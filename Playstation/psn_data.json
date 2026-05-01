@@ -18,7 +18,7 @@
       },
       "online": false,
       "currentGame": "Farming Simulator 25",
-      "currentGameProgress": 0,
+      "currentGameProgress": 54,
       "gameArt": "https://image.api.playstation.com/sgst/prod/00/PPSA19644_00/app/info/69/fi_b277574d82be6a110f9b919a0f6e3be0ba1d69b965fcc3f5173595d58733fd67/icon0.png",
       "recentGames": [
         {
@@ -52,7 +52,7 @@
           "platform": "NPWR50314_00"
         }
       ],
-      "lastUpdated": "5/1/2026, 4:52:03 PM"
+      "lastUpdated": "5/1/2026, 4:57:09 PM"
     },
     "darkwing": {
       "online": false,
@@ -110,7 +110,15 @@
           "platform": "NPWR23165_00"
         }
       ],
-      "lastUpdated": "5/1/2026, 4:52:04 PM"
+      "lastUpdated": "5/1/2026, 4:57:12 PM"
+    },
+    "phoenix": {
+      "online": false,
+      "currentGame": ""
+    },
+    "elucidator": {
+      "online": false,
+      "currentGame": ""
     }
   }
 }
