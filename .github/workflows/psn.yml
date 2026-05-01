@@ -2,6 +2,7 @@ name: Sync PSN Data
 
 on:
   schedule:
+    # Runs every 30 minutes to stay within GitHub Free Tier limits
     - cron: '*/30 * * * *'
   workflow_dispatch:
   push:
@@ -20,23 +21,24 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          fetch-depth: 0 # Fetch all history so rebase works correctly
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Install Dependencies
         run: |
-          pip install psnawp-api
+          npm install psn-api
 
       - name: Run PSN Sync
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
-        # Changed from Playstation/psnscript.py to psnscript.py 
-        # as the script lives in the root but creates the folder.
-        run: python psnscript.py
+        # Runs the JS script in the Playstation folder as seen in successful logs
+        run: node Playstation/psnscript.js
 
       - name: Commit and Push Changes
         run: |
@@ -44,4 +46,6 @@ jobs:
           git config --local user.name "GitHub Action"
           git add Playstation/psn_data.json
           git commit -m "Wolf Sync: Updated PSN Stats [skip ci]" || echo "No changes to commit"
-          git push
+          # Pull latest changes and rebase to avoid "rejected" errors
+          git pull --rebase origin main
+          git push origin main
