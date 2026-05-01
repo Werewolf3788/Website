@@ -3,7 +3,7 @@ const {
   exchangeCodeForAccessToken,
   getUserTitles,
   getUserTrophyProfileSummary,
-  getPresenceOfUser, // Corrected function name
+  getPresenceFromUser, // Standard function name for psn-api
   getUserTrophiesEarnedForTitle,
   getTitleTrophies,
   makeUniversalSearch
@@ -24,11 +24,18 @@ async function getFullUserData(npsso, label) {
     
     // 2. Get basic profile and presence
     const trophySummary = await getUserTrophyProfileSummary(authorization, "me");
-    const presence = await getPresenceOfUser(authorization, "me"); // Corrected call
+    
+    let presence;
+    try {
+        presence = await getPresenceFromUser(authorization, "me");
+    } catch (e) {
+        console.log(`[${label}] Presence fetch failed, using offline defaults.`);
+        presence = { primaryPlatformInfo: { onlineStatus: "offline" } };
+    }
     
     console.log(`[${label}] Level: ${trophySummary.trophyLevel} | Progress: ${trophySummary.progress}%`);
 
-    const isOnline = presence.primaryPlatformInfo.onlineStatus === "online";
+    const isOnline = presence.primaryPlatformInfo?.onlineStatus === "online";
     const gameList = presence.gameTitleInfoList || [];
     const rawGameName = gameList[0]?.titleName || "";
     const currentGameArt = gameList[0]?.conceptIconUrl || "";
@@ -43,7 +50,6 @@ async function getFullUserData(npsso, label) {
     let latestTrophyInfo = null;
 
     for (const title of trophyTitles) {
-      // Skip blacklisted games
       if (BLACKLIST.some(f => title.trophyTitleName.toLowerCase().includes(f))) continue;
 
       if (recentGames.length < 5) {
@@ -74,9 +80,7 @@ async function getFullUserData(npsso, label) {
               icon: meta.trophyIconUrl
             };
           }
-        } catch (e) { 
-          // Log minor skips
-        }
+        } catch (e) { /* Skip specific titles with errors */ }
       }
 
       if (recentGames.length >= 5 && latestTrophyInfo) break;
@@ -101,7 +105,7 @@ async function getFullUserData(npsso, label) {
       lastUpdated: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
     };
   } catch (error) {
-    console.error(`[${label}] Error in script:`, error.message);
+    console.error(`[${label}] Fatal error in script:`, error.message);
     return null;
   }
 }
@@ -111,11 +115,10 @@ async function getFriendStatus(npsso, onlineId) {
     const accessCode = await exchangeNpssoForCode(npsso);
     const authorization = await exchangeCodeForAccessToken(accessCode);
     
-    // Search to get accountId for friends
     const searchResults = await makeUniversalSearch(authorization, onlineId, "socialAccounts");
     const accountId = searchResults.domainResponses[0].results[0].socialMetadata.accountId;
     
-    const presence = await getPresenceOfUser(authorization, accountId); // Corrected call
+    const presence = await getPresenceFromUser(authorization, accountId);
     let game = presence.gameTitleInfoList?.[0]?.titleName || "";
     if (BLACKLIST.some(f => game.toLowerCase().includes(f))) game = "Classified";
     
@@ -127,7 +130,6 @@ async function getFriendStatus(npsso, onlineId) {
       currentGame: game
     };
   } catch (e) {
-    console.error(`[Friend] Could not reach ${onlineId}`);
     return { online: false, currentGame: "" };
   }
 }
@@ -139,7 +141,6 @@ async function main() {
 
   const dataPath = path.join(__dirname, "psn_data.json");
   
-  // Load existing data to prevent "Zeroing out"
   try {
     if (fs.existsSync(dataPath)) {
       finalData = JSON.parse(fs.readFileSync(dataPath, "utf8"));
