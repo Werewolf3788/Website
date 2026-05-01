@@ -21,10 +21,12 @@ async function getFullUserData(npsso, label) {
     const accessCode = await exchangeNpssoForCode(npsso);
     const authorization = await exchangeCodeForAccessToken(accessCode);
     
-    // 2. Get basic profile and presence
+    // 2. Get basic profile and presence using "me"
     const trophySummary = await getUserTrophySummaryForUser(authorization, "me");
     const presence = await getPresenceFromUser(authorization, "me");
     
+    console.log(`[${label}] Level: ${trophySummary.trophyLevel} | Total Trophies: ${trophySummary.earnedTrophies.platinum + trophySummary.earnedTrophies.gold + trophySummary.earnedTrophies.silver + trophySummary.earnedTrophies.bronze}`);
+
     const isOnline = presence.primaryPlatformInfo.onlineStatus === "online";
     const gameList = presence.gameTitleInfoList || [];
     const rawGameName = gameList[0]?.titleName || "";
@@ -65,13 +67,11 @@ async function getFullUserData(npsso, label) {
               icon: earned[0].trophyIconUrl
             };
           }
-        } catch (e) { console.log(`Trophy skip for ${title.trophyTitleName}`); }
+        } catch (e) { console.log(`[${label}] Trophy skip for ${title.trophyTitleName}`); }
       }
 
       if (recentGames.length >= 5 && latestTrophyInfo) break;
     }
-
-    console.log(`Success: Found Level ${trophySummary.trophyLevel} for ${label}`);
 
     return {
       level: trophySummary.trophyLevel,
@@ -89,10 +89,10 @@ async function getFullUserData(npsso, label) {
       currentGameProgress: recentGames.find(g => g.name === currentGameName)?.progress || 0,
       gameArt: currentGameName !== "Dashboard" ? currentGameArt : "",
       recentGames: recentGames,
-      lastUpdated: new Date().toLocaleString()
+      lastUpdated: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
     };
   } catch (error) {
-    console.error(`Fatal error syncing ${label}:`, error.message);
+    console.error(`[${label}] Fatal error:`, error.message);
     return null;
   }
 }
@@ -110,13 +110,14 @@ async function getFriendStatus(npsso, onlineId) {
     if (BLACKLIST.some(f => game.toLowerCase().includes(f))) game = "Classified";
     
     const status = presence.primaryPlatformInfo.onlineStatus;
-    console.log(`Friend ${onlineId}: ${status}`);
+    console.log(`[Friend] ${onlineId}: ${status}`);
     
     return {
       online: status === "online",
       currentGame: game
     };
   } catch (e) {
+    console.error(`[Friend] Failed to fetch ${onlineId}:`, e.message);
     return { online: false, currentGame: "" };
   }
 }
@@ -127,6 +128,8 @@ async function main() {
   let finalData = { users: {} };
 
   const dataPath = path.join(__dirname, "psn_data.json");
+  
+  // Try to load existing data to prevent blanking on fail
   try {
     if (fs.existsSync(dataPath)) {
       finalData = JSON.parse(fs.readFileSync(dataPath, "utf8"));
@@ -147,7 +150,7 @@ async function main() {
   }
 
   fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-  console.log("Sync finished.");
+  console.log("--- Sync Finished ---");
 }
 
 main();
