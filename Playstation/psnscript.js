@@ -5,6 +5,7 @@ const {
   getUserTrophyProfileSummary,
   getPresenceFromUser,
   getUserTrophiesEarnedForTitle,
+  getTitleTrophies,
   makeUniversalSearch
 } = require("psn-api");
 const fs = require("fs");
@@ -17,11 +18,11 @@ async function getFullUserData(npsso, label) {
   try {
     console.log(`--- Starting Sync for ${label} ---`);
     
-    // 1. Authenticate
+    // 1. Authenticate using NPSSO
     const accessCode = await exchangeNpssoForCode(npsso);
     const authorization = await exchangeCodeForAccessToken(accessCode);
     
-    // 2. Get basic profile and presence using the correct function names found in source
+    // 2. Get basic profile and presence using correct function names from source
     const trophySummary = await getUserTrophyProfileSummary(authorization, "me");
     const presence = await getPresenceFromUser(authorization, "me");
     
@@ -36,13 +37,13 @@ async function getFullUserData(npsso, label) {
     const isBlacklisted = BLACKLIST.some(f => rawGameName.toLowerCase().includes(f));
     const currentGameName = (!rawGameName || isBlacklisted) ? "Dashboard" : rawGameName;
 
-    // 3. Get Games and Trophy Progress using the correct function name
+    // 3. Get Games list
     const { trophyTitles } = await getUserTitles(authorization, "me");
     const recentGames = [];
     let latestTrophyInfo = null;
 
     for (const title of trophyTitles) {
-      // Skip blacklisted games in the "Recent Hunts" list
+      // Skip blacklisted games
       if (BLACKLIST.some(f => title.trophyTitleName.toLowerCase().includes(f))) continue;
 
       if (recentGames.length < 5) {
@@ -54,23 +55,29 @@ async function getFullUserData(npsso, label) {
         });
       }
 
-      // Get the latest trophy for the most recent valid game
+      // Get metadata for the most recent valid trophy
       if (!latestTrophyInfo) {
         try {
-          const { trophies } = await getUserTrophiesEarnedForTitle(authorization, "me", title.npCommunicationId, "all");
-          // Sort by earned date to find the absolute newest one
-          const earned = trophies.filter(t => t.earned).sort((a, b) => new Date(b.earnedDateTime) - new Date(a.earnedDateTime));
+          // Get EARNED status
+          const { trophies: earnedTrophies } = await getUserTrophiesEarnedForTitle(authorization, "me", title.npCommunicationId, "all");
+          // Get METADATA (Names and Icons)
+          const { trophies: trophyMetadata } = await getTitleTrophies(authorization, title.npCommunicationId, "all");
           
-          if (earned.length > 0) {
+          const newestEarned = earnedTrophies
+            .filter(t => t.earned)
+            .sort((a, b) => new Date(b.earnedDateTime) - new Date(a.earnedDateTime))[0];
+
+          if (newestEarned) {
+            const meta = trophyMetadata.find(m => m.trophyId === newestEarned.trophyId);
             latestTrophyInfo = {
-              name: earned[0].trophyName,
+              name: meta.trophyName,
               game: title.trophyTitleName,
-              rank: earned[0].trophyType.charAt(0).toUpperCase() + earned[0].trophyType.slice(1),
-              icon: earned[0].trophyIconUrl
+              rank: meta.trophyType.charAt(0).toUpperCase() + meta.trophyType.slice(1),
+              icon: meta.trophyIconUrl
             };
           }
         } catch (e) { 
-            // Silence minor errors for specific titles
+          console.log(`[${label}] Skipping trophy details for ${title.trophyTitleName}`);
         }
       }
 
@@ -96,7 +103,7 @@ async function getFullUserData(npsso, label) {
       lastUpdated: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
     };
   } catch (error) {
-    console.error(`[${label}] Error in script logic:`, error.message);
+    console.error(`[${label}] Error:`, error.message);
     return null;
   }
 }
@@ -106,6 +113,7 @@ async function getFriendStatus(npsso, onlineId) {
     const accessCode = await exchangeNpssoForCode(npsso);
     const authorization = await exchangeCodeForAccessToken(accessCode);
     
+    // Search to get accountId for friends
     const searchResults = await makeUniversalSearch(authorization, onlineId, "socialAccounts");
     const accountId = searchResults.domainResponses[0].results[0].socialMetadata.accountId;
     
@@ -121,6 +129,7 @@ async function getFriendStatus(npsso, onlineId) {
       currentGame: game
     };
   } catch (e) {
+    console.error(`[Friend] Could not reach ${onlineId}`);
     return { online: false, currentGame: "" };
   }
 }
@@ -132,7 +141,7 @@ async function main() {
 
   const dataPath = path.join(__dirname, "psn_data.json");
   
-  // Persistence: Load existing data first
+  // Load existing data so we never show "0" if PSN is down
   try {
     if (fs.existsSync(dataPath)) {
       finalData = JSON.parse(fs.readFileSync(dataPath, "utf8"));
@@ -143,7 +152,7 @@ async function main() {
     const data = await getFullUserData(werewolfToken, "Werewolf");
     if (data) {
       finalData.users.werewolf = data;
-      // Fetch Darkwing while we have Werewolf's session
+      // Check Darkwing using Werewolf's session
       finalData.users.darkwing = await getFriendStatus(werewolfToken, "Darkwing69420");
     }
   }
