@@ -34,7 +34,9 @@ jobs:
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
-        run: python Playstation/psnscript.py
+        # Changed from Playstation/psnscript.py to psnscript.py 
+        # as the script lives in the root but creates the folder.
+        run: python psnscript.py
 
       - name: Commit and Push Changes
         run: |
