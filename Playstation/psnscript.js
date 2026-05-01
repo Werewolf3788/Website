@@ -4,13 +4,10 @@ const {
   exchangeCodeForAccessToken,
   getUserTitles,
   getUserTrophyProfileSummary,
-  getPresenceOfUser,
-  getPresenceFromUser,
   getUserTrophiesEarnedForTitle,
   getTitleTrophies,
   makeUniversalSearch,
-  getRecentlyPlayedGames,
-  getPurchasedGames
+  getRecentlyPlayedGames
 } = psnApi;
 
 const fs = require("fs");
@@ -21,75 +18,64 @@ const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gt
 
 // Helper to find the correct presence function regardless of naming shifts in the library
 const findPresenceFunc = () => {
-    return psnApi.getPresenceFromUser || psnApi.getPresenceOfUser || psnApi.getUserPresence || null;
+  return psnApi.getPresenceFromUser || psnApi.getPresenceOfUser || psnApi.getUserPresence || null;
 };
 
 /**
  * Normalizes title strings for better matching between Presence and Trophy lists.
- * This ensures "Ghost Recon Wildlands" matches even if one source includes special characters.
  */
 const normalizeTitle = (str) => {
-    return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+  return str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : "";
+};
+
+/**
+ * Formats ISO 8601 duration (PT1H30M) to readable string (1h 30m)
+ */
+const formatDuration = (durationStr) => {
+  if (!durationStr) return "--";
+  const h = durationStr.match(/(\d+)H/);
+  const m = durationStr.match(/(\d+)M/);
+  const hours = h ? h[1] + "h" : "";
+  const mins = m ? m[1] + "m" : "";
+  return `${hours} ${mins}`.trim() || "0h";
 };
 
 async function getFullUserData(npsso, label) {
   try {
     console.log(`--- Starting Sync for ${label} ---`);
     
-    // 1. Authenticate using NPSSO
     const accessCode = await exchangeNpssoForCode(npsso);
     const authorization = await exchangeCodeForAccessToken(accessCode);
     
-    // 2. Get Trophy Summary (Global Stats)
     const trophySummary = await getUserTrophyProfileSummary(authorization, "me");
     console.log(`[${label}] Level: ${trophySummary.trophyLevel} (${trophySummary.progress}%)`);
 
-    // 3. Detect "Active Hunt" (Current Game for Overlay)
     let isOnline = false;
     let currentGameName = "Dashboard";
     let currentGameArt = "";
+    let currentGamePlaytime = "--";
     
     const presenceFunc = findPresenceFunc();
     if (presenceFunc) {
-        try {
-            const presence = await presenceFunc(authorization, "me");
-            isOnline = presence.primaryPlatformInfo?.onlineStatus === "online";
-        } catch (e) {
-            console.log(`[${label}] Online status fetch skipped (API/Privacy restricted).`);
-        }
+      try {
+        const presence = await presenceFunc(authorization, "me");
+        isOnline = presence.primaryPlatformInfo?.onlineStatus === "online";
+      } catch (e) { }
     }
 
-    // Pull high-res data for the overlay's "Now Playing" display
+    // Detect active game (Squirrel with a Gun / Farming Simulator 25)
     try {
-        const recentlyPlayed = await getRecentlyPlayedGames(authorization, { limit: 1 });
-        const lastGame = recentlyPlayed.data?.gameLibraryTitlesRetrieve?.games?.[0];
-        
-        if (lastGame) {
-            const isBlacklisted = BLACKLIST.some(f => lastGame.name.toLowerCase().includes(f));
-            if (!isBlacklisted) {
-                currentGameName = lastGame.name;
-                currentGameArt = lastGame.image?.url || "";
-                console.log(`[${label}] Active Game Detected: ${currentGameName}`);
-            }
-        }
-    } catch (e) {
-        console.log(`[${label}] Recently Played fetch failed.`);
-    }
+      const recentlyPlayed = await getRecentlyPlayedGames(authorization, { limit: 1 });
+      const lastGame = recentlyPlayed.data?.gameLibraryTitlesRetrieve?.games?.[0];
+      
+      if (lastGame && !BLACKLIST.some(f => lastGame.name.toLowerCase().includes(f))) {
+        currentGameName = lastGame.name;
+        currentGameArt = lastGame.image?.url || "";
+        currentGamePlaytime = formatDuration(lastGame.playDuration);
+        console.log(`[${label}] Active Game Detected: ${currentGameName} (${currentGamePlaytime})`);
+      }
+    } catch (e) { }
 
-    // 4. Get Purchased Games (For the "New Acquisitions" overlay alert)
-    let recentPurchases = [];
-    try {
-        const purchases = await getPurchasedGames(authorization, { size: 5 });
-        recentPurchases = purchases.data.purchasedTitlesRetrieve.titles.map(t => ({
-            name: t.name,
-            art: t.image.url,
-            platform: t.platform
-        }));
-    } catch (e) {
-        console.log(`[${label}] Purchased games fetch failed.`);
-    }
-
-    // 5. Get Titles list (Matching Current Game to Progress)
     const { trophyTitles } = await getUserTitles(authorization, "me");
     const recentGames = [];
     let latestTrophyInfo = null;
@@ -100,7 +86,6 @@ async function getFullUserData(npsso, label) {
     for (const title of trophyTitles) {
       if (BLACKLIST.some(f => title.trophyTitleName.toLowerCase().includes(f))) continue;
 
-      // Smart Matching: Use normalized names to ensure progress displays correctly for the overlay
       if (normalizeTitle(title.trophyTitleName) === normalizedCurrent) {
         detectedGameProgress = title.progress;
       }
@@ -109,12 +94,10 @@ async function getFullUserData(npsso, label) {
         recentGames.push({
           name: title.trophyTitleName,
           progress: title.progress,
-          art: title.trophyTitleIconUrl,
-          platform: title.npCommunicationId
+          art: title.trophyTitleIconUrl
         });
       }
 
-      // Fetch precise metadata for the most recent trophy earned
       if (!latestTrophyInfo) {
         try {
           const { trophies: earnedTrophies } = await getUserTrophiesEarnedForTitle(authorization, "me", title.npCommunicationId, "all");
@@ -122,11 +105,7 @@ async function getFullUserData(npsso, label) {
           
           const newestEarned = earnedTrophies
             .filter(t => t.earned)
-            .sort((a, b) => {
-                const dateA = a.earnedDateTime ? new Date(a.earnedDateTime).getTime() : 0;
-                const dateB = b.earnedDateTime ? new Date(b.earnedDateTime).getTime() : 0;
-                return dateB - dateA;
-            })[0];
+            .sort((a, b) => new Date(b.earnedDateTime) - new Date(a.earnedDateTime))[0];
 
           if (newestEarned) {
             const meta = trophyMetadata.find(m => m.trophyId === newestEarned.trophyId);
@@ -134,19 +113,11 @@ async function getFullUserData(npsso, label) {
               name: meta.trophyName,
               game: title.trophyTitleName,
               rank: meta.trophyType.charAt(0).toUpperCase() + meta.trophyType.slice(1),
-              icon: meta.trophyIconUrl,
-              earnedDate: newestEarned.earnedDateTime
+              icon: meta.trophyIconUrl
             };
           }
-        } catch (e) { /* Skip private titles */ }
+        } catch (e) { }
       }
-    }
-
-    // Fallback logic for Active Hunt if GraphQL fails
-    if (currentGameName === "Dashboard" && recentGames.length > 0) {
-        currentGameName = recentGames[0].name;
-        currentGameArt = recentGames[0].art;
-        detectedGameProgress = recentGames[0].progress;
     }
 
     return {
@@ -163,13 +134,13 @@ async function getFullUserData(npsso, label) {
       online: isOnline,
       currentGame: currentGameName,
       currentGameProgress: detectedGameProgress,
+      currentGamePlaytime: currentGamePlaytime,
       gameArt: currentGameArt,
       recentGames: recentGames,
-      recentPurchases: recentPurchases,
       lastUpdated: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
     };
   } catch (error) {
-    console.error(`[${label}] Fatal Error during sync:`, error.message);
+    console.error(`[${label}] Error:`, error.message);
     return null;
   }
 }
@@ -179,7 +150,6 @@ async function getFriendStatus(npsso, onlineId) {
     const accessCode = await exchangeNpssoForCode(npsso);
     const authorization = await exchangeCodeForAccessToken(accessCode);
     const searchResults = await makeUniversalSearch(authorization, onlineId, "socialAccounts");
-    
     if (!searchResults.domainResponses[0]?.results?.length) return { online: false, currentGame: "" };
     
     const accountId = searchResults.domainResponses[0].results[0].socialMetadata.accountId;
@@ -188,19 +158,16 @@ async function getFriendStatus(npsso, onlineId) {
     
     const presenceFunc = findPresenceFunc();
     if (presenceFunc) {
-        try {
-            const presence = await presenceFunc(authorization, accountId);
-            game = presence.gameTitleInfoList?.[0]?.titleName || "";
-            status = presence.primaryPlatformInfo.onlineStatus;
-        } catch (e) { }
+      try {
+        const presence = await presenceFunc(authorization, accountId);
+        game = presence.gameTitleInfoList?.[0]?.titleName || "";
+        status = presence.primaryPlatformInfo.onlineStatus;
+      } catch (e) { }
     }
     
     if (game && BLACKLIST.some(f => game.toLowerCase().includes(f))) game = "Classified";
-    
     return { online: status === "online", currentGame: game };
-  } catch (e) {
-    return { online: false, currentGame: "" };
-  }
+  } catch (e) { return { online: false, currentGame: "" }; }
 }
 
 async function main() {
@@ -209,23 +176,15 @@ async function main() {
   let finalData = { users: {} };
   const dataPath = path.join(__dirname, "psn_data.json");
   
-  // Load existing data to preserve state if API has a hiccup
-  try {
-    if (fs.existsSync(dataPath)) {
-      finalData = JSON.parse(fs.readFileSync(dataPath, "utf8"));
-    }
-  } catch (e) {}
-
   if (werewolfToken) {
     const data = await getFullUserData(werewolfToken, "Werewolf");
     if (data) {
-        finalData.users.werewolf = data;
-        
-        // Sync Lobby Friends (Phoenix, Elucidator, Darkwing)
-        console.log("--- Syncing Lobby Friends ---");
-        finalData.users.darkwing = await getFriendStatus(werewolfToken, "Darkwing69420");
-        finalData.users.phoenix = await getFriendStatus(werewolfToken, "phoenix_darkfire");
-        finalData.users.elucidator = await getFriendStatus(werewolfToken, "ElucidatorVah");
+      finalData.users.werewolf = data;
+      console.log("--- Syncing Lobby Friends ---");
+      finalData.users.darkwing = await getFriendStatus(werewolfToken, "Darkwing69420");
+      finalData.users.phoenix = await getFriendStatus(werewolfToken, "phoenix_darkfire");
+      finalData.users.elucidator = await getFriendStatus(werewolfToken, "ElucidatorVah");
+      finalData.users.terrdog = await getFriendStatus(werewolfToken, "TerrDog420");
     }
   }
 
@@ -235,7 +194,7 @@ async function main() {
   }
 
   fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-  console.log("--- Sync Finished: All data ready for Overlay/Website ---");
+  console.log("--- Sync Finished ---");
 }
 
 main();
