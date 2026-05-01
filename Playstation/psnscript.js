@@ -24,19 +24,27 @@ const findPresenceFunc = () => {
     return psnApi.getPresenceFromUser || psnApi.getPresenceOfUser || psnApi.getUserPresence || null;
 };
 
+/**
+ * Normalizes title strings for better matching between Presence and Trophy lists.
+ * This ensures "Ghost Recon Wildlands" matches even if one source includes special characters.
+ */
+const normalizeTitle = (str) => {
+    return str.toLowerCase().replace(/[^a-z0-9]/g, '');
+};
+
 async function getFullUserData(npsso, label) {
   try {
     console.log(`--- Starting Sync for ${label} ---`);
     
-    // 1. Authenticate
+    // 1. Authenticate using NPSSO
     const accessCode = await exchangeNpssoForCode(npsso);
     const authorization = await exchangeCodeForAccessToken(accessCode);
     
-    // 2. Get Trophy Summary (Levels/Counts)
+    // 2. Get Trophy Summary (Global Stats)
     const trophySummary = await getUserTrophyProfileSummary(authorization, "me");
     console.log(`[${label}] Level: ${trophySummary.trophyLevel} (${trophySummary.progress}%)`);
 
-    // 3. Detect "Active Hunt" (Current Game)
+    // 3. Detect "Active Hunt" (Current Game for Overlay)
     let isOnline = false;
     let currentGameName = "Dashboard";
     let currentGameArt = "";
@@ -47,13 +55,15 @@ async function getFullUserData(npsso, label) {
             const presence = await presenceFunc(authorization, "me");
             isOnline = presence.primaryPlatformInfo?.onlineStatus === "online";
         } catch (e) {
-            console.log(`[${label}] Online status fetch skipped.`);
+            console.log(`[${label}] Online status fetch skipped (API/Privacy restricted).`);
         }
     }
 
+    // Pull high-res data for the overlay's "Now Playing" display
     try {
         const recentlyPlayed = await getRecentlyPlayedGames(authorization, { limit: 1 });
         const lastGame = recentlyPlayed.data?.gameLibraryTitlesRetrieve?.games?.[0];
+        
         if (lastGame) {
             const isBlacklisted = BLACKLIST.some(f => lastGame.name.toLowerCase().includes(f));
             if (!isBlacklisted) {
@@ -66,7 +76,7 @@ async function getFullUserData(npsso, label) {
         console.log(`[${label}] Recently Played fetch failed.`);
     }
 
-    // 4. Get Purchased Games
+    // 4. Get Purchased Games (For the "New Acquisitions" overlay alert)
     let recentPurchases = [];
     try {
         const purchases = await getPurchasedGames(authorization, { size: 5 });
@@ -79,16 +89,19 @@ async function getFullUserData(npsso, label) {
         console.log(`[${label}] Purchased games fetch failed.`);
     }
 
-    // 5. Get Titles list (Recent Games for grid and progress)
+    // 5. Get Titles list (Matching Current Game to Progress)
     const { trophyTitles } = await getUserTitles(authorization, "me");
     const recentGames = [];
     let latestTrophyInfo = null;
     let detectedGameProgress = 0;
 
+    const normalizedCurrent = normalizeTitle(currentGameName);
+
     for (const title of trophyTitles) {
       if (BLACKLIST.some(f => title.trophyTitleName.toLowerCase().includes(f))) continue;
 
-      if (title.trophyTitleName === currentGameName) {
+      // Smart Matching: Use normalized names to ensure progress displays correctly for the overlay
+      if (normalizeTitle(title.trophyTitleName) === normalizedCurrent) {
         detectedGameProgress = title.progress;
       }
 
@@ -101,15 +114,12 @@ async function getFullUserData(npsso, label) {
         });
       }
 
-      // --- RECENT TROPHY LOGIC ---
+      // Fetch precise metadata for the most recent trophy earned
       if (!latestTrophyInfo) {
         try {
-          // 1. Get list of earned status for this game
           const { trophies: earnedTrophies } = await getUserTrophiesEarnedForTitle(authorization, "me", title.npCommunicationId, "all");
-          // 2. Get names/icons for trophies in this game
           const { trophies: trophyMetadata } = await getTitleTrophies(authorization, title.npCommunicationId, "all");
           
-          // 3. Find the newest one earned by comparing timestamps
           const newestEarned = earnedTrophies
             .filter(t => t.earned)
             .sort((a, b) => {
@@ -127,12 +137,16 @@ async function getFullUserData(npsso, label) {
               icon: meta.trophyIconUrl,
               earnedDate: newestEarned.earnedDateTime
             };
-            console.log(`[${label}] Latest Trophy Found: ${latestTrophyInfo.name} in ${latestTrophyInfo.game}`);
           }
-        } catch (e) { 
-          // Move to next title if this one is private
-        }
+        } catch (e) { /* Skip private titles */ }
       }
+    }
+
+    // Fallback logic for Active Hunt if GraphQL fails
+    if (currentGameName === "Dashboard" && recentGames.length > 0) {
+        currentGameName = recentGames[0].name;
+        currentGameArt = recentGames[0].art;
+        detectedGameProgress = recentGames[0].progress;
     }
 
     return {
@@ -155,7 +169,7 @@ async function getFullUserData(npsso, label) {
       lastUpdated: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
     };
   } catch (error) {
-    console.error(`[${label}] Fatal Error:`, error.message);
+    console.error(`[${label}] Fatal Error during sync:`, error.message);
     return null;
   }
 }
@@ -171,6 +185,7 @@ async function getFriendStatus(npsso, onlineId) {
     const accountId = searchResults.domainResponses[0].results[0].socialMetadata.accountId;
     let game = "";
     let status = "offline";
+    
     const presenceFunc = findPresenceFunc();
     if (presenceFunc) {
         try {
@@ -179,7 +194,9 @@ async function getFriendStatus(npsso, onlineId) {
             status = presence.primaryPlatformInfo.onlineStatus;
         } catch (e) { }
     }
+    
     if (game && BLACKLIST.some(f => game.toLowerCase().includes(f))) game = "Classified";
+    
     return { online: status === "online", currentGame: game };
   } catch (e) {
     return { online: false, currentGame: "" };
@@ -191,22 +208,34 @@ async function main() {
   const rayToken = process.env.PSN_NPSSO_RAY;
   let finalData = { users: {} };
   const dataPath = path.join(__dirname, "psn_data.json");
-  try { if (fs.existsSync(dataPath)) { finalData = JSON.parse(fs.readFileSync(dataPath, "utf8")); } } catch (e) {}
+  
+  // Load existing data to preserve state if API has a hiccup
+  try {
+    if (fs.existsSync(dataPath)) {
+      finalData = JSON.parse(fs.readFileSync(dataPath, "utf8"));
+    }
+  } catch (e) {}
 
   if (werewolfToken) {
     const data = await getFullUserData(werewolfToken, "Werewolf");
     if (data) {
         finalData.users.werewolf = data;
+        
+        // Sync Lobby Friends (Phoenix, Elucidator, Darkwing)
+        console.log("--- Syncing Lobby Friends ---");
         finalData.users.darkwing = await getFriendStatus(werewolfToken, "Darkwing69420");
         finalData.users.phoenix = await getFriendStatus(werewolfToken, "phoenix_darkfire");
         finalData.users.elucidator = await getFriendStatus(werewolfToken, "ElucidatorVah");
     }
   }
+
   if (rayToken) {
     const data = await getFullUserData(rayToken, "Ray");
     if (data) finalData.users.ray = data;
   }
+
   fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-  console.log("--- Sync Finished ---");
+  console.log("--- Sync Finished: All data ready for Overlay/Website ---");
 }
+
 main();
