@@ -35,7 +35,7 @@ def get_full_user_data(client):
                     "name": game_name,
                     "progress": title.progress,
                     "art": title.trophy_title_icon_url,
-                    "platform": title.np_communication_id # Used to help identify PS5/PS4
+                    "platform": title.np_communication_id 
                 })
             
             # Get the single most recent earned trophy from the first valid game
@@ -54,7 +54,6 @@ def get_full_user_data(client):
                 except:
                     pass
             
-            # If we have 5 games and a trophy, we can stop searching
             if len(recent_games) >= 5 and latest_trophy_info:
                 break
 
@@ -83,7 +82,6 @@ def get_friend_status(client, online_id):
         search_user = client.user(online_id=online_id)
         presence = search_user.get_presence()
         game = presence.get("gameTitleInfoList", [{}])[0].get("titleName", "")
-        # Apply blacklist to friends too, just in case
         if any(f in game.lower() for f in BLACKLIST): game = "Classified"
         
         return {
@@ -114,9 +112,13 @@ def main():
         except Exception as e:
             print(f"Error: {e}")
 
-    os.makedirs("json", exist_ok=True)
-    with open("json/psn_data.json", "w") as f:
+    # Ensure the Playstation directory exists
+    os.makedirs("Playstation", exist_ok=True)
+    
+    # Save to the specific folder linked in your query
+    with open("Playstation/psn_data.json", "w") as f:
         json.dump(final_data, f, indent=2)
+    print("Successfully updated Playstation/psn_data.json")
 
 if __name__ == "__main__":
     main()
