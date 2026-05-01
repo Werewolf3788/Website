@@ -17,9 +17,9 @@
         "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/009fa825-3750-4f7a-a4d4-a3693fc62894.png"
       },
       "online": false,
-      "currentGame": "Dashboard",
+      "currentGame": "Farming Simulator 25",
       "currentGameProgress": 0,
-      "gameArt": "",
+      "gameArt": "https://image.api.playstation.com/sgst/prod/00/PPSA19644_00/app/info/69/fi_b277574d82be6a110f9b919a0f6e3be0ba1d69b965fcc3f5173595d58733fd67/icon0.png",
       "recentGames": [
         {
           "name": "Crossout",
@@ -52,7 +52,7 @@
           "platform": "NPWR50314_00"
         }
       ],
-      "lastUpdated": "5/1/2026, 4:50:28 PM"
+      "lastUpdated": "5/1/2026, 4:52:03 PM"
     },
     "darkwing": {
       "online": false,
@@ -75,9 +75,9 @@
         "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/c4cc9e52-45e4-41bd-97a3-d1c270ee71e9.png"
       },
       "online": false,
-      "currentGame": "Dashboard",
+      "currentGame": "Mahjong3D",
       "currentGameProgress": 0,
-      "gameArt": "",
+      "gameArt": "https://image.api.playstation.com/sgst/prod/00/PPSA06595_00/app/info/5/fi_80540447de8dcaa553ab6ac7b805b5ed2d1328f39c85605393478238bba8427e/icon0.png",
       "recentGames": [
         {
           "name": "Mahjong",
@@ -110,7 +110,7 @@
           "platform": "NPWR23165_00"
         }
       ],
-      "lastUpdated": "5/1/2026, 4:50:30 PM"
+      "lastUpdated": "5/1/2026, 4:52:04 PM"
     }
   }
 }
