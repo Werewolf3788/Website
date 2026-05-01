@@ -1,3 +1,116 @@
 {
-  "users": {}
+  "users": {
+    "werewolf": {
+      "level": 232,
+      "progress": 46,
+      "trophies": {
+        "platinum": 5,
+        "gold": 77,
+        "silver": 214,
+        "bronze": 980,
+        "total": 1276
+      },
+      "recentTrophy": {
+        "name": "Journeyman Engineer",
+        "game": "Crossout",
+        "rank": "Bronze",
+        "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/009fa825-3750-4f7a-a4d4-a3693fc62894.png"
+      },
+      "online": false,
+      "currentGame": "Dashboard",
+      "currentGameProgress": 0,
+      "gameArt": "",
+      "recentGames": [
+        {
+          "name": "Crossout",
+          "progress": 4,
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
+          "platform": "NPWR24327_00"
+        },
+        {
+          "name": "Wo Long: Fallen Dynasty",
+          "progress": 9,
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
+          "platform": "NPWR27198_00"
+        },
+        {
+          "name": "Tom Clancy’s Ghost Recon® Wildlands",
+          "progress": 29,
+          "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+          "platform": "NPWR09395_00"
+        },
+        {
+          "name": "Where Winds Meet",
+          "progress": 3,
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
+          "platform": "NPWR50887_00"
+        },
+        {
+          "name": "Call of Duty® Modern Warfare® II",
+          "progress": 0,
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50314_00/8e558b12-9144-4d7f-a141-5b04943763b4.png",
+          "platform": "NPWR50314_00"
+        }
+      ],
+      "lastUpdated": "5/1/2026, 4:34:44 PM"
+    },
+    "darkwing": {
+      "online": false,
+      "currentGame": ""
+    },
+    "ray": {
+      "level": 201,
+      "progress": 93,
+      "trophies": {
+        "platinum": 5,
+        "gold": 33,
+        "silver": 106,
+        "bronze": 544,
+        "total": 688
+      },
+      "recentTrophy": {
+        "name": "CLEAR 10 LEVELS",
+        "game": "Mahjong",
+        "rank": "Silver",
+        "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/c4cc9e52-45e4-41bd-97a3-d1c270ee71e9.png"
+      },
+      "online": false,
+      "currentGame": "Dashboard",
+      "currentGameProgress": 0,
+      "gameArt": "",
+      "recentGames": [
+        {
+          "name": "Mahjong",
+          "progress": 30,
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png",
+          "platform": "NPWR28141_00"
+        },
+        {
+          "name": "theHunter: Call of the Wild",
+          "progress": 35,
+          "art": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/88AFFFD0B28B703B28CA71F6353F797230B9FB32.PNG",
+          "platform": "NPWR13211_00"
+        },
+        {
+          "name": "Sniper Elite: Resistance",
+          "progress": 0,
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
+          "platform": "NPWR40813_00"
+        },
+        {
+          "name": "Farming Simulator 25",
+          "progress": 100,
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+          "platform": "NPWR44827_00"
+        },
+        {
+          "name": "Farming Simulator 22",
+          "progress": 18,
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR23165_00/dae2fb95-5224-40a6-bd64-b9c4b1e826f6.png",
+          "platform": "NPWR23165_00"
+        }
+      ],
+      "lastUpdated": "5/1/2026, 4:34:45 PM"
+    }
+  }
 }
