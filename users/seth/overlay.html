@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phoenix Darkfire - Elite Protocol</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <style>
+        body, html { 
+            margin: 0; 
+            padding: 0; 
+            width: 100%; 
+            height: 100%; 
+            overflow: hidden; 
+            background: transparent; 
+            font-family: 'Arial Black', sans-serif; 
+        }
+
+        .overlay-wrapper { 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            width: 100vw; 
+            overflow: hidden; 
+            position: relative;
+        }
+
+        /* --- TOP BANNER --- */
+        .top-banner {
+            height: 12vh; 
+            width: 100%; 
+            background: linear-gradient(90deg, #000000 0%, #001a33 50%, #000000 100%); 
+            position: relative; 
+            overflow: hidden; 
+            border-bottom: 0.4vh solid #0055ff; 
+            z-index: 10;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .top-banner::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+            pointer-events: none;
+            opacity: 0.3;
+        }
+
+        .wing-text {
+            position: absolute; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            font-size: 3.5vh; 
+            color: #00d4ff;
+            text-transform: uppercase; 
+            text-shadow: 0 0 15px #0055ff, 0 0 30px #0055ff; 
+            letter-spacing: 0.5vw; 
+            z-index: 11;
+        }
+        .left-wing { left: 10vw; } 
+        .right-wing { right: 10vw; }
+
+        /* --- FX LAYER --- */
+        #fx-container { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            pointer-events: none; 
+            z-index: 50; 
+        }
+        .falling-icon {
+            position: absolute; 
+            font-size: 5vh; 
+            animation: fall linear forwards;
+            filter: drop-shadow(0 0 10px #00d4ff);
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+        }
+
+        .firework-particle {
+            position: absolute; 
+            width: 8px; 
+            height: 8px; 
+            background: #00d4ff;
+            border-radius: 50%; 
+            box-shadow: 0 0 15px #0055ff; 
+            pointer-events: none;
+        }
+
+        .middle-section { 
+            flex: 1; 
+            position: relative; 
+            background: transparent; 
+        }
+
+        /* --- PHOENIX ALERT --- */
+        #phoenix-beast {
+            position: absolute; 
+            width: 30vw; 
+            max-width: 600px; 
+            aspect-ratio: 1/1; 
+            top: 50%; 
+            left: -100vw; 
+            z-index: 150;
+            transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+            filter: grayscale(100%) brightness(0.8) sepia(1) hue-rotate(185deg) saturate(15) drop-shadow(0 0 5vw #0055ff); 
+            opacity: 0;
+        }
+        #phoenix-img { width: 100%; height: 100%; object-fit: contain; }
+        #alert-box { 
+            position: fixed; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            text-align: center; 
+            display: none; 
+            z-index: 200; 
+            width: 90vw; 
+        }
+        .name-banner {
+            font-size: 8vw; 
+            font-weight: 900; 
+            text-transform: uppercase;
+            background: linear-gradient(to bottom, #00d4ff 0%, #0055ff 50%, #001a33 100%);
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 2vw rgba(0, 85, 255, 0.8));
+        }
+
+        .ignite { animation: blueFire 2.8s ease-out forwards; }
+        @keyframes blueFire {
+            0% { filter: grayscale(100%) sepia(1) hue-rotate(185deg) saturate(15) brightness(1); transform: scale(1); opacity: 1; }
+            40% { filter: grayscale(100%) sepia(1) hue-rotate(185deg) saturate(20) brightness(40) blur(2vh); transform: scale(3.5); opacity: 1; }
+            100% { filter: brightness(0) blur(5vh); transform: scale(0); opacity: 0; }
+        }
+
+        /* --- BOTTOM LEFT: QR & CLOCK --- */
+        .bottom-left-container {
+            position: absolute;
+            bottom: 3vh;
+            left: 3vw;
+            z-index: 60;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1.5vh;
+            animation: slideInLeft 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .qr-wrapper {
+            background: rgba(0, 0, 0, 0.6);
+            padding: 0.8vh;
+            border-radius: 1vh;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            backdrop-filter: blur(5px);
+            box-shadow: 0 0 20px rgba(0, 85, 255, 0.15);
+        }
+
+        #support-qr {
+            width: 9vh;
+            height: 9vh;
+            display: block;
+            border-radius: 0.4vh;
+        }
+
+        .clock-wrapper {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 0.8vh 1.5vw;
+            border-radius: 1vh;
+            border-left: 0.5vh solid #0055ff;
+            backdrop-filter: blur(10px);
+            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.5);
+            border-top: 1px solid rgba(0, 212, 255, 0.1);
+        }
+
+        #central-timestamp {
+            font-size: 1.8vh;
+            color: #fff;
+            font-weight: 900;
+            text-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
+            letter-spacing: 0.1vw;
+            white-space: nowrap;
+        }
+
+        /* --- BOTTOM TICKER (CENTER) --- */
+        .bottom-ticker-container {
+            position: absolute;
+            bottom: 3.5vh;
+            left: 17vw; 
+            right: 42vw;
+            height: 4vh;
+            background: rgba(0, 0, 0, 0.4);
+            border-top: 1px solid rgba(0, 85, 255, 0.3);
+            border-bottom: 1px solid rgba(0, 85, 255, 0.3);
+            backdrop-filter: blur(5px);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            z-index: 55;
+            border-radius: 0.5vh;
+        }
+
+        .ticker-text {
+            white-space: nowrap;
+            display: inline-block;
+            /* Slowed down from 25s to 45s for readability */
+            animation: ticker-scroll 45s linear infinite;
+            color: #00d4ff;
+            font-size: 1.5vh;
+            text-transform: uppercase;
+            letter-spacing: 0.1vw;
+            text-shadow: 0 0 10px rgba(0, 85, 255, 0.8);
+        }
+
+        @keyframes ticker-scroll {
+            0% { transform: translateX(100vw); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* --- BOTTOM RIGHT: UPDATED LAYOUT --- */
+        .bottom-right-container {
+            position: absolute;
+            bottom: 3vh;
+            right: 3vw;
+            z-index: 60;
+            display: flex;
+            flex-direction: row; 
+            align-items: flex-end;
+            gap: 1.5vw;
+            animation: slideInRight 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .game-title-wrapper {
+            max-width: 25vw;
+            padding-bottom: 0.5vh; 
+            text-align: right;
+        }
+
+        .current-game-title {
+            font-size: 2.2vh;
+            color: #fff;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px rgba(0, 85, 255, 0.8);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 900;
+            animation: textPulse 2s infinite alternate;
+        }
+
+        .identity-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            gap: 0.8vh;
+        }
+
+        .stats-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5vh;
+            align-items: center;
+        }
+
+        .stat-label {
+            font-size: 1.1vh;
+            color: #00d4ff;
+            padding: 2px 8px;
+            border: 1px solid #0055ff;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.1vw;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .stat-label span { color: #fff; }
+
+        .uptime-label {
+            font-size: 1.3vh;
+            color: #fff;
+            background: #0055ff;
+            padding: 2px 8px;
+            border-radius: 3px;
+            text-transform: uppercase;
+            letter-spacing: 0.15vw;
+            box-shadow: 0 0 15px rgba(0, 85, 255, 0.6);
+            font-weight: bold;
+        }
+
+        .profile-pic-wrapper {
+            position: relative;
+            width: 7.5vh;
+            height: 7.5vh;
+            border-radius: 50%;
+            padding: 0.4vh;
+            background: linear-gradient(45deg, #0055ff, #00d4ff);
+            box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        #twitch-profile-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 0.2vh solid #000;
+        }
+
+        @keyframes textPulse {
+            0% { text-shadow: 0 0 5px rgba(0, 132, 255, 0.6); }
+            100% { text-shadow: 0 0 20px rgba(0, 212, 255, 1), 0 0 30px rgba(0, 85, 255, 0.8); }
+        }
+
+        @keyframes slideInRight {
+            from { transform: translateX(120%) skewX(-10deg); opacity: 0; }
+            to { transform: translateX(0) skewX(0deg); opacity: 1; }
+        }
+
+        @keyframes slideInLeft {
+            from { transform: translateX(-120%) skewX(10deg); opacity: 0; }
+            to { transform: translateX(0) skewX(0deg); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="fx-container"></div>
+
+    <div class="overlay-wrapper">
+        <header class="top-banner">
+            <div class="wing-text left-wing">Phoenix</div>
+            <div class="wing-text right-wing">Darkfire</div>
+        </header>
+
+        <div class="middle-section">
+            <div id="phoenix-beast"><img id="phoenix-img" src="https://raw.githubusercontent.com/KFruti88/Phoenix-Darkfire/main/Banner.png"></div>
+            <div id="alert-box"><div class="name-banner" id="follower-name"></div></div>
+        </div>
+
+        <!-- BOTTOM LEFT: QR & CLOCK -->
+        <div class="bottom-left-container">
+            <div class="qr-wrapper">
+                <img id="support-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://amzn.to/4cYvgtP&bgcolor=ffffff&color=000000" alt="Support QR">
+            </div>
+            <div class="clock-wrapper">
+                <div id="central-timestamp">INITIALIZING...</div>
+            </div>
+        </div>
+
+        <!-- BOTTOM MIDDLE: TICKER PROTOCOL -->
+        <div class="bottom-ticker-container">
+            <div class="ticker-text">
+                Like What You See? Subscribe! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Also Follow my friends CoralPoppa, GraphixWorkx, and Werewolf3788 ——— Like What You See? Subscribe! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Also Follow my friends CoralPoppa, GraphixWorkx, and Werewolf3788
+            </div>
+        </div>
+
+        <!-- BOTTOM RIGHT: IDENTITY & STATS CENTERED STACK -->
+        <div class="bottom-right-container">
+            <!-- Game Title to the LEFT of the profile stack -->
+            <div class="game-title-wrapper">
+                <div class="current-game-title" id="game-title">SCANNING...</div>
+            </div>
+
+            <!-- Vertical Stack for Stats and Image -->
+            <div class="identity-column">
+                <div class="stats-stack">
+                    <div class="stat-label">VIEWERS: <span id="viewer-count">0</span></div>
+                    <div class="stat-label">RECRUITS: <span id="follower-count">0</span></div>
+                    <div class="uptime-label" id="uptime-timer">00:00:00</div>
+                </div>
+
+                <div class="profile-pic-wrapper">
+                    <img id="twitch-profile-img" src="https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png" alt="Phoenix">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const fxContainer = document.getElementById('fx-container');
+        const beast = document.getElementById('phoenix-beast');
+        const alertBox = document.getElementById('alert-box');
+        const nameField = document.getElementById('follower-name');
+        const gameTitleField = document.getElementById('game-title');
+        const uptimeField = document.getElementById('uptime-timer');
+        const followerField = document.getElementById('follower-count');
+        const viewerField = document.getElementById('viewer-count');
+        const profileImg = document.getElementById('twitch-profile-img');
+        const timestampField = document.getElementById('central-timestamp');
+
+        const DEBUG_MODE = true; 
+
+        /**
+         * Updates the Central Time clock in MM/DD/YY HH:MM format (24hr)
+         */
+        function updateClock() {
+            try {
+                const now = new Date();
+                const options = {
+                    timeZone: 'America/Chicago',
+                    year: '2-digit',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                };
+
+                const formatter = new Intl.DateTimeFormat('en-US', options);
+                const parts = formatter.formatToParts(now);
+                
+                const getPart = (type) => {
+                    const part = parts.find(p => p.type === type);
+                    return part ? part.value : '00';
+                };
+                
+                const mm = getPart('month');
+                const dd = getPart('day');
+                const yy = getPart('year');
+                const hh = getPart('hour');
+                const min = getPart('minute');
+
+                timestampField.innerText = `${mm}/${dd}/${yy} ${hh}:${min}`;
+            } catch (e) {
+                timestampField.innerText = "ERROR";
+            }
+        }
+
+        /**
+         * Fetches all live data from DecAPI
+         */
+        async function fetchTwitchData() {
+            const timestamp = Date.now();
+            
+            try {
+                const gameRes = await fetch(`https://decapi.me/twitch/game/phoenix_darkfire?cache=${timestamp}`);
+                if (gameRes.ok) {
+                    let game = (await gameRes.text()).trim();
+                    if (game.toLowerCase().includes("offline") || !game) {
+                        gameTitleField.innerText = DEBUG_MODE ? "GHOST WIRE" : "OFFLINE";
+                    } else {
+                        gameTitleField.innerText = game.toUpperCase();
+                    }
+                }
+            } catch (e) {}
+
+            try {
+                const uptimeRes = await fetch(`https://decapi.me/twitch/uptime/phoenix_darkfire?cache=${timestamp}`);
+                if (uptimeRes.ok) {
+                    let uptime = (await uptimeRes.text()).trim();
+                    if (uptime.toLowerCase().includes("offline")) {
+                        uptimeField.innerText = DEBUG_MODE ? "02:45:12" : "STANDBY";
+                    } else {
+                        uptimeField.innerText = uptime;
+                    }
+                }
+            } catch (e) {}
+
+            try {
+                const followRes = await fetch(`https://decapi.me/twitch/followcount/phoenix_darkfire?cache=${timestamp}`);
+                if (followRes.ok) {
+                    let count = (await followRes.text()).trim();
+                    followerField.innerText = count || "0";
+                }
+            } catch (e) {}
+
+            try {
+                const viewRes = await fetch(`https://decapi.me/twitch/viewercount/phoenix_darkfire?cache=${timestamp}`);
+                if (viewRes.ok) {
+                    let count = (await viewRes.text()).trim();
+                    if (count.toLowerCase().includes("offline") || isNaN(count)) {
+                        viewerField.innerText = DEBUG_MODE ? "88" : "0";
+                    } else {
+                        viewerField.innerText = count;
+                    }
+                }
+            } catch (e) {}
+        }
+
+        // --- Execution ---
+        updateClock();
+
+        window.addEventListener('onWidgetLoad', function (obj) {
+            fetchTwitchData();
+            updateClock();
+            
+            setInterval(fetchTwitchData, 30000); 
+            
+            setInterval(() => {
+                updateClock();
+                
+                let current = uptimeField.innerText;
+                if (current !== "STANDBY" && current !== "SCANNING..." && !current.includes("DEBUG") && current.includes(':')) {
+                    let parts = current.split(':').map(n => parseInt(n));
+                    if (parts.length === 3) {
+                        parts[2]++; 
+                        if (parts[2] >= 60) { parts[2] = 0; parts[1]++; }
+                        if (parts[1] >= 60) { parts[1] = 0; parts[0]++; }
+                        uptimeField.innerText = parts.map(n => n.toString().padStart(2, '0')).join(':');
+                    }
+                }
+            }, 1000);
+
+            profileImg.src = `https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png?t=${Date.now()}`;
+        });
+
+        // Backup Timer
+        setTimeout(() => { 
+            updateClock();
+            if (gameTitleField.innerText === "SCANNING...") fetchTwitchData(); 
+        }, 500);
+
+        function triggerFollowerAlert(name) {
+            beast.classList.remove('ignite');
+            beast.style.opacity = "1"; 
+            beast.style.left = "50%"; 
+            beast.style.transform = "translate(-50%, -50%) scale(1.5)";
+            setTimeout(() => {
+                beast.classList.add('ignite');
+                setTimeout(() => {
+                    alertBox.style.display = "block";
+                    nameField.innerHTML = `NEW FOLLOWER<br>${name}`;
+                }, 600);
+                setTimeout(() => {
+                    beast.style.opacity = "0"; 
+                    beast.style.left = "-100vw"; 
+                    alertBox.style.display = "none";
+                }, 8500);
+            }, 1600);
+        }
+
+        window.addEventListener('onEventReceived', function (obj) {
+            const sk = obj.detail.listener;
+            const ev = obj.detail.event;
+            if (!ev) return;
+            if (sk === 'message') {
+                const user = (ev.data.displayName || ev.data.nick || "").toLowerCase();
+                if (user === 'cat_louves' || user === 'anakigod99' || user === 'corelpoppa') {
+                    const particleCount = 40;
+                    const centerX = window.innerWidth / 2;
+                    const centerY = window.innerHeight / 2;
+                    for (let i = 0; i < particleCount; i++) {
+                        const p = document.createElement('div');
+                        p.className = 'firework-particle';
+                        p.style.left = centerX + 'px';
+                        p.style.top = centerY + 'px';
+                        fxContainer.appendChild(p);
+                        const angle = Math.random() * Math.PI * 2;
+                        const velocity = Math.random() * 20 + 10;
+                        const destinationX = Math.cos(angle) * velocity * 20;
+                        const destinationY = Math.sin(angle) * velocity * 20;
+                        p.animate([
+                            { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                            { transform: `translate(${destinationX}px, ${destinationY}px) scale(0)`, opacity: 0 }
+                        ], { duration: 1500, easing: 'ease-out' });
+                        setTimeout(() => p.remove(), 1500);
+                    }
+                }
+                const rain = (icons) => {
+                    for(let i=0; i<50; i++) {
+                        setTimeout(() => {
+                            const icon = document.createElement('div');
+                            icon.className = 'falling-icon';
+                            let selected = icons[Math.floor(Math.random() * icons.length)];
+                            icon.innerHTML = selected;
+                            icon.style.left = Math.random() * 100 + 'vw';
+                            icon.style.animationDuration = (Math.random() * 1.5 + 1) + 's';
+                            fxContainer.appendChild(icon);
+                            setTimeout(() => icon.remove(), 3000);
+                        }, i * 60);
+                    }
+                }
+                if (user === 'nyxskillissue') rain(['🐈', '⚡', '🍪', '🐱', '⚡', '🍪', '😻', '⚡', '🍪', '😼']);
+                if (user === 'phoenix_darkfire') rain(['🦅', '🔥', '🐦', '✨']); 
+                if (user === 'werewolf3788') rain(['🐺', '🌕', '🐾', '🐺']);
+            }
+            if (sk === 'follower-latest') triggerFollowerAlert(ev.name);
+        });
+    </script>
+</body>
+</html>
