@@ -20,9 +20,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.10'
           cache: 'pip'
 
       - name: Install Dependencies
@@ -33,13 +33,14 @@ jobs:
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
-        run: python update_psn.py
+        # Updated to point to the Playstation folder and psnscript.py
+        run: python Playstation/psnscript.py
 
       - name: Commit and Push Changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          # UPDATED: Adding the folder specifically
-          git add json/psn_data.json
-          git commit -m "Update PSN stats [skip ci]" || echo "No changes to commit"
+          # Updated to add the specific data file in the Playstation folder
+          git add Playstation/psn_data.json
+          git commit -m "Wolf Sync: Updated PSN Stats [skip ci]" || echo "No changes to commit"
           git push
