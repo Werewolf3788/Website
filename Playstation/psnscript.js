@@ -1,18 +1,25 @@
+const psnApi = require("psn-api");
 const {
   exchangeNpssoForCode,
   exchangeCodeForAccessToken,
   getUserTitles,
   getUserTrophyProfileSummary,
-  getPresenceOfUser, // Corrected function name from psn-api source
   getUserTrophiesEarnedForTitle,
   getTitleTrophies,
-  makeUniversalSearch
-} = require("psn-api");
+  makeUniversalSearch,
+  getRecentlyPlayedGames // Using the GraphQL-based recently played games
+} = psnApi;
+
 const fs = require("fs");
 const path = require("path");
 
 // BLOCKLIST: GTA titles are filtered out
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"];
+
+// Helper to find the correct presence function regardless of naming shifts in the library
+const findPresenceFunc = () => {
+    return psnApi.getPresenceFromUser || psnApi.getPresenceOfUser || psnApi.getUserPresence || null;
+};
 
 async function getFullUserData(npsso, label) {
   try {
@@ -26,37 +33,40 @@ async function getFullUserData(npsso, label) {
     const trophySummary = await getUserTrophyProfileSummary(authorization, "me");
     console.log(`[${label}] Level: ${trophySummary.trophyLevel} (${trophySummary.progress}%)`);
 
-    // 3. Get Presence (Online Status & Game)
-    let presence;
+    // 3. Detect "Active Hunt" (Current Game)
     let isOnline = false;
     let currentGameName = "Dashboard";
     let currentGameArt = "";
-
-    try {
-        // Direct call for presence using the corrected function name
-        presence = await getPresenceOfUser(authorization, "me");
-        isOnline = presence.primaryPlatformInfo?.onlineStatus === "online";
-        
-        const gameList = presence.gameTitleInfoList || [];
-        if (gameList.length > 0) {
-            const rawGameName = gameList[0].titleName || "";
-            const isBlacklisted = BLACKLIST.some(f => rawGameName.toLowerCase().includes(f));
-            
-            if (!isBlacklisted) {
-                currentGameName = rawGameName;
-                currentGameArt = gameList[0].conceptIconUrl || "";
-                console.log(`[${label}] Presence Detected: ${currentGameName} (${isOnline ? 'Online' : 'Offline'})`);
-            } else {
-                console.log(`[${label}] Presence filtered (Blacklisted game).`);
-            }
-        } else {
-            console.log(`[${label}] No active game titles found in presence.`);
+    
+    // Try Presence first (for Online status)
+    const presenceFunc = findPresenceFunc();
+    if (presenceFunc) {
+        try {
+            const presence = await presenceFunc(authorization, "me");
+            isOnline = presence.primaryPlatformInfo?.onlineStatus === "online";
+        } catch (e) {
+            console.log(`[${label}] Online status fetch skipped (Privacy or API restriction).`);
         }
-    } catch (e) {
-        console.log(`[${label}] Presence Fetch failed. Reason: ${e.message}`);
     }
 
-    // 4. Get Titles list (Recent Games)
+    // Use Recently Played Games to identify the active game (Should catch FS25)
+    try {
+        const recentlyPlayed = await getRecentlyPlayedGames(authorization, { limit: 1 });
+        const lastGame = recentlyPlayed.data?.gameLibraryTitlesRetrieve?.games?.[0];
+        
+        if (lastGame) {
+            const isBlacklisted = BLACKLIST.some(f => lastGame.name.toLowerCase().includes(f));
+            if (!isBlacklisted) {
+                currentGameName = lastGame.name;
+                currentGameArt = lastGame.image?.url || "";
+                console.log(`[${label}] Active Game Detected: ${currentGameName}`);
+            }
+        }
+    } catch (e) {
+        console.log(`[${label}] Recently Played fetch failed: ${e.message}`);
+    }
+
+    // 4. Get Titles list (Recent Games for the grid)
     const { trophyTitles } = await getUserTitles(authorization, "me");
     const recentGames = [];
     let latestTrophyInfo = null;
@@ -73,6 +83,7 @@ async function getFullUserData(npsso, label) {
         });
       }
 
+      // Fetch metadata for the single newest trophy
       if (!latestTrophyInfo) {
         try {
           const { trophies: earnedTrophies } = await getUserTrophiesEarnedForTitle(authorization, "me", title.npCommunicationId, "all");
@@ -95,9 +106,15 @@ async function getFullUserData(npsso, label) {
               icon: meta.trophyIconUrl
             };
           }
-        } catch (e) { /* Skip titles with privacy errors */ }
+        } catch (e) { /* Skip titles with errors */ }
       }
       if (recentGames.length >= 5 && latestTrophyInfo) break;
+    }
+
+    // If RecentlyPlayed failed, use the first item in recentGames as the Active Hunt
+    if (currentGameName === "Dashboard" && recentGames.length > 0) {
+        currentGameName = recentGames[0].name;
+        currentGameArt = recentGames[0].art;
     }
 
     return {
@@ -131,11 +148,18 @@ async function getFriendStatus(npsso, onlineId) {
     const searchResults = await makeUniversalSearch(authorization, onlineId, "socialAccounts");
     const accountId = searchResults.domainResponses[0].results[0].socialMetadata.accountId;
     
-    const presence = await getPresenceOfUser(authorization, accountId);
-    let game = presence.gameTitleInfoList?.[0]?.titleName || "";
+    let game = "";
+    let status = "offline";
+    
+    const presenceFunc = findPresenceFunc();
+    if (presenceFunc) {
+        const presence = await presenceFunc(authorization, accountId);
+        game = presence.gameTitleInfoList?.[0]?.titleName || "";
+        status = presence.primaryPlatformInfo.onlineStatus;
+    }
+    
     if (BLACKLIST.some(f => game.toLowerCase().includes(f))) game = "Classified";
     
-    const status = presence.primaryPlatformInfo.onlineStatus;
     return { online: status === "online", currentGame: game };
   } catch (e) {
     return { online: false, currentGame: "" };
