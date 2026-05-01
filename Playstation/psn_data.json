@@ -14,7 +14,8 @@
         "name": "Journeyman Engineer",
         "game": "Crossout",
         "rank": "Bronze",
-        "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/009fa825-3750-4f7a-a4d4-a3693fc62894.png"
+        "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/009fa825-3750-4f7a-a4d4-a3693fc62894.png",
+        "earnedDate": "2026-05-01T04:01:46Z"
       },
       "online": false,
       "currentGame": "Farming Simulator 25",
@@ -52,7 +53,8 @@
           "platform": "NPWR50314_00"
         }
       ],
-      "lastUpdated": "5/1/2026, 4:57:09 PM"
+      "recentPurchases": [],
+      "lastUpdated": "5/1/2026, 5:02:44 PM"
     },
     "darkwing": {
       "online": false,
@@ -72,7 +74,8 @@
         "name": "CLEAR 10 LEVELS",
         "game": "Mahjong",
         "rank": "Silver",
-        "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/c4cc9e52-45e4-41bd-97a3-d1c270ee71e9.png"
+        "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/c4cc9e52-45e4-41bd-97a3-d1c270ee71e9.png",
+        "earnedDate": "2026-04-27T21:59:06Z"
       },
       "online": false,
       "currentGame": "Mahjong3D",
@@ -110,7 +113,8 @@
           "platform": "NPWR23165_00"
         }
       ],
-      "lastUpdated": "5/1/2026, 4:57:12 PM"
+      "recentPurchases": [],
+      "lastUpdated": "5/1/2026, 5:02:48 PM"
     },
     "phoenix": {
       "online": false,
