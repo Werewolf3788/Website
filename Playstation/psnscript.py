@@ -9,6 +9,7 @@ def get_full_user_data(client, name_label):
     """Helper to pull profile, trophy progress for top 5 games, and latest achievement."""
     try:
         user = client.me()
+        # Correctly calling presence on the User object
         presence = user.get_presence()
         trophy_summary = user.trophy_summary()
         
@@ -25,7 +26,7 @@ def get_full_user_data(client, name_label):
         print(f"Level: {trophy_summary.trophy_level} ({trophy_summary.progress}%)")
         print(f"Status: {online_status}")
         if current_game_name:
-            print(f"Activity: Playing {current_game_name}")
+            print(f"Activity: Currently Playing {current_game_name}")
         
         recent_games = []
         latest_trophy_info = None
@@ -44,7 +45,7 @@ def get_full_user_data(client, name_label):
             if len(recent_games) < 5:
                 recent_games.append({
                     "name": game_name,
-                    "progress": title.progress,
+                    "progress": title.progress, # The 29/100 style progress
                     "art": title.trophy_title_icon_url,
                     "platform": title.np_communication_id 
                 })
@@ -59,7 +60,7 @@ def get_full_user_data(client, name_label):
                                 "name": t.trophy_name,
                                 "game": game_name,
                                 "rank": t.trophy_type.name.capitalize(),
-                                "icon": t.trophy_icon_url
+                                "icon": t.trophy_icon_url # Pulls the actual trophy image
                             }
                             break
                 except:
@@ -80,6 +81,7 @@ def get_full_user_data(client, name_label):
             "recentTrophy": latest_trophy_info,
             "online": is_online,
             "currentGame": current_game_name if not any(f in current_game_name.lower() for f in BLACKLIST) else "Dashboard",
+            # Finds the % progress for the game you are currently playing
             "currentGameProgress": next((g['progress'] for g in recent_games if g['name'] == current_game_name), 0),
             "gameArt": current_game_art if not any(f in current_game_name.lower() for f in BLACKLIST) else "",
             "recentGames": recent_games
@@ -137,7 +139,7 @@ def main():
         except Exception as e:
             print(f"Login failed for Ray: {e}")
 
-    # Save
+    # Save to the specific folder linked in your repository
     os.makedirs("Playstation", exist_ok=True)
     with open("Playstation/psn_data.json", "w") as f:
         json.dump(final_data, f, indent=2)
