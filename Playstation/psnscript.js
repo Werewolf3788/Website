@@ -3,11 +3,10 @@ const {
   exchangeCodeForAccessToken,
   getUserTitles,
   getUserTrophyProfileSummary,
-  getPresenceFromUser, 
+  getPresenceFromUser,
   getUserTrophiesEarnedForTitle,
   getTitleTrophies,
-  makeUniversalSearch,
-  getRecentlyPlayedGames
+  makeUniversalSearch
 } = require("psn-api");
 const fs = require("fs");
 const path = require("path");
@@ -20,28 +19,26 @@ async function getFullUserData(npsso, label) {
     const accessCode = await exchangeNpssoForCode(npsso);
     const authorization = await exchangeCodeForAccessToken(accessCode);
     
-    // 1. Get Trophy Summary (Level 232, etc.)
+    // 1. Get Trophy Summary (Works in Standby/Off)
     const trophySummary = await getUserTrophyProfileSummary(authorization, "me");
-    console.log(`[${label}] Level: ${trophySummary.trophyLevel} | Progress: ${trophySummary.progress}%`);
+    console.log(`[${label}] Level: ${trophySummary.trophyLevel} (${trophySummary.progress}%)`);
 
-    // 2. Try to get Presence (Online/Current Game)
+    // 2. Get Presence (May fail in Standby)
     let presence = { primaryPlatformInfo: { onlineStatus: "offline" } };
     try {
         presence = await getPresenceFromUser(authorization, "me");
     } catch (e) {
-        // Log the specific reason for failure (Privacy/Function name)
-        console.log(`[${label}] Presence Fetch failed: ${e.message}`);
+        console.log(`[${label}] Console in Standby/Offline. Using offline status.`);
     }
 
     const isOnline = presence.primaryPlatformInfo?.onlineStatus === "online";
     const gameList = presence.gameTitleInfoList || [];
     const rawGameName = gameList[0]?.titleName || "";
     const currentGameArt = gameList[0]?.conceptIconUrl || "";
-    
     const isBlacklisted = BLACKLIST.some(f => rawGameName.toLowerCase().includes(f));
     const currentGameName = (!rawGameName || isBlacklisted) ? "Dashboard" : rawGameName;
 
-    // 3. Get Recent Games List
+    // 3. Get Recent Titles (Works in Standby/Off)
     const { trophyTitles } = await getUserTitles(authorization, "me");
     const recentGames = [];
     let latestTrophyInfo = null;
@@ -76,7 +73,7 @@ async function getFullUserData(npsso, label) {
               icon: meta.trophyIconUrl
             };
           }
-        } catch (e) { /* Skip titles with privacy errors */ }
+        } catch (e) { /* Skip specific titles */ }
       }
       if (recentGames.length >= 5 && latestTrophyInfo) break;
     }
@@ -117,8 +114,6 @@ async function getFriendStatus(npsso, onlineId) {
     if (BLACKLIST.some(f => game.toLowerCase().includes(f))) game = "Classified";
     
     const status = presence.primaryPlatformInfo.onlineStatus;
-    console.log(`[Friend] ${onlineId}: ${status}`);
-    
     return { online: status === "online", currentGame: game };
   } catch (e) {
     return { online: false, currentGame: "" };
