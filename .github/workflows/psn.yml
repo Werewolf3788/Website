@@ -12,6 +12,9 @@ on:
       - 'README.md'
       - '.gitignore'
 
+permissions:
+  contents: write # REQUIRED: This fixes the 403 Forbidden error
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,7 +26,6 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-          # Removed the cache line to fix the "No file matched" error
 
       - name: Install Dependencies
         run: |
@@ -33,14 +35,12 @@ jobs:
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
-        # Updated to point to the Playstation folder and psnscript.py
         run: python Playstation/psnscript.py
 
       - name: Commit and Push Changes
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          # Updated to add the specific data file in the Playstation folder
           git add Playstation/psn_data.json
           git commit -m "Wolf Sync: Updated PSN Stats [skip ci]" || echo "No changes to commit"
           git push
