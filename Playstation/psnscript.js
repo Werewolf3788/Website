@@ -1,200 +1,210 @@
-const psnApi = require("psn-api");
-const {
-  exchangeNpssoForCode,
-  exchangeCodeForAccessToken,
-  getUserTitles,
-  getUserTrophyProfileSummary,
-  getUserTrophiesEarnedForTitle,
-  getTitleTrophies,
-  makeUniversalSearch,
-  getRecentlyPlayedGames
-} = psnApi;
+import os
+import json
+import datetime
+import re
+from psnawp_api import PSNAWP
 
-const fs = require("fs");
-const path = require("path");
+# BLOCKLIST: GTA titles are filtered out to protect account integrity
+BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"]
 
-// BLOCKLIST: GTA titles are filtered out to protect account integrity
-const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"];
-
-// Helper to find the correct presence function regardless of naming shifts in the library
-const findPresenceFunc = () => {
-  return psnApi.getPresenceFromUser || psnApi.getPresenceOfUser || psnApi.getUserPresence || null;
-};
-
-/**
- * Normalizes title strings for better matching between Presence and Trophy lists.
- */
-const normalizeTitle = (str) => {
-  return str ? str.toLowerCase().replace(/[^a-z0-9]/g, '') : "";
-};
-
-/**
- * Formats ISO 8601 duration (PT1H30M) to readable string (1h 30m)
- */
-const formatDuration = (durationStr) => {
-  if (!durationStr) return "--";
-  const h = durationStr.match(/(\d+)H/);
-  const m = durationStr.match(/(\d+)M/);
-  const hours = h ? h[1] + "h" : "";
-  const mins = m ? m[1] + "m" : "";
-  return `${hours} ${mins}`.trim() || "0h";
-};
-
-async function getFullUserData(npsso, label) {
-  try {
-    console.log(`--- Starting Sync for ${label} ---`);
+def format_duration(duration_str):
+    """
+    Requirement 7: Converts ISO 8601 duration (e.g., PT12H30M) to readable format (12h 30m).
+    """
+    if not duration_str:
+        return "0h"
+    hours = 0
+    minutes = 0
+    h_match = re.search(r'(\d+)H', duration_str)
+    m_match = re.search(r'(\d+)M', duration_str)
+    if h_match:
+        hours = int(h_match.group(1))
+    if m_match:
+        minutes = int(m_match.group(1))
     
-    const accessCode = await exchangeNpssoForCode(npsso);
-    const authorization = await exchangeCodeForAccessToken(accessCode);
+    if hours > 0:
+        return f"{hours}h {minutes}m" if minutes > 0 else f"{hours}h"
+    return f"{minutes}m"
+
+def get_full_user_data(psn_client, name_label):
+    """
+    Fetches the 11 requirements: Game Title, Image, Trophy Title/Image, 
+    Progress (%, 33/100), Hours, Recent Games, and Online Status.
+    """
+    try:
+        me = psn_client.me()
+        account_id = me.account_id
+        user = psn_client.user(account_id=account_id)
+        
+        print(f"--- Starting Full Data Sync for {name_label} ---")
+        
+        # Requirement 11: Console Online/Offline status
+        presence = user.get_presence()
+        online_status = presence.get("primaryPlatformInfo", {}).get("onlineStatus", "offline")
+        is_online = online_status == "online"
+
+        # Requirement 1 & 2: Current Game Title and Image
+        game_list = presence.get("gameTitleInfoList", [])
+        raw_game_name = game_list[0].get("titleName", "") if game_list else ""
+        current_game_art = game_list[0].get("conceptIconUrl", "") if game_list else ""
+        
+        is_blacklisted = any(forbidden in raw_game_name.lower() for forbidden in BLACKLIST)
+        current_game_name = "Dashboard" if (not raw_game_name or is_blacklisted) else raw_game_name
+        
+        # Requirement 7: Hours played on game
+        playtime_map = {}
+        try:
+            title_stats = user.title_stats()
+            for stat in title_stats:
+                playtime_map[stat.name] = format_duration(stat.play_duration)
+        except Exception as e:
+            print(f"[{name_label}] Playtime fetch failed: {e}")
+
+        # Requirement 5, 6, & 9: Recent Games, Progress %, and Trophy Count (e.g. 33/100)
+        recent_games = []
+        latest_trophy_info = None
+        current_game_stats = {"progress": 0, "count": "0/0"}
+
+        try:
+            titles = user.trophy_titles()
+            for title in titles:
+                game_name = title.trophy_title_name
+                if any(forbidden in game_name.lower() for forbidden in BLACKLIST): 
+                    continue
+                
+                # Calculation for Requirement 6 (33/100 logic)
+                earned = (title.earned_trophies.platinum + title.earned_trophies.gold + 
+                          title.earned_trophies.silver + title.earned_trophies.bronze)
+                total = (title.defined_trophies.platinum + title.defined_trophies.gold + 
+                         title.defined_trophies.silver + title.defined_trophies.bronze)
+                trophy_ratio = f"{earned}/{total}"
+
+                # Capture stats for the currently playing game
+                if game_name == current_game_name:
+                    current_game_stats["progress"] = title.progress
+                    current_game_stats["count"] = trophy_ratio
+
+                # Requirement 9: Recent games played
+                if len(recent_games) < 5:
+                    recent_games.append({
+                        "name": game_name,
+                        "progress": title.progress,
+                        "trophyCount": trophy_ratio,
+                        "art": title.trophy_title_icon_url,
+                        "playtime": playtime_map.get(game_name, "--")
+                    })
+                
+                # Requirement 3 & 4: Latest Trophy Title and Image
+                if not latest_trophy_info:
+                    try:
+                        trophies = title.trophies(account_id)
+                        for t in trophies:
+                            if t.earned:
+                                latest_trophy_info = {
+                                    "name": t.trophy_name,
+                                    "game": game_name,
+                                    "rank": t.trophy_type.name.capitalize(),
+                                    "icon": t.trophy_icon_url
+                                }
+                                break
+                    except: 
+                        pass
+        except Exception as e:
+            print(f"[{name_label}] Trophy/History fetch failed: {e}")
+
+        # Global Trophy Totals for the Hub
+        trophy_summary = user.trophy_summary()
+
+        return {
+            "level": trophy_summary.trophy_level,
+            "levelProgress": trophy_summary.progress,
+            "trophies": {
+                "platinum": trophy_summary.earned_trophies.platinum,
+                "gold": trophy_summary.earned_trophies.gold,
+                "silver": trophy_summary.earned_trophies.silver,
+                "bronze": trophy_summary.earned_trophies.bronze,
+                "total": (trophy_summary.earned_trophies.platinum + 
+                          trophy_summary.earned_trophies.gold + 
+                          trophy_summary.earned_trophies.silver + 
+                          trophy_summary.earned_trophies.bronze)
+            },
+            "recentTrophy": latest_trophy_info,
+            "online": is_online,
+            "currentGame": current_game_name,
+            "currentGameArt": current_game_art if current_game_name != "Dashboard" else "",
+            "currentGamePlaytime": playtime_map.get(current_game_name, "--") if current_game_name != "Dashboard" else "--",
+            "currentGameProgress": current_game_stats["progress"],
+            "currentGameTrophyCount": current_game_stats["count"],
+            "recentGames": recent_games,
+            "lastUpdated": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+    except Exception as e:
+        print(f"Fatal error syncing {name_label}: {e}")
+        return None
+
+def get_friend_status(psn_client, online_id):
+    """
+    Requirement 8 & 10: Checks online status and current game for specific friends.
+    """
+    try:
+        search_user = psn_client.user(online_id=online_id)
+        presence = search_user.get_presence()
+        
+        # Requirement 8: What game are they playing
+        game_list = presence.get("gameTitleInfoList", [])
+        game = game_list[0].get("titleName", "") if game_list else ""
+        
+        if any(f in game.lower() for f in BLACKLIST): 
+            game = "Classified"
+            
+        status = presence.get("primaryPlatformInfo", {}).get("onlineStatus", "offline")
+        return {
+            "online": status == "online", 
+            "currentGame": game
+        }
+    except:
+        return {"online": False, "currentGame": ""}
+
+def main():
+    # Load Tokens from Environment
+    werewolf_token = os.getenv("PSN_NPSSO_WEREWOLF")
+    ray_token = os.getenv("PSN_NPSSO_RAY")
     
-    const trophySummary = await getUserTrophyProfileSummary(authorization, "me");
-    console.log(`[${label}] Level: ${trophySummary.trophyLevel} (${trophySummary.progress}%)`);
+    final_data = {"users": {}}
 
-    let isOnline = false;
-    let currentGameName = "Dashboard";
-    let currentGameArt = "";
-    let currentGamePlaytime = "--";
-    
-    const presenceFunc = findPresenceFunc();
-    if (presenceFunc) {
-      try {
-        const presence = await presenceFunc(authorization, "me");
-        isOnline = presence.primaryPlatformInfo?.onlineStatus === "online";
-      } catch (e) { }
-    }
+    if werewolf_token:
+        try:
+            client_w = PSNAWP(werewolf_token)
+            # Admin Kevin (Werewolf) Full Sync
+            data = get_full_user_data(client_w, "Werewolf")
+            if data:
+                final_data["users"]["werewolf"] = data
+                
+                # Requirement 10: Specific most played friends list
+                print("--- Syncing Most Played Friends ---")
+                final_data["users"]["ray"] = get_friend_status(client_w, "raymystyro")
+                final_data["users"]["phoenix"] = get_friend_status(client_w, "phoenix_darkfire")
+                final_data["users"]["terrdog"] = get_friend_status(client_w, "TerrDog420")
+                final_data["users"]["darkwing"] = get_friend_status(client_w, "Darkwing69420")
+                final_data["users"]["elucidator"] = get_friend_status(client_w, "ElucidatorVah")
+        except Exception as e:
+            print(f"Werewolf Authentication Error: {e}")
 
-    // Detect active game (Squirrel with a Gun / Farming Simulator 25)
-    try {
-      const recentlyPlayed = await getRecentlyPlayedGames(authorization, { limit: 1 });
-      const lastGame = recentlyPlayed.data?.gameLibraryTitlesRetrieve?.games?.[0];
-      
-      if (lastGame && !BLACKLIST.some(f => lastGame.name.toLowerCase().includes(f))) {
-        currentGameName = lastGame.name;
-        currentGameArt = lastGame.image?.url || "";
-        currentGamePlaytime = formatDuration(lastGame.playDuration);
-        console.log(`[${label}] Active Game Detected: ${currentGameName} (${currentGamePlaytime})`);
-      }
-    } catch (e) { }
+    # If Ray's token is also provided, get his detailed stats too
+    if ray_token:
+        try:
+            client_r = PSNAWP(ray_token)
+            ray_full = get_full_user_data(client_r, "Ray")
+            if ray_full:
+                final_data["users"]["ray"] = ray_full
+        except:
+            pass
 
-    const { trophyTitles } = await getUserTitles(authorization, "me");
-    const recentGames = [];
-    let latestTrophyInfo = null;
-    let detectedGameProgress = 0;
+    # Save output to the JSON file the website uses
+    os.makedirs("Playstation", exist_ok=True)
+    with open("Playstation/psn_data.json", "w") as f:
+        json.dump(final_data, f, indent=2)
+    print("--- Sync Finished: 11 Requirements Met ---")
 
-    const normalizedCurrent = normalizeTitle(currentGameName);
-
-    for (const title of trophyTitles) {
-      if (BLACKLIST.some(f => title.trophyTitleName.toLowerCase().includes(f))) continue;
-
-      if (normalizeTitle(title.trophyTitleName) === normalizedCurrent) {
-        detectedGameProgress = title.progress;
-      }
-
-      if (recentGames.length < 5) {
-        recentGames.push({
-          name: title.trophyTitleName,
-          progress: title.progress,
-          art: title.trophyTitleIconUrl
-        });
-      }
-
-      if (!latestTrophyInfo) {
-        try {
-          const { trophies: earnedTrophies } = await getUserTrophiesEarnedForTitle(authorization, "me", title.npCommunicationId, "all");
-          const { trophies: trophyMetadata } = await getTitleTrophies(authorization, title.npCommunicationId, "all");
-          
-          const newestEarned = earnedTrophies
-            .filter(t => t.earned)
-            .sort((a, b) => new Date(b.earnedDateTime) - new Date(a.earnedDateTime))[0];
-
-          if (newestEarned) {
-            const meta = trophyMetadata.find(m => m.trophyId === newestEarned.trophyId);
-            latestTrophyInfo = {
-              name: meta.trophyName,
-              game: title.trophyTitleName,
-              rank: meta.trophyType.charAt(0).toUpperCase() + meta.trophyType.slice(1),
-              icon: meta.trophyIconUrl
-            };
-          }
-        } catch (e) { }
-      }
-    }
-
-    return {
-      level: trophySummary.trophyLevel,
-      progress: trophySummary.progress,
-      trophies: {
-        platinum: trophySummary.earnedTrophies.platinum,
-        gold: trophySummary.earnedTrophies.gold,
-        silver: trophySummary.earnedTrophies.silver,
-        bronze: trophySummary.earnedTrophies.bronze,
-        total: (trophySummary.earnedTrophies.platinum + trophySummary.earnedTrophies.gold + trophySummary.earnedTrophies.silver + trophySummary.earnedTrophies.bronze)
-      },
-      recentTrophy: latestTrophyInfo,
-      online: isOnline,
-      currentGame: currentGameName,
-      currentGameProgress: detectedGameProgress,
-      currentGamePlaytime: currentGamePlaytime,
-      gameArt: currentGameArt,
-      recentGames: recentGames,
-      lastUpdated: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
-    };
-  } catch (error) {
-    console.error(`[${label}] Error:`, error.message);
-    return null;
-  }
-}
-
-async function getFriendStatus(npsso, onlineId) {
-  try {
-    const accessCode = await exchangeNpssoForCode(npsso);
-    const authorization = await exchangeCodeForAccessToken(accessCode);
-    const searchResults = await makeUniversalSearch(authorization, onlineId, "socialAccounts");
-    if (!searchResults.domainResponses[0]?.results?.length) return { online: false, currentGame: "" };
-    
-    const accountId = searchResults.domainResponses[0].results[0].socialMetadata.accountId;
-    let game = "";
-    let status = "offline";
-    
-    const presenceFunc = findPresenceFunc();
-    if (presenceFunc) {
-      try {
-        const presence = await presenceFunc(authorization, accountId);
-        game = presence.gameTitleInfoList?.[0]?.titleName || "";
-        status = presence.primaryPlatformInfo.onlineStatus;
-      } catch (e) { }
-    }
-    
-    if (game && BLACKLIST.some(f => game.toLowerCase().includes(f))) game = "Classified";
-    return { online: status === "online", currentGame: game };
-  } catch (e) { return { online: false, currentGame: "" }; }
-}
-
-async function main() {
-  const werewolfToken = process.env.PSN_NPSSO_WEREWOLF;
-  const rayToken = process.env.PSN_NPSSO_RAY;
-  let finalData = { users: {} };
-  const dataPath = path.join(__dirname, "psn_data.json");
-  
-  if (werewolfToken) {
-    const data = await getFullUserData(werewolfToken, "Werewolf");
-    if (data) {
-      finalData.users.werewolf = data;
-      console.log("--- Syncing Lobby Friends ---");
-      finalData.users.darkwing = await getFriendStatus(werewolfToken, "Darkwing69420");
-      finalData.users.phoenix = await getFriendStatus(werewolfToken, "phoenix_darkfire");
-      finalData.users.elucidator = await getFriendStatus(werewolfToken, "ElucidatorVah");
-      finalData.users.terrdog = await getFriendStatus(werewolfToken, "TerrDog420");
-    }
-  }
-
-  if (rayToken) {
-    const data = await getFullUserData(rayToken, "Ray");
-    if (data) finalData.users.ray = data;
-  }
-
-  fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-  console.log("--- Sync Finished ---");
-}
-
-main();
+if __name__ == "__main__":
+    main()
