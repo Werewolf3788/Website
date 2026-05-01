@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Scripts -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <!-- QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Roboto:700,900);
+        * { box-sizing: border-box; }
+        
+        #wp-custom-wrapper {
+            height: 100%; width: 100%; margin: 0; padding: 0; 
+            overflow: hidden; background: transparent; 
+            font-family: 'Roboto', sans-serif; position: relative;
+        }
+
+        html, body { height: 100%; width: 100%; margin: 0; padding: 0; background: transparent; overflow: hidden; }
+
+        :root { 
+            --accent: #7b2096; 
+            --glow-color: rgba(123, 32, 150, 0.8);
+            --url-accent: #c084fc; 
+        }
+
+        /* EMERGENCY FLASHING EFFECT (COPS/SPEED MODE) */
+        .speed-mode { animation: siren-flash 0.8s infinite steps(1); }
+        @keyframes siren-flash {
+            0%, 100% { --accent: #ff0000; --glow-color: rgba(255, 0, 0, 0.9); }
+            50% { --accent: #0000ff; --glow-color: rgba(0, 0, 255, 0.9); }
+        }
+
+        /* GHOSTLY PULSE */
+        .ghostly-pulse { animation: ghost-fade 3s infinite ease-in-out; }
+        @keyframes ghost-fade {
+            0%, 100% { opacity: 1; filter: brightness(1); }
+            50% { opacity: 0.6; filter: brightness(1.5) drop-shadow(0 0 20px white); }
+        }
+
+        /* DYNAMIC CHAT BAR - 50% transparent */
+        #chat-ticker-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 60px;
+            background: rgba(0, 0, 0, 0.5); 
+            border-bottom: 4px solid var(--accent);
+            display: flex; align-items: center; z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            overflow: hidden;
+            transition: border-color 0.5s ease;
+        }
+
+        #ticker-wrapper {
+            display: flex; align-items: center; white-space: nowrap;
+            width: 100%; height: 100%; position: relative;
+        }
+
+        .ticker-item { 
+            position: absolute; left: 100%; 
+            color: white; font-weight: 900; 
+            font-size: 30px; 
+            text-shadow: 0 0 10px var(--glow-color);
+            display: flex; align-items: center; will-change: transform;
+        }
+
+        @keyframes scroll-left-logic {
+            from { transform: translateX(0); }
+            to { transform: translateX(calc(-100vw - 300%)); }
+        }
+
+        .scrolling { animation: scroll-left-logic 25s linear forwards; }
+
+        /* RIGHT-SIDE TROPHY HUD */
+        #right-stats-hud {
+            position: absolute; right: 5px; top: 100px;
+            display: flex; flex-direction: column; gap: 12px;
+            z-index: 900;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        #right-stats-hud.active { opacity: 1; }
+        
+        .trophy-pill {
+            background: rgba(11, 2, 20, 0.95); border-right: 4px solid var(--accent);
+            padding: 10px 15px; border-radius: 12px 0 0 12px; color: white;
+            display: none; 
+            align-items: center; gap: 12px; min-width: 90px;
+            justify-content: flex-end; box-shadow: -5px 5px 15px rgba(0,0,0,0.4);
+            transition: border-color 0.5s ease;
+        }
+
+        .t-val { font-size: 24px; font-weight: 900; font-family: monospace; }
+        .t-icon { font-size: 24px; }
+
+        /* BOTTOM LEFT TIME/DATE WIDGET */
+        #timestamp-widget {
+            position: absolute; bottom: 30px; left: 20px;
+            display: flex; flex-direction: column; gap: 2px;
+            color: white; text-shadow: 0 0 10px var(--glow-color);
+            pointer-events: none; z-index: 1000;
+        }
+
+        #live-time { font-size: 32px; font-weight: 900; letter-spacing: 1px; }
+        #live-date { font-size: 16px; font-weight: 700; text-transform: uppercase; opacity: 0.9; }
+
+        /* BRANDING FOOTER */
+        .brand-footer { 
+            position: absolute; bottom: 30px; right: 10px; 
+            display: flex; flex-direction: column; align-items: flex-end; gap: 12px; 
+        }
+        
+        #game-name-display { 
+            font-size: 28px; font-weight: 900; color: white; text-transform: uppercase; font-style: italic; 
+            text-shadow: 0 0 15px var(--glow-color), 0 0 30px var(--glow-color);
+        }
+
+        .branding-row { display: flex; align-items: center; gap: 15px; }
+
+        .shoutout-box {
+            background: rgba(11, 2, 20, 0.95); border-right: 4px solid var(--url-accent); 
+            padding: 10px 18px; color: #ffffff; font-weight: 900; font-size: 13px;
+            border-radius: 6px 0 0 6px; box-shadow: -5px 5px 25px rgba(0,0,0,0.5);
+            transition: border-color 0.5s ease;
+        }
+        
+        .url-text { color: var(--url-accent); text-shadow: 0 0 10px var(--url-accent); }
+        
+        .pfp-img { 
+            height: 75px; width: 75px; border-radius: 50%; border: 3px solid var(--accent); 
+            object-fit: cover; box-shadow: 0 0 20px var(--glow-color); 
+            transition: border-color 0.5s ease;
+        }
+
+        #qrcode-container {
+            background: white; padding: 5px; border-radius: 8px;
+            border: 3px solid var(--accent); box-shadow: 0 0 20px var(--glow-color);
+            display: flex; align-items: center; justify-content: center;
+            transition: border-color 0.5s ease;
+        }
+
+        @media (max-width: 768px) {
+            .brand-footer { right: 50%; transform: translateX(50%); width: 100%; align-items: center; }
+            .branding-row { flex-direction: column; gap: 10px; }
+            .shoutout-box { border-right: none; border-bottom: 4px solid var(--url-accent); border-radius: 6px; }
+            #right-stats-hud { right: 5px; top: 60px; }
+            #timestamp-widget { left: 50%; bottom: 10px; transform: translateX(-50%); align-items: center; text-align: center; }
+        }
+    </style>
+</head>
+<body id="overlay-body">
+
+<div id="wp-custom-wrapper">
+    <!-- Chat Ticker -->
+    <div id="chat-ticker-container">
+        <div id="ticker-wrapper">
+            <div id="standby-msg" class="ticker-item" style="left: auto; right: 20px;">HUB SCANNING...</div>
+        </div>
+    </div>
+
+    <!-- Bottom Left Clock -->
+    <div id="timestamp-widget">
+        <div id="live-time">00:00:00</div>
+        <div id="live-date">LOADING...</div>
+    </div>
+    
+    <!-- Trophy HUD -->
+    <div id="right-stats-hud">
+        <div id="pill-greatone" class="trophy-pill" style="border-color:#ef4444"><span id="val-greatone" class="t-val">0</span><span class="t-icon">🔴</span></div>
+        <div id="pill-diamond" class="trophy-pill" style="border-color:#22d3ee"><span id="val-diamond" class="t-val">0</span><span class="t-icon">💎</span></div>
+        <div id="pill-gold" class="trophy-pill" style="border-color:#facc15"><span id="val-gold" class="t-val">0</span><span class="t-icon">🥇</span></div>
+        <div id="pill-silver" class="trophy-pill" style="border-color:#94a3b8"><span id="val-silver" class="t-val">0</span><span class="t-icon">🥈</span></div>
+        <div id="pill-bronze" class="trophy-pill" style="border-color:#c2410c"><span id="val-bronze" class="t-val">0</span><span class="t-icon">🥉</span></div>
+    </div>
+
+    <!-- Right Branding Footer -->
+    <div class="brand-footer">
+        <div id="game-name-display">SCANNING...</div>
+        <div class="branding-row">
+            <div class="shoutout-box">HUB: <span class="url-text">werewolf.ourflora.com/darkwing-dog/</span></div>
+            <div id="qrcode-container"></div>
+            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/9dad426e-04cb-4fc0-a917-25982b3800ce-profile_image-70x70.png" class="pfp-img" alt="terrdog420">
+        </div>
+    </div>
+</div>
+
+<script>
+    const config = {
+        user: "terrdog420",
+        qrUrl: "https://amzn.to/4s3cvvJ",
+        timeZone: "America/Chicago",
+        themeSource: "https://raw.githubusercontent.com/KFruti88/PSN/main/theme-setup/theme.json",
+        firebase: { apiKey: "AIzaSyC55Cb3JcK9NiDkdSHpAS3UuTEG82aze7k", projectId: "angler-squad-tracker" },
+        trophies: [{id:'greatone'},{id:'diamond'},{id:'gold'},{id:'silver'},{id:'bronze'}]
+    };
+
+    let db;
+    let gitTheme = null;
+    let chatQueue = [];
+    let activeItems = [];
+
+    function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('en-US', { timeZone: config.timeZone, hour12: true, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const dateStr = now.toLocaleDateString('en-US', { timeZone: config.timeZone, weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        const timeEl = document.getElementById('live-time');
+        const dateEl = document.getElementById('live-date');
+        if(timeEl) timeEl.innerText = timeStr;
+        if(dateEl) dateEl.innerText = dateStr;
+    }
+
+    function initQRCode() {
+        const container = document.getElementById('qrcode-container');
+        if (container) {
+            new QRCode(container, { text: config.qrUrl, width: 65, height: 65, colorDark : "#000000", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
+        }
+    }
+
+    async function loadTheme() {
+        try {
+            const res = await fetch(`${config.themeSource}?v=${Date.now()}`);
+            if (res.ok) gitTheme = await res.json();
+        } catch (e) { console.warn("Theme load failed."); }
+    }
+
+    function initFirebase() {
+        if (typeof firebase !== 'undefined') {
+            firebase.initializeApp({ apiKey: config.firebase.apiKey, authDomain: `${config.firebase.projectId}.firebaseapp.com`, projectId: config.firebase.projectId });
+            db = firebase.firestore();
+            firebase.auth().signInAnonymously();
+
+            db.collection('artifacts').doc('cotw-trophy-display').collection('public').doc('data').collection('userTrophies').doc(config.user).onSnapshot(d => {
+                if (d.exists) { 
+                    const data = d.data(); 
+                    config.trophies.forEach(tr => { 
+                        const val = data[tr.id] || 0;
+                        document.getElementById(`val-${tr.id}`).innerText = val;
+                        document.getElementById(`pill-${tr.id}`).style.display = (val > 0) ? "flex" : "none";
+                    }); 
+                }
+            });
+        }
+    }
+
+    async function updateGameStatus() {
+        try {
+            const res = await fetch(`https://decapi.me/twitch/game/${config.user}?v=${Date.now()}`);
+            const gameName = await res.text();
+            const game = gameName.toLowerCase();
+            
+            const body = document.getElementById('overlay-body');
+            const display = document.getElementById('game-name-display');
+            const hud = document.getElementById('right-stats-hud');
+            
+            if (!display) return;
+            display.innerText = game.includes('not found') ? "OFFLINE" : gameName.toUpperCase();
+
+            game.includes('ghost') ? body.classList.add('ghostly-pulse') : body.classList.remove('ghostly-pulse');
+
+            let mode = 'default';
+            if (game.includes('hunter')) mode = 'hunter';
+            else if (game.includes('pirate') || game.includes('skull and bones') || game.includes('sea of thieves') || game.includes('black flag')) mode = 'pirate';
+            else if (game.includes('police') || game.includes('nfs') || game.includes('speed') || game.includes('racing')) mode = 'speed';
+            else if (game.includes('farming') || game.includes('simulator') || game.includes('stardew') || game.includes('harvest')) mode = 'farming';
+
+            body.className = `${mode}-mode`;
+
+            const t = gitTheme?.[mode] || gitTheme?.['default'] || {};
+            let accent, glow, url;
+
+            if (mode === 'hunter') {
+                accent = t.accent || '#228B22';
+                glow = t.glow || 'rgba(34, 139, 34, 0.8)';
+                url = t.url || '#4ade80';
+            } else if (mode === 'pirate') {
+                accent = t.accent || '#D4AF37';
+                glow = t.glow || 'rgba(212, 175, 55, 0.8)';
+                url = t.url || '#00CED1';
+            } else if (mode === 'farming') {
+                accent = t.accent || '#1B5E20';
+                glow = t.glow || 'rgba(27, 94, 32, 0.8)';
+                url = t.url || '#FFD700';
+            } else {
+                accent = t.accent || '#7b2096';
+                glow = t.glow || 'rgba(123, 32, 150, 0.8)';
+                url = t.url || '#c084fc';
+            }
+
+            document.documentElement.style.setProperty('--accent', accent);
+            document.documentElement.style.setProperty('--glow-color', glow);
+            document.documentElement.style.setProperty('--url-accent', url);
+
+            if (mode === 'hunter') {
+                hud.classList.add('active');
+            } else {
+                hud.classList.remove('active');
+            }
+        } catch (e) { console.error("Game sync failed", e); }
+    }
+
+    function processFlow() {
+        if (chatQueue.length === 0) return;
+        const wrapper = document.getElementById('ticker-wrapper');
+
+        if (activeItems.length > 0) {
+            const lastItem = activeItems[activeItems.length - 1];
+            const rect = lastItem.getBoundingClientRect();
+            const containerRect = wrapper.getBoundingClientRect();
+            if (rect.right > (containerRect.right - 150)) return; 
+        }
+
+        const data = chatQueue.shift();
+        const standby = document.getElementById('standby-msg');
+        if (standby) standby.remove();
+
+        const item = document.createElement('div');
+        item.className = "ticker-item scrolling";
+        item.innerHTML = `<span style="color:${data.color || 'var(--accent)'}">${data.user}:</span> <span style="margin-left:15px">${data.message}</span>`;
+        
+        wrapper.appendChild(item);
+        activeItems.push(item);
+
+        item.addEventListener('animationend', () => {
+            activeItems = activeItems.filter(i => i !== item);
+            item.remove();
+            if (activeItems.length === 0 && chatQueue.length === 0) {
+                const standbyItem = document.createElement('div');
+                standbyItem.id = "standby-msg";
+                standbyItem.className = "ticker-item";
+                standbyItem.style.left = "auto";
+                standbyItem.style.right = "20px";
+                standbyItem.innerText = "HUB ACTIVE...";
+                wrapper.appendChild(standbyItem);
+            }
+        });
+    }
+
+    setInterval(processFlow, 100);
+    setInterval(updateClock, 1000);
+    setInterval(updateGameStatus, 60000); 
+
+    window.addEventListener('onEventReceived', (obj) => {
+        if (obj.detail.listener === "message-receive") {
+            const d = obj.detail.event.data;
+            chatQueue.push({ user: d.displayName, message: d.text, color: d.color });
+        }
+    });
+
+    window.onload = async () => { 
+        await loadTheme(); 
+        initFirebase(); 
+        initQRCode();
+        updateClock();
+        updateGameStatus();
+    };
+</script>
+</body>
+</html>
