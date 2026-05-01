@@ -11,34 +11,54 @@ const {
 const fs = require("fs");
 const path = require("path");
 
+// BLOCKLIST: GTA titles are filtered out
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"];
 
 async function getFullUserData(npsso, label) {
   try {
     console.log(`--- Starting Sync for ${label} ---`);
+    
+    // 1. Authenticate
     const accessCode = await exchangeNpssoForCode(npsso);
     const authorization = await exchangeCodeForAccessToken(accessCode);
     
-    // 1. Get Trophy Summary (Works in Standby/Off)
+    // 2. Get Trophy Summary (Levels/Counts)
     const trophySummary = await getUserTrophyProfileSummary(authorization, "me");
     console.log(`[${label}] Level: ${trophySummary.trophyLevel} (${trophySummary.progress}%)`);
 
-    // 2. Get Presence (May fail in Standby)
-    let presence = { primaryPlatformInfo: { onlineStatus: "offline" } };
+    // 3. Get Presence (Online Status & Game)
+    let presence;
+    let isOnline = false;
+    let currentGameName = "Dashboard";
+    let currentGameArt = "";
+
     try {
+        // Direct call for presence
         presence = await getPresenceFromUser(authorization, "me");
+        isOnline = presence.primaryPlatformInfo?.onlineStatus === "online";
+        
+        const gameList = presence.gameTitleInfoList || [];
+        if (gameList.length > 0) {
+            const rawGameName = gameList[0].titleName || "";
+            const isBlacklisted = BLACKLIST.some(f => rawGameName.toLowerCase().includes(f));
+            
+            if (!isBlacklisted) {
+                currentGameName = rawGameName;
+                currentGameArt = gameList[0].conceptIconUrl || "";
+                console.log(`[${label}] Presence Detected: ${currentGameName} (${isOnline ? 'Online' : 'Offline'})`);
+            } else {
+                console.log(`[${label}] Presence filtered (Blacklisted game).`);
+            }
+        }
     } catch (e) {
-        console.log(`[${label}] Console in Standby/Offline. Using offline status.`);
+        // This is where FS25 is likely getting stuck
+        console.log(`[${label}] Presence Fetch failed. Reason: ${e.message}`);
+        if (e.message.includes("404")) {
+            console.log(`[${label}] Check PS5 Privacy: 'Online Status' must be set to 'Anyone'.`);
+        }
     }
 
-    const isOnline = presence.primaryPlatformInfo?.onlineStatus === "online";
-    const gameList = presence.gameTitleInfoList || [];
-    const rawGameName = gameList[0]?.titleName || "";
-    const currentGameArt = gameList[0]?.conceptIconUrl || "";
-    const isBlacklisted = BLACKLIST.some(f => rawGameName.toLowerCase().includes(f));
-    const currentGameName = (!rawGameName || isBlacklisted) ? "Dashboard" : rawGameName;
-
-    // 3. Get Recent Titles (Works in Standby/Off)
+    // 4. Get Titles list (Recent Games)
     const { trophyTitles } = await getUserTitles(authorization, "me");
     const recentGames = [];
     let latestTrophyInfo = null;
@@ -62,7 +82,11 @@ async function getFullUserData(npsso, label) {
           
           const newestEarned = earnedTrophies
             .filter(t => t.earned)
-            .sort((a, b) => new Date(b.earnedDateTime) - new Date(a.earnedDateTime))[0];
+            .sort((a, b) => {
+                const dateA = a.earnedDateTime ? new Date(a.earnedDateTime).getTime() : 0;
+                const dateB = b.earnedDateTime ? new Date(b.earnedDateTime).getTime() : 0;
+                return dateB - dateA;
+            })[0];
 
           if (newestEarned) {
             const meta = trophyMetadata.find(m => m.trophyId === newestEarned.trophyId);
@@ -73,7 +97,7 @@ async function getFullUserData(npsso, label) {
               icon: meta.trophyIconUrl
             };
           }
-        } catch (e) { /* Skip specific titles */ }
+        } catch (e) { /* Skip titles with privacy errors */ }
       }
       if (recentGames.length >= 5 && latestTrophyInfo) break;
     }
@@ -92,12 +116,12 @@ async function getFullUserData(npsso, label) {
       online: isOnline,
       currentGame: currentGameName,
       currentGameProgress: recentGames.find(g => g.name === currentGameName)?.progress || 0,
-      gameArt: currentGameName !== "Dashboard" ? currentGameArt : "",
+      gameArt: currentGameArt,
       recentGames: recentGames,
       lastUpdated: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
     };
   } catch (error) {
-    console.error(`[${label}] Error:`, error.message);
+    console.error(`[${label}] Fatal Error:`, error.message);
     return null;
   }
 }
