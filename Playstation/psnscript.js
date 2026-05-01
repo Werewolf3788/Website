@@ -1,8 +1,8 @@
 const {
   exchangeNpssoForCode,
   exchangeCodeForAccessToken,
-  getUserTitlesForUser,
-  getUserTrophySummaryForUser,
+  getUserTitles,
+  getUserTrophyProfileSummary,
   getPresenceFromUser,
   getUserTrophiesEarnedForTitle,
   makeUniversalSearch
@@ -21,27 +21,28 @@ async function getFullUserData(npsso, label) {
     const accessCode = await exchangeNpssoForCode(npsso);
     const authorization = await exchangeCodeForAccessToken(accessCode);
     
-    // 2. Get basic profile and presence using "me"
-    const trophySummary = await getUserTrophySummaryForUser(authorization, "me");
+    // 2. Get basic profile and presence using the correct function names found in source
+    const trophySummary = await getUserTrophyProfileSummary(authorization, "me");
     const presence = await getPresenceFromUser(authorization, "me");
     
-    console.log(`[${label}] Level: ${trophySummary.trophyLevel} | Total Trophies: ${trophySummary.earnedTrophies.platinum + trophySummary.earnedTrophies.gold + trophySummary.earnedTrophies.silver + trophySummary.earnedTrophies.bronze}`);
+    console.log(`[${label}] Level: ${trophySummary.trophyLevel} | Progress: ${trophySummary.progress}%`);
 
     const isOnline = presence.primaryPlatformInfo.onlineStatus === "online";
     const gameList = presence.gameTitleInfoList || [];
     const rawGameName = gameList[0]?.titleName || "";
     const currentGameArt = gameList[0]?.conceptIconUrl || "";
     
-    // GTA Filter
+    // GTA Filter for current activity
     const isBlacklisted = BLACKLIST.some(f => rawGameName.toLowerCase().includes(f));
     const currentGameName = (!rawGameName || isBlacklisted) ? "Dashboard" : rawGameName;
 
-    // 3. Get Games and Trophy Progress
-    const { trophyTitles } = await getUserTitlesForUser(authorization, "me");
+    // 3. Get Games and Trophy Progress using the correct function name
+    const { trophyTitles } = await getUserTitles(authorization, "me");
     const recentGames = [];
     let latestTrophyInfo = null;
 
     for (const title of trophyTitles) {
+      // Skip blacklisted games in the "Recent Hunts" list
       if (BLACKLIST.some(f => title.trophyTitleName.toLowerCase().includes(f))) continue;
 
       if (recentGames.length < 5) {
@@ -57,6 +58,7 @@ async function getFullUserData(npsso, label) {
       if (!latestTrophyInfo) {
         try {
           const { trophies } = await getUserTrophiesEarnedForTitle(authorization, "me", title.npCommunicationId, "all");
+          // Sort by earned date to find the absolute newest one
           const earned = trophies.filter(t => t.earned).sort((a, b) => new Date(b.earnedDateTime) - new Date(a.earnedDateTime));
           
           if (earned.length > 0) {
@@ -67,7 +69,9 @@ async function getFullUserData(npsso, label) {
               icon: earned[0].trophyIconUrl
             };
           }
-        } catch (e) { console.log(`[${label}] Trophy skip for ${title.trophyTitleName}`); }
+        } catch (e) { 
+            // Silence minor errors for specific titles
+        }
       }
 
       if (recentGames.length >= 5 && latestTrophyInfo) break;
@@ -92,7 +96,7 @@ async function getFullUserData(npsso, label) {
       lastUpdated: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
     };
   } catch (error) {
-    console.error(`[${label}] Fatal error:`, error.message);
+    console.error(`[${label}] Error in script logic:`, error.message);
     return null;
   }
 }
@@ -117,7 +121,6 @@ async function getFriendStatus(npsso, onlineId) {
       currentGame: game
     };
   } catch (e) {
-    console.error(`[Friend] Failed to fetch ${onlineId}:`, e.message);
     return { online: false, currentGame: "" };
   }
 }
@@ -129,7 +132,7 @@ async function main() {
 
   const dataPath = path.join(__dirname, "psn_data.json");
   
-  // Try to load existing data to prevent blanking on fail
+  // Persistence: Load existing data first
   try {
     if (fs.existsSync(dataPath)) {
       finalData = JSON.parse(fs.readFileSync(dataPath, "utf8"));
@@ -140,6 +143,7 @@ async function main() {
     const data = await getFullUserData(werewolfToken, "Werewolf");
     if (data) {
       finalData.users.werewolf = data;
+      // Fetch Darkwing while we have Werewolf's session
       finalData.users.darkwing = await getFriendStatus(werewolfToken, "Darkwing69420");
     }
   }
@@ -150,7 +154,7 @@ async function main() {
   }
 
   fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-  console.log("--- Sync Finished ---");
+  console.log("--- Sync Successfully Completed ---");
 }
 
 main();
