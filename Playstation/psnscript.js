@@ -3,7 +3,7 @@ const {
   exchangeCodeForAccessToken,
   getUserTitles,
   getUserTrophyProfileSummary,
-  getPresenceFromUser,
+  getPresenceOfUser, // Corrected function name
   getUserTrophiesEarnedForTitle,
   getTitleTrophies,
   makeUniversalSearch
@@ -22,9 +22,9 @@ async function getFullUserData(npsso, label) {
     const accessCode = await exchangeNpssoForCode(npsso);
     const authorization = await exchangeCodeForAccessToken(accessCode);
     
-    // 2. Get basic profile and presence using correct function names from source
+    // 2. Get basic profile and presence
     const trophySummary = await getUserTrophyProfileSummary(authorization, "me");
-    const presence = await getPresenceFromUser(authorization, "me");
+    const presence = await getPresenceOfUser(authorization, "me"); // Corrected call
     
     console.log(`[${label}] Level: ${trophySummary.trophyLevel} | Progress: ${trophySummary.progress}%`);
 
@@ -58,9 +58,7 @@ async function getFullUserData(npsso, label) {
       // Get metadata for the most recent valid trophy
       if (!latestTrophyInfo) {
         try {
-          // Get EARNED status
           const { trophies: earnedTrophies } = await getUserTrophiesEarnedForTitle(authorization, "me", title.npCommunicationId, "all");
-          // Get METADATA (Names and Icons)
           const { trophies: trophyMetadata } = await getTitleTrophies(authorization, title.npCommunicationId, "all");
           
           const newestEarned = earnedTrophies
@@ -77,7 +75,7 @@ async function getFullUserData(npsso, label) {
             };
           }
         } catch (e) { 
-          console.log(`[${label}] Skipping trophy details for ${title.trophyTitleName}`);
+          // Log minor skips
         }
       }
 
@@ -103,7 +101,7 @@ async function getFullUserData(npsso, label) {
       lastUpdated: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
     };
   } catch (error) {
-    console.error(`[${label}] Error:`, error.message);
+    console.error(`[${label}] Error in script:`, error.message);
     return null;
   }
 }
@@ -117,7 +115,7 @@ async function getFriendStatus(npsso, onlineId) {
     const searchResults = await makeUniversalSearch(authorization, onlineId, "socialAccounts");
     const accountId = searchResults.domainResponses[0].results[0].socialMetadata.accountId;
     
-    const presence = await getPresenceFromUser(authorization, accountId);
+    const presence = await getPresenceOfUser(authorization, accountId); // Corrected call
     let game = presence.gameTitleInfoList?.[0]?.titleName || "";
     if (BLACKLIST.some(f => game.toLowerCase().includes(f))) game = "Classified";
     
@@ -141,7 +139,7 @@ async function main() {
 
   const dataPath = path.join(__dirname, "psn_data.json");
   
-  // Load existing data so we never show "0" if PSN is down
+  // Load existing data to prevent "Zeroing out"
   try {
     if (fs.existsSync(dataPath)) {
       finalData = JSON.parse(fs.readFileSync(dataPath, "utf8"));
@@ -152,7 +150,6 @@ async function main() {
     const data = await getFullUserData(werewolfToken, "Werewolf");
     if (data) {
       finalData.users.werewolf = data;
-      // Check Darkwing using Werewolf's session
       finalData.users.darkwing = await getFriendStatus(werewolfToken, "Darkwing69420");
     }
   }
@@ -163,7 +160,7 @@ async function main() {
   }
 
   fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-  console.log("--- Sync Successfully Completed ---");
+  console.log("--- Sync Finished ---");
 }
 
 main();
