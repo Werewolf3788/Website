@@ -2,9 +2,9 @@ name: Sync PSN Data
 
 on:
   schedule:
-    # Runs every 30 minutes to stay within GitHub Free Tier limits (approx 1,440 runs/mo)
+    # Runs every 30 minutes to stay within GitHub Free Tier limits
     - cron: '*/30 * * * *'
-  workflow_dispatch: # Allows you to manually click "Run workflow" in the Actions tab
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -17,13 +17,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4 # Updated to v4 for better performance
+        uses: actions/checkout@v4
 
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-          cache: 'pip' # Speeds up runs by caching dependencies
+          cache: 'pip'
 
       - name: Install Dependencies
         run: |
@@ -39,6 +39,7 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add psn_data.json
+          # UPDATED: Adding the folder specifically
+          git add json/psn_data.json
           git commit -m "Update PSN stats [skip ci]" || echo "No changes to commit"
           git push
