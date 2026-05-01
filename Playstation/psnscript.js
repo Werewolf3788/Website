@@ -4,16 +4,18 @@ const {
   exchangeCodeForAccessToken,
   getUserTitles,
   getUserTrophyProfileSummary,
+  getPresenceOfUser,
+  getPresenceFromUser,
   getUserTrophiesEarnedForTitle,
   getTitleTrophies,
   makeUniversalSearch,
-  getRecentlyPlayedGames // Using the GraphQL-based recently played games
+  getRecentlyPlayedGames
 } = psnApi;
 
 const fs = require("fs");
 const path = require("path");
 
-// BLOCKLIST: GTA titles are filtered out
+// BLOCKLIST: GTA titles are filtered out to protect account integrity
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"];
 
 // Helper to find the correct presence function regardless of naming shifts in the library
@@ -49,7 +51,7 @@ async function getFullUserData(npsso, label) {
         }
     }
 
-    // Use Recently Played Games to identify the active game (Should catch FS25)
+    // Use Recently Played Games to identify the active game
     try {
         const recentlyPlayed = await getRecentlyPlayedGames(authorization, { limit: 1 });
         const lastGame = recentlyPlayed.data?.gameLibraryTitlesRetrieve?.games?.[0];
@@ -66,13 +68,19 @@ async function getFullUserData(npsso, label) {
         console.log(`[${label}] Recently Played fetch failed: ${e.message}`);
     }
 
-    // 4. Get Titles list (Recent Games for the grid)
+    // 4. Get Titles list (Recent Games for the grid and progress matching)
     const { trophyTitles } = await getUserTitles(authorization, "me");
     const recentGames = [];
     let latestTrophyInfo = null;
+    let detectedGameProgress = 0;
 
     for (const title of trophyTitles) {
       if (BLACKLIST.some(f => title.trophyTitleName.toLowerCase().includes(f))) continue;
+
+      // If this title matches our "Current Game", save the progress percentage
+      if (title.trophyTitleName === currentGameName) {
+        detectedGameProgress = title.progress;
+      }
 
       if (recentGames.length < 5) {
         recentGames.push({
@@ -108,13 +116,13 @@ async function getFullUserData(npsso, label) {
           }
         } catch (e) { /* Skip titles with errors */ }
       }
-      if (recentGames.length >= 5 && latestTrophyInfo) break;
     }
 
     // If RecentlyPlayed failed, use the first item in recentGames as the Active Hunt
     if (currentGameName === "Dashboard" && recentGames.length > 0) {
         currentGameName = recentGames[0].name;
         currentGameArt = recentGames[0].art;
+        detectedGameProgress = recentGames[0].progress;
     }
 
     return {
@@ -130,7 +138,7 @@ async function getFullUserData(npsso, label) {
       recentTrophy: latestTrophyInfo,
       online: isOnline,
       currentGame: currentGameName,
-      currentGameProgress: recentGames.find(g => g.name === currentGameName)?.progress || 0,
+      currentGameProgress: detectedGameProgress,
       gameArt: currentGameArt,
       recentGames: recentGames,
       lastUpdated: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
@@ -146,6 +154,12 @@ async function getFriendStatus(npsso, onlineId) {
     const accessCode = await exchangeNpssoForCode(npsso);
     const authorization = await exchangeCodeForAccessToken(accessCode);
     const searchResults = await makeUniversalSearch(authorization, onlineId, "socialAccounts");
+    
+    if (!searchResults.domainResponses[0]?.results?.length) {
+        console.log(`[Friend] Could not find user: ${onlineId}`);
+        return { online: false, currentGame: "" };
+    }
+
     const accountId = searchResults.domainResponses[0].results[0].socialMetadata.accountId;
     
     let game = "";
@@ -153,15 +167,18 @@ async function getFriendStatus(npsso, onlineId) {
     
     const presenceFunc = findPresenceFunc();
     if (presenceFunc) {
-        const presence = await presenceFunc(authorization, accountId);
-        game = presence.gameTitleInfoList?.[0]?.titleName || "";
-        status = presence.primaryPlatformInfo.onlineStatus;
+        try {
+            const presence = await presenceFunc(authorization, accountId);
+            game = presence.gameTitleInfoList?.[0]?.titleName || "";
+            status = presence.primaryPlatformInfo.onlineStatus;
+        } catch (e) { }
     }
     
-    if (BLACKLIST.some(f => game.toLowerCase().includes(f))) game = "Classified";
+    if (game && BLACKLIST.some(f => game.toLowerCase().includes(f))) game = "Classified";
     
     return { online: status === "online", currentGame: game };
   } catch (e) {
+    console.error(`[Friend] Error fetching ${onlineId}: ${e.message}`);
     return { online: false, currentGame: "" };
   }
 }
@@ -182,7 +199,12 @@ async function main() {
     const data = await getFullUserData(werewolfToken, "Werewolf");
     if (data) {
         finalData.users.werewolf = data;
+        
+        // Sync Lobby Friends using Werewolf's session
+        console.log("--- Syncing Lobby Friends ---");
         finalData.users.darkwing = await getFriendStatus(werewolfToken, "Darkwing69420");
+        finalData.users.phoenix = await getFriendStatus(werewolfToken, "phoenix_darkfire");
+        finalData.users.elucidator = await getFriendStatus(werewolfToken, "ElucidatorVah");
     }
   }
 
