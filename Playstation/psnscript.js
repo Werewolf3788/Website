@@ -6,157 +6,103 @@ const {
     getUserTrophyProfileSummary,
     getUserTrophiesEarnedForTitle,
     getTitleTrophies,
-    makeUniversalSearch,
-    getRecentlyPlayedGames
+    makeUniversalSearch
 } = psnApi;
 
 const fs = require("fs");
 const path = require("path");
 
-// BLOCKLIST: GTA titles are filtered out to protect account integrity
-const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"];
-
-// Requirement 7: ISO 8601 Duration Parser (PT12H30M -> 12h 30m)
-const formatDuration = (durationStr) => {
-    if (!durationStr) return "--";
-    const h = durationStr.match(/(\d+)H/);
-    const m = durationStr.match(/(\d+)M/);
-    const hours = h ? h[1] + "h" : "";
-    const mins = m ? m[1] + "m" : "";
-    return `${hours} ${mins}`.trim() || "0h";
+// Requirement 10: Your specific friend list IDs
+const SQUAD_IDS = {
+    ray: "raymystyro",       // OneLIVIDMAN
+    darkwing: "Darkwing69420", // TJ / Terrdog
+    phoenix: "phoenix_darkfire", // Seth / Fluffy
+    elucidator: "ElucidatorVah"
 };
 
-// Helper to find presence function
-const findPresenceFunc = () => {
-    return psnApi.getPresenceFromUser || psnApi.getPresenceOfUser || psnApi.getUserPresence || null;
+const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"];
+
+// Requirement 7: Parse playtime duration (PT12H30M -> 12h 30m)
+const parsePlaytime = (duration) => {
+    if (!duration) return "--";
+    const h = duration.match(/(\d+)H/);
+    const m = duration.match(/(\d+)M/);
+    return `${h ? h[1]+'h' : ''} ${m ? m[1]+'m' : ''}`.trim() || "0h";
+};
+
+// Helper for Presence (Requirement 11)
+const getPresence = async (auth, accountId) => {
+    const func = psnApi.getPresenceFromUser || psnApi.getPresenceOfUser || psnApi.getUserPresence;
+    try {
+        const p = await func(auth, accountId);
+        return {
+            online: p.primaryPlatformInfo?.onlineStatus === "online",
+            game: p.gameTitleInfoList?.[0]?.titleName || ""
+        };
+    } catch (e) { return { online: false, game: "" }; }
 };
 
 async function getFullUserData(npsso, label) {
     try {
-        console.log(`--- Starting Sync for ${label} ---`);
+        console.log(`--- Syncing ${label} ---`);
         const accessCode = await exchangeNpssoForCode(npsso);
         const authorization = await exchangeCodeForAccessToken(accessCode);
+        
+        // Req 11: Console Status
+        const presence = await getPresence(authorization, "me");
 
-        // Requirement 11: Console online/offline status
-        let isOnline = false;
-        const presenceFunc = findPresenceFunc();
-        if (presenceFunc) {
-            try {
-                const presence = await presenceFunc(authorization, "me");
-                isOnline = presence.primaryPlatformInfo?.onlineStatus === "online";
-            } catch (e) { console.log(`[${label}] Presence fetch restricted.`); }
-        }
-
-        // Requirement 1, 2, 7: High-res current game data
-        let currentGameName = "Dashboard";
-        let currentGameArt = "";
-        let currentGamePlaytime = "--";
-        try {
-            const recentlyPlayed = await getRecentlyPlayedGames(authorization, { limit: 1 });
-            const lastGame = recentlyPlayed.data?.gameLibraryTitlesRetrieve?.games?.[0];
-            if (lastGame && !BLACKLIST.some(f => lastGame.name.toLowerCase().includes(f))) {
-                currentGameName = lastGame.name;
-                currentGameArt = lastGame.image?.url || "";
-                currentGamePlaytime = formatDuration(lastGame.playDuration);
-            }
-        } catch (e) { console.log(`[${label}] Playtime stats fetch failed.`); }
-
-        // Global Stats
-        const trophySummary = await getUserTrophyProfileSummary(authorization, "me");
-
-        // Requirement 5, 6, 9: Recent Games and Progress (33/100)
+        // Req 1, 2, 5, 6, 7, 9: Game info, Art, Progress, Ratio, Hours, and History
         const { trophyTitles } = await getUserTitles(authorization, "me");
         const recentGames = [];
-        let latestTrophyInfo = null;
-        let detectedGameProgress = 0;
-        let detectedGameRatio = "0/0";
+        let latestTrophy = null;
 
         for (const title of trophyTitles) {
-            if (BLACKLIST.some(f => title.trophyTitleName.toLowerCase().includes(f))) continue;
+            const name = title.trophyTitleName;
+            if (BLACKLIST.some(f => name.toLowerCase().includes(f))) continue;
 
-            // Requirement 6: Calculate earned vs total ratio
-            const earned = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
-            const total = (title.definedTrophies.platinum + title.definedTrophies.gold + title.definedTrophies.silver + title.definedTrophies.bronze);
+            // Req 6: 33/100 Ratio logic
+            const earned = title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze;
+            const total = title.definedTrophies.platinum + title.definedTrophies.gold + title.definedTrophies.silver + title.definedTrophies.bronze;
             const ratio = `${earned}/${total}`;
-
-            if (title.trophyTitleName === currentGameName) {
-                detectedGameProgress = title.progress;
-                detectedGameRatio = ratio;
-            }
 
             if (recentGames.length < 5) {
                 recentGames.push({
-                    name: title.trophyTitleName,
-                    progress: title.progress,
-                    ratio: ratio,
-                    art: title.trophyTitleIconUrl
+                    name: name,
+                    art: title.trophyTitleIconUrl, // Req 2
+                    progress: title.progress,     // Req 5
+                    ratio: ratio,                 // Req 6
+                    hours: parsePlaytime(title.playDuration) // Req 7
                 });
             }
 
-            // Requirement 3 & 4: Latest Trophy Title and Image
-            if (!latestTrophyInfo) {
+            // Req 3 & 4: Latest Trophy
+            if (!latestTrophy) {
                 try {
-                    const { trophies: earnedTrophies } = await getUserTrophiesEarnedForTitle(authorization, "me", title.npCommunicationId, "all");
-                    const { trophies: trophyMetadata } = await getTitleTrophies(authorization, title.npCommunicationId, "all");
-                    const newest = earnedTrophies.filter(t => t.earned).sort((a, b) => new Date(b.earnedDateTime) - new Date(a.earnedDateTime))[0];
-                    if (newest) {
-                        const meta = trophyMetadata.find(m => m.trophyId === newest.trophyId);
-                        latestTrophyInfo = {
-                            name: meta.trophyName,
-                            game: title.trophyTitleName,
-                            icon: meta.trophyIconUrl
-                        };
+                    const { trophies } = await getUserTrophiesEarnedForTitle(authorization, "me", title.npCommunicationId, "all");
+                    const { trophies: meta } = await getTitleTrophies(authorization, title.npCommunicationId, "all");
+                    const lastEarned = trophies.filter(t => t.earned).sort((a,b) => new Date(b.earnedDateTime) - new Date(a.earnedDateTime))[0];
+                    if (lastEarned) {
+                        const m = meta.find(x => x.trophyId === lastEarned.trophyId);
+                        latestTrophy = { name: m.trophyName, icon: m.trophyIconUrl, game: name };
                     }
-                } catch (e) { }
+                } catch (e) {}
             }
         }
 
+        const stats = await getUserTrophyProfileSummary(authorization, "me");
         return {
-            level: trophySummary.trophyLevel,
-            levelProgress: trophySummary.progress,
-            online: isOnline,
-            currentGame: currentGameName,
-            currentGameArt: currentGameArt,
-            currentGamePlaytime: currentGamePlaytime,
-            currentGameProgress: detectedGameProgress,
-            currentGameRatio: detectedGameRatio,
-            recentTrophy: latestTrophyInfo,
+            online: presence.online,
+            currentGame: presence.game || "Dashboard",
+            gameArt: recentGames[0]?.art || "",
+            hours: recentGames[0]?.hours || "--",
+            progress: recentGames[0]?.progress || 0,
+            ratio: recentGames[0]?.ratio || "0/0",
+            recentTrophy: latestTrophy,
             recentGames: recentGames,
-            trophies: {
-                platinum: trophySummary.earnedTrophies.platinum,
-                gold: trophySummary.earnedTrophies.gold,
-                silver: trophySummary.earnedTrophies.silver,
-                bronze: trophySummary.earnedTrophies.bronze,
-                total: (trophySummary.earnedTrophies.platinum + trophySummary.earnedTrophies.gold + trophySummary.earnedTrophies.silver + trophySummary.earnedTrophies.bronze)
-            },
-            lastUpdated: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
+            level: stats.trophyLevel,
+            lastUpdated: new Date().toLocaleString()
         };
-    } catch (error) {
-        console.error(`[${label}] Fatal Error:`, error.message);
-        return null;
-    }
-}
-
-// Requirement 8: Friends active game status
-async function getFriendStatus(authorization, onlineId) {
-    try {
-        const searchResults = await makeUniversalSearch(authorization, onlineId, "socialAccounts");
-        if (!searchResults.domainResponses[0]?.results?.length) return { online: false, currentGame: "" };
-        const accountId = searchResults.domainResponses[0].results[0].socialMetadata.accountId;
-        
-        let game = "";
-        let status = "offline";
-        const presenceFunc = findPresenceFunc();
-        if (presenceFunc) {
-            try {
-                const presence = await presenceFunc(authorization, accountId);
-                game = presence.gameTitleInfoList?.[0]?.titleName || "";
-                status = presence.primaryPlatformInfo.onlineStatus;
-            } catch (e) { }
-        }
-        if (game && BLACKLIST.some(f => game.toLowerCase().includes(f))) game = "Classified";
-        return { online: status === "online", currentGame: game };
-    } catch (e) { return { online: false, currentGame: "" }; }
+    } catch (e) { console.error(e); return null; }
 }
 
 async function main() {
@@ -166,28 +112,26 @@ async function main() {
     const dataPath = path.join(__dirname, "psn_data.json");
 
     if (werewolfToken) {
-        // Authenticate primary token for friend searches
-        const accessCode = await exchangeNpssoForCode(werewolfToken);
-        const authorization = await exchangeCodeForAccessToken(accessCode);
-        
+        const authCode = await exchangeNpssoForCode(werewolfToken);
+        const auth = await exchangeCodeForAccessToken(authCode);
         finalData.users.werewolf = await getFullUserData(werewolfToken, "Werewolf");
-        
-        // Requirement 10: Specific friends list
-        console.log("--- Syncing Lobby Friends ---");
-        finalData.users.ray = await getFriendStatus(authorization, "raymystyro");
-        finalData.users.phoenix = await getFriendStatus(authorization, "phoenix_darkfire");
-        finalData.users.terrdog = await getFriendStatus(authorization, "TerrDog420");
-        finalData.users.darkwing = await getFriendStatus(authorization, "Darkwing69420");
-        finalData.users.elucidator = await getFriendStatus(authorization, "ElucidatorVah");
+
+        // Req 8 & 10: Friends Sync
+        for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
+            try {
+                const search = await makeUniversalSearch(auth, onlineId, "socialAccounts");
+                const accId = search.domainResponses[0].results[0].socialMetadata.accountId;
+                finalData.users[key] = await getPresence(auth, accId);
+            } catch (e) { finalData.users[key] = { online: false, game: "" }; }
+        }
     }
 
     if (rayToken) {
         const rayDetail = await getFullUserData(rayToken, "Ray");
-        if (rayDetail) finalData.users.ray_detail = rayDetail;
+        if (rayDetail) finalData.users.ray = rayDetail;
     }
 
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log("--- Sync Finished: All JS Requirements Met ---");
 }
 
 main();
