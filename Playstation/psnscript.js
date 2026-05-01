@@ -3,7 +3,7 @@ const {
   exchangeCodeForAccessToken,
   getUserTitles,
   getUserTrophyProfileSummary,
-  getPresenceFromUser,
+  getPresenceOfUser, // Corrected function name from psn-api source
   getUserTrophiesEarnedForTitle,
   getTitleTrophies,
   makeUniversalSearch
@@ -33,8 +33,8 @@ async function getFullUserData(npsso, label) {
     let currentGameArt = "";
 
     try {
-        // Direct call for presence
-        presence = await getPresenceFromUser(authorization, "me");
+        // Direct call for presence using the corrected function name
+        presence = await getPresenceOfUser(authorization, "me");
         isOnline = presence.primaryPlatformInfo?.onlineStatus === "online";
         
         const gameList = presence.gameTitleInfoList || [];
@@ -49,13 +49,11 @@ async function getFullUserData(npsso, label) {
             } else {
                 console.log(`[${label}] Presence filtered (Blacklisted game).`);
             }
+        } else {
+            console.log(`[${label}] No active game titles found in presence.`);
         }
     } catch (e) {
-        // This is where FS25 is likely getting stuck
         console.log(`[${label}] Presence Fetch failed. Reason: ${e.message}`);
-        if (e.message.includes("404")) {
-            console.log(`[${label}] Check PS5 Privacy: 'Online Status' must be set to 'Anyone'.`);
-        }
     }
 
     // 4. Get Titles list (Recent Games)
@@ -133,7 +131,7 @@ async function getFriendStatus(npsso, onlineId) {
     const searchResults = await makeUniversalSearch(authorization, onlineId, "socialAccounts");
     const accountId = searchResults.domainResponses[0].results[0].socialMetadata.accountId;
     
-    const presence = await getPresenceFromUser(authorization, accountId);
+    const presence = await getPresenceOfUser(authorization, accountId);
     let game = presence.gameTitleInfoList?.[0]?.titleName || "";
     if (BLACKLIST.some(f => game.toLowerCase().includes(f))) game = "Classified";
     
