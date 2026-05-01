@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phoenix_Darkfire | Link Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f0f12;
+            color: #e2e8f0;
+            font-size: 14px; /* Divi mobile settings: Body Text Size 14 */
+            margin: 0;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* Fixed Wallpaper Background */
+        .wallpaper-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            /* Using the provided Steam artwork URL */
+            background-image: 
+                linear-gradient(rgba(15, 15, 18, 0.7), rgba(15, 15, 18, 0.7)), 
+                url('https://images.steamusercontent.com/ugc/954083822073858739/D3BE5BA765E106959EFAE8B8E2C2BE92C81C1672/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        h1 { font-size: 30px; line-height: 1.2; } /* Divi mobile settings: Header Text Size 30 */
+
+        .glass-card {
+            background: rgba(15, 15, 18, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(185, 28, 28, 0.4);
+        }
+
+        .twitch-accent { color: #a970ff; }
+        .twitch-bg { background-color: #a970ff; }
+        
+        /* Divi mobile settings for phone layout */
+        .custom-section { padding-top: 50px; padding-bottom: 50px; }
+        .custom-row { margin-top: 30px; margin-bottom: 30px; }
+
+        .stat-badge {
+            background: rgba(169, 112, 255, 0.15);
+            border: 1px solid rgba(169, 112, 255, 0.4);
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            backdrop-blur: 4px;
+        }
+
+        .social-grid a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 50px;
+            width: 50px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            background: rgba(15, 15, 18, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.2s;
+        }
+
+        .social-grid a:hover {
+            background: #b91c1c; 
+            color: white;
+            box-shadow: 0 0 15px rgba(185, 28, 28, 0.5);
+            transform: scale(1.1);
+        }
+
+        .image-banner {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 12px 12px 0 0;
+        }
+
+        /* Floating Messenger Button */
+        .messenger-fab {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: #0084ff;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            transition: transform 0.2s ease;
+        }
+
+        .messenger-fab:hover {
+            transform: scale(1.1);
+        }
+
+        .status-dot {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            border: 3px solid #0f0f12;
+            transition: background-color 0.5s ease;
+        }
+
+        .status-live { background-color: #22c55e; box-shadow: 0 0 10px #22c55e; }
+        .status-offline { background-color: #64748b; }
+
+        .game-tag {
+            display: inline-block;
+            background: rgba(185, 28, 28, 0.2);
+            border: 1px solid rgba(185, 28, 28, 0.3);
+            padding: 4px 10px;
+            border-radius: 6px;
+            margin: 2px;
+            font-size: 12px;
+            color: #fecaca;
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loader {
+            width: 12px;
+            height: 12px;
+            border: 2px solid #a970ff;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            animation: rotation 1s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div class="wallpaper-bg"></div>
+
+    <div class="max-w-xl mx-auto px-6 py-12 pb-32">
+        
+        <!-- Header / Profile Section -->
+        <header class="text-center mb-10">
+            <div class="relative inline-block mb-4">
+                <img id="twitch-pfp" 
+                     src="https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png" 
+                     alt="Phoenix_Darkfire" 
+                     class="w-24 h-24 rounded-full border-4 border-[#a970ff] shadow-2xl mx-auto"
+                     onerror="this.src='https://ui-avatars.com/api/?name=Phoenix+Darkfire&background=a970ff&color=fff'">
+                <!-- Dynamic Status Dot -->
+                <div id="live-status-dot" class="status-dot status-offline"></div>
+            </div>
+            <h1 class="font-bold text-white mb-1 drop-shadow-lg">Phoenix_Darkfire</h1>
+            <p class="text-gray-200 mb-6 drop-shadow-md">Variety Streamer & Community Leader</p>
+            
+            <!-- Dynamic Stats -->
+            <div class="flex flex-wrap justify-center gap-3 mb-8">
+                <div class="stat-badge flex items-center gap-2">
+                    <i class="fa-solid fa-users text-[#a970ff]"></i>
+                    <span id="follower-count"><span class="loader"></span></span>
+                </div>
+                <div class="stat-badge flex items-center gap-2">
+                    <i class="fa-solid fa-gamepad text-[#a970ff]"></i>
+                    <span id="current-game">Loading...</span>
+                </div>
+            </div>
+
+            <!-- Primary Action -->
+            <a href="https://www.twitch.tv/phoenix_darkfire" 
+               class="inline-flex items-center justify-center gap-3 w-full py-4 px-6 twitch-bg text-white font-bold rounded-xl shadow-lg hover:opacity-90 transition-all active:scale-95 mb-4">
+                <i class="fa-brands fa-twitch"></i>
+                WATCH ON TWITCH
+            </a>
+            
+            <!-- Welcome Message Section -->
+            <div class="mt-6 text-sm text-gray-100 bg-black/60 p-5 rounded-xl border border-white/10 leading-relaxed italic text-left backdrop-blur-md">
+                <p>🔥 Welcome to my little corner of Twitch, I bet I know some of the questions you might ask: What Do You Stream? When Do You Stream? and Why Should I Follow? Well, to answer each in order: A little bit of everything, I stream usually in the evenings, and to answer why, because we welcome all here.</p>
+            </div>
+        </header>
+
+        <!-- Social Grid -->
+        <div class="flex justify-between gap-2 mb-10 social-grid">
+            <a href="https://bsky.app/profile/phoenixofdarkfire.bsky.social" title="Bluesky"><i class="fa-solid fa-square-rss"></i></a>
+            <a href="https://twitter.com/DrkflamePhoenix" title="X (Twitter)"><i class="fa-brands fa-x-twitter"></i></a>
+            <a href="https://www.youtube.com/channel/UCzSadTAUJs2ZuhhG4a2fWuw" title="YouTube"><i class="fa-brands fa-youtube"></i></a>
+            <a href="https://www.tiktok.com/@phoenix.darkfire" title="TikTok"><i class="fa-brands fa-tiktok"></i></a>
+            <a href="https://www.facebook.com/PhoenixofDarkfire" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+        </div>
+
+        <!-- Main Content Sections -->
+        <div class="space-y-6">
+            
+            <!-- Smart Recently Streamed Games -->
+            <section class="glass-card p-6">
+                <h2 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-red-500"></i>
+                    Recently Streamed
+                </h2>
+                <div id="recent-games" class="flex flex-wrap gap-1">
+                    <!-- Loaded via Script -->
+                </div>
+            </section>
+
+            <!-- Adopt a Cat Section -->
+            <section class="glass-card overflow-hidden">
+                <a href="https://www.whimsicalwhiskersrescue.org/" target="_blank" class="block">
+                    <img src="https://panels.twitch.tv/panel-192320614-image-5ecb548c-c125-4bf2-89ca-75d1db2cec9c" alt="Adopt a Cat" class="image-banner">
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-cat text-orange-400"></i>
+                            Adopt a Cat
+                        </h2>
+                        <p class="text-gray-200 leading-relaxed mb-4">
+                            Non-profit animal rescue organization dedicated to providing a safe haven for cats in need. Based in Assumption, IL, but serving all surrounding counties!
+                        </p>
+                        <span class="text-red-400 font-semibold text-sm">Visit Website <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i></span>
+                    </div>
+                </a>
+            </section>
+
+            <!-- Support Sections Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Throne -->
+                <a href="https://throne.com/phoenix_darkfire" class="glass-card p-6 block">
+                    <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-crown text-yellow-500"></i>
+                        Throne Wishlist
+                    </h3>
+                    <p class="text-sm text-gray-300">Support the stream with safe, private gifting.</p>
+                </a>
+                
+                <!-- Blerps -->
+                <a href="https://blerp.com/x/phoenix_darkfire" class="glass-card p-6 block">
+                    <h3 class="font-bold text-lg mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-volume-high text-blue-400"></i>
+                        Blerp Sounds
+                    </h3>
+                    <p class="text-sm text-gray-300">Trigger funny sound alerts live on stream!</p>
+                </a>
+            </div>
+
+            <!-- Artist Credit Section -->
+            <section class="glass-card overflow-hidden">
+                <div class="p-1 bg-gradient-to-r from-red-600 to-orange-500"></div>
+                <div class="p-6">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-1">
+                            <h2 class="text-xl font-bold mb-2 text-white">Like my cover?</h2>
+                            <p class="text-gray-200 mb-4">
+                                All art is by the <span class="text-orange-400 font-semibold">AMAZING and TALENTED Awkbit!</span> She has made the awesome cover art and deserves ALL of the credit!
+                            </p>
+                            <a href="https://vgen.co/Awkbit" class="inline-block py-2 px-4 bg-white/10 hover:bg-white/20 rounded-lg text-sm font-medium transition-colors text-white">
+                                <i class="fa-solid fa-palette mr-2"></i> View Awkbit on VGen
+                            </a>
+                        </div>
+                    </div>
+                    <div class="mt-6 rounded-lg overflow-hidden border border-white/10">
+                        <img src="https://panels.twitch.tv/panel-192320614-image-1c39d696-d11b-43f3-9f10-3374194dede4" alt="Awkbit Art" class="w-full">
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <footer class="mt-16 text-center text-gray-400 text-xs">
+            <p>&copy; 2024 Phoenix_Darkfire Hub</p>
+            <p class="mt-2 text-red-500/50">Always evolving, always gaming.</p>
+        </footer>
+
+    </div>
+
+    <!-- Floating Messenger Button -->
+    <a href="https://m.me/PhoenixofDarkfire" target="_blank" class="messenger-fab" title="Message me on Facebook">
+        <i class="fa-brands fa-facebook-messenger"></i>
+    </a>
+
+    <script>
+        const USERNAME = 'phoenix_darkfire';
+        
+        let gameList = ["Gotham Knights", "The Medium", "Doki Doki Literature Club", "Dead by Daylight"];
+
+        const savedGames = localStorage.getItem('phoenix_discovered_games');
+        if (savedGames) {
+            try {
+                const parsed = JSON.parse(savedGames);
+                gameList = [...new Set([...gameList, ...parsed])];
+            } catch (e) {
+                console.error("Failed to parse saved games");
+            }
+        }
+
+        function renderGameTags() {
+            const container = document.getElementById('recent-games');
+            if (!container) return;
+            container.innerHTML = '';
+            gameList.forEach(game => {
+                const span = document.createElement('span');
+                span.className = 'game-tag';
+                span.innerText = game;
+                container.appendChild(span);
+            });
+        }
+
+        async function fetchTwitchStats() {
+            try {
+                // Fetch Follower Count
+                const followersRes = await fetch(`https://decapi.me/twitch/followcount/${USERNAME}`);
+                if (followersRes.ok) {
+                    const count = await followersRes.text();
+                    document.getElementById('follower-count').innerText = `${count} Followers`;
+                }
+
+                // Fetch Current Game
+                const gameRes = await fetch(`https://decapi.me/twitch/game/${USERNAME}`);
+                if (gameRes.ok) {
+                    const currentGame = await gameRes.text();
+                    const cleanGame = currentGame.trim();
+                    
+                    document.getElementById('current-game').innerText = cleanGame || "Just Chatting";
+
+                    if (cleanGame && cleanGame.toLowerCase() !== "offline" && !gameList.includes(cleanGame)) {
+                        gameList.push(cleanGame);
+                        localStorage.setItem('phoenix_discovered_games', JSON.stringify(gameList));
+                        renderGameTags();
+                    }
+                }
+
+                // Fetch Live Status for the dot
+                const statusRes = await fetch(`https://decapi.me/twitch/uptime/${USERNAME}`);
+                const statusText = await statusRes.text();
+                const dot = document.getElementById('live-status-dot');
+                
+                if (statusText.toLowerCase().includes("offline")) {
+                    dot.classList.remove('status-live');
+                    dot.classList.add('status-offline');
+                } else {
+                    dot.classList.remove('status-offline');
+                    dot.classList.add('status-live');
+                }
+
+            } catch (error) {
+                console.error("Stats fetch failed:", error);
+            }
+        }
+
+        window.onload = () => {
+            renderGameTags();
+            fetchTwitchStats();
+            setInterval(fetchTwitchStats, 60000);
+        };
+    </script>
+</body>
+</html>
