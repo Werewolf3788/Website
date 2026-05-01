@@ -1,8 +1,8 @@
 const {
   exchangeNpssoForCode,
   exchangeCodeForAccessToken,
-  getUserTitles,
-  getUserTrophySummary,
+  getUserTitlesForUser,
+  getUserTrophySummaryForUser,
   getPresenceFromUser,
   getUserTrophiesEarnedForTitle,
   makeUniversalSearch
@@ -22,7 +22,7 @@ async function getFullUserData(npsso, label) {
     const authorization = await exchangeCodeForAccessToken(accessCode);
     
     // 2. Get basic profile and presence
-    const trophySummary = await getUserTrophySummary(authorization, "me");
+    const trophySummary = await getUserTrophySummaryForUser(authorization, "me");
     const presence = await getPresenceFromUser(authorization, "me");
     
     const isOnline = presence.primaryPlatformInfo.onlineStatus === "online";
@@ -35,7 +35,7 @@ async function getFullUserData(npsso, label) {
     const currentGameName = (!rawGameName || isBlacklisted) ? "Dashboard" : rawGameName;
 
     // 3. Get Games and Trophy Progress
-    const { trophyTitles } = await getUserTitles(authorization, "me");
+    const { trophyTitles } = await getUserTitlesForUser(authorization, "me");
     const recentGames = [];
     let latestTrophyInfo = null;
 
@@ -80,7 +80,8 @@ async function getFullUserData(npsso, label) {
         platinum: trophySummary.earnedTrophies.platinum,
         gold: trophySummary.earnedTrophies.gold,
         silver: trophySummary.earnedTrophies.silver,
-        bronze: trophySummary.earnedTrophies.bronze
+        bronze: trophySummary.earnedTrophies.bronze,
+        total: (trophySummary.earnedTrophies.platinum + trophySummary.earnedTrophies.gold + trophySummary.earnedTrophies.silver + trophySummary.earnedTrophies.bronze)
       },
       recentTrophy: latestTrophyInfo,
       online: isOnline,
@@ -88,7 +89,7 @@ async function getFullUserData(npsso, label) {
       currentGameProgress: recentGames.find(g => g.name === currentGameName)?.progress || 0,
       gameArt: currentGameName !== "Dashboard" ? currentGameArt : "",
       recentGames: recentGames,
-      lastUpdated: new Date().toISOString().replace('T', ' ').substring(0, 19)
+      lastUpdated: new Date().toLocaleString()
     };
   } catch (error) {
     console.error(`Fatal error syncing ${label}:`, error.message);
@@ -101,7 +102,6 @@ async function getFriendStatus(npsso, onlineId) {
     const accessCode = await exchangeNpssoForCode(npsso);
     const authorization = await exchangeCodeForAccessToken(accessCode);
     
-    // Search for friend
     const searchResults = await makeUniversalSearch(authorization, onlineId, "socialAccounts");
     const accountId = searchResults.domainResponses[0].results[0].socialMetadata.accountId;
     
@@ -126,7 +126,6 @@ async function main() {
   const rayToken = process.env.PSN_NPSSO_RAY;
   let finalData = { users: {} };
 
-  // Load existing data
   const dataPath = path.join(__dirname, "psn_data.json");
   try {
     if (fs.existsSync(dataPath)) {
