@@ -2,20 +2,24 @@ import os
 import json
 from psnawp_api import PSNAWP
 
-# BLOCKLIST: Games that will never show up on your site to protect account integrity
+# BLOCKLIST: GTA titles are filtered out as requested
 BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"]
 
 def get_full_user_data(client_instance, name_label):
     """Helper to pull profile, trophy progress for top 5 games, and latest achievement."""
     try:
-        # Get the authenticated 'me' user object (Required for PSNAWP 2.1.0+)
+        # Step 1: Login and get the 'me' object
         me = client_instance.me()
+        print(f"--- Starting Sync for {name_label} ---")
         
-        # Get presence (Online status / Current Game) and trophy summary
-        presence = me.get_presence()
-        trophy_summary = me.trophy_summary()
-        
-        # Extract presence info safely
+        # Step 2: Fetch basic summary and presence
+        try:
+            trophy_summary = me.trophy_summary()
+            presence = me.get_presence()
+        except Exception as e:
+            print(f"Critical Error: Could not fetch basic profile info for {name_label}. Check Privacy Settings. {e}")
+            return None
+
         online_status = presence.get("primaryPlatformInfo", {}).get("onlineStatus")
         is_online = online_status == "online"
         
@@ -23,58 +27,51 @@ def get_full_user_data(client_instance, name_label):
         raw_game_name = game_list[0].get("titleName", "") if game_list else ""
         current_game_art = game_list[0].get("conceptIconUrl", "") if game_list else ""
         
-        # Check if current game is blacklisted
+        # GTA Filter
         is_blacklisted = any(forbidden in raw_game_name.lower() for forbidden in BLACKLIST)
         current_game_name = "Dashboard" if (not raw_game_name or is_blacklisted) else raw_game_name
-        
-        # LOGGING for GitHub Actions Console troubleshooting
-        print(f"--- {name_label} Sync ---")
-        print(f"Level: {trophy_summary.trophy_level} ({trophy_summary.progress}%)")
-        print(f"Status: {online_status}")
-        print(f"Activity: {current_game_name}")
         
         recent_games = []
         latest_trophy_info = None
 
-        # Get all trophy titles (games list)
-        titles = me.trophy_titles()
-        
-        for title in titles:
-            game_name = title.trophy_title_name
-            
-            # SMART FILTER: Skip blacklisted games entirely
-            if any(forbidden in game_name.lower() for forbidden in BLACKLIST):
-                continue
-            
-            # Limit to top 5 most recent valid games for the "Recent Hunts" grid
-            if len(recent_games) < 5:
-                recent_games.append({
-                    "name": game_name,
-                    "progress": title.progress, # The 0-100% progress
-                    "art": title.trophy_title_icon_url,
-                    "platform": title.np_communication_id 
-                })
-            
-            # Get the single most recent earned trophy (Trophy Title + Icon)
-            if not latest_trophy_info:
-                try:
-                    # Pass the account_id to check earned status
-                    trophies = title.trophies(me.account_id)
-                    for t in trophies:
-                        if t.earned:
-                            latest_trophy_info = {
-                                "name": t.trophy_name,
-                                "game": game_name,
-                                "rank": t.trophy_type.name.capitalize(),
-                                "icon": t.trophy_icon_url # Pulls actual trophy artwork
-                            }
-                            break
-                except Exception as e:
-                    print(f"Trophy detail skip for {game_name}: {e}")
-            
-            # Stop searching once we have 5 games and the latest trophy
-            if len(recent_games) >= 5 and latest_trophy_info:
-                break
+        # Step 3: Fetch Games and Trophy Progress
+        try:
+            titles = me.trophy_titles()
+            for title in titles:
+                game_name = title.trophy_title_name
+                if any(forbidden in game_name.lower() for forbidden in BLACKLIST):
+                    continue
+                
+                if len(recent_games) < 5:
+                    recent_games.append({
+                        "name": game_name,
+                        "progress": title.progress,
+                        "art": title.trophy_title_icon_url,
+                        "platform": title.np_communication_id 
+                    })
+                
+                if not latest_trophy_info:
+                    try:
+                        # Passing account_id is required for some API versions
+                        trophies = title.trophies(me.account_id)
+                        for t in trophies:
+                            if t.earned:
+                                latest_trophy_info = {
+                                    "name": t.trophy_name,
+                                    "game": game_name,
+                                    "rank": t.trophy_type.name.capitalize(),
+                                    "icon": t.trophy_icon_url
+                                }
+                                break
+                    except: pass
+                
+                if len(recent_games) >= 5 and latest_trophy_info:
+                    break
+        except Exception as e:
+            print(f"Warning: Could not fetch detailed game list for {name_label}. {e}")
+
+        # Final Log for GitHub Console
+        print(f"Result: Level {trophy_summary.trophy_level} found with {len(recent_games)} games.")
 
         return {
             "level": trophy_summary.trophy_level,
@@ -88,58 +85,45 @@ def get_full_user_data(client_instance, name_label):
             "recentTrophy": latest_trophy_info,
             "online": is_online,
             "currentGame": current_game_name,
-            # Find the % progress for the current game from our filtered list
             "currentGameProgress": next((g['progress'] for g in recent_games if g['name'] == current_game_name), 0),
             "gameArt": current_game_art if current_game_name != "Dashboard" else "",
-            "recentGames": recent_games
+            "recentGames": recent_games,
+            "lastUpdated": __import__('datetime').datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
     except Exception as e:
-        print(f"Error fetching data for {name_label}: {e}")
+        print(f"Fatal error in get_full_user_data for {name_label}: {e}")
         return None
 
 def get_friend_status(client_instance, online_id):
-    """Helper to check status of Lobby members (Ray/Darkwing)."""
+    """Helper to check status of Lobby members."""
     try:
         search_user = client_instance.user(online_id=online_id)
         presence = search_user.get_presence()
         game_list = presence.get("gameTitleInfoList", [])
         game = game_list[0].get("titleName", "") if game_list else ""
-        
-        # Apply blacklist to friends just in case
-        if any(f in game.lower() for f in BLACKLIST): 
-            game = "Classified"
-        
-        online_status = presence.get("primaryPlatformInfo", {}).get("onlineStatus")
-        print(f"Lobby Member {online_id}: {online_status} {('- ' + game) if game else ''}")
-        
+        if any(f in game.lower() for f in BLACKLIST): game = "Classified"
         return {
-            "online": online_status == "online",
+            "online": presence.get("primaryPlatformInfo", {}).get("onlineStatus") == "online",
             "currentGame": game
         }
-    except Exception as e:
-        print(f"Friend {online_id} not reachable: {e}")
+    except:
         return {"online": False, "currentGame": ""}
 
 def main():
-    # Load Secrets from GitHub Actions Environment
     werewolf_token = os.getenv("PSN_NPSSO_WEREWOLF")
     ray_token = os.getenv("PSN_NPSSO_RAY")
-
     final_data = {"users": {}}
 
-    # 1. Sync Werewolf Data
     if werewolf_token:
         try:
             client_w = PSNAWP(werewolf_token)
             data = get_full_user_data(client_w, "Werewolf")
             if data:
                 final_data["users"]["werewolf"] = data
-                # Use your session to check Darkwing's public presence
                 final_data["users"]["darkwing"] = get_friend_status(client_w, "Darkwing69420")
         except Exception as e:
-            print(f"Auth failed for Werewolf: {e}")
+            print(f"Login failed for Werewolf: {e}")
 
-    # 2. Sync Ray Data (Full Profile)
     if ray_token:
         try:
             client_r = PSNAWP(ray_token)
@@ -147,16 +131,12 @@ def main():
             if data:
                 final_data["users"]["ray"] = data
         except Exception as e:
-            print(f"Auth failed for Ray: {e}")
+            print(f"Login failed for Ray: {e}")
 
-    # Ensure the target folder exists
     os.makedirs("Playstation", exist_ok=True)
-    
-    # Save formatted JSON for the website to read
     with open("Playstation/psn_data.json", "w") as f:
         json.dump(final_data, f, indent=2)
-    
-    print("Sync process finished. Playstation/psn_data.json updated.")
+    print("Sync process finished successfully.")
 
 if __name__ == "__main__":
     main()
