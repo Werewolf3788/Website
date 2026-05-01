@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Werewolf3788 | Official Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0a0a0c;
+            --wolf-gray: #1e1e24;
+            --accent-blue: #00439c;
+            --accent-purple: #8b5cf6;
+            /* User preferences */
+            --body-text-size: 14px;
+            --header-text-size: 30px;
+            --section-height: 50px;
+            --row-height: 30px;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #e2e8f0;
+            font-size: var(--body-text-size);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2, h3 {
+            font-size: var(--header-text-size);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.025em;
+            margin: 0;
+        }
+
+        .section-padding {
+            padding-top: var(--section-height);
+            padding-bottom: var(--section-height);
+        }
+
+        .row-spacing {
+            margin-top: var(--row-height);
+            margin-bottom: var(--row-height);
+        }
+
+        .glass-card {
+            background: rgba(30, 30, 36, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-purple);
+        }
+
+        .wolf-gradient {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-link {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.75rem;
+            background: #1e1e24;
+            border: 1px solid #2d2d35;
+            transition: all 0.3s ease;
+        }
+
+        .btn-link:hover {
+            background: #2d2d35;
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .status-badge {
+            background: rgba(139, 92, 246, 0.1);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            color: #a78bfa;
+            padding: 0.4rem 1rem;
+            border-radius: 9999px;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+
+        .status-badge.is-live {
+            background: rgba(16, 185, 129, 0.15);
+            border-color: rgba(16, 185, 129, 0.5);
+            color: #34d399;
+        }
+
+        .trophy-count {
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .progress-bar {
+            height: 6px;
+            background: #2d2d35;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+            border-radius: 3px;
+        }
+
+        .friend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .hidden { display: none !important; }
+
+        .pulse {
+            width: 10px;
+            height: 10px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse-animation 2s infinite;
+        }
+
+        @keyframes pulse-animation {
+            0% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0px rgba(16, 185, 129, 0); }
+        }
+
+        /* Trophy Specific Colors */
+        .color-plat { color: #50b3e7; }
+        .color-gold { color: #f9d71c; }
+        .color-silver { color: #d1d1d1; }
+        .color-bronze { color: #cd7f32; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center">
+
+    <!-- Hero Section -->
+    <header class="w-full max-w-2xl text-center section-padding px-6">
+        <div class="relative inline-block mb-6">
+            <div class="absolute inset-0 bg-purple-500 blur-2xl opacity-20 rounded-full"></div>
+            <img 
+                src="https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-70x70.png" 
+                alt="Werewolf3788 Profile" 
+                class="relative w-32 h-32 rounded-full border-4 border-purple-500 shadow-2xl mx-auto"
+            >
+        </div>
+        
+        <h1 class="wolf-gradient">Werewolf3788</h1>
+        
+        <div class="mt-4 flex flex-col items-center gap-3">
+            <div id="live-status" class="status-badge hidden">
+                <div class="pulse"></div>
+                <span id="game-name"></span>
+            </div>
+            
+            <div id="stats-container" class="flex gap-4 w-full justify-center mt-2">
+                <div id="follower-card" class="stat-card flex-1 glass-card p-3">
+                    <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wider">Followers</div>
+                    <div id="follower-count" class="text-xl font-black text-white">--</div>
+                </div>
+                <div id="psn-level-card" class="stat-card flex-1 glass-card p-3 border-l-4 border-blue-600">
+                    <div class="text-[10px] text-blue-500 uppercase font-bold tracking-wider">PSN Level</div>
+                    <div id="psn-level" class="text-xl font-black text-white">--</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full max-w-2xl lg:max-w-6xl px-6">
+        
+        <!-- Grid Wrapper for Desktop -->
+        <div class="lg:grid lg:grid-cols-12 lg:gap-8 lg:items-start">
+            
+            <!-- Left Column: Live Data & Stats -->
+            <div class="lg:col-span-7">
+                
+                <!-- PSN Live Presence Section -->
+                <section id="psn-presence" class="glass-card p-6 row-spacing hidden">
+                    <div class="flex items-center gap-4">
+                        <div class="relative">
+                            <img id="psn-game-art" src="" class="w-16 h-16 rounded-lg hidden border border-gray-700 shadow-lg">
+                            <div id="psn-icon-fallback" class="w-16 h-16 bg-blue-900 rounded-lg flex items-center justify-center">
+                                <i class="fab fa-playstation text-3xl text-white"></i>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-xs uppercase text-blue-400 font-bold mb-1">My Current Game</h3>
+                            <p id="psn-activity" class="text-lg font-bold text-white">Loading...</p>
+                            <p id="psn-platform" class="text-[10px] text-gray-500 uppercase tracking-widest mt-1">PlayStation 5</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- The Lobby -->
+                <section id="psn-friends" class="glass-card p-6 row-spacing">
+                    <h2 class="mb-4 text-white opacity-90">The Lobby</h2>
+                    <div id="friends-list" class="space-y-4">
+                        <div id="friend-ray" class="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/5 transition-all">
+                            <div class="flex items-center gap-3">
+                                <div id="ray-dot" class="friend-dot bg-gray-600"></div>
+                                <div>
+                                    <span class="font-bold block">OneLIVIDMAN (Ray)</span>
+                                    <span id="ray-status" class="text-[10px] text-gray-500 uppercase tracking-tighter">Offline</span>
+                                </div>
+                            </div>
+                            <div id="ray-game" class="text-right">
+                                <span class="text-[11px] text-blue-400 font-semibold block italic"></span>
+                            </div>
+                        </div>
+                        <div id="friend-darkwing" class="flex items-center justify-between p-3 bg-white/5 rounded-lg border border-white/5 transition-all">
+                            <div class="flex items-center gap-3">
+                                <div id="darkwing-dot" class="friend-dot bg-gray-600"></div>
+                                <div>
+                                    <span class="font-bold block">Darkwing69420</span>
+                                    <span id="darkwing-status" class="text-[10px] text-gray-500 uppercase tracking-tighter">Offline</span>
+                                </div>
+                            </div>
+                            <div id="darkwing-game" class="text-right">
+                                <span class="text-[11px] text-blue-400 font-semibold block italic"></span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Trophy Room -->
+                <section id="psn-trophies" class="glass-card p-6 row-spacing">
+                    <h2 class="mb-4 text-white opacity-90">The Trophy Room</h2>
+                    <div id="recent-trophy-container" class="mb-6 p-4 bg-white/5 rounded-xl border border-white/10 hidden">
+                        <p class="text-[10px] uppercase text-gray-500 font-bold mb-2 tracking-widest">Latest Achievement</p>
+                        <div class="flex items-center gap-3">
+                            <div id="recent-trophy-icon" class="w-10 h-10 flex items-center justify-center rounded-full bg-black/40 border border-white/10">
+                                <i class="fas fa-trophy text-xl"></i>
+                            </div>
+                            <div>
+                                <p id="recent-trophy-name" class="font-bold text-white text-sm leading-tight"></p>
+                                <p id="recent-trophy-game" class="text-xs text-blue-400"></p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-2 mb-6 text-center">
+                        <div class="p-2 bg-white/5 rounded-lg border border-yellow-500/20">
+                            <div class="text-yellow-500 trophy-count" id="t-plat">0</div>
+                            <div class="text-[9px] uppercase text-gray-500">Platinum</div>
+                        </div>
+                        <div class="p-2 bg-white/5 rounded-lg border border-yellow-200/20">
+                            <div class="text-yellow-200 trophy-count" id="t-gold">0</div>
+                            <div class="text-[9px] uppercase text-gray-500">Gold</div>
+                        </div>
+                        <div class="p-2 bg-white/5 rounded-lg border border-gray-400/20">
+                            <div class="text-gray-400 trophy-count" id="t-silver">0</div>
+                            <div class="text-[9px] uppercase text-gray-500">Silver</div>
+                        </div>
+                        <div class="p-2 bg-white/5 rounded-lg border border-orange-400/20">
+                            <div class="text-orange-400 trophy-count" id="t-bronze">0</div>
+                            <div class="text-[9px] uppercase text-gray-500">Bronze</div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs text-gray-400 uppercase font-bold">Progress to next level</span>
+                            <span id="level-percent" class="text-xs text-blue-400 font-bold">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Column: About & Links -->
+            <div class="lg:col-span-5 lg:sticky lg:top-8">
+                
+                <!-- About Me -->
+                <section class="glass-card p-6 row-spacing lg:mt-0">
+                    <h2 class="mb-4 text-white opacity-90">About Me</h2>
+                    <p class="leading-relaxed text-gray-400">
+                        Hey everyone, Werewolf3788 here! Not here for a long time but for a howling good time! 
+                        You can catch my streams on TikTok, Trovo, Kick, Facebook, and YouTube pretty much everywhere. 
+                        If it's got pew pews I'm playing it whether it's alone or with my friends, Hope to see you all there!!!
+                    </p>
+                </section>
+
+                <!-- Pack Links -->
+                <section class="row-spacing">
+                    <h2 class="mb-6 text-white opacity-90">The Pack Links</h2>
+                    <div id="links-grid" class="space-y-4">
+                        <a href="https://twitch.tv/werewolf3788" target="_blank" class="btn-link mb-0">
+                            <i class="fab fa-twitch text-2xl w-10 text-[#9146FF]"></i>
+                            <div class="flex-1">
+                                <div class="font-bold">Twitch</div>
+                                <div class="text-xs text-gray-500">Watch the howl live</div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-600"></i>
+                        </a>
+
+                        <a href="https://discord.gg/wUwuupWkgV" target="_blank" class="btn-link mb-0">
+                            <i class="fab fa-discord text-2xl w-10 text-[#5865F2]"></i>
+                            <div class="flex-1">
+                                <div class="font-bold">Join The Discord</div>
+                                <div class="text-xs text-gray-500">Hang out with the pack</div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-600"></i>
+                        </a>
+
+                        <a href="https://linktr.ee/werewolf3788" target="_blank" class="btn-link mb-0">
+                            <i class="fas fa-tree text-2xl w-10 text-[#43E55E]"></i>
+                            <div class="flex-1">
+                                <div class="font-bold">LinkTree</div>
+                                <div class="text-xs text-gray-500">All my socials in one place</div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-600"></i>
+                        </a>
+
+                        <a href="https://www.tiktok.com/@k082412" target="_blank" class="btn-link mb-0">
+                            <i class="fab fa-tiktok text-2xl w-10 text-white"></i>
+                            <div class="flex-1">
+                                <div class="font-bold">TikTok</div>
+                                <div class="text-xs text-gray-500">Daily clips and live streams</div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-600"></i>
+                        </a>
+
+                        <a href="https://amzn.to/4n9GpNe" target="_blank" class="btn-link mb-0">
+                            <i class="fab fa-amazon text-2xl w-10 text-[#FF9900]"></i>
+                            <div class="flex-1">
+                                <div class="font-bold">Amazon Affiliate</div>
+                                <div class="text-xs text-gray-500">Gear I use and recommend</div>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-600"></i>
+                        </a>
+                    </div>
+
+                    <!-- Mobile Only Section -->
+                    <div class="mt-8 border-t border-gray-800 pt-6">
+                        <p class="text-xs uppercase tracking-widest text-gray-500 mb-4 font-semibold">Mobile Only</p>
+                        <a href="https://music.apple.com/profile/DJKru88" target="_blank" class="btn-link border-pink-900/30">
+                            <i class="fab fa-apple text-2xl w-10 text-[#FA243C]"></i>
+                            <div class="flex-1">
+                                <div class="font-bold">Apple Music</div>
+                                <div class="text-xs text-gray-500">DJKru88 Profile</div>
+                            </div>
+                            <span class="text-[10px] bg-pink-500/20 text-pink-400 px-2 py-1 rounded">MOBILE</span>
+                        </a>
+                    </div>
+                </section>
+            </div>
+
+        </div> <!-- End Grid Wrapper -->
+
+    </main>
+
+    <footer class="w-full text-center py-12 text-gray-600 text-xs">
+        &copy; 2024 Werewolf3788. For a howling good time.
+    </footer>
+
+    <script>
+        async function updateStats() {
+            const statusBadge = document.getElementById('live-status');
+            const gameName = document.getElementById('game-name');
+            const followerEl = document.getElementById('follower-count');
+            
+            try {
+                const gameRes = await fetch('https://decapi.me/twitch/game/werewolf3788');
+                const game = await gameRes.text();
+                
+                if (game && !game.toLowerCase().includes('offline') && 
+                    !game.toLowerCase().includes('not found') && 
+                    !game.toLowerCase().includes('error')) {
+                    gameName.innerText = `Streaming: ${game}`;
+                    statusBadge.classList.remove('hidden');
+                    statusBadge.classList.add('is-live');
+                } else {
+                    statusBadge.classList.add('hidden');
+                    statusBadge.classList.remove('is-live');
+                }
+
+                const followRes = await fetch('https://decapi.me/twitch/followcount/werewolf3788');
+                const follows = await followRes.text();
+                if (follows && !follows.includes('error')) {
+                    followerEl.innerText = follows;
+                }
+
+                const psnRes = await fetch('psn_data.json');
+                const psnData = await psnRes.json();
+                
+                if (psnData && psnData.users) {
+                    const me = psnData.users.werewolf;
+                    const ray = psnData.users.ray;
+                    const dw = psnData.users.darkwing;
+
+                    if (me) {
+                        document.getElementById('psn-level').innerText = me.level || '--';
+                        document.getElementById('level-percent').innerText = `${me.progress}%`;
+                        document.getElementById('progress-fill').style.width = `${me.progress}%`;
+                        document.getElementById('t-plat').innerText = me.trophies.platinum;
+                        document.getElementById('t-gold').innerText = me.trophies.gold;
+                        document.getElementById('t-silver').innerText = me.trophies.silver;
+                        document.getElementById('t-bronze').innerText = me.trophies.bronze;
+
+                        if (me.recentTrophy) {
+                            const recentContainer = document.getElementById('recent-trophy-container');
+                            const trophyName = document.getElementById('recent-trophy-name');
+                            const trophyGame = document.getElementById('recent-trophy-game');
+                            const trophyIcon = document.getElementById('recent-trophy-icon');
+                            
+                            recentContainer.classList.remove('hidden');
+                            trophyName.innerText = me.recentTrophy.name;
+                            trophyGame.innerText = me.recentTrophy.game;
+                            const rank = me.recentTrophy.rank.toLowerCase();
+                            trophyIcon.className = `w-10 h-10 flex items-center justify-center rounded-full bg-black/40 border border-white/10 color-${rank}`;
+                        }
+
+                        if (me.online) {
+                            document.getElementById('psn-presence').classList.remove('hidden');
+                            document.getElementById('psn-activity').innerText = `Playing: ${me.currentGame}`;
+                            if(me.gameArt) {
+                                const art = document.getElementById('psn-game-art');
+                                art.src = me.gameArt;
+                                art.classList.remove('hidden');
+                                document.getElementById('psn-icon-fallback').classList.add('hidden');
+                            }
+                        } else {
+                            document.getElementById('psn-presence').classList.add('hidden');
+                        }
+                    }
+
+                    if (ray) {
+                        const rayDot = document.getElementById('ray-dot');
+                        const rayStatus = document.getElementById('ray-status');
+                        const rayGame = document.getElementById('ray-game').querySelector('span');
+                        if (ray.online) {
+                            rayDot.classList.replace('bg-gray-600', 'bg-green-500');
+                            rayStatus.innerText = 'Online';
+                            rayStatus.classList.add('text-green-400');
+                            rayGame.innerText = ray.currentGame || 'Dashboard';
+                        } else {
+                            rayDot.classList.replace('bg-green-500', 'bg-gray-600');
+                            rayStatus.innerText = 'Offline';
+                            rayStatus.classList.remove('text-green-400');
+                            rayGame.innerText = '';
+                        }
+                    }
+
+                    if (dw) {
+                        const dwDot = document.getElementById('darkwing-dot');
+                        const dwStatus = document.getElementById('darkwing-status');
+                        const dwGame = document.getElementById('darkwing-game').querySelector('span');
+                        if (dw.online) {
+                            dwDot.classList.replace('bg-gray-600', 'bg-green-500');
+                            dwStatus.innerText = 'Online';
+                            dwStatus.classList.add('text-green-400');
+                            dwGame.innerText = dw.currentGame || 'Dashboard';
+                        } else {
+                            dwDot.classList.replace('bg-green-500', 'bg-gray-600');
+                            dwStatus.innerText = 'Offline';
+                            dwStatus.classList.remove('text-green-400');
+                            dwGame.innerText = '';
+                        }
+                    }
+                }
+            } catch (error) {
+                console.log("Waiting for synced PSN Data source...");
+            }
+        }
+
+        window.onload = () => {
+            updateStats();
+            setInterval(updateStats, 120000);
+        };
+    </script>
+</body>
+</html>
