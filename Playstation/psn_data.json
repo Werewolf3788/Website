@@ -18,9 +18,9 @@
         "earnedDate": "2026-05-01T04:01:46Z"
       },
       "online": false,
-      "currentGame": "Farming Simulator 25",
-      "currentGameProgress": 54,
-      "gameArt": "https://image.api.playstation.com/sgst/prod/00/PPSA19644_00/app/info/69/fi_b277574d82be6a110f9b919a0f6e3be0ba1d69b965fcc3f5173595d58733fd67/icon0.png",
+      "currentGame": "Squirrel with a Gun",
+      "currentGameProgress": 4,
+      "gameArt": "https://image.api.playstation.com/sgst/prod/00/PPSA22102_00/app/info/21/fi_d05dcf64cf1b67a414fc08f1ad8e5a473120154b8aba3405db7a2f7f1a9e4353/icon0.png",
       "recentGames": [
         {
           "name": "Crossout",
@@ -54,7 +54,7 @@
         }
       ],
       "recentPurchases": [],
-      "lastUpdated": "5/1/2026, 5:41:18 PM"
+      "lastUpdated": "5/1/2026, 5:54:37 PM"
     },
     "darkwing": {
       "online": false,
@@ -114,7 +114,7 @@
         }
       ],
       "recentPurchases": [],
-      "lastUpdated": "5/1/2026, 5:41:22 PM"
+      "lastUpdated": "5/1/2026, 5:54:40 PM"
     },
     "phoenix": {
       "online": false,
