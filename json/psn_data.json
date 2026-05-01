@@ -1,0 +1,90 @@
+import os
+import json
+from psnawp_api import PSNAWP
+
+def get_full_user_data(client):
+    """Helper to pull profile, trophies, and presence for an authenticated user."""
+    user = client.me()
+    profile = user.get_profile_names()
+    presence = user.get_presence()
+    
+    # Fetch Trophy Summary
+    trophy_summary = user.trophy_summary()
+    
+    # Fetch Latest Trophy
+    # We pull the most recent trophy from the first game in the list
+    latest_trophy_info = None
+    try:
+        titles = user.trophy_titles()
+        first_title = next(titles)
+        trophies = first_title.trophies(user.account_id)
+        # Sort by earned date if possible, otherwise take the first
+        latest = next(trophies)
+        latest_trophy_info = {
+            "name": latest.trophy_name,
+            "game": first_title.trophy_title_name,
+            "rank": latest.trophy_type.name.capitalize()
+        }
+    except Exception:
+        pass
+
+    return {
+        "level": trophy_summary.trophy_level,
+        "progress": trophy_summary.progress,
+        "trophies": {
+            "platinum": trophy_summary.earned_trophies.platinum,
+            "gold": trophy_summary.earned_trophies.gold,
+            "silver": trophy_summary.earned_trophies.silver,
+            "bronze": trophy_summary.earned_trophies.bronze
+        },
+        "recentTrophy": latest_trophy_info,
+        "online": presence.get("primaryPlatformInfo", {}).get("onlineStatus") == "online",
+        "currentGame": presence.get("gameTitleInfoList", [{}])[0].get("titleName", ""),
+        "gameArt": presence.get("gameTitleInfoList", [{}])[0].get("conceptIconUrl", "")
+    }
+
+def get_friend_status(client, online_id):
+    """Helper to find a specific user and get their basic status."""
+    try:
+        search_user = client.user(online_id=online_id)
+        presence = search_user.get_presence()
+        return {
+            "online": presence.get("primaryPlatformInfo", {}).get("onlineStatus") == "online",
+            "currentGame": presence.get("gameTitleInfoList", [{}])[0].get("titleName", "")
+        }
+    except:
+        return {"online": False, "currentGame": ""}
+
+def main():
+    # Load Secrets from GitHub Environment
+    werewolf_npsso = os.getenv("PSN_NPSSO_WEREWOLF")
+    ray_npsso = os.getenv("PSN_NPSSO_RAY")
+
+    final_data = {"users": {}}
+
+    # 1. Process Werewolf (Full Data)
+    if werewolf_npsso:
+        try:
+            client_w = PSNAWP(werewolf_npsso)
+            final_data["users"]["werewolf"] = get_full_user_data(client_w)
+            
+            # Use Werewolf's client to search for Darkwing (No secret needed)
+            final_data["users"]["darkwing"] = get_friend_status(client_w, "Darkwing69420")
+        except Exception as e:
+            print(f"Error fetching Werewolf data: {e}")
+
+    # 2. Process Ray (Full Data)
+    if ray_npsso:
+        try:
+            client_r = PSNAWP(ray_npsso)
+            final_data["users"]["ray"] = get_full_user_data(client_r)
+        except Exception as e:
+            print(f"Error fetching Ray data: {e}")
+
+    # Save to JSON file
+    with open("psn_data.json", "w") as f:
+        json.dump(final_data, f, indent=2)
+    print("Successfully updated psn_data.json")
+
+if __name__ == "__main__":
+    main()
