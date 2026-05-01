@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <style>
+        @import url(https://fonts.googleapis.com/css?family=Roboto:700,900);
+        * { box-sizing: border-box; }
+        html, body { height: 100%; width: 100%; margin: 0; padding: 0; overflow: hidden; background: transparent; font-family: 'Roboto', sans-serif; }
+
+        /* THE TRIBUTE BAR */
+        #tribute-bar {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            display: none; align-items: center; gap: 20px;
+            background: linear-gradient(180deg, rgba(30,30,30,0.98) 0%, rgba(0,0,0,0.95) 100%); 
+            padding: 12px 40px; border-bottom: 4px solid #FFD700; border-radius: 0 0 20px 20px;
+            color: white; z-index: 1000; box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            overflow: hidden;
+        }
+        #tribute-bar::after {
+            content: ""; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transform: skewX(-25deg); animation: shine 4s infinite;
+        }
+        @keyframes shine { 100% { left: 200%; } }
+
+        /* HUD & BRANDING */
+        .top-right-hub { position: absolute; top: 20px; right: 40px; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; z-index: 100; }
+        .info-pill { background: rgba(0,0,0,0.85); border-right: 6px solid #FF5F1F; padding: 8px 22px; color: white; font-weight: 900; border-radius: 4px; display: flex; align-items: center; gap: 15px; }
+        .brand-footer { position: absolute; bottom: 30px; right: 40px; display: flex; align-items: center; gap: 20px; z-index: 100; }
+        .text-stack { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; width: 400px; }
+        #shoutout-display { background: rgba(0,0,0,0.8); border-left: 4px solid #FF5F1F; padding: 10px 15px; color: white; font-size: 15px; text-align: center; border-radius: 4px; width: 100%; font-weight: 700; }
+        #game-name-display { font-size: 26px; font-weight: 900; color: white; text-transform: uppercase; text-shadow: 0 0 10px #000, 0 0 5px #FF5F1F; }
+        .main-logo { height: 110px; width: 110px; border-radius: 50%; border: 4px solid #FF5F1F; background: #000; filter: drop-shadow(0 0 12px #FF5F1F); }
+
+        /* ASSET CRAWLER */
+        #crawler-layer { position: absolute; width: 100%; height: 100%; top: 0; left: 0; pointer-events: none; z-index: 1; }
+        .crawler-asset { position: absolute; pointer-events: none; filter: drop-shadow(0 0 8px rgba(0,0,0,0.6)); opacity: 0; }
+        .flag-asset { height: 40px; width: auto; }
+        .emoji-asset { font-size: 45px; }
+
+        @keyframes driftHorizontal {
+            0% { left: -80px; opacity: 0; }
+            15% { opacity: 0.7; }
+            85% { opacity: 0.7; }
+            100% { left: 105%; opacity: 0; transform: translateY(40px); }
+        }
+
+        /* CHAT LOG */
+        #log { position: absolute; bottom: 30px; left: 40px; width: 350px; display: table; table-layout: fixed; z-index: 100; }
+        .chat-row { display: table-row; }
+        .meta { width: 40%; text-align: right; padding: 8px 10px; background: rgba(0,0,0,0.5); border-left: 4px solid #FF5F1F; color: white; font-weight: 900; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .message { width: 60%; padding: 8px 10px; background: rgba(0,0,0,0.5); color: white; word-wrap: break-word; font-weight: 700; }
+    </style>
+</head>
+<body>
+
+<div id="tribute-bar">
+    <img src="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg" style="height:20px;">
+    <span style="letter-spacing:2px; font-weight:900;">IN HONOR OF OLDMAN - FEB, 2025</span>
+    <img src="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg" style="height:20px;">
+</div>
+
+<div id="crawler-layer"></div>
+
+<div class="top-right-hub">
+    <div class="info-pill" id="theme-pill"><span id="game-icon">🐺</span><span id="local-time">--:--</span><span>| EST</span></div>
+    <div style="background: white; padding: 4px; border-radius: 4px;"><img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=https://www.amazon.com/gp/goldbox?tag=werewolf3788-20"></div>
+</div>
+
+<div class="brand-footer">
+    <div class="text-stack">
+        <div id="game-name-display">SYNCING...</div>
+        <div id="shoutout-display">Scan the QR code to support the Pack! 🛒</div>
+    </div>
+    <img src="https://werewolf.ourflora.com/wp-content/uploads/2025/12/image_2025-12-22_222907634.png" class="main-logo" id="brand-logo">
+</div>
+
+<div id="log"></div>
+
+<script>
+    const flagUrl = "https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg";
+    const config = {
+        user: "werewolf3788",
+        memorialGames: ["red dead", "the hunter", "division"],
+        shoutouts: ["Scan the QR for Deals! 🛒", "Support the Pack! 📦", "Go follow @mjolnirgaming & @terrdog420! 🎮"],
+        themes: {
+            "the hunter": { color: "#228B22", icon: "🌲", assets: ["🦌", "🌲", "🐾"] },
+            "marvel rivals": { color: "#FF8B00", icon: "⚡", assets: ["💥", "⚡", "🦸"] },
+            "default": { color: "#FF5F1F", icon: "🐺", assets: ["🐺", "🐾", "🌙"] }
+        }
+    };
+
+    function getFloatingHolidays(year) {
+        const findNthWeekday = (y, m, n, d) => {
+            let date = new Date(y, m, 1);
+            let count = 0;
+            while (date.getMonth() === m) {
+                if (date.getDay() === d) {
+                    count++;
+                    if (count === n) return new Date(date);
+                }
+                date.setDate(date.getDate() + 1);
+            }
+        };
+        const findLastWeekday = (y, m, d) => {
+            let date = new Date(y, m + 1, 0);
+            while (date.getDay() !== d) date.setDate(date.getDate() - 1);
+            return new Date(date);
+        };
+        return [
+            { name: "Valentines", date: new Date(year, 1, 14), assets: ["❤️", "💖", "💘"], color: "#ff4d6d" },
+            { name: "StPatricks", date: new Date(year, 2, 17), assets: ["☘️", "🍀", "🌈"], color: "#009e60" },
+            { name: "MemorialDay", date: findLastWeekday(year, 4, 1), assets: ["FLAG", "🇺🇸", "🎖️"], color: "#b22234" },
+            { name: "IndependenceDay", date: new Date(year, 6, 4), assets: ["FLAG", "🎆", "🎇"], color: "#002868" },
+            { name: "LaborDay", date: findNthWeekday(year, 8, 1, 1), assets: ["FLAG", "🛠️", "🏗️"], color: "#0055a4" },
+            { name: "Halloween", date: new Date(year, 9, 31), assets: ["🎃", "👻", "🦇"], color: "#ff7518" },
+            { name: "Thanksgiving", date: findNthWeekday(year, 10, 4, 4), assets: ["🦃", "🍂", "🥧"], color: "#8b4513" },
+            { name: "Christmas", date: new Date(year, 11, 25), assets: ["❄️", "🎄", "🎁"], color: "#2f5233" }
+        ];
+    }
+
+    let activeTheme = config.themes.default;
+    let activeHoliday = null;
+
+    async function update() {
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const yearHolidays = getFloatingHolidays(today.getFullYear());
+        
+        activeHoliday = yearHolidays.find(h => {
+            const start = new Date(h.date); start.setDate(start.getDate() - 7);
+            const end = new Date(h.date); end.setDate(end.getDate() + 1);
+            return today >= start && today <= end;
+        });
+
+        try {
+            const res = await fetch(`https://decapi.me/twitch/game/${config.user}?v=${Date.now()}`);
+            const game = (await res.text()).toLowerCase();
+            document.getElementById('game-name-display').innerText = game.toUpperCase();
+            document.getElementById('tribute-bar').style.display = config.memorialGames.some(k => game.includes(k)) ? "flex" : "none";
+
+            activeTheme = config.themes.default;
+            for(let key in config.themes) { if(game.includes(key)) activeTheme = config.themes[key]; }
+            
+            const finalColor = activeHoliday ? activeHoliday.color : activeTheme.color;
+            document.getElementById('theme-pill').style.borderRightColor = finalColor;
+            document.getElementById('brand-logo').style.borderColor = finalColor;
+            document.getElementById('shoutout-display').style.borderLeftColor = finalColor;
+        } catch (e) {}
+    }
+
+    function spawnAsset() {
+        const layer = document.getElementById('crawler-layer');
+        const assetContainer = document.createElement('div');
+        assetContainer.className = 'crawler-asset';
+        
+        const assets = activeHoliday ? activeHoliday.assets : activeTheme.assets;
+        const selected = assets[Math.floor(Math.random() * assets.length)];
+
+        if (selected === "FLAG") {
+            const img = document.createElement('img'); img.src = flagUrl; img.className = "flag-asset"; assetContainer.appendChild(img);
+        } else {
+            assetContainer.innerText = selected; assetContainer.classList.add("emoji-asset");
+        }
+
+        assetContainer.style.top = Math.random() * 70 + 15 + "%";
+        const duration = Math.random() * 5000 + 8000;
+        assetContainer.style.animation = `driftHorizontal ${duration}ms linear forwards`;
+        layer.appendChild(assetContainer);
+        setTimeout(() => assetContainer.remove(), duration + 100);
+    }
+
+    document.addEventListener('onEventReceived', function (obj) {
+        if (obj.detail.listener !== "message-receive") return;
+        const data = obj.detail.event.data;
+        const log = document.getElementById('log');
+        const row = document.createElement('div');
+        row.className = "chat-row";
+        row.innerHTML = `<span class="meta" style="border-left-color: ${activeHoliday ? activeHoliday.color : activeTheme.color}"><span style="color: ${data.color || '#FFF'}">${data.displayName}</span></span><span class="message">${data.text}</span>`;
+        log.appendChild(row);
+        if (log.children.length > 8) log.removeChild(log.children[0]);
+    });
+
+    setInterval(update, 30000); update();
+    setInterval(spawnAsset, 15000);
+    setInterval(() => {
+        document.getElementById('local-time').innerText = new Date().toLocaleTimeString('en-US', { hour:'2-digit', minute:'2-digit', timeZone:'America/New_York' });
+    }, 1000);
+</script>
+</body>
+</html>
