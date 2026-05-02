@@ -3,16 +3,23 @@
     "werewolf": {
       "online": false,
       "currentGame": "Dashboard",
-      "gameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
+      "gameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
       "hours": "--",
-      "progress": 4,
-      "ratio": "1/13",
+      "progress": 25,
+      "ratio": "22/71",
       "recentTrophy": {
-        "name": "Journeyman Engineer",
-        "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/009fa825-3750-4f7a-a4d4-a3693fc62894.png",
-        "game": "Crossout"
+        "name": "Vive La Résistance",
+        "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/1e11ac32-3048-415c-8d47-fcec2230463a.png",
+        "game": "Sniper Elite: Resistance"
       },
       "recentGames": [
+        {
+          "name": "Sniper Elite: Resistance",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
+          "progress": 25,
+          "ratio": "22/71",
+          "hours": "--"
+        },
         {
           "name": "Crossout",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
@@ -40,13 +47,6 @@
           "progress": 3,
           "ratio": "2/45",
           "hours": "--"
-        },
-        {
-          "name": "Call of Duty® Modern Warfare® II",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50314_00/8e558b12-9144-4d7f-a141-5b04943763b4.png",
-          "progress": 0,
-          "ratio": "0/25",
-          "hours": "--"
         }
       ],
       "level": 232,
@@ -57,7 +57,7 @@
         "bronze": 980,
         "total": 1276
       },
-      "lastUpdated": "5/2/2026, 6:24:02 AM"
+      "lastUpdated": "5/2/2026, 8:14:08 AM"
     },
     "ray": {
       "online": false,
@@ -116,7 +116,7 @@
         "bronze": 544,
         "total": 688
       },
-      "lastUpdated": "5/2/2026, 6:24:04 AM"
+      "lastUpdated": "5/2/2026, 8:14:10 AM"
     }
   }
 }
