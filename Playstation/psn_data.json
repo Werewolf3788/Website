@@ -42,6 +42,7 @@
         "trophies": [
           {
             "name": "Sniper Elite",
+            "description": "Obtain all Trophies.",
             "type": "platinum",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/ee0fe762-6a65-4fa8-9a27-c02d337de0d9.png",
             "rarity": "undefined%",
@@ -50,86 +51,98 @@
           },
           {
             "name": "Dam Buster",
+            "description": "Sabotage the Dam and destroy the AA guns.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/7060e573-5ef3-411e-a975-677e6b6ac02e.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "3/11/2025"
+            "earnedDate": "3/11/2025, 9:55:56 PM"
           },
           {
             "name": "Welcome to the Resistance",
+            "description": "Find the Mole and uncover the Superweapon plot.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/4a180d97-6657-4945-9066-a9b5eaee9060.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "6/16/2025"
+            "earnedDate": "6/16/2025, 5:53:48 AM"
           },
           {
             "name": "Trainwreck",
+            "description": "Raid the Hotel Terminus and sabotage the Sonderzüge.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/a483bef5-2738-4092-a524-019e5a44262e.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "6/16/2025"
+            "earnedDate": "6/16/2025, 7:49:06 PM"
           },
           {
             "name": "Bomb Squad",
+            "description": "Ensure Allied secrets remain unknown and confirm the location of Site D.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/86837e42-2a5c-4148-b23b-fe0573f1239e.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "6/17/2025"
+            "earnedDate": "6/17/2025, 11:00:04 PM"
           },
           {
             "name": "Industrial Action",
+            "description": "Destroy the underground chemical weapons plant and cease Kleine Blume production.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/fca05f79-da88-4ed3-9c44-1e3bfd131398.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "6/18/2025"
+            "earnedDate": "6/18/2025, 12:14:40 AM"
           },
           {
             "name": "Blast from the Past",
+            "description": "Infiltrate Fort Rouge and escape before Allied bombers level the site.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/8b480898-bf2e-4198-9d32-bd01cfc62481.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "7/26/2025"
+            "earnedDate": "7/26/2025, 3:39:05 AM"
           },
           {
             "name": "Grapes of Wrath",
+            "description": "Infiltrate the V1 rocket launch site and destroy the Zugwerfer.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/d68ca53b-2500-4e29-b7a5-09d05bf4c419.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "9/28/2025"
+            "earnedDate": "9/28/2025, 11:29:53 PM"
           },
           {
             "name": "Whatever it Takes",
+            "description": "Stop the Zugwerfers from leaving and obliterating the D-Day landings.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/26115f96-aeab-40c1-aa38-a9173be1e236.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "9/29/2025"
+            "earnedDate": "9/29/2025, 1:53:24 AM"
           },
           {
             "name": "Climbing the Ranks",
+            "description": "Reach rank 40.",
             "type": "silver",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/5d54df3f-e030-4210-867d-ef937716a9b7.png",
             "rarity": "undefined%",
             "earned": false,
-            "earnedDate": "--"
+            "earnedDate": "--",
+            "currentValue": "38"
           },
           {
             "name": "Vive La Résistance",
+            "description": "Complete the campaign.",
             "type": "gold",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/1e11ac32-3048-415c-8d47-fcec2230463a.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "9/29/2025"
+            "earnedDate": "9/29/2025, 2:01:12 AM"
           },
           {
             "name": "Crème de la Crème",
+            "description": "Complete the entire campaign on Authentic difficulty.",
             "type": "gold",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/3ab5d4e9-5ec5-4d2b-8427-3a922f3160ce.png",
             "rarity": "undefined%",
@@ -138,14 +151,16 @@
           },
           {
             "name": "Full English",
+            "description": "Complete 11 Optional objectives.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/b678831c-f34e-48b7-82a6-9faf8dc91683.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "9/29/2025"
+            "earnedDate": "9/29/2025, 1:40:08 AM"
           },
           {
             "name": "Hostile Takeover",
+            "description": "Win one Axis Invasion as an Invader.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/2f271c3f-8423-4536-a106-13e185e32716.png",
             "rarity": "undefined%",
@@ -154,6 +169,7 @@
           },
           {
             "name": "Hold the Line",
+            "description": "Defeat an invading Sniper Jager.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/46383227-487b-4bca-a22a-08f6f98ee87c.png",
             "rarity": "undefined%",
@@ -162,6 +178,7 @@
           },
           {
             "name": "Brothers in Arms",
+            "description": "Play one team-based PVP match.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/fb4f95a6-14f7-4da3-b183-6807d88b24dd.png",
             "rarity": "undefined%",
@@ -170,22 +187,25 @@
           },
           {
             "name": "Just a Scratch",
+            "description": "Complete any mission, excluding Mission 1 and Mission 9, on any difficulty without healing.",
             "type": "silver",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/8d432ce6-b456-4e0b-a406-7b84e4c5171e.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "6/17/2025"
+            "earnedDate": "6/17/2025, 11:00:05 PM"
           },
           {
             "name": "Open Surgery",
+            "description": "Hit every Organ at least once with a Rifle.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/3c713fb3-35ed-4e74-92d6-4d7af64b97ca.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "7/26/2025"
+            "earnedDate": "7/26/2025, 1:07:42 AM"
           },
           {
             "name": "Tactician",
+            "description": "Make a Tank shoot and destroy another enemy Vehicle.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/4f3c9d67-5a7c-4199-9f16-c93ffc10e224.png",
             "rarity": "undefined%",
@@ -194,8 +214,488 @@
           },
           {
             "name": "Pistol Perfectionist",
+            "description": "Obtain Six Pistol-related Mastery Medals.",
             "type": "bronze",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/fcc00b1c-4fb1-40e7-8694-6dbf5f2c8cd5.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "0"
+          },
+          {
+            "name": "Secondary Supremacy",
+            "description": "Obtain Eight Secondary-related Mastery Medals.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/cb67a1f1-2356-4933-afa8-9142584cb68f.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "0"
+          },
+          {
+            "name": "Revered with Rifles",
+            "description": "Obtain Seven Rifle-related Mastery Medals.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/9e562f54-4a8f-4e29-ad64-63255f6b8d63.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "0"
+          },
+          {
+            "name": "Master-at-arms",
+            "description": "Become the Master of each Weapon.",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/13ff9bb6-bb8c-483e-a84f-39279fa37f0f.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "0"
+          },
+          {
+            "name": "Gunslinger",
+            "description": "Kill 150 enemies with a Pistol.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/d7537377-2b5f-497b-9b92-942f18c36218.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "88"
+          },
+          {
+            "name": "Skirmisher",
+            "description": "Kill 300 enemies with a Secondary Weapon.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/a055f3b1-92de-491d-8d6f-865a5341cc7a.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "45"
+          },
+          {
+            "name": "Sharpshooter",
+            "description": "Kill 350 enemies with a Rifle.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/a5e508a9-e57c-45d7-b106-3a47cbb4da82.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "9/26/2025, 4:46:15 AM"
+          },
+          {
+            "name": "Going The Distance",
+            "description": "Total kill distance of 100,000 meters.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/e214afe1-a176-4f8d-9c9d-8b2e90b4fe34.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "53338"
+          },
+          {
+            "name": "Blaze of Gory",
+            "description": "Kill 50 enemies with Traps.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/d8c4859d-8c4d-490a-857d-e04d30278cdf.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "9/28/2025, 9:22:31 PM"
+          },
+          {
+            "name": "Eyes on the Prize",
+            "description": "Kill 150 enemies with any weapon while in Iron Sights.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/705f9ed7-4f7c-4e19-a8e5-022022bf32da.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "95"
+          },
+          {
+            "name": "Scoping Mechanism",
+            "description": "Kill 150 enemies with a Rifle while in Iron Sights.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/ac59ac29-cc6c-496d-ae3f-dde1743aa931.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "2"
+          },
+          {
+            "name": "Set to Blow",
+            "description": "Kill 20 soldiers using Booby traps.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/ff3344b1-c770-4a46-a526-129366cc949a.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "9/28/2025, 11:12:14 PM"
+          },
+          {
+            "name": "The Big Guns",
+            "description": "Kill 50 soldiers with Heavy weapons.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85ca6979-95e2-415e-92d8-e273cfd51b8a.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "8"
+          },
+          {
+            "name": "Three Birds One Stone",
+            "description": "Kill 3 on-foot soldiers with one Grenade.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/dc85976b-8af2-46e2-b5a6-ff0b69f26b12.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Jack of All Trades",
+            "description": "Get a kill with 20 different Weapons.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/b6c1242f-96f4-43fd-8c09-1594116baa56.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "6/17/2025, 11:14:23 PM"
+          },
+          {
+            "name": "Das Nuts!",
+            "description": "Get a testicle shot with a Rifle from a distance of 100 meters or more.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/1b149ca3-9521-4b2d-97a9-02732e728938.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Finders Keepers",
+            "description": "Kill 50 enemy soldiers with Found Weapons.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85db4010-19fb-4ef9-9fba-316fb083a533.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "9/28/2025, 9:48:38 PM"
+          },
+          {
+            "name": "Le Fantome",
+            "description": "Achieve 250 Ghost Kills.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/e37e2a78-29d1-44d2-b068-fff76935d6c9.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "9/29/2025, 12:55:33 AM"
+          },
+          {
+            "name": "Silent but Deadly",
+            "description": "Kill 50 enemies during a Sound Mask.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/a64d24cd-2dd1-4266-9192-8996099df5fc.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "9/26/2025, 5:02:16 AM"
+          },
+          {
+            "name": "Knives for a Pro",
+            "description": "Perform 100 lethal Takedowns.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/35e0e190-2ea6-42be-ad05-2060e3d0cede.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "78"
+          },
+          {
+            "name": "Always Greener",
+            "description": "While in Tall Grass, kill 50 Soldiers.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/06af0d61-8178-49e7-b141-61110c1e6eef.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "27"
+          },
+          {
+            "name": "Pen Pal",
+            "description": "Collect 35 Personal Letters.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/cc179f73-ffc5-415a-9252-92f6c63c6590.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "34"
+          },
+          {
+            "name": "Top Secret",
+            "description": "Collect 35 Classified Documents.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/f9b29c1b-ace6-4628-ac80-ba61a18804bb.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "32"
+          },
+          {
+            "name": "Treasure Hunter",
+            "description": "Collect 22 Hidden Items.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/726953a1-4a76-4df5-80f7-f06143634823.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "20"
+          },
+          {
+            "name": "Spread Your Wings",
+            "description": "Destroy 21 Dead-eye Targets.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/0958da41-e682-4115-bea0-31786a2d7110.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "20"
+          },
+          {
+            "name": "Innovator",
+            "description": "Interact with 21 Workbenches.",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/6b09b0fc-4089-4e52-9548-df0867898e02.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "19"
+          },
+          {
+            "name": "Survivalist",
+            "description": "Complete an entire Survival mission.",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/04b57a73-7fd6-48ad-a218-fd16c0e17519.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "File O' Facts",
+            "description": "Recover evidence implicating Resistance members within the Library in Dead Drop.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/31589849-6c41-440d-b09b-b5b3aebc3a60.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "6/16/2025, 5:46:57 AM"
+          },
+          {
+            "name": "Sprung a Leak",
+            "description": "Sabotage the Dam's pump room in Collision Course.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/a92de4e2-35db-4221-aed8-10c2e3a12d2c.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "6/17/2025, 10:29:28 PM"
+          },
+          {
+            "name": "Stopping Traffic",
+            "description": "Destroy the Trucks carrying Kleine Blume ingredients in Devil's Cauldron.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/b76bdd19-1b5b-4ea6-b7b9-4d3b74c984c6.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "6/17/2025, 11:37:37 PM"
+          },
+          {
+            "name": "Lost its way Gnome",
+            "description": "Find the French Resistance Gnome and take a Picture.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/39a37ff8-b8fd-434b-ad41-3ff1230effe2.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Tanks for Nothing!",
+            "description": "Destroy the Panzer Tank in End of the Line.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/72eb9c2b-1b1a-457e-9f7d-071c3df0dc4e.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Mastermind",
+            "description": "Headshot Kruger.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/6774d162-3d85-46ff-b095-752b8399d234.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Propagandist",
+            "description": "Complete all Propaganda missions with a 3 Star Rating.",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/4a960604-d4ea-468d-9f82-094c4ba6c5f9.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Propaganda Machine",
+            "description": "Complete all Propaganda missions with a 3 Star Rating on Authentic difficulty.",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/af483bd5-dc49-43f4-8ead-9c62d4c37da2.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Take 5, and... ACHTUNG!",
+            "description": "Lights, Camera, ACHTUNG! - Kill Hitler 5 times.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/4018f7af-0b58-4e24-bf6e-febf125a4383.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "0"
+          },
+          {
+            "name": "Fast and Fuhrer-less",
+            "description": "Lights, Camera, ACHTUNG! - Kill only Hitler and exfiltrate.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/bac518e6-4b36-49cf-909c-fc434fde2daa.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "He did Nazi-it Coming",
+            "description": "Lights, Camera, ACHTUNG! - Kill Hitler at a distance of 250 meters or more.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/471eebbd-746d-4e3f-828c-bf18783a2fa8.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "0"
+          },
+          {
+            "name": "In The Dead Of Reich",
+            "description": "Lights, Camera, ACHTUNG! - Kill Hitler and exfiltrate without ever being detected.",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/dacc6d59-b57d-4e4b-b7ff-09b17a6e0ceb.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Blockbuster",
+            "description": "Lights, Camera, ACHTUNG! - Complete the mission on Authentic difficulty.",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/53367136-39a8-462a-96a6-d55819b92b19.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "That's a Wrap!",
+            "description": "Lights, Camera, ACHTUNG! - Complete the mission.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/bf42bd27-c74a-4acd-a273-0849530c4e91.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "B-Movie",
+            "description": "Lights, Camera, ACHTUNG! - Complete the mission with a 2 star rating.",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/39b47886-7934-4d3f-9a38-5e33285ca134.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--",
+            "currentValue": "0"
+          },
+          {
+            "name": "Mein Juewel!",
+            "description": "Lights, Camera, ACHTUNG! - Kill Hitler with a testicle shot.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/180b1b68-a0ef-4fc7-a20b-865ca4b876b0.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Mortar Combat",
+            "description": "Vercors Vendetta - Complete the mission.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/06bbca58-f4ea-4e94-8de6-d54f481b0a1e.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Nein-a Blume",
+            "description": "Vercors Vendetta - Complete the mission with a 2 star rating.",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/c72a060e-2214-42da-a2c7-44c0ff03379c.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Vercors' Vengeance",
+            "description": "Vercors Vendetta - Complete the mission on Authentic difficulty.",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/a5eccf74-49b0-4586-8399-e073e1d30ac2.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Vergeltungswaffe",
+            "description": "Striking Range - Complete the mission.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/a2aa76b6-17bd-4e06-b17c-dd3cab9663fc.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Communication Breakdown",
+            "description": "Striking Range - Complete the mission with a 2 star rating.",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/d522d1c9-1dae-4c29-b698-4e1d62edbdea.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Jailbreak",
+            "description": "Striking Range - Complete the mission on Authentic difficulty.",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/fcc5e306-aae3-4152-9393-2d1116960046.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Mis-guided-missile",
+            "description": "Mud and Thunder - Complete the mission.",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/8c6916e3-a40f-49ba-92b1-537ff273d401.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Lethal Love letter",
+            "description": "Mud and Thunder - Complete the mission with a 2 star rating.",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/da8185db-e638-49f2-9e43-c35e4aaeb7fb.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "The Path of Most Resistance",
+            "description": "Mud and Thunder - Complete the mission on Authentic difficulty.",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/05b8da05-8f04-422d-895a-0c33bf512023.png",
             "rarity": "undefined%",
             "earned": false,
             "earnedDate": "--"
@@ -253,7 +753,7 @@
         "bronze": 980,
         "total": 1276
       },
-      "lastUpdated": "5/2/2026, 9:11:34 PM"
+      "lastUpdated": "5/2/2026, 10:00:24 PM"
     },
     "darkwing": {
       "online": false,
@@ -301,30 +801,34 @@
         "trophies": [
           {
             "name": "CLEAR 1 LEVEL",
+            "description": "CLEAR 1 LEVEL",
             "type": "silver",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6a3ac782-b027-4a9c-9b2e-47f6ca3a8759.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "4/27/2026"
+            "earnedDate": "4/27/2026, 4:12:14 PM"
           },
           {
             "name": "CLEAR 5 LEVELS",
+            "description": "CLEAR 5 LEVELS",
             "type": "silver",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/a2b6cd81-f3d0-4a2b-b580-b706b875dd2f.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "4/27/2026"
+            "earnedDate": "4/27/2026, 6:01:07 PM"
           },
           {
             "name": "CLEAR 10 LEVELS",
+            "description": "CLEAR 10 LEVELS",
             "type": "silver",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/c4cc9e52-45e4-41bd-97a3-d1c270ee71e9.png",
             "rarity": "undefined%",
             "earned": true,
-            "earnedDate": "4/27/2026"
+            "earnedDate": "4/27/2026, 9:59:06 PM"
           },
           {
             "name": "CLEAR 15 LEVELS",
+            "description": "CLEAR 15 LEVELS",
             "type": "silver",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/e7c05277-96df-4133-b044-d1d76f07f861.png",
             "rarity": "undefined%",
@@ -333,6 +837,7 @@
           },
           {
             "name": "CLEAR 20 LEVELS",
+            "description": "CLEAR 20 LEVELS",
             "type": "silver",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/5c335c31-75f7-4194-8867-163a13a15071.png",
             "rarity": "undefined%",
@@ -341,6 +846,7 @@
           },
           {
             "name": "CLEAR 30 LEVELS",
+            "description": "CLEAR 30 LEVELS",
             "type": "silver",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6fd426e8-81b3-4b7d-990f-31583f266bf4.png",
             "rarity": "undefined%",
@@ -349,6 +855,7 @@
           },
           {
             "name": "CLEAR 40 LEVELS",
+            "description": "CLEAR 40 LEVELS",
             "type": "silver",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/de222a3e-5ebb-493c-96ba-a1fe844befa0.png",
             "rarity": "undefined%",
@@ -357,6 +864,7 @@
           },
           {
             "name": "CLEAR 50 LEVELS",
+            "description": "CLEAR 50 LEVELS",
             "type": "silver",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/86127749-7a5e-4a71-ae20-83bcb08cd044.png",
             "rarity": "undefined%",
@@ -365,6 +873,7 @@
           },
           {
             "name": "CLEAR 60 LEVELS",
+            "description": "CLEAR 60 LEVELS",
             "type": "silver",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/68c284db-85b4-4d52-ba00-21d5621caa32.png",
             "rarity": "undefined%",
@@ -373,6 +882,7 @@
           },
           {
             "name": "CLEAR 70 LEVELS",
+            "description": "CLEAR 70 LEVELS",
             "type": "silver",
             "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/4b6d04d8-59c7-4280-afcf-808d94619e59.png",
             "rarity": "undefined%",
@@ -432,7 +942,7 @@
         "bronze": 544,
         "total": 688
       },
-      "lastUpdated": "5/2/2026, 9:11:37 PM"
+      "lastUpdated": "5/2/2026, 10:00:28 PM"
     }
   }
 }
