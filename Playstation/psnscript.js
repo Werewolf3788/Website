@@ -66,6 +66,8 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             accountId = search.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
         }
 
+        if (!accountId) return null;
+
         const profile = await getProfileFromAccountId(authorization, accountId);
         const presence = await getPresence(authorization, accountId);
         
@@ -101,9 +103,8 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                         hours: gameHours,
                         trophies: (meta || []).map(m => {
                             const s = earnedStatus.find(x => x.trophyId === m.trophyId);
-                            // DEEP SEARCH FOR 78/100 NUMBERS
                             const current = s?.progress || undefined;
-                            const target = m.trophyProgressTargetValue || m.targetValue || undefined;
+                            const target = m.trophyProgressTargetValue || undefined;
 
                             return {
                                 name: m.trophyName,
@@ -144,7 +145,10 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             },
             lastUpdated: new Date().toLocaleString()
         };
-    } catch (e) { return null; }
+    } catch (e) { 
+        console.error(`[ERR] Sync for ${label} failed: ${e.message}`);
+        return null; 
+    }
 }
 
 async function main() {
@@ -154,36 +158,55 @@ async function main() {
     let finalData = { users: {}, mutualPack: [] };
     const dataPath = path.join(__dirname, "psn_data.json");
 
+    // Load existing data first as a safety backup
     try {
-        const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
-        if (wolfData) finalData.users.werewolf = wolfData;
-
-        const rayDetail = rayToken ? await getFullUserData(rayToken, "Ray", "OneLIVIDMAN") : null;
-        if (rayDetail) finalData.users.ray = rayDetail;
-
-        // FIXED CROSS REFERENCE LOGIC
-        if (wolfData && rayDetail) {
-            console.log("[CROSS-REF] Starting Pack Intersection using resolved Account IDs...");
-            try {
-                const wolfFriends = await getFriendsList(wolfData.auth, wolfData.accountId);
-                const rayFriends = await getFriendsList(rayDetail.auth, rayDetail.accountId);
-                const wIds = (wolfFriends.friends || []).map(f => f.onlineId);
-                const rIds = (rayFriends.friends || []).map(f => f.onlineId);
-                finalData.mutualPack = wIds.filter(id => rIds.includes(id));
-                console.log(`[CROSS-REF] Success! Found ${finalData.mutualPack.length} shared friends.`);
-            } catch (e) { console.log("[CROSS-REF] Blocked by Sony Rate Limit or Account Restriction."); }
-        }
-
-        const auth = wolfData.auth;
-        for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
-            if (finalData.users[key]) continue;
-            try {
-                const search = await makeUniversalSearch(auth, onlineId, "socialAccounts");
-                const accId = search.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
-                if (accId) finalData.users[key] = await getPresence(auth, accId);
-            } catch (e) {}
+        if (fs.existsSync(dataPath)) {
+            const existing = JSON.parse(fs.readFileSync(dataPath));
+            finalData = existing;
         }
     } catch (e) {}
+
+    try {
+        // Kevin Sync
+        const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
+        if (wolfData) {
+            finalData.users.werewolf = wolfData;
+            
+            // Ray Sync (Nested to reuse Wolf's auth if needed)
+            const rayDetail = rayToken ? await getFullUserData(rayToken, "Ray", "OneLIVIDMAN") : null;
+            if (rayDetail) {
+                finalData.users.ray = rayDetail;
+
+                // CROSS REFERENCE (Now crash-proof)
+                console.log("[CROSS-REF] Starting Pack Intersection...");
+                try {
+                    const wolfFriends = await getFriendsList(wolfData.auth, wolfData.accountId);
+                    const rayFriends = await getFriendsList(rayDetail.auth, rayDetail.accountId);
+                    const wIds = (wolfFriends.friends || []).map(f => f.onlineId);
+                    const rIds = (rayFriends.friends || []).map(f => f.onlineId);
+                    finalData.mutualPack = wIds.filter(id => rIds.includes(id));
+                    console.log(`[CROSS-REF] Success! Found ${finalData.mutualPack.length} shared friends.`);
+                } catch (e) { console.log("[CROSS-REF] Blocked by Sony API limits."); }
+            }
+
+            // Sync Squad Presence
+            const auth = wolfData.auth;
+            for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
+                if (key === 'ray') continue;
+                try {
+                    const search = await makeUniversalSearch(auth, onlineId, "socialAccounts");
+                    const accId = search.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
+                    if (accId) finalData.users[key] = await getPresence(auth, accId);
+                } catch (e) {}
+            }
+        } else {
+            console.error("[CRITICAL] Main account sync failed. Aborting write to prevent data loss.");
+            return; 
+        }
+    } catch (e) {
+        console.error("[FATAL] Script error:", e.message);
+        return;
+    }
 
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
     console.log(`[SUCCESS] Data saved to psn_data.json`);
