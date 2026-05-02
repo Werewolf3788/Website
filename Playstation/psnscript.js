@@ -69,7 +69,6 @@ async function getFullUserData(npsso, label, targetOnlineId) {
         const profile = await getProfileFromAccountId(authorization, accountId);
         const presence = await getPresence(authorization, accountId);
         
-        // High-Res Library check
         let playtimeMap = {};
         try {
             const recentlyPlayed = await getRecentlyPlayedGames(authorization, { limit: 50 });
@@ -102,16 +101,20 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                         hours: gameHours,
                         trophies: (meta || []).map(m => {
                             const s = earnedStatus.find(x => x.trophyId === m.trophyId);
+                            // DEEP SEARCH FOR 78/100 NUMBERS
+                            const current = s?.progress || undefined;
+                            const target = m.trophyProgressTargetValue || m.targetValue || undefined;
+
                             return {
                                 name: m.trophyName,
-                                description: m.trophyDetail || "Secret Objective",
+                                description: m.trophyDetail || "Secret Requirement",
                                 type: m.trophyType,
                                 icon: m.trophyIconUrl,
-                                rarity: m.trophyRare ? m.trophyRare + "%" : "Common",
+                                rarity: m.trophyEarnedRate ? m.trophyEarnedRate + "%" : "Common",
                                 earned: s?.earned || false,
                                 earnedDate: s?.earned ? new Date(s.earnedDateTime).toLocaleString() : "--",
-                                currentValue: s?.progress || undefined,
-                                targetValue: m.trophyProgressTargetValue || undefined
+                                currentValue: current,
+                                targetValue: target
                             };
                         })
                     };
@@ -158,20 +161,19 @@ async function main() {
         const rayDetail = rayToken ? await getFullUserData(rayToken, "Ray", "OneLIVIDMAN") : null;
         if (rayDetail) finalData.users.ray = rayDetail;
 
-        // CROSS REFERENCE: Mutual Friends Intersection
+        // FIXED CROSS REFERENCE LOGIC
         if (wolfData && rayDetail) {
-            console.log("[CROSS-REF] Intersecting Kevin & Ray's friends lists...");
+            console.log("[CROSS-REF] Starting Pack Intersection using resolved Account IDs...");
             try {
-                const wolfFriends = await getFriendsList(wolfData.auth, "me");
-                const rayFriends = await getFriendsList(rayDetail.auth, "me");
+                const wolfFriends = await getFriendsList(wolfData.auth, wolfData.accountId);
+                const rayFriends = await getFriendsList(rayDetail.auth, rayDetail.accountId);
                 const wIds = (wolfFriends.friends || []).map(f => f.onlineId);
                 const rIds = (rayFriends.friends || []).map(f => f.onlineId);
                 finalData.mutualPack = wIds.filter(id => rIds.includes(id));
                 console.log(`[CROSS-REF] Success! Found ${finalData.mutualPack.length} shared friends.`);
-            } catch (e) { console.log("[CROSS-REF] Failed due to Sony internal error."); }
+            } catch (e) { console.log("[CROSS-REF] Blocked by Sony Rate Limit or Account Restriction."); }
         }
 
-        // Sync Lobby Status
         const auth = wolfData.auth;
         for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
             if (finalData.users[key]) continue;
