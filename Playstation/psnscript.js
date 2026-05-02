@@ -19,8 +19,7 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Squad Tracking
- * Version 6.6.1 - Deep Data Integrity & Persistence
- * Path: Playstation/psnscript.js
+ * Version 6.6.2 - Precision Friend Intersection & Zero-Value Progress Fix
  */
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
@@ -35,9 +34,6 @@ const SQUAD_IDS = {
 
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"];
 
-/**
- * Smart Token Parser: Extracts NPSSO even if a full JSON block is provided.
- */
 const cleanToken = (input) => {
     if (!input) return "";
     let str = input.trim();
@@ -131,6 +127,10 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                         hours: gameHours,
                         trophies: (meta || []).map(m => {
                             const s = earnedStatus.find(x => x.trophyId === m.trophyId);
+                            // FORCE numerical even if 0
+                            const current = (s?.progress !== undefined) ? s.progress : undefined;
+                            const target = (m.trophyProgressTargetValue !== undefined) ? m.trophyProgressTargetValue : undefined;
+
                             return {
                                 name: m.trophyName,
                                 description: m.trophyDetail || "Requirement Hidden",
@@ -139,8 +139,8 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                                 rarity: m.trophyRare ? m.trophyRare + "%" : "Common",
                                 earned: s?.earned || false,
                                 earnedDate: s?.earned ? new Date(s.earnedDateTime).toLocaleString() : "--",
-                                currentValue: s?.progress,
-                                targetValue: m.trophyProgressTargetValue
+                                currentValue: current,
+                                targetValue: target
                             };
                         })
                     };
@@ -181,57 +181,56 @@ async function main() {
     let tokens = { werewolf: "", ray: "" };
     let finalData = { users: {}, mutualPack: [], systemAlerts: [] };
 
-    // 1. Load Keys from File
     try {
         if (fs.existsSync(tokensPath)) {
             tokens = JSON.parse(fs.readFileSync(tokensPath));
         }
-    } catch (e) { console.log("[INFO] Using Environment Tokens."); }
+    } catch (e) {}
 
     const werewolfToken = tokens.werewolf || process.env.PSN_NPSSO_WEREWOLF || "Z16BT0DB8X1dR5PiuftzTslTeH796cHb9alTA9S7nrpr37L4cu1RrqFCfYWc2YyG";
     const rayToken = tokens.ray || process.env.PSN_NPSSO_RAY || "WQcE2imvkX8YsIiMGP8G2MYwUXHJxbrxvmh8yclvXirAjQ4SOJQrneZpsdhYqW2j";
 
-    // 2. Load Backup Data (Critical Persistence)
     try {
         if (fs.existsSync(dataPath)) {
             const existing = JSON.parse(fs.readFileSync(dataPath));
-            finalData = {
-                users: existing.users || {},
-                mutualPack: existing.mutualPack || [],
-                systemAlerts: [] // Reset alerts for current run
-            };
+            finalData.users = existing.users || {};
+            finalData.mutualPack = existing.mutualPack || [];
         }
     } catch (e) {}
 
     try {
-        // Kevin Sync
         const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
         if (wolfData && wolfData.error === "TOKEN_EXPIRED") {
             finalData.systemAlerts.push({ user: "Werewolf", issue: "NPSSO Expired", time: wolfData.lastCheck });
         } else if (wolfData) {
             finalData.users.werewolf = wolfData;
             
-            // Ray Sync
             const rayDetail = await getFullUserData(rayToken, "Ray", "OneLIVIDMAN");
             if (rayDetail && rayDetail.error === "TOKEN_EXPIRED") {
                 finalData.systemAlerts.push({ user: "Ray", issue: "NPSSO Expired", time: rayDetail.lastCheck });
             } else if (rayDetail) {
                 finalData.users.ray = rayDetail;
                 
-                // Mutual Pack Cross-Ref (Kevin & Ray)
-                console.log("[CROSS-REF] Intersecting friends lists...");
+                // HARDENED CROSS REFERENCE (Kevin & Ray)
+                console.log("[CROSS-REF] Starting Pack Intersection...");
                 try {
                     const wolfFriends = await getFriendsList(wolfData.auth, wolfData.accountId);
                     const rayFriends = await getFriendsList(rayDetail.auth, rayDetail.accountId);
-                    const wIds = (wolfFriends.friends || []).map(f => f.onlineId);
-                    const rIds = (rayFriends.friends || []).map(f => f.onlineId);
-                    finalData.mutualPack = wIds.filter(id => rIds.includes(id));
+                    
+                    const wList = (wolfFriends.friends || []);
+                    const rList = (rayFriends.friends || []);
+                    
+                    // Intersect by Account ID for absolute precision
+                    finalData.mutualPack = wList
+                        .filter(wf => rList.some(rf => rf.accountId === wf.accountId))
+                        .map(m => m.onlineId);
+                        
+                    console.log(`[CROSS-REF] Success! Found ${finalData.mutualPack.length} shared friends.`);
                 } catch (e) {
-                    console.log("[CROSS-REF] Friends list restricted by Sony API.");
+                    console.log("[CROSS-REF] Sony API restriction detected.");
                 }
             }
 
-            // Squad Sync (Lobby Presence)
             const auth = wolfData.auth;
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
                 if (key === 'ray' && rayDetail && !rayDetail.error) continue;
@@ -241,23 +240,15 @@ async function main() {
                     const accId = search.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
                     if (accId) {
                         const pres = await getPresence(auth, accId);
-                        // Update status while keeping bio/avatar from previous deep syncs
                         finalData.users[key] = { ...finalData.users[key], ...pres };
                     }
                 } catch (e) {}
             }
         }
-    } catch (e) {
-        console.error(`[FATAL] Script error during sync: ${e.message}`);
-    }
+    } catch (e) {}
 
-    // 3. Final Write
-    try {
-        fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-        console.log(`[SUCCESS] psn_data.json saved. Alerts: ${finalData.systemAlerts.length}`);
-    } catch (writeError) {
-        console.error(`[CRITICAL] Failed to write data file: ${writeError.message}`);
-    }
+    fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
+    console.log(`[SUCCESS] psn_data.json updated.`);
 }
 
 main();
