@@ -1,18 +1,16 @@
 /**
- * WEREWOLF3788 OFFICIAL NPM-PATTERN SYNC ENGINE v5.0.0
- * Based on the latest psn-api implementation standards.
- * * 1. exchangeNpssoForCode
- * 2. exchangeCodeForAccessToken
- * 3. getProfileFromAccountId -> Resolve ID
- * 4. Scoped Data Fetching
+ * WEREWOLF3788 OFFICIAL NPM-SPEC SYNC ENGINE v5.1.0
+ * * 1. exchangeNpssoForAccessCode (Official)
+ * 2. exchangeAccessCodeForAuthTokens (Official)
+ * 3. getUserPlayedGames (High-Res Playtime)
  */
 
 const psnApi = require("psn-api");
 const fs = require("fs");
 
 const {
-    exchangeNpssoForCode,
-    exchangeCodeForAccessToken,
+    exchangeNpssoForAccessCode,
+    exchangeAccessCodeForAuthTokens,
     getUserTitles,
     getUserTrophyProfileSummary,
     getUserTrophiesEarnedForTitle,
@@ -20,11 +18,11 @@ const {
     getTitleTrophyGroups,
     makeUniversalSearch,
     getProfileFromAccountId,
-    getRecentlyPlayedGames,
+    getUserPlayedGames,
     getPresenceOfUser
 } = psnApi;
 
-// TOKENS (Official NPSSO Pattern)
+// ACTIVE TOKENS
 const TOKENS = {
     werewolf: process.env.PSN_NPSSO_WEREWOLF || "Z16BT0DB8X1dR5PiuftzTslTeH796cHb9alTA9S7nrpr37L4cu1RrqFCfYWc2YyG",
     ray: process.env.PSN_NPSSO_RAY || "VQIj9KP6j1vQzmPEhPMj6rgiFTVREmEYSk7NHbSDlw15YuWmTAsaJztpk1ZqeFix"
@@ -40,6 +38,9 @@ const SQUAD_IDS = {
     unicorn: "UnicornBunnyShiv"
 };
 
+/**
+ * Official ISO 8601 Parser for playDuration (e.g., PT228H56M33S)
+ */
 const parsePlaytime = (duration) => {
     if (!duration) return "0h";
     const h = duration.match(/(\d+)H/);
@@ -47,90 +48,85 @@ const parsePlaytime = (duration) => {
     return `${h ? h[1] + 'h' : ''} ${m ? m[1] + 'm' : ''}`.trim() || "0h";
 };
 
-async function getFullUserData(authorization, label, onlineId) {
-    console.log(`[${label}] Starting Official NPM Flow...`);
+async function getFullUserData(authorization, label) {
+    console.log(`[${label}] Executing Official PSN-API Flow...`);
     
     let data = { 
         lastUpdated: new Date().toLocaleString(),
         online: false,
         currentGame: "Dashboard",
-        platform: "PS5",
         label: label,
         trophies: { total: 0, platinum: 0, gold: 0, silver: 0, bronze: 0 }
     };
 
     try {
-        // Step 1: Resolve the actual numeric Account ID from the Token
-        // This is the NPM recommended way to avoid 'me' restriction issues
+        // 1. Authenticate Profile via Account ID "me"
         const profile = await getProfileFromAccountId(authorization, "me");
-        const accountId = "me"; // 'me' is officially supported for profile calls
-
-        data.avatar = profile.avatarUrls.sort((a, b) => b.size - a.size)[0]?.avatarUrl;
+        data.avatar = profile.avatars.sort((a, b) => parseInt(b.size) - parseInt(a.size))[0]?.url;
         data.plus = profile.isPlus;
         data.bio = profile.aboutMe;
-        console.log(`[${label}] Authenticated as ${profile.onlineId}`);
+        data.onlineId = profile.onlineId;
 
-        // Step 2: Presence & Activity
-        try {
-            const presence = await getPresenceOfUser(authorization, accountId);
-            data.online = presence.primaryPlatformInfo?.onlineStatus === "online";
-            data.currentGame = presence.gameTitleInfoList?.[0]?.titleName || "Dashboard";
-            data.platform = presence.primaryPlatformInfo?.platform?.toUpperCase() || "PS5";
-        } catch (e) { console.log(`[${label}] Presence fetch skipped.`); }
-
-        // Step 3: Global Trophy Summary
-        try {
-            const stats = await getUserTrophyProfileSummary(authorization, accountId);
-            data.level = stats.trophyLevel;
-            data.levelProgress = stats.progress;
-            data.trophies = {
-                total: (stats.earnedTrophies.platinum || 0) + (stats.earnedTrophies.gold || 0) + (stats.earnedTrophies.silver || 0) + (stats.earnedTrophies.bronze || 0),
-                platinum: stats.earnedTrophies.platinum || 0,
-                gold: stats.earnedTrophies.gold || 0,
-                silver: stats.earnedTrophies.silver || 0,
-                bronze: stats.earnedTrophies.bronze || 0
-            };
-            data.trophyPoints = (data.trophies.platinum * 300) + (data.trophies.gold * 90) + (data.trophies.silver * 30) + (data.trophies.bronze * 15);
-        } catch (e) { console.log(`[${label}] Stats fetch restricted.`); }
-
-        // Step 4: High-Res Playtime (The NPM "Recently Played" Pattern)
+        // 2. Fetch High-Res Playtime (Library Method)
         let playtimeMap = {};
         try {
-            const recentlyPlayed = await getRecentlyPlayedGames(authorization, { limit: 15 });
-            const games = recentlyPlayed.data?.gameLibraryTitlesRetrieve?.games || [];
-            games.forEach(g => {
-                playtimeMap[g.name] = parsePlaytime(g.playDuration);
+            const played = await getUserPlayedGames(authorization, "me", { limit: 15 });
+            played.titles.forEach(t => {
+                playtimeMap[t.name] = parsePlaytime(t.playDuration);
             });
-        } catch (e) { console.log(`[${label}] High-res playtime restricted.`); }
+        } catch (e) { console.log(`[${label}] Library playtime restricted.`); }
 
-        // Step 5: Titles & Active Hunt Detail
+        // 3. Fetch Global Stats
         try {
-            const { trophyTitles } = await getUserTitles(authorization, accountId);
+            const stats = await getUserTrophyProfileSummary(authorization, "me");
+            data.level = stats.trophyLevel;
+            data.levelProgress = stats.progress;
+            const et = stats.earnedTrophies;
+            data.trophies = {
+                total: et.platinum + et.gold + et.silver + et.bronze,
+                platinum: et.platinum,
+                gold: et.gold,
+                silver: et.silver,
+                bronze: et.bronze
+            };
+            data.trophyPoints = (et.platinum * 300) + (et.gold * 90) + (et.silver * 30) + (et.bronze * 15);
+        } catch (e) { console.log(`[${label}] Global stats restricted.`); }
+
+        // 4. Fetch Presence
+        try {
+            const p = await getPresenceOfUser(authorization, "me");
+            data.online = p.primaryPlatformInfo?.onlineStatus === "online";
+            data.currentGame = p.gameTitleInfoList?.[0]?.titleName || "Dashboard";
+            data.platform = p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5";
+        } catch (e) { console.log(`[${label}] Presence Restricted.`); }
+
+        // 5. Recent Titles & Mission Log
+        try {
+            const { trophyTitles } = await getUserTitles(authorization, "me");
             if (trophyTitles && trophyTitles.length > 0) {
                 data.recentGames = trophyTitles.slice(0, 6).map(t => ({
                     name: t.trophyTitleName,
                     art: t.trophyTitleIconUrl,
                     progress: t.progress,
-                    ratio: `${(t.earnedTrophies.platinum || 0) + (t.earnedTrophies.gold || 0) + (t.earnedTrophies.silver || 0) + (t.earnedTrophies.bronze || 0)}/${(t.definedTrophies.platinum || 0) + (t.definedTrophies.gold || 0) + (t.definedTrophies.silver || 0) + (t.definedTrophies.bronze || 0)}`,
-                    hours: playtimeMap[t.trophyTitleName] || parsePlaytime(t.playDuration)
+                    ratio: `${t.earnedTrophies.platinum + t.earnedTrophies.gold + t.earnedTrophies.silver + t.earnedTrophies.bronze}/${t.definedTrophies.platinum + t.definedTrophies.gold + t.definedTrophies.silver + t.definedTrophies.bronze}`,
+                    hours: playtimeMap[t.trophyTitleName] || "0h"
                 }));
 
-                // Focus on the top game for the Mission Log
                 const top = trophyTitles[0];
-                const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(authorization, accountId, top.npCommunicationId, "all");
+                const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(authorization, "me", top.npCommunicationId, "all");
                 const { trophies: meta } = await getTitleTrophies(authorization, top.npCommunicationId, "all");
                 const { trophyGroups } = await getTitleTrophyGroups(authorization, top.npCommunicationId, "all");
 
                 data.activeHunt = {
                     title: top.trophyTitleName,
                     hours: data.recentGames[0].hours,
-                    dlcGroups: (trophyGroups || []).map(g => ({
+                    dlcGroups: trophyGroups.map(g => ({
                         name: g.trophyGroupName,
-                        progress: g.progress || 0,
-                        earned: (g.earnedTrophies.gold || 0) + (g.earnedTrophies.silver || 0) + (g.earnedTrophies.bronze || 0),
-                        total: (g.definedTrophies.gold || 0) + (g.definedTrophies.silver || 0) + (g.definedTrophies.bronze || 0)
+                        progress: g.progress,
+                        earned: (g.earnedTrophies.gold + g.earnedTrophies.silver + g.earnedTrophies.bronze),
+                        total: (g.definedTrophies.gold + g.definedTrophies.silver + g.definedTrophies.bronze)
                     })),
-                    trophies: (meta || []).slice(0, 20).map(m => {
+                    trophies: meta.slice(0, 20).map(m => {
                         const s = earnedStatus.find(x => x.trophyId === m.trophyId);
                         return {
                             name: m.trophyName,
@@ -146,7 +142,7 @@ async function getFullUserData(authorization, label, onlineId) {
         } catch (e) { console.log(`[${label}] Title History Restricted.`); }
 
     } catch (e) {
-        console.error(`[${label}] Critical Fail in NPM Flow: ${e.message}`);
+        console.error(`[${label}] Sync Failed: ${e.message}`);
     }
 
     return data;
@@ -155,46 +151,46 @@ async function getFullUserData(authorization, label, onlineId) {
 async function main() {
     let finalData = { users: {} };
 
-    // AUTH KEVIN (WEREWOLF)
+    // SYNC KEVIN (WEREWOLF)
     if (TOKENS.werewolf) {
         try {
-            console.log("--- Executing Kevin Sync ---");
-            const accessCode = await exchangeNpssoForCode(TOKENS.werewolf);
-            const authorization = await exchangeCodeForAccessToken(accessCode);
-            finalData.users.werewolf = await getFullUserData(authorization, "Werewolf", "Werewolf3788");
+            console.log("--- Executing Official Werewolf Auth ---");
+            const accessCode = await exchangeNpssoForAccessCode(TOKENS.werewolf);
+            const authorization = await exchangeAccessCodeForAuthTokens(accessCode);
+            finalData.users.werewolf = await getFullUserData(authorization, "Werewolf");
 
-            // Official Pattern for Friend/Squad Presence
-            console.log("--- Syncing Pack Lobby ---");
+            // Sync Squad Presence
+            console.log("--- Syncing Squad Presence ---");
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
                 try {
                     const search = await makeUniversalSearch(authorization, onlineId, "socialAccounts");
                     const res = search.domainResponses?.[0]?.results?.[0];
                     if (res) {
-                        const targetId = res.socialMetadata.accountId;
-                        const presence = await getPresenceOfUser(authorization, targetId);
+                        const accId = res.socialMetadata.accountId;
+                        const p = await getPresenceOfUser(authorization, accId);
                         finalData.users[key] = {
-                            online: presence.primaryPlatformInfo?.onlineStatus === "online",
-                            currentGame: presence.gameTitleInfoList?.[0]?.titleName || "Offline",
-                            platform: presence.primaryPlatformInfo?.platform?.toUpperCase() || "N/A"
+                            online: p.primaryPlatformInfo?.onlineStatus === "online",
+                            currentGame: p.gameTitleInfoList?.[0]?.titleName || "Offline",
+                            platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "N/A"
                         };
                     }
-                } catch (e) { console.log(`[Squad] Skipping ${onlineId}.`); }
+                } catch (e) { console.log(`[Squad] ${onlineId} Fetch Failed.`); }
             }
-        } catch (e) { console.error("Kevin Authentication Stack Failed."); }
+        } catch (e) { console.error("Kevin Auth Stack Failure."); }
     }
 
-    // AUTH RAY (ONELIVIDMAN)
+    // SYNC RAY
     if (TOKENS.ray) {
         try {
-            console.log("--- Executing Ray Sync ---");
-            const accessCode = await exchangeNpssoForCode(TOKENS.ray);
-            const authorization = await exchangeCodeForAccessToken(accessCode);
-            finalData.users.ray = await getFullUserData(authorization, "Ray", "OneLIVIDMAN");
-        } catch (e) { console.error("Ray Authentication Stack Failed."); }
+            console.log("--- Executing Official Ray Auth ---");
+            const accessCode = await exchangeNpssoForAccessCode(TOKENS.ray);
+            const authorization = await exchangeAccessCodeForAuthTokens(accessCode);
+            finalData.users.ray = await getFullUserData(authorization, "Ray");
+        } catch (e) { console.error("Ray Auth Stack Failure."); }
     }
 
     fs.writeFileSync("psn_data.json", JSON.stringify(finalData, null, 2));
-    console.log("--- Success: Official NPM Data Structure Saved ---");
+    console.log("--- Sync Finalized: psn_data.json is ready ---");
 }
 
 main();
