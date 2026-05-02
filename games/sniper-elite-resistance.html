@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sniper Elite Resistance Master Tracker | Werewolf3788</title>
+    <style>
+        :root {
+            --ser-color: #ff8800; /* Kevin Orange Default */
+            --ser-glow: rgba(255, 136, 0, 0.6);
+            --bg-dark: #050505;
+            --card-bg: rgba(20, 20, 25, 0.95);
+            --nav-height: 60px;
+        }
+
+        /* --- GLOBAL MOBILE SETTINGS (Kevin Preferences) --- */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            background-image: url('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2407270/ss_752a78f3e5c9a0914909a805c8651a0290823528.1920x1080.jpg?t=1738260133');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #ffffff;
+            font-family: ui-sans-serif, system-ui, sans-serif;
+            font-size: 14px; /* User Preference: 14 */
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* User Preference: Header Text 30 */
+        h1, h2 {
+            font-size: 30px; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(10, 10, 10, 1));
+            z-index: -1;
+        }
+
+        /* --- NAVIGATION --- */
+        .master-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--nav-height);
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 2px solid var(--ser-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            font-weight: 900;
+            color: var(--ser-color);
+            text-decoration: none;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px var(--ser-glow);
+        }
+
+        .tracker-container {
+            margin-top: calc(var(--nav-height) + 15px);
+            padding: 10px;
+            width: 95%;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+
+        /* --- OPERATIVE CONSOLE --- */
+        .profile-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 15, 20, 0.95);
+            padding: 15px;
+            border-radius: 1rem;
+            border: 3px solid var(--ser-color);
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px var(--ser-glow);
+            gap: 10px;
+        }
+
+        .hunter-glow { font-size: 1.6rem; font-weight: 900; color: var(--ser-color); text-shadow: 0 0 15px var(--ser-glow); }
+        .profile-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        
+        .profile-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white; padding: 8px 12px; border-radius: 0.5rem; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 11px;
+        }
+        .active-btn { border-color: var(--ser-color); background: rgba(255, 255, 255, 0.15); }
+
+        /* Progress Header */
+        .main-header {
+            background: rgba(10, 0, 0, 0.85); padding: 25px 15px; border-radius: 1.5rem;
+            border: 2px solid var(--ser-color); text-align: center; margin-bottom: 30px;
+        }
+
+        .bar-bg { background: #000; height: 18px; border-radius: 9px; border: 1px solid #333; margin: 15px 0; overflow: hidden; }
+        .bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--ser-color), #fff); transition: width 0.8s ease-out; }
+
+        /* User Preference: Section Height 50 */
+        .category-header {
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; border-left: 8px solid var(--ser-color);
+            padding: 0 15px; background: rgba(20, 20, 25, 0.95);
+            border-radius: 0.5rem; margin-bottom: 5px;
+            height: 50px; 
+        }
+
+        .section-content { overflow: hidden; transition: max-height 0.4s ease; margin-bottom: 20px; }
+        .section-collapsed .section-content { max-height: 0; margin-bottom: 0; }
+
+        .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; padding: 10px 0; }
+
+        .item-card {
+            background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0.8rem; padding: 12px; display: flex; flex-direction: column;
+            justify-content: space-between; min-height: 120px;
+        }
+        .item-card.completed {
+            border-color: var(--ser-color); background: linear-gradient(135deg, rgba(20, 20, 25, 1), rgba(255, 255, 255, 0.05));
+        }
+
+        .item-type-tag { font-size: 8px; padding: 1px 5px; border-radius: 3px; font-weight: 900; text-transform: uppercase; background: #333; color: #aaa; margin-bottom: 5px; width: fit-content; }
+        
+        /* User Preference: Row Height 30 Controls */
+        .toggle-btn, .lock-badge {
+            margin-top: 10px; width: 100%; height: 30px; 
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 5px; font-weight: 900; text-transform: uppercase;
+            border: 1px solid #444; background: #000; color: #fff; cursor: pointer;
+            font-size: 11px;
+        }
+        .lock-badge { border-color: var(--ser-color); color: var(--ser-color); background: rgba(255, 255, 255, 0.03); cursor: default; }
+
+        .tracker-footer { margin-top: 50px; text-align: center; padding-bottom: 40px; opacity: 0.5; font-size: 10px; }
+    </style>
+</head>
+<body id="master-body">
+    <div class="background-overlay"></div>
+
+    <nav class="master-nav">
+        <a href="#" class="nav-logo">SNIPER ELITE: RESISTANCE</a>
+        <div id="stat-line" style="font-family: monospace; font-size: 10px; opacity: 0.6; text-transform: uppercase; color: #aaa;">
+            LINK: INITIALIZING...
+        </div>
+    </nav>
+
+    <div class="tracker-container">
+        <!-- OPERATIVE CONSOLE -->
+        <div class="profile-header">
+            <div class="active-info">
+                <div style="font-size: 0.6rem; text-transform: uppercase; color: #888;">Operative Terminal</div>
+                <span id="hunter-display" class="hunter-glow text-white">KEVIN</span>
+            </div>
+            <div class="profile-actions">
+                <button class="profile-btn active-btn" onclick="appState.switchHunter('Kevin')">Kevin</button>
+                <button class="profile-btn" onclick="appState.switchHunter('Ray')">Ray</button>
+                <button class="profile-btn" onclick="appState.switchHunter('TJ')">TJ</button>
+            </div>
+        </div>
+
+        <header class="main-header">
+            <h2>Platinum Registry</h2>
+            <div id="percent-text" style="font-weight: 900; margin-top: 5px; color: #ccc;">TOTAL COLLECTION: 0%</div>
+            <div class="bar-bg"><div id="overall-bar" class="bar-fill"></div></div>
+        </header>
+
+        <!-- MISSION REGISTRY RENDERS HERE -->
+        <div id="section-container"></div>
+
+        <footer class="tracker-footer">
+            <p>DESIGNED BY WEREWOLF3788 | OPERATIVES: KEVIN, RAY, TJ</p>
+            <p style="margin-top: 5px; font-mono">NODE-PROJECT: game-tracker-5b2ef</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        // --- FIREBASE CONFIGURATION (game-tracker-5b2ef) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
+            authDomain: "game-tracker-5b2ef.firebaseapp.com",
+            databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
+            projectId: "game-tracker-5b2ef",
+            storageBucket: "game-tracker-5b2ef.firebasestorage.app",
+            messagingSenderId: "555667047127",
+            appId: "1:555667047127:web:af6f468ca3cf06759aa692",
+            measurementId: "G-QJ7ZFH25ER"
+        };
+
+        const userThemes = {
+            'Kevin': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
+            'Ray': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
+            'TJ': { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)' }
+        };
+
+        // --- FULL UNSTRIPPED SNIPER ELITE REGISTRY (Missions 1-8 + DLC) ---
+        const sniperData = [
+            { id: 'm1_wb1', cat: '1: Behind Enemy Lines', name: 'Pistol Workbench', type: 'WB', desc: 'Pull wooden boards off the wall in the enemy house.' },
+            
+            { id: 'm2_pl1', cat: '2: Dead Drop', name: 'A Lost Soul Trembles', type: 'PL', desc: 'Church safe (requires key or charge).' },
+            { id: 'm2_pl2', cat: '2: Dead Drop', name: 'Missing You Dearly', type: 'PL', desc: 'Garden area bench west of office.' },
+            { id: 'm2_pl3', cat: '2: Dead Drop', name: 'Surrounded by Idiots', type: 'PL', desc: 'Main library southern desk.' },
+            { id: 'm2_pl4', cat: '2: Dead Drop', name: 'A Withering Tree', type: 'PL', desc: 'Restaurant table southwest.' },
+            { id: 'm2_pl5', cat: '2: Dead Drop', name: "A Nephew's Concern", type: 'PL', desc: 'Bench north of library.' },
+            { id: 'm2_cd1', cat: '2: Dead Drop', name: 'Findings Report', type: 'CD', desc: 'Right tent next to church.' },
+            { id: 'm2_cd2', cat: '2: Dead Drop', name: 'Orders to Follow', type: 'CD', desc: 'Table with radio, bottom floor Vertigo office.' },
+            { id: 'm2_cd3', cat: '2: Dead Drop', name: 'Use the Library', type: 'CD', desc: 'First floor safe in eastern house.' },
+            { id: 'm2_cd4', cat: '2: Dead Drop', name: 'Tightening Security', type: 'CD', desc: 'Restaurant second floor table.' },
+            { id: 'm2_cd5', cat: '2: Dead Drop', name: 'Increased Security', type: 'CD', desc: 'Enclosed tent east of entrance.' },
+            { id: 'm2_hi1', cat: '2: Dead Drop', name: 'Police Report: #222', type: 'HI', desc: 'Library bottom floor western edge.' },
+            { id: 'm2_hi2', cat: '2: Dead Drop', name: 'Police Report: #223', type: 'HI', desc: 'Library top floor small room.' },
+            { id: 'm2_hi3', cat: '2: Dead Drop', name: 'Police Report: #224', type: 'HI', desc: 'Statue room below main entrance.' },
+            { id: 'm2_hi4', cat: '2: Dead Drop', name: 'La Résistance', type: 'HI', desc: 'Tunnel stairs after bridge.' },
+            { id: 'm2_e1', cat: '2: Dead Drop', name: 'Stone Eagle #1', type: 'SE', desc: 'Building right of library entrance.' },
+            { id: 'm2_e2', cat: '2: Dead Drop', name: 'Stone Eagle #2', type: 'SE', desc: 'Top of church.' },
+            { id: 'm2_e3', cat: '2: Dead Drop', name: 'Stone Eagle #3', type: 'SE', desc: 'Top of tower near Vertigo office.' },
+            { id: 'm2_wb1', cat: '2: Dead Drop', name: 'Rifle Workbench', type: 'WB', desc: 'Building behind church, break gate.' },
+            { id: 'm2_wb2', cat: '2: Dead Drop', name: 'Pistol Workbench', type: 'WB', desc: 'Fortress tunnel stairs under fortress.' },
+            { id: 'm2_wb3', cat: '2: Dead Drop', name: 'SMG Workbench', type: 'WB', desc: 'Workshop near Vertigo office.' },
+            { id: 'm2_tr1', cat: '2: Dead Drop', name: "File O' Facts Trophy", type: 'TR', desc: 'Recover library evidence.' },
+
+            { id: 'm3_l1', cat: '3: Sonderzüge Sabotage', name: 'Be Safe, My Dear', type: 'PL', desc: 'Safe inside crashed truck.' },
+            { id: 'm3_l2', cat: '3: Sonderzüge Sabotage', name: 'We Are Everywhere', type: 'PL', desc: 'Third floor central bldg desk.' },
+            { id: 'm3_l3', cat: '3: Sonderzüge Sabotage', name: 'Cross of Lorraine', type: 'PL', desc: 'Optional Obj bldg end room.' },
+            { id: 'm3_l4', cat: '3: Sonderzüge Sabotage', name: 'Missing Her Birthday', type: 'PL', desc: 'Train station 2nd floor bench.' },
+            { id: 'm3_l5', cat: '3: Sonderzüge Sabotage', name: 'The Scars of War', type: 'PL', desc: 'Garden area benches northeast.' },
+            { id: 'm3_d1', cat: '3: Sonderzüge Sabotage', name: 'Gestapo Briefing', type: 'CD', desc: 'Top floor office war table.' },
+            { id: 'm3_d2', cat: '3: Sonderzüge Sabotage', name: 'Hotel Refurbishment', type: 'CD', desc: 'Hotel reception desk.' },
+            { id: 'm3_d3', cat: '3: Sonderzüge Sabotage', name: 'Hotel Storage', type: 'CD', desc: 'Archway ladder top, north.' },
+            { id: 'm3_d4', cat: '3: Sonderzüge Sabotage', name: 'Rail Network Control', type: 'CD', desc: 'Watchtower top near Kill List.' },
+            { id: 'm3_d5', cat: '3: Sonderzüge Sabotage', name: 'Cargo Details', type: 'CD', desc: 'Train station top floor room.' },
+            { id: 'm3_h1', cat: '3: Sonderzüge Sabotage', name: 'Resistance Flag', type: 'HI', desc: 'Optional Obj first floor box.' },
+            { id: 'm3_h2', cat: '3: Sonderzüge Sabotage', name: 'Gestapo ID Badge', type: 'HI', desc: 'Bridge crossing left side box.' },
+            { id: 'm3_h3', cat: '3: Sonderzüge Sabotage', name: 'Le Sniper', type: 'HI', desc: 'Propaganda Poster outside Obj bldg.' },
+            { id: 'm3_e1', cat: '3: Sonderzüge Sabotage', name: 'Stone Eagle #1', type: 'SE', desc: 'Building left of starting gate.' },
+            { id: 'm3_e2', cat: '3: Sonderzüge Sabotage', name: 'Stone Eagle #2', type: 'SE', desc: 'On dome of northern corner bldg.' },
+            { id: 'm3_e3', cat: '3: Sonderzüge Sabotage', name: 'Stone Eagle #3', type: 'SE', desc: 'Above clock on cargo bldg.' },
+            { id: 'm3_wb1', cat: '3: Sonderzüge Sabotage', name: 'Pistol Workbench', type: 'WB', desc: 'Trainyard undercover area upstairs.' },
+            { id: 'm3_wb2', cat: '3: Sonderzüge Sabotage', name: 'Rifle Workbench', type: 'WB', desc: 'Side wall of bldg in Kill List area.' },
+            { id: 'm3_wb3', cat: '3: Sonderzüge Sabotage', name: 'SMG Workbench', type: 'WB', desc: 'Old Town courtyard gate.' },
+
+            { id: 'm4_l1', cat: '4: Collision Course', name: 'A Gift, and a Name', type: 'PL', desc: 'Pinned to tree after vines.' },
+            { id: 'm4_l2', cat: '4: Collision Course', name: 'I Will Miss You', type: 'PL', desc: 'Checkpoint desk.' },
+            { id: 'm4_l3', cat: '4: Collision Course', name: 'What a Discovery', type: 'PL', desc: 'Farmstead fountain shed.' },
+            { id: 'm4_l4', cat: '4: Collision Course', name: 'So Boring!', type: 'PL', desc: 'Main bridge gatling tower.' },
+            { id: 'm4_l5', cat: '4: Collision Course', name: "I'm So Sorry", type: 'PL', desc: 'Ruins north of main objective.' },
+            { id: 'm4_d1', cat: '4: Collision Course', name: 'Transfer Details', type: 'CD', desc: 'Train station 2nd floor desk.' },
+            { id: 'm4_d2', cat: '4: Collision Course', name: 'Requisition Orders', type: 'CD', desc: 'Optional Obj bldg first floor.' },
+            { id: 'm4_d3', cat: '4: Collision Course', name: 'Findings Report', type: 'CD', desc: 'House 2nd floor fireplace.' },
+            { id: 'm4_d4', cat: '4: Collision Course', name: 'Requesting Support', type: 'CD', desc: 'Solitary house upstairs, farmstead.' },
+            { id: 'm4_d5', cat: '4: Collision Course', name: 'Dam Damage Report', type: 'CD', desc: 'Northwestern tent with radio.' },
+            { id: 'm4_h1', cat: '4: Collision Course', name: 'Wine Bottle', type: 'HI', desc: 'Station 2nd floor bar.' },
+            { id: 'm4_h2', cat: '4: Collision Course', name: 'Gas Mask', type: 'HI', desc: 'Intel building basement table.' },
+            { id: 'm4_h3', cat: '4: Collision Course', name: 'Libération', type: 'HI', desc: 'Train track tunnel wall.' },
+            { id: 'm4_e1', cat: '4: Collision Course', name: 'Stone Eagle #1', type: 'SE', desc: 'Left side cliffs before bridge.' },
+            { id: 'm4_e2', cat: '4: Collision Course', name: 'Stone Eagle #2', type: 'SE', desc: 'Left turret start castle.' },
+            { id: 'm4_e3', cat: '4: Collision Course', name: 'Stone Eagle #3', type: 'SE', desc: 'Broken dam metal bars.' },
+            { id: 'm4_wb1', cat: '4: Collision Course', name: 'SMG Workbench', type: 'WB', desc: 'Train station salvaged tech bunker.' },
+            { id: 'm4_wb2', cat: '4: Collision Course', name: 'Pistol Workbench', type: 'WB', desc: 'Farmstead house vine entrance.' },
+            { id: 'm4_wb3', cat: '4: Collision Course', name: 'Rifle Workbench', type: 'WB', desc: 'Bridge building back room.' },
+            { id: 'm4_tr1', cat: '4: Collision Course', name: "Sprung a Leak Trophy", type: 'TR', desc: 'Sabotage pump.' },
+            { id: 'm4_tr2', cat: '4: Collision Course', name: "Gnome Photo Trophy", type: 'TR', desc: 'Photo of Resistance Gnome.' },
+
+            { id: 'm5_l1', cat: "5: Devil's Cauldron", name: 'Location Exposed', type: 'PL', desc: 'Southwest graveyard box.' },
+            { id: 'm5_l2', cat: "5: Devil's Cauldron", name: 'A Childish Party!', type: 'PL', desc: 'Hill checkpoint table.' },
+            { id: 'm5_l3', cat: "5: Devil's Cauldron", name: 'I Miss You So Much', type: 'PL', desc: 'Lighthouse cliff path bench.' },
+            { id: 'm5_l4', cat: "5: Devil's Cauldron", name: 'It Is All in Ruins', type: 'PL', desc: 'Kill List bldg upstairs bed.' },
+            { id: 'm5_l5', cat: "5: Devil's Cauldron", name: 'Be a Man, Not a Boy', type: 'PL', desc: 'Southern barracks table.' },
+            { id: 'm5_d1', cat: "5: Devil's Cauldron", name: 'Scuttle Order', type: 'CD', desc: 'Circular factory room overlook.' },
+            { id: 'm5_d2', cat: "5: Devil's Cauldron", name: "Wilhelm's Folly", type: 'CD', desc: 'U-Boat office upstairs.' },
+            { id: 'm5_d3', cat: "5: Devil's Cauldron", name: 'Classified Cargo', type: 'CD', desc: 'Nazi banner house desk.' },
+            { id: 'm5_d4', cat: "5: Devil's Cauldron", name: 'Intruder Spotted', type: 'CD', desc: 'Railway depot stairs room.' },
+            { id: 'm5_d5', cat: "5: Devil's Cauldron", name: 'Scuttle Instructions', type: 'CD', desc: 'Underground bunker safe.' },
+            { id: 'm5_h1', cat: "5: Devil's Cauldron", name: 'Playing Cards', type: 'HI', desc: 'Road bend lit barrel.' },
+            { id: 'm5_h2', cat: "5: Devil's Cauldron", name: 'Laboratory ID', type: 'HI', desc: 'Factory area yellow door.' },
+            { id: 'm5_h3', cat: "5: Devil's Cauldron", name: 'Le Maquis Voit Tout!', type: 'HI', desc: 'Southwestern church wall.' },
+            { id: 'm5_e1', cat: "5: Devil's Cauldron", name: 'Stone Eagle #1', type: 'SE', desc: 'Top of lighthouse.' },
+            { id: 'm5_e2', cat: "5: Devil's Cauldron", name: 'Stone Eagle #2', type: 'SE', desc: 'Above bridge ladders.' },
+            { id: 'm5_e3', cat: "5: Devil's Cauldron", name: 'Stone Eagle #3', type: 'SE', desc: 'Top of giant crane.' },
+            { id: 'm5_wb1', cat: "5: Devil's Cauldron", name: 'Rifle Workbench', type: 'WB', desc: 'Southwest church basement.' },
+            { id: 'm5_wb2', cat: "5: Devil's Cauldron", name: 'Pistol Workbench', type: 'WB', desc: 'Factory 2nd floor locked door.' },
+            { id: 'm5_wb3', cat: "5: Devil's Cauldron", name: 'SMG Workbench', type: 'WB', desc: 'Southern road tunnel room.' },
+            { id: 'm5_tr1', cat: "5: Devil's Cauldron", name: 'Stopping Traffic Trophy', type: 'TR', desc: 'Destroy 4 tanker trucks.' },
+
+            { id: 'm6_l1', cat: '6: Assault on Fort Rouge', name: 'Just Do Your Job.', type: 'PL', desc: 'Ruined house north of entrance.' },
+            { id: 'm6_l2', cat: '6: Assault on Fort Rouge', name: 'I Am Fed Up', type: 'PL', desc: 'Church safe table.' },
+            { id: 'm6_l3', cat: '6: Assault on Fort Rouge', name: 'Something Is Strange', type: 'PL', desc: 'Zig-zag road rubble bldg.' },
+            { id: 'm6_l4', cat: '6: Assault on Fort Rouge', name: 'Beautiful Views', type: 'PL', desc: 'Fortress roof ladder path.' },
+            { id: 'm6_l5', cat: '6: Assault on Fort Rouge', name: 'Fools Everywhere', type: 'PL', desc: 'Pink house checkpoint table.' },
+            { id: 'm6_d1', cat: '6: Assault on Fort Rouge', name: 'Roof Weakness Found', type: 'CD', desc: 'Kill List bldg second floor desk.' },
+            { id: 'm6_d2', cat: '6: Assault on Fort Rouge', name: 'Defend Our Skies', type: 'CD', desc: 'Second garden greenhouse table.' },
+            { id: 'm6_d3', cat: '6: Assault on Fort Rouge', name: 'Ready on Your Order', type: 'CD', desc: 'Hill fortress stairs room.' },
+            { id: 'm6_d4', cat: '6: Assault on Fort Rouge', name: 'No Retreat', type: 'CD', desc: 'Radio tower safe corridor.' },
+            { id: 'm6_d5', cat: '6: Assault on Fort Rouge', name: "Schoene's Notes", type: 'CD', desc: 'Hangar bunker room left room.' },
+            { id: 'm6_h1', cat: '6: Assault on Fort Rouge', name: 'Todt Uniform Badge', type: 'HI', desc: 'Underground corridor table.' },
+            { id: 'm6_h2', cat: '6: Assault on Fort Rouge', name: 'Committee C Map', type: 'HI', desc: 'Underground hangar photo.' },
+            { id: 'm6_h3', cat: '6: Assault on Fort Rouge', name: 'Prende Le Maquis', type: 'HI', desc: 'Southern corner wall.' },
+            { id: 'm6_e1', cat: '6: Assault on Fort Rouge', name: 'Stone Eagle #1', type: 'SE', desc: 'Western side of the abbey.' },
+            { id: 'm6_e2', cat: '6: Assault on Fort Rouge', name: 'Stone Eagle #2', type: 'SE', desc: 'Building near main gate.' },
+            { id: 'm6_e3', cat: '6: Assault on Fort Rouge', name: 'Stone Eagle #3', type: 'SE', desc: 'Fortress wall corner hole.' },
+            { id: 'm6_wb1', cat: '6: Assault on Fort Rouge', name: 'Rifle Workbench', type: 'WB', desc: 'Underground hangar door path.' },
+            { id: 'm6_wb2', cat: '6: Assault on Fort Rouge', name: 'SMG Workbench', type: 'WB', desc: 'Town eastern stairs.' },
+            { id: 'm6_wb3', cat: '6: Assault on Fort Rouge', name: 'Pistol Workbench', type: 'WB', desc: 'Abbey grounds shed.' },
+
+            { id: 'm7_pl1', cat: '7: Lock, Stock and Barrels', name: 'What Do They Want?', type: 'PL', desc: 'Southern edge building table.' },
+            { id: 'm7_cd1', cat: '7: Lock, Stock and Barrels', name: 'A Service Hatch', type: 'CD', desc: 'Main Nazi bldg bedroom.' },
+            { id: 'm7_hi1', cat: '7: Lock, Stock and Barrels', name: 'Engraved Lighter', type: 'HI', desc: 'SE house from main bldg.' },
+            { id: 'm7_g1', cat: '7: Lock, Stock and Barrels', name: 'Gnome #1 (Slope)', type: 'GN', desc: 'Slope near stone wall.' },
+            { id: 'm7_g2', cat: '7: Lock, Stock and Barrels', name: 'Gnome #2 (Wheel)', type: 'GN', desc: 'Stone wall near mill wheel.' },
+            { id: 'm7_g3', cat: '7: Lock, Stock and Barrels', name: 'Gnome #3 (Island)', type: 'GN', desc: 'Small lake island.' },
+            { id: 'm7_g4', cat: '7: Lock, Stock and Barrels', name: 'Gnome #4 (Rock)', type: 'GN', desc: 'On a rock in the pond.' },
+            { id: 'm7_g5', cat: '7: Lock, Stock and Barrels', name: 'Gnome #5 (Barrow)', type: 'GN', desc: 'Wheelbarrows near yellow post.' },
+            { id: 'm7_g6', cat: '7: Lock, Stock and Barrels', name: 'Gnome #6 (Roof)', type: 'GN', desc: 'In a hole of the roof.' },
+            { id: 'm7_g7', cat: '7: Lock, Stock and Barrels', name: 'Gnome #7 (Flower)', type: 'GN', desc: 'Split tree in circular bed.' },
+            { id: 'm7_g8', cat: '7: Lock, Stock and Barrels', name: 'Gnome #8 (Planter)', type: 'GN', desc: 'Corner of vegetable planter.' },
+            { id: 'm7_g9', cat: '7: Lock, Stock and Barrels', name: 'Gnome #9 (Barrel)', type: 'GN', desc: 'Fruit barrel apple tree.' },
+            { id: 'm7_g10', cat: '7: Lock, Stock and Barrels', name: 'Gnome #10 (Garden)', type: 'GN', desc: 'Back garden bed.' },
+
+            { id: 'm8_pl1', cat: '8: End of the Line', name: 'Victory Is Imminent!', type: 'PL', desc: 'SE edge house top floor.' },
+            { id: 'm8_tr1', cat: '8: End of the Line', name: 'Tanks for Nothing!', type: 'TR', desc: 'Destroy the Panzer tank.' },
+            
+            { id: 'dv_pl1', cat: 'DLC: Vercors Vendetta', name: 'No Brother of Mine', type: 'PL', desc: 'Starting house bottom floor box.' },
+            { id: 'dv_e1', cat: 'DLC: Vercors Vendetta', name: 'Stone Eagle #1', type: 'SE', desc: 'Western clifftop building top.' }
+        ];
+
+        const appState = {
+            activeHunter: 'Kevin',
+            hunterData: [],
+            collapsedSections: {}, 
+            db: null, auth: null, user: null, unsub: null,
+
+            init: async function() {
+                // IMMEDIATELY render local list so screen isn't blank
+                this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
+                this.render();
+
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    this.auth = getAuth(app);
+                    this.db = getFirestore(app);
+                    
+                    await signInAnonymously(this.auth);
+
+                    onAuthStateChanged(this.auth, async (u) => {
+                        this.user = u;
+                        if (u) {
+                            document.getElementById('stat-line').innerText = `ID: ${u.uid.substring(0,8)}...`;
+                            // BOOTSTRAP: Ensure the structure exists in the console immediately
+                            await this.bootstrapUsers();
+                        } else {
+                            document.getElementById('stat-line').innerText = `OFFLINE`;
+                        }
+                        this.loadHunter(this.activeHunter);
+                    });
+                } catch (e) { 
+                    console.error("Firebase Init Error:", e);
+                    document.getElementById('stat-line').innerText = "LINK FAILED: CHECK CONFIG"; 
+                }
+            },
+
+            // Ensures folders appear in Firebase Console immediately for the squad
+            bootstrapUsers: async function() {
+                const names = ['Kevin', 'Ray', 'TJ'];
+                for (const name of names) {
+                    const path = `artifacts/sniper-elite-resistance/data/public/user/${name}`;
+                    const docRef = doc(this.db, path);
+                    const snap = await getDoc(docRef);
+                    if (!snap.exists()) {
+                        await setDoc(docRef, { 
+                            initialized: true, 
+                            hunterName: name, 
+                            progress: sniperData.map(i => ({ id: i.id, collected: false })) 
+                        });
+                    }
+                }
+            },
+
+            loadHunter: function(name) {
+                this.activeHunter = name;
+                document.getElementById('hunter-display').innerText = name.toUpperCase();
+                
+                const theme = userThemes[name] || userThemes['Kevin'];
+                document.documentElement.style.setProperty('--ser-color', theme.color);
+                document.documentElement.style.setProperty('--ser-glow', theme.glow);
+
+                document.querySelectorAll('.profile-btn').forEach(b => {
+                    b.classList.remove('active-btn');
+                    if(b.innerText === name) b.classList.add('active-btn');
+                });
+
+                if (this.unsub) this.unsub();
+
+                const path = `artifacts/sniper-elite-resistance/data/public/user/${name}`;
+                const docRef = doc(this.db, path);
+                
+                this.unsub = onSnapshot(docRef, (snap) => {
+                    if (snap.exists()) {
+                        const saved = snap.data().progress || [];
+                        this.hunterData = sniperData.map(item => {
+                            const status = saved.find(s => s.id === item.id);
+                            return { ...item, collected: status ? status.collected : false };
+                        });
+                        this.render();
+                    }
+                }, (err) => { 
+                    console.error("Snapshot Error:", err);
+                    document.getElementById('stat-line').innerText = "ACCESS_DENIED"; 
+                });
+            },
+
+            render: function() {
+                const container = document.getElementById('section-container');
+                container.innerHTML = '';
+                const cats = [...new Set(this.hunterData.map(i => i.cat))];
+                let totalCollected = 0;
+
+                cats.forEach(cat => {
+                    const items = this.hunterData.filter(i => i.cat === cat);
+                    const collectedCount = items.filter(i => i.collected).length;
+                    totalCollected += collectedCount;
+
+                    const sectionId = cat.replace(/[^a-z0-9]/gi, '');
+                    const isCollapsed = this.collapsedSections[sectionId] !== false; 
+
+                    const section = document.createElement('div');
+                    section.className = `category-section ${isCollapsed ? 'section-collapsed' : ''}`;
+                    section.innerHTML = `
+                        <div class="category-header" onclick="appState.toggleSection('${sectionId}')">
+                            <h2>${cat}</h2>
+                            <div style="font-weight:900; font-size: 14px; color: var(--ser-color);">${collectedCount}/${items.length}</div>
+                        </div>
+                        <div class="section-content">
+                            <div class="item-grid"></div>
+                        </div>
+                    `;
+
+                    const grid = section.querySelector('.item-grid');
+                    items.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = `item-card ${item.collected ? 'completed' : ''}`;
+                        card.innerHTML = `
+                            <div>
+                                <div class="item-type-tag">${item.type}</div>
+                                <div style="font-weight:900; font-size:14px; margin-bottom:4px;">${item.name}</div>
+                                <div style="font-size:11px; color:#aaa; font-style:italic; line-height:1.2;">${item.desc}</div>
+                            </div>
+                            ${item.collected ? `<div class="lock-badge">COLLECTED</div>` : `<button class="toggle-btn" onclick="appState.toggleItem('${item.id}')">Confirm Found</button>`}
+                        `;
+                        grid.appendChild(card);
+                    });
+                    container.appendChild(section);
+                });
+
+                const percent = Math.round((totalCollected / this.hunterData.length) * 100) || 0;
+                document.getElementById('overall-bar').style.width = percent + '%';
+                document.getElementById('percent-text').innerText = `TOTAL COLLECTION: ${percent}%`;
+            },
+
+            toggleItem: async function(id) {
+                const item = this.hunterData.find(i => i.id === id);
+                item.collected = !item.collected;
+                this.render(); 
+                this.sync();
+            },
+
+            toggleSection: function(id) {
+                const current = this.collapsedSections[id] !== false;
+                this.collapsedSections[id] = !current;
+                this.render();
+            },
+
+            switchHunter: function(name) { this.loadHunter(name); },
+
+            sync: async function() {
+                if (!this.user) return;
+                const path = `artifacts/sniper-elite-resistance/data/public/user/${this.activeHunter}`;
+                const ref = doc(this.db, path);
+                const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
+                try {
+                    await setDoc(ref, { progress, lastUpdate: Date.now() }, { merge: true });
+                } catch (err) { 
+                    console.error("Sync Error:", err);
+                    document.getElementById('stat-line').innerText = "WRITE_FAILURE"; 
+                }
+            }
+        };
+
+        window.appState = appState;
+        appState.init();
+    </script>
+</body>
+</html>
