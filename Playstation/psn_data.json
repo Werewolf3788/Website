@@ -1,3 +1,24 @@
 {
-  "users": {}
+  "users": {
+    "darkwing": {
+      "online": false,
+      "currentGame": ""
+    },
+    "phoenix": {
+      "online": false,
+      "currentGame": ""
+    },
+    "elucidator": {
+      "online": false,
+      "currentGame": ""
+    },
+    "jcrow": {
+      "online": false,
+      "currentGame": ""
+    },
+    "unicorn": {
+      "online": false,
+      "currentGame": ""
+    }
+  }
 }
