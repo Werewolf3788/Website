@@ -253,7 +253,7 @@
         "bronze": 980,
         "total": 1276
       },
-      "lastUpdated": "5/2/2026, 9:06:34 PM"
+      "lastUpdated": "5/2/2026, 9:11:34 PM"
     },
     "darkwing": {
       "online": false,
@@ -262,7 +262,7 @@
     },
     "phoenix": {
       "online": false,
-      "currentGame": ""
+      "currentGame": "Private"
     },
     "elucidator": {
       "online": false,
@@ -432,7 +432,7 @@
         "bronze": 544,
         "total": 688
       },
-      "lastUpdated": "5/2/2026, 9:06:36 PM"
+      "lastUpdated": "5/2/2026, 9:11:37 PM"
     }
   }
 }
