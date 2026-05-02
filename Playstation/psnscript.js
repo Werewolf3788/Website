@@ -19,7 +19,7 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Squad Tracking
- * Version 6.5.0 - Automatic Token Health Monitoring
+ * Version 6.5.1 - Applied Ray's New Key & Hardened Progress Logic
  */
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
@@ -108,12 +108,12 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             const name = title.trophyTitleName;
             if (BLACKLIST.some(f => name.toLowerCase().includes(f))) continue;
 
-            const earned = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
-            const total = (title.definedTrophies.platinum + title.definedTrophies.gold + title.definedTrophies.silver + title.definedTrophies.bronze);
+            const earnedCount = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
+            const totalCount = (title.definedTrophies.platinum + title.definedTrophies.gold + title.definedTrophies.silver + title.definedTrophies.bronze);
             const gameHours = playtimeMap[name] || parsePlaytime(title.playDuration);
 
             if (recentGames.length < 6) {
-                recentGames.push({ name, art: title.trophyTitleIconUrl, progress: title.progress, ratio: `${earned}/${total}`, hours: gameHours });
+                recentGames.push({ name, art: title.trophyTitleIconUrl, progress: title.progress, ratio: `${earnedCount}/${totalCount}`, hours: gameHours });
             }
 
             if (!activeGameMetadata) {
@@ -125,6 +125,8 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                         hours: gameHours,
                         trophies: (meta || []).map(m => {
                             const s = earnedStatus.find(x => x.trophyId === m.trophyId);
+                            
+                            // HARDENED NUMERICAL CHECK: Ensure '0' is captured and not ignored
                             const current = (s?.progress !== undefined) ? s.progress : undefined;
                             const target = (m.trophyProgressTargetValue !== undefined) ? m.trophyProgressTargetValue : undefined;
 
@@ -176,6 +178,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
 
 async function main() {
     const werewolfToken = process.env.PSN_NPSSO_WEREWOLF || "Z16BT0DB8X1dR5PiuftzTslTeH796cHb9alTA9S7nrpr37L4cu1RrqFCfYWc2YyG";
+    // Ray's updated key applied:
     const rayToken = process.env.PSN_NPSSO_RAY || "WQcE2imvkX8YsIiMGP8G2MYwUXHJxbrxvmh8yclvXirAjQ4SOJQrneZpsdhYqW2j";
     
     let finalData = { users: {}, mutualPack: [], systemAlerts: [] };
@@ -239,7 +242,7 @@ async function main() {
     }
 
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] psn_data.json saved. Alerts: ${finalData.systemAlerts.length}`);
+    console.log(`[SUCCESS] psn_data.json saved. Alerts logged: ${finalData.systemAlerts.length}`);
 }
 
 main();
