@@ -1,6 +1,6 @@
 /**
- * WEREWOLF3788 FAIL-SAFE SYNC ENGINE v4.9.7
- * Fixes: "Bad Request (path: accountId)" by resolving "me" to numeric ID
+ * WEREWOLF3788 FAIL-SAFE SYNC ENGINE v4.9.8
+ * Fixes: Undefined '0' crash in account resolution
  */
 const psnApi = require("psn-api");
 const fs = require("fs");
@@ -29,7 +29,7 @@ const TOKENS = {
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
     darkwing: "Darkwing69420",
-    phoenix: "phoenix_darkfire",
+    phoenix: "joe-punk_",
     elucidator: "ElucidatorVah",
     jcrow: "JCrow207",
     unicorn: "UnicornBunnyShiv"
@@ -55,28 +55,44 @@ async function getFullUserData(auth, label) {
         console.log(`[${label}] Resolving numeric Account ID...`);
         
         /**
-         * STEP 1: RESOLVE ID
-         * We use getUserTrophyProfileSummary because it is one of the few 
-         * endpoints that still reliably accepts "me".
+         * STEP 1: RESOLVE ID SAFELY
          */
-        const selfSummary = await getUserTrophyProfileSummary(auth, "me");
-        // We fetch the profile to get the avatar and bio using the resolved logic
-        // If "me" fails here, we use a search fallback
         let myId = "me"; 
+        let selfSummary;
 
         try {
+            // This is the most reliable endpoint for "me"
+            selfSummary = await getUserTrophyProfileSummary(auth, "me");
+        } catch (e) {
+            console.log(`[${label}] Trophy Summary failed with 'me'. Account might be restricted.`);
+        }
+
+        try {
+            // Attempt to get profile with 'me'
             const profile = await getProfileFromAccountId(auth, "me");
             data.avatar = profile.avatarUrls.sort((a, b) => b.size - a.size)[0]?.avatarUrl;
             data.plus = profile.isPlus;
             data.bio = profile.aboutMe;
         } catch (e) {
-            console.log(`[${label}] Standard profile call failed, attempting search-based resolution...`);
-            const searchSelf = await makeUniversalSearch(auth, label === "Werewolf" ? "Werewolf3788" : "OneLIVIDMAN", "socialAccounts");
-            myId = searchSelf.domainResponses[0].results[0].socialMetadata.accountId;
+            console.log(`[${label}] Profile call failed with 'me', attempting search resolution...`);
+            const onlineId = label === "Werewolf" ? "Werewolf3788" : "OneLIVIDMAN";
+            const searchSelf = await makeUniversalSearch(auth, onlineId, "socialAccounts");
+            
+            // CRASH PROTECTION: Check if search results exist before accessing [0]
+            const results = searchSelf.domainResponses?.[0]?.results;
+            if (results && results.length > 0) {
+                myId = results[0].socialMetadata.accountId;
+                console.log(`[${label}] ID Resolved via Search: ${myId}`);
+                
+                // Retry profile with numeric ID
+                const profile = await getProfileFromAccountId(auth, myId);
+                data.avatar = profile.avatarUrls.sort((a, b) => b.size - a.size)[0]?.avatarUrl;
+                data.plus = profile.isPlus;
+                data.bio = profile.aboutMe;
+            } else {
+                console.log(`[${label}] Warning: Search returned no results for ${onlineId}.`);
+            }
         }
-
-        // Now that we have a stable ID (either "me" if supported or numeric), continue
-        console.log(`[${label}] ID Resolved. Fetching remaining data...`);
 
         // 2. Presence
         try {
@@ -84,20 +100,22 @@ async function getFullUserData(auth, label) {
             data.online = p.primaryPlatformInfo?.onlineStatus === "online";
             data.currentGame = p.gameTitleInfoList?.[0]?.titleName || "Dashboard";
             data.platform = p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5";
-        } catch (e) { console.log(`[${label}] Presence data skipped.`); }
+        } catch (e) { console.log(`[${label}] Presence data unavailable.`); }
 
-        // 3. Trophy Stats (Already have summary from Step 1)
-        data.level = selfSummary.trophyLevel;
-        data.levelProgress = selfSummary.progress;
-        const et = selfSummary.earnedTrophies;
-        data.trophies = {
-            total: et.platinum + et.gold + et.silver + et.bronze,
-            platinum: et.platinum,
-            gold: et.gold,
-            silver: et.silver,
-            bronze: et.bronze
-        };
-        data.trophyPoints = (et.platinum * 300) + (et.gold * 90) + (et.silver * 30) + (et.bronze * 15);
+        // 3. Trophy Stats
+        if (selfSummary) {
+            data.level = selfSummary.trophyLevel;
+            data.levelProgress = selfSummary.progress;
+            const et = selfSummary.earnedTrophies;
+            data.trophies = {
+                total: et.platinum + et.gold + et.silver + et.bronze,
+                platinum: et.platinum,
+                gold: et.gold,
+                silver: et.silver,
+                bronze: et.bronze
+            };
+            data.trophyPoints = (et.platinum * 300) + (et.gold * 90) + (et.silver * 30) + (et.bronze * 15);
+        }
 
         // 4. Recently Played
         let playtimeMap = {};
@@ -166,15 +184,15 @@ async function main() {
             const auth = await exchangeCodeForAccessToken(code);
             finalData.users.werewolf = await getFullUserData(auth, "Werewolf");
             
-            // Sync Squad using Werewolf Auth
+            // Sync Squad Status
             console.log("--- Syncing Squad Status ---");
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
                 try {
                     const search = await makeUniversalSearch(auth, onlineId, "socialAccounts");
-                    const result = search.domainResponses?.[0]?.results?.[0];
+                    const results = search.domainResponses?.[0]?.results;
                     
-                    if (result) {
-                        const accId = result.socialMetadata.accountId;
+                    if (results && results.length > 0) {
+                        const accId = results[0].socialMetadata.accountId;
                         const p = await getPresenceOfUser(auth, accId);
                         finalData.users[key] = {
                             online: p.primaryPlatformInfo?.onlineStatus === "online",
@@ -187,7 +205,7 @@ async function main() {
         } catch (e) { console.error("Werewolf Primary Sync Failed."); }
     }
 
-    // SYNC RAY (If token exists)
+    // SYNC RAY
     if (TOKENS.ray) {
         try {
             console.log("--- Syncing Ray ---");
