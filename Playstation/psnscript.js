@@ -1,7 +1,7 @@
 /**
- * WEREWOLF3788 OFFICIAL NPM-SPEC SYNC ENGINE v5.2.0
+ * WEREWOLF3788 OFFICIAL NPM-SPEC SYNC ENGINE v5.2.1
+ * Fixes: "Bad Request (path: accountId)" by forcing OnlineID resolution
  * Optimized for psn-api v2.18.0 + Node 20
- * * Kevin (Admin) & Ray Sync Logic
  */
 
 const psnApi = require("psn-api");
@@ -48,7 +48,7 @@ const parsePlaytime = (duration) => {
 };
 
 async function getFullUserData(authorization, label, onlineId) {
-    console.log(`[${label}] Initializing v2.18.0 Sync Flow...`);
+    console.log(`[${label}] Starting v5.2.1 Resolution Handshake...`);
     
     let data = { 
         lastUpdated: new Date().toLocaleString(),
@@ -59,24 +59,28 @@ async function getFullUserData(authorization, label, onlineId) {
     };
 
     try {
-        // STEP 1: RESOLVE ACCOUNT ID (The v2.18.0 Fix)
-        // We get the profile for "me" first. This is the only way to get the 
-        // true accountId without hitting the search "Bad Request" wall.
-        const profile = await getProfileFromAccountId(authorization, "me");
+        // STEP 1: RESOLVE NUMERIC ACCOUNT ID (The "Bad Request" Fix)
+        // We cannot use "me" for profile/played titles anymore. 
+        // We search for the OnlineID to get the required numeric string.
+        console.log(`[${label}] Searching for AccountID: ${onlineId}`);
+        const searchResult = await makeUniversalSearch(authorization, onlineId, "socialAccounts");
         
-        // This is the numeric ID we need for all other calls
-        // In some versions it's profile.accountId, in others we use the 'me' alias safely 
-        // if we know the endpoint supports it.
-        const accountId = "me"; 
+        const accountId = searchResult.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
+        
+        if (!accountId) {
+            throw new Error(`Could not resolve numeric ID for ${onlineId}. Search returned no results.`);
+        }
+        
+        console.log(`[${label}] Resolved Numeric ID: ${accountId}`);
 
+        // 2. Fetch Profile (Now using the numeric ID)
+        const profile = await getProfileFromAccountId(authorization, accountId);
         data.avatar = profile.avatars?.sort((a, b) => parseInt(b.size) - parseInt(a.size))[0]?.url;
         data.plus = profile.isPlus;
         data.bio = profile.aboutMe;
         data.onlineId = profile.onlineId;
 
-        console.log(`[${label}] Profile Resolved for: ${profile.onlineId}`);
-
-        // 2. Fetch High-Res Playtime (v2.18.0 Method)
+        // 3. Fetch High-Res Playtime
         let playtimeMap = {};
         try {
             const played = await getUserPlayedGames(authorization, accountId, { limit: 15 });
@@ -85,9 +89,9 @@ async function getFullUserData(authorization, label, onlineId) {
                     playtimeMap[t.name] = parsePlaytime(t.playDuration);
                 });
             }
-        } catch (e) { console.log(`[${label}] Playtime blocked by privacy.`); }
+        } catch (e) { console.log(`[${label}] Playtime library restricted.`); }
 
-        // 3. Global Stats
+        // 4. Global Stats
         try {
             const stats = await getUserTrophyProfileSummary(authorization, accountId);
             data.level = stats.trophyLevel;
@@ -103,7 +107,7 @@ async function getFullUserData(authorization, label, onlineId) {
             data.trophyPoints = (data.trophies.platinum * 300) + (data.trophies.gold * 90) + (data.trophies.silver * 30) + (data.trophies.bronze * 15);
         } catch (e) { console.log(`[${label}] Stats fetch restricted.`); }
 
-        // 4. Presence
+        // 5. Presence
         try {
             const p = await getPresenceOfUser(authorization, accountId);
             data.online = p.primaryPlatformInfo?.onlineStatus === "online";
@@ -111,7 +115,7 @@ async function getFullUserData(authorization, label, onlineId) {
             data.platform = p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5";
         } catch (e) { console.log(`[${label}] Presence Restricted.`); }
 
-        // 5. Recent Titles & Mission Log
+        // 6. Recent Titles & Mission Log
         try {
             const { trophyTitles } = await getUserTitles(authorization, accountId);
             if (trophyTitles && trophyTitles.length > 0) {
@@ -133,7 +137,7 @@ async function getFullUserData(authorization, label, onlineId) {
                     hours: data.recentGames[0].hours,
                     dlcGroups: (trophyGroups || []).map(g => ({
                         name: g.trophyGroupName,
-                        progress: g.progress || 0,
+                        progress: g.progress,
                         earned: (g.earnedTrophies.gold + g.earnedTrophies.silver + g.earnedTrophies.bronze),
                         total: (g.definedTrophies.gold + g.definedTrophies.silver + g.definedTrophies.bronze)
                     })),
@@ -153,7 +157,7 @@ async function getFullUserData(authorization, label, onlineId) {
         } catch (e) { console.log(`[${label}] History fetch failed.`); }
 
     } catch (e) {
-        console.error(`[${label}] Error: ${e.message}`);
+        console.error(`[${label}] Critical Fail in v5.2.1 flow: ${e.message}`);
     }
 
     return data;
