@@ -1,8 +1,264 @@
 {
   "users": {
+    "werewolf": {
+      "online": false,
+      "currentGame": "",
+      "platform": "N/A",
+      "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0004_s.png",
+      "bio": "6C3RG",
+      "plus": true,
+      "level": 232,
+      "levelProgress": 46,
+      "activeHunt": {
+        "title": "Sniper Elite: Resistance",
+        "hours": "0h",
+        "dlcGroups": [
+          {
+            "name": "Sniper Elite: Resistance",
+            "earned": 0,
+            "total": 53
+          },
+          {
+            "name": "Lights, Camera, ACHTUNG!",
+            "earned": 0,
+            "total": 8
+          },
+          {
+            "name": "Vercors Vendetta",
+            "earned": 0,
+            "total": 3
+          },
+          {
+            "name": "Striking Range",
+            "earned": 0,
+            "total": 3
+          },
+          {
+            "name": "Mud and Thunder",
+            "earned": 0,
+            "total": 3
+          }
+        ],
+        "trophies": [
+          {
+            "name": "Sniper Elite",
+            "type": "platinum",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/ee0fe762-6a65-4fa8-9a27-c02d337de0d9.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Dam Buster",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/7060e573-5ef3-411e-a975-677e6b6ac02e.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "3/11/2025"
+          },
+          {
+            "name": "Welcome to the Resistance",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/4a180d97-6657-4945-9066-a9b5eaee9060.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "6/16/2025"
+          },
+          {
+            "name": "Trainwreck",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/a483bef5-2738-4092-a524-019e5a44262e.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "6/16/2025"
+          },
+          {
+            "name": "Bomb Squad",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/86837e42-2a5c-4148-b23b-fe0573f1239e.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "6/17/2025"
+          },
+          {
+            "name": "Industrial Action",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/fca05f79-da88-4ed3-9c44-1e3bfd131398.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "6/18/2025"
+          },
+          {
+            "name": "Blast from the Past",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/8b480898-bf2e-4198-9d32-bd01cfc62481.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "7/26/2025"
+          },
+          {
+            "name": "Grapes of Wrath",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/d68ca53b-2500-4e29-b7a5-09d05bf4c419.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "9/28/2025"
+          },
+          {
+            "name": "Whatever it Takes",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/26115f96-aeab-40c1-aa38-a9173be1e236.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "9/29/2025"
+          },
+          {
+            "name": "Climbing the Ranks",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/5d54df3f-e030-4210-867d-ef937716a9b7.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Vive La Résistance",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/1e11ac32-3048-415c-8d47-fcec2230463a.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "9/29/2025"
+          },
+          {
+            "name": "Crème de la Crème",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/3ab5d4e9-5ec5-4d2b-8427-3a922f3160ce.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Full English",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/b678831c-f34e-48b7-82a6-9faf8dc91683.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "9/29/2025"
+          },
+          {
+            "name": "Hostile Takeover",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/2f271c3f-8423-4536-a106-13e185e32716.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Hold the Line",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/46383227-487b-4bca-a22a-08f6f98ee87c.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Brothers in Arms",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/fb4f95a6-14f7-4da3-b183-6807d88b24dd.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Just a Scratch",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/8d432ce6-b456-4e0b-a406-7b84e4c5171e.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "6/17/2025"
+          },
+          {
+            "name": "Open Surgery",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/3c713fb3-35ed-4e74-92d6-4d7af64b97ca.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "7/26/2025"
+          },
+          {
+            "name": "Tactician",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/4f3c9d67-5a7c-4199-9f16-c93ffc10e224.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "Pistol Perfectionist",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/fcc00b1c-4fb1-40e7-8694-6dbf5f2c8cd5.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          }
+        ]
+      },
+      "recentGames": [
+        {
+          "name": "Sniper Elite: Resistance",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
+          "progress": 25,
+          "ratio": "22/71",
+          "hours": "0h"
+        },
+        {
+          "name": "Crossout",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
+          "progress": 4,
+          "ratio": "1/13",
+          "hours": "0h"
+        },
+        {
+          "name": "Wo Long: Fallen Dynasty",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
+          "progress": 9,
+          "ratio": "10/90",
+          "hours": "0h"
+        },
+        {
+          "name": "Tom Clancy’s Ghost Recon® Wildlands",
+          "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+          "progress": 29,
+          "ratio": "20/58",
+          "hours": "0h"
+        },
+        {
+          "name": "Where Winds Meet",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
+          "progress": 3,
+          "ratio": "2/45",
+          "hours": "0h"
+        },
+        {
+          "name": "Call of Duty® Modern Warfare® II",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50314_00/8e558b12-9144-4d7f-a141-5b04943763b4.png",
+          "progress": 0,
+          "ratio": "0/25",
+          "hours": "0h"
+        }
+      ],
+      "trophies": {
+        "platinum": 5,
+        "gold": 77,
+        "silver": 214,
+        "bronze": 980,
+        "total": 1276
+      },
+      "lastUpdated": "5/2/2026, 9:06:34 PM"
+    },
     "darkwing": {
       "online": false,
-      "currentGame": ""
+      "currentGame": "",
+      "platform": "N/A"
     },
     "phoenix": {
       "online": false,
@@ -10,15 +266,173 @@
     },
     "elucidator": {
       "online": false,
-      "currentGame": ""
+      "currentGame": "",
+      "platform": "N/A"
     },
     "jcrow": {
       "online": false,
-      "currentGame": ""
+      "currentGame": "",
+      "platform": "N/A"
     },
     "unicorn": {
       "online": false,
-      "currentGame": ""
+      "currentGame": "",
+      "platform": "N/A"
+    },
+    "ray": {
+      "online": false,
+      "currentGame": "",
+      "platform": "N/A",
+      "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
+      "bio": "exo-ONELIVIDMANKDFC3",
+      "plus": true,
+      "level": 201,
+      "levelProgress": 93,
+      "activeHunt": {
+        "title": "Mahjong",
+        "hours": "0h",
+        "dlcGroups": [
+          {
+            "name": "Mahjong",
+            "earned": 0,
+            "total": 10
+          }
+        ],
+        "trophies": [
+          {
+            "name": "CLEAR 1 LEVEL",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6a3ac782-b027-4a9c-9b2e-47f6ca3a8759.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "4/27/2026"
+          },
+          {
+            "name": "CLEAR 5 LEVELS",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/a2b6cd81-f3d0-4a2b-b580-b706b875dd2f.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "4/27/2026"
+          },
+          {
+            "name": "CLEAR 10 LEVELS",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/c4cc9e52-45e4-41bd-97a3-d1c270ee71e9.png",
+            "rarity": "undefined%",
+            "earned": true,
+            "earnedDate": "4/27/2026"
+          },
+          {
+            "name": "CLEAR 15 LEVELS",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/e7c05277-96df-4133-b044-d1d76f07f861.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "CLEAR 20 LEVELS",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/5c335c31-75f7-4194-8867-163a13a15071.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "CLEAR 30 LEVELS",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6fd426e8-81b3-4b7d-990f-31583f266bf4.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "CLEAR 40 LEVELS",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/de222a3e-5ebb-493c-96ba-a1fe844befa0.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "CLEAR 50 LEVELS",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/86127749-7a5e-4a71-ae20-83bcb08cd044.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "CLEAR 60 LEVELS",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/68c284db-85b4-4d52-ba00-21d5621caa32.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          },
+          {
+            "name": "CLEAR 70 LEVELS",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/4b6d04d8-59c7-4280-afcf-808d94619e59.png",
+            "rarity": "undefined%",
+            "earned": false,
+            "earnedDate": "--"
+          }
+        ]
+      },
+      "recentGames": [
+        {
+          "name": "Mahjong",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png",
+          "progress": 30,
+          "ratio": "3/10",
+          "hours": "0h"
+        },
+        {
+          "name": "theHunter: Call of the Wild",
+          "art": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/88AFFFD0B28B703B28CA71F6353F797230B9FB32.PNG",
+          "progress": 35,
+          "ratio": "39/115",
+          "hours": "0h"
+        },
+        {
+          "name": "Sniper Elite: Resistance",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
+          "progress": 0,
+          "ratio": "0/71",
+          "hours": "0h"
+        },
+        {
+          "name": "Farming Simulator 25",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+          "progress": 100,
+          "ratio": "46/46",
+          "hours": "0h"
+        },
+        {
+          "name": "Farming Simulator 22",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR23165_00/dae2fb95-5224-40a6-bd64-b9c4b1e826f6.png",
+          "progress": 18,
+          "ratio": "10/46",
+          "hours": "0h"
+        },
+        {
+          "name": "SKULL AND BONES™",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22432_00/cbdac3c7-fa16-4556-81f0-a93c788c0cf8.png",
+          "progress": 10,
+          "ratio": "7/51",
+          "hours": "0h"
+        }
+      ],
+      "trophies": {
+        "platinum": 5,
+        "gold": 33,
+        "silver": 106,
+        "bronze": 544,
+        "total": 688
+      },
+      "lastUpdated": "5/2/2026, 9:06:36 PM"
     }
   }
 }
