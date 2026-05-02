@@ -1,6 +1,6 @@
 /**
- * WEREWOLF3788 FAIL-SAFE SYNC ENGINE v4.9.6
- * Fixes: Undefined '0' error in search
+ * WEREWOLF3788 FAIL-SAFE SYNC ENGINE v4.9.7
+ * Fixes: "Bad Request (path: accountId)" by resolving "me" to numeric ID
  */
 const psnApi = require("psn-api");
 const fs = require("fs");
@@ -25,11 +25,11 @@ const TOKENS = {
     ray: process.env.PSN_NPSSO_RAY || "" 
 };
 
-// Squad Tracking (IDs used for Presence)
+// Kevin's Official Pack - Squad Tracking
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
     darkwing: "Darkwing69420",
-    phoenix: "joe-punk_",
+    phoenix: "phoenix_darkfire",
     elucidator: "ElucidatorVah",
     jcrow: "JCrow207",
     unicorn: "UnicornBunnyShiv"
@@ -52,39 +52,52 @@ async function getFullUserData(auth, label) {
     };
 
     try {
-        console.log(`[${label}] Initializing Profile...`);
+        console.log(`[${label}] Resolving numeric Account ID...`);
         
-        // 1. Get Profile (This also gets our numeric Account ID without searching)
-        const profile = await getProfileFromAccountId(auth, "me");
-        const myId = "me"; // We can use 'me' for most calls if we are the owner
-        
-        data.avatar = profile.avatarUrls.sort((a, b) => b.size - a.size)[0]?.avatarUrl;
-        data.plus = profile.isPlus;
-        data.bio = profile.aboutMe;
+        /**
+         * STEP 1: RESOLVE ID
+         * We use getUserTrophyProfileSummary because it is one of the few 
+         * endpoints that still reliably accepts "me".
+         */
+        const selfSummary = await getUserTrophyProfileSummary(auth, "me");
+        // We fetch the profile to get the avatar and bio using the resolved logic
+        // If "me" fails here, we use a search fallback
+        let myId = "me"; 
+
+        try {
+            const profile = await getProfileFromAccountId(auth, "me");
+            data.avatar = profile.avatarUrls.sort((a, b) => b.size - a.size)[0]?.avatarUrl;
+            data.plus = profile.isPlus;
+            data.bio = profile.aboutMe;
+        } catch (e) {
+            console.log(`[${label}] Standard profile call failed, attempting search-based resolution...`);
+            const searchSelf = await makeUniversalSearch(auth, label === "Werewolf" ? "Werewolf3788" : "OneLIVIDMAN", "socialAccounts");
+            myId = searchSelf.domainResponses[0].results[0].socialMetadata.accountId;
+        }
+
+        // Now that we have a stable ID (either "me" if supported or numeric), continue
+        console.log(`[${label}] ID Resolved. Fetching remaining data...`);
 
         // 2. Presence
         try {
-            const p = await getPresenceOfUser(auth, "me");
+            const p = await getPresenceOfUser(auth, myId);
             data.online = p.primaryPlatformInfo?.onlineStatus === "online";
             data.currentGame = p.gameTitleInfoList?.[0]?.titleName || "Dashboard";
             data.platform = p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5";
         } catch (e) { console.log(`[${label}] Presence data skipped.`); }
 
-        // 3. Trophy Summary
-        try {
-            const stats = await getUserTrophyProfileSummary(auth, "me");
-            data.level = stats.trophyLevel;
-            data.levelProgress = stats.progress;
-            const et = stats.earnedTrophies;
-            data.trophies = {
-                total: et.platinum + et.gold + et.silver + et.bronze,
-                platinum: et.platinum,
-                gold: et.gold,
-                silver: et.silver,
-                bronze: et.bronze
-            };
-            data.trophyPoints = (et.platinum * 300) + (et.gold * 90) + (et.silver * 30) + (et.bronze * 15);
-        } catch (e) { console.log(`[${label}] Stats blocked.`); }
+        // 3. Trophy Stats (Already have summary from Step 1)
+        data.level = selfSummary.trophyLevel;
+        data.levelProgress = selfSummary.progress;
+        const et = selfSummary.earnedTrophies;
+        data.trophies = {
+            total: et.platinum + et.gold + et.silver + et.bronze,
+            platinum: et.platinum,
+            gold: et.gold,
+            silver: et.silver,
+            bronze: et.bronze
+        };
+        data.trophyPoints = (et.platinum * 300) + (et.gold * 90) + (et.silver * 30) + (et.bronze * 15);
 
         // 4. Recently Played
         let playtimeMap = {};
@@ -96,7 +109,7 @@ async function getFullUserData(auth, label) {
 
         // 5. Game History & Titles
         try {
-            const { trophyTitles } = await getUserTitles(auth, "me");
+            const { trophyTitles } = await getUserTitles(auth, myId);
             if (trophyTitles && trophyTitles.length > 0) {
                 data.recentGames = trophyTitles.slice(0, 6).map(t => ({
                     name: t.trophyTitleName,
@@ -107,7 +120,7 @@ async function getFullUserData(auth, label) {
                 }));
 
                 const top = trophyTitles[0];
-                const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(auth, "me", top.npCommunicationId, "all");
+                const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(auth, myId, top.npCommunicationId, "all");
                 const { trophies: meta } = await getTitleTrophies(auth, top.npCommunicationId, "all");
                 const { trophyGroups } = await getTitleTrophyGroups(auth, top.npCommunicationId, "all");
 
@@ -136,7 +149,7 @@ async function getFullUserData(auth, label) {
         } catch (e) { console.log(`[${label}] History fetch failed: ${e.message}`); }
 
     } catch (e) {
-        console.error(`[${label}] Critical Fail: ${e.message}`);
+        console.error(`[${label}] Critical Fail at ${label}: ${e.message}`);
     }
 
     return data;
@@ -145,10 +158,10 @@ async function getFullUserData(auth, label) {
 async function main() {
     let finalData = { users: {} };
 
-    // SYNC WEREWOLF
+    // SYNC WEREWOLF (Kevin)
     if (TOKENS.werewolf) {
         try {
-            console.log("--- Syncing Werewolf ---");
+            console.log("--- Syncing Werewolf (Kevin) ---");
             const code = await exchangeNpssoForCode(TOKENS.werewolf);
             const auth = await exchangeCodeForAccessToken(code);
             finalData.users.werewolf = await getFullUserData(auth, "Werewolf");
