@@ -2,53 +2,25 @@
   "users": {
     "werewolf": {
       "auth": {
-        "accessToken": "eyJraWQiOiJucF8xIiwiYWxnIjoiUlMyNTYifQ.eyJhY2NvdW50X2lkIjoiMzcyODIxNTAwODE1MTcyNDU2MCIsImFjY291bnRfdXVpZCI6IjJlNTcxMmUwLTZjMDQtNGEwNy1iZWQ1LTFkZjA3MzhiOGY0YyIsImFnZSI6MzcsImF1dGh6X2MiOiJlTnFWVmR1TzNEWU0vWlhCZm9DQnRtOTYyMHpRUllCc0VHU0F2aG9haWJhWmxTVkJsTDNyRlAzM1VwTHQ4ZHl5eWRPTURvOHBYZzZwZng5SU9ROFA0a0dxaUNOR0JCSURRWGdzeDZsS2g2cDNSelJRalFpdk95V3RVSzd2cGRYRjJFSzhCbWtGYllTM2VNbmNnSVVacFhHdGlCZ04wSWQ5WVhvaWdaYWpnSHpXTUtJQ2tmN0NtemN1OEgvWkExVmJoS0lMT0dQSitnd2E1UUZDL2xRWk4raU1QRWxqSUV4M2FNNlM0M1RaZ0xiOTdBYmJRalY0TFNQc3R0aFRjSU12NVZvcU5QdjdHU1hsMjRIeGg0a2k5R0x6SWVvNnVoZXdRdXJCeEhxRWdBMXlhZERabXFLTUEyMG9MWndPUnd5eHkrR3RVQzZ4amJXS3daeFFwRnAxYVBRSmNkYWdoUm9ac2s5Y2lNZVRETFpOUi9abURMWmdGWHcxTWpZdTlNTC84WmN0Z2QreUVyUTlSN0FTQWxEY1N4OEg3dEttRkMreWw5OVJLQmxpZlJ3bTYxNXZRTFVQa09QWW1pNHhsaDhFQmJYbGlvMnd3S203dFVGYWIrSjQ2aHlQbGFibUFKUGtVcUMwRUJKNVBRUnRjZ2FiSTZrT3VFR3d4V1oxek1nUXpCcWRjWk0wY2NvUzJGbDRwYjhCdE1nQnBKRmpxVlVHWDJEbjVCQTdJYjBQYm9RNkhXd2RVYjN3M2NVVVFPb0wzSVBseG5rakp3amZJQmZBNnF3WEVnVXRnK0NKaDY2TXp5ZmJ1Q1hhREtlNHZnWm91RC9jdlpPSkpXU1F5OElSNWRPaWhqOHJ4WE8yOHdOMVgxeGNCU3BlNFhod0theEY1NnhBQ3lydVZ0OGZlY2hQSXpiWUdLYTlzdzIyVlVwdEY2TDZFRkMzSUViSGxIMG40K3FEWkFOY3cxblVsZVRXVFQ5Z1IwZlpyWkd4QkxtUDdMVHFKSFU3VWdIQVVpZFpicmtSQkRLb1RzeXJKdGRsaHNncGxHWkdpRGliWjc2aGhTQTg2Mnc2Rkt5aVBMQkxoUzZadWR3WDFNMXMvd1o5dlNCRzNpTWtYTlBzNTQxVXBEMDd2R3YyQTV0elRzc1dMd3ZvUmxURGtldUV2a2pHbGQ4Ymx2TDVCaXFjN08rWmsrQ2NSRjkrcTdTcG9LejJKWk9idlBWRmlJcDRXV1JkVkt5MmlodVh2a3J3TnV3RkRzNTNrNUM4eDJETWc3dE5hTFpxYU5CaUR2VGE2QU9PVWswM0xPbTZRNm5ycjFubkJBZkxjd0I2cWZhelMrdmhiSDh5WTRRM3dhOFVML1c4YmJMbjVKSlR5ZE5ReVJnREhvZklyOWNvRFJiUFp3UWUvclN3eXNSeERCcXV2YVF0d0xmTm5IZk1TL3gzR2FmTlFPLzQrc2JyUFdEZWFJZjhWbDN6b1pkb0hyWG1sK0NlOVovTm0zZE51UUs0bXVUc1BMdG5GaGFMK2NLci85cXlERTYxNk9DYWNSNy8yWnF6bThNTnFmK2N2MHErTEYzWHNEN3VqZVk3bEhMZnczLy9BMmZieUowIiwiY2xpZW50X2lkIjoiMDk1MTUxNTktNzIzNy00MzcwLTliNDAtMzgwNmU2N2MwODkxIiwiZGNpbV9pZCI6ImNlMmZlODJkLTJjOWUtNGI1OC05Y2JmLWM1OWZjM2E4NmU0NSIsImVudl9pc3NfaWQiOiIyNTYiLCJleHAiOjE3Nzc3NjM4NjgsImdyYW50X3R5cGUiOiJhdXRob3JpemF0aW9uX2NvZGUiLCJpYXQiOjE3Nzc3NjAyNjgsImlzX2NoaWxkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9hdXRoLmFjY291bnQuc29ueS5jb20vIiwianRpIjoiYzU3NDc5YTAtYjM4Yi00ZjkzLTllNDgtYWY4ZWZkNWM5NWY3IiwibGVnYWxfY291bnRyeSI6IlVTIiwibG9jYWxlIjoiZW4tVVMiLCJ1c2VyX2RldmljZV9pcCI6IjY4LjIyMC42Mi4xMDUiLCJ2ZXIiOiIyIn0.F-aD4YLqfd_J5LaBWNPxnqL8_bfMDnJ1XFrrxM5RvWm0Kve6J7878jQjcnuptvCP5GtO21fxlKODh6mLYribzJ2j6Q8JasJ1SSi9jIEmGweZaH0T0j9qz2xnRNx3wLiybE44t1jVuK8EoH-g6RaMas-vaQYRBGV-4cDoL4unHM5XymnEzRPYr0B45QChKWnW4yDPqbRSNLNrDbwm592rsc-iyOhqKB_ZHxjitlJ2FB4ddptyJC_MwUcLzXKiHetVc0H821F3PkIPim9DufRk92mNc5DMXph8CPEs3Z4ZBdvQMATxPovVWspisjHJ6Rfx3NLtKW8eL6oF0_pjyZaqu5VO7KfzhBojqGp9OnZ3gbQETx1pswofkB2VZNGZIrgfvUUT2XCkxkA3b8gYyC9fNnT7u3OiVgjX6gZ5sx-N3_WUuKzZqnhGxU28pkgObcU4sX312cCR17OfKzUxrZcIPrCvoKNTxMr3iEnx8V9YmOybCgVVOsoTaE-W1vrRoOBP",
+        "accessToken": "eyJraWQiOiJucF8xIiwiYWxnIjoiUlMyNTYifQ.eyJhY2NvdW50X2lkIjoiMzcyODIxNTAwODE1MTcyNDU2MCIsImFjY291bnRfdXVpZCI6IjJlNTcxMmUwLTZjMDQtNGEwNy1iZWQ1LTFkZjA3MzhiOGY0YyIsImFnZSI6MzcsImF1dGh6X2MiOiJlTnFWVmR1TzNEWU0vWlhCZm9DQnRtOTYyMHpRUllCc0VHU0F2aG9haWJhWmxTVkJsTDNyRlAzM1VwTHQ4ZHl5eWRPTURvOHBYZzZwZng5SU9ROFA0a0dxaUNOR0JCSURRWGdzeDZsS2g2cDNSelJRalFpdk95V3RVSzd2cGRYRjJFSzhCbWtGYllTM2VNbmNnSVVacFhHdGlCZ04wSWQ5WVhvaWdaYWpnSHpXTUtJQ2tmN0NtemN1OEgvWkExVmJoS0lMT0dQSitnd2E1UUZDL2xRWk4raU1QRWxqSUV4M2FNNlM0M1RaZ0xiOTdBYmJRalY0TFNQc3R0aFRjSU12NVZvcU5QdjdHU1hsMjRIeGg0a2k5R0x6SWVvNnVoZXdRdXJCeEhxRWdBMXlhZERabXFLTUEyMG9MWndPUnd5eHkrR3RVQzZ4amJXS3daeFFwRnAxYVBRSmNkYWdoUm9ac2s5Y2lNZVRETFpOUi9abURMWmdGWHcxTWpZdTlNTC84WmN0Z2QreUVyUTlSN0FTQWxEY1N4OEg3dEttRkMreWw5OVJLQmxpZlJ3bTYxNXZRTFVQa09QWW1pNHhsaDhFQmJYbGlvMnd3S203dFVGYWIrSjQ2aHlQbGFibUFKUGtVcUMwRUJKNVBRUnRjZ2FiSTZrT3VFR3d4V1oxek1nUXpCcWRjWk0wY2NvUzJGbDRwYjhCdE1nQnBKRmpxVlVHWDJEbjVCQTdJYjBQYm9RNkhXd2RVYjN3M2NVVVFPb0wzSVBseG5rakp3amZJQmZBNnF3WEVnVXRnK0NKaDY2TXp5ZmJ1Q1hhREtlNHZnWm91RC9jdlpPSkpXU1F5OElSNWRPaWhqOHJ4WE8yOHdOMVgxeGNCU3BlNFhod0theEY1NnhBQ3lydVZ0OGZlY2hQSXpiWUdLYTlzdzIyVlVwdEY2TDZFRkMzSUViSGxIMG40K3FEWkFOY3cxblVsZVRXVFQ5Z1IwZlpyWkd4QkxtUDdMVHFKSFU3VWdIQVVpZFpicmtSQkRLb1RzeXJKdGRsaHNncGxHWkdpRGliWjc2aGhTQTg2Mnc2Rkt5aVBMQkxoUzZadWR3WDFNMXMvd1o5dlNCRzNpTWtYTlBzNTQxVXBEMDd2R3YyQTV0elRzc1dMd3ZvUmxURGtldUV2a2pHbGQ4Ymx2TDVCaXFjN08rWmsrQ2NSRjkrcTdTcG9LejJKWk9idlBWRmlJcDRXV1JkVkt5MmlodVh2a3J3TnV3RkRzNTNrNUM4eDJETWc3dE5hTFpxYU5CaUR2VGE2QU9PVWswM0xPbTZRNm5ycjFubkJBZkxjd0I2cWZhelMrdmhiSDh5WTRRM3dhOFVML1c4YmJMbjVKSlR5ZE5ReVJnREhvZklyOWNvRFJiUFp3UWUvclN3eXNSeERCcXV2YVF0d0xmTm5IZk1TL3gzR2FmTlFPLzQrc2JyUFdEZWFJZjhWbDN6b1pkb0hyWG1sK0NlOVovTm0zZE51UUs0bXVUc1BMdG5GaGFMK2NLci85cXlERTYxNk9DYWNSNy8yWnF6bThNTnFmK2N2MHErTEYzWHNEN3VqZVk3bEhMZnczLy9BMmZieUowIiwiY2xpZW50X2lkIjoiMDk1MTUxNTktNzIzNy00MzcwLTliNDAtMzgwNmU2N2MwODkxIiwiZGNpbV9pZCI6ImNlMmZlODJkLTJjOWUtNGI1OC05Y2JmLWM1OWZjM2E4NmU0NSIsImVudl9pc3NfaWQiOiIyNTYiLCJleHAiOjE3Nzc3NjQyODMsImdyYW50X3R5cGUiOiJhdXRob3JpemF0aW9uX2NvZGUiLCJpYXQiOjE3Nzc3NjA2ODMsImlzX2NoaWxkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9hdXRoLmFjY291bnQuc29ueS5jb20vIiwianRpIjoiMzgzZjA0Y2MtZTM5MC00ZDM3LThjZTYtOGRhMDg0ZTQ4NWQzIiwibGVnYWxfY291bnRyeSI6IlVTIiwibG9jYWxlIjoiZW4tVVMiLCJ1c2VyX2RldmljZV9pcCI6IjE3Mi4xODIuMjEyLjUwIiwidmVyIjoiMiJ9.L5KOZn75iuellMIpaOOM17RWJsvN7CTyShDdZtkdGJlkbVk0nFQmS0mH_KmyZraSuy_nAvU0wbrRR_dSWUy8lbDa9xdJHVHJwX6Mq0daWnVPVwBBgN_brET-mZrL31ZWtfnldX4s01PWnJ8hRJUpN3RwBhlFpBrAlkLmTpLklJLCZ2wmr6EUSSFdAePUyPDh3-5sh8Xod97hnur3wzvQo1a0aytbT61tTQuC1cyqka45GvU_hw2xbX_ori0zXh0e_cW9Jimckj5j76v9l31tsVzbeyB7eLKIFTeECbvx2dir8UBZhkIkZcw9pmBTI-U4qMg1CwdoGbd5WCqUVA92iTUiZX-ynfGapi312LJQSnICR84w9ZuoNB1iGpfCd8yhu8hcb7GvQNR8mbyptgLzS4vmz1BAsjOi63mnbtqApOafE55ch_rDItSW_ml1GXPQcz3CNrfAxPeDmKas0CPEj2OhoCnjeTMBGva_aWogUYy6PVGSQKJsn202XLMOlbi9",
         "expiresIn": 3599,
-        "idToken": "eyJraWQiOiJucF8yIiwiYWxnIjoiUlMyNTYifQ.eyJhZHVsdF92ZXJpZmljYXRpb25fc3RhdHVzIjoiTk9UX1JFUVVJUkVEIiwiYWdlIjozNywiYXRfaGFzaCI6IlV5TURfTTB4N25vRS0wVk41blVZLVEiLCJhdWQiOlsiMDk1MTUxNTktNzIzNy00MzcwLTliNDAtMzgwNmU2N2MwODkxIl0sImF1dGhfbW9kZSI6IlRXT19TVEVQIiwiYmlydGhkYXRlIjoiMTk4OC0wNy0xOCIsImVudl9pc3NfaWQiOiIyNTYiLCJleHAiOjE3Nzc3NjE0NjgsImlhdCI6MTc3Nzc2MDI2OCwiaXNfY2hpbGQiOmZhbHNlLCJpc3MiOiJodHRwczovL2F1dGguYWNjb3VudC5zb255LmNvbSIsImxlZ2FsX2NvdW50cnkiOiJVUyIsImxvY2FsZSI6ImVuLVVTIiwib25saW5lX2lkIjoiV2VyZXdvbGYzNzg4Iiwic3ViIjoiMzcyODIxNTAwODE1MTcyNDU2MCIsInZlciI6IjMifQ.E4u6P-4K8uOa9TjnXBrSTJ1BtmU5OgztJQ2SpPpd5W2gDgMujJQ1wjdo4Zrn9aQ_khwoMDGY1z-gRInipwa1mCiAS-9rPtYHColVJJ-lu_E0OIOk81LsZAYG_a8zdNaYaFpYS71vwyCHu5CJBkGzqEVOdkkWisBxdRogDgJhHuSUZmb8Tb4jDdtapDdT73RsCbw9x6KpHVvyMcvQSZX4bZxNsvEGXkaKVdgKRF1Lanqcmfn9GDBwK4oda7mpjwTUKurLsgSK84x_076pfHZvGvuDDl2WQ8LmCMIMaMByFvIIPvGJ74tsLbvYO3OwqfzwB4G1UU3B4ktgyNIxhgjka15nJxlwiAJNNC4E7S6Ao3W93Pztl8y-ftFxp6QeUXcaZhzF8B5_OcSTBhT_Z3VXxT5Hk4KnJJOBe2E_5QXUTils93M6K2xt8dFc_q4DRTcGLgNyrFLMroAdW4EBQz3tcVBfI-f0IgYV7Dz5Ws0CQ_dd1P8eL0m5dGL247YyV-AQ",
-        "refreshToken": "f4dbdedb-8ed5-4399-a4fe-36630f19f886",
+        "idToken": "eyJraWQiOiJucF8yIiwiYWxnIjoiUlMyNTYifQ.eyJhZHVsdF92ZXJpZmljYXRpb25fc3RhdHVzIjoiTk9UX1JFUVVJUkVEIiwiYWdlIjozNywiYXRfaGFzaCI6IlZEWDhlbFlDMG9LUWhJSHZWbVNXMnciLCJhdWQiOlsiMDk1MTUxNTktNzIzNy00MzcwLTliNDAtMzgwNmU2N2MwODkxIl0sImF1dGhfbW9kZSI6IlRXT19TVEVQIiwiYmlydGhkYXRlIjoiMTk4OC0wNy0xOCIsImVudl9pc3NfaWQiOiIyNTYiLCJleHAiOjE3Nzc3NjE4ODMsImlhdCI6MTc3Nzc2MDY4MywiaXNfY2hpbGQiOmZhbHNlLCJpc3MiOiJodHRwczovL2F1dGguYWNjb3VudC5zb255LmNvbSIsImxlZ2FsX2NvdW50cnkiOiJVUyIsImxvY2FsZSI6ImVuLVVTIiwib25saW5lX2lkIjoiV2VyZXdvbGYzNzg4Iiwic3ViIjoiMzcyODIxNTAwODE1MTcyNDU2MCIsInZlciI6IjMifQ.aLeIqKd1mxdEEZq36gXSHz6qVltXzBY1B_7BOG3GneeZMCHL4z9XxXliOwQUkDDyUBL-k4VxERYFTCKckyh7vP9IYlUBh4F7a998HQQmDqU2bWBVUpvYAqUx3czlMPf8G_VryHO6afQLRMYbkZLQsrXY8jfuTPz4Xt7EqaS-sI_szyL2Xn16q9kRDRSQC64cENQZ3tBMJ4S458NhWJMCwZNqepKfhrTG2X-Ow9hd46Mko_kVVMDnLbZIzClMhwr6DxtkeVhcRhUYvpGIqFRaTLHb7TqinU8oDAJjiU5IDgebO1nmIAMo09P8JtJw_y4MSsVPiganHnFygKxNcu6o6BY2EvaCRp_VwZolBQirzPyU7vmeA6iS9VhrPYdnWfGfGfLwF4BpyU3x_ZfXE8Pt8z9H_GYi_cpjQvvQKSix1nLZ6IX4LS6J3tb-VP3xIcrrm_HfMW0xobERBSMIQ43SQkqYRySD2HxKOuTxTdwsMCsgwECyY-XreNh4eSwKoMHZ",
+        "refreshToken": "e9154f85-caf8-4814-9ec7-89f0ccb7d063",
         "refreshTokenExpiresIn": 863999,
         "scope": "psn:mobile.v2.core psn:clientapp",
         "tokenType": "bearer"
       },
       "accountId": "3728215008151724560",
       "online": false,
-      "currentGame": "",
-      "platform": "N/A",
+      "currentGame": "Dashboard",
+      "platform": "PS5",
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0004_s.png",
       "bio": "6C3RG",
       "plus": true,
       "level": 232,
-      "levelProgress": 46,
       "activeHunt": {
         "title": "Sniper Elite: Resistance",
         "hours": "0h",
-        "dlcGroups": [
-          {
-            "name": "Sniper Elite: Resistance",
-            "earned": 0,
-            "total": 53
-          },
-          {
-            "name": "Lights, Camera, ACHTUNG!",
-            "earned": 0,
-            "total": 8
-          },
-          {
-            "name": "Vercors Vendetta",
-            "earned": 0,
-            "total": 3
-          },
-          {
-            "name": "Striking Range",
-            "earned": 0,
-            "total": 3
-          },
-          {
-            "name": "Mud and Thunder",
-            "earned": 0,
-            "total": 3
-          }
-        ],
         "trophies": [
           {
             "name": "Sniper Elite",
@@ -792,183 +764,8 @@
         "bronze": 980,
         "total": 1276
       },
-      "lastUpdated": "5/2/2026, 10:17:50 PM"
-    },
-    "ray": {
-      "auth": {
-        "accessToken": "eyJraWQiOiJucF8xIiwiYWxnIjoiUlMyNTYifQ.eyJhY2NvdW50X2lkIjoiMjczMjczMzczMDM0NjMxMjQ5NCIsImFjY291bnRfdXVpZCI6IjEyOWZlNzBhLTcwM2QtNGY4NC1hNGNiLWM4NjUwNzVhZWFhNSIsImFnZSI6NDUsImF1dGh6X2MiOiJlTnFWVmR1TzNEWU0vWlhCZm9DQnRtOTYyMHpRUllCc0VHU0F2aG9haWJhWmxTVkJsTDNyRlAzM1VwTHQ4ZHl5eWRPTURvOHBYZzZwZng5SU9ROFA0a0dxaUNOR0JCSURRWGdzeDZsS2g2cDNSelJRalFpdk95V3RVSzd2cGRYRjJFSzhCbWtGYllTM2VNbmNnSVVacFhHdGlCZ04wSWQ5WVhvaWdaYWpnSHpXTUtJQ2tmN0NtemN1OEgvWkExVmJoS0lMT0dQSitnd2E1UUZDL2xRWk4raU1QRWxqSUV4M2FNNlM0M1RaZ0xiOTdBYmJRalY0TFNQc3R0aFRjSU12NVZvcU5QdjdHU1hsMjRIeGg0a2k5R0x6SWVvNnVoZXdRdXJCeEhxRWdBMXlhZERabXFLTUEyMG9MWndPUnd5eHkrR3RVQzZ4amJXS3daeFFwRnAxYVBRSmNkYWdoUm9ac2s5Y2lNZVRETFpOUi9abURMWmdGWHcxTWpZdTlNTC84WmN0Z2QreUVyUTlSN0FTQWxEY1N4OEg3dEttRkMreWw5OVJLQmxpZlJ3bTYxNXZRTFVQa09QWW1pNHhsaDhFQmJYbGlvMnd3S203dFVGYWIrSjQ2aHlQbGFibUFKUGtVcUMwRUJKNVBRUnRjZ2FiSTZrT3VFR3d4V1oxek1nUXpCcWRjWk0wY2NvUzJGbDRwYjhCdE1nQnBKRmpxVlVHWDJEbjVCQTdJYjBQYm9RNkhXd2RVYjN3M2NVVVFPb0wzSVBseG5rakp3amZJQmZBNnF3WEVnVXRnK0NKaDY2TXp5ZmJ1Q1hhREtlNHZnWm91RC9jdlpPSkpXU1F5OElSNWRPaWhqOHJ4WE8yOHdOMVgxeGNCU3BlNFhod0theEY1NnhBQ3lydVZ0OGZlY2hQSXpiWUdLYTlzdzIyVlVwdEY2TDZFRkMzSUViSGxIMG40K3FEWkFOY3cxblVsZVRXVFQ5Z1IwZlpyWkd4QkxtUDdMVHFKSFU3VWdIQVVpZFpicmtSQkRLb1RzeXJKdGRsaHNncGxHWkdpRGliWjc2aGhTQTg2Mnc2Rkt5aVBMQkxoUzZadWR3WDFNMXMvd1o5dlNCRzNpTWtYTlBzNTQxVXBEMDd2R3YyQTV0elRzc1dMd3ZvUmxURGtldUV2a2pHbGQ4Ymx2TDVCaXFjN08rWmsrQ2NSRjkrcTdTcG9LejJKWk9idlBWRmlJcDRXV1JkVkt5MmlodVh2a3J3TnV3RkRzNTNrNUM4eDJETWc3dE5hTFpxYU5CaUR2VGE2QU9PVWswM0xPbTZRNm5ycjFubkJBZkxjd0I2cWZhelMrdmhiSDh5WTRRM3dhOFVML1c4YmJMbjVKSlR5ZE5ReVJnREhvZklyOWNvRFJiUFp3UWUvclN3eXNSeERCcXV2YVF0d0xmTm5IZk1TL3gzR2FmTlFPLzQrc2JyUFdEZWFJZjhWbDN6b1pkb0hyWG1sK0NlOVovTm0zZE51UUs0bXVUc1BMdG5GaGFMK2NLci85cXlERTYxNk9DYWNSNy8yWnF6bThNTnFmK2N2MHErTEYzWHNEN3VqZVk3bEhMZnczLy9BMmZieUowIiwiY2xpZW50X2lkIjoiMDk1MTUxNTktNzIzNy00MzcwLTliNDAtMzgwNmU2N2MwODkxIiwiZGNpbV9pZCI6ImNlMmZlODJkLTJjOWUtNGI1OC05Y2JmLWM1OWZjM2E4NmU0NSIsImVudl9pc3NfaWQiOiIyNTYiLCJleHAiOjE3Nzc3NjM4NzAsImdyYW50X3R5cGUiOiJhdXRob3JpemF0aW9uX2NvZGUiLCJpYXQiOjE3Nzc3NjAyNzAsImlzX2NoaWxkIjpmYWxzZSwiaXNzIjoiaHR0cHM6Ly9hdXRoLmFjY291bnQuc29ueS5jb20vIiwianRpIjoiN2IwZDkzNzMtMjMwZi00ZWZhLTg2ZDAtMDJhNThiNWZiNTYwIiwibGVnYWxfY291bnRyeSI6IlVTIiwibG9jYWxlIjoiZW4tVVMiLCJ1c2VyX2RldmljZV9pcCI6IjY4LjIyMC42Mi4xMDUiLCJ2ZXIiOiIyIn0.NA2JjA_9wBWFBEBzeUPGGqEBl4A6Ad19873jPn7yW-Sw5Mvxqddmu63ImiTcyvZ2KXMHfgPegHQJphGwPGkzOsXcOyi4YHVqBznLD7ZdQBTa4BWMUXl78PG0bfUU6kGXp3Y-R6POP0sJqWTX0uDCMO2VSw1BmEN9_lQGKvTfKK-OQEElCMOklfs3qVP_krWg73uVnksYv4yMv8r75gk5zt2oTjAd-eSz4zr0vXmT9q4gy18-XE5W9SusrU-f6GNxFZUW9kVH145xW9T9wXmft5B4LHeuAbaOWFwzDzp_XAjAneOEy6QXPcvCs21EuSPoe8H0ARBL5OjrZ--ic8gnGhw6WKeT5UCh5AWqFxvJvD-7k77zih12WJSsDxRVA5vMlJHlaCN-CSWPXXO4a5j5E_zqq7DlnbIMTqKWzIEQIVM0_gyhtXQKX1LNylpV4yAX8geMUnJx4bosxizV6z3MJuskhqiaZC0dT8nK0ogxtVQq8HmWGVE0YEbtzIfWDqQz",
-        "expiresIn": 3599,
-        "idToken": "eyJraWQiOiJucF8yIiwiYWxnIjoiUlMyNTYifQ.eyJhZHVsdF92ZXJpZmljYXRpb25fc3RhdHVzIjoiTk9UX1JFUVVJUkVEIiwiYWdlIjo0NSwiYXRfaGFzaCI6IjJCWDRsbGRtQ0hqUXJQM0lUY0tGb2ciLCJhdWQiOlsiMDk1MTUxNTktNzIzNy00MzcwLTliNDAtMzgwNmU2N2MwODkxIl0sImF1dGhfbW9kZSI6IlBBU1NLRVkiLCJiaXJ0aGRhdGUiOiIxOTgwLTA1LTE1IiwiZW52X2lzc19pZCI6IjI1NiIsImV4cCI6MTc3Nzc2MTQ3MCwiaWF0IjoxNzc3NzYwMjcwLCJpc19jaGlsZCI6ZmFsc2UsImlzcyI6Imh0dHBzOi8vYXV0aC5hY2NvdW50LnNvbnkuY29tIiwibGVnYWxfY291bnRyeSI6IlVTIiwibG9jYWxlIjoiZW4tVVMiLCJvbmxpbmVfaWQiOiJPbmVMSVZJRE1BTiIsInN1YiI6IjI3MzI3MzM3MzAzNDYzMTI0OTQiLCJ2ZXIiOiIzIn0.htoyGTKolAHw7j7WON0tPlN9rDHH_i3bbB2OqenFJwM44aIT6SlqpqFr1bs8AiqPPCKRAYFhNsiIu_mcYTk9QwuRwg39BlRMjOqpMThGNFBv5gBM2JQ7kFCpLoUQAJeXUd5e7HLEbWKDoFZ74nbPx17vFatx3R0avQEqdGfibiNAQex1Z5SDwE0i-ypvfx2S_m2baaWsLLx_jgyjCAby9yWVrTOxjutjbefxyXLYLAzDqv7c28qlL0a4V0mCfxKVjUDGTaQAuZQb1vFLJ3FLxt2G3iqP2dFKbPp2cJm9nOepw1z-NoF3AyPBBp8BPxeUmxBWsQnLNHDwPHcksju3rm9WJiObI2z0yjOeeUL-BVwGr_q1Low3XmprGuxn6meki3W5dV3xb8ViNPVVRMO-5g4w5yNuGtWTiDZyr0hmCBjJV1Ok1pHnlRiLoW5L0jnszZFafzXLQs6xX3rV2sfSvPtwSVY8VIYpUzWk4abO12FLHP6eMyK8MLg_ossgfUfa",
-        "refreshToken": "bfa4cc8c-4aed-48e1-9990-c3567b216d82",
-        "refreshTokenExpiresIn": 863999,
-        "scope": "psn:mobile.v2.core psn:clientapp",
-        "tokenType": "bearer"
-      },
-      "accountId": "2732733730346312494",
-      "online": false,
-      "currentGame": "",
-      "platform": "N/A",
-      "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
-      "bio": "exo-ONELIVIDMANKDFC3",
-      "plus": true,
-      "level": 201,
-      "levelProgress": 93,
-      "activeHunt": {
-        "title": "Mahjong",
-        "hours": "0h",
-        "dlcGroups": [
-          {
-            "name": "Mahjong",
-            "earned": 0,
-            "total": 10
-          }
-        ],
-        "trophies": [
-          {
-            "name": "CLEAR 1 LEVEL",
-            "description": "CLEAR 1 LEVEL",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6a3ac782-b027-4a9c-9b2e-47f6ca3a8759.png",
-            "rarity": "Common",
-            "earned": true,
-            "earnedDate": "4/27/2026, 4:12:14 PM"
-          },
-          {
-            "name": "CLEAR 5 LEVELS",
-            "description": "CLEAR 5 LEVELS",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/a2b6cd81-f3d0-4a2b-b580-b706b875dd2f.png",
-            "rarity": "Common",
-            "earned": true,
-            "earnedDate": "4/27/2026, 6:01:07 PM"
-          },
-          {
-            "name": "CLEAR 10 LEVELS",
-            "description": "CLEAR 10 LEVELS",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/c4cc9e52-45e4-41bd-97a3-d1c270ee71e9.png",
-            "rarity": "Common",
-            "earned": true,
-            "earnedDate": "4/27/2026, 9:59:06 PM"
-          },
-          {
-            "name": "CLEAR 15 LEVELS",
-            "description": "CLEAR 15 LEVELS",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/e7c05277-96df-4133-b044-d1d76f07f861.png",
-            "rarity": "Common",
-            "earned": false,
-            "earnedDate": "--"
-          },
-          {
-            "name": "CLEAR 20 LEVELS",
-            "description": "CLEAR 20 LEVELS",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/5c335c31-75f7-4194-8867-163a13a15071.png",
-            "rarity": "Common",
-            "earned": false,
-            "earnedDate": "--"
-          },
-          {
-            "name": "CLEAR 30 LEVELS",
-            "description": "CLEAR 30 LEVELS",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6fd426e8-81b3-4b7d-990f-31583f266bf4.png",
-            "rarity": "Common",
-            "earned": false,
-            "earnedDate": "--"
-          },
-          {
-            "name": "CLEAR 40 LEVELS",
-            "description": "CLEAR 40 LEVELS",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/de222a3e-5ebb-493c-96ba-a1fe844befa0.png",
-            "rarity": "Common",
-            "earned": false,
-            "earnedDate": "--"
-          },
-          {
-            "name": "CLEAR 50 LEVELS",
-            "description": "CLEAR 50 LEVELS",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/86127749-7a5e-4a71-ae20-83bcb08cd044.png",
-            "rarity": "Common",
-            "earned": false,
-            "earnedDate": "--"
-          },
-          {
-            "name": "CLEAR 60 LEVELS",
-            "description": "CLEAR 60 LEVELS",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/68c284db-85b4-4d52-ba00-21d5621caa32.png",
-            "rarity": "Common",
-            "earned": false,
-            "earnedDate": "--"
-          },
-          {
-            "name": "CLEAR 70 LEVELS",
-            "description": "CLEAR 70 LEVELS",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/4b6d04d8-59c7-4280-afcf-808d94619e59.png",
-            "rarity": "Common",
-            "earned": false,
-            "earnedDate": "--"
-          }
-        ]
-      },
-      "recentGames": [
-        {
-          "name": "Mahjong",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png",
-          "progress": 30,
-          "ratio": "3/10",
-          "hours": "0h"
-        },
-        {
-          "name": "theHunter: Call of the Wild",
-          "art": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/88AFFFD0B28B703B28CA71F6353F797230B9FB32.PNG",
-          "progress": 35,
-          "ratio": "39/115",
-          "hours": "0h"
-        },
-        {
-          "name": "Sniper Elite: Resistance",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
-          "progress": 0,
-          "ratio": "0/71",
-          "hours": "0h"
-        },
-        {
-          "name": "Farming Simulator 25",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
-          "progress": 100,
-          "ratio": "46/46",
-          "hours": "0h"
-        },
-        {
-          "name": "Farming Simulator 22",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR23165_00/dae2fb95-5224-40a6-bd64-b9c4b1e826f6.png",
-          "progress": 18,
-          "ratio": "10/46",
-          "hours": "0h"
-        },
-        {
-          "name": "SKULL AND BONES™",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22432_00/cbdac3c7-fa16-4556-81f0-a93c788c0cf8.png",
-          "progress": 10,
-          "ratio": "7/51",
-          "hours": "0h"
-        }
-      ],
-      "trophies": {
-        "platinum": 5,
-        "gold": 33,
-        "silver": 106,
-        "bronze": 544,
-        "total": 688
-      },
-      "lastUpdated": "5/2/2026, 10:17:52 PM"
+      "lastUpdated": "5/2/2026, 10:24:45 PM"
     }
   },
-  "mutualFriends": []
+  "mutualPack": []
 }
