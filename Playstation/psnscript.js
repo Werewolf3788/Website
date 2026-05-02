@@ -16,7 +16,8 @@ const fs = require("fs");
 const path = require("path");
 
 /**
- * Kevin's Official Pack Squad
+ * Kevin's Official Pack Squad Tracking
+ * Mapping Aliases: Ray (OneLIVIDMAN), TJ (Darkwing69420), Seth (phoenix_darkfire)
  */
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
@@ -30,10 +31,10 @@ const SQUAD_IDS = {
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"];
 
 /**
- * Requirement 7: ISO 8601 Duration Parser
+ * ISO 8601 Duration Parser (PT12H30M -> 12h 30m)
  */
 const parsePlaytime = (duration) => {
-    if (!duration) return "--";
+    if (!duration) return "0h";
     const h = duration.match(/(\d+)H/);
     const m = duration.match(/(\d+)M/);
     const hours = h ? h[1] + "h" : "";
@@ -42,7 +43,7 @@ const parsePlaytime = (duration) => {
 };
 
 /**
- * Requirement 8 & 11: Presence Helper
+ * Helper for Live Presence & Platform Detection
  */
 const getPresence = async (auth, accountId) => {
     const func = psnApi.getPresenceOfUser || psnApi.getUserPresence || psnApi.getPresenceFromUser;
@@ -58,31 +59,34 @@ const getPresence = async (auth, accountId) => {
     }
 };
 
+/**
+ * Main Data Aggregator
+ * Resolves OnlineID to numeric AccountID to prevent "Bad Request" errors.
+ */
 async function getFullUserData(npsso, label, targetOnlineId) {
     try {
-        console.log(`--- Starting Full Sync for ${label} (${targetOnlineId}) ---`);
+        console.log(`--- Starting Backend Sync for ${label} (${targetOnlineId}) ---`);
         const accessCode = await exchangeNpssoForCode(npsso);
         const authorization = await exchangeCodeForAccessToken(accessCode);
 
-        // FIX: Resolve numeric accountId to bypass Sony's "me" block
-        console.log(`[${label}] Resolving accountId for ${targetOnlineId}...`);
+        // Step 1: Handshake to get numeric ID (Sony blocked 'me' for profile calls)
+        console.log(`[${label}] Resolving accountId via Search...`);
         const search = await makeUniversalSearch(authorization, targetOnlineId, "socialAccounts");
         const accountId = search.domainResponses[0].results[0].socialMetadata.accountId;
-        console.log(`[${label}] Resolved: ${accountId}`);
+        console.log(`[${label}] Resolved Account ID: ${accountId}`);
 
         const profile = await getProfileFromAccountId(authorization, accountId);
         const presence = await getPresence(authorization, accountId);
 
-        /**
-         * Requirement 7: High-res playtime
-         */
+        // Step 2: High-Resolution Playtime (Library titles)
         let playtimeMap = {};
         try {
             const recentlyPlayed = await getRecentlyPlayedGames(authorization, { limit: 15 });
             const games = recentlyPlayed.data?.gameLibraryTitlesRetrieve?.games || [];
             games.forEach(g => { playtimeMap[g.name] = parsePlaytime(g.playDuration); });
-        } catch (e) { console.log(`[${label}] Playtime restricted.`); }
+        } catch (e) { console.log(`[${label}] Playtime API fetch restricted.`); }
 
+        // Step 3: Trophy Titles & Game History
         const { trophyTitles } = await getUserTitles(authorization, accountId);
         const recentGames = [];
         let activeGameMetadata = null;
@@ -93,7 +97,6 @@ async function getFullUserData(npsso, label, targetOnlineId) {
 
             const earned = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
             const total = (title.definedTrophies.platinum + title.definedTrophies.gold + title.definedTrophies.silver + title.definedTrophies.bronze);
-            const ratio = `${earned}/${total}`;
             const gameHours = playtimeMap[name] || parsePlaytime(title.playDuration);
 
             if (recentGames.length < 6) {
@@ -101,11 +104,12 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                     name: name,
                     art: title.trophyTitleIconUrl,
                     progress: title.progress,
-                    ratio: ratio,
+                    ratio: `${earned}/${total}`,
                     hours: gameHours
                 });
             }
 
+            // Step 4: Mission Log (Full Detail for current game)
             if (!activeGameMetadata) {
                 try {
                     const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(authorization, accountId, title.npCommunicationId, "all");
@@ -121,7 +125,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                             earned: (g.earnedTrophies.gold + g.earnedTrophies.silver + g.earnedTrophies.bronze),
                             total: (g.definedTrophies.gold + g.definedTrophies.silver + g.definedTrophies.bronze)
                         })),
-                        trophies: meta.slice(0, 15).map(m => {
+                        trophies: meta.slice(0, 20).map(m => {
                             const s = earnedStatus.find(x => x.trophyId === m.trophyId);
                             return {
                                 name: m.trophyName,
@@ -133,7 +137,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                             };
                         })
                     };
-                } catch (e) { }
+                } catch (e) { console.log(`[${label}] Mission Log detail failed.`); }
             }
         }
 
@@ -145,7 +149,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             currentGame: presence.currentGame,
             platform: presence.platform,
             avatar: profile.avatars.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url,
-            bio: profile.aboutMe || "Pack Admin",
+            bio: profile.aboutMe || "Admin Kevin",
             plus: profile.isPlus,
             level: stats.trophyLevel,
             levelProgress: stats.progress,
@@ -161,7 +165,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             lastUpdated: new Date().toLocaleString()
         };
     } catch (e) {
-        console.error(`[${label}] Error:`, e.message);
+        console.error(`[${label}] Critical Sync Failure:`, e.message);
         return null;
     }
 }
@@ -177,9 +181,12 @@ async function main() {
             const authCode = await exchangeNpssoForCode(werewolfToken);
             const auth = await exchangeCodeForAccessToken(authCode);
             
-            finalData.users.werewolf = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
+            // Sync Admin Kevin
+            const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
+            if (wolfData) finalData.users.werewolf = wolfData;
 
-            console.log("--- Syncing Squad Status ---");
+            // Sync Squad Presence
+            console.log("--- Syncing Squad Presence ---");
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
                 if (finalData.users[key]) continue;
                 try {
@@ -191,16 +198,17 @@ async function main() {
                     }
                 } catch (e) { finalData.users[key] = { online: false }; }
             }
-        } catch (e) { console.error("Werewolf Auth Failed:", e.message); }
+        } catch (e) { console.error("Authentication Loop Failed:", e.message); }
     }
 
     if (rayToken) {
+        // Sync Ray Details
         const rayDetail = await getFullUserData(rayToken, "Ray", "OneLIVIDMAN");
         if (rayDetail) finalData.users.ray = rayDetail;
     }
 
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log("--- Sync Finished: All Requirements Saved ---");
+    console.log("--- Backend Sync Complete: psn_data.json updated ---");
 }
 
 main();
