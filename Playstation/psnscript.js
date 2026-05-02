@@ -6,11 +6,11 @@ const {
     getUserTrophyProfileSummary,
     getUserTrophiesEarnedForTitle,
     getTitleTrophies,
-    getTitleTrophyGroups, // NEW: Get DLC names and grouping
+    getTitleTrophyGroups,
     makeUniversalSearch,
-    getRecentlyPlayedGames,
     getProfileFromAccountId,
-    getFriendsFromAccountId // NEW: Get total social count
+    getFriendsFromAccountId,
+    getRecentlyPlayedGames // NEW: Re-added for high-res playtime
 } = psnApi;
 
 const fs = require("fs");
@@ -29,10 +29,25 @@ const SQUAD_IDS = {
     unicorn: "UnicornBunnyShiv"
 };
 
+// GTA V is kept here to prevent unauthorized session activity from appearing on the Hub
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"];
 
 /**
+ * Requirement 7: ISO 8601 Duration Parser (PT12H30M -> 12h 30m)
+ * Ensures "hours played on game" is formatted correctly.
+ */
+const parsePlaytime = (duration) => {
+    if (!duration) return "0h";
+    const h = duration.match(/(\d+)H/);
+    const m = duration.match(/(\d+)M/);
+    const hours = h ? h[1] + "h" : "";
+    const mins = m ? m[1] + "m" : "";
+    return `${hours} ${mins}`.trim() || "0h";
+};
+
+/**
  * Helper: Formats duration between two dates
+ * Used for the Mission Log to show how long between trophy unlocks
  */
 const getDurationText = (start, end) => {
     const diff = new Date(end) - new Date(start);
@@ -74,10 +89,25 @@ async function getFullUserData(npsso, label) {
         const accessCode = await exchangeNpssoForCode(npsso);
         const authorization = await exchangeCodeForAccessToken(accessCode);
         
-        // Fetch Core Profile
+        // Fetch Core Profile and Presence
         const profile = await getProfileFromAccountId(authorization, "me");
         const presence = await getEnhancedPresence(authorization, "me");
-        const friends = await getFriendsFromAccountId(authorization, "me", { limit: 1 }); // Just to get total count
+        const friends = await getFriendsFromAccountId(authorization, "me", { limit: 1 });
+
+        /**
+         * Fetch high-res playtime data.
+         * This pulls the actual hours from the recently played library.
+         */
+        let playtimeMap = {};
+        try {
+            const recentlyPlayed = await getRecentlyPlayedGames(authorization, { limit: 15 });
+            const games = recentlyPlayed.data?.gameLibraryTitlesRetrieve?.games || [];
+            games.forEach(g => {
+                playtimeMap[g.name] = parsePlaytime(g.playDuration);
+            });
+        } catch (e) { 
+            console.log(`[${label}] High-res playtime fetch failed, will use title duration fallback.`); 
+        }
 
         const { trophyTitles } = await getUserTitles(authorization, "me");
         const recentGames = [];
@@ -90,14 +120,17 @@ async function getFullUserData(npsso, label) {
             const earned = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
             const total = (title.definedTrophies.platinum + title.definedTrophies.gold + title.definedTrophies.silver + title.definedTrophies.bronze);
             
+            // Map playtime from high-res API or fallback to title duration
+            const gameHours = playtimeMap[name] || parsePlaytime(title.playDuration);
+
             if (recentGames.length < 6) {
                 recentGames.push({
                     name: name,
                     art: title.trophyTitleIconUrl,
                     progress: title.progress,
                     ratio: `${earned}/${total}`,
-                    platform: title.npServiceName === "trophy2" ? "PS5" : "PS4",
-                    lastPlayed: title.lastUpdatedDateTime
+                    hours: gameHours, // Re-added: Total lifetime hours
+                    platform: title.npServiceName === "trophy2" ? "PS5" : "PS4"
                 });
             }
 
@@ -135,6 +168,7 @@ async function getFullUserData(npsso, label) {
 
                     activeGameMetadata = {
                         title: name,
+                        hours: gameHours,
                         trophies: trophiesDetailed,
                         dlcGroups: trophyGroups.map(g => ({
                             name: g.trophyGroupName,
@@ -158,7 +192,7 @@ async function getFullUserData(npsso, label) {
             online: presence.online,
             platform: presence.platform,
             currentGame: presence.currentGame,
-            avatar: profile.avatarUrls.sort((a,b) => b.size - a.size)[0]?.avatarUrl || "", // Get highest res
+            avatar: profile.avatarUrls.sort((a,b) => b.size - a.size)[0]?.avatarUrl || "", 
             bio: profile.aboutMe || "",
             plus: profile.isPlus || false,
             friendCount: friends.totalItemCount || 0,
@@ -167,6 +201,7 @@ async function getFullUserData(npsso, label) {
             levelProgress: stats.progress,
             activeHunt: activeGameMetadata,
             recentGames: recentGames,
+            hours: activeGameMetadata?.hours || "0h", // Current session game hours
             trophies: {
                 platinum: et.platinum || 0,
                 gold: et.gold || 0,
