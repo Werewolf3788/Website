@@ -6,7 +6,7 @@ const {
     getUserTrophyProfileSummary,
     getUserTrophiesEarnedForTitle,
     getTitleTrophies,
-    getTitleTrophyGroups, // Integrated from Ultimate
+    getTitleTrophyGroups,
     makeUniversalSearch,
     getProfileFromAccountId,
     getRecentlyPlayedGames
@@ -17,11 +17,15 @@ const path = require("path");
 
 /**
  * Requirement 10: Kevin's Official Pack Squad
+ * Aliases: Seth (Phoenix), Ray (OneLIVIDMAN), TJ (Darkwing)
  */
 const SQUAD_IDS = {
-    ray: "OneLIVIDMAN",         // Ray
-    darkwing: "Darkwing69420",  // TJ
-    phoenix: "phoenix_darkfire" // Seth
+    ray: "OneLIVIDMAN",
+    darkwing: "Darkwing69420",
+    phoenix: "phoenix_darkfire",
+    elucidator: "ElucidatorVah",
+    jcrow: "JCrow207",
+    unicorn: "UnicornBunnyShiv"
 };
 
 // BLOCKLIST: GTA V Titles
@@ -56,19 +60,33 @@ const getPresence = async (auth, accountId) => {
     }
 };
 
-async function getFullUserData(npsso, label) {
+/**
+ * Core Logic: Fetch everything for a specific user
+ * We now pass the OnlineID directly to resolve the numeric AccountID immediately.
+ */
+async function getFullUserData(npsso, label, targetOnlineId) {
     try {
-        console.log(`--- Starting Full Sync for ${label} ---`);
+        console.log(`--- Starting Full Sync for ${label} (${targetOnlineId}) ---`);
         const accessCode = await exchangeNpssoForCode(npsso);
         const authorization = await exchangeCodeForAccessToken(accessCode);
 
-        // BRIDGE FIX: Resolve numeric accountId to bypass "Bad Request"
-        // We get the profile for 'me' to find the onlineId, then search that ID to get the number.
-        const selfProfile = await getProfileFromAccountId(authorization, "me");
-        const searchSelf = await makeUniversalSearch(authorization, selfProfile.onlineId, "socialAccounts");
-        const accountId = searchSelf.domainResponses[0].results[0].socialMetadata.accountId;
+        // BRIDGE FIX: Resolve numeric accountId via Search FIRST
+        // This avoids the 'me' Bad Request error entirely.
+        console.log(`[${label}] Resolving numeric ID for ${targetOnlineId}...`);
+        const searchResult = await makeUniversalSearch(authorization, targetOnlineId, "socialAccounts");
+        
+        // Safety check for search results
+        const result = searchResult.domainResponses?.[0]?.results?.[0];
+        if (!result) {
+            throw new Error(`Search failed to find profile for ${targetOnlineId}. Ensure profile is public.`);
+        }
+        
+        const accountId = result.socialMetadata.accountId;
         console.log(`[${label}] Account ID Resolved: ${accountId}`);
 
+        // 1. Fetch Profile Data (Using numeric ID)
+        const profile = await getProfileFromAccountId(authorization, accountId);
+        
         // Requirement 11: Console online/offline status
         const presence = await getPresence(authorization, accountId);
 
@@ -147,9 +165,9 @@ async function getFullUserData(npsso, label) {
             online: presence.online,
             platform: presence.platform,
             currentGame: presence.currentGame,
-            avatar: selfProfile.avatars.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url,
-            bio: selfProfile.aboutMe || "Admin Kevin",
-            plus: selfProfile.isPlus || false,
+            avatar: profile.avatars.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url,
+            bio: profile.aboutMe || "Admin Kevin",
+            plus: profile.isPlus || false,
             level: stats.trophyLevel,
             levelProgress: stats.progress,
             activeHunt: activeGameMetadata,
@@ -181,15 +199,20 @@ async function main() {
             const authCode = await exchangeNpssoForCode(werewolfToken);
             const auth = await exchangeCodeForAccessToken(authCode);
             
-            const wolfData = await getFullUserData(werewolfToken, "Werewolf");
+            // Full Sync for Kevin (Werewolf3788)
+            const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
             if (wolfData) finalData.users.werewolf = wolfData;
 
             console.log("--- Syncing Squad Status ---");
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
+                // If we already have full data for this key (e.g., ray), skip the basic presence check
+                if (finalData.users[key]) continue;
+                
                 try {
                     const search = await makeUniversalSearch(auth, onlineId, "socialAccounts");
-                    if (search.domainResponses?.[0]?.results?.[0]) {
-                        const accId = search.domainResponses[0].results[0].socialMetadata.accountId;
+                    const res = search.domainResponses?.[0]?.results?.[0];
+                    if (res) {
+                        const accId = res.socialMetadata.accountId;
                         finalData.users[key] = await getPresence(auth, accId);
                     }
                 } catch (e) { finalData.users[key] = { online: false }; }
@@ -198,7 +221,8 @@ async function main() {
     }
 
     if (rayToken) {
-        const rayDetail = await getFullUserData(rayToken, "Ray");
+        // Full Sync for Ray (OneLIVIDMAN)
+        const rayDetail = await getFullUserData(rayToken, "Ray", "OneLIVIDMAN");
         if (rayDetail) finalData.users.ray = rayDetail;
     }
 
