@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Werewolf Project | Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* Applying user-specified mobile settings */
+            --header-text-size: 30px;
+            --body-text-size: 14px;
+            --row-height: 30px;
+            --section-height: 50px;
+
+            /* Custom Theme Colors */
+            --color-werewolf: #FF5F1F; /* Jet Orange */
+            --color-ray: #C41E3A;      /* St. Louis Cardinals Red */
+            --color-phoenix: #00f2ff;   /* Blue Flame (Vibrant Cyan) */
+            --color-terrdog: #9333ea;   /* Purple */
+        }
+
+        body {
+            background-color: #0f172a;
+            color: #f1f5f9;
+            font-size: var(--body-text-size);
+            line-height: var(--row-height);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        h1, h2, h3 {
+            font-size: var(--header-text-size);
+            line-height: 1.2;
+            font-weight: 800;
+            color: #38bdf8;
+        }
+
+        .section-padding {
+            padding-top: var(--section-height);
+            padding-bottom: var(--section-height);
+        }
+
+        .nav-link {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #38bdf8;
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            display: block;
+        }
+
+        .custom-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+        }
+
+        /* Weather Layers */
+        .weather-layer {
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        .weather-layer.active {
+            opacity: 1;
+        }
+
+        .card-content {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Dynamic Weather Backgrounds */
+        .bg-rain { background: linear-gradient(to bottom, #1e293b, #0f172a); }
+        .bg-cloudy { background: linear-gradient(to bottom, #475569, #1e293b); }
+        .bg-sunny { background: linear-gradient(to bottom, #fbbf24, #f59e0b); }
+        .bg-snowy { background: linear-gradient(to bottom, #1e40af, #3b82f6); }
+        .bg-clear { background: linear-gradient(to bottom, #0f172a, #020617); }
+
+        /* Rain Particles */
+        .rain-drop {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            width: 1px;
+            height: 15px;
+            top: -20px;
+            animation: fall linear infinite;
+        }
+
+        /* Cloud Particles */
+        .cloud-puff {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            filter: blur(20px);
+            animation: float 10s ease-in-out infinite;
+        }
+
+        /* Sun Effect */
+        .sun-glow {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse-sun 4s ease-in-out infinite;
+        }
+
+        /* Snow Particles */
+        .snow-ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: white;
+            filter: blur(8px);
+            opacity: 0.6;
+        }
+        .snowflake {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            top: -10px;
+            animation: drift linear infinite;
+        }
+
+        @keyframes fall { to { transform: translateY(350px); } }
+        @keyframes drift { to { transform: translateY(350px) translateX(20px); } }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 15px); }
+        }
+        @keyframes pulse-sun {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.3); opacity: 0.8; }
+        }
+
+        /* Status & Colors */
+        .status-pulse {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: #ef4444;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Theme Accents */
+        .border-werewolf { border-color: var(--color-werewolf); }
+        .text-werewolf { color: var(--color-werewolf); }
+        .shadow-werewolf { box-shadow: 0 10px 15px -3px rgba(255, 95, 31, 0.4); }
+
+        .border-ray { border-color: var(--color-ray); }
+        .text-ray { color: var(--color-ray); }
+        .shadow-ray { box-shadow: 0 10px 15px -3px rgba(196, 30, 58, 0.4); }
+
+        /* Phoenix "Blue Flame" Styling */
+        .border-phoenix { border-color: var(--color-phoenix); }
+        .text-phoenix { 
+            color: var(--color-phoenix); 
+            text-shadow: 0 0 8px rgba(0, 242, 255, 0.6);
+        }
+        .shadow-phoenix { box-shadow: 0 0 20px -5px rgba(0, 242, 255, 0.5); }
+
+        .border-terrdog { border-color: var(--color-terrdog); }
+        .text-terrdog { color: var(--color-terrdog); }
+        .shadow-terrdog { box-shadow: 0 10px 15px -3px rgba(147, 51, 234, 0.4); }
+
+        /* Visibility for sunny backgrounds */
+        .is-sunny h3 { color: #0f172a !important; }
+        .is-sunny p { color: #1e293b !important; }
+        .is-sunny .weather-desc { color: #334155 !important; opacity: 0.9; }
+        .is-sunny .border-terrdog, .is-sunny .border-werewolf, .is-sunny .border-ray, .is-sunny .border-phoenix { border-color: rgba(0,0,0,0.4); }
+        .is-sunny .visit-link { color: #0f172a !important; border-color: rgba(0,0,0,0.3) !important; }
+        
+        /* Ensure Phoenix's blue flame is visible on bright backgrounds */
+        .is-sunny .text-phoenix { 
+            color: #007788 !important; 
+            text-shadow: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Navigation -->
+    <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="text-xl font-black tracking-tighter text-sky-400">WEREWOLF<span class="text-white">PROJECT</span></span>
+                </div>
+
+                <!-- Desktop Menu (Clean Relative Paths) -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="./users/kevin/" class="nav-link text-slate-300 hover:text-white">Werewolf3788</a>
+                    <a href="./users/ray/" class="nav-link text-slate-300 hover:text-white">Raymystyro</a>
+                    <a href="./users/seth/" class="nav-link text-slate-300 hover:text-white">Phoenix_Darkfire</a>
+                    <a href="./users/tj/" class="nav-link text-slate-300 hover:text-white">Terrdog420</a>
+                    
+                    <div class="relative group dropdown">
+                        <button class="flex items-center space-x-1 text-slate-300 hover:text-white focus:outline-none py-4">
+                            <span>Games</span>
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                            <a href="./games/sniper-elite-resistance" class="block px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-sky-400">
+                                Sniper-Elite-Resistance
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="md:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="text-slate-400 hover:text-white p-2">
+                        <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="md:hidden bg-slate-900 border-b border-slate-700">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                <a href="./users/kevin/" class="block px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">Werewolf3788</a>
+                <a href="./users/ray/" class="block px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">Raymystyro</a>
+                <a href="./users/seth/" class="block px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">Phoenix_Darkfire</a>
+                <a href="./users/tj/" class="block px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">Terrdog420</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="section-padding px-4 flex-grow flex items-center">
+        <div class="max-w-4xl mx-auto text-center">
+            <h1>Knowing the Players</h1>
+            <p class="mt-6 text-slate-400 max-w-2xl mx-auto leading-relaxed">
+                We all have a PS5 or a PlayStation account, though our usernames are not our gamertags. Click on each player and view their profile to see how they progress through their gaming world.
+            </p>
+        </div>
+    </header>
+
+    <!-- Team Section -->
+    <section id="team" class="section-padding bg-slate-900/50">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <h2>Project Contributors</h2>
+                <div class="h-1 w-20 bg-sky-500 mx-auto mt-4 rounded-full"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Werewolf3788 -->
+                <div id="card-werewolf" class="custom-card p-6 text-center shadow-werewolf">
+                    <div class="weather-layer" id="layer-werewolf"></div>
+                    <div class="card-content">
+                        <div class="w-24 h-24 mx-auto mb-4 relative">
+                            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-70x70.png" 
+                                 class="w-full h-full rounded-full border-2 border-werewolf object-cover shadow-lg">
+                            <div id="twitch-status-indicator-werewolf" class="hidden absolute bottom-1 right-1">
+                                <span class="status-pulse"></span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl mb-1 text-white">Werewolf3788</h3>
+                        <p class="text-werewolf text-xs font-bold uppercase tracking-tighter mb-1">Admin / Streamer</p>
+                        <p id="weather-desc-werewolf" class="weather-desc text-[10px] opacity-70 mb-2 italic">Updating weather...</p>
+                        <div class="mb-4 min-h-[20px]">
+                            <p id="twitch-game-werewolf" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking Twitch...</p>
+                        </div>
+                        <a href="./users/kevin/" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-werewolf text-xs transition-colors">Visit Profile</a>
+                    </div>
+                </div>
+
+                <!-- Raymystyro -->
+                <div id="card-ray" class="custom-card p-6 text-center shadow-ray">
+                    <div class="weather-layer" id="layer-ray"></div>
+                    <div class="card-content">
+                        <div class="w-24 h-24 mx-auto mb-4 relative">
+                            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-70x70.png" 
+                                 class="w-full h-full rounded-full border-2 border-ray object-cover shadow-lg">
+                            <div id="twitch-status-indicator-ray" class="hidden absolute bottom-1 right-1">
+                                <span class="status-pulse"></span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl mb-1 text-white">Raymystyro</h3>
+                        <p class="text-ray text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
+                        <p id="weather-desc-ray" class="weather-desc text-[10px] opacity-70 mb-2 italic">Updating weather...</p>
+                        <div class="mb-4 min-h-[20px]">
+                            <p id="twitch-game-ray" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking Twitch...</p>
+                        </div>
+                        <a href="./users/ray/" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-ray text-xs transition-colors">Visit Profile</a>
+                    </div>
+                </div>
+
+                <!-- Phoenix_Darkfire -->
+                <div id="card-phoenix" class="custom-card p-6 text-center shadow-phoenix">
+                    <div class="weather-layer" id="layer-phoenix"></div>
+                    <div class="card-content">
+                        <div class="w-24 h-24 mx-auto mb-4 relative">
+                            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png" 
+                                 class="w-full h-full rounded-full border-2 border-phoenix object-cover shadow-lg">
+                            <div id="twitch-status-indicator-phoenix" class="hidden absolute bottom-1 right-1">
+                                <span class="status-pulse"></span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl mb-1 text-white">Phoenix_Darkfire</h3>
+                        <p class="text-phoenix text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
+                        <p id="weather-desc-phoenix" class="weather-desc text-[10px] opacity-70 mb-2 italic">Updating weather...</p>
+                        <div class="mb-4 min-h-[20px]">
+                            <p id="twitch-game-phoenix" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking Twitch...</p>
+                        </div>
+                        <a href="./users/seth/" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-phoenix text-xs transition-colors">Visit Profile</a>
+                    </div>
+                </div>
+
+                <!-- Terrdog420 -->
+                <div id="card-tj" class="custom-card p-6 text-center shadow-terrdog">
+                    <div class="weather-layer" id="layer-tj"></div>
+                    <div class="card-content">
+                        <div class="w-24 h-24 mx-auto mb-4 relative">
+                            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/9dad426e-04cb-4fc0-a917-25982b3800ce-profile_image-70x70.png" 
+                                 class="w-full h-full rounded-full border-2 border-terrdog object-cover shadow-lg">
+                            <div id="twitch-status-indicator-tj" class="hidden absolute bottom-1 right-1">
+                                <span class="status-pulse"></span>
+                            </div>
+                        </div>
+                        <h3 class="text-xl mb-1 text-white">Terrdog420</h3>
+                        <p class="text-terrdog text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
+                        <p id="weather-desc-tj" class="weather-desc text-[10px] opacity-70 mb-2 italic">Updating weather...</p>
+                        <div class="mb-4 min-h-[20px]">
+                            <p id="twitch-game-tj" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking Twitch...</p>
+                        </div>
+                        <a href="./users/tj/" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-terrdog text-xs transition-colors">Visit Profile</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Games Featured -->
+    <section class="section-padding">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <span class="text-sky-500 font-bold uppercase tracking-widest text-xs">Featured Content</span>
+                    <h2 class="mt-2">Gaming Modules</h2>
+                    <p class="mt-4 text-slate-400">
+                        Custom Sniper Elite interfaces and tracking tools integrated directly into the repository.
+                    </p>
+                    <div class="mt-8">
+                        <a href="./games/sniper-elite-resistance" class="text-sky-400 hover:text-sky-300 font-bold flex items-center space-x-2">
+                            <span>Explore Sniper-Elite-Resistance</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="custom-card p-8 aspect-video flex items-center justify-center overflow-hidden">
+                    <div class="relative w-full h-full bg-slate-800 rounded-lg flex items-center justify-center border border-slate-700">
+                        <i class="fa-solid fa-crosshairs text-6xl text-slate-700 group-hover:text-sky-500 transition-colors"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="mt-auto bg-slate-950 py-10 border-t border-slate-800 text-center">
+        <div class="max-w-7xl mx-auto px-4">
+            <p class="text-slate-500 text-sm">
+                &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        const users = [
+            { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf', twitch: 'werewolf3788', theme: 'text-werewolf' },
+            { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray', twitch: 'raymystyro', theme: 'text-ray' },
+            { id: 'phoenix', user: 'phoenix_darkfire', lat: 38.8681, lon: -88.8509, cardId: 'card-phoenix', layerId: 'layer-phoenix', descId: 'weather-desc-phoenix', twitch: 'phoenix_darkfire', theme: 'text-phoenix' },
+            { id: 'tj', user: 'terrdog420', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', layerId: 'layer-tj', descId: 'weather-desc-tj', twitch: 'terrdog420', theme: 'text-terrdog' }
+        ];
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const icon = document.getElementById('menu-icon');
+            menu.classList.toggle('active');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-xmark');
+        }
+
+        async function updateWeather() {
+            for (const u of users) {
+                try {
+                    const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${u.lat}&longitude=${u.lon}&current_weather=true&temperature_unit=fahrenheit`);
+                    const data = await res.json();
+                    const code = data.current_weather.weathercode;
+                    const temp = Math.round(data.current_weather.temperature);
+                    
+                    let type = 'clear';
+                    let desc = 'Clear Skies';
+                    
+                    if (code === 0) { type = 'sunny'; desc = 'Sunny'; }
+                    else if (code >= 1 && code <= 3) { type = 'cloudy'; desc = 'Partly Cloudy'; }
+                    else if (code >= 45 && code <= 48) { type = 'cloudy'; desc = 'Foggy'; }
+                    else if (code >= 51 && code <= 67 || code >= 80 && code <= 82 || code >= 95) { type = 'rain'; desc = 'Raining'; }
+                    else if (code >= 71 && code <= 77 || code >= 85 && code <= 86) { type = 'snowy'; desc = 'Snowing'; }
+
+                    applyWeatherUI(u, type, `${desc} • ${temp}°F`);
+                } catch (e) {
+                    console.error("Weather error:", e);
+                    document.getElementById(u.descId).textContent = "Weather unavailable";
+                }
+            }
+        }
+
+        function applyWeatherUI(user, type, description) {
+            const card = document.getElementById(user.cardId);
+            const layer = document.getElementById(user.layerId);
+            const descText = document.getElementById(user.descId);
+            
+            descText.textContent = description;
+            card.classList.remove('bg-rain', 'bg-cloudy', 'bg-sunny', 'bg-snowy', 'bg-clear', 'is-sunny');
+            card.classList.add(`bg-${type}`);
+            
+            if (type === 'sunny') card.classList.add('is-sunny');
+
+            layer.innerHTML = '';
+            layer.classList.add('active');
+
+            if (type === 'rain') {
+                for(let i=0; i<30; i++) {
+                    const drop = document.createElement('div');
+                    drop.className = 'rain-drop';
+                    drop.style.left = Math.random() * 100 + '%';
+                    drop.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
+                    drop.style.animationDelay = Math.random() * 2 + 's';
+                    layer.appendChild(drop);
+                }
+            } else if (type === 'snowy') {
+                const ground = document.createElement('div');
+                ground.className = 'snow-ground';
+                layer.appendChild(ground);
+                for(let i=0; i<40; i++) {
+                    const flake = document.createElement('div');
+                    flake.className = 'snowflake';
+                    const size = Math.random() * 4 + 2 + 'px';
+                    flake.style.width = size; flake.style.height = size;
+                    flake.style.left = Math.random() * 100 + '%';
+                    flake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    layer.appendChild(flake);
+                }
+            } else if (type === 'cloudy') {
+                for(let i=0; i<3; i++) {
+                    const puff = document.createElement('div');
+                    puff.className = 'cloud-puff';
+                    puff.style.width = (Math.random() * 100 + 100) + 'px';
+                    puff.style.height = '60px';
+                    puff.style.top = Math.random() * 80 + '%';
+                    puff.style.left = Math.random() * 80 + '%';
+                    puff.style.animationDelay = (i * -3) + 's';
+                    layer.appendChild(puff);
+                }
+            } else if (type === 'sunny') {
+                const sun = document.createElement('div');
+                sun.className = 'sun-glow';
+                layer.appendChild(sun);
+            }
+        }
+
+        async function updateTwitchStatus(u) {
+            const gameEl = document.getElementById(`twitch-game-${u.id}`);
+            const statusIndicator = document.getElementById(`twitch-status-indicator-${u.id}`);
+            try {
+                const response = await fetch(`https://decapi.me/twitch/game/${u.twitch}`);
+                const gameName = await response.text();
+                if (gameName && gameName.toLowerCase() !== 'offline') {
+                    gameEl.innerHTML = `<i class="fa-solid fa-gamepad mr-2"></i>Live: ${gameName}`;
+                    gameEl.className = `${u.theme} text-[10px] uppercase font-bold italic`;
+                    statusIndicator.classList.remove('hidden');
+                } else {
+                    gameEl.textContent = 'Currently Offline';
+                    gameEl.className = 'text-slate-500 opacity-50 text-[10px]';
+                    statusIndicator.classList.add('hidden');
+                }
+            } catch (e) { gameEl.textContent = 'Twitch Unreachable'; }
+        }
+
+        function refreshData() {
+            updateWeather();
+            users.forEach(updateTwitchStatus);
+        }
+
+        window.onload = () => {
+            refreshData();
+            setInterval(refreshData, 300000);
+        };
+    </script>
+</body>
+</html>
