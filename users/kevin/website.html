@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Version: 3.6.0 - Dynamic Lobby Logic & Auto-Hide -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -41,15 +42,7 @@
             line-height: 1;
         }
 
-        .section-container { 
-            padding-top: var(--section-padding); 
-            padding-bottom: var(--section-padding); 
-        }
-
-        .row-gap { 
-            margin-top: var(--row-spacing); 
-            margin-bottom: var(--row-spacing);
-        }
+        .section-container { padding-top: var(--section-padding); padding-bottom: var(--section-padding); }
 
         .glass-card {
             background: rgba(30, 30, 36, 0.6);
@@ -80,10 +73,8 @@
             border-radius: 9999px;
             font-size: 12px;
             display: inline-flex;
-            align-items: center;
-            gap: 0.6rem;
-            font-weight: 800;
-            text-transform: uppercase;
+            align-items: center; gap: 0.6rem;
+            font-weight: 800; text-transform: uppercase;
         }
 
         .pulse-dot {
@@ -102,6 +93,48 @@
         .progress-bar-container { height: 10px; background: #2d2d35; border-radius: 5px; overflow: hidden; }
         .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #8b5cf6); transition: width 1.5s ease-out; }
 
+        /* --- PSNPROFILES STYLE TROPHY ROW --- */
+        .trophy-row {
+            display: grid;
+            grid-template-columns: 50px 1fr auto 75px;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            transition: background 0.2s ease;
+            position: relative;
+        }
+        .trophy-row:hover { background: rgba(255,255,255,0.03); }
+        .trophy-row.earned { background: rgba(16, 185, 129, 0.04); }
+        .trophy-row.locked { opacity: 0.6; }
+
+        .trophy-icon-sq {
+            width: 50px; height: 50px;
+            border-radius: 4px; border: 1px solid rgba(255,255,255,0.1);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .trophy-main-info { min-width: 0; }
+        .trophy-title-text { font-weight: 800; color: #fff; font-size: 13px; margin-bottom: 1px; }
+        .trophy-desc-text { font-size: 10px; color: #94a3b8; font-weight: 500; line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .trophy-duration-text { font-size: 9px; color: #64748b; font-weight: 700; margin-top: 2px; }
+
+        .trophy-time-stats { text-align: right; min-width: 95px; }
+        .trophy-date-label { font-size: 9px; font-weight: 800; color: #e2e8f0; display: block; white-space: nowrap; }
+        .trophy-time-label { font-size: 9px; color: #94a3b8; font-weight: 500; display: block; }
+        .trophy-prog-fraction { font-family: monospace; font-size: 12px; font-weight: 900; color: #3b82f6; }
+        .earned .trophy-prog-fraction { color: #10b981; }
+
+        .trophy-rarity-block { text-align: right; border-left: 1px solid rgba(255,255,255,0.05); padding-left: 10px; }
+        .rarity-percent { font-size: 10px; font-weight: 900; color: #cbd5e1; display: block; }
+        .rarity-name { font-size: 8px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.05em; }
+
+        .trophy-color-platinum { color: #50b3e7; }
+        .trophy-color-gold { color: #f9d71c; }
+        .trophy-color-silver { color: #d1d1d1; }
+        .trophy-color-bronze { color: #cd7f32; }
+
         .game-card-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -109,199 +142,159 @@
         }
 
         .game-thumb {
-            position: relative;
-            aspect-ratio: 2/3;
-            overflow: hidden;
-            border-radius: 0.75rem;
-            background: #1e1e24;
-            border: 1px solid rgba(255,255,255,0.05);
+            position: relative; aspect-ratio: 2/3; overflow: hidden;
+            border-radius: 0.75rem; background: #1e1e24; border: 1px solid rgba(255,255,255,0.05);
         }
-        
         .game-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
         .game-thumb:hover img { transform: scale(1.15); }
-        
         .game-info-overlay {
-            position: absolute; inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 70%);
-            display: flex; flex-direction: column; justify-content: flex-end;
-            padding: 12px; opacity: 0; transition: opacity 0.3s ease;
+            position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 70%);
+            display: flex; flex-direction: column; justify-content: flex-end; padding: 12px; opacity: 0; transition: opacity 0.3s ease;
         }
-        .game-thumb:hover .game-info-overlay { opacity: 1; }
-
-        .trophy-color-platinum { color: #50b3e7; text-shadow: 0 0 10px rgba(80, 179, 231, 0.5); }
-        .trophy-color-gold { color: #f9d71c; text-shadow: 0 0 10px rgba(249, 215, 28, 0.5); }
-        .trophy-color-silver { color: #d1d1d1; }
-        .trophy-color-bronze { color: #cd7f32; }
-
-        .trophy-list-item {
-            display: flex; align-items: center; gap: 15px; padding: 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .trophy-list-item:last-child { border-bottom: none; }
-        .trophy-list-item.locked { opacity: 0.3; filter: grayscale(1); }
-        .trophy-list-icon { width: 40px; height: 40px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); }
-        .trophy-list-info { flex: 1; min-width: 0; }
-        .trophy-list-name { font-weight: 800; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 13px; }
-        .trophy-list-type { font-size: 9px; font-weight: 900; text-transform: uppercase; color: #94a3b8; }
-        .trophy-list-status { font-size: 9px; font-weight: 900; text-transform: uppercase; padding: 2px 8px; border-radius: 4px; background: rgba(255,255,255,0.05); }
-        .earned .trophy-list-status { color: #34d399; background: rgba(16, 185, 129, 0.1); }
 
         .btn-link {
-            display: flex; align-items: center; padding: 1rem;
-            border-radius: 1rem; background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: all 0.3s ease;
+            display: flex; align-items: center; padding: 1rem; border-radius: 1rem; background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s ease;
         }
-        .btn-link:hover {
-            background: rgba(255,255,255,0.07);
-            border-color: var(--accent-purple);
-            transform: translateX(5px);
-        }
+        .btn-link:hover { background: rgba(255,255,255,0.07); border-color: var(--accent-purple); transform: translateX(5px); }
 
         .lobby-card {
             display: flex; align-items: center; justify-content: space-between; padding: 1.25rem;
-            background: rgba(255,255,255,0.03); border-radius: 1rem; border: 1px solid rgba(255,255,255,0.05);
-            transition: all 0.3s ease;
+            background: rgba(255,255,255,0.03); border-radius: 1rem; border: 1px solid rgba(255,255,255,0.05); transition: all 0.3s ease;
+            text-decoration: none; color: inherit;
         }
-        a.lobby-card:hover {
-            background: rgba(255,255,255,0.08);
-            border-color: var(--accent-purple);
-            transform: scale(1.02);
-        }
+        .lobby-card:hover { background: rgba(255,255,255,0.08); border-color: var(--accent-purple); transform: scale(1.02); }
 
         .hidden { display: none !important; }
 
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: var(--bg-dark); }
+        #admin-debug {
+            position: fixed; bottom: 10px; left: 10px; background: rgba(0,0,0,0.85); border-left: 4px solid #3b82f6;
+            padding: 10px 15px; font-family: monospace; font-size: 11px; z-index: 9999; color: #ffffff;
+            border-radius: 4px; max-width: 300px; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transition: opacity 1s ease;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #2d2d35; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
     </style>
 </head>
 <body class="min-h-screen">
 
+    <!-- Admin Debug Panel -->
+    <div id="admin-debug" class="hidden">
+        <div class="font-black text-blue-400 mb-1">PACK ADMIN CONSOLE</div>
+        <div id="debug-msg">Initializing...</div>
+    </div>
+
     <!-- HEADER / HERO -->
     <header class="w-full text-center section-container px-6">
         <div class="max-w-6xl mx-auto">
             <div class="relative inline-block mb-8">
                 <div class="absolute inset-0 bg-blue-600 blur-[100px] opacity-25 rounded-full"></div>
-                <img 
-                    src="https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-70x70.png" 
-                    alt="Werewolf3788 Avatar" 
-                    class="relative w-40 h-40 rounded-full border-4 border-blue-600 shadow-2xl mx-auto object-cover"
-                >
+                <a href="https://profile.playstation.com/Werewolf3788" target="_blank" class="block">
+                    <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-70x70.png" 
+                         class="relative w-40 h-40 rounded-full border-4 border-blue-600 shadow-2xl mx-auto object-cover hover:scale-105 transition-transform">
+                </a>
             </div>
             
-            <h1 class="wolf-gradient-text mb-4">Werewolf3788</h1>
+            <h1 class="wolf-gradient-text mb-2">Werewolf3788</h1>
+            <div class="text-[10px] font-black text-blue-500/50 uppercase tracking-[0.4em] mb-4">Pack Admin Hub v3.6.0</div>
             
             <div id="live-status-container" class="mb-8 hidden">
-                <div class="status-badge">
-                    <div class="pulse-dot"></div>
-                    <span id="twitch-game-label">LIVE ON TWITCH</span>
-                </div>
+                <div class="status-badge"><div class="pulse-dot"></div><span id="twitch-game-label">LIVE</span></div>
             </div>
 
             <!-- Global Status Bar -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
                 <div class="glass-card p-5 border-b-4 border-blue-600">
-                    <div class="text-[10px] text-blue-400 uppercase font-black tracking-widest mb-1">Followers</div>
+                    <div class="text-[10px] text-blue-400 font-black mb-1 uppercase">Followers</div>
                     <div id="follower-count" class="text-3xl font-black text-white">--</div>
                 </div>
                 <div class="glass-card p-5 border-b-4 border-purple-600">
-                    <div class="text-[10px] text-purple-400 uppercase font-black tracking-widest mb-1">PSN Level</div>
+                    <div class="text-[10px] text-purple-400 font-black mb-1 uppercase">PSN Level</div>
                     <div id="psn-level-label" class="text-3xl font-black text-white">--</div>
                 </div>
                 <div class="glass-card p-5 border-b-4 border-yellow-500">
-                    <div class="text-[10px] text-yellow-500 uppercase font-black tracking-widest mb-1">Total Trophies</div>
+                    <div class="text-[10px] text-yellow-500 font-black mb-1 uppercase">Total Trophies</div>
                     <div id="trophy-total" class="text-3xl font-black text-white">--</div>
                 </div>
                 <div class="glass-card p-5 border-b-4 border-green-500">
-                    <div class="text-[10px] text-green-500 uppercase font-black tracking-widest mb-1">Status</div>
-                    <div id="online-status-label" class="text-2xl font-black text-white uppercase pt-1">Offline</div>
+                    <div class="text-[10px] text-green-500 font-black mb-1 uppercase">Status</div>
+                    <div id="online-status-label" class="text-2xl font-black uppercase pt-1">Offline</div>
                 </div>
             </div>
         </div>
     </header>
 
     <main class="max-w-[1600px] mx-auto px-6 pb-24">
-        <!-- TOP SECTION: ACTIVE HUNT (Full Width on Desktop) -->
-        <section id="active-hunt-section" class="glass-card p-8 border-l-8 border-blue-600 hidden mb-12">
-            <div class="grid lg:grid-cols-12 gap-12">
-                <!-- Left: Game Info -->
-                <div class="lg:col-span-4 flex flex-col justify-center">
-                    <h2 class="mb-8 text-blue-400 flex items-center gap-3">
-                        <i class="fas fa-crosshairs"></i> Active Hunt
-                    </h2>
-                    <div class="flex flex-col sm:flex-row lg:flex-col gap-8 items-center sm:items-start lg:items-center text-center sm:text-left lg:text-center">
-                        <div class="w-56">
-                            <div class="aspect-square rounded-3xl overflow-hidden shadow-2xl border border-white/10 group">
-                                <img id="active-game-art" src="" class="w-full h-full object-cover hidden group-hover:scale-110 transition-transform duration-700">
-                                <div id="active-game-fallback" class="w-full h-full bg-blue-900/20 flex items-center justify-center">
-                                    <i class="fab fa-playstation text-7xl text-blue-500/50"></i>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex-1 space-y-6 w-full">
-                            <h3 id="active-game-title" class="text-4xl text-white">GAME TITLE</h3>
-                            <div class="inline-block bg-blue-600/10 px-4 py-2 rounded-xl border border-blue-500/20 text-blue-400 font-black text-sm">
-                                <i class="far fa-clock mr-2"></i><span id="active-game-time">--</span> Played
-                            </div>
-                            <div class="space-y-4">
-                                <div class="flex justify-between items-end">
-                                    <span class="text-[11px] text-gray-400 font-black uppercase tracking-widest">Progress</span>
-                                    <span id="active-game-progress-text" class="text-xl font-black text-blue-400">0%</span>
-                                </div>
-                                <div class="progress-bar-container">
-                                    <div id="active-game-progress-fill" class="progress-bar-fill" style="width: 0%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Right: Objectives Checklist -->
-                <div class="lg:col-span-8 border-t lg:border-t-0 lg:border-l border-white/10 pt-10 lg:pt-0 lg:pl-10">
-                    <div id="active-trophy-checklist">
-                        <h3 class="text-xs font-black text-gray-500 uppercase tracking-[0.3em] mb-6 flex justify-between items-center">
-                            <span>Hunt Objectives</span>
-                            <span id="active-game-ratio" class="text-white">--/--</span>
-                        </h3>
-                        <div id="trophy-checklist-container" class="grid md:grid-cols-2 gap-x-6 max-h-[500px] overflow-y-auto pr-3 space-y-1 md:space-y-0">
-                            <!-- Populated dynamically -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- MAIN GRID: Non-stacked layout for Desktop -->
         <div class="grid lg:grid-cols-3 gap-12 items-start">
             
-            <!-- COLUMN 1: Profile & Trophies -->
+            <!-- COLUMN 1: Profile & Detailed Hunt -->
             <div class="space-y-12">
-                <!-- ABOUT ME -->
                 <section class="glass-card p-8">
-                    <h2 class="mb-6 opacity-90">About Me</h2>
+                    <h2 class="mb-6 opacity-90 text-[20px]">About Me</h2>
                     <p class="leading-relaxed text-gray-400 text-base">
-                        Hey everyone, Werewolf3788 here! Not here for a long time but for a howling good time! 
-                        You can catch my streams on TikTok, Trovo, Kick, Facebook, and YouTube pretty much everywhere. 
-                        If it's got pew pews I'm playing it whether it's alone or with my friends. Hope to see you all there!!!
+                        Hey everyone, Werewolf3788 here! Not here for a long time but for a howling good time! Catch my streams everywhere.
                     </p>
                 </section>
 
-                <!-- LATEST ACHIEVEMENT -->
                 <section id="latest-trophy-card" class="glass-card p-8 hidden">
-                    <h2 class="mb-8 text-purple-400">Latest Win</h2>
+                    <h2 class="mb-8 text-purple-400 text-[20px]">Latest Win</h2>
                     <div class="flex flex-col items-center text-center gap-6 p-6 bg-white/[0.03] rounded-3xl border border-white/10">
                         <div class="w-32 h-32 bg-black/40 rounded-2xl overflow-hidden border border-white/10 shrink-0 relative">
                             <img id="latest-trophy-img" src="" class="w-full h-full object-cover hidden">
-                            <div id="latest-trophy-fallback" class="w-full h-full flex items-center justify-center">
-                                <i class="fas fa-trophy text-6xl text-gray-800"></i>
-                            </div>
+                            <div id="latest-trophy-fallback" class="w-full h-full flex items-center justify-center"><i class="fas fa-trophy text-6xl text-gray-800"></i></div>
                         </div>
                         <div>
                             <p class="text-[10px] uppercase font-black text-purple-400 tracking-[0.3em] mb-2">Achievement Unlocked</p>
-                            <h3 id="latest-trophy-name" class="text-2xl text-white mb-2 leading-tight">Trophy Name</h3>
-                            <p id="latest-trophy-game" class="text-base text-gray-400 font-bold mb-4 italic">Game Name</p>
+                            <h3 id="latest-trophy-name" class="text-2xl text-white mb-2 leading-tight">--</h3>
+                            <p id="latest-trophy-game" class="text-base text-gray-400 font-bold italic mb-4">--</p>
                             <span id="latest-trophy-rank" class="px-5 py-2 bg-white/5 rounded-full font-black text-[11px] uppercase tracking-widest border border-white/10">Rank</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ACTIVE HUNT CARD -->
+                <section id="active-hunt-card" class="glass-card overflow-hidden">
+                    <div class="p-8 pb-4">
+                        <h2 id="hunt-status-header" class="mb-6 text-blue-400 flex items-center gap-3 text-[20px]">
+                            <i class="fas fa-crosshairs"></i> Active Hunt
+                        </h2>
+                    </div>
+                    
+                    <div class="relative w-full aspect-video bg-blue-900/10 overflow-hidden group border-y border-white/5">
+                        <img id="active-game-art" src="" class="w-full h-full object-cover hidden group-hover:scale-110 transition-transform duration-700">
+                        <div id="active-game-fallback" class="w-full h-full flex items-center justify-center">
+                            <i class="fab fa-playstation text-6xl text-blue-500/30"></i>
+                        </div>
+                        <div class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/90 to-transparent p-6 pt-12">
+                            <h3 id="active-game-title" class="text-xl text-white mb-1">GAME TITLE</h3>
+                            <div class="flex items-center gap-3">
+                                <span class="text-[10px] text-blue-400 font-black uppercase tracking-widest"><i class="far fa-clock mr-1"></i><span id="active-game-time">--</span></span>
+                                <span class="text-[10px] text-white/40 font-black uppercase tracking-widest border-l border-white/10 pl-3"><span id="active-game-ratio">--/--</span> Objectives</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-8 pb-0">
+                        <div class="space-y-4 mb-8">
+                            <div class="flex justify-between items-end">
+                                <span class="text-[10px] text-gray-400 font-black uppercase tracking-widest">Platinum Progress</span>
+                                <span id="active-game-progress-text" class="text-lg font-black text-blue-400">0%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div id="active-game-progress-fill" class="progress-bar-fill" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="mission-log-wrapper" class="border-t border-white/5">
+                        <div class="p-4 bg-white/[0.02] flex justify-between items-center border-b border-white/5">
+                            <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Trophy Mission Log</span>
+                        </div>
+                        <div id="trophy-checklist-container" class="space-y-0 max-h-[800px] overflow-y-auto">
+                            <!-- JS Generated -->
                         </div>
                     </div>
                 </section>
@@ -309,9 +302,8 @@
 
             <!-- COLUMN 2: Collection & History -->
             <div class="space-y-12">
-                <!-- TROPHY HALL TOTALS -->
                 <section class="glass-card p-8">
-                    <h2 class="mb-10 text-purple-400">Collection</h2>
+                    <h2 class="mb-10 text-purple-400 text-[20px]">Collection</h2>
                     <div class="grid grid-cols-2 gap-4 mb-8">
                         <div class="p-6 bg-white/[0.03] rounded-2xl border border-white/5 flex flex-col items-center">
                             <div class="trophy-color-platinum text-4xl font-black mb-2" id="count-plat">0</div>
@@ -330,179 +322,162 @@
                             <div class="text-[10px] font-black text-gray-500 uppercase tracking-widest text-center">Bronze</div>
                         </div>
                     </div>
-                    <div class="p-6 bg-white/[0.02] rounded-2xl border border-white/5">
-                        <div class="flex justify-between items-end mb-4">
-                            <span class="text-[11px] text-gray-400 font-black uppercase tracking-widest">Level Progression</span>
-                            <span id="level-progress-text" class="text-xl font-black text-purple-400">0%</span>
-                        </div>
-                        <div class="progress-bar-container">
-                            <div id="level-progress-fill" class="progress-bar-fill" style="width: 0%; background: linear-gradient(90deg, #8b5cf6, #d946ef);"></div>
-                        </div>
-                    </div>
                 </section>
 
-                <!-- RECENT HUNTS -->
                 <section class="glass-card p-8">
-                    <h2 class="mb-10 text-blue-400 text-center">Recent Hunts</h2>
+                    <h2 class="mb-10 text-blue-400 text-center text-[20px]">Recent Hunts</h2>
                     <div id="recent-games-container" class="game-card-grid"></div>
                 </section>
             </div>
 
-            <!-- COLUMN 3: Lobby & Social -->
+            <!-- COLUMN 3: Music & Lobby -->
             <div class="space-y-12">
-                <!-- THE LOBBY -->
-                <section class="glass-card p-8">
-                    <h2 class="mb-10 flex items-center gap-3">
-                        <i class="fas fa-users text-blue-400"></i> The Lobby
+                <!-- NOW PLAYING -->
+                <section id="music-section" class="glass-card p-8 text-center">
+                    <h2 class="mb-6 text-pink-400 flex items-center justify-center gap-3 text-[20px]">
+                        <i class="fas fa-headphones"></i> Now Playing
                     </h2>
-                    <div id="lobby-list" class="space-y-4">
-                        <a id="friend-phoenix" href="users/seth/phoenix_darkfire.html" class="lobby-card group">
-                            <div class="flex items-center gap-5">
-                                <div id="phoenix-status-dot" class="w-4 h-4 rounded-full bg-gray-600 transition-all shadow-lg"></div>
-                                <div>
-                                    <span class="font-black block text-white text-lg">Phoenix</span>
-                                    <span id="phoenix-status-label" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Offline</span>
-                                </div>
-                            </div>
-                            <div class="text-right"><span id="phoenix-current-game" class="text-[11px] text-blue-400 font-black block italic"></span></div>
+                    <div style="text-align: center;">
+                        <a href="https://www.last.fm/user/KR888434" target="_blank">
+                            <img id="music-widget-img" src="https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300" 
+                                 alt="Now Playing" 
+                                 style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.2); margin: 0 auto;">
                         </a>
-
-                        <a id="friend-ray" href="users/ray/website.html" class="lobby-card group">
-                            <div class="flex items-center gap-5">
-                                <div id="ray-status-dot" class="w-4 h-4 rounded-full bg-gray-600 transition-all shadow-lg"></div>
-                                <div>
-                                    <span class="font-black block text-white text-lg">OneLIVIDMAN</span>
-                                    <span id="ray-status-label" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Offline</span>
-                                </div>
-                            </div>
-                            <div class="text-right"><span id="ray-current-game" class="text-[11px] text-blue-400 font-black block italic"></span></div>
-                        </a>
-
-                        <a id="friend-darkwing" href="users/tj/overlay.html" class="lobby-card group">
-                            <div class="flex items-center gap-5">
-                                <div id="darkwing-status-dot" class="w-4 h-4 rounded-full bg-gray-600 transition-all shadow-lg"></div>
-                                <div>
-                                    <span class="font-black block text-white text-lg">Darkwing</span>
-                                    <span id="darkwing-status-label" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Offline</span>
-                                </div>
-                            </div>
-                            <div class="text-right"><span id="darkwing-current-game" class="text-[11px] text-blue-400 font-black block italic"></span></div>
-                        </a>
-
-                        <div id="friend-elucidator" class="lobby-card">
-                            <div class="flex items-center gap-5">
-                                <div id="elucidator-status-dot" class="w-4 h-4 rounded-full bg-gray-600 transition-all shadow-lg"></div>
-                                <div>
-                                    <span class="font-black block text-white text-lg">Elucidator</span>
-                                    <span id="elucidator-status-label" class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">Offline</span>
-                                </div>
-                            </div>
-                            <div class="text-right"><span id="elucidator-current-game" class="text-[11px] text-blue-400 font-black block italic"></span></div>
-                        </div>
                     </div>
                 </section>
 
-                <!-- THE PACK LINKS -->
+                <!-- THE LOBBY (Auto-hides if empty) -->
+                <section id="lobby-section" class="glass-card p-8 hidden">
+                    <h2 class="mb-10 flex items-center gap-3 text-[20px]">
+                        <i class="fas fa-users text-blue-400"></i> The Lobby
+                    </h2>
+                    <div id="lobby-list" class="space-y-4">
+                        <a id="card-seth" href="https://profile.playstation.com/joe-punk_" target="_blank" class="lobby-card group hidden">
+                            <div class="flex items-center gap-5">
+                                <div id="seth-status-dot" class="w-4 h-4 rounded-full bg-gray-600"></div>
+                                <div><span class="font-black block text-white text-lg">Phoenix</span><span id="seth-status-label" class="text-[11px] font-bold text-gray-500 uppercase">Offline</span></div>
+                            </div>
+                            <div class="text-right"><span id="seth-current-game" class="text-[11px] text-blue-400 font-black block italic"></span></div>
+                        </a>
+                        <a id="card-ray" href="https://profile.playstation.com/OneLIVIDMAN" target="_blank" class="lobby-card group hidden">
+                            <div class="flex items-center gap-5">
+                                <div id="ray-status-dot" class="w-4 h-4 rounded-full bg-gray-600"></div>
+                                <div><span class="font-black block text-white text-lg">OneLIVIDMAN</span><span id="ray-status-label" class="text-[11px] font-bold text-gray-500 uppercase">Offline</span></div>
+                            </div>
+                            <div class="text-right"><span id="ray-current-game" class="text-[11px] text-blue-400 font-black block italic"></span></div>
+                        </a>
+                        <a id="card-tj" href="https://profile.playstation.com/Darkwing69420" target="_blank" class="lobby-card group hidden">
+                            <div class="flex items-center gap-5">
+                                <div id="tj-status-dot" class="w-4 h-4 rounded-full bg-gray-600"></div>
+                                <div><span class="font-black block text-white text-lg">Darkwing</span><span id="tj-status-label" class="text-[11px] font-bold text-gray-500 uppercase">Offline</span></div>
+                            </div>
+                            <div class="text-right"><span id="tj-current-game" class="text-[11px] text-blue-400 font-black block italic"></span></div>
+                        </a>
+                        <a id="card-elucidator" href="https://profile.playstation.com/ElucidatorVah" target="_blank" class="lobby-card group hidden">
+                            <div class="flex items-center gap-5">
+                                <div id="elucidator-status-dot" class="w-4 h-4 rounded-full bg-gray-600"></div>
+                                <div><span class="font-black block text-white text-lg">Elucidator</span><span id="elucidator-status-label" class="text-[11px] font-bold text-gray-500 uppercase">Offline</span></div>
+                            </div>
+                            <div class="text-right"><span id="elucidator-current-game" class="text-[11px] text-blue-400 font-black block italic"></span></div>
+                        </a>
+                        <a id="card-jcrow" href="https://profile.playstation.com/JCrow207" target="_blank" class="lobby-card group hidden">
+                            <div class="flex items-center gap-5">
+                                <div id="jcrow-status-dot" class="w-4 h-4 rounded-full bg-gray-600"></div>
+                                <div><span class="font-black block text-white text-lg">JCrow207</span><span id="jcrow-status-label" class="text-[11px] font-bold text-gray-500 uppercase">Offline</span></div>
+                            </div>
+                            <div class="text-right"><span id="jcrow-current-game" class="text-[11px] text-blue-400 font-black block italic"></span></div>
+                        </a>
+                        <a id="card-unicorn" href="https://profile.playstation.com/UnicornBunnyShiv" target="_blank" class="lobby-card group hidden">
+                            <div class="flex items-center gap-5">
+                                <div id="unicorn-status-dot" class="w-4 h-4 rounded-full bg-gray-600"></div>
+                                <div><span class="font-black block text-white text-lg">UnicornBunny</span><span id="unicorn-status-label" class="text-[11px] font-bold text-gray-500 uppercase">Offline</span></div>
+                            </div>
+                            <div class="text-right"><span id="unicorn-current-game" class="text-[11px] text-blue-400 font-black block italic"></span></div>
+                        </a>
+                    </div>
+                </section>
+
                 <section class="glass-card p-8">
                     <h2 class="mb-10 text-xs font-black uppercase opacity-60 tracking-widest">The Pack Links</h2>
                     <div class="grid grid-cols-1 gap-4">
                         <a href="https://discord.gg/wUwuupWkgV" target="_blank" class="btn-link">
                             <i class="fab fa-discord text-2xl w-10 text-[#5865F2]"></i>
-                            <div class="flex-1">
-                                <div class="font-bold">Join Discord</div>
-                                <div class="text-[10px] text-gray-500 uppercase">Hang with the pack</div>
-                            </div>
+                            <div class="flex-1"><div class="font-bold">Join Discord</div><div class="text-[10px] text-gray-500 uppercase">Hang with the pack</div></div>
                         </a>
                         <a href="https://linktr.ee/werewolf3788" target="_blank" class="btn-link">
                             <i class="fas fa-tree text-2xl w-10 text-[#43E55E]"></i>
-                            <div class="flex-1">
-                                <div class="font-bold">LinkTree</div>
-                                <div class="text-[10px] text-gray-500 uppercase">All my socials</div>
-                            </div>
+                            <div class="flex-1"><div class="font-bold">LinkTree</div><div class="text-[10px] text-gray-500 uppercase">All my socials</div></div>
                         </a>
-                        <a href="https://www.tiktok.com/@k082412" target="_blank" class="btn-link">
-                            <i class="fab fa-tiktok text-2xl w-10 text-white"></i>
-                            <div class="flex-1">
-                                <div class="font-bold">TikTok</div>
-                                <div class="text-[10px] text-gray-500 uppercase">Daily clips</div>
-                            </div>
-                        </a>
-                        <div class="mt-4 border-t border-white/10 pt-4">
-                            <p class="text-[10px] uppercase tracking-widest text-gray-500 mb-4 font-black">Mobile Only</p>
-                            <a href="https://music.apple.com/profile/DJKru88" target="_blank" class="btn-link border-pink-900/30">
-                                <i class="fab fa-apple text-2xl w-10 text-[#FA243C]"></i>
-                                <div class="flex-1">
-                                    <div class="font-bold">Apple Music</div>
-                                    <div class="text-[10px] text-gray-500 uppercase text-xs">DJKru88</div>
-                                </div>
-                                <span class="text-[9px] bg-pink-500/20 text-pink-400 px-2 py-0.5 rounded font-black uppercase">Mobile</span>
-                            </a>
-                        </div>
                     </div>
                 </section>
             </div>
         </div>
         
-        <div class="text-center mt-12 text-[10px] font-black text-gray-700 uppercase tracking-[0.4em]">
-            Last Sync: <span id="sync-time">--</span>
-        </div>
+        <div class="text-center mt-12 text-[10px] font-black text-gray-700 uppercase">Last Sync: <span id="sync-time">--</span></div>
     </main>
 
-    <footer class="w-full text-center py-16 text-gray-800 text-[12px] font-black uppercase tracking-[0.5em] border-t border-white/5">
-        &copy; 2026 Kevin | Pack Admin
-    </footer>
-
     <script>
-        function getSecureUrl(path) {
-            const cacheBuster = "?t=" + Date.now();
-            if (path.startsWith('http')) return path + cacheBuster;
-            try {
-                const base = window.location.href.includes('blob:') || window.location.href.includes('usercontent.goog')
-                    ? "https://raw.githubusercontent.com/Werewolf3788/Website/main/" 
-                    : window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/') + 1);
-                const cleanPath = path.startsWith('/') ? path.substring(1) : path;
-                return new URL(cleanPath, base).href + cacheBuster;
-            } catch (e) {
-                return "https://raw.githubusercontent.com/Werewolf3788/Website/main/" + path + cacheBuster;
+        const REPO_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/";
+
+        function safeSet(id, value, attr = 'innerText') {
+            const el = document.getElementById(id);
+            if (el) { el[attr] = value; return true; }
+            return false;
+        }
+
+        function debug(msg) {
+            const panel = document.getElementById('admin-debug');
+            const label = document.getElementById('debug-msg');
+            if (panel && label) {
+                panel.classList.remove('hidden');
+                label.innerText = msg;
+                if (!window.debugTimerStarted) {
+                    window.debugTimerStarted = true;
+                    setTimeout(() => { panel.style.opacity = '0'; setTimeout(() => panel.classList.add('hidden'), 1000); }, 60000);
+                }
             }
         }
 
         async function updateProfile() {
+            // 1. Independent Music Update
+            try {
+                const mImg = document.getElementById('music-widget-img');
+                if (mImg) mImg.src = "https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&cb=" + Date.now();
+            } catch(e){}
+
+            // 2. Independent Twitch Update
             try {
                 const twitchRes = await fetch('https://decapi.me/twitch/game/werewolf3788');
                 const twitchGame = await twitchRes.text();
                 const liveStatusEl = document.getElementById('live-status-container');
-                if (liveStatusEl) {
-                    if (twitchGame && typeof twitchGame === 'string' && !twitchGame.toLowerCase().includes('offline')) {
-                        const twitchLabel = document.getElementById('twitch-game-label');
-                        if (twitchLabel) twitchLabel.innerText = `LIVE: ${twitchGame}`;
-                        liveStatusEl.classList.remove('hidden');
-                    } else { liveStatusEl.classList.add('hidden'); }
+                if (liveStatusEl && twitchGame && !twitchGame.toLowerCase().includes('offline')) {
+                    document.getElementById('twitch-game-label').innerText = `LIVE: ${twitchGame}`;
+                    liveStatusEl.classList.remove('hidden');
+                } else if (liveStatusEl) {
+                    liveStatusEl.classList.add('hidden');
                 }
 
                 const followRes = await fetch('https://decapi.me/twitch/followcount/werewolf3788');
                 const follows = await followRes.text();
-                const followCountEl = document.getElementById('follower-count');
-                if (followCountEl && !follows.includes('error')) followCountEl.innerText = follows;
+                if (follows && !follows.toLowerCase().includes('error')) {
+                    safeSet('follower-count', follows);
+                }
+            } catch(e){}
 
-                const psnRes = await fetch(getSecureUrl('Playstation/psn_data.json'));
-                if (!psnRes.ok) throw new Error("Failed to load PSN data");
+            // 3. PSN Update
+            try {
+                debug("Syncing Data...");
+                const psnRes = await fetch(REPO_BASE + "Playstation/psn_data.json?t=" + Date.now());
+                if (!psnRes.ok) throw new Error("Sync failure");
                 const psnData = await psnRes.json();
-                
+                debug("PSN Sync OK");
+
                 if (psnData && psnData.users) {
                     const wolf = psnData.users.werewolf || psnData.users.Werewolf;
                     if (wolf) {
-                        const lvlLabel = document.getElementById('psn-level-label');
-                        if (lvlLabel) lvlLabel.innerText = wolf.level || '--';
-                        
-                        const trophTotalLabel = document.getElementById('trophy-total');
-                        if (trophTotalLabel) {
-                            const t = wolf.trophies || {};
-                            const totalCount = t.total || ((t.platinum || 0) + (t.gold || 0) + (t.silver || 0) + (t.bronze || 0));
-                            trophTotalLabel.innerText = totalCount || '--';
-                        }
-                        
-                        if (document.getElementById('sync-time')) document.getElementById('sync-time').innerText = wolf.lastUpdated || '--';
+                        safeSet('psn-level-label', wolf.level || '--');
+                        safeSet('trophy-total', wolf.trophies?.total || '--');
+                        safeSet('sync-time', wolf.lastUpdated || '--');
                         
                         const statusLabel = document.getElementById('online-status-label');
                         if (statusLabel) {
@@ -510,76 +485,58 @@
                             statusLabel.className = wolf.online ? 'text-2xl font-black text-green-500 uppercase pt-1' : 'text-2xl font-black text-gray-500 uppercase pt-1';
                         }
 
-                        if (wolf.trophies) {
-                            const keys = { plat: 'platinum', gold: 'gold', silver: 'silver', bronze: 'bronze' };
-                            Object.keys(keys).forEach(k => {
-                                const el = document.getElementById(`count-${k}`);
-                                if (el) el.innerText = wolf.trophies[keys[k]] || 0;
-                            });
-                        }
+                        safeSet('count-plat', wolf.trophies?.platinum || 0);
+                        safeSet('count-gold', wolf.trophies?.gold || 0);
+                        safeSet('count-silver', wolf.trophies?.silver || 0);
+                        safeSet('count-bronze', wolf.trophies?.bronze || 0);
+                        safeSet('level-progress-text', (wolf.progress || 0) + '%');
+                        const lFill = document.getElementById('level-progress-fill');
+                        if (lFill) lFill.style.width = (wolf.progress || 0) + '%';
 
-                        const huntSection = document.getElementById('active-hunt-section');
-                        if (huntSection) {
-                            if (wolf.currentGame && wolf.currentGame !== "Dashboard") {
-                                huntSection.classList.remove('hidden');
-                                if (document.getElementById('active-game-title')) document.getElementById('active-game-title').innerText = wolf.currentGame;
-                                if (document.getElementById('active-game-time')) document.getElementById('active-game-time').innerText = wolf.currentGamePlaytime || '--';
-                                
-                                const curGame = (wolf.recentGames || []).find(g => g.name === wolf.currentGame) || wolf.recentGames?.[0];
-                                if (document.getElementById('active-game-ratio')) document.getElementById('active-game-ratio').innerText = curGame?.ratio || '--/--';
-                                if (document.getElementById('active-game-progress-text')) document.getElementById('active-game-progress-text').innerText = `${wolf.currentGameProgress || 0}%`;
-                                if (document.getElementById('active-game-progress-fill')) document.getElementById('active-game-progress-fill').style.width = `${wolf.currentGameProgress || 0}%`;
-                                
-                                const artEl = document.getElementById('active-game-art');
-                                const fallbackEl = document.getElementById('active-game-fallback');
-                                if (artEl && fallbackEl) {
-                                    if (wolf.gameArt) { artEl.src = wolf.gameArt; artEl.classList.remove('hidden'); fallbackEl.classList.add('hidden'); }
-                                    else { artEl.classList.add('hidden'); fallbackEl.classList.remove('hidden'); }
-                                }
-
-                                const checklist = document.getElementById('trophy-checklist-container');
-                                if (checklist) {
-                                    if (wolf.activeTrophyList && wolf.activeTrophyList.length > 0) {
-                                        document.getElementById('active-trophy-checklist').classList.remove('hidden');
-                                        checklist.innerHTML = wolf.activeTrophyList.map(t => `
-                                            <div class="trophy-list-item ${t.earned ? 'earned' : 'locked'}">
-                                                <img src="${t.icon}" class="trophy-list-icon">
-                                                <div class="trophy-list-info">
-                                                    <div class="trophy-list-name">${t.name}</div>
-                                                    <div class="trophy-list-type">${t.type}</div>
-                                                </div>
-                                                <div class="trophy-list-status">${t.earned ? 'Earned' : 'Locked'}</div>
-                                            </div>
-                                        `).join('');
-                                    } else { document.getElementById('active-trophy-checklist').classList.add('hidden'); }
-                                }
-                            } else { huntSection.classList.add('hidden'); }
-                        }
-
-                        const trophCard = document.getElementById('latest-trophy-card');
-                        if (trophCard && wolf.recentTrophy) {
-                            trophCard.classList.remove('hidden');
-                            if (document.getElementById('latest-trophy-name')) document.getElementById('latest-trophy-name').innerText = wolf.recentTrophy.name || '';
-                            if (document.getElementById('latest-trophy-game')) document.getElementById('latest-trophy-game').innerText = wolf.recentTrophy.game || '';
-                            const tRank = document.getElementById('latest-trophy-rank');
-                            if (tRank) {
-                                const rank = wolf.recentTrophy.rank ? wolf.recentTrophy.rank.toLowerCase() : 'bronze';
-                                tRank.innerText = wolf.recentTrophy.rank || 'Bronze';
-                                tRank.className = `px-5 py-2 bg-white/5 rounded-full font-black text-[11px] uppercase tracking-widest border border-white/10 trophy-color-${rank}`;
+                        const isPlaying = wolf.online && wolf.currentGame && wolf.currentGame !== "Dashboard";
+                        let displayGame = isPlaying ? ((wolf.recentGames || []).find(g => g.name === wolf.currentGame) || wolf.recentGames?.[0]) : wolf.recentGames?.[0];
+                        
+                        if (displayGame) {
+                            const header = document.getElementById('hunt-status-header');
+                            if (header) header.innerHTML = isPlaying ? `<i class="fas fa-crosshairs"></i> Currently Playing` : `<i class="fas fa-history"></i> Last Played`;
+                            
+                            safeSet('active-game-title', displayGame.name || '--');
+                            safeSet('active-game-time', isPlaying ? (wolf.currentGamePlaytime || displayGame.hours || '--') : (displayGame.hours || '--'));
+                            safeSet('active-game-ratio', displayGame.ratio || '--/--');
+                            safeSet('active-game-progress-text', (displayGame.progress || 0) + '%');
+                            const hFill = document.getElementById('active-game-progress-fill');
+                            if (hFill) hFill.style.width = (displayGame.progress || 0) + '%';
+                            
+                            const artEl = document.getElementById('active-game-art');
+                            if (displayGame.art || wolf.gameArt) { 
+                                artEl.src = displayGame.art || wolf.gameArt; 
+                                artEl.classList.remove('hidden'); 
+                                const fall = document.getElementById('active-game-fallback');
+                                if (fall) fall.classList.add('hidden');
                             }
-                            const tImg = document.getElementById('latest-trophy-img');
-                            const tFallback = document.getElementById('latest-trophy-fallback');
-                            if (tImg && tFallback && wolf.recentTrophy.icon) {
-                                tImg.src = wolf.recentTrophy.icon; tImg.classList.remove('hidden'); tFallback.classList.add('hidden');
+
+                            if (wolf.activeTrophyList) {
+                                document.getElementById('trophy-checklist-container').innerHTML = wolf.activeTrophyList.map(t => {
+                                    const rank = (t.type || 'bronze').toLowerCase();
+                                    let rightStats = t.earned ? `<span class="trophy-date-label">${t.earnedDate || 'Earned'}</span><span class="trophy-time-label">${t.earnedTime || ''}</span>` : `<span class="trophy-prog-fraction">${(t.current !== undefined && t.target !== undefined) ? `${t.current}/${t.target}` : (t.progress || 0) + '%'}</span>`;
+                                    return `
+                                    <div class="trophy-row ${t.earned ? 'earned' : 'locked'}">
+                                        <img src="${t.icon}" class="trophy-icon-sq" onerror="this.src='https://via.placeholder.com/50'">
+                                        <div class="trophy-main-info">
+                                            <div class="trophy-title-text">${t.name}</div>
+                                            <div class="trophy-desc-text">${t.description || ''}</div>
+                                            ${t.earned && t.duration ? `<div class="trophy-duration-text">${t.duration}</div>` : ''}
+                                        </div>
+                                        <div class="trophy-time-stats">${rightStats}</div>
+                                        <div class="trophy-rarity-block"><span class="rarity-percent">${t.rarity || '0%'}</span><span class="rarity-name trophy-color-${rank}">${t.rarityName || 'Common'}</span></div>
+                                    </div>`;
+                                }).join('');
                             }
                         }
 
-                        if (document.getElementById('level-progress-text')) document.getElementById('level-progress-text').innerText = `${wolf.progress || 0}%`;
-                        if (document.getElementById('level-progress-fill')) document.getElementById('level-progress-fill').style.width = `${wolf.progress || 0}%`;
-
-                        const container = document.getElementById('recent-games-container');
-                        if (container && wolf.recentGames) {
-                            container.innerHTML = wolf.recentGames.map(game => `
+                        if (wolf.recentGames) {
+                            const rContainer = document.getElementById('recent-games-container');
+                            if (rContainer) rContainer.innerHTML = wolf.recentGames.slice(0,6).map(game => `
                                 <div class="game-thumb group">
                                     <img src="${game.art}" alt="${game.name}" onerror="this.src='https://via.placeholder.com/200x300?text=PS+Title'">
                                     <div class="game-info-overlay">
@@ -590,32 +547,68 @@
                                 </div>
                             `).join('');
                         }
+
+                        if (wolf.recentTrophy) {
+                            const lCard = document.getElementById('latest-trophy-card');
+                            if (lCard) {
+                                lCard.classList.remove('hidden');
+                                safeSet('latest-trophy-name', wolf.recentTrophy.name);
+                                safeSet('latest-trophy-game', wolf.recentTrophy.game);
+                                const rText = wolf.recentTrophy.rank || wolf.recentTrophy.type || 'Bronze';
+                                const rLabel = document.getElementById('latest-trophy-rank');
+                                if (rLabel) {
+                                    rLabel.innerText = rText;
+                                    rLabel.className = `px-5 py-2 bg-white/5 rounded-full font-black text-[11px] uppercase tracking-widest border border-white/10 trophy-color-${rText.toLowerCase()}`;
+                                }
+                                const tImg = document.getElementById('latest-trophy-img');
+                                if (tImg && wolf.recentTrophy.icon) {
+                                    tImg.src = wolf.recentTrophy.icon;
+                                    tImg.classList.remove('hidden');
+                                    const fall = document.getElementById('latest-trophy-fallback');
+                                    if (fall) fall.classList.add('hidden');
+                                }
+                            }
+                        }
                     }
 
-                    const syncSquad = (id, data) => {
-                        const dot = document.getElementById(`${id}-status-dot`);
-                        const label = document.getElementById(`${id}-status-label`);
-                        const gameSlot = document.getElementById(`${id}-current-game`);
-                        if (!dot || !label || !gameSlot) return; 
-                        const friendData = data || psnData.users[id.toLowerCase()];
+                    // Lobby Sync (Returns true if online)
+                    let totalOnline = 0;
+                    const syncLobby = (id, aliases) => {
+                        const card = document.getElementById(`card-${id}`);
+                        if (!card) return false;
+                        const dot = card.querySelector('[id$="-status-dot"]');
+                        const label = card.querySelector('[id$="-status-label"]');
+                        const gameSlot = card.querySelector('[id$="-current-game"]');
+                        if (!dot || !label || !gameSlot) return false;
+
+                        const friendData = aliases.reduce((found, alias) => found || psnData.users[alias.toLowerCase()], null);
                         if (friendData && friendData.online) {
-                            dot.className = 'w-4 h-4 rounded-full bg-green-500 shadow-[0_0_15px_rgba(16,185,129,0.8)]';
+                            card.classList.remove('hidden');
+                            dot.className = 'w-4 h-4 rounded-full bg-green-500 shadow-[0_0_10px_#10b981]';
                             label.innerText = 'Online';
-                            label.className = 'text-[11px] font-bold text-green-400 uppercase tracking-widest';
-                            gameSlot.innerText = friendData.currentGame || friendData.game || 'Main Menu';
+                            label.style.color = '#10b981';
+                            gameSlot.innerText = friendData.currentGame || 'Main Menu';
+                            totalOnline++;
+                            return true;
                         } else {
-                            dot.className = 'w-4 h-4 rounded-full bg-gray-600';
-                            label.innerText = 'Offline';
-                            label.className = 'text-[11px] font-bold text-gray-500 uppercase tracking-widest';
-                            gameSlot.innerText = '';
+                            card.classList.add('hidden');
+                            return false;
                         }
                     };
-                    syncSquad('ray', psnData.users.ray);
-                    syncSquad('phoenix', psnData.users.phoenix);
-                    syncSquad('darkwing', psnData.users.darkwing || psnData.users.terrdog);
-                    syncSquad('elucidator', psnData.users.elucidator);
+
+                    syncLobby('seth', ['seth', 'joe-punk_', 'phoenix_darkfire', 'phoenix']);
+                    syncLobby('ray', ['ray', 'onelividman', 'raymystyro']);
+                    syncLobby('tj', ['tj', 'darkwing', 'darkwing69420', 'terrdog', 'terrdog420']);
+                    syncLobby('elucidator', ['elucidator', 'elucidatorvah']);
+                    syncLobby('jcrow', ['jcrow', 'jcrow207']);
+                    syncLobby('unicorn', ['unicorn', 'unicornbunnyshiv', 'unicornbunny']);
+
+                    // Toggle Lobby Section Visibility
+                    const lSection = document.getElementById('lobby-section');
+                    if (totalOnline > 0) lSection.classList.remove('hidden');
+                    else lSection.classList.add('hidden');
                 }
-            } catch (err) { console.error("Refresh Error:", err); }
+            } catch (err) { debug(`Fatal Sync Error: ${err.message}`); }
         }
 
         updateProfile();
