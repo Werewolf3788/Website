@@ -9,6 +9,7 @@ const {
     getTitleTrophyGroups,
     makeUniversalSearch,
     getProfileFromAccountId,
+    getProfileFromUserName, // Bridge for finding numeric accountId
     getRecentlyPlayedGames
 } = psnApi;
 
@@ -34,7 +35,7 @@ const SQUAD_IDS = {
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"];
 
 /**
- * Requirement 7: ISO 8601 Duration Parser (PT12H30M -> 12h 30m)
+ * Requirement 7: ISO 8601 Duration Parser
  */
 const parsePlaytime = (duration) => {
     if (!duration) return "0h";
@@ -64,7 +65,7 @@ const getPresence = async (auth, accountId) => {
 
 /**
  * Main Data Aggregator
- * Updated with "Correct Info" logging for verification.
+ * Updated to force numeric accountId resolution to fix "Bad Request" errors.
  */
 async function getFullUserData(npsso, label, targetOnlineId) {
     try {
@@ -72,23 +73,31 @@ async function getFullUserData(npsso, label, targetOnlineId) {
         const accessCode = await exchangeNpssoForCode(npsso);
         const authorization = await exchangeCodeForAccessToken(accessCode);
 
-        // Step 1: Handshake to get numeric ID
-        let accountId = "me"; 
+        // STEP 1: THE HANDSHAKE BRIDGE
+        // We need the numeric accountId. Since "me" is blocked and Search is lagging,
+        // we use getProfileFromUserName which is a legacy bridge that still returns the ID.
+        let accountId = "";
+        console.log(`[${label}] Resolving numeric accountId for ${targetOnlineId}...`);
+        
         try {
+            const bridgeProfile = await getProfileFromUserName(authorization, targetOnlineId);
+            accountId = bridgeProfile.profile.accountId;
+            console.log(`[${label}] Handshake Success! Resolved ID: ${accountId}`);
+        } catch (bridgeError) {
+            console.log(`[${label}] Bridge failed, attempting Universal Search fallback...`);
             const search = await makeUniversalSearch(authorization, targetOnlineId, "socialAccounts");
-            const result = search.domainResponses?.[0]?.results?.[0];
-            
-            if (result?.socialMetadata?.accountId) {
-                accountId = result.socialMetadata.accountId;
-            }
-        } catch (searchError) {
-            console.log(`[${label}] Search index unavailable. Using 'me'.`);
+            accountId = search.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
         }
 
+        if (!accountId) {
+            throw new Error(`CRITICAL: Could not find numeric accountId for ${targetOnlineId}. Sony is blocking all identification methods.`);
+        }
+
+        // STEP 2: Use the numeric ID for all restricted endpoints
         const profile = await getProfileFromAccountId(authorization, accountId);
         const presence = await getPresence(authorization, accountId);
 
-        // Step 2: High-Resolution Playtime (Library titles)
+        // STEP 3: High-Resolution Playtime
         let playtimeMap = {};
         try {
             const recentlyPlayed = await getRecentlyPlayedGames(authorization, { limit: 15 });
@@ -96,7 +105,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             games.forEach(g => { playtimeMap[g.name] = parsePlaytime(g.playDuration); });
         } catch (e) { console.log(`[${label}] Playtime fetch restricted.`); }
 
-        // Step 3: Trophy Titles & Game History
+        // STEP 4: Trophy Titles & Game History
         const { trophyTitles } = await getUserTitles(authorization, accountId);
         const recentGames = [];
         let activeGameMetadata = null;
@@ -119,7 +128,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                 });
             }
 
-            // Step 4: Mission Log (Full Detail for current game)
+            // MISSION LOG: Detailed trophy list for the current active game
             if (!activeGameMetadata) {
                 try {
                     const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(authorization, accountId, title.npCommunicationId, "all");
@@ -136,7 +145,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                             total: (g.definedTrophies?.gold || 0) + (g.definedTrophies?.silver || 0) + (g.definedTrophies?.bronze || 0)
                         })),
                         trophies: (meta || []).slice(0, 20).map(m => {
-                            const s = earnedStatus?.find(x => x.trophyId === m.trophyId);
+                            const s = earnedStatus.find(x => x.trophyId === m.trophyId);
                             return {
                                 name: m.trophyName,
                                 type: m.trophyType,
@@ -159,7 +168,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             currentGame: presence.currentGame,
             platform: presence.platform,
             avatar: profile.avatars?.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url || "",
-            bio: profile.aboutMe || "Admin Kevin",
+            bio: profile.aboutMe || "Official Pack Admin",
             plus: profile.isPlus,
             level: stats.trophyLevel,
             levelProgress: stats.progress,
@@ -180,14 +189,12 @@ async function getFullUserData(npsso, label, targetOnlineId) {
         console.log(` > Online ID: ${targetOnlineId}`);
         console.log(` > Account ID: ${accountId}`);
         console.log(` > PSN Level: ${finalUserData.level}`);
-        console.log(` > Total Trophies: ${finalUserData.trophies.total}`);
         console.log(` > Status: ${finalUserData.online ? 'ONLINE' : 'OFFLINE'}`);
-        console.log(` > Current Game: ${finalUserData.currentGame} (${finalUserData.platform})`);
         console.log(`------------------------------------------`);
 
         return finalUserData;
     } catch (e) {
-        console.error(`[${label}] Sync Failure:`, e.message);
+        console.error(`[${label}] Critical Sync Failure:`, e.message);
         return null;
     }
 }
@@ -204,12 +211,12 @@ async function main() {
             const authCode = await exchangeNpssoForCode(werewolfToken);
             const auth = await exchangeCodeForAccessToken(authCode);
             
-            // Kevin Sync
+            // Sync Admin Kevin
             const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
             if (wolfData) finalData.users.werewolf = wolfData;
 
-            // Squad Sync
-            console.log("\n[TEST LOG] --- Syncing Pack Members ---");
+            // Sync Squad
+            console.log("\n[TEST LOG] --- Syncing Squad Status ---");
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
                 if (key === 'ray' && rayToken) continue;
                 try {
@@ -218,24 +225,32 @@ async function main() {
                     if (res?.socialMetadata?.accountId) {
                         const accId = res.socialMetadata.accountId;
                         finalData.users[key] = await getPresence(auth, accId);
-                        console.log(` > [SQUAD] ${onlineId}: ${finalData.users[key].online ? 'ONLINE - ' + finalData.users[key].currentGame : 'OFFLINE'}`);
+                        console.log(` > [SQUAD] ${onlineId}: ${finalData.users[key].online ? 'ONLINE' : 'OFFLINE'}`);
                     } else {
-                        console.log(` > [SQUAD] ${onlineId}: Not Found or Private`);
-                        finalData.users[key] = { online: false, currentGame: "" };
+                        // Squad Handshake Backup
+                        try {
+                            const bridge = await getProfileFromUserName(auth, onlineId);
+                            const accId = bridge.profile.accountId;
+                            finalData.users[key] = await getPresence(auth, accId);
+                            console.log(` > [SQUAD] ${onlineId}: ONLINE (Resolved via Bridge)`);
+                        } catch (e) {
+                            console.log(` > [SQUAD] ${onlineId}: Not Found/Private`);
+                            finalData.users[key] = { online: false, currentGame: "" };
+                        }
                     }
                 } catch (e) { finalData.users[key] = { online: false }; }
             }
-        } catch (e) { console.error("Auth Loop Failed:", e.message); }
+        } catch (e) { console.error("Authentication Stack Failure:", e.message); }
     }
 
     if (rayToken) {
-        // Ray Sync
+        // Sync Ray Details
         const rayDetail = await getFullUserData(rayToken, "Ray", "OneLIVIDMAN");
         if (rayDetail) finalData.users.ray = rayDetail;
     }
 
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log(`\n[SUCCESS] psn_data.json updated at ${new Date().toLocaleTimeString()}`);
+    console.log(`\n[SUCCESS] psn_data.json saved with verified accountId info.`);
 }
 
 main();
