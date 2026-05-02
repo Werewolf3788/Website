@@ -65,7 +65,7 @@ const getPresence = async (auth, accountId) => {
 
 /**
  * Main Data Aggregator
- * Uses the Handshake Bridge to resolve numeric accountId.
+ * Updated to capture Numerical Trophy Progress (e.g. 78/100)
  */
 async function getFullUserData(npsso, label, targetOnlineId) {
     try {
@@ -91,11 +91,10 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             throw new Error(`CRITICAL: Could not find numeric accountId for ${targetOnlineId}.`);
         }
 
-        // STEP 2: Profile & Presence using numeric ID
         const profile = await getProfileFromAccountId(authorization, accountId);
         const presence = await getPresence(authorization, accountId);
 
-        // STEP 3: High-Resolution Playtime
+        // STEP 2: High-Resolution Playtime
         let playtimeMap = {};
         try {
             const recentlyPlayed = await getRecentlyPlayedGames(authorization, { limit: 15 });
@@ -103,7 +102,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             games.forEach(g => { playtimeMap[g.name] = parsePlaytime(g.playDuration); });
         } catch (e) { console.log(`[${label}] Playtime fetch restricted.`); }
 
-        // STEP 4: Trophy Titles & Game History
+        // STEP 3: Trophy Titles & Game History
         const { trophyTitles } = await getUserTitles(authorization, accountId);
         const recentGames = [];
         let activeGameMetadata = null;
@@ -126,7 +125,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                 });
             }
 
-            // MISSION LOG: Detailed trophy list
+            // MISSION LOG: Pulling EVERYTHING (No 20-trophy limit)
             if (!activeGameMetadata) {
                 try {
                     const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(authorization, accountId, title.npCommunicationId, "all");
@@ -142,19 +141,24 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                             earned: (g.earnedTrophies?.gold || 0) + (g.earnedTrophies?.silver || 0) + (g.earnedTrophies?.bronze || 0),
                             total: (g.definedTrophies?.gold || 0) + (g.definedTrophies?.silver || 0) + (g.definedTrophies?.bronze || 0)
                         })),
-                        trophies: (meta || []).slice(0, 20).map(m => {
+                        // CAPTURING NUMERICAL PROGRESS (78/100)
+                        trophies: (meta || []).map(m => {
                             const s = earnedStatus.find(x => x.trophyId === m.trophyId);
                             return {
                                 name: m.trophyName,
+                                description: m.trophyDetail || "",
                                 type: m.trophyType,
                                 icon: m.trophyIconUrl,
                                 rarity: m.trophyRare + "%",
                                 earned: s?.earned || false,
-                                earnedDate: s?.earned ? new Date(s.earnedDateTime).toLocaleDateString() : "--"
+                                earnedDate: s?.earned ? new Date(s.earnedDateTime).toLocaleString() : "--",
+                                // These two fields are required for the 78/100 display
+                                currentValue: s?.progress || undefined, 
+                                targetValue: s?.progressTargetValue || undefined
                             };
                         })
                     };
-                } catch (e) { }
+                } catch (e) { console.log(`[${label}] Mission Log fetch failed for ${name}`); }
             }
         }
 
@@ -182,12 +186,10 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             lastUpdated: new Date().toLocaleString()
         };
 
-        // VERIFIED LOG BLOCK
         console.log(`[VERIFIED INFO FOR ${label}]`);
-        console.log(` > Online ID: ${targetOnlineId}`);
-        console.log(` > Account ID: ${accountId}`);
-        console.log(` > PSN Level: ${finalUserData.level}`);
         console.log(` > Status: ${finalUserData.online ? 'ONLINE' : 'OFFLINE'}`);
+        console.log(` > Level: ${finalUserData.level}`);
+        console.log(` > Trophies: ${finalUserData.trophies.total}`);
         console.log(`------------------------------------------`);
 
         return finalUserData;
@@ -209,15 +211,12 @@ async function main() {
             const authCode = await exchangeNpssoForCode(werewolfToken);
             const auth = await exchangeCodeForAccessToken(authCode);
             
-            // Kevin Sync
             const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
             if (wolfData) finalData.users.werewolf = wolfData;
 
-            // Squad Sync
             console.log("\n[TEST LOG] --- Syncing Squad Status ---");
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
                 if (key === 'ray' && rayToken) continue; 
-                
                 try {
                     const search = await makeUniversalSearch(auth, onlineId, "socialAccounts");
                     const res = search.domainResponses?.[0]?.results?.[0];
@@ -227,23 +226,16 @@ async function main() {
                         try {
                             const bridge = await getProfileFromUserName(auth, onlineId);
                             accId = bridge.profile.accountId;
-                        } catch (e) {
-                            if (onlineId === "phoenix_darkfire") {
-                                console.log(` > [SQUAD] Seth (phoenix_darkfire) is currently private/blocked.`);
-                            }
-                        }
+                        } catch (e) {}
                     }
 
                     if (accId) {
                         finalData.users[key] = await getPresence(auth, accId);
-                        console.log(` > [SQUAD] ${onlineId}: ${finalData.users[key].online ? 'ONLINE' : 'OFFLINE'} (ID: ${accId})`);
+                        console.log(` > [SQUAD] ${onlineId}: ${finalData.users[key].online ? 'ONLINE' : 'OFFLINE'}`);
                     } else {
                         finalData.users[key] = { online: false, currentGame: "Private" };
-                        console.log(` > [SQUAD] ${onlineId}: Skipped (Privacy Blocked)`);
                     }
-                } catch (e) { 
-                    finalData.users[key] = { online: false }; 
-                }
+                } catch (e) { finalData.users[key] = { online: false }; }
             }
         } catch (e) { console.error("Authentication Stack Failure:", e.message); }
     }
@@ -254,7 +246,7 @@ async function main() {
     }
 
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log(`\n[SUCCESS] psn_data.json saved with verified accountId info.`);
+    console.log(`\n[SUCCESS] psn_data.json saved with verified numerical progress.`);
 }
 
 main();
