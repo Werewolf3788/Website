@@ -19,7 +19,8 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Squad Tracking
- * Version 6.5.3 - Updated Ray's Token & Hardened Numerical Logic
+ * Version 6.6.1 - Deep Data Integrity & Persistence
+ * Path: Playstation/psnscript.js
  */
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
@@ -35,8 +36,20 @@ const SQUAD_IDS = {
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"];
 
 /**
- * Requirement 7: ISO 8601 Duration Parser
+ * Smart Token Parser: Extracts NPSSO even if a full JSON block is provided.
  */
+const cleanToken = (input) => {
+    if (!input) return "";
+    let str = input.trim();
+    if (str.startsWith("{")) {
+        try {
+            const parsed = JSON.parse(str);
+            return parsed.npsso || str;
+        } catch (e) { return str; }
+    }
+    return str;
+};
+
 const parsePlaytime = (duration) => {
     if (!duration) return "0h";
     const h = duration.match(/(\d+)H/);
@@ -46,9 +59,6 @@ const parsePlaytime = (duration) => {
     return `${hours} ${mins}`.trim() || "0h";
 };
 
-/**
- * Helper for Live Presence & Platform Detection
- */
 const getPresence = async (auth, accountId) => {
     const func = psnApi.getPresenceOfUser || psnApi.getUserPresence || psnApi.getPresenceFromUser;
     try {
@@ -61,18 +71,14 @@ const getPresence = async (auth, accountId) => {
     } catch (e) { return { online: false, currentGame: "Dashboard", platform: "PS5" }; }
 };
 
-/**
- * Main Data Aggregator
- * Includes Token Health Checks, Plus status, and Screenshot-style Numerical Progress.
- */
 async function getFullUserData(npsso, label, targetOnlineId) {
     try {
-        console.log(`\n[LOG] Starting Sync: ${label}`);
+        const token = cleanToken(npsso);
+        console.log(`\n[LOG] Syncing ${label}...`);
         
-        // TOKEN HEALTH CHECK
         let authorization;
         try {
-            const accessCode = await exchangeNpssoForCode(npsso.trim());
+            const accessCode = await exchangeNpssoForCode(token);
             authorization = await exchangeCodeForAccessToken(accessCode);
         } catch (authError) {
             console.error(`[ALERT] ${label}'s key is EXPIRED.`);
@@ -125,20 +131,16 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                         hours: gameHours,
                         trophies: (meta || []).map(m => {
                             const s = earnedStatus.find(x => x.trophyId === m.trophyId);
-                            // Mapping for Screenshot style 78/100
-                            const current = (s?.progress !== undefined) ? s.progress : undefined;
-                            const target = (m.trophyProgressTargetValue !== undefined) ? m.trophyProgressTargetValue : undefined;
-
                             return {
                                 name: m.trophyName,
-                                description: m.trophyDetail || "Secret Objective",
+                                description: m.trophyDetail || "Requirement Hidden",
                                 type: m.trophyType,
                                 icon: m.trophyIconUrl,
                                 rarity: m.trophyRare ? m.trophyRare + "%" : "Common",
                                 earned: s?.earned || false,
                                 earnedDate: s?.earned ? new Date(s.earnedDateTime).toLocaleString() : "--",
-                                currentValue: current,
-                                targetValue: target
+                                currentValue: s?.progress,
+                                targetValue: m.trophyProgressTargetValue
                             };
                         })
                     };
@@ -154,7 +156,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             currentGame: presence.currentGame,
             platform: presence.platform,
             avatar: profile.avatars?.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url || "",
-            bio: profile.aboutMe || "Kevin Admin Hub",
+            bio: profile.aboutMe || "",
             plus: profile.isPlus,
             level: stats.trophyLevel,
             activeHunt: activeGameMetadata,
@@ -173,37 +175,50 @@ async function getFullUserData(npsso, label, targetOnlineId) {
 }
 
 async function main() {
-    const wolfToken = process.env.PSN_NPSSO_WEREWOLF || "Z16BT0DB8X1dR5PiuftzTslTeH796cHb9alTA9S7nrpr37L4cu1RrqFCfYWc2YyG";
-    const rayToken = process.env.PSN_NPSSO_RAY || "WQcE2imvkX8YsIiMGP8G2MYwUXHJxbrxvmh8yclvXirAjQ4SOJQrneZpsdhYqW2j";
-    
-    let finalData = { users: {}, mutualPack: [], systemAlerts: [] };
     const dataPath = path.join(__dirname, "psn_data.json");
+    const tokensPath = path.join(__dirname, "tokens.json");
+    
+    let tokens = { werewolf: "", ray: "" };
+    let finalData = { users: {}, mutualPack: [], systemAlerts: [] };
 
+    // 1. Load Keys from File
+    try {
+        if (fs.existsSync(tokensPath)) {
+            tokens = JSON.parse(fs.readFileSync(tokensPath));
+        }
+    } catch (e) { console.log("[INFO] Using Environment Tokens."); }
+
+    const werewolfToken = tokens.werewolf || process.env.PSN_NPSSO_WEREWOLF || "Z16BT0DB8X1dR5PiuftzTslTeH796cHb9alTA9S7nrpr37L4cu1RrqFCfYWc2YyG";
+    const rayToken = tokens.ray || process.env.PSN_NPSSO_RAY || "WQcE2imvkX8YsIiMGP8G2MYwUXHJxbrxvmh8yclvXirAjQ4SOJQrneZpsdhYqW2j";
+
+    // 2. Load Backup Data (Critical Persistence)
     try {
         if (fs.existsSync(dataPath)) {
             const existing = JSON.parse(fs.readFileSync(dataPath));
             finalData = {
                 users: existing.users || {},
                 mutualPack: existing.mutualPack || [],
-                systemAlerts: [] // Reset alerts for fresh run
+                systemAlerts: [] // Reset alerts for current run
             };
         }
     } catch (e) {}
 
     try {
-        const wolfData = await getFullUserData(wolfToken, "Werewolf", "Werewolf3788");
+        // Kevin Sync
+        const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
         if (wolfData && wolfData.error === "TOKEN_EXPIRED") {
-            finalData.systemAlerts.push({ user: "Werewolf", issue: "NPSSO Key Expired", time: wolfData.lastCheck });
+            finalData.systemAlerts.push({ user: "Werewolf", issue: "NPSSO Expired", time: wolfData.lastCheck });
         } else if (wolfData) {
             finalData.users.werewolf = wolfData;
             
+            // Ray Sync
             const rayDetail = await getFullUserData(rayToken, "Ray", "OneLIVIDMAN");
             if (rayDetail && rayDetail.error === "TOKEN_EXPIRED") {
-                finalData.systemAlerts.push({ user: "Ray", issue: "NPSSO Key Expired", time: rayDetail.lastCheck });
+                finalData.systemAlerts.push({ user: "Ray", issue: "NPSSO Expired", time: rayDetail.lastCheck });
             } else if (rayDetail) {
                 finalData.users.ray = rayDetail;
                 
-                // Cross-Reference Mutual Friends
+                // Mutual Pack Cross-Ref (Kevin & Ray)
                 console.log("[CROSS-REF] Intersecting friends lists...");
                 try {
                     const wolfFriends = await getFriendsList(wolfData.auth, wolfData.accountId);
@@ -211,9 +226,12 @@ async function main() {
                     const wIds = (wolfFriends.friends || []).map(f => f.onlineId);
                     const rIds = (rayFriends.friends || []).map(f => f.onlineId);
                     finalData.mutualPack = wIds.filter(id => rIds.includes(id));
-                } catch (e) {}
+                } catch (e) {
+                    console.log("[CROSS-REF] Friends list restricted by Sony API.");
+                }
             }
 
+            // Squad Sync (Lobby Presence)
             const auth = wolfData.auth;
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
                 if (key === 'ray' && rayDetail && !rayDetail.error) continue;
@@ -223,15 +241,23 @@ async function main() {
                     const accId = search.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
                     if (accId) {
                         const pres = await getPresence(auth, accId);
+                        // Update status while keeping bio/avatar from previous deep syncs
                         finalData.users[key] = { ...finalData.users[key], ...pres };
                     }
                 } catch (e) {}
             }
         }
-    } catch (e) {}
+    } catch (e) {
+        console.error(`[FATAL] Script error during sync: ${e.message}`);
+    }
 
-    fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] psn_data.json saved. Alerts: ${finalData.systemAlerts.length}`);
+    // 3. Final Write
+    try {
+        fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
+        console.log(`[SUCCESS] psn_data.json saved. Alerts: ${finalData.systemAlerts.length}`);
+    } catch (writeError) {
+        console.error(`[CRITICAL] Failed to write data file: ${writeError.message}`);
+    }
 }
 
 main();
