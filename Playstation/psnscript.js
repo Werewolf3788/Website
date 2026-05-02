@@ -17,6 +17,10 @@ const {
 const fs = require("fs");
 const path = require("path");
 
+/**
+ * Kevin's Official Pack Squad Tracking
+ * Version 6.5.0 - Automatic Token Health Monitoring
+ */
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
     darkwing: "Darkwing69420",
@@ -30,6 +34,9 @@ const SQUAD_IDS = {
 
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online", "grand theft auto"];
 
+/**
+ * Requirement 7: ISO 8601 Duration Parser
+ */
 const parsePlaytime = (duration) => {
     if (!duration) return "0h";
     const h = duration.match(/(\d+)H/);
@@ -39,6 +46,9 @@ const parsePlaytime = (duration) => {
     return `${hours} ${mins}`.trim() || "0h";
 };
 
+/**
+ * Helper for Live Presence & Platform Detection
+ */
 const getPresence = async (auth, accountId) => {
     const func = psnApi.getPresenceOfUser || psnApi.getUserPresence || psnApi.getPresenceFromUser;
     try {
@@ -51,11 +61,23 @@ const getPresence = async (auth, accountId) => {
     } catch (e) { return { online: false, currentGame: "Dashboard", platform: "PS5" }; }
 };
 
+/**
+ * Main Data Aggregator
+ * Includes Token Health Checks to alert Kevin when an NPSSO expires.
+ */
 async function getFullUserData(npsso, label, targetOnlineId) {
     try {
         console.log(`\n[LOG] Starting DEEP Sync: ${label}`);
-        const accessCode = await exchangeNpssoForCode(npsso);
-        const authorization = await exchangeCodeForAccessToken(accessCode);
+        
+        // TOKEN HEALTH CHECK:
+        let authorization;
+        try {
+            const accessCode = await exchangeNpssoForCode(npsso);
+            authorization = await exchangeCodeForAccessToken(accessCode);
+        } catch (authError) {
+            console.error(`[ALERT] ${label}'s NPSSO Key has EXPIRED.`);
+            return { error: "TOKEN_EXPIRED", lastCheck: new Date().toLocaleString() };
+        }
 
         let accountId = "";
         try {
@@ -103,15 +125,15 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                         hours: gameHours,
                         trophies: (meta || []).map(m => {
                             const s = earnedStatus.find(x => x.trophyId === m.trophyId);
-                            const current = s?.progress || undefined;
-                            const target = m.trophyProgressTargetValue || undefined;
+                            const current = (s?.progress !== undefined) ? s.progress : undefined;
+                            const target = (m.trophyProgressTargetValue !== undefined) ? m.trophyProgressTargetValue : undefined;
 
                             return {
                                 name: m.trophyName,
                                 description: m.trophyDetail || "Secret Requirement",
                                 type: m.trophyType,
                                 icon: m.trophyIconUrl,
-                                rarity: m.trophyEarnedRate ? m.trophyEarnedRate + "%" : "Common",
+                                rarity: m.trophyRare ? m.trophyRare + "%" : "Common",
                                 earned: s?.earned || false,
                                 earnedDate: s?.earned ? new Date(s.earnedDateTime).toLocaleString() : "--",
                                 currentValue: current,
@@ -143,6 +165,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                 bronze: stats.earnedTrophies?.bronze || 0,
                 total: (stats.earnedTrophies?.platinum || 0) + (stats.earnedTrophies?.gold || 0) + (stats.earnedTrophies?.silver || 0) + (stats.earnedTrophies?.bronze || 0)
             },
+            tokenStatus: "HEALTHY",
             lastUpdated: new Date().toLocaleString()
         };
     } catch (e) { 
@@ -153,12 +176,12 @@ async function getFullUserData(npsso, label, targetOnlineId) {
 
 async function main() {
     const werewolfToken = process.env.PSN_NPSSO_WEREWOLF || "Z16BT0DB8X1dR5PiuftzTslTeH796cHb9alTA9S7nrpr37L4cu1RrqFCfYWc2YyG";
-    const rayToken = process.env.PSN_NPSSO_RAY || "VQIj9KP6j1vQzmPEhPMj6rgiFTVREmEYSk7NHbSDlw15YuWmTAsaJztpk1ZqeFix";
+    const rayToken = process.env.PSN_NPSSO_RAY || "WQcE2imvkX8YsIiMGP8G2MYwUXHJxbrxvmh8yclvXirAjQ4SOJQrneZpsdhYqW2j";
     
-    let finalData = { users: {}, mutualPack: [] };
+    let finalData = { users: {}, mutualPack: [], systemAlerts: [] };
     const dataPath = path.join(__dirname, "psn_data.json");
 
-    // Load existing data first as a safety backup
+    // Load existing data for backup
     try {
         if (fs.existsSync(dataPath)) {
             const existing = JSON.parse(fs.readFileSync(dataPath));
@@ -167,41 +190,48 @@ async function main() {
     } catch (e) {}
 
     try {
-        // Kevin Sync
+        // 1. Sync Kevin (Werewolf)
         const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
-        if (wolfData) {
+        if (wolfData && wolfData.error === "TOKEN_EXPIRED") {
+            finalData.systemAlerts.push({ user: "Werewolf", issue: "NPSSO Key Expired", time: wolfData.lastCheck });
+        } else if (wolfData) {
             finalData.users.werewolf = wolfData;
             
-            // Ray Sync (Nested to reuse Wolf's auth if needed)
+            // 2. Sync Ray
             const rayDetail = rayToken ? await getFullUserData(rayToken, "Ray", "OneLIVIDMAN") : null;
-            if (rayDetail) {
+            if (rayDetail && rayDetail.error === "TOKEN_EXPIRED") {
+                finalData.systemAlerts.push({ user: "Ray", issue: "NPSSO Key Expired", time: rayDetail.lastCheck });
+            } else if (rayDetail) {
                 finalData.users.ray = rayDetail;
 
-                // CROSS REFERENCE (Now crash-proof)
-                console.log("[CROSS-REF] Starting Pack Intersection...");
+                // 3. CROSS REFERENCE
                 try {
                     const wolfFriends = await getFriendsList(wolfData.auth, wolfData.accountId);
                     const rayFriends = await getFriendsList(rayDetail.auth, rayDetail.accountId);
                     const wIds = (wolfFriends.friends || []).map(f => f.onlineId);
                     const rIds = (rayFriends.friends || []).map(f => f.onlineId);
                     finalData.mutualPack = wIds.filter(id => rIds.includes(id));
-                    console.log(`[CROSS-REF] Success! Found ${finalData.mutualPack.length} shared friends.`);
-                } catch (e) { console.log("[CROSS-REF] Blocked by Sony API limits."); }
+                } catch (e) {}
             }
 
-            // Sync Squad Presence
+            // 4. Sync Presence for the rest of the Pack
             const auth = wolfData.auth;
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
-                if (key === 'ray') continue;
+                if (key === 'ray' && rayDetail && !rayDetail.error) continue;
+                if (key === 'werewolf') continue;
+                
                 try {
                     const search = await makeUniversalSearch(auth, onlineId, "socialAccounts");
                     const accId = search.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
-                    if (accId) finalData.users[key] = await getPresence(auth, accId);
+                    if (accId) {
+                        const pres = await getPresence(auth, accId);
+                        finalData.users[key] = { ...finalData.users[key], ...pres };
+                    }
                 } catch (e) {}
             }
         } else {
-            console.error("[CRITICAL] Main account sync failed. Aborting write to prevent data loss.");
-            return; 
+            console.error("[CRITICAL] Main account failed. Key might be dead.");
+            return;
         }
     } catch (e) {
         console.error("[FATAL] Script error:", e.message);
@@ -209,6 +239,7 @@ async function main() {
     }
 
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] Data saved to psn_data.json`);
+    console.log(`[SUCCESS] psn_data.json saved. Alerts: ${finalData.systemAlerts.length}`);
 }
+
 main();
