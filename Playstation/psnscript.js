@@ -19,7 +19,8 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Squad Tracking
- * Version 6.6.2 - Precision Friend Intersection & Zero-Value Progress Fix
+ * Version 6.7.0 - Persistence Engine & Last Known Good Logic
+ * Ensures data stays filled even if keys expire.
  */
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
@@ -127,20 +128,16 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                         hours: gameHours,
                         trophies: (meta || []).map(m => {
                             const s = earnedStatus.find(x => x.trophyId === m.trophyId);
-                            // FORCE numerical even if 0
-                            const current = (s?.progress !== undefined) ? s.progress : undefined;
-                            const target = (m.trophyProgressTargetValue !== undefined) ? m.trophyProgressTargetValue : undefined;
-
                             return {
                                 name: m.trophyName,
-                                description: m.trophyDetail || "Requirement Hidden",
+                                description: m.trophyDetail || "Secret Requirement",
                                 type: m.trophyType,
                                 icon: m.trophyIconUrl,
                                 rarity: m.trophyRare ? m.trophyRare + "%" : "Common",
                                 earned: s?.earned || false,
                                 earnedDate: s?.earned ? new Date(s.earnedDateTime).toLocaleString() : "--",
-                                currentValue: current,
-                                targetValue: target
+                                currentValue: s?.progress,
+                                targetValue: m.trophyProgressTargetValue
                             };
                         })
                     };
@@ -181,15 +178,18 @@ async function main() {
     let tokens = { werewolf: "", ray: "" };
     let finalData = { users: {}, mutualPack: [], systemAlerts: [] };
 
+    // 1. Load Keys from tokens.json
     try {
         if (fs.existsSync(tokensPath)) {
             tokens = JSON.parse(fs.readFileSync(tokensPath));
         }
-    } catch (e) {}
+    } catch (e) { console.log("[INFO] No tokens.json found, using environment variables."); }
 
     const werewolfToken = tokens.werewolf || process.env.PSN_NPSSO_WEREWOLF || "Z16BT0DB8X1dR5PiuftzTslTeH796cHb9alTA9S7nrpr37L4cu1RrqFCfYWc2YyG";
     const rayToken = tokens.ray || process.env.PSN_NPSSO_RAY || "WQcE2imvkX8YsIiMGP8G2MYwUXHJxbrxvmh8yclvXirAjQ4SOJQrneZpsdhYqW2j";
 
+    // 2. LOAD BACKUP DATA (The Persistence Engine)
+    // We load the existing file so we don't overwrite good data with nulls if a key fails.
     try {
         if (fs.existsSync(dataPath)) {
             const existing = JSON.parse(fs.readFileSync(dataPath));
@@ -199,38 +199,36 @@ async function main() {
     } catch (e) {}
 
     try {
+        // Kevin Sync
         const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
         if (wolfData && wolfData.error === "TOKEN_EXPIRED") {
             finalData.systemAlerts.push({ user: "Werewolf", issue: "NPSSO Expired", time: wolfData.lastCheck });
+            // wolfData is null, so we DONT overwrite finalData.users.werewolf here.
         } else if (wolfData) {
             finalData.users.werewolf = wolfData;
             
+            // Ray Sync
             const rayDetail = await getFullUserData(rayToken, "Ray", "OneLIVIDMAN");
             if (rayDetail && rayDetail.error === "TOKEN_EXPIRED") {
                 finalData.systemAlerts.push({ user: "Ray", issue: "NPSSO Expired", time: rayDetail.lastCheck });
+                // If Ray's key fails, we keep finalData.users.ray from the Backup Load.
             } else if (rayDetail) {
                 finalData.users.ray = rayDetail;
                 
-                // HARDENED CROSS REFERENCE (Kevin & Ray)
-                console.log("[CROSS-REF] Starting Pack Intersection...");
+                // Mutual Pack Cross-Ref
                 try {
                     const wolfFriends = await getFriendsList(wolfData.auth, wolfData.accountId);
                     const rayFriends = await getFriendsList(rayDetail.auth, rayDetail.accountId);
+                    const wIds = (wolfFriends.friends || []).map(f => f.accountId);
+                    const rIds = (rayFriends.friends || []).map(f => f.accountId);
                     
-                    const wList = (wolfFriends.friends || []);
-                    const rList = (rayFriends.friends || []);
-                    
-                    // Intersect by Account ID for absolute precision
-                    finalData.mutualPack = wList
-                        .filter(wf => rList.some(rf => rf.accountId === wf.accountId))
-                        .map(m => m.onlineId);
-                        
-                    console.log(`[CROSS-REF] Success! Found ${finalData.mutualPack.length} shared friends.`);
-                } catch (e) {
-                    console.log("[CROSS-REF] Sony API restriction detected.");
-                }
+                    const mutualAccountIds = wIds.filter(id => rIds.includes(id));
+                    finalAccountList = (wolfFriends.friends || []).filter(f => mutualAccountIds.includes(f.accountId));
+                    finalData.mutualPack = finalAccountList.map(m => m.onlineId);
+                } catch (e) {}
             }
 
+            // Squad Sync (Uses Kevin's auth for basic presence)
             const auth = wolfData.auth;
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
                 if (key === 'ray' && rayDetail && !rayDetail.error) continue;
@@ -240,15 +238,19 @@ async function main() {
                     const accId = search.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
                     if (accId) {
                         const pres = await getPresence(auth, accId);
+                        // Merge presence status without losing previous metadata
                         finalData.users[key] = { ...finalData.users[key], ...pres };
                     }
                 } catch (e) {}
             }
         }
-    } catch (e) {}
+    } catch (e) {
+        console.error(`[FATAL] Script error: ${e.message}`);
+    }
 
+    // 3. Final Write
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] psn_data.json updated.`);
+    console.log(`[SUCCESS] psn_data.json updated. Persistence Engine Active.`);
 }
 
 main();
