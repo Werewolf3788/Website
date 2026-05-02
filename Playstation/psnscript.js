@@ -9,7 +9,7 @@ const {
     getTitleTrophyGroups,
     makeUniversalSearch,
     getProfileFromAccountId,
-    getProfileFromUserName, // Bridge for finding numeric accountId
+    getProfileFromUserName, // The Handshake Bridge
     getRecentlyPlayedGames
 } = psnApi;
 
@@ -18,10 +18,10 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Squad Tracking
- * Aliases: 
- * - Ray: OneLIVIDMAN, Raymystyro
- * - TJ: Darkwing69420, terrdog420
- * - Seth: joe-punk_, fluffy, phoenix_darkfire
+ * Mapping Aliases for the Lobby:
+ * - Ray: OneLIVIDMAN
+ * - TJ: Darkwing69420
+ * - Seth: phoenix_darkfire (Privacy Blocked)
  */
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
@@ -65,7 +65,7 @@ const getPresence = async (auth, accountId) => {
 
 /**
  * Main Data Aggregator
- * Updated to force numeric accountId resolution to fix "Bad Request" errors.
+ * Uses the Handshake Bridge to resolve numeric accountId.
  */
 async function getFullUserData(npsso, label, targetOnlineId) {
     try {
@@ -74,8 +74,6 @@ async function getFullUserData(npsso, label, targetOnlineId) {
         const authorization = await exchangeCodeForAccessToken(accessCode);
 
         // STEP 1: THE HANDSHAKE BRIDGE
-        // We need the numeric accountId. Since "me" is blocked and Search is lagging,
-        // we use getProfileFromUserName which is a legacy bridge that still returns the ID.
         let accountId = "";
         console.log(`[${label}] Resolving numeric accountId for ${targetOnlineId}...`);
         
@@ -90,10 +88,10 @@ async function getFullUserData(npsso, label, targetOnlineId) {
         }
 
         if (!accountId) {
-            throw new Error(`CRITICAL: Could not find numeric accountId for ${targetOnlineId}. Sony is blocking all identification methods.`);
+            throw new Error(`CRITICAL: Could not find numeric accountId for ${targetOnlineId}.`);
         }
 
-        // STEP 2: Use the numeric ID for all restricted endpoints
+        // STEP 2: Profile & Presence using numeric ID
         const profile = await getProfileFromAccountId(authorization, accountId);
         const presence = await getPresence(authorization, accountId);
 
@@ -128,7 +126,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                 });
             }
 
-            // MISSION LOG: Detailed trophy list for the current active game
+            // MISSION LOG: Detailed trophy list
             if (!activeGameMetadata) {
                 try {
                     const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(authorization, accountId, title.npCommunicationId, "all");
@@ -138,7 +136,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                     activeGameMetadata = {
                         title: name,
                         hours: gameHours,
-                        dlcGroups: (trophyGroups || []).map(g => ({
+                        dlcGroups: trophyGroups.map(g => ({
                             name: g.trophyGroupName,
                             progress: g.progress,
                             earned: (g.earnedTrophies?.gold || 0) + (g.earnedTrophies?.silver || 0) + (g.earnedTrophies?.bronze || 0),
@@ -184,7 +182,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             lastUpdated: new Date().toLocaleString()
         };
 
-        // CORRECT INFO LOG BLOCK
+        // VERIFIED LOG BLOCK
         console.log(`[VERIFIED INFO FOR ${label}]`);
         console.log(` > Online ID: ${targetOnlineId}`);
         console.log(` > Account ID: ${accountId}`);
@@ -211,40 +209,46 @@ async function main() {
             const authCode = await exchangeNpssoForCode(werewolfToken);
             const auth = await exchangeCodeForAccessToken(authCode);
             
-            // Sync Admin Kevin
+            // Kevin Sync
             const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
             if (wolfData) finalData.users.werewolf = wolfData;
 
-            // Sync Squad
+            // Squad Sync
             console.log("\n[TEST LOG] --- Syncing Squad Status ---");
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
-                if (key === 'ray' && rayToken) continue;
+                if (key === 'ray' && rayToken) continue; 
+                
                 try {
                     const search = await makeUniversalSearch(auth, onlineId, "socialAccounts");
                     const res = search.domainResponses?.[0]?.results?.[0];
-                    if (res?.socialMetadata?.accountId) {
-                        const accId = res.socialMetadata.accountId;
-                        finalData.users[key] = await getPresence(auth, accId);
-                        console.log(` > [SQUAD] ${onlineId}: ${finalData.users[key].online ? 'ONLINE' : 'OFFLINE'}`);
-                    } else {
-                        // Squad Handshake Backup
+                    let accId = res?.socialMetadata?.accountId;
+                    
+                    if (!accId) {
                         try {
                             const bridge = await getProfileFromUserName(auth, onlineId);
-                            const accId = bridge.profile.accountId;
-                            finalData.users[key] = await getPresence(auth, accId);
-                            console.log(` > [SQUAD] ${onlineId}: ONLINE (Resolved via Bridge)`);
+                            accId = bridge.profile.accountId;
                         } catch (e) {
-                            console.log(` > [SQUAD] ${onlineId}: Not Found/Private`);
-                            finalData.users[key] = { online: false, currentGame: "" };
+                            if (onlineId === "phoenix_darkfire") {
+                                console.log(` > [SQUAD] Seth (phoenix_darkfire) is currently private/blocked.`);
+                            }
                         }
                     }
-                } catch (e) { finalData.users[key] = { online: false }; }
+
+                    if (accId) {
+                        finalData.users[key] = await getPresence(auth, accId);
+                        console.log(` > [SQUAD] ${onlineId}: ${finalData.users[key].online ? 'ONLINE' : 'OFFLINE'} (ID: ${accId})`);
+                    } else {
+                        finalData.users[key] = { online: false, currentGame: "Private" };
+                        console.log(` > [SQUAD] ${onlineId}: Skipped (Privacy Blocked)`);
+                    }
+                } catch (e) { 
+                    finalData.users[key] = { online: false }; 
+                }
             }
         } catch (e) { console.error("Authentication Stack Failure:", e.message); }
     }
 
     if (rayToken) {
-        // Sync Ray Details
         const rayDetail = await getFullUserData(rayToken, "Ray", "OneLIVIDMAN");
         if (rayDetail) finalData.users.ray = rayDetail;
     }
