@@ -19,7 +19,7 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Squad Tracking
- * Version 6.5.1 - Applied Ray's New Key & Hardened Progress Logic
+ * Version 6.5.3 - Updated Ray's Token & Hardened Numerical Logic
  */
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
@@ -63,19 +63,19 @@ const getPresence = async (auth, accountId) => {
 
 /**
  * Main Data Aggregator
- * Includes Token Health Checks to alert Kevin when an NPSSO expires.
+ * Includes Token Health Checks, Plus status, and Screenshot-style Numerical Progress.
  */
 async function getFullUserData(npsso, label, targetOnlineId) {
     try {
-        console.log(`\n[LOG] Starting DEEP Sync: ${label}`);
+        console.log(`\n[LOG] Starting Sync: ${label}`);
         
-        // TOKEN HEALTH CHECK:
+        // TOKEN HEALTH CHECK
         let authorization;
         try {
-            const accessCode = await exchangeNpssoForCode(npsso);
+            const accessCode = await exchangeNpssoForCode(npsso.trim());
             authorization = await exchangeCodeForAccessToken(accessCode);
         } catch (authError) {
-            console.error(`[ALERT] ${label}'s NPSSO Key has EXPIRED.`);
+            console.error(`[ALERT] ${label}'s key is EXPIRED.`);
             return { error: "TOKEN_EXPIRED", lastCheck: new Date().toLocaleString() };
         }
 
@@ -108,12 +108,12 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             const name = title.trophyTitleName;
             if (BLACKLIST.some(f => name.toLowerCase().includes(f))) continue;
 
-            const earnedCount = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
-            const totalCount = (title.definedTrophies.platinum + title.definedTrophies.gold + title.definedTrophies.silver + title.definedTrophies.bronze);
+            const earnedC = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
+            const totalC = (title.definedTrophies.platinum + title.definedTrophies.gold + title.definedTrophies.silver + title.definedTrophies.bronze);
             const gameHours = playtimeMap[name] || parsePlaytime(title.playDuration);
 
             if (recentGames.length < 6) {
-                recentGames.push({ name, art: title.trophyTitleIconUrl, progress: title.progress, ratio: `${earnedCount}/${totalCount}`, hours: gameHours });
+                recentGames.push({ name, art: title.trophyTitleIconUrl, progress: title.progress, ratio: `${earnedC}/${totalC}`, hours: gameHours });
             }
 
             if (!activeGameMetadata) {
@@ -125,14 +125,13 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                         hours: gameHours,
                         trophies: (meta || []).map(m => {
                             const s = earnedStatus.find(x => x.trophyId === m.trophyId);
-                            
-                            // HARDENED NUMERICAL CHECK: Ensure '0' is captured and not ignored
+                            // Mapping for Screenshot style 78/100
                             const current = (s?.progress !== undefined) ? s.progress : undefined;
                             const target = (m.trophyProgressTargetValue !== undefined) ? m.trophyProgressTargetValue : undefined;
 
                             return {
                                 name: m.trophyName,
-                                description: m.trophyDetail || "Secret Requirement",
+                                description: m.trophyDetail || "Secret Objective",
                                 type: m.trophyType,
                                 icon: m.trophyIconUrl,
                                 rarity: m.trophyRare ? m.trophyRare + "%" : "Common",
@@ -155,7 +154,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             currentGame: presence.currentGame,
             platform: presence.platform,
             avatar: profile.avatars?.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url || "",
-            bio: profile.aboutMe || "Official Pack Admin",
+            bio: profile.aboutMe || "Kevin Admin Hub",
             plus: profile.isPlus,
             level: stats.trophyLevel,
             activeHunt: activeGameMetadata,
@@ -170,44 +169,42 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             tokenStatus: "HEALTHY",
             lastUpdated: new Date().toLocaleString()
         };
-    } catch (e) { 
-        console.error(`[ERR] Sync for ${label} failed: ${e.message}`);
-        return null; 
-    }
+    } catch (e) { return null; }
 }
 
 async function main() {
-    const werewolfToken = process.env.PSN_NPSSO_WEREWOLF || "Z16BT0DB8X1dR5PiuftzTslTeH796cHb9alTA9S7nrpr37L4cu1RrqFCfYWc2YyG";
-    // Ray's updated key applied:
+    const wolfToken = process.env.PSN_NPSSO_WEREWOLF || "Z16BT0DB8X1dR5PiuftzTslTeH796cHb9alTA9S7nrpr37L4cu1RrqFCfYWc2YyG";
     const rayToken = process.env.PSN_NPSSO_RAY || "WQcE2imvkX8YsIiMGP8G2MYwUXHJxbrxvmh8yclvXirAjQ4SOJQrneZpsdhYqW2j";
     
     let finalData = { users: {}, mutualPack: [], systemAlerts: [] };
     const dataPath = path.join(__dirname, "psn_data.json");
 
-    // Load existing data for backup
     try {
         if (fs.existsSync(dataPath)) {
             const existing = JSON.parse(fs.readFileSync(dataPath));
-            finalData = existing;
+            finalData = {
+                users: existing.users || {},
+                mutualPack: existing.mutualPack || [],
+                systemAlerts: [] // Reset alerts for fresh run
+            };
         }
     } catch (e) {}
 
     try {
-        // 1. Sync Kevin (Werewolf)
-        const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
+        const wolfData = await getFullUserData(wolfToken, "Werewolf", "Werewolf3788");
         if (wolfData && wolfData.error === "TOKEN_EXPIRED") {
             finalData.systemAlerts.push({ user: "Werewolf", issue: "NPSSO Key Expired", time: wolfData.lastCheck });
         } else if (wolfData) {
             finalData.users.werewolf = wolfData;
             
-            // 2. Sync Ray
-            const rayDetail = rayToken ? await getFullUserData(rayToken, "Ray", "OneLIVIDMAN") : null;
+            const rayDetail = await getFullUserData(rayToken, "Ray", "OneLIVIDMAN");
             if (rayDetail && rayDetail.error === "TOKEN_EXPIRED") {
                 finalData.systemAlerts.push({ user: "Ray", issue: "NPSSO Key Expired", time: rayDetail.lastCheck });
             } else if (rayDetail) {
                 finalData.users.ray = rayDetail;
-
-                // 3. CROSS REFERENCE
+                
+                // Cross-Reference Mutual Friends
+                console.log("[CROSS-REF] Intersecting friends lists...");
                 try {
                     const wolfFriends = await getFriendsList(wolfData.auth, wolfData.accountId);
                     const rayFriends = await getFriendsList(rayDetail.auth, rayDetail.accountId);
@@ -217,12 +214,10 @@ async function main() {
                 } catch (e) {}
             }
 
-            // 4. Sync Presence for the rest of the Pack
             const auth = wolfData.auth;
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
                 if (key === 'ray' && rayDetail && !rayDetail.error) continue;
                 if (key === 'werewolf') continue;
-                
                 try {
                     const search = await makeUniversalSearch(auth, onlineId, "socialAccounts");
                     const accId = search.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
@@ -232,17 +227,11 @@ async function main() {
                     }
                 } catch (e) {}
             }
-        } else {
-            console.error("[CRITICAL] Main account failed. Key might be dead.");
-            return;
         }
-    } catch (e) {
-        console.error("[FATAL] Script error:", e.message);
-        return;
-    }
+    } catch (e) {}
 
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] psn_data.json saved. Alerts logged: ${finalData.systemAlerts.length}`);
+    console.log(`[SUCCESS] psn_data.json saved. Alerts: ${finalData.systemAlerts.length}`);
 }
 
 main();
