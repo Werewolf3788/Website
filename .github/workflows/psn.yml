@@ -2,8 +2,8 @@ name: Sync PSN Data
 
 on:
   schedule:
-    # Runs every 30 minutes to stay within GitHub Free Tier limits
-    - cron: '*/30 * * * *'
+    # Runs every 15 minutes
+    - cron: '*/15 * * * *'
   workflow_dispatch:
   push:
     branches:
@@ -37,8 +37,8 @@ jobs:
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
-        # Runs the JS script in the Playstation folder as seen in successful logs
-        run: node Playstation/psnscript.js
+        # Updated to point to the correct script name: werewolf_sync.js
+        run: node Playstation/werewolf_sync.js
 
       - name: Commit and Push Changes
         run: |
