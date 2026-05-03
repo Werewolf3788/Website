@@ -2,13 +2,14 @@ name: Sync PSN Data
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    # UPDATED: Set to 20 minutes to prevent deployment collisions
+    - cron: '*/20 * * * *'
   workflow_dispatch:
   push:
     branches:
       - main
 
-# FIX: Group builds together and prevent them from cancelling each other
+# FIX: Queue builds so they don't cancel each other out
 concurrency:
   group: "pages"
   cancel-in-progress: false 
@@ -20,7 +21,6 @@ permissions:
 
 jobs:
   build-and-sync:
-    # CRITICAL: This environment block fixes the error in your screenshot
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -49,10 +49,12 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          git add .nojekyll || echo "no jekyll"
+          # Ensure .nojekyll exists to speed up deployment
+          touch .nojekyll
+          git add .nojekyll
           git add Playstation/psn_data.json
           git add Playstation/tokens.json || echo "no tokens"
-          git commit -m "Wolf Sync: v7.5.3 Environment & Presence Fix [skip ci]" || echo "No changes"
+          git commit -m "Wolf Sync: v7.5.3 Deployment Guard [skip ci]" || echo "No changes"
           git pull --rebase origin main
           git push origin main
 
