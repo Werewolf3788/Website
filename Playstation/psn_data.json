@@ -62,7 +62,7 @@
         "platinum": 5,
         "total": 1276
       },
-      "lastUpdated": "5/3/2026, 7:11:50 AM"
+      "lastUpdated": "5/3/2026, 10:36:35 AM"
     },
     "ray": {
       "accountId": "2732733730346312494",
@@ -75,8 +75,8 @@
         {
           "name": "Mahjong",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png",
-          "progress": 40,
-          "ratio": "4/10",
+          "progress": 50,
+          "ratio": "5/10",
           "hours": "0h"
         },
         {
@@ -99,6 +99,13 @@
         "trophies": []
       },
       "mostRecentTrophies": [
+        {
+          "game": "Mahjong",
+          "name": "CLEAR 20 LEVELS",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/5c335c31-75f7-4194-8867-163a13a15071.png",
+          "timestamp": 1777792873000,
+          "date": "5/3/2026, 7:21:13 AM"
+        },
         {
           "game": "Mahjong",
           "name": "CLEAR 15 LEVELS",
@@ -126,21 +133,14 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6a3ac782-b027-4a9c-9b2e-47f6ca3a8759.png",
           "timestamp": 1777306334000,
           "date": "4/27/2026, 4:12:14 PM"
-        },
-        {
-          "game": "Farming Simulator 25",
-          "name": "Farming is in our nature",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/d07f4a23-2e38-4b5a-8fd7-b2521bd3ee5d.png",
-          "timestamp": 1776163727000,
-          "date": "4/14/2026, 10:48:47 AM"
         }
       ],
       "dataStatus": "LIVE",
       "trophies": {
         "platinum": 5,
-        "total": 689
+        "total": 690
       },
-      "lastUpdated": "5/3/2026, 7:11:51 AM"
+      "lastUpdated": "5/3/2026, 10:36:37 AM"
     }
   },
   "systemAlerts": []
