@@ -15,41 +15,6 @@
           "progress": 25,
           "ratio": "22/71",
           "hours": "0h"
-        },
-        {
-          "name": "Crossout",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
-          "progress": 4,
-          "ratio": "1/13",
-          "hours": "0h"
-        },
-        {
-          "name": "Wo Long: Fallen Dynasty",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
-          "progress": 9,
-          "ratio": "10/90",
-          "hours": "0h"
-        },
-        {
-          "name": "Tom Clancy’s Ghost Recon® Wildlands",
-          "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
-          "progress": 29,
-          "ratio": "20/58",
-          "hours": "0h"
-        },
-        {
-          "name": "Where Winds Meet",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
-          "progress": 3,
-          "ratio": "2/45",
-          "hours": "0h"
-        },
-        {
-          "name": "Call of Duty® Modern Warfare® II",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50314_00/8e558b12-9144-4d7f-a141-5b04943763b4.png",
-          "progress": 0,
-          "ratio": "0/25",
-          "hours": "0h"
         }
       ],
       "activeHunt": {
@@ -98,7 +63,7 @@
         "platinum": 5,
         "total": 1276
       },
-      "lastUpdated": "5/3/2026, 5:42:21 AM"
+      "lastUpdated": "5/3/2026, 6:02:19 AM"
     },
     "ray": {
       "accountId": "2732733730346312494",
@@ -117,13 +82,6 @@
           "hours": "0h"
         },
         {
-          "name": "theHunter: Call of the Wild",
-          "art": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/88AFFFD0B28B703B28CA71F6353F797230B9FB32.PNG",
-          "progress": 35,
-          "ratio": "39/115",
-          "hours": "0h"
-        },
-        {
           "name": "Sniper Elite: Resistance",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
           "progress": 0,
@@ -135,20 +93,6 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
           "progress": 100,
           "ratio": "46/46",
-          "hours": "0h"
-        },
-        {
-          "name": "Farming Simulator 22",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR23165_00/dae2fb95-5224-40a6-bd64-b9c4b1e826f6.png",
-          "progress": 18,
-          "ratio": "10/46",
-          "hours": "0h"
-        },
-        {
-          "name": "SKULL AND BONES™",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22432_00/cbdac3c7-fa16-4556-81f0-a93c788c0cf8.png",
-          "progress": 10,
-          "ratio": "7/51",
           "hours": "0h"
         }
       ],
@@ -198,7 +142,7 @@
         "platinum": 5,
         "total": 689
       },
-      "lastUpdated": "5/3/2026, 5:42:22 AM"
+      "lastUpdated": "5/3/2026, 6:02:21 AM"
     }
   },
   "systemAlerts": []
