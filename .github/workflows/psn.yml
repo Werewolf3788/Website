@@ -20,6 +20,7 @@ permissions:
 
 jobs:
   build-and-sync:
+    # CRITICAL: This environment block fixes the error in your screenshot
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -51,7 +52,7 @@ jobs:
           git add .nojekyll || echo "no jekyll"
           git add Playstation/psn_data.json
           git add Playstation/tokens.json || echo "no tokens"
-          git commit -m "Wolf Sync: v7.5.3 Queue Fix [skip ci]" || echo "No changes"
+          git commit -m "Wolf Sync: v7.5.3 Environment & Presence Fix [skip ci]" || echo "No changes"
           git pull --rebase origin main
           git push origin main
 
