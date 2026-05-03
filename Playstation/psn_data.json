@@ -1,4 +1,205 @@
 {
-  "users": {},
+  "users": {
+    "werewolf": {
+      "accountId": "3728215008151724560",
+      "online": false,
+      "currentGame": "Home Screen",
+      "platform": "PS5",
+      "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0004_s.png",
+      "plus": true,
+      "level": 232,
+      "recentGames": [
+        {
+          "name": "Sniper Elite: Resistance",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
+          "progress": 25,
+          "ratio": "22/71",
+          "hours": "0h"
+        },
+        {
+          "name": "Crossout",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
+          "progress": 4,
+          "ratio": "1/13",
+          "hours": "0h"
+        },
+        {
+          "name": "Wo Long: Fallen Dynasty",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
+          "progress": 9,
+          "ratio": "10/90",
+          "hours": "0h"
+        },
+        {
+          "name": "Tom Clancy’s Ghost Recon® Wildlands",
+          "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+          "progress": 29,
+          "ratio": "20/58",
+          "hours": "0h"
+        },
+        {
+          "name": "Where Winds Meet",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
+          "progress": 3,
+          "ratio": "2/45",
+          "hours": "0h"
+        },
+        {
+          "name": "Call of Duty® Modern Warfare® II",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50314_00/8e558b12-9144-4d7f-a141-5b04943763b4.png",
+          "progress": 0,
+          "ratio": "0/25",
+          "hours": "0h"
+        }
+      ],
+      "activeHunt": {
+        "title": "Home Screen",
+        "trophies": []
+      },
+      "mostRecentTrophies": [
+        {
+          "game": "Sniper Elite: Resistance",
+          "name": "Vive La Résistance",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/1e11ac32-3048-415c-8d47-fcec2230463a.png",
+          "timestamp": 1759111272000,
+          "date": "9/29/2025, 2:01:12 AM"
+        },
+        {
+          "game": "Sniper Elite: Resistance",
+          "name": "Whatever it Takes",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/26115f96-aeab-40c1-aa38-a9173be1e236.png",
+          "timestamp": 1759110804000,
+          "date": "9/29/2025, 1:53:24 AM"
+        },
+        {
+          "game": "Sniper Elite: Resistance",
+          "name": "Full English",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/b678831c-f34e-48b7-82a6-9faf8dc91683.png",
+          "timestamp": 1759110008000,
+          "date": "9/29/2025, 1:40:08 AM"
+        },
+        {
+          "game": "Sniper Elite: Resistance",
+          "name": "Le Fantome",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/e37e2a78-29d1-44d2-b068-fff76935d6c9.png",
+          "timestamp": 1759107333000,
+          "date": "9/29/2025, 12:55:33 AM"
+        },
+        {
+          "game": "Sniper Elite: Resistance",
+          "name": "Grapes of Wrath",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/d68ca53b-2500-4e29-b7a5-09d05bf4c419.png",
+          "timestamp": 1759102193000,
+          "date": "9/28/2025, 11:29:53 PM"
+        }
+      ],
+      "dataStatus": "SYNCING",
+      "trophies": {
+        "platinum": 5,
+        "total": 1276
+      },
+      "lastUpdated": "5/3/2026, 5:42:21 AM"
+    },
+    "ray": {
+      "accountId": "2732733730346312494",
+      "online": false,
+      "currentGame": "Home Screen",
+      "platform": "PS5",
+      "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
+      "plus": true,
+      "level": 202,
+      "recentGames": [
+        {
+          "name": "Mahjong",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png",
+          "progress": 40,
+          "ratio": "4/10",
+          "hours": "0h"
+        },
+        {
+          "name": "theHunter: Call of the Wild",
+          "art": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/88AFFFD0B28B703B28CA71F6353F797230B9FB32.PNG",
+          "progress": 35,
+          "ratio": "39/115",
+          "hours": "0h"
+        },
+        {
+          "name": "Sniper Elite: Resistance",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
+          "progress": 0,
+          "ratio": "0/71",
+          "hours": "0h"
+        },
+        {
+          "name": "Farming Simulator 25",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+          "progress": 100,
+          "ratio": "46/46",
+          "hours": "0h"
+        },
+        {
+          "name": "Farming Simulator 22",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR23165_00/dae2fb95-5224-40a6-bd64-b9c4b1e826f6.png",
+          "progress": 18,
+          "ratio": "10/46",
+          "hours": "0h"
+        },
+        {
+          "name": "SKULL AND BONES™",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22432_00/cbdac3c7-fa16-4556-81f0-a93c788c0cf8.png",
+          "progress": 10,
+          "ratio": "7/51",
+          "hours": "0h"
+        }
+      ],
+      "activeHunt": {
+        "title": "Home Screen",
+        "trophies": []
+      },
+      "mostRecentTrophies": [
+        {
+          "game": "Mahjong",
+          "name": "CLEAR 15 LEVELS",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/e7c05277-96df-4133-b044-d1d76f07f861.png",
+          "timestamp": 1777781054000,
+          "date": "5/3/2026, 4:04:14 AM"
+        },
+        {
+          "game": "Mahjong",
+          "name": "CLEAR 10 LEVELS",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/c4cc9e52-45e4-41bd-97a3-d1c270ee71e9.png",
+          "timestamp": 1777327146000,
+          "date": "4/27/2026, 9:59:06 PM"
+        },
+        {
+          "game": "Mahjong",
+          "name": "CLEAR 5 LEVELS",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/a2b6cd81-f3d0-4a2b-b580-b706b875dd2f.png",
+          "timestamp": 1777312867000,
+          "date": "4/27/2026, 6:01:07 PM"
+        },
+        {
+          "game": "Mahjong",
+          "name": "CLEAR 1 LEVEL",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6a3ac782-b027-4a9c-9b2e-47f6ca3a8759.png",
+          "timestamp": 1777306334000,
+          "date": "4/27/2026, 4:12:14 PM"
+        },
+        {
+          "game": "Farming Simulator 25",
+          "name": "Farming is in our nature",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/d07f4a23-2e38-4b5a-8fd7-b2521bd3ee5d.png",
+          "timestamp": 1776163727000,
+          "date": "4/14/2026, 10:48:47 AM"
+        }
+      ],
+      "dataStatus": "LIVE",
+      "trophies": {
+        "platinum": 5,
+        "total": 689
+      },
+      "lastUpdated": "5/3/2026, 5:42:22 AM"
+    }
+  },
   "systemAlerts": []
 }
