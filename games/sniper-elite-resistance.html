@@ -147,6 +147,7 @@
         .lock-badge { border-color: var(--ser-color); color: var(--ser-color); background: rgba(255, 255, 255, 0.03); cursor: default; }
 
         .tracker-footer { margin-top: 50px; text-align: center; padding-bottom: 40px; opacity: 0.5; font-size: 10px; }
+        .reward-tag { color: #00ff00; font-weight: 900; font-size: 10px; margin-top: 4px; display: block; }
     </style>
 </head>
 <body id="master-body">
@@ -170,6 +171,7 @@
                 <button class="profile-btn active-btn" onclick="appState.switchHunter('Kevin')">Kevin</button>
                 <button class="profile-btn" onclick="appState.switchHunter('Ray')">Ray</button>
                 <button class="profile-btn" onclick="appState.switchHunter('TJ')">TJ</button>
+                <button class="profile-btn" onclick="appState.switchHunter('Seth')">Seth</button>
             </div>
         </div>
 
@@ -183,8 +185,8 @@
         <div id="section-container"></div>
 
         <footer class="tracker-footer">
-            <p>DESIGNED BY WEREWOLF3788 | OPERATIVES: KEVIN, RAY, TJ</p>
-            <p style="margin-top: 5px; font-mono">NODE-PROJECT: game-tracker-5b2ef</p>
+            <p>DESIGNED BY WEREWOLF3788 | OPERATIVES: KEVIN, RAY, TJ, SETH</p>
+            <p style="margin-top: 5px; font-family: monospace;">NODE-PROJECT: game-tracker-5b2ef</p>
         </footer>
     </div>
 
@@ -193,7 +195,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-        // --- FIREBASE CONFIGURATION (game-tracker-5b2ef) ---
         const firebaseConfig = {
             apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
             authDomain: "game-tracker-5b2ef.firebaseapp.com",
@@ -208,13 +209,22 @@
         const userThemes = {
             'Kevin': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
             'Ray': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
-            'TJ': { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)' }
+            'TJ': { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)' },
+            'Seth': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
         };
 
-        // --- FULL UNSTRIPPED SNIPER ELITE REGISTRY (Missions 1-8 + DLC) ---
+        // --- FULL UNSTRIPPED REGISTRY: ALL 3 CODES COMBINED ---
         const sniperData = [
+            // MISSION 1: BEHIND ENEMY LINES
             { id: 'm1_wb1', cat: '1: Behind Enemy Lines', name: 'Pistol Workbench', type: 'WB', desc: 'Pull wooden boards off the wall in the enemy house.' },
-            
+            { id: 'm1_tr1', cat: '1: Behind Enemy Lines', name: 'Dam Buster Trophy', type: 'TR', desc: 'Sabotage the Dam and destroy the AA guns.' },
+
+            // MISSION 2: DEAD DROP
+            { id: 'm2_kl1', cat: '2: Dead Drop', name: 'Philo Beck (Kill List)', type: 'KL', desc: 'Pick up rat bomb and place in designated location for Philo to trigger.', reward: 'REWARD: Negant M1895' },
+            { id: 'm2_pp1', cat: '2: Dead Drop', name: 'La Resistance (Poster)', type: 'PP', desc: 'Pick lock on gate in tunnel ladder room or go via car area to stairs wall.' },
+            { id: 'm2_wb1', cat: '2: Dead Drop', name: 'Rifle Workbench', type: 'WB', desc: 'Building behind church, break gate. manor southwest of graveyard.', reward: 'UNLOCK: Maxin 1910 Suppressor' },
+            { id: 'm2_wb2', cat: '2: Dead Drop', name: 'Pistol Workbench', type: 'WB', desc: 'Fortress tunnel stairs under fortress.' },
+            { id: 'm2_wb3', cat: '2: Dead Drop', name: 'SMG Workbench', type: 'WB', desc: 'Workshop near Vertigo office.' },
             { id: 'm2_pl1', cat: '2: Dead Drop', name: 'A Lost Soul Trembles', type: 'PL', desc: 'Church safe (requires key or charge).' },
             { id: 'm2_pl2', cat: '2: Dead Drop', name: 'Missing You Dearly', type: 'PL', desc: 'Garden area bench west of office.' },
             { id: 'm2_pl3', cat: '2: Dead Drop', name: 'Surrounded by Idiots', type: 'PL', desc: 'Main library southern desk.' },
@@ -228,15 +238,18 @@
             { id: 'm2_hi1', cat: '2: Dead Drop', name: 'Police Report: #222', type: 'HI', desc: 'Library bottom floor western edge.' },
             { id: 'm2_hi2', cat: '2: Dead Drop', name: 'Police Report: #223', type: 'HI', desc: 'Library top floor small room.' },
             { id: 'm2_hi3', cat: '2: Dead Drop', name: 'Police Report: #224', type: 'HI', desc: 'Statue room below main entrance.' },
-            { id: 'm2_hi4', cat: '2: Dead Drop', name: 'La Résistance', type: 'HI', desc: 'Tunnel stairs after bridge.' },
+            { id: 'm2_hi4', cat: '2: Dead Drop', name: 'La Résistance Item', type: 'HI', desc: 'Tunnel stairs after bridge.' },
             { id: 'm2_e1', cat: '2: Dead Drop', name: 'Stone Eagle #1', type: 'SE', desc: 'Building right of library entrance.' },
             { id: 'm2_e2', cat: '2: Dead Drop', name: 'Stone Eagle #2', type: 'SE', desc: 'Top of church.' },
             { id: 'm2_e3', cat: '2: Dead Drop', name: 'Stone Eagle #3', type: 'SE', desc: 'Top of tower near Vertigo office.' },
-            { id: 'm2_wb1', cat: '2: Dead Drop', name: 'Rifle Workbench', type: 'WB', desc: 'Building behind church, break gate.' },
-            { id: 'm2_wb2', cat: '2: Dead Drop', name: 'Pistol Workbench', type: 'WB', desc: 'Fortress tunnel stairs under fortress.' },
-            { id: 'm2_wb3', cat: '2: Dead Drop', name: 'SMG Workbench', type: 'WB', desc: 'Workshop near Vertigo office.' },
             { id: 'm2_tr1', cat: '2: Dead Drop', name: "File O' Facts Trophy", type: 'TR', desc: 'Recover library evidence.' },
 
+            // MISSION 3: SONDERZÜGE SABOTAGE
+            { id: 'm3_kl1', cat: '3: Sonderzüge Sabotage', name: 'Claude La Ronde (Kill List)', type: 'KL', desc: 'Shoot hanging cargo so it falls on him while he stands underneath.', reward: 'REWARD: M1907' },
+            { id: 'm3_pp1', cat: '3: Sonderzüge Sabotage', name: 'Le Sniper (Poster)', type: 'PP', desc: 'To the left of the first safehouse building building.' },
+            { id: 'm3_wb1', cat: '3: Sonderzüge Sabotage', name: 'SMG Workbench', type: 'WB', desc: 'Old Town courtyard gate. Locked door under steps.', reward: 'UNLOCK: SMG Extended Magazine' },
+            { id: 'm3_wb2', cat: '3: Sonderzüge Sabotage', name: 'Pistol Workbench', type: 'WB', desc: 'Trainyard undercover area upstairs.' },
+            { id: 'm3_wb3', cat: '3: Sonderzüge Sabotage', name: 'Rifle Workbench', type: 'WB', desc: 'Side wall of bldg in Kill List area.' },
             { id: 'm3_l1', cat: '3: Sonderzüge Sabotage', name: 'Be Safe, My Dear', type: 'PL', desc: 'Safe inside crashed truck.' },
             { id: 'm3_l2', cat: '3: Sonderzüge Sabotage', name: 'We Are Everywhere', type: 'PL', desc: 'Third floor central bldg desk.' },
             { id: 'm3_l3', cat: '3: Sonderzüge Sabotage', name: 'Cross of Lorraine', type: 'PL', desc: 'Optional Obj bldg end room.' },
@@ -249,14 +262,19 @@
             { id: 'm3_d5', cat: '3: Sonderzüge Sabotage', name: 'Cargo Details', type: 'CD', desc: 'Train station top floor room.' },
             { id: 'm3_h1', cat: '3: Sonderzüge Sabotage', name: 'Resistance Flag', type: 'HI', desc: 'Optional Obj first floor box.' },
             { id: 'm3_h2', cat: '3: Sonderzüge Sabotage', name: 'Gestapo ID Badge', type: 'HI', desc: 'Bridge crossing left side box.' },
-            { id: 'm3_h3', cat: '3: Sonderzüge Sabotage', name: 'Le Sniper', type: 'HI', desc: 'Propaganda Poster outside Obj bldg.' },
+            { id: 'm3_h3', cat: '3: Sonderzüge Sabotage', name: 'Le Sniper Item', type: 'HI', desc: 'Propaganda Poster outside Obj bldg.' },
             { id: 'm3_e1', cat: '3: Sonderzüge Sabotage', name: 'Stone Eagle #1', type: 'SE', desc: 'Building left of starting gate.' },
             { id: 'm3_e2', cat: '3: Sonderzüge Sabotage', name: 'Stone Eagle #2', type: 'SE', desc: 'On dome of northern corner bldg.' },
             { id: 'm3_e3', cat: '3: Sonderzüge Sabotage', name: 'Stone Eagle #3', type: 'SE', desc: 'Above clock on cargo bldg.' },
-            { id: 'm3_wb1', cat: '3: Sonderzüge Sabotage', name: 'Pistol Workbench', type: 'WB', desc: 'Trainyard undercover area upstairs.' },
-            { id: 'm3_wb2', cat: '3: Sonderzüge Sabotage', name: 'Rifle Workbench', type: 'WB', desc: 'Side wall of bldg in Kill List area.' },
-            { id: 'm3_wb3', cat: '3: Sonderzüge Sabotage', name: 'SMG Workbench', type: 'WB', desc: 'Old Town courtyard gate.' },
 
+            // MISSION 4: COLLISION COURSE
+            { id: 'm4_kl1', cat: '4: Collision Course', name: 'Ludwig Spiegel (Kill List)', type: 'KL', desc: 'Shoot the shoddy dam platform while he stands on it to cause a fall.', reward: 'REWARD: M1 Garand' },
+            { id: 'm4_pp1', cat: '4: Collision Course', name: 'Liberations (Poster)', type: 'PP', desc: 'Steps going down near bridge with rails.' },
+            { id: 'm4_wb1', cat: '4: Collision Course', name: 'Pistol Workbench', type: 'WB', desc: 'Farmstead house. Use vines to climb into 1st floor window.', reward: 'UNLOCK: ZF4 P 6x Scope' },
+            { id: 'm4_wb2', cat: '4: Collision Course', name: 'SMG Workbench', type: 'WB', desc: 'Train station salvaged tech bunker.' },
+            { id: 'm4_wb3', cat: '4: Collision Course', name: 'Rifle Workbench', type: 'WB', desc: 'Bridge building back room.' },
+            { id: 'm4_tr1', cat: '4: Collision Course', name: "Sprung a Leak Trophy", type: 'TR', desc: 'Sabotage pump.' },
+            { id: 'm4_tr2', cat: '4: Collision Course', name: "Lost its way Gnome", type: 'TR', desc: 'Photo of Resistance Gnome under bridge archway.' },
             { id: 'm4_l1', cat: '4: Collision Course', name: 'A Gift, and a Name', type: 'PL', desc: 'Pinned to tree after vines.' },
             { id: 'm4_l2', cat: '4: Collision Course', name: 'I Will Miss You', type: 'PL', desc: 'Checkpoint desk.' },
             { id: 'm4_l3', cat: '4: Collision Course', name: 'What a Discovery', type: 'PL', desc: 'Farmstead fountain shed.' },
@@ -269,16 +287,18 @@
             { id: 'm4_d5', cat: '4: Collision Course', name: 'Dam Damage Report', type: 'CD', desc: 'Northwestern tent with radio.' },
             { id: 'm4_h1', cat: '4: Collision Course', name: 'Wine Bottle', type: 'HI', desc: 'Station 2nd floor bar.' },
             { id: 'm4_h2', cat: '4: Collision Course', name: 'Gas Mask', type: 'HI', desc: 'Intel building basement table.' },
-            { id: 'm4_h3', cat: '4: Collision Course', name: 'Libération', type: 'HI', desc: 'Train track tunnel wall.' },
+            { id: 'm4_h3', cat: '4: Collision Course', name: 'Libération Item', type: 'HI', desc: 'Train track tunnel wall.' },
             { id: 'm4_e1', cat: '4: Collision Course', name: 'Stone Eagle #1', type: 'SE', desc: 'Left side cliffs before bridge.' },
             { id: 'm4_e2', cat: '4: Collision Course', name: 'Stone Eagle #2', type: 'SE', desc: 'Left turret start castle.' },
             { id: 'm4_e3', cat: '4: Collision Course', name: 'Stone Eagle #3', type: 'SE', desc: 'Broken dam metal bars.' },
-            { id: 'm4_wb1', cat: '4: Collision Course', name: 'SMG Workbench', type: 'WB', desc: 'Train station salvaged tech bunker.' },
-            { id: 'm4_wb2', cat: '4: Collision Course', name: 'Pistol Workbench', type: 'WB', desc: 'Farmstead house vine entrance.' },
-            { id: 'm4_wb3', cat: '4: Collision Course', name: 'Rifle Workbench', type: 'WB', desc: 'Bridge building back room.' },
-            { id: 'm4_tr1', cat: '4: Collision Course', name: "Sprung a Leak Trophy", type: 'TR', desc: 'Sabotage pump.' },
-            { id: 'm4_tr2', cat: '4: Collision Course', name: "Gnome Photo Trophy", type: 'TR', desc: 'Photo of Resistance Gnome.' },
 
+            // MISSION 5: DEVIL'S CAULDRON
+            { id: 'm5_kl1', cat: "5: Devil's Cauldron", name: 'Eloi Coste (Kill List)', type: 'KL', desc: 'Kill using an LMG (found on map). Do not use all ammo beforehand.', reward: 'REWARD: Trench Gun' },
+            { id: 'm5_pp1', cat: "5: Devil's Cauldron", name: 'Le Marquis Voit Tout (Poster)', type: 'PP', desc: 'On the right wall of the church steeple.' },
+            { id: 'm5_tr1', cat: "5: Devil's Cauldron", name: 'Stopping Traffic Trophy', type: 'TR', desc: 'Destroy 4 tanker trucks carrying Kleine Blume ingredients.' },
+            { id: 'm5_wb1', cat: "5: Devil's Cauldron", name: 'Rifle Workbench', type: 'WB', desc: 'Southwest church basement.' },
+            { id: 'm5_wb2', cat: "5: Devil's Cauldron", name: 'Pistol Workbench', type: 'WB', desc: 'Factory 2nd floor locked door.' },
+            { id: 'm5_wb3', cat: "5: Devil's Cauldron", name: 'SMG Workbench', type: 'WB', desc: 'Southern road tunnel room.' },
             { id: 'm5_l1', cat: "5: Devil's Cauldron", name: 'Location Exposed', type: 'PL', desc: 'Southwest graveyard box.' },
             { id: 'm5_l2', cat: "5: Devil's Cauldron", name: 'A Childish Party!', type: 'PL', desc: 'Hill checkpoint table.' },
             { id: 'm5_l3', cat: "5: Devil's Cauldron", name: 'I Miss You So Much', type: 'PL', desc: 'Lighthouse cliff path bench.' },
@@ -291,15 +311,17 @@
             { id: 'm5_d5', cat: "5: Devil's Cauldron", name: 'Scuttle Instructions', type: 'CD', desc: 'Underground bunker safe.' },
             { id: 'm5_h1', cat: "5: Devil's Cauldron", name: 'Playing Cards', type: 'HI', desc: 'Road bend lit barrel.' },
             { id: 'm5_h2', cat: "5: Devil's Cauldron", name: 'Laboratory ID', type: 'HI', desc: 'Factory area yellow door.' },
-            { id: 'm5_h3', cat: "5: Devil's Cauldron", name: 'Le Maquis Voit Tout!', type: 'HI', desc: 'Southwestern church wall.' },
+            { id: 'm5_h3', cat: "5: Devil's Cauldron", name: 'Le Maquis Voit Tout Item', type: 'HI', desc: 'Southwestern church wall.' },
             { id: 'm5_e1', cat: "5: Devil's Cauldron", name: 'Stone Eagle #1', type: 'SE', desc: 'Top of lighthouse.' },
             { id: 'm5_e2', cat: "5: Devil's Cauldron", name: 'Stone Eagle #2', type: 'SE', desc: 'Above bridge ladders.' },
             { id: 'm5_e3', cat: "5: Devil's Cauldron", name: 'Stone Eagle #3', type: 'SE', desc: 'Top of giant crane.' },
-            { id: 'm5_wb1', cat: "5: Devil's Cauldron", name: 'Rifle Workbench', type: 'WB', desc: 'Southwest church basement.' },
-            { id: 'm5_wb2', cat: "5: Devil's Cauldron", name: 'Pistol Workbench', type: 'WB', desc: 'Factory 2nd floor locked door.' },
-            { id: 'm5_wb3', cat: "5: Devil's Cauldron", name: 'SMG Workbench', type: 'WB', desc: 'Southern road tunnel room.' },
-            { id: 'm5_tr1', cat: "5: Devil's Cauldron", name: 'Stopping Traffic Trophy', type: 'TR', desc: 'Destroy 4 tanker trucks.' },
 
+            // MISSION 6: ASSAULT ON FORT ROUGE
+            { id: 'm6_kl1', cat: '6: Assault on Fort Rouge', name: 'Uwe Schoene (Kill List)', type: 'KL', desc: 'Throw a Coal Torpedo on his fireplace. Explosion kills him when he uses it.', reward: 'REWARD: ERMA 36' },
+            { id: 'm6_pp1', cat: '6: Assault on Fort Rouge', name: 'Prendre Le Maquis (Poster)', type: 'PP', desc: 'Inside a triangular groove past north checkpoint gate.' },
+            { id: 'm6_wb1', cat: '6: Assault on Fort Rouge', name: 'Rifle Workbench', type: 'WB', desc: 'Underground hangar door path.' },
+            { id: 'm6_wb2', cat: '6: Assault on Fort Rouge', name: 'SMG Workbench', type: 'WB', desc: 'Town eastern stairs.' },
+            { id: 'm6_wb3', cat: '6: Assault on Fort Rouge', name: 'Pistol Workbench', type: 'WB', desc: 'Abbey grounds shed.' },
             { id: 'm6_l1', cat: '6: Assault on Fort Rouge', name: 'Just Do Your Job.', type: 'PL', desc: 'Ruined house north of entrance.' },
             { id: 'm6_l2', cat: '6: Assault on Fort Rouge', name: 'I Am Fed Up', type: 'PL', desc: 'Church safe table.' },
             { id: 'm6_l3', cat: '6: Assault on Fort Rouge', name: 'Something Is Strange', type: 'PL', desc: 'Zig-zag road rubble bldg.' },
@@ -312,33 +334,90 @@
             { id: 'm6_d5', cat: '6: Assault on Fort Rouge', name: "Schoene's Notes", type: 'CD', desc: 'Hangar bunker room left room.' },
             { id: 'm6_h1', cat: '6: Assault on Fort Rouge', name: 'Todt Uniform Badge', type: 'HI', desc: 'Underground corridor table.' },
             { id: 'm6_h2', cat: '6: Assault on Fort Rouge', name: 'Committee C Map', type: 'HI', desc: 'Underground hangar photo.' },
-            { id: 'm6_h3', cat: '6: Assault on Fort Rouge', name: 'Prende Le Maquis', type: 'HI', desc: 'Southern corner wall.' },
+            { id: 'm6_h3', cat: '6: Assault on Fort Rouge', name: 'Prende Le Maquis Item', type: 'HI', desc: 'Southern corner wall.' },
             { id: 'm6_e1', cat: '6: Assault on Fort Rouge', name: 'Stone Eagle #1', type: 'SE', desc: 'Western side of the abbey.' },
             { id: 'm6_e2', cat: '6: Assault on Fort Rouge', name: 'Stone Eagle #2', type: 'SE', desc: 'Building near main gate.' },
             { id: 'm6_e3', cat: '6: Assault on Fort Rouge', name: 'Stone Eagle #3', type: 'SE', desc: 'Fortress wall corner hole.' },
-            { id: 'm6_wb1', cat: '6: Assault on Fort Rouge', name: 'Rifle Workbench', type: 'WB', desc: 'Underground hangar door path.' },
-            { id: 'm6_wb2', cat: '6: Assault on Fort Rouge', name: 'SMG Workbench', type: 'WB', desc: 'Town eastern stairs.' },
-            { id: 'm6_wb3', cat: '6: Assault on Fort Rouge', name: 'Pistol Workbench', type: 'WB', desc: 'Abbey grounds shed.' },
 
-            { id: 'm7_pl1', cat: '7: Lock, Stock and Barrels', name: 'What Do They Want?', type: 'PL', desc: 'Southern edge building table.' },
-            { id: 'm7_cd1', cat: '7: Lock, Stock and Barrels', name: 'A Service Hatch', type: 'CD', desc: 'Main Nazi bldg bedroom.' },
-            { id: 'm7_hi1', cat: '7: Lock, Stock and Barrels', name: 'Engraved Lighter', type: 'HI', desc: 'SE house from main bldg.' },
-            { id: 'm7_g1', cat: '7: Lock, Stock and Barrels', name: 'Gnome #1 (Slope)', type: 'GN', desc: 'Slope near stone wall.' },
-            { id: 'm7_g2', cat: '7: Lock, Stock and Barrels', name: 'Gnome #2 (Wheel)', type: 'GN', desc: 'Stone wall near mill wheel.' },
-            { id: 'm7_g3', cat: '7: Lock, Stock and Barrels', name: 'Gnome #3 (Island)', type: 'GN', desc: 'Small lake island.' },
-            { id: 'm7_g4', cat: '7: Lock, Stock and Barrels', name: 'Gnome #4 (Rock)', type: 'GN', desc: 'On a rock in the pond.' },
-            { id: 'm7_g5', cat: '7: Lock, Stock and Barrels', name: 'Gnome #5 (Barrow)', type: 'GN', desc: 'Wheelbarrows near yellow post.' },
-            { id: 'm7_g6', cat: '7: Lock, Stock and Barrels', name: 'Gnome #6 (Roof)', type: 'GN', desc: 'In a hole of the roof.' },
-            { id: 'm7_g7', cat: '7: Lock, Stock and Barrels', name: 'Gnome #7 (Flower)', type: 'GN', desc: 'Split tree in circular bed.' },
-            { id: 'm7_g8', cat: '7: Lock, Stock and Barrels', name: 'Gnome #8 (Planter)', type: 'GN', desc: 'Corner of vegetable planter.' },
-            { id: 'm7_g9', cat: '7: Lock, Stock and Barrels', name: 'Gnome #9 (Barrel)', type: 'GN', desc: 'Fruit barrel apple tree.' },
-            { id: 'm7_g10', cat: '7: Lock, Stock and Barrels', name: 'Gnome #10 (Garden)', type: 'GN', desc: 'Back garden bed.' },
+            // MISSION 7: LOCK, STOCK, AND BARRELS
+            { id: 'm7_kl1', cat: '7: Lock, Stock, and Barrels', name: 'Aldo Riese (Kill List)', type: 'KL', desc: 'Poison his water and ring the dinner bell. Poison is in building next to foyer.', reward: 'REWARD: M1918 BAR' },
+            { id: 'm7_pp1', cat: '7: Lock, Stock, and Barrels', name: 'La Voix Du Maquis (Poster)', type: 'PP', desc: 'Outer wall of house with water wheel (Southwest).' },
+            { id: 'm7_poison', cat: '7: Lock, Stock, and Barrels', name: 'Poison Location Info', type: 'HI', desc: 'Derelict barn top floor near sniper nest or southern building table.' },
+            { id: 'm7_se1', cat: '7: Lock, Stock, and Barrels', name: 'Stone Eagle #1', type: 'SE', desc: 'Top middle of the building to the north (Main Objective building).' },
+            { id: 'm7_se2', cat: '7: Lock, Stock, and Barrels', name: 'Stone Eagle #2', type: 'SE', desc: 'On top of the windmill (West side).' },
+            { id: 'm7_se3', cat: '7: Lock, Stock, and Barrels', name: 'Stone Eagle #3', type: 'SE', desc: 'On top of a chimney left of the Zugwerfer Carriage.' },
+            { id: 'm7_sl1', cat: '7: Lock, Stock, and Barrels', name: 'Windmill Starting Loc', type: 'SL', desc: 'Light the pile of wood at the base of the windmill stairs.' },
+            { id: 'm7_sl2', cat: '7: Lock, Stock, and Barrels', name: 'Outskirts Starting Loc', type: 'SL', desc: 'Unlock the gate near the small house on southern outskirts.' },
+            { id: 'm7_pl1', cat: '7: Lock, Stock, and Barrels', name: 'What Do They Want?', type: 'PL', desc: 'Dining room table in the house on the left side of map.' },
+            { id: 'm7_pl2', cat: '7: Lock, Stock, and Barrels', name: 'Everything is Fine!', type: 'PL', desc: 'Large cable spool inside a stable with a generator.' },
+            { id: 'm7_pl3', cat: '7: Lock, Stock, and Barrels', name: 'I Feel Uneasy', type: 'PL', desc: 'Attic table with lantern in the center complex house.' },
+            { id: 'm7_pl4', cat: '7: Lock, Stock, and Barrels', name: 'Do Not Worry, Mother', type: 'PL', desc: "Aldo's study upstairs in the Kill Challenge building." },
+            { id: 'm7_pl5', cat: '7: Lock, Stock, and Barrels', name: 'Lying is Necessary', type: 'PL', desc: 'Table in right corner of small storage house near block house.' },
+            { id: 'm7_cd1', cat: '7: Lock, Stock, and Barrels', name: 'Rocket Fuse Setup', type: 'CD', desc: 'V1 Bunker Safe. Requires key from officer or Satchel Charge.' },
+            { id: 'm7_cd2', cat: '7: Lock, Stock, and Barrels', name: 'Hydraulics Concerns', type: 'CD', desc: 'On table inside small block house between CD 1 and 3.' },
+            { id: 'm7_cd3', cat: '7: Lock, Stock, and Barrels', name: 'A Service Hatch', type: 'CD', desc: 'Main building foyer red carpet right room fireplace table.' },
+            { id: 'm7_cd4', cat: '7: Lock, Stock, and Barrels', name: 'Control Room Key', type: 'CD', desc: 'Underground facility, room to the right of 2 sealed doors.' },
+            { id: 'm7_cd5', cat: '7: Lock, Stock, and Barrels', name: 'Vulnerability Found', type: 'CD', desc: 'Underground facility officer room after large metal doors.' },
+            { id: 'm7_wb1', cat: '7: Lock, Stock, and Barrels', name: 'Pistol Workbench', type: 'WB', desc: 'Metal ladder room, one floor up.' },
+            { id: 'm7_wb2', cat: '7: Lock, Stock, and Barrels', name: 'Rifle Workbench', type: 'WB', desc: 'House with water wheel. Climb vines to first floor window.' },
+            { id: 'm7_wb3', cat: '7: Lock, Stock, and Barrels', name: 'SMG Workbench', type: 'WB', desc: 'Inside a shed with a ladder near Starting Loc 2.' },
+            { id: 'm7_hi1', cat: '7: Lock, Stock, and Barrels', name: 'Engraved Lighter', type: 'HI', desc: 'Table inside house by the southern outskirts gate.' },
+            { id: 'm7_hi2', cat: '7: Lock, Stock, and Barrels', name: 'Gold Pocket Watch', type: 'HI', desc: 'Desk inside small shed northwest of main building.' },
+            { id: 'm7_hi3', cat: '7: Lock, Stock, and Barrels', name: 'Propaganda Poster Item', type: 'HI', desc: 'Outer wall of waterwheel house.' },
+            { id: 'm7_gn1', cat: '7: Gnomes - Lock, Stock, and Barrels', name: 'Gnome #1 (Slope)', type: 'GN', desc: 'Slope near stone wall.' },
+            { id: 'm7_gn2', cat: '7: Gnomes - Lock, Stock, and Barrels', name: 'Gnome #2 (Wheel)', type: 'GN', desc: 'Stone wall near mill wheel.' },
+            { id: 'm7_gn3', cat: '7: Gnomes - Lock, Stock, and Barrels', name: 'Gnome #3 (Island)', type: 'GN', desc: 'Small lake island.' },
+            { id: 'm7_gn4', cat: '7: Gnomes - Lock, Stock, and Barrels', name: 'Gnome #4 (Rock)', type: 'GN', desc: 'On a rock in the pond.' },
+            { id: 'm7_gn5', cat: '7: Gnomes - Lock, Stock, and Barrels', name: 'Gnome #5 (Barrow)', type: 'GN', desc: 'Wheelbarrows near yellow post.' },
+            { id: 'm7_gn6', cat: '7: Gnomes - Lock, Stock, and Barrels', name: 'Gnome #6 (Roof)', type: 'GN', desc: 'In a hole of the roof.' },
+            { id: 'm7_gn7', cat: '7: Gnomes - Lock, Stock, and Barrels', name: 'Gnome #7 (Flower)', type: 'GN', desc: 'Split tree in circular bed.' },
+            { id: 'm7_gn8', cat: '7: Gnomes - Lock, Stock, and Barrels', name: 'Gnome #8 (Planter)', type: 'GN', desc: 'Corner of vegetable planter.' },
+            { id: 'm7_gn9', cat: '7: Gnomes - Lock, Stock, and Barrels', name: 'Gnome #9 (Barrel)', type: 'GN', desc: 'Fruit barrel apple tree.' },
+            { id: 'm7_gn10', cat: '7: Gnomes - Lock, Stock, and Barrels', name: 'Gnome #10 (Garden)', type: 'GN', desc: 'Back garden bed.' },
 
-            { id: 'm8_pl1', cat: '8: End of the Line', name: 'Victory Is Imminent!', type: 'PL', desc: 'SE edge house top floor.' },
-            { id: 'm8_tr1', cat: '8: End of the Line', name: 'Tanks for Nothing!', type: 'TR', desc: 'Destroy the Panzer tank.' },
-            
+            // MISSION 8: END OF THE LINE
+            { id: 'm8_kl1', cat: '8: End of the Line', name: 'Hermann Gottschalk (Kill List)', type: 'KL', desc: 'Interact with red valve to build gas pressure OR shoot gas tank when he is near.', reward: 'REWARD: ZK-420S' },
+            { id: 'm8_pp1', cat: '8: End of the Line', name: 'Pour Une France Libre (Poster)', type: 'PP', desc: 'Ladder on outer building closest to start OR metal stairs hole in wall.' },
+            { id: 'm8_se1', cat: '8: End of the Line', name: 'Stone Eagle #1', type: 'SE', desc: 'Northwest corner of the warehouse near bottom of map.' },
+            { id: 'm8_se2', cat: '8: End of the Line', name: 'Stone Eagle #2', type: 'SE', desc: 'Top of east corner of Zugwerfer building.' },
+            { id: 'm8_se3', cat: '8: End of the Line', name: 'Stone Eagle #3', type: 'SE', desc: 'Perched on a tower near the top of the map.' },
+            { id: 'm8_sl1', cat: '8: End of the Line', name: 'Eastern Rail Yard Loc', type: 'SL', desc: 'Reached by running along right wall past crane to northern Yard.' },
+            { id: 'm8_wb1', cat: '8: End of the Line', name: 'SMG Workbench', type: 'WB', desc: 'Garage second floor, with Turret Locations CD.' },
+            { id: 'm8_wb2', cat: '8: End of the Line', name: 'Pistol Workbench', type: 'WB', desc: 'Inside small shed. Climb vines north side, shimmy beam.' },
+            { id: 'm8_wb3', cat: '8: End of the Line', name: 'Rifle Workbench', type: 'WB', desc: 'Trap Zugwerfer building. Metal walkway room. Needs Satchel.' },
+            { id: 'm8_pl1', cat: '8: End of the Line', name: 'What We’ve Achieved', type: 'PL', desc: 'Second floor building room. Needs Satchel Charge.' },
+            { id: 'm8_pl2', cat: '8: End of the Line', name: 'Burn After Reading', type: 'PL', desc: 'Small table after passing through building entry doors.' },
+            { id: 'm8_pl3', cat: '8: End of the Line', name: 'Victory is Imminent!', type: 'PL', desc: 'SE edge house top floor / building roof via stairs.' },
+            { id: 'm8_pl4', cat: '8: End of the Line', name: 'I Think This Is It', type: 'PL', desc: 'Desk in communications room via office stairs.' },
+            { id: 'm8_pl5', cat: '8: End of the Line', name: 'Home Soon, My Love', type: 'PL', desc: 'Table inside turret in perimeter wall ladder (East).' },
+            { id: 'm8_cd1', cat: '8: End of the Line', name: 'Prepare to Strike!', type: 'CD', desc: 'Desk in room at bottom of ladder past Lookout Ruins.' },
+            { id: 'm8_cd2', cat: '8: End of the Line', name: 'Turret Locations', type: 'CD', desc: 'On top of crate on garage second floor.' },
+            { id: 'm8_cd3', cat: '8: End of the Line', name: 'Rusty Turntable', type: 'CD', desc: 'Office east side building next to garage.' },
+            { id: 'm8_cd4', cat: '8: End of the Line', name: 'Railyard Management', type: 'CD', desc: 'Top of flight of stairs, door to circular walkway.' },
+            { id: 'm8_cd5', cat: '8: End of the Line', name: 'Zugwerfer Departure', type: 'CD', desc: 'In room with the Rifle Workbench.' },
+            { id: 'm8_hi1', cat: '8: End of the Line', name: 'New Tank Blueprints', type: 'HI', desc: 'Crate near northeast corner of southern warehouse.' },
+            { id: 'm8_hi2', cat: '8: End of the Line', name: 'AA Repair Manual', type: 'HI', desc: 'Circular room bottom of ladder north of warehouse.' },
+            { id: 'm8_tr1', cat: '8: End of the Line', name: 'Tanks for Nothing!', type: 'TR', desc: 'Destroy the Panzer tank on the east side.' },
+
+            // DLC: VERCORS VENDETTA
             { id: 'dv_pl1', cat: 'DLC: Vercors Vendetta', name: 'No Brother of Mine', type: 'PL', desc: 'Starting house bottom floor box.' },
-            { id: 'dv_e1', cat: 'DLC: Vercors Vendetta', name: 'Stone Eagle #1', type: 'SE', desc: 'Western clifftop building top.' }
+            { id: 'dv_e1', cat: 'DLC: Vercors Vendetta', name: 'Stone Eagle #1', type: 'SE', desc: 'Western clifftop building top.' },
+
+            // GLOBAL TROPHIES (ALL 61 TRACKED)
+            { id: 'tr_p1', cat: 'Global Trophies', name: 'Sniper Elite (Platinum)', type: 'TR', desc: 'Obtain all other Trophies (PS5 Exclusive).' },
+            { id: 'tr_p2', cat: 'Global Trophies', name: 'Crème de la Crème', type: 'TR', desc: 'Complete entire campaign on Authentic difficulty.' },
+            { id: 'tr_p3', cat: 'Global Trophies', name: 'Propaganda Machine', type: 'TR', desc: '3-Star all Propaganda missions on Authentic difficulty.' },
+            { id: 'tr_p4', cat: 'Global Trophies', name: 'Das Nuts', type: 'TR', desc: 'Testicle shot with a Rifle from 100m+.' },
+            { id: 'tr_p5', cat: 'Global Trophies', name: 'Le Fantome', type: 'TR', desc: 'Achieve 250 Ghost Kills (unalerted suppressive kills).' },
+            { id: 'tr_p6', cat: 'Global Trophies', name: 'Climbing the Ranks', type: 'TR', desc: 'Reach rank 40.' },
+            { id: 'tr_p7', cat: 'Global Trophies', name: 'Just a Scratch', type: 'TR', desc: 'Complete any mission (excl. 1 & 9) without healing.' },
+            { id: 'tr_p8', cat: 'Global Trophies', name: 'Open Surgery', type: 'TR', desc: 'Hit every Organ at least once with a Rifle.' },
+            { id: 'tr_p9', cat: 'Global Trophies', name: 'Jack of all Trades', type: 'TR', desc: 'Get a kill with 20 different Weapons.' },
+            { id: 'tr_p10', cat: 'Global Trophies', name: 'Innovator', type: 'TR', desc: 'Interact with all 22 Workbenches.' },
+            { id: 'tr_p11', cat: 'Global Trophies', name: 'Pen Pal', type: 'TR', desc: 'Collect all 35 Personal Letters.' },
+            { id: 'tr_p12', cat: 'Global Trophies', name: 'Top Secret', type: 'TR', desc: 'Collect all 35 Classified Documents.' },
+            { id: 'tr_p13', cat: 'Global Trophies', name: 'Treasure Hunter', type: 'TR', desc: 'Collect all 22 Hidden Items.' },
+            { id: 'tr_p14', cat: 'Global Trophies', name: 'Spread Your Wings', type: 'TR', desc: 'Destroy all 21 Stone Eagles.' }
         ];
 
         const appState = {
@@ -348,7 +427,6 @@
             db: null, auth: null, user: null, unsub: null,
 
             init: async function() {
-                // IMMEDIATELY render local list so screen isn't blank
                 this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
                 this.render();
 
@@ -362,8 +440,7 @@
                     onAuthStateChanged(this.auth, async (u) => {
                         this.user = u;
                         if (u) {
-                            document.getElementById('stat-line').innerText = `ID: ${u.uid.substring(0,8)}...`;
-                            // BOOTSTRAP: Ensure the structure exists in the console immediately
+                            document.getElementById('stat-line').innerText = `ID: ${u.uid.substring(0,8)} | ONLINE`;
                             await this.bootstrapUsers();
                         } else {
                             document.getElementById('stat-line').innerText = `OFFLINE`;
@@ -372,13 +449,11 @@
                     });
                 } catch (e) { 
                     console.error("Firebase Init Error:", e);
-                    document.getElementById('stat-line').innerText = "LINK FAILED: CHECK CONFIG"; 
                 }
             },
 
-            // Ensures folders appear in Firebase Console immediately for the squad
             bootstrapUsers: async function() {
-                const names = ['Kevin', 'Ray', 'TJ'];
+                const names = ['Kevin', 'Ray', 'TJ', 'Seth'];
                 for (const name of names) {
                     const path = `artifacts/sniper-elite-resistance/data/public/user/${name}`;
                     const docRef = doc(this.db, path);
@@ -402,12 +477,10 @@
                 document.documentElement.style.setProperty('--ser-glow', theme.glow);
 
                 document.querySelectorAll('.profile-btn').forEach(b => {
-                    b.classList.remove('active-btn');
-                    if(b.innerText === name) b.classList.add('active-btn');
+                    b.classList.toggle('active-btn', b.innerText === name);
                 });
 
                 if (this.unsub) this.unsub();
-
                 const path = `artifacts/sniper-elite-resistance/data/public/user/${name}`;
                 const docRef = doc(this.db, path);
                 
@@ -420,9 +493,6 @@
                         });
                         this.render();
                     }
-                }, (err) => { 
-                    console.error("Snapshot Error:", err);
-                    document.getElementById('stat-line').innerText = "ACCESS_DENIED"; 
                 });
             },
 
@@ -430,22 +500,20 @@
                 const container = document.getElementById('section-container');
                 container.innerHTML = '';
                 const cats = [...new Set(this.hunterData.map(i => i.cat))];
-                let totalCollected = 0;
+                let totalFound = 0;
 
                 cats.forEach(cat => {
                     const items = this.hunterData.filter(i => i.cat === cat);
-                    const collectedCount = items.filter(i => i.collected).length;
-                    totalCollected += collectedCount;
+                    const count = items.filter(i => i.collected).length;
+                    totalFound += count;
 
-                    const sectionId = cat.replace(/[^a-z0-9]/gi, '');
-                    const isCollapsed = this.collapsedSections[sectionId] !== false; 
-
+                    const sid = cat.replace(/[^a-z0-9]/gi, '');
                     const section = document.createElement('div');
-                    section.className = `category-section ${isCollapsed ? 'section-collapsed' : ''}`;
+                    section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''}`;
                     section.innerHTML = `
-                        <div class="category-header" onclick="appState.toggleSection('${sectionId}')">
+                        <div class="category-header" onclick="appState.toggleSection('${sid}')">
                             <h2>${cat}</h2>
-                            <div style="font-weight:900; font-size: 14px; color: var(--ser-color);">${collectedCount}/${items.length}</div>
+                            <div style="font-weight:900; font-size: 14px; color: var(--ser-color);">${count}/${items.length}</div>
                         </div>
                         <div class="section-content">
                             <div class="item-grid"></div>
@@ -461,6 +529,7 @@
                                 <div class="item-type-tag">${item.type}</div>
                                 <div style="font-weight:900; font-size:14px; margin-bottom:4px;">${item.name}</div>
                                 <div style="font-size:11px; color:#aaa; font-style:italic; line-height:1.2;">${item.desc}</div>
+                                ${item.reward ? `<span class="reward-tag">${item.reward}</span>` : ''}
                             </div>
                             ${item.collected ? `<div class="lock-badge">COLLECTED</div>` : `<button class="toggle-btn" onclick="appState.toggleItem('${item.id}')">Confirm Found</button>`}
                         `;
@@ -469,7 +538,7 @@
                     container.appendChild(section);
                 });
 
-                const percent = Math.round((totalCollected / this.hunterData.length) * 100) || 0;
+                const percent = Math.round((totalFound / this.hunterData.length) * 100) || 0;
                 document.getElementById('overall-bar').style.width = percent + '%';
                 document.getElementById('percent-text').innerText = `TOTAL COLLECTION: ${percent}%`;
             },
@@ -482,8 +551,7 @@
             },
 
             toggleSection: function(id) {
-                const current = this.collapsedSections[id] !== false;
-                this.collapsedSections[id] = !current;
+                this.collapsedSections[id] = !this.collapsedSections[id];
                 this.render();
             },
 
@@ -492,14 +560,8 @@
             sync: async function() {
                 if (!this.user) return;
                 const path = `artifacts/sniper-elite-resistance/data/public/user/${this.activeHunter}`;
-                const ref = doc(this.db, path);
                 const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
-                try {
-                    await setDoc(ref, { progress, lastUpdate: Date.now() }, { merge: true });
-                } catch (err) { 
-                    console.error("Sync Error:", err);
-                    document.getElementById('stat-line').innerText = "WRITE_FAILURE"; 
-                }
+                await setDoc(doc(this.db, path), { progress, lastUpdate: Date.now() }, { merge: true });
             }
         };
 
