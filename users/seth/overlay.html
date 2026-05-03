@@ -210,7 +210,6 @@
         .ticker-text {
             white-space: nowrap;
             display: inline-block;
-            /* Slowed down from 25s to 45s for readability */
             animation: ticker-scroll 45s linear infinite;
             color: #00d4ff;
             font-size: 1.5vh;
@@ -546,7 +545,8 @@
             if (!ev) return;
             if (sk === 'message') {
                 const user = (ev.data.displayName || ev.data.nick || "").toLowerCase();
-                if (user === 'cat_louves' || user === 'anakigod99' || user === 'corelpoppa') {
+                // Special triggers for friends
+                if (user === 'coralpoppa' || user === 'anakigod99' || user === 'corelpoppa') {
                     const particleCount = 40;
                     const centerX = window.innerWidth / 2;
                     const centerY = window.innerHeight / 2;
