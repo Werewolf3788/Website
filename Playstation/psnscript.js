@@ -19,8 +19,8 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Squad Tracking
- * Version 6.8.5 - Collision Fix & Accurate Presence Logic
- * Ensures Ray's token-based status isn't overwritten by Kevin's search status.
+ * Version 6.8.8 - Master Online Logic Fix
+ * Fixes "Me & Ray" presence detection priority.
  */
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
@@ -53,6 +53,10 @@ const parsePlaytime = (duration) => {
     return `${hours} ${mins}`.trim() || "0h";
 };
 
+/**
+ * Robust Presence Check
+ * Marks user as online if they are 'online', 'busy', or 'away' (standard active states)
+ */
 const getPresence = async (auth, accountId) => {
     try {
         const p = await psnApi.getPresenceOfUser(auth, accountId);
@@ -186,7 +190,7 @@ async function main() {
     const werewolfToken = tokens.werewolf || process.env.PSN_NPSSO_WEREWOLF || "";
     const rayToken = tokens.ray || process.env.PSN_NPSSO_RAY || "";
 
-    // Persistence Engine: Load Existing
+    // Persistence Load: Get previous state
     try {
         if (fs.existsSync(dataPath)) {
             const existing = JSON.parse(fs.readFileSync(dataPath));
@@ -196,19 +200,20 @@ async function main() {
     } catch (e) {}
 
     try {
+        // Kevin and Ray Handshake
         const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
         const rayDetail = await getFullUserData(rayToken, "Ray", "OneLIVIDMAN");
 
         if (wolfData) finalData.users.werewolf = wolfData;
         if (rayDetail) finalData.users.ray = rayDetail;
 
-        // Squad Logic: Only update if not already accurately synced via token
+        // Squad Refresh Logic: Updates statuses for TJ, Seth, etc.
         const auth = (wolfData && !wolfData.error) ? wolfData.auth : (rayDetail && !rayDetail.error ? rayDetail.auth : null);
         if (auth) {
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
                 if (key === 'werewolf') continue;
                 
-                // CRITICAL FIX: If Ray's direct sync just succeeded, do NOT overwrite it with your search result
+                // If Ray already synced correctly using his own token, do not overwrite him via friends list search
                 if (key === 'ray' && rayDetail && !rayDetail.error) continue;
 
                 try {
@@ -216,17 +221,32 @@ async function main() {
                     const accId = search.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
                     if (accId) {
                         const pres = await getPresence(auth, accId);
+                        // Merge Online status into user metadata
                         finalData.users[key] = { ...finalData.users[key], ...pres };
                     }
                 } catch (e) {}
             }
         }
+
+        // Shared Pack Logic
+        if (wolfData && rayDetail && !wolfData.error && !rayDetail.error) {
+            try {
+                const wolfFriends = await getFriendsList(wolfData.auth, wolfData.accountId);
+                const rayFriends = await getFriendsList(rayDetail.auth, rayDetail.accountId);
+                const wIds = (wolfFriends.friends || []).map(f => f.accountId);
+                const rIds = (rayFriends.friends || []).map(f => f.accountId);
+                const mutualAccountIds = wIds.filter(id => rIds.includes(id));
+                const finalAccountList = (wolfFriends.friends || []).filter(f => mutualAccountIds.includes(f.accountId));
+                finalData.mutualPack = finalAccountList.map(m => m.onlineId);
+            } catch (e) {}
+        }
     } catch (e) {
-        console.error(`[FATAL] ${e.message}`);
+        console.error(`[FATAL] Script error: ${e.message}`);
     }
 
+    // Save
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] psn_data.json updated.`);
+    console.log(`[SUCCESS] psn_data.json updated with Online Priority Logic.`);
 }
 
 main();
