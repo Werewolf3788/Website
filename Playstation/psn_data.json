@@ -3,7 +3,7 @@
     "werewolf": {
       "accountId": "3728215008151724560",
       "online": false,
-      "currentGame": "Home Screen",
+      "currentGame": "Sniper Elite: Resistance",
       "platform": "PS5",
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0004_s.png",
       "plus": true,
@@ -18,7 +18,7 @@
         }
       ],
       "activeHunt": {
-        "title": "Home Screen",
+        "title": "Sniper Elite: Resistance",
         "trophies": []
       },
       "mostRecentTrophies": [
@@ -63,12 +63,12 @@
         "platinum": 5,
         "total": 1276
       },
-      "lastUpdated": "5/3/2026, 6:02:19 AM"
+      "lastUpdated": "5/3/2026, 6:29:57 AM"
     },
     "ray": {
       "accountId": "2732733730346312494",
       "online": false,
-      "currentGame": "Home Screen",
+      "currentGame": "Mahjong",
       "platform": "PS5",
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
       "plus": true,
@@ -97,7 +97,7 @@
         }
       ],
       "activeHunt": {
-        "title": "Home Screen",
+        "title": "Mahjong",
         "trophies": []
       },
       "mostRecentTrophies": [
@@ -142,7 +142,7 @@
         "platinum": 5,
         "total": 689
       },
-      "lastUpdated": "5/3/2026, 6:02:21 AM"
+      "lastUpdated": "5/3/2026, 6:29:58 AM"
     }
   },
   "systemAlerts": []
