@@ -23,9 +23,9 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 7.4.4 - Data Persistence & Failure Protection
+ * Version 7.4.5 - Real-Time Percentage Fix & Mahjong 3D Deep Scan
  * Filepath: Playstation/psnscript.js
- * FIXED: Data disappearing by loading existing JSON before sync.
+ * FIXED: Mahjong 3D 30% lag by calculating progress from live trophy counts.
  */
 const SQUAD_MAP = {
     werewolf: "Werewolf3788",
@@ -107,7 +107,7 @@ async function getFullUserData(auth, label, targetOnlineId) {
         const accountId = bridgeProfile.profile.accountId;
         const profile = await getProfileFromAccountId(auth, accountId);
         
-        // Safety check for presence
+        // Forced Presence Lock
         let p = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         try { p = await getBasicPresence(auth, accountId); } catch(e) {}
 
@@ -135,28 +135,58 @@ async function getFullUserData(auth, label, targetOnlineId) {
             const earnedC = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
             localSummed += earnedC;
 
-            if (recentGames.length < 6) {
-                recentGames.push({
-                    name, art: title.trophyTitleIconUrl, progress: title.progress,
-                    ratio: `${earnedC}/${(title.definedTrophies.platinum + title.definedTrophies.gold + title.definedTrophies.silver + title.definedTrophies.bronze)}`,
-                    hours: parsePlaytime(title.playDuration)
-                });
-            }
-
-            // Only Deep Scan for the active game (Mahjong 3D etc) or top 10 recent
-            if (name === presence.currentGame || mostRecentTrophies.length < 10) {
+            // Deep Scan for the active game (e.g. Mahjong 3D)
+            if (name === presence.currentGame || mostRecentTrophies.length < 15) {
                 try {
                     const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(auth, accountId, title.npCommunicationId, "all");
                     const { trophies: meta } = await getTitleTrophies(auth, title.npCommunicationId, "all");
                     
                     const mapped = (meta || []).map(m => {
                         const s = earnedStatus.find(x => x.trophyId === m.trophyId);
-                        return { name: m.trophyName, type: m.trophyType, icon: m.trophyIconUrl, earned: s?.earned || false, earnedDate: s?.earned ? new Date(s.earnedDateTime).toLocaleString() : null, description: m.trophyDetail };
+                        return { 
+                            name: m.trophyName, 
+                            type: m.trophyType, 
+                            icon: m.trophyIconUrl, 
+                            earned: s?.earned || false, 
+                            earnedDate: s?.earned ? new Date(s.earnedDateTime).toLocaleString() : null,
+                            rawTimestamp: s?.earned ? new Date(s.earnedDateTime).getTime() : 0,
+                            description: m.trophyDetail || "Secret Objective"
+                        };
                     });
 
-                    if (name === presence.currentGame) activeGameTrophies = mapped.slice(0, 15);
+                    // If this is the active game, we manually recalculate the percentage to bypass PSN lag
+                    if (name === presence.currentGame) {
+                        activeGameTrophies = mapped;
+                        const liveEarned = mapped.filter(t => t.earned).length;
+                        const liveTotal = mapped.length;
+                        const livePct = Math.round((liveEarned / liveTotal) * 100);
+                        
+                        // Push to recent games with THE REAL LATEST DATA
+                        if (recentGames.length < 6) {
+                            recentGames.push({
+                                name, art: title.trophyTitleIconUrl, 
+                                progress: livePct, // Using live calculated Pct instead of title.progress
+                                ratio: `${liveEarned}/${liveTotal}`,
+                                hours: parsePlaytime(title.playDuration)
+                            });
+                        }
+                    } else if (recentGames.length < 6) {
+                        recentGames.push({
+                            name, art: title.trophyTitleIconUrl, progress: title.progress,
+                            ratio: `${earnedC}/${(title.definedTrophies.platinum + title.definedTrophies.gold + title.definedTrophies.silver + title.definedTrophies.bronze)}`,
+                            hours: parsePlaytime(title.playDuration)
+                        });
+                    }
+
+                    // Feed Recent Trophies (ensure icons are present)
                     mapped.filter(t => t.earned).forEach(t => {
-                        mostRecentTrophies.push({ game: name, name: t.name, icon: t.icon, timestamp: new Date(t.earnedDate).getTime(), date: t.earnedDate });
+                        mostRecentTrophies.push({ 
+                            game: name, 
+                            name: t.name, 
+                            icon: t.icon, 
+                            timestamp: t.rawTimestamp, 
+                            date: t.earnedDate 
+                        });
                     });
                 } catch (e) {}
             }
@@ -166,7 +196,7 @@ async function getFullUserData(auth, label, targetOnlineId) {
 
         return {
             accountId, ...presence, avatar: profile.avatars?.[0]?.url || "", plus: profile.isPlus, level: stats.trophyLevel,
-            recentGames, activeHunt: { title: presence.currentGame, trophies: activeGameTrophies || [] },
+            recentGames, activeHunt: { title: presence.currentGame, trophies: (activeGameTrophies || []).slice(0, 15) },
             mostRecentTrophies, dataStatus: (localSummed < globalTotal) ? "SYNCING" : "LIVE",
             trophies: { platinum: stats.earnedTrophies?.platinum || 0, total: globalTotal },
             lastUpdated: new Date().toLocaleString()
@@ -175,13 +205,12 @@ async function getFullUserData(auth, label, targetOnlineId) {
 }
 
 async function main() {
-    // --- PROTECTION: Load existing data before doing anything ---
     let finalData = { users: {}, systemAlerts: [] };
     try {
         if (fs.existsSync(DATA_PATH)) {
             finalData = JSON.parse(fs.readFileSync(DATA_PATH));
         }
-    } catch (e) { console.error("[WARN] Could not load backup data."); }
+    } catch (e) { console.error("[WARN] Backup load failed."); }
 
     const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
@@ -189,7 +218,6 @@ async function main() {
     const wolfFull = await getFullUserData(wolfAuth, "Werewolf", "Werewolf3788");
     const rayFull = await getFullUserData(rayAuth, "Ray", "OneLIVIDMAN");
 
-    // Only update if we actually got data back
     if (wolfFull) finalData.users.werewolf = wolfFull;
     if (rayFull) finalData.users.ray = rayFull;
 
@@ -211,7 +239,7 @@ async function main() {
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log("[SUCCESS] Sync Complete.");
+    console.log("[SUCCESS] Master Sync v7.4.5 Complete.");
 }
 
 main();
