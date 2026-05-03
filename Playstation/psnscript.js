@@ -23,9 +23,9 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 7.4.8 - High-Availability Protocol
+ * Version 7.5.0 - Live-Lock Protocol
  * Filepath: Playstation/psnscript.js
- * FIXED: Build cancellations, API timeouts, and "Home Screen" NaN lag.
+ * FIXED: Ray presence showing offline, NaN% on Home Screen, and Trophy Feed Icons.
  */
 const SQUAD_MAP = {
     werewolf: "Werewolf3788",
@@ -62,10 +62,19 @@ const parsePlaytime = (duration) => {
     return `${h ? h[1] + "h" : ""} ${m ? m[1] + "m" : ""}`.trim() || "0h";
 };
 
-const isUserActive = (status) => {
-    if (!status) return false;
-    const s = status.toLowerCase();
-    return s.includes("online") || s.includes("busy") || s.includes("away") || s === "active";
+// Advanced Presence Check (Sony's Multi-State Logic)
+const isUserActive = (p) => {
+    if (!p) return false;
+    const status = (p.primaryPlatformInfo?.onlineStatus || "").toLowerCase();
+    const state = (p.presenceState || "").toLowerCase();
+    const avail = (p.availability || "").toLowerCase();
+    
+    return status.includes("online") || 
+           state.includes("online") || 
+           avail.includes("available") ||
+           status === "busy" || 
+           status === "away" ||
+           (p.gameTitleInfoList && p.gameTitleInfoList.length > 0);
 };
 
 async function getAuthenticated(userKey, npssoInput) {
@@ -116,7 +125,7 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
         try { p = await getBasicPresence(auth, accountId); } catch(e) {}
 
         const presence = {
-            online: isUserActive(p.primaryPlatformInfo?.onlineStatus) || isUserActive(p.presenceState),
+            online: isUserActive(p),
             currentGame: p.gameTitleInfoList?.[0]?.titleName || "Home Screen",
             platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5"
         };
@@ -127,8 +136,8 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
         const { trophyTitles } = await getUserTitles(auth, accountId);
         const sortedTitles = (trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
 
-        // CRITICAL: NaN Shield - If "Home Screen" but console was recently used, override with the real game
-        if (presence.currentGame === "Home Screen" && sortedTitles.length > 0) {
+        // Presence Logic Hack: If Online but stuck on Home Screen, pull the last game updated
+        if (presence.online && (presence.currentGame === "Home Screen" || !presence.currentGame) && sortedTitles.length > 0) {
             presence.currentGame = sortedTitles[0].trophyTitleName;
         }
 
@@ -144,6 +153,7 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
             const earnedC = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
             localSummed += earnedC;
 
+            // Gather trophies for active game and global feed
             if (name === presence.currentGame || mostRecentTrophies.length < 20) {
                 try {
                     const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(auth, accountId, title.npCommunicationId, "all");
@@ -165,7 +175,7 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
                     if (name === presence.currentGame) {
                         activeGameTrophies = mapped;
                         const liveEarned = mapped.filter(t => t.earned).length;
-                        const liveTotal = Math.max(mapped.length, 1);
+                        const liveTotal = Math.max(mapped.length, 1); // NaN Protection
                         const livePct = Math.round((liveEarned / liveTotal) * 100);
 
                         if (recentGames.length < 6) {
@@ -212,14 +222,11 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
             trophies: { platinum: stats.earnedTrophies?.platinum || 0, total: globalTotal },
             lastUpdated: new Date().toLocaleString()
         };
-    } catch (e) { 
-        return existingData || null; 
-    }
+    } catch (e) { return existingData || null; }
 }
 
 async function main() {
-    // SECURITY: Create .nojekyll at the root level to speed up deployments
-    try { fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
+    try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { users: {}, systemAlerts: [] };
     try {
@@ -244,8 +251,7 @@ async function main() {
             for (const f of list.friends || []) {
                 const key = PSN_ID_TO_KEY[f.onlineId.toLowerCase()];
                 if (key) {
-                    const status = f.presence?.primaryPlatformInfo?.onlineStatus || f.presence?.presenceState;
-                    const online = isUserActive(status);
+                    const online = isUserActive(f.presence);
                     
                     if (!finalData.users[key] || !finalData.users[key].dataStatus) {
                         finalData.users[key] = { 
@@ -255,8 +261,8 @@ async function main() {
                         };
                     } else {
                         finalData.users[key].online = online;
-                        if (online) {
-                            finalData.users[key].currentGame = f.presence?.gameTitleInfoList?.[0]?.titleName || finalData.users[key].currentGame;
+                        if (online && f.presence?.gameTitleInfoList?.[0]?.titleName) {
+                            finalData.users[key].currentGame = f.presence.gameTitleInfoList[0].titleName;
                         }
                     }
                 }
@@ -265,7 +271,7 @@ async function main() {
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log("[SUCCESS] Ghost Protocol v7.4.8 Complete.");
+    console.log("[SUCCESS] Live-Lock v7.5.0 Active.");
 }
 
 main();
