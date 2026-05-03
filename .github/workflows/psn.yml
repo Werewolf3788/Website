@@ -8,10 +8,10 @@ on:
     branches:
       - main
 
-# Prevent multiple builds from running at once
+# FIX: Group builds together and prevent them from cancelling each other
 concurrency:
   group: "pages"
-  cancel-in-progress: false
+  cancel-in-progress: false 
 
 permissions:
   contents: write
@@ -20,7 +20,6 @@ permissions:
 
 jobs:
   build-and-sync:
-    # This environment block is the fix for the error in your screenshot
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -52,7 +51,7 @@ jobs:
           git add .nojekyll || echo "no jekyll"
           git add Playstation/psn_data.json
           git add Playstation/tokens.json || echo "no tokens"
-          git commit -m "Wolf Sync: v7.5.1 Environment Fix [skip ci]" || echo "No changes"
+          git commit -m "Wolf Sync: v7.5.3 Queue Fix [skip ci]" || echo "No changes"
           git pull --rebase origin main
           git push origin main
 
