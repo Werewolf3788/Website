@@ -23,9 +23,9 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 7.4.5 - Real-Time Percentage Fix & Mahjong 3D Deep Scan
+ * Version 7.4.6 - Ghost Protocol & NaN Protection
  * Filepath: Playstation/psnscript.js
- * FIXED: Mahjong 3D 30% lag by calculating progress from live trophy counts.
+ * FIXED: NaN% error, Offline Lobby bug, and Home Screen trophy lag.
  */
 const SQUAD_MAP = {
     werewolf: "Werewolf3788",
@@ -61,7 +61,12 @@ const parsePlaytime = (duration) => {
     return `${h ? h[1] + "h" : ""} ${m ? m[1] + "m" : ""}`.trim() || "0h";
 };
 
-const isUserActive = (status) => ["online", "busy", "away"].includes(status?.toLowerCase());
+// Expanded check for online states (including 'away' and 'busy')
+const isUserActive = (status) => {
+    if (!status) return false;
+    const s = status.toLowerCase();
+    return s.includes("online") || s.includes("busy") || s.includes("away") || s === "active";
+};
 
 async function getAuthenticated(userKey, npssoInput) {
     let currentUserTokens = tokenStore[userKey] || {};
@@ -107,12 +112,12 @@ async function getFullUserData(auth, label, targetOnlineId) {
         const accountId = bridgeProfile.profile.accountId;
         const profile = await getProfileFromAccountId(auth, accountId);
         
-        // Forced Presence Lock
+        // --- 1. Smart Presence Logic ---
         let p = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         try { p = await getBasicPresence(auth, accountId); } catch(e) {}
 
         const presence = {
-            online: isUserActive(p.primaryPlatformInfo?.onlineStatus),
+            online: isUserActive(p.primaryPlatformInfo?.onlineStatus) || isUserActive(p.presenceState),
             currentGame: p.gameTitleInfoList?.[0]?.titleName || "Home Screen",
             platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5"
         };
@@ -120,8 +125,18 @@ async function getFullUserData(auth, label, targetOnlineId) {
         const stats = await getUserTrophyProfileSummary(auth, accountId);
         const globalTotal = (stats.earnedTrophies?.platinum || 0) + (stats.earnedTrophies?.gold || 0) + (stats.earnedTrophies?.silver || 0) + (stats.earnedTrophies?.bronze || 0);
 
+        // --- 2. Trophy Scan ---
         const { trophyTitles } = await getUserTitles(auth, accountId);
         const sortedTitles = (trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
+
+        // PROTECTION: If PSN says Home Screen but a game was updated 1 hour ago, treat that as the active game
+        if (presence.currentGame === "Home Screen" && sortedTitles.length > 0) {
+            const lastUpdated = new Date(sortedTitles[0].lastUpdatedDateTime).getTime();
+            const oneHourAgo = Date.now() - (60 * 60 * 1000);
+            if (lastUpdated > oneHourAgo) {
+                presence.currentGame = sortedTitles[0].trophyTitleName;
+            }
+        }
 
         const recentGames = [];
         let activeGameTrophies = null;
@@ -135,8 +150,8 @@ async function getFullUserData(auth, label, targetOnlineId) {
             const earnedC = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
             localSummed += earnedC;
 
-            // Deep Scan for the active game (e.g. Mahjong 3D)
-            if (name === presence.currentGame || mostRecentTrophies.length < 15) {
+            // Gather deep trophy info for active game and global feed
+            if (name === presence.currentGame || mostRecentTrophies.length < 20) {
                 try {
                     const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(auth, accountId, title.npCommunicationId, "all");
                     const { trophies: meta } = await getTitleTrophies(auth, title.npCommunicationId, "all");
@@ -154,18 +169,17 @@ async function getFullUserData(auth, label, targetOnlineId) {
                         };
                     });
 
-                    // If this is the active game, we manually recalculate the percentage to bypass PSN lag
+                    // Set active hunt trophies
                     if (name === presence.currentGame) {
                         activeGameTrophies = mapped;
                         const liveEarned = mapped.filter(t => t.earned).length;
-                        const liveTotal = mapped.length;
+                        const liveTotal = mapped.length || 1; // Prevent division by zero
                         const livePct = Math.round((liveEarned / liveTotal) * 100);
-                        
-                        // Push to recent games with THE REAL LATEST DATA
+
                         if (recentGames.length < 6) {
                             recentGames.push({
                                 name, art: title.trophyTitleIconUrl, 
-                                progress: livePct, // Using live calculated Pct instead of title.progress
+                                progress: livePct, 
                                 ratio: `${liveEarned}/${liveTotal}`,
                                 hours: parsePlaytime(title.playDuration)
                             });
@@ -178,7 +192,7 @@ async function getFullUserData(auth, label, targetOnlineId) {
                         });
                     }
 
-                    // Feed Recent Trophies (ensure icons are present)
+                    // Feed global recent list
                     mapped.filter(t => t.earned).forEach(t => {
                         mostRecentTrophies.push({ 
                             game: name, 
@@ -192,12 +206,28 @@ async function getFullUserData(auth, label, targetOnlineId) {
             }
         }
 
+        // Sort global feed
         mostRecentTrophies = mostRecentTrophies.sort((a,b) => b.timestamp - a.timestamp).slice(0, 5);
 
+        // Fallback for active hunt if no game found
+        if (!activeGameTrophies && sortedTitles.length > 0) {
+            presence.currentGame = sortedTitles[0].trophyTitleName;
+            // Recursion protection: we just use the simple stats if deep scan fails
+            activeGameTrophies = []; 
+        }
+
         return {
-            accountId, ...presence, avatar: profile.avatars?.[0]?.url || "", plus: profile.isPlus, level: stats.trophyLevel,
-            recentGames, activeHunt: { title: presence.currentGame, trophies: (activeGameTrophies || []).slice(0, 15) },
-            mostRecentTrophies, dataStatus: (localSummed < globalTotal) ? "SYNCING" : "LIVE",
+            accountId, ...presence, 
+            avatar: profile.avatars?.[0]?.url || "", 
+            plus: profile.isPlus, 
+            level: stats.trophyLevel,
+            recentGames, 
+            activeHunt: { 
+                title: presence.currentGame, 
+                trophies: activeGameTrophies || [] 
+            },
+            mostRecentTrophies, 
+            dataStatus: (localSummed < globalTotal) ? "SYNCING" : "LIVE",
             trophies: { platinum: stats.earnedTrophies?.platinum || 0, total: globalTotal },
             lastUpdated: new Date().toLocaleString()
         };
@@ -210,7 +240,7 @@ async function main() {
         if (fs.existsSync(DATA_PATH)) {
             finalData = JSON.parse(fs.readFileSync(DATA_PATH));
         }
-    } catch (e) { console.error("[WARN] Backup load failed."); }
+    } catch (e) {}
 
     const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
@@ -227,19 +257,31 @@ async function main() {
             const list = await getFriendsList(masterAuth, wolfFull?.accountId || rayFull?.accountId || finalData.users.werewolf?.accountId);
             for (const f of list.friends || []) {
                 const key = PSN_ID_TO_KEY[f.onlineId.toLowerCase()];
-                if (key && !finalData.users[key]?.dataStatus) {
-                    finalData.users[key] = { 
-                        online: isUserActive(f.presence?.primaryPlatformInfo?.onlineStatus), 
-                        currentGame: f.presence?.gameTitleInfoList?.[0]?.titleName || "Home Screen", 
-                        platform: f.presence?.primaryPlatformInfo?.platform?.toUpperCase() || "PS5" 
-                    };
+                if (key) {
+                    const status = f.presence?.primaryPlatformInfo?.onlineStatus || f.presence?.presenceState;
+                    const online = isUserActive(status);
+                    
+                    // Update discovery data
+                    if (!finalData.users[key] || !finalData.users[key].dataStatus) {
+                        finalData.users[key] = { 
+                            online, 
+                            currentGame: f.presence?.gameTitleInfoList?.[0]?.titleName || "Home Screen", 
+                            platform: f.presence?.primaryPlatformInfo?.platform?.toUpperCase() || "PS5" 
+                        };
+                    } else {
+                        // Keep deep data but update status
+                        finalData.users[key].online = online;
+                        if (online) {
+                            finalData.users[key].currentGame = f.presence?.gameTitleInfoList?.[0]?.titleName || finalData.users[key].currentGame;
+                        }
+                    }
                 }
             }
         } catch (e) {}
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log("[SUCCESS] Master Sync v7.4.5 Complete.");
+    console.log("[SUCCESS] Ghost Protocol Complete.");
 }
 
 main();
