@@ -18,8 +18,8 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 6.9.4 - Verbose Logging & Multi-Auth Friend Discovery
- * NOTHING STRIPPED: Persistence, Trackers, Hours, Plus, and Fallbacks preserved.
+ * Version 6.9.5 - Final Presence Fix & Discovery Unification
+ * Robust logic for Online/Busy/Away + Overlap CSS protection preparation.
  */
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
@@ -50,15 +50,25 @@ const parsePlaytime = (duration) => {
     return `${h ? h[1] + "h" : ""} ${m ? m[1] + "m" : ""}`.trim() || "0h";
 };
 
+/**
+ * FIXED: Standardized Presence Logic
+ * Used for both primary users and the friend discovery pool.
+ */
+const isUserActive = (status) => {
+    const activeStates = ["online", "busy", "away"];
+    return activeStates.includes(status?.toLowerCase());
+};
+
 const getPresence = async (auth, accountId) => {
     try {
         const p = await psnApi.getPresenceOfUser(auth, accountId);
-        const status = p.primaryPlatformInfo?.onlineStatus;
+        const status = p.primaryPlatformInfo?.onlineStatus || "offline";
         const game = p.gameTitleInfoList?.[0]?.titleName || "Dashboard";
-        // Log the status for the GitHub Action console
+        
         console.log(`   [Presence] Status: ${status} | Activity: ${game}`);
+        
         return {
-            online: status === "online" || status === "busy" || status === "away",
+            online: isUserActive(status),
             currentGame: game,
             platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5"
         };
@@ -89,14 +99,13 @@ async function getFallbackData(auth, targetOnlineId) {
 async function getFullUserData(npsso, label, targetOnlineId) {
     try {
         const token = cleanToken(npsso);
-        console.log(`[SYNC] Starting full sync for: ${label}`);
+        console.log(`[SYNC] Handshaking: ${label}`);
         let auth;
         try {
             const accessCode = await exchangeNpssoForCode(token);
             auth = await exchangeCodeForAccessToken(accessCode);
-            console.log(`   [Auth] Token Valid.`);
         } catch (e) { 
-            console.log(`   [Auth] TOKEN EXPIRED for ${label}.`);
+            console.log(`   [Auth] KEY EXPIRED for ${label}.`);
             return { error: "TOKEN_EXPIRED" }; 
         }
 
@@ -105,7 +114,6 @@ async function getFullUserData(npsso, label, targetOnlineId) {
         const profile = await getProfileFromAccountId(auth, accountId);
         const presence = await getPresence(auth, accountId);
         
-        console.log(`   [Profile] Pulling Playtime...`);
         let playtimeMap = {};
         try {
             const recentlyPlayed = await getRecentlyPlayedGames(auth, { limit: 50 });
@@ -117,7 +125,6 @@ async function getFullUserData(npsso, label, targetOnlineId) {
         const recentGames = [];
         let activeGameMetadata = null;
 
-        console.log(`   [Trophies] Scanning titles...`);
         for (const title of trophyTitles) {
             const name = title.trophyTitleName;
             if (BLACKLIST.some(f => name.toLowerCase().includes(f))) continue;
@@ -136,7 +143,6 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                             return { name: m.trophyName, description: m.trophyDetail || "Secret", type: m.trophyType, icon: m.trophyIconUrl, rarity: m.trophyRare ? m.trophyRare + "%" : "Common", earned: s?.earned || false, earnedDate: s?.earned ? new Date(s.earnedDateTime).toLocaleString() : "--", currentValue: s?.progress, targetValue: m.trophyProgressTargetValue };
                         })
                     };
-                    console.log(`   [Hunt] Loaded active game: ${name}`);
                 } catch (e) {}
             }
         }
@@ -150,10 +156,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
             trophies: { platinum: stats.earnedTrophies?.platinum || 0, gold: stats.earnedTrophies?.gold || 0, silver: stats.earnedTrophies?.silver || 0, bronze: stats.earnedTrophies?.bronze || 0, total: (stats.earnedTrophies?.platinum || 0) + (stats.earnedTrophies?.gold || 0) + (stats.earnedTrophies?.silver || 0) + (stats.earnedTrophies?.bronze || 0) },
             tokenStatus: "HEALTHY", lastUpdated: new Date().toLocaleString()
         };
-    } catch (e) { 
-        console.log(`   [Fatal] Error syncing ${label}: ${e.message}`);
-        return null; 
-    }
+    } catch (e) { return null; }
 }
 
 async function main() {
@@ -180,47 +183,44 @@ async function main() {
 
     // FALLBACKS
     if (wolfFull?.error && rayFull?.error) {
-        console.log(`[ALERT] CRITICAL: Both keys expired.`);
         finalData.systemAlerts.push({ level: "CRITICAL", msg: "IMMEDIATE FIX: ALL PSN KEYS EXPIRED" });
     } else {
         if (wolfFull?.error && rayFull && !rayFull.error) {
-            console.log(`[FALLBACK] Fetching Kevin via Ray's Key...`);
             const fb = await getFallbackData(rayFull.auth, "Werewolf3788");
             if (fb) finalData.users.werewolf = { ...finalData.users.werewolf, ...fb, tokenStatus: "EXPIRED" };
         }
         if (rayFull?.error && wolfFull && !wolfFull.error) {
-            console.log(`[FALLBACK] Fetching Ray via Kevin's Key...`);
             const fb = await getFallbackData(wolfFull.auth, "OneLIVIDMAN");
             if (fb) finalData.users.ray = { ...finalData.users.ray, ...fb, tokenStatus: "EXPIRED" };
         }
     }
 
-    // DISCOVERY POOL
+    // DISCOVERY POOL (Unified Presence)
     const sessions = [];
-    if (wolfFull && !wolfFull.error) sessions.push({ auth: wolfFull.auth, accId: wolfFull.accountId, name: "Kevin" });
-    if (rayFull && !rayFull.error) sessions.push({ auth: rayFull.auth, accId: rayFull.accountId, name: "Ray" });
+    if (wolfFull && !wolfFull.error) sessions.push({ auth: wolfFull.auth, accId: wolfFull.accountId });
+    if (rayFull && !rayFull.error) sessions.push({ auth: rayFull.auth, accId: rayFull.accountId });
 
     if (sessions.length > 0) {
-        console.log(`[DISCOVERY] Building master friend pool...`);
+        console.log(`[DISCOVERY] Syncing shared friend pool...`);
         for (const session of sessions) {
-            // Refresh Squad Statuses
-            for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
-                if (key === 'werewolf' || (key === 'ray' && rayFull && !rayFull.error)) continue;
-                try {
-                    const fb = await getFallbackData(session.auth, onlineId);
-                    if (fb) finalData.users[key] = { ...finalData.users[key], ...fb };
-                } catch (e) {}
-            }
-            // Friends List Pull
             try {
                 const list = await getFriendsList(session.auth, session.accId);
-                console.log(`   [Friends] Found ${list.friends?.length || 0} friends on ${session.name}'s list.`);
                 for (const f of list.friends || []) {
+                    const statusText = f.presence?.primaryPlatformInfo?.onlineStatus;
+                    const isActive = isUserActive(statusText);
+                    
                     if (!finalData.users[f.onlineId]) {
-                        finalData.users[f.onlineId] = { online: f.presence?.primaryPlatformInfo?.onlineStatus === "online", currentGame: f.presence?.gameTitleInfoList?.[0]?.titleName || "Dashboard", platform: f.presence?.primaryPlatformInfo?.platform?.toUpperCase() || "PS5" };
+                        finalData.users[f.onlineId] = { 
+                            online: isActive, 
+                            currentGame: f.presence?.gameTitleInfoList?.[0]?.titleName || "Dashboard", 
+                            platform: f.presence?.primaryPlatformInfo?.platform?.toUpperCase() || "PS5" 
+                        };
                     } else {
-                        // Just update online status for existing users in the discovery pool
-                        finalData.users[f.onlineId].online = f.presence?.primaryPlatformInfo?.onlineStatus === "online";
+                        // Update status for existing squad members in the pool
+                        finalData.users[f.onlineId].online = isActive;
+                        if (isActive) {
+                            finalData.users[f.onlineId].currentGame = f.presence?.gameTitleInfoList?.[0]?.titleName || "Dashboard";
+                        }
                     }
                 }
             } catch (e) {}
@@ -228,6 +228,6 @@ async function main() {
     }
 
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] PSN Sync v6.9.4 Handshake Successful.`);
+    console.log(`[SUCCESS] Master Sync v6.9.5 Complete.`);
 }
 main();
