@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: 10.0.0-Ray - St. Louis Cardinal Red Theme | Gapless Layout | Locked Nav | Twitch: raymystyro | S:50 R:30 B:14 H:30 -->
+<!-- Version: 10.4.0-Ray - Clickable Twitch Stat | Cardinal Red | Gapless Layout | Locked Nav | S:50 R:30 B:14 H:30 -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -85,6 +85,8 @@
             border-radius: 1.25rem;
             transition: all 0.3s ease;
             height: auto;
+            text-decoration: none;
+            display: block;
         }
         
         .glass-card:hover { border-color: var(--accent-red); transform: translateY(-3px); }
@@ -272,10 +274,11 @@
             <div class="text-[10px] lg:text-[18px] font-black text-gray-500 uppercase tracking-[0.5em] mb-12">Official Pack Member Dashboard</div>
             
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl mx-auto text-center">
-                <div class="glass-card p-5 lg:p-10 border-b-4 border-[#C41E3A]">
+                <!-- CLICKABLE TWITCH STAT -->
+                <a href="https://www.twitch.tv/raymystyro" target="_blank" class="glass-card p-5 lg:p-10 border-b-4 border-[#C41E3A] transition-all hover:bg-red-900/10">
                     <div class="text-[10px] lg:text-[14px] text-red-400 font-black mb-1 uppercase">Twitch Followers</div>
                     <div id="follower-count" class="text-3xl lg:text-6xl font-black text-white">--</div>
-                </div>
+                </a>
                 <div class="glass-card p-5 lg:p-10 border-b-4 border-[#7d1225]">
                     <div class="text-[10px] lg:text-[14px] text-red-700 font-black mb-1 uppercase tracking-widest">PSN Level</div>
                     <div id="psn-level-label" class="text-3xl lg:text-6xl font-black text-white">--</div>
@@ -299,12 +302,11 @@
             <!-- LEFT AREA (2/3 Width) - VERTICAL FLOW FOR NO GAPS -->
             <div class="lg:col-span-2 flex flex-col gap-8 lg:gap-12">
                 
-                <!-- Inner Dashboard Header Row -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                     <div class="flex flex-col gap-8 lg:gap-12">
                         <section class="glass-card p-8 lg:p-12">
                             <h2 class="mb-6 opacity-90 text-[20px] lg:text-[36px]">About Ray</h2>
-                            <p id="profile-bio" class="leading-relaxed text-gray-400 text-base lg:text-xl">Pack Member Profile</p>
+                            <p id="profile-bio" class="leading-relaxed text-gray-400 text-base lg:text-xl">Official Pack Member Profile</p>
                         </section>
 
                         <section id="last-played-hero" class="glass-card overflow-hidden">
@@ -383,7 +385,6 @@
 
                 <section class="glass-card p-8 lg:p-12 space-y-5 mobile-order-last">
                     <h2 class="mb-6 text-xs font-black uppercase opacity-60 text-center tracking-widest">Support & Socials</h2>
-                    
                     <a href="https://amzn.to/4n3OpPL" target="_blank" class="flex items-center p-6 rounded-2xl bg-[#FF9900]/10 border border-[#FF9900]/30 hover:border-[#FF9900] transition-all group">
                         <i class="fab fa-amazon text-4xl text-[#FF9900] group-hover:scale-110 transition-transform"></i>
                         <div class="flex-1 ml-5 text-left"><div class="font-black lg:text-xl text-white">Amazon Store</div><div class="text-[10px] text-gray-500 uppercase">Support the Pack</div></div>
@@ -397,7 +398,7 @@
     <script>
         const REPO_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/";
         
-        // SQUAD REGISTRY (CLEANED)
+        // REVERTED SQUAD REGISTRY (STABLE HARDCODED LIST)
         const FULL_SQUAD = [
             { key: 'werewolf', label: 'Werewolf3788', psn: 'Werewolf3788', url: 'https://profile.playstation.com/Werewolf3788' },
             { key: 'darkwing', label: 'Darkwing', psn: 'Darkwing69420', url: 'https://profile.playstation.com/Darkwing69420' },
@@ -435,7 +436,7 @@
 
         async function updateTwitch() {
             try {
-                // SYNCED TO RAYMYSTYRO
+                // RAY'S TWITCH USERNAME
                 const follows = await fetch('https://decapi.me/twitch/followcount/raymystyro').then(r => r.text());
                 if(follows && !follows.includes('Error')) { document.getElementById('follower-count').innerText = follows; }
             } catch(e){}
@@ -446,7 +447,6 @@
                 const res = await fetch(REPO_BASE + "Playstation/psn_data.json?t=" + Date.now());
                 const data = await res.json();
                 
-                // PULL RAY'S DATA
                 const ray = data.users.ray || data.users.Ray;
                 const healthDot = document.getElementById('health-dot');
                 const healthValue = document.getElementById('health-value');
@@ -461,7 +461,7 @@
                     }
 
                     document.getElementById('main-avatar').src = ray.avatar || "";
-                    document.getElementById('profile-bio').innerText = ray.bio || "Official Pack Member";
+                    document.getElementById('profile-bio').innerText = ray.bio || "Official Pack Member Profile";
                     document.getElementById('psn-level-label').innerText = ray.level || "--";
                     document.getElementById('trophy-total').innerText = (ray.trophies?.total || 0).toLocaleString();
                     document.getElementById('sync-time').innerText = ray.lastUpdated || "--";
