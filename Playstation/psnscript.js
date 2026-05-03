@@ -19,7 +19,7 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Squad Tracking
- * Version 6.8.1 - Presence Refresh Fix & Variable Declaration Cleanup
+ * Version 6.8.4 - Final Online Status & Variable Safety Fix
  */
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
@@ -54,9 +54,11 @@ const parsePlaytime = (duration) => {
 
 const getPresence = async (auth, accountId) => {
     try {
+        // We use the direct presence API for the most accurate "Online" check
         const p = await psnApi.getPresenceOfUser(auth, accountId);
+        const status = p.primaryPlatformInfo?.onlineStatus;
         return {
-            online: p.primaryPlatformInfo?.onlineStatus === "online" || p.primaryPlatformInfo?.onlineStatus === "busy",
+            online: status === "online" || status === "busy",
             currentGame: p.gameTitleInfoList?.[0]?.titleName || "Dashboard",
             platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5"
         };
@@ -184,21 +186,24 @@ async function main() {
     const werewolfToken = tokens.werewolf || process.env.PSN_NPSSO_WEREWOLF || "";
     const rayToken = tokens.ray || process.env.PSN_NPSSO_RAY || "";
 
-    // Load Persistence Backup
+    // 1. Load Persistence Backup (Ensures we don't lose old data)
     try {
         if (fs.existsSync(dataPath)) {
             const existing = JSON.parse(fs.readFileSync(dataPath));
             finalData.users = existing.users || {};
+            finalData.mutualPack = existing.mutualPack || [];
         }
     } catch (e) {}
 
     try {
+        // 2. Sync Admin (Kevin) and Ray
         const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
         const rayDetail = await getFullUserData(rayToken, "Ray", "OneLIVIDMAN");
 
         if (wolfData) finalData.users.werewolf = wolfData;
         if (rayDetail) finalData.users.ray = rayDetail;
 
+        // 3. Update Mutual Pack List
         if (wolfData && rayDetail && !wolfData.error && !rayDetail.error) {
             try {
                 const wolfFriends = await getFriendsList(wolfData.auth, wolfData.accountId);
@@ -207,13 +212,13 @@ async function main() {
                 const rIds = (rayFriends.friends || []).map(f => f.accountId);
                 
                 const mutualAccountIds = wIds.filter(id => rIds.includes(id));
-                // FIX: Define finalAccountList
                 const finalAccountList = (wolfFriends.friends || []).filter(f => mutualAccountIds.includes(f.accountId));
                 finalData.mutualPack = finalAccountList.map(m => m.onlineId);
             } catch (e) {}
         }
 
-        // LOBBY STATUS REFRESH (ALL SQUAD)
+        // 4. LOBBY STATUS REFRESH (ALL SQUAD)
+        // This ensures Ray, TJ, and Seth show "Online" correctly in the lobby
         const auth = (wolfData && !wolfData.error) ? wolfData.auth : (rayDetail && !rayDetail.error ? rayDetail.auth : null);
         if (auth) {
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
@@ -223,16 +228,19 @@ async function main() {
                     const accId = search.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
                     if (accId) {
                         const pres = await getPresence(auth, accId);
-                        // Update presence without overwriting long-term stats
+                        // Merge presence status without overwriting long-term stats
                         finalData.users[key] = { ...finalData.users[key], ...pres };
                     }
                 } catch (e) {}
             }
         }
-    } catch (e) {}
+    } catch (e) {
+        console.error(`[FATAL] Script error: ${e.message}`);
+    }
 
+    // 5. Final Write
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] psn_data.json updated. Online status check completed.`);
+    console.log(`[SUCCESS] psn_data.json updated.`);
 }
 
 main();
