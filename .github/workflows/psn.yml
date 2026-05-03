@@ -38,7 +38,7 @@ jobs:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
         # Updated to point to the correct script name: werewolf_sync.js
-        run: node Playstation/werewolf_sync.js
+        run: node Playstation/psnscript.js
 
       - name: Commit and Push Changes
         run: |
