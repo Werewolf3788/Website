@@ -19,16 +19,12 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Squad Tracking
- * Version 6.7.0 - Persistence Engine & Last Known Good Logic
- * Ensures data stays filled even if keys expire.
+ * Version 6.8.1 - Presence Refresh Fix & Variable Declaration Cleanup
  */
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
     darkwing: "Darkwing69420",
     phoenix: "phoenix_darkfire",
-    elucidator: "ElucidatorVah",
-    jcrow: "JCrow207",
-    unicorn: "UnicornBunnyShiv",
     balto: "Balto20_01",
     mjolnir: "IlIMjolnirIlI"
 };
@@ -57,15 +53,16 @@ const parsePlaytime = (duration) => {
 };
 
 const getPresence = async (auth, accountId) => {
-    const func = psnApi.getPresenceOfUser || psnApi.getUserPresence || psnApi.getPresenceFromUser;
     try {
-        const p = await func(auth, accountId);
+        const p = await psnApi.getPresenceOfUser(auth, accountId);
         return {
-            online: p.primaryPlatformInfo?.onlineStatus === "online",
+            online: p.primaryPlatformInfo?.onlineStatus === "online" || p.primaryPlatformInfo?.onlineStatus === "busy",
             currentGame: p.gameTitleInfoList?.[0]?.titleName || "Dashboard",
             platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5"
         };
-    } catch (e) { return { online: false, currentGame: "Dashboard", platform: "PS5" }; }
+    } catch (e) { 
+        return { online: false, currentGame: "Offline", platform: "PS5" }; 
+    }
 };
 
 async function getFullUserData(npsso, label, targetOnlineId) {
@@ -130,7 +127,7 @@ async function getFullUserData(npsso, label, targetOnlineId) {
                             const s = earnedStatus.find(x => x.trophyId === m.trophyId);
                             return {
                                 name: m.trophyName,
-                                description: m.trophyDetail || "Secret Requirement",
+                                description: m.trophyDetail || "Secret Objective",
                                 type: m.trophyType,
                                 icon: m.trophyIconUrl,
                                 rarity: m.trophyRare ? m.trophyRare + "%" : "Common",
@@ -178,79 +175,64 @@ async function main() {
     let tokens = { werewolf: "", ray: "" };
     let finalData = { users: {}, mutualPack: [], systemAlerts: [] };
 
-    // 1. Load Keys from tokens.json
     try {
         if (fs.existsSync(tokensPath)) {
             tokens = JSON.parse(fs.readFileSync(tokensPath));
         }
-    } catch (e) { console.log("[INFO] No tokens.json found, using environment variables."); }
+    } catch (e) {}
 
-    const werewolfToken = tokens.werewolf || process.env.PSN_NPSSO_WEREWOLF || "Z16BT0DB8X1dR5PiuftzTslTeH796cHb9alTA9S7nrpr37L4cu1RrqFCfYWc2YyG";
-    const rayToken = tokens.ray || process.env.PSN_NPSSO_RAY || "WQcE2imvkX8YsIiMGP8G2MYwUXHJxbrxvmh8yclvXirAjQ4SOJQrneZpsdhYqW2j";
+    const werewolfToken = tokens.werewolf || process.env.PSN_NPSSO_WEREWOLF || "";
+    const rayToken = tokens.ray || process.env.PSN_NPSSO_RAY || "";
 
-    // 2. LOAD BACKUP DATA (The Persistence Engine)
-    // We load the existing file so we don't overwrite good data with nulls if a key fails.
+    // Load Persistence Backup
     try {
         if (fs.existsSync(dataPath)) {
             const existing = JSON.parse(fs.readFileSync(dataPath));
             finalData.users = existing.users || {};
-            finalData.mutualPack = existing.mutualPack || [];
         }
     } catch (e) {}
 
     try {
-        // Kevin Sync
         const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
-        if (wolfData && wolfData.error === "TOKEN_EXPIRED") {
-            finalData.systemAlerts.push({ user: "Werewolf", issue: "NPSSO Expired", time: wolfData.lastCheck });
-            // wolfData is null, so we DONT overwrite finalData.users.werewolf here.
-        } else if (wolfData) {
-            finalData.users.werewolf = wolfData;
-            
-            // Ray Sync
-            const rayDetail = await getFullUserData(rayToken, "Ray", "OneLIVIDMAN");
-            if (rayDetail && rayDetail.error === "TOKEN_EXPIRED") {
-                finalData.systemAlerts.push({ user: "Ray", issue: "NPSSO Expired", time: rayDetail.lastCheck });
-                // If Ray's key fails, we keep finalData.users.ray from the Backup Load.
-            } else if (rayDetail) {
-                finalData.users.ray = rayDetail;
-                
-                // Mutual Pack Cross-Ref
-                try {
-                    const wolfFriends = await getFriendsList(wolfData.auth, wolfData.accountId);
-                    const rayFriends = await getFriendsList(rayDetail.auth, rayDetail.accountId);
-                    const wIds = (wolfFriends.friends || []).map(f => f.accountId);
-                    const rIds = (rayFriends.friends || []).map(f => f.accountId);
-                    
-                    const mutualAccountIds = wIds.filter(id => rIds.includes(id));
-                    finalAccountList = (wolfFriends.friends || []).filter(f => mutualAccountIds.includes(f.accountId));
-                    finalData.mutualPack = finalAccountList.map(m => m.onlineId);
-                } catch (e) {}
-            }
+        const rayDetail = await getFullUserData(rayToken, "Ray", "OneLIVIDMAN");
 
-            // Squad Sync (Uses Kevin's auth for basic presence)
-            const auth = wolfData.auth;
+        if (wolfData) finalData.users.werewolf = wolfData;
+        if (rayDetail) finalData.users.ray = rayDetail;
+
+        if (wolfData && rayDetail && !wolfData.error && !rayDetail.error) {
+            try {
+                const wolfFriends = await getFriendsList(wolfData.auth, wolfData.accountId);
+                const rayFriends = await getFriendsList(rayDetail.auth, rayDetail.accountId);
+                const wIds = (wolfFriends.friends || []).map(f => f.accountId);
+                const rIds = (rayFriends.friends || []).map(f => f.accountId);
+                
+                const mutualAccountIds = wIds.filter(id => rIds.includes(id));
+                // FIX: Define finalAccountList
+                const finalAccountList = (wolfFriends.friends || []).filter(f => mutualAccountIds.includes(f.accountId));
+                finalData.mutualPack = finalAccountList.map(m => m.onlineId);
+            } catch (e) {}
+        }
+
+        // LOBBY STATUS REFRESH (ALL SQUAD)
+        const auth = (wolfData && !wolfData.error) ? wolfData.auth : (rayDetail && !rayDetail.error ? rayDetail.auth : null);
+        if (auth) {
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
-                if (key === 'ray' && rayDetail && !rayDetail.error) continue;
                 if (key === 'werewolf') continue;
                 try {
                     const search = await makeUniversalSearch(auth, onlineId, "socialAccounts");
                     const accId = search.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
                     if (accId) {
                         const pres = await getPresence(auth, accId);
-                        // Merge presence status without losing previous metadata
+                        // Update presence without overwriting long-term stats
                         finalData.users[key] = { ...finalData.users[key], ...pres };
                     }
                 } catch (e) {}
             }
         }
-    } catch (e) {
-        console.error(`[FATAL] Script error: ${e.message}`);
-    }
+    } catch (e) {}
 
-    // 3. Final Write
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] psn_data.json updated. Persistence Engine Active.`);
+    console.log(`[SUCCESS] psn_data.json updated. Online status check completed.`);
 }
 
 main();
