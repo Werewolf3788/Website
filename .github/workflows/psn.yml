@@ -20,30 +20,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-          uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up Node.js
-          uses: actions/setup-node@v4
-          with:
-            node-version: '20'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Install Dependencies
-          run: npm install psn-api
+        run: npm install psn-api
 
       - name: Run PSN Sync
-          env:
-            PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
-            PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
-          # REVERTED TO YOUR ORIGINAL FILENAME
-          run: node Playstation/psnscript.js
+        env:
+          PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
+          PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
+        run: node Playstation/psnscript.js
 
       - name: Commit and Push Changes
-          run: |
-            git config --local user.email "action@github.com"
-            git config --local user.name "GitHub Action"
-            git add Playstation/psn_data.json
-            git commit -m "Wolf Sync: Updated PSN Stats [skip ci]" || echo "No changes to commit"
-            git pull --rebase origin main
-            git push origin main
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add Playstation/psn_data.json
+          git commit -m "Wolf Sync: Updated PSN Stats [skip ci]" || echo "No changes to commit"
+          git pull --rebase origin main
+          git push origin main
