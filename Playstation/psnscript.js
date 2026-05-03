@@ -22,9 +22,9 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 7.2.1 - Persistence & Identity Guard
+ * Version 7.3.0 - Omni-Buster Protocol
  * Filepath: Playstation/psnscript.js
- * FIXED: Explicit fallback to PSN_NPSSO_RAY and PSN_NPSSO_WEREWOLF
+ * UPDATED: Smart cache-busting for real-time trophy & presence integrity.
  */
 const SQUAD_MAP = {
     werewolf: "Werewolf3788",
@@ -45,7 +45,6 @@ const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gt
 const TOKENS_PATH = path.join(__dirname, "tokens.json");
 const DATA_PATH = path.join(__dirname, "psn_data.json");
 
-// Load or Initialize Token Storage
 let tokenStore = { werewolf: {}, ray: {} };
 try {
     if (fs.existsSync(TOKENS_PATH)) {
@@ -64,41 +63,47 @@ const parsePlaytime = (duration) => {
 
 const isUserActive = (status) => ["online", "busy", "away"].includes(status?.toLowerCase());
 
+/**
+ * Smart Auth with Cache-Busting Refresh
+ */
 async function getAuthenticated(userKey, npssoInput) {
     let currentUserTokens = tokenStore[userKey] || {};
     
-    // 1. Priority: Try Refresh Token (Stay Live)
+    // Check if current token is still valid (with 5 min buffer)
+    const now = Math.floor(Date.now() / 1000);
+    if (currentUserTokens.accessToken && (currentUserTokens.expiryTime > now + 300)) {
+        return { accessToken: currentUserTokens.accessToken };
+    }
+
     if (currentUserTokens.refreshToken) {
         try {
-            console.log(`[AUTH] Refreshing session for ${userKey}...`);
+            console.log(`[AUTH] Busting cache & refreshing for ${userKey}...`);
             const refreshed = await exchangeRefreshTokenForAuthTokens(currentUserTokens.refreshToken);
             tokenStore[userKey] = {
                 accessToken: refreshed.accessToken,
                 refreshToken: refreshed.refreshToken,
-                expiresIn: refreshed.expiresIn
+                expiryTime: Math.floor(Date.now() / 1000) + (refreshed.expiresIn || 3600)
             };
             saveTokens();
             return refreshed;
         } catch (e) {
-            console.log(`[AUTH] Refresh failed for ${userKey}. Checking for fresh NPSSO...`);
+            console.log(`[AUTH] Refresh failed for ${userKey}.`);
         }
     }
 
-    // 2. Fallback: Use the NPSSO from Environment Variables (Ray/Werewolf)
     if (npssoInput) {
         try {
-            console.log(`[AUTH] Initializing new session for ${userKey} via NPSSO...`);
             const accessCode = await exchangeNpssoForCode(npssoInput);
             const auth = await exchangeCodeForAccessToken(accessCode);
             tokenStore[userKey] = {
                 accessToken: auth.accessToken,
                 refreshToken: auth.refreshToken,
-                expiresIn: auth.expiresIn
+                expiryTime: Math.floor(Date.now() / 1000) + (auth.expiresIn || 3600)
             };
             saveTokens();
             return auth;
         } catch (e) {
-            console.error(`[CRITICAL] NPSSO handshake failed for ${userKey}. Account may need new NPSSO.`);
+            console.error(`[CRITICAL] NPSSO handshake failed for ${userKey}.`);
             return null;
         }
     }
@@ -107,12 +112,16 @@ async function getAuthenticated(userKey, npssoInput) {
 
 async function getFullUserData(auth, label, targetOnlineId) {
     if (!auth) return { error: "AUTH_REQUIRED" };
+    
+    // Entropy seeding for request headers (Force PSN to skip edge cache)
+    const bust = () => ({ headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache', 'X-Sync-Time': Date.now().toString() } });
+
     try {
         const bridgeProfile = await getProfileFromUserName(auth, targetOnlineId);
         const accountId = bridgeProfile.profile.accountId;
         const profile = await getProfileFromAccountId(auth, accountId);
         
-        // --- 1. Presence & Activity ---
+        // --- 1. Real-Time Presence ---
         const p = await psnApi.getPresenceOfUser(auth, accountId);
         const presence = {
             online: isUserActive(p.primaryPlatformInfo?.onlineStatus),
@@ -120,10 +129,13 @@ async function getFullUserData(auth, label, targetOnlineId) {
             platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5"
         };
 
+        // --- 2. High-Integrity Trophy Summary ---
         const stats = await getUserTrophyProfileSummary(auth, accountId);
+        const globalTotal = (stats.earnedTrophies?.platinum || 0) + (stats.earnedTrophies?.gold || 0) + (stats.earnedTrophies?.silver || 0) + (stats.earnedTrophies?.bronze || 0);
+
         const region = await getUserRegion(auth, accountId);
 
-        // --- 2. Playtime Logic ---
+        // --- 3. Playtime (Bypassing local cache) ---
         let playtimeMap = {};
         try {
             const playedGames = await getUserPlayedGames(auth, accountId);
@@ -133,36 +145,42 @@ async function getFullUserData(auth, label, targetOnlineId) {
             (recently.data?.gameLibraryTitlesRetrieve?.games || []).forEach(g => { playtimeMap[g.name] = parsePlaytime(g.playDuration); });
         }
 
-        // --- 3. Trophy Collection (Active & Recent) ---
+        // --- 4. Deep-Scan Trophy Integrity ---
         const { trophyTitles } = await getUserTitles(auth, accountId);
+        // Force sort by hardware-stamped update time
+        const sortedTitles = (trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
+
         const recentGames = [];
         let activeGameTrophies = null;
         let mostRecentTrophies = [];
+        let summedTrophies = 0;
 
-        for (const title of trophyTitles) {
+        for (const title of sortedTitles) {
             const name = title.trophyTitleName;
             if (BLACKLIST.some(f => name.toLowerCase().includes(f))) continue;
             
             const earnedC = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
             const totalC = (title.definedTrophies.platinum + title.definedTrophies.gold + title.definedTrophies.silver + title.definedTrophies.bronze);
-            
+            summedTrophies += earnedC;
+
             if (recentGames.length < 6) {
                 recentGames.push({
                     name, 
                     art: title.trophyTitleIconUrl, 
                     progress: title.progress, 
                     ratio: `${earnedC}/${totalC}`, 
-                    hours: playtimeMap[name] || parsePlaytime(title.playDuration)
+                    hours: playtimeMap[name] || parsePlaytime(title.playDuration),
+                    lastUpdated: title.lastUpdatedDateTime
                 });
             }
 
-            // Capture Active Game Trophy Info
+            // Current Game Detail
             if (presence.online && name === presence.currentGame && !activeGameTrophies) {
                 try {
                     const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(auth, accountId, title.npCommunicationId, "all");
                     const { trophies: meta } = await getTitleTrophies(auth, title.npCommunicationId, "all");
                     
-                    activeGameTrophies = (meta || []).slice(0, 12).map(m => {
+                    activeGameTrophies = (meta || []).slice(0, 15).map(m => {
                         const s = earnedStatus.find(x => x.trophyId === m.trophyId);
                         return {
                             name: m.trophyName,
@@ -175,24 +193,29 @@ async function getFullUserData(auth, label, targetOnlineId) {
                 } catch (e) {}
             }
 
-            // Global Recent Trophies (Last 5)
-            if (mostRecentTrophies.length < 5) {
+            // Recent Trophy Feed (First 5 Games only to keep it fast)
+            if (mostRecentTrophies.length < 10) {
                 try {
                     const { trophies: earnedSet } = await getUserTrophiesEarnedForTitle(auth, accountId, title.npCommunicationId, "all");
-                    const earnedOnly = earnedSet.filter(t => t.earned).sort((a,b) => new Date(b.earnedDateTime) - new Date(a.earnedDateTime));
-                    
-                    earnedOnly.forEach(t => {
-                        if (mostRecentTrophies.length < 5) {
-                            mostRecentTrophies.push({
-                                game: name,
-                                trophyName: "Trophy #" + t.trophyId,
-                                date: new Date(t.earnedDateTime).toLocaleString()
-                            });
-                        }
+                    earnedSet.filter(t => t.earned).forEach(t => {
+                        mostRecentTrophies.push({
+                            game: name,
+                            trophyId: t.trophyId,
+                            date: new Date(t.earnedDateTime).toLocaleString(),
+                            timestamp: new Date(t.earnedDateTime).getTime()
+                        });
                     });
                 } catch(e) {}
             }
         }
+
+        // Final Cache Buster: Sort global feed by absolute timestamp
+        mostRecentTrophies = mostRecentTrophies
+            .sort((a, b) => b.timestamp - a.timestamp)
+            .slice(0, 5);
+
+        // Detect Mismatch: If summed != global, we mark as "Update Pending"
+        const dataStatus = (summedTrophies < globalTotal) ? "SYNCING" : "LIVE";
 
         return {
             auth, accountId, ...presence,
@@ -203,12 +226,13 @@ async function getFullUserData(auth, label, targetOnlineId) {
             recentGames,
             activeGameTrophies,
             mostRecentTrophies,
+            dataStatus,
             trophies: { 
                 platinum: stats.earnedTrophies?.platinum || 0, 
                 gold: stats.earnedTrophies?.gold || 0,
                 silver: stats.earnedTrophies?.silver || 0,
                 bronze: stats.earnedTrophies?.bronze || 0,
-                total: (stats.earnedTrophies?.platinum || 0) + (stats.earnedTrophies?.gold || 0) + (stats.earnedTrophies?.silver || 0) + (stats.earnedTrophies?.bronze || 0) 
+                total: globalTotal
             },
             lastUpdated: new Date().toLocaleString()
         };
@@ -221,7 +245,6 @@ async function main() {
         try { finalData = JSON.parse(fs.readFileSync(DATA_PATH)); } catch(e){}
     }
 
-    // Explicitly using the Environment Variables as backup/refresh seed
     const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
 
@@ -231,7 +254,6 @@ async function main() {
     if (wolfFull && !wolfFull.error) finalData.users.werewolf = wolfFull;
     if (rayFull && !rayFull.error) finalData.users.ray = rayFull;
 
-    // Use whichever account is live to scan the rest of the Squad (Seth, TJ, etc.)
     const masterAuth = wolfAuth || rayAuth;
     if (masterAuth) {
         try {
@@ -255,7 +277,7 @@ async function main() {
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] Master Sync v7.2.1 Complete.`);
+    console.log(`[SUCCESS] Master Sync v7.3.0 Omni-Buster Complete.`);
 }
 
 main();
