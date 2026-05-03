@@ -42,7 +42,9 @@ jobs:
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
+          # Ensure both the data and the tokens (if updated) are tracked
           git add Playstation/psn_data.json
+          git add Playstation/tokens.json || echo "No token changes"
           git commit -m "Wolf Sync: Updated PSN Stats [skip ci]" || echo "No changes to commit"
           git pull --rebase origin main
           git push origin main
