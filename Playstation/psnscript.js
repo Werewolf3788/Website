@@ -19,7 +19,8 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Squad Tracking
- * Version 6.8.4 - Final Online Status & Variable Safety Fix
+ * Version 6.8.5 - Collision Fix & Accurate Presence Logic
+ * Ensures Ray's token-based status isn't overwritten by Kevin's search status.
  */
 const SQUAD_IDS = {
     ray: "OneLIVIDMAN",
@@ -54,11 +55,10 @@ const parsePlaytime = (duration) => {
 
 const getPresence = async (auth, accountId) => {
     try {
-        // We use the direct presence API for the most accurate "Online" check
         const p = await psnApi.getPresenceOfUser(auth, accountId);
         const status = p.primaryPlatformInfo?.onlineStatus;
         return {
-            online: status === "online" || status === "busy",
+            online: status === "online" || status === "busy" || status === "away",
             currentGame: p.gameTitleInfoList?.[0]?.titleName || "Dashboard",
             platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5"
         };
@@ -186,7 +186,7 @@ async function main() {
     const werewolfToken = tokens.werewolf || process.env.PSN_NPSSO_WEREWOLF || "";
     const rayToken = tokens.ray || process.env.PSN_NPSSO_RAY || "";
 
-    // 1. Load Persistence Backup (Ensures we don't lose old data)
+    // Persistence Engine: Load Existing
     try {
         if (fs.existsSync(dataPath)) {
             const existing = JSON.parse(fs.readFileSync(dataPath));
@@ -196,49 +196,35 @@ async function main() {
     } catch (e) {}
 
     try {
-        // 2. Sync Admin (Kevin) and Ray
         const wolfData = await getFullUserData(werewolfToken, "Werewolf", "Werewolf3788");
         const rayDetail = await getFullUserData(rayToken, "Ray", "OneLIVIDMAN");
 
         if (wolfData) finalData.users.werewolf = wolfData;
         if (rayDetail) finalData.users.ray = rayDetail;
 
-        // 3. Update Mutual Pack List
-        if (wolfData && rayDetail && !wolfData.error && !rayDetail.error) {
-            try {
-                const wolfFriends = await getFriendsList(wolfData.auth, wolfData.accountId);
-                const rayFriends = await getFriendsList(rayDetail.auth, rayDetail.accountId);
-                const wIds = (wolfFriends.friends || []).map(f => f.accountId);
-                const rIds = (rayFriends.friends || []).map(f => f.accountId);
-                
-                const mutualAccountIds = wIds.filter(id => rIds.includes(id));
-                const finalAccountList = (wolfFriends.friends || []).filter(f => mutualAccountIds.includes(f.accountId));
-                finalData.mutualPack = finalAccountList.map(m => m.onlineId);
-            } catch (e) {}
-        }
-
-        // 4. LOBBY STATUS REFRESH (ALL SQUAD)
-        // This ensures Ray, TJ, and Seth show "Online" correctly in the lobby
+        // Squad Logic: Only update if not already accurately synced via token
         const auth = (wolfData && !wolfData.error) ? wolfData.auth : (rayDetail && !rayDetail.error ? rayDetail.auth : null);
         if (auth) {
             for (const [key, onlineId] of Object.entries(SQUAD_IDS)) {
                 if (key === 'werewolf') continue;
+                
+                // CRITICAL FIX: If Ray's direct sync just succeeded, do NOT overwrite it with your search result
+                if (key === 'ray' && rayDetail && !rayDetail.error) continue;
+
                 try {
                     const search = await makeUniversalSearch(auth, onlineId, "socialAccounts");
                     const accId = search.domainResponses?.[0]?.results?.[0]?.socialMetadata?.accountId;
                     if (accId) {
                         const pres = await getPresence(auth, accId);
-                        // Merge presence status without overwriting long-term stats
                         finalData.users[key] = { ...finalData.users[key], ...pres };
                     }
                 } catch (e) {}
             }
         }
     } catch (e) {
-        console.error(`[FATAL] Script error: ${e.message}`);
+        console.error(`[FATAL] ${e.message}`);
     }
 
-    // 5. Final Write
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
     console.log(`[SUCCESS] psn_data.json updated.`);
 }
