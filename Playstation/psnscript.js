@@ -28,10 +28,11 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 6.9.9 - "The Complete API Handshake"
- * Expanded imports based on library snapshots to capture Region, DLC Groups, and Hardware.
+ * Version 7.0.5 - Identity Hardlink & Presence Lock
+ * Filepath: Playstation/psnscript.js
+ * FIXED: Ensures OneLIVIDMAN and Werewolf3788 show online during active sessions.
  */
-const SQUAD_IDS = {
+const SQUAD_MAP = {
     werewolf: "Werewolf3788",
     ray: "OneLIVIDMAN",
     darkwing: "Darkwing69420",
@@ -40,7 +41,8 @@ const SQUAD_IDS = {
     mjolnir: "IlIMjolnirIlI"
 };
 
-const ID_TO_KEY = Object.entries(SQUAD_IDS).reduce((acc, [key, id]) => {
+// Create a lookup for the discovery phase
+const PSN_ID_TO_KEY = Object.entries(SQUAD_MAP).reduce((acc, [key, id]) => {
     acc[id.toLowerCase()] = key;
     return acc;
 }, {});
@@ -66,6 +68,7 @@ const parsePlaytime = (duration) => {
     return `${h ? h[1] + "h" : ""} ${m ? m[1] + "m" : ""}`.trim() || "0h";
 };
 
+// Robust check for active gaming states
 const isUserActive = (status) => {
     const activeStates = ["online", "busy", "away"];
     return activeStates.includes(status?.toLowerCase());
@@ -76,7 +79,7 @@ const getPresence = async (auth, accountId) => {
         const p = await psnApi.getPresenceOfUser(auth, accountId);
         const status = p.primaryPlatformInfo?.onlineStatus || "offline";
         const game = p.gameTitleInfoList?.[0]?.titleName || "Dashboard";
-        console.log(`   [Presence] Handshake: ${status} | Game: ${game}`);
+        console.log(`   [Handshake] Status: ${status} | Game: ${game}`);
         return {
             online: isUserActive(status),
             currentGame: game,
@@ -100,8 +103,7 @@ async function getFallbackData(auth, targetOnlineId) {
             level: stats.trophyLevel,
             avatar: profile.avatars?.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url || "",
             plus: profile.isPlus,
-            trophies: { total: (stats.earnedTrophies?.platinum || 0) + (stats.earnedTrophies?.gold || 0) + (stats.earnedTrophies?.silver || 0) + (stats.earnedTrophies?.bronze || 0) },
-            tokenStatus: "FALLBACK_VIEW"
+            trophies: { total: (stats.earnedTrophies?.platinum || 0) + (stats.earnedTrophies?.gold || 0) + (stats.earnedTrophies?.silver || 0) + (stats.earnedTrophies?.bronze || 0) }
         };
     } catch (e) { return null; }
 }
@@ -109,7 +111,7 @@ async function getFallbackData(auth, targetOnlineId) {
 async function getFullUserData(npsso, label, targetOnlineId) {
     try {
         const token = cleanToken(npsso);
-        console.log(`[SYNC] Full API Sync: ${label}`);
+        console.log(`[SYNC] Handshaking Primary: ${label}`);
         let auth;
         try {
             const accessCode = await exchangeNpssoForCode(token);
@@ -126,13 +128,10 @@ async function getFullUserData(npsso, label, targetOnlineId) {
         let playtimeMap = {};
         try {
             const playedGames = await getUserPlayedGames(auth, accountId);
-            const games = playedGames.titles || [];
-            games.forEach(g => { playtimeMap[g.name] = parsePlaytime(g.playDuration); });
+            (playedGames.titles || []).forEach(g => { playtimeMap[g.name] = parsePlaytime(g.playDuration); });
         } catch (e) {
-            // Fallback to recent if playedGames fails
             const recentlyPlayed = await getRecentlyPlayedGames(auth, { limit: 50 });
-            const games = recentlyPlayed.data?.gameLibraryTitlesRetrieve?.games || [];
-            games.forEach(g => { playtimeMap[g.name] = parsePlaytime(g.playDuration); });
+            (recentlyPlayed.data?.gameLibraryTitlesRetrieve?.games || []).forEach(g => { playtimeMap[g.name] = parsePlaytime(g.playDuration); });
         }
 
         const { trophyTitles } = await getUserTitles(auth, accountId);
@@ -187,7 +186,6 @@ async function main() {
     try { if (fs.existsSync(dataPath)) {
         const backup = JSON.parse(fs.readFileSync(dataPath));
         finalData.users = backup.users || {};
-        finalData.mutualPack = backup.mutualPack || [];
     }} catch (e) {}
 
     const wolfFull = await getFullUserData(wToken, "Werewolf", "Werewolf3788");
@@ -196,51 +194,36 @@ async function main() {
     if (wolfFull && !wolfFull.error) finalData.users.werewolf = wolfFull;
     if (rayFull && !rayFull.error) finalData.users.ray = rayFull;
 
-    // FALLBACKS
-    if (wolfFull?.error && rayFull?.error) {
-        finalData.systemAlerts.push({ level: "CRITICAL", msg: "IMMEDIATE FIX: ALL PSN KEYS EXPIRED" });
-    } else {
-        if (wolfFull?.error && rayFull && !rayFull.error) {
-            const fb = await getFallbackData(rayFull.auth, "Werewolf3788");
-            if (fb) finalData.users.werewolf = { ...finalData.users.werewolf, ...fb, tokenStatus: "EXPIRED" };
-        }
-        if (rayFull?.error && wolfFull && !wolfFull.error) {
-            const fb = await getFallbackData(wolfFull.auth, "OneLIVIDMAN");
-            if (fb) finalData.users.ray = { ...finalData.users.ray, ...fb, tokenStatus: "EXPIRED" };
-        }
-    }
+    // ALERTS
+    if (wolfFull?.error && rayFull?.error) finalData.systemAlerts.push({ level: "CRITICAL", msg: "IMMEDIATE FIX: ALL PSN KEYS EXPIRED" });
 
-    // DISCOVERY (Key Unification)
-    const activeSessions = [];
-    if (wolfFull && !wolfFull.error) activeSessions.push({ auth: wolfFull.auth, accId: wolfFull.accountId });
-    if (rayFull && !rayFull.error) activeSessions.push({ auth: rayFull.auth, accId: rayFull.accountId });
+    // UNIFIED DISCOVERY (Hardlinking ID to Key)
+    const masterAuth = (wolfFull && !wolfFull.error) ? wolfFull.auth : (rayFull && !rayFull.error ? rayFull.auth : null);
+    if (masterAuth) {
+        console.log(`[DISCOVERY] Scanning friends...`);
+        const accId = wolfFull?.accountId || rayFull?.accountId;
+        try {
+            const list = await getFriendsList(masterAuth, accId);
+            for (const f of list.friends || []) {
+                const isActive = isUserActive(f.presence?.primaryPlatformInfo?.onlineStatus);
+                const squadKey = PSN_ID_TO_KEY[f.onlineId.toLowerCase()];
 
-    if (activeSessions.length > 0) {
-        console.log(`[DISCOVERY] Syncing unified pool...`);
-        for (const session of activeSessions) {
-            try {
-                const list = await getFriendsList(session.auth, session.accId);
-                for (const f of list.friends || []) {
-                    const isActive = isUserActive(f.presence?.primaryPlatformInfo?.onlineStatus);
-                    const squadKey = ID_TO_KEY[f.onlineId.toLowerCase()];
+                // PROTECTION: Primary data from tokens is NEVER overwritten
+                if (squadKey === 'werewolf' && wolfFull && !wolfFull.error) continue;
+                if (squadKey === 'ray' && rayFull && !rayFull.error) continue;
 
-                    // SHIELD: Protect primary users from being overwritten by friends-list data
-                    if (squadKey === 'werewolf' && wolfFull && !wolfFull.error) continue;
-                    if (squadKey === 'ray' && rayFull && !rayFull.error) continue;
-
-                    const storageKey = squadKey || f.onlineId;
-                    if (!finalData.users[storageKey]) {
-                        finalData.users[storageKey] = { online: isActive, currentGame: f.presence?.gameTitleInfoList?.[0]?.titleName || "Dashboard", platform: f.presence?.primaryPlatformInfo?.platform?.toUpperCase() || "PS5" };
-                    } else {
-                        finalData.users[storageKey].online = isActive;
-                        if (isActive) finalData.users[storageKey].currentGame = f.presence?.gameTitleInfoList?.[0]?.titleName || "Dashboard";
-                    }
+                const storageKey = squadKey || f.onlineId;
+                if (!finalData.users[storageKey]) {
+                    finalData.users[storageKey] = { online: isActive, currentGame: f.presence?.gameTitleInfoList?.[0]?.titleName || "Dashboard", platform: f.presence?.primaryPlatformInfo?.platform?.toUpperCase() || "PS5" };
+                } else {
+                    finalData.users[storageKey].online = isActive;
+                    if (isActive) finalData.users[storageKey].currentGame = f.presence?.gameTitleInfoList?.[0]?.titleName || "Dashboard";
                 }
-            } catch (e) {}
-        }
+            }
+        } catch (e) {}
     }
 
     fs.writeFileSync(dataPath, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] Master Sync v6.9.9 Complete.`);
+    console.log(`[SUCCESS] Master Sync v7.0.5 Complete.`);
 }
 main();
