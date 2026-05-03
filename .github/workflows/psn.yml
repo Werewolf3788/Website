@@ -2,21 +2,24 @@ name: Sync PSN Data
 
 on:
   schedule:
-    # Runs every 15 minutes
     - cron: '*/15 * * * *'
   workflow_dispatch:
   push:
     branches:
       - main
-    paths-ignore:
-      - 'README.md'
-      - '.gitignore'
+
+# Prevent multiple builds from running at once
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
-  build:
+  build-and-sync:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -38,13 +41,25 @@ jobs:
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
         run: node Playstation/psnscript.js
 
-      - name: Commit and Push Changes
+      - name: Commit and Push Data
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-          # Ensure both the data and the tokens (if updated) are tracked
+          git add .nojekyll || echo "no jekyll"
           git add Playstation/psn_data.json
-          git add Playstation/tokens.json || echo "No token changes"
-          git commit -m "Wolf Sync: Updated PSN Stats [skip ci]" || echo "No changes to commit"
+          git add Playstation/tokens.json || echo "no tokens"
+          git commit -m "Wolf Sync: v7.4.9 High-Speed Deploy [skip ci]" || echo "No changes"
           git pull --rebase origin main
           git push origin main
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
