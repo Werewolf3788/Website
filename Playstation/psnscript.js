@@ -23,9 +23,9 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 7.4.7 - Deployment Guard & NaN Shield
+ * Version 7.4.8 - High-Availability Protocol
  * Filepath: Playstation/psnscript.js
- * FIXED: Build cancellations, NaN% display, and "Home Screen" presence lag.
+ * FIXED: Build cancellations, API timeouts, and "Home Screen" NaN lag.
  */
 const SQUAD_MAP = {
     werewolf: "Werewolf3788",
@@ -44,7 +44,7 @@ const PSN_ID_TO_KEY = Object.entries(SQUAD_MAP).reduce((acc, [key, id]) => {
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online"];
 const TOKENS_PATH = path.join(__dirname, "tokens.json");
 const DATA_PATH = path.join(__dirname, "psn_data.json");
-const NOJEKYLL_PATH = path.join(__dirname, "..", ".nojekyll");
+const ROOT_NOJEKYLL = path.join(__dirname, "..", ".nojekyll");
 
 let tokenStore = { werewolf: {}, ray: {} };
 try { 
@@ -105,8 +105,8 @@ async function getAuthenticated(userKey, npssoInput) {
     return null;
 }
 
-async function getFullUserData(auth, label, targetOnlineId) {
-    if (!auth) return null;
+async function getFullUserData(auth, label, targetOnlineId, existingData) {
+    if (!auth) return existingData || null;
     try {
         const bridgeProfile = await getProfileFromUserName(auth, targetOnlineId);
         const accountId = bridgeProfile.profile.accountId;
@@ -127,7 +127,7 @@ async function getFullUserData(auth, label, targetOnlineId) {
         const { trophyTitles } = await getUserTitles(auth, accountId);
         const sortedTitles = (trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
 
-        // CRITICAL: If Online but stuck on "Home Screen", find the last game touched to prevent NaN%
+        // CRITICAL: NaN Shield - If "Home Screen" but console was recently used, override with the real game
         if (presence.currentGame === "Home Screen" && sortedTitles.length > 0) {
             presence.currentGame = sortedTitles[0].trophyTitleName;
         }
@@ -144,7 +144,6 @@ async function getFullUserData(auth, label, targetOnlineId) {
             const earnedC = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
             localSummed += earnedC;
 
-            // Gather trophy data for feed and active hunt
             if (name === presence.currentGame || mostRecentTrophies.length < 20) {
                 try {
                     const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(auth, accountId, title.npCommunicationId, "all");
@@ -166,7 +165,7 @@ async function getFullUserData(auth, label, targetOnlineId) {
                     if (name === presence.currentGame) {
                         activeGameTrophies = mapped;
                         const liveEarned = mapped.filter(t => t.earned).length;
-                        const liveTotal = mapped.length || 1; // NaN Shield
+                        const liveTotal = Math.max(mapped.length, 1);
                         const livePct = Math.round((liveEarned / liveTotal) * 100);
 
                         if (recentGames.length < 6) {
@@ -199,9 +198,7 @@ async function getFullUserData(auth, label, targetOnlineId) {
         }
 
         mostRecentTrophies = mostRecentTrophies.sort((a,b) => b.timestamp - a.timestamp).slice(0, 5);
-
-        // Final safety check for active hunt array
-        if (!activeGameTrophies && sortedTitles.length > 0) activeGameTrophies = [];
+        if (!activeGameTrophies) activeGameTrophies = [];
 
         return {
             accountId, ...presence, 
@@ -209,21 +206,20 @@ async function getFullUserData(auth, label, targetOnlineId) {
             plus: profile.isPlus, 
             level: stats.trophyLevel,
             recentGames, 
-            activeHunt: { 
-                title: presence.currentGame, 
-                trophies: activeGameTrophies || [] 
-            },
+            activeHunt: { title: presence.currentGame, trophies: activeGameTrophies },
             mostRecentTrophies, 
             dataStatus: (localSummed < globalTotal) ? "SYNCING" : "LIVE",
             trophies: { platinum: stats.earnedTrophies?.platinum || 0, total: globalTotal },
             lastUpdated: new Date().toLocaleString()
         };
-    } catch (e) { return null; }
+    } catch (e) { 
+        return existingData || null; 
+    }
 }
 
 async function main() {
-    // --- Speed Hack: Create .nojekyll to fix GitHub Build cancellations ---
-    if (!fs.existsSync(NOJEKYLL_PATH)) fs.writeFileSync(NOJEKYLL_PATH, "");
+    // SECURITY: Create .nojekyll at the root level to speed up deployments
+    try { fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { users: {}, systemAlerts: [] };
     try {
@@ -235,8 +231,8 @@ async function main() {
     const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
 
-    const wolfFull = await getFullUserData(wolfAuth, "Werewolf", "Werewolf3788");
-    const rayFull = await getFullUserData(rayAuth, "Ray", "OneLIVIDMAN");
+    const wolfFull = await getFullUserData(wolfAuth, "Werewolf", "Werewolf3788", finalData.users.werewolf);
+    const rayFull = await getFullUserData(rayAuth, "Ray", "OneLIVIDMAN", finalData.users.ray);
 
     if (wolfFull) finalData.users.werewolf = wolfFull;
     if (rayFull) finalData.users.ray = rayFull;
@@ -269,7 +265,7 @@ async function main() {
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log("[SUCCESS] Ghost Protocol v7.4.7 Live.");
+    console.log("[SUCCESS] Ghost Protocol v7.4.8 Complete.");
 }
 
 main();
