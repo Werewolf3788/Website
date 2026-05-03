@@ -23,9 +23,9 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 7.4.6 - Ghost Protocol & NaN Protection
+ * Version 7.4.7 - Deployment Guard & NaN Shield
  * Filepath: Playstation/psnscript.js
- * FIXED: NaN% error, Offline Lobby bug, and Home Screen trophy lag.
+ * FIXED: Build cancellations, NaN% display, and "Home Screen" presence lag.
  */
 const SQUAD_MAP = {
     werewolf: "Werewolf3788",
@@ -44,13 +44,14 @@ const PSN_ID_TO_KEY = Object.entries(SQUAD_MAP).reduce((acc, [key, id]) => {
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online"];
 const TOKENS_PATH = path.join(__dirname, "tokens.json");
 const DATA_PATH = path.join(__dirname, "psn_data.json");
+const NOJEKYLL_PATH = path.join(__dirname, "..", ".nojekyll");
 
 let tokenStore = { werewolf: {}, ray: {} };
 try { 
     if (fs.existsSync(TOKENS_PATH)) {
         tokenStore = JSON.parse(fs.readFileSync(TOKENS_PATH));
     }
-} catch (e) { console.error("[ERROR] Could not read tokens.json"); }
+} catch (e) { console.error("[ERROR] Token load failed"); }
 
 const saveTokens = () => fs.writeFileSync(TOKENS_PATH, JSON.stringify(tokenStore, null, 2));
 
@@ -61,7 +62,6 @@ const parsePlaytime = (duration) => {
     return `${h ? h[1] + "h" : ""} ${m ? m[1] + "m" : ""}`.trim() || "0h";
 };
 
-// Expanded check for online states (including 'away' and 'busy')
 const isUserActive = (status) => {
     if (!status) return false;
     const s = status.toLowerCase();
@@ -112,7 +112,6 @@ async function getFullUserData(auth, label, targetOnlineId) {
         const accountId = bridgeProfile.profile.accountId;
         const profile = await getProfileFromAccountId(auth, accountId);
         
-        // --- 1. Smart Presence Logic ---
         let p = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         try { p = await getBasicPresence(auth, accountId); } catch(e) {}
 
@@ -125,17 +124,12 @@ async function getFullUserData(auth, label, targetOnlineId) {
         const stats = await getUserTrophyProfileSummary(auth, accountId);
         const globalTotal = (stats.earnedTrophies?.platinum || 0) + (stats.earnedTrophies?.gold || 0) + (stats.earnedTrophies?.silver || 0) + (stats.earnedTrophies?.bronze || 0);
 
-        // --- 2. Trophy Scan ---
         const { trophyTitles } = await getUserTitles(auth, accountId);
         const sortedTitles = (trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
 
-        // PROTECTION: If PSN says Home Screen but a game was updated 1 hour ago, treat that as the active game
+        // CRITICAL: If Online but stuck on "Home Screen", find the last game touched to prevent NaN%
         if (presence.currentGame === "Home Screen" && sortedTitles.length > 0) {
-            const lastUpdated = new Date(sortedTitles[0].lastUpdatedDateTime).getTime();
-            const oneHourAgo = Date.now() - (60 * 60 * 1000);
-            if (lastUpdated > oneHourAgo) {
-                presence.currentGame = sortedTitles[0].trophyTitleName;
-            }
+            presence.currentGame = sortedTitles[0].trophyTitleName;
         }
 
         const recentGames = [];
@@ -150,7 +144,7 @@ async function getFullUserData(auth, label, targetOnlineId) {
             const earnedC = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
             localSummed += earnedC;
 
-            // Gather deep trophy info for active game and global feed
+            // Gather trophy data for feed and active hunt
             if (name === presence.currentGame || mostRecentTrophies.length < 20) {
                 try {
                     const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(auth, accountId, title.npCommunicationId, "all");
@@ -169,11 +163,10 @@ async function getFullUserData(auth, label, targetOnlineId) {
                         };
                     });
 
-                    // Set active hunt trophies
                     if (name === presence.currentGame) {
                         activeGameTrophies = mapped;
                         const liveEarned = mapped.filter(t => t.earned).length;
-                        const liveTotal = mapped.length || 1; // Prevent division by zero
+                        const liveTotal = mapped.length || 1; // NaN Shield
                         const livePct = Math.round((liveEarned / liveTotal) * 100);
 
                         if (recentGames.length < 6) {
@@ -192,7 +185,6 @@ async function getFullUserData(auth, label, targetOnlineId) {
                         });
                     }
 
-                    // Feed global recent list
                     mapped.filter(t => t.earned).forEach(t => {
                         mostRecentTrophies.push({ 
                             game: name, 
@@ -206,15 +198,10 @@ async function getFullUserData(auth, label, targetOnlineId) {
             }
         }
 
-        // Sort global feed
         mostRecentTrophies = mostRecentTrophies.sort((a,b) => b.timestamp - a.timestamp).slice(0, 5);
 
-        // Fallback for active hunt if no game found
-        if (!activeGameTrophies && sortedTitles.length > 0) {
-            presence.currentGame = sortedTitles[0].trophyTitleName;
-            // Recursion protection: we just use the simple stats if deep scan fails
-            activeGameTrophies = []; 
-        }
+        // Final safety check for active hunt array
+        if (!activeGameTrophies && sortedTitles.length > 0) activeGameTrophies = [];
 
         return {
             accountId, ...presence, 
@@ -235,6 +222,9 @@ async function getFullUserData(auth, label, targetOnlineId) {
 }
 
 async function main() {
+    // --- Speed Hack: Create .nojekyll to fix GitHub Build cancellations ---
+    if (!fs.existsSync(NOJEKYLL_PATH)) fs.writeFileSync(NOJEKYLL_PATH, "");
+
     let finalData = { users: {}, systemAlerts: [] };
     try {
         if (fs.existsSync(DATA_PATH)) {
@@ -261,7 +251,6 @@ async function main() {
                     const status = f.presence?.primaryPlatformInfo?.onlineStatus || f.presence?.presenceState;
                     const online = isUserActive(status);
                     
-                    // Update discovery data
                     if (!finalData.users[key] || !finalData.users[key].dataStatus) {
                         finalData.users[key] = { 
                             online, 
@@ -269,7 +258,6 @@ async function main() {
                             platform: f.presence?.primaryPlatformInfo?.platform?.toUpperCase() || "PS5" 
                         };
                     } else {
-                        // Keep deep data but update status
                         finalData.users[key].online = online;
                         if (online) {
                             finalData.users[key].currentGame = f.presence?.gameTitleInfoList?.[0]?.titleName || finalData.users[key].currentGame;
@@ -281,7 +269,7 @@ async function main() {
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log("[SUCCESS] Ghost Protocol Complete.");
+    console.log("[SUCCESS] Ghost Protocol v7.4.7 Live.");
 }
 
 main();
