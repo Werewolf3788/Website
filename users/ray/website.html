@@ -1,12 +1,34 @@
 <!DOCTYPE html>
-<!-- Version: 10.4.0-Ray - Clickable Twitch Stat | Cardinal Red | Gapless Layout | Locked Nav | S:50 R:30 B:14 H:30 -->
+<!-- 
+    Version: 10.4.6-Ray - Universal CSV Dynamic Menu | Mobile Sandwich | Cardinal Red | Gapless Layout | Locked Nav 
+    Global Standards: S:50 R:30 B:14 H:30
+    Author: Kevin (Werewolf3788) Admin Engine
+-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RayMystyro | Pack Dashboard</title>
+    
+    <!-- --- GOOGLE ANALYTICS (WEREWOLF GLOBAL) --- -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-Z9M5LXQ5XN', {
+            'page_type': 'dashboard',
+            'content_group': 'squad_hub',
+            'layout_version': '10.4.6',
+            'user_id': 'OneLIVIDMAN'
+        });
+    </script>
+
+    <!-- --- EXTERNAL ASSETS --- -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- --- CUSTOM STYLES (EXPANDED) --- -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap');
 
@@ -36,44 +58,72 @@
             margin: 0; padding: 0;
             overflow-x: hidden;
             line-height: 1.5;
+            overflow-wrap: break-word; /* GLOBAL REQUIREMENT */
         }
 
-        /* --- STICKY NAVIGATION BAR --- */
+        /* --- NAVIGATION & DYNAMIC DROPDOWN LOGIC --- */
         .nav-bar {
             position: sticky; top: 0; z-index: 20000;
-            background: rgba(10, 10, 12, 0.85);
+            background: rgba(10, 10, 12, 0.95);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             padding: 12px 20px;
         }
         .nav-container {
             max-width: 1700px; margin: 0 auto;
-            display: flex; gap: 15px; justify-content: center; overflow-x: auto;
-            scrollbar-width: none;
+            display: flex; align-items: center; justify-content: space-between;
         }
-        .nav-container::-webkit-scrollbar { display: none; }
+        .nav-links-wrapper {
+            display: none; 
+            gap: 25px; align-items: center;
+        }
+        .nav-links-wrapper.active {
+            display: flex; flex-direction: column; position: absolute;
+            top: 100%; left: 0; right: 0; background: var(--bg-dark);
+            padding: 20px; border-bottom: 1px solid var(--accent-red);
+        }
         .nav-link {
             font-size: 10px; font-weight: 900; text-transform: uppercase;
             letter-spacing: 0.15em; color: #64748b; transition: all 0.3s;
-            white-space: nowrap; text-decoration: none;
+            white-space: nowrap; text-decoration: none; cursor: pointer;
         }
         .nav-link:hover, .nav-link.active { color: var(--accent-red); }
 
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content {
+            display: none; position: absolute; top: 100%; left: 0;
+            background-color: var(--wolf-gray); min-width: 250px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+            z-index: 1; border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px; margin-top: 10px;
+        }
+        .dropdown-content a {
+            color: #94a3b8; padding: 12px 16px; text-decoration: none;
+            display: block; font-size: 11px; font-weight: 700;
+            text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .dropdown-content a:hover { background-color: rgba(196, 30, 58, 0.1); color: var(--accent-red); }
+        .dropdown:hover .dropdown-content { display: block; }
+
         @media (min-width: 1024px) {
+            .nav-links-wrapper { display: flex; flex-direction: row; }
+            .mobile-toggle { display: none; }
             body { font-size: 16px; }
             h1 { font-size: 72px !important; }
             h2 { font-size: 36px !important; }
             .section-container { padding-top: 80px; padding-bottom: 80px; }
             .nav-link { font-size: 12px; }
-            .nav-container { justify-content: flex-start; gap: 40px; }
         }
 
+        /* --- GLOBAL UI COMPONENTS --- */
         h1, h2, h3 {
             font-size: var(--header-text-size);
             font-weight: 900;
             text-transform: uppercase;
             letter-spacing: -0.05em;
-            margin: 0; line-height: 1; color: white;
+            margin: 0; 
+            line-height: 1.2; 
+            color: white;
         }
 
         .section-container { padding-top: var(--section-padding); padding-bottom: var(--section-padding); }
@@ -97,6 +147,13 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* --- PLUS BADGE --- */
+        .plus-badge {
+            background: #f59e0b; color: black; font-weight: 900;
+            font-size: 10px; padding: 2px 6px; border-radius: 4px;
+            vertical-align: middle; margin-left: 10px;
+        }
+
         /* --- TROPHY LIST --- */
         .trophy-row {
             display: grid;
@@ -112,9 +169,6 @@
         @media (min-width: 1024px) {
             .trophy-row { grid-template-columns: 80px 1fr auto; padding: 25px 40px; gap: 35px; }
             .trophy-icon-sq { width: 70px !important; height: 70px !important; }
-            .trophy-title-text { font-size: 20px !important; }
-            .trophy-desc-text { font-size: 14px !important; }
-            .prog-fraction { font-size: 28px !important; }
         }
 
         .trophy-icon-sq {
@@ -129,7 +183,7 @@
         .prog-fraction { font-family: 'Inter', sans-serif; font-weight: 900; color: #ffffff; font-size: 18px; text-align: right; }
         .earned-tag { font-size: 10px; font-weight: 900; text-transform: uppercase; color: #10b981; text-align: right; }
 
-        /* LOBBY (R:30) */
+        /* LOBBY GRID */
         .lobby-card {
             display: flex; align-items: center; justify-content: space-between; padding: 0 1.25rem;
             height: var(--row-spacing);
@@ -152,7 +206,7 @@
         .progress-bar-container { height: 10px; background: #2d2d35; border-radius: 5px; overflow: hidden; }
         .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #C41E3A, #7d1225); transition: width 1.5s ease-out; }
 
-        /* RECENT HUNTS & PLATINUM GLOW */
+        /* GAME THUMBS */
         .game-thumb {
             position: relative; aspect-ratio: 2/3; overflow: hidden;
             border-radius: 1rem; background: #1e1e24; border: 1px solid rgba(255,255,255,0.05);
@@ -200,29 +254,29 @@
             overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8);
         }
 
-        /* MOBILE ORDERING */
-        @media (max-width: 1023px) {
-            .mobile-order-last { order: 999 !important; }
-        }
-
         .hidden { display: none !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- LOCKED NAVIGATION BAR -->
+    <!-- --- NAVIGATION --- -->
     <nav class="nav-bar">
         <div class="nav-container">
-            <a href="https://werewolf3788.github.io/Website/" class="nav-link">Home</a>
-            <a href="https://werewolf3788.github.io/Website/users/kevin/website.html" target="_blank" class="nav-link">Werewolf</a>
-            <a href="https://werewolf3788.github.io/Website/users/ray/website.html" class="nav-link active">RayMystyro</a>
-            <a href="https://werewolf3788.github.io/Website/users/tj/overlay.html" target="_blank" class="nav-link">Darkwing</a>
-            <a href="https://werewolf3788.github.io/Website/users/seth/phoenix_darkfire.html" target="_blank" class="nav-link">Phoenix Darkfire</a>
+            <a href="https://werewolf3788.github.io/Website/" class="text-white font-black text-lg flex items-center gap-2">
+                <i class="fab fa-playstation text-red-500"></i> PACK HUB
+            </a>
+            
+            <button class="mobile-toggle text-white text-2xl" onclick="toggleNav()">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <!-- DYNAMIC LINKS INJECTED HERE -->
+            <div class="nav-links-wrapper" id="nav-links"></div>
         </div>
     </nav>
 
-    <!-- SYSTEM HEALTH MONITOR -->
+    <!-- --- HEALTH MONITOR --- -->
     <div id="health-monitor">
         <div id="health-dot" class="status-dot-pulse bg-gray-500"></div>
         <div class="flex flex-col">
@@ -231,7 +285,7 @@
         </div>
     </div>
 
-    <!-- TROPHY DETAIL LIGHTBOX -->
+    <!-- --- TROPHY LIGHTBOX --- -->
     <div id="trophy-lightbox" onclick="closeTrophyLightbox()">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="relative w-full aspect-square bg-black">
@@ -262,7 +316,7 @@
         </div>
     </div>
 
-    <!-- HEADER -->
+    <!-- --- HEADER --- -->
     <header class="w-full text-center section-container px-6">
         <div class="max-w-7xl mx-auto">
             <div class="relative inline-block mb-10">
@@ -270,11 +324,10 @@
                 <img id="main-avatar" src="" class="relative w-44 h-44 lg:w-64 lg:h-64 rounded-full border-4 border-[#C41E3A] shadow-2xl mx-auto object-cover">
             </div>
             
-            <h1 class="red-gradient-text mb-4">RayMystyro</h1>
+            <h1 class="red-gradient-text mb-4">RayMystyro<span id="plus-badge-container"></span></h1>
             <div class="text-[10px] lg:text-[18px] font-black text-gray-500 uppercase tracking-[0.5em] mb-12">Official Pack Member Dashboard</div>
             
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-6xl mx-auto text-center">
-                <!-- CLICKABLE TWITCH STAT -->
                 <a href="https://www.twitch.tv/raymystyro" target="_blank" class="glass-card p-5 lg:p-10 border-b-4 border-[#C41E3A] transition-all hover:bg-red-900/10">
                     <div class="text-[10px] lg:text-[14px] text-red-400 font-black mb-1 uppercase">Twitch Followers</div>
                     <div id="follower-count" class="text-3xl lg:text-6xl font-black text-white">--</div>
@@ -289,19 +342,16 @@
                 </div>
                 <div class="glass-card p-5 lg:p-10 border-b-4 border-green-500">
                     <div class="text-[10px] lg:text-[14px] text-green-500 font-black mb-1 uppercase tracking-widest">Status</div>
-                    <div id="online-status-label" class="text-2xl lg:text-5xl font-black uppercase">Offline</div>
+                    <div id="online-status-label" class="text-[20px] lg:text-[30px] font-black uppercase whitespace-nowrap">Offline</div>
                 </div>
             </div>
         </div>
     </header>
 
     <main class="max-w-[1700px] mx-auto px-6 pb-24 flex-1">
-        <!-- GLOBAL GAPLESS GRID -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
             
-            <!-- LEFT AREA (2/3 Width) - VERTICAL FLOW FOR NO GAPS -->
             <div class="lg:col-span-2 flex flex-col gap-8 lg:gap-12">
-                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                     <div class="flex flex-col gap-8 lg:gap-12">
                         <section class="glass-card p-8 lg:p-12">
@@ -339,16 +389,10 @@
                             <h2 class="mb-10 text-red-500 text-center uppercase tracking-widest">Recent Hunts</h2>
                             <div id="recent-games-container" class="grid grid-cols-2 gap-4"></div>
                         </section>
-
-                        <section id="mutual-section" class="glass-card p-8 lg:p-12 hidden border-l-4 border-green-500">
-                            <h2 class="mb-8 text-green-500 text-center uppercase tracking-widest">Shared Pack</h2>
-                            <div id="mutual-list" class="space-y-3"></div>
-                        </section>
                     </div>
                 </div>
 
-                <!-- GAPLESS CHECKLIST (Hugs content above) -->
-                <section id="mission-log-container" class="glass-card overflow-hidden mobile-order-last">
+                <section id="mission-log-container" class="glass-card overflow-hidden">
                     <div class="p-8 lg:p-12 border-b border-white/5">
                         <h2 class="text-white flex items-center gap-3 uppercase"><i class="fas fa-list-check text-red-500"></i> Trophy Checklist</h2>
                     </div>
@@ -356,7 +400,6 @@
                 </section>
             </div>
 
-            <!-- RIGHT AREA -->
             <div class="flex flex-col gap-8 lg:gap-12">
                 <section id="recent-trophy-card" class="glass-card p-8 border-t-4 border-yellow-500 hidden">
                     <h2 class="text-yellow-500 flex items-center gap-3 mb-6"><i class="fas fa-trophy"></i> Recently Earned</h2>
@@ -380,11 +423,14 @@
 
                 <section id="lobby-section" class="glass-card p-8 lg:p-12">
                     <h2 class="mb-10 flex items-center gap-4"><i class="fas fa-users text-red-500"></i> The Lobby</h2>
+                    <div id="shared-friends-header" class="hidden text-[10px] font-black text-red-400 uppercase tracking-widest mb-4">Mutual Pack Members</div>
+                    <div id="mutual-list" class="space-y-4 mb-8"></div>
+                    <div id="others-header" class="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-4">Squad Presence</div>
                     <div id="lobby-list" class="space-y-4"></div>
                 </section>
 
-                <section class="glass-card p-8 lg:p-12 space-y-5 mobile-order-last">
-                    <h2 class="mb-6 text-xs font-black uppercase opacity-60 text-center tracking-widest">Support & Socials</h2>
+                <section class="glass-card p-8 lg:p-12 space-y-5">
+                    <h2 class="mb-6 opacity-60 text-center tracking-widest">Support & Socials</h2>
                     <a href="https://amzn.to/4n3OpPL" target="_blank" class="flex items-center p-6 rounded-2xl bg-[#FF9900]/10 border border-[#FF9900]/30 hover:border-[#FF9900] transition-all group">
                         <i class="fab fa-amazon text-4xl text-[#FF9900] group-hover:scale-110 transition-transform"></i>
                         <div class="flex-1 ml-5 text-left"><div class="font-black lg:text-xl text-white">Amazon Store</div><div class="text-[10px] text-gray-500 uppercase">Support the Pack</div></div>
@@ -397,19 +443,89 @@
 
     <script>
         const REPO_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/";
+        const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
         
-        // REVERTED SQUAD REGISTRY (STABLE HARDCODED LIST)
         const FULL_SQUAD = [
             { key: 'werewolf', label: 'Werewolf3788', psn: 'Werewolf3788', url: 'https://profile.playstation.com/Werewolf3788' },
-            { key: 'darkwing', label: 'Darkwing', psn: 'Darkwing69420', url: 'https://profile.playstation.com/Darkwing69420' },
+            { key: 'ray', label: 'OneLIVIDMAN', psn: 'OneLIVIDMAN', url: 'https://profile.playstation.com/OneLIVIDMAN' },
+            { key: 'darkwing', label: 'Darkwing69420', psn: 'Darkwing69420', url: 'https://profile.playstation.com/Darkwing69420' },
             { key: 'phoenix', label: 'Phoenix', psn: 'phoenix_darkfire', url: 'https://profile.playstation.com/phoenix_darkfire' },
+            { key: 'marc', label: 'ElucidatorVah', psn: 'ElucidatorVah', url: 'https://profile.playstation.com/ElucidatorVah' },
+            { key: 'jcrow', label: 'JCrow207', psn: 'JCrow207', url: 'https://profile.playstation.com/JCrow207' },
+            { key: 'bunny', label: 'UnicornBunnyShiv', psn: 'UnicornBunnyShiv', url: 'https://profile.playstation.com/UnicornBunnyShiv' },
             { key: 'balto', label: 'Balto', psn: 'Balto20_01', url: 'https://profile.playstation.com/Balto20_01' },
             { key: 'mjolnir', label: 'Mjolnir', psn: 'IlIMjolnirIlI', url: 'https://profile.playstation.com/IlIMjolnirIlI' }
         ];
 
         let currentTrophyData = [];
 
-        function openStore(gameName) { window.open(`https://store.playstation.com/en-us/search/${encodeURIComponent(gameName)}`, '_blank'); }
+        // --- UNIVERSAL MENU BUILDER ---
+        async function buildUniversalMenu() {
+            try {
+                const response = await fetch(MENU_CSV_URL + "&t=" + Date.now());
+                const csvData = await response.text();
+                const rows = csvData.split('\n').slice(1); // Skip header
+
+                const menuData = [];
+                rows.forEach(row => {
+                    const columns = row.split(',');
+                    if (columns.length >= 3) {
+                        menuData.push({
+                            name: columns[0].trim(),
+                            group: columns[1].trim(),
+                            url: columns[2].trim()
+                        });
+                    }
+                });
+
+                const menuContainer = document.getElementById('nav-links');
+                const groupedLinks = {};
+                const flatLinks = [];
+
+                menuData.forEach(item => {
+                    if (item.group) {
+                        if (!groupedLinks[item.group]) groupedLinks[item.group] = [];
+                        groupedLinks[item.group].push(item);
+                    } else {
+                        flatLinks.push(item);
+                    }
+                });
+
+                let menuHtml = "";
+                
+                // Add direct links first
+                flatLinks.forEach(item => {
+                    const activeClass = window.location.href.includes(item.url) ? 'active' : '';
+                    menuHtml += `<a href="${item.url}" class="nav-link ${activeClass}">${item.name}</a>`;
+                });
+
+                // Add dropdowns
+                for (const groupName in groupedLinks) {
+                    menuHtml += `
+                        <div class="dropdown">
+                            <span class="nav-link">${groupName} <i class="fas fa-chevron-down ml-1 text-[8px]"></i></span>
+                            <div class="dropdown-content">
+                                ${groupedLinks[groupName].map(item => `<a href="${item.url}">${item.name}</a>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                menuContainer.innerHTML = menuHtml;
+            } catch (e) {
+                console.error("Menu Sync Error:", e);
+                // Fallback for critical failure
+                document.getElementById('nav-links').innerHTML = `<a href="/" class="nav-link">Home</a>`;
+            }
+        }
+
+        function toggleNav() {
+            document.getElementById('nav-links').classList.toggle('active');
+        }
+
+        function openStore(gameName) { 
+            window.open(`https://store.playstation.com/en-us/search/${encodeURIComponent(gameName)}`, '_blank'); 
+        }
 
         function openTrophyLightbox(index) {
             const t = currentTrophyData[index];
@@ -431,12 +547,11 @@
         function refreshMusic() {
             const img = document.getElementById('music-widget-img');
             const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}`;
+            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=10.4.6`;
         }
 
         async function updateTwitch() {
             try {
-                // RAY'S TWITCH USERNAME
                 const follows = await fetch('https://decapi.me/twitch/followcount/raymystyro').then(r => r.text());
                 if(follows && !follows.includes('Error')) { document.getElementById('follower-count').innerText = follows; }
             } catch(e){}
@@ -444,10 +559,11 @@
 
         async function updateHub() {
             try {
-                const res = await fetch(REPO_BASE + "Playstation/psn_data.json?t=" + Date.now());
+                const res = await fetch(REPO_BASE + "Playstation/psn_data.json?v=10.4.6&t=" + Date.now());
                 const data = await res.json();
                 
                 const ray = data.users.ray || data.users.Ray;
+                const wolf = data.users.werewolf || data.users.Werewolf;
                 const healthDot = document.getElementById('health-dot');
                 const healthValue = document.getElementById('health-value');
 
@@ -461,23 +577,28 @@
                     }
 
                     document.getElementById('main-avatar').src = ray.avatar || "";
-                    document.getElementById('profile-bio').innerText = ray.bio || "Official Pack Member Profile";
+                    document.getElementById('profile-bio').innerText = ray.bio || ray.aboutMe || "Official Pack Member Profile";
                     document.getElementById('psn-level-label').innerText = ray.level || "--";
                     document.getElementById('trophy-total').innerText = (ray.trophies?.total || 0).toLocaleString();
                     document.getElementById('sync-time').innerText = ray.lastUpdated || "--";
                     
                     const statusLabel = document.getElementById('online-status-label');
                     statusLabel.innerText = ray.online ? (ray.platform || 'Online') : 'Offline';
-                    statusLabel.className = ray.online ? 'text-2xl lg:text-5xl font-black text-green-500 uppercase' : 'text-2xl lg:text-5xl font-black text-gray-500 uppercase';
+                    statusLabel.className = ray.online ? 'text-[20px] lg:text-[30px] font-black text-green-500 uppercase whitespace-nowrap' : 'text-[20px] lg:text-[30px] font-black text-gray-500 uppercase whitespace-nowrap';
+
+                    document.getElementById('plus-badge-container').innerHTML = ray.plus ? '<span class="plus-badge">PLUS</span>' : '';
 
                     if (ray.activeHunt) {
                         const hunt = ray.activeHunt;
-                        currentTrophyData = hunt.trophies; 
-                        document.getElementById('active-game-title').innerText = hunt.title;
+                        currentTrophyData = hunt.trophies || []; 
+                        document.getElementById('active-game-title').innerText = hunt.title || "---";
                         document.getElementById('active-game-time').innerText = hunt.hours || "0h";
-                        const earnedTrophies = hunt.trophies.filter(t => t.earned);
-                        document.getElementById('active-game-ratio').innerText = `${earnedTrophies.length}/${hunt.trophies.length}`;
-                        const pct = Math.round((earnedTrophies.length/hunt.trophies.length)*100);
+                        
+                        const totalTrophies = Math.max(currentTrophyData.length, 1);
+                        const earnedTrophies = currentTrophyData.filter(t => t.earned);
+                        document.getElementById('active-game-ratio').innerText = `${earnedTrophies.length}/${currentTrophyData.length}`;
+                        
+                        const pct = Math.round((earnedTrophies.length / totalTrophies) * 100);
                         document.getElementById('active-game-progress-text').innerText = pct + "%";
                         document.getElementById('active-game-progress-fill').style.width = pct + "%";
 
@@ -488,23 +609,15 @@
                         }
 
                         if (earnedTrophies.length > 0) {
-                            const sorted = [...earnedTrophies].sort((a,b) => new Date(b.earnedDate) - new Date(a.earnedDate));
-                            const latest = sorted[0];
+                            const latest = [...earnedTrophies].sort((a,b) => new Date(b.earnedDate) - new Date(a.earnedDate))[0];
                             document.getElementById('recent-trophy-card').classList.remove('hidden');
                             document.getElementById('last-trophy-icon').src = latest.icon;
                             document.getElementById('last-trophy-name').innerText = latest.name;
                             document.getElementById('last-trophy-game').innerText = hunt.title;
                         }
 
-                        document.getElementById('trophy-checklist-container').innerHTML = hunt.trophies.map((t, idx) => {
-                            let rightCol = "";
-                            if (!t.earned && t.currentValue !== undefined && t.targetValue !== undefined) {
-                                rightCol = `<div class="prog-fraction">${t.currentValue}/${t.targetValue}</div>`;
-                            } else if (t.earned) {
-                                rightCol = `<div class="earned-tag">EARNED</div><div class="text-[9px] text-gray-500 text-right uppercase">${t.earnedDate.split(',')[0]}</div>`;
-                            } else {
-                                rightCol = `<div class="text-[10px] font-black uppercase text-gray-600">${t.rarity || t.type}</div>`;
-                            }
+                        document.getElementById('trophy-checklist-container').innerHTML = currentTrophyData.map((t, idx) => {
+                            let rightCol = t.earned ? `<div class="earned-tag">EARNED</div><div class="text-[9px] text-gray-500 text-right uppercase">${t.earnedDate.split(',')[0]}</div>` : `<div class="text-[10px] font-black uppercase text-gray-600">${t.rarity || t.type}</div>`;
                             return `<div class="trophy-row" onclick="openTrophyLightbox(${idx})">
                                 <img src="${t.icon}" class="trophy-icon-sq">
                                 <div class="min-w-0 flex-1"><div class="trophy-title-text truncate">${t.name}</div><div class="trophy-desc-text truncate">${t.description}</div></div>
@@ -513,7 +626,7 @@
                         }).join('');
                     }
 
-                    document.getElementById('recent-games-container').innerHTML = (ray.recentGames || []).map(g => {
+                    document.getElementById('recent-games-container').innerHTML = (ray.recentGames || []).slice(0, 6).map(g => {
                         const is100 = parseInt(g.progress) >= 100;
                         return `
                         <div class="game-thumb ${is100 ? 'platinum-glow' : ''}" onclick="openStore('${g.name}')">
@@ -525,32 +638,43 @@
                         </div>`;
                     }).join('');
 
-                    document.getElementById('lobby-list').innerHTML = FULL_SQUAD.map(member => {
+                    const mutualList = [];
+                    const otherList = [];
+
+                    FULL_SQUAD.forEach(member => {
                         const s = data.users[member.key] || { online: false };
-                        const statusClass = s.online ? 'online' : 'offline';
-                        const gameLabel = s.online ? (s.currentGame || 'Dashboard') : 'Offline';
-                        const platformLabel = s.online ? (s.platform || 'PS5') : '';
-                        return `
+                        const html = `
                             <a href="${member.url}" target="_blank" class="lobby-card ${!s.online ? 'opacity-40' : ''}">
                                 <div class="flex items-center gap-4">
-                                    <div class="status-dot-pulse ${statusClass}"></div>
+                                    <div class="status-dot-pulse ${s.online ? 'online' : 'offline'}"></div>
                                     <span class="font-black text-white uppercase text-[12px] lg:text-[18px] tracking-widest">${member.label}</span>
                                 </div>
                                 <div class="text-right">
-                                    <div class="text-[10px] lg:text-[14px] text-red-500 font-black uppercase truncate max-w-[140px] lg:max-w-[300px]">${gameLabel}</div>
-                                    <div class="text-[8px] text-gray-700 font-black uppercase">${platformLabel}</div>
+                                    <div class="text-[10px] lg:text-[14px] text-red-500 font-black uppercase truncate max-w-[140px] lg:max-w-[300px]">${s.online ? (s.currentGame || 'Dashboard') : 'Offline'}</div>
+                                    <div class="text-[8px] text-gray-700 font-black uppercase">${s.online ? (s.platform || 'PS5') : ''}</div>
                                 </div>
                             </a>`;
-                    }).join('');
+
+                        if (member.key !== 'werewolf' && member.key !== 'ray' && s.lastUpdated) {
+                            mutualList.push(html);
+                        } else {
+                            otherList.push(html);
+                        }
+                    });
+
+                    document.getElementById('mutual-list').innerHTML = mutualList.join('');
+                    document.getElementById('lobby-list').innerHTML = otherList.join('');
+                    if (mutualList.length > 0) document.getElementById('shared-friends-header').classList.remove('hidden');
                 }
             } catch(e){}
         }
 
-        refreshMusic();
-        updateTwitch();
+        buildUniversalMenu();
+        refreshMusic(); 
+        updateTwitch(); 
         updateHub();
         setInterval(refreshMusic, 60000); 
-        setInterval(updateTwitch, 60000);
+        setInterval(updateTwitch, 60000); 
         setInterval(updateHub, 300000);
     </script>
 </body>
