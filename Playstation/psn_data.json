@@ -1190,7 +1190,7 @@
           "date": "9/26/2025, 4:46:15 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:46:35 PM"
+      "lastUpdated": "5/4/2026, 11:58:49 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -1480,7 +1480,7 @@
           "date": "4/27/2026, 4:12:14 PM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:46:36 PM"
+      "lastUpdated": "5/4/2026, 11:58:51 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -2933,7 +2933,7 @@
           "date": "4/25/2026, 2:33:05 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:46:38 PM"
+      "lastUpdated": "5/4/2026, 11:58:52 PM"
     },
     "marc": {
       "onlineId": "ElucidatorVah",
@@ -3670,7 +3670,7 @@
         "npCommunicationId": "NPWR50887_00"
       },
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 11:46:39 PM"
+      "lastUpdated": "5/4/2026, 11:58:53 PM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -5823,7 +5823,7 @@
           "date": "4/3/2025, 5:26:08 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:46:40 PM"
+      "lastUpdated": "5/4/2026, 11:58:54 PM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -6565,7 +6565,7 @@
           "date": "5/4/2026, 3:03:28 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:46:41 PM"
+      "lastUpdated": "5/4/2026, 11:58:55 PM"
     },
     "mjolnir": {
       "onlineId": "Michael (Mjolnir)",
@@ -6586,7 +6586,7 @@
         "statusMessage": "Protecting and Serving the community 👮🏻‍♂️⭐",
         "uptime": "mjolnirgaming is offline"
       },
-      "lastUpdated": "5/4/2026, 11:46:41 PM",
+      "lastUpdated": "5/4/2026, 11:58:55 PM",
       "note": "Twitch-Active Profile"
     },
     "phoenix": {
@@ -6608,11 +6608,89 @@
         "statusMessage": "I See a Full Moon a'Rising",
         "uptime": "phoenix_darkfire is offline"
       },
-      "lastUpdated": "5/4/2026, 11:46:42 PM",
+      "lastUpdated": "5/4/2026, 11:58:56 PM",
+      "note": "Twitch-Active Profile"
+    },
+    "queen": {
+      "onlineId": "broken_queen10",
+      "online": true,
+      "currentGame": "Dashboard",
+      "currentGameArt": null,
+      "currentGameActivity": "User not found: broken_queen10",
+      "amazonAffiliateUrl": null,
+      "bio": "Official Pack Member Profile",
+      "twitch": {
+        "isLive": true,
+        "game": null,
+        "gameArt": null,
+        "followers": "User not found: broken_queen10",
+        "avatar": null,
+        "age": "User not found: broken_queen10",
+        "bio": null,
+        "statusMessage": "User not found: broken_queen10",
+        "uptime": "broken_queen10 is offline"
+      },
+      "lastUpdated": "5/4/2026, 11:58:56 PM",
+      "note": "Twitch-Active Profile"
+    },
+    "kfruti": {
+      "onlineId": "KFruti88",
+      "online": true,
+      "currentGame": "Call of Duty: Modern Warfare",
+      "currentGameArt": null,
+      "currentGameActivity": "CoD",
+      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Call%20of%20Duty%3A%20Modern%20Warfare+Playstation+5&tag=psngaming-20",
+      "bio": "Official Pack Member Profile",
+      "twitch": {
+        "isLive": true,
+        "game": "Call of Duty: Modern Warfare",
+        "gameArt": null,
+        "followers": "1",
+        "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/2f5a9d7a-b651-4ad4-8af1-b9f0c8fac7b7-profile_image-300x300.png",
+        "age": "11 years, 11 months",
+        "bio": null,
+        "statusMessage": "CoD",
+        "uptime": "kfruti88 is offline"
+      },
+      "lastUpdated": "5/4/2026, 11:58:56 PM",
+      "note": "Twitch-Active Profile"
+    },
+    "balto": {
+      "onlineId": "Balto20_01",
+      "online": true,
+      "currentGame": "Dashboard",
+      "currentGameArt": null,
+      "currentGameActivity": "User not found: balto20_01",
+      "amazonAffiliateUrl": null,
+      "bio": "Official Pack Member Profile",
+      "twitch": {
+        "isLive": true,
+        "game": null,
+        "gameArt": null,
+        "followers": "User not found: balto20_01",
+        "avatar": null,
+        "age": "User not found: balto20_01",
+        "bio": null,
+        "statusMessage": "User not found: balto20_01",
+        "uptime": "balto20_01 is offline"
+      },
+      "lastUpdated": "5/4/2026, 11:58:56 PM",
+      "note": "Twitch-Active Profile"
+    },
+    "oldman": {
+      "onlineId": "In Memoriam: old-man5919",
+      "online": false,
+      "currentGame": "Dashboard",
+      "currentGameArt": null,
+      "currentGameActivity": null,
+      "amazonAffiliateUrl": null,
+      "bio": "Official Pack Member Profile",
+      "twitch": null,
+      "lastUpdated": "5/4/2026, 11:58:56 PM",
       "note": "Twitch-Active Profile"
     }
   },
-  "lastGlobalUpdate": "5/4/2026, 11:46:30 PM",
-  "engineVersion": "12.5.0",
-  "codeTimestamp": "Monday, May 4, 2026 | 7:45 PM EDT"
+  "lastGlobalUpdate": "5/4/2026, 11:58:47 PM",
+  "engineVersion": "12.6.0",
+  "codeTimestamp": "Monday, May 4, 2026 | 7:55 PM EDT"
 }
