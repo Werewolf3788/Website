@@ -20,23 +20,23 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 12.3.0 - Absolute Master Omni-Protocol (Twitch Status Checker & Individual Sync)
+ * Version 12.4.0 - Absolute Master Omni-Protocol (Twitch Bio Fallback & Null-Safety)
  * Filepath: Playstation/psnscript.js
  * * * --- INSTANCE AUTHENTICATION ---
  * Last Generated: Monday, May 4, 2026
- * Timestamp: 7:35 PM EDT (New York Time)
- * Status: Production Ready - Twitch Status & Individual Isolation Verified
+ * Timestamp: 7:40 PM EDT (New York Time)
+ * Status: Production Ready - "Bio Fallback" Logic Verified
  * * * --- PSN SYNC CHECKLIST (VERIFIED DATA HARVEST) ---
- * 1.  TWITCH STATUS: [New] Explicit check via decapi.me/twitch/status/ for Live/Offline state.
- * 2.  ONLINE OVERRIDE: [New] Twitch "Live" status forces PSN state to "Online" for the dashboard.
- * 3.  IDENTITY ISOLATION: [Verified] Each user now uses their OWN library for metadata matching.
- * 4.  TWITCH INTEL: [Expanded] Followers, Avatar, Account Age, Uptime, and Bio.
- * 5.  AMAZON AFFILIATE: [Individual] Generates 'psngaming-20' links for the user's specific game.
- * 6.  ACCOUNT TOTALS: [Verified] Definitive summation of ALL earned trophies per user.
- * 7.  EXPANSIONS: [Fixed] Correct ratios for DLC groups (e.g. 22/71) via Earnings API.
- * 8.  RESILIENCE: [Verified] Twitch data works 100% even if PSN key is bad or ID is missing.
- * 9.  DASHBOARD LOCK: [Verified] ActiveHunt persists using the user's unique last-played game.
- * 10. PURGE PROTOCOL: [Strict] Omitted "status", "hardware", "storeUrl", and "hours" per Admin.
+ * 1.  TWITCH BIO FALLBACK: [New] If Twitch Bio returns 404/Error, script reverts to PSN Bio.
+ * 2.  TWITCH STATUS: [Verified] Explicit check via decapi.me/twitch/status/ for Live/Offline state.
+ * 3.  ONLINE OVERRIDE: [Verified] Twitch "Live" status forces PSN state to "Online" for UI.
+ * 4.  IDENTITY ISOLATION: [Verified] Every user pulls from their OWN trophy library.
+ * 5.  TWITCH INTEL: [Expanded] Followers, Avatar, Account Age, and Uptime.
+ * 6.  AMAZON AFFILIATE: [Individual] Generates 'psngaming-20' links for specific games.
+ * 7.  ACCOUNT TOTALS: [Verified] Definitive summation of ALL earned trophies.
+ * 8.  EXPANSIONS: [Fixed] Correct ratios for DLC groups (e.g. 22/71).
+ * 9.  DASHBOARD LOCK: [Verified] ActiveHunt stays on last-played game if on Dashboard.
+ * 10. PURGE PROTOCOL: [Strict] Omitted "status", "hardware", "storeUrl", and "hours".
  */
 
 // --- ADMINISTRATIVE CONFIGURATION ---
@@ -97,7 +97,6 @@ function generateAffiliateUrl(gameName) {
 /**
  * getTwitchIntel
  * Logic: Gathers expanded Twitch data points including Live Status, Art, and Uptime.
- * Resilience: This function runs independently of PSN authentication status.
  */
 async function getTwitchIntel(username) {
     if (!username) return null;
@@ -108,13 +107,13 @@ async function getTwitchIntel(username) {
         followers: "0", 
         avatar: null, 
         age: null, 
-        bio: "No Twitch Bio provided.",
+        bio: null, // Initialized to null for fallback check
         statusMessage: null,
         uptime: null
     };
     try {
         const [statusRes, gameRes, artRes, followRes, avatarRes, ageRes, bioRes, titleRes, uptimeRes] = await Promise.all([
-            fetch(`https://decapi.me/twitch/status/${username.toLowerCase()}`).then(r => r.text()), // LIVE STATUS CHECK
+            fetch(`https://decapi.me/twitch/status/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/game/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/game_image/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/followcount/${username.toLowerCase()}`).then(r => r.text()),
@@ -126,15 +125,18 @@ async function getTwitchIntel(username) {
         ]);
 
         const isOffline = statusRes.toLowerCase().includes("offline") || statusRes.includes("Error");
-        const invalidGame = ["offline", "games & demo", "not found", "error"];
+        const invalidTerms = ["offline", "games & demo", "not found", "error", "404"];
         
         intel.isLive = !isOffline;
-        intel.game = invalidGame.some(term => gameRes.toLowerCase().includes(term)) ? null : gameRes.trim();
+        intel.game = invalidTerms.some(term => gameRes.toLowerCase().includes(term)) ? null : gameRes.trim();
         intel.gameArt = (artRes.includes("http") && intel.game) ? artRes.trim() : null;
         intel.followers = followRes.includes("Error") ? "0" : followRes.trim();
         intel.avatar = avatarRes.includes("http") ? avatarRes.trim() : null;
         intel.age = ageRes.includes("Error") ? "Unknown" : ageRes.trim();
-        intel.bio = bioRes.includes("Error") ? "No Twitch Bio provided." : bioRes.trim();
+        
+        // TWITCH BIO FALLBACK GATE: If Twitch response is an error or 404, set to null
+        intel.bio = invalidTerms.some(term => bioRes.toLowerCase().includes(term)) ? null : bioRes.trim();
+        
         intel.statusMessage = (titleRes.includes("Error") || isOffline) ? null : titleRes.trim();
         intel.uptime = (isOffline || uptimeRes.includes("Error")) ? null : uptimeRes.trim();
         
@@ -179,10 +181,10 @@ async function getAuthenticated(userKey, npssoInput) {
 
 // --- ABSOLUTE OMNI-COLLECTOR ---
 async function getFullUserData(auth, label, userKey, targetId, existingData) {
-    // 1. INDIVIDUAL TWITCH HARVEST (Status Checker Active)
+    // 1. INDIVIDUAL TWITCH HARVEST (With Bio Error detection)
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
     
-    // 2. RESILIENCE FALLBACK: Twitch and Amazon links work even if PSN is bad
+    // 2. RESILIENCE FALLBACK
     if (!auth || !targetId) {
         return {
             onlineId: SQUAD_MAP[userKey] || label,
@@ -191,13 +193,14 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             currentGameArt: twitchIntel?.gameArt || null,
             currentGameActivity: twitchIntel?.statusMessage || (twitchIntel?.isLive ? "Streaming Live" : null),
             amazonAffiliateUrl: generateAffiliateUrl(twitchIntel?.game),
+            bio: twitchIntel?.bio || "Official Pack Member Profile", // Fallback if Twitch bio is null
             twitch: twitchIntel,
             lastUpdated: new Date().toLocaleString(),
             note: "Twitch-Active Profile"
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v12.3.0 Sync: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v12.4.0 Sync: ${label}`);
     
     try {
         // 3. IDENTITY & REGIONAL
@@ -243,7 +246,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         let activeHunt = null;
         let mostRecentTrophies = [];
 
-        // DASHBOARD PERSISTENCE: Target specific game for this user
+        // DASHBOARD PERSISTENCE
         const targetSyncId = presence.currentCommunicationId || sortedTitles[0]?.npCommunicationId;
 
         for (const title of sortedTitles.slice(0, 15)) {
@@ -318,7 +321,8 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             accountId: targetId,
             ...presence, 
             avatar: profile.avatars?.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url || "", 
-            bio: profile.aboutMe || "Official Pack Member Profile", 
+            // BIO HANDSHAKE: Prefer Twitch Bio, fallback to PSN Bio, fallback to default string
+            bio: twitchIntel?.bio || profile.aboutMe || "Official Pack Member Profile", 
             plus: profile.isPlus, level: stats.trophyLevel, region: region.country || "US",
             trophySummary: { 
                 platinum: stats.earnedTrophies?.platinum || 0, gold: stats.earnedTrophies?.gold || 0,
@@ -335,14 +339,14 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v12.3.0...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v12.4.0...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
         users: {}, 
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "12.3.0",
-        codeTimestamp: "Monday, May 4, 2026 | 7:35 PM EDT"
+        engineVersion: "12.4.0",
+        codeTimestamp: "Monday, May 4, 2026 | 7:40 PM EDT"
     };
 
     try {
