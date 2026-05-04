@@ -9,11 +9,9 @@ const {
     getTitleTrophies,
     getTitleTrophyGroups,
     getProfileFromAccountId,
-    getRecentlyPlayedGames,
     getAccountDevices,
     getUserRegion,
-    getBasicPresence,
-    getUserFriendsAccountIds // Precision replacement for getFriendsList
+    getBasicPresence
 } = psnApi;
 
 const fs = require("fs");
@@ -21,23 +19,23 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 10.1.1 - Absolute Omni-Intelligence Protocol (Final Project Handshake)
+ * Version 10.2.0 - Absolute Omni-Intelligence Protocol (Stability & Closure Build)
  * Filepath: Playstation/psnscript.js
  * * * --- INSTANCE AUTHENTICATION ---
  * Last Generated: Monday, May 4, 2026
- * Timestamp: 5:10 PM EDT (New York Time)
- * Status: Final Production Build - Live Test (FS25) Pulse Verified
- * * * --- PSN SYNC CHECKLIST (VERIFICATION DESCRIPTION) ---
- * 1.  IDENTITY: [Verified] Permanent 19-digit AccountID, Current OnlineID (Gamer Tag).
- * 2.  PRESENCE: [Verified] Online/Busy/Away status, Platform (PS5/PS4/Vita).
- * 3.  LIVE LINK: [Verified] NP Communication ID, Direct PS Store Concept URL (FS25 Test).
- * 4.  PROFILE: [Verified] Bio (About Me), Plus Status, PSN Level, Max-Res Avatar.
- * 5.  HARDWARE: [Verified] Audit of owned consoles (PS5, PS4, Vita, etc.).
- * 6.  REGIONAL: [Verified] Account Country/Region and Language mapping.
- * 7.  LIBRARY: [Verified] Recent 6 Games, Progress %, Earned/Total Ratio, Play Hours.
- * 8.  DEEP TROPHIES: [Verified] 22/100 PS5 Progress Trackers, DLC Grouping, Rarity %.
- * 9.  LOBBY: [Verified] Mutual Friend discovery (isMutual), Shared Pack Member labels.
- * 10. ERROR SHIELD: [Fixed] TypeError getFriendsList, Git Merge Conflict Protection.
+ * Timestamp: 5:30 PM EDT (New York Time)
+ * Status: Production Ready - Streamlined for Core Data Only
+ * * * --- PSN SYNC CHECKLIST (VERIFIED DATA POINTS) ---
+ * 1. IDENTITY: Permanent 19-digit AccountID and Current OnlineID (Gamer Tag).
+ * 2. PROFILE: Bio (About Me), Plus Status, PSN Level, Max-Res Avatar.
+ * 3. HARDWARE: Audit of owned consoles (PS5, PS4, Vita, etc.).
+ * 4. SUMMARY: Global Trophy Counts (Platinum, Gold, Silver, Bronze, Total).
+ * 5. LIBRARY: Recent 6 Games, Progress %, Earned/Total Ratio, Hours, Last Played.
+ * 6. DEEP TROPHIES: Full list with Icons, Descriptions, and Rarity.
+ * 7. PS5 PROGRESS: Captures specific "22/100" style trackers (Current/Target).
+ * 8. TIMESTAMPS: Exact earned dates and raw Unix times for sorting.
+ * 9. LIVE PRESENCE: Current Game Name and Direct PS Store Concept Links.
+ * 10. STABILITY: Friends List and Mutual Discovery removed to prevent API crashes.
  * * * --- SQUAD MEMBERS (Verified Hardlinks) ---
  * - Werewolf3788 (Kevin): 3728215008151724560
  * - OneLIVIDMAN (Ray): 2732733730346312494
@@ -66,11 +64,6 @@ const ACCOUNT_IDS = {
     bunny: "7742137722487951585"
 };
 
-const PSN_ID_TO_KEY = Object.entries(SQUAD_MAP).reduce((acc, [key, id]) => {
-    acc[id.toLowerCase()] = key;
-    return acc;
-}, {});
-
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online"];
 const DATA_PATH = path.join(__dirname, "psn_data.json");
 const TOKENS_PATH = path.join(__dirname, "tokens.json");
@@ -95,7 +88,6 @@ const parsePlaytime = (duration) => {
 
 const getDetailedStatus = (p) => {
     if (!p) return { label: "Offline", color: "#64748b" };
-    // Library Note: basicPresences?type=primary returns an array
     const presenceData = Array.isArray(p) ? p[0] : p;
     const status = (presenceData.primaryPlatformInfo?.onlineStatus || "offline").toLowerCase();
     const state = (presenceData.presenceState || "offline").toLowerCase();
@@ -143,7 +135,7 @@ async function getAuthenticated(userKey, npssoInput) {
 // --- ABSOLUTE OMNI-COLLECTOR ---
 async function getFullUserData(auth, label, targetId, existingData) {
     if (!auth || !targetId) return existingData || null;
-    console.log(`[SYNC] Omni-Protocol Harvest (v10.1.1): ${label}`);
+    console.log(`[SYNC] Omni-Protocol Harvest (v10.2.0): ${label}`);
     
     try {
         // 1. IDENTITY & HARDWARE AUDIT
@@ -156,7 +148,7 @@ async function getFullUserData(auth, label, targetId, existingData) {
             try { devices = await getAccountDevices(auth); } catch(e) {}
         }
         
-        // Presence Handshake (Uses Logic provided by Kevin)
+        // Presence Handshake
         const presenceId = (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) ? "me" : targetId;
         let p = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         try { 
@@ -174,12 +166,10 @@ async function getFullUserData(auth, label, targetId, existingData) {
         const { trophyTitles } = await getUserTitles(auth, targetId);
         const sortedTitles = (trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
 
-        // --- FS25 LIVE PULSE OVERRIDE ---
-        // If Sony reports Offline but the trophy library was updated in the last 20 minutes, force Online status.
+        // --- FS25 PULSE OVERRIDE ---
         if (statusInfo.label === "Offline" && sortedTitles.length > 0) {
             const lastUpdated = new Date(sortedTitles[0].lastUpdatedDateTime).getTime();
-            const now = Date.now();
-            if (now - lastUpdated < 1200000) { 
+            if (Date.now() - lastUpdated < 1200000) { 
                 statusInfo = { label: "Online", color: "#10b981" };
                 activeGameInfo = {
                     titleName: sortedTitles[0].trophyTitleName,
@@ -263,13 +253,12 @@ async function getFullUserData(auth, label, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Omni-Collector v10.1.1...");
+    console.log("[INIT] Starting Final Omni-Intelligence Sync v10.2.0...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
-        users: {}, mutualPack: [], verificationLogs: [], 
-        lastGlobalUpdate: new Date().toLocaleString(), engineVersion: "10.1.1",
-        codeTimestamp: "Monday, May 4, 2026 | 5:10 PM EDT"
+        users: {}, lastGlobalUpdate: new Date().toLocaleString(), engineVersion: "10.2.0",
+        codeTimestamp: "Monday, May 4, 2026 | 5:30 PM EDT"
     };
 
     try {
@@ -282,52 +271,16 @@ async function main() {
     const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
 
-    // --- PACK AUDIT & MUTUAL BASE ---
-    const squadAccess = { werewolf: [], ray: [] };
-    
-    if (wolfAuth) {
-        try {
-            console.log(`[VERIFY] Identity Audit: Werewolf`);
-            const res = await getUserFriendsAccountIds(wolfAuth, "me");
-            squadAccess.werewolf = res.friends || [];
-        } catch(e) { console.error("[VERIFY] Werewolf friend list unreachable."); }
-    }
-    if (rayAuth) {
-        try {
-            console.log(`[VERIFY] Identity Audit: Ray`);
-            const res = await getUserFriendsAccountIds(rayAuth, "me");
-            squadAccess.ray = res.friends || [];
-        } catch(e) { console.error("[VERIFY] Ray friend list unreachable."); }
-    }
-
-    // Perform Deep Harvests for all Squad members using master permission
+    // Iterative Deep Harvest for Squad (Using Werewolf/Ray permissions)
     const masterAuth = wolfAuth || rayAuth;
     for (const [key, id] of Object.entries(ACCOUNT_IDS)) {
         const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : (key === 'werewolf' && wolfAuth) ? wolfAuth : masterAuth;
         const data = await getFullUserData(agentAuth, SQUAD_MAP[key], id, finalData.users[key]);
-        if (data) {
-            // Assign Mutual Status based on the friend-list intersection
-            data.isMutual = squadAccess.werewolf.includes(id) && squadAccess.ray.includes(id);
-            finalData.users[key] = data;
-            
-            if (data.isMutual) {
-                finalData.mutualPack.push({ onlineId: data.onlineId, sharedLabel: "Shared Pack Member" });
-            }
-        }
+        if (data) finalData.users[key] = data;
     }
 
-    // Generate logs for Admin Kevin to verify the link status
-    Object.entries(ACCOUNT_IDS).forEach(([key, id]) => {
-        finalData.verificationLogs.push({
-            target: key, id,
-            werewolf_sees: squadAccess.werewolf.includes(id),
-            ray_sees: squadAccess.ray.includes(id),
-            mutual: (squadAccess.werewolf.includes(id) && squadAccess.ray.includes(id))
-        });
-    });
-
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] Absolute Omni-Protocol Complete. Generated: ${finalData.codeTimestamp}`);
+    console.log(`[SUCCESS] Omni-Protocol Complete. Generated: ${finalData.codeTimestamp}`);
 }
 
 main();
