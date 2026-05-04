@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     
     # CRITICAL: This block resolves the "Missing environment" error
+    # It links the workflow to the GitHub Pages environment
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
