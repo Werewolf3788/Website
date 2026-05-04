@@ -21,26 +21,29 @@
       "recentGames": [
         {
           "name": "Sniper Elite: Resistance",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
+          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA17232_00/app/info/58/fi_8049801d3c212cdd2a3121808814ee75deb845ca7e218b7971781875dfc8feb8/icon0.png",
           "progress": 25,
           "ratio": "22/71",
           "npCommunicationId": "NPWR40813_00",
+          "conceptId": "10008716",
           "lastPlayed": "2026-05-02T07:33:09Z"
         },
         {
           "name": "Crossout",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
+          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA02187_00/app/info/157/fi_3935e2833da0f015f33a02ac8e276d6afd03dfbc073c3504ae7c23deae2d3299/icon0.png",
           "progress": 4,
           "ratio": "1/13",
           "npCommunicationId": "NPWR24327_00",
+          "conceptId": "227108",
           "lastPlayed": "2026-05-01T04:01:47Z"
         },
         {
           "name": "Wo Long: Fallen Dynasty",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
+          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA08772_00/app/info/50/fi_6e981a974e057f5de01c20788fdb0811aac97ebb5c45c2b534187ba105a19f68/icon0.png",
           "progress": 9,
           "ratio": "10/90",
           "npCommunicationId": "NPWR27198_00",
+          "conceptId": "10004116",
           "lastPlayed": "2026-04-30T03:51:42Z"
         },
         {
@@ -49,14 +52,16 @@
           "progress": 29,
           "ratio": "20/58",
           "npCommunicationId": "NPWR09395_00",
+          "conceptId": null,
           "lastPlayed": "2026-04-29T01:13:02Z"
         },
         {
           "name": "Where Winds Meet",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
+          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA23355_00/app/info/57/fi_46083b8fb1dd2ff75d89d516fadea96c73439a3872977dd278d37cb215d060e3/icon0.png",
           "progress": 3,
           "ratio": "2/45",
           "npCommunicationId": "NPWR50887_00",
+          "conceptId": "10011142",
           "lastPlayed": "2026-04-28T02:37:12Z"
         },
         {
@@ -65,6 +70,7 @@
           "progress": 0,
           "ratio": "0/25",
           "npCommunicationId": "NPWR50314_00",
+          "conceptId": null,
           "lastPlayed": "2026-04-25T01:06:06Z"
         }
       ],
@@ -72,29 +78,24 @@
         "title": "Sniper Elite: Resistance",
         "groups": [
           {
-            "id": "default",
-            "name": "Sniper Elite: Resistance",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png"
+            "progress": 40,
+            "earned": 22
           },
           {
-            "id": "001",
-            "name": "Lights, Camera, ACHTUNG!",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/fb480a04-b65f-4ab3-b4c7-3a350173d70f.png"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "002",
-            "name": "Vercors Vendetta",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/4b835b3c-7ad2-458c-9ca4-7e0f8553a8d9.png"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "003",
-            "name": "Striking Range",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/8da00442-49d8-44c8-bce3-357aa4ac21f2.png"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "004",
-            "name": "Mud and Thunder",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/61c21629-4c21-4818-b54d-e17c4d19c7fc.png"
+            "progress": 0,
+            "earned": 0
           }
         ],
         "trophies": [
@@ -1167,7 +1168,7 @@
           "date": "9/26/2025, 4:46:15 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:52:23 PM"
+      "lastUpdated": "5/4/2026, 9:59:32 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -1194,46 +1195,52 @@
           "progress": 50,
           "ratio": "5/10",
           "npCommunicationId": "NPWR28141_00",
+          "conceptId": null,
           "lastPlayed": "2026-05-03T07:21:14Z"
         },
         {
           "name": "theHunter: Call of the Wild",
-          "art": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/88AFFFD0B28B703B28CA71F6353F797230B9FB32.PNG",
+          "art": "https://image.api.playstation.com/gs2-sec/appkgo/prod/CUSA08661_00/3/i_e3eb64f8588ec1a46599bf200c4b274f9061e261f6ee6fff874a1ed4df2e8fa2/i/icon0.png",
           "progress": 35,
           "ratio": "39/115",
           "npCommunicationId": "NPWR13211_00",
+          "conceptId": "228868",
           "lastPlayed": "2026-04-22T23:42:00Z"
         },
         {
           "name": "Sniper Elite: Resistance",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
+          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA17232_00/app/info/58/fi_8049801d3c212cdd2a3121808814ee75deb845ca7e218b7971781875dfc8feb8/icon0.png",
           "progress": 0,
           "ratio": "0/71",
           "npCommunicationId": "NPWR40813_00",
+          "conceptId": "10008716",
           "lastPlayed": "2026-04-14T10:55:49Z"
         },
         {
           "name": "Farming Simulator 25",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+          "art": "https://image.api.playstation.com/vulcan/ap/rnd/202406/1221/5e7b5321408d56da66ffbb45abae3d2f812b0a1dd03cee5d.png",
           "progress": 100,
           "ratio": "46/46",
           "npCommunicationId": "NPWR44827_00",
+          "conceptId": "10009612",
           "lastPlayed": "2026-04-14T10:48:47Z"
         },
         {
           "name": "Farming Simulator 22",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR23165_00/dae2fb95-5224-40a6-bd64-b9c4b1e826f6.png",
+          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA02426_00/app/info/73/fi_01c2cfdca51ba4ee24979777d2b09fa896f0b804f576b02c38682ab73b6aecba/icon0.png",
           "progress": 18,
           "ratio": "10/46",
           "npCommunicationId": "NPWR23165_00",
+          "conceptId": "10001771",
           "lastPlayed": "2026-04-04T02:01:34Z"
         },
         {
           "name": "SKULL AND BONES™",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22432_00/cbdac3c7-fa16-4556-81f0-a93c788c0cf8.png",
+          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA02202_00/app/info/101/fi_e96294573b16dd91678d9381e0c06ec145491cdc05f195b7cc2efee1d0c4beb4/icon0.png",
           "progress": 10,
           "ratio": "7/51",
           "npCommunicationId": "NPWR22432_00",
+          "conceptId": "225700",
           "lastPlayed": "2026-04-03T21:23:10Z"
         }
       ],
@@ -1241,9 +1248,8 @@
         "title": "Mahjong",
         "groups": [
           {
-            "id": "default",
-            "name": "Mahjong",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png"
+            "progress": 50,
+            "earned": 5
           }
         ],
         "trophies": [
@@ -1427,7 +1433,7 @@
           "date": "4/27/2026, 4:12:14 PM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:52:24 PM"
+      "lastUpdated": "5/4/2026, 9:59:34 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -1450,10 +1456,11 @@
       "recentGames": [
         {
           "name": "Wo Long: Fallen Dynasty",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
+          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA08772_00/app/info/50/fi_6e981a974e057f5de01c20788fdb0811aac97ebb5c45c2b534187ba105a19f68/icon0.png",
           "progress": 32,
           "ratio": "35/90",
           "npCommunicationId": "NPWR27198_00",
+          "conceptId": "10004116",
           "lastPlayed": "2026-05-03T07:59:38Z"
         },
         {
@@ -1462,6 +1469,7 @@
           "progress": 30,
           "ratio": "15/51",
           "npCommunicationId": "NPWR11435_00",
+          "conceptId": null,
           "lastPlayed": "2026-04-05T03:31:01Z"
         },
         {
@@ -1470,6 +1478,7 @@
           "progress": 1,
           "ratio": "1/55",
           "npCommunicationId": "NPWR15386_00",
+          "conceptId": null,
           "lastPlayed": "2026-04-04T06:34:39Z"
         },
         {
@@ -1478,14 +1487,16 @@
           "progress": 0,
           "ratio": "0/31",
           "npCommunicationId": "NPWR16633_00",
+          "conceptId": null,
           "lastPlayed": "2026-04-04T06:17:20Z"
         },
         {
           "name": "Farming Simulator 25",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA19644_00/app/info/69/fi_b277574d82be6a110f9b919a0f6e3be0ba1d69b965fcc3f5173595d58733fd67/icon0.png",
           "progress": 27,
           "ratio": "16/46",
           "npCommunicationId": "NPWR44827_00",
+          "conceptId": "10009612",
           "lastPlayed": "2026-03-29T16:42:32Z"
         },
         {
@@ -1494,6 +1505,7 @@
           "progress": 76,
           "ratio": "24/37",
           "npCommunicationId": "NPWR40778_00",
+          "conceptId": null,
           "lastPlayed": "2026-03-23T08:11:59Z"
         }
       ],
@@ -1501,24 +1513,20 @@
         "title": "Wo Long: Fallen Dynasty",
         "groups": [
           {
-            "id": "default",
-            "name": "Wo Long: Fallen Dynasty",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png"
+            "progress": 50,
+            "earned": 35
           },
           {
-            "id": "001",
-            "name": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/a381cd86-03f6-4b8d-af42-4f40283ef2f2.png"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "002",
-            "name": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/61db9e67-a718-4546-8b4e-7bb210f9f2d0.png"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "003",
-            "name": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/f67003ae-9fc0-4057-8823-d76c540813bf.png"
+            "progress": 0,
+            "earned": 0
           }
         ],
         "trophies": [
@@ -2857,7 +2865,7 @@
           "date": "4/25/2026, 2:33:05 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:52:26 PM"
+      "lastUpdated": "5/4/2026, 9:59:36 PM"
     },
     "marc": {
       "onlineId": "ElucidatorVah",
@@ -2880,10 +2888,11 @@
       "recentGames": [
         {
           "name": "Where Winds Meet",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
+          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA23355_00/app/info/57/fi_46083b8fb1dd2ff75d89d516fadea96c73439a3872977dd278d37cb215d060e3/icon0.png",
           "progress": 0,
           "ratio": "0/45",
           "npCommunicationId": "NPWR50887_00",
+          "conceptId": "10011142",
           "lastPlayed": "2026-05-04T17:47:48Z"
         },
         {
@@ -2892,14 +2901,16 @@
           "progress": 0,
           "ratio": "0/36",
           "npCommunicationId": "NPWR51218_00",
+          "conceptId": null,
           "lastPlayed": "2026-05-03T13:37:23Z"
         },
         {
           "name": "Crossout",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
+          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA02187_00/app/info/157/fi_3935e2833da0f015f33a02ac8e276d6afd03dfbc073c3504ae7c23deae2d3299/icon0.png",
           "progress": 23,
           "ratio": "5/13",
           "npCommunicationId": "NPWR24327_00",
+          "conceptId": "227108",
           "lastPlayed": "2026-05-03T12:13:19Z"
         },
         {
@@ -2908,14 +2919,16 @@
           "progress": 14,
           "ratio": "12/58",
           "npCommunicationId": "NPWR09395_00",
+          "conceptId": null,
           "lastPlayed": "2026-05-01T01:12:15Z"
         },
         {
           "name": "SWORD ART ONLINE Fractured Daydream",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28127_00/55ea858b-c481-4450-bc51-b7df862a4f31.png",
+          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA06569_00/app/info/39/fi_03485a9f23449bbac40a0015ec8d829b20498e9b6d4a8a2f77576c9adb32b551/icon0.png",
           "progress": 25,
           "ratio": "13/52",
           "npCommunicationId": "NPWR28127_00",
+          "conceptId": "10004518",
           "lastPlayed": "2026-04-18T00:14:26Z"
         },
         {
@@ -2924,6 +2937,7 @@
           "progress": 48,
           "ratio": "40/92",
           "npCommunicationId": "NPWR24042_00",
+          "conceptId": null,
           "lastPlayed": "2026-04-17T19:59:48Z"
         }
       ],
@@ -2931,19 +2945,16 @@
         "title": "Where Winds Meet",
         "groups": [
           {
-            "id": "default",
-            "name": "Where Winds Meet",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "001",
-            "name": "Hexi",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/fc42b496-4d24-48fc-8bf3-64772ad82c6d.png"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "002",
-            "name": "Event",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/65c0dfd6-9a8f-457a-b639-151c6a3df5b8.png"
+            "progress": 0,
+            "earned": 0
           }
         ],
         "trophies": [
@@ -3581,7 +3592,7 @@
         "npCommunicationId": "NPWR50887_00"
       },
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 9:52:27 PM"
+      "lastUpdated": "5/4/2026, 9:59:37 PM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -3608,6 +3619,7 @@
           "progress": 11,
           "ratio": "26/135",
           "npCommunicationId": "NPWR41319_00",
+          "conceptId": null,
           "lastPlayed": "2026-04-02T04:32:33Z"
         },
         {
@@ -3616,22 +3628,25 @@
           "progress": 1,
           "ratio": "1/54",
           "npCommunicationId": "NPWR50656_00",
+          "conceptId": null,
           "lastPlayed": "2026-02-26T23:27:41Z"
         },
         {
           "name": "Farming Simulator 25",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA19644_00/app/info/69/fi_b277574d82be6a110f9b919a0f6e3be0ba1d69b965fcc3f5173595d58733fd67/icon0.png",
           "progress": 22,
           "ratio": "10/46",
           "npCommunicationId": "NPWR44827_00",
+          "conceptId": "10009612",
           "lastPlayed": "2026-02-19T03:08:00Z"
         },
         {
           "name": "theHunter: Call of the Wild",
-          "art": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/88AFFFD0B28B703B28CA71F6353F797230B9FB32.PNG",
+          "art": "https://image.api.playstation.com/gs2-sec/appkgo/prod/CUSA08661_00/3/i_e3eb64f8588ec1a46599bf200c4b274f9061e261f6ee6fff874a1ed4df2e8fa2/i/icon0.png",
           "progress": 24,
           "ratio": "27/115",
           "npCommunicationId": "NPWR13211_00",
+          "conceptId": "228868",
           "lastPlayed": "2025-12-02T02:17:44Z"
         },
         {
@@ -3640,6 +3655,7 @@
           "progress": 9,
           "ratio": "29/291",
           "npCommunicationId": "NPWR40455_00",
+          "conceptId": null,
           "lastPlayed": "2025-11-09T02:28:43Z"
         },
         {
@@ -3648,6 +3664,7 @@
           "progress": 5,
           "ratio": "7/158",
           "npCommunicationId": "NPWR24223_00",
+          "conceptId": null,
           "lastPlayed": "2025-10-19T20:00:25Z"
         }
       ],
@@ -3655,104 +3672,84 @@
         "title": "Minecraft: PlayStation®5 Edition",
         "groups": [
           {
-            "id": "default",
-            "name": "Minecraft: PlayStation®5 Edition",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/7270b75f-f28d-424e-96d1-ae88a5405438.PNG"
+            "progress": 34,
+            "earned": 23
           },
           {
-            "id": "001",
-            "name": "Expansion Pack 1",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "002",
-            "name": "Expansion Pack 3",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "003",
-            "name": "Expansion Pack 4",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "004",
-            "name": "Expansion Pack 6",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "005",
-            "name": "Expansion Pack 7",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 7,
+            "earned": 1
           },
           {
-            "id": "006",
-            "name": "Expansion Pack 8",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 7,
+            "earned": 1
           },
           {
-            "id": "007",
-            "name": "Expansion Pack 9",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 16,
+            "earned": 1
           },
           {
-            "id": "008",
-            "name": "Expansion Pack 10",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "009",
-            "name": "Expansion Pack 11",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "010",
-            "name": "Expansion Pack 12",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "011",
-            "name": "Expansion Pack 13",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "012",
-            "name": "Expansion Pack 14",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "013",
-            "name": "Expansion Pack 15",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "014",
-            "name": "Expansion Pack 16",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "015",
-            "name": "Expansion Pack 17",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "016",
-            "name": "Expansion Pack 18",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "017",
-            "name": "Expansion Pack 19",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "018",
-            "name": "Expansion Pack 20",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           },
           {
-            "id": "019",
-            "name": "Expansion Pack 21",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/a0f09d32-9c56-4622-9384-3c2af8bc92d0.PNG"
+            "progress": 0,
+            "earned": 0
           }
         ],
         "trophies": [
@@ -5721,7 +5718,7 @@
           "date": "4/3/2025, 5:26:08 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:52:28 PM"
+      "lastUpdated": "5/4/2026, 9:59:39 PM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -5748,6 +5745,7 @@
           "progress": 17,
           "ratio": "11/41",
           "npCommunicationId": "NPWR56684_00",
+          "conceptId": null,
           "lastPlayed": "2026-05-04T06:47:32Z"
         },
         {
@@ -5756,6 +5754,7 @@
           "progress": 17,
           "ratio": "2/25",
           "npCommunicationId": "NPWR19514_00",
+          "conceptId": null,
           "lastPlayed": "2026-04-12T05:27:06Z"
         },
         {
@@ -5764,6 +5763,7 @@
           "progress": 25,
           "ratio": "16/39",
           "npCommunicationId": "NPWR39871_00",
+          "conceptId": null,
           "lastPlayed": "2026-04-06T01:32:29Z"
         },
         {
@@ -5772,6 +5772,7 @@
           "progress": 1,
           "ratio": "1/53",
           "npCommunicationId": "NPWR25659_00",
+          "conceptId": null,
           "lastPlayed": "2026-03-22T06:13:40Z"
         },
         {
@@ -5780,6 +5781,7 @@
           "progress": 2,
           "ratio": "2/51",
           "npCommunicationId": "NPWR47309_00",
+          "conceptId": null,
           "lastPlayed": "2026-03-21T04:54:34Z"
         },
         {
@@ -5788,6 +5790,7 @@
           "progress": 0,
           "ratio": "0/59",
           "npCommunicationId": "NPWR12023_00",
+          "conceptId": null,
           "lastPlayed": "2026-03-19T23:11:13Z"
         }
       ],
@@ -5795,9 +5798,8 @@
         "title": "Trash Goblin",
         "groups": [
           {
-            "id": "default",
-            "name": "Trash Goblin",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/11d8eb80-114c-41e4-a719-407c2ac3d551.png"
+            "progress": 17,
+            "earned": 11
           }
         ],
         "trophies": [
@@ -6450,10 +6452,10 @@
           "date": "5/4/2026, 12:48:53 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:52:30 PM"
+      "lastUpdated": "5/4/2026, 9:59:41 PM"
     }
   },
-  "lastGlobalUpdate": "5/4/2026, 9:52:21 PM",
-  "engineVersion": "10.6.0",
-  "codeTimestamp": "Monday, May 4, 2026 | 5:55 PM EDT"
+  "lastGlobalUpdate": "5/4/2026, 9:59:29 PM",
+  "engineVersion": "10.8.0",
+  "codeTimestamp": "Monday, May 4, 2026 | 6:05 PM EDT"
 }
