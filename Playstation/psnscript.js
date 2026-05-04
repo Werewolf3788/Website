@@ -24,13 +24,16 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 8.5.0 - Omni-Intelligence Revision 2 (Identity Hardening)
+ * Version 8.5.0 - Omni-Intelligence Protocol (Identity & Deep Progress Fix)
  * Filepath: Playstation/psnscript.js
- * * * DESCRIPTION:
- * Resolves the "User not found" error by forcing the "me" identity protocol.
- * Pulls all metadata: Bio, PS5 Progress (22/100), DLC Groups, and Concept IDs.
- * Includes explicit Git conflict avoidance for automated syncs.
- * * * SQUAD MEMBERS (Verified):
+ * * DESCRIPTION:
+ * The ultimate data harvester for the Werewolf Pack. 
+ * - Fixes "User not found" errors by utilizing the "me" identity protocol.
+ * - Extracts every available data point: Bio, Plus Status, Hardware, Region.
+ * - Deep Sync Trophies: Captures PS5 progress trackers (e.g., 22/100) and DLC groups.
+ * - Identity Persistence: Maps explicit AccountID and OnlineID (User ID).
+ * - Mutual Discovery: Automatically flags friends shared between Werewolf and Ray.
+ * * SQUAD MEMBERS (Verified Hardlinks):
  * - Werewolf3788 (Kevin): 3728215008151724560
  * - OneLIVIDMAN (Ray): 2732733730346312494
  * - Darkwing69420 (TJ): 4398462806362115916
@@ -39,7 +42,7 @@ const path = require("path");
  * - UnicornBunnyShiv: 7742137722487951585
  */
 
-// --- CONFIGURATION ---
+// --- CONFIGURATION & MAPPING ---
 const SQUAD_MAP = {
     werewolf: "Werewolf3788",
     ray: "OneLIVIDMAN",
@@ -68,7 +71,7 @@ const TOKENS_PATH = path.join(__dirname, "tokens.json");
 const DATA_PATH = path.join(__dirname, "psn_data.json");
 const ROOT_NOJEKYLL = path.join(__dirname, "..", ".nojekyll");
 
-// --- DATA PERSISTENCE ---
+// --- DATA PERSISTENCE HELPERS ---
 let tokenStore = { werewolf: {}, ray: {} };
 try { 
     if (fs.existsSync(TOKENS_PATH)) {
@@ -96,7 +99,7 @@ const getDetailedStatus = (p) => {
     return { label: "Offline", color: "#64748b" };
 };
 
-// --- AUTHENTICATION ---
+// --- AUTHENTICATION ENGINE ---
 async function getAuthenticated(userKey, npssoInput) {
     let currentUserTokens = tokenStore[userKey] || {};
     const now = Math.floor(Date.now() / 1000);
@@ -137,11 +140,11 @@ async function getAuthenticated(userKey, npssoInput) {
 // --- DEEP HARVESTER ---
 async function getFullUserData(auth, label, targetOnlineId, existingData) {
     if (!auth) return existingData || null;
-    console.log(`[SYNC] Identity Audit (v8.5.0): ${label}`);
+    console.log(`[SYNC] Identity Handshake (v8.5.0): ${label}`);
     
     try {
-        // 1. IDENTITY HANDSHAKE (Fixes "User not found")
-        // We strictly use "me" for authenticated users to bypass ID lookup failures
+        // 1. IDENTITY PROTOCOL (Fixes "User not found")
+        // We strictly use "me" for authenticated users to pull private metadata
         const profile = await getProfileFromAccountId(auth, "me");
         const accountId = profile.accountId;
         const onlineId = profile.onlineId;
@@ -186,11 +189,12 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
                     ratio: `${earnedTotal}/${definedTotal}`,
                     hours: parsePlaytime(title.playDuration),
                     npCommunicationId: title.npCommunicationId,
-                    lastPlayed: title.lastUpdatedDateTime
+                    lastPlayed: title.lastUpdatedDateTime,
+                    platform: title.npServiceName === "trophy" ? "PS4/PS5" : "Legacy"
                 });
             }
 
-            // TROPHY GROUP & PROGRESS SCAN
+            // TROPHY GROUP & PROGRESS SCAN (22/100 support)
             if (!activeHunt || name === presence.currentGame) {
                 try {
                     const { trophyGroups } = await getTitleTrophyGroups(auth, title.npCommunicationId, "all");
@@ -210,7 +214,7 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
                             earned: s?.earned || false, 
                             earnedDate: s?.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString() : null,
                             timestamp: s?.earnedDateTime ? new Date(s.earnedDateTime).getTime() : 0,
-                            currentValue: s?.progress || 0, // Captured for 22/100 progress bars
+                            currentValue: s?.progress || 0,
                             targetValue: m.trophyProgressTargetValue || 0
                         };
                     });
@@ -241,6 +245,7 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
             plus: profile.isPlus, 
             level: stats.trophyLevel,
             region: region.country || "US",
+            language: region.language || "en",
             hardware: (devices.devices || []).map(d => ({ type: d.deviceType, name: d.deviceName })),
             trophySummary: { 
                 platinum: stats.earnedTrophies?.platinum || 0, 
@@ -258,9 +263,9 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
     }
 }
 
-// --- MAIN ENGINE ---
+// --- MAIN SYNC ENGINE ---
 async function main() {
-    console.log("[INIT] Starting Omni-Sync Engine v8.5.0...");
+    console.log("[INIT] Starting Master Sync Engine v8.5.0...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
@@ -286,7 +291,7 @@ async function main() {
     if (wolfFull) finalData.users.werewolf = wolfFull;
     if (rayFull) finalData.users.ray = rayFull;
 
-    // --- MUTUAL DISCOVERY ---
+    // --- MUTUAL DISCOVERY & UNIVERSAL LOBBY ---
     const squadFriends = { werewolf: [], ray: [] };
     if (wolfAuth) {
         try {
@@ -331,7 +336,7 @@ async function main() {
         else Object.assign(finalData.users[key], lobbyData);
     }
 
-    // Shadow Sync for Squad
+    // Shadow Sync for Squad members not tracked as friends
     const masterAuth = wolfAuth || rayAuth;
     if (masterAuth) {
         for (const [key, accountId] of Object.entries(ACCOUNT_IDS)) {
