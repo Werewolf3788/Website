@@ -1,18 +1,13 @@
-name: Sync PSN Data
+# .github/workflows/deploy.yml
+# Kevin's Official Pack Sync Engine - Deployment Workflow
+# Version 1.0.1 - Fixed Missing Environment Error
+
+name: Sync PSN Data and Deploy
 
 on:
   schedule:
-    # Set to 20 minutes to prevent deployment collisions and server lag
-    - cron: '*/20 * * * *'
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-
-# FIX: Use a unique group name to stop collisions with internal GitHub tasks
-concurrency:
-  group: "psn-data-group"
-  cancel-in-progress: false 
+    - cron: '0 * * * *' # Runs every hour
+  workflow_dispatch: # Allows manual trigger
 
 permissions:
   contents: write
@@ -21,17 +16,18 @@ permissions:
 
 jobs:
   build-and-sync:
+    runs-on: ubuntu-latest
+    
+    # CRITICAL: This block resolves the "Missing environment" error
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -39,28 +35,24 @@ jobs:
       - name: Install Dependencies
         run: npm install psn-api
 
-      - name: Run PSN Sync
+      - name: Run PSN Sync Script
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
         run: node Playstation/psnscript.js
 
-      - name: Commit and Push Data
+      - name: Commit and Push Data Changes
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          touch .nojekyll
-          git add .nojekyll
-          git add Playstation/psn_data.json
-          git add Playstation/tokens.json || echo "no tokens"
-          git commit -m "Wolf Sync: v7.5.4 Collision Guard [skip ci]" || echo "No changes"
-          git pull --rebase origin main
-          git push origin main
+          git config --global user.name "Werewolf3788-Bot"
+          git config --global user.email "bot@werewolf.ourflora.com"
+          git add Playstation/psn_data.json Playstation/tokens.json .nojekyll
+          git commit -m "Automated PSN Sync: $(date)" || echo "No changes to commit"
+          git push
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Upload artifact
+      - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
