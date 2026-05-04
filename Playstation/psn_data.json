@@ -4,10 +4,16 @@
       "onlineId": "Werewolf3788",
       "accountId": "3728215008151724560",
       "online": true,
-      "currentGame": "Farming Simulator 25",
-      "currentGameActivity": null,
+      "currentGame": "Dashboard",
+      "currentGameActivity": "Live on Twitch",
       "currentCommunicationId": null,
       "platform": "PS5",
+      "twitch": {
+        "game": "Games + Demos",
+        "followers": "97",
+        "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-300x300.png",
+        "age": "3 years, 4 weeks"
+      },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0004_s.png",
       "bio": "6C3RG",
       "plus": true,
@@ -1169,16 +1175,22 @@
           "date": "9/26/2025, 4:46:15 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:35:17 PM"
+      "lastUpdated": "5/4/2026, 11:08:04 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
       "accountId": "2732733730346312494",
-      "online": True,
-      "currentGame": "Mahjong3D",
-      "currentGameActivity": null,
+      "online": true,
+      "currentGame": "Dashboard",
+      "currentGameActivity": "Live on Twitch",
       "currentCommunicationId": null,
       "platform": "PS5",
+      "twitch": {
+        "game": "Farming Simulator 22",
+        "followers": "25",
+        "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-300x300.png",
+        "age": "2 years, 11 months"
+      },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
       "bio": "exo-ONELIVIDMANKDFC3",
       "plus": true,
@@ -1431,16 +1443,22 @@
           "date": "4/27/2026, 4:12:14 PM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:35:19 PM"
+      "lastUpdated": "5/4/2026, 11:08:07 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
       "accountId": "4398462806362115916",
-      "online": false,
+      "online": true,
       "currentGame": "Dashboard",
-      "currentGameActivity": null,
+      "currentGameActivity": "Live on Twitch",
       "currentCommunicationId": null,
       "platform": "PS5",
+      "twitch": {
+        "game": "Wo Long: Fallen Dynasty",
+        "followers": "75",
+        "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/53503674-298d-4302-89ad-4c58c18dcbd9-profile_image-300x300.jpeg",
+        "age": "1 year, 1 month"
+      },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
       "bio": "Official Pack Member Profile",
       "plus": true,
@@ -2863,7 +2881,7 @@
           "date": "4/25/2026, 2:33:05 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:35:20 PM"
+      "lastUpdated": "5/4/2026, 11:08:09 PM"
     },
     "marc": {
       "onlineId": "ElucidatorVah",
@@ -2873,6 +2891,7 @@
       "currentGameActivity": null,
       "currentCommunicationId": null,
       "platform": "PS5",
+      "twitch": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_A/A2073_s.png",
       "bio": "Why are you looking here im a boring person with no irl friends.... Life is great",
       "plus": true,
@@ -3589,7 +3608,7 @@
         "npCommunicationId": "NPWR50887_00"
       },
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 10:35:22 PM"
+      "lastUpdated": "5/4/2026, 11:08:12 PM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -3599,6 +3618,7 @@
       "currentGameActivity": null,
       "currentCommunicationId": null,
       "platform": "PS5",
+      "twitch": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0021_s.png",
       "bio": "Official Pack Member Profile",
       "plus": true,
@@ -5731,7 +5751,7 @@
           "date": "4/3/2025, 5:26:08 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:35:23 PM"
+      "lastUpdated": "5/4/2026, 11:08:14 PM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -5741,6 +5761,7 @@
       "currentGameActivity": null,
       "currentCommunicationId": null,
       "platform": "PS5",
+      "twitch": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/SCEI/I0001_s.png",
       "bio": "Official Pack Member Profile",
       "plus": true,
@@ -5750,17 +5771,17 @@
         "platinum": 0,
         "gold": 43,
         "silver": 134,
-        "bronze": 745,
-        "total": 922
+        "bronze": 746,
+        "total": 923
       },
       "recentGames": [
         {
           "name": "Trash Goblin",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/11d8eb80-114c-41e4-a719-407c2ac3d551.png",
-          "progress": 17,
-          "ratio": "11/41",
+          "progress": 18,
+          "ratio": "12/41",
           "npCommunicationId": "NPWR56684_00",
-          "lastPlayed": "2026-05-04T06:47:32Z"
+          "lastPlayed": "2026-05-04T22:49:51Z"
         },
         {
           "name": "Untitled Goose Game",
@@ -5808,8 +5829,8 @@
         "groups": [
           {
             "name": "Trash Goblin",
-            "progress": 17,
-            "ratio": "11/41"
+            "progress": 18,
+            "ratio": "12/41"
           }
         ],
         "trophies": [
@@ -5989,9 +6010,9 @@
             "rarity": "Rare",
             "earnedRate": "0.0",
             "groupName": "Trash Goblin",
-            "earned": false,
-            "earnedDate": null,
-            "timestamp": 0,
+            "earned": true,
+            "earnedDate": "5/4/2026, 10:49:51 PM",
+            "timestamp": 1777934991000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -6393,6 +6414,13 @@
       "mostRecentTrophies": [
         {
           "game": "Trash Goblin",
+          "name": "Delving Deep",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/492e702d-d33c-48c3-a2d3-19075180c76f.png",
+          "timestamp": 1777934991000,
+          "date": "5/4/2026, 10:49:51 PM"
+        },
+        {
+          "game": "Trash Goblin",
           "name": "Silver City Sightseeing",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/bbb648f0-902a-483d-a9a1-30c6b3f87bf4.png",
           "timestamp": 1777877251000,
@@ -6453,19 +6481,12 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/72494268-9bbc-4491-abdc-c1bde8d15b09.png",
           "timestamp": 1777863808000,
           "date": "5/4/2026, 3:03:28 AM"
-        },
-        {
-          "game": "Trash Goblin",
-          "name": "Trash To Treasure",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/395f0baa-8faf-4275-8c7e-363d430e9083.png",
-          "timestamp": 1777855733000,
-          "date": "5/4/2026, 12:48:53 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:35:25 PM"
+      "lastUpdated": "5/4/2026, 11:08:16 PM"
     }
   },
-  "lastGlobalUpdate": "5/4/2026, 10:35:14 PM",
-  "engineVersion": "11.2.1",
-  "codeTimestamp": "Monday, May 4, 2026 | 6:35 PM EDT"
+  "lastGlobalUpdate": "5/4/2026, 11:08:01 PM",
+  "engineVersion": "11.4.0",
+  "codeTimestamp": "Monday, May 4, 2026 | 7:15 PM EDT"
 }
