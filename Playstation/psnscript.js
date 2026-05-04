@@ -10,10 +10,9 @@ const {
     getTitleTrophyGroups,
     getUserTrophyGroupEarningsForTitle,
     getProfileFromAccountId,
-    getRecentlyPlayedGames, // GraphQL metadata engine
-    getUserPlayedGames, // REST library engine
+    getRecentlyPlayedGames, 
     getUserRegion,
-    getBasicPresence // Real-time Presence Handshake (Kevin's Snippet)
+    getBasicPresence 
 } = psnApi;
 
 const fs = require("fs");
@@ -21,23 +20,23 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 11.2.1 - Absolute Master Omni-Protocol (Rich Presence Activity Build)
+ * Version 11.4.0 - Absolute Master Omni-Protocol (Twitch Resilience Build)
  * Filepath: Playstation/psnscript.js
  * * * --- INSTANCE AUTHENTICATION ---
  * Last Generated: Monday, May 4, 2026
- * Timestamp: 6:35 PM EDT (New York Time)
- * Status: Production Ready - "Rich Presence" Verified
+ * Timestamp: 7:15 PM EDT (New York Time)
+ * Status: Production Ready - Twitch Bypass Verified
  * * * --- PSN SYNC CHECKLIST (VERIFIED DATA HARVEST) ---
- * 1.  PROFILE: [Cross-Ref] High-Res Avatar, Bio, Plus Status, PSN Level.
- * 2.  LIVE STATUS: [Verified] Real-time online check + Platform (PS5/PS4/Vita).
- * 3.  RICH PRESENCE: [New] Captures "Funny Quotes" (formatValue) like "Look at all the trees".
- * 4.  DASHBOARD PERSISTENCE: [Fixed] Merges last-played game metadata into presence if on Dashboard.
- * 5.  ACCOUNT TOTALS: [Verified] Definitive count of ALL earned trophies (Plat/Gold/Silver/Bronze/Total).
- * 6.  LIBRARY: [Cross-Ref] Handshakes GraphQL (Art) with REST (Duration) for the last 6 Games.
- * 7.  EXPANSIONS: [Fixed] Captured DLC ratios (e.g., 22/71) via Trophy Group Earnings API.
- * 8.  22/100 FEATURE: [Captured] PS5 raw progress values (Current Value / Target Value).
- * 9.  PURGE PROTOCOL: [Strict] Omitted "status: offline", "hardware", "storeUrl", and "hours" per Admin.
- * 10. AUTH REFRESH: [Active] Built-in refreshToken rotation for 24/7 autonomous sync.
+ * 1.  TWITCH INTEL: [New] Pulls Followers, Profile Image, and Account Age via DecAPI.
+ * 2.  RESILIENCE: [New] Twitch data loads even if PSN tokens are expired/bad.
+ * 3.  PROFILE: [Cross-Ref] High-Res Avatar, Bio, Plus Status, PSN Level.
+ * 4.  PRESENCE: [Cross-Ref] Real-time Handshake (Twitch Game vs PSN Library).
+ * 5.  ACCOUNT TOTALS: [Verified] definitive count of ALL earned trophies.
+ * 6.  EXPANSIONS: [Fixed] Captured DLC ratios (e.g., 22/71) via Trophy Group Earnings.
+ * 7.  22/100 FEATURE: [Captured] PS5 raw progress trackers (Current vs Target).
+ * 8.  LIBRARY: [Cross-Ref] Handshakes GraphQL (Art) with Presence for session detail.
+ * 9.  PURGE PROTOCOL: [Strict] Omitted "status", "hardware", "storeUrl", and "hours".
+ * 10. AUTH REFRESH: [Active] Built-in refreshToken rotation for 24/7 sync.
  */
 
 // --- ADMINISTRATIVE CONFIGURATION ---
@@ -48,6 +47,12 @@ const SQUAD_MAP = {
     marc: "ElucidatorVah",
     jcrow: "JCrow207",
     bunny: "UnicornBunnyShiv"
+};
+
+const TWITCH_MAP = {
+    werewolf: "werewolf3788",
+    ray: "raymystyro",
+    darkwing: "terrdog420"
 };
 
 const ACCOUNT_IDS = {
@@ -73,6 +78,32 @@ try {
 } catch (e) { console.error("[ERROR] Local Token Store not found."); }
 
 const saveTokens = () => fs.writeFileSync(TOKENS_PATH, JSON.stringify(tokenStore, null, 2));
+
+/**
+ * getTwitchIntel
+ * Logic: Gathers all Twitch data points for a user.
+ * Resilience: Key feature - Twitch data does not require PSN auth.
+ */
+async function getTwitchIntel(username) {
+    if (!username) return null;
+    const intel = { game: null, followers: "0", avatar: null, age: null };
+    try {
+        const [gameRes, followRes, avatarRes, ageRes] = await Promise.all([
+            fetch(`https://decapi.me/twitch/game/${username.toLowerCase()}`).then(r => r.text()),
+            fetch(`https://decapi.me/twitch/followcount/${username.toLowerCase()}`).then(r => r.text()),
+            fetch(`https://decapi.me/twitch/avatar/${username.toLowerCase()}`).then(r => r.text()),
+            fetch(`https://decapi.me/twitch/accountage/${username.toLowerCase()}`).then(r => r.text())
+        ]);
+
+        const invalidGame = ["offline", "games & demo", "not found", "error"];
+        intel.game = invalidGame.some(term => gameRes.toLowerCase().includes(term)) ? null : gameRes.trim();
+        intel.followers = followRes.includes("Error") ? "0" : followRes.trim();
+        intel.avatar = avatarRes.includes("http") ? avatarRes.trim() : null;
+        intel.age = ageRes.includes("Error") ? "Unknown" : ageRes.trim();
+        
+        return intel;
+    } catch (e) { return null; }
+}
 
 // --- AUTHENTICATION ENGINE ---
 async function getAuthenticated(userKey, npssoInput) {
@@ -110,24 +141,38 @@ async function getAuthenticated(userKey, npssoInput) {
 }
 
 // --- ABSOLUTE OMNI-COLLECTOR ---
-async function getFullUserData(auth, label, targetId, existingData) {
-    if (!auth || !targetId) return existingData || null;
-    console.log(`[SYNC] Omni-Protocol v11.2.1 Handshake (Rich Presence): ${label}`);
+async function getFullUserData(auth, label, userKey, targetId, existingData) {
+    // START TWITCH HARVEST (Bypasses PSN Key State)
+    const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
+    
+    // If PSN Auth is bad, return a skeleton object with the working Twitch data
+    if (!auth || !targetId) {
+        console.warn(`[WARN] PSN Auth failed for ${label}. Reverting to Twitch-Only data.`);
+        return {
+            onlineId: SQUAD_MAP[userKey],
+            online: !!twitchIntel?.game,
+            currentGame: twitchIntel?.game || "Dashboard",
+            twitch: twitchIntel,
+            lastUpdated: new Date().toLocaleString(),
+            note: "PSN Key Expired - Twitch Active"
+        };
+    }
+
+    console.log(`[SYNC] Omni-Protocol v11.4.0 Handshake: ${label}`);
     
     try {
-        // 1. IDENTITY & REGIONAL Handshake
+        // 1. IDENTITY & REGIONAL
         const profile = await getProfileFromAccountId(auth, targetId);
         let region = { country: "US", language: "en" };
         if (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) {
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
         }
         
-        // 2. ULTIMATE CROSS-REFERENCE (Presence + GraphQL Library + REST Titles)
+        // 2. PSN PRESENCE & LIBRARY HANDSHAKE
         const presenceId = (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) ? "me" : targetId;
         let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         let graphLib = { data: { gameLibraryTitlesRetrieve: { games: [] } } };
         
-        // Pull library metadata from silos
         try { graphLib = await getRecentlyPlayedGames(auth, { limit: 30 }); } catch(e) {}
         try { 
             const raw = await getBasicPresence(auth, presenceId); 
@@ -137,15 +182,17 @@ async function getFullUserData(auth, label, targetId, existingData) {
         const activeGameInfo = rawP.gameTitleInfoList?.[0] || {};
         const gamesList = graphLib.data?.gameLibraryTitlesRetrieve?.games || [];
         
-        // Handshake: Cross-match live title against library to get high-res art and store links
-        const matchedMeta = gamesList.find(g => g.name === activeGameInfo.titleName) || {};
+        // Handshake: If Twitch is live with a valid game, prioritize it over "Dashboard"
+        const resolvedTitle = (twitchIntel?.game && activeGameInfo.titleName === "Dashboard") ? twitchIntel.game : (activeGameInfo.titleName || "Dashboard");
+        const matchedMeta = gamesList.find(g => g.name.toLowerCase() === resolvedTitle.toLowerCase()) || {};
 
         const presence = {
-            online: (rawP.primaryPlatformInfo?.onlineStatus || "offline") !== "offline",
-            currentGame: activeGameInfo.titleName || "Dashboard",
-            currentGameActivity: activeGameInfo.formatValue || null, // CAPTURES THE "FUNNY QUOTE"
+            online: (rawP.primaryPlatformInfo?.onlineStatus || "offline") !== "offline" || !!twitchIntel?.game,
+            currentGame: resolvedTitle,
+            currentGameActivity: activeGameInfo.formatValue || (twitchIntel?.game ? "Live on Twitch" : null),
             currentCommunicationId: activeGameInfo.npCommunicationId || matchedMeta.titleId || null,
-            platform: rawP.primaryPlatformInfo?.platform?.toUpperCase() || "PS5"
+            platform: rawP.primaryPlatformInfo?.platform?.toUpperCase() || "PS5",
+            twitch: twitchIntel // ATTACH EXPANDED TWITCH DATA
         };
 
         // 3. ACCOUNT-WIDE TROPHY ANALYTICS
@@ -157,7 +204,7 @@ async function getFullUserData(auth, label, targetId, existingData) {
         let activeHunt = null;
         let mostRecentTrophies = [];
 
-        // PERSISTENCE: If on Dashboard/Media App, lock to the last real game for data density
+        // PERSISTENCE LOCK
         const targetSyncId = presence.currentCommunicationId || sortedTitles[0]?.npCommunicationId;
 
         for (const title of sortedTitles.slice(0, 15)) {
@@ -167,7 +214,6 @@ async function getFullUserData(auth, label, targetId, existingData) {
             const earnedTotal = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
             const definedTotal = (title.definedTrophies.platinum + title.definedTrophies.gold + title.definedTrophies.silver + title.definedTrophies.bronze);
 
-            // Fetch library high-res art from GraphQL Match
             const libMatch = gamesList.find(g => g.name === name) || {};
 
             if (recentGames.length < 6) {
@@ -181,7 +227,7 @@ async function getFullUserData(auth, label, targetId, existingData) {
                 });
             }
 
-            // 4. DEEP TROPHY HARVEST (DLC Groups + 22/100 trackers)
+            // 4. DEEP TROPHY HARVEST
             if (title.npCommunicationId === targetSyncId) {
                 try {
                     const { trophyGroups } = await getTitleTrophyGroups(auth, title.npCommunicationId, "all");
@@ -198,7 +244,6 @@ async function getFullUserData(auth, label, targetId, existingData) {
                             groupName: group?.trophyGroupName || "Base Game", earned: s?.earned || false, 
                             earnedDate: s?.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString() : null,
                             timestamp: s?.earnedDateTime ? new Date(s.earnedDateTime).getTime() : 0,
-                            // CAPTURES 22/100 FEATURE
                             currentValue: s?.progress || 0,
                             targetValue: m.trophyProgressTargetValue || 0
                         };
@@ -207,13 +252,13 @@ async function getFullUserData(auth, label, targetId, existingData) {
                     activeHunt = { 
                         title: name, 
                         groups: (groupEarnings.trophyGroups || []).map(g => {
-                            const gMeta = trophyGroups.find(tg => tg.trophyGroupId === g.trophyGroupId);
-                            const gMax = (gMeta?.definedTrophies?.platinum || 0) + (gMeta?.definedTrophies?.gold || 0) + (gMeta?.definedTrophies?.silver || 0) + (gMeta?.definedTrophies?.bronze || 0);
-                            const gEarned = (g.earnedTrophies.platinum + g.earnedTrophies.gold + g.earnedTrophies.silver + g.earnedTrophies.bronze);
+                            const groupMeta = trophyGroups.find(tg => tg.trophyGroupId === g.trophyGroupId);
+                            const groupMax = (groupMeta?.definedTrophies?.platinum || 0) + (groupMeta?.definedTrophies?.gold || 0) + (groupMeta?.definedTrophies?.silver || 0) + (groupMeta?.definedTrophies?.bronze || 0);
+                            const groupEarned = (g.earnedTrophies.platinum + g.earnedTrophies.gold + g.earnedTrophies.silver + g.earnedTrophies.bronze);
                             return {
-                                name: gMeta?.trophyGroupName || "Expansion Pack",
+                                name: groupMeta?.trophyGroupName || "Expansion Pack",
                                 progress: g.progress,
-                                ratio: `${gEarned}/${gMax}`
+                                ratio: `${groupEarned}/${groupMax}`
                             };
                         }),
                         trophies: mappedTrophies, 
@@ -235,15 +280,12 @@ async function getFullUserData(auth, label, targetId, existingData) {
             ...presence, 
             avatar: profile.avatars?.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url || "", 
             bio: profile.aboutMe || "Official Pack Member Profile", 
-            plus: profile.isPlus, 
-            level: stats.trophyLevel,
-            region: region.country || "US",
+            plus: profile.isPlus, level: stats.trophyLevel, region: region.country || "US",
             trophySummary: { 
                 platinum: stats.earnedTrophies?.platinum || 0, 
                 gold: stats.earnedTrophies?.gold || 0,
                 silver: stats.earnedTrophies?.silver || 0,
                 bronze: stats.earnedTrophies?.bronze || 0,
-                // DEFINITIVE TOTAL ACCOUNT COUNT
                 total: (stats.earnedTrophies?.platinum || 0) + (stats.earnedTrophies?.gold || 0) + (stats.earnedTrophies?.silver || 0) + (stats.earnedTrophies?.bronze || 0)
             },
             recentGames, activeHunt, mostRecentTrophies,
@@ -256,14 +298,14 @@ async function getFullUserData(auth, label, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Master Omni-Collector v11.2.1...");
+    console.log("[INIT] Starting Absolute Omni-Collector v11.4.0...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
         users: {}, 
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "11.2.1",
-        codeTimestamp: "Monday, May 4, 2026 | 6:35 PM EDT"
+        engineVersion: "11.4.0",
+        codeTimestamp: "Monday, May 4, 2026 | 7:15 PM EDT"
     };
 
     try {
@@ -278,8 +320,9 @@ async function main() {
     const masterAuth = wolfAuth || rayAuth;
 
     for (const [key, id] of Object.entries(ACCOUNT_IDS)) {
+        // Fallback: If rayAuth fails, use wolfAuth. If both fail, pass null to trigger Twitch-Only mode.
         const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : (key === 'werewolf' && wolfAuth) ? wolfAuth : masterAuth;
-        const data = await getFullUserData(agentAuth, SQUAD_MAP[key], id, finalData.users[key]);
+        const data = await getFullUserData(agentAuth, SQUAD_MAP[key], key, id, finalData.users[key]);
         if (data) finalData.users[key] = data;
     }
 
