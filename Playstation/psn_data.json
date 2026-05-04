@@ -11,6 +11,7 @@
       "currentCommunicationId": null,
       "platform": "PS5",
       "twitch": {
+        "isLive": true,
         "game": "Farming Simulator 25",
         "gameArt": null,
         "followers": "97",
@@ -18,7 +19,7 @@
         "age": "3 years, 4 weeks",
         "bio": "404 Page Not Found",
         "statusMessage": "Fun tymes",
-        "uptime": null
+        "uptime": "werewolf3788 is offline"
       },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0004_s.png",
       "bio": "6C3RG",
@@ -35,7 +36,7 @@
       "recentGames": [
         {
           "name": "Sniper Elite: Resistance",
-          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA17232_00/app/info/58/fi_8049801d3c212cdd2a3121808814ee75deb845ca7e218b7971781875dfc8feb8/icon0.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
           "progress": 25,
           "ratio": "22/71",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%3A%20Resistance+Playstation+5&tag=psngaming-20",
@@ -44,7 +45,7 @@
         },
         {
           "name": "Crossout",
-          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA02187_00/app/info/157/fi_3935e2833da0f015f33a02ac8e276d6afd03dfbc073c3504ae7c23deae2d3299/icon0.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
           "progress": 4,
           "ratio": "1/13",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Crossout+Playstation+5&tag=psngaming-20",
@@ -53,7 +54,7 @@
         },
         {
           "name": "Wo Long: Fallen Dynasty",
-          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA08772_00/app/info/50/fi_6e981a974e057f5de01c20788fdb0811aac97ebb5c45c2b534187ba105a19f68/icon0.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
           "progress": 9,
           "ratio": "10/90",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Wo%20Long%3A%20Fallen%20Dynasty+Playstation+5&tag=psngaming-20",
@@ -71,7 +72,7 @@
         },
         {
           "name": "Where Winds Meet",
-          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA23355_00/app/info/57/fi_46083b8fb1dd2ff75d89d516fadea96c73439a3872977dd278d37cb215d060e3/icon0.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
           "progress": 3,
           "ratio": "2/45",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Where%20Winds%20Meet+Playstation+5&tag=psngaming-20",
@@ -1188,7 +1189,7 @@
           "date": "9/26/2025, 4:46:15 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:25:59 PM"
+      "lastUpdated": "5/4/2026, 11:35:28 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -1201,6 +1202,7 @@
       "currentCommunicationId": null,
       "platform": "PS5",
       "twitch": {
+        "isLive": true,
         "game": "Farming Simulator 22",
         "gameArt": null,
         "followers": "25",
@@ -1208,7 +1210,7 @@
         "age": "2 years, 11 months",
         "bio": "404 Page Not Found",
         "statusMessage": "🏆 farming",
-        "uptime": null
+        "uptime": "raymystyro is offline"
       },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
       "bio": "exo-ONELIVIDMANKDFC3",
@@ -1234,7 +1236,7 @@
         },
         {
           "name": "theHunter: Call of the Wild",
-          "art": "https://image.api.playstation.com/gs2-sec/appkgo/prod/CUSA08661_00/3/i_e3eb64f8588ec1a46599bf200c4b274f9061e261f6ee6fff874a1ed4df2e8fa2/i/icon0.png",
+          "art": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/88AFFFD0B28B703B28CA71F6353F797230B9FB32.PNG",
           "progress": 35,
           "ratio": "39/115",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=theHunter%3A%20Call%20of%20the%20Wild+Playstation+5&tag=psngaming-20",
@@ -1243,7 +1245,7 @@
         },
         {
           "name": "Sniper Elite: Resistance",
-          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA17232_00/app/info/58/fi_8049801d3c212cdd2a3121808814ee75deb845ca7e218b7971781875dfc8feb8/icon0.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
           "progress": 0,
           "ratio": "0/71",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%3A%20Resistance+Playstation+5&tag=psngaming-20",
@@ -1252,7 +1254,7 @@
         },
         {
           "name": "Farming Simulator 25",
-          "art": "https://image.api.playstation.com/vulcan/ap/rnd/202406/1221/5e7b5321408d56da66ffbb45abae3d2f812b0a1dd03cee5d.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
           "progress": 100,
           "ratio": "46/46",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025+Playstation+5&tag=psngaming-20",
@@ -1261,7 +1263,7 @@
         },
         {
           "name": "Farming Simulator 22",
-          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA02426_00/app/info/73/fi_01c2cfdca51ba4ee24979777d2b09fa896f0b804f576b02c38682ab73b6aecba/icon0.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR23165_00/dae2fb95-5224-40a6-bd64-b9c4b1e826f6.png",
           "progress": 18,
           "ratio": "10/46",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2022+Playstation+5&tag=psngaming-20",
@@ -1270,7 +1272,7 @@
         },
         {
           "name": "SKULL AND BONES™",
-          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA02202_00/app/info/101/fi_e96294573b16dd91678d9381e0c06ec145491cdc05f195b7cc2efee1d0c4beb4/icon0.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22432_00/cbdac3c7-fa16-4556-81f0-a93c788c0cf8.png",
           "progress": 10,
           "ratio": "7/51",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=SKULL%20AND%20BONES+Playstation+5&tag=psngaming-20",
@@ -1469,7 +1471,7 @@
           "date": "4/27/2026, 4:12:14 PM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:26:01 PM"
+      "lastUpdated": "5/4/2026, 11:35:29 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -1482,6 +1484,7 @@
       "currentCommunicationId": null,
       "platform": "PS5",
       "twitch": {
+        "isLive": true,
         "game": "Wo Long: Fallen Dynasty",
         "gameArt": null,
         "followers": "75",
@@ -1489,7 +1492,7 @@
         "age": "1 year, 1 month",
         "bio": "404 Page Not Found",
         "statusMessage": "Wolong first time playing",
-        "uptime": null
+        "uptime": "terrdog420 is offline"
       },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
       "bio": "Official Pack Member Profile",
@@ -1506,7 +1509,7 @@
       "recentGames": [
         {
           "name": "Wo Long: Fallen Dynasty",
-          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA08772_00/app/info/50/fi_6e981a974e057f5de01c20788fdb0811aac97ebb5c45c2b534187ba105a19f68/icon0.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
           "progress": 32,
           "ratio": "35/90",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Wo%20Long%3A%20Fallen%20Dynasty+Playstation+5&tag=psngaming-20",
@@ -1542,7 +1545,7 @@
         },
         {
           "name": "Farming Simulator 25",
-          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA19644_00/app/info/69/fi_b277574d82be6a110f9b919a0f6e3be0ba1d69b965fcc3f5173595d58733fd67/icon0.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
           "progress": 27,
           "ratio": "16/46",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025+Playstation+5&tag=psngaming-20",
@@ -2920,7 +2923,7 @@
           "date": "4/25/2026, 2:33:05 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:26:02 PM"
+      "lastUpdated": "5/4/2026, 11:35:30 PM"
     },
     "marc": {
       "onlineId": "ElucidatorVah",
@@ -2948,7 +2951,7 @@
       "recentGames": [
         {
           "name": "Where Winds Meet",
-          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA23355_00/app/info/57/fi_46083b8fb1dd2ff75d89d516fadea96c73439a3872977dd278d37cb215d060e3/icon0.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
           "progress": 0,
           "ratio": "0/45",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Where%20Winds%20Meet+Playstation+5&tag=psngaming-20",
@@ -2966,7 +2969,7 @@
         },
         {
           "name": "Crossout",
-          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA02187_00/app/info/157/fi_3935e2833da0f015f33a02ac8e276d6afd03dfbc073c3504ae7c23deae2d3299/icon0.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
           "progress": 23,
           "ratio": "5/13",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Crossout+Playstation+5&tag=psngaming-20",
@@ -2984,7 +2987,7 @@
         },
         {
           "name": "SWORD ART ONLINE Fractured Daydream",
-          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA06569_00/app/info/39/fi_03485a9f23449bbac40a0015ec8d829b20498e9b6d4a8a2f77576c9adb32b551/icon0.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28127_00/55ea858b-c481-4450-bc51-b7df862a4f31.png",
           "progress": 25,
           "ratio": "13/52",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=SWORD%20ART%20ONLINE%20Fractured%20Daydream+Playstation+5&tag=psngaming-20",
@@ -3656,7 +3659,7 @@
         "npCommunicationId": "NPWR50887_00"
       },
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 11:26:04 PM"
+      "lastUpdated": "5/4/2026, 11:35:31 PM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -3702,7 +3705,7 @@
         },
         {
           "name": "Farming Simulator 25",
-          "art": "https://image.api.playstation.com/sgst/prod/00/PPSA19644_00/app/info/69/fi_b277574d82be6a110f9b919a0f6e3be0ba1d69b965fcc3f5173595d58733fd67/icon0.png",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
           "progress": 22,
           "ratio": "10/46",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025+Playstation+5&tag=psngaming-20",
@@ -3711,7 +3714,7 @@
         },
         {
           "name": "theHunter: Call of the Wild",
-          "art": "https://image.api.playstation.com/gs2-sec/appkgo/prod/CUSA08661_00/3/i_e3eb64f8588ec1a46599bf200c4b274f9061e261f6ee6fff874a1ed4df2e8fa2/i/icon0.png",
+          "art": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/88AFFFD0B28B703B28CA71F6353F797230B9FB32.PNG",
           "progress": 24,
           "ratio": "27/115",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=theHunter%3A%20Call%20of%20the%20Wild+Playstation+5&tag=psngaming-20",
@@ -5808,7 +5811,7 @@
           "date": "4/3/2025, 5:26:08 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:26:05 PM"
+      "lastUpdated": "5/4/2026, 11:35:32 PM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -6549,7 +6552,7 @@
           "date": "5/4/2026, 3:03:28 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:26:07 PM"
+      "lastUpdated": "5/4/2026, 11:35:33 PM"
     },
     "mjolnir": {
       "onlineId": "Michael (Mjolnir)",
@@ -6559,6 +6562,7 @@
       "currentGameActivity": "Protecting and Serving the community 👮🏻‍♂️⭐",
       "amazonAffiliateUrl": "https://www.amazon.com/s?k=Police%20Simulator%3A%20Patrol%20Officers+Playstation+5&tag=psngaming-20",
       "twitch": {
+        "isLive": true,
         "game": "Police Simulator: Patrol Officers",
         "gameArt": null,
         "followers": "18",
@@ -6566,9 +6570,9 @@
         "age": "6 years, 1 month",
         "bio": "404 Page Not Found",
         "statusMessage": "Protecting and Serving the community 👮🏻‍♂️⭐",
-        "uptime": null
+        "uptime": "mjolnirgaming is offline"
       },
-      "lastUpdated": "5/4/2026, 11:26:07 PM",
+      "lastUpdated": "5/4/2026, 11:35:33 PM",
       "note": "Twitch-Active Profile"
     },
     "phoenix": {
@@ -6579,6 +6583,7 @@
       "currentGameActivity": "I See a Full Moon a'Rising",
       "amazonAffiliateUrl": "https://www.amazon.com/s?k=Werewolf%3A%20The%20Apocalypse%20-%20Earthblood+Playstation+5&tag=psngaming-20",
       "twitch": {
+        "isLive": true,
         "game": "Werewolf: The Apocalypse - Earthblood",
         "gameArt": null,
         "followers": "64",
@@ -6586,13 +6591,13 @@
         "age": "8 years, 3 months",
         "bio": "404 Page Not Found",
         "statusMessage": "I See a Full Moon a'Rising",
-        "uptime": null
+        "uptime": "phoenix_darkfire is offline"
       },
-      "lastUpdated": "5/4/2026, 11:26:07 PM",
+      "lastUpdated": "5/4/2026, 11:35:33 PM",
       "note": "Twitch-Active Profile"
     }
   },
-  "lastGlobalUpdate": "5/4/2026, 11:25:56 PM",
-  "engineVersion": "12.1.0",
-  "codeTimestamp": "Monday, May 4, 2026 | 7:25 PM EDT"
+  "lastGlobalUpdate": "5/4/2026, 11:35:26 PM",
+  "engineVersion": "12.3.0",
+  "codeTimestamp": "Monday, May 4, 2026 | 7:35 PM EDT"
 }
