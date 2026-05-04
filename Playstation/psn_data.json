@@ -25,7 +25,6 @@
           "progress": 25,
           "ratio": "22/71",
           "npCommunicationId": "NPWR40813_00",
-          "conceptId": "10008716",
           "lastPlayed": "2026-05-02T07:33:09Z"
         },
         {
@@ -34,7 +33,6 @@
           "progress": 4,
           "ratio": "1/13",
           "npCommunicationId": "NPWR24327_00",
-          "conceptId": "227108",
           "lastPlayed": "2026-05-01T04:01:47Z"
         },
         {
@@ -43,7 +41,6 @@
           "progress": 9,
           "ratio": "10/90",
           "npCommunicationId": "NPWR27198_00",
-          "conceptId": "10004116",
           "lastPlayed": "2026-04-30T03:51:42Z"
         },
         {
@@ -52,7 +49,6 @@
           "progress": 29,
           "ratio": "20/58",
           "npCommunicationId": "NPWR09395_00",
-          "conceptId": null,
           "lastPlayed": "2026-04-29T01:13:02Z"
         },
         {
@@ -61,7 +57,6 @@
           "progress": 3,
           "ratio": "2/45",
           "npCommunicationId": "NPWR50887_00",
-          "conceptId": "10011142",
           "lastPlayed": "2026-04-28T02:37:12Z"
         },
         {
@@ -70,7 +65,6 @@
           "progress": 0,
           "ratio": "0/25",
           "npCommunicationId": "NPWR50314_00",
-          "conceptId": null,
           "lastPlayed": "2026-04-25T01:06:06Z"
         }
       ],
@@ -79,23 +73,23 @@
         "groups": [
           {
             "progress": 40,
-            "earned": 22
+            "ratio": "22/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           }
         ],
         "trophies": [
@@ -1168,7 +1162,7 @@
           "date": "9/26/2025, 4:46:15 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:59:32 PM"
+      "lastUpdated": "5/4/2026, 10:01:35 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -1195,7 +1189,6 @@
           "progress": 50,
           "ratio": "5/10",
           "npCommunicationId": "NPWR28141_00",
-          "conceptId": null,
           "lastPlayed": "2026-05-03T07:21:14Z"
         },
         {
@@ -1204,7 +1197,6 @@
           "progress": 35,
           "ratio": "39/115",
           "npCommunicationId": "NPWR13211_00",
-          "conceptId": "228868",
           "lastPlayed": "2026-04-22T23:42:00Z"
         },
         {
@@ -1213,7 +1205,6 @@
           "progress": 0,
           "ratio": "0/71",
           "npCommunicationId": "NPWR40813_00",
-          "conceptId": "10008716",
           "lastPlayed": "2026-04-14T10:55:49Z"
         },
         {
@@ -1222,7 +1213,6 @@
           "progress": 100,
           "ratio": "46/46",
           "npCommunicationId": "NPWR44827_00",
-          "conceptId": "10009612",
           "lastPlayed": "2026-04-14T10:48:47Z"
         },
         {
@@ -1231,7 +1221,6 @@
           "progress": 18,
           "ratio": "10/46",
           "npCommunicationId": "NPWR23165_00",
-          "conceptId": "10001771",
           "lastPlayed": "2026-04-04T02:01:34Z"
         },
         {
@@ -1240,7 +1229,6 @@
           "progress": 10,
           "ratio": "7/51",
           "npCommunicationId": "NPWR22432_00",
-          "conceptId": "225700",
           "lastPlayed": "2026-04-03T21:23:10Z"
         }
       ],
@@ -1249,7 +1237,7 @@
         "groups": [
           {
             "progress": 50,
-            "earned": 5
+            "ratio": "5/--"
           }
         ],
         "trophies": [
@@ -1433,7 +1421,7 @@
           "date": "4/27/2026, 4:12:14 PM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:59:34 PM"
+      "lastUpdated": "5/4/2026, 10:01:37 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -1460,7 +1448,6 @@
           "progress": 32,
           "ratio": "35/90",
           "npCommunicationId": "NPWR27198_00",
-          "conceptId": "10004116",
           "lastPlayed": "2026-05-03T07:59:38Z"
         },
         {
@@ -1469,7 +1456,6 @@
           "progress": 30,
           "ratio": "15/51",
           "npCommunicationId": "NPWR11435_00",
-          "conceptId": null,
           "lastPlayed": "2026-04-05T03:31:01Z"
         },
         {
@@ -1478,7 +1464,6 @@
           "progress": 1,
           "ratio": "1/55",
           "npCommunicationId": "NPWR15386_00",
-          "conceptId": null,
           "lastPlayed": "2026-04-04T06:34:39Z"
         },
         {
@@ -1487,7 +1472,6 @@
           "progress": 0,
           "ratio": "0/31",
           "npCommunicationId": "NPWR16633_00",
-          "conceptId": null,
           "lastPlayed": "2026-04-04T06:17:20Z"
         },
         {
@@ -1496,7 +1480,6 @@
           "progress": 27,
           "ratio": "16/46",
           "npCommunicationId": "NPWR44827_00",
-          "conceptId": "10009612",
           "lastPlayed": "2026-03-29T16:42:32Z"
         },
         {
@@ -1505,7 +1488,6 @@
           "progress": 76,
           "ratio": "24/37",
           "npCommunicationId": "NPWR40778_00",
-          "conceptId": null,
           "lastPlayed": "2026-03-23T08:11:59Z"
         }
       ],
@@ -1514,19 +1496,19 @@
         "groups": [
           {
             "progress": 50,
-            "earned": 35
+            "ratio": "35/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           }
         ],
         "trophies": [
@@ -2865,7 +2847,7 @@
           "date": "4/25/2026, 2:33:05 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:59:36 PM"
+      "lastUpdated": "5/4/2026, 10:01:38 PM"
     },
     "marc": {
       "onlineId": "ElucidatorVah",
@@ -2892,7 +2874,6 @@
           "progress": 0,
           "ratio": "0/45",
           "npCommunicationId": "NPWR50887_00",
-          "conceptId": "10011142",
           "lastPlayed": "2026-05-04T17:47:48Z"
         },
         {
@@ -2901,7 +2882,6 @@
           "progress": 0,
           "ratio": "0/36",
           "npCommunicationId": "NPWR51218_00",
-          "conceptId": null,
           "lastPlayed": "2026-05-03T13:37:23Z"
         },
         {
@@ -2910,7 +2890,6 @@
           "progress": 23,
           "ratio": "5/13",
           "npCommunicationId": "NPWR24327_00",
-          "conceptId": "227108",
           "lastPlayed": "2026-05-03T12:13:19Z"
         },
         {
@@ -2919,7 +2898,6 @@
           "progress": 14,
           "ratio": "12/58",
           "npCommunicationId": "NPWR09395_00",
-          "conceptId": null,
           "lastPlayed": "2026-05-01T01:12:15Z"
         },
         {
@@ -2928,7 +2906,6 @@
           "progress": 25,
           "ratio": "13/52",
           "npCommunicationId": "NPWR28127_00",
-          "conceptId": "10004518",
           "lastPlayed": "2026-04-18T00:14:26Z"
         },
         {
@@ -2937,7 +2914,6 @@
           "progress": 48,
           "ratio": "40/92",
           "npCommunicationId": "NPWR24042_00",
-          "conceptId": null,
           "lastPlayed": "2026-04-17T19:59:48Z"
         }
       ],
@@ -2946,15 +2922,15 @@
         "groups": [
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           }
         ],
         "trophies": [
@@ -3592,7 +3568,7 @@
         "npCommunicationId": "NPWR50887_00"
       },
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 9:59:37 PM"
+      "lastUpdated": "5/4/2026, 10:01:39 PM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -3619,7 +3595,6 @@
           "progress": 11,
           "ratio": "26/135",
           "npCommunicationId": "NPWR41319_00",
-          "conceptId": null,
           "lastPlayed": "2026-04-02T04:32:33Z"
         },
         {
@@ -3628,7 +3603,6 @@
           "progress": 1,
           "ratio": "1/54",
           "npCommunicationId": "NPWR50656_00",
-          "conceptId": null,
           "lastPlayed": "2026-02-26T23:27:41Z"
         },
         {
@@ -3637,7 +3611,6 @@
           "progress": 22,
           "ratio": "10/46",
           "npCommunicationId": "NPWR44827_00",
-          "conceptId": "10009612",
           "lastPlayed": "2026-02-19T03:08:00Z"
         },
         {
@@ -3646,7 +3619,6 @@
           "progress": 24,
           "ratio": "27/115",
           "npCommunicationId": "NPWR13211_00",
-          "conceptId": "228868",
           "lastPlayed": "2025-12-02T02:17:44Z"
         },
         {
@@ -3655,7 +3627,6 @@
           "progress": 9,
           "ratio": "29/291",
           "npCommunicationId": "NPWR40455_00",
-          "conceptId": null,
           "lastPlayed": "2025-11-09T02:28:43Z"
         },
         {
@@ -3664,7 +3635,6 @@
           "progress": 5,
           "ratio": "7/158",
           "npCommunicationId": "NPWR24223_00",
-          "conceptId": null,
           "lastPlayed": "2025-10-19T20:00:25Z"
         }
       ],
@@ -3673,83 +3643,83 @@
         "groups": [
           {
             "progress": 34,
-            "earned": 23
+            "ratio": "23/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 7,
-            "earned": 1
+            "ratio": "1/--"
           },
           {
             "progress": 7,
-            "earned": 1
+            "ratio": "1/--"
           },
           {
             "progress": 16,
-            "earned": 1
+            "ratio": "1/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           },
           {
             "progress": 0,
-            "earned": 0
+            "ratio": "0/--"
           }
         ],
         "trophies": [
@@ -5718,7 +5688,7 @@
           "date": "4/3/2025, 5:26:08 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:59:39 PM"
+      "lastUpdated": "5/4/2026, 10:01:41 PM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -5745,7 +5715,6 @@
           "progress": 17,
           "ratio": "11/41",
           "npCommunicationId": "NPWR56684_00",
-          "conceptId": null,
           "lastPlayed": "2026-05-04T06:47:32Z"
         },
         {
@@ -5754,7 +5723,6 @@
           "progress": 17,
           "ratio": "2/25",
           "npCommunicationId": "NPWR19514_00",
-          "conceptId": null,
           "lastPlayed": "2026-04-12T05:27:06Z"
         },
         {
@@ -5763,7 +5731,6 @@
           "progress": 25,
           "ratio": "16/39",
           "npCommunicationId": "NPWR39871_00",
-          "conceptId": null,
           "lastPlayed": "2026-04-06T01:32:29Z"
         },
         {
@@ -5772,7 +5739,6 @@
           "progress": 1,
           "ratio": "1/53",
           "npCommunicationId": "NPWR25659_00",
-          "conceptId": null,
           "lastPlayed": "2026-03-22T06:13:40Z"
         },
         {
@@ -5781,7 +5747,6 @@
           "progress": 2,
           "ratio": "2/51",
           "npCommunicationId": "NPWR47309_00",
-          "conceptId": null,
           "lastPlayed": "2026-03-21T04:54:34Z"
         },
         {
@@ -5790,7 +5755,6 @@
           "progress": 0,
           "ratio": "0/59",
           "npCommunicationId": "NPWR12023_00",
-          "conceptId": null,
           "lastPlayed": "2026-03-19T23:11:13Z"
         }
       ],
@@ -5799,7 +5763,7 @@
         "groups": [
           {
             "progress": 17,
-            "earned": 11
+            "ratio": "11/--"
           }
         ],
         "trophies": [
@@ -6452,10 +6416,10 @@
           "date": "5/4/2026, 12:48:53 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:59:41 PM"
+      "lastUpdated": "5/4/2026, 10:01:42 PM"
     }
   },
-  "lastGlobalUpdate": "5/4/2026, 9:59:29 PM",
-  "engineVersion": "10.8.0",
+  "lastGlobalUpdate": "5/4/2026, 10:01:32 PM",
+  "engineVersion": "10.9.0",
   "codeTimestamp": "Monday, May 4, 2026 | 6:05 PM EDT"
 }
