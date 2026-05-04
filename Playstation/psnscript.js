@@ -22,12 +22,12 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 10.0.6 - Absolute Omni-Intelligence Protocol (Verification Audit Build)
+ * Version 10.0.7 - Absolute Omni-Intelligence Protocol (Identity & Live Pulse Fix)
  * Filepath: Playstation/psnscript.js
  * * * --- INSTANCE AUTHENTICATION ---
  * Last Generated: Monday, May 4, 2026
- * Timestamp: 4:45 PM EDT (New York Time)
- * Status: Production Ready - Live Test Optimized
+ * Timestamp: 4:55 PM EDT (New York Time)
+ * Status: Production Ready - Live Test (FS25) Final Optimization
  * * * --- PSN SYNC CHECKLIST (EVERYTHING BEING PULLED) ---
  * 1. IDENTITY: Permanent 19-digit AccountID, Current OnlineID (Gamer Tag).
  * 2. PRESENCE: Status (Online/Busy/Away), Status CSS Color, Platform (PS5/PS4), 
@@ -98,6 +98,10 @@ const parsePlaytime = (duration) => {
     return `${h ? h[1] + "h" : ""} ${m ? m[1] + "m" : ""}`.trim() || "0h";
 };
 
+/**
+ * getDetailedStatus
+ * Advanced Logic: Resolves Online, Busy, Away, or Offline with UI-Ready status colors.
+ */
 const getDetailedStatus = (p) => {
     if (!p) return { label: "Offline", color: "#64748b" };
     const status = (p.primaryPlatformInfo?.onlineStatus || "offline").toLowerCase();
@@ -112,11 +116,9 @@ const getDetailedStatus = (p) => {
 async function getAuthenticated(userKey, npssoInput) {
     let currentUserTokens = tokenStore[userKey] || {};
     const now = Math.floor(Date.now() / 1000);
-    
     if (currentUserTokens.accessToken && (currentUserTokens.expiryTime > now + 300)) {
         return { accessToken: currentUserTokens.accessToken };
     }
-
     if (currentUserTokens.refreshToken) {
         try {
             const refreshed = await exchangeRefreshTokenForAuthTokens(currentUserTokens.refreshToken);
@@ -129,7 +131,6 @@ async function getAuthenticated(userKey, npssoInput) {
             return refreshed;
         } catch (e) {}
     }
-
     if (npssoInput) {
         try {
             const accessCode = await exchangeNpssoForCode(npssoInput.trim());
@@ -149,39 +150,26 @@ async function getAuthenticated(userKey, npssoInput) {
 // --- ABSOLUTE OMNI-COLLECTOR ---
 async function getFullUserData(auth, label, targetId, existingData) {
     if (!auth || !targetId) return existingData || null;
-    console.log(`[SYNC] Omni-Protocol Harvest (v10.0.6): ${label}`);
+    console.log(`[SYNC] Omni-Protocol Harvest (v10.0.7): ${label}`);
     
     try {
-        // 1. IDENTITY & HARDWARE HANDSHAKE
+        // 1. IDENTITY, REGION & HARDWARE AUDIT
         const profile = await getProfileFromAccountId(auth, targetId);
         
         let region = { country: "US", language: "en" };
         let devices = { devices: [] };
-        
         if (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) {
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
             try { devices = await getAccountDevices(auth); } catch(e) {}
         }
         
+        // Presence Handshake (Uses "me" for maximum accuracy of token holder)
         const presenceId = (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) ? "me" : targetId;
         let p = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         try { p = await getBasicPresence(auth, presenceId); } catch(e) {}
 
-        const statusInfo = getDetailedStatus(p);
-        const activeGameInfo = p.gameTitleInfoList?.[0] || {};
-        
-        const presence = {
-            onlineId: profile.onlineId,
-            accountId: targetId,
-            online: statusInfo.label !== "Offline",
-            status: statusInfo.label,
-            statusColor: statusInfo.color,
-            currentGame: activeGameInfo.titleName || "Dashboard",
-            currentGameId: activeGameInfo.npTitleId || null,
-            currentCommunicationId: activeGameInfo.npCommunicationId || null,
-            platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5",
-            storeUrl: activeGameInfo.npCommunicationId ? `https://store.playstation.com/en-us/concept/${activeGameInfo.npCommunicationId}` : null
-        };
+        let statusInfo = getDetailedStatus(p);
+        let activeGameInfo = p.gameTitleInfoList?.[0] || {};
 
         // 2. TROPHY & PROGRESS ANALYTICS
         const stats = await getUserTrophyProfileSummary(auth, targetId);
@@ -189,6 +177,21 @@ async function getFullUserData(auth, label, targetId, existingData) {
 
         const { trophyTitles } = await getUserTitles(auth, targetId);
         const sortedTitles = (trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
+
+        // --- LIVE PULSE CHECK (FS25 Overrider) ---
+        // If the most recent game was updated in the last 10 minutes, force Online status.
+        if (statusInfo.label === "Offline" && sortedTitles.length > 0) {
+            const lastUpdated = new Date(sortedTitles[0].lastUpdatedDateTime).getTime();
+            const now = Date.now();
+            if (now - lastUpdated < 600000) { // 10 Minutes
+                statusInfo = { label: "Online", color: "#10b981" };
+                activeGameInfo = {
+                    titleName: sortedTitles[0].trophyTitleName,
+                    npCommunicationId: sortedTitles[0].npCommunicationId,
+                    npTitleId: sortedTitles[0].npCommunicationId // Fallback title ID
+                };
+            }
+        }
 
         const recentGames = [];
         let activeHunt = null;
@@ -203,18 +206,14 @@ async function getFullUserData(auth, label, targetId, existingData) {
 
             if (recentGames.length < 6) {
                 recentGames.push({
-                    name, 
-                    art: title.trophyTitleIconUrl,
-                    progress: title.progress,
-                    ratio: `${earnedTotal}/${definedTotal}`,
-                    hours: parsePlaytime(title.playDuration),
-                    npCommunicationId: title.npCommunicationId,
-                    lastPlayed: title.lastUpdatedDateTime,
+                    name, art: title.trophyTitleIconUrl, progress: title.progress,
+                    ratio: `${earnedTotal}/${definedTotal}`, hours: parsePlaytime(title.playDuration),
+                    npCommunicationId: title.npCommunicationId, lastPlayed: title.lastUpdatedDateTime,
                     storeUrl: `https://store.playstation.com/en-us/concept/${title.npCommunicationId}`
                 });
             }
 
-            if (!activeHunt || name === presence.currentGame) {
+            if (!activeHunt || name === activeGameInfo.titleName) {
                 try {
                     const { trophyGroups } = await getTitleTrophyGroups(auth, title.npCommunicationId, "all");
                     const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(auth, targetId, title.npCommunicationId, "all");
@@ -224,28 +223,19 @@ async function getFullUserData(auth, label, targetId, existingData) {
                         const s = earnedStatus.find(x => x.trophyId === m.trophyId);
                         const group = trophyGroups.find(g => g.trophyGroupId === m.trophyGroupId);
                         return { 
-                            name: m.trophyName, 
-                            type: m.trophyType, 
-                            icon: m.trophyIconUrl, 
-                            description: m.trophyDetail || "Secret Objective",
-                            rarity: m.trophyRare ? m.trophyRare + "%" : "Rare",
-                            earnedRate: m.trophyEarnedRate || "0.0",
-                            groupName: group?.trophyGroupName || "Base Game",
-                            earned: s?.earned || false, 
+                            name: m.trophyName, type: m.trophyType, icon: m.trophyIconUrl, description: m.trophyDetail || "Secret Objective",
+                            rarity: m.trophyRare ? m.trophyRare + "%" : "Rare", earnedRate: m.trophyEarnedRate || "0.0",
+                            groupName: group?.trophyGroupName || "Base Game", earned: s?.earned || false, 
                             earnedDate: s?.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString() : null,
                             timestamp: s?.earnedDateTime ? new Date(s.earnedDateTime).getTime() : 0,
-                            currentValue: s?.progress || 0,
-                            targetValue: m.trophyProgressTargetValue || 0
+                            currentValue: s?.progress || 0, targetValue: m.trophyProgressTargetValue || 0
                         };
                     });
 
-                    if (!activeHunt || name === presence.currentGame) {
+                    if (!activeHunt || name === activeGameInfo.titleName) {
                         activeHunt = { 
-                            title: name, 
-                            groups: trophyGroups.map(g => ({ id: g.trophyGroupId, name: g.trophyGroupName, icon: g.trophyGroupIconUrl })),
-                            trophies: mappedTrophies, 
-                            hours: parsePlaytime(title.playDuration),
-                            npCommunicationId: title.npCommunicationId
+                            title: name, groups: trophyGroups.map(g => ({ id: g.trophyGroupId, name: g.trophyGroupName, icon: g.trophyGroupIconUrl })),
+                            trophies: mappedTrophies, hours: parsePlaytime(title.playDuration), npCommunicationId: title.npCommunicationId
                         };
                     }
 
@@ -259,25 +249,17 @@ async function getFullUserData(auth, label, targetId, existingData) {
         mostRecentTrophies = mostRecentTrophies.sort((a,b) => b.timestamp - a.timestamp).slice(0, 10);
 
         return {
-            onlineId: profile.onlineId,
-            accountId: targetId,
-            ...presence, 
+            onlineId: profile.onlineId, accountId: targetId,
+            online: statusInfo.label !== "Offline", status: statusInfo.label, statusColor: statusInfo.color,
+            currentGame: activeGameInfo.titleName || "Dashboard",
+            currentCommunicationId: activeGameInfo.npCommunicationId || null,
+            platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5",
+            storeUrl: activeGameInfo.npCommunicationId ? `https://store.playstation.com/en-us/concept/${activeGameInfo.npCommunicationId}` : null,
             avatar: profile.avatars?.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url || "", 
-            bio: profile.aboutMe || "Official Pack Member", 
-            plus: profile.isPlus, 
-            level: stats.trophyLevel,
-            region: region.country || "US",
-            language: region.language || "en",
-            hardware: (devices.devices || []).map(d => ({ type: d.deviceType, name: d.deviceName })),
-            trophySummary: { 
-                platinum: stats.earnedTrophies?.platinum || 0, 
-                gold: stats.earnedTrophies?.gold || 0,
-                silver: stats.earnedTrophies?.silver || 0,
-                bronze: stats.earnedTrophies?.bronze || 0,
-                total: globalTotal 
-            },
-            recentGames, activeHunt, mostRecentTrophies,
-            lastUpdated: new Date().toLocaleString()
+            bio: profile.aboutMe || "Official Pack Member", plus: profile.isPlus, level: stats.trophyLevel,
+            region: region.country || "US", hardware: (devices.devices || []).map(d => ({ type: d.deviceType, name: d.deviceName })),
+            trophySummary: { platinum: stats.earnedTrophies?.platinum || 0, gold: stats.earnedTrophies?.gold || 0, silver: stats.earnedTrophies?.silver || 0, bronze: stats.earnedTrophies?.bronze || 0, total: globalTotal },
+            recentGames, activeHunt, mostRecentTrophies, lastUpdated: new Date().toLocaleString()
         };
     } catch (e) { 
         console.error(`[CRITICAL] Omni-Collector Error for ${label}:`, e.message);
@@ -285,18 +267,14 @@ async function getFullUserData(auth, label, targetId, existingData) {
     }
 }
 
-// --- MAIN EXECUTION LOOP ---
 async function main() {
-    console.log("[INIT] Starting Absolute Omni-Collector Sync Engine v10.0.6...");
+    console.log("[INIT] Starting Absolute Omni-Collector v10.0.7...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
-        users: {}, 
-        mutualPack: [], 
-        verificationLogs: [],
-        lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "10.0.6",
-        codeTimestamp: "Monday, May 4, 2026 | 4:45 PM EDT"
+        users: {}, mutualPack: [], verificationLogs: [], 
+        lastGlobalUpdate: new Date().toLocaleString(), engineVersion: "10.0.7",
+        codeTimestamp: "Monday, May 4, 2026 | 4:55 PM EDT"
     };
 
     try {
@@ -309,72 +287,61 @@ async function main() {
     const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
 
-    const verifyIdentity = async (auth, label) => {
+    // --- ID VERIFICATION (Determines Mutual Friend Base) ---
+    const squadAccess = { werewolf: [], ray: [] };
+    const verifyIdentity = async (auth, label, key) => {
         if (!auth) return;
         try {
-            console.log(`[VERIFY] Validating ${label} Identity Persistence...`);
+            console.log(`[VERIFY] Identity Audit: ${label}`);
             const response = await getUserFriendsAccountIds(auth, "me");
-            const friends = response.friends || [];
-            Object.entries(ACCOUNT_IDS).forEach(([key, id]) => {
-                if (key !== label.toLowerCase()) {
-                    finalData.verificationLogs.push({ agent: label, target: key, id, status: friends.includes(id) ? "VERIFIED" : "DISCOVERY_MODE" });
+            squadAccess[key] = response.friends || [];
+            Object.entries(ACCOUNT_IDS).forEach(([mKey, id]) => {
+                if (mKey !== key) {
+                    finalData.verificationLogs.push({ agent: label, target: mKey, id, status: squadAccess[key].includes(id) ? "VERIFIED" : "DISCOVERY_MODE" });
                 }
             });
         } catch (e) {}
     };
 
-    await verifyIdentity(wolfAuth, "Werewolf");
-    await verifyIdentity(rayAuth, "Ray");
+    await verifyIdentity(wolfAuth, "Werewolf", "werewolf");
+    await verifyIdentity(rayAuth, "Ray", "ray");
 
+    // Perform Deep Harvests for SQUAD
     const masterAuth = wolfAuth || rayAuth;
     for (const [key, id] of Object.entries(ACCOUNT_IDS)) {
-        const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : 
-                         (key === 'werewolf' && wolfAuth) ? wolfAuth : masterAuth;
-        
-        const label = SQUAD_MAP[key];
-        const data = await getFullUserData(agentAuth, label, id, finalData.users[key]);
+        const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : (key === 'werewolf' && wolfAuth) ? wolfAuth : masterAuth;
+        const data = await getFullUserData(agentAuth, SQUAD_MAP[key], id, finalData.users[key]);
         if (data) finalData.users[key] = data;
     }
 
-    const squadFriends = { werewolf: [], ray: [] };
-    if (wolfAuth) try { squadFriends.werewolf = (await getFriendsList(wolfAuth, ACCOUNT_IDS.werewolf)).friends || []; } catch(e){}
-    if (rayAuth) try { squadFriends.ray = (await getFriendsList(rayAuth, ACCOUNT_IDS.ray)).friends || []; } catch(e){}
-
-    const mutualMap = {};
-    squadFriends.werewolf.forEach(f => {
-        if (squadFriends.ray.some(rf => rf.onlineId === f.onlineId)) {
-            mutualMap[f.onlineId.toLowerCase()] = { sharedWith: [SQUAD_MAP.werewolf, SQUAD_MAP.ray] };
+    // --- MUTUAL DISCOVERY & UNIVERSAL LOBBY ---
+    // Hard-Check for squad members shared between agents
+    Object.entries(ACCOUNT_IDS).forEach(([key, id]) => {
+        const isMutual = squadAccess.werewolf.includes(id) && squadAccess.ray.includes(id);
+        if (isMutual) {
+            finalData.mutualPack.push({ onlineId: SQUAD_MAP[key], sharedLabel: "Mutual Pack Member" });
+            if (finalData.users[key]) finalData.users[key].isMutual = true;
         }
     });
 
-    const allUniqueFriends = [...squadFriends.werewolf, ...squadFriends.ray];
+    // Unified Discovery for all other friends
+    const allUniqueFriends = [...(wolfAuth ? (await getFriendsList(wolfAuth, ACCOUNT_IDS.werewolf)).friends || [] : []), ...(rayAuth ? (await getFriendsList(rayAuth, ACCOUNT_IDS.ray)).friends || [] : [])];
     for (const f of allUniqueFriends) {
         const idLower = f.onlineId.toLowerCase();
         const key = PSN_ID_TO_KEY[idLower] || f.onlineId;
         const statusInfo = getDetailedStatus(f.presence);
-        const isMutual = !!mutualMap[idLower];
+        const isMutual = squadAccess.werewolf.includes(f.accountId) && squadAccess.ray.includes(f.accountId);
         
         const lobbyData = {
-            onlineId: f.onlineId,
-            online: statusInfo.label !== "Offline",
-            status: statusInfo.label,
-            statusColor: statusInfo.color,
+            onlineId: f.onlineId, online: statusInfo.label !== "Offline", status: statusInfo.label, statusColor: statusInfo.color,
             currentGame: f.presence?.gameTitleInfoList?.[0]?.titleName || "Dashboard",
             platform: f.presence?.primaryPlatformInfo?.platform?.toUpperCase() || "PS5",
-            isMutual: isMutual,
-            sharedWith: isMutual ? mutualMap[idLower].sharedWith : [],
+            isMutual: isMutual, sharedWith: isMutual ? [SQUAD_MAP.werewolf, SQUAD_MAP.ray] : [],
             storeUrl: f.presence?.gameTitleInfoList?.[0]?.npCommunicationId ? `https://store.playstation.com/en-us/concept/${f.presence.gameTitleInfoList[0].npCommunicationId}` : null
         };
 
         if (!finalData.users[key]) finalData.users[key] = lobbyData;
         else Object.assign(finalData.users[key], lobbyData);
-
-        if (isMutual && !finalData.mutualPack.some(m => m.onlineId === f.onlineId)) {
-            finalData.mutualPack.push({ 
-                onlineId: f.onlineId, 
-                sharedLabel: `Friends with ${mutualMap[idLower].sharedWith.join(' & ')}` 
-            });
-        }
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
