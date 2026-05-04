@@ -5,7 +5,7 @@
       "accountId": "3728215008151724560",
       "online": true,
       "currentGame": "Dashboard",
-      "currentGameActivity": "Live on Twitch",
+      "currentGameActivity": "Streaming Live",
       "currentCommunicationId": null,
       "platform": "PS5",
       "twitch": {
@@ -1175,14 +1175,14 @@
           "date": "9/26/2025, 4:46:15 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:08:04 PM"
+      "lastUpdated": "5/4/2026, 11:11:57 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
       "accountId": "2732733730346312494",
       "online": true,
       "currentGame": "Dashboard",
-      "currentGameActivity": "Live on Twitch",
+      "currentGameActivity": "Streaming Live",
       "currentCommunicationId": null,
       "platform": "PS5",
       "twitch": {
@@ -1443,14 +1443,14 @@
           "date": "4/27/2026, 4:12:14 PM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:08:07 PM"
+      "lastUpdated": "5/4/2026, 11:11:59 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
       "accountId": "4398462806362115916",
       "online": true,
       "currentGame": "Dashboard",
-      "currentGameActivity": "Live on Twitch",
+      "currentGameActivity": "Streaming Live",
       "currentCommunicationId": null,
       "platform": "PS5",
       "twitch": {
@@ -2881,7 +2881,7 @@
           "date": "4/25/2026, 2:33:05 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:08:09 PM"
+      "lastUpdated": "5/4/2026, 11:12:01 PM"
     },
     "marc": {
       "onlineId": "ElucidatorVah",
@@ -3608,7 +3608,7 @@
         "npCommunicationId": "NPWR50887_00"
       },
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 11:08:12 PM"
+      "lastUpdated": "5/4/2026, 11:12:03 PM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -5751,7 +5751,7 @@
           "date": "4/3/2025, 5:26:08 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:08:14 PM"
+      "lastUpdated": "5/4/2026, 11:12:04 PM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -6483,10 +6483,36 @@
           "date": "5/4/2026, 3:03:28 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:08:16 PM"
+      "lastUpdated": "5/4/2026, 11:12:05 PM"
+    },
+    "mjolnir": {
+      "onlineId": "Michael (Mjolnir)",
+      "online": true,
+      "currentGame": "Police Simulator: Patrol Officers",
+      "twitch": {
+        "game": "Police Simulator: Patrol Officers",
+        "followers": "18",
+        "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/6b984b2f-9b16-43c6-a699-4fd019576faf-profile_image-300x300.png",
+        "age": "6 years, 1 month"
+      },
+      "lastUpdated": "5/4/2026, 11:12:06 PM",
+      "note": "Twitch-Active Status"
+    },
+    "phoenix": {
+      "onlineId": "Seth (Fluffy/Phoenix)",
+      "online": true,
+      "currentGame": "Werewolf: The Apocalypse - Earthblood",
+      "twitch": {
+        "game": "Werewolf: The Apocalypse - Earthblood",
+        "followers": "64",
+        "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-300x300.png",
+        "age": "8 years, 3 months"
+      },
+      "lastUpdated": "5/4/2026, 11:12:06 PM",
+      "note": "Twitch-Active Status"
     }
   },
-  "lastGlobalUpdate": "5/4/2026, 11:08:01 PM",
-  "engineVersion": "11.4.0",
+  "lastGlobalUpdate": "5/4/2026, 11:11:54 PM",
+  "engineVersion": "11.5.0",
   "codeTimestamp": "Monday, May 4, 2026 | 7:15 PM EDT"
 }
