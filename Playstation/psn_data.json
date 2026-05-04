@@ -72,24 +72,29 @@
         "title": "Sniper Elite: Resistance",
         "groups": [
           {
+            "name": "Sniper Elite: Resistance",
             "progress": 40,
-            "ratio": "22/--"
+            "ratio": "22/54"
           },
           {
+            "name": "Lights, Camera, ACHTUNG!",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/8"
           },
           {
+            "name": "Vercors Vendetta",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/3"
           },
           {
+            "name": "Striking Range",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/3"
           },
           {
+            "name": "Mud and Thunder",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/3"
           }
         ],
         "trophies": [
@@ -1162,7 +1167,7 @@
           "date": "9/26/2025, 4:46:15 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:01:35 PM"
+      "lastUpdated": "5/4/2026, 10:06:42 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -1236,8 +1241,9 @@
         "title": "Mahjong",
         "groups": [
           {
+            "name": "Mahjong",
             "progress": 50,
-            "ratio": "5/--"
+            "ratio": "5/10"
           }
         ],
         "trophies": [
@@ -1421,7 +1427,7 @@
           "date": "4/27/2026, 4:12:14 PM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:01:37 PM"
+      "lastUpdated": "5/4/2026, 10:06:44 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -1495,20 +1501,24 @@
         "title": "Wo Long: Fallen Dynasty",
         "groups": [
           {
+            "name": "Wo Long: Fallen Dynasty",
             "progress": 50,
-            "ratio": "35/--"
+            "ratio": "35/51"
           },
           {
+            "name": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/13"
           },
           {
+            "name": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/13"
           },
           {
+            "name": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/13"
           }
         ],
         "trophies": [
@@ -2847,7 +2857,7 @@
           "date": "4/25/2026, 2:33:05 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:01:38 PM"
+      "lastUpdated": "5/4/2026, 10:06:46 PM"
     },
     "marc": {
       "onlineId": "ElucidatorVah",
@@ -2921,16 +2931,19 @@
         "title": "Where Winds Meet",
         "groups": [
           {
+            "name": "Where Winds Meet",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/34"
           },
           {
+            "name": "Hexi",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/10"
           },
           {
+            "name": "Event",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/1"
           }
         ],
         "trophies": [
@@ -3568,7 +3581,7 @@
         "npCommunicationId": "NPWR50887_00"
       },
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 10:01:39 PM"
+      "lastUpdated": "5/4/2026, 10:06:47 PM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -3642,84 +3655,104 @@
         "title": "Minecraft: PlayStation®5 Edition",
         "groups": [
           {
+            "name": "Minecraft: PlayStation®5 Edition",
             "progress": 34,
-            "ratio": "23/--"
+            "ratio": "23/51"
           },
           {
+            "name": "Expansion Pack 1",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/6"
           },
           {
+            "name": "Expansion Pack 3",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/4"
           },
           {
+            "name": "Expansion Pack 4",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/7"
           },
           {
+            "name": "Expansion Pack 6",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/7"
           },
           {
+            "name": "Expansion Pack 7",
             "progress": 7,
-            "ratio": "1/--"
+            "ratio": "1/6"
           },
           {
+            "name": "Expansion Pack 8",
             "progress": 7,
-            "ratio": "1/--"
+            "ratio": "1/6"
           },
           {
+            "name": "Expansion Pack 9",
             "progress": 16,
-            "ratio": "1/--"
+            "ratio": "1/5"
           },
           {
+            "name": "Expansion Pack 10",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/6"
           },
           {
+            "name": "Expansion Pack 11",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/8"
           },
           {
+            "name": "Expansion Pack 12",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/4"
           },
           {
+            "name": "Expansion Pack 13",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/4"
           },
           {
+            "name": "Expansion Pack 14",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/3"
           },
           {
+            "name": "Expansion Pack 15",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/4"
           },
           {
+            "name": "Expansion Pack 16",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/4"
           },
           {
+            "name": "Expansion Pack 17",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/3"
           },
           {
+            "name": "Expansion Pack 18",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/4"
           },
           {
+            "name": "Expansion Pack 19",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/1"
           },
           {
+            "name": "Expansion Pack 20",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/1"
           },
           {
+            "name": "Expansion Pack 21",
             "progress": 0,
-            "ratio": "0/--"
+            "ratio": "0/1"
           }
         ],
         "trophies": [
@@ -5688,7 +5721,7 @@
           "date": "4/3/2025, 5:26:08 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:01:41 PM"
+      "lastUpdated": "5/4/2026, 10:06:49 PM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -5762,8 +5795,9 @@
         "title": "Trash Goblin",
         "groups": [
           {
+            "name": "Trash Goblin",
             "progress": 17,
-            "ratio": "11/--"
+            "ratio": "11/41"
           }
         ],
         "trophies": [
@@ -6416,10 +6450,10 @@
           "date": "5/4/2026, 12:48:53 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:01:42 PM"
+      "lastUpdated": "5/4/2026, 10:06:51 PM"
     }
   },
-  "lastGlobalUpdate": "5/4/2026, 10:01:32 PM",
-  "engineVersion": "10.9.0",
-  "codeTimestamp": "Monday, May 4, 2026 | 6:05 PM EDT"
+  "lastGlobalUpdate": "5/4/2026, 10:06:39 PM",
+  "engineVersion": "10.9.2",
+  "codeTimestamp": "Monday, May 4, 2026 | 6:15 PM EDT"
 }
