@@ -7,7 +7,6 @@
       "status": "Offline",
       "statusColor": "#64748b",
       "currentGame": "Dashboard",
-      "currentGameId": null,
       "currentCommunicationId": null,
       "platform": "PS5",
       "storeUrl": null,
@@ -16,7 +15,6 @@
       "plus": true,
       "level": 232,
       "region": "US",
-      "language": "en",
       "hardware": [],
       "trophySummary": {
         "platinum": 5,
@@ -1187,7 +1185,8 @@
           "date": "9/26/2025, 4:46:15 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 8:50:10 PM"
+      "lastUpdated": "5/4/2026, 9:24:29 PM",
+      "isMutual": false
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -1196,7 +1195,6 @@
       "status": "Offline",
       "statusColor": "#64748b",
       "currentGame": "Dashboard",
-      "currentGameId": null,
       "currentCommunicationId": null,
       "platform": "PS5",
       "storeUrl": null,
@@ -1205,7 +1203,6 @@
       "plus": true,
       "level": 202,
       "region": "US",
-      "language": "en",
       "hardware": [],
       "trophySummary": {
         "platinum": 5,
@@ -1467,7 +1464,8 @@
           "date": "4/27/2026, 4:12:14 PM"
         }
       ],
-      "lastUpdated": "5/4/2026, 8:50:12 PM"
+      "lastUpdated": "5/4/2026, 9:24:31 PM",
+      "isMutual": false
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -1476,7 +1474,6 @@
       "status": "Offline",
       "statusColor": "#64748b",
       "currentGame": "Dashboard",
-      "currentGameId": null,
       "currentCommunicationId": null,
       "platform": "PS5",
       "storeUrl": null,
@@ -1485,7 +1482,6 @@
       "plus": true,
       "level": 60,
       "region": "US",
-      "language": "en",
       "hardware": [],
       "trophySummary": {
         "platinum": 0,
@@ -2917,7 +2913,8 @@
           "date": "4/25/2026, 2:33:05 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 8:50:13 PM"
+      "lastUpdated": "5/4/2026, 9:24:32 PM",
+      "isMutual": false
     },
     "marc": {
       "onlineId": "ElucidatorVah",
@@ -2926,7 +2923,6 @@
       "status": "Offline",
       "statusColor": "#64748b",
       "currentGame": "Dashboard",
-      "currentGameId": null,
       "currentCommunicationId": null,
       "platform": "PS5",
       "storeUrl": null,
@@ -2935,7 +2931,6 @@
       "plus": true,
       "level": 188,
       "region": "US",
-      "language": "en",
       "hardware": [],
       "trophySummary": {
         "platinum": 1,
@@ -3661,7 +3656,8 @@
         "npCommunicationId": "NPWR50887_00"
       },
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 8:50:14 PM"
+      "lastUpdated": "5/4/2026, 9:24:33 PM",
+      "isMutual": false
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -3670,7 +3666,6 @@
       "status": "Offline",
       "statusColor": "#64748b",
       "currentGame": "Dashboard",
-      "currentGameId": null,
       "currentCommunicationId": null,
       "platform": "PS5",
       "storeUrl": null,
@@ -3679,7 +3674,6 @@
       "plus": true,
       "level": 60,
       "region": "US",
-      "language": "en",
       "hardware": [],
       "trophySummary": {
         "platinum": 0,
@@ -5821,7 +5815,8 @@
           "date": "4/3/2025, 5:26:08 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 8:50:15 PM"
+      "lastUpdated": "5/4/2026, 9:24:34 PM",
+      "isMutual": false
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -5830,7 +5825,6 @@
       "status": "Offline",
       "statusColor": "#64748b",
       "currentGame": "Dashboard",
-      "currentGameId": null,
       "currentCommunicationId": null,
       "platform": "PS5",
       "storeUrl": null,
@@ -5839,7 +5833,6 @@
       "plus": true,
       "level": 209,
       "region": "US",
-      "language": "en",
       "hardware": [],
       "trophySummary": {
         "platinum": 0,
@@ -6570,73 +6563,56 @@
           "date": "5/4/2026, 12:48:53 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 8:50:16 PM"
+      "lastUpdated": "5/4/2026, 9:24:35 PM",
+      "isMutual": false
     }
   },
   "mutualPack": [],
   "verificationLogs": [
     {
-      "agent": "Werewolf",
-      "target": "ray",
-      "id": "2732733730346312494",
-      "status": "VERIFIED"
-    },
-    {
-      "agent": "Werewolf",
-      "target": "darkwing",
-      "id": "4398462806362115916",
-      "status": "VERIFIED"
-    },
-    {
-      "agent": "Werewolf",
-      "target": "marc",
-      "id": "6551906246515882523",
-      "status": "VERIFIED"
-    },
-    {
-      "agent": "Werewolf",
-      "target": "jcrow",
-      "id": "7524753921019262614",
-      "status": "VERIFIED"
-    },
-    {
-      "agent": "Werewolf",
-      "target": "bunny",
-      "id": "7742137722487951585",
-      "status": "VERIFIED"
-    },
-    {
-      "agent": "Ray",
       "target": "werewolf",
       "id": "3728215008151724560",
-      "status": "VERIFIED"
+      "werewolf_sees": false,
+      "ray_sees": true,
+      "mutual": false
     },
     {
-      "agent": "Ray",
+      "target": "ray",
+      "id": "2732733730346312494",
+      "werewolf_sees": true,
+      "ray_sees": false,
+      "mutual": false
+    },
+    {
       "target": "darkwing",
       "id": "4398462806362115916",
-      "status": "DISCOVERY_MODE"
+      "werewolf_sees": true,
+      "ray_sees": false,
+      "mutual": false
     },
     {
-      "agent": "Ray",
       "target": "marc",
       "id": "6551906246515882523",
-      "status": "DISCOVERY_MODE"
+      "werewolf_sees": true,
+      "ray_sees": false,
+      "mutual": false
     },
     {
-      "agent": "Ray",
       "target": "jcrow",
       "id": "7524753921019262614",
-      "status": "DISCOVERY_MODE"
+      "werewolf_sees": true,
+      "ray_sees": false,
+      "mutual": false
     },
     {
-      "agent": "Ray",
       "target": "bunny",
       "id": "7742137722487951585",
-      "status": "DISCOVERY_MODE"
+      "werewolf_sees": true,
+      "ray_sees": false,
+      "mutual": false
     }
   ],
-  "lastGlobalUpdate": "5/4/2026, 8:50:08 PM",
-  "engineVersion": "10.0.6",
-  "codeTimestamp": "Monday, May 4, 2026 | 4:45 PM EDT"
+  "lastGlobalUpdate": "5/4/2026, 9:24:27 PM",
+  "engineVersion": "10.1.1",
+  "codeTimestamp": "Monday, May 4, 2026 | 5:10 PM EDT"
 }
