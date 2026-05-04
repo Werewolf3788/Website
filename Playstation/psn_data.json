@@ -62,7 +62,7 @@
         "platinum": 5,
         "total": 1276
       },
-      "lastUpdated": "5/4/2026, 3:32:53 PM"
+      "lastUpdated": "5/4/2026, 6:44:10 PM"
     },
     "ray": {
       "accountId": "2732733730346312494",
@@ -77,20 +77,6 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png",
           "progress": 50,
           "ratio": "5/10",
-          "hours": "0h"
-        },
-        {
-          "name": "Sniper Elite: Resistance",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
-          "progress": 0,
-          "ratio": "0/71",
-          "hours": "0h"
-        },
-        {
-          "name": "Farming Simulator 25",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
-          "progress": 100,
-          "ratio": "46/46",
           "hours": "0h"
         }
       ],
@@ -135,12 +121,12 @@
           "date": "4/27/2026, 4:12:14 PM"
         }
       ],
-      "dataStatus": "LIVE",
+      "dataStatus": "SYNCING",
       "trophies": {
         "platinum": 5,
         "total": 690
       },
-      "lastUpdated": "5/4/2026, 3:32:55 PM"
+      "lastUpdated": "5/4/2026, 6:44:11 PM"
     }
   },
   "systemAlerts": []
