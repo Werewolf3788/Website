@@ -24,13 +24,13 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 8.2.0 - Ultimate Deep-Intelligence Protocol
+ * Version 8.4.0 - Omni-Intelligence Revision (Identity & Progress Fix)
  * Filepath: Playstation/psnscript.js
  * * * DESCRIPTION:
- * The most advanced PSN data harvester available. It extracts core profile data,
- * hardware lists, region metadata, DLC trophy groups, PS5 progress trackers,
- * and performs cross-account mutual friend discovery for the Werewolf Pack.
- * * * SQUAD MEMBERS (Hardlinked Verified IDs):
+ * The ultimate data harvester. Fixes the "User not found" error by using the "me" 
+ * identity protocol for authenticated agents. Pulls deep trophies (22/100), 
+ * DLC groups, concept IDs, and bio metadata.
+ * * * SQUAD MEMBERS (Verified):
  * - Werewolf3788 (Kevin): 3728215008151724560
  * - OneLIVIDMAN (Ray): 2732733730346312494
  * - Darkwing69420 (TJ): 4398462806362115916
@@ -85,10 +85,6 @@ const parsePlaytime = (duration) => {
     return `${h ? h[1] + "h" : ""} ${m ? m[1] + "m" : ""}`.trim() || "0h";
 };
 
-/**
- * getDetailedStatus
- * Resolves Online, Busy, Away, or Offline with custom color codes for HTML mapping.
- */
 const getDetailedStatus = (p) => {
     if (!p) return { label: "Offline", color: "#64748b" };
     const status = (p.primaryPlatformInfo?.onlineStatus || "offline").toLowerCase();
@@ -100,7 +96,7 @@ const getDetailedStatus = (p) => {
     return { label: "Offline", color: "#64748b" };
 };
 
-// --- AUTHENTICATION ENGINE ---
+// --- AUTHENTICATION ---
 async function getAuthenticated(userKey, npssoInput) {
     let currentUserTokens = tokenStore[userKey] || {};
     const now = Math.floor(Date.now() / 1000);
@@ -138,40 +134,37 @@ async function getAuthenticated(userKey, npssoInput) {
     return null;
 }
 
-// --- ULTIMATE DEEP HARVESTER ---
+// --- DEEP HARVESTER ---
 async function getFullUserData(auth, label, targetOnlineId, existingData) {
     if (!auth) return existingData || null;
-    console.log(`[SYNC] Ultimate Deep-Dive: ${label}`);
+    console.log(`[SYNC] Omni-Pulse: ${label}`);
     
     try {
-        // 1. UNIVERSAL PROFILE & SYSTEM DATA
-        const bridgeProfile = await getProfileFromUserName(auth, targetOnlineId);
-        const accountId = bridgeProfile.profile.accountId;
-        const profile = await getProfileFromAccountId(auth, accountId);
-        const region = await getUserRegion(auth, accountId);
+        // 1. IDENTITY HANDSHAKE (Fixes "User not found")
+        // We use "me" for the primary user profile calls to avoid ID mismatch
+        const profile = await getProfileFromAccountId(auth, "me");
+        const accountId = profile.accountId;
+        const onlineId = profile.onlineId;
+        const region = await getUserRegion(auth, "me");
         const devices = await getAccountDevices(auth);
         
-        // 2. REAL-TIME PRESENCE & HARDWARE
         let p = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         try { p = await getBasicPresence(auth, accountId); } catch(e) {}
 
         const statusInfo = getDetailedStatus(p);
         const presence = {
+            onlineId, accountId,
             online: statusInfo.label !== "Offline",
             status: statusInfo.label,
             statusColor: statusInfo.color,
             currentGame: p.gameTitleInfoList?.[0]?.titleName || "Dashboard",
             currentGameId: p.gameTitleInfoList?.[0]?.npTitleId || null,
-            platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5",
-            availability: p.availability || "available",
-            lastPresenceUpdate: p.lastAvailableUpdate || new Date().toISOString()
+            platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5"
         };
 
-        // 3. OMNI-TROPHY STATS (Including granular types)
         const stats = await getUserTrophyProfileSummary(auth, accountId);
         const globalTotal = (stats.earnedTrophies?.platinum || 0) + (stats.earnedTrophies?.gold || 0) + (stats.earnedTrophies?.silver || 0) + (stats.earnedTrophies?.bronze || 0);
 
-        // 4. DEEP LIBRARY SCAN
         const { trophyTitles } = await getUserTitles(auth, accountId);
         const sortedTitles = (trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
 
@@ -188,18 +181,16 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
 
             if (recentGames.length < 6) {
                 recentGames.push({
-                    name, 
-                    art: title.trophyTitleIconUrl,
+                    name, art: title.trophyTitleIconUrl,
                     progress: title.progress,
                     ratio: `${earnedTotal}/${definedTotal}`,
                     hours: parsePlaytime(title.playDuration),
                     npCommunicationId: title.npCommunicationId,
-                    lastPlayed: title.lastUpdatedDateTime,
-                    platform: title.npServiceName === "trophy" ? "PS4/PS5" : "Legacy"
+                    lastPlayed: title.lastUpdatedDateTime
                 });
             }
 
-            // 5. TROPHY GROUP & PROGRESS SCAN (Captures DLC names and 22/100 values)
+            // TROPHY GROUP & PROGRESS SCAN
             if (!activeHunt || name === presence.currentGame) {
                 try {
                     const { trophyGroups } = await getTitleTrophyGroups(auth, title.npCommunicationId, "all");
@@ -219,7 +210,7 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
                             earned: s?.earned || false, 
                             earnedDate: s?.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString() : null,
                             timestamp: s?.earnedDateTime ? new Date(s.earnedDateTime).getTime() : 0,
-                            currentValue: s?.progress || 0,
+                            currentValue: s?.progress || 0, // PS5 22/100
                             targetValue: m.trophyProgressTargetValue || 0
                         };
                     });
@@ -241,18 +232,15 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
             }
         }
 
-        mostRecentTrophies = mostRecentTrophies.sort((a,b) => b.timestamp - a.timestamp).slice(0, 5);
+        mostRecentTrophies = mostRecentTrophies.sort((a,b) => b.timestamp - a.timestamp).slice(0, 10);
 
-        // 6. FINAL DATA PACK CONSTRUCTION
         return {
-            accountId,
-            ...presence, 
+            onlineId, accountId, ...presence, 
             avatar: profile.avatars?.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url || "", 
             bio: profile.aboutMe || "Official Pack Member", 
             plus: profile.isPlus, 
             level: stats.trophyLevel,
             region: region.country || "US",
-            language: region.language || "en",
             hardware: (devices.devices || []).map(d => ({ type: d.deviceType, name: d.deviceName })),
             trophySummary: { 
                 platinum: stats.earnedTrophies?.platinum || 0, 
@@ -261,32 +249,31 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
                 bronze: stats.earnedTrophies?.bronze || 0,
                 total: globalTotal 
             },
-            recentGames, 
-            activeHunt, 
-            mostRecentTrophies,
+            recentGames, activeHunt, mostRecentTrophies,
             lastUpdated: new Date().toLocaleString()
         };
     } catch (e) { 
-        console.error(`[CRITICAL] Harvest Error for ${label}:`, e.message);
+        console.error(`[CRITICAL] Harvest failed for ${label}:`, e.message);
         return existingData || null; 
     }
 }
 
 // --- MAIN ENGINE ---
 async function main() {
-    console.log("[INIT] Starting Master Sync Engine v8.2.0...");
+    console.log("[INIT] Starting Omni-Sync Engine v8.4.0...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
         users: {}, 
         mutualPack: [], 
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "8.2.0"
+        engineVersion: "8.4.0"
     };
 
     try {
         if (fs.existsSync(DATA_PATH)) {
-            finalData = JSON.parse(fs.readFileSync(DATA_PATH));
+            const backup = JSON.parse(fs.readFileSync(DATA_PATH));
+            finalData.users = backup.users || {};
         }
     } catch (e) {}
 
@@ -299,9 +286,8 @@ async function main() {
     if (wolfFull) finalData.users.werewolf = wolfFull;
     if (rayFull) finalData.users.ray = rayFull;
 
-    // --- MUTUAL DISCOVERY & UNIVERSAL LOBBY ---
+    // --- MUTUAL DISCOVERY ---
     const squadFriends = { werewolf: [], ray: [] };
-    
     if (wolfAuth) {
         try {
             const list = await getFriendsList(wolfAuth, ACCOUNT_IDS.werewolf);
@@ -317,11 +303,8 @@ async function main() {
 
     const mutualMap = {};
     squadFriends.werewolf.forEach(f => {
-        const rayMatch = squadFriends.ray.find(rf => rf.onlineId === f.onlineId);
-        if (rayMatch) {
-            mutualMap[f.onlineId.toLowerCase()] = { 
-                sharedWith: ["Werewolf3788", "OneLIVIDMAN"]
-            };
+        if (squadFriends.ray.some(rf => rf.onlineId === f.onlineId)) {
+            mutualMap[f.onlineId.toLowerCase()] = { sharedWith: ["Werewolf3788", "OneLIVIDMAN"] };
         }
     });
 
@@ -333,35 +316,33 @@ async function main() {
         const isMutual = !!mutualMap[idLower];
         
         const lobbyData = {
+            onlineId: f.onlineId,
             online: statusInfo.label !== "Offline",
             status: statusInfo.label,
             statusColor: statusInfo.color,
             currentGame: f.presence?.gameTitleInfoList?.[0]?.titleName || "Dashboard",
-            currentGameId: f.presence?.gameTitleInfoList?.[0]?.npCommunicationId || null,
             platform: f.presence?.primaryPlatformInfo?.platform?.toUpperCase() || "PS5",
             isMutual: isMutual,
             sharedWith: isMutual ? mutualMap[idLower].sharedWith : [],
             storeUrl: f.presence?.gameTitleInfoList?.[0]?.npCommunicationId ? `https://store.playstation.com/en-us/concept/${f.presence.gameTitleInfoList[0].npCommunicationId}` : null
         };
 
-        if (!finalData.users[key]) {
-            finalData.users[key] = lobbyData;
-        } else {
-            // Merge lobby status into harvested data without overwriting bios/system info
-            Object.assign(finalData.users[key], lobbyData);
-        }
+        if (!finalData.users[key]) finalData.users[key] = lobbyData;
+        else Object.assign(finalData.users[key], lobbyData);
     }
 
-    // Shadow Sync remaining Squad members via master auth
+    // Shadow Sync for Squad
     const masterAuth = wolfAuth || rayAuth;
     if (masterAuth) {
         for (const [key, accountId] of Object.entries(ACCOUNT_IDS)) {
-            if (finalData.users[key] && finalData.users[key].lastUpdated) continue;
+            if (finalData.users[key]?.lastUpdated) continue;
             try {
                 const p = await getBasicPresence(masterAuth, accountId);
                 const s = getDetailedStatus(p);
                 finalData.users[key] = {
                     ...finalData.users[key],
+                    onlineId: SQUAD_MAP[key],
+                    accountId: accountId,
                     online: s.label !== "Offline",
                     status: s.label,
                     statusColor: s.color,
@@ -373,7 +354,7 @@ async function main() {
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] Ultimate Sync Complete. v${finalData.engineVersion}`);
+    console.log(`[SUCCESS] Identity Sync Complete. v${finalData.engineVersion}`);
 }
 
 main();
