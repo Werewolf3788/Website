@@ -5,6 +5,7 @@
       "accountId": "3728215008151724560",
       "online": false,
       "currentGame": "Dashboard",
+      "currentGameActivity": null,
       "currentCommunicationId": null,
       "platform": "PS5",
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0004_s.png",
@@ -1168,13 +1169,14 @@
           "date": "9/26/2025, 4:46:15 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:25:30 PM"
+      "lastUpdated": "5/4/2026, 10:35:17 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
       "accountId": "2732733730346312494",
       "online": false,
       "currentGame": "Dashboard",
+      "currentGameActivity": null,
       "currentCommunicationId": null,
       "platform": "PS5",
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
@@ -1429,13 +1431,14 @@
           "date": "4/27/2026, 4:12:14 PM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:25:32 PM"
+      "lastUpdated": "5/4/2026, 10:35:19 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
       "accountId": "4398462806362115916",
       "online": false,
       "currentGame": "Dashboard",
+      "currentGameActivity": null,
       "currentCommunicationId": null,
       "platform": "PS5",
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
@@ -2860,13 +2863,14 @@
           "date": "4/25/2026, 2:33:05 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:25:33 PM"
+      "lastUpdated": "5/4/2026, 10:35:20 PM"
     },
     "marc": {
       "onlineId": "ElucidatorVah",
       "accountId": "6551906246515882523",
       "online": false,
       "currentGame": "Dashboard",
+      "currentGameActivity": null,
       "currentCommunicationId": null,
       "platform": "PS5",
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_A/A2073_s.png",
@@ -3585,13 +3589,14 @@
         "npCommunicationId": "NPWR50887_00"
       },
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 10:25:35 PM"
+      "lastUpdated": "5/4/2026, 10:35:22 PM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
       "accountId": "7524753921019262614",
       "online": false,
       "currentGame": "Dashboard",
+      "currentGameActivity": null,
       "currentCommunicationId": null,
       "platform": "PS5",
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0021_s.png",
@@ -5726,13 +5731,14 @@
           "date": "4/3/2025, 5:26:08 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:25:36 PM"
+      "lastUpdated": "5/4/2026, 10:35:23 PM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
       "accountId": "7742137722487951585",
       "online": false,
       "currentGame": "Dashboard",
+      "currentGameActivity": null,
       "currentCommunicationId": null,
       "platform": "PS5",
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/SCEI/I0001_s.png",
@@ -6456,10 +6462,10 @@
           "date": "5/4/2026, 12:48:53 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 10:25:38 PM"
+      "lastUpdated": "5/4/2026, 10:35:25 PM"
     }
   },
-  "lastGlobalUpdate": "5/4/2026, 10:25:26 PM",
-  "engineVersion": "11.2.0",
-  "codeTimestamp": "Monday, May 4, 2026 | 6:25 PM EDT"
+  "lastGlobalUpdate": "5/4/2026, 10:35:14 PM",
+  "engineVersion": "11.2.1",
+  "codeTimestamp": "Monday, May 4, 2026 | 6:35 PM EDT"
 }
