@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <!-- 
-    Version: 10.5.2-Ray - Universal CSV Dynamic Menu | Mobile Sandwich | Cardinal Red | Gapless Layout | Locked Nav 
+    Version: 10.5.3-Ray - Universal CSV Dynamic Menu | Mobile Sandwich | Cardinal Red | JSON v12.1.0 Sync | Amazon Affiliate
     Global Standards: S:50 R:30 B:14 H:30
     Author: Kevin (Werewolf3788) Admin Engine
-    Last Updated: May 4, 2026 - 7:15 PM (New York Time)
+    Last Updated: May 4, 2026 - 7:31 PM (New York Time)
 -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="900"> <!-- Hard Refresh every 15 minutes -->
     <title>RayMystyro | Pack Dashboard</title>
     
     <!-- --- GOOGLE ANALYTICS (WEREWOLF GLOBAL) --- -->
@@ -20,7 +21,7 @@
         gtag('config', 'G-Z9M5LXQ5XN', {
             'page_type': 'dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '10.5.2',
+            'layout_version': '10.5.3',
             'user_id': 'OneLIVIDMAN'
         });
     </script>
@@ -93,7 +94,6 @@
         }
         .nav-link:hover, .nav-link.active { color: var(--accent-red); }
 
-        /* DROPDOWN STABILITY FIX */
         .dropdown { position: relative; display: inline-block; padding-bottom: 5px; }
         .dropdown-content {
             display: none; position: absolute; top: 100%; left: 0;
@@ -146,19 +146,16 @@
         
         .glass-card:hover { border-color: var(--accent-red); transform: translateY(-3px); }
 
-        /* CENTERED STAT CARD SPECIFICS */
         .header-stat-card {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 180px; /* MOBILE HEIGHT */
+            min-height: 180px;
         }
 
         @media (min-width: 1024px) {
-            .header-stat-card {
-                min-height: 280px; /* DESKTOP HEIGHT FOR CENTERING */
-            }
+            .header-stat-card { min-height: 280px; }
         }
 
         .red-gradient-text {
@@ -167,7 +164,6 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* --- PLUS BADGE (IMG BASED) --- */
         .plus-badge-img {
             height: 24px;
             width: auto;
@@ -179,7 +175,7 @@
         }
         .plus-badge-img:hover { transform: scale(1.1); }
 
-        /* --- TROPHY LIST & BREAKDOWN --- */
+        /* --- TROPHY LIST --- */
         .trophy-row {
             display: grid;
             grid-template-columns: 50px 1fr auto;
@@ -342,47 +338,57 @@
             <h1 class="red-gradient-text mb-4">RayMystyro<span id="plus-badge-container"></span></h1>
             <div class="text-[10px] lg:text-[18px] font-black text-gray-500 uppercase tracking-[0.5em] mb-12">Official Pack Member Dashboard</div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 max-w-6xl mx-auto text-center">
-                <!-- TWITCH STATS (CENTERED) -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 max-w-7xl mx-auto text-center">
+                <!-- TWITCH STATS -->
                 <a href="https://www.twitch.tv/raymystyro" target="_blank" class="glass-card header-stat-card p-5 lg:p-10 border-b-4 border-[#C41E3A] transition-all hover:bg-red-900/10">
                     <div class="text-[10px] lg:text-[14px] text-red-400 font-black mb-1 uppercase">Twitch Followers</div>
                     <div id="follower-count" class="text-3xl lg:text-6xl font-black text-white">--</div>
+                    <div id="twitch-status-msg" class="text-[7px] lg:text-[9px] text-gray-400 font-bold uppercase mt-2 italic">"--"</div>
+                    <div id="twitch-age" class="text-[8px] lg:text-[10px] text-gray-600 font-black uppercase mt-1">Age: --</div>
                 </a>
 
-                <!-- PSN LEVEL (CENTERED) -->
+                <!-- PSN LEVEL -->
                 <div class="glass-card header-stat-card p-5 lg:p-10 border-b-4 border-[#7d1225]">
                     <div class="text-[10px] lg:text-[14px] text-red-700 font-black mb-1 uppercase tracking-widest">PSN Level</div>
                     <div id="psn-level-label" class="text-3xl lg:text-6xl font-black text-white">--</div>
+                    <div id="psn-region" class="text-[8px] lg:text-[10px] text-gray-500 font-bold uppercase mt-2">Region: US</div>
                 </div>
 
-                <!-- TOTAL TROPHIES (HIDDEN IF 0 - CENTERED) -->
+                <!-- TOTAL TROPHIES -->
                 <div id="trophy-card" class="glass-card header-stat-card p-5 lg:p-10 border-b-4 border-yellow-500">
                     <div class="text-[10px] lg:text-[14px] text-yellow-500 font-black mb-1 uppercase tracking-widest">Total Trophies</div>
                     <div id="trophy-total" class="text-3xl lg:text-6xl font-black text-white mb-4">--</div>
                     
-                    <!-- DYNAMIC BREAKDOWN -->
                     <div class="grid grid-cols-4 gap-2 pt-4 border-t border-white/5 w-full">
                         <div class="flex flex-col items-center">
-                            <i class="fas fa-trophy text-blue-300 text-xs lg:text-sm mb-1"></i>
+                            <i class="fas fa-trophy text-blue-300 text-xs mb-1"></i>
                             <div id="plat-count" class="mini-stat-value">0</div>
                             <div class="mini-stat-label">P</div>
                         </div>
                         <div class="flex flex-col items-center">
-                            <i class="fas fa-trophy text-amber-400 text-xs lg:text-sm mb-1"></i>
+                            <i class="fas fa-trophy text-amber-400 text-xs mb-1"></i>
                             <div id="gold-count" class="mini-stat-value">0</div>
                             <div class="mini-stat-label">G</div>
                         </div>
                         <div class="flex flex-col items-center">
-                            <i class="fas fa-trophy text-slate-400 text-xs lg:text-sm mb-1"></i>
+                            <i class="fas fa-trophy text-slate-400 text-xs mb-1"></i>
                             <div id="silver-count" class="mini-stat-value">0</div>
                             <div class="mini-stat-label">S</div>
                         </div>
                         <div class="flex flex-col items-center">
-                            <i class="fas fa-trophy text-orange-700 text-xs lg:text-sm mb-1"></i>
+                            <i class="fas fa-trophy text-orange-700 text-xs mb-1"></i>
                             <div id="bronze-count" class="mini-stat-value">0</div>
                             <div class="mini-stat-label">B</div>
                         </div>
                     </div>
+                </div>
+
+                <!-- CURRENT STATUS -->
+                <div class="glass-card header-stat-card p-5 lg:p-10 border-b-4 border-green-500">
+                    <div id="online-status-label" class="text-[14px] lg:text-[20px] font-black text-white uppercase text-center leading-tight">Initializing</div>
+                    <div id="current-game-sub" class="text-[8px] lg:text-[11px] text-green-400 font-black uppercase mt-1">Connecting...</div>
+                    <div id="current-activity" class="text-[7px] lg:text-[9px] text-gray-500 font-bold uppercase mt-2">Activity: --</div>
+                    <div id="current-platform" class="text-[7px] lg:text-[9px] text-gray-600 font-black uppercase mt-1 tracking-tighter">System: PS5</div>
                 </div>
             </div>
         </div>
@@ -400,14 +406,18 @@
                             <p id="profile-bio" class="leading-relaxed text-gray-400 text-base lg:text-xl">Official Pack Member Profile</p>
                         </section>
 
+                        <!-- LAST PLAYED HERO SECTION -->
                         <section id="last-played-hero" class="glass-card overflow-hidden">
                             <div class="p-8 lg:p-12 pb-4">
-                                <h2 class="mb-6 text-red-500 flex items-center gap-3"><i class="fas fa-history"></i> Last Played</h2>
+                                <h2 class="mb-6 text-red-500 flex items-center gap-3 uppercase"><i class="fas fa-history"></i> Last Played</h2>
                             </div>
-                            <div class="relative w-full aspect-video bg-red-900/10 border-y border-white/5">
+                            <a id="active-game-affiliate-link" href="#" target="_blank" class="block relative w-full aspect-video bg-red-900/10 border-y border-white/5 group">
                                 <img id="active-game-art" src="" class="w-full h-full object-cover hidden">
                                 <div id="active-game-fallback" class="w-full h-full flex items-center justify-center"><i class="fab fa-playstation text-7xl text-red-500/30"></i></div>
-                            </div>
+                                <div class="absolute inset-0 bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                    <div class="px-6 py-2 bg-black/80 rounded-full border border-red-500 text-red-500 font-black text-xs uppercase tracking-widest">Buy on Amazon</div>
+                                </div>
+                            </a>
                             <div class="p-8 lg:p-12">
                                 <div id="active-game-title" class="text-xl lg:text-4xl font-black text-white mb-6 uppercase leading-tight">---</div>
                                 <div class="space-y-4 bg-white/5 p-6 rounded-2xl border border-white/5">
@@ -426,7 +436,8 @@
                     </div>
 
                     <div class="flex flex-col gap-8 lg:gap-12">
-                        <section class="glass-card p-8 lg:p-12">
+                        <!-- RECENT HUNTS -->
+                        <section id="recent-hunts-section" class="glass-card p-8 lg:p-12">
                             <h2 class="mb-10 text-red-500 text-center uppercase tracking-widest">Recent Hunts</h2>
                             <div id="recent-games-container" class="grid grid-cols-2 gap-4"></div>
                         </section>
@@ -444,13 +455,29 @@
             <!-- RIGHT COLUMN -->
             <div class="flex flex-col gap-8 lg:gap-12">
                 <section id="recent-trophy-card" class="glass-card p-8 border-t-4 border-yellow-500 hidden">
-                    <h2 class="text-yellow-500 flex items-center gap-3 mb-6"><i class="fas fa-trophy"></i> Recently Earned</h2>
+                    <h2 class="text-yellow-500 flex items-center gap-3 mb-6 uppercase"><i class="fas fa-trophy"></i> Recently Earned</h2>
                     <div class="flex gap-4 items-center bg-white/5 p-4 rounded-xl">
                         <img id="last-trophy-icon" src="" class="w-16 h-16 rounded-lg">
                         <div class="min-w-0 flex-1">
                             <div id="last-trophy-name" class="font-black text-white uppercase truncate">---</div>
                             <div id="last-trophy-game" class="text-[10px] font-black text-yellow-500 uppercase truncate">---</div>
                         </div>
+                    </div>
+                </section>
+
+                <section id="ps-plus-section" class="glass-card p-8 border-b-4 border-blue-600">
+                    <h2 class="mb-6 text-blue-500 flex items-center justify-center gap-3 uppercase tracking-tighter">
+                        <i class="fab fa-playstation"></i> PS Plus Premium
+                    </h2>
+                    <div class="flex justify-center group">
+                        <a id="ps-plus-affiliate" href="https://www.playstation.com/en-us/ps-plus/" target="_blank">
+                            <img src="https://gmedia.playstation.com/is/image/SIEPDC/ps-plus-black-badge-01-22sep20?$400px--t$" alt="PS Plus Premium" class="rounded-2xl border border-white/10 group-hover:border-blue-500 transition-all duration-300 shadow-2xl">
+                        </a>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <a href="https://www.playstation.com/en-us/ps-plus/" target="_blank" class="text-[10px] font-black text-gray-500 uppercase tracking-widest hover:text-blue-400 transition-colors">
+                            Membership Status: ACTIVE <i class="fas fa-external-link-alt ml-1"></i>
+                        </a>
                     </div>
                 </section>
 
@@ -464,7 +491,7 @@
                 </section>
 
                 <section class="glass-card p-8 lg:p-12 space-y-5">
-                    <h2 class="mb-6 opacity-60 text-center tracking-widest">Support & Socials</h2>
+                    <h2 class="mb-6 opacity-60 text-center tracking-widest uppercase text-xs">Support & Socials</h2>
                     <a href="https://amzn.to/4n3OpPL" target="_blank" class="flex items-center p-6 rounded-2xl bg-[#FF9900]/10 border border-[#FF9900]/30 hover:border-[#FF9900] transition-all group">
                         <i class="fab fa-amazon text-4xl text-[#FF9900] group-hover:scale-110 transition-transform"></i>
                         <div class="flex-1 ml-5 text-left"><div class="font-black lg:text-xl text-white">Amazon Store</div><div class="text-[10px] text-gray-500 uppercase">Support the Pack</div></div>
@@ -473,7 +500,7 @@
             </div>
         </div>
         <div class="text-center mt-12 text-[10px] font-black text-gray-700 uppercase tracking-[0.4em]">Wolf Admin Handshake: <span id="sync-time">--</span></div>
-    </header>
+    </main>
 
     <script>
         const REPO_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/";
@@ -488,7 +515,7 @@
             try {
                 const response = await fetch(MENU_CSV_URL + "&t=" + Date.now());
                 const csvData = await response.text();
-                const rows = csvData.split('\n').slice(1); // Skip header
+                const rows = csvData.split('\n').slice(1);
 
                 const menuData = [];
                 rows.forEach(row => {
@@ -516,7 +543,6 @@
                 });
 
                 let menuHtml = "";
-                
                 flatLinks.forEach(item => {
                     const activeClass = window.location.href.includes(item.url) ? 'active' : '';
                     menuHtml += `<a href="${item.url}" class="nav-link ${activeClass}">${item.name}</a>`;
@@ -532,11 +558,9 @@
                         </div>
                     `;
                 }
-
                 menuContainer.innerHTML = menuHtml;
             } catch (e) {
                 console.error("Menu Sync Error:", e);
-                document.getElementById('nav-links').innerHTML = `<a href="/" class="nav-link">Home</a>`;
             }
         }
 
@@ -544,8 +568,9 @@
             document.getElementById('nav-links').classList.toggle('active');
         }
 
-        function openStore(gameName) { 
-            window.open(`https://store.playstation.com/en-us/search/${encodeURIComponent(gameName)}`, '_blank'); 
+        function openStore(gameName, affiliateUrl) { 
+            const target = affiliateUrl || `https://store.playstation.com/en-us/search/${encodeURIComponent(gameName)}`;
+            window.open(target, '_blank'); 
         }
 
         function openTrophyLightbox(index) {
@@ -568,7 +593,7 @@
         function refreshMusic() {
             const img = document.getElementById('music-widget-img');
             const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=10.5.2`;
+            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=10.5.3`;
         }
 
         async function updateTwitch() {
@@ -580,72 +605,110 @@
 
         async function updateHub() {
             try {
-                const res = await fetch(REPO_BASE + "Playstation/psn_data.json?v=10.5.2&t=" + Date.now());
-                const data = await res.json();
+                const res = await fetch(REPO_BASE + "Playstation/psn_data.json?v=10.5.3&t=" + Date.now());
+                let text = await res.text();
                 
+                // --- JSON RESILIENCE FIX ---
+                text = text.replace(/:\s*True\b/g, ': true').replace(/:\s*False\b/g, ': false');
+                
+                const data = JSON.parse(text);
                 const ray = data.users.ray || data.users.Ray;
+                
                 const healthDot = document.getElementById('health-dot');
                 const healthValue = document.getElementById('health-value');
 
                 if (ray) {
-                    // Handshake Logic
+                    // Handshake
                     if (data.systemAlerts && data.systemAlerts.some(a => a.user === 'Ray')) {
                         healthDot.className = "status-dot-pulse bg-red-500";
                         healthValue.innerText = "Key: Expired";
                     } else {
                         healthDot.className = "status-dot-pulse online";
-                        healthValue.innerText = "Ray Key: Good";
+                        healthValue.innerText = ray.onlineId + " Key: Good";
                     }
 
                     // Profile Content
                     document.getElementById('main-avatar').src = ray.avatar || "";
-                    document.getElementById('profile-bio').innerText = ray.bio || ray.aboutMe || "Official Pack Member Profile";
+                    document.getElementById('profile-bio').innerText = ray.bio || "Official Pack Member Profile";
                     document.getElementById('psn-level-label').innerText = ray.level || "--";
+                    document.getElementById('psn-region').innerText = "Region: " + (ray.region || "US");
+                    document.getElementById('sync-time').innerText = ray.lastUpdated || "--";
+
+                    // Status & Activity (v12.1.0)
+                    const statusLabel = document.getElementById('online-status-label');
+                    const gameSub = document.getElementById('current-game-sub');
+                    const activityLabel = document.getElementById('current-activity');
+                    const platformLabel = document.getElementById('current-platform');
                     
-                    // --- TROPHY SUMMARY LOGIC ---
+                    if (ray.online) {
+                        statusLabel.innerText = "Online";
+                        statusLabel.className = "text-[14px] lg:text-[20px] font-black text-green-500 uppercase text-center leading-tight";
+                        gameSub.innerText = ray.currentGame || "Dashboard";
+                        activityLabel.innerText = "Activity: " + (ray.currentGameActivity || "Active");
+                        platformLabel.innerText = "System: " + (ray.platform || "PS5");
+                    } else {
+                        statusLabel.innerText = "Offline";
+                        statusLabel.className = "text-[14px] lg:text-[20px] font-black text-gray-500 uppercase text-center leading-tight";
+                        gameSub.innerText = "Currently Away";
+                        activityLabel.innerText = "Activity: Idle";
+                        platformLabel.innerText = "System: PS5";
+                    }
+
+                    // Twitch Heritage
+                    if (ray.twitch) {
+                        document.getElementById('twitch-age').innerText = "Age: " + (ray.twitch.age || "Unknown");
+                        document.getElementById('twitch-status-msg').innerText = `"${ray.twitch.statusMessage || 'Active'}"`;
+                    }
+
+                    // Trophy Card
                     const summary = ray.trophySummary || ray.trophies || {};
                     const totalTrophiesCount = summary.total || 0;
                     const trophyCard = document.getElementById('trophy-card');
 
-                    // If total is 0, hide the card
                     if (totalTrophiesCount === 0) {
                         trophyCard.classList.add('hidden');
                     } else {
                         trophyCard.classList.remove('hidden');
                         document.getElementById('trophy-total').innerText = totalTrophiesCount.toLocaleString();
-                        
-                        // Populate Specific Trophies
                         document.getElementById('plat-count').innerText = summary.platinum || 0;
                         document.getElementById('gold-count').innerText = summary.gold || 0;
                         document.getElementById('silver-count').innerText = summary.silver || 0;
                         document.getElementById('bronze-count').innerText = summary.bronze || 0;
                     }
 
-                    document.getElementById('sync-time').innerText = ray.lastUpdated || "--";
-                    
                     // PS Plus Status Branding
                     document.getElementById('plus-badge-container').innerHTML = ray.plus ? 
                         `<a href="${PLUS_LINK}" target="_blank"><img src="${PLUS_IMG}" class="plus-badge-img"></a>` : '';
 
-                    // Active Hunt Data
+                    // Active Hunt
                     if (ray.activeHunt) {
                         const hunt = ray.activeHunt;
+                        document.getElementById('last-played-hero').classList.remove('hidden');
                         currentTrophyData = hunt.trophies || []; 
                         document.getElementById('active-game-title').innerText = hunt.title || "---";
                         document.getElementById('active-game-time').innerText = hunt.hours || "0h";
                         
-                        const totalListCount = Math.max(currentTrophyData.length, 1);
+                        const affiliateLink = document.getElementById('active-game-affiliate-link');
+                        affiliateLink.href = hunt.amazonAffiliateUrl || `https://store.playstation.com/en-us/search/${encodeURIComponent(hunt.title)}`;
+
                         const earnedTrophies = currentTrophyData.filter(t => t.earned);
                         document.getElementById('active-game-ratio').innerText = `${earnedTrophies.length}/${currentTrophyData.length}`;
                         
-                        const pct = Math.round((earnedTrophies.length / totalListCount) * 100);
+                        const pct = Math.round((earnedTrophies.length / Math.max(currentTrophyData.length, 1)) * 100);
                         document.getElementById('active-game-progress-text').innerText = pct + "%";
                         document.getElementById('active-game-progress-fill').style.width = pct + "%";
 
-                        if (ray.recentGames?.[0]?.art) {
-                            const art = document.getElementById('active-game-art');
-                            art.src = ray.recentGames[0].art; art.classList.remove('hidden');
-                            document.getElementById('active-game-fallback').classList.add('hidden');
+                        const huntArt = ray.currentGameArt || (ray.recentGames?.[0]?.art);
+                        const artImg = document.getElementById('active-game-art');
+                        const fallbackBox = document.getElementById('active-game-fallback');
+
+                        if (huntArt) {
+                            artImg.src = huntArt; 
+                            artImg.classList.remove('hidden');
+                            fallbackBox.classList.add('hidden');
+                        } else {
+                            artImg.classList.add('hidden');
+                            fallbackBox.classList.remove('hidden');
                         }
 
                         if (earnedTrophies.length > 0) {
@@ -657,7 +720,7 @@
                         }
 
                         document.getElementById('trophy-checklist-container').innerHTML = currentTrophyData.map((t, idx) => {
-                            let rightCol = t.earned ? `<div class="earned-tag">EARNED</div><div class="text-[9px] text-gray-500 text-right uppercase">${t.earnedDate.split(',')[0]}</div>` : `<div class="text-[10px] font-black uppercase text-gray-600">${t.rarity || t.type}</div>`;
+                            let rightCol = t.earned ? `<div class="earned-tag text-green-500 font-black text-[10px]">EARNED</div><div class="text-[9px] text-gray-500 text-right uppercase">${t.earnedDate.split(',')[0]}</div>` : `<div class="text-[10px] font-black uppercase text-gray-600">${t.rarity || t.type}</div>`;
                             return `<div class="trophy-row" onclick="openTrophyLightbox(${idx})">
                                 <img src="${t.icon}" class="trophy-icon-sq">
                                 <div class="min-w-0 flex-1"><div class="trophy-title-text truncate">${t.name}</div><div class="trophy-desc-text truncate">${t.description}</div></div>
@@ -670,7 +733,7 @@
                     document.getElementById('recent-games-container').innerHTML = (ray.recentGames || []).slice(0, 6).map(g => {
                         const is100 = parseInt(g.progress) >= 100;
                         return `
-                        <div class="game-thumb ${is100 ? 'platinum-glow' : ''}" onclick="openStore('${g.name}')">
+                        <div class="game-thumb ${is100 ? 'platinum-glow' : ''}" onclick="openStore('${g.name}', '${g.amazonAffiliateUrl || ''}')">
                             <img src="${g.art}" class="w-full h-full object-cover">
                             <div class="game-info-overlay">
                                 <div class="text-[11px] font-black text-red-500 uppercase tracking-tighter">${g.ratio}</div>
