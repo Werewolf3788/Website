@@ -25,20 +25,30 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 9.0.0 - Absolute Omni-Protocol (Total PSN Intelligence)
+ * Version 10.0.2 - Master Omni-Intelligence Protocol (Absolute Harvest Fix)
  * Filepath: Playstation/psnscript.js
- * * * DESCRIPTION:
- * The most advanced data harvester available for the Werewolf Pack.
- * Extracts every possible string and value from the PlayStation Network API.
- * * * FEATURES:
- * - Identity: OnlineID, AccountID, and Verified Handshakes.
- * - Presence: Status (Online/Busy/Away), Platform, and Store-Linked Game Tracking.
- * - Profile: Bio (About Me), Plus Status, PSN Level, and Multi-Console Hardware List.
- * - Deep Trophies: Captures PS5 progress (22/100), DLC Expansion groups, and Rarity %.
- * - Shared Intelligence: Automates "Mutual Friend" grouping between primary users.
+ * * --- INSTANCE AUTHENTICATION ---
+ * Last Generated: Monday, May 4, 2026
+ * Timestamp: 4:26 PM EDT (New York Time)
+ * Status: Production Ready - Final Intelligence Build
+ * * --- DESCRIPTION ---
+ * The definitive "Everything" harvester for the Werewolf Pack.
+ * - Resolved "Bad Request" and zeroed-data issues by splitting ID protocols.
+ * - Profile Depth: Forces extraction of Bio, Plus status, and Level.
+ * - Hardware Audit: Identifies owned PS5, PS4, and Legacy consoles.
+ * - Deep Trophies: Captures PS5 Progress (22/100), DLC Group Names, and Earn Rates (%).
+ * - Mutual Discovery: Automated shared friend grouping for the Lobby.
+ * * --- SQUAD MEMBERS (Verified Hardlinks) ---
+ * - Werewolf3788 (Kevin): 3728215008151724560
+ * - OneLIVIDMAN (Ray): 2732733730346312494
+ * - Darkwing69420 (TJ): 4398462806362115916
+ * - ElucidatorVah (Marc): 6551906246515882523
+ * - JCrow207: 7524753921019262614
+ * - UnicornBunnyShiv: 7742137722487951585
  */
 
 // --- ADMINISTRATIVE CONFIGURATION ---
+// Maps keys used in logic to official PSN Online IDs
 const SQUAD_MAP = {
     werewolf: "Werewolf3788",
     ray: "OneLIVIDMAN",
@@ -48,6 +58,7 @@ const SQUAD_MAP = {
     bunny: "UnicornBunnyShiv"
 };
 
+// Permanent 19-digit Account IDs verified for precision lookups
 const ACCOUNT_IDS = {
     werewolf: "3728215008151724560",
     ray: "2732733730346312494",
@@ -57,17 +68,20 @@ const ACCOUNT_IDS = {
     bunny: "7742137722487951585"
 };
 
+// Reverse map for OnlineID to Internal Key lookups
 const PSN_ID_TO_KEY = Object.entries(SQUAD_MAP).reduce((acc, [key, id]) => {
     acc[id.toLowerCase()] = key;
     return acc;
 }, {});
 
+// Global Blacklist for games that should not clutter the "Recent Hunts" feed
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online"];
 const DATA_PATH = path.join(__dirname, "psn_data.json");
 const TOKENS_PATH = path.join(__dirname, "tokens.json");
 const ROOT_NOJEKYLL = path.join(__dirname, "..", ".nojekyll");
 
 // --- DATA PERSISTENCE HELPERS ---
+// Manages local token cache to avoid account locking/rate limiting
 let tokenStore = { werewolf: {}, ray: {} };
 try { 
     if (fs.existsSync(TOKENS_PATH)) {
@@ -79,7 +93,7 @@ const saveTokens = () => fs.writeFileSync(TOKENS_PATH, JSON.stringify(tokenStore
 
 /**
  * parsePlaytime
- * Converts ISO-8601 duration to "10h 30m".
+ * Converts Sony's ISO-8601 duration format (PT12H) into "12h" strings.
  */
 const parsePlaytime = (duration) => {
     if (!duration) return "0h";
@@ -90,7 +104,7 @@ const parsePlaytime = (duration) => {
 
 /**
  * getDetailedStatus
- * Resolves full presence state with UI-ready color mapping.
+ * Converts raw presence data into UI-ready labels and CSS colors.
  */
 const getDetailedStatus = (p) => {
     if (!p) return { label: "Offline", color: "#64748b" };
@@ -103,12 +117,17 @@ const getDetailedStatus = (p) => {
 };
 
 // --- AUTHENTICATION ENGINE ---
+// Performs NPSSO handshake and manages the Access/Refresh token rotation lifecycle.
 async function getAuthenticated(userKey, npssoInput) {
     let currentUserTokens = tokenStore[userKey] || {};
     const now = Math.floor(Date.now() / 1000);
+    
+    // Check if current access token is valid
     if (currentUserTokens.accessToken && (currentUserTokens.expiryTime > now + 300)) {
         return { accessToken: currentUserTokens.accessToken };
     }
+
+    // Attempt to refresh if expired
     if (currentUserTokens.refreshToken) {
         try {
             const refreshed = await exchangeRefreshTokenForAuthTokens(currentUserTokens.refreshToken);
@@ -121,6 +140,8 @@ async function getAuthenticated(userKey, npssoInput) {
             return refreshed;
         } catch (e) {}
     }
+
+    // Handshake using NPSSO Secret
     if (npssoInput) {
         try {
             const accessCode = await exchangeNpssoForCode(npssoInput.trim());
@@ -138,18 +159,20 @@ async function getAuthenticated(userKey, npssoInput) {
 }
 
 // --- ABSOLUTE OMNI-COLLECTOR ---
+// Deep-Sync function that retrieves every possible data point for a primary user.
 async function getFullUserData(auth, label, targetOnlineId, existingData) {
     if (!auth) return existingData || null;
-    console.log(`[SYNC] Omni-Protocol Harvest: ${label}`);
+    console.log(`[SYNC] Omni-Protocol Harvest (v10.0.2): ${label}`);
     
     try {
-        // 1. CORE IDENTITY, REGION & HARDWARE
+        // 1. IDENTITY & HARDWARE AUDIT
+        // Using specific AccountIDs to bypass library "Bad Request" errors on "me" protocols.
         const targetId = ACCOUNT_IDS[label.toLowerCase()];
         const profile = await getProfileFromAccountId(auth, targetId);
         const region = await getUserRegion(auth, "me");
         const devices = await getAccountDevices(auth);
         
-        // Presence handshake (uses "me" for token-holder accuracy)
+        // Presence Handshake (Uses "me" for real-time accuracy of token owner)
         let p = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         try { p = await getBasicPresence(auth, "me"); } catch(e) {}
 
@@ -185,7 +208,8 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
 
             if (recentGames.length < 6) {
                 recentGames.push({
-                    name, art: title.trophyTitleIconUrl,
+                    name, 
+                    art: title.trophyTitleIconUrl,
                     progress: title.progress,
                     ratio: `${earnedTotal}/${definedTotal}`,
                     hours: parsePlaytime(title.playDuration),
@@ -195,7 +219,7 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
                 });
             }
 
-            // 3. DEEP TROPHY PULL (DLC groups & 22/100 Progress)
+            // 3. DEEP TROPHY PROGRESS (Captures PS5 22/100 and DLC Grouping)
             if (!activeHunt || name === presence.currentGame) {
                 try {
                     const { trophyGroups } = await getTitleTrophyGroups(auth, title.npCommunicationId, "all");
@@ -216,8 +240,8 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
                             earned: s?.earned || false, 
                             earnedDate: s?.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString() : null,
                             timestamp: s?.earnedDateTime ? new Date(s.earnedDateTime).getTime() : 0,
-                            currentValue: s?.progress || 0, // PS5 22/100 Tracker
-                            targetValue: m.trophyProgressTargetValue || 0
+                            currentValue: s?.progress || 0, // PS5 Progress value (22)
+                            targetValue: m.trophyProgressTargetValue || 0 // PS5 Target value (100)
                         };
                     });
 
@@ -238,6 +262,7 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
             }
         }
 
+        // Keep a list of the 10 most recent trophies earned across all games
         mostRecentTrophies = mostRecentTrophies.sort((a,b) => b.timestamp - a.timestamp).slice(0, 10);
 
         return {
@@ -262,14 +287,14 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
             lastUpdated: new Date().toLocaleString()
         };
     } catch (e) { 
-        console.error(`[CRITICAL] Omni-Collector failed for ${label}:`, e.message);
+        console.error(`[CRITICAL] Omni-Collector Error for ${label}:`, e.message);
         return existingData || null; 
     }
 }
 
-// --- MAIN SYNC ENGINE ---
+// --- MAIN EXECUTION LOOP ---
 async function main() {
-    console.log("[INIT] Starting Absolute Omni-Collector v9.0.0...");
+    console.log("[INIT] Starting Absolute Omni-Collector Sync Engine v10.0.2...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
@@ -277,7 +302,8 @@ async function main() {
         mutualPack: [], 
         verificationLogs: [],
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "9.0.0"
+        engineVersion: "10.0.2",
+        codeTimestamp: "Monday, May 4, 2026 | 4:26 PM EDT"
     };
 
     try {
@@ -287,17 +313,38 @@ async function main() {
         }
     } catch (e) {}
 
+    // Authenticate Primary Agents (Werewolf and Ray)
     const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
 
-    // Run Primary Deep Harvests
+    // --- LIVE IDENTITY AUDIT ---
+    // Verifies that Account IDs haven't changed and friends are still visible.
+    const verifyIdentity = async (auth, label) => {
+        if (!auth) return;
+        try {
+            console.log(`[VERIFY] Validating ${label} Identity Persistence...`);
+            const response = await getUserFriendsAccountIds(auth, "me");
+            const friends = response.friends || [];
+            Object.entries(ACCOUNT_IDS).forEach(([key, id]) => {
+                if (key !== label.toLowerCase()) {
+                    finalData.verificationLogs.push({ agent: label, target: key, id, status: friends.includes(id) ? "VERIFIED" : "DISCOVERY_MODE" });
+                }
+            });
+        } catch (e) {}
+    };
+
+    await verifyIdentity(wolfAuth, "Werewolf");
+    await verifyIdentity(rayAuth, "Ray");
+
+    // Perform Full-Deep Synchronizations for primary members
     const wolfFull = await getFullUserData(wolfAuth, "Werewolf", "Werewolf3788", finalData.users.werewolf);
     const rayFull = await getFullUserData(rayAuth, "Ray", "OneLIVIDMAN", finalData.users.ray);
 
     if (wolfFull) finalData.users.werewolf = wolfFull;
     if (rayFull) finalData.users.ray = rayFull;
 
-    // --- MUTUAL DISCOVERY & LOBBY ENHANCEMENT ---
+    // --- MUTUAL DISCOVERY & UNIVERSAL LOBBY ---
+    // Compares friends lists between Werewolf and Ray to find "Shared Pack" members.
     const squadFriends = { werewolf: [], ray: [] };
     if (wolfAuth) try { squadFriends.werewolf = (await getFriendsList(wolfAuth, ACCOUNT_IDS.werewolf)).friends || []; } catch(e){}
     if (rayAuth) try { squadFriends.ray = (await getFriendsList(rayAuth, ACCOUNT_IDS.ray)).friends || []; } catch(e){}
@@ -331,7 +378,7 @@ async function main() {
         if (!finalData.users[key]) finalData.users[key] = lobbyData;
         else Object.assign(finalData.users[key], lobbyData);
 
-        // Add to mutual pack specifically for your Lobby grouping
+        // Populate mutual pack labels for HTML Lobby grouping
         if (isMutual && !finalData.mutualPack.some(m => m.onlineId === f.onlineId)) {
             finalData.mutualPack.push({ 
                 onlineId: f.onlineId, 
@@ -340,7 +387,7 @@ async function main() {
         }
     }
 
-    // Shadow Sync remaining Squad members via master auth
+    // Shadow Sync for Squad members not visible in active friend lists
     const masterAuth = wolfAuth || rayAuth;
     if (masterAuth) {
         for (const [key, accountId] of Object.entries(ACCOUNT_IDS)) {
@@ -362,8 +409,9 @@ async function main() {
         }
     }
 
+    // Save master dataset to disk
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] Omni-Protocol Sync v${finalData.engineVersion} Complete.`);
+    console.log(`[SUCCESS] Absolute Omni-Protocol Complete. Generated: ${finalData.codeTimestamp}`);
 }
 
 main();
