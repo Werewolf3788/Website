@@ -24,7 +24,7 @@
       "recentGames": [],
       "activeHunt": null,
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 8:19:30 PM"
+      "lastUpdated": "5/4/2026, 8:28:27 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -50,7 +50,7 @@
       "recentGames": [],
       "activeHunt": null,
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 8:19:31 PM"
+      "lastUpdated": "5/4/2026, 8:28:27 PM"
     },
     "darkwing": {
       "online": false,
@@ -90,7 +90,69 @@
     }
   },
   "mutualPack": [],
-  "verificationLogs": [],
-  "lastGlobalUpdate": "5/4/2026, 8:19:27 PM",
-  "engineVersion": "9.0.0"
+  "verificationLogs": [
+    {
+      "agent": "Werewolf",
+      "target": "ray",
+      "id": "2732733730346312494",
+      "status": "VERIFIED"
+    },
+    {
+      "agent": "Werewolf",
+      "target": "darkwing",
+      "id": "4398462806362115916",
+      "status": "VERIFIED"
+    },
+    {
+      "agent": "Werewolf",
+      "target": "marc",
+      "id": "6551906246515882523",
+      "status": "VERIFIED"
+    },
+    {
+      "agent": "Werewolf",
+      "target": "jcrow",
+      "id": "7524753921019262614",
+      "status": "VERIFIED"
+    },
+    {
+      "agent": "Werewolf",
+      "target": "bunny",
+      "id": "7742137722487951585",
+      "status": "VERIFIED"
+    },
+    {
+      "agent": "Ray",
+      "target": "werewolf",
+      "id": "3728215008151724560",
+      "status": "VERIFIED"
+    },
+    {
+      "agent": "Ray",
+      "target": "darkwing",
+      "id": "4398462806362115916",
+      "status": "DISCOVERY_MODE"
+    },
+    {
+      "agent": "Ray",
+      "target": "marc",
+      "id": "6551906246515882523",
+      "status": "DISCOVERY_MODE"
+    },
+    {
+      "agent": "Ray",
+      "target": "jcrow",
+      "id": "7524753921019262614",
+      "status": "DISCOVERY_MODE"
+    },
+    {
+      "agent": "Ray",
+      "target": "bunny",
+      "id": "7742137722487951585",
+      "status": "DISCOVERY_MODE"
+    }
+  ],
+  "lastGlobalUpdate": "5/4/2026, 8:28:24 PM",
+  "engineVersion": "10.0.2",
+  "codeTimestamp": "Monday, May 4, 2026 | 4:26 PM EDT"
 }
