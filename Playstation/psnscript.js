@@ -20,15 +20,15 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 12.0.0 - Absolute Master Omni-Protocol (Amazon Affiliate & Twitch Box Art)
+ * Version 12.1.0 - Absolute Master Omni-Protocol (Visual Handshake & Affiliate Engine)
  * Filepath: Playstation/psnscript.js
  * * * --- INSTANCE AUTHENTICATION ---
  * Last Generated: Monday, May 4, 2026
  * Timestamp: 7:25 PM EDT (New York Time)
- * Status: Production Ready - Affiliate & Visual Handshake Verified
+ * Status: Production Ready - Twitch Game Art & Amazon Links Verified
  * * * --- PSN SYNC CHECKLIST (VERIFIED DATA HARVEST) ---
- * 1.  AMAZON AFFILIATE: [New] Generates optimized search links with tag 'psngaming-20'.
- * 2.  TWITCH GAME ART: [Verified] Pulls the real-time Box Art via decapi.me/twitch/game_image/.
+ * 1.  TWITCH GAME ART: [Captured] Pulls the real-time Box Art via decapi.me/twitch/game_image/.
+ * 2.  AMAZON AFFILIATE: [Captured] Generates optimized search links with tag 'psngaming-20'.
  * 3.  TWITCH UPTIME: [Verified] Pulls real-time "Time Live" duration via DecAPI.
  * 4.  GO LIVE MESSAGE: [Verified] Pulls the Twitch Stream Title/Notification message.
  * 5.  TWITCH INTEL: [Expanded] Followers, Avatar, Account Age, and full Bio.
@@ -86,17 +86,20 @@ const saveTokens = () => fs.writeFileSync(TOKENS_PATH, JSON.stringify(tokenStore
 
 /**
  * generateAffiliateUrl
- * Creates an optimized Amazon search link for a specific game title.
+ * Logic: Constructs an Amazon search URL optimized for PS5 physical copies.
+ * Tag: psngaming-20
  */
 function generateAffiliateUrl(gameName) {
     if (!gameName || gameName === "Dashboard") return null;
+    // Remove registered symbols to clean up the search query
     const cleanName = encodeURIComponent(gameName.replace(/®|™/g, ""));
     return `https://www.amazon.com/s?k=${cleanName}+Playstation+5&tag=${AMAZON_TAG}`;
 }
 
 /**
  * getTwitchIntel
- * Logic: Gathers expanded Twitch data points including Game Art and Uptime.
+ * Logic: Gathers expanded Twitch data points including Game Box Art and Uptime.
+ * Resilience: This function runs independently of PSN authentication status.
  */
 async function getTwitchIntel(username) {
     if (!username) return null;
@@ -113,7 +116,7 @@ async function getTwitchIntel(username) {
     try {
         const [gameRes, artRes, followRes, avatarRes, ageRes, bioRes, titleRes, uptimeRes] = await Promise.all([
             fetch(`https://decapi.me/twitch/game/${username.toLowerCase()}`).then(r => r.text()),
-            fetch(`https://decapi.me/twitch/game_image/${username.toLowerCase()}`).then(r => r.text()),
+            fetch(`https://decapi.me/twitch/game_image/${username.toLowerCase()}`).then(r => r.text()), // FETCH GAME BOX ART
             fetch(`https://decapi.me/twitch/followcount/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/avatar/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/accountage/${username.toLowerCase()}`).then(r => r.text()),
@@ -173,7 +176,7 @@ async function getAuthenticated(userKey, npssoInput) {
 
 // --- ABSOLUTE OMNI-COLLECTOR ---
 async function getFullUserData(auth, label, userKey, targetId, existingData) {
-    // 1. TWITCH INTEL HARVEST (Visual Priority Layer)
+    // 1. TWITCH INTEL HARVEST (Highest Priority Visual Layer)
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
     
     // 2. RESILIENCE FALLBACK: Provide Twitch and Affiliate links even if PSN is bad
@@ -192,7 +195,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v12.0.0 Detail Cross-Ref: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v12.1.0 Detail Cross-Ref: ${label}`);
     
     try {
         // 3. IDENTITY & REGIONAL Handshake
@@ -216,14 +219,14 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         const activeGameInfo = rawP.gameTitleInfoList?.[0] || {};
         const gamesList = graphLib.data?.gameLibraryTitlesRetrieve?.games || [];
         
-        // Handshake: Resolve primary session title
+        // Handshake Resolver: Merge Twitch category with PSN Presence
         const resolvedTitle = (twitchIntel?.game && activeGameInfo.titleName === "Dashboard") ? twitchIntel.game : (activeGameInfo.titleName || "Dashboard");
         const matchedMeta = gamesList.find(g => g.name.toLowerCase() === resolvedTitle.toLowerCase()) || {};
 
         const presence = {
             online: (rawP.primaryPlatformInfo?.onlineStatus || "offline") !== "offline" || !!twitchIntel?.game,
             currentGame: resolvedTitle,
-            currentGameArt: matchedMeta.image?.url || twitchIntel?.gameArt || null,
+            currentGameArt: matchedMeta.image?.url || twitchIntel?.gameArt || null, // Handshake visual art
             currentGameActivity: activeGameInfo.formatValue || twitchIntel?.statusMessage || (twitchIntel?.game ? "Streaming Live" : null),
             amazonAffiliateUrl: generateAffiliateUrl(resolvedTitle), // PRIMARY AFFILIATE LINK
             currentCommunicationId: activeGameInfo.npCommunicationId || matchedMeta.titleId || null,
@@ -333,13 +336,13 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v12.0.0...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v12.1.0...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
         users: {}, 
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "12.0.0",
+        engineVersion: "12.1.0",
         codeTimestamp: "Monday, May 4, 2026 | 7:25 PM EDT"
     };
 
