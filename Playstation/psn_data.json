@@ -23,6 +23,7 @@
       },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0004_s.png",
       "bio": "6C3RG",
+      "psnAccountAge": "1 years, 4 months",
       "plus": true,
       "level": 232,
       "region": "US",
@@ -1189,7 +1190,7 @@
           "date": "9/26/2025, 4:46:15 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:40:56 PM"
+      "lastUpdated": "5/4/2026, 11:46:35 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -1214,25 +1215,26 @@
       },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
       "bio": "exo-ONELIVIDMANKDFC3",
+      "psnAccountAge": "9 years, 4 months",
       "plus": true,
       "level": 202,
       "region": "US",
       "trophySummary": {
         "platinum": 5,
         "gold": 33,
-        "silver": 108,
+        "silver": 109,
         "bronze": 544,
-        "total": 690
+        "total": 691
       },
       "recentGames": [
         {
           "name": "Mahjong",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png",
-          "progress": 50,
-          "ratio": "5/10",
+          "progress": 60,
+          "ratio": "6/10",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Mahjong+Playstation+5&tag=psngaming-20",
           "npCommunicationId": "NPWR28141_00",
-          "lastPlayed": "2026-05-03T07:21:14Z"
+          "lastPlayed": "2026-05-04T23:42:41Z"
         },
         {
           "name": "theHunter: Call of the Wild",
@@ -1286,8 +1288,8 @@
         "groups": [
           {
             "name": "Mahjong",
-            "progress": 50,
-            "ratio": "5/10"
+            "progress": 60,
+            "ratio": "6/10"
           }
         ],
         "trophies": [
@@ -1369,9 +1371,9 @@
             "rarity": "Rare",
             "earnedRate": "0.0",
             "groupName": "Mahjong",
-            "earned": false,
-            "earnedDate": null,
-            "timestamp": 0,
+            "earned": true,
+            "earnedDate": "5/4/2026, 11:42:41 PM",
+            "timestamp": 1777938161000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -1437,6 +1439,13 @@
       "mostRecentTrophies": [
         {
           "game": "Mahjong",
+          "name": "CLEAR 30 LEVELS",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6fd426e8-81b3-4b7d-990f-31583f266bf4.png",
+          "timestamp": 1777938161000,
+          "date": "5/4/2026, 11:42:41 PM"
+        },
+        {
+          "game": "Mahjong",
           "name": "CLEAR 20 LEVELS",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/5c335c31-75f7-4194-8867-163a13a15071.png",
           "timestamp": 1777792873000,
@@ -1471,7 +1480,7 @@
           "date": "4/27/2026, 4:12:14 PM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:40:58 PM"
+      "lastUpdated": "5/4/2026, 11:46:36 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -1496,6 +1505,7 @@
       },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
       "bio": "Official Pack Member Profile",
+      "psnAccountAge": "4 months",
       "plus": true,
       "level": 60,
       "region": "US",
@@ -2923,7 +2933,7 @@
           "date": "4/25/2026, 2:33:05 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:40:59 PM"
+      "lastUpdated": "5/4/2026, 11:46:38 PM"
     },
     "marc": {
       "onlineId": "ElucidatorVah",
@@ -2938,6 +2948,7 @@
       "twitch": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_A/A2073_s.png",
       "bio": "Why are you looking here im a boring person with no irl friends.... Life is great",
+      "psnAccountAge": "3 years, 8 months",
       "plus": true,
       "level": 188,
       "region": "US",
@@ -3659,7 +3670,7 @@
         "npCommunicationId": "NPWR50887_00"
       },
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 11:41:00 PM"
+      "lastUpdated": "5/4/2026, 11:46:39 PM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -3674,6 +3685,7 @@
       "twitch": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0021_s.png",
       "bio": "Official Pack Member Profile",
+      "psnAccountAge": "1 years, 5 months",
       "plus": true,
       "level": 60,
       "region": "US",
@@ -5811,7 +5823,7 @@
           "date": "4/3/2025, 5:26:08 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:41:02 PM"
+      "lastUpdated": "5/4/2026, 11:46:40 PM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -5826,6 +5838,7 @@
       "twitch": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/SCEI/I0001_s.png",
       "bio": "Official Pack Member Profile",
+      "psnAccountAge": "7 years, 6 months",
       "plus": true,
       "level": 209,
       "region": "US",
@@ -6552,7 +6565,7 @@
           "date": "5/4/2026, 3:03:28 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:41:03 PM"
+      "lastUpdated": "5/4/2026, 11:46:41 PM"
     },
     "mjolnir": {
       "onlineId": "Michael (Mjolnir)",
@@ -6573,7 +6586,7 @@
         "statusMessage": "Protecting and Serving the community 👮🏻‍♂️⭐",
         "uptime": "mjolnirgaming is offline"
       },
-      "lastUpdated": "5/4/2026, 11:41:03 PM",
+      "lastUpdated": "5/4/2026, 11:46:41 PM",
       "note": "Twitch-Active Profile"
     },
     "phoenix": {
@@ -6595,11 +6608,11 @@
         "statusMessage": "I See a Full Moon a'Rising",
         "uptime": "phoenix_darkfire is offline"
       },
-      "lastUpdated": "5/4/2026, 11:41:03 PM",
+      "lastUpdated": "5/4/2026, 11:46:42 PM",
       "note": "Twitch-Active Profile"
     }
   },
-  "lastGlobalUpdate": "5/4/2026, 11:40:52 PM",
-  "engineVersion": "12.4.0",
-  "codeTimestamp": "Monday, May 4, 2026 | 7:40 PM EDT"
+  "lastGlobalUpdate": "5/4/2026, 11:46:30 PM",
+  "engineVersion": "12.5.0",
+  "codeTimestamp": "Monday, May 4, 2026 | 7:45 PM EDT"
 }
