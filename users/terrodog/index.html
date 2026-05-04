@@ -6,17 +6,23 @@
     <title>Darkwing69420 | About Me</title>
     
     <!-- 
+        CANONICAL URL & CLEAN LINKING
+        Ensures search engines index the directory instead of the .html file.
+    -->
+    <link rel="canonical" href="https://werewolf3788.github.io/Website/users/terrodog/">
+
+    <!-- 
         GLOBAL STYLES & MOBILE STANDARDS
         - Body Font: 14px
         - Header Font: 30px
         - Overflow Wrap: break-word
-        - Section Height: 50 (rem/units)
-        - Row Height: 30 (rem/units)
+        - Section Height: 50 (units)
+        - Row Height: 30 (units)
         - Layout: Responsive and stacked
     -->
     <style>
         /* PRECISION INTEGRATION CSS 
-           STRICTLY NO COMPRESSION - FULLY EXPANDED
+           STRICTLY NO COMPRESSION - FULLY EXPANDED SOURCE
         */
         :root {
             --primary-dark: #0f172a;
@@ -32,12 +38,12 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            overflow-wrap: break-word; /* Global requirement */
+            overflow-wrap: break-word; /* Global requirement for mobile safety */
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 14px; /* Mobile Standard: 14 */
+            font-size: 14px; /* Mobile Standard: 14px body */
             line-height: 1.6;
             background-color: var(--primary-dark);
             color: var(--text-main);
@@ -45,7 +51,7 @@
         }
 
         h1, h2, h3 {
-            font-size: 30px; /* Mobile Standard: 30 */
+            font-size: 30px; /* Mobile Standard: 30px headers */
             color: var(--accent-purple);
             margin-bottom: 1rem;
             text-transform: uppercase;
@@ -53,7 +59,7 @@
         }
 
         /* NAVIGATION & SANDWICH MENU 
-           Logo remains visible adjacent to the icon
+           Maintains logo visibility adjacent to the menu icon
         */
         nav {
             background: var(--secondary-dark);
@@ -71,6 +77,7 @@
             font-weight: bold;
             font-size: 20px;
             color: var(--text-main);
+            text-decoration: none;
         }
 
         .menu-icon {
@@ -88,7 +95,7 @@
         }
 
         #nav-links {
-            display: none; /* Collapsed by default for mobile */
+            display: none; /* Collapsed by default for mobile UX */
             flex-direction: column;
             width: 100%;
             position: absolute;
@@ -110,7 +117,7 @@
         }
 
         /* LAYOUT SECTIONS
-           Section height context: 50 
+           Standard Heights: Section 50, Row 30
         */
         section {
             padding: 50px 5%; /* Section Height: 50 */
@@ -133,7 +140,9 @@
             margin-bottom: 20px;
         }
 
-        /* PROFILE IMAGE / AVATAR */
+        /* ASSET STYLING 
+           Smart Asset Sizing: max-width 100%
+        */
         .profile-container {
             text-align: center;
             margin-bottom: 20px;
@@ -183,19 +192,24 @@
             border-radius: 6px;
         }
 
+        /* Conditional Hiding Class */
+        .hidden-metric {
+            display: none !important;
+        }
+
         .stat-label {
             color: var(--text-dim);
             font-size: 12px;
             display: block;
         }
 
-        .follower-link {
+        .follower-link, .ps-store-link {
             color: var(--success-green);
             text-decoration: none;
             font-weight: bold;
         }
 
-        .follower-link:hover {
+        .follower-link:hover, .ps-store-link:hover {
             text-decoration: underline;
         }
 
@@ -247,6 +261,7 @@
 
     <!-- 
         GOOGLE ANALYTICS (G-TAG) SETUP 
+        User: Werewolf3788 (Kevin)
         Measurement ID: G-Z9M5LXQ5XN
     -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
@@ -255,28 +270,40 @@
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
 
+        // Tracking Darkwing69420/Terrdog420 project data
         gtag('config', 'G-Z9M5LXQ5XN', {
             'page_type': 'streamer_profile',
-            'content_group': 'About_Me',
-            'layout_version': '1.3'
+            'content_group': 'Darkwing69420_Portal',
+            'layout_version': '1.7',
+            'user_id': 'terrdog420'
         });
+
+        // Universal Helper for Event Tracking (Clicks/Engagement)
+        function trackClick(elementName, destination) {
+            gtag('event', 'click', {
+                'event_category': 'Engagement',
+                'event_label': elementName,
+                'destination_url': destination,
+                'project_owner': 'Werewolf3788'
+            });
+        }
     </script>
 </head>
 <body>
 
     <!-- NAVIGATION -->
     <nav>
-        <div class="logo">DARKWING69420</div>
+        <a href="./" class="logo" onclick="trackClick('Logo_Home', './')">DARKWING69420</a>
         <div class="menu-icon" onclick="toggleMenu()">
             <div></div>
             <div></div>
             <div></div>
         </div>
         <div id="nav-links">
-            <a href="#about">About Me</a>
-            <a href="https://www.twitch.tv/terrdog420?v=1.3" target="_blank">Twitch</a>
-            <a href="#channel-stats">Channel Data</a>
-            <a href="#squad">The Squad</a>
+            <a href="#about" onclick="trackClick('Nav_About', '#about')">About Me</a>
+            <a href="https://www.twitch.tv/terrdog420?v=1.7" target="_blank" onclick="trackClick('Nav_Twitch', 'twitch.tv/terrdog420')">Twitch</a>
+            <a href="#channel-stats" onclick="trackClick('Nav_Stats', '#channel-stats')">Channel Data</a>
+            <a href="#squad" onclick="trackClick('Nav_Squad', '#squad')">The Squad</a>
         </div>
     </nav>
 
@@ -284,33 +311,39 @@
     <section id="hero">
         <div class="row">
             <div class="profile-container">
-                <!-- Syncing with specific Twitch CDN provided -->
-                <img id="twitch-avatar" src="https://static-cdn.jtvnw.net/jtv_user_pictures/9dad426e-04cb-4fc0-a917-25982b3800ce-profile_image-70x70.png?v=1.3" class="profile-avatar lightbox-trigger" alt="Darkwing69420 Avatar">
+                <img id="twitch-avatar" 
+                     src="https://static-cdn.jtvnw.net/jtv_user_pictures/9dad426e-04cb-4fc0-a917-25982b3800ce-profile_image-70x70.png?v=1.7" 
+                     class="profile-avatar lightbox-trigger" 
+                     alt="Darkwing69420 Avatar"
+                     onclick="trackClick('Profile_Avatar', 'lightbox_open')">
             </div>
             <h1>Welcome to the Stream</h1>
             <p style="font-size: 1.1rem; color: var(--text-dim);">I'm Darkwing69420, and this is where memories live on.</p>
             
-            <!-- LIVE STATUS INTEGRATION -->
+            <!-- LIVE STATUS INTEGRATION (Via DecAPI) -->
             <div class="card live-card">
                 <h3><span class="status-dot"></span>Live Status</h3>
                 <p id="stream-title" style="font-weight: bold; margin-bottom: 5px;">Checking stream status...</p>
                 
                 <div class="stat-grid">
-                    <div class="stat-item">
+                    <div class="stat-item" id="container-game">
                         <span class="stat-label">CURRENT GAME</span>
                         <span id="stream-game">Offline</span>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-item" id="container-uptime">
                         <span class="stat-label">UPTIME</span>
                         <span id="stream-uptime">Offline</span>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-item" id="container-audience">
                         <span class="stat-label">VIEWERS / CHATTERS</span>
                         <span id="stream-audience">0 / 0</span>
                     </div>
                 </div>
                 
-                <a href="https://www.twitch.tv/terrdog420?v=1.3" target="_blank" class="twitch-btn">Watch Live on Twitch</a>
+                <a href="https://www.twitch.tv/terrdog420?v=1.7" 
+                   target="_blank" 
+                   class="twitch-btn" 
+                   onclick="trackClick('Live_Card_Twitch_Button', 'twitch.tv/terrdog420')">Watch Live on Twitch</a>
             </div>
         </div>
     </section>
@@ -321,19 +354,19 @@
             <h2>Channel Legacy</h2>
             <div class="card" style="border-left-color: var(--success-green);">
                 <div class="stat-grid">
-                    <div class="stat-item">
+                    <div class="stat-item" id="container-followers">
                         <span class="stat-label">FOLLOWERS</span>
                         <span id="follow-count">Loading...</span>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-item" id="container-views">
                         <span class="stat-label">LIFETIME VIEWS</span>
                         <span id="total-views">Loading...</span>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-item" id="container-age">
                         <span class="stat-label">ACCOUNT AGE</span>
                         <span id="account-age">Loading...</span>
                     </div>
-                    <div class="stat-item">
+                    <div class="stat-item" id="container-latest-follower">
                         <span class="stat-label">LATEST FOLLOWER</span>
                         <span id="latest-follower">Loading...</span>
                     </div>
@@ -355,7 +388,9 @@
                 <p style="font-style: italic; border-top: 1px solid #334155; padding-top: 1rem;">
                     "Some of my streaming is a reminder: Cherish the time you have with your friends and family."
                 </p>
-                <a href="https://www.twitch.tv/terrdog420/about?v=1.3" class="twitch-btn">Visit My Twitch Profile</a>
+                <a href="https://www.twitch.tv/terrdog420/about?v=1.7" 
+                   class="twitch-btn" 
+                   onclick="trackClick('About_Twitch_Button', 'twitch.tv/terrdog420/about')">Visit My Twitch Profile</a>
             </div>
         </div>
     </section>
@@ -371,7 +406,7 @@
         </div>
     </section>
 
-    <!-- LIGHTBOX MODAL -->
+    <!-- UNIVERSAL LIGHTBOX MODAL -->
     <div id="lightbox" onclick="this.style.display='none'">
         <img id="lightbox-img" src="" alt="Expanded View">
     </div>
@@ -379,21 +414,30 @@
     <footer>
         <p>&copy; 2026 Darkwing69420. All rights reserved.</p>
         <p id="footer-creation">Created: Loading...</p>
-        <p>Version 1.3.0 | Built for Memories</p>
+        <p>Version 1.7.0 | Built for Memories</p>
     </footer>
 
     <script>
         /* INTERACTIVE SCRIPTING 
-           NO MINIFICATION
+           STRICTLY NO MINIFICATION
         */
 
-        // Mobile Menu Toggle (Sandwich Menu Logic)
+        // URL CLEANER
+        (function() {
+            const currentUrl = window.location.href;
+            if (currentUrl.includes('/index.html')) {
+                const cleanUrl = currentUrl.replace('/index.html', '/');
+                window.history.replaceState({}, document.title, cleanUrl);
+            }
+        })();
+
+        // Mobile Navigation Toggle
         function toggleMenu() {
             const links = document.getElementById('nav-links');
             links.classList.toggle('active');
         }
 
-        // Helper to handle DecAPI 404s gracefully
+        // Safe fetch helper
         async function fetchSafeText(url, fallbackValue = "0") {
             try {
                 const response = await fetch(url);
@@ -406,52 +450,85 @@
             }
         }
 
-        // Fetch multiple stats from Decapi.me
+        // Real-time Data Synchronization (DecAPI)
         async function updateTwitchData() {
             const user = 'terrdog420';
             
-            // Audience data (handles 404 when offline)
+            // 1. Audience Metrics (Hiding if chatters is 0)
             const viewers = await fetchSafeText(`https://decapi.me/twitch/viewercount/${user}`, "0");
             const chatters = await fetchSafeText(`https://decapi.me/twitch/chatters/${user}`, "0");
-            document.getElementById('stream-audience').innerText = `${viewers} / ${chatters}`;
+            
+            const audienceContainer = document.getElementById('container-audience');
+            if (chatters.trim() === "0") {
+                audienceContainer.classList.add('hidden-metric');
+            } else {
+                audienceContainer.classList.remove('hidden-metric');
+                document.getElementById('stream-audience').innerText = `${viewers} / ${chatters}`;
+            }
 
-            // Main stats
+            // 2. Main Stream Stats
             const game = await fetchSafeText(`https://decapi.me/twitch/game/${user}`, "Offline");
             const title = await fetchSafeText(`https://decapi.me/twitch/title/${user}`, "Currently Offline");
             const uptime = await fetchSafeText(`https://decapi.me/twitch/uptime/${user}`, "Offline");
+
+            // Game Link to Playstation Store
+            const gameEl = document.getElementById('stream-game');
+            if (game.toLowerCase() !== "offline" && game.trim() !== "") {
+                const psLink = `https://store.playstation.com/en-us/search/${encodeURIComponent(game)}`;
+                gameEl.innerHTML = `<a href="${psLink}" target="_blank" class="ps-store-link" onclick="trackClick('PS_Store_Link', '${game}')">${game}</a>`;
+            } else {
+                gameEl.innerText = game;
+            }
+
+            document.getElementById('stream-title').innerText = title;
+            document.getElementById('stream-uptime').innerText = uptime.includes('offline') ? "Offline" : uptime;
+
+            // 3. Channel Stats (Conditional Visibility)
             const followers = await fetchSafeText(`https://decapi.me/twitch/followcount/${user}`, "...");
-            const views = await fetchSafeText(`https://decapi.me/twitch/total_views/${user}`, "...");
+            const views = await fetchSafeText(`https://decapi.me/twitch/total_views/${user}`, "0");
             const age = await fetchSafeText(`https://decapi.me/twitch/accountage/${user}`, "...");
             const creation = await fetchSafeText(`https://decapi.me/twitch/creation/${user}`, "...");
             const latestFollowerName = await fetchSafeText(`https://decapi.me/twitch/latest_follower/${user}`, "None");
 
-            // Update DOM
-            document.getElementById('stream-game').innerText = game;
-            document.getElementById('stream-title').innerText = title;
-            document.getElementById('stream-uptime').innerText = uptime.includes('offline') ? "Offline" : uptime;
+            // Hide Lifetime Views if 0
+            const viewsContainer = document.getElementById('container-views');
+            if (views.trim() === "0") {
+                viewsContainer.classList.add('hidden-metric');
+            } else {
+                viewsContainer.classList.remove('hidden-metric');
+                document.getElementById('total-views').innerText = views;
+            }
+
+            // Hide Latest Follower if None
+            const latestFollowerContainer = document.getElementById('container-latest-follower');
+            if (latestFollowerName.trim().toLowerCase() === "none") {
+                latestFollowerContainer.classList.add('hidden-metric');
+            } else {
+                latestFollowerContainer.classList.remove('hidden-metric');
+                document.getElementById('latest-follower').innerHTML = `<a href="https://twitch.tv/${latestFollowerName}" target="_blank" class="follower-link" onclick="trackClick('Latest_Follower_Link', '${latestFollowerName}')">${latestFollowerName}</a>`;
+            }
+
             document.getElementById('follow-count').innerText = followers;
-            document.getElementById('total-views').innerText = views;
             document.getElementById('account-age').innerText = age;
             document.getElementById('footer-creation').innerText = "Account Created: " + creation;
-
-            // Handle Latest Follower link
-            const followerEl = document.getElementById('latest-follower');
-            if (latestFollowerName !== "None") {
-                followerEl.innerHTML = `<a href="https://twitch.tv/${latestFollowerName}" target="_blank" class="follower-link">${latestFollowerName}</a>`;
-            } else {
-                followerEl.innerText = "None";
-            }
         }
 
-        // Universal Lightbox Setup for all images with .lightbox-trigger
+        // Universal Lightbox Activation
         document.querySelectorAll('.lightbox-trigger').forEach(img => {
             img.onclick = () => {
-                document.getElementById('lightbox').style.display = 'flex';
-                document.getElementById('lightbox-img').src = img.src;
+                const lightbox = document.getElementById('lightbox');
+                const lbImg = document.getElementById('lightbox-img');
+                lightbox.style.display = 'flex';
+                lbImg.src = img.src;
+                
+                gtag('event', 'view_image', {
+                    'image_src': img.src,
+                    'method': 'lightbox'
+                });
             };
         });
 
-        // Close menu on click outside to improve mobile UX
+        // Close Mobile Menu on background click
         window.onclick = function(event) {
             if (!event.target.matches('.menu-icon') && !event.target.matches('.menu-icon div')) {
                 const links = document.getElementById('nav-links');
@@ -461,7 +538,7 @@
             }
         }
 
-        // Initial Load and Auto-Refresh (every 2 minutes)
+        // Initial Load
         window.onload = function() {
             updateTwitchData();
             setInterval(updateTwitchData, 120000); 
