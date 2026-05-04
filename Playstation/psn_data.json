@@ -24,7 +24,7 @@
       "recentGames": [],
       "activeHunt": null,
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 8:12:31 PM"
+      "lastUpdated": "5/4/2026, 8:19:30 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -50,7 +50,7 @@
       "recentGames": [],
       "activeHunt": null,
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 8:12:32 PM"
+      "lastUpdated": "5/4/2026, 8:19:31 PM"
     },
     "darkwing": {
       "online": false,
@@ -90,78 +90,7 @@
     }
   },
   "mutualPack": [],
-  "verificationLogs": [
-    {
-      "agent": "Werewolf",
-      "target": "ray",
-      "id": "2732733730346312494",
-      "status": "VERIFIED",
-      "timestamp": "2026-05-04T20:12:30.032Z"
-    },
-    {
-      "agent": "Werewolf",
-      "target": "darkwing",
-      "id": "4398462806362115916",
-      "status": "VERIFIED",
-      "timestamp": "2026-05-04T20:12:30.032Z"
-    },
-    {
-      "agent": "Werewolf",
-      "target": "marc",
-      "id": "6551906246515882523",
-      "status": "VERIFIED",
-      "timestamp": "2026-05-04T20:12:30.032Z"
-    },
-    {
-      "agent": "Werewolf",
-      "target": "jcrow",
-      "id": "7524753921019262614",
-      "status": "VERIFIED",
-      "timestamp": "2026-05-04T20:12:30.032Z"
-    },
-    {
-      "agent": "Werewolf",
-      "target": "bunny",
-      "id": "7742137722487951585",
-      "status": "VERIFIED",
-      "timestamp": "2026-05-04T20:12:30.032Z"
-    },
-    {
-      "agent": "Ray",
-      "target": "werewolf",
-      "id": "3728215008151724560",
-      "status": "VERIFIED",
-      "timestamp": "2026-05-04T20:12:30.207Z"
-    },
-    {
-      "agent": "Ray",
-      "target": "darkwing",
-      "id": "4398462806362115916",
-      "status": "NOT_IN_FRIENDS_LIST",
-      "timestamp": "2026-05-04T20:12:30.207Z"
-    },
-    {
-      "agent": "Ray",
-      "target": "marc",
-      "id": "6551906246515882523",
-      "status": "NOT_IN_FRIENDS_LIST",
-      "timestamp": "2026-05-04T20:12:30.207Z"
-    },
-    {
-      "agent": "Ray",
-      "target": "jcrow",
-      "id": "7524753921019262614",
-      "status": "NOT_IN_FRIENDS_LIST",
-      "timestamp": "2026-05-04T20:12:30.207Z"
-    },
-    {
-      "agent": "Ray",
-      "target": "bunny",
-      "id": "7742137722487951585",
-      "status": "NOT_IN_FRIENDS_LIST",
-      "timestamp": "2026-05-04T20:12:30.207Z"
-    }
-  ],
-  "lastGlobalUpdate": "5/4/2026, 8:12:29 PM",
-  "engineVersion": "8.7.0"
+  "verificationLogs": [],
+  "lastGlobalUpdate": "5/4/2026, 8:19:27 PM",
+  "engineVersion": "9.0.0"
 }
