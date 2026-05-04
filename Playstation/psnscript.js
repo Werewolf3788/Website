@@ -22,19 +22,28 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 10.0.5 - Master Omni-Intelligence Protocol (FS25 Live Test Build)
+ * Version 10.0.6 - Absolute Omni-Intelligence Protocol (Verification Audit Build)
  * Filepath: Playstation/psnscript.js
- * * --- INSTANCE AUTHENTICATION ---
+ * * * --- INSTANCE AUTHENTICATION ---
  * Last Generated: Monday, May 4, 2026
  * Timestamp: 4:45 PM EDT (New York Time)
- * Status: Production Ready - Live Link Verified
- * * --- DESCRIPTION ---
- * The definitive "Everything" harvester for the Werewolf Pack.
- * - Live Link Optimization: Explicitly captures npCommunicationId for current activity (FS25).
- * - Precision Trophy Extraction: Uses hardlinked IDs to ensure non-zero trophy counts.
- * - Absolute Depth: Extracts Bio, Plus status, Hardware, DLC Groups, and PS5 Progress.
- * - Squad Intelligence: Authenticated users perform deep harvests for all verified squad members.
- * * --- SQUAD MEMBERS (Verified Hardlinks) ---
+ * Status: Production Ready - Live Test Optimized
+ * * * --- PSN SYNC CHECKLIST (EVERYTHING BEING PULLED) ---
+ * 1. IDENTITY: Permanent 19-digit AccountID, Current OnlineID (Gamer Tag).
+ * 2. PRESENCE: Status (Online/Busy/Away), Status CSS Color, Platform (PS5/PS4), 
+ * Current Game Title, NP Title ID, NP Communication ID (Live Link), Direct Store URL.
+ * 3. PROFILE: Bio (About Me), PlayStation Plus Status, PSN Level, Avatar URL.
+ * 4. HARDWARE: Complete Audit of owned consoles (PS5, PS4, PSVR2, Vita, etc.).
+ * 5. REGIONAL: Account Country/Region and Language settings.
+ * 6. SUMMARY: Granular Trophy Counts (Platinum, Gold, Silver, Bronze, Total).
+ * 7. LIBRARY: Recent Game List (6 slots), Game Art, Progress %, Earned/Total Ratio, 
+ * Play Duration (Hours), Last Played Timestamp, Store Link.
+ * 8. DEEP TROPHIES: Trophy Name, Type, Icon, Description, Rarity Rank, 
+ * Earn Rate Percentage (%), DLC Group vs Base Game Name, Earned Date/Time, 
+ * Raw Unix Timestamp (Sorting), PS5 Progress Tracker (Current/Target e.g. 22/100).
+ * 9. LOBBY: Verification Logs (Squad Integrity), Mutual Friend discovery (isMutual), 
+ * Shared Pack Member Label (e.g., "Friends with Werewolf & Ray").
+ * * * --- SQUAD MEMBERS (Verified Hardlinks) ---
  * - Werewolf3788 (Kevin): 3728215008151724560
  * - OneLIVIDMAN (Ray): 2732733730346312494
  * - Darkwing69420 (TJ): 4398462806362115916
@@ -138,26 +147,22 @@ async function getAuthenticated(userKey, npssoInput) {
 }
 
 // --- ABSOLUTE OMNI-COLLECTOR ---
-// Core data extraction for identity, presence, hardware, and trophies.
 async function getFullUserData(auth, label, targetId, existingData) {
     if (!auth || !targetId) return existingData || null;
-    console.log(`[SYNC] Omni-Protocol Harvest (v10.0.5): ${label}`);
+    console.log(`[SYNC] Omni-Protocol Harvest (v10.0.6): ${label}`);
     
     try {
         // 1. IDENTITY & HARDWARE HANDSHAKE
-        // Using direct hardlinked ID for profile lookups to ensure type-safety and permission access.
         const profile = await getProfileFromAccountId(auth, targetId);
         
         let region = { country: "US", language: "en" };
         let devices = { devices: [] };
         
-        // System metadata retrieval (restricted to the authenticating account holder)
         if (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) {
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
             try { devices = await getAccountDevices(auth); } catch(e) {}
         }
         
-        // Presence Handshake (Uses "me" if searching self for FS25 test accuracy)
         const presenceId = (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) ? "me" : targetId;
         let p = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         try { p = await getBasicPresence(auth, presenceId); } catch(e) {}
@@ -173,7 +178,6 @@ async function getFullUserData(auth, label, targetId, existingData) {
             statusColor: statusInfo.color,
             currentGame: activeGameInfo.titleName || "Dashboard",
             currentGameId: activeGameInfo.npTitleId || null,
-            // Captured for absolute FS25 Live Linking
             currentCommunicationId: activeGameInfo.npCommunicationId || null,
             platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5",
             storeUrl: activeGameInfo.npCommunicationId ? `https://store.playstation.com/en-us/concept/${activeGameInfo.npCommunicationId}` : null
@@ -210,8 +214,6 @@ async function getFullUserData(auth, label, targetId, existingData) {
                 });
             }
 
-            // 3. DEEP TROPHY PULL (DLC groups & PS5 22/100 Progress)
-            // Triggered if game matches live presence or is the top of the library
             if (!activeHunt || name === presence.currentGame) {
                 try {
                     const { trophyGroups } = await getTitleTrophyGroups(auth, title.npCommunicationId, "all");
@@ -232,8 +234,8 @@ async function getFullUserData(auth, label, targetId, existingData) {
                             earned: s?.earned || false, 
                             earnedDate: s?.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString() : null,
                             timestamp: s?.earnedDateTime ? new Date(s.earnedDateTime).getTime() : 0,
-                            currentValue: s?.progress || 0, // CAPTURES (22)
-                            targetValue: m.trophyProgressTargetValue || 0 // CAPTURES (100)
+                            currentValue: s?.progress || 0,
+                            targetValue: m.trophyProgressTargetValue || 0
                         };
                     });
 
@@ -285,7 +287,7 @@ async function getFullUserData(auth, label, targetId, existingData) {
 
 // --- MAIN EXECUTION LOOP ---
 async function main() {
-    console.log("[INIT] Starting Absolute Omni-Collector Sync Engine v10.0.5...");
+    console.log("[INIT] Starting Absolute Omni-Collector Sync Engine v10.0.6...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
@@ -293,7 +295,7 @@ async function main() {
         mutualPack: [], 
         verificationLogs: [],
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "10.0.5",
+        engineVersion: "10.0.6",
         codeTimestamp: "Monday, May 4, 2026 | 4:45 PM EDT"
     };
 
@@ -304,11 +306,9 @@ async function main() {
         }
     } catch (e) {}
 
-    // Authenticate primary pack agents
     const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
 
-    // Identity audit to verify friends-list access and hardlink stability
     const verifyIdentity = async (auth, label) => {
         if (!auth) return;
         try {
@@ -326,8 +326,6 @@ async function main() {
     await verifyIdentity(wolfAuth, "Werewolf");
     await verifyIdentity(rayAuth, "Ray");
 
-    // Perform Full-Deep Synchronizations for ALL hardlinked squad members
-    // This allows Werewolf/Ray tokens to harvest deep metadata for TJ, Marc, Bunny, and JCrow.
     const masterAuth = wolfAuth || rayAuth;
     for (const [key, id] of Object.entries(ACCOUNT_IDS)) {
         const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : 
@@ -338,7 +336,6 @@ async function main() {
         if (data) finalData.users[key] = data;
     }
 
-    // --- MUTUAL DISCOVERY & UNIVERSAL LOBBY ---
     const squadFriends = { werewolf: [], ray: [] };
     if (wolfAuth) try { squadFriends.werewolf = (await getFriendsList(wolfAuth, ACCOUNT_IDS.werewolf)).friends || []; } catch(e){}
     if (rayAuth) try { squadFriends.ray = (await getFriendsList(rayAuth, ACCOUNT_IDS.ray)).friends || []; } catch(e){}
@@ -380,7 +377,6 @@ async function main() {
         }
     }
 
-    // Persistence Save: Master JSON Write
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
     console.log(`[SUCCESS] Absolute Omni-Protocol Complete. Generated: ${finalData.codeTimestamp}`);
 }
