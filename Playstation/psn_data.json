@@ -1,161 +1,167 @@
 {
   "users": {
     "werewolf": {
-      "accountId": "3728215008151724560",
-      "currentGame": "Home Screen",
+      "onlineId": "Werewolf3788",
+      "online": false,
+      "status": "Offline",
+      "statusColor": "#64748b",
+      "currentGame": "Dashboard",
+      "currentGameId": null,
       "platform": "PS5",
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0004_s.png",
+      "bio": "6C3RG",
       "plus": true,
-      "level": 232,
-      "recentGames": [
-        {
-          "name": "Sniper Elite: Resistance",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
-          "progress": 25,
-          "ratio": "22/71",
-          "hours": "0h"
-        }
-      ],
-      "activeHunt": {
-        "title": "Home Screen",
-        "trophies": []
+      "region": "US",
+      "language": "en",
+      "hardware": [],
+      "trophySummary": {
+        "platinum": 0,
+        "gold": 0,
+        "silver": 0,
+        "bronze": 0,
+        "total": 0
       },
-      "mostRecentTrophies": [
-        {
-          "game": "Sniper Elite: Resistance",
-          "name": "Vive La Résistance",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/1e11ac32-3048-415c-8d47-fcec2230463a.png",
-          "timestamp": 1759111272000,
-          "date": "9/29/2025, 2:01:12 AM"
-        },
-        {
-          "game": "Sniper Elite: Resistance",
-          "name": "Whatever it Takes",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/26115f96-aeab-40c1-aa38-a9173be1e236.png",
-          "timestamp": 1759110804000,
-          "date": "9/29/2025, 1:53:24 AM"
-        },
-        {
-          "game": "Sniper Elite: Resistance",
-          "name": "Full English",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/b678831c-f34e-48b7-82a6-9faf8dc91683.png",
-          "timestamp": 1759110008000,
-          "date": "9/29/2025, 1:40:08 AM"
-        },
-        {
-          "game": "Sniper Elite: Resistance",
-          "name": "Le Fantome",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/e37e2a78-29d1-44d2-b068-fff76935d6c9.png",
-          "timestamp": 1759107333000,
-          "date": "9/29/2025, 12:55:33 AM"
-        },
-        {
-          "game": "Sniper Elite: Resistance",
-          "name": "Grapes of Wrath",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/d68ca53b-2500-4e29-b7a5-09d05bf4c419.png",
-          "timestamp": 1759102193000,
-          "date": "9/28/2025, 11:29:53 PM"
-        }
-      ],
-      "dataStatus": "SYNCING",
-      "trophies": {
-        "platinum": 5,
-        "total": 1276
-      },
-      "lastUpdated": "5/4/2026, 6:48:42 PM"
+      "recentGames": [],
+      "activeHunt": null,
+      "mostRecentTrophies": [],
+      "lastUpdated": "5/4/2026, 8:12:31 PM"
     },
     "ray": {
-      "accountId": "2732733730346312494",
-      "currentGame": "Home Screen",
+      "onlineId": "OneLIVIDMAN",
+      "online": false,
+      "status": "Offline",
+      "statusColor": "#64748b",
+      "currentGame": "Dashboard",
+      "currentGameId": null,
       "platform": "PS5",
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
+      "bio": "exo-ONELIVIDMANKDFC3",
       "plus": true,
-      "level": 202,
-      "recentGames": [
-        {
-          "name": "Mahjong",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png",
-          "progress": 50,
-          "ratio": "5/10",
-          "hours": "0h"
-        }
-      ],
-      "activeHunt": {
-        "title": "Home Screen",
-        "trophies": []
+      "region": "US",
+      "language": "en",
+      "hardware": [],
+      "trophySummary": {
+        "platinum": 0,
+        "gold": 0,
+        "silver": 0,
+        "bronze": 0,
+        "total": 0
       },
-      "mostRecentTrophies": [
-        {
-          "game": "Mahjong",
-          "name": "CLEAR 20 LEVELS",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/5c335c31-75f7-4194-8867-163a13a15071.png",
-          "timestamp": 1777792873000,
-          "date": "5/3/2026, 7:21:13 AM"
-        },
-        {
-          "game": "Mahjong",
-          "name": "CLEAR 15 LEVELS",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/e7c05277-96df-4133-b044-d1d76f07f861.png",
-          "timestamp": 1777781054000,
-          "date": "5/3/2026, 4:04:14 AM"
-        },
-        {
-          "game": "Mahjong",
-          "name": "CLEAR 10 LEVELS",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/c4cc9e52-45e4-41bd-97a3-d1c270ee71e9.png",
-          "timestamp": 1777327146000,
-          "date": "4/27/2026, 9:59:06 PM"
-        },
-        {
-          "game": "Mahjong",
-          "name": "CLEAR 5 LEVELS",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/a2b6cd81-f3d0-4a2b-b580-b706b875dd2f.png",
-          "timestamp": 1777312867000,
-          "date": "4/27/2026, 6:01:07 PM"
-        },
-        {
-          "game": "Mahjong",
-          "name": "CLEAR 1 LEVEL",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6a3ac782-b027-4a9c-9b2e-47f6ca3a8759.png",
-          "timestamp": 1777306334000,
-          "date": "4/27/2026, 4:12:14 PM"
-        }
-      ],
-      "dataStatus": "SYNCING",
-      "trophies": {
-        "platinum": 5,
-        "total": 690
-      },
-      "lastUpdated": "5/4/2026, 6:48:43 PM"
+      "recentGames": [],
+      "activeHunt": null,
+      "mostRecentTrophies": [],
+      "lastUpdated": "5/4/2026, 8:12:32 PM"
     },
     "darkwing": {
       "online": false,
       "status": "Offline",
       "statusColor": "#64748b",
       "currentGame": "Dashboard",
-      "platform": "PS5"
+      "platform": "PS5",
+      "onlineId": "Darkwing69420",
+      "accountId": "4398462806362115916"
     },
     "marc": {
       "online": false,
       "status": "Offline",
       "statusColor": "#64748b",
       "currentGame": "Dashboard",
-      "platform": "PS5"
+      "platform": "PS5",
+      "onlineId": "ElucidatorVah",
+      "accountId": "6551906246515882523"
     },
     "jcrow": {
       "online": false,
       "status": "Offline",
       "statusColor": "#64748b",
       "currentGame": "Dashboard",
-      "platform": "PS5"
+      "platform": "PS5",
+      "onlineId": "JCrow207",
+      "accountId": "7524753921019262614"
     },
     "bunny": {
       "online": false,
       "status": "Offline",
       "statusColor": "#64748b",
       "currentGame": "Dashboard",
-      "platform": "PS5"
+      "platform": "PS5",
+      "onlineId": "UnicornBunnyShiv",
+      "accountId": "7742137722487951585"
     }
   },
-  "systemAlerts": []
+  "mutualPack": [],
+  "verificationLogs": [
+    {
+      "agent": "Werewolf",
+      "target": "ray",
+      "id": "2732733730346312494",
+      "status": "VERIFIED",
+      "timestamp": "2026-05-04T20:12:30.032Z"
+    },
+    {
+      "agent": "Werewolf",
+      "target": "darkwing",
+      "id": "4398462806362115916",
+      "status": "VERIFIED",
+      "timestamp": "2026-05-04T20:12:30.032Z"
+    },
+    {
+      "agent": "Werewolf",
+      "target": "marc",
+      "id": "6551906246515882523",
+      "status": "VERIFIED",
+      "timestamp": "2026-05-04T20:12:30.032Z"
+    },
+    {
+      "agent": "Werewolf",
+      "target": "jcrow",
+      "id": "7524753921019262614",
+      "status": "VERIFIED",
+      "timestamp": "2026-05-04T20:12:30.032Z"
+    },
+    {
+      "agent": "Werewolf",
+      "target": "bunny",
+      "id": "7742137722487951585",
+      "status": "VERIFIED",
+      "timestamp": "2026-05-04T20:12:30.032Z"
+    },
+    {
+      "agent": "Ray",
+      "target": "werewolf",
+      "id": "3728215008151724560",
+      "status": "VERIFIED",
+      "timestamp": "2026-05-04T20:12:30.207Z"
+    },
+    {
+      "agent": "Ray",
+      "target": "darkwing",
+      "id": "4398462806362115916",
+      "status": "NOT_IN_FRIENDS_LIST",
+      "timestamp": "2026-05-04T20:12:30.207Z"
+    },
+    {
+      "agent": "Ray",
+      "target": "marc",
+      "id": "6551906246515882523",
+      "status": "NOT_IN_FRIENDS_LIST",
+      "timestamp": "2026-05-04T20:12:30.207Z"
+    },
+    {
+      "agent": "Ray",
+      "target": "jcrow",
+      "id": "7524753921019262614",
+      "status": "NOT_IN_FRIENDS_LIST",
+      "timestamp": "2026-05-04T20:12:30.207Z"
+    },
+    {
+      "agent": "Ray",
+      "target": "bunny",
+      "id": "7742137722487951585",
+      "status": "NOT_IN_FRIENDS_LIST",
+      "timestamp": "2026-05-04T20:12:30.207Z"
+    }
+  ],
+  "lastGlobalUpdate": "5/4/2026, 8:12:29 PM",
+  "engineVersion": "8.7.0"
 }
