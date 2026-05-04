@@ -1,25 +1,26 @@
 # .github/workflows/deploy.yml
 # Kevin's Official Pack Sync Engine - Deployment Workflow
-# Version 1.0.1 - Fixed Missing Environment Error
+# Version 1.0.3 - Fixed Git Conflict Error (Rejected Refs)
 
 name: Sync PSN Data and Deploy
 
 on:
   schedule:
-    - cron: '0 * * * *' # Runs every hour
-  workflow_dispatch: # Allows manual trigger
+    - cron: '0 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
   pages: write
   id-token: write
 
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
 jobs:
   build-and-sync:
     runs-on: ubuntu-latest
-    
-    # CRITICAL: This block resolves the "Missing environment" error
-    # It links the workflow to the GitHub Pages environment
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -27,6 +28,8 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for safe rebasing
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -47,8 +50,10 @@ jobs:
           git config --global user.name "Werewolf3788-Bot"
           git config --global user.email "bot@werewolf.ourflora.com"
           git add Playstation/psn_data.json Playstation/tokens.json .nojekyll
+          # FIX: Rebase before pushing to handle remote changes during the run
+          git pull --rebase origin main
           git commit -m "Automated PSN Sync: $(date)" || echo "No changes to commit"
-          git push
+          git push origin main
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
