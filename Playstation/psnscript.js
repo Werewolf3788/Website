@@ -16,7 +16,8 @@ const {
     getUserPlayedGames,
     getUserRegion,
     getBasicPresence,
-    makeUniversalSearch
+    makeUniversalSearch,
+    getUserFriendsAccountIds // Added for ID Verification
 } = psnApi;
 
 const fs = require("fs");
@@ -24,15 +25,13 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 8.5.0 - Omni-Intelligence Protocol (Identity & Deep Progress Fix)
+ * Version 8.7.0 - Omni-Intelligence Protocol (Identity Verification & Discovery)
  * Filepath: Playstation/psnscript.js
  * * DESCRIPTION:
- * The ultimate data harvester for the Werewolf Pack. 
- * - Fixes "User not found" errors by utilizing the "me" identity protocol.
- * - Extracts every available data point: Bio, Plus Status, Hardware, Region.
- * - Deep Sync Trophies: Captures PS5 progress trackers (e.g., 22/100) and DLC groups.
- * - Identity Persistence: Maps explicit AccountID and OnlineID (User ID).
- * - Mutual Discovery: Automatically flags friends shared between Werewolf and Ray.
+ * - Integrates getUserFriendsAccountIds for live squad ID verification.
+ * - Fixes "Bad Request" by using verified numeric IDs for deep profile lookups.
+ * - Full Metadata Extraction: Bio, Hardware, Region, DLC Groups, Concept IDs.
+ * - PS5 Progress Support: Captures (22/100) style trophy values.
  * * SQUAD MEMBERS (Verified Hardlinks):
  * - Werewolf3788 (Kevin): 3728215008151724560
  * - OneLIVIDMAN (Ray): 2732733730346312494
@@ -140,19 +139,19 @@ async function getAuthenticated(userKey, npssoInput) {
 // --- DEEP HARVESTER ---
 async function getFullUserData(auth, label, targetOnlineId, existingData) {
     if (!auth) return existingData || null;
-    console.log(`[SYNC] Identity Handshake (v8.5.0): ${label}`);
+    console.log(`[SYNC] Omni-Pulse Sync (v8.7.0): ${label}`);
     
     try {
-        // 1. IDENTITY PROTOCOL (Fixes "User not found")
-        // We strictly use "me" for authenticated users to pull private metadata
-        const profile = await getProfileFromAccountId(auth, "me");
+        // 1. IDENTITY HANDSHAKE
+        const targetId = ACCOUNT_IDS[label.toLowerCase()];
+        const profile = await getProfileFromAccountId(auth, targetId);
         const accountId = profile.accountId;
         const onlineId = profile.onlineId;
         const region = await getUserRegion(auth, "me");
         const devices = await getAccountDevices(auth);
         
         let p = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
-        try { p = await getBasicPresence(auth, accountId); } catch(e) {}
+        try { p = await getBasicPresence(auth, "me"); } catch(e) {}
 
         const statusInfo = getDetailedStatus(p);
         const presence = {
@@ -194,7 +193,6 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
                 });
             }
 
-            // TROPHY GROUP & PROGRESS SCAN (22/100 support)
             if (!activeHunt || name === presence.currentGame) {
                 try {
                     const { trophyGroups } = await getTitleTrophyGroups(auth, title.npCommunicationId, "all");
@@ -258,21 +256,22 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
             lastUpdated: new Date().toLocaleString()
         };
     } catch (e) { 
-        console.error(`[CRITICAL] Harvest failed for ${label}:`, e.message);
+        console.error(`[CRITICAL] Harvest Error for ${label}:`, e.message);
         return existingData || null; 
     }
 }
 
 // --- MAIN SYNC ENGINE ---
 async function main() {
-    console.log("[INIT] Starting Master Sync Engine v8.5.0...");
+    console.log("[INIT] Starting Identity Validation Sync v8.7.0...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
         users: {}, 
         mutualPack: [], 
+        verificationLogs: [],
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "8.5.0"
+        engineVersion: "8.7.0"
     };
 
     try {
@@ -285,13 +284,43 @@ async function main() {
     const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
 
+    // --- LIVE ID VERIFICATION ---
+    const verifyIdentity = async (auth, label) => {
+        if (!auth) return;
+        try {
+            console.log(`[VERIFY] Validating ${label} Squad Access...`);
+            const response = await getUserFriendsAccountIds(auth, "me");
+            const friendIds = response.friends || [];
+            
+            // Check if our hardlinked squad members are in the friend list
+            Object.entries(ACCOUNT_IDS).forEach(([key, id]) => {
+                const isFound = friendIds.includes(id);
+                if (key !== label.toLowerCase()) {
+                    finalData.verificationLogs.push({
+                        agent: label,
+                        target: key,
+                        id: id,
+                        status: isFound ? "VERIFIED" : "NOT_IN_FRIENDS_LIST",
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            });
+        } catch (e) {
+            console.error(`[VERIFY] Error during identity audit for ${label}:`, e.message);
+        }
+    };
+
+    await verifyIdentity(wolfAuth, "Werewolf");
+    await verifyIdentity(rayAuth, "Ray");
+
+    // Run Primary Deep Harvests
     const wolfFull = await getFullUserData(wolfAuth, "Werewolf", "Werewolf3788", finalData.users.werewolf);
     const rayFull = await getFullUserData(rayAuth, "Ray", "OneLIVIDMAN", finalData.users.ray);
 
     if (wolfFull) finalData.users.werewolf = wolfFull;
     if (rayFull) finalData.users.ray = rayFull;
 
-    // --- MUTUAL DISCOVERY & UNIVERSAL LOBBY ---
+    // --- MUTUAL DISCOVERY ---
     const squadFriends = { werewolf: [], ray: [] };
     if (wolfAuth) {
         try {
@@ -336,7 +365,7 @@ async function main() {
         else Object.assign(finalData.users[key], lobbyData);
     }
 
-    // Shadow Sync for Squad members not tracked as friends
+    // Shadow Sync for Squad
     const masterAuth = wolfAuth || rayAuth;
     if (masterAuth) {
         for (const [key, accountId] of Object.entries(ACCOUNT_IDS)) {
@@ -359,7 +388,7 @@ async function main() {
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] Identity Sync Complete. v${finalData.engineVersion}`);
+    console.log(`[SUCCESS] Identity Validation Complete. v${finalData.engineVersion}`);
 }
 
 main();
