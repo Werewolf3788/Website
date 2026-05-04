@@ -23,10 +23,14 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 7.5.0 - Live-Lock Protocol
+ * Version 7.6.0 - Live-Lock Protocol (NPM psn-api Integration)
  * Filepath: Playstation/psnscript.js
- * FIXED: Ray presence showing offline, NaN% on Home Screen, and Trophy Feed Icons.
+ * * DESCRIPTION:
+ * This script synchronizes PlayStation Network data for the squad.
+ * It handles OAuth2 token rotation, presence monitoring, and trophy tracking.
+ * Compatible with GitHub Pages and optimized for Kevin's dashboard.
  */
+
 const SQUAD_MAP = {
     werewolf: "Werewolf3788",
     ray: "OneLIVIDMAN",
@@ -34,6 +38,15 @@ const SQUAD_MAP = {
     phoenix: "phoenix_darkfire",
     balto: "Balto20_01",
     mjolnir: "IlIMjolnirIlI"
+};
+
+const ACCOUNT_IDS = {
+    werewolf: "3728215008151724560",
+    ray: "2732733730346312494",
+    darkwing: "4398462806362115916",
+    marc: "6551906246515882523",
+    jcrow: "7524753921019262614",
+    bunny: "7742137722487951585"
 };
 
 const PSN_ID_TO_KEY = Object.entries(SQUAD_MAP).reduce((acc, [key, id]) => {
@@ -62,7 +75,7 @@ const parsePlaytime = (duration) => {
     return `${h ? h[1] + "h" : ""} ${m ? m[1] + "m" : ""}`.trim() || "0h";
 };
 
-// Advanced Presence Check (Sony's Multi-State Logic)
+// Advanced Presence Check (Sony's Multi-State Logic via psn-api)
 const isUserActive = (p) => {
     if (!p) return false;
     const status = (p.primaryPlatformInfo?.onlineStatus || "").toLowerCase();
@@ -81,10 +94,12 @@ async function getAuthenticated(userKey, npssoInput) {
     let currentUserTokens = tokenStore[userKey] || {};
     const now = Math.floor(Date.now() / 1000);
     
+    // Check if current access token is still valid (with 5 min buffer)
     if (currentUserTokens.accessToken && (currentUserTokens.expiryTime > now + 300)) {
         return { accessToken: currentUserTokens.accessToken };
     }
 
+    // Try Refresh Token
     if (currentUserTokens.refreshToken) {
         try {
             const refreshed = await exchangeRefreshTokenForAuthTokens(currentUserTokens.refreshToken);
@@ -95,9 +110,12 @@ async function getAuthenticated(userKey, npssoInput) {
             };
             saveTokens();
             return refreshed;
-        } catch (e) {}
+        } catch (e) {
+            console.error(`[AUTH] Refresh failed for ${userKey}`);
+        }
     }
 
+    // Fallback to NPSSO (SsoCookie)
     if (npssoInput) {
         try {
             const accessCode = await exchangeNpssoForCode(npssoInput);
@@ -109,7 +127,10 @@ async function getAuthenticated(userKey, npssoInput) {
             };
             saveTokens();
             return auth;
-        } catch (e) { return null; }
+        } catch (e) { 
+            console.error(`[AUTH] NPSSO exchange failed for ${userKey}`);
+            return null; 
+        }
     }
     return null;
 }
@@ -117,10 +138,12 @@ async function getAuthenticated(userKey, npssoInput) {
 async function getFullUserData(auth, label, targetOnlineId, existingData) {
     if (!auth) return existingData || null;
     try {
+        // Step 1: Get Account ID
         const bridgeProfile = await getProfileFromUserName(auth, targetOnlineId);
         const accountId = bridgeProfile.profile.accountId;
-        const profile = await getProfileFromAccountId(auth, accountId);
         
+        // Step 2: Get Detailed Profile & Presence
+        const profile = await getProfileFromAccountId(auth, accountId);
         let p = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         try { p = await getBasicPresence(auth, accountId); } catch(e) {}
 
@@ -130,9 +153,11 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
             platform: p.primaryPlatformInfo?.platform?.toUpperCase() || "PS5"
         };
 
+        // Step 3: Trophy Stats
         const stats = await getUserTrophyProfileSummary(auth, accountId);
         const globalTotal = (stats.earnedTrophies?.platinum || 0) + (stats.earnedTrophies?.gold || 0) + (stats.earnedTrophies?.silver || 0) + (stats.earnedTrophies?.bronze || 0);
 
+        // Step 4: Game Titles (Limited to top 15 for performance)
         const { trophyTitles } = await getUserTitles(auth, accountId);
         const sortedTitles = (trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
 
@@ -146,15 +171,15 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
         let mostRecentTrophies = [];
         let localSummed = 0;
 
-        for (const title of sortedTitles) {
+        for (const title of sortedTitles.slice(0, 10)) {
             const name = title.trophyTitleName;
             if (BLACKLIST.some(f => name.toLowerCase().includes(f))) continue;
 
             const earnedC = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
             localSummed += earnedC;
 
-            // Gather trophies for active game and global feed
-            if (name === presence.currentGame || mostRecentTrophies.length < 20) {
+            // Deep Sync for Active Game or top of list
+            if (name === presence.currentGame || mostRecentTrophies.length < 5) {
                 try {
                     const { trophies: earnedStatus } = await getUserTrophiesEarnedForTitle(auth, accountId, title.npCommunicationId, "all");
                     const { trophies: meta } = await getTitleTrophies(auth, title.npCommunicationId, "all");
@@ -175,7 +200,7 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
                     if (name === presence.currentGame) {
                         activeGameTrophies = mapped;
                         const liveEarned = mapped.filter(t => t.earned).length;
-                        const liveTotal = Math.max(mapped.length, 1); // NaN Protection
+                        const liveTotal = Math.max(mapped.length, 1);
                         const livePct = Math.round((liveEarned / liveTotal) * 100);
 
                         if (recentGames.length < 6) {
@@ -208,7 +233,6 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
         }
 
         mostRecentTrophies = mostRecentTrophies.sort((a,b) => b.timestamp - a.timestamp).slice(0, 5);
-        if (!activeGameTrophies) activeGameTrophies = [];
 
         return {
             accountId, ...presence, 
@@ -216,16 +240,20 @@ async function getFullUserData(auth, label, targetOnlineId, existingData) {
             plus: profile.isPlus, 
             level: stats.trophyLevel,
             recentGames, 
-            activeHunt: { title: presence.currentGame, trophies: activeGameTrophies },
+            activeHunt: { title: presence.currentGame, trophies: activeGameTrophies || [] },
             mostRecentTrophies, 
             dataStatus: (localSummed < globalTotal) ? "SYNCING" : "LIVE",
             trophies: { platinum: stats.earnedTrophies?.platinum || 0, total: globalTotal },
             lastUpdated: new Date().toLocaleString()
         };
-    } catch (e) { return existingData || null; }
+    } catch (e) { 
+        console.error(`[SYNC] Error for ${label}:`, e.message);
+        return existingData || null; 
+    }
 }
 
 async function main() {
+    console.log("[INIT] Starting Live-Lock Sync Engine v7.6.0...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { users: {}, systemAlerts: [] };
@@ -235,43 +263,42 @@ async function main() {
         }
     } catch (e) {}
 
+    // Authentication for primary sync agents
     const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
 
+    // Deep Sync for Werewolf and Ray
     const wolfFull = await getFullUserData(wolfAuth, "Werewolf", "Werewolf3788", finalData.users.werewolf);
     const rayFull = await getFullUserData(rayAuth, "Ray", "OneLIVIDMAN", finalData.users.ray);
 
     if (wolfFull) finalData.users.werewolf = wolfFull;
     if (rayFull) finalData.users.ray = rayFull;
 
+    // Friends List Presence Update (Shadow Sync for Squad)
     const masterAuth = wolfAuth || rayAuth;
     if (masterAuth) {
         try {
-            const list = await getFriendsList(masterAuth, wolfFull?.accountId || rayFull?.accountId || finalData.users.werewolf?.accountId);
+            const list = await getFriendsList(masterAuth, "me");
             for (const f of list.friends || []) {
                 const key = PSN_ID_TO_KEY[f.onlineId.toLowerCase()];
                 if (key) {
                     const online = isUserActive(f.presence);
+                    if (!finalData.users[key]) finalData.users[key] = {};
                     
-                    if (!finalData.users[key] || !finalData.users[key].dataStatus) {
-                        finalData.users[key] = { 
-                            online, 
-                            currentGame: f.presence?.gameTitleInfoList?.[0]?.titleName || "Home Screen", 
-                            platform: f.presence?.primaryPlatformInfo?.platform?.toUpperCase() || "PS5" 
-                        };
-                    } else {
-                        finalData.users[key].online = online;
-                        if (online && f.presence?.gameTitleInfoList?.[0]?.titleName) {
-                            finalData.users[key].currentGame = f.presence.gameTitleInfoList[0].titleName;
-                        }
+                    finalData.users[key].online = online;
+                    finalData.users[key].platform = f.presence?.primaryPlatformInfo?.platform?.toUpperCase() || "PS5";
+                    if (online && f.presence?.gameTitleInfoList?.[0]?.titleName) {
+                        finalData.users[key].currentGame = f.presence.gameTitleInfoList[0].titleName;
                     }
                 }
             }
-        } catch (e) {}
+        } catch (e) {
+            console.error("[SYNC] Friends list update failed.");
+        }
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log("[SUCCESS] Live-Lock v7.5.0 Active.");
+    console.log("[SUCCESS] Live-Lock Sync Complete.");
 }
 
 main();
