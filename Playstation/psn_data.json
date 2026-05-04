@@ -17,7 +17,7 @@
         "followers": "97",
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-300x300.png",
         "age": "3 years, 4 weeks",
-        "bio": "404 Page Not Found",
+        "bio": null,
         "statusMessage": "Fun tymes",
         "uptime": "werewolf3788 is offline"
       },
@@ -1189,7 +1189,7 @@
           "date": "9/26/2025, 4:46:15 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:37:34 PM"
+      "lastUpdated": "5/4/2026, 11:40:56 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -1208,7 +1208,7 @@
         "followers": "25",
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-300x300.png",
         "age": "2 years, 11 months",
-        "bio": "404 Page Not Found",
+        "bio": null,
         "statusMessage": "🏆 farming",
         "uptime": "raymystyro is offline"
       },
@@ -1471,7 +1471,7 @@
           "date": "4/27/2026, 4:12:14 PM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:37:36 PM"
+      "lastUpdated": "5/4/2026, 11:40:58 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -1490,7 +1490,7 @@
         "followers": "75",
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/53503674-298d-4302-89ad-4c58c18dcbd9-profile_image-300x300.jpeg",
         "age": "1 year, 1 month",
-        "bio": "404 Page Not Found",
+        "bio": null,
         "statusMessage": "Wolong first time playing",
         "uptime": "terrdog420 is offline"
       },
@@ -2923,7 +2923,7 @@
           "date": "4/25/2026, 2:33:05 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:37:37 PM"
+      "lastUpdated": "5/4/2026, 11:40:59 PM"
     },
     "marc": {
       "onlineId": "ElucidatorVah",
@@ -3659,7 +3659,7 @@
         "npCommunicationId": "NPWR50887_00"
       },
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 11:37:38 PM"
+      "lastUpdated": "5/4/2026, 11:41:00 PM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -5811,7 +5811,7 @@
           "date": "4/3/2025, 5:26:08 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:37:39 PM"
+      "lastUpdated": "5/4/2026, 11:41:02 PM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -6552,7 +6552,7 @@
           "date": "5/4/2026, 3:03:28 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 11:37:40 PM"
+      "lastUpdated": "5/4/2026, 11:41:03 PM"
     },
     "mjolnir": {
       "onlineId": "Michael (Mjolnir)",
@@ -6561,6 +6561,7 @@
       "currentGameArt": null,
       "currentGameActivity": "Protecting and Serving the community 👮🏻‍♂️⭐",
       "amazonAffiliateUrl": "https://www.amazon.com/s?k=Police%20Simulator%3A%20Patrol%20Officers+Playstation+5&tag=psngaming-20",
+      "bio": "Official Pack Member Profile",
       "twitch": {
         "isLive": true,
         "game": "Police Simulator: Patrol Officers",
@@ -6568,11 +6569,11 @@
         "followers": "18",
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/6b984b2f-9b16-43c6-a699-4fd019576faf-profile_image-300x300.png",
         "age": "6 years, 1 month",
-        "bio": "404 Page Not Found",
+        "bio": null,
         "statusMessage": "Protecting and Serving the community 👮🏻‍♂️⭐",
         "uptime": "mjolnirgaming is offline"
       },
-      "lastUpdated": "5/4/2026, 11:37:41 PM",
+      "lastUpdated": "5/4/2026, 11:41:03 PM",
       "note": "Twitch-Active Profile"
     },
     "phoenix": {
@@ -6582,6 +6583,7 @@
       "currentGameArt": null,
       "currentGameActivity": "I See a Full Moon a'Rising",
       "amazonAffiliateUrl": "https://www.amazon.com/s?k=Werewolf%3A%20The%20Apocalypse%20-%20Earthblood+Playstation+5&tag=psngaming-20",
+      "bio": "Official Pack Member Profile",
       "twitch": {
         "isLive": true,
         "game": "Werewolf: The Apocalypse - Earthblood",
@@ -6589,15 +6591,15 @@
         "followers": "64",
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-300x300.png",
         "age": "8 years, 3 months",
-        "bio": "404 Page Not Found",
+        "bio": null,
         "statusMessage": "I See a Full Moon a'Rising",
         "uptime": "phoenix_darkfire is offline"
       },
-      "lastUpdated": "5/4/2026, 11:37:41 PM",
+      "lastUpdated": "5/4/2026, 11:41:03 PM",
       "note": "Twitch-Active Profile"
     }
   },
-  "lastGlobalUpdate": "5/4/2026, 11:37:31 PM",
-  "engineVersion": "12.3.0",
-  "codeTimestamp": "Monday, May 4, 2026 | 7:35 PM EDT"
+  "lastGlobalUpdate": "5/4/2026, 11:40:52 PM",
+  "engineVersion": "12.4.0",
+  "codeTimestamp": "Monday, May 4, 2026 | 7:40 PM EDT"
 }
