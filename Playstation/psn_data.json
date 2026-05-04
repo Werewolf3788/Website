@@ -3,8 +3,8 @@
     "werewolf": {
       "onlineId": "Werewolf3788",
       "accountId": "3728215008151724560",
-      "online": false,
-      "currentGame": "Dashboard",
+      "online": true,
+      "currentGame": "Farming Simulator 25",
       "currentGameActivity": null,
       "currentCommunicationId": null,
       "platform": "PS5",
@@ -1174,8 +1174,8 @@
     "ray": {
       "onlineId": "OneLIVIDMAN",
       "accountId": "2732733730346312494",
-      "online": false,
-      "currentGame": "Dashboard",
+      "online": True,
+      "currentGame": "Mahjong3D",
       "currentGameActivity": null,
       "currentCommunicationId": null,
       "platform": "PS5",
