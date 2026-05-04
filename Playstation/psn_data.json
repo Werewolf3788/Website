@@ -3,19 +3,14 @@
     "werewolf": {
       "onlineId": "Werewolf3788",
       "accountId": "3728215008151724560",
-      "online": false,
-      "status": "Offline",
-      "statusColor": "#64748b",
       "currentGame": "Dashboard",
       "currentCommunicationId": null,
       "platform": "PS5",
-      "storeUrl": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0004_s.png",
       "bio": "6C3RG",
       "plus": true,
       "level": 232,
       "region": "US",
-      "hardware": [],
       "trophySummary": {
         "platinum": 5,
         "gold": 77,
@@ -29,60 +24,48 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
           "progress": 25,
           "ratio": "22/71",
-          "hours": "0h",
           "npCommunicationId": "NPWR40813_00",
-          "lastPlayed": "2026-05-02T07:33:09Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR40813_00"
+          "lastPlayed": "2026-05-02T07:33:09Z"
         },
         {
           "name": "Crossout",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
           "progress": 4,
           "ratio": "1/13",
-          "hours": "0h",
           "npCommunicationId": "NPWR24327_00",
-          "lastPlayed": "2026-05-01T04:01:47Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR24327_00"
+          "lastPlayed": "2026-05-01T04:01:47Z"
         },
         {
           "name": "Wo Long: Fallen Dynasty",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
           "progress": 9,
           "ratio": "10/90",
-          "hours": "0h",
           "npCommunicationId": "NPWR27198_00",
-          "lastPlayed": "2026-04-30T03:51:42Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR27198_00"
+          "lastPlayed": "2026-04-30T03:51:42Z"
         },
         {
           "name": "Tom Clancy’s Ghost Recon® Wildlands",
           "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
           "progress": 29,
           "ratio": "20/58",
-          "hours": "0h",
           "npCommunicationId": "NPWR09395_00",
-          "lastPlayed": "2026-04-29T01:13:02Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR09395_00"
+          "lastPlayed": "2026-04-29T01:13:02Z"
         },
         {
           "name": "Where Winds Meet",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
           "progress": 3,
           "ratio": "2/45",
-          "hours": "0h",
           "npCommunicationId": "NPWR50887_00",
-          "lastPlayed": "2026-04-28T02:37:12Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR50887_00"
+          "lastPlayed": "2026-04-28T02:37:12Z"
         },
         {
           "name": "Call of Duty® Modern Warfare® II",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50314_00/8e558b12-9144-4d7f-a141-5b04943763b4.png",
           "progress": 0,
           "ratio": "0/25",
-          "hours": "0h",
           "npCommunicationId": "NPWR50314_00",
-          "lastPlayed": "2026-04-25T01:06:06Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR50314_00"
+          "lastPlayed": "2026-04-25T01:06:06Z"
         }
       ],
       "activeHunt": {
@@ -1110,7 +1093,6 @@
             "targetValue": 0
           }
         ],
-        "hours": "0h",
         "npCommunicationId": "NPWR40813_00"
       },
       "mostRecentTrophies": [
@@ -1185,24 +1167,19 @@
           "date": "9/26/2025, 4:46:15 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:36:06 PM"
+      "lastUpdated": "5/4/2026, 9:52:23 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
       "accountId": "2732733730346312494",
-      "online": false,
-      "status": "Offline",
-      "statusColor": "#64748b",
       "currentGame": "Dashboard",
       "currentCommunicationId": null,
       "platform": "PS5",
-      "storeUrl": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
       "bio": "exo-ONELIVIDMANKDFC3",
       "plus": true,
       "level": 202,
       "region": "US",
-      "hardware": [],
       "trophySummary": {
         "platinum": 5,
         "gold": 33,
@@ -1216,60 +1193,48 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png",
           "progress": 50,
           "ratio": "5/10",
-          "hours": "0h",
           "npCommunicationId": "NPWR28141_00",
-          "lastPlayed": "2026-05-03T07:21:14Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR28141_00"
+          "lastPlayed": "2026-05-03T07:21:14Z"
         },
         {
           "name": "theHunter: Call of the Wild",
           "art": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/88AFFFD0B28B703B28CA71F6353F797230B9FB32.PNG",
           "progress": 35,
           "ratio": "39/115",
-          "hours": "0h",
           "npCommunicationId": "NPWR13211_00",
-          "lastPlayed": "2026-04-22T23:42:00Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR13211_00"
+          "lastPlayed": "2026-04-22T23:42:00Z"
         },
         {
           "name": "Sniper Elite: Resistance",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
           "progress": 0,
           "ratio": "0/71",
-          "hours": "0h",
           "npCommunicationId": "NPWR40813_00",
-          "lastPlayed": "2026-04-14T10:55:49Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR40813_00"
+          "lastPlayed": "2026-04-14T10:55:49Z"
         },
         {
           "name": "Farming Simulator 25",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
           "progress": 100,
           "ratio": "46/46",
-          "hours": "0h",
           "npCommunicationId": "NPWR44827_00",
-          "lastPlayed": "2026-04-14T10:48:47Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR44827_00"
+          "lastPlayed": "2026-04-14T10:48:47Z"
         },
         {
           "name": "Farming Simulator 22",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR23165_00/dae2fb95-5224-40a6-bd64-b9c4b1e826f6.png",
           "progress": 18,
           "ratio": "10/46",
-          "hours": "0h",
           "npCommunicationId": "NPWR23165_00",
-          "lastPlayed": "2026-04-04T02:01:34Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR23165_00"
+          "lastPlayed": "2026-04-04T02:01:34Z"
         },
         {
           "name": "SKULL AND BONES™",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22432_00/cbdac3c7-fa16-4556-81f0-a93c788c0cf8.png",
           "progress": 10,
           "ratio": "7/51",
-          "hours": "0h",
           "npCommunicationId": "NPWR22432_00",
-          "lastPlayed": "2026-04-03T21:23:10Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR22432_00"
+          "lastPlayed": "2026-04-03T21:23:10Z"
         }
       ],
       "activeHunt": {
@@ -1423,7 +1388,6 @@
             "targetValue": 0
           }
         ],
-        "hours": "0h",
         "npCommunicationId": "NPWR28141_00"
       },
       "mostRecentTrophies": [
@@ -1463,24 +1427,19 @@
           "date": "4/27/2026, 4:12:14 PM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:36:07 PM"
+      "lastUpdated": "5/4/2026, 9:52:24 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
       "accountId": "4398462806362115916",
-      "online": false,
-      "status": "Offline",
-      "statusColor": "#64748b",
       "currentGame": "Dashboard",
       "currentCommunicationId": null,
       "platform": "PS5",
-      "storeUrl": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
-      "bio": "Official Pack Member",
+      "bio": "Official Pack Member Profile",
       "plus": true,
       "level": 60,
       "region": "US",
-      "hardware": [],
       "trophySummary": {
         "platinum": 0,
         "gold": 8,
@@ -1494,60 +1453,48 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
           "progress": 32,
           "ratio": "35/90",
-          "hours": "0h",
           "npCommunicationId": "NPWR27198_00",
-          "lastPlayed": "2026-05-03T07:59:38Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR27198_00"
+          "lastPlayed": "2026-05-03T07:59:38Z"
         },
         {
           "name": "Assassin's Creed® II",
           "art": "https://image.api.playstation.com/trophy/np/NPWR11435_00_00025CC40B8D85858575298BAA090D80E9E134D207/987B37AA2202ABB7055B12AD6E63A95EC077D01E.PNG",
           "progress": 30,
           "ratio": "15/51",
-          "hours": "0h",
           "npCommunicationId": "NPWR11435_00",
-          "lastPlayed": "2026-04-05T03:31:01Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR11435_00"
+          "lastPlayed": "2026-04-05T03:31:01Z"
         },
         {
           "name": "Assassin's Creed® III Remastered",
           "art": "https://image.api.playstation.com/trophy/np/NPWR15386_00_0064D75EBEAF65A7023B745B7AD7E2BA9558E1BDA4/4E0DB86EC39C09F26B69F290639B1A4A789AA053.PNG",
           "progress": 1,
           "ratio": "1/55",
-          "hours": "0h",
           "npCommunicationId": "NPWR15386_00",
-          "lastPlayed": "2026-04-04T06:34:39Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR15386_00"
+          "lastPlayed": "2026-04-04T06:34:39Z"
         },
         {
           "name": "Assassin's Creed® Liberation Remastered",
           "art": "https://image.api.playstation.com/trophy/np/NPWR16633_00_00A31AE68788AAB69A7FFED0B33EA1D4785CF4A065/D5DC222FB18539383BA022A52E993EB0CDF05920.PNG",
           "progress": 0,
           "ratio": "0/31",
-          "hours": "0h",
           "npCommunicationId": "NPWR16633_00",
-          "lastPlayed": "2026-04-04T06:17:20Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR16633_00"
+          "lastPlayed": "2026-04-04T06:17:20Z"
         },
         {
           "name": "Farming Simulator 25",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
           "progress": 27,
           "ratio": "16/46",
-          "hours": "0h",
           "npCommunicationId": "NPWR44827_00",
-          "lastPlayed": "2026-03-29T16:42:32Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR44827_00"
+          "lastPlayed": "2026-03-29T16:42:32Z"
         },
         {
           "name": "Undisputed",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40778_00/25fdbc26-029b-4394-b276-3487ff4bcc2f.png",
           "progress": 76,
           "ratio": "24/37",
-          "hours": "0h",
           "npCommunicationId": "NPWR40778_00",
-          "lastPlayed": "2026-03-23T08:11:59Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR40778_00"
+          "lastPlayed": "2026-03-23T08:11:59Z"
         }
       ],
       "activeHunt": {
@@ -2836,7 +2783,6 @@
             "targetValue": 0
           }
         ],
-        "hours": "0h",
         "npCommunicationId": "NPWR27198_00"
       },
       "mostRecentTrophies": [
@@ -2911,24 +2857,19 @@
           "date": "4/25/2026, 2:33:05 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:36:08 PM"
+      "lastUpdated": "5/4/2026, 9:52:26 PM"
     },
     "marc": {
       "onlineId": "ElucidatorVah",
       "accountId": "6551906246515882523",
-      "online": false,
-      "status": "Offline",
-      "statusColor": "#64748b",
       "currentGame": "Dashboard",
       "currentCommunicationId": null,
       "platform": "PS5",
-      "storeUrl": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_A/A2073_s.png",
       "bio": "Why are you looking here im a boring person with no irl friends.... Life is great",
       "plus": true,
       "level": 188,
       "region": "US",
-      "hardware": [],
       "trophySummary": {
         "platinum": 1,
         "gold": 33,
@@ -2942,60 +2883,48 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
           "progress": 0,
           "ratio": "0/45",
-          "hours": "0h",
           "npCommunicationId": "NPWR50887_00",
-          "lastPlayed": "2026-05-04T17:47:48Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR50887_00"
+          "lastPlayed": "2026-05-04T17:47:48Z"
         },
         {
           "name": "Neverness to Everness",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51218_00/0ca364c4-8c31-4e6d-b058-ced0b4c94332.png",
           "progress": 0,
           "ratio": "0/36",
-          "hours": "0h",
           "npCommunicationId": "NPWR51218_00",
-          "lastPlayed": "2026-05-03T13:37:23Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR51218_00"
+          "lastPlayed": "2026-05-03T13:37:23Z"
         },
         {
           "name": "Crossout",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
           "progress": 23,
           "ratio": "5/13",
-          "hours": "0h",
           "npCommunicationId": "NPWR24327_00",
-          "lastPlayed": "2026-05-03T12:13:19Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR24327_00"
+          "lastPlayed": "2026-05-03T12:13:19Z"
         },
         {
           "name": "Tom Clancy’s Ghost Recon® Wildlands",
           "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
           "progress": 14,
           "ratio": "12/58",
-          "hours": "0h",
           "npCommunicationId": "NPWR09395_00",
-          "lastPlayed": "2026-05-01T01:12:15Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR09395_00"
+          "lastPlayed": "2026-05-01T01:12:15Z"
         },
         {
           "name": "SWORD ART ONLINE Fractured Daydream",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28127_00/55ea858b-c481-4450-bc51-b7df862a4f31.png",
           "progress": 25,
           "ratio": "13/52",
-          "hours": "0h",
           "npCommunicationId": "NPWR28127_00",
-          "lastPlayed": "2026-04-18T00:14:26Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR28127_00"
+          "lastPlayed": "2026-04-18T00:14:26Z"
         },
         {
           "name": "Overwatch",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24042_00/aba3ff3d-cc81-4d08-b163-5209e0efc12f.png",
           "progress": 48,
           "ratio": "40/92",
-          "hours": "0h",
           "npCommunicationId": "NPWR24042_00",
-          "lastPlayed": "2026-04-17T19:59:48Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR24042_00"
+          "lastPlayed": "2026-04-17T19:59:48Z"
         }
       ],
       "activeHunt": {
@@ -3649,28 +3578,22 @@
             "targetValue": 0
           }
         ],
-        "hours": "0h",
         "npCommunicationId": "NPWR50887_00"
       },
       "mostRecentTrophies": [],
-      "lastUpdated": "5/4/2026, 9:36:09 PM"
+      "lastUpdated": "5/4/2026, 9:52:27 PM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
       "accountId": "7524753921019262614",
-      "online": false,
-      "status": "Offline",
-      "statusColor": "#64748b",
       "currentGame": "Dashboard",
       "currentCommunicationId": null,
       "platform": "PS5",
-      "storeUrl": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0021_s.png",
-      "bio": "Official Pack Member",
+      "bio": "Official Pack Member Profile",
       "plus": true,
       "level": 60,
       "region": "US",
-      "hardware": [],
       "trophySummary": {
         "platinum": 0,
         "gold": 7,
@@ -3684,60 +3607,48 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/7270b75f-f28d-424e-96d1-ae88a5405438.PNG",
           "progress": 11,
           "ratio": "26/135",
-          "hours": "0h",
           "npCommunicationId": "NPWR41319_00",
-          "lastPlayed": "2026-04-02T04:32:33Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR41319_00"
+          "lastPlayed": "2026-04-02T04:32:33Z"
         },
         {
           "name": "Battlefield™ 6",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50656_00/5886a741-0f5c-4993-9ac0-ab82791fa528.png",
           "progress": 1,
           "ratio": "1/54",
-          "hours": "0h",
           "npCommunicationId": "NPWR50656_00",
-          "lastPlayed": "2026-02-26T23:27:41Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR50656_00"
+          "lastPlayed": "2026-02-26T23:27:41Z"
         },
         {
           "name": "Farming Simulator 25",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
           "progress": 22,
           "ratio": "10/46",
-          "hours": "0h",
           "npCommunicationId": "NPWR44827_00",
-          "lastPlayed": "2026-02-19T03:08:00Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR44827_00"
+          "lastPlayed": "2026-02-19T03:08:00Z"
         },
         {
           "name": "theHunter: Call of the Wild",
           "art": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/88AFFFD0B28B703B28CA71F6353F797230B9FB32.PNG",
           "progress": 24,
           "ratio": "27/115",
-          "hours": "0h",
           "npCommunicationId": "NPWR13211_00",
-          "lastPlayed": "2025-12-02T02:17:44Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR13211_00"
+          "lastPlayed": "2025-12-02T02:17:44Z"
         },
         {
           "name": "Sea of Thieves",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40455_00/b925290d-ba56-4240-8715-55457d78e612.png",
           "progress": 9,
           "ratio": "29/291",
-          "hours": "0h",
           "npCommunicationId": "NPWR40455_00",
-          "lastPlayed": "2025-11-09T02:28:43Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR40455_00"
+          "lastPlayed": "2025-11-09T02:28:43Z"
         },
         {
           "name": "Call of Duty® Modern Warfare® II",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24223_00/4bf6ce0f-4c4c-42a2-b3d0-66c295cbd7aa.png",
           "progress": 5,
           "ratio": "7/158",
-          "hours": "0h",
           "npCommunicationId": "NPWR24223_00",
-          "lastPlayed": "2025-10-19T20:00:25Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR24223_00"
+          "lastPlayed": "2025-10-19T20:00:25Z"
         }
       ],
       "activeHunt": {
@@ -5736,7 +5647,6 @@
             "targetValue": 0
           }
         ],
-        "hours": "0h",
         "npCommunicationId": "NPWR41319_00"
       },
       "mostRecentTrophies": [
@@ -5811,24 +5721,19 @@
           "date": "4/3/2025, 5:26:08 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:36:09 PM"
+      "lastUpdated": "5/4/2026, 9:52:28 PM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
       "accountId": "7742137722487951585",
-      "online": false,
-      "status": "Offline",
-      "statusColor": "#64748b",
       "currentGame": "Dashboard",
       "currentCommunicationId": null,
       "platform": "PS5",
-      "storeUrl": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/SCEI/I0001_s.png",
-      "bio": "Official Pack Member",
+      "bio": "Official Pack Member Profile",
       "plus": true,
       "level": 209,
       "region": "US",
-      "hardware": [],
       "trophySummary": {
         "platinum": 0,
         "gold": 43,
@@ -5842,60 +5747,48 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/11d8eb80-114c-41e4-a719-407c2ac3d551.png",
           "progress": 17,
           "ratio": "11/41",
-          "hours": "0h",
           "npCommunicationId": "NPWR56684_00",
-          "lastPlayed": "2026-05-04T06:47:32Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR56684_00"
+          "lastPlayed": "2026-05-04T06:47:32Z"
         },
         {
           "name": "Untitled Goose Game",
           "art": "https://image.api.playstation.com/trophy/np/NPWR19514_00_00AFD45414CE474BFBA792F7CC3950B22401428A7F/AC5C8ECE7C36ADC1086ED6ECE6DF792721D065B9.PNG",
           "progress": 17,
           "ratio": "2/25",
-          "hours": "0h",
           "npCommunicationId": "NPWR19514_00",
-          "lastPlayed": "2026-04-12T05:27:06Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR19514_00"
+          "lastPlayed": "2026-04-12T05:27:06Z"
         },
         {
           "name": "Planet Zoo",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39871_00/ab762577-0859-4d75-9e57-d49024b01177.png",
           "progress": 25,
           "ratio": "16/39",
-          "hours": "0h",
           "npCommunicationId": "NPWR39871_00",
-          "lastPlayed": "2026-04-06T01:32:29Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR39871_00"
+          "lastPlayed": "2026-04-06T01:32:29Z"
         },
         {
           "name": "Dragon Age™: The Veilguard",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25659_00/601898a5-1fc0-4877-9222-18f8a6b43d26.png",
           "progress": 1,
           "ratio": "1/53",
-          "hours": "0h",
           "npCommunicationId": "NPWR25659_00",
-          "lastPlayed": "2026-03-22T06:13:40Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR25659_00"
+          "lastPlayed": "2026-03-22T06:13:40Z"
         },
         {
           "name": "Avowed",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR47309_00/824404d6-3daa-49e3-9ea4-5b379c67c471.png",
           "progress": 2,
           "ratio": "2/51",
-          "hours": "0h",
           "npCommunicationId": "NPWR47309_00",
-          "lastPlayed": "2026-03-21T04:54:34Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR47309_00"
+          "lastPlayed": "2026-03-21T04:54:34Z"
         },
         {
           "name": "Prey",
           "art": "https://image.api.playstation.com/trophy/np/NPWR12023_00_00CBE2F8DECB178FEB455931C911EF865FA30E7AA4/66A30E60316331DA1D779B5113F637E53A96D7F9.PNG",
           "progress": 0,
           "ratio": "0/59",
-          "hours": "0h",
           "npCommunicationId": "NPWR12023_00",
-          "lastPlayed": "2026-03-19T23:11:13Z",
-          "storeUrl": "https://store.playstation.com/en-us/concept/NPWR12023_00"
+          "lastPlayed": "2026-03-19T23:11:13Z"
         }
       ],
       "activeHunt": {
@@ -6483,7 +6376,6 @@
             "targetValue": 0
           }
         ],
-        "hours": "0h",
         "npCommunicationId": "NPWR56684_00"
       },
       "mostRecentTrophies": [
@@ -6558,10 +6450,10 @@
           "date": "5/4/2026, 12:48:53 AM"
         }
       ],
-      "lastUpdated": "5/4/2026, 9:36:10 PM"
+      "lastUpdated": "5/4/2026, 9:52:30 PM"
     }
   },
-  "lastGlobalUpdate": "5/4/2026, 9:36:03 PM",
-  "engineVersion": "10.2.1",
-  "codeTimestamp": "Monday, May 4, 2026 | 5:35 PM EDT"
+  "lastGlobalUpdate": "5/4/2026, 9:52:21 PM",
+  "engineVersion": "10.6.0",
+  "codeTimestamp": "Monday, May 4, 2026 | 5:55 PM EDT"
 }
