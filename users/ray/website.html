@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <!-- 
-    Version: 10.5.4-Ray - Universal CSV Dynamic Menu | Mobile Sandwich | Cardinal Red | JSON v12.1.0 Sync | "Age of PSN" Integration
+    Version: 10.6.0-Ray - Mutual Twitch Logic | Trophy Age Sync | PSN Store Deep Link
     Global Standards: S:50 R:30 B:14 H:30
     Author: Kevin (Werewolf3788) Admin Engine
-    Last Updated: May 4, 2026 - 7:57 PM (New York Time)
+    Last Updated: May 4, 2026 - 8:35 PM (New York Time)
 -->
 <html lang="en">
 <head>
@@ -21,7 +21,7 @@
         gtag('config', 'G-Z9M5LXQ5XN', {
             'page_type': 'dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '10.5.4',
+            'layout_version': '10.6.0',
             'user_id': 'OneLIVIDMAN'
         });
     </script>
@@ -261,6 +261,12 @@
 
         .hidden { display: none !important; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        /* Shared Followers Avatar List */
+        .avatar-stack { display: flex; align-items: center; justify-content: center; }
+        .avatar-stack-item { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--wolf-gray); margin-left: -8px; transition: transform 0.3s; }
+        .avatar-stack-item:first-child { margin-left: 0; }
+        .avatar-stack-item:hover { transform: translateY(-5px); z-index: 10; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -409,11 +415,11 @@
                             <div class="p-8 lg:p-12 pb-4">
                                 <h2 class="mb-6 text-red-500 flex items-center gap-3 uppercase"><i class="fas fa-history"></i> Last Played</h2>
                             </div>
-                            <a id="active-game-affiliate-link" href="#" target="_blank" class="block relative w-full aspect-video bg-red-900/10 border-y border-white/5 group">
+                            <a id="active-game-store-link" href="#" target="_blank" class="block relative w-full aspect-video bg-red-900/10 border-y border-white/5 group">
                                 <img id="active-game-art" src="" class="w-full h-full object-cover hidden">
                                 <div id="active-game-fallback" class="w-full h-full flex items-center justify-center"><i class="fab fa-playstation text-7xl text-red-500/30"></i></div>
                                 <div class="absolute inset-0 bg-red-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <div class="px-6 py-2 bg-black/80 rounded-full border border-red-500 text-red-500 font-black text-xs uppercase tracking-widest">Buy on Amazon</div>
+                                    <div class="px-6 py-2 bg-black/80 rounded-full border border-red-500 text-red-500 font-black text-xs uppercase tracking-widest">View on PSN Store</div>
                                 </div>
                             </a>
                             <div class="p-8 lg:p-12">
@@ -425,7 +431,7 @@
                                     </div>
                                     <div class="progress-bar-container lg:h-5"><div id="active-game-progress-fill" class="progress-bar-fill" style="width: 0%"></div></div>
                                     <div class="flex justify-between text-[10px] font-black text-gray-400 uppercase">
-                                        <span id="active-game-time-wrapper"><i class="far fa-clock mr-1 text-red-400"></i><span id="active-game-time">--</span></span>
+                                        <span id="active-game-time-wrapper"><i class="far fa-clock mr-1 text-red-400"></i>First Earned: <span id="game-age">--</span></span>
                                         <span><span id="active-game-ratio" class="text-white">--/--</span> Objectives</span>
                                     </div>
                                 </div>
@@ -438,6 +444,13 @@
                         <section id="recent-hunts-section" class="glass-card p-8 lg:p-12">
                             <h2 class="mb-10 text-red-500 text-center uppercase tracking-widest">Recent Hunts</h2>
                             <div id="recent-games-container" class="grid grid-cols-2 gap-4"></div>
+                        </section>
+
+                        <!-- SHARED FOLLOWERS SECTION -->
+                        <section id="mutual-followers-section" class="glass-card p-8 text-center hidden">
+                            <div class="text-[10px] font-black text-red-500 uppercase tracking-[0.3em] mb-4">Squad Mutuals</div>
+                            <div id="mutual-avatars" class="avatar-stack mb-2"></div>
+                            <div class="text-[11px] text-gray-400 font-bold uppercase">Shared Twitch Followers</div>
                         </section>
                     </div>
                 </div>
@@ -507,6 +520,29 @@
         const PLUS_IMG = "https://gmedia.playstation.com/is/image/SIEPDC/ps-plus-black-badge-01-22sep20?$400px--t$";
         
         let currentTrophyData = [];
+
+        /**
+         * RELATIVE TIME HELPER
+         * Calculates "How long ago" based on a timestamp.
+         */
+        function getRelativeTime(timestamp) {
+            if (!timestamp) return "";
+            const now = Date.now();
+            const diff = now - timestamp;
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            const months = Math.floor(days / 30);
+            const years = Math.floor(days / 365);
+
+            if (years > 0) return years === 1 ? "1 year ago" : `${years} years ago`;
+            if (months > 0) return months === 1 ? "1 month ago" : `${months} months ago`;
+            if (days > 0) return days === 1 ? "Yesterday" : `${days} days ago`;
+            if (hours > 0) return `${hours}h ago`;
+            if (minutes > 0) return `${minutes}m ago`;
+            return "Just now";
+        }
 
         async function buildUniversalMenu() {
             try {
@@ -579,7 +615,7 @@
         function refreshMusic() {
             const img = document.getElementById('music-widget-img');
             const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=10.5.4`;
+            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=10.6.0`;
         }
 
         async function updateTwitch() {
@@ -591,7 +627,7 @@
 
         async function updateHub() {
             try {
-                const res = await fetch(REPO_BASE + "Playstation/psn_data.json?v=10.5.4&t=" + Date.now());
+                const res = await fetch(REPO_BASE + "Playstation/psn_data.json?v=10.6.0&t=" + Date.now());
                 let text = await res.text();
                 // --- JSON RESILIENCE FIX ---
                 text = text.replace(/:\s*True\b/g, ': true').replace(/:\s*False\b/g, ': false');
@@ -645,6 +681,16 @@
                         document.getElementById('twitch-status-msg').innerText = `"${ray.twitch.statusMessage || 'Active'}"`;
                     }
 
+                    // Shared Followers Logic
+                    const mutualSection = document.getElementById('mutual-followers-section');
+                    const mutualContainer = document.getElementById('mutual-avatars');
+                    if (data.mutualSquadFollowers && data.mutualSquadFollowers.length > 0) {
+                        mutualSection.classList.remove('hidden');
+                        mutualContainer.innerHTML = data.mutualSquadFollowers.map(f => `<img src="${f.avatar}" title="${f.name}" class="avatar-stack-item">`).join('');
+                    } else {
+                        mutualSection.classList.add('hidden');
+                    }
+
                     // Trophy Card
                     const summary = ray.trophySummary || ray.trophies || {};
                     const totalTrophiesCount = summary.total || 0;
@@ -667,18 +713,17 @@
                         currentTrophyData = hunt.trophies || []; 
                         document.getElementById('active-game-title').innerText = hunt.title || "---";
                         
-                        const hours = hunt.hours || "0h";
-                        const timeWrapper = document.getElementById('active-game-time-wrapper');
-                        const timeEl = document.getElementById('active-game-time');
-                        if (hours === "0h" || hours === "0") {
-                            timeWrapper.classList.add('hidden');
-                        } else {
-                            timeWrapper.classList.remove('hidden');
-                            timeEl.innerText = hours;
+                        // Game Age calculation (First Trophy Earned)
+                        const earnedOnly = currentTrophyData.filter(t => t.earned && t.timestamp > 0);
+                        if (earnedOnly.length > 0) {
+                            const oldest = [...earnedOnly].sort((a,b) => a.timestamp - b.timestamp)[0];
+                            document.getElementById('game-age').innerText = oldest ? getRelativeTime(oldest.timestamp) : "Starting...";
                         }
 
-                        const affiliateLink = document.getElementById('active-game-affiliate-link');
-                        affiliateLink.href = hunt.amazonAffiliateUrl || `https://store.playstation.com/en-us/search/${encodeURIComponent(hunt.title)}`;
+                        // Store Link (PSN Priority)
+                        const storeLink = document.getElementById('active-game-store-link');
+                        storeLink.href = `https://store.playstation.com/en-us/search/${encodeURIComponent(hunt.title)}`;
+
                         const earnedTrophies = currentTrophyData.filter(t => t.earned);
                         document.getElementById('active-game-ratio').innerText = `${earnedTrophies.length}/${currentTrophyData.length}`;
                         const pct = Math.round((earnedTrophies.length / Math.max(currentTrophyData.length, 1)) * 100);
@@ -694,7 +739,7 @@
                         } else { artImg.classList.add('hidden'); fallbackBox.classList.remove('hidden'); }
 
                         if (earnedTrophies.length > 0) {
-                            const latest = [...earnedTrophies].sort((a,b) => new Date(b.earnedDate) - new Date(a.earnedDate))[0];
+                            const latest = [...earnedTrophies].sort((a,b) => b.timestamp - a.timestamp)[0];
                             document.getElementById('recent-trophy-card').classList.remove('hidden');
                             document.getElementById('last-trophy-icon').src = latest.icon;
                             document.getElementById('last-trophy-name').innerText = latest.name;
@@ -702,7 +747,7 @@
                         }
 
                         document.getElementById('trophy-checklist-container').innerHTML = currentTrophyData.map((t, idx) => {
-                            let rightCol = t.earned ? `<div class="earned-tag font-black text-[10px]">EARNED</div><div class="text-[10px] text-gray-400 text-right uppercase">${t.earnedDate.split(',')[0]}</div>` : `<div class="text-[11px] font-black uppercase text-gray-500">${t.rarity || t.type}</div>`;
+                            let rightCol = t.earned ? `<div class="earned-tag font-black text-[10px] text-green-500 text-right uppercase">EARNED</div><div class="text-[10px] text-gray-400 text-right uppercase">${getRelativeTime(t.timestamp)}</div>` : `<div class="text-[11px] font-black uppercase text-gray-500 text-right">${t.rarity || t.type}</div>`;
                             return `<div class="trophy-row" onclick="openTrophyLightbox(${idx})">
                                 <img src="${t.icon}" class="trophy-icon-sq">
                                 <div class="min-w-0 flex-1"><div class="trophy-title-text truncate font-black">${t.name}</div><div class="trophy-desc-text truncate">${t.description}</div></div>
@@ -711,7 +756,7 @@
                         }).join('');
                     }
 
-                    // Recent Grid
+                    // Recent Grid (Clickable)
                     document.getElementById('recent-games-container').innerHTML = (ray.recentGames || []).slice(0, 6).map(g => {
                         const is100 = parseInt(g.progress) >= 100;
                         return `
