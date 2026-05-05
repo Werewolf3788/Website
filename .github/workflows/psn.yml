@@ -1,19 +1,13 @@
 # .github/workflows/deploy.yml
 # Kevin's Official Pack Sync Engine - Deployment Workflow
-# Version 1.1.0 - Multi-Trigger Resilience (Push + Timer + Manual)
-# This version ensures updates happen on a timer AND immediately after you edit code.
+# Version 1.0.8 - Conflict Resilience Protocol (Overwrite Strategy)
 
 name: Sync PSN Data and Deploy
 
 on:
   schedule:
-    - cron: '*/23 * * * *' # BACKGROUND TIMER: Runs every 23 minutes automatically.
-  push:
-    branches:
-      - main               # IMMEDIATE TRIGGER: Runs the second you push a change to GitHub.
-    paths:
-      - 'Playstation/**'   # Only trigger push runs if files in the Playstation folder change.
-  workflow_dispatch:       # MANUAL TRIGGER: Gives you the "Run Workflow" button in GitHub Actions.
+    - cron: '*/23 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -35,7 +29,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0 # Essential for the rebase logic below
+          fetch-depth: 0 
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -56,17 +50,17 @@ jobs:
           git config --global user.name "Werewolf3788-Bot"
           git config --global user.email "bot@werewolf.ourflora.com"
           
-          # Stage the specific data files
+          # Stage the new data
           git add Playstation/psn_data.json Playstation/tokens.json .nojekyll
           
-          # Attempt to commit
+          # Commit the bot's changes locally
           git commit -m "Automated PSN Sync: $(date)" || echo "No changes to commit"
           
-          # REBASE STRATEGY: Pull latest changes and put our new data on top
-          # This prevents the "Conflict" errors you saw in Run #154
-          git pull --rebase origin main
+          # RESILIENCE FIX: Force the bot's local changes to overwrite conflicts on these specific files
+          git fetch origin main
+          git pull --rebase -X theirs origin main
           
-          # Final push to the live site
+          # Final push to the main branch
           git push origin main
 
       - name: Setup Pages
