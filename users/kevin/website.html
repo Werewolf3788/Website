@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <!-- 
-    Version: 9.1.0-Wolf - G-Tag Stream ID Sync | Smart CSV Tag Filter | Image Rendering Fix | Journey Tracking
+    Version: 9.3.1-Wolf - Smart G-Tag Logic | NY Time Sync | Column D Image Fix | Priority Art Resolver
     Global Standards: S:50 R:30 B:14 H:30
     Author: Kevin (Werewolf3788) Admin Engine
     Engine Version: 12.8.0
-    Last Updated: May 4, 2026 - 9:42 PM (New York Time)
+    Last Updated: May 4, 2026 - 9:51 PM (New York Time)
 -->
 <html lang="en">
 <head>
@@ -13,7 +13,7 @@
     <meta http-equiv="refresh" content="900"> <!-- Hard Refresh every 15 minutes -->
     <title>Werewolf3788 | Official Admin Hub</title>
     
-    <!-- --- GOOGLE ANALYTICS (WEREWOLF GLOBAL) --- -->
+    <!-- --- GOOGLE ANALYTICS (WEREWOLF SMART TRACKING) --- -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -23,8 +23,10 @@
             'stream_id': '13278632388',
             'page_type': 'admin_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '9.1.0',
+            'layout_version': '9.3.1',
             'user_id': 'Werewolf3788',
+            'engagement_timestamp_ny': '2026-05-04 21:51:00 EDT',
+            'send_page_view': true,
             'description': 'This is Werewolf3788 "twitch" or OneLIVIDMAN playstation stats progress on trophy\'s, he has my amazon affliflate id in recent hunt as well as in the quicklink. then we have my Last FM widget showing current song'
         });
     </script>
@@ -113,8 +115,8 @@
         }
         .dropdown-content a:hover { background-color: rgba(255, 95, 31, 0.1); color: var(--accent-orange); }
         .dropdown:hover .dropdown-content { display: block; }
-
-        .nav-thumb { width: 20px; height: 20px; border-radius: 4px; object-fit: cover; }
+        
+        .nav-thumb { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; }
 
         @media (min-width: 1024px) {
             .nav-links-wrapper { display: flex; flex-direction: row; }
@@ -164,8 +166,8 @@
         .avatar-stack-item { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--wolf-gray); margin-left: -8px; transition: transform 0.3s; }
         .avatar-stack-item:hover { transform: translateY(-5px); z-index: 10; }
 
-        .support-img-icon { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 2px solid rgba(255,255,255,0.05); }
-        .expansion-card { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .support-card:hover .support-img-icon { transform: scale(1.1); }
+        .support-img-icon { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 2px solid rgba(255,255,255,0.05); transition: transform 0.3s; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -212,12 +214,13 @@
 
                 <!-- PSN LEVEL -->
                 <div class="glass-card header-stat-card p-5 lg:p-10 border-b-4 border-[#9e3a12]">
+                    <div class="text-[11px] lg:text-[14px] text-orange-700 font-black mb-1 uppercase tracking-widest text-center w-full">PSN Level</div>
                     <div id="psn-level-label" class="text-3xl lg:text-6xl font-black text-white">--</div>
                     <div id="psn-region" class="text-[10px] text-gray-300 font-bold uppercase mt-2">Region: US</div>
                     <div id="psn-account-age" class="text-[10px] text-gray-400 font-black uppercase mt-1 tracking-tighter">Age of PSN: --</div>
                 </div>
 
-                <!-- TROPHIES -->
+                <!-- TOTAL TROPHIES -->
                 <div id="trophy-card" class="glass-card header-stat-card p-5 lg:p-10 border-b-4 border-yellow-500">
                     <div id="trophy-total" class="text-3xl lg:text-6xl font-black text-white mb-4">--</div>
                     <div class="grid grid-cols-4 gap-2 pt-4 border-t border-white/5 w-full">
@@ -246,7 +249,10 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                     <div class="flex flex-col gap-8 lg:gap-12">
                         <section class="glass-card p-8 lg:p-12">
-                            <h2 class="mb-6 opacity-90 text-[20px] lg:text-[36px]">About Me</h2>
+                            <div class="flex justify-between items-start mb-6">
+                                <h2 class="opacity-90 text-[20px] lg:text-[36px]">About Me</h2>
+                                <i class="fab fa-twitch text-purple-500 text-xl" title="Twitch Bio Integrated"></i>
+                            </div>
                             <p id="profile-bio" class="leading-relaxed text-gray-400 text-base lg:text-xl">Official Admin Profile</p>
                         </section>
 
@@ -302,7 +308,10 @@
                     <h2 class="text-yellow-500 flex items-center gap-3 mb-6 uppercase"><i class="fas fa-trophy"></i> Recently Earned</h2>
                     <div class="flex gap-4 items-center bg-white/5 p-4 rounded-xl">
                         <img id="last-trophy-icon" src="" class="w-16 h-16 rounded-lg">
-                        <div class="min-w-0 flex-1"><div id="last-trophy-name" class="font-black text-white uppercase truncate">---</div><div id="last-trophy-game" class="text-[10px] font-black text-yellow-500 uppercase truncate">---</div></div>
+                        <div class="min-w-0 flex-1">
+                            <div id="last-trophy-name" class="font-black text-white uppercase truncate">---</div>
+                            <div id="last-trophy-game" class="text-[10px] font-black text-yellow-500 uppercase truncate">---</div>
+                        </div>
                     </div>
                 </section>
 
@@ -313,7 +322,7 @@
 
                 <section id="music-section" class="glass-card p-8 text-center border-b-4 border-pink-500">
                     <h2 class="mb-8 text-pink-400 flex items-center justify-center gap-4"><i class="fas fa-headphones"></i> Now Playing</h2>
-                    <div class="flex justify-center"><a href="https://www.last.fm/user/KR888434" target="_blank"><img id="music-widget-img" src="" class="rounded-2xl shadow-2xl border border-white/10"></a></div>
+                    <div class="flex justify-center"><a id="music-link" href="https://www.last.fm/user/KR888434" target="_blank"><img id="music-widget-img" src="" class="rounded-2xl shadow-2xl border border-white/10"></a></div>
                 </section>
 
                 <section class="glass-card p-8 lg:p-12 space-y-5">
@@ -361,11 +370,20 @@
             return "Just now";
         }
 
+        function logSmartEvent(eventName, params) {
+            if (typeof gtag === 'function') {
+                gtag('event', eventName, {
+                    ...params,
+                    'engagement_timestamp_ny': '2026-05-04 21:51:00 EDT'
+                });
+            }
+        }
+
         function refreshMusic() {
             const img = document.getElementById('music-widget-img');
             if(!img) return;
             const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=9.1.0`;
+            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=9.3.1`;
         }
 
         async function updateTwitch() {
@@ -397,23 +415,23 @@
                         const url = cols[2].trim();              // Column C
                         const img = cols[3] ? cols[3].trim() : ""; // Column D
 
-                        // LOGIC A: If it is MY tag -> Support & Socials
+                        // Support Section (Werewolf Tags)
                         if (MY_TAGS.includes(tag)) {
                             supportHtml += `
-                                <a href="${url}" target="_blank" class="support-card flex items-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-orange-500 transition-all group h-auto mb-4">
+                                <a href="${url}" target="_blank" onclick="logSmartEvent('click_support_link', {'link_name': '${name}'})" class="support-card flex items-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-orange-500 transition-all group h-auto mb-4">
                                     ${img ? `<img src="${img}" class="support-img-icon mr-4">` : `<i class="fas fa-external-link-alt text-2xl text-orange-500 mr-4"></i>`}
                                     <div class="flex-1 text-left">
                                         <div class="font-black text-white leading-tight uppercase text-xs">${name}</div>
-                                        <div class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Open Resource</div>
+                                        <div class="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">Open Resource</div>
                                     </div>
                                 </a>`;
                             return;
                         }
 
-                        // LOGIC B: Ignore other member tags
+                        // Ignore other member tags
                         if (OTHER_MEMBER_TAGS.includes(tag)) return;
 
-                        // LOGIC C: Universal Nav Logic
+                        // Nav Bar Logic
                         if (tag) {
                             if (!groupedLinks[tag]) groupedLinks[tag] = [];
                             groupedLinks[tag].push({ name, url, img });
@@ -447,7 +465,15 @@
             if(nav) nav.classList.toggle('active'); 
         }
 
-        function openStore(gameName, affiliateUrl) { window.open(affiliateUrl || `https://store.playstation.com/en-us/search/${encodeURIComponent(gameName)}`, '_blank'); }
+        function openStore(gameName, affiliateUrl, source) { 
+            logSmartEvent('click_game_link', {
+                'game_name': gameName,
+                'link_url': affiliateUrl || 'PSN_Store',
+                'click_source': source || 'recent_hunts'
+            });
+            window.open(affiliateUrl || `https://store.playstation.com/en-us/search/${encodeURIComponent(gameName)}`, '_blank'); 
+        }
+
         function closeTrophyLightbox() { 
             const lb = document.getElementById('trophy-lightbox');
             if(lb) lb.style.display = 'none'; 
@@ -472,7 +498,7 @@
 
         async function updateHub() {
             try {
-                const res = await fetch(REPO_BASE + "Playstation/psn_data.json?v=9.1.0&t=" + Date.now());
+                const res = await fetch(REPO_BASE + "Playstation/psn_data.json?v=9.3.1&t=" + Date.now());
                 const data = await res.json();
                 const user = data.users.werewolf || data.users.Werewolf;
                 if (!user) return;
@@ -488,6 +514,7 @@
                 const bioEl = document.getElementById('profile-bio'); if(bioEl) bioEl.innerText = user.bio || "Official Admin Profile";
                 const lvlEl = document.getElementById('psn-level-label'); if(lvlEl) lvlEl.innerText = user.level || "--";
                 const ageEl = document.getElementById('psn-account-age'); if(ageEl) ageEl.innerText = "Age of PSN: " + (user.psnAccountAge || "Veteran");
+                const regionEl = document.getElementById('psn-region'); if(regionEl) regionEl.innerText = "Region: " + (user.region || "US");
                 const syncEl = document.getElementById('sync-time'); if(syncEl) syncEl.innerText = user.lastUpdated || "--";
 
                 const twMsg = document.getElementById('twitch-status-msg');
@@ -531,7 +558,7 @@
                     currentTrophyData = hunt.trophies || [];
                     const activeTitle = document.getElementById('active-game-title'); if(activeTitle) activeTitle.innerText = hunt.title || "---";
                     
-                    // IMAGE LOGIC: Fix art fallback
+                    // Art Fallback Logic
                     const artImg = document.getElementById('active-game-art');
                     const fallback = document.getElementById('active-game-fallback');
                     const resolvedArt = user.currentGameArt || (user.recentGames && user.recentGames[0] ? user.recentGames[0].art : null);
@@ -563,7 +590,7 @@
                 }
 
                 document.getElementById('recent-games-container').innerHTML = (user.recentGames || []).slice(0, 6).map(g => `
-                    <div class="game-thumb ${parseInt(g.progress) >= 100 ? 'platinum-glow' : ''}" onclick="openStore('${g.name}', '${g.amazonAffiliateUrl || ''}')">
+                    <div class="game-thumb ${parseInt(g.progress) >= 100 ? 'platinum-glow' : ''}" onclick="openStore('${g.name}', '${g.amazonAffiliateUrl || ''}', 'recent_hunts')">
                         <img src="${g.art}" class="w-full h-full object-cover">
                         <div class="game-info-overlay"><div class="text-[11px] font-black text-orange-400 uppercase tracking-tighter">${g.ratio}</div><div class="text-[10px] font-black text-white/70 uppercase tracking-widest">${g.progress}%</div></div>
                     </div>`).join('');
