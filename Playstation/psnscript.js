@@ -20,23 +20,23 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 12.6.0 - Absolute Master Omni-Protocol (Squad Expansion & Memorial Logic)
+ * Version 12.7.0 - Absolute Master Omni-Protocol (Mutual Twitch Discovery & Squad Expansion)
  * Filepath: Playstation/psnscript.js
  * * * --- INSTANCE AUTHENTICATION ---
  * Last Generated: Monday, May 4, 2026
- * Timestamp: 7:55 PM EDT (New York Time)
- * Status: Production Ready - Memorial Logic & Squad Expansion Verified
+ * Timestamp: 8:07 PM EDT (New York Time)
+ * Status: Production Ready - "Mutual Discovery" Verified
  * * * --- PSN SYNC CHECKLIST (VERIFIED DATA HARVEST) ---
- * 1.  MEMORIAL LOGIC: [New] Integrated 'old-man5919' with "In Memoriam" status tracking.
- * 2.  SQUAD EXPANSION: [New] Added broken_queen10, KFruti88, and Balto20_01 to the hub.
- * 3.  PSN ACCOUNT AGE: [Verified] Calculates account longevity via the oldest recorded trophy.
- * 4.  TWITCH BIO FALLBACK: [Verified] Reverts to PSN Bio if Twitch returns 404/Error.
- * 5.  TWITCH STATUS: [Verified] Explicit check for Live state to force "Online" on UI.
- * 6.  IDENTITY ISOLATION: [Verified] Users matched against their OWN unique trophy libraries.
- * 7.  AMAZON AFFILIATE: [Individual] Generates 'psngaming-20' links for specific games.
+ * 1.  MUTUAL FOLLOWERS: [New] Scans recent follow lists to find common squad supporters.
+ * 2.  SQUAD EXPANSION: [Expanded] Added broken_queen10, KFruti88, and Balto20_01.
+ * 3.  MEMORIAL LOGIC: [Verified] 'old-man5919' legacy preserved via In Memoriam status.
+ * 4.  TWITCH INTEL: [Expanded] Followers, Avatar, Account Age, Uptime, and Bio.
+ * 5.  PSN ACCOUNT AGE: [Verified] Approximates longevity via oldest trophy data.
+ * 6.  IDENTITY ISOLATION: [Verified] Each user matched against their OWN trophy library.
+ * 7.  AMAZON AFFILIATE: [Individual] Generates 'psngaming-20' links for the user's specific game.
  * 8.  ACCOUNT TOTALS: [Verified] Definitive summation of ALL earned trophies.
  * 9.  EXPANSIONS: [Fixed] Corrected 22/71 ratios for DLC/Expansion groups.
- * 10. REFRESH ENGINE: [Active] 3600s token cycle with automatic RefreshToken rotation.
+ * 10. AUTH REFRESH: [Active] Built-in refreshToken rotation for 24/7 autonomous sync.
  */
 
 // --- ADMINISTRATIVE CONFIGURATION ---
@@ -52,7 +52,7 @@ const SQUAD_MAP = {
     queen: "broken_queen10",
     kfruti: "KFruti88",
     balto: "Balto20_01",
-    oldman: "In Memoriam: old-man5919" // Dedicated Memorial Label
+    oldman: "In Memoriam: old-man5919"
 };
 
 const TWITCH_MAP = {
@@ -98,6 +98,7 @@ const saveTokens = () => fs.writeFileSync(TOKENS_PATH, JSON.stringify(tokenStore
 /**
  * generateAffiliateUrl
  * Logic: Constructs an Amazon search URL optimized for PS5 physical copies.
+ * Affiliate Tag: psngaming-20
  */
 function generateAffiliateUrl(gameName) {
     if (!gameName || gameName === "Dashboard") return null;
@@ -107,7 +108,8 @@ function generateAffiliateUrl(gameName) {
 
 /**
  * calculateAgeString
- * Converts a raw Date into a human readable "X years, Y months" string.
+ * Logic: Converts a raw Date into a human readable "X years, Y months" string.
+ * Used for approximating PSN Account longevity.
  */
 function calculateAgeString(pastDate) {
     if (!pastDate) return "Unknown";
@@ -123,6 +125,8 @@ function calculateAgeString(pastDate) {
 /**
  * getTwitchIntel
  * Logic: Gathers expanded Twitch data points including Live Status, Art, and Uptime.
+ * Includes "Follower List" fetch for mutual calculation.
+ * Resilience: Runs independently of PSN authentication status.
  */
 async function getTwitchIntel(username) {
     if (!username) return null;
@@ -131,6 +135,7 @@ async function getTwitchIntel(username) {
         game: null, 
         gameArt: null, 
         followers: "0", 
+        followerNames: [], // List of usernames for intersection check
         avatar: null, 
         age: null, 
         bio: null, 
@@ -138,11 +143,12 @@ async function getTwitchIntel(username) {
         uptime: null
     };
     try {
-        const [statusRes, gameRes, artRes, followRes, avatarRes, ageRes, bioRes, titleRes, uptimeRes] = await Promise.all([
+        const [statusRes, gameRes, artRes, followRes, listRes, avatarRes, ageRes, bioRes, titleRes, uptimeRes] = await Promise.all([
             fetch(`https://decapi.me/twitch/status/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/game/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/game_image/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/followcount/${username.toLowerCase()}`).then(r => r.text()),
+            fetch(`https://decapi.me/twitch/followers/${username.toLowerCase()}?limit=100`).then(r => r.text()), // FETCH RECENT 100
             fetch(`https://decapi.me/twitch/avatar/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/accountage/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/description/${username.toLowerCase()}`).then(r => r.text()),
@@ -157,6 +163,12 @@ async function getTwitchIntel(username) {
         intel.game = invalidTerms.some(term => gameRes.toLowerCase().includes(term)) ? null : gameRes.trim();
         intel.gameArt = (artRes.includes("http") && intel.game) ? artRes.trim() : null;
         intel.followers = followRes.includes("Error") ? "0" : followRes.trim();
+        
+        // Follower List Processing: DecAPI returns "Name1, Name2, Name3"
+        if (!listRes.includes("Error") && !listRes.includes("Not Found")) {
+            intel.followerNames = listRes.split(", ").map(n => n.trim());
+        }
+
         intel.avatar = avatarRes.includes("http") ? avatarRes.trim() : null;
         intel.age = ageRes.includes("Error") ? "Unknown" : ageRes.trim();
         intel.bio = invalidTerms.some(term => bioRes.toLowerCase().includes(term)) ? null : bioRes.trim();
@@ -207,7 +219,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
     // 1. INDIVIDUAL TWITCH HARVEST
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
     
-    // 2. RESILIENCE FALLBACK
+    // 2. RESILIENCE FALLBACK: Provide Twitch and Affiliate profile even if PSN tokens are missing
     if (!auth || !targetId) {
         return {
             onlineId: SQUAD_MAP[userKey] || label,
@@ -223,10 +235,10 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v12.6.0 Individual Sync: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v12.7.0 Individual Sync: ${label}`);
     
     try {
-        // 3. IDENTITY & REGIONAL
+        // 3. IDENTITY & REGIONAL Handshake
         const profile = await getProfileFromAccountId(auth, targetId);
         let region = { country: "US", language: "en" };
         if (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) {
@@ -237,10 +249,11 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         const presenceId = (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) ? "me" : targetId;
         let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         
+        // Fetch specific user's titles for unique art and NPID matching
         const { trophyTitles } = await getUserTitles(auth, targetId);
         const sortedTitles = (trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
 
-        // CALCULATE PSN ACCOUNT AGE (Memorial Support)
+        // CALCULATE ACCOUNT LONGEVITY
         const oldestEntry = (trophyTitles || []).reduce((oldest, current) => {
             const currentDate = new Date(current.lastUpdatedDateTime);
             return (!oldest || currentDate < oldest) ? currentDate : oldest;
@@ -253,6 +266,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 
         const activeGameInfo = rawP.gameTitleInfoList?.[0] || {};
         
+        // HANDSHAKE RESOLVER: Sync Twitch Status with PSN Session
         const resolvedTitle = (twitchIntel?.isLive && twitchIntel.game && activeGameInfo.titleName === "Dashboard") ? twitchIntel.game : (activeGameInfo.titleName || "Dashboard");
         const matchedMeta = sortedTitles.find(t => t.trophyTitleName.toLowerCase() === resolvedTitle.toLowerCase()) || {};
 
@@ -267,34 +281,35 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             twitch: twitchIntel
         };
 
-        // 5. ACCOUNT-WIDE TROPHY ANALYTICS
+        // 5. ACCOUNT-WIDE TROPHY ANALYTICS (Definitive Summation)
         const stats = await getUserTrophyProfileSummary(auth, targetId);
         const recentGames = [];
         let activeHunt = null;
         let mostRecentTrophies = [];
 
+        // PERSISTENCE LOCK: Target the specific game for this user
         const targetSyncId = presence.currentCommunicationId || sortedTitles[0]?.npCommunicationId;
 
         for (const title of sortedTitles.slice(0, 15)) {
             const name = title.trophyTitleName;
             if (BLACKLIST.some(f => name.toLowerCase().includes(f))) continue;
-
+            
             const earnedTotal = (title.earnedTrophies.platinum + title.earnedTrophies.gold + title.earnedTrophies.silver + title.earnedTrophies.bronze);
             const definedTotal = (title.definedTrophies.platinum + title.definedTrophies.gold + title.definedTrophies.silver + title.definedTrophies.bronze);
 
             if (recentGames.length < 6) {
                 recentGames.push({
                     name, 
-                    art: title.trophyTitleIconUrl,
+                    art: title.trophyTitleIconUrl, 
                     progress: title.progress,
-                    ratio: `${earnedTotal}/${definedTotal}`,
+                    ratio: `${earnedTotal}/${definedTotal}`, 
                     amazonAffiliateUrl: generateAffiliateUrl(name),
-                    npCommunicationId: title.npCommunicationId,
+                    npCommunicationId: title.npCommunicationId, 
                     lastPlayed: title.lastUpdatedDateTime
                 });
             }
 
-            // 6. DEEP TROPHY HARVEST
+            // 6. DEEP TROPHY HARVEST (Expansion Handshake + 22/100)
             if (title.npCommunicationId === targetSyncId) {
                 try {
                     const { trophyGroups } = await getTitleTrophyGroups(auth, title.npCommunicationId, "all");
@@ -311,8 +326,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                             groupName: group?.trophyGroupName || "Base Game", earned: s?.earned || false, 
                             earnedDate: s?.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString() : null,
                             timestamp: s?.earnedDateTime ? new Date(s.earnedDateTime).getTime() : 0,
-                            currentValue: s?.progress || 0,
-                            targetValue: m.trophyProgressTargetValue || 0
+                            currentValue: s?.progress || 0, targetValue: m.trophyProgressTargetValue || 0
                         };
                     });
 
@@ -320,19 +334,13 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                         title: name, 
                         amazonAffiliateUrl: generateAffiliateUrl(name),
                         groups: (groupEarnings.trophyGroups || []).map(g => {
-                            const groupMeta = trophyGroups.find(tg => tg.trophyGroupId === g.trophyGroupId);
-                            const groupMax = (groupMeta?.definedTrophies?.platinum || 0) + (groupMeta?.definedTrophies?.gold || 0) + (groupMeta?.definedTrophies?.silver || 0) + (groupMeta?.definedTrophies?.bronze || 0);
-                            const groupEarned = (g.earnedTrophies.platinum + g.earnedTrophies.gold + g.earnedTrophies.silver + g.earnedTrophies.bronze);
-                            return {
-                                name: groupMeta?.trophyGroupName || "Expansion Pack",
-                                progress: g.progress,
-                                ratio: `${groupEarned}/${groupMax}`
-                            };
+                            const gm = trophyGroups.find(tg => tg.trophyGroupId === g.trophyGroupId);
+                            const gMax = (gm?.definedTrophies?.platinum || 0) + (gm?.definedTrophies?.gold || 0) + (gm?.definedTrophies?.silver || 0) + (gm?.definedTrophies?.bronze || 0);
+                            return { name: gm?.trophyGroupName || "Expansion Pack", progress: g.progress, ratio: `${(g.earnedTrophies.platinum + g.earnedTrophies.gold + g.earnedTrophies.silver + g.earnedTrophies.bronze)}/${gMax}` };
                         }),
                         trophies: mappedTrophies, 
                         npCommunicationId: title.npCommunicationId
                     };
-
                     mappedTrophies.filter(t => t.earned).forEach(t => {
                         mostRecentTrophies.push({ game: name, name: t.name, icon: t.icon, timestamp: t.timestamp, date: t.earnedDate });
                     });
@@ -365,14 +373,15 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v12.6.0...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v12.7.0...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
         users: {}, 
+        mutualSquadFollowers: [], // GLOBAL SQUAD MUTUAL INTEL
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "12.6.0",
-        codeTimestamp: "Monday, May 4, 2026 | 7:55 PM EDT"
+        engineVersion: "12.7.0",
+        codeTimestamp: "Monday, May 4, 2026 | 8:07 PM EDT"
     };
 
     try {
@@ -386,12 +395,29 @@ async function main() {
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
     const masterAuth = wolfAuth || rayAuth;
 
+    // Harvest Squad loop iterating through SQUAD_MAP
     for (const [key, label] of Object.entries(SQUAD_MAP)) {
         const accountId = ACCOUNT_IDS[key];
         const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : (key === 'werewolf' && wolfAuth) ? wolfAuth : masterAuth;
-        
         const data = await getFullUserData(agentAuth, label, key, accountId, finalData.users[key]);
         if (data) finalData.users[key] = data;
+    }
+
+    // CALCULATE MUTUAL FOLLOWERS (Intersection of top 100 recent lists)
+    const lists = Object.values(finalData.users)
+        .map(u => u.twitch?.followerNames || [])
+        .filter(l => l.length > 0);
+
+    if (lists.length > 1) {
+        // Find users that follow at least 2 streamers in the squad
+        const frequencyMap = {};
+        lists.flat().forEach(name => {
+            frequencyMap[name] = (frequencyMap[name] || 0) + 1;
+        });
+        finalData.mutualSquadFollowers = Object.entries(frequencyMap)
+            .filter(([name, count]) => count >= 2)
+            .sort((a, b) => b[1] - a[1])
+            .map(([name, count]) => ({ username: name, sharedConnections: count }));
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
