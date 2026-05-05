@@ -20,24 +20,24 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 13.7.2 - Absolute Master Omni-Protocol (Identity Ownership & Multi-Account Link)
+ * Version 13.7.4 - Absolute Master Omni-Protocol (Legacy Range & Cross-Account Age)
  * Filepath: Playstation/psnscript.js
  * * * --- INSTANCE AUTHENTICATION ---
  * Last Generated: Monday, May 4, 2026
- * Timestamp: 10:01 PM EDT (New York Time)
- * Status: Production Ready - Multi-Account Logic Verified
+ * Timestamp: 10:12 PM EDT (New York Time)
+ * Status: Production Ready - Legacy Span Logic Verified
  * * * --- PSN SYNC CHECKLIST (VERIFIED DATA HARVEST) ---
  * 1.  BIO HARVEST: [Verified] Master key pulls "About Me" for all members if 19-digit ID is provided.
- * 2.  HUNTER PERSONAS: [Verified] Dynamic labels ("Dead Set," "Steady," "Casual") based on velocity.
+ * 2.  HUNTER PERSONAS: [Verified] Dynamic labels based on hunting velocity.
  * 3.  HUNTING VELOCITY: [Verified] Tracks "First Blood" and calculates completion speed.
- * 4.  API HANDSHAKE: [Verified] Full psn-api integration for Titles, Presence, and DLC earnings.
- * 5.  TWITCH INTELLIGENCE: [Verified] Positive "live" verification, Uptime, and Box Art via DecAPI.
- * 6.  HIDDEN PROFILE CATCH: [Verified] Seth (Phoenix) resilience logic uses Twitch-Master Presence fallback.
+ * 4.  API HANDSHAKE: [Verified] Full psn-api integration for Titles, Presence, and DLC.
+ * 5.  TWITCH INTELLIGENCE: [Verified] Positive "live" verification via DecAPI.
+ * 6.  HIDDEN PROFILE CATCH: [Verified] Resilience logic for private profiles.
  * 7.  ACTIVITY OVERRIDE: [Verified] Proof-of-Life forces Online status if trophies pop within 20 mins.
- * 8.  MUTUAL FOLLOWERS: [Verified] Intersection logic identifies Shared Fans across the whole squad.
- * 9.  IMAGE RECOVERY: [Verified] Multi-stage matching (ID -> Sanitized Name -> Last Played) for Game Art.
- * 10. OWNERSHIP LINK [NEW]: Formal mapping for Kevin (Werewolf/KFruti) and TJ (Darkwing/Darkterro).
- * 11. MEMORIAL LOGIC: [Verified] 'old-man5919' legacy preserved with specialized age calculation.
+ * 8.  MUTUAL FOLLOWERS: [Verified] Intersection logic identifies Shared Fans.
+ * 9.  IMAGE RECOVERY: [Verified] Multi-stage matching for Game Art.
+ * 10. IDENTITY CONSOLIDATION: [Verified] Aggregates Multi-Accounts into single Personas.
+ * 11. LEGACY RANGE [NEW]: Calculates total PSN Age from the earliest Alt trophy to the latest Main trophy.
  */
 
 // --- ADMINISTRATIVE CONFIGURATION ---
@@ -46,7 +46,7 @@ const SQUAD_MAP = {
     kfruti: "KFruti88",       // Kevin (Alt)
     ray: "OneLIVIDMAN",
     darkwing: "Darkwing69420", // TJ (Primary)
-    darkterro: "darkterro420", // TJ (Alt/Twitch Terrdog)
+    darkterro: "darkterro420", // TJ (Alt)
     marc: "ElucidatorVah",
     jcrow: "JCrow207",
     bunny: "UnicornBunnyShiv",
@@ -57,12 +57,18 @@ const SQUAD_MAP = {
     oldman: "In Memoriam: old-man5919"
 };
 
-// Formalizes cross-account relationships for persona building
-const OWNERSHIP_MAP = {
-    kevin: ["werewolf", "kfruti"],
-    tj: ["darkwing", "darkterro"],
-    ray: ["ray"],
-    seth: ["phoenix"]
+const PERSONA_CONFIG = {
+    "Kevin": ["werewolf", "kfruti"],
+    "TJ": ["darkwing", "darkterro"],
+    "Ray": ["ray"],
+    "Seth": ["phoenix"],
+    "Marc": ["marc"],
+    "JCrow": ["jcrow"],
+    "Shiv": ["bunny"],
+    "Michael": ["mjolnir"],
+    "Queen": ["queen"],
+    "Balto": ["balto"],
+    "Memorial": ["oldman"]
 };
 
 const TWITCH_MAP = {
@@ -85,8 +91,8 @@ const ACCOUNT_IDS = {
     jcrow: "7524753921019262614",
     bunny: "7742137722487951585",
     queen: "",  
-    kfruti: "", // Kevin's Alt - Add 19-digit ID here
-    darkterro: "", // TJ's Alt - Add 19-digit ID here
+    kfruti: "", 
+    darkterro: "", 
     balto: "",  
     oldman: ""  
 };
@@ -150,12 +156,13 @@ function getTrophyAgeString(timestamp) {
 
 /**
  * calculateAgeString
- * Converts raw Date into human readable account longevity string.
+ * Converts raw Date into human readable longevity string.
  */
-function calculateAgeString(pastDate) {
-    if (!pastDate) return "Unknown";
-    const now = new Date();
-    const diffTime = Math.abs(now - pastDate);
+function calculateAgeString(startDate, endDate = new Date()) {
+    if (!startDate) return "Unknown";
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diffTime = Math.abs(end - start);
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     const years = Math.floor(diffDays / 365);
     const months = Math.floor((diffDays % 365) / 30);
@@ -253,10 +260,8 @@ async function getAuthenticated(userKey, npssoInput) {
 
 // --- ABSOLUTE OMNI-COLLECTOR ---
 async function getFullUserData(auth, label, userKey, targetId, existingData) {
-    // 1. INDIVIDUAL TWITCH HARVEST
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
     
-    // 2. PRIVACY & RESILIENCE FALLBACK
     if (!auth || !targetId) {
         return {
             onlineId: SQUAD_MAP[userKey] || label,
@@ -272,24 +277,22 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v13.7.2 Sync: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v13.7.4 Sync: ${label}`);
     
     try {
-        // 3. IDENTITY & REGIONAL
         const profile = await getProfileFromAccountId(auth, targetId);
         let region = { country: "US", language: "en" };
         if (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) {
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
         }
         
-        // 4. PSN PRESENCE & INDIVIDUAL LIBRARY HARVEST
         const presenceId = (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) ? "me" : targetId;
         let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         
         const { trophyTitles } = await getUserTitles(auth, targetId);
         const sortedTitles = (trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
 
-        const oldestEntry = (trophyTitles || []).reduce((oldest, current) => {
+        const earliestEntry = (trophyTitles || []).reduce((oldest, current) => {
             const currentDate = new Date(current.lastUpdatedDateTime);
             return (!oldest || currentDate < oldest) ? currentDate : oldest;
         }, null);
@@ -302,7 +305,6 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         const activeGameInfo = rawP.gameTitleInfoList?.[0] || {};
         const resolvedTitle = (twitchIntel?.isLive && twitchIntel.game && activeGameInfo.titleName === "Dashboard") ? twitchIntel.game : (activeGameInfo.titleName || "Dashboard");
         
-        // Multi-stage image recovery (from v13.7.1)
         const matchedMeta = sortedTitles.find(t => {
             if (activeGameInfo.npCommunicationId && t.npCommunicationId === activeGameInfo.npCommunicationId) return true;
             const cleanTrophyName = t.trophyTitleName.replace(/®|™/g, "").toLowerCase().trim();
@@ -410,7 +412,9 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             ...presence, 
             avatar: profile.avatars?.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url || "", 
             bio: twitchIntel?.bio || profile.aboutMe || "Official Pack Member Profile", 
-            psnAccountAge: calculateAgeString(oldestEntry),
+            psnAccountAge: calculateAgeString(earliestEntry),
+            earliestTrophyDate: earliestEntry, // RAW timestamp for persona aggregation
+            latestTrophyDate: mostRecentTrophies[0]?.timestamp || new Date().getTime(), // RAW timestamp for persona aggregation
             plus: profile.isPlus, level: stats.trophyLevel, region: region.country || "US",
             trophySummary: { 
                 platinum: stats.earnedTrophies?.platinum || 0, gold: stats.earnedTrophies?.gold || 0,
@@ -437,16 +441,16 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v13.7.2...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v13.7.4...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
         users: {}, 
+        personas: {}, 
         mutualSquadFollowers: [], 
-        ownershipMapping: OWNERSHIP_MAP, // Export mapping for UI grouping
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "13.7.2",
-        codeTimestamp: "Monday, May 4, 2026 | 10:01 PM EDT"
+        engineVersion: "13.7.4",
+        codeTimestamp: "Monday, May 4, 2026 | 10:12 PM EDT"
     };
 
     try {
@@ -460,6 +464,7 @@ async function main() {
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
     const masterAuth = wolfAuth || rayAuth;
 
+    // 1. Process Individual Accounts
     for (const [key, label] of Object.entries(SQUAD_MAP)) {
         const accountId = ACCOUNT_IDS[key];
         const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : (key === 'werewolf' && wolfAuth) ? wolfAuth : masterAuth;
@@ -467,6 +472,54 @@ async function main() {
         if (data) finalData.users[key] = data;
     }
 
+    // 2. Persona Consolidation Loop (Aggregating Age across accounts)
+    for (const [realName, keys] of Object.entries(PERSONA_CONFIG)) {
+        const linkedAccounts = keys.map(k => finalData.users[k]).filter(u => !!u);
+        if (linkedAccounts.length === 0) continue;
+
+        // Aggregate Stats
+        const totalPlats = linkedAccounts.reduce((sum, u) => sum + (u.trophySummary?.platinum || 0), 0);
+        const totalGolds = linkedAccounts.reduce((sum, u) => sum + (u.trophySummary?.gold || 0), 0);
+        const totalSilvers = linkedAccounts.reduce((sum, u) => sum + (u.trophySummary?.silver || 0), 0);
+        const totalBronzes = linkedAccounts.reduce((sum, u) => sum + (u.trophySummary?.bronze || 0), 0);
+        const maxLevel = Math.max(...linkedAccounts.map(u => u.level || 0));
+        const isOnline = linkedAccounts.some(u => u.online);
+        
+        // Find Absolute Earliest and Latest timestamps across all linked IDs
+        const allStartTimes = linkedAccounts.map(u => new Date(u.earliestTrophyDate).getTime()).filter(t => !isNaN(t));
+        const allEndTimes = linkedAccounts.map(u => u.latestTrophyDate).filter(t => !!t);
+        
+        const absoluteStart = allStartTimes.length > 0 ? Math.min(...allStartTimes) : null;
+        const absoluteEnd = allEndTimes.length > 0 ? Math.max(...allEndTimes) : new Date().getTime();
+        
+        const activeAccount = linkedAccounts.find(u => u.online) || linkedAccounts[0];
+
+        finalData.personas[realName] = {
+            displayName: realName,
+            isOnline,
+            primaryOnlineId: activeAccount.onlineId,
+            combinedTrophies: {
+                platinum: totalPlats, gold: totalGolds,
+                silver: totalSilvers, bronze: totalBronzes,
+                total: totalPlats + totalGolds + totalSilvers + totalBronzes
+            },
+            maxLevel,
+            legacyAge: calculateAgeString(absoluteStart, absoluteEnd),
+            legacyRange: {
+                start: absoluteStart ? new Date(absoluteStart).toLocaleString() : "Unknown",
+                end: new Date(absoluteEnd).toLocaleString()
+            },
+            currentGame: activeAccount.currentGame,
+            currentGameArt: activeAccount.currentGameArt,
+            currentActivity: activeAccount.currentGameActivity,
+            avatar: activeAccount.avatar,
+            bio: activeAccount.bio,
+            accounts: keys,
+            lastUpdated: new Date().toLocaleString()
+        };
+    }
+
+    // 3. Mutual Follower Logic
     const lists = Object.values(finalData.users).map(u => u.twitch?.followerNames || []).filter(l => l.length > 0);
     if (lists.length > 1) {
         const frequencyMap = {};
@@ -475,7 +528,7 @@ async function main() {
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] Absolute Omni-Protocol Complete. Generated: ${finalData.codeTimestamp}`);
+    console.log(`[SUCCESS] Persona Aggregator v13.7.4 Complete. Generated: ${finalData.codeTimestamp}`);
 }
 
 main();
