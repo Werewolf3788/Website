@@ -20,12 +20,12 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 13.7.1 - Absolute Master Omni-Protocol (Identity Match Hotfix)
+ * Version 13.7.2 - Absolute Master Omni-Protocol (Identity Ownership & Multi-Account Link)
  * Filepath: Playstation/psnscript.js
  * * * --- INSTANCE AUTHENTICATION ---
  * Last Generated: Monday, May 4, 2026
- * Timestamp: 9:29 PM EDT (New York Time)
- * Status: Production Ready - Asset Delivery Verified
+ * Timestamp: 10:01 PM EDT (New York Time)
+ * Status: Production Ready - Multi-Account Logic Verified
  * * * --- PSN SYNC CHECKLIST (VERIFIED DATA HARVEST) ---
  * 1.  BIO HARVEST: [Verified] Master key pulls "About Me" for all members if 19-digit ID is provided.
  * 2.  HUNTER PERSONAS: [Verified] Dynamic labels ("Dead Set," "Steady," "Casual") based on velocity.
@@ -35,34 +35,45 @@ const path = require("path");
  * 6.  HIDDEN PROFILE CATCH: [Verified] Seth (Phoenix) resilience logic uses Twitch-Master Presence fallback.
  * 7.  ACTIVITY OVERRIDE: [Verified] Proof-of-Life forces Online status if trophies pop within 20 mins.
  * 8.  MUTUAL FOLLOWERS: [Verified] Intersection logic identifies Shared Fans across the whole squad.
- * 9.  IMAGE RECOVERY [FIXED]: Multi-stage matching (ID -> Sanitized Name -> Last Played) for Game Art.
- * 10. MEMORIAL LOGIC: [Verified] 'old-man5919' legacy preserved with specialized age calculation.
+ * 9.  IMAGE RECOVERY: [Verified] Multi-stage matching (ID -> Sanitized Name -> Last Played) for Game Art.
+ * 10. OWNERSHIP LINK [NEW]: Formal mapping for Kevin (Werewolf/KFruti) and TJ (Darkwing/Darkterro).
+ * 11. MEMORIAL LOGIC: [Verified] 'old-man5919' legacy preserved with specialized age calculation.
  */
 
 // --- ADMINISTRATIVE CONFIGURATION ---
 const SQUAD_MAP = {
-    werewolf: "Werewolf3788",
+    werewolf: "Werewolf3788", // Kevin (Primary)
+    kfruti: "KFruti88",       // Kevin (Alt)
     ray: "OneLIVIDMAN",
-    darkwing: "Darkwing69420",
+    darkwing: "Darkwing69420", // TJ (Primary)
+    darkterro: "darkterro420", // TJ (Alt/Twitch Terrdog)
     marc: "ElucidatorVah",
     jcrow: "JCrow207",
     bunny: "UnicornBunnyShiv",
     mjolnir: "Michael (Mjolnir)",
     phoenix: "Seth (Fluffy/Phoenix)",
     queen: "broken_queen10",
-    kfruti: "KFruti88",
     balto: "Balto20_01",
     oldman: "In Memoriam: old-man5919"
 };
 
+// Formalizes cross-account relationships for persona building
+const OWNERSHIP_MAP = {
+    kevin: ["werewolf", "kfruti"],
+    tj: ["darkwing", "darkterro"],
+    ray: ["ray"],
+    seth: ["phoenix"]
+};
+
 const TWITCH_MAP = {
     werewolf: "werewolf3788",
+    kfruti: "kfruti88",
     ray: "raymystyro",
     darkwing: "terrdog420",
+    darkterro: "terrdog420",
     mjolnir: "mjolnirgaming",
     phoenix: "phoenix_darkfire",
     queen: "broken_queen10",
-    kfruti: "kfruti88",
     balto: "balto20_01"
 };
 
@@ -73,9 +84,10 @@ const ACCOUNT_IDS = {
     marc: "6551906246515882523",
     jcrow: "7524753921019262614",
     bunny: "7742137722487951585",
-    queen: "",  // Add 19-digit ID here
-    kfruti: "", // Add 19-digit ID here
-    balto: "",  // Add 19-digit ID here
+    queen: "",  
+    kfruti: "", // Kevin's Alt - Add 19-digit ID here
+    darkterro: "", // TJ's Alt - Add 19-digit ID here
+    balto: "",  
     oldman: ""  
 };
 
@@ -260,7 +272,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v13.7.1 Sync: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v13.7.2 Sync: ${label}`);
     
     try {
         // 3. IDENTITY & REGIONAL
@@ -290,8 +302,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         const activeGameInfo = rawP.gameTitleInfoList?.[0] || {};
         const resolvedTitle = (twitchIntel?.isLive && twitchIntel.game && activeGameInfo.titleName === "Dashboard") ? twitchIntel.game : (activeGameInfo.titleName || "Dashboard");
         
-        // --- [NEW RECOVERY LOGIC] ---
-        // Match by Communications ID first (Precise), then by Sanitized Name (Fallback)
+        // Multi-stage image recovery (from v13.7.1)
         const matchedMeta = sortedTitles.find(t => {
             if (activeGameInfo.npCommunicationId && t.npCommunicationId === activeGameInfo.npCommunicationId) return true;
             const cleanTrophyName = t.trophyTitleName.replace(/®|™/g, "").toLowerCase().trim();
@@ -385,7 +396,6 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         const presence = {
             online: (rawP.primaryPlatformInfo?.onlineStatus || "offline") !== "offline" || !!twitchIntel?.isLive || proofOfLife,
             currentGame: resolvedTitle,
-            // [ART RESOLUTION]: Check Matched -> Twitch -> Fallback to Last Played Trophy Icon
             currentGameArt: matchedMeta.trophyTitleIconUrl || twitchIntel?.gameArt || sortedTitles[0]?.trophyTitleIconUrl || null,
             currentGameActivity: activeGameInfo.formatValue || twitchIntel?.statusMessage || (proofOfLife ? "Active Hunting" : null) || (twitchIntel?.isLive ? "Streaming Live" : null),
             amazonAffiliateUrl: generateAffiliateUrl(resolvedTitle),
@@ -427,15 +437,16 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v13.7.1...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v13.7.2...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
         users: {}, 
         mutualSquadFollowers: [], 
+        ownershipMapping: OWNERSHIP_MAP, // Export mapping for UI grouping
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "13.7.1",
-        codeTimestamp: "Monday, May 4, 2026 | 9:29 PM EDT"
+        engineVersion: "13.7.2",
+        codeTimestamp: "Monday, May 4, 2026 | 10:01 PM EDT"
     };
 
     try {
