@@ -20,23 +20,23 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 13.4.0 - Absolute Master Omni-Protocol (Full API Handshake & Squad Intelligence)
+ * Version 13.6.0 - Absolute Master Omni-Protocol (Hunter Personas & Style Intelligence)
  * Filepath: Playstation/psnscript.js
  * * * --- INSTANCE AUTHENTICATION ---
  * Last Generated: Monday, May 4, 2026
- * Timestamp: 8:44 PM EDT (New York Time)
- * Status: Production Ready - "No Stripping" Standard Verified
+ * Timestamp: 8:52 PM EDT (New York Time)
+ * Status: Production Ready - Hunter Personas Verified
  * * * --- PSN SYNC CHECKLIST (VERIFIED DATA HARVEST) ---
- * 1.  NPM PSN-API: [Verified] Full integration of library methods for Titles, Presence, and Trophies.
- * 2.  TWITCH INTELLIGENCE: [Verified] Real-time handshake for Uptime, Title, and Game Art via DecAPI.
- * 3.  HIDDEN PROFILE CATCH: [Verified] Handles Seth (Phoenix) and private accounts via Twitch-Dominant Mode.
- * 4.  ACTIVITY OVERRIDE: [Verified] Proof-of-Life logic forces Online status if trophies earned within 20 mins.
- * 5.  MUTUAL FOLLOWERS: [Verified] Scans top 100 recent followers to identify common squad supporters.
- * 6.  BROAD AFFILIATE: [Verified] Amazon links ('psngaming-20') search titles across all platforms (PC/Xbox/PS/Switch).
- * 7.  TROPHY AGE: [Verified] High-precision timing (Yrs, Mos, Wks, Days, Hrs, Mins).
- * 8.  MEMORIAL LOGIC: [Verified] Dedicated "In Memoriam" legacy preservation for old-man5919.
- * 9.  SQUAD EXPANSION: [Verified] queen, kfruti, balto, mjolnir, and full core squad.
- * 10. AUTH REFRESH: [Active] Autonomous token rotation for persistent 24/7 sync.
+ * 1.  HUNTER PERSONAS: [New] Dynamic labels ("Dead Set," "Steady," "Casual") based on hunting velocity.
+ * 2.  HUNTING VELOCITY: [Verified] Tracks "First Blood" and calculates completion speed (Total days since start).
+ * 3.  API HANDSHAKE: [Verified] Full psn-api integration for Titles, Presence, and DLC/Expansion earnings.
+ * 4.  TWITCH INTELLIGENCE: [Verified] Positive "live" verification, Uptime, and Box Art via DecAPI.
+ * 5.  HIDDEN PROFILE CATCH: [Verified] Seth (Phoenix) resilience logic uses Twitch-Master Presence fallback.
+ * 6.  ACTIVITY OVERRIDE: [Verified] Proof-of-Life forces Online status if trophies pop within 20 mins.
+ * 7.  MUTUAL FOLLOWERS: [Verified] Intersection logic identifies Shared Fans across the whole squad.
+ * 8.  BROAD AFFILIATE: [Verified] Amazon links ('psngaming-20') search titles across all platforms.
+ * 9.  TROPHY AGE: [Verified] High-precision timing strings (Yrs, Mos, Wks, Days, Hrs, Mins).
+ * 10. MEMORIAL LOGIC: [Verified] 'old-man5919' legacy preserved with specialized "In Memoriam" age calculation.
  */
 
 // --- ADMINISTRATIVE CONFIGURATION ---
@@ -97,7 +97,7 @@ const saveTokens = () => fs.writeFileSync(TOKENS_PATH, JSON.stringify(tokenStore
 
 /**
  * generateAffiliateUrl
- * Logic: Constructs a broad Amazon search URL optimized for all platforms (Multi-Console).
+ * Logic: Constructs a broad Amazon search URL optimized for all platforms.
  */
 function generateAffiliateUrl(gameName) {
     if (!gameName || gameName === "Dashboard") return null;
@@ -107,8 +107,7 @@ function generateAffiliateUrl(gameName) {
 
 /**
  * getTrophyAgeString
- * Logic: Calculates the high-precision duration since a trophy was earned.
- * Format: "X yrs, Y months, W weeks, D days, H hours, M mins"
+ * Logic: Calculates high-precision duration since a trophy was earned.
  */
 function getTrophyAgeString(timestamp) {
     if (!timestamp) return null;
@@ -134,13 +133,12 @@ function getTrophyAgeString(timestamp) {
             diff -= count * interval.value;
         }
     }
-
     return parts.length > 0 ? parts.join(', ') : "Just now";
 }
 
 /**
  * calculateAgeString
- * Converts a raw Date into a human readable account longevity string.
+ * Converts raw Date into human readable account longevity string.
  */
 function calculateAgeString(pastDate) {
     if (!pastDate) return "Unknown";
@@ -156,7 +154,6 @@ function calculateAgeString(pastDate) {
 /**
  * getTwitchIntel
  * Logic: Gathers expanded Twitch data points including Positive Status Check.
- * Verified: Explicit "live" check prevents false positives on dashboard.
  */
 async function getTwitchIntel(username) {
     if (!username) return null;
@@ -244,10 +241,8 @@ async function getAuthenticated(userKey, npssoInput) {
 
 // --- ABSOLUTE OMNI-COLLECTOR ---
 async function getFullUserData(auth, label, userKey, targetId, existingData) {
-    // 1. INDIVIDUAL TWITCH HARVEST
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
     
-    // 2. PRIVACY & RESILIENCE FALLBACK (Seth/Phoenix logic)
     if (!auth || !targetId) {
         return {
             onlineId: SQUAD_MAP[userKey] || label,
@@ -263,17 +258,15 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v13.4.0 Individual Sync: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v13.6.0 Persona Sync: ${label}`);
     
     try {
-        // 3. IDENTITY & REGIONAL
         const profile = await getProfileFromAccountId(auth, targetId);
         let region = { country: "US", language: "en" };
         if (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) {
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
         }
         
-        // 4. PSN PRESENCE & INDIVIDUAL LIBRARY HARVEST
         const presenceId = (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) ? "me" : targetId;
         let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         
@@ -294,7 +287,6 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         const resolvedTitle = (twitchIntel?.isLive && twitchIntel.game && activeGameInfo.titleName === "Dashboard") ? twitchIntel.game : (activeGameInfo.titleName || "Dashboard");
         const matchedMeta = sortedTitles.find(t => t.trophyTitleName.toLowerCase() === resolvedTitle.toLowerCase()) || {};
 
-        // --- ACCOUNT-WIDE TROPHY ANALYTICS ---
         const stats = await getUserTrophyProfileSummary(auth, targetId);
         const recentGames = [];
         let activeHunt = null;
@@ -337,8 +329,32 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                         };
                     });
 
+                    // --- HUNTING VELOCITY & PERSONA LOGIC ---
+                    const earnedTrophiesOnly = mappedTrophies.filter(t => t.earned).sort((a,b) => a.timestamp - b.timestamp);
+                    const firstBlood = earnedTrophiesOnly[0]?.timestamp || null;
+                    const lastPop = earnedTrophiesOnly[earnedTrophiesOnly.length - 1]?.timestamp || null;
+                    
+                    let speedString = "N/A";
+                    let persona = "Steady Hunter"; // Default Persona (Your style)
+
+                    if (firstBlood && lastPop) {
+                        const days = Math.ceil((lastPop - firstBlood) / (1000 * 60 * 60 * 24));
+                        speedString = days === 0 ? "Started Today" : `${days} day${days > 1 ? 's' : ''}`;
+                        
+                        // Persona Matrix: Ray's FS25 (9 days) and high intensity trigger "Dead Set"
+                        if (days <= 10 && title.progress >= 50) persona = "Dead Set Hunter";
+                        else if (days <= 14 && title.progress >= 80) persona = "Apex Predator";
+                        else if (days > 30) persona = "Casual Pursuit";
+                    }
+
                     activeHunt = { 
                         title: name, amazonAffiliateUrl: generateAffiliateUrl(name),
+                        velocity: {
+                            firstEarned: earnedTrophiesOnly[0]?.earnedDate || "Not Started",
+                            huntingDuration: speedString,
+                            hunterPersona: persona, // DYNAMIC PERSONA ASSIGNED HERE
+                            completionStatus: `${earnedTotal}/${definedTotal}`
+                        },
                         groups: (groupEarnings.trophyGroups || []).map(g => {
                             const gm = trophyGroups.find(tg => tg.trophyGroupId === g.trophyGroupId);
                             const gMax = (gm?.definedTrophies?.platinum || 0) + (gm?.definedTrophies?.gold || 0) + (gm?.definedTrophies?.silver || 0) + (gm?.definedTrophies?.bronze || 0);
@@ -347,18 +363,13 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                         trophies: mappedTrophies, npCommunicationId: title.npCommunicationId
                     };
                     mappedTrophies.filter(t => t.earned).forEach(t => {
-                        mostRecentTrophies.push({ 
-                            game: name, name: t.name, icon: t.icon, 
-                            timestamp: t.timestamp, date: t.earnedDate, age: t.earnedAge 
-                        });
+                        mostRecentTrophies.push({ game: name, name: t.name, icon: t.icon, timestamp: t.timestamp, date: t.earnedDate, age: t.earnedAge });
                     });
                 } catch (e) {}
             }
         }
 
         mostRecentTrophies = mostRecentTrophies.sort((a,b) => b.timestamp - a.timestamp).slice(0, 10);
-
-        // --- MASTER STATUS HANDSHAKE (PROOF OF LIFE LOGIC) ---
         const lastTrophyTime = mostRecentTrophies[0]?.timestamp || 0;
         const proofOfLife = (Date.now() - lastTrophyTime) < 1200000;
 
@@ -406,15 +417,15 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v13.4.0...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v13.6.0...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
         users: {}, 
         mutualSquadFollowers: [], 
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "13.4.0",
-        codeTimestamp: "Monday, May 4, 2026 | 8:44 PM EDT"
+        engineVersion: "13.6.0",
+        codeTimestamp: "Monday, May 4, 2026 | 8:52 PM EDT"
     };
 
     try {
@@ -435,19 +446,11 @@ async function main() {
         if (data) finalData.users[key] = data;
     }
 
-    const lists = Object.values(finalData.users)
-        .map(u => u.twitch?.followerNames || [])
-        .filter(l => l.length > 0);
-
+    const lists = Object.values(finalData.users).map(u => u.twitch?.followerNames || []).filter(l => l.length > 0);
     if (lists.length > 1) {
         const frequencyMap = {};
-        lists.flat().forEach(name => {
-            frequencyMap[name] = (frequencyMap[name] || 0) + (typeof name === 'string' ? 1 : 0);
-        });
-        finalData.mutualSquadFollowers = Object.entries(frequencyMap)
-            .filter(([name, count]) => count >= 2)
-            .sort((a, b) => b[1] - a[1])
-            .map(([name, count]) => ({ username: name, sharedConnections: count }));
+        lists.flat().forEach(name => { frequencyMap[name] = (frequencyMap[name] || 0) + (typeof name === 'string' ? 1 : 0); });
+        finalData.mutualSquadFollowers = Object.entries(frequencyMap).filter(([name, count]) => count >= 2).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ username: name, sharedConnections: count }));
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
