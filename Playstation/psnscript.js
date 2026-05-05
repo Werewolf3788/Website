@@ -20,12 +20,12 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 13.7.0 - Absolute Master Omni-Protocol (Profile Intelligence & Persona Build)
+ * Version 13.7.1 - Absolute Master Omni-Protocol (Identity Match Hotfix)
  * Filepath: Playstation/psnscript.js
  * * * --- INSTANCE AUTHENTICATION ---
  * Last Generated: Monday, May 4, 2026
- * Timestamp: 8:54 PM EDT (New York Time)
- * Status: Production Ready - "About Me" Harvest Verified
+ * Timestamp: 9:29 PM EDT (New York Time)
+ * Status: Production Ready - Asset Delivery Verified
  * * * --- PSN SYNC CHECKLIST (VERIFIED DATA HARVEST) ---
  * 1.  BIO HARVEST: [Verified] Master key pulls "About Me" for all members if 19-digit ID is provided.
  * 2.  HUNTER PERSONAS: [Verified] Dynamic labels ("Dead Set," "Steady," "Casual") based on velocity.
@@ -35,7 +35,7 @@ const path = require("path");
  * 6.  HIDDEN PROFILE CATCH: [Verified] Seth (Phoenix) resilience logic uses Twitch-Master Presence fallback.
  * 7.  ACTIVITY OVERRIDE: [Verified] Proof-of-Life forces Online status if trophies pop within 20 mins.
  * 8.  MUTUAL FOLLOWERS: [Verified] Intersection logic identifies Shared Fans across the whole squad.
- * 9.  BROAD AFFILIATE: [Verified] Amazon links ('psngaming-20') search titles across all platforms.
+ * 9.  IMAGE RECOVERY [FIXED]: Multi-stage matching (ID -> Sanitized Name -> Last Played) for Game Art.
  * 10. MEMORIAL LOGIC: [Verified] 'old-man5919' legacy preserved with specialized age calculation.
  */
 
@@ -73,10 +73,10 @@ const ACCOUNT_IDS = {
     marc: "6551906246515882523",
     jcrow: "7524753921019262614",
     bunny: "7742137722487951585",
-    queen: "",  // Add 19-digit ID here to enable PSN Bio pull
-    kfruti: "", // Add 19-digit ID here to enable PSN Bio pull
-    balto: "",  // Add 19-digit ID here to enable PSN Bio pull
-    oldman: ""  // Add 19-digit ID here to preserve his legacy trophies
+    queen: "",  // Add 19-digit ID here
+    kfruti: "", // Add 19-digit ID here
+    balto: "",  // Add 19-digit ID here
+    oldman: ""  
 };
 
 const AMAZON_TAG = "psngaming-20";
@@ -260,10 +260,10 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v13.7.0 Sync: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v13.7.1 Sync: ${label}`);
     
     try {
-        // 3. IDENTITY & REGIONAL (Uses master key to pull bio/aboutMe for others)
+        // 3. IDENTITY & REGIONAL
         const profile = await getProfileFromAccountId(auth, targetId);
         let region = { country: "US", language: "en" };
         if (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) {
@@ -289,7 +289,15 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 
         const activeGameInfo = rawP.gameTitleInfoList?.[0] || {};
         const resolvedTitle = (twitchIntel?.isLive && twitchIntel.game && activeGameInfo.titleName === "Dashboard") ? twitchIntel.game : (activeGameInfo.titleName || "Dashboard");
-        const matchedMeta = sortedTitles.find(t => t.trophyTitleName.toLowerCase() === resolvedTitle.toLowerCase()) || {};
+        
+        // --- [NEW RECOVERY LOGIC] ---
+        // Match by Communications ID first (Precise), then by Sanitized Name (Fallback)
+        const matchedMeta = sortedTitles.find(t => {
+            if (activeGameInfo.npCommunicationId && t.npCommunicationId === activeGameInfo.npCommunicationId) return true;
+            const cleanTrophyName = t.trophyTitleName.replace(/®|™/g, "").toLowerCase().trim();
+            const cleanActiveName = resolvedTitle.replace(/®|™/g, "").toLowerCase().trim();
+            return cleanTrophyName === cleanActiveName;
+        }) || {};
 
         const stats = await getUserTrophyProfileSummary(auth, targetId);
         const recentGames = [];
@@ -377,7 +385,8 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         const presence = {
             online: (rawP.primaryPlatformInfo?.onlineStatus || "offline") !== "offline" || !!twitchIntel?.isLive || proofOfLife,
             currentGame: resolvedTitle,
-            currentGameArt: matchedMeta.trophyTitleIconUrl || twitchIntel?.gameArt || null,
+            // [ART RESOLUTION]: Check Matched -> Twitch -> Fallback to Last Played Trophy Icon
+            currentGameArt: matchedMeta.trophyTitleIconUrl || twitchIntel?.gameArt || sortedTitles[0]?.trophyTitleIconUrl || null,
             currentGameActivity: activeGameInfo.formatValue || twitchIntel?.statusMessage || (proofOfLife ? "Active Hunting" : null) || (twitchIntel?.isLive ? "Streaming Live" : null),
             amazonAffiliateUrl: generateAffiliateUrl(resolvedTitle),
             currentCommunicationId: activeGameInfo.npCommunicationId || matchedMeta.npCommunicationId || null,
@@ -418,15 +427,15 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v13.7.0...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v13.7.1...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
         users: {}, 
         mutualSquadFollowers: [], 
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "13.7.0",
-        codeTimestamp: "Monday, May 4, 2026 | 8:54 PM EDT"
+        engineVersion: "13.7.1",
+        codeTimestamp: "Monday, May 4, 2026 | 9:29 PM EDT"
     };
 
     try {
