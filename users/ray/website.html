@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <!-- 
-    Version: 10.8.4-Ray - Column D Image Sync | G-Tag Stream ID Integration | Smart Tag Filtering
+    Version: 10.9.0-Ray - Smart G-Tag Logic | Chicago Time Sync | Click Attribution | Art Resolver
     Global Standards: S:50 R:30 B:14 H:30
     Author: Kevin (Werewolf3788) Admin Engine
-    Last Updated: May 4, 2026 - 9:40 PM (New York Time)
+    Engine Version: 12.8.0
+    Last Updated: May 4, 2026 - 9:55 PM (Chicago Time)
 -->
 <html lang="en">
 <head>
@@ -12,18 +13,27 @@
     <meta http-equiv="refresh" content="900"> <!-- Hard Refresh every 15 minutes -->
     <title>RayMystyro | Pack Dashboard</title>
     
-    <!-- --- GOOGLE ANALYTICS (WEREWOLF GLOBAL) --- -->
+    <!-- --- GOOGLE ANALYTICS (RAY SMART TRACKING) --- -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
+        
+        // Helper for Chicago Time
+        function getChicagoTime() {
+            return new Date().toLocaleString("en-US", {timeZone: "America/Chicago", timeZoneName: "short"});
+        }
+
         gtag('config', 'G-Z9M5LXQ5XN', {
             'stream_id': '13278632388',
             'page_type': 'dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '10.8.4',
+            'layout_version': '10.9.0',
             'user_id': 'OneLIVIDMAN',
+            'engagement_timezone': 'Central Time (Chicago)',
+            'engagement_timestamp_local': getChicagoTime(),
+            'send_page_view': true,
             'description': 'This is RayMystyro "twitch" or OneLIVIDMAN playstation stats progress on trophy\'s, he has my amazon affliflate id in recent hunt as well as in the quicklink. then we have my Last FM widget showing current song'
         });
     </script>
@@ -36,7 +46,6 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap');
 
-        /* --- CSS VARIABLES & TOKENS --- */
         :root {
             --bg-dark: #0a0a0c;
             --wolf-gray: #1e1e24;
@@ -55,7 +64,6 @@
             --row-spacing: 30px;
         }
 
-        /* --- BASE STYLES --- */
         body {
             background-color: var(--bg-dark);
             color: #e2e8f0;
@@ -79,52 +87,19 @@
             max-width: 1700px; margin: 0 auto;
             display: flex; align-items: center; justify-content: space-between;
         }
-        .nav-links-wrapper {
-            display: none; 
-            gap: 25px; align-items: center;
-        }
-        .nav-links-wrapper.active {
-            display: flex; flex-direction: column; position: absolute;
-            top: 100%; left: 0; right: 0; background: var(--bg-dark);
-            padding: 20px; border-bottom: 1px solid var(--accent-red);
-        }
-        .nav-link {
-            font-size: 10px; font-weight: 900; text-transform: uppercase;
-            letter-spacing: 0.15em; color: #64748b; transition: all 0.3s;
-            white-space: nowrap; text-decoration: none; cursor: pointer;
-            padding: 10px 0;
-        }
+        .nav-links-wrapper { display: none; gap: 25px; align-items: center; }
+        .nav-links-wrapper.active { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--bg-dark); padding: 20px; border-bottom: 1px solid var(--accent-red); }
+        .nav-link { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em; color: #64748b; transition: all 0.3s; white-space: nowrap; text-decoration: none; cursor: pointer; padding: 10px 0; }
         .nav-link:hover, .nav-link.active { color: var(--accent-red); }
 
         .dropdown { position: relative; display: inline-block; padding-bottom: 5px; }
-        .dropdown-content {
-            display: none; position: absolute; top: 100%; left: 0;
-            background-color: var(--wolf-gray); min-width: 250px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
-            z-index: 1; border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 8px; margin-top: 0px;
-        }
-        .dropdown-content a {
-            color: #cbd5e1; padding: 12px 16px; text-decoration: none;
-            display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 700;
-            text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
+        .dropdown-content { display: none; position: absolute; top: 100%; left: 0; background-color: var(--wolf-gray); min-width: 250px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5); z-index: 1; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; margin-top: 0px; }
+        .dropdown-content a { color: #cbd5e1; padding: 12px 16px; text-decoration: none; display: flex; align-items: center; gap: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .dropdown-content a:hover { background-color: rgba(196, 30, 58, 0.1); color: var(--accent-red); }
         .dropdown:hover .dropdown-content { display: block; }
-        
-        .nav-thumb { width: 20px; height: 20px; border-radius: 4px; object-fit: cover; }
 
-        @media (min-width: 1024px) {
-            .nav-links-wrapper { display: flex; flex-direction: row; }
-            .mobile-toggle { display: none; }
-            body { font-size: 16px; }
-            h1 { font-size: 72px !important; }
-            h2 { font-size: 36px !important; }
-            .section-container { padding-top: 80px; padding-bottom: 80px; }
-            .nav-link { font-size: 12px; }
-        }
+        @media (min-width: 1024px) { .nav-links-wrapper { display: flex; flex-direction: row; } .mobile-toggle { display: none; } h1 { font-size: 72px !important; } h2 { font-size: 36px !important; } .section-container { padding-top: 80px; padding-bottom: 80px; } .nav-link { font-size: 12px; } }
 
-        /* --- GLOBAL UI COMPONENTS --- */
         h1, h2, h3 { font-size: var(--header-text-size); font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; margin: 0; line-height: 1.3; color: white; }
         .section-container { padding-top: var(--section-padding); padding-bottom: var(--section-padding); }
         .glass-card { background: rgba(30, 30, 36, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.25rem; transition: all 0.3s ease; height: auto; text-decoration: none; display: block; }
@@ -157,8 +132,6 @@
         .status-dot-pulse.online::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; background: inherit; opacity: 0.4; animation: dotPulse 2s infinite; }
         .status-dot-pulse.offline { background: #475569; }
         
-        @keyframes dotPulse { 0% { transform: scale(1); opacity: 0.4; } 70% { transform: scale(2.5); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
-
         #trophy-lightbox { position: fixed; inset: 0; z-index: 21000; background: rgba(0,0,0,0.98); display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); padding: 20px; }
         .modal-content { background: var(--wolf-gray); width: 100%; max-width: 500px; border-radius: 2rem; border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
 
@@ -170,10 +143,8 @@
         @keyframes pulseLive { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
         .expansion-card { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
-
-        /* Dynamic Support Card Styling */
-        .support-card { transition: all 0.3s; }
-        .support-img-icon { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 2px solid rgba(255,255,255,0.05); }
+        .support-img-icon { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 2px solid rgba(255,255,255,0.05); transition: transform 0.3s; }
+        .support-card:hover .support-img-icon { transform: scale(1.1); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -262,7 +233,6 @@
 
     <main class="max-w-[1700px] mx-auto px-6 pb-24 flex-1">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
-            <!-- LEFT COLUMN area -->
             <div class="lg:col-span-2 flex flex-col gap-8 lg:gap-12">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
                     <div class="flex flex-col gap-8 lg:gap-12">
@@ -285,8 +255,8 @@
                                 <div class="space-y-4 bg-white/5 p-6 rounded-2xl border border-white/5">
                                     <div class="flex justify-between items-end"><span class="text-[11px] lg:text-[14px] text-gray-300 font-black uppercase text-red-400">Hunt Progress</span><span id="active-game-progress-text" class="text-lg lg:text-2xl font-black text-red-500">0%</span></div>
                                     <div class="progress-bar-container lg:h-5"><div id="active-game-progress-fill" class="progress-bar-fill" style="width: 0%"></div></div>
-                                    <div class="flex flex-wrap justify-between gap-4 text-[10px] font-black text-gray-400 uppercase">
-                                        <div class="flex items-center gap-1"><i class="far fa-clock text-red-400"></i>Started: <span id="game-journey-age" class="text-white">--</span></div>
+                                    <div class="flex flex-wrap justify-between gap-2 text-[10px] font-black text-gray-400 uppercase">
+                                        <div class="flex items-center gap-1"><i class="far fa-clock text-red-400"></i>Journey Started: <span id="game-journey-age" class="text-white">--</span></div>
                                         <div class="flex items-center gap-1"><i class="fas fa-bullseye text-red-400"></i><span id="active-game-ratio" class="text-white">--/--</span> Objectives</div>
                                     </div>
                                 </div>
@@ -317,7 +287,6 @@
                 </section>
             </div>
 
-            <!-- RIGHT COLUMN -->
             <div class="flex flex-col gap-8 lg:gap-12">
                 <section id="recent-trophy-card" class="glass-card p-8 border-t-4 border-yellow-500 hidden">
                     <h2 class="text-yellow-500 flex items-center gap-3 mb-6 uppercase"><i class="fas fa-trophy"></i> Recently Earned</h2>
@@ -334,15 +303,12 @@
 
                 <section id="music-section" class="glass-card p-8 text-center border-b-4 border-pink-500">
                     <h2 class="mb-8 text-pink-400 flex items-center justify-center gap-4"><i class="fas fa-headphones"></i> Now Playing</h2>
-                    <div class="flex justify-center"><a href="https://www.last.fm/user/KR888434" target="_blank"><img id="music-widget-img" src="" class="rounded-2xl shadow-2xl border border-white/10"></a></div>
+                    <div class="flex justify-center"><a id="music-link" href="https://www.last.fm/user/KR888434" target="_blank"><img id="music-widget-img" src="" class="rounded-2xl shadow-2xl border border-white/10"></a></div>
                 </section>
 
                 <section class="glass-card p-8 lg:p-12 space-y-5">
                     <h2 class="mb-8 opacity-70 text-center tracking-[0.2em] uppercase text-[11px] font-black leading-relaxed block h-auto text-gray-300">Support & Socials</h2>
-                    
-                    <!-- DYNAMIC CSV SUPPORT LINKS -->
                     <div id="dynamic-support-links" class="space-y-4"></div>
-                    
                     <a href="https://amzn.to/4n3OpPL" target="_blank" class="flex items-center p-6 rounded-2xl bg-[#FF9900]/10 border border-[#FF9900]/30 hover:border-[#FF9900] transition-all group h-auto">
                         <i class="fab fa-amazon text-4xl text-[#FF9900] group-hover:scale-110 transition-transform"></i>
                         <div class="flex-1 ml-5 text-left"><div class="font-black lg:text-xl text-white leading-tight">Amazon Store</div><div class="text-[11px] text-gray-300 font-bold uppercase leading-normal">Support the Pack</div></div>
@@ -351,7 +317,7 @@
             </div>
         </div>
         <div class="text-center mt-12 text-[11px] font-black text-gray-500 uppercase tracking-[0.4em]">Wolf Admin Handshake: <span id="sync-time" class="text-gray-300">--</span></div>
-    </header>
+    </main>
 
     <div id="trophy-lightbox" onclick="closeTrophyLightbox()"></div>
 
@@ -360,9 +326,9 @@
         const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
         const PLUS_IMG = "https://gmedia.playstation.com/is/image/SIEPDC/ps-plus-black-badge-01-22sep20?$400px--t$";
         
-        // --- TAG DEFINITIONS ---
+        // --- SMART TAG LOGIC ---
         const MY_TAGS = ["raymystyro", "onelividman"];
-        const OTHER_TAGS = ["werewolf", "werewolf3788", "darkwing", "darkwing69420", "terrdog", "terrdog420", "fluffy", "phoenix_darkfire", "elucidatorvah", "jcrow", "jcrow207", "unicornbunnyshiv"];
+        const OTHER_MEMBER_TAGS = ["werewolf", "werewolf3788", "darkwing", "darkwing69420", "terrdog", "terrdog420", "fluffy", "phoenix_darkfire", "elucidatorvah", "jcrow", "jcrow207", "unicornbunnyshiv"];
 
         let currentTrophyData = [];
 
@@ -370,24 +336,35 @@
             if (!timestamp || timestamp === 0) return "Starting...";
             const now = Date.now();
             const diff = now - timestamp;
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(minutes / 60);
-            const days = Math.floor(hours / 24);
+            const mins = Math.floor(diff / 60000);
+            const hrs = Math.floor(mins / 60);
+            const days = Math.floor(hrs / 24);
             const months = Math.floor(days / 30);
             const years = Math.floor(days / 365);
             if (years > 0) return years === 1 ? "1 year ago" : `${years} years ago`;
             if (months > 0) return months === 1 ? "1 month ago" : `${months} months ago`;
             if (days > 0) return days === 1 ? "Yesterday" : `${days} days ago`;
-            if (hours > 0) return `${hours}h ago`;
-            if (minutes > 0) return `${minutes}m ago`;
+            if (hrs > 0) return `${hrs}h ago`;
+            if (mins > 0) return `${mins}m ago`;
             return "Just now";
+        }
+
+        // SMART G-TAG LOGIC
+        function logSmartEvent(eventName, params) {
+            if (typeof gtag === 'function') {
+                const chicagoTime = new Date().toLocaleString("en-US", {timeZone: "America/Chicago"});
+                gtag('event', eventName, {
+                    ...params,
+                    'chicago_timestamp': chicagoTime
+                });
+            }
         }
 
         function refreshMusic() {
             const img = document.getElementById('music-widget-img');
             if(!img) return;
             const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=10.8.4`;
+            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=10.9.0`;
         }
 
         async function updateTwitch() {
@@ -398,7 +375,6 @@
             } catch(e){}
         }
 
-        // --- SMART CSV LOADER ---
         async function buildSmartMenu() {
             try {
                 const response = await fetch(MENU_CSV_URL + "&t=" + Date.now());
@@ -420,23 +396,23 @@
                         const url = cols[2].trim();              // Column C
                         const img = cols[3] ? cols[3].trim() : ""; // Column D
 
-                        // LOGIC A: Support Section (My Tags)
+                        // Logic: Tagged for me -> Support
                         if (MY_TAGS.includes(tag)) {
                             supportHtml += `
-                                <a href="${url}" target="_blank" class="support-card flex items-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-red-500 transition-all group h-auto mb-4">
+                                <a href="${url}" target="_blank" onclick="logSmartEvent('click_support_link', {'link_name': '${name}'})" class="support-card flex items-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-red-500 transition-all group h-auto mb-4">
                                     ${img ? `<img src="${img}" class="support-img-icon mr-4">` : `<i class="fas fa-external-link-alt text-2xl text-red-500 mr-4"></i>`}
                                     <div class="flex-1 text-left">
                                         <div class="font-black text-white leading-tight uppercase text-xs">${name}</div>
-                                        <div class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Open Resource</div>
+                                        <div class="text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-1">Open Portal</div>
                                     </div>
                                 </a>`;
                             return;
                         }
 
-                        // LOGIC B: Ignore other member tags
-                        if (OTHER_TAGS.includes(tag)) return;
+                        // Logic: Tagged for someone else -> Hidden
+                        if (OTHER_MEMBER_TAGS.includes(tag)) return;
 
-                        // LOGIC C: Top Navigation (Home, User, Games, and untagged)
+                        // Logic: Nav items (Home, User, Games, or non-gamer tagged)
                         if (tag) {
                             if (!groupedLinks[tag]) groupedLinks[tag] = [];
                             groupedLinks[tag].push({ name, url, img });
@@ -470,7 +446,15 @@
             if(nav) nav.classList.toggle('active'); 
         }
 
-        function openStore(gameName, affiliateUrl) { window.open(affiliateUrl || `https://store.playstation.com/en-us/search/${encodeURIComponent(gameName)}`, '_blank'); }
+        function openStore(gameName, affiliateUrl, source) { 
+            logSmartEvent('click_game_link', {
+                'game_name': gameName,
+                'link_url': affiliateUrl || 'PSN_Store',
+                'click_source': source || 'recent_hunts'
+            });
+            window.open(affiliateUrl || `https://store.playstation.com/en-us/search/${encodeURIComponent(gameName)}`, '_blank'); 
+        }
+
         function closeTrophyLightbox() { 
             const lb = document.getElementById('trophy-lightbox');
             if(lb) lb.style.display = 'none'; 
@@ -495,7 +479,7 @@
 
         async function updateHub() {
             try {
-                const res = await fetch(REPO_BASE + "Playstation/psn_data.json?v=10.8.4&t=" + Date.now());
+                const res = await fetch(REPO_BASE + "Playstation/psn_data.json?v=10.9.0&t=" + Date.now());
                 const data = await res.json();
                 const user = data.users.ray || data.users.Ray;
                 if (!user) return;
@@ -510,20 +494,20 @@
                     if(aBox) { aBox.classList.remove('hidden'); if(aMsg) aMsg.innerText = data.systemAlerts.find(a => a.user === 'Ray').message; }
                 } else {
                     if(hDot) hDot.className = "status-dot-pulse online";
-                    if(hVal) hVal.innerText = (user.onlineId || "OneLIVIDMAN") + " Key: Good";
+                    if(hVal) hVal.innerText = (user.onlineId || "OneLIVIDMAN") + " Handshake: Good";
                     if(aBox) aBox.classList.add('hidden');
                 }
 
-                document.getElementById('main-avatar').src = user.avatar || "";
-                document.getElementById('profile-bio').innerText = user.bio || "Official Pack Member Profile";
-                document.getElementById('psn-level-label').innerText = user.level || "--";
-                document.getElementById('psn-account-age').innerText = "Age of PSN: " + (user.psnAccountAge || "Veteran");
-                document.getElementById('psn-region').innerText = "Region: " + (user.region || "US");
-                document.getElementById('sync-time').innerText = user.lastUpdated || "--";
+                const mainAv = document.getElementById('main-avatar'); if(mainAv) mainAv.src = user.avatar || "";
+                const profileBio = document.getElementById('profile-bio'); if(profileBio) profileBio.innerText = user.bio || "Official Pack Member Profile";
+                const psnLvl = document.getElementById('psn-level-label'); if(psnLvl) psnLvl.innerText = user.level || "--";
+                const psnAge = document.getElementById('psn-account-age'); if(psnAge) psnAge.innerText = "Age of PSN: " + (user.psnAccountAge || "Veteran");
+                const psnRegion = document.getElementById('psn-region'); if(psnRegion) psnRegion.innerText = "Region: " + (user.region || "US");
+                const syncTime = document.getElementById('sync-time'); if(syncTime) syncTime.innerText = user.lastUpdated || "--";
 
-                const liveB = document.getElementById('live-indicator');
-                const twMsg = document.getElementById('twitch-status-msg');
                 if (user.twitch) {
+                    const liveB = document.getElementById('live-indicator');
+                    const twMsg = document.getElementById('twitch-status-msg');
                     document.getElementById('twitch-age').innerText = "Age: " + (user.twitch.age || "Unknown");
                     if (user.twitch.isLive) { 
                         if(liveB) liveB.classList.remove('hidden'); 
@@ -550,24 +534,24 @@
                 }
 
                 const summary = user.trophySummary || user.trophies || {};
-                document.getElementById('trophy-total').innerText = (summary.total || 0).toLocaleString();
-                document.getElementById('plat-count').innerText = summary.platinum || 0;
-                document.getElementById('gold-count').innerText = summary.gold || 0;
-                document.getElementById('silver-count').innerText = summary.silver || 0;
-                document.getElementById('bronze-count').innerText = summary.bronze || 0;
-                document.getElementById('plus-badge-container').innerHTML = user.plus ? `<img src="${PLUS_IMG}" class="plus-badge-img">` : '';
+                const tTotal = document.getElementById('trophy-total'); if(tTotal) tTotal.innerText = (summary.total || 0).toLocaleString();
+                const pC = document.getElementById('plat-count'); if(pC) pC.innerText = summary.platinum || 0;
+                const gC = document.getElementById('gold-count'); if(gC) gC.innerText = summary.gold || 0;
+                const sC = document.getElementById('silver-count'); if(sC) sC.innerText = summary.silver || 0;
+                const bC = document.getElementById('bronze-count'); if(bC) bC.innerText = summary.bronze || 0;
+                const plusBadge = document.getElementById('plus-badge-container');
+                if(plusBadge) plusBadge.innerHTML = user.plus ? `<img src="${PLUS_IMG}" class="plus-badge-img">` : '';
 
                 if (user.activeHunt) {
                     const hunt = user.activeHunt;
-                    document.getElementById('last-played-hero').classList.remove('hidden');
+                    const heroSec = document.getElementById('last-played-hero'); if(heroSec) heroSec.classList.remove('hidden');
                     currentTrophyData = hunt.trophies || [];
-                    document.getElementById('active-game-title').innerText = hunt.title || "---";
+                    const activeTitle = document.getElementById('active-game-title'); if(activeTitle) activeTitle.innerText = hunt.title || "---";
                     
                     const artImg = document.getElementById('active-game-art');
                     const fallbackBox = document.getElementById('active-game-fallback');
                     const resolvedArt = user.currentGameArt || (user.recentGames && user.recentGames[0] ? user.recentGames[0].art : null);
-                    
-                    if (resolvedArt && artImg) {
+                    if (resolvedArt && artImg) { 
                         artImg.src = resolvedArt; artImg.classList.remove('hidden');
                         if(fallbackBox) fallbackBox.classList.add('hidden');
                     } else if(fallbackBox) {
@@ -576,16 +560,18 @@
                     }
                     
                     const earnedT = currentTrophyData.filter(t => t.earned && t.timestamp > 0);
-                    if (document.getElementById('game-journey-age') && earnedT.length > 0) {
+                    const jAge = document.getElementById('game-journey-age');
+                    if (jAge && earnedT.length > 0) {
                         const oldest = [...earnedT].sort((a,b) => a.timestamp - b.timestamp)[0];
-                        document.getElementById('game-journey-age').innerText = getRelativeTime(oldest.timestamp);
+                        jAge.innerText = getRelativeTime(oldest.timestamp);
                     }
 
                     document.getElementById('active-game-store-link').href = `https://store.playstation.com/en-us/search/${encodeURIComponent(hunt.title)}`;
-                    document.getElementById('active-game-ratio').innerText = `${earnedT.length}/${currentTrophyData.length}`;
+                    const ratioEl = document.getElementById('active-game-ratio'); if(ratioEl) ratioEl.innerText = `${earnedT.length}/${currentTrophyData.length}`;
+                    
                     const pct = Math.round((earnedT.length / Math.max(currentTrophyData.length, 1)) * 100);
-                    document.getElementById('active-game-progress-text').innerText = pct + "%";
-                    document.getElementById('active-game-progress-fill').style.width = pct + "%";
+                    const pText = document.getElementById('active-game-progress-text'); if(pText) pText.innerText = pct + "%";
+                    const pFill = document.getElementById('active-game-progress-fill'); if(pFill) pFill.style.width = pct + "%";
 
                     const expContainer = document.getElementById('expansion-groups-container');
                     if (expContainer && hunt.groups && hunt.groups.length > 1) {
@@ -601,7 +587,7 @@
                 }
 
                 document.getElementById('recent-games-container').innerHTML = (user.recentGames || []).slice(0, 6).map(g => `
-                    <div class="game-thumb ${parseInt(g.progress) >= 100 ? 'platinum-glow' : ''}" onclick="openStore('${g.name}', '${g.amazonAffiliateUrl || ''}')">
+                    <div class="game-thumb ${parseInt(g.progress) >= 100 ? 'platinum-glow' : ''}" onclick="openStore('${g.name}', '${g.amazonAffiliateUrl || ''}', 'recent_hunts')">
                         <img src="${g.art}" class="w-full h-full object-cover">
                         <div class="game-info-overlay"><div class="text-[11px] font-black text-red-400 uppercase tracking-tighter">${g.ratio}</div><div class="text-[10px] font-black text-white/70 uppercase tracking-widest">${g.progress}%</div></div>
                     </div>`).join('');
