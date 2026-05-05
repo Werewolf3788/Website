@@ -20,22 +20,22 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 12.9.0 - Absolute Master Omni-Protocol (Temporal Intelligence & High Precision)
+ * Version 13.0.0 - Absolute Master Omni-Protocol (Multi-Platform Affiliate & Temporal Intel)
  * Filepath: Playstation/psnscript.js
  * * * --- INSTANCE AUTHENTICATION ---
  * Last Generated: Monday, May 4, 2026
- * Timestamp: 8:15 PM EDT (New York Time)
- * Status: Production Ready - "Trophy Age" Intelligence Verified
+ * Timestamp: 8:20 PM EDT (New York Time)
+ * Status: Production Ready - "Multi-Platform Search" Verified
  * * * --- PSN SYNC CHECKLIST (VERIFIED DATA HARVEST) ---
- * 1.  TROPHY AGE: [New] High-precision "Time Ago" calculation (Yrs, Mos, Wks, Days, Hrs, Mins).
- * 2.  STATUS PRECISION: [Verified] Explicit "live" word check prevents fake online status.
- * 3.  MUTUAL FOLLOWERS: [Verified] Global squad intersection of recent Twitch supporters.
- * 4.  SQUAD EXPANSION: [Verified] Integrated queen, kfruti, balto, and mjolnir.
- * 5.  MEMORIAL LOGIC: [Verified] 'old-man5919' legacy preserved via In Memoriam status.
- * 6.  TWITCH INTEL: [Expanded] Followers, Avatar, Account Age, Uptime, and Bio.
- * 7.  PSN ACCOUNT AGE: [Verified] Longevity approximated via oldest trophy history.
- * 8.  IDENTITY ISOLATION: [Verified] Individual library handshaking per squad member.
- * 9.  AMAZON AFFILIATE: [Individual] Personalized 'psngaming-20' search links.
+ * 1.  BROAD AFFILIATE: [New] Amazon links now search for the game title only to show all platforms (Xbox/PC/PS/Switch).
+ * 2.  TROPHY AGE: [Verified] High-precision "Time Ago" calculation (Yrs, Mos, Wks, Days, Hrs, Mins).
+ * 3.  STATUS PRECISION: [Verified] Explicit "live" word check prevents fake online status.
+ * 4.  MUTUAL FOLLOWERS: [Verified] Global squad intersection of recent Twitch supporters.
+ * 5.  SQUAD EXPANSION: [Verified] Integrated queen, kfruti, balto, and mjolnir.
+ * 6.  MEMORIAL LOGIC: [Verified] 'old-man5919' legacy preserved via In Memoriam status.
+ * 7.  TWITCH INTEL: [Expanded] Followers, Avatar, Account Age, Uptime, and Bio.
+ * 8.  PSN ACCOUNT AGE: [Verified] Longevity approximated via oldest trophy history.
+ * 9.  IDENTITY ISOLATION: [Verified] Individual library handshaking per squad member.
  * 10. AUTH REFRESH: [Active] Built-in rotation for 24/7 autonomous sync operations.
  */
 
@@ -97,18 +97,19 @@ const saveTokens = () => fs.writeFileSync(TOKENS_PATH, JSON.stringify(tokenStore
 
 /**
  * generateAffiliateUrl
- * Logic: Constructs an Amazon search URL optimized for PS5 physical copies.
+ * Logic: Constructs a broad Amazon search URL optimized for all platforms.
+ * Update v13.0.0: Removed "+Playstation+5" to allow Xbox/PC/Switch results.
  */
 function generateAffiliateUrl(gameName) {
     if (!gameName || gameName === "Dashboard") return null;
     const cleanName = encodeURIComponent(gameName.replace(/®|™/g, ""));
-    return `https://www.amazon.com/s?k=${cleanName}+Playstation+5&tag=${AMAZON_TAG}`;
+    return `https://www.amazon.com/s?k=${cleanName}&tag=${AMAZON_TAG}`;
 }
 
 /**
  * getTrophyAgeString
  * Logic: Calculates the high-precision duration since a trophy was earned.
- * Format: "5 mins" or "7 yrs, 2 months, 4 weeks, 4 days, 12 hours, 32 mins"
+ * Format: "X yrs, Y months, W weeks, D days, H hours, M mins"
  */
 function getTrophyAgeString(timestamp) {
     if (!timestamp) return null;
@@ -185,7 +186,7 @@ async function getTwitchIntel(username) {
             fetch(`https://decapi.me/twitch/uptime/${username.toLowerCase()}`).then(r => r.text())
         ]);
 
-        // POSITIVE STATUS GATE
+        // POSITIVE STATUS GATE: Prevents fake online status
         intel.isLive = statusRes.toLowerCase().includes("live");
         const invalidTerms = ["offline", "games & demo", "not found", "error", "404"];
         
@@ -244,8 +245,10 @@ async function getAuthenticated(userKey, npssoInput) {
 
 // --- ABSOLUTE OMNI-COLLECTOR ---
 async function getFullUserData(auth, label, userKey, targetId, existingData) {
+    // 1. INDIVIDUAL TWITCH HARVEST
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
     
+    // 2. RESILIENCE FALLBACK
     if (!auth || !targetId) {
         return {
             onlineId: SQUAD_MAP[userKey] || label,
@@ -261,21 +264,24 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v12.9.0 Sync: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v13.0.0 Individual Sync: ${label}`);
     
     try {
+        // 3. IDENTITY & REGIONAL
         const profile = await getProfileFromAccountId(auth, targetId);
         let region = { country: "US", language: "en" };
         if (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) {
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
         }
         
+        // 4. PSN PRESENCE & INDIVIDUAL LIBRARY HARVEST
         const presenceId = (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) ? "me" : targetId;
         let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         
         const { trophyTitles } = await getUserTitles(auth, targetId);
         const sortedTitles = (trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
 
+        // CALCULATE ACCOUNT LONGEVITY
         const oldestEntry = (trophyTitles || []).reduce((oldest, current) => {
             const currentDate = new Date(current.lastUpdatedDateTime);
             return (!oldest || currentDate < oldest) ? currentDate : oldest;
@@ -287,6 +293,8 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         } catch(e) {}
 
         const activeGameInfo = rawP.gameTitleInfoList?.[0] || {};
+        
+        // HANDSHAKE RESOLVER: Sync Twitch Status with PSN Session
         const resolvedTitle = (twitchIntel?.isLive && twitchIntel.game && activeGameInfo.titleName === "Dashboard") ? twitchIntel.game : (activeGameInfo.titleName || "Dashboard");
         const matchedMeta = sortedTitles.find(t => t.trophyTitleName.toLowerCase() === resolvedTitle.toLowerCase()) || {};
 
@@ -301,6 +309,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             twitch: twitchIntel
         };
 
+        // 5. ACCOUNT-WIDE TROPHY ANALYTICS
         const stats = await getUserTrophyProfileSummary(auth, targetId);
         const recentGames = [];
         let activeHunt = null;
@@ -389,15 +398,15 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v12.9.0...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v13.0.0...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
         users: {}, 
         mutualSquadFollowers: [], 
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "12.9.0",
-        codeTimestamp: "Monday, May 4, 2026 | 8:15 PM EDT"
+        engineVersion: "13.0.0",
+        codeTimestamp: "Monday, May 4, 2026 | 8:20 PM EDT"
     };
 
     try {
