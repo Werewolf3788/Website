@@ -5,14 +5,14 @@
       "accountId": "3728215008151724560",
       "online": false,
       "currentGame": "Dashboard",
-      "currentGameArt": null,
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
       "currentGameActivity": null,
       "amazonAffiliateUrl": null,
       "currentCommunicationId": null,
       "platform": "PS5",
       "twitch": {
         "isLive": false,
-        "game": "Farming Simulator 25",
+        "game": "Crossout",
         "gameArt": null,
         "followers": "97",
         "followerNames": [
@@ -27,6 +27,8 @@
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0004_s.png",
       "bio": "6C3RG",
       "psnAccountAge": "1 years, 4 months",
+      "earliestTrophyDate": "2025-01-05T01:27:35.000Z",
+      "latestTrophyDate": 1759111272000,
       "plus": true,
       "level": 232,
       "region": "US",
@@ -43,7 +45,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
           "progress": 25,
           "ratio": "22/71",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%3A%20Resistance+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%3A%20Resistance&tag=psngaming-20",
           "npCommunicationId": "NPWR40813_00",
           "lastPlayed": "2026-05-02T07:33:09Z"
         },
@@ -52,7 +54,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
           "progress": 4,
           "ratio": "1/13",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Crossout+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Crossout&tag=psngaming-20",
           "npCommunicationId": "NPWR24327_00",
           "lastPlayed": "2026-05-01T04:01:47Z"
         },
@@ -61,7 +63,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
           "progress": 9,
           "ratio": "10/90",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Wo%20Long%3A%20Fallen%20Dynasty+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Wo%20Long%3A%20Fallen%20Dynasty&tag=psngaming-20",
           "npCommunicationId": "NPWR27198_00",
           "lastPlayed": "2026-04-30T03:51:42Z"
         },
@@ -70,7 +72,7 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
           "progress": 29,
           "ratio": "20/58",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands&tag=psngaming-20",
           "npCommunicationId": "NPWR09395_00",
           "lastPlayed": "2026-04-29T01:13:02Z"
         },
@@ -79,7 +81,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
           "progress": 3,
           "ratio": "2/45",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Where%20Winds%20Meet+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Where%20Winds%20Meet&tag=psngaming-20",
           "npCommunicationId": "NPWR50887_00",
           "lastPlayed": "2026-04-28T02:37:12Z"
         },
@@ -88,14 +90,20 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50314_00/8e558b12-9144-4d7f-a141-5b04943763b4.png",
           "progress": 0,
           "ratio": "0/25",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Call%20of%20Duty%20Modern%20Warfare%20II+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Call%20of%20Duty%20Modern%20Warfare%20II&tag=psngaming-20",
           "npCommunicationId": "NPWR50314_00",
           "lastPlayed": "2026-04-25T01:06:06Z"
         }
       ],
       "activeHunt": {
         "title": "Sniper Elite: Resistance",
-        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%3A%20Resistance+Playstation+5&tag=psngaming-20",
+        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%3A%20Resistance&tag=psngaming-20",
+        "velocity": {
+          "firstEarned": "3/11/2025, 9:55:56 PM",
+          "huntingDuration": "202 days",
+          "hunterPersona": "Casual Pursuit",
+          "completionStatus": "22/71"
+        },
         "groups": [
           {
             "name": "Sniper Elite: Resistance",
@@ -134,6 +142,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -148,6 +157,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "3/11/2025, 9:55:56 PM",
+            "earnedAge": "1 yr, 1 month, 3 weeks, 3 days, 9 hours, 32 mins",
             "timestamp": 1741730156000,
             "currentValue": 0,
             "targetValue": 0
@@ -162,6 +172,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/16/2025, 5:53:48 AM",
+            "earnedAge": "10 months, 3 weeks, 2 days, 1 hour, 34 mins",
             "timestamp": 1750053228000,
             "currentValue": 0,
             "targetValue": 0
@@ -176,6 +187,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/16/2025, 7:49:06 PM",
+            "earnedAge": "10 months, 3 weeks, 1 day, 11 hours, 39 mins",
             "timestamp": 1750103346000,
             "currentValue": 0,
             "targetValue": 0
@@ -190,6 +202,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/17/2025, 11:00:04 PM",
+            "earnedAge": "10 months, 3 weeks, 8 hours, 28 mins",
             "timestamp": 1750201204000,
             "currentValue": 0,
             "targetValue": 0
@@ -204,6 +217,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/18/2025, 12:14:40 AM",
+            "earnedAge": "10 months, 3 weeks, 7 hours, 13 mins",
             "timestamp": 1750205680000,
             "currentValue": 0,
             "targetValue": 0
@@ -218,6 +232,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "7/26/2025, 3:39:05 AM",
+            "earnedAge": "9 months, 1 week, 6 days, 3 hours, 49 mins",
             "timestamp": 1753501145000,
             "currentValue": 0,
             "targetValue": 0
@@ -232,6 +247,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/28/2025, 11:29:53 PM",
+            "earnedAge": "7 months, 1 week, 1 day, 7 hours, 58 mins",
             "timestamp": 1759102193000,
             "currentValue": 0,
             "targetValue": 0
@@ -246,6 +262,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/29/2025, 1:53:24 AM",
+            "earnedAge": "7 months, 1 week, 1 day, 5 hours, 35 mins",
             "timestamp": 1759110804000,
             "currentValue": 0,
             "targetValue": 0
@@ -260,6 +277,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "38",
             "targetValue": "40"
@@ -274,6 +292,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/29/2025, 2:01:12 AM",
+            "earnedAge": "7 months, 1 week, 1 day, 5 hours, 27 mins",
             "timestamp": 1759111272000,
             "currentValue": 0,
             "targetValue": 0
@@ -288,6 +307,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -302,6 +322,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/29/2025, 1:40:08 AM",
+            "earnedAge": "7 months, 1 week, 1 day, 5 hours, 48 mins",
             "timestamp": 1759110008000,
             "currentValue": 0,
             "targetValue": "11"
@@ -316,6 +337,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -330,6 +352,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -344,6 +367,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -358,6 +382,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/17/2025, 11:00:05 PM",
+            "earnedAge": "10 months, 3 weeks, 8 hours, 28 mins",
             "timestamp": 1750201205000,
             "currentValue": 0,
             "targetValue": 0
@@ -372,6 +397,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "7/26/2025, 1:07:42 AM",
+            "earnedAge": "9 months, 1 week, 6 days, 6 hours, 20 mins",
             "timestamp": 1753492062000,
             "currentValue": 0,
             "targetValue": 0
@@ -386,6 +412,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -400,6 +427,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "6"
@@ -414,6 +442,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "8"
@@ -428,6 +457,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "7"
@@ -442,6 +472,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "3"
@@ -456,6 +487,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "88",
             "targetValue": "150"
@@ -470,6 +502,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "45",
             "targetValue": "300"
@@ -484,6 +517,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/26/2025, 4:46:15 AM",
+            "earnedAge": "7 months, 1 week, 4 days, 2 hours, 42 mins",
             "timestamp": 1758861975000,
             "currentValue": 0,
             "targetValue": "350"
@@ -498,6 +532,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "53338",
             "targetValue": "100000"
@@ -512,6 +547,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/28/2025, 9:22:31 PM",
+            "earnedAge": "7 months, 1 week, 1 day, 10 hours, 5 mins",
             "timestamp": 1759094551000,
             "currentValue": 0,
             "targetValue": "50"
@@ -526,6 +562,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "95",
             "targetValue": "150"
@@ -540,6 +577,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "2",
             "targetValue": "150"
@@ -554,6 +592,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/28/2025, 11:12:14 PM",
+            "earnedAge": "7 months, 1 week, 1 day, 8 hours, 16 mins",
             "timestamp": 1759101134000,
             "currentValue": 0,
             "targetValue": "20"
@@ -568,6 +607,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "8",
             "targetValue": "50"
@@ -582,6 +622,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -596,6 +637,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/17/2025, 11:14:23 PM",
+            "earnedAge": "10 months, 3 weeks, 8 hours, 14 mins",
             "timestamp": 1750202063000,
             "currentValue": 0,
             "targetValue": "20"
@@ -610,6 +652,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -624,6 +667,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/28/2025, 9:48:38 PM",
+            "earnedAge": "7 months, 1 week, 1 day, 9 hours, 39 mins",
             "timestamp": 1759096118000,
             "currentValue": 0,
             "targetValue": "50"
@@ -638,6 +682,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/29/2025, 12:55:33 AM",
+            "earnedAge": "7 months, 1 week, 1 day, 6 hours, 32 mins",
             "timestamp": 1759107333000,
             "currentValue": 0,
             "targetValue": "250"
@@ -652,6 +697,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/26/2025, 5:02:16 AM",
+            "earnedAge": "7 months, 1 week, 4 days, 2 hours, 26 mins",
             "timestamp": 1758862936000,
             "currentValue": 0,
             "targetValue": "50"
@@ -666,6 +712,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "78",
             "targetValue": "100"
@@ -680,6 +727,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "27",
             "targetValue": "50"
@@ -694,6 +742,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "34",
             "targetValue": "35"
@@ -708,6 +757,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "32",
             "targetValue": "35"
@@ -722,6 +772,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "20",
             "targetValue": "22"
@@ -736,6 +787,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "20",
             "targetValue": "21"
@@ -750,6 +802,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "19",
             "targetValue": "21"
@@ -764,6 +817,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -778,6 +832,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/16/2025, 5:46:57 AM",
+            "earnedAge": "10 months, 3 weeks, 2 days, 1 hour, 41 mins",
             "timestamp": 1750052817000,
             "currentValue": 0,
             "targetValue": 0
@@ -792,6 +847,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/17/2025, 10:29:28 PM",
+            "earnedAge": "10 months, 3 weeks, 8 hours, 58 mins",
             "timestamp": 1750199368000,
             "currentValue": 0,
             "targetValue": 0
@@ -806,6 +862,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/17/2025, 11:37:37 PM",
+            "earnedAge": "10 months, 3 weeks, 7 hours, 50 mins",
             "timestamp": 1750203457000,
             "currentValue": 0,
             "targetValue": 0
@@ -820,6 +877,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -834,6 +892,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -848,6 +907,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -862,6 +922,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -876,6 +937,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -890,6 +952,7 @@
             "groupName": "Lights, Camera, ACHTUNG!",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "5"
@@ -904,6 +967,7 @@
             "groupName": "Lights, Camera, ACHTUNG!",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -918,6 +982,7 @@
             "groupName": "Lights, Camera, ACHTUNG!",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "250"
@@ -932,6 +997,7 @@
             "groupName": "Lights, Camera, ACHTUNG!",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -946,6 +1012,7 @@
             "groupName": "Lights, Camera, ACHTUNG!",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -960,6 +1027,7 @@
             "groupName": "Lights, Camera, ACHTUNG!",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -974,6 +1042,7 @@
             "groupName": "Lights, Camera, ACHTUNG!",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "2"
@@ -988,6 +1057,7 @@
             "groupName": "Lights, Camera, ACHTUNG!",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1002,6 +1072,7 @@
             "groupName": "Vercors Vendetta",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1016,6 +1087,7 @@
             "groupName": "Vercors Vendetta",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1030,6 +1102,7 @@
             "groupName": "Vercors Vendetta",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1044,6 +1117,7 @@
             "groupName": "Striking Range",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1058,6 +1132,7 @@
             "groupName": "Striking Range",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1072,6 +1147,7 @@
             "groupName": "Striking Range",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1086,6 +1162,7 @@
             "groupName": "Mud and Thunder",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1100,6 +1177,7 @@
             "groupName": "Mud and Thunder",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1114,6 +1192,7 @@
             "groupName": "Mud and Thunder",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1127,80 +1206,90 @@
           "name": "Vive La Résistance",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/1e11ac32-3048-415c-8d47-fcec2230463a.png",
           "timestamp": 1759111272000,
-          "date": "9/29/2025, 2:01:12 AM"
+          "date": "9/29/2025, 2:01:12 AM",
+          "age": "7 months, 1 week, 1 day, 5 hours, 27 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
           "name": "Whatever it Takes",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/26115f96-aeab-40c1-aa38-a9173be1e236.png",
           "timestamp": 1759110804000,
-          "date": "9/29/2025, 1:53:24 AM"
+          "date": "9/29/2025, 1:53:24 AM",
+          "age": "7 months, 1 week, 1 day, 5 hours, 35 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
           "name": "Full English",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/b678831c-f34e-48b7-82a6-9faf8dc91683.png",
           "timestamp": 1759110008000,
-          "date": "9/29/2025, 1:40:08 AM"
+          "date": "9/29/2025, 1:40:08 AM",
+          "age": "7 months, 1 week, 1 day, 5 hours, 48 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
           "name": "Le Fantome",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/e37e2a78-29d1-44d2-b068-fff76935d6c9.png",
           "timestamp": 1759107333000,
-          "date": "9/29/2025, 12:55:33 AM"
+          "date": "9/29/2025, 12:55:33 AM",
+          "age": "7 months, 1 week, 1 day, 6 hours, 32 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
           "name": "Grapes of Wrath",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/d68ca53b-2500-4e29-b7a5-09d05bf4c419.png",
           "timestamp": 1759102193000,
-          "date": "9/28/2025, 11:29:53 PM"
+          "date": "9/28/2025, 11:29:53 PM",
+          "age": "7 months, 1 week, 1 day, 7 hours, 58 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
           "name": "Set to Blow",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/ff3344b1-c770-4a46-a526-129366cc949a.png",
           "timestamp": 1759101134000,
-          "date": "9/28/2025, 11:12:14 PM"
+          "date": "9/28/2025, 11:12:14 PM",
+          "age": "7 months, 1 week, 1 day, 8 hours, 16 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
           "name": "Finders Keepers",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85db4010-19fb-4ef9-9fba-316fb083a533.png",
           "timestamp": 1759096118000,
-          "date": "9/28/2025, 9:48:38 PM"
+          "date": "9/28/2025, 9:48:38 PM",
+          "age": "7 months, 1 week, 1 day, 9 hours, 39 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
           "name": "Blaze of Gory",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/d8c4859d-8c4d-490a-857d-e04d30278cdf.png",
           "timestamp": 1759094551000,
-          "date": "9/28/2025, 9:22:31 PM"
+          "date": "9/28/2025, 9:22:31 PM",
+          "age": "7 months, 1 week, 1 day, 10 hours, 5 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
           "name": "Silent but Deadly",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/a64d24cd-2dd1-4266-9192-8996099df5fc.png",
           "timestamp": 1758862936000,
-          "date": "9/26/2025, 5:02:16 AM"
+          "date": "9/26/2025, 5:02:16 AM",
+          "age": "7 months, 1 week, 4 days, 2 hours, 26 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
           "name": "Sharpshooter",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/a5e508a9-e57c-45d7-b106-3a47cbb4da82.png",
           "timestamp": 1758861975000,
-          "date": "9/26/2025, 4:46:15 AM"
+          "date": "9/26/2025, 4:46:15 AM",
+          "age": "7 months, 1 week, 4 days, 2 hours, 42 mins"
         }
       ],
-      "lastUpdated": "5/5/2026, 12:12:50 AM"
+      "lastUpdated": "5/5/2026, 7:28:24 AM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
       "accountId": "2732733730346312494",
       "online": false,
       "currentGame": "Dashboard",
-      "currentGameArt": null,
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png",
       "currentGameActivity": null,
       "amazonAffiliateUrl": null,
       "currentCommunicationId": null,
@@ -1222,6 +1311,8 @@
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
       "bio": "exo-ONELIVIDMANKDFC3",
       "psnAccountAge": "9 years, 4 months",
+      "earliestTrophyDate": "2016-12-30T18:40:30.000Z",
+      "latestTrophyDate": 1777938161000,
       "plus": true,
       "level": 202,
       "region": "US",
@@ -1238,7 +1329,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png",
           "progress": 60,
           "ratio": "6/10",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Mahjong+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Mahjong&tag=psngaming-20",
           "npCommunicationId": "NPWR28141_00",
           "lastPlayed": "2026-05-04T23:42:41Z"
         },
@@ -1247,7 +1338,7 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/88AFFFD0B28B703B28CA71F6353F797230B9FB32.PNG",
           "progress": 35,
           "ratio": "39/115",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=theHunter%3A%20Call%20of%20the%20Wild+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=theHunter%3A%20Call%20of%20the%20Wild&tag=psngaming-20",
           "npCommunicationId": "NPWR13211_00",
           "lastPlayed": "2026-04-22T23:42:00Z"
         },
@@ -1256,7 +1347,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
           "progress": 0,
           "ratio": "0/71",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%3A%20Resistance+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%3A%20Resistance&tag=psngaming-20",
           "npCommunicationId": "NPWR40813_00",
           "lastPlayed": "2026-04-14T10:55:49Z"
         },
@@ -1265,7 +1356,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
           "progress": 100,
           "ratio": "46/46",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
           "npCommunicationId": "NPWR44827_00",
           "lastPlayed": "2026-04-14T10:48:47Z"
         },
@@ -1274,7 +1365,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR23165_00/dae2fb95-5224-40a6-bd64-b9c4b1e826f6.png",
           "progress": 18,
           "ratio": "10/46",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2022+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2022&tag=psngaming-20",
           "npCommunicationId": "NPWR23165_00",
           "lastPlayed": "2026-04-04T02:01:34Z"
         },
@@ -1283,14 +1374,20 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22432_00/cbdac3c7-fa16-4556-81f0-a93c788c0cf8.png",
           "progress": 10,
           "ratio": "7/51",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=SKULL%20AND%20BONES+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=SKULL%20AND%20BONES&tag=psngaming-20",
           "npCommunicationId": "NPWR22432_00",
           "lastPlayed": "2026-04-03T21:23:10Z"
         }
       ],
       "activeHunt": {
         "title": "Mahjong",
-        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Mahjong+Playstation+5&tag=psngaming-20",
+        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Mahjong&tag=psngaming-20",
+        "velocity": {
+          "firstEarned": "4/27/2026, 4:12:14 PM",
+          "huntingDuration": "8 days",
+          "hunterPersona": "Dead Set Hunter",
+          "completionStatus": "6/10"
+        },
         "groups": [
           {
             "name": "Mahjong",
@@ -1309,6 +1406,7 @@
             "groupName": "Mahjong",
             "earned": true,
             "earnedDate": "4/27/2026, 4:12:14 PM",
+            "earnedAge": "1 week, 15 hours, 16 mins",
             "timestamp": 1777306334000,
             "currentValue": 0,
             "targetValue": 0
@@ -1323,6 +1421,7 @@
             "groupName": "Mahjong",
             "earned": true,
             "earnedDate": "4/27/2026, 6:01:07 PM",
+            "earnedAge": "1 week, 13 hours, 27 mins",
             "timestamp": 1777312867000,
             "currentValue": 0,
             "targetValue": 0
@@ -1337,6 +1436,7 @@
             "groupName": "Mahjong",
             "earned": true,
             "earnedDate": "4/27/2026, 9:59:06 PM",
+            "earnedAge": "1 week, 9 hours, 29 mins",
             "timestamp": 1777327146000,
             "currentValue": 0,
             "targetValue": 0
@@ -1351,6 +1451,7 @@
             "groupName": "Mahjong",
             "earned": true,
             "earnedDate": "5/3/2026, 4:04:14 AM",
+            "earnedAge": "2 days, 3 hours, 24 mins",
             "timestamp": 1777781054000,
             "currentValue": 0,
             "targetValue": 0
@@ -1365,6 +1466,7 @@
             "groupName": "Mahjong",
             "earned": true,
             "earnedDate": "5/3/2026, 7:21:13 AM",
+            "earnedAge": "2 days, 7 mins",
             "timestamp": 1777792873000,
             "currentValue": 0,
             "targetValue": 0
@@ -1379,6 +1481,7 @@
             "groupName": "Mahjong",
             "earned": true,
             "earnedDate": "5/4/2026, 11:42:41 PM",
+            "earnedAge": "7 hours, 45 mins",
             "timestamp": 1777938161000,
             "currentValue": 0,
             "targetValue": 0
@@ -1393,6 +1496,7 @@
             "groupName": "Mahjong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1407,6 +1511,7 @@
             "groupName": "Mahjong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1421,6 +1526,7 @@
             "groupName": "Mahjong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1435,6 +1541,7 @@
             "groupName": "Mahjong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1448,52 +1555,58 @@
           "name": "CLEAR 30 LEVELS",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6fd426e8-81b3-4b7d-990f-31583f266bf4.png",
           "timestamp": 1777938161000,
-          "date": "5/4/2026, 11:42:41 PM"
+          "date": "5/4/2026, 11:42:41 PM",
+          "age": "7 hours, 45 mins"
         },
         {
           "game": "Mahjong",
           "name": "CLEAR 20 LEVELS",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/5c335c31-75f7-4194-8867-163a13a15071.png",
           "timestamp": 1777792873000,
-          "date": "5/3/2026, 7:21:13 AM"
+          "date": "5/3/2026, 7:21:13 AM",
+          "age": "2 days, 7 mins"
         },
         {
           "game": "Mahjong",
           "name": "CLEAR 15 LEVELS",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/e7c05277-96df-4133-b044-d1d76f07f861.png",
           "timestamp": 1777781054000,
-          "date": "5/3/2026, 4:04:14 AM"
+          "date": "5/3/2026, 4:04:14 AM",
+          "age": "2 days, 3 hours, 24 mins"
         },
         {
           "game": "Mahjong",
           "name": "CLEAR 10 LEVELS",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/c4cc9e52-45e4-41bd-97a3-d1c270ee71e9.png",
           "timestamp": 1777327146000,
-          "date": "4/27/2026, 9:59:06 PM"
+          "date": "4/27/2026, 9:59:06 PM",
+          "age": "1 week, 9 hours, 29 mins"
         },
         {
           "game": "Mahjong",
           "name": "CLEAR 5 LEVELS",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/a2b6cd81-f3d0-4a2b-b580-b706b875dd2f.png",
           "timestamp": 1777312867000,
-          "date": "4/27/2026, 6:01:07 PM"
+          "date": "4/27/2026, 6:01:07 PM",
+          "age": "1 week, 13 hours, 27 mins"
         },
         {
           "game": "Mahjong",
           "name": "CLEAR 1 LEVEL",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6a3ac782-b027-4a9c-9b2e-47f6ca3a8759.png",
           "timestamp": 1777306334000,
-          "date": "4/27/2026, 4:12:14 PM"
+          "date": "4/27/2026, 4:12:14 PM",
+          "age": "1 week, 15 hours, 16 mins"
         }
       ],
-      "lastUpdated": "5/5/2026, 12:12:52 AM"
+      "lastUpdated": "5/5/2026, 7:28:25 AM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
       "accountId": "4398462806362115916",
       "online": false,
       "currentGame": "Dashboard",
-      "currentGameArt": null,
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
       "currentGameActivity": null,
       "amazonAffiliateUrl": null,
       "currentCommunicationId": null,
@@ -1515,6 +1628,8 @@
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
       "bio": "Official Pack Member Profile",
       "psnAccountAge": "4 months",
+      "earliestTrophyDate": "2025-12-22T11:15:30.000Z",
+      "latestTrophyDate": 1777794142000,
       "plus": true,
       "level": 60,
       "region": "US",
@@ -1531,16 +1646,16 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
           "progress": 32,
           "ratio": "35/90",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Wo%20Long%3A%20Fallen%20Dynasty+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Wo%20Long%3A%20Fallen%20Dynasty&tag=psngaming-20",
           "npCommunicationId": "NPWR27198_00",
-          "lastPlayed": "2026-05-03T07:59:38Z"
+          "lastPlayed": "2026-05-05T07:07:11Z"
         },
         {
           "name": "Assassin's Creed® II",
           "art": "https://image.api.playstation.com/trophy/np/NPWR11435_00_00025CC40B8D85858575298BAA090D80E9E134D207/987B37AA2202ABB7055B12AD6E63A95EC077D01E.PNG",
           "progress": 30,
           "ratio": "15/51",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Assassin's%20Creed%20II+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Assassin's%20Creed%20II&tag=psngaming-20",
           "npCommunicationId": "NPWR11435_00",
           "lastPlayed": "2026-04-05T03:31:01Z"
         },
@@ -1549,7 +1664,7 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR15386_00_0064D75EBEAF65A7023B745B7AD7E2BA9558E1BDA4/4E0DB86EC39C09F26B69F290639B1A4A789AA053.PNG",
           "progress": 1,
           "ratio": "1/55",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Assassin's%20Creed%20III%20Remastered+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Assassin's%20Creed%20III%20Remastered&tag=psngaming-20",
           "npCommunicationId": "NPWR15386_00",
           "lastPlayed": "2026-04-04T06:34:39Z"
         },
@@ -1558,7 +1673,7 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR16633_00_00A31AE68788AAB69A7FFED0B33EA1D4785CF4A065/D5DC222FB18539383BA022A52E993EB0CDF05920.PNG",
           "progress": 0,
           "ratio": "0/31",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Assassin's%20Creed%20Liberation%20Remastered+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Assassin's%20Creed%20Liberation%20Remastered&tag=psngaming-20",
           "npCommunicationId": "NPWR16633_00",
           "lastPlayed": "2026-04-04T06:17:20Z"
         },
@@ -1567,7 +1682,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
           "progress": 27,
           "ratio": "16/46",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
           "npCommunicationId": "NPWR44827_00",
           "lastPlayed": "2026-03-29T16:42:32Z"
         },
@@ -1576,14 +1691,20 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40778_00/25fdbc26-029b-4394-b276-3487ff4bcc2f.png",
           "progress": 76,
           "ratio": "24/37",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Undisputed+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Undisputed&tag=psngaming-20",
           "npCommunicationId": "NPWR40778_00",
           "lastPlayed": "2026-03-23T08:11:59Z"
         }
       ],
       "activeHunt": {
         "title": "Wo Long: Fallen Dynasty",
-        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Wo%20Long%3A%20Fallen%20Dynasty+Playstation+5&tag=psngaming-20",
+        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Wo%20Long%3A%20Fallen%20Dynasty&tag=psngaming-20",
+        "velocity": {
+          "firstEarned": "4/10/2026, 8:50:40 AM",
+          "huntingDuration": "23 days",
+          "hunterPersona": "Steady Hunter",
+          "completionStatus": "35/90"
+        },
         "groups": [
           {
             "name": "Wo Long: Fallen Dynasty",
@@ -1617,6 +1738,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1631,6 +1753,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/12/2026, 7:10:32 AM",
+            "earnedAge": "3 weeks, 2 days, 17 mins",
             "timestamp": 1775977832000,
             "currentValue": 0,
             "targetValue": "15"
@@ -1645,6 +1768,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/28/2026, 6:41:20 AM",
+            "earnedAge": "1 week, 47 mins",
             "timestamp": 1777358480000,
             "currentValue": 0,
             "targetValue": "80"
@@ -1659,6 +1783,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/11/2026, 5:36:47 AM",
+            "earnedAge": "3 weeks, 3 days, 1 hour, 51 mins",
             "timestamp": 1775885807000,
             "currentValue": 0,
             "targetValue": 0
@@ -1673,6 +1798,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/12/2026, 6:31:58 AM",
+            "earnedAge": "3 weeks, 2 days, 56 mins",
             "timestamp": 1775975518000,
             "currentValue": 0,
             "targetValue": 0
@@ -1687,6 +1813,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/14/2026, 5:48:30 AM",
+            "earnedAge": "3 weeks, 1 hour, 39 mins",
             "timestamp": 1776145710000,
             "currentValue": 0,
             "targetValue": 0
@@ -1701,6 +1828,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/18/2026, 6:15:33 AM",
+            "earnedAge": "2 weeks, 3 days, 1 hour, 12 mins",
             "timestamp": 1776492933000,
             "currentValue": 0,
             "targetValue": 0
@@ -1715,6 +1843,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/20/2026, 12:21:04 AM",
+            "earnedAge": "2 weeks, 1 day, 7 hours, 7 mins",
             "timestamp": 1776644464000,
             "currentValue": 0,
             "targetValue": 0
@@ -1729,6 +1858,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/21/2026, 5:33:36 AM",
+            "earnedAge": "2 weeks, 1 hour, 54 mins",
             "timestamp": 1776749616000,
             "currentValue": 0,
             "targetValue": 0
@@ -1743,6 +1873,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/24/2026, 1:08:54 AM",
+            "earnedAge": "1 week, 4 days, 6 hours, 19 mins",
             "timestamp": 1776992934000,
             "currentValue": 0,
             "targetValue": 0
@@ -1757,6 +1888,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/25/2026, 2:33:05 AM",
+            "earnedAge": "1 week, 3 days, 4 hours, 55 mins",
             "timestamp": 1777084385000,
             "currentValue": 0,
             "targetValue": 0
@@ -1771,6 +1903,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/25/2026, 4:12:56 AM",
+            "earnedAge": "1 week, 3 days, 3 hours, 15 mins",
             "timestamp": 1777090376000,
             "currentValue": 0,
             "targetValue": 0
@@ -1785,6 +1918,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/25/2026, 5:45:52 AM",
+            "earnedAge": "1 week, 3 days, 1 hour, 42 mins",
             "timestamp": 1777095952000,
             "currentValue": 0,
             "targetValue": 0
@@ -1799,6 +1933,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/25/2026, 7:59:56 AM",
+            "earnedAge": "1 week, 2 days, 23 hours, 28 mins",
             "timestamp": 1777103996000,
             "currentValue": 0,
             "targetValue": 0
@@ -1813,6 +1948,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/26/2026, 6:36:36 AM",
+            "earnedAge": "1 week, 2 days, 51 mins",
             "timestamp": 1777185396000,
             "currentValue": 0,
             "targetValue": 0
@@ -1827,6 +1963,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/28/2026, 6:56:02 AM",
+            "earnedAge": "1 week, 32 mins",
             "timestamp": 1777359362000,
             "currentValue": 0,
             "targetValue": 0
@@ -1841,6 +1978,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "5/3/2026, 6:50:50 AM",
+            "earnedAge": "2 days, 37 mins",
             "timestamp": 1777791050000,
             "currentValue": 0,
             "targetValue": 0
@@ -1855,6 +1993,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "5/3/2026, 7:42:22 AM",
+            "earnedAge": "1 day, 23 hours, 46 mins",
             "timestamp": 1777794142000,
             "currentValue": 0,
             "targetValue": 0
@@ -1869,6 +2008,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1883,6 +2023,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1897,6 +2038,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "15"
@@ -1911,6 +2053,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "14",
             "targetValue": "46"
@@ -1925,6 +2068,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/12/2026, 6:40:42 AM",
+            "earnedAge": "3 weeks, 2 days, 47 mins",
             "timestamp": 1775976042000,
             "currentValue": 0,
             "targetValue": 0
@@ -1939,6 +2083,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "7",
             "targetValue": "9"
@@ -1953,6 +2098,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "7",
             "targetValue": "9"
@@ -1967,6 +2113,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/20/2026, 12:35:33 AM",
+            "earnedAge": "2 weeks, 1 day, 6 hours, 52 mins",
             "timestamp": 1776645333000,
             "currentValue": 0,
             "targetValue": 0
@@ -1981,6 +2128,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -1995,6 +2143,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/10/2026, 9:34:39 AM",
+            "earnedAge": "3 weeks, 3 days, 21 hours, 53 mins",
             "timestamp": 1775813679000,
             "currentValue": 0,
             "targetValue": 0
@@ -2009,6 +2158,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "50",
             "targetValue": "70"
@@ -2023,6 +2173,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/14/2026, 5:11:49 AM",
+            "earnedAge": "3 weeks, 2 hours, 16 mins",
             "timestamp": 1776143509000,
             "currentValue": 0,
             "targetValue": 0
@@ -2037,6 +2188,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/11/2026, 5:32:50 AM",
+            "earnedAge": "3 weeks, 3 days, 1 hour, 55 mins",
             "timestamp": 1775885570000,
             "currentValue": 0,
             "targetValue": 0
@@ -2051,6 +2203,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/19/2026, 11:07:08 PM",
+            "earnedAge": "2 weeks, 1 day, 8 hours, 21 mins",
             "timestamp": 1776640028000,
             "currentValue": 0,
             "targetValue": 0
@@ -2065,6 +2218,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "12",
             "targetValue": "17"
@@ -2079,6 +2233,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/23/2026, 5:36:12 AM",
+            "earnedAge": "1 week, 5 days, 1 hour, 52 mins",
             "timestamp": 1776922572000,
             "currentValue": 0,
             "targetValue": 0
@@ -2093,6 +2248,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "22"
@@ -2107,6 +2263,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "20",
             "targetValue": "31"
@@ -2121,6 +2278,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/10/2026, 8:50:40 AM",
+            "earnedAge": "3 weeks, 3 days, 22 hours, 37 mins",
             "timestamp": 1775811040000,
             "currentValue": 0,
             "targetValue": 0
@@ -2135,8 +2293,9 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "90",
+            "currentValue": "91",
             "targetValue": "145"
           },
           {
@@ -2149,6 +2308,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/23/2026, 5:36:33 AM",
+            "earnedAge": "1 week, 5 days, 1 hour, 51 mins",
             "timestamp": 1776922593000,
             "currentValue": 0,
             "targetValue": 0
@@ -2163,6 +2323,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "9",
             "targetValue": "23"
@@ -2177,6 +2338,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/10/2026, 10:09:22 AM",
+            "earnedAge": "3 weeks, 3 days, 21 hours, 19 mins",
             "timestamp": 1775815762000,
             "currentValue": 0,
             "targetValue": "10"
@@ -2191,6 +2353,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/12/2026, 7:03:11 AM",
+            "earnedAge": "3 weeks, 2 days, 25 mins",
             "timestamp": 1775977391000,
             "currentValue": 0,
             "targetValue": "50"
@@ -2205,6 +2368,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/30/2026, 1:58:25 AM",
+            "earnedAge": "5 days, 5 hours, 30 mins",
             "timestamp": 1777514305000,
             "currentValue": 0,
             "targetValue": "10"
@@ -2219,6 +2383,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "9",
             "targetValue": "10"
@@ -2233,6 +2398,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/12/2026, 4:54:09 AM",
+            "earnedAge": "3 weeks, 2 days, 2 hours, 34 mins",
             "timestamp": 1775969649000,
             "currentValue": 0,
             "targetValue": "10"
@@ -2247,6 +2413,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/19/2026, 11:36:40 PM",
+            "earnedAge": "2 weeks, 1 day, 7 hours, 51 mins",
             "timestamp": 1776641800000,
             "currentValue": 0,
             "targetValue": "10"
@@ -2261,6 +2428,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/24/2026, 1:47:15 AM",
+            "earnedAge": "1 week, 4 days, 5 hours, 41 mins",
             "timestamp": 1776995235000,
             "currentValue": 0,
             "targetValue": 0
@@ -2275,6 +2443,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/14/2026, 5:35:05 AM",
+            "earnedAge": "3 weeks, 1 hour, 53 mins",
             "timestamp": 1776144905000,
             "currentValue": 0,
             "targetValue": 0
@@ -2289,6 +2458,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/20/2026, 1:41:16 AM",
+            "earnedAge": "2 weeks, 1 day, 5 hours, 47 mins",
             "timestamp": 1776649276000,
             "currentValue": 0,
             "targetValue": 0
@@ -2303,6 +2473,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/21/2026, 5:49:18 AM",
+            "earnedAge": "2 weeks, 1 hour, 39 mins",
             "timestamp": 1776750558000,
             "currentValue": 0,
             "targetValue": 0
@@ -2317,6 +2488,7 @@
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "20"
@@ -2331,6 +2503,7 @@
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2345,6 +2518,7 @@
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2359,6 +2533,7 @@
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2373,6 +2548,7 @@
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2387,6 +2563,7 @@
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2401,6 +2578,7 @@
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "5"
@@ -2415,6 +2593,7 @@
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "10"
@@ -2429,6 +2608,7 @@
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "23"
@@ -2443,6 +2623,7 @@
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "100"
@@ -2457,6 +2638,7 @@
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2471,6 +2653,7 @@
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "2"
@@ -2485,6 +2668,7 @@
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "5"
@@ -2499,6 +2683,7 @@
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2513,6 +2698,7 @@
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2527,6 +2713,7 @@
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2541,6 +2728,7 @@
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2555,6 +2743,7 @@
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2569,6 +2758,7 @@
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2583,6 +2773,7 @@
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "10"
@@ -2597,6 +2788,7 @@
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "29"
@@ -2611,6 +2803,7 @@
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "100"
@@ -2625,6 +2818,7 @@
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2639,6 +2833,7 @@
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "2"
@@ -2653,6 +2848,7 @@
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "7"
@@ -2667,6 +2863,7 @@
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2681,6 +2878,7 @@
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "5"
@@ -2695,6 +2893,7 @@
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2709,6 +2908,7 @@
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2723,6 +2923,7 @@
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2737,6 +2938,7 @@
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2751,6 +2953,7 @@
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2765,6 +2968,7 @@
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "12"
@@ -2779,6 +2983,7 @@
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "29"
@@ -2793,6 +2998,7 @@
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "100"
@@ -2807,6 +3013,7 @@
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2821,6 +3028,7 @@
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "4"
@@ -2835,6 +3043,7 @@
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "8"
@@ -2849,6 +3058,7 @@
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2863,6 +3073,7 @@
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -2876,80 +3087,90 @@
           "name": "Dreams of Unity",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/7c66dca1-5c3e-489f-8c19-4a01a9d05647.png",
           "timestamp": 1777794142000,
-          "date": "5/3/2026, 7:42:22 AM"
+          "date": "5/3/2026, 7:42:22 AM",
+          "age": "1 day, 23 hours, 46 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
           "name": "Aspiration and Amity",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/cb75ea2c-742e-441a-b6de-c08295951c00.png",
           "timestamp": 1777791050000,
-          "date": "5/3/2026, 6:50:50 AM"
+          "date": "5/3/2026, 6:50:50 AM",
+          "age": "2 days, 37 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
           "name": "Side by Side",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/896a0fdd-2c92-4638-ac57-8a433d47b8ef.png",
           "timestamp": 1777514305000,
-          "date": "4/30/2026, 1:58:25 AM"
+          "date": "4/30/2026, 1:58:25 AM",
+          "age": "5 days, 5 hours, 30 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
           "name": "Entrusted Legacy",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/b0d77653-a00b-4b55-9e6e-655b342d17c7.png",
           "timestamp": 1777359362000,
-          "date": "4/28/2026, 6:56:02 AM"
+          "date": "4/28/2026, 6:56:02 AM",
+          "age": "1 week, 32 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
           "name": "Only at Eighty Did I Finally Return",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/4c440d91-d918-424a-b96a-359289ad59c4.png",
           "timestamp": 1777358480000,
-          "date": "4/28/2026, 6:41:20 AM"
+          "date": "4/28/2026, 6:41:20 AM",
+          "age": "1 week, 47 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
           "name": "Fearless Warrior",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/e73816ff-7bbf-4a9f-b417-fd67503bd76f.png",
           "timestamp": 1777185396000,
-          "date": "4/26/2026, 6:36:36 AM"
+          "date": "4/26/2026, 6:36:36 AM",
+          "age": "1 week, 2 days, 51 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
           "name": "The Steadfast Duo",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/739dae23-943c-4c95-b97b-112041f92a24.png",
           "timestamp": 1777103996000,
-          "date": "4/25/2026, 7:59:56 AM"
+          "date": "4/25/2026, 7:59:56 AM",
+          "age": "1 week, 2 days, 23 hours, 28 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
           "name": "Familial Ties",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/17629b2b-be26-4b15-89f6-905f46541fd2.png",
           "timestamp": 1777095952000,
-          "date": "4/25/2026, 5:45:52 AM"
+          "date": "4/25/2026, 5:45:52 AM",
+          "age": "1 week, 3 days, 1 hour, 42 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
           "name": "Succession",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/21ff78f2-fc59-44f4-9d00-13de6a13aa79.png",
           "timestamp": 1777090376000,
-          "date": "4/25/2026, 4:12:56 AM"
+          "date": "4/25/2026, 4:12:56 AM",
+          "age": "1 week, 3 days, 3 hours, 15 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
           "name": "Guidance of the Constellations",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/5cfa4099-e564-4dcc-8f5e-d284f76f179a.png",
           "timestamp": 1777084385000,
-          "date": "4/25/2026, 2:33:05 AM"
+          "date": "4/25/2026, 2:33:05 AM",
+          "age": "1 week, 3 days, 4 hours, 55 mins"
         }
       ],
-      "lastUpdated": "5/5/2026, 12:12:54 AM"
+      "lastUpdated": "5/5/2026, 7:28:26 AM"
     },
     "marc": {
       "onlineId": "ElucidatorVah",
       "accountId": "6551906246515882523",
       "online": false,
       "currentGame": "Dashboard",
-      "currentGameArt": null,
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
       "currentGameActivity": null,
       "amazonAffiliateUrl": null,
       "currentCommunicationId": null,
@@ -2958,6 +3179,8 @@
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_A/A2073_s.png",
       "bio": "Why are you looking here im a boring person with no irl friends.... Life is great",
       "psnAccountAge": "3 years, 8 months",
+      "earliestTrophyDate": "2022-08-31T19:43:50.000Z",
+      "latestTrophyDate": 1777966108035,
       "plus": true,
       "level": 188,
       "region": "US",
@@ -2974,7 +3197,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
           "progress": 0,
           "ratio": "0/45",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Where%20Winds%20Meet+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Where%20Winds%20Meet&tag=psngaming-20",
           "npCommunicationId": "NPWR50887_00",
           "lastPlayed": "2026-05-04T17:47:48Z"
         },
@@ -2983,7 +3206,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51218_00/0ca364c4-8c31-4e6d-b058-ced0b4c94332.png",
           "progress": 0,
           "ratio": "0/36",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Neverness%20to%20Everness+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Neverness%20to%20Everness&tag=psngaming-20",
           "npCommunicationId": "NPWR51218_00",
           "lastPlayed": "2026-05-03T13:37:23Z"
         },
@@ -2992,7 +3215,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/e335ed72-da8e-4eb0-81a4-59a87e79b874.png",
           "progress": 23,
           "ratio": "5/13",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Crossout+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Crossout&tag=psngaming-20",
           "npCommunicationId": "NPWR24327_00",
           "lastPlayed": "2026-05-03T12:13:19Z"
         },
@@ -3001,7 +3224,7 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
           "progress": 14,
           "ratio": "12/58",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands&tag=psngaming-20",
           "npCommunicationId": "NPWR09395_00",
           "lastPlayed": "2026-05-01T01:12:15Z"
         },
@@ -3010,7 +3233,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28127_00/55ea858b-c481-4450-bc51-b7df862a4f31.png",
           "progress": 25,
           "ratio": "13/52",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=SWORD%20ART%20ONLINE%20Fractured%20Daydream+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=SWORD%20ART%20ONLINE%20Fractured%20Daydream&tag=psngaming-20",
           "npCommunicationId": "NPWR28127_00",
           "lastPlayed": "2026-04-18T00:14:26Z"
         },
@@ -3019,14 +3242,20 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24042_00/aba3ff3d-cc81-4d08-b163-5209e0efc12f.png",
           "progress": 48,
           "ratio": "40/92",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Overwatch+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Overwatch&tag=psngaming-20",
           "npCommunicationId": "NPWR24042_00",
           "lastPlayed": "2026-04-17T19:59:48Z"
         }
       ],
       "activeHunt": {
         "title": "Where Winds Meet",
-        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Where%20Winds%20Meet+Playstation+5&tag=psngaming-20",
+        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Where%20Winds%20Meet&tag=psngaming-20",
+        "velocity": {
+          "firstEarned": "Not Started",
+          "huntingDuration": "N/A",
+          "hunterPersona": "Steady Hunter",
+          "completionStatus": "0/45"
+        },
         "groups": [
           {
             "name": "Where Winds Meet",
@@ -3055,6 +3284,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3069,6 +3299,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3083,6 +3314,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3097,6 +3329,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3111,6 +3344,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3125,6 +3359,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3139,6 +3374,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3153,6 +3389,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3167,6 +3404,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3181,6 +3419,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3195,6 +3434,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "150"
@@ -3209,6 +3449,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "250"
@@ -3223,6 +3464,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "40"
@@ -3237,6 +3479,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3251,6 +3494,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3265,6 +3509,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "10"
@@ -3279,6 +3524,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "5"
@@ -3293,6 +3539,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3307,6 +3554,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3321,6 +3569,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3335,6 +3584,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3349,6 +3599,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3363,6 +3614,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3377,6 +3629,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3391,6 +3644,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3405,6 +3659,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3419,6 +3674,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3433,6 +3689,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3447,6 +3704,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3461,6 +3719,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "3"
@@ -3475,6 +3734,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "3"
@@ -3489,6 +3749,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3503,6 +3764,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3517,6 +3779,7 @@
             "groupName": "Where Winds Meet",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "40"
@@ -3531,6 +3794,7 @@
             "groupName": "Hexi",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "20"
@@ -3545,6 +3809,7 @@
             "groupName": "Hexi",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": "0",
             "targetValue": "6"
@@ -3559,6 +3824,7 @@
             "groupName": "Hexi",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3573,6 +3839,7 @@
             "groupName": "Hexi",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3587,6 +3854,7 @@
             "groupName": "Hexi",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3601,6 +3869,7 @@
             "groupName": "Hexi",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3615,6 +3884,7 @@
             "groupName": "Hexi",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3629,6 +3899,7 @@
             "groupName": "Hexi",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3643,6 +3914,7 @@
             "groupName": "Hexi",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3657,6 +3929,7 @@
             "groupName": "Hexi",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3671,6 +3944,7 @@
             "groupName": "Event",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3679,14 +3953,14 @@
         "npCommunicationId": "NPWR50887_00"
       },
       "mostRecentTrophies": [],
-      "lastUpdated": "5/5/2026, 12:12:56 AM"
+      "lastUpdated": "5/5/2026, 7:28:28 AM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
       "accountId": "7524753921019262614",
       "online": false,
       "currentGame": "Dashboard",
-      "currentGameArt": null,
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/7270b75f-f28d-424e-96d1-ae88a5405438.PNG",
       "currentGameActivity": null,
       "amazonAffiliateUrl": null,
       "currentCommunicationId": null,
@@ -3695,6 +3969,8 @@
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0021_s.png",
       "bio": "Official Pack Member Profile",
       "psnAccountAge": "1 years, 5 months",
+      "earliestTrophyDate": "2024-12-01T02:02:19.000Z",
+      "latestTrophyDate": 1775104350000,
       "plus": true,
       "level": 60,
       "region": "US",
@@ -3711,7 +3987,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/7270b75f-f28d-424e-96d1-ae88a5405438.PNG",
           "progress": 11,
           "ratio": "26/135",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Minecraft%3A%20PlayStation5%20Edition+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Minecraft%3A%20PlayStation5%20Edition&tag=psngaming-20",
           "npCommunicationId": "NPWR41319_00",
           "lastPlayed": "2026-04-02T04:32:33Z"
         },
@@ -3720,7 +3996,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50656_00/5886a741-0f5c-4993-9ac0-ab82791fa528.png",
           "progress": 1,
           "ratio": "1/54",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Battlefield%206+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Battlefield%206&tag=psngaming-20",
           "npCommunicationId": "NPWR50656_00",
           "lastPlayed": "2026-02-26T23:27:41Z"
         },
@@ -3729,7 +4005,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
           "progress": 22,
           "ratio": "10/46",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
           "npCommunicationId": "NPWR44827_00",
           "lastPlayed": "2026-02-19T03:08:00Z"
         },
@@ -3738,7 +4014,7 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/88AFFFD0B28B703B28CA71F6353F797230B9FB32.PNG",
           "progress": 24,
           "ratio": "27/115",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=theHunter%3A%20Call%20of%20the%20Wild+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=theHunter%3A%20Call%20of%20the%20Wild&tag=psngaming-20",
           "npCommunicationId": "NPWR13211_00",
           "lastPlayed": "2025-12-02T02:17:44Z"
         },
@@ -3747,7 +4023,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40455_00/b925290d-ba56-4240-8715-55457d78e612.png",
           "progress": 9,
           "ratio": "29/291",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sea%20of%20Thieves+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sea%20of%20Thieves&tag=psngaming-20",
           "npCommunicationId": "NPWR40455_00",
           "lastPlayed": "2025-11-09T02:28:43Z"
         },
@@ -3756,14 +4032,20 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24223_00/4bf6ce0f-4c4c-42a2-b3d0-66c295cbd7aa.png",
           "progress": 5,
           "ratio": "7/158",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Call%20of%20Duty%20Modern%20Warfare%20II+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Call%20of%20Duty%20Modern%20Warfare%20II&tag=psngaming-20",
           "npCommunicationId": "NPWR24223_00",
           "lastPlayed": "2025-10-19T20:00:25Z"
         }
       ],
       "activeHunt": {
         "title": "Minecraft: PlayStation®5 Edition",
-        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Minecraft%3A%20PlayStation5%20Edition+Playstation+5&tag=psngaming-20",
+        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Minecraft%3A%20PlayStation5%20Edition&tag=psngaming-20",
+        "velocity": {
+          "firstEarned": "3/31/2025, 7:46:48 PM",
+          "huntingDuration": "367 days",
+          "hunterPersona": "Casual Pursuit",
+          "completionStatus": "26/135"
+        },
         "groups": [
           {
             "name": "Minecraft: PlayStation®5 Edition",
@@ -3877,6 +4159,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -3891,6 +4174,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "3/31/2025, 7:46:48 PM",
+            "earnedAge": "1 yr, 1 month, 4 days, 11 hours, 41 mins",
             "timestamp": 1743450408000,
             "currentValue": 0,
             "targetValue": 0
@@ -3905,6 +4189,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "3/31/2025, 7:54:54 PM",
+            "earnedAge": "1 yr, 1 month, 4 days, 11 hours, 33 mins",
             "timestamp": 1743450894000,
             "currentValue": 0,
             "targetValue": 0
@@ -3919,6 +4204,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "3/31/2025, 8:13:16 PM",
+            "earnedAge": "1 yr, 1 month, 4 days, 11 hours, 15 mins",
             "timestamp": 1743451996000,
             "currentValue": 0,
             "targetValue": 0
@@ -3933,6 +4219,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "3/31/2025, 8:18:47 PM",
+            "earnedAge": "1 yr, 1 month, 4 days, 11 hours, 9 mins",
             "timestamp": 1743452327000,
             "currentValue": 0,
             "targetValue": 0
@@ -3947,6 +4234,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "3/31/2025, 8:31:49 PM",
+            "earnedAge": "1 yr, 1 month, 4 days, 10 hours, 56 mins",
             "timestamp": 1743453109000,
             "currentValue": 0,
             "targetValue": 0
@@ -3961,6 +4249,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "4/1/2025, 3:20:39 AM",
+            "earnedAge": "1 yr, 1 month, 4 days, 4 hours, 7 mins",
             "timestamp": 1743477639000,
             "currentValue": 0,
             "targetValue": 0
@@ -3975,6 +4264,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "3/31/2025, 9:32:03 PM",
+            "earnedAge": "1 yr, 1 month, 4 days, 9 hours, 56 mins",
             "timestamp": 1743456723000,
             "currentValue": 0,
             "targetValue": 0
@@ -3989,6 +4279,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "4/3/2025, 5:22:44 AM",
+            "earnedAge": "1 yr, 1 month, 2 days, 2 hours, 5 mins",
             "timestamp": 1743657764000,
             "currentValue": 0,
             "targetValue": 0
@@ -4003,6 +4294,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4017,6 +4309,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "3/31/2025, 8:18:47 PM",
+            "earnedAge": "1 yr, 1 month, 4 days, 11 hours, 9 mins",
             "timestamp": 1743452327000,
             "currentValue": 0,
             "targetValue": 0
@@ -4031,6 +4324,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "1/8/2026, 2:15:35 AM",
+            "earnedAge": "3 months, 3 weeks, 6 days, 5 hours, 12 mins",
             "timestamp": 1767838535000,
             "currentValue": 0,
             "targetValue": 0
@@ -4045,6 +4339,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4059,6 +4354,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "3/31/2025, 8:39:46 PM",
+            "earnedAge": "1 yr, 1 month, 4 days, 10 hours, 48 mins",
             "timestamp": 1743453586000,
             "currentValue": 0,
             "targetValue": 0
@@ -4073,6 +4369,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "3/31/2025, 8:13:05 PM",
+            "earnedAge": "1 yr, 1 month, 4 days, 11 hours, 15 mins",
             "timestamp": 1743451985000,
             "currentValue": 0,
             "targetValue": 0
@@ -4087,6 +4384,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "3/31/2025, 8:41:17 PM",
+            "earnedAge": "1 yr, 1 month, 4 days, 10 hours, 47 mins",
             "timestamp": 1743453677000,
             "currentValue": 0,
             "targetValue": 0
@@ -4101,6 +4399,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4115,6 +4414,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4129,6 +4429,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "3/31/2025, 9:32:03 PM",
+            "earnedAge": "1 yr, 1 month, 4 days, 9 hours, 56 mins",
             "timestamp": 1743456723000,
             "currentValue": 0,
             "targetValue": 0
@@ -4143,6 +4444,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4157,6 +4459,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "1/14/2026, 2:14:58 AM",
+            "earnedAge": "3 months, 3 weeks, 5 hours, 13 mins",
             "timestamp": 1768356898000,
             "currentValue": 0,
             "targetValue": 0
@@ -4171,6 +4474,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4185,6 +4489,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "1/7/2026, 2:04:38 AM",
+            "earnedAge": "3 months, 4 weeks, 5 hours, 23 mins",
             "timestamp": 1767751478000,
             "currentValue": 0,
             "targetValue": 0
@@ -4199,6 +4504,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4213,6 +4519,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4227,6 +4534,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4241,6 +4549,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4255,6 +4564,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4269,6 +4579,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4283,6 +4594,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "4/2/2026, 4:32:30 AM",
+            "earnedAge": "1 month, 3 days, 2 hours, 55 mins",
             "timestamp": 1775104350000,
             "currentValue": 0,
             "targetValue": 0
@@ -4297,6 +4609,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4311,6 +4624,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "10/18/2025, 8:39:09 PM",
+            "earnedAge": "6 months, 2 weeks, 4 days, 10 hours, 49 mins",
             "timestamp": 1760819949000,
             "currentValue": 0,
             "targetValue": 0
@@ -4325,6 +4639,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4339,6 +4654,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4353,6 +4669,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "3/31/2025, 8:38:48 PM",
+            "earnedAge": "1 yr, 1 month, 4 days, 10 hours, 49 mins",
             "timestamp": 1743453528000,
             "currentValue": 0,
             "targetValue": 0
@@ -4367,6 +4684,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "1/14/2026, 3:32:22 AM",
+            "earnedAge": "3 months, 3 weeks, 3 hours, 56 mins",
             "timestamp": 1768361542000,
             "currentValue": 0,
             "targetValue": 0
@@ -4381,6 +4699,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4395,6 +4714,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4409,6 +4729,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4423,6 +4744,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "1/14/2026, 10:04:10 PM",
+            "earnedAge": "3 months, 2 weeks, 6 days, 9 hours, 24 mins",
             "timestamp": 1768428250000,
             "currentValue": 0,
             "targetValue": 0
@@ -4437,6 +4759,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4451,6 +4774,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4465,6 +4789,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4479,6 +4804,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4493,6 +4819,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "4/2/2026, 2:53:33 AM",
+            "earnedAge": "1 month, 3 days, 4 hours, 34 mins",
             "timestamp": 1775098413000,
             "currentValue": 0,
             "targetValue": 0
@@ -4507,6 +4834,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4521,6 +4849,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4535,6 +4864,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4549,6 +4879,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": true,
             "earnedDate": "4/3/2025, 5:26:08 AM",
+            "earnedAge": "1 yr, 1 month, 2 days, 2 hours, 2 mins",
             "timestamp": 1743657968000,
             "currentValue": 0,
             "targetValue": 0
@@ -4563,6 +4894,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4577,6 +4909,7 @@
             "groupName": "Minecraft: PlayStation®5 Edition",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4591,6 +4924,7 @@
             "groupName": "Expansion Pack 1",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4605,6 +4939,7 @@
             "groupName": "Expansion Pack 1",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4619,6 +4954,7 @@
             "groupName": "Expansion Pack 1",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4633,6 +4969,7 @@
             "groupName": "Expansion Pack 1",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4647,6 +4984,7 @@
             "groupName": "Expansion Pack 1",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4661,6 +4999,7 @@
             "groupName": "Expansion Pack 1",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4675,6 +5014,7 @@
             "groupName": "Expansion Pack 3",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4689,6 +5029,7 @@
             "groupName": "Expansion Pack 3",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4703,6 +5044,7 @@
             "groupName": "Expansion Pack 3",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4717,6 +5059,7 @@
             "groupName": "Expansion Pack 3",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4731,6 +5074,7 @@
             "groupName": "Expansion Pack 4",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4745,6 +5089,7 @@
             "groupName": "Expansion Pack 4",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4759,6 +5104,7 @@
             "groupName": "Expansion Pack 4",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4773,6 +5119,7 @@
             "groupName": "Expansion Pack 4",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4787,6 +5134,7 @@
             "groupName": "Expansion Pack 4",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4801,6 +5149,7 @@
             "groupName": "Expansion Pack 4",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4815,6 +5164,7 @@
             "groupName": "Expansion Pack 4",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4829,6 +5179,7 @@
             "groupName": "Expansion Pack 6",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4843,6 +5194,7 @@
             "groupName": "Expansion Pack 6",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4857,6 +5209,7 @@
             "groupName": "Expansion Pack 6",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4871,6 +5224,7 @@
             "groupName": "Expansion Pack 6",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4885,6 +5239,7 @@
             "groupName": "Expansion Pack 6",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4899,6 +5254,7 @@
             "groupName": "Expansion Pack 6",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4913,6 +5269,7 @@
             "groupName": "Expansion Pack 6",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4927,6 +5284,7 @@
             "groupName": "Expansion Pack 7",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4941,6 +5299,7 @@
             "groupName": "Expansion Pack 7",
             "earned": true,
             "earnedDate": "4/1/2025, 8:30:58 PM",
+            "earnedAge": "1 yr, 1 month, 3 days, 10 hours, 57 mins",
             "timestamp": 1743539458000,
             "currentValue": 0,
             "targetValue": 0
@@ -4955,6 +5314,7 @@
             "groupName": "Expansion Pack 7",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4969,6 +5329,7 @@
             "groupName": "Expansion Pack 7",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4983,6 +5344,7 @@
             "groupName": "Expansion Pack 7",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -4997,6 +5359,7 @@
             "groupName": "Expansion Pack 7",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5011,6 +5374,7 @@
             "groupName": "Expansion Pack 8",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5025,6 +5389,7 @@
             "groupName": "Expansion Pack 8",
             "earned": true,
             "earnedDate": "4/1/2025, 5:51:15 PM",
+            "earnedAge": "1 yr, 1 month, 3 days, 13 hours, 37 mins",
             "timestamp": 1743529875000,
             "currentValue": 0,
             "targetValue": 0
@@ -5039,6 +5404,7 @@
             "groupName": "Expansion Pack 8",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5053,6 +5419,7 @@
             "groupName": "Expansion Pack 8",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5067,6 +5434,7 @@
             "groupName": "Expansion Pack 8",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5081,6 +5449,7 @@
             "groupName": "Expansion Pack 8",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5095,6 +5464,7 @@
             "groupName": "Expansion Pack 9",
             "earned": true,
             "earnedDate": "1/21/2026, 2:38:45 AM",
+            "earnedAge": "3 months, 2 weeks, 4 hours, 49 mins",
             "timestamp": 1768963125000,
             "currentValue": 0,
             "targetValue": 0
@@ -5109,6 +5479,7 @@
             "groupName": "Expansion Pack 9",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5123,6 +5494,7 @@
             "groupName": "Expansion Pack 9",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5137,6 +5509,7 @@
             "groupName": "Expansion Pack 9",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5151,6 +5524,7 @@
             "groupName": "Expansion Pack 9",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5165,6 +5539,7 @@
             "groupName": "Expansion Pack 10",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5179,6 +5554,7 @@
             "groupName": "Expansion Pack 10",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5193,6 +5569,7 @@
             "groupName": "Expansion Pack 10",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5207,6 +5584,7 @@
             "groupName": "Expansion Pack 10",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5221,6 +5599,7 @@
             "groupName": "Expansion Pack 10",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5235,6 +5614,7 @@
             "groupName": "Expansion Pack 10",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5249,6 +5629,7 @@
             "groupName": "Expansion Pack 11",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5263,6 +5644,7 @@
             "groupName": "Expansion Pack 11",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5277,6 +5659,7 @@
             "groupName": "Expansion Pack 11",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5291,6 +5674,7 @@
             "groupName": "Expansion Pack 11",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5305,6 +5689,7 @@
             "groupName": "Expansion Pack 11",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5319,6 +5704,7 @@
             "groupName": "Expansion Pack 11",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5333,6 +5719,7 @@
             "groupName": "Expansion Pack 11",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5347,6 +5734,7 @@
             "groupName": "Expansion Pack 11",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5361,6 +5749,7 @@
             "groupName": "Expansion Pack 12",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5375,6 +5764,7 @@
             "groupName": "Expansion Pack 12",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5389,6 +5779,7 @@
             "groupName": "Expansion Pack 12",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5403,6 +5794,7 @@
             "groupName": "Expansion Pack 12",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5417,6 +5809,7 @@
             "groupName": "Expansion Pack 13",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5431,6 +5824,7 @@
             "groupName": "Expansion Pack 13",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5445,6 +5839,7 @@
             "groupName": "Expansion Pack 13",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5459,6 +5854,7 @@
             "groupName": "Expansion Pack 13",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5473,6 +5869,7 @@
             "groupName": "Expansion Pack 14",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5487,6 +5884,7 @@
             "groupName": "Expansion Pack 14",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5501,6 +5899,7 @@
             "groupName": "Expansion Pack 14",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5515,6 +5914,7 @@
             "groupName": "Expansion Pack 15",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5529,6 +5929,7 @@
             "groupName": "Expansion Pack 15",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5543,6 +5944,7 @@
             "groupName": "Expansion Pack 15",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5557,6 +5959,7 @@
             "groupName": "Expansion Pack 15",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5571,6 +5974,7 @@
             "groupName": "Expansion Pack 16",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5585,6 +5989,7 @@
             "groupName": "Expansion Pack 16",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5599,6 +6004,7 @@
             "groupName": "Expansion Pack 16",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5613,6 +6019,7 @@
             "groupName": "Expansion Pack 16",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5627,6 +6034,7 @@
             "groupName": "Expansion Pack 17",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5641,6 +6049,7 @@
             "groupName": "Expansion Pack 17",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5655,6 +6064,7 @@
             "groupName": "Expansion Pack 17",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5669,6 +6079,7 @@
             "groupName": "Expansion Pack 18",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5683,6 +6094,7 @@
             "groupName": "Expansion Pack 18",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5697,6 +6109,7 @@
             "groupName": "Expansion Pack 18",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5711,6 +6124,7 @@
             "groupName": "Expansion Pack 18",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5725,6 +6139,7 @@
             "groupName": "Expansion Pack 19",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5739,6 +6154,7 @@
             "groupName": "Expansion Pack 20",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5753,6 +6169,7 @@
             "groupName": "Expansion Pack 21",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5766,80 +6183,90 @@
           "name": "Overkill",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/6575de8d-3035-4497-9ab8-761d0f89d8e1.PNG",
           "timestamp": 1775104350000,
-          "date": "4/2/2026, 4:32:30 AM"
+          "date": "4/2/2026, 4:32:30 AM",
+          "age": "1 month, 3 days, 2 hours, 55 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
           "name": "Chestful of Cobblestone",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/63dc02ce-bd45-45f9-b0b3-ec139df08d1a.PNG",
           "timestamp": 1775098413000,
-          "date": "4/2/2026, 2:53:33 AM"
+          "date": "4/2/2026, 2:53:33 AM",
+          "age": "1 month, 3 days, 4 hours, 34 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
           "name": "Atlantis?",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/7ea0f9c8-9a2c-425f-a70d-82d938c17096.PNG",
           "timestamp": 1768963125000,
-          "date": "1/21/2026, 2:38:45 AM"
+          "date": "1/21/2026, 2:38:45 AM",
+          "age": "3 months, 2 weeks, 4 hours, 49 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
           "name": "It’s a Sign!",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/c49e2529-5f55-429d-95bd-705264f1e725.PNG",
           "timestamp": 1768428250000,
-          "date": "1/14/2026, 10:04:10 PM"
+          "date": "1/14/2026, 10:04:10 PM",
+          "age": "3 months, 2 weeks, 6 days, 9 hours, 24 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
           "name": "Passing the Time",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/d042261f-a1d3-4173-b2b7-b7bae15b9c0f.PNG",
           "timestamp": 1768361542000,
-          "date": "1/14/2026, 3:32:22 AM"
+          "date": "1/14/2026, 3:32:22 AM",
+          "age": "3 months, 3 weeks, 3 hours, 56 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
           "name": "Into The Nether",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/b3890925-6c3c-423d-89e6-529abb22c728.PNG",
           "timestamp": 1768356898000,
-          "date": "1/14/2026, 2:14:58 AM"
+          "date": "1/14/2026, 2:14:58 AM",
+          "age": "3 months, 3 weeks, 5 hours, 13 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
           "name": "Delicious Fish",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/4cd20426-649c-46bb-a90b-0c93feae4c2e.PNG",
           "timestamp": 1767838535000,
-          "date": "1/8/2026, 2:15:35 AM"
+          "date": "1/8/2026, 2:15:35 AM",
+          "age": "3 months, 3 weeks, 6 days, 5 hours, 12 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
           "name": "DIAMONDS!",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/397095ac-c631-4e68-9e91-5d8fa8bba17b.PNG",
           "timestamp": 1767751478000,
-          "date": "1/7/2026, 2:04:38 AM"
+          "date": "1/7/2026, 2:04:38 AM",
+          "age": "3 months, 4 weeks, 5 hours, 23 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
           "name": "Adventuring Time",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/bb41f786-1ced-4dbe-900a-8c1668da6bd9.PNG",
           "timestamp": 1760819949000,
-          "date": "10/18/2025, 8:39:09 PM"
+          "date": "10/18/2025, 8:39:09 PM",
+          "age": "6 months, 2 weeks, 4 days, 10 hours, 49 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
           "name": "Iron Man",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/e3fdba75-8df3-4af7-97d2-88e6593275b1.PNG",
           "timestamp": 1743657968000,
-          "date": "4/3/2025, 5:26:08 AM"
+          "date": "4/3/2025, 5:26:08 AM",
+          "age": "1 yr, 1 month, 2 days, 2 hours, 2 mins"
         }
       ],
-      "lastUpdated": "5/5/2026, 12:12:58 AM"
+      "lastUpdated": "5/5/2026, 7:28:28 AM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
       "accountId": "7742137722487951585",
       "online": false,
       "currentGame": "Dashboard",
-      "currentGameArt": null,
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/11d8eb80-114c-41e4-a719-407c2ac3d551.png",
       "currentGameActivity": null,
       "amazonAffiliateUrl": null,
       "currentCommunicationId": null,
@@ -5848,6 +6275,8 @@
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/SCEI/I0001_s.png",
       "bio": "Official Pack Member Profile",
       "psnAccountAge": "7 years, 6 months",
+      "earliestTrophyDate": "2018-10-26T06:41:45.000Z",
+      "latestTrophyDate": 1777934991000,
       "plus": true,
       "level": 209,
       "region": "US",
@@ -5864,7 +6293,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/11d8eb80-114c-41e4-a719-407c2ac3d551.png",
           "progress": 18,
           "ratio": "12/41",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Trash%20Goblin+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Trash%20Goblin&tag=psngaming-20",
           "npCommunicationId": "NPWR56684_00",
           "lastPlayed": "2026-05-04T22:49:51Z"
         },
@@ -5873,7 +6302,7 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR19514_00_00AFD45414CE474BFBA792F7CC3950B22401428A7F/AC5C8ECE7C36ADC1086ED6ECE6DF792721D065B9.PNG",
           "progress": 17,
           "ratio": "2/25",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Untitled%20Goose%20Game+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Untitled%20Goose%20Game&tag=psngaming-20",
           "npCommunicationId": "NPWR19514_00",
           "lastPlayed": "2026-04-12T05:27:06Z"
         },
@@ -5882,7 +6311,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39871_00/ab762577-0859-4d75-9e57-d49024b01177.png",
           "progress": 25,
           "ratio": "16/39",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Planet%20Zoo+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Planet%20Zoo&tag=psngaming-20",
           "npCommunicationId": "NPWR39871_00",
           "lastPlayed": "2026-04-06T01:32:29Z"
         },
@@ -5891,7 +6320,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25659_00/601898a5-1fc0-4877-9222-18f8a6b43d26.png",
           "progress": 1,
           "ratio": "1/53",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Dragon%20Age%3A%20The%20Veilguard+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Dragon%20Age%3A%20The%20Veilguard&tag=psngaming-20",
           "npCommunicationId": "NPWR25659_00",
           "lastPlayed": "2026-03-22T06:13:40Z"
         },
@@ -5900,7 +6329,7 @@
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR47309_00/824404d6-3daa-49e3-9ea4-5b379c67c471.png",
           "progress": 2,
           "ratio": "2/51",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Avowed+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Avowed&tag=psngaming-20",
           "npCommunicationId": "NPWR47309_00",
           "lastPlayed": "2026-03-21T04:54:34Z"
         },
@@ -5909,14 +6338,20 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR12023_00_00CBE2F8DECB178FEB455931C911EF865FA30E7AA4/66A30E60316331DA1D779B5113F637E53A96D7F9.PNG",
           "progress": 0,
           "ratio": "0/59",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Prey+Playstation+5&tag=psngaming-20",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Prey&tag=psngaming-20",
           "npCommunicationId": "NPWR12023_00",
           "lastPlayed": "2026-03-19T23:11:13Z"
         }
       ],
       "activeHunt": {
         "title": "Trash Goblin",
-        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Trash%20Goblin+Playstation+5&tag=psngaming-20",
+        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Trash%20Goblin&tag=psngaming-20",
+        "velocity": {
+          "firstEarned": "5/4/2026, 12:47:33 AM",
+          "huntingDuration": "1 day",
+          "hunterPersona": "Steady Hunter",
+          "completionStatus": "12/41"
+        },
         "groups": [
           {
             "name": "Trash Goblin",
@@ -5935,6 +6370,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -5949,6 +6385,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:47:33 AM",
+            "earnedAge": "1 day, 6 hours, 40 mins",
             "timestamp": 1777855653000,
             "currentValue": 0,
             "targetValue": 0
@@ -5963,6 +6400,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:03:28 AM",
+            "earnedAge": "1 day, 4 hours, 25 mins",
             "timestamp": 1777863808000,
             "currentValue": 0,
             "targetValue": 0
@@ -5977,6 +6415,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:22:57 AM",
+            "earnedAge": "1 day, 4 hours, 5 mins",
             "timestamp": 1777864977000,
             "currentValue": 0,
             "targetValue": 0
@@ -5991,6 +6430,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:48:53 AM",
+            "earnedAge": "1 day, 6 hours, 39 mins",
             "timestamp": 1777855733000,
             "currentValue": 0,
             "targetValue": 0
@@ -6005,6 +6445,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6019,6 +6460,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6033,6 +6475,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6047,6 +6490,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6061,6 +6505,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:37:55 AM",
+            "earnedAge": "1 day, 2 hours, 50 mins",
             "timestamp": 1777869475000,
             "currentValue": 0,
             "targetValue": 0
@@ -6075,6 +6520,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:23:29 AM",
+            "earnedAge": "1 day, 4 hours, 5 mins",
             "timestamp": 1777865009000,
             "currentValue": 0,
             "targetValue": 0
@@ -6089,6 +6535,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6103,6 +6550,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 10:49:51 PM",
+            "earnedAge": "8 hours, 38 mins",
             "timestamp": 1777934991000,
             "currentValue": 0,
             "targetValue": 0
@@ -6117,6 +6565,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:14:40 AM",
+            "earnedAge": "1 day, 1 hour, 13 mins",
             "timestamp": 1777875280000,
             "currentValue": 0,
             "targetValue": 0
@@ -6131,6 +6580,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:47:31 AM",
+            "earnedAge": "1 day, 40 mins",
             "timestamp": 1777877251000,
             "currentValue": 0,
             "targetValue": 0
@@ -6145,6 +6595,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:03:37 AM",
+            "earnedAge": "1 day, 3 hours, 24 mins",
             "timestamp": 1777867417000,
             "currentValue": 0,
             "targetValue": 0
@@ -6159,6 +6610,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 5:22:06 AM",
+            "earnedAge": "1 day, 2 hours, 6 mins",
             "timestamp": 1777872126000,
             "currentValue": 0,
             "targetValue": 0
@@ -6173,6 +6625,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6187,6 +6640,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6201,6 +6655,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6215,6 +6670,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6229,6 +6685,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6243,6 +6700,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6257,6 +6715,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6271,6 +6730,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6285,6 +6745,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6299,6 +6760,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6313,6 +6775,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6327,6 +6790,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6341,6 +6805,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6355,6 +6820,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6369,6 +6835,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6383,6 +6850,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6397,6 +6865,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6411,6 +6880,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:30:33 AM",
+            "earnedAge": "1 day, 57 mins",
             "timestamp": 1777876233000,
             "currentValue": 0,
             "targetValue": 0
@@ -6425,6 +6895,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6439,6 +6910,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6453,6 +6925,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6467,6 +6940,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6481,6 +6955,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6495,6 +6970,7 @@
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
+            "earnedAge": null,
             "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
@@ -6508,73 +6984,83 @@
           "name": "Delving Deep",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/492e702d-d33c-48c3-a2d3-19075180c76f.png",
           "timestamp": 1777934991000,
-          "date": "5/4/2026, 10:49:51 PM"
+          "date": "5/4/2026, 10:49:51 PM",
+          "age": "8 hours, 38 mins"
         },
         {
           "game": "Trash Goblin",
           "name": "Silver City Sightseeing",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/bbb648f0-902a-483d-a9a1-30c6b3f87bf4.png",
           "timestamp": 1777877251000,
-          "date": "5/4/2026, 6:47:31 AM"
+          "date": "5/4/2026, 6:47:31 AM",
+          "age": "1 day, 40 mins"
         },
         {
           "game": "Trash Goblin",
           "name": "Running A Business Here",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/28baea49-5915-4b1b-89db-bf1d84bf1afd.png",
           "timestamp": 1777876233000,
-          "date": "5/4/2026, 6:30:33 AM"
+          "date": "5/4/2026, 6:30:33 AM",
+          "age": "1 day, 57 mins"
         },
         {
           "game": "Trash Goblin",
           "name": "Fun Guys",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/b2e3576d-a71a-459e-8035-ada1e3ef774b.png",
           "timestamp": 1777875280000,
-          "date": "5/4/2026, 6:14:40 AM"
+          "date": "5/4/2026, 6:14:40 AM",
+          "age": "1 day, 1 hour, 13 mins"
         },
         {
           "game": "Trash Goblin",
           "name": "Feels Like Home",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/791a3e33-6019-4253-9bfa-5de6d1ad58a2.png",
           "timestamp": 1777872126000,
-          "date": "5/4/2026, 5:22:06 AM"
+          "date": "5/4/2026, 5:22:06 AM",
+          "age": "1 day, 2 hours, 6 mins"
         },
         {
           "game": "Trash Goblin",
           "name": "Tools Of The Trade",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/468002bc-35f9-43f1-add4-c4f9e45a943c.png",
           "timestamp": 1777869475000,
-          "date": "5/4/2026, 4:37:55 AM"
+          "date": "5/4/2026, 4:37:55 AM",
+          "age": "1 day, 2 hours, 50 mins"
         },
         {
           "game": "Trash Goblin",
           "name": "Feeling Expansive",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/0ae703ef-cc71-4353-9f33-00190ca95e9d.png",
           "timestamp": 1777867417000,
-          "date": "5/4/2026, 4:03:37 AM"
+          "date": "5/4/2026, 4:03:37 AM",
+          "age": "1 day, 3 hours, 24 mins"
         },
         {
           "game": "Trash Goblin",
           "name": "Aimon Expert Now",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/7cd3ebe1-c396-43ad-bbc3-c4364bc5d856.png",
           "timestamp": 1777865009000,
-          "date": "5/4/2026, 3:23:29 AM"
+          "date": "5/4/2026, 3:23:29 AM",
+          "age": "1 day, 4 hours, 5 mins"
         },
         {
           "game": "Trash Goblin",
           "name": "One Goblin's Junk",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/9d995876-c567-4a56-bf14-e8855e61f9ec.png",
           "timestamp": 1777864977000,
-          "date": "5/4/2026, 3:22:57 AM"
+          "date": "5/4/2026, 3:22:57 AM",
+          "age": "1 day, 4 hours, 5 mins"
         },
         {
           "game": "Trash Goblin",
           "name": "Chip Off The Old Block",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/72494268-9bbc-4491-abdc-c1bde8d15b09.png",
           "timestamp": 1777863808000,
-          "date": "5/4/2026, 3:03:28 AM"
+          "date": "5/4/2026, 3:03:28 AM",
+          "age": "1 day, 4 hours, 25 mins"
         }
       ],
-      "lastUpdated": "5/5/2026, 12:12:59 AM"
+      "lastUpdated": "5/5/2026, 7:28:29 AM"
     },
     "mjolnir": {
       "onlineId": "Michael (Mjolnir)",
@@ -6582,13 +7068,13 @@
       "currentGame": "Police Simulator: Patrol Officers",
       "currentGameArt": null,
       "currentGameActivity": null,
-      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Police%20Simulator%3A%20Patrol%20Officers+Playstation+5&tag=psngaming-20",
+      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Police%20Simulator%3A%20Patrol%20Officers&tag=psngaming-20",
       "bio": "Official Pack Member Profile",
       "twitch": {
         "isLive": false,
         "game": "Police Simulator: Patrol Officers",
         "gameArt": null,
-        "followers": "18",
+        "followers": "19",
         "followerNames": [
           "[DecAPI - /twitch/followers/mjolnirgaming] 410 Gone - This API has been deprecated/removed"
         ],
@@ -6598,8 +7084,8 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/5/2026, 12:12:59 AM",
-      "note": "Twitch-Active Profile"
+      "lastUpdated": "5/5/2026, 7:28:30 AM",
+      "note": "Twitch-Master Presence"
     },
     "phoenix": {
       "onlineId": "Seth (Fluffy/Phoenix)",
@@ -6607,7 +7093,7 @@
       "currentGame": "Werewolf: The Apocalypse - Earthblood",
       "currentGameArt": null,
       "currentGameActivity": null,
-      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Werewolf%3A%20The%20Apocalypse%20-%20Earthblood+Playstation+5&tag=psngaming-20",
+      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Werewolf%3A%20The%20Apocalypse%20-%20Earthblood&tag=psngaming-20",
       "bio": "Official Pack Member Profile",
       "twitch": {
         "isLive": false,
@@ -6623,8 +7109,8 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/5/2026, 12:13:00 AM",
-      "note": "Twitch-Active Profile"
+      "lastUpdated": "5/5/2026, 7:28:30 AM",
+      "note": "Twitch-Master Presence"
     },
     "queen": {
       "onlineId": "broken_queen10",
@@ -6648,8 +7134,8 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/5/2026, 12:13:00 AM",
-      "note": "Twitch-Active Profile"
+      "lastUpdated": "5/5/2026, 7:28:30 AM",
+      "note": "Twitch-Master Presence"
     },
     "kfruti": {
       "onlineId": "KFruti88",
@@ -6657,7 +7143,7 @@
       "currentGame": "Call of Duty: Modern Warfare",
       "currentGameArt": null,
       "currentGameActivity": null,
-      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Call%20of%20Duty%3A%20Modern%20Warfare+Playstation+5&tag=psngaming-20",
+      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Call%20of%20Duty%3A%20Modern%20Warfare&tag=psngaming-20",
       "bio": "Official Pack Member Profile",
       "twitch": {
         "isLive": false,
@@ -6673,8 +7159,8 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/5/2026, 12:13:00 AM",
-      "note": "Twitch-Active Profile"
+      "lastUpdated": "5/5/2026, 7:28:24 AM",
+      "note": "Twitch-Master Presence"
     },
     "balto": {
       "onlineId": "Balto20_01",
@@ -6698,8 +7184,8 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/5/2026, 12:13:01 AM",
-      "note": "Twitch-Active Profile"
+      "lastUpdated": "5/5/2026, 7:28:31 AM",
+      "note": "Twitch-Master Presence"
     },
     "oldman": {
       "onlineId": "In Memoriam: old-man5919",
@@ -6710,12 +7196,338 @@
       "amazonAffiliateUrl": null,
       "bio": "Official Pack Member Profile",
       "twitch": null,
-      "lastUpdated": "5/5/2026, 12:13:01 AM",
-      "note": "Twitch-Active Profile"
+      "lastUpdated": "5/5/2026, 7:28:31 AM",
+      "note": "Twitch-Master Presence"
+    },
+    "darkterro": {
+      "onlineId": "darkterro420",
+      "online": false,
+      "currentGame": "Wo Long: Fallen Dynasty",
+      "currentGameArt": null,
+      "currentGameActivity": null,
+      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Wo%20Long%3A%20Fallen%20Dynasty&tag=psngaming-20",
+      "bio": "Official Pack Member Profile",
+      "twitch": {
+        "isLive": false,
+        "game": "Wo Long: Fallen Dynasty",
+        "gameArt": null,
+        "followers": "75",
+        "followerNames": [
+          "[DecAPI - /twitch/followers/terrdog420] 410 Gone - This API has been deprecated/removed"
+        ],
+        "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/53503674-298d-4302-89ad-4c58c18dcbd9-profile_image-300x300.jpeg",
+        "age": "1 year, 1 month",
+        "bio": null,
+        "statusMessage": null,
+        "uptime": null
+      },
+      "lastUpdated": "5/5/2026, 7:28:26 AM",
+      "note": "Twitch-Master Presence"
     }
   },
-  "mutualSquadFollowers": [],
-  "lastGlobalUpdate": "5/5/2026, 12:12:48 AM",
-  "engineVersion": "12.8.0",
-  "codeTimestamp": "Monday, May 4, 2026 | 8:11 PM EDT"
+  "personas": {
+    "Kevin": {
+      "displayName": "Kevin",
+      "isOnline": false,
+      "primaryOnlineId": "Werewolf3788",
+      "combinedTrophies": {
+        "platinum": 5,
+        "gold": 77,
+        "silver": 214,
+        "bronze": 980,
+        "total": 1276
+      },
+      "maxLevel": 232,
+      "legacyAge": "8 months",
+      "legacyRange": {
+        "start": "1/5/2025, 1:27:35 AM",
+        "end": "9/29/2025, 2:01:12 AM"
+      },
+      "currentGame": "Dashboard",
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
+      "currentActivity": null,
+      "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0004_s.png",
+      "bio": "6C3RG",
+      "accounts": [
+        "werewolf",
+        "kfruti"
+      ],
+      "lastUpdated": "5/5/2026, 7:28:31 AM"
+    },
+    "TJ": {
+      "displayName": "TJ",
+      "isOnline": false,
+      "primaryOnlineId": "Darkwing69420",
+      "combinedTrophies": {
+        "platinum": 0,
+        "gold": 8,
+        "silver": 29,
+        "bronze": 132,
+        "total": 169
+      },
+      "maxLevel": 60,
+      "legacyAge": "4 months",
+      "legacyRange": {
+        "start": "12/22/2025, 11:15:30 AM",
+        "end": "5/3/2026, 7:42:22 AM"
+      },
+      "currentGame": "Dashboard",
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/75c0cc18-47f0-476f-8d5e-a3ea97bce4c6.png",
+      "currentActivity": null,
+      "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
+      "bio": "Official Pack Member Profile",
+      "accounts": [
+        "darkwing",
+        "darkterro"
+      ],
+      "lastUpdated": "5/5/2026, 7:28:31 AM"
+    },
+    "Ray": {
+      "displayName": "Ray",
+      "isOnline": false,
+      "primaryOnlineId": "OneLIVIDMAN",
+      "combinedTrophies": {
+        "platinum": 5,
+        "gold": 33,
+        "silver": 109,
+        "bronze": 544,
+        "total": 691
+      },
+      "maxLevel": 202,
+      "legacyAge": "9 years, 4 months",
+      "legacyRange": {
+        "start": "12/30/2016, 6:40:30 PM",
+        "end": "5/4/2026, 11:42:41 PM"
+      },
+      "currentGame": "Dashboard",
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png",
+      "currentActivity": null,
+      "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
+      "bio": "exo-ONELIVIDMANKDFC3",
+      "accounts": [
+        "ray"
+      ],
+      "lastUpdated": "5/5/2026, 7:28:31 AM"
+    },
+    "Seth": {
+      "displayName": "Seth",
+      "isOnline": false,
+      "primaryOnlineId": "Seth (Fluffy/Phoenix)",
+      "combinedTrophies": {
+        "platinum": 0,
+        "gold": 0,
+        "silver": 0,
+        "bronze": 0,
+        "total": 0
+      },
+      "maxLevel": 0,
+      "legacyAge": "Unknown",
+      "legacyRange": {
+        "start": "Unknown",
+        "end": "5/5/2026, 7:28:31 AM"
+      },
+      "currentGame": "Werewolf: The Apocalypse - Earthblood",
+      "currentGameArt": null,
+      "currentActivity": null,
+      "bio": "Official Pack Member Profile",
+      "accounts": [
+        "phoenix"
+      ],
+      "lastUpdated": "5/5/2026, 7:28:31 AM"
+    },
+    "Marc": {
+      "displayName": "Marc",
+      "isOnline": false,
+      "primaryOnlineId": "ElucidatorVah",
+      "combinedTrophies": {
+        "platinum": 1,
+        "gold": 33,
+        "silver": 84,
+        "bronze": 538,
+        "total": 656
+      },
+      "maxLevel": 188,
+      "legacyAge": "3 years, 8 months",
+      "legacyRange": {
+        "start": "8/31/2022, 7:43:50 PM",
+        "end": "5/5/2026, 7:28:28 AM"
+      },
+      "currentGame": "Dashboard",
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/153b7dff-c525-48af-89d2-cccfb93d3e0d.png",
+      "currentActivity": null,
+      "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_A/A2073_s.png",
+      "bio": "Why are you looking here im a boring person with no irl friends.... Life is great",
+      "accounts": [
+        "marc"
+      ],
+      "lastUpdated": "5/5/2026, 7:28:31 AM"
+    },
+    "JCrow": {
+      "displayName": "JCrow",
+      "isOnline": false,
+      "primaryOnlineId": "JCrow207",
+      "combinedTrophies": {
+        "platinum": 0,
+        "gold": 7,
+        "silver": 19,
+        "bronze": 158,
+        "total": 184
+      },
+      "maxLevel": 60,
+      "legacyAge": "1 years, 4 months",
+      "legacyRange": {
+        "start": "12/1/2024, 2:02:19 AM",
+        "end": "4/2/2026, 4:32:30 AM"
+      },
+      "currentGame": "Dashboard",
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/7270b75f-f28d-424e-96d1-ae88a5405438.PNG",
+      "currentActivity": null,
+      "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0021_s.png",
+      "bio": "Official Pack Member Profile",
+      "accounts": [
+        "jcrow"
+      ],
+      "lastUpdated": "5/5/2026, 7:28:31 AM"
+    },
+    "Shiv": {
+      "displayName": "Shiv",
+      "isOnline": false,
+      "primaryOnlineId": "UnicornBunnyShiv",
+      "combinedTrophies": {
+        "platinum": 0,
+        "gold": 43,
+        "silver": 134,
+        "bronze": 746,
+        "total": 923
+      },
+      "maxLevel": 209,
+      "legacyAge": "7 years, 6 months",
+      "legacyRange": {
+        "start": "10/26/2018, 6:41:45 AM",
+        "end": "5/4/2026, 10:49:51 PM"
+      },
+      "currentGame": "Dashboard",
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/11d8eb80-114c-41e4-a719-407c2ac3d551.png",
+      "currentActivity": null,
+      "avatar": "http://static-resource.np.community.playstation.net/avatar_s/SCEI/I0001_s.png",
+      "bio": "Official Pack Member Profile",
+      "accounts": [
+        "bunny"
+      ],
+      "lastUpdated": "5/5/2026, 7:28:31 AM"
+    },
+    "Michael": {
+      "displayName": "Michael",
+      "isOnline": false,
+      "primaryOnlineId": "Michael (Mjolnir)",
+      "combinedTrophies": {
+        "platinum": 0,
+        "gold": 0,
+        "silver": 0,
+        "bronze": 0,
+        "total": 0
+      },
+      "maxLevel": 0,
+      "legacyAge": "Unknown",
+      "legacyRange": {
+        "start": "Unknown",
+        "end": "5/5/2026, 7:28:31 AM"
+      },
+      "currentGame": "Police Simulator: Patrol Officers",
+      "currentGameArt": null,
+      "currentActivity": null,
+      "bio": "Official Pack Member Profile",
+      "accounts": [
+        "mjolnir"
+      ],
+      "lastUpdated": "5/5/2026, 7:28:31 AM"
+    },
+    "Queen": {
+      "displayName": "Queen",
+      "isOnline": false,
+      "primaryOnlineId": "broken_queen10",
+      "combinedTrophies": {
+        "platinum": 0,
+        "gold": 0,
+        "silver": 0,
+        "bronze": 0,
+        "total": 0
+      },
+      "maxLevel": 0,
+      "legacyAge": "Unknown",
+      "legacyRange": {
+        "start": "Unknown",
+        "end": "5/5/2026, 7:28:31 AM"
+      },
+      "currentGame": "Dashboard",
+      "currentGameArt": null,
+      "currentActivity": null,
+      "bio": "Official Pack Member Profile",
+      "accounts": [
+        "queen"
+      ],
+      "lastUpdated": "5/5/2026, 7:28:31 AM"
+    },
+    "Balto": {
+      "displayName": "Balto",
+      "isOnline": false,
+      "primaryOnlineId": "Balto20_01",
+      "combinedTrophies": {
+        "platinum": 0,
+        "gold": 0,
+        "silver": 0,
+        "bronze": 0,
+        "total": 0
+      },
+      "maxLevel": 0,
+      "legacyAge": "Unknown",
+      "legacyRange": {
+        "start": "Unknown",
+        "end": "5/5/2026, 7:28:31 AM"
+      },
+      "currentGame": "Dashboard",
+      "currentGameArt": null,
+      "currentActivity": null,
+      "bio": "Official Pack Member Profile",
+      "accounts": [
+        "balto"
+      ],
+      "lastUpdated": "5/5/2026, 7:28:31 AM"
+    },
+    "Memorial": {
+      "displayName": "Memorial",
+      "isOnline": false,
+      "primaryOnlineId": "In Memoriam: old-man5919",
+      "combinedTrophies": {
+        "platinum": 0,
+        "gold": 0,
+        "silver": 0,
+        "bronze": 0,
+        "total": 0
+      },
+      "maxLevel": 0,
+      "legacyAge": "Unknown",
+      "legacyRange": {
+        "start": "Unknown",
+        "end": "5/5/2026, 7:28:31 AM"
+      },
+      "currentGame": "Dashboard",
+      "currentGameArt": null,
+      "currentActivity": null,
+      "bio": "Official Pack Member Profile",
+      "accounts": [
+        "oldman"
+      ],
+      "lastUpdated": "5/5/2026, 7:28:31 AM"
+    }
+  },
+  "mutualSquadFollowers": [
+    {
+      "username": "[DecAPI - /twitch/followers/terrdog420] 410 Gone - This API has been deprecated/removed",
+      "sharedConnections": 2
+    }
+  ],
+  "lastGlobalUpdate": "5/5/2026, 7:28:22 AM",
+  "engineVersion": "13.7.4",
+  "codeTimestamp": "Monday, May 4, 2026 | 10:12 PM EDT"
 }
