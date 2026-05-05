@@ -20,23 +20,23 @@ const path = require("path");
 
 /**
  * Kevin's Official Pack Sync Engine
- * Version 13.6.0 - Absolute Master Omni-Protocol (Hunter Personas & Style Intelligence)
+ * Version 13.7.0 - Absolute Master Omni-Protocol (Profile Intelligence & Persona Build)
  * Filepath: Playstation/psnscript.js
  * * * --- INSTANCE AUTHENTICATION ---
  * Last Generated: Monday, May 4, 2026
- * Timestamp: 8:52 PM EDT (New York Time)
- * Status: Production Ready - Hunter Personas Verified
+ * Timestamp: 8:54 PM EDT (New York Time)
+ * Status: Production Ready - "About Me" Harvest Verified
  * * * --- PSN SYNC CHECKLIST (VERIFIED DATA HARVEST) ---
- * 1.  HUNTER PERSONAS: [New] Dynamic labels ("Dead Set," "Steady," "Casual") based on hunting velocity.
- * 2.  HUNTING VELOCITY: [Verified] Tracks "First Blood" and calculates completion speed (Total days since start).
- * 3.  API HANDSHAKE: [Verified] Full psn-api integration for Titles, Presence, and DLC/Expansion earnings.
- * 4.  TWITCH INTELLIGENCE: [Verified] Positive "live" verification, Uptime, and Box Art via DecAPI.
- * 5.  HIDDEN PROFILE CATCH: [Verified] Seth (Phoenix) resilience logic uses Twitch-Master Presence fallback.
- * 6.  ACTIVITY OVERRIDE: [Verified] Proof-of-Life forces Online status if trophies pop within 20 mins.
- * 7.  MUTUAL FOLLOWERS: [Verified] Intersection logic identifies Shared Fans across the whole squad.
- * 8.  BROAD AFFILIATE: [Verified] Amazon links ('psngaming-20') search titles across all platforms.
- * 9.  TROPHY AGE: [Verified] High-precision timing strings (Yrs, Mos, Wks, Days, Hrs, Mins).
- * 10. MEMORIAL LOGIC: [Verified] 'old-man5919' legacy preserved with specialized "In Memoriam" age calculation.
+ * 1.  BIO HARVEST: [Verified] Master key pulls "About Me" for all members if 19-digit ID is provided.
+ * 2.  HUNTER PERSONAS: [Verified] Dynamic labels ("Dead Set," "Steady," "Casual") based on velocity.
+ * 3.  HUNTING VELOCITY: [Verified] Tracks "First Blood" and calculates completion speed.
+ * 4.  API HANDSHAKE: [Verified] Full psn-api integration for Titles, Presence, and DLC earnings.
+ * 5.  TWITCH INTELLIGENCE: [Verified] Positive "live" verification, Uptime, and Box Art via DecAPI.
+ * 6.  HIDDEN PROFILE CATCH: [Verified] Seth (Phoenix) resilience logic uses Twitch-Master Presence fallback.
+ * 7.  ACTIVITY OVERRIDE: [Verified] Proof-of-Life forces Online status if trophies pop within 20 mins.
+ * 8.  MUTUAL FOLLOWERS: [Verified] Intersection logic identifies Shared Fans across the whole squad.
+ * 9.  BROAD AFFILIATE: [Verified] Amazon links ('psngaming-20') search titles across all platforms.
+ * 10. MEMORIAL LOGIC: [Verified] 'old-man5919' legacy preserved with specialized age calculation.
  */
 
 // --- ADMINISTRATIVE CONFIGURATION ---
@@ -73,10 +73,10 @@ const ACCOUNT_IDS = {
     marc: "6551906246515882523",
     jcrow: "7524753921019262614",
     bunny: "7742137722487951585",
-    queen: "",  
-    kfruti: "", 
-    balto: "",  
-    oldman: ""  
+    queen: "",  // Add 19-digit ID here to enable PSN Bio pull
+    kfruti: "", // Add 19-digit ID here to enable PSN Bio pull
+    balto: "",  // Add 19-digit ID here to enable PSN Bio pull
+    oldman: ""  // Add 19-digit ID here to preserve his legacy trophies
 };
 
 const AMAZON_TAG = "psngaming-20";
@@ -241,8 +241,10 @@ async function getAuthenticated(userKey, npssoInput) {
 
 // --- ABSOLUTE OMNI-COLLECTOR ---
 async function getFullUserData(auth, label, userKey, targetId, existingData) {
+    // 1. INDIVIDUAL TWITCH HARVEST
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
     
+    // 2. PRIVACY & RESILIENCE FALLBACK
     if (!auth || !targetId) {
         return {
             onlineId: SQUAD_MAP[userKey] || label,
@@ -258,15 +260,17 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v13.6.0 Persona Sync: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v13.7.0 Sync: ${label}`);
     
     try {
+        // 3. IDENTITY & REGIONAL (Uses master key to pull bio/aboutMe for others)
         const profile = await getProfileFromAccountId(auth, targetId);
         let region = { country: "US", language: "en" };
         if (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) {
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
         }
         
+        // 4. PSN PRESENCE & INDIVIDUAL LIBRARY HARVEST
         const presenceId = (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) ? "me" : targetId;
         let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         
@@ -329,19 +333,16 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                         };
                     });
 
-                    // --- HUNTING VELOCITY & PERSONA LOGIC ---
                     const earnedTrophiesOnly = mappedTrophies.filter(t => t.earned).sort((a,b) => a.timestamp - b.timestamp);
                     const firstBlood = earnedTrophiesOnly[0]?.timestamp || null;
                     const lastPop = earnedTrophiesOnly[earnedTrophiesOnly.length - 1]?.timestamp || null;
                     
                     let speedString = "N/A";
-                    let persona = "Steady Hunter"; // Default Persona (Your style)
+                    let persona = "Steady Hunter"; 
 
                     if (firstBlood && lastPop) {
                         const days = Math.ceil((lastPop - firstBlood) / (1000 * 60 * 60 * 24));
                         speedString = days === 0 ? "Started Today" : `${days} day${days > 1 ? 's' : ''}`;
-                        
-                        // Persona Matrix: Ray's FS25 (9 days) and high intensity trigger "Dead Set"
                         if (days <= 10 && title.progress >= 50) persona = "Dead Set Hunter";
                         else if (days <= 14 && title.progress >= 80) persona = "Apex Predator";
                         else if (days > 30) persona = "Casual Pursuit";
@@ -352,7 +353,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                         velocity: {
                             firstEarned: earnedTrophiesOnly[0]?.earnedDate || "Not Started",
                             huntingDuration: speedString,
-                            hunterPersona: persona, // DYNAMIC PERSONA ASSIGNED HERE
+                            hunterPersona: persona,
                             completionStatus: `${earnedTotal}/${definedTotal}`
                         },
                         groups: (groupEarnings.trophyGroups || []).map(g => {
@@ -417,15 +418,15 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v13.6.0...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v13.7.0...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
         users: {}, 
         mutualSquadFollowers: [], 
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "13.6.0",
-        codeTimestamp: "Monday, May 4, 2026 | 8:52 PM EDT"
+        engineVersion: "13.7.0",
+        codeTimestamp: "Monday, May 4, 2026 | 8:54 PM EDT"
     };
 
     try {
