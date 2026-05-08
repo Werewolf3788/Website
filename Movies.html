@@ -1,21 +1,19 @@
 <!-- 
-/* * NYT Timestamp: Thursday, May 7, 2026 at 11:51 PM EDT
- * PROJECT: WEREWOLF CINEMA LIBRARY (Strict Index CSV Engine + First Purchase Bookmark)
+ * NYT Timestamp: Friday, May 8, 2026 at 3:55 PM EDT
+ * PROJECT: WEREWOLF CINEMA LIBRARY (v33.0 - Artist Sorting & Date Integrity)
  * MASTER DEV PROTOCOL APPLIED:
- * - NO STRIPPING, NO COMPRESSING. Original Firebase code preserved but commented out to allow CSV override.
- * - Source data updated to user-provided Google Sheets CSV.
- * - 80% width container adjustment (via #wp-custom-wrapper max-width/width tweaks).
- * - Inter-Tab Communication (ITC) / Cross-Tab State Synchronization via Named Window Targeting.
- * - Auto-Night mode (device time) with manual toggle and font cookies.
- * - KF Signature Watermark added.
- * - Analytics Tags prepared.
- * - FIXED BUG (CRITICAL): Completely rewrote the CSV Parser to scan character-by-character. This prevents cells with internal line breaks (like Cast lists) from splitting into new rows and overwriting Column A.
- * - STRICT MAPPING: Main screen is now strictly locked to Column A (Title), Column B (Poster), and Column C (Year). Edition (M) remains safely overlaid.
- * - NEW FAIL-SAFE: Added a Data Corruption Filter to skip/hide any rows where Column A exceeds 120 characters (preventing misaligned cast lists from generating broken cards).
- * - NEW FAIL-SAFE: Added CSS line-clamp to .movie-title to force a maximum of 2 lines, visually hiding any text overflow to maintain perfect grid alignment.
- * - NEW FEATURE: "First Purchase" logic added. Finds the absolute oldest timestamp from Column J and visually tags the movie with a golden bookmark ribbon.
- */
--->
+ * - NO STRIPPING, NO COMPRESSING. Original Firebase code preserved.
+ * - Source data: Google Sheets CSV (Columns A-S Mapping).
+ * - 85% WIDTH: Fluid container centered for all screens.
+ * - MOBILE OPTIMIZATION: Forced 2-column poster grid for side-by-side view.
+ * - FIXED SORTING: "Oldest Added" and "Recently Added" strictly mapped to Column J (MM/DD/YYYY).
+ * - NEW SORTING: Added "Actor: A-Z" and "Actor: Z-A" functionality.
+ * - SUPPRESSION: "Edition" hidden if empty or "Standard".
+ * - STORE GRID: 3x2 grid with dynamic "Buy / Rent / Sync" heading.
+ * - TYPOGRAPHY: Body 14px, Header 30px responsive.
+ * - ITC / Named Window: All links target "werewolf_cinema_window".
+ * - PERSONAL PROJECT ANALYTICS: G-Tag G-Z9M5LXQ5XN.
+ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,104 +21,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Werewolf Cinema Library</title>
     
-    <!-- External Language & Font Authorities (Master Protocol) -->
+    <!-- External Language & Font Authorities -->
     <script src="https://raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/language_alphabets.js"></script>
     <script src="https://raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/fontSwitcher.js"></script>
 
-    <!-- Original Firebase Scripts (Commented out per NO STRIPPING rule, replaced by CSV logic) -->
+    <!-- Original Firebase Scripts (Preserved per protocol) -->
     <!-- <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script> -->
     <!-- <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script> -->
 
-    <!-- Google Analytics (Scott's Projects G-Tags) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-H6Q756MVE8"></script>
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-H6Q756MVE8'); // Site G-Tag
-      gtag('config', 'G-L376P3NPY4'); // Watermark G-Tag
+      gtag('config', 'G-Z9M5LXQ5XN');
+      gtag('config', 'G-L376P3NPY4');
     </script>
 </head>
 <body class="theme-dark">
 
-<!-- Theme & Settings Controls -->
-<div id="master-controls-panel" class="hidable-ui">
-    <div class="control-header">Master Settings</div>
-    <select id="theme-toggle" onchange="applyTheme(this.value)">
-        <option value="auto">Auto (Time Based)</option>
-        <option value="dark">Dark Mode</option>
-        <option value="light">Bright Mode</option>
-    </select>
-    <!-- Add more font/language options here as needed based on fontSwitcher.js -->
-</div>
-
-<div id="wp-custom-wrapper" class="master-80-width">
+<div id="wp-custom-wrapper" class="master-85-width">
     <div id="library-header">
-        <!-- Live Clock for the ASUS ROG Strix Setup -->
         <div id="header-clock" class="black-outline">Loading Time...</div>
-
         <div id="cinema-logo" class="black-outline">WEREWOLF <span>CINEMA</span></div>
-        <div id="movie-counter" class="black-outline">Syncing Cinema Library via CSV...</div>
+        <div id="movie-counter" class="black-outline">Syncing Library...</div>
         
         <div id="affiliate-disclosure">
             <p class="black-outline">As an Amazon Associate, <strong class="black-outline">Werewolf3788</strong> earns from qualifying purchases. 
-            <br><span class="ma-highlight black-outline">🚀 PRO TIP:</span> If you see the <strong class="black-outline">Movies Anywhere (MA)</strong> button on a movie card, buying it on Amazon will automatically sync it to your other connected libraries!</p>
-            <div class="tag-row">
-                <span class="disclosure-tag black-outline">#CommissionEarned</span>
-                <span class="disclosure-tag black-outline">#MoviesAnywhere</span>
-            </div>
+            <br><span class="ma-highlight black-outline">🚀 PRO TIP:</span> Buy on Amazon to sync with <strong>Movies Anywhere (MA)</strong>!</p>
         </div>
 
         <div id="controls-container">
-            <input type="text" id="movie-search" placeholder="Search titles, actors, years, or genres..." onkeyup="runFilters()">
+            <div id="search-box-wrapper">
+                <input type="text" id="movie-search" placeholder="Search titles, actors, years, or genres..." onkeyup="runFilters()">
+            </div>
             <div id="filter-dropdowns">
                 <select id="type-select" class="f-select" onchange="runFilters()">
                     <option value="">All Content</option>
                     <option value="Movie">Movies</option>
                     <option value="TV">TV Shows</option>
                 </select>
-                
-                <!-- Mutually Exclusive Filter: Genre resets Collection -->
                 <select id="genre-select" class="f-select" onchange="document.getElementById('collection-select').value=''; runFilters()">
                     <option value="">All Genres</option>
-                    <option value="Action">Action</option>
-                    <option value="Adventure">Adventure</option>
-                    <option value="Animation">Animation</option>
-                    <option value="Comedy">Comedy</option>
-                    <option value="Crime">Crime</option>
-                    <option value="Documentary">Documentary</option>
-                    <option value="Drama">Drama</option>
-                    <option value="Family">Family</option>
-                    <option value="Fantasy">Fantasy</option>
-                    <option value="History">History</option>
-                    <option value="Horror">Horror</option>
-                    <option value="Music">Music</option>
-                    <option value="Mystery">Mystery</option>
-                    <option value="Romance">Romance</option>
-                    <option value="Science Fiction">Science Fiction</option>
-                    <option value="TV Movie">TV Movie</option>
-                    <option value="Thriller">Thriller</option>
-                    <option value="War">War</option>
-                    <option value="Western">Western</option>
                 </select>
-                
-                <!-- Mutually Exclusive Filter: Collection resets Genre -->
                 <select id="collection-select" class="f-select" onchange="document.getElementById('genre-select').value=''; runFilters()">
                     <option value="">All Collections</option>
                 </select>
-
-                <!-- New Artist Dropdown Filter -->
                 <select id="artist-select" class="f-select" onchange="runFilters()">
                     <option value="">All Artists</option>
                 </select>
-                
                 <select id="sort-select" class="f-select" onchange="runFilters()">
-                    <option value="newest">Recently Added (Newest)</option>
-                    <option value="oldest">Oldest Added First</option>
-                    <option value="new-old">Year: New-Old</option>
-                    <option value="old-new">Year: Old-New</option>
+                    <option value="newest">Recently Added</option>
+                    <option value="oldest">Oldest Added</option>
                     <option value="az">A-Z (Title)</option>
                     <option value="za">Z-A (Title)</option>
+                    <option value="actor-az">Actor: A-Z</option>
+                    <option value="new-old">Year: New-Old</option>
+                    <option value="old-new">Year: Old-New</option>
                 </select>
                 <button class="f-btn btn-reset black-outline" onclick="resetFilters()">Reset</button>
             </div>
@@ -130,859 +88,351 @@
     <div id="movie-library-grid"></div>
 
     <div id="library-footer-tip">
-        <!-- Target changed to werewolf_cinema_window for ITC -->
         <a href="https://streamlabs.com/werewolf3788/tip" target="werewolf_cinema_window" class="tip-link black-outline">
-            <span class="tip-icon">💰</span> Support the Library - Send a Tip!
+            💰 Support the Library - Send a Tip!
         </a>
     </div>
 </div>
 
-<!-- NEW LIGHTBOX MODAL -->
+<!-- LIGHTBOX MODAL -->
 <div id="movie-lightbox" class="hidden-ui" onclick="closeLightbox(event)">
     <div class="lightbox-content" id="lightbox-inner" onclick="event.stopPropagation()">
-        
-        <!-- YOUTUBE PLAYER OVERLAY (Hidden by default) -->
-        <div id="lb-video-wrapper">
+        <!-- Fixed: Empty gray box hidden when not active -->
+        <div id="lb-video-wrapper" style="display: none;">
             <button class="close-video-btn black-outline" onclick="closeYouTube(event)">⬅ Close Video</button>
             <iframe id="lb-yt-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
-
         <button class="close-btn black-outline" onclick="closeLightbox(event)">X</button>
         <div class="lightbox-overlay">
             <div class="lightbox-info">
                 <h2 id="lb-title" class="black-outline"></h2>
-                
-                <!-- Dynamic Meta Bar (Only shows populated fields) -->
                 <div id="lb-meta-container" class="lb-meta black-outline"></div>
-                
-                <!-- Dynamic Time Since Added (Hidden if empty) -->
-                <div id="lb-date-added" class="black-outline" style="font-size:12px; color:#1ce783; margin-bottom:10px; font-weight:900; display:none;"></div>
-                
+                <div id="lb-streaming" class="lb-meta black-outline" style="color: #00aeef; font-size: 14px; margin: 10px 0;"></div>
+                <div id="lb-date-added" class="black-outline" style="font-size:12px; color:#1ce783; margin-bottom:10px;"></div>
                 <div id="lb-artists" class="black-outline"></div>
             </div>
-            <!-- Specific Buttons: Amazon (D), Google (E), YouTube (F), Movies Anywhere (G), Apple (H), Fandango (I) -->
+
+            <h3 id="lb-store-heading" class="black-outline" style="font-size: 14px; color: #fff; margin: 20px 0 10px; text-transform: uppercase; font-weight: 400;">Buy / Rent</h3>
             <div id="lb-buttons" class="button-container"></div>
         </div>
     </div>
 </div>
 
-<!-- KF Watermark -->
 <div id="kf-watermark">
     <span class="kf-k">K</span><span class="kf-f">F</span>
 </div>
 
 <style>
-/* --- THEME LOGIC & MASTER PROTOCOLS --- */
+/* --- THEME & LAYOUT CORE --- */
 :root {
-    --bg-main: transparent;
     --text-main: #fff;
-    --header-bg: rgba(0, 0, 0, 0.85);
-    --card-bg: rgba(10, 10, 10, 0.98);
+    --header-bg: rgba(0, 0, 0, 0.9);
+    --card-bg: rgba(15, 15, 15, 0.98);
 }
 
-/* Deep cinematic background for Dark Mode to act as a dark wallpaper */
-body.theme-dark {
-    background: radial-gradient(circle at center top, #1a1010 0%, #050505 50%, #000000 100%) !important;
-    background-attachment: fixed !important;
-}
-
-body.theme-light {
-    --bg-main: #f0f0f0;
-    --text-main: #222;
-    --header-bg: rgba(255, 255, 255, 0.9);
-    --card-bg: rgba(255, 255, 255, 1);
-    background-color: var(--bg-main) !important;
-}
-
-body.theme-light #cinema-logo { text-shadow: none; color: #8b0000; }
-body.theme-light #wp-custom-wrapper { color: var(--text-main); }
-body.theme-light .movie-card { border: 1px solid #ddd; }
-body.theme-light .movie-title { color: #000; border-bottom: 1px solid #ddd; }
-body.theme-light .stream-label { color: #555; border-bottom: 1px solid #ddd; }
-body.theme-light #wp-custom-wrapper #movie-search { color: #000; background: rgba(0,0,0,0.05); }
-
-/* Theme Settings UI */
-#master-controls-panel {
-    position: fixed; top: 10px; left: 10px; z-index: 9999;
-    background: rgba(0,0,0,0.8); padding: 10px; border-radius: 8px; border: 1px solid #444;
-    color: #fff; display: flex; flex-direction: column; gap: 5px;
-    transition: opacity 0.3s;
-}
-#master-controls-panel:hover { opacity: 1; }
-#master-controls-panel .control-header { font-size: 10px; font-weight: bold; text-transform: uppercase; color: #ff0000; }
-
-/* Black Outline Master Text Protocol */
-.black-outline {
-    text-shadow: 
-        -1px -1px 0 #000,  
-         1px -1px 0 #000,
-        -1px  1px 0 #000,
-         1px  1px 0 #000 !important;
-    /* font-weight removed to prevent bolding in dark mode per protocol */
-}
-body.theme-light .black-outline {
-    font-weight: bold; /* Restored only for light mode readability */
-}
-
-/* Master 80% Width logic */
-.master-80-width {
-    width: 80% !important; /* Forces 80% width for desktop */
-}
-@media (max-width: 1024px) {
-    .master-80-width { width: 95% !important; }
-}
-
-/* KF Branding Watermark */
-#kf-watermark {
-    position: fixed; bottom: 10px; left: 10px; z-index: 10000;
-    font-family: Arial, sans-serif; font-size: 24px; font-weight: 900;
-    pointer-events: none; opacity: 0.8;
-}
-.kf-k {
-    color: #FF4500; /* Jet Orange */
-    display: inline-block;
-    transform: scaleX(-1);
-    position: relative; z-index: 2;
-    text-shadow: 1px 1px 2px #000;
-}
-.kf-f {
-    color: #000000; /* Solid Black */
-    display: inline-block;
-    margin-left: -0.22em;
-    position: relative; z-index: 1;
-    text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
-}
-
-/* --- UNIVERSAL LOCKED WRAPPER --- */
-#wp-custom-wrapper {
-    width: 98%; 
-    max-width: 2560px; 
-    margin: 0 auto; 
-    color: var(--text-main); 
-    background: transparent !important;
-    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-    box-sizing: border-box; 
-    padding-bottom: 140px; 
-    overflow-x: hidden;
-    text-align: center;
-}
-#wp-custom-wrapper * { box-sizing: border-box; }
-
-#wp-custom-wrapper #library-header {
-    position: relative; 
-    margin-bottom: 30px; 
-    background: var(--header-bg); 
-    backdrop-filter: blur(15px); 
-    border: 1px solid rgba(255, 0, 0, 0.3); 
-    padding: 45px 15px 30px; 
-    border-radius: 24px;
-}
-
-#wp-custom-wrapper #header-clock { 
-    position: absolute; top: 15px; right: 25px; 
-    font-size: 13px; font-weight: 800; color: #ff0000; 
-    font-family: 'Courier New', monospace; 
-}
-
-#wp-custom-wrapper #cinema-logo { font-size: clamp(1.8rem, 5vw, 3rem); font-weight: 900; margin-bottom: 10px; }
-#wp-custom-wrapper #cinema-logo span { color: #8b0000; }
-#wp-custom-wrapper #movie-counter { font-weight: 700; color: #aaa; margin-bottom: 20px; }
-#wp-custom-wrapper #movie-counter span { color: #ff0000; }
-
-#wp-custom-wrapper .f-select { background: #1a1a1a !important; color: #ffff00 !important; border: 1px solid #444; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; }
-#wp-custom-wrapper #movie-search { width: 100%; max-width: 600px; padding: 12px 20px; background: rgba(255,255,255,0.05); border: 1px solid #333; border-radius: 50px; color: #fff; margin-bottom: 15px; outline: none; transition: border 0.3s; }
-#wp-custom-wrapper #movie-search:focus { border-color: #ff0000; }
-
-#wp-custom-wrapper #movie-library-grid { 
-    display: grid; 
-    gap: 25px; 
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
-    width: 100%;
-}
-
-#wp-custom-wrapper .movie-card {
-    background: var(--card-bg); border-radius: 15px; border: 1px solid #222; 
-    display: flex; flex-direction: column; transition: transform 0.3s ease, box-shadow 0.3s ease; 
-    overflow: hidden; text-align: center; cursor: pointer;
-}
-#wp-custom-wrapper .movie-card:hover { transform: translateY(-5px); }
-
-#wp-custom-wrapper .movie-card.glow-unrated { border-color: #ff0000; box-shadow: 0 0 15px rgba(255, 0, 0, 0.6); }
-#wp-custom-wrapper .movie-card.glow-extended { border-color: #00ff00; box-shadow: 0 0 15px rgba(0, 255, 0, 0.6); }
-#wp-custom-wrapper .movie-card.glow-tvshow { border-color: #ffff00; box-shadow: 0 0 15px rgba(255, 255, 0, 0.6); }
-#wp-custom-wrapper .movie-card.glow-directors { border-color: #00ccff; box-shadow: 0 0 15px rgba(0, 204, 255, 0.6); }
-#wp-custom-wrapper .movie-card.christmas-card { border-color: #ff0000; box-shadow: 0 0 15px rgba(255, 0, 0, 0.4); }
-
-/* Poster Box Layout Updates */
-#wp-custom-wrapper .poster-box { 
-    position: relative; aspect-ratio: 2/3; background: #000; border-radius: 15px 15px 0 0; overflow: hidden; pointer-events: none; 
-}
-#wp-custom-wrapper .movie-card img { width: 100%; height: 100%; object-fit: contain; }
-
-/* In-Poster Overlays */
-#wp-custom-wrapper .poster-year-badge {
-    position: absolute; bottom: 8px; right: 8px;
-    background: rgba(0, 0, 0, 0.8); color: #fff; font-size: 12px; font-weight: 900;
-    padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.3);
-    z-index: 5;
-}
-#wp-custom-wrapper .poster-edition-badge {
-    position: absolute; top: 8px; left: 8px;
-    background: rgba(139, 0, 0, 0.9); color: #fff; font-size: 11px; font-weight: 900;
-    padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.4); text-transform: uppercase;
-    z-index: 5;
-}
-
-/* First Purchase Bookmark Ribbon */
-#wp-custom-wrapper .first-purchase-bookmark {
-    position: absolute;
-    top: -5px;
-    right: 15px;
-    background: linear-gradient(135deg, #ffd700, #ff8c00);
-    color: #000;
-    padding: 10px 10px 18px 10px;
-    font-size: 11px;
-    font-weight: 900;
-    text-transform: uppercase;
-    box-shadow: 0 5px 15px rgba(255,215,0,0.6);
-    z-index: 10;
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 85%, 0 100%);
-    text-align: center;
-    border: 1px solid #fff;
-    border-top: none;
-}
-
-#wp-custom-wrapper .movie-info { padding: 20px 10px; flex-grow: 1; pointer-events: none; display: flex; flex-direction: column; justify-content: center; }
-
-/* CSS TRUNCATION - Forces 2 lines max to hide massive misaligned strings */
-#wp-custom-wrapper .movie-title { 
-    font-size: 18px; font-weight: 800; border-bottom: 1px solid #333; 
-    padding-bottom: 8px; margin-bottom: 8px; 
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;
-}
-
-.click-indicator { font-size: 12px; color: #1ce783; font-weight: bold; margin-top: auto; border-top: 1px solid #333; padding-top: 10px; text-transform: uppercase; letter-spacing: 1px; }
-
-/* --- LIGHTBOX MODAL CSS --- */
-#movie-lightbox {
-    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.95); z-index: 20000;
-    display: none; align-items: center; justify-content: center;
-}
-#movie-lightbox.active { display: flex; }
-
-.lightbox-content {
-    width: 90%; max-width: 500px; height: 85vh; max-height: 800px;
-    border-radius: 20px; border: 2px solid #ff0000;
-    background-color: #000; background-size: cover; background-position: center top;
-    position: relative; overflow: hidden;
-    box-shadow: 0 0 30px rgba(255,0,0,0.5);
+body {
+    background: #000;
+    color: var(--text-main);
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-size: 14px; /* Body 14 Protocol */
+    margin: 0; padding: 0;
+    overflow-x: hidden;
 }
 
-.lightbox-overlay {
-    position: absolute; bottom: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,0.85) 50%, rgba(0,0,0,0.2) 100%);
-    display: flex; flex-direction: column; justify-content: flex-end; padding: 30px 20px;
-    box-sizing: border-box; text-align: center;
-    transition: opacity 0.3s;
+h2, #cinema-logo { font-size: 30px !important; text-align: center; width: 100%; } /* Header 30 Protocol */
+
+.black-outline {
+    text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000 !important;
 }
 
-.close-btn {
-    position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); border: 2px solid #fff;
-    color: #fff; border-radius: 50%; width: 40px; height: 40px; font-weight: 900;
-    cursor: pointer; z-index: 10; font-size: 18px; transition: 0.3s; display: flex; align-items: center; justify-content: center;
+.master-85-width { 
+    width: 85% !important; 
+    margin: 0 auto; 
+    max-width: 2560px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
-.close-btn:hover { background: #ff0000; border-color: #ff0000; transform: scale(1.1); }
 
-/* YouTube In-Modal Player Styling */
-#lb-video-wrapper {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: #000; z-index: 50; display: none; flex-direction: column;
+body.theme-dark {
+    background: radial-gradient(circle at center top, #1a1010 0%, #050505 50%, #000000 100%) fixed !important;
 }
+
+#library-header {
+    width: 100%; background: var(--header-bg); border-bottom: 2px solid #8b0000;
+    padding: 40px 20px; border-radius: 0 0 24px 24px; margin-bottom: 30px;
+    display: flex; flex-direction: column; align-items: center; text-align: center; position: relative;
+}
+
+#header-clock { position: absolute; top: 10px; right: 20px; font-size: 12px; color: #ff0000; }
+#cinema-logo span { color: #8b0000; }
+#movie-counter { margin-top: 5px; font-weight: 700; color: #aaa; }
+#movie-counter span { color: #ff0000; }
+
+#controls-container { width: 100%; margin-top: 25px; display: flex; flex-direction: column; align-items: center; }
+
+#movie-search {
+    width: 90%; max-width: 600px; padding: 14px 25px; border-radius: 50px;
+    background: #111; border: 1px solid #333; color: #fff; margin-bottom: 20px; text-align: center;
+}
+
+#filter-dropdowns { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; }
+.f-select { background: #111; color: #ffff00; border: 1px solid #444; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+
+#movie-library-grid { display: grid; gap: 15px; width: 100%; grid-template-columns: repeat(2, 1fr); }
+@media (min-width: 768px) {
+    #movie-library-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+}
+
+.movie-card {
+    background: var(--card-bg); border: 1px solid #222; border-radius: 12px;
+    display: flex; flex-direction: column; overflow: hidden; transition: 0.3s; cursor: pointer;
+}
+.movie-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(139,0,0,0.5); border-color: #8b0000; }
+
+.poster-box { position: relative; aspect-ratio: 2/3; background: #000; overflow: hidden; }
+.movie-card img { width: 100%; height: 100%; object-fit: cover; }
+.poster-year-badge { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 900; }
+
+.movie-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; gap: 5px; text-align: center; }
+.movie-title { font-weight: 800; font-size: 15px; border-bottom: 1px solid #333; padding-bottom: 5px; min-height: 2.5em; display: flex; align-items: center; justify-content: center; }
+.main-desc { font-size: 11px; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 5px 0; }
+.main-meta-row { display: flex; justify-content: center; gap: 8px; font-size: 10px; color: #f5c518; text-transform: uppercase; margin-top: auto; }
+.click-indicator { font-size: 10px; color: #1ce783; font-weight: bold; padding-top: 5px; text-transform: uppercase; letter-spacing: 1px; border-top: 1px solid #222; }
+
+/* Lightbox Styling */
+#movie-lightbox { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); z-index: 20000; display: none; align-items: center; justify-content: center; padding: 20px; }
+#movie-lightbox.active { display: flex; }
+.lightbox-content { width: 100%; max-width: 500px; height: 85vh; border: 2px solid #ff0000; border-radius: 20px; position: relative; background-size: cover; background-position: center; }
+.lightbox-overlay { position: absolute; inset: 0; background: linear-gradient(to top, #000 45%, rgba(0,0,0,0.4) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 25px; text-align: center; overflow-y: auto; }
+
+/* Video Wrapper */
+#lb-video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; display: none; flex-direction: column; border-radius: 20px; overflow: hidden; }
 #lb-video-wrapper.active { display: flex; }
-#lb-yt-iframe { width: 100%; flex-grow: 1; border: none; }
-.close-video-btn {
-    background: #111; color: #fff; border: none; border-bottom: 2px solid #ff0000;
-    padding: 12px; font-weight: bold; cursor: pointer; text-transform: uppercase;
-    letter-spacing: 1px; display: flex; align-items: center; justify-content: center; font-size: 14px;
-}
-.close-video-btn:hover { background: #ff0000; }
 
-.lightbox-info { margin-bottom: 25px; }
-#lb-title { font-size: clamp(1.4rem, 4vw, 2rem); margin: 0 0 10px; color: #fff; font-weight: 900; }
-.lb-meta { font-size: 13px; color: #ccc; margin-bottom: 10px; font-weight: 700; }
-.lb-meta a { color: #f5c518; text-decoration: none; }
-.lb-meta a:hover { text-decoration: underline; }
+.close-btn { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.8); border: 1px solid #fff; color: #fff; border-radius: 50%; width: 40px; height: 40px; font-weight: 900; cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; }
 
-#lb-artists { font-size: 14px; color: #fff; line-height: 1.6; max-height: 120px; overflow-y: auto; padding-right: 5px; }
-#lb-artists strong { color: #aaa; display: block; margin-bottom: 5px; font-size: 12px; text-transform: uppercase; }
-.artist-tag { 
-    display: inline-block; cursor: pointer; color: #1CE783; font-weight: 800; margin: 2px 4px; 
-    transition: color 0.3s; border-bottom: 1px dashed rgba(28, 231, 131, 0.4);
-}
-.artist-tag:hover { color: #ff0000; border-bottom-color: #ff0000; }
+/* Button Grid - Strictly 3-columns 3x2 */
+.button-container { display: grid; gap: 8px; width: 100%; margin-top: 5px; grid-template-columns: repeat(3, 1fr); }
 
-/* Custom Scrollbar for artists if cast is huge */
-#lb-artists::-webkit-scrollbar { width: 4px; }
-#lb-artists::-webkit-scrollbar-track { background: transparent; }
-#lb-artists::-webkit-scrollbar-thumb { background: #ff0000; border-radius: 2px; }
+/* Force non-bold, remove outline/text-shadow for stream buttons */
+.m-link { padding: 10px 4px; border-radius: 8px; font-size: 10px; font-weight: 400 !important; text-transform: uppercase; color: #fff; text-decoration: none; text-align: center; transition: 0.3s; text-shadow: none !important; }
+.btn-amazon { background: #FF9900 !important; color: #000 !important; }
+.btn-google { background: #4285F4; }
+.btn-moviesanywhere { background: #00aeef; }
+.btn-apple { background: #555; }
+.btn-fandango { background: #ff7300; }
+.btn-youtube { background: #FF0000; }
 
-/* Button layout in Lightbox */
-.button-container { display: grid; gap: 8px; width: 100%; margin-top: 15px; }
-.button-container.count-1 { grid-template-columns: 1fr; }
-.button-container.count-2 { grid-template-columns: 1fr 1fr; }
-.button-container.count-3, .button-container.count-4 { grid-template-columns: 1fr 1fr; }
-.button-container.count-5, .button-container.count-6 { grid-template-columns: 1fr 1fr 1fr; }
+#kf-watermark { position: fixed; bottom: 10px; left: 10px; font-size: 24px; font-weight: 900; opacity: 0.8; z-index: 10000; pointer-events: none; }
+.kf-k { color: #FF4500; transform: scaleX(-1); display: inline-block; }
+.kf-f { color: #000; margin-left: -0.22em; text-shadow: 0 0 2px #fff; }
 
-.m-link { 
-    padding: 10px 4px; border-radius: 6px; font-size: 11px; font-weight: 900; text-decoration: none !important; 
-    text-transform: uppercase; text-align: center; color: #fff; display: flex; align-items: center; justify-content: center; min-height: 38px; 
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-button.m-link {
-    font-family: inherit; border: none; cursor: pointer; width: 100%; 
-}
-.m-link:hover, .m-link:active { filter: brightness(1.1); transform: scale(1.02); }
-
-/* RESTORED COLOR PALETTE */
-.btn-amazon { background: #FF9900 !important; color: #000 !important; box-shadow: 0 0 10px #FF9900; }
-.btn-amazon:hover { background: #000 !important; color: #FF9900 !important; border: 1px solid #FF9900; }
-
-.btn-moviesanywhere { background: #00aeef !important; color: #fff !important; }
-.btn-moviesanywhere:hover { background: #fff !important; color: #00aeef !important; border: 1px solid #00aeef; }
-
-.btn-google { background: #4285F4 !important; color: #ff0000 !important; font-weight: 900; border: 1px solid #ff0000; }
-.btn-google:hover { background: #ff0000 !important; color: #4285F4 !important; border: 1px solid #4285F4; }
-
-.btn-youtube { background: #FF0000 !important; color: #0000ff !important; font-weight: 900; border: 1px solid #0000ff; }
-.btn-youtube:hover { background: #0000ff !important; color: #FF0000 !important; border: 1px solid #FF0000; }
-
-.btn-apple { background: #ffffff !important; color: #007aff !important; border: 1px solid #007aff; }
-.btn-apple:hover { background: #007aff !important; color: #fff !important; }
-
-.btn-fandango { background: linear-gradient(180deg, #007ec3 0%, #004a80 100%) !important; color: #ff7300 !important; box-shadow: 0 0 12px rgba(0, 126, 195, 0.5); }
-.btn-fandango:hover { background: #ff7300 !important; color: #004a80 !important; }
-
-@media (max-width: 768px) {
-    #wp-custom-wrapper #movie-library-grid { grid-template-columns: 1fr !important; padding: 0 10px; }
-    #wp-custom-wrapper .poster-box { aspect-ratio: 1/1; } 
-    .lightbox-content { width: 95%; max-width: none; height: 90vh; }
-    .button-container { grid-template-columns: 1fr 1fr !important; }
-}
-
-.tip-link { display: block; padding: 12px; background: linear-gradient(135deg, #8b0000, #ff0000); color: #fff !important; font-weight: 900; border-radius: 50px; text-align: center; border: 2px solid #fff; box-shadow: 0 5px 15px rgba(255,0,0,0.5); text-decoration: none; }
+.tip-link { padding: 15px 40px; background: linear-gradient(135deg, #8b0000, #ff0000); color: #fff !important; font-weight: 900; border-radius: 50px; text-decoration: none; border: 2px solid #fff; }
 </style>
 
 <script>
-// --- THEME & TIME LOGIC (MASTER PROTOCOL) ---
-function setCookie(name, value, days) {
-    let expires = "";
-    if (days) {
-        let date = new Date();
-        date.setTime(date.getTime() + (days*24*60*60*1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-}
-function getCookie(name) {
-    let nameEQ = name + "=";
-    let ca = document.cookie.split(';');
-    for(let i=0;i < ca.length;i++) {
-        let c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
-}
-
-function applyTheme(override) {
-    let mode = override;
-    if (mode === 'auto' || !mode) {
-        const hour = new Date().getHours();
-        mode = (hour < 6 || hour >= 18) ? 'dark' : 'light';
-    }
-    
-    if (mode === 'dark') {
-        document.body.classList.remove('theme-light');
-        document.body.classList.add('theme-dark');
-    } else {
-        document.body.classList.remove('theme-dark');
-        document.body.classList.add('theme-light');
-    }
-    
-    if (override) {
-        setCookie("kf_theme_pref", override, 365);
-        document.getElementById('theme-toggle').value = override;
-    }
-}
-
-// Initial Theme Check
-(function initTheme() {
-    let saved = getCookie("kf_theme_pref");
-    if (saved) {
-        applyTheme(saved);
-        document.getElementById('theme-toggle').value = saved;
-    } else {
-        applyTheme('auto');
-    }
-})();
-
-// Detailed Relative Time Formatter
-function getRelativeTime(dateString) {
-    if (!dateString) return null;
-    const addedDate = new Date(dateString);
-    if (isNaN(addedDate.getTime())) return null;
-    
-    const now = new Date();
-    let diffMs = now - addedDate;
-    if (diffMs < 0) diffMs = 0; 
-
-    let mins = Math.floor(diffMs / 60000);
-    let hours = Math.floor(mins / 60); mins = mins % 60;
-    let days = Math.floor(hours / 24); hours = hours % 24;
-    
-    let years = Math.floor(days / 365.25); days = Math.floor(days % 365.25);
-    let months = Math.floor(days / 30.44); days = Math.floor(days % 30.44);
-    let weeks = Math.floor(days / 7); days = days % 7;
-
-    let parts = [];
-    if(years > 0) parts.push(`${years}yr${years>1?'s':''}`);
-    if(months > 0) parts.push(`${months} month${months>1?'s':''}`);
-    if(weeks > 0) parts.push(`${weeks} week${weeks>1?'s':''}`);
-    if(days > 0) parts.push(`${days} day${days>1?'s':''}`);
-    if(hours > 0) parts.push(`${hours} hour${hours>1?'s':''}`);
-    if(mins > 0) parts.push(`${mins} min${mins>1?'s':''}`);
-
-    return parts.length > 0 ? parts.join(' ') + ' old' : 'Just added';
-}
-
+// --- CORE ENGINE ---
 (function() {
-    /**
-     * WEREWOLF CINEMA LIBRARY - V28.0 Revised (Data Corruption Fail-Safes & First Purchase Bookmark)
-     * Optimized for ASUS ROG Strix & UltraWide Displays
-     * Logic: tag=moviesanywhere02-20 only for MA films.
-     */
     let movies = [];
-    window.currentRenderedMovies = []; // For lightbox indexing
-    
-    /* === ORIGINAL FIREBASE LOGIC (Commented out per NO STRIPPING rule) ===
-    const config = { databaseURL: "https://werewolf-movie-library-default-rtdb.firebaseio.com" };
-    if (!firebase.apps.length) firebase.initializeApp(config, 'werewolfLibrary');
-    const db = firebase.app('werewolfLibrary').database();
-
-    db.ref('movies').on('value', snap => {
-        movies = [];
-        try {
-            snap.forEach(firstLevel => {
-                const nodeData = firstLevel.val();
-                if (nodeData.imdbId) {
-                    movies.push(nodeData); 
-                } else {
-                    firstLevel.forEach(movieEntry => {
-                        const m = movieEntry.val();
-                        if (m && m.imdbId) movies.push(m);
-                    });
-                }
-            });
-        } catch(e) { console.error("Library Sync Failure:", e); }
-        updateCollectionDropdown(movies); 
-        runFilters(); 
-    });
-    ======================================================================== */
-
-    // === NEW GOOGLE SHEETS CSV FETCHING LOGIC ===
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?output=csv";
 
-    async function loadCSVLibrary() {
+    // Strict Date Handler for Column J (MM/DD/YYYY)
+    function getSafeTimestamp(ds) {
+        if (!ds) return 0;
+        const p = ds.split(/[\/\-\.]/);
+        if (p.length < 3) return 0;
+        let m = parseInt(p[0]), d = parseInt(p[1]), y = parseInt(p[2]);
+        if (isNaN(m) || isNaN(d) || isNaN(y)) return 0;
+        if (y < 100) y += (y < 50 ? 2000 : 1900);
+        return new Date(y, m-1, d).getTime() || 0;
+    }
+
+    async function loadCSV() {
         try {
-            const response = await fetch(CSV_URL);
-            if (!response.ok) throw new Error("Network response was not ok");
-            const csvText = await response.text();
-            parseCSVData(csvText);
-            document.getElementById('movie-counter').innerHTML = `Library Synced Successfully: <span>${movies.length}</span> Titles`;
-        } catch (error) {
-            console.error("Library CSV Sync Failure:", error);
-            document.getElementById('movie-counter').innerHTML = `<span style="color:red">Failed to sync CSV data. Retrying...</span>`;
-        }
+            const res = await fetch(CSV_URL);
+            const text = await res.text();
+            parseCSV(text);
+        } catch (e) { console.error("CSV Sync Failure", e); }
     }
 
-    // ADVANCED CSV PARSER: Reads character by character to safely ignore internal newlines.
-    function parseCSVData(data) {
-        let rows = [];
-        let currentRow = [];
-        let currentCell = '';
-        let inQuotes = false;
-
-        for (let i = 0; i < data.length; i++) {
-            let char = data[i];
-            let nextChar = data[i + 1];
-
-            if (char === '"' && inQuotes && nextChar === '"') {
-                // Escaped quote
-                currentCell += '"';
-                i++; 
-            } else if (char === '"') {
-                // Toggle quote state
-                inQuotes = !inQuotes;
-            } else if (char === ',' && !inQuotes) {
-                // End of cell
-                currentRow.push(currentCell.trim());
-                currentCell = '';
-            } else if ((char === '\n' || char === '\r') && !inQuotes) {
-                // End of row
-                if (char === '\r' && nextChar === '\n') i++; // skip \n of \r\n
-                currentRow.push(currentCell.trim());
-                rows.push(currentRow);
-                currentRow = [];
-                currentCell = '';
-            } else {
-                // Inside cell content (including internal newlines if inQuotes is true)
-                currentCell += char;
-            }
+    function parseCSV(data) {
+        let rows = [], currentRow = [], currentCell = '', inQuotes = false;
+        for (let i=0; i<data.length; i++) {
+            let char = data[i], next = data[i+1];
+            if (char === '"' && inQuotes && next === '"') { currentCell += '"'; i++; }
+            else if (char === '"') inQuotes = !inQuotes;
+            else if (char === ',' && !inQuotes) { currentRow.push(currentCell.trim()); currentCell = ''; }
+            else if ((char === '\n' || char === '\r') && !inQuotes) {
+                if (char === '\r' && next === '\n') i++;
+                currentRow.push(currentCell.trim()); rows.push(currentRow); currentRow = []; currentCell = '';
+            } else currentCell += char;
         }
-        // Push the final cell/row if file ends without a newline
-        if (currentCell || currentRow.length > 0) {
-            currentRow.push(currentCell.trim());
-            rows.push(currentRow);
-        }
-
-        if (rows.length < 2) return;
-        movies = [];
-
-        // Skip headers (i = 0), start at row 1.
-        // STRICT MAPPING purely by index (0-16) to ensure no misaligned data.
-        for (let i = 1; i < rows.length; i++) {
-            const values = rows[i];
-            // Skip empty rows
-            if (values.length < 2 && !values[0]) continue;
-
-            let m = { platforms: {} };
-
-            m.title = values[0] || ""; // A
-            m.image = values[1] || ""; // B
-            m.year = parseInt(values[2], 10) || values[2] || ""; // C
-            
-            if (values[3]) m.platforms['amazon'] = values[3]; // D
-            if (values[4]) m.platforms['google'] = values[4]; // E
-            if (values[5]) m.platforms['youtube'] = values[5]; // F
-            if (values[6]) m.platforms['moviesanywhere'] = values[6]; // G
-            if (values[7]) m.platforms['apple'] = values[7]; // H
-            if (values[8]) m.platforms['fandango'] = values[8]; // I
-            
-            if (values[9]) { // J - Date Added
-                m.dateAdded = values[9];
-                m.timestamp = new Date(values[9]).getTime();
-            }
-            
-            m.imdbId = values[10] || ""; // K
-            
-            if (values[11]) { // L - Actor/Cast
-                m.cast = values[11].split(',').map(s => s.trim()).filter(Boolean);
-            }
-            
-            m.edition = values[12] || ""; // M
-            m.collection = values[13] || ""; // N
-            m.genre = values[14] || ""; // O
-            m.length = values[15] || ""; // P
-            m.type = values[16] || ""; // Q
-
-            // FAILSAFE: Ensure we only push valid movie entries.
-            // If the Title exceeds 120 characters, it is almost definitely a corrupted/misaligned cast string or plot summary. HIDE IT.
-            if (m.title && m.title.toLowerCase() !== 'unknown' && m.title.length < 120) {
-                movies.push(m);
-            }
-        }
+        if (currentCell || currentRow.length) { currentRow.push(currentCell.trim()); rows.push(currentRow); }
         
-        // DYNAMIC FIRST PURCHASE LOGIC
-        // Scan the entire parsed array to find the absolute lowest (oldest) timestamp.
-        if (movies.length > 0) {
-            const validTimestamps = movies.filter(m => m.timestamp).map(m => m.timestamp);
-            if (validTimestamps.length > 0) {
-                const absoluteOldestTimestamp = Math.min(...validTimestamps);
-                
-                // Flag all movies that match the oldest timestamp (handles ties if multiple added on day 1)
-                movies.forEach(m => {
-                    if (m.timestamp === absoluteOldestTimestamp) {
-                        m.isFirstPurchase = true;
-                    }
-                });
-            }
-        }
-        
-        updateCollectionDropdown(movies); 
-        updateArtistDropdown(movies);
-        runFilters(); 
+        movies = rows.slice(1).map(v => ({
+            title: v[0]||'', image: v[1]||'', year: v[2]||'', 
+            platforms: { amazon:v[3], google:v[4], youtube:v[5], moviesanywhere:v[6], apple:v[7], fandango:v[8] },
+            dateAdded: v[9]||'', imdbId: v[10]||'', 
+            cast: v[11] ? v[11].split(',').map(s=>s.trim()).filter(Boolean) : [],
+            edition: v[12]||'', collection: v[13]||'', genre: v[14]||'', runtime: v[15]||'',
+            type: v[16]||'', streaming: v[17]||'', description: v[18]||'',
+            timestamp: getSafeTimestamp(v[9])
+        })).filter(m => m.title && m.title.length < 120);
+
+        updateDropdowns();
+        runFilters();
     }
 
-    function startClock() {
+    window.renderMovies = (list) => {
+        const grid = document.getElementById('movie-library-grid');
+        grid.innerHTML = '';
+        list.forEach(m => {
+            const card = document.createElement('div');
+            card.className = 'movie-card';
+            card.onclick = () => openLightbox(m);
+            
+            // Suppression: Hide "Standard" or empty editions
+            const hasEdition = m.edition && m.edition.toLowerCase() !== 'standard' && m.edition.trim() !== '';
+            
+            card.innerHTML = `
+                <div class="poster-box">
+                    <img src="${m.image}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
+                    <div class="poster-year-badge black-outline">${m.year}</div>
+                </div>
+                <div class="movie-info">
+                    <div class="movie-title black-outline">${m.title}</div>
+                    <div class="main-desc">${m.description || 'N/A'}</div>
+                    <div class="main-meta-row black-outline">
+                        <span>${m.runtime || '0m'}</span>
+                        ${hasEdition ? `<span>•</span><span>${m.edition}</span>` : ''}
+                    </div>
+                    <div class="click-indicator black-outline">Details & Streams</div>
+                </div>
+            `;
+            grid.appendChild(card);
+        });
+        document.getElementById('movie-counter').innerHTML = `Cinema Inventory: <span>${list.length}</span>`;
+    };
+
+    window.runFilters = () => {
+        const query = document.getElementById('movie-search').value.toLowerCase();
+        const typeF = document.getElementById('type-select').value;
+        const genreF = document.getElementById('genre-select').value;
+        const collF = document.getElementById('collection-select').value;
+        const artF = document.getElementById('artist-select').value;
+        const sort = document.getElementById('sort-select').value;
+
+        let filtered = movies.filter(m => {
+            const pool = [m.title, m.year, m.genre, m.description, ...m.cast].join(' ').toLowerCase();
+            const searchMatch = pool.includes(query);
+            const typeMatch = !typeF || (typeF === 'TV' ? m.type.toLowerCase().includes('tv') : m.type.toLowerCase().includes('movie'));
+            const genreMatch = !genreF || m.genre.toLowerCase().includes(genreF.toLowerCase());
+            const collMatch = !collF || m.collection === collF;
+            const artMatch = !artF || m.cast.includes(artF);
+            return searchMatch && typeMatch && genreMatch && collMatch && artMatch;
+        });
+
+        // Advanced Sorting Logic
+        if (sort === 'newest') filtered.sort((a,b) => b.timestamp - a.timestamp);
+        else if (sort === 'oldest') filtered.sort((a,b) => a.timestamp - b.timestamp);
+        else if (sort === 'az') filtered.sort((a,b) => a.title.localeCompare(b.title));
+        else if (sort === 'za') filtered.sort((a,b) => b.title.localeCompare(a.title));
+        else if (sort === 'new-old') filtered.sort((a,b) => (parseInt(b.year)||0) - (parseInt(a.year)||0));
+        else if (sort === 'old-new') filtered.sort((a,b) => (parseInt(a.year)||0) - (parseInt(b.year)||0));
+        else if (sort === 'actor-az') filtered.sort((a,b) => (a.cast[0]||'').localeCompare(b.cast[0]||''));
+
+        renderMovies(filtered);
+    };
+
+    window.openLightbox = (m) => {
+        const lb = document.getElementById('movie-lightbox');
+        document.getElementById('lightbox-inner').style.backgroundImage = `url('${m.image}')`;
+        document.getElementById('lb-title').textContent = m.title;
+        
+        const hasEdition = m.edition && m.edition.toLowerCase() !== 'standard' && m.edition.trim() !== '';
+        document.getElementById('lb-meta-container').innerHTML = `${m.imdbId ? `IMDb: ${m.imdbId} | ` : ''}${m.genre}${hasEdition ? ` | Edition: ${m.edition}` : ''}`;
+        
+        document.getElementById('lb-streaming').textContent = m.streaming ? `Available on: ${m.streaming}` : '';
+        document.getElementById('lb-artists').innerHTML = `<strong class="black-outline">Starring:</strong><br>${m.cast.join(' • ')}`;
+        
+        const hasMA = m.platforms.moviesanywhere && m.platforms.moviesanywhere.trim() !== '';
+        document.getElementById('lb-store-heading').textContent = hasMA ? "Buy / Rent / Sync" : "Buy / Rent";
+
+        let btns = [];
+        const p = m.platforms;
+        // Strictly filter out buttons without URLs
+        if (p.amazon) btns.push(`<a href="${p.amazon}" target="werewolf_cinema_window" class="m-link btn-amazon">Amazon</a>`);
+        if (p.google) btns.push(`<a href="${p.google}" target="werewolf_cinema_window" class="m-link btn-google">Google</a>`);
+        if (p.moviesanywhere) btns.push(`<a href="${p.moviesanywhere}" target="werewolf_cinema_window" class="m-link btn-moviesanywhere">MA</a>`);
+        if (p.apple) btns.push(`<a href="${p.apple}" target="werewolf_cinema_window" class="m-link btn-apple">Apple TV</a>`);
+        if (p.fandango) btns.push(`<a href="${p.fandango}" target="werewolf_cinema_window" class="m-link btn-fandango">Fandango</a>`);
+        if (p.youtube) btns.push(`<button onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube">YouTube</button>`);
+        
+        document.getElementById('lb-buttons').innerHTML = btns.join('');
+        lb.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeLightbox = () => {
+        document.getElementById('movie-lightbox').classList.remove('active');
+        document.body.style.overflow = 'auto';
+        closeYouTube();
+    };
+
+    window.playYouTube = (u) => {
+        const vid = u.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
+        if (vid && vid[2].length === 11) {
+            document.getElementById('lb-video-wrapper').classList.add('active').style.display = "flex";
+            document.getElementById('lb-yt-iframe').src = `https://www.youtube.com/embed/${vid[2]}?autoplay=1`;
+        } else window.open(u, 'werewolf_cinema_window');
+    };
+
+    window.closeYouTube = (e) => {
+        if(e) e.stopPropagation();
+        document.getElementById('lb-video-wrapper').classList.remove('active').style.display = "none";
+        document.getElementById('lb-yt-iframe').src = "";
+    };
+
+    function updateDropdowns() {
+        const gSet = new Set(), cSet = new Set(), aSet = new Set();
+        movies.forEach(m => { 
+            if(m.genre) gSet.add(m.genre); 
+            if(m.collection) cSet.add(m.collection);
+            m.cast.forEach(a => aSet.add(a));
+        });
+        const fill = (id, set, label) => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            const cur = el.value;
+            el.innerHTML = `<option value="">All ${label}</option>`;
+            Array.from(set).sort().forEach(v => {
+                const o = document.createElement('option');
+                o.value = v; o.textContent = v;
+                if (v === cur) o.selected = true;
+                el.appendChild(o);
+            });
+        };
+        fill('genre-select', gSet, 'Genres');
+        fill('collection-select', cSet, 'Collections');
+        fill('artist-select', aSet, 'Artists');
+    }
+
+    window.resetFilters = () => {
+        ['movie-search','type-select','genre-select','collection-select','artist-select'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('sort-select').value = 'newest';
+        runFilters();
+    };
+
+    const startClock = () => {
         const update = () => {
             const now = new Date();
             document.getElementById('header-clock').textContent = `${now.toLocaleDateString()} | ${now.toLocaleTimeString()}`;
         };
         update(); setInterval(update, 1000);
-    }
-    startClock();
-
-    // Trigger Initial CSV Load, then Auto-Refresh every 5 minutes (300,000 ms)
-    loadCSVLibrary();
-    setInterval(loadCSVLibrary, 300000);
-
-    function updateCollectionDropdown(currentList) {
-        let colCounts = {};
-        currentList.forEach(m => {
-            if (m.collection && m.collection !== "None" && m.collection !== "") {
-                const name = m.collection.trim();
-                colCounts[name] = (colCounts[name] || 0) + 1;
-            }
-        });
-        const validCols = Object.keys(colCounts).filter(name => colCounts[name] >= 2).sort();
-        const el = document.getElementById('collection-select'); if (!el) return;
-        const currentVal = el.value;
-        el.innerHTML = `<option value="">All Collections</option>`;
-        validCols.forEach(name => {
-            const o = document.createElement('option'); o.value = name; o.textContent = name;
-            if (name === currentVal) o.selected = true; el.appendChild(o);
-        });
-    }
-
-    // NEW: Dynamically build Artist Dropdown
-    function updateArtistDropdown(currentList) {
-        let artistsSet = new Set();
-        currentList.forEach(m => {
-            if (m.cast && Array.isArray(m.cast)) {
-                m.cast.forEach(artist => artistsSet.add(artist));
-            }
-        });
-        // Sort artists alphabetically
-        const sortedArtists = Array.from(artistsSet).sort();
-        const el = document.getElementById('artist-select'); if (!el) return;
-        const currentVal = el.value;
-        el.innerHTML = `<option value="">All Artists</option>`;
-        sortedArtists.forEach(name => {
-            const o = document.createElement('option'); o.value = name; o.textContent = name;
-            if (name === currentVal) o.selected = true; el.appendChild(o);
-        });
-    }
-
-    window.renderMovies = list => {
-        const cnt = document.getElementById('movie-library-grid'); if (!cnt) return;
-        document.getElementById('movie-counter').innerHTML = `Found: <span>${list.length}</span> Titles`;
-        cnt.innerHTML = '';
-        
-        window.currentRenderedMovies = list; // Update scoped list for lightbox reference
-
-        list.forEach((m, index) => {
-            const card = document.createElement('div');
-            const ed = (m.edition || "").toLowerCase();
-            const ty = (m.type || m.AC || "").toLowerCase();
-            let glowClass = "";
-            if (ed.includes("unrated")) glowClass = "glow-unrated";
-            else if (ed.includes("extended")) glowClass = "glow-extended";
-            else if (ed.includes("director")) glowClass = "glow-directors";
-            else if (ty.includes("tv show") || ty.includes("tv")) glowClass = "glow-tvshow";
-            card.className = `movie-card ${glowClass} ${m.isChristmas ? 'christmas-card' : ''}`;
-            
-            // Whole card click triggers Lightbox Expansion
-            card.setAttribute("onclick", `openLightbox(${index})`);
-
-            // Primary info locked strictly to Title (A), Image (B), Year (C).
-            card.innerHTML = `
-                <div class="poster-box">
-                    <img src="${m.image || ''}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
-                    ${m.edition && m.edition.toLowerCase() !== 'standard' ? `<div class="poster-edition-badge black-outline">${m.edition}</div>` : ''}
-                    ${m.year ? `<div class="poster-year-badge black-outline">${m.year}</div>` : ''}
-                    ${m.isFirstPurchase ? `<div class="first-purchase-bookmark black-outline">🏆 1st Purchase</div>` : ''}
-                </div>
-                <div class="movie-info">
-                    <div class="movie-title black-outline">${m.title || 'Unknown'}</div>
-                    <div class="click-indicator black-outline">Click for Details & Streams</div>
-                </div>`;
-            cnt.appendChild(card);
-        });
     };
 
-    // --- YOUTUBE NATIVE PLAYER LOGIC ---
-    window.playYouTube = (url) => {
-        let videoId = null;
-        // Parse YouTube ID from various URL formats
-        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-        const match = url.match(regExp);
-        if (match && match[2].length === 11) {
-            videoId = match[2];
-        }
-
-        if (videoId) {
-            document.getElementById('lb-video-wrapper').classList.add('active');
-            document.getElementById('lb-yt-iframe').src = `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-        } else {
-            // Fallback safely to window open if the URL format isn't standard YouTube
-            window.open(url, 'werewolf_cinema_window');
-        }
-    };
-
-    window.closeYouTube = (e) => {
-        if(e) e.stopPropagation();
-        document.getElementById('lb-video-wrapper').classList.remove('active');
-        document.getElementById('lb-yt-iframe').src = "";
-    };
-
-    // --- LIGHTBOX & ARTIST FILTER LOGIC ---
-    window.openLightbox = (index) => {
-        const m = window.currentRenderedMovies[index];
-        if(!m) return;
-        
-        const lb = document.getElementById('movie-lightbox');
-        const inner = document.getElementById('lightbox-inner');
-        const title = document.getElementById('lb-title');
-        const metaContainer = document.getElementById('lb-meta-container');
-        const dateAddedNode = document.getElementById('lb-date-added');
-        const artists = document.getElementById('lb-artists');
-        const btns = document.getElementById('lb-buttons');
-        
-        inner.style.backgroundImage = `url('${m.image || 'https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'}')`;
-        title.textContent = `${m.title || 'Unknown'} ${m.year ? `(${m.year})` : ''}`;
-        
-        // Strict Meta Hide Logic (Only show if data exists in CSV)
-        let metaItems = [];
-        if (m.imdbId) metaItems.push(`<a href="https://www.imdb.com/title/${m.imdbId}" target="werewolf_cinema_window">IMDB: ${m.imdbId}</a>`);
-        if (m.length) metaItems.push(m.length);
-        if (m.genre) metaItems.push(m.genre);
-        
-        metaContainer.innerHTML = metaItems.join(' | ');
-        metaContainer.style.display = metaItems.length ? 'block' : 'none';
-        
-        // Relative Time hide logic
-        const relTime = getRelativeTime(m.dateAdded);
-        if (relTime) {
-            dateAddedNode.innerHTML = `${m.isFirstPurchase ? '🏆 <strong>1st Purchase</strong> <br>' : ''}In Collection: ${relTime}`;
-            dateAddedNode.style.display = 'block';
-        } else {
-            dateAddedNode.style.display = 'none';
-        }
-        
-        // Populate Artists (Clickable/Hidden if empty)
-        if (m.cast && m.cast.length > 0) {
-            const castLinks = m.cast.map(c => {
-                const safeName = c.replace(/'/g, "\\'"); // escape single quotes for JS
-                return `<span class="artist-tag black-outline" onclick="filterByArtist('${safeName}')">${c}</span>`;
-            }).join(' • ');
-            artists.innerHTML = `<strong>Starring:</strong> ${castLinks}`;
-        } else {
-            artists.innerHTML = '';
-        }
-        
-        // --- BUTTON STRICT DIRECT LINK LOGIC ---
-        const platforms = m.platforms || {};
-        const isMA = !!platforms.moviesanywhere;
-        const amazonTag = isMA ? "moviesanywhere02-20" : ""; 
-        let bB = [];
-        
-        // If amazon exists in CSV, show Direct Link. No search fallbacks if empty.
-        if (platforms.amazon) {
-            let fUrl = platforms.amazon + (amazonTag ? (platforms.amazon.includes('?') ? '&' : '?') + 'tag=' + amazonTag : '');
-            bB.push(`<a href="${fUrl}" target="werewolf_cinema_window" class="m-link btn-amazon black-outline">Amazon</a>`);
-        }
-        
-        // E, F, G, H, I: Specific Buy/Rent Platforms
-        const reqPlatforms = ['google', 'youtube', 'moviesanywhere', 'apple', 'fandango'];
-        reqPlatforms.forEach(k => {
-            if (platforms[k]) {
-                const label = k === 'moviesanywhere' ? 'Movies Anywhere' : (k === 'apple' ? 'Apple TV' : k.charAt(0).toUpperCase() + k.slice(1));
-                const btnClass = k === 'moviesanywhere' ? 'btn-moviesanywhere' : `btn-${k}`;
-                
-                if (k === 'youtube') {
-                    // Trigger native player instead of opening a tab
-                    bB.push(`<button onclick="playYouTube('${platforms[k]}')" class="m-link ${btnClass} black-outline">${label}</button>`);
-                } else {
-                    // Strict Direct Link
-                    bB.push(`<a href="${platforms[k]}" target="werewolf_cinema_window" class="m-link ${btnClass} black-outline">${label}</a>`);
-                }
-            }
-        });
-        
-        btns.className = `button-container count-${bB.length}`;
-        btns.innerHTML = bB.join('');
-        
-        // Show Lightbox
-        lb.classList.add('active');
-        document.body.style.overflow = 'hidden'; // Stop background scroll
-    };
-
-    window.closeLightbox = (e) => {
-        if(e) e.stopPropagation();
-        document.getElementById('movie-lightbox').classList.remove('active');
-        document.body.style.overflow = 'auto'; // Restore scroll
-        closeYouTube(); // Ensure native video stops when modal is closed
-    };
-
-    window.filterByArtist = (artistName) => {
-        closeLightbox();
-        // Set dropdown specifically if artist exists in it
-        const artistSelect = document.getElementById('artist-select');
-        artistSelect.value = artistName;
-        runFilters();
-        // Scroll smoothly to top of grid
-        document.getElementById('artist-select').scrollIntoView({behavior: 'smooth', block: 'start'});
-    };
-    // ----------------------------------------
-
-    window.runFilters = () => {
-        const t = document.getElementById('movie-search').value.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const ty = document.getElementById('type-select').value;
-        const gn = document.getElementById('genre-select').value;
-        const co = document.getElementById('collection-select').value;
-        const ar = document.getElementById('artist-select').value;
-        const so = document.getElementById('sort-select').value;
-        
-        let filtered = movies.filter(m => {
-            let typeMatch = true; 
-            const mType = (m.type || m.AC || "").toLowerCase();
-            if (ty === 'TV') typeMatch = mType.includes("tv"); 
-            else if (ty === 'Movie') typeMatch = mType.includes("movie"); 
-            
-            const cleanTitle = (m.title || "").toLowerCase().replace(/[^a-z0-9]/g, '');
-            const mCast = (Array.isArray(m.cast) ? m.cast.join(' ') : "").toLowerCase();
-            const searchPool = (cleanTitle + (m.year || '') + (m.collection || '') + (m.genre || '') + (m.edition || '') + mCast);
-            
-            // Artist Exact Dropdown Match Check
-            let artistMatch = true;
-            if (ar) {
-                artistMatch = m.cast && m.cast.includes(ar);
-            }
-
-            return searchPool.includes(t) && typeMatch && artistMatch &&
-                   (!gn || (m.genre || "").toLowerCase().includes(gn.toLowerCase())) && 
-                   (!co || (m.collection || '') === co);
-        });
-
-        // Advanced Sorting Logic
-        if (so === 'az') {
-            filtered.sort((a,b) => (a.title || "").localeCompare(b.title || ""));
-        } else if (so === 'za') {
-            filtered.sort((a,b) => (b.title || "").localeCompare(a.title || ""));
-        } else if (so === 'newest') {
-            // Z-A / Newest Timestamp First
-            filtered.sort((a,b) => (b.timestamp || 0) - (a.timestamp || 0));
-        } else if (so === 'oldest') {
-            // A-Z / Oldest Timestamp First
-            filtered.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
-        } else if (so === 'new-old') {
-            // High Year to Low Year
-            filtered.sort((a,b) => (b.year || 0) - (a.year || 0));
-        } else if (so === 'old-new') {
-            // Low Year to High Year
-            filtered.sort((a,b) => (a.year || 0) - (b.year || 0));
-        }
-
-        renderMovies(filtered);
-    };
-
-    window.resetFilters = () => { 
-        ['movie-search','type-select','genre-select','collection-select','artist-select'].forEach(id => document.getElementById(id).value = ''); 
-        document.getElementById('sort-select').value = 'newest';
-        runFilters(); 
-    };
+    window.onload = () => { startClock(); loadCSV(); };
 })();
 </script>
 </body>
