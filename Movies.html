@@ -221,6 +221,10 @@ body.theme-dark {
 .imdb-link { color: #f5c518; text-decoration: none; transition: color 0.3s ease; }
 .imdb-link:hover { color: #fff; text-decoration: underline; }
 
+/* NEW: Clickable Streaming Platform Link */
+.streaming-link { color: #00aeef; text-decoration: none; font-weight: 900; transition: color 0.3s ease; }
+.streaming-link:hover { color: #fff; text-decoration: underline; text-shadow: 0 0 10px #00aeef !important; }
+
 /* Video Wrapper */
 #lb-video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; display: none; flex-direction: column; border-radius: 20px; overflow: hidden; }
 #lb-video-wrapper.active { display: flex; }
@@ -461,13 +465,45 @@ body.theme-dark {
         
         const hasEdition = m.edition && m.edition.toLowerCase() !== 'standard' && m.edition.trim() !== '';
         
-        // --- NEW: Clickable IMDb Link ---
+        // --- Clickable IMDb Link ---
         const imdbLinkHtml = m.imdbId ? `<a href="https://www.imdb.com/title/${m.imdbId}/" target="werewolf_cinema_window" class="imdb-link black-outline">IMDb: ${m.imdbId}</a> | ` : '';
         document.getElementById('lb-meta-container').innerHTML = `${imdbLinkHtml}${m.genre}${hasEdition ? ` | Edition: ${m.edition}` : ''}`;
         
-        document.getElementById('lb-streaming').textContent = m.streaming ? `Available on: ${m.streaming}` : '';
+        // --- FIXED: Only show buttons if they exist in the spreadsheet ---
+        let btns = [];
+        const p = m.platforms;
         
-        // --- NEW: Clickable Actor Links ---
+        if (p.amazon && p.amazon.startsWith('http')) btns.push(`<a href="${p.amazon}" target="werewolf_cinema_window" class="m-link btn-amazon">Amazon</a>`);
+        if (p.google && p.google.startsWith('http')) btns.push(`<a href="${p.google}" target="werewolf_cinema_window" class="m-link btn-google">Google</a>`);
+        if (p.moviesanywhere && p.moviesanywhere.startsWith('http')) btns.push(`<a href="${p.moviesanywhere}" target="werewolf_cinema_window" class="m-link btn-moviesanywhere">MA</a>`);
+        if (p.apple && p.apple.startsWith('http')) btns.push(`<a href="${p.apple}" target="werewolf_cinema_window" class="m-link btn-apple">Apple TV</a>`);
+        if (p.fandango && p.fandango.startsWith('http')) btns.push(`<a href="${p.fandango}" target="werewolf_cinema_window" class="m-link btn-fandango">Fandango</a>`);
+        if (p.youtube && p.youtube.startsWith('http')) btns.push(`<button onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube">YouTube</button>`);
+        
+        document.getElementById('lb-buttons').innerHTML = btns.join('');
+        
+        // --- FIXED: Show Column R text with Buy/Rent suppression, but NO clickable links ---
+        let streamingText = '';
+        if (m.streaming && m.streaming.trim() !== '') {
+            const platforms = m.streaming.split(',').map(s => s.trim()).filter(Boolean);
+            let displayPlatforms = [];
+            
+            platforms.forEach(platform => {
+                const pLower = platform.toLowerCase();
+                // Suppress "Buy / Rent" text if we already have store buttons rendered below
+                if ((pLower === 'buy' || pLower === 'rent' || pLower.includes('buy/rent') || pLower.includes('buy / rent') || pLower.includes('buy & rent')) && btns.length > 0) {
+                    return;
+                }
+                displayPlatforms.push(platform);
+            });
+            
+            if (displayPlatforms.length > 0) {
+                streamingText = `Available on: ${displayPlatforms.join(', ')}`;
+            }
+        }
+        document.getElementById('lb-streaming').textContent = streamingText;
+        
+        // --- Clickable Actor Links ---
         // Replacing single quotes safely so it doesn't break the onclick attribute
         const actorLinksHtml = m.cast.map(actor => `<span class="actor-link black-outline" onclick="filterByActor('${actor.replace(/'/g, "\\'")}')">${actor}</span>`).join(' • ');
         document.getElementById('lb-artists').innerHTML = `<strong class="black-outline">Starring:</strong><br>${actorLinksHtml}`;
@@ -475,17 +511,6 @@ body.theme-dark {
         const hasMA = m.platforms.moviesanywhere && m.platforms.moviesanywhere.trim() !== '';
         document.getElementById('lb-store-heading').textContent = hasMA ? "Buy / Rent / Sync" : "Buy / Rent";
 
-        let btns = [];
-        const p = m.platforms;
-        // Strictly filter out buttons without URLs
-        if (p.amazon) btns.push(`<a href="${p.amazon}" target="werewolf_cinema_window" class="m-link btn-amazon">Amazon</a>`);
-        if (p.google) btns.push(`<a href="${p.google}" target="werewolf_cinema_window" class="m-link btn-google">Google</a>`);
-        if (p.moviesanywhere) btns.push(`<a href="${p.moviesanywhere}" target="werewolf_cinema_window" class="m-link btn-moviesanywhere">MA</a>`);
-        if (p.apple) btns.push(`<a href="${p.apple}" target="werewolf_cinema_window" class="m-link btn-apple">Apple TV</a>`);
-        if (p.fandango) btns.push(`<a href="${p.fandango}" target="werewolf_cinema_window" class="m-link btn-fandango">Fandango</a>`);
-        if (p.youtube) btns.push(`<button onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube">YouTube</button>`);
-        
-        document.getElementById('lb-buttons').innerHTML = btns.join('');
         lb.classList.add('active');
         document.body.style.overflow = 'hidden';
     };
