@@ -1,6 +1,6 @@
 <!-- 
- * NYT Timestamp: Friday, May 8, 2026 at 3:55 PM EDT
- * PROJECT: WEREWOLF CINEMA LIBRARY (v33.0 - Artist Sorting & Date Integrity)
+ * NYT Timestamp: Friday, May 8, 2026 at 6:26 PM EDT
+ * PROJECT: WEREWOLF CINEMA LIBRARY (v34.0 - Clickable Actors & External IMDb Sync)
  * MASTER DEV PROTOCOL APPLIED:
  * - NO STRIPPING, NO COMPRESSING. Original Firebase code preserved.
  * - Source data: Google Sheets CSV (Columns A-S Mapping).
@@ -41,6 +41,9 @@
 </head>
 <body class="theme-dark">
 
+<!-- ==========================================
+     HTML SECTION START
+     ========================================== -->
 <div id="wp-custom-wrapper" class="master-85-width">
     <div id="library-header">
         <div id="header-clock" class="black-outline">Loading Time...</div>
@@ -121,7 +124,13 @@
 <div id="kf-watermark">
     <span class="kf-k">K</span><span class="kf-f">F</span>
 </div>
+<!-- ==========================================
+     HTML SECTION END
+     ========================================== -->
 
+<!-- ==========================================
+     CSS SECTION START
+     ========================================== -->
 <style>
 /* --- THEME & LAYOUT CORE --- */
 :root {
@@ -206,6 +215,12 @@ body.theme-dark {
 .lightbox-content { width: 100%; max-width: 500px; height: 85vh; border: 2px solid #ff0000; border-radius: 20px; position: relative; background-size: cover; background-position: center; }
 .lightbox-overlay { position: absolute; inset: 0; background: linear-gradient(to top, #000 45%, rgba(0,0,0,0.4) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 25px; text-align: center; overflow-y: auto; }
 
+/* Clickable Actors & IMDb links */
+.actor-link { cursor: pointer; color: #38bdf8; text-decoration: none; transition: color 0.3s ease; }
+.actor-link:hover { color: #ff0000; text-decoration: underline; }
+.imdb-link { color: #f5c518; text-decoration: none; transition: color 0.3s ease; }
+.imdb-link:hover { color: #fff; text-decoration: underline; }
+
 /* Video Wrapper */
 #lb-video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; display: none; flex-direction: column; border-radius: 20px; overflow: hidden; }
 #lb-video-wrapper.active { display: flex; }
@@ -230,7 +245,13 @@ body.theme-dark {
 
 .tip-link { padding: 15px 40px; background: linear-gradient(135deg, #8b0000, #ff0000); color: #fff !important; font-weight: 900; border-radius: 50px; text-decoration: none; border: 2px solid #fff; }
 </style>
+<!-- ==========================================
+     CSS SECTION END
+     ========================================== -->
 
+<!-- ==========================================
+     JAVASCRIPT SECTION START
+     ========================================== -->
 <script>
 // --- CORE ENGINE ---
 (function() {
@@ -250,8 +271,31 @@ body.theme-dark {
 
     async function loadCSV() {
         try {
+            // SPEED UPGRADE 1: Blazing Fast Local Cache (1 Hour Expiration)
+            const cachedData = localStorage.getItem('werewolf_cinema_csv');
+            const cacheTime = localStorage.getItem('werewolf_cinema_time');
+            const now = Date.now();
+            
+            if (cachedData && cacheTime && (now - parseInt(cacheTime) < 3600000)) {
+                // Instantly load from memory
+                parseCSV(cachedData);
+                
+                // Silently fetch in the background to update the cache for the next load
+                fetch(CSV_URL).then(r => r.text()).then(text => {
+                    localStorage.setItem('werewolf_cinema_csv', text);
+                    localStorage.setItem('werewolf_cinema_time', Date.now().toString());
+                }).catch(e => console.error("Silent Background Sync Failed", e));
+                return;
+            }
+
+            // Normal fetch if no cache exists
             const res = await fetch(CSV_URL);
             const text = await res.text();
+            
+            // Save to Cache for next time
+            localStorage.setItem('werewolf_cinema_csv', text);
+            localStorage.setItem('werewolf_cinema_time', Date.now().toString());
+            
             parseCSV(text);
         } catch (e) { console.error("CSV Sync Failure", e); }
     }
@@ -284,10 +328,30 @@ body.theme-dark {
         runFilters();
     }
 
+    // --- SPEED UPGRADE 2: Global vars for Infinite Scroll (DOM Virtualization) ---
+    let currentRenderList = [];
+    let currentRenderIndex = 0;
+    const CHUNK_SIZE = 48; // Load 48 movies at a time to prevent UI freezing
+    let scrollObserver;
+
     window.renderMovies = (list) => {
         const grid = document.getElementById('movie-library-grid');
-        grid.innerHTML = '';
-        list.forEach(m => {
+        grid.innerHTML = ''; // Clear current grid
+        
+        currentRenderList = list;
+        currentRenderIndex = 0;
+        
+        // Render first chunk immediately
+        window.renderNextChunk();
+        
+        document.getElementById('movie-counter').innerHTML = `Cinema Inventory: <span>${list.length}</span>`;
+    };
+
+    window.renderNextChunk = () => {
+        const grid = document.getElementById('movie-library-grid');
+        const slice = currentRenderList.slice(currentRenderIndex, currentRenderIndex + CHUNK_SIZE);
+        
+        slice.forEach(m => {
             const card = document.createElement('div');
             card.className = 'movie-card';
             card.onclick = () => openLightbox(m);
@@ -312,8 +376,37 @@ body.theme-dark {
             `;
             grid.appendChild(card);
         });
-        document.getElementById('movie-counter').innerHTML = `Cinema Inventory: <span>${list.length}</span>`;
+        
+        currentRenderIndex += CHUNK_SIZE;
+        
+        // Trigger infinite scroll setup if there are more movies
+        if (currentRenderIndex < currentRenderList.length) {
+            setupIntersectionObserver();
+        }
     };
+
+    function setupIntersectionObserver() {
+        let sentinel = document.getElementById('scroll-sentinel');
+        if (!sentinel) {
+            sentinel = document.createElement('div');
+            sentinel.id = 'scroll-sentinel';
+            sentinel.style.width = "100%";
+            sentinel.style.height = "20px";
+            // Insert sentinel right after the grid
+            const grid = document.getElementById('movie-library-grid');
+            grid.parentNode.insertBefore(sentinel, grid.nextSibling);
+        }
+        
+        if (scrollObserver) scrollObserver.disconnect();
+        
+        scrollObserver = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                scrollObserver.disconnect();
+                window.renderNextChunk();
+            }
+        });
+        scrollObserver.observe(sentinel);
+    }
 
     window.runFilters = () => {
         const query = document.getElementById('movie-search').value.toLowerCase();
@@ -345,16 +438,39 @@ body.theme-dark {
         renderMovies(filtered);
     };
 
+    // --- NEW: Filter By Clicked Actor ---
+    window.filterByActor = (actorName) => {
+        closeLightbox();
+        // Clear conflicting filters to ensure all movies for this actor are visible
+        document.getElementById('movie-search').value = '';
+        document.getElementById('genre-select').value = '';
+        document.getElementById('collection-select').value = '';
+        
+        // Select the artist in the dropdown
+        document.getElementById('artist-select').value = actorName;
+        
+        runFilters();
+        // Scroll smoothly back up to the controls
+        document.getElementById('controls-container').scrollIntoView({ behavior: 'smooth' });
+    };
+
     window.openLightbox = (m) => {
         const lb = document.getElementById('movie-lightbox');
         document.getElementById('lightbox-inner').style.backgroundImage = `url('${m.image}')`;
         document.getElementById('lb-title').textContent = m.title;
         
         const hasEdition = m.edition && m.edition.toLowerCase() !== 'standard' && m.edition.trim() !== '';
-        document.getElementById('lb-meta-container').innerHTML = `${m.imdbId ? `IMDb: ${m.imdbId} | ` : ''}${m.genre}${hasEdition ? ` | Edition: ${m.edition}` : ''}`;
+        
+        // --- NEW: Clickable IMDb Link ---
+        const imdbLinkHtml = m.imdbId ? `<a href="https://www.imdb.com/title/${m.imdbId}/" target="werewolf_cinema_window" class="imdb-link black-outline">IMDb: ${m.imdbId}</a> | ` : '';
+        document.getElementById('lb-meta-container').innerHTML = `${imdbLinkHtml}${m.genre}${hasEdition ? ` | Edition: ${m.edition}` : ''}`;
         
         document.getElementById('lb-streaming').textContent = m.streaming ? `Available on: ${m.streaming}` : '';
-        document.getElementById('lb-artists').innerHTML = `<strong class="black-outline">Starring:</strong><br>${m.cast.join(' • ')}`;
+        
+        // --- NEW: Clickable Actor Links ---
+        // Replacing single quotes safely so it doesn't break the onclick attribute
+        const actorLinksHtml = m.cast.map(actor => `<span class="actor-link black-outline" onclick="filterByActor('${actor.replace(/'/g, "\\'")}')">${actor}</span>`).join(' • ');
+        document.getElementById('lb-artists').innerHTML = `<strong class="black-outline">Starring:</strong><br>${actorLinksHtml}`;
         
         const hasMA = m.platforms.moviesanywhere && m.platforms.moviesanywhere.trim() !== '';
         document.getElementById('lb-store-heading').textContent = hasMA ? "Buy / Rent / Sync" : "Buy / Rent";
@@ -390,8 +506,15 @@ body.theme-dark {
 
     window.closeYouTube = (e) => {
         if(e) e.stopPropagation();
-        document.getElementById('lb-video-wrapper').classList.remove('active').style.display = "none";
-        document.getElementById('lb-yt-iframe').src = "";
+        
+        const videoWrapper = document.getElementById('lb-video-wrapper');
+        const iframe = document.getElementById('lb-yt-iframe');
+        
+        if(videoWrapper && iframe) {
+            videoWrapper.classList.remove('active');
+            videoWrapper.style.display = "none";
+            iframe.src = "";
+        }
     };
 
     function updateDropdowns() {
@@ -435,5 +558,8 @@ body.theme-dark {
     window.onload = () => { startClock(); loadCSV(); };
 })();
 </script>
+<!-- ==========================================
+     JAVASCRIPT SECTION END
+     ========================================== -->
 </body>
 </html>
