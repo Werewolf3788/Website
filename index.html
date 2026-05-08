@@ -6,6 +6,16 @@
     <title>Werewolf Project | Home</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Tag Manager - Personal Project -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9M5LXQ5XN');
+    </script>
+
     <style>
         :root {
             /* Applying user-specified mobile settings */
@@ -27,6 +37,14 @@
             font-size: var(--body-text-size);
             line-height: var(--row-height);
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        /* Enforcing 80% width per protocol without breaking Tailwind */
+        .max-w-7xl {
+            width: 80% !important;
+            max-width: 80% !important;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         h1, h2, h3 {
@@ -211,6 +229,21 @@
             color: #007788 !important; 
             text-shadow: none;
         }
+
+        /* KF Signature Branding */
+        .kf-watermark {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            font-family: 'Arial Black', sans-serif;
+            font-size: 28px;
+            z-index: 999;
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.8;
+        }
+        .k-sig { color: #FF4500; display: inline-block; transform: scaleX(-1); position: relative; z-index: 2; }
+        .f-sig { color: #000000; display: inline-block; margin-left: -0.22em; position: relative; z-index: 1; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -229,6 +262,9 @@
                     <a href="https://werewolf3788.github.io/Website/users/ray/website.html" class="nav-link text-slate-300 hover:text-white">Raymystyro</a>
                     <a href="https://werewolf3788.github.io/Website/users/seth/phoenix_darkfire.html" class="nav-link text-slate-300 hover:text-white">Phoenix_Darkfire</a>
                     <a href="https://werewolf3788.github.io/Website/users/terrodog/index.html" class="nav-link text-slate-300 hover:text-white">Terrdog420</a>
+                    
+                    <!-- Movies Link with ITC -->
+                    <a href="https://werewolf3788.github.io/Website/Movies.html" target="werewolf_cinema_window" class="nav-link text-orange-400 hover:text-orange-300 font-bold">Movies</a>
                     
                     <div class="relative group dropdown">
                         <button class="flex items-center space-x-1 text-slate-300 hover:text-white focus:outline-none py-4">
@@ -252,12 +288,14 @@
         </div>
 
         <!-- Mobile Menu -->
-        <div id="mobile-menu" class="md:hidden bg-slate-900 border-b border-slate-700">
+        <div id="mobile-menu" class="md:hidden hidden bg-slate-900 border-b border-slate-700">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                 <a href="./users/kevin/website.html" class="block px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">Werewolf3788</a>
                 <a href="./users/ray/website.html" class="block px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">Raymystyro</a>
                 <a href="./users/seth/phoenix_darkfire.html" class="block px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">Phoenix_Darkfire</a>
                 <a href="./users/tj/overlay.html" class="block px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">Terrdog420</a>
+                <!-- Mobile Movies Link -->
+                <a href="https://werewolf3788.github.io/Website/Movies.html" target="werewolf_cinema_window" class="block px-3 py-2 rounded-md text-orange-400 font-bold hover:bg-slate-800">Movies</a>
             </div>
         </div>
     </nav>
@@ -368,6 +406,44 @@
         </div>
     </section>
 
+    <!-- Movie Library Section (Added to original aesthetic) -->
+    <section class="section-padding bg-slate-900/30">
+        <div class="max-w-7xl mx-auto px-4">
+            <div id="cinema-container" class="custom-card p-10 border border-orange-500/30 flex flex-col items-center justify-center shadow-orange-500/10 shadow-2xl text-center relative overflow-hidden min-h-[500px]">
+                
+                <!-- Slideshow Background Layers (Ambient Fill + Sharp Centered) -->
+                <div id="cinema-layer-1" class="absolute inset-0 transition-opacity duration-1000 opacity-100 z-0">
+                    <div class="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-50"></div>
+                    <div class="absolute inset-0 bg-contain bg-center bg-no-repeat drop-shadow-2xl"></div>
+                </div>
+                <div id="cinema-layer-2" class="absolute inset-0 transition-opacity duration-1000 opacity-0 z-0">
+                    <div class="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-50"></div>
+                    <div class="absolute inset-0 bg-contain bg-center bg-no-repeat drop-shadow-2xl"></div>
+                </div>
+                
+                <!-- Heavy Dark Overlay for Maximum Text Visibility -->
+                <div class="absolute inset-0 bg-slate-950/70 z-0"></div>
+                
+                <!-- Content Layer -->
+                <div class="relative z-10 flex flex-col items-center justify-center gap-6 w-full">
+                    <h2 class="text-orange-500 outline-text">Werewolf Cinema</h2>
+                    <p class="text-slate-200 font-bold outline-text max-w-md">Access our private media collection, synchronized directly from the Google Sheets repository.</p>
+                    
+                    <a href="https://werewolf3788.github.io/Website/Movies.html" 
+                       target="werewolf_cinema_window" 
+                       class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 px-10 rounded-lg transition-all shadow-[0_0_15px_rgba(255,95,31,0.5)] border border-orange-400 outline-text">
+                        MOVIES
+                    </a>
+                    
+                    <div class="mt-2 flex flex-col items-center">
+                        <span class="text-slate-300 text-xs font-black uppercase tracking-widest outline-text">Total Titles in Archive</span>
+                        <span id="movie-count" class="text-4xl font-black text-white mt-1 outline-text drop-shadow-[0_0_10px_rgba(255,95,31,0.8)]">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- Games Featured -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4">
@@ -394,15 +470,25 @@
         </div>
     </section>
 
-    <footer class="mt-auto bg-slate-950 py-10 border-t border-slate-800 text-center">
+    <footer class="mt-auto bg-slate-950 py-10 border-t border-slate-800 text-center relative">
         <div class="max-w-7xl mx-auto px-4">
             <p class="text-slate-500 text-sm">
                 &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
             </p>
         </div>
+        
+        <!-- KF Signature Branding -->
+        <div class="kf-watermark">
+            <span class="k-sig">K</span><span class="f-sig">F</span>
+        </div>
     </footer>
 
     <script>
+        /* ==========================================
+           JAVASCRIPT SECTION 
+           NYT Timestamp: 2026-05-08 17:35:00 EDT
+           ========================================== */
+        
         const users = [
             { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf', twitch: 'werewolf3788', theme: 'text-werewolf' },
             { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray', twitch: 'raymystyro', theme: 'text-ray' },
@@ -413,11 +499,114 @@
         function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
             const icon = document.getElementById('menu-icon');
-            menu.classList.toggle('active');
+            menu.classList.toggle('hidden');
             icon.classList.toggle('fa-bars');
             icon.classList.toggle('fa-xmark');
         }
 
+        // --- FETCH MOVIE CSV COUNT & SLIDESHOW LOGIC ---
+        let cinemaImages = [];
+        let currentSlideIndex = 0;
+        let activeBgId = 1;
+        let cinemaInterval;
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"' && line[i+1] === '"') {
+                    current += '"'; i++; // Escaped quote
+                } else if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim());
+            return result;
+        }
+
+        async function fetchMovieData() {
+            const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?output=csv';
+            const countDisplay = document.getElementById('movie-count');
+
+            try {
+                const response = await fetch(csvUrl);
+                const data = await response.text();
+                
+                const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
+                const totalItems = Math.max(0, rows.length - 1);
+
+                if (countDisplay) {
+                    countDisplay.textContent = totalItems.toLocaleString();
+                }
+                
+                // Inter-Tab Communication (ITC)
+                localStorage.setItem('werewolf_library_count', totalItems);
+
+                // Extract Poster URLs from Column B (Index 1)
+                cinemaImages = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const columns = parseCSVLine(rows[i]);
+                    if (columns.length > 1 && columns[1] && columns[1].startsWith('http')) {
+                        cinemaImages.push(columns[1]);
+                    }
+                }
+
+                if (cinemaImages.length > 0) {
+                    // Randomize the slideshow order
+                    cinemaImages.sort(() => 0.5 - Math.random());
+                    startCinemaSlideshow();
+                }
+
+            } catch (error) {
+                console.error('Error fetching library data:', error);
+                if (countDisplay) countDisplay.textContent = 'Data Error';
+            }
+        }
+
+        function startCinemaSlideshow() {
+            if (cinemaImages.length === 0 || cinemaInterval) return;
+            
+            const layer1 = document.getElementById('cinema-layer-1');
+            const layer2 = document.getElementById('cinema-layer-2');
+            
+            // Helper function to set background on both the blurred ambient layer and sharp centered layer
+            const setSlideImage = (layer, url) => {
+                layer.querySelectorAll('div').forEach(el => {
+                    el.style.backgroundImage = `url('${url}')`;
+                });
+            };
+
+            // Set initial image
+            setSlideImage(layer1, cinemaImages[0]);
+            layer1.style.opacity = 1;
+            layer2.style.opacity = 0;
+
+            cinemaInterval = setInterval(() => {
+                currentSlideIndex = (currentSlideIndex + 1) % cinemaImages.length;
+                const nextImgUrl = cinemaImages[currentSlideIndex];
+
+                if (activeBgId === 1) {
+                    setSlideImage(layer2, nextImgUrl);
+                    layer2.style.opacity = 1;
+                    layer1.style.opacity = 0;
+                    activeBgId = 2;
+                } else {
+                    setSlideImage(layer1, nextImgUrl);
+                    layer1.style.opacity = 1;
+                    layer2.style.opacity = 0;
+                    activeBgId = 1;
+                }
+            }, 6000); // Crossfade every 6 seconds
+        }
+
+        // --- WEATHER LOGIC ---
         async function updateWeather() {
             for (const u of users) {
                 try {
@@ -497,6 +686,7 @@
             }
         }
 
+        // --- TWITCH LOGIC ---
         async function updateTwitchStatus(u) {
             const gameEl = document.getElementById(`twitch-game-${u.id}`);
             const statusIndicator = document.getElementById(`twitch-status-indicator-${u.id}`);
@@ -515,13 +705,16 @@
             } catch (e) { gameEl.textContent = 'Twitch Unreachable'; }
         }
 
+        // --- DATA REFRESH ---
         function refreshData() {
             updateWeather();
             users.forEach(updateTwitchStatus);
+            fetchMovieData(); // Updated to run the new unified data fetch
         }
 
         window.onload = () => {
             refreshData();
+            // 5 minute interval refresh
             setInterval(refreshData, 300000);
         };
     </script>
