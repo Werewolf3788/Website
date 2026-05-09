@@ -1,6 +1,6 @@
 <!-- 
  * NYT Timestamp: Friday, May 8, 2026 at 6:26 PM EDT
- * PROJECT: WEREWOLF CINEMA LIBRARY (v34.0 - Clickable Actors & External IMDb Sync)
+ * PROJECT: WEREWOLF CINEMA LIBRARY (v35.0 - Live ITC Sync & Auto-Refresh)
  * MASTER DEV PROTOCOL APPLIED:
  * - NO STRIPPING, NO COMPRESSING. Original Firebase code preserved.
  * - Source data: Google Sheets CSV (Columns A-S Mapping).
@@ -11,7 +11,7 @@
  * - SUPPRESSION: "Edition" hidden if empty or "Standard".
  * - STORE GRID: 3x2 grid with dynamic "Buy / Rent / Sync" heading.
  * - TYPOGRAPHY: Body 14px, Header 30px responsive.
- * - ITC / Named Window: All links target "werewolf_cinema_window".
+ * - ITC / Named Window: All links target "werewolf_cinema_window". Live Cross-Tab State Sync implemented.
  * - PERSONAL PROJECT ANALYTICS: G-Tag G-Z9M5LXQ5XN.
  -->
 <!DOCTYPE html>
@@ -49,6 +49,7 @@
         <div id="header-clock" class="black-outline">Loading Time...</div>
         <div id="cinema-logo" class="black-outline">WEREWOLF <span>CINEMA</span></div>
         <div id="movie-counter" class="black-outline">Syncing Library...</div>
+        <div id="sync-indicator" class="black-outline" style="font-size: 11px; color: #1ce783; margin-top: 5px; font-weight: bold; letter-spacing: 1px;">🟢 LIVE ITC SYNC ACTIVE</div>
         
         <div id="affiliate-disclosure">
             <p class="black-outline">As an Amazon Associate, <strong class="black-outline">Werewolf3788</strong> earns from qualifying purchases. 
@@ -91,6 +92,7 @@
     <div id="movie-library-grid"></div>
 
     <div id="library-footer-tip">
+        <!-- Named Window Targeting Protocol observed here -->
         <a href="https://streamlabs.com/werewolf3788/tip" target="werewolf_cinema_window" class="tip-link black-outline">
             💰 Support the Library - Send a Tip!
         </a>
@@ -177,6 +179,8 @@ body.theme-dark {
 #cinema-logo span { color: #8b0000; }
 #movie-counter { margin-top: 5px; font-weight: 700; color: #aaa; }
 #movie-counter span { color: #ff0000; }
+#sync-indicator { animation: pulse 2s infinite; }
+@keyframes pulse { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
 
 #controls-container { width: 100%; margin-top: 25px; display: flex; flex-direction: column; align-items: center; }
 
@@ -275,7 +279,7 @@ body.theme-dark {
 
     async function loadCSV() {
         try {
-            // SPEED UPGRADE 1: Blazing Fast Local Cache (1 Hour Expiration)
+            // SPEED UPGRADE 1: Blazing Fast Local Cache
             const cachedData = localStorage.getItem('werewolf_cinema_csv');
             const cacheTime = localStorage.getItem('werewolf_cinema_time');
             const now = Date.now();
@@ -285,10 +289,8 @@ body.theme-dark {
                 parseCSV(cachedData);
                 
                 // Silently fetch in the background to update the cache for the next load
-                fetch(CSV_URL).then(r => r.text()).then(text => {
-                    localStorage.setItem('werewolf_cinema_csv', text);
-                    localStorage.setItem('werewolf_cinema_time', Date.now().toString());
-                }).catch(e => console.error("Silent Background Sync Failed", e));
+                // and to trigger ITC updates if changes are found.
+                silentCheckForUpdates();
                 return;
             }
 
@@ -303,6 +305,29 @@ body.theme-dark {
             parseCSV(text);
         } catch (e) { console.error("CSV Sync Failure", e); }
     }
+
+    // AUTOMATIC BACKGROUND REFRESH
+    // Polls the CSV in the background without refreshing the page.
+    async function silentCheckForUpdates() {
+        try {
+            // Append cache-buster to ensure we get the absolute latest sheet
+            const res = await fetch(CSV_URL + "&_t=" + Date.now());
+            const newText = await res.text();
+            const oldText = localStorage.getItem('werewolf_cinema_csv');
+            
+            // If the CSV updated, save it to local storage. 
+            // This natively triggers the 'storage' event across ALL open tabs!
+            if (newText !== oldText) {
+                console.log("Background Check: New database records found! Updating live...");
+                localStorage.setItem('werewolf_cinema_csv', newText);
+                localStorage.setItem('werewolf_cinema_time', Date.now().toString());
+                parseCSV(newText); // update the current tab immediately
+            }
+        } catch(e) { console.error("Silent background sync failed", e); }
+    }
+
+    // Check for changes every 3 minutes automatically
+    setInterval(silentCheckForUpdates, 180000);
 
     function parseCSV(data) {
         let rows = [], currentRow = [], currentCell = '', inQuotes = false;
@@ -329,7 +354,7 @@ body.theme-dark {
         })).filter(m => m.title && m.title.length < 120);
 
         updateDropdowns();
-        runFilters();
+        runFilters(true); // Don't broadcast state on initial load
     }
 
     // --- SPEED UPGRADE 2: Global vars for Infinite Scroll (DOM Virtualization) ---
@@ -412,7 +437,50 @@ body.theme-dark {
         scrollObserver.observe(sentinel);
     }
 
-    window.runFilters = () => {
+    // --- INTER-TAB COMMUNICATION (ITC) ---
+    // Broadcasts the user's current filter selection to other tabs.
+    function broadcastState() {
+        const state = {
+            search: document.getElementById('movie-search').value,
+            type: document.getElementById('type-select').value,
+            genre: document.getElementById('genre-select').value,
+            collection: document.getElementById('collection-select').value,
+            artist: document.getElementById('artist-select').value,
+            sort: document.getElementById('sort-select').value
+        };
+        // Save the state to localStorage to trigger the Cross-Tab event.
+        localStorage.setItem('werewolf_cinema_state', JSON.stringify(state));
+        // Force the event to fire even if the state payload is identical, by updating a timestamp flag
+        localStorage.setItem('werewolf_cinema_state_time', Date.now().toString()); 
+    }
+
+    // Listen for state changes or CSV data updates originating from OTHER tabs
+    window.addEventListener('storage', (e) => {
+        // If another tab found an updated CSV and saved it to local storage
+        if (e.key === 'werewolf_cinema_csv' && e.newValue) {
+            console.log("ITC Notification: CSV Database updated from another tab. Re-rendering library.");
+            parseCSV(e.newValue);
+        }
+        
+        // If another tab changed a dropdown filter or search term
+        if (e.key === 'werewolf_cinema_state' && e.newValue) {
+            console.log("ITC Notification: Filter state synced from another tab window.");
+            const state = JSON.parse(e.newValue);
+            
+            document.getElementById('movie-search').value = state.search || '';
+            document.getElementById('type-select').value = state.type || '';
+            document.getElementById('genre-select').value = state.genre || '';
+            document.getElementById('collection-select').value = state.collection || '';
+            document.getElementById('artist-select').value = state.artist || '';
+            document.getElementById('sort-select').value = state.sort || 'newest';
+            
+            // Run filters using the new state, but prevent it from broadcasting back out (preventing loop)
+            runFilters(true); 
+        }
+    });
+
+    // Added 'fromSync' argument to prevent an infinite ITC broadcast loop
+    window.runFilters = (fromSync = false) => {
         const query = document.getElementById('movie-search').value.toLowerCase();
         const typeF = document.getElementById('type-select').value;
         const genreF = document.getElementById('genre-select').value;
@@ -440,6 +508,11 @@ body.theme-dark {
         else if (sort === 'actor-az') filtered.sort((a,b) => (a.cast[0]||'').localeCompare(b.cast[0]||''));
 
         renderMovies(filtered);
+
+        // If this function was triggered by user input, broadcast it to other tabs
+        if (!fromSync) {
+            broadcastState();
+        }
     };
 
     // --- NEW: Filter By Clicked Actor ---
@@ -453,7 +526,7 @@ body.theme-dark {
         // Select the artist in the dropdown
         document.getElementById('artist-select').value = actorName;
         
-        runFilters();
+        runFilters(); // Runs locally and automatically broadcasts state
         // Scroll smoothly back up to the controls
         document.getElementById('controls-container').scrollIntoView({ behavior: 'smooth' });
     };
@@ -466,10 +539,13 @@ body.theme-dark {
         const hasEdition = m.edition && m.edition.toLowerCase() !== 'standard' && m.edition.trim() !== '';
         
         // --- Clickable IMDb Link ---
+        // Utilizing Named Window Targeting "werewolf_cinema_window"
         const imdbLinkHtml = m.imdbId ? `<a href="https://www.imdb.com/title/${m.imdbId}/" target="werewolf_cinema_window" class="imdb-link black-outline">IMDb: ${m.imdbId}</a> | ` : '';
         document.getElementById('lb-meta-container').innerHTML = `${imdbLinkHtml}${m.genre}${hasEdition ? ` | Edition: ${m.edition}` : ''}`;
         
         // --- FIXED: Only show buttons if they exist in the spreadsheet ---
+        // Named Window Targeting applied to all store buttons. This ensures when they open in the 
+        // named window, the browser maintains the same context, allowing ITC storage events to flow reliably.
         let btns = [];
         const p = m.platforms;
         
@@ -569,7 +645,7 @@ body.theme-dark {
     window.resetFilters = () => {
         ['movie-search','type-select','genre-select','collection-select','artist-select'].forEach(id => document.getElementById(id).value = '');
         document.getElementById('sort-select').value = 'newest';
-        runFilters();
+        runFilters(); // Runs locally and automatically broadcasts state
     };
 
     const startClock = () => {
