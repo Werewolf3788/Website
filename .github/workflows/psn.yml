@@ -1,3 +1,4 @@
+# Your original steps, now nested properly inside a job definition
 steps:
   - name: Checkout Repository
     uses: actions/checkout@v4
