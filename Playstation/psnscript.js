@@ -19,11 +19,21 @@ const fs = require("fs");
 const path = require("path");
 
 /**
+ * --- PRECISION INTEGRITY PROTOCOL ---
+ * Project: Kevin's Official Pack Sync Engine
+ * Version 13.7.9 - Absolute Master Omni-Protocol (Presence Hotfix)
+ * Timestamp: May 10, 2026, 6:04 PM (NYT)
+ * Note: NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
+ * Updates: Fixed getBasicPresence object pathing to correctly identify the current game instead of falling back to Dashboard. Added telemetry fallback.
+ * ------------------------------------
+ */
+
+/**
  * Kevin's Official Pack Sync Engine
- * Version 13.7.8 - Absolute Master Omni-Protocol (Hardened API Parser)
+ * Version 13.7.9 - Absolute Master Omni-Protocol (Hardened API Parser)
  * Filepath: Playstation/psnscript.js
  * * * --- INSTANCE AUTHENTICATION ---
- * Last Generated: Saturday, May 9, 2026
+ * Last Generated: Sunday, May 10, 2026
  * Status: Production Ready - Strict Array Fallbacks Applied
  */
 
@@ -259,7 +269,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v13.7.8 Sync: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v13.7.9 Sync: ${label}`);
     
     try {
         const profile = await getProfileFromAccountId(auth, targetId).catch(() => ({}));
@@ -280,10 +290,11 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             return (!oldest || currentDate < oldest) ? currentDate : oldest;
         }, null);
 
-        // SAFE FETCH: Presence
+        // SAFE FETCH: Presence (FIXED OBJECT PATHING)
         try { 
             const raw = await getBasicPresence(auth, presenceId); 
-            rawP = Array.isArray(raw) ? raw[0] : (raw?.basicPresences ? raw.basicPresences[0] : raw) || rawP;
+            // Correctly targets raw.basicPresence first, falling back to arrays/plural
+            rawP = raw?.basicPresence || (Array.isArray(raw) ? raw[0] : (raw?.basicPresences ? raw.basicPresences[0] : raw)) || rawP;
         } catch(e) {}
 
         // SAFE FETCH: Telemetry
@@ -296,7 +307,21 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         }
 
         const activeGameInfo = rawP?.gameTitleInfoList?.[0] || {};
-        const resolvedTitle = (twitchIntel?.isLive && twitchIntel.game && activeGameInfo.titleName === "Dashboard") ? twitchIntel.game : (activeGameInfo.titleName || "Dashboard");
+        
+        // Smarter Fallback Logic for Resolving Title
+        let resolvedTitle = (twitchIntel?.isLive && twitchIntel.game && (!activeGameInfo.titleName || activeGameInfo.titleName === "Dashboard")) 
+            ? twitchIntel.game 
+            : (activeGameInfo.titleName || "Dashboard");
+            
+        // If PSN is hiding the game but we know they are online, grab the telemetry backup
+        if (resolvedTitle === "Dashboard" && (rawP?.primaryPlatformInfo?.onlineStatus === "online")) {
+            if (telemetryData.length > 0 && telemetryData[0].name) {
+                resolvedTitle = telemetryData[0].name;
+                if (!activeGameInfo.npCommunicationId) activeGameInfo.npCommunicationId = telemetryData[0].npCommunicationId;
+            } else if (sortedTitles.length > 0) {
+                resolvedTitle = sortedTitles[0].trophyTitleName || "Dashboard";
+            }
+        }
         
         const matchedMeta = sortedTitles.find(t => {
             if (activeGameInfo.npCommunicationId && t.npCommunicationId === activeGameInfo.npCommunicationId) return true;
@@ -458,7 +483,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v13.7.8...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v13.7.9...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
@@ -466,8 +491,8 @@ async function main() {
         personas: {}, 
         mutualSquadFollowers: [], 
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "13.7.8",
-        codeTimestamp: "Saturday, May 9, 2026 | 3:48 AM EDT"
+        engineVersion: "13.7.9",
+        codeTimestamp: "Sunday, May 10, 2026 | 6:04 PM EDT"
     };
 
     try {
@@ -540,7 +565,7 @@ async function main() {
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] Persona Aggregator v13.7.8 Complete. Generated: ${finalData.codeTimestamp}`);
+    console.log(`[SUCCESS] Persona Aggregator v13.7.9 Complete. Generated: ${finalData.codeTimestamp}`);
 }
 
 main();
