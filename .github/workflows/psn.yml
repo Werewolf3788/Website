@@ -1,8 +1,9 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
 # Project: PSN Sync Workflow
-# Timestamp: May 10, 2026, 6:00 PM (NYT)
-# Compatibility: GitHub Actions, GitHub Pages
+# Timestamp: May 10, 2026, 6:01 PM (NYT)
+# Compatibility: GitHub Actions, GitHub Pages, GitHack
 # Note: DO NOT STRIP INDENTATION. YAML REQUIRES 2-SPACE SPACING.
+# Updates: Added environment block for deployment job fix.
 # ------------------------------------
 
 name: PSN Sync and Deploy
@@ -22,6 +23,9 @@ permissions:
 
 jobs:
   psn-sync-job:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
