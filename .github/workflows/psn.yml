@@ -5,24 +5,24 @@ steps:
     with:
       fetch-depth: 0 
 
-  # STREAMING_CHUNK:Setting up Node.js...
+  # STREAMING_CHUNK:Setting up Node.js environment...
   - name: Setup Node.js
     uses: actions/setup-node@v4
     with:
       node-version: '20'
 
-  # STREAMING_CHUNK:Installing dependencies...
+  # STREAMING_CHUNK:Installing necessary NPM packages...
   - name: Install Dependencies
     run: npm install psn-api
 
-  # STREAMING_CHUNK:Running the PSN script...
+  # STREAMING_CHUNK:Running the PSN synchronization script...
   - name: Run PSN Sync Script
     env:
       PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
       PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
     run: node Playstation/psnscript.js
 
-  # STREAMING_CHUNK:Committing and pushing changes...
+  # STREAMING_CHUNK:Committing and pushing data changes to the main branch...
   - name: Commit and Push Data Changes
     run: |
       git config --global user.name "Werewolf3788-Bot"
@@ -44,17 +44,15 @@ steps:
         echo "No data changes detected. Skipping commit."
       fi
 
-  # STREAMING_CHUNK:Setting up GitHub Pages...
+  # STREAMING_CHUNK:Setting up and deploying to GitHub Pages...
   - name: Setup Pages
     uses: actions/configure-pages@v4
 
-  # STREAMING_CHUNK:Uploading site artifacts...
   - name: Upload Artifact
     uses: actions/upload-pages-artifact@v3
     with:
       path: '.'
 
-  # STREAMING_CHUNK:Deploying to GitHub Pages...
   - name: Deploy to GitHub Pages
     id: deployment
     uses: actions/deploy-pages@v4
