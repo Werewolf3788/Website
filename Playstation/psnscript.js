@@ -12,7 +12,8 @@ const {
     getProfileFromAccountId,
     getRecentlyPlayedGames, 
     getUserRegion,
-    getBasicPresence 
+    getBasicPresence,
+    getUserFriendsAccountIds // <-- Added PSN Friends List API
 } = psnApi;
 
 const fs = require("fs");
@@ -21,10 +22,10 @@ const path = require("path");
 /**
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Kevin's Official Pack Sync Engine
- * Version 13.8.7 - Absolute Master Omni-Protocol (UNLIMITED EXTRACTION)
+ * Version 13.8.8 - Absolute Master Omni-Protocol (RAW PSN FIREHOSE)
  * Timestamp: May 10, 2026, 11:05 PM (NYT)
  * Note: NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
- * Updates: NO CAPS. All limits removed. Twitch limit set to 100,000. PSN limit set to 10,000. Deep Scan set to 10,000. Restored ALL Twitch followers and mutuals logic while dumping ALL raw PSN variables into JSON.
+ * Updates: Unleashed maximum extraction. Added rawPsnDump to push unfiltered Sony server responses straight into the JSON. Added fullLibrary array (10,000 games). Added PSN Friends extraction. Tuned deep scan to 200 to fit inside the 23-minute cron loop.
  * ------------------------------------
  */
 
@@ -264,13 +265,20 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v13.8.7 Sync: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v13.8.8 Sync: ${label}`);
     
     try {
         const profile = await getProfileFromAccountId(auth, targetId).catch(() => ({}));
         let region = { country: "US", language: "en" };
+        let friendsList = [];
+        
+        // UNCAPPED: Fetch Friends Network for Auth Users
         if (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) {
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
+            try {
+                const friendsRes = await getUserFriendsAccountIds(auth, "me");
+                friendsList = friendsRes || [];
+            } catch(e) { console.log(`[WARN] Friends list hidden/failed for ${label}`); }
         }
         
         const presenceId = (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) ? "me" : targetId;
@@ -407,10 +415,10 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 
         const targetSyncId = activeCommId || matchedGame.npCommunicationId || allRecentGames[0]?.npCommunicationId;
         
-        // UNCAPPED DEEP SCAN: 10,000 Limit
-        let gamesToDeepScan = 10000; 
+        // DEEP SCAN: Scanning top 200 games to avoid GitHub Action 6-Hour Timeout during the 23-min Cron loop
+        let gamesToDeepScan = 200; 
 
-        for (const game of allRecentGames.slice(0, 100)) { // Limiting array loop to 100 to prevent GitHub Action timeout
+        for (const game of allRecentGames.slice(0, 200)) { 
             if (BLACKLIST.some(f => game.name.toLowerCase().includes(f))) continue;
             
             const recentGameRef = {
@@ -552,6 +560,17 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                 total: (stats?.earnedTrophies?.platinum || 0) + (stats?.earnedTrophies?.gold || 0) + (stats?.earnedTrophies?.silver || 0) + (stats?.earnedTrophies?.bronze || 0)
             },
             recentGames, activeHunt, mostRecentTrophies,
+            
+            // UNCAPPED: THE RAW PSN FIREHOSE
+            fullLibrary: allRecentGames, // Dumps EVERY game ever played into the JSON
+            rawPsnDump: { // Dumps ALL raw API responses into the JSON
+                profile: profile,
+                presence: rawP,
+                telemetry: telemetryData,
+                titles: sortedTitles,
+                friends: friendsList
+            },
+            
             lastUpdated: new Date().toLocaleString()
         };
     } catch (e) { 
@@ -567,7 +586,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v13.8.7 (UNCAPPED)...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v13.8.8 (UNCAPPED)...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
@@ -575,7 +594,7 @@ async function main() {
         personas: {}, 
         mutualSquadFollowers: [], 
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "13.8.7",
+        engineVersion: "13.8.8",
         codeTimestamp: "Sunday, May 10, 2026 | 11:05 PM EDT"
     };
 
@@ -649,7 +668,7 @@ async function main() {
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] Persona Aggregator v13.8.7 Complete. Generated: ${finalData.codeTimestamp}`);
+    console.log(`[SUCCESS] Persona Aggregator v13.8.8 Complete. Generated: ${finalData.codeTimestamp}`);
 }
 
 main();
