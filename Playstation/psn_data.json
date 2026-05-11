@@ -14,7 +14,7 @@
         "isLive": false,
         "game": "Farming Simulator 25",
         "gameArt": null,
-        "followers": "96",
+        "followers": "97",
         "followerNames": [
           "[DecAPI - /twitch/followers/werewolf3788] 410 Gone - This API has been deprecated/removed"
         ],
@@ -28,7 +28,7 @@
       "bio": "6C3RG",
       "psnAccountAge": "1 years, 4 months",
       "earliestTrophyDate": "2025-01-05T01:27:35.000Z",
-      "latestTrophyDate": 1778302474000,
+      "latestTrophyDate": 1778456796000,
       "plus": true,
       "level": 232,
       "region": "US",
@@ -36,10 +36,20 @@
         "platinum": 5,
         "gold": 77,
         "silver": 215,
-        "bronze": 984,
-        "total": 1281
+        "bronze": 985,
+        "total": 1282
       },
       "recentGames": [
+        {
+          "name": "Farming Simulator 25",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+          "progress": 55,
+          "ratio": "26/46",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
+          "npCommunicationId": "NPWR44827_00",
+          "lastPlayed": "2026-05-10T23:50:09Z",
+          "bootCount": "Unknown"
+        },
         {
           "name": "Sniper Elite: Resistance",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
@@ -48,7 +58,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%3A%20Resistance&tag=psngaming-20",
           "npCommunicationId": "NPWR40813_00",
           "lastPlayed": "2026-05-09T04:54:34Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -59,7 +68,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Crossout&tag=psngaming-20",
           "npCommunicationId": "NPWR24327_00",
           "lastPlayed": "2026-05-01T04:01:47Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -70,7 +78,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Wo%20Long%3A%20Fallen%20Dynasty&tag=psngaming-20",
           "npCommunicationId": "NPWR27198_00",
           "lastPlayed": "2026-04-30T03:51:42Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -81,7 +88,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands&tag=psngaming-20",
           "npCommunicationId": "NPWR09395_00",
           "lastPlayed": "2026-04-29T01:13:02Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -92,18 +98,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Where%20Winds%20Meet&tag=psngaming-20",
           "npCommunicationId": "NPWR50887_00",
           "lastPlayed": "2026-04-28T02:37:12Z",
-          "playHours": "Unknown",
-          "bootCount": "Unknown"
-        },
-        {
-          "name": "Call of Duty® Modern Warfare® II",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50314_00/8e558b12-9144-4d7f-a141-5b04943763b4.png",
-          "progress": 0,
-          "ratio": "0/25",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Call%20of%20Duty%20Modern%20Warfare%20II&tag=psngaming-20",
-          "npCommunicationId": "NPWR50314_00",
-          "lastPlayed": "2026-04-25T01:06:06Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         }
       ],
@@ -112,16 +106,15 @@
         "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
         "velocity": {
           "firstEarned": "4/5/2026, 8:57:06 AM",
-          "huntingDuration": "10 days",
-          "hunterPersona": "Dead Set Hunter",
-          "completionStatus": "25/46",
-          "totalPlaytime": "Unknown"
+          "huntingDuration": "36 days",
+          "hunterPersona": "Casual Pursuit",
+          "completionStatus": "26/46"
         },
         "groups": [
           {
             "name": "Farming Simulator 25",
-            "progress": 54,
-            "ratio": "25/46"
+            "progress": 55,
+            "ratio": "26/46"
           }
         ],
         "trophies": [
@@ -132,6 +125,7 @@
             "description": "Plant today - harvest tomorrow.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -147,10 +141,11 @@
             "description": "That thing wouldn't have fit onto the street anyway.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/8/2026, 3:29:52 AM",
-            "earnedAge": "1 month, 2 days, 18 hours, 54 mins",
+            "earnedAge": "1 month, 2 days, 20 hours, 46 mins",
             "timestamp": 1775618992000,
             "currentValue": 0,
             "targetValue": "100"
@@ -162,10 +157,11 @@
             "description": "A little help can go a long way.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 5:52:22 AM",
-            "earnedAge": "1 month, 3 days, 16 hours, 32 mins",
+            "earnedAge": "1 month, 3 days, 18 hours, 24 mins",
             "timestamp": 1775541142000,
             "currentValue": 0,
             "targetValue": "100"
@@ -177,6 +173,7 @@
             "description": "You won't rest until you've reached maximum efficiency.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -192,10 +189,11 @@
             "description": "Oh, they can do THAT as well?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/5/2026, 9:08:43 AM",
-            "earnedAge": "1 month, 5 days, 13 hours, 16 mins",
+            "earnedAge": "1 month, 5 days, 15 hours, 7 mins",
             "timestamp": 1775380123000,
             "currentValue": 0,
             "targetValue": "100"
@@ -207,10 +205,11 @@
             "description": "Seriously, think of the poor animal!",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/5/2026, 10:19:57 AM",
-            "earnedAge": "1 month, 5 days, 12 hours, 4 mins",
+            "earnedAge": "1 month, 5 days, 13 hours, 56 mins",
             "timestamp": 1775384397000,
             "currentValue": 0,
             "targetValue": "100"
@@ -222,10 +221,11 @@
             "description": "I could get used to getting around like this…",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/5/2026, 9:10:36 AM",
-            "earnedAge": "1 month, 5 days, 13 hours, 14 mins",
+            "earnedAge": "1 month, 5 days, 15 hours, 5 mins",
             "timestamp": 1775380236000,
             "currentValue": 0,
             "targetValue": "100"
@@ -237,10 +237,11 @@
             "description": "I'm a real cowboy, mom!",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 8:31:55 AM",
-            "earnedAge": "1 month, 4 days, 13 hours, 52 mins",
+            "earnedAge": "1 month, 4 days, 15 hours, 44 mins",
             "timestamp": 1775464315000,
             "currentValue": 0,
             "targetValue": "100"
@@ -252,10 +253,11 @@
             "description": "Sure, I can take care of that, neighbor.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 8:58:48 AM",
-            "earnedAge": "1 month, 4 days, 13 hours, 26 mins",
+            "earnedAge": "1 month, 4 days, 15 hours, 17 mins",
             "timestamp": 1775465928000,
             "currentValue": 0,
             "targetValue": "100"
@@ -267,10 +269,11 @@
             "description": "What do you mean \"take care of my own farm as well\"?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 10:28:03 AM",
-            "earnedAge": "1 month, 3 days, 11 hours, 56 mins",
+            "earnedAge": "1 month, 3 days, 13 hours, 48 mins",
             "timestamp": 1775557683000,
             "currentValue": 0,
             "targetValue": "100"
@@ -282,10 +285,11 @@
             "description": "I've never felt happier than here.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 7:28:20 AM",
-            "earnedAge": "1 month, 3 days, 14 hours, 56 mins",
+            "earnedAge": "1 month, 3 days, 16 hours, 48 mins",
             "timestamp": 1775546900000,
             "currentValue": 0,
             "targetValue": "100"
@@ -297,12 +301,13 @@
             "description": "You have to think about the future.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "25",
+            "earned": true,
+            "earnedDate": "5/10/2026, 11:46:36 PM",
+            "earnedAge": "29 mins",
+            "timestamp": 1778456796000,
+            "currentValue": 0,
             "targetValue": "100"
           },
           {
@@ -312,12 +317,13 @@
             "description": "Planting one bean will yield much green.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "0",
+            "currentValue": "6",
             "targetValue": "100"
           },
           {
@@ -327,10 +333,11 @@
             "description": "Reap what you sow.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 10:36:51 AM",
-            "earnedAge": "1 month, 4 days, 11 hours, 48 mins",
+            "earnedAge": "1 month, 4 days, 13 hours, 39 mins",
             "timestamp": 1775471811000,
             "currentValue": 0,
             "targetValue": "100"
@@ -342,6 +349,7 @@
             "description": "These are the fruits of your labor.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -357,6 +365,7 @@
             "description": "One vehicle for all of your needs.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -372,6 +381,7 @@
             "description": "In it for the long game, I see.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -387,10 +397,11 @@
             "description": "Look at Mr. Fancypants over there.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 8:49:26 AM",
-            "earnedAge": "1 month, 4 days, 13 hours, 35 mins",
+            "earnedAge": "1 month, 4 days, 15 hours, 27 mins",
             "timestamp": 1775465366000,
             "currentValue": 0,
             "targetValue": "100"
@@ -402,10 +413,11 @@
             "description": "It was only a matter of time…",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 8:49:24 AM",
-            "earnedAge": "1 month, 4 days, 13 hours, 35 mins",
+            "earnedAge": "1 month, 4 days, 15 hours, 27 mins",
             "timestamp": 1775465364000,
             "currentValue": 0,
             "targetValue": "100"
@@ -417,6 +429,7 @@
             "description": "Seriously, you should consider a membership card.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -432,6 +445,7 @@
             "description": "Building up my wool empire.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -447,6 +461,7 @@
             "description": "You'll be amazed how much food they need.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -462,6 +477,7 @@
             "description": "Now that's a lot of Easter eggs.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -477,10 +493,11 @@
             "description": "Well you've been one busy bee, haven't you?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/5/2026, 9:04:25 AM",
-            "earnedAge": "1 month, 5 days, 13 hours, 20 mins",
+            "earnedAge": "1 month, 5 days, 15 hours, 12 mins",
             "timestamp": 1775379865000,
             "currentValue": 0,
             "targetValue": "100"
@@ -492,6 +509,7 @@
             "description": "Bet you didn't think they'd be that much work, right?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -507,10 +525,11 @@
             "description": "We're slowly getting there.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 6:07:10 AM",
-            "earnedAge": "1 month, 3 days, 16 hours, 17 mins",
+            "earnedAge": "1 month, 3 days, 18 hours, 9 mins",
             "timestamp": 1775542030000,
             "currentValue": 0,
             "targetValue": "100"
@@ -522,10 +541,11 @@
             "description": "Yes, I need each and every one of these.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 6:12:32 AM",
-            "earnedAge": "1 month, 3 days, 16 hours, 12 mins",
+            "earnedAge": "1 month, 3 days, 18 hours, 4 mins",
             "timestamp": 1775542352000,
             "currentValue": 0,
             "targetValue": "100"
@@ -537,10 +557,11 @@
             "description": "Ok, I might have a problem…",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 6:25:51 AM",
-            "earnedAge": "1 month, 3 days, 15 hours, 59 mins",
+            "earnedAge": "1 month, 3 days, 17 hours, 50 mins",
             "timestamp": 1775543151000,
             "currentValue": 0,
             "targetValue": "100"
@@ -552,6 +573,7 @@
             "description": "The first step of any farmer.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -567,6 +589,7 @@
             "description": "I'm a little proud of this one myself.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -582,10 +605,11 @@
             "description": "Who's a good boy?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/5/2026, 9:02:36 AM",
-            "earnedAge": "1 month, 5 days, 13 hours, 22 mins",
+            "earnedAge": "1 month, 5 days, 15 hours, 13 mins",
             "timestamp": 1775379756000,
             "currentValue": 0,
             "targetValue": "100"
@@ -597,6 +621,7 @@
             "description": "What's in the bale?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -612,6 +637,7 @@
             "description": "Where would you even store them?!",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -627,6 +653,7 @@
             "description": "It's Californian gold!",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -642,6 +669,7 @@
             "description": "It's a fruit, not a vegetable!",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -657,6 +685,7 @@
             "description": "My horses are crazy for it.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -672,6 +701,7 @@
             "description": "The path to success is paved with rocks.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -687,10 +717,11 @@
             "description": "If a tree falls in a forest and no one is around to hear it, does one hand clap?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 3:19:53 AM",
-            "earnedAge": "1 month, 3 days, 19 hours, 4 mins",
+            "earnedAge": "1 month, 3 days, 20 hours, 56 mins",
             "timestamp": 1775531993000,
             "currentValue": 0,
             "targetValue": "100"
@@ -702,10 +733,11 @@
             "description": "Taking a leaf of absence.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 7:20:11 AM",
-            "earnedAge": "1 month, 3 days, 15 hours, 4 mins",
+            "earnedAge": "1 month, 3 days, 16 hours, 56 mins",
             "timestamp": 1775546411000,
             "currentValue": 0,
             "targetValue": "100"
@@ -717,10 +749,11 @@
             "description": "You know you can also spend it, right?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/5/2026, 8:57:06 AM",
-            "earnedAge": "1 month, 5 days, 13 hours, 27 mins",
+            "earnedAge": "1 month, 5 days, 15 hours, 19 mins",
             "timestamp": 1775379426000,
             "currentValue": 0,
             "targetValue": "100"
@@ -732,10 +765,11 @@
             "description": "Everything the light touches...is mine.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/5/2026, 9:01:43 AM",
-            "earnedAge": "1 month, 5 days, 13 hours, 23 mins",
+            "earnedAge": "1 month, 5 days, 15 hours, 14 mins",
             "timestamp": 1775379703000,
             "currentValue": 0,
             "targetValue": "100"
@@ -747,10 +781,11 @@
             "description": "Hmm, we could franchise this…",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/14/2026, 2:31:21 AM",
-            "earnedAge": "3 weeks, 5 days, 19 hours, 53 mins",
+            "earnedAge": "3 weeks, 5 days, 21 hours, 45 mins",
             "timestamp": 1776133881000,
             "currentValue": 0,
             "targetValue": "100"
@@ -762,10 +797,11 @@
             "description": "The Museum needs help.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/14/2026, 8:18:51 AM",
-            "earnedAge": "3 weeks, 5 days, 14 hours, 6 mins",
+            "earnedAge": "3 weeks, 5 days, 15 hours, 57 mins",
             "timestamp": 1776154731000,
             "currentValue": 0,
             "targetValue": "100"
@@ -777,10 +813,11 @@
             "description": "With the power of farm balls for even more yield.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/14/2026, 10:43:35 AM",
-            "earnedAge": "3 weeks, 5 days, 11 hours, 41 mins",
+            "earnedAge": "3 weeks, 5 days, 13 hours, 32 mins",
             "timestamp": 1776163415000,
             "currentValue": 0,
             "targetValue": "100"
@@ -792,10 +829,11 @@
             "description": "The legend of the golden apple.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/14/2026, 9:44:33 AM",
-            "earnedAge": "3 weeks, 5 days, 12 hours, 40 mins",
+            "earnedAge": "3 weeks, 5 days, 14 hours, 32 mins",
             "timestamp": 1776159873000,
             "currentValue": 0,
             "targetValue": "100"
@@ -807,6 +845,7 @@
             "description": "It feels good to be home.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": false,
             "earnedDate": null,
@@ -820,12 +859,20 @@
       },
       "mostRecentTrophies": [
         {
+          "game": "Farming Simulator 25",
+          "name": "Just a sprinkle",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/2eb8774d-737d-4a82-ad1e-796e90a9b8a1.png",
+          "timestamp": 1778456796000,
+          "date": "5/10/2026, 11:46:36 PM",
+          "age": "29 mins"
+        },
+        {
           "game": "Sniper Elite: Resistance",
           "name": "Survivalist",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/04b57a73-7fd6-48ad-a218-fd16c0e17519.png",
           "timestamp": 1778302474000,
           "date": "5/9/2026, 4:54:34 AM",
-          "age": "1 day, 17 hours, 30 mins"
+          "age": "1 day, 19 hours, 22 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -833,7 +880,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/dc85976b-8af2-46e2-b5a6-ff0b69f26b12.png",
           "timestamp": 1778300440000,
           "date": "5/9/2026, 4:20:40 AM",
-          "age": "1 day, 18 hours, 4 mins"
+          "age": "1 day, 19 hours, 55 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -841,7 +888,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/2f271c3f-8423-4536-a106-13e185e32716.png",
           "timestamp": 1778299334000,
           "date": "5/9/2026, 4:02:14 AM",
-          "age": "1 day, 18 hours, 22 mins"
+          "age": "1 day, 20 hours, 14 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -849,7 +896,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/46383227-487b-4bca-a22a-08f6f98ee87c.png",
           "timestamp": 1778297819000,
           "date": "5/9/2026, 3:36:59 AM",
-          "age": "1 day, 18 hours, 47 mins"
+          "age": "1 day, 20 hours, 39 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -857,7 +904,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/1b149ca3-9521-4b2d-97a9-02732e728938.png",
           "timestamp": 1778219226000,
           "date": "5/8/2026, 5:47:06 AM",
-          "age": "2 days, 16 hours, 37 mins"
+          "age": "2 days, 18 hours, 29 mins"
         },
         {
           "game": "Crossout",
@@ -865,7 +912,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/009fa825-3750-4f7a-a4d4-a3693fc62894.png",
           "timestamp": 1777608106000,
           "date": "5/1/2026, 4:01:46 AM",
-          "age": "1 week, 2 days, 18 hours, 23 mins"
+          "age": "1 week, 2 days, 20 hours, 14 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -873,7 +920,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/3138fc6b-2350-4429-b96d-3d28c91569e8.png",
           "timestamp": 1777519538000,
           "date": "4/30/2026, 3:25:38 AM",
-          "age": "1 week, 3 days, 18 hours, 59 mins"
+          "age": "1 week, 3 days, 20 hours, 50 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -881,7 +928,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/7c1e51c5-3b51-4473-9121-f5fa1f1b89dc.png",
           "timestamp": 1777519387000,
           "date": "4/30/2026, 3:23:07 AM",
-          "age": "1 week, 3 days, 19 hours, 1 min"
+          "age": "1 week, 3 days, 20 hours, 53 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -889,18 +936,10 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/1f1efd6c-1aee-4d3d-80b8-bdb5cb493341.png",
           "timestamp": 1777518061000,
           "date": "4/30/2026, 3:01:01 AM",
-          "age": "1 week, 3 days, 19 hours, 23 mins"
-        },
-        {
-          "game": "Wo Long: Fallen Dynasty",
-          "name": "Sharp Reflexes",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/127dbf40-e9e1-4e3c-8ec7-a957f0331f2a.png",
-          "timestamp": 1777517985000,
-          "date": "4/30/2026, 2:59:45 AM",
-          "age": "1 week, 3 days, 19 hours, 25 mins"
+          "age": "1 week, 3 days, 21 hours, 15 mins"
         }
       ],
-      "lastUpdated": "5/10/2026, 10:24:51 PM"
+      "lastUpdated": "5/11/2026, 12:16:36 AM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -943,6 +982,16 @@
       },
       "recentGames": [
         {
+          "name": "Farming Simulator 25",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+          "progress": 100,
+          "ratio": "46/46",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
+          "npCommunicationId": "NPWR44827_00",
+          "lastPlayed": "2026-04-14T10:48:47Z",
+          "bootCount": "Unknown"
+        },
+        {
           "name": "Mahjong",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/8a811471-ab74-4f68-a775-b3278ad98873.png",
           "progress": 100,
@@ -950,7 +999,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Mahjong&tag=psngaming-20",
           "npCommunicationId": "NPWR28141_00",
           "lastPlayed": "2026-05-08T21:38:08Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -961,7 +1009,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=theHunter%3A%20Call%20of%20the%20Wild&tag=psngaming-20",
           "npCommunicationId": "NPWR13211_00",
           "lastPlayed": "2026-04-22T23:42:00Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -972,18 +1019,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%3A%20Resistance&tag=psngaming-20",
           "npCommunicationId": "NPWR40813_00",
           "lastPlayed": "2026-04-14T10:55:49Z",
-          "playHours": "Unknown",
-          "bootCount": "Unknown"
-        },
-        {
-          "name": "Farming Simulator 25",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
-          "progress": 100,
-          "ratio": "46/46",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
-          "npCommunicationId": "NPWR44827_00",
-          "lastPlayed": "2026-04-14T10:48:47Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -994,7 +1029,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2022&tag=psngaming-20",
           "npCommunicationId": "NPWR23165_00",
           "lastPlayed": "2026-04-04T02:01:34Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -1005,7 +1039,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=SKULL%20AND%20BONES&tag=psngaming-20",
           "npCommunicationId": "NPWR22432_00",
           "lastPlayed": "2026-04-03T21:23:10Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         }
       ],
@@ -1016,8 +1049,7 @@
           "firstEarned": "4/5/2026, 3:18:12 AM",
           "huntingDuration": "10 days",
           "hunterPersona": "Dead Set Hunter",
-          "completionStatus": "46/46",
-          "totalPlaytime": "Unknown"
+          "completionStatus": "46/46"
         },
         "groups": [
           {
@@ -1034,10 +1066,11 @@
             "description": "Plant today - harvest tomorrow.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/14/2026, 10:48:47 AM",
-            "earnedAge": "3 weeks, 5 days, 11 hours, 36 mins",
+            "earnedAge": "3 weeks, 5 days, 13 hours, 27 mins",
             "timestamp": 1776163727000,
             "currentValue": 0,
             "targetValue": 0
@@ -1049,10 +1082,11 @@
             "description": "That thing wouldn't have fit onto the street anyway.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 11:03:05 AM",
-            "earnedAge": "1 month, 3 days, 11 hours, 21 mins",
+            "earnedAge": "1 month, 3 days, 13 hours, 13 mins",
             "timestamp": 1775559785000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1064,10 +1098,11 @@
             "description": "A little help can go a long way.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/8/2026, 3:28:45 PM",
-            "earnedAge": "1 month, 2 days, 6 hours, 56 mins",
+            "earnedAge": "1 month, 2 days, 8 hours, 47 mins",
             "timestamp": 1775662125000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1079,10 +1114,11 @@
             "description": "You won't rest until you've reached maximum efficiency.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/8/2026, 6:49:58 PM",
-            "earnedAge": "1 month, 2 days, 3 hours, 34 mins",
+            "earnedAge": "1 month, 2 days, 5 hours, 26 mins",
             "timestamp": 1775674198000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1094,10 +1130,11 @@
             "description": "Oh, they can do THAT as well?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 7:34:35 AM",
-            "earnedAge": "1 month, 4 days, 14 hours, 50 mins",
+            "earnedAge": "1 month, 4 days, 16 hours, 42 mins",
             "timestamp": 1775460875000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1109,10 +1146,11 @@
             "description": "Seriously, think of the poor animal!",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 7:34:35 AM",
-            "earnedAge": "1 month, 4 days, 14 hours, 50 mins",
+            "earnedAge": "1 month, 4 days, 16 hours, 42 mins",
             "timestamp": 1775460875000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1124,10 +1162,11 @@
             "description": "I could get used to getting around like this…",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 7:34:53 AM",
-            "earnedAge": "1 month, 4 days, 14 hours, 50 mins",
+            "earnedAge": "1 month, 4 days, 16 hours, 41 mins",
             "timestamp": 1775460893000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1139,10 +1178,11 @@
             "description": "I'm a real cowboy, mom!",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 8:28:26 AM",
-            "earnedAge": "1 month, 4 days, 13 hours, 56 mins",
+            "earnedAge": "1 month, 4 days, 15 hours, 48 mins",
             "timestamp": 1775464106000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1154,10 +1194,11 @@
             "description": "Sure, I can take care of that, neighbor.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/5/2026, 3:18:12 AM",
-            "earnedAge": "1 month, 5 days, 19 hours, 6 mins",
+            "earnedAge": "1 month, 5 days, 20 hours, 58 mins",
             "timestamp": 1775359092000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1169,10 +1210,11 @@
             "description": "What do you mean \"take care of my own farm as well\"?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 8:06:04 AM",
-            "earnedAge": "1 month, 3 days, 14 hours, 18 mins",
+            "earnedAge": "1 month, 3 days, 16 hours, 10 mins",
             "timestamp": 1775549164000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1184,10 +1226,11 @@
             "description": "I've never felt happier than here.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 7:26:52 AM",
-            "earnedAge": "1 month, 4 days, 14 hours, 58 mins",
+            "earnedAge": "1 month, 4 days, 16 hours, 49 mins",
             "timestamp": 1775460412000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1199,10 +1242,11 @@
             "description": "You have to think about the future.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/9/2026, 10:11:19 PM",
-            "earnedAge": "1 month, 1 day, 13 mins",
+            "earnedAge": "1 month, 1 day, 2 hours, 5 mins",
             "timestamp": 1775772679000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1214,10 +1258,11 @@
             "description": "Planting one bean will yield much green.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/14/2026, 2:30:20 AM",
-            "earnedAge": "3 weeks, 5 days, 19 hours, 54 mins",
+            "earnedAge": "3 weeks, 5 days, 21 hours, 46 mins",
             "timestamp": 1776133820000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1229,10 +1274,11 @@
             "description": "Reap what you sow.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 7:12:26 PM",
-            "earnedAge": "1 month, 3 days, 3 hours, 12 mins",
+            "earnedAge": "1 month, 3 days, 5 hours, 4 mins",
             "timestamp": 1775589146000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1244,10 +1290,11 @@
             "description": "These are the fruits of your labor.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/8/2026, 3:45:52 AM",
-            "earnedAge": "1 month, 2 days, 18 hours, 39 mins",
+            "earnedAge": "1 month, 2 days, 20 hours, 30 mins",
             "timestamp": 1775619952000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1259,10 +1306,11 @@
             "description": "One vehicle for all of your needs.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 6:14:26 AM",
-            "earnedAge": "1 month, 3 days, 16 hours, 10 mins",
+            "earnedAge": "1 month, 3 days, 18 hours, 2 mins",
             "timestamp": 1775542466000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1274,10 +1322,11 @@
             "description": "In it for the long game, I see.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 7:02:03 AM",
-            "earnedAge": "1 month, 3 days, 15 hours, 22 mins",
+            "earnedAge": "1 month, 3 days, 17 hours, 14 mins",
             "timestamp": 1775545323000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1289,10 +1338,11 @@
             "description": "Look at Mr. Fancypants over there.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 8:32:23 AM",
-            "earnedAge": "1 month, 4 days, 13 hours, 52 mins",
+            "earnedAge": "1 month, 4 days, 15 hours, 44 mins",
             "timestamp": 1775464343000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1304,10 +1354,11 @@
             "description": "It was only a matter of time…",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 6:14:31 PM",
-            "earnedAge": "1 month, 3 days, 4 hours, 10 mins",
+            "earnedAge": "1 month, 3 days, 6 hours, 2 mins",
             "timestamp": 1775585671000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1319,10 +1370,11 @@
             "description": "Seriously, you should consider a membership card.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/14/2026, 6:48:19 AM",
-            "earnedAge": "3 weeks, 5 days, 15 hours, 36 mins",
+            "earnedAge": "3 weeks, 5 days, 17 hours, 28 mins",
             "timestamp": 1776149299000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1334,10 +1386,11 @@
             "description": "Building up my wool empire.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 3:32:57 PM",
-            "earnedAge": "1 month, 3 days, 6 hours, 51 mins",
+            "earnedAge": "1 month, 3 days, 8 hours, 43 mins",
             "timestamp": 1775575977000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1349,10 +1402,11 @@
             "description": "You'll be amazed how much food they need.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 3:32:57 PM",
-            "earnedAge": "1 month, 3 days, 6 hours, 51 mins",
+            "earnedAge": "1 month, 3 days, 8 hours, 43 mins",
             "timestamp": 1775575977000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1364,10 +1418,11 @@
             "description": "Now that's a lot of Easter eggs.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 2:52:13 PM",
-            "earnedAge": "1 month, 3 days, 7 hours, 32 mins",
+            "earnedAge": "1 month, 3 days, 9 hours, 24 mins",
             "timestamp": 1775573533000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1379,10 +1434,11 @@
             "description": "Well you've been one busy bee, haven't you?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/5/2026, 9:05:43 AM",
-            "earnedAge": "1 month, 5 days, 13 hours, 19 mins",
+            "earnedAge": "1 month, 5 days, 15 hours, 10 mins",
             "timestamp": 1775379943000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1394,10 +1450,11 @@
             "description": "Bet you didn't think they'd be that much work, right?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 6:06:22 PM",
-            "earnedAge": "1 month, 3 days, 4 hours, 18 mins",
+            "earnedAge": "1 month, 3 days, 6 hours, 10 mins",
             "timestamp": 1775585182000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1409,10 +1466,11 @@
             "description": "We're slowly getting there.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 8:48:32 AM",
-            "earnedAge": "1 month, 4 days, 13 hours, 36 mins",
+            "earnedAge": "1 month, 4 days, 15 hours, 28 mins",
             "timestamp": 1775465312000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1424,10 +1482,11 @@
             "description": "Yes, I need each and every one of these.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 8:48:32 AM",
-            "earnedAge": "1 month, 4 days, 13 hours, 36 mins",
+            "earnedAge": "1 month, 4 days, 15 hours, 28 mins",
             "timestamp": 1775465312000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1439,10 +1498,11 @@
             "description": "Ok, I might have a problem…",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 8:31:40 AM",
-            "earnedAge": "1 month, 3 days, 13 hours, 53 mins",
+            "earnedAge": "1 month, 3 days, 15 hours, 44 mins",
             "timestamp": 1775550700000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1454,10 +1514,11 @@
             "description": "The first step of any farmer.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/8/2026, 11:27:12 AM",
-            "earnedAge": "1 month, 2 days, 10 hours, 57 mins",
+            "earnedAge": "1 month, 2 days, 12 hours, 49 mins",
             "timestamp": 1775647632000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1469,10 +1530,11 @@
             "description": "I'm a little proud of this one myself.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/9/2026, 11:15:58 PM",
-            "earnedAge": "1 month, 23 hours, 8 mins",
+            "earnedAge": "1 month, 1 day, 1 hour",
             "timestamp": 1775776558000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1484,10 +1546,11 @@
             "description": "Who's a good boy?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/5/2026, 9:01:46 AM",
-            "earnedAge": "1 month, 5 days, 13 hours, 23 mins",
+            "earnedAge": "1 month, 5 days, 15 hours, 14 mins",
             "timestamp": 1775379706000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1499,10 +1562,11 @@
             "description": "What's in the bale?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/14/2026, 7:13:53 AM",
-            "earnedAge": "3 weeks, 5 days, 15 hours, 11 mins",
+            "earnedAge": "3 weeks, 5 days, 17 hours, 2 mins",
             "timestamp": 1776150833000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1514,10 +1578,11 @@
             "description": "Where would you even store them?!",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 11:38:12 AM",
-            "earnedAge": "1 month, 3 days, 10 hours, 46 mins",
+            "earnedAge": "1 month, 3 days, 12 hours, 38 mins",
             "timestamp": 1775561892000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1529,10 +1594,11 @@
             "description": "It's Californian gold!",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 11:45:56 AM",
-            "earnedAge": "1 month, 3 days, 10 hours, 38 mins",
+            "earnedAge": "1 month, 3 days, 12 hours, 30 mins",
             "timestamp": 1775562356000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1544,10 +1610,11 @@
             "description": "It's a fruit, not a vegetable!",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 11:48:56 AM",
-            "earnedAge": "1 month, 3 days, 10 hours, 35 mins",
+            "earnedAge": "1 month, 3 days, 12 hours, 27 mins",
             "timestamp": 1775562536000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1559,10 +1626,11 @@
             "description": "My horses are crazy for it.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 11:55:56 AM",
-            "earnedAge": "1 month, 3 days, 10 hours, 28 mins",
+            "earnedAge": "1 month, 3 days, 12 hours, 20 mins",
             "timestamp": 1775562956000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1574,10 +1642,11 @@
             "description": "The path to success is paved with rocks.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 12:06:58 PM",
-            "earnedAge": "1 month, 3 days, 10 hours, 17 mins",
+            "earnedAge": "1 month, 3 days, 12 hours, 9 mins",
             "timestamp": 1775563618000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1589,10 +1658,11 @@
             "description": "If a tree falls in a forest and no one is around to hear it, does one hand clap?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/6/2026, 8:34:31 AM",
-            "earnedAge": "1 month, 4 days, 13 hours, 50 mins",
+            "earnedAge": "1 month, 4 days, 15 hours, 42 mins",
             "timestamp": 1775464471000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1604,10 +1674,11 @@
             "description": "Taking a leaf of absence.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/7/2026, 7:27:58 AM",
-            "earnedAge": "1 month, 3 days, 14 hours, 56 mins",
+            "earnedAge": "1 month, 3 days, 16 hours, 48 mins",
             "timestamp": 1775546878000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1619,10 +1690,11 @@
             "description": "You know you can also spend it, right?",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/5/2026, 3:46:32 AM",
-            "earnedAge": "1 month, 5 days, 18 hours, 38 mins",
+            "earnedAge": "1 month, 5 days, 20 hours, 30 mins",
             "timestamp": 1775360792000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1634,10 +1706,11 @@
             "description": "Everything the light touches...is mine.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/5/2026, 3:42:36 AM",
-            "earnedAge": "1 month, 5 days, 18 hours, 42 mins",
+            "earnedAge": "1 month, 5 days, 20 hours, 34 mins",
             "timestamp": 1775360556000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1649,10 +1722,11 @@
             "description": "Hmm, we could franchise this…",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/5/2026, 11:21:40 AM",
-            "earnedAge": "1 month, 5 days, 11 hours, 3 mins",
+            "earnedAge": "1 month, 5 days, 12 hours, 54 mins",
             "timestamp": 1775388100000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1664,10 +1738,11 @@
             "description": "The Museum needs help.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/14/2026, 8:18:31 AM",
-            "earnedAge": "3 weeks, 5 days, 14 hours, 6 mins",
+            "earnedAge": "3 weeks, 5 days, 15 hours, 58 mins",
             "timestamp": 1776154711000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1679,10 +1754,11 @@
             "description": "With the power of farm balls for even more yield.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/14/2026, 10:48:47 AM",
-            "earnedAge": "3 weeks, 5 days, 11 hours, 36 mins",
+            "earnedAge": "3 weeks, 5 days, 13 hours, 27 mins",
             "timestamp": 1776163727000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1694,10 +1770,11 @@
             "description": "The legend of the golden apple.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/14/2026, 9:43:54 AM",
-            "earnedAge": "3 weeks, 5 days, 12 hours, 41 mins",
+            "earnedAge": "3 weeks, 5 days, 14 hours, 32 mins",
             "timestamp": 1776159834000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1709,10 +1786,11 @@
             "description": "It feels good to be home.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "4/10/2026, 2:19:01 AM",
-            "earnedAge": "1 month, 20 hours, 5 mins",
+            "earnedAge": "1 month, 21 hours, 57 mins",
             "timestamp": 1775787541000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1727,7 +1805,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/4b6d04d8-59c7-4280-afcf-808d94619e59.png",
           "timestamp": 1778276288000,
           "date": "5/8/2026, 9:38:08 PM",
-          "age": "2 days, 46 mins"
+          "age": "2 days, 2 hours, 38 mins"
         },
         {
           "game": "Mahjong",
@@ -1735,7 +1813,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/68c284db-85b4-4d52-ba00-21d5621caa32.png",
           "timestamp": 1778268262000,
           "date": "5/8/2026, 7:24:22 PM",
-          "age": "2 days, 3 hours"
+          "age": "2 days, 4 hours, 52 mins"
         },
         {
           "game": "Mahjong",
@@ -1743,7 +1821,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/86127749-7a5e-4a71-ae20-83bcb08cd044.png",
           "timestamp": 1777996589000,
           "date": "5/5/2026, 3:56:29 PM",
-          "age": "5 days, 6 hours, 28 mins"
+          "age": "5 days, 8 hours, 20 mins"
         },
         {
           "game": "Mahjong",
@@ -1751,7 +1829,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/de222a3e-5ebb-493c-96ba-a1fe844befa0.png",
           "timestamp": 1777989355000,
           "date": "5/5/2026, 1:55:55 PM",
-          "age": "5 days, 8 hours, 28 mins"
+          "age": "5 days, 10 hours, 20 mins"
         },
         {
           "game": "Mahjong",
@@ -1759,7 +1837,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6fd426e8-81b3-4b7d-990f-31583f266bf4.png",
           "timestamp": 1777938161000,
           "date": "5/4/2026, 11:42:41 PM",
-          "age": "5 days, 22 hours, 42 mins"
+          "age": "6 days, 33 mins"
         },
         {
           "game": "Mahjong",
@@ -1767,7 +1845,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/5c335c31-75f7-4194-8867-163a13a15071.png",
           "timestamp": 1777792873000,
           "date": "5/3/2026, 7:21:13 AM",
-          "age": "1 week, 15 hours, 3 mins"
+          "age": "1 week, 16 hours, 55 mins"
         },
         {
           "game": "Mahjong",
@@ -1775,7 +1853,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/e7c05277-96df-4133-b044-d1d76f07f861.png",
           "timestamp": 1777781054000,
           "date": "5/3/2026, 4:04:14 AM",
-          "age": "1 week, 18 hours, 20 mins"
+          "age": "1 week, 20 hours, 12 mins"
         },
         {
           "game": "Mahjong",
@@ -1783,7 +1861,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/c4cc9e52-45e4-41bd-97a3-d1c270ee71e9.png",
           "timestamp": 1777327146000,
           "date": "4/27/2026, 9:59:06 PM",
-          "age": "1 week, 6 days, 25 mins"
+          "age": "1 week, 6 days, 2 hours, 17 mins"
         },
         {
           "game": "Mahjong",
@@ -1791,7 +1869,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/a2b6cd81-f3d0-4a2b-b580-b706b875dd2f.png",
           "timestamp": 1777312867000,
           "date": "4/27/2026, 6:01:07 PM",
-          "age": "1 week, 6 days, 4 hours, 23 mins"
+          "age": "1 week, 6 days, 6 hours, 15 mins"
         },
         {
           "game": "Mahjong",
@@ -1799,10 +1877,10 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6a3ac782-b027-4a9c-9b2e-47f6ca3a8759.png",
           "timestamp": 1777306334000,
           "date": "4/27/2026, 4:12:14 PM",
-          "age": "1 week, 6 days, 6 hours, 12 mins"
+          "age": "1 week, 6 days, 8 hours, 4 mins"
         }
       ],
-      "lastUpdated": "5/10/2026, 10:24:55 PM"
+      "lastUpdated": "5/11/2026, 12:16:41 AM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -1852,7 +1930,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Wo%20Long%3A%20Fallen%20Dynasty&tag=psngaming-20",
           "npCommunicationId": "NPWR27198_00",
           "lastPlayed": "2026-05-10T14:44:00Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -1863,7 +1940,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Assassin's%20Creed%20II&tag=psngaming-20",
           "npCommunicationId": "NPWR11435_00",
           "lastPlayed": "2026-04-05T03:31:01Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -1874,7 +1950,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Assassin's%20Creed%20III%20Remastered&tag=psngaming-20",
           "npCommunicationId": "NPWR15386_00",
           "lastPlayed": "2026-04-04T06:34:39Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -1885,7 +1960,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Assassin's%20Creed%20Liberation%20Remastered&tag=psngaming-20",
           "npCommunicationId": "NPWR16633_00",
           "lastPlayed": "2026-04-04T06:17:20Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -1896,7 +1970,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
           "npCommunicationId": "NPWR44827_00",
           "lastPlayed": "2026-03-29T16:42:32Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -1907,7 +1980,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Undisputed&tag=psngaming-20",
           "npCommunicationId": "NPWR40778_00",
           "lastPlayed": "2026-03-23T08:11:59Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         }
       ],
@@ -1918,8 +1990,7 @@
           "firstEarned": "4/10/2026, 8:50:40 AM",
           "huntingDuration": "31 days",
           "hunterPersona": "Casual Pursuit",
-          "completionStatus": "42/90",
-          "totalPlaytime": "Unknown"
+          "completionStatus": "42/90"
         },
         "groups": [
           {
@@ -1951,6 +2022,7 @@
             "description": "Obtained all trophies.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
@@ -1966,10 +2038,11 @@
             "description": "Reached Level 15.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/12/2026, 7:10:32 AM",
-            "earnedAge": "4 weeks, 15 hours, 14 mins",
+            "earnedAge": "4 weeks, 17 hours, 6 mins",
             "timestamp": 1775977832000,
             "currentValue": 0,
             "targetValue": "15"
@@ -1981,10 +2054,11 @@
             "description": "Reached Level 80.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/28/2026, 6:41:20 AM",
-            "earnedAge": "1 week, 5 days, 15 hours, 43 mins",
+            "earnedAge": "1 week, 5 days, 17 hours, 35 mins",
             "timestamp": 1777358480000,
             "currentValue": 0,
             "targetValue": "80"
@@ -1996,10 +2070,11 @@
             "description": "Awakened from the sleep of death at the sound of the Blindfolded Boy's voice.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/11/2026, 5:36:47 AM",
-            "earnedAge": "4 weeks, 1 day, 16 hours, 48 mins",
+            "earnedAge": "4 weeks, 1 day, 18 hours, 39 mins",
             "timestamp": 1775885807000,
             "currentValue": 0,
             "targetValue": 0
@@ -2011,10 +2086,11 @@
             "description": "Swore an oath with Zhao Yun.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/12/2026, 6:31:58 AM",
-            "earnedAge": "4 weeks, 15 hours, 52 mins",
+            "earnedAge": "4 weeks, 17 hours, 44 mins",
             "timestamp": 1775975518000,
             "currentValue": 0,
             "targetValue": 0
@@ -2026,10 +2102,11 @@
             "description": "Swore an oath with Guan Yu and Zhang Fei.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/14/2026, 5:48:30 AM",
-            "earnedAge": "3 weeks, 5 days, 16 hours, 36 mins",
+            "earnedAge": "3 weeks, 5 days, 18 hours, 28 mins",
             "timestamp": 1776145710000,
             "currentValue": 0,
             "targetValue": 0
@@ -2041,10 +2118,11 @@
             "description": "Swore an oath with Sun Jian.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/18/2026, 6:15:33 AM",
-            "earnedAge": "3 weeks, 1 day, 16 hours, 9 mins",
+            "earnedAge": "3 weeks, 1 day, 18 hours, 1 min",
             "timestamp": 1776492933000,
             "currentValue": 0,
             "targetValue": 0
@@ -2056,10 +2134,11 @@
             "description": "Swore an oath with Zuo Ci.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/20/2026, 12:21:04 AM",
-            "earnedAge": "2 weeks, 6 days, 22 hours, 3 mins",
+            "earnedAge": "2 weeks, 6 days, 23 hours, 55 mins",
             "timestamp": 1776644464000,
             "currentValue": 0,
             "targetValue": 0
@@ -2071,10 +2150,11 @@
             "description": "Swore an oath with Cao Cao.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/21/2026, 5:33:36 AM",
-            "earnedAge": "2 weeks, 5 days, 16 hours, 51 mins",
+            "earnedAge": "2 weeks, 5 days, 18 hours, 43 mins",
             "timestamp": 1776749616000,
             "currentValue": 0,
             "targetValue": 0
@@ -2086,10 +2166,11 @@
             "description": "Repelled Lu Bu's forces.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/24/2026, 1:08:54 AM",
-            "earnedAge": "2 weeks, 2 days, 21 hours, 16 mins",
+            "earnedAge": "2 weeks, 2 days, 23 hours, 7 mins",
             "timestamp": 1776992934000,
             "currentValue": 0,
             "targetValue": 0
@@ -2101,10 +2182,11 @@
             "description": "Swore an oath with Lady Zhen.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/25/2026, 2:33:05 AM",
-            "earnedAge": "2 weeks, 1 day, 19 hours, 51 mins",
+            "earnedAge": "2 weeks, 1 day, 21 hours, 43 mins",
             "timestamp": 1777084385000,
             "currentValue": 0,
             "targetValue": 0
@@ -2116,10 +2198,11 @@
             "description": "Swore an oath with Sun Ce and Sun Quan.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/25/2026, 4:12:56 AM",
-            "earnedAge": "2 weeks, 1 day, 18 hours, 12 mins",
+            "earnedAge": "2 weeks, 1 day, 20 hours, 3 mins",
             "timestamp": 1777090376000,
             "currentValue": 0,
             "targetValue": 0
@@ -2131,10 +2214,11 @@
             "description": "Swore an oath with Hong Jing.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/25/2026, 5:45:52 AM",
-            "earnedAge": "2 weeks, 1 day, 16 hours, 39 mins",
+            "earnedAge": "2 weeks, 1 day, 18 hours, 30 mins",
             "timestamp": 1777095952000,
             "currentValue": 0,
             "targetValue": 0
@@ -2146,10 +2230,11 @@
             "description": "Swore an oath with Xiahou Dun and Xiahou Yuan.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/25/2026, 7:59:56 AM",
-            "earnedAge": "2 weeks, 1 day, 14 hours, 25 mins",
+            "earnedAge": "2 weeks, 1 day, 16 hours, 16 mins",
             "timestamp": 1777103996000,
             "currentValue": 0,
             "targetValue": 0
@@ -2161,10 +2246,11 @@
             "description": "Swore an oath with Zhang Liao.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/26/2026, 6:36:36 AM",
-            "earnedAge": "2 weeks, 15 hours, 48 mins",
+            "earnedAge": "2 weeks, 17 hours, 40 mins",
             "timestamp": 1777185396000,
             "currentValue": 0,
             "targetValue": 0
@@ -2176,10 +2262,11 @@
             "description": "Swore an oath with Lu Bu.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/28/2026, 6:56:02 AM",
-            "earnedAge": "1 week, 5 days, 15 hours, 28 mins",
+            "earnedAge": "1 week, 5 days, 17 hours, 20 mins",
             "timestamp": 1777359362000,
             "currentValue": 0,
             "targetValue": 0
@@ -2191,10 +2278,11 @@
             "description": "Swore an oath with Liu Bei.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "5/3/2026, 6:50:50 AM",
-            "earnedAge": "1 week, 15 hours, 34 mins",
+            "earnedAge": "1 week, 17 hours, 25 mins",
             "timestamp": 1777791050000,
             "currentValue": 0,
             "targetValue": 0
@@ -2206,10 +2294,11 @@
             "description": "Swore an oath with Yuan Shao.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "5/3/2026, 7:42:22 AM",
-            "earnedAge": "1 week, 14 hours, 42 mins",
+            "earnedAge": "1 week, 16 hours, 34 mins",
             "timestamp": 1777794142000,
             "currentValue": 0,
             "targetValue": 0
@@ -2221,10 +2310,11 @@
             "description": "Defeated Yu Ji.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "5/7/2026, 5:05:57 AM",
-            "earnedAge": "3 days, 17 hours, 19 mins",
+            "earnedAge": "3 days, 19 hours, 10 mins",
             "timestamp": 1778130357000,
             "currentValue": 0,
             "targetValue": 0
@@ -2236,10 +2326,11 @@
             "description": "Heard the Blindfolded Boy's decision.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "5/7/2026, 6:08:46 AM",
-            "earnedAge": "3 days, 16 hours, 16 mins",
+            "earnedAge": "3 days, 18 hours, 7 mins",
             "timestamp": 1778134126000,
             "currentValue": 0,
             "targetValue": 0
@@ -2251,10 +2342,11 @@
             "description": "Dominated 15 sub battlefields.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "5/10/2026, 2:43:59 PM",
-            "earnedAge": "7 hours, 40 mins",
+            "earnedAge": "9 hours, 32 mins",
             "timestamp": 1778424239000,
             "currentValue": 0,
             "targetValue": "15"
@@ -2266,6 +2358,7 @@
             "description": "Dominated all main and sub battlefields.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
@@ -2281,10 +2374,11 @@
             "description": "Upgraded your first piece of equipment.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/12/2026, 6:40:42 AM",
-            "earnedAge": "4 weeks, 15 hours, 44 mins",
+            "earnedAge": "4 weeks, 17 hours, 36 mins",
             "timestamp": 1775976042000,
             "currentValue": 0,
             "targetValue": 0
@@ -2296,10 +2390,11 @@
             "description": "Upgraded a weapon to its fullest capacity.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "5/6/2026, 5:43:08 AM",
-            "earnedAge": "4 days, 16 hours, 41 mins",
+            "earnedAge": "4 days, 18 hours, 33 mins",
             "timestamp": 1778046188000,
             "currentValue": 0,
             "targetValue": "9"
@@ -2311,10 +2406,11 @@
             "description": "Upgraded a piece of armor to its fullest capacity.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "5/6/2026, 5:43:33 AM",
-            "earnedAge": "4 days, 16 hours, 41 mins",
+            "earnedAge": "4 days, 18 hours, 33 mins",
             "timestamp": 1778046213000,
             "currentValue": 0,
             "targetValue": "9"
@@ -2326,10 +2422,11 @@
             "description": "Embedded your first jewel at the Forge.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/20/2026, 12:35:33 AM",
-            "earnedAge": "2 weeks, 6 days, 21 hours, 49 mins",
+            "earnedAge": "2 weeks, 6 days, 23 hours, 41 mins",
             "timestamp": 1776645333000,
             "currentValue": 0,
             "targetValue": 0
@@ -2341,6 +2438,7 @@
             "description": "Decorated your first item at the Forge.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
@@ -2356,10 +2454,11 @@
             "description": "Learned your first Wizardry Spell.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/10/2026, 9:34:39 AM",
-            "earnedAge": "1 month, 12 hours, 50 mins",
+            "earnedAge": "1 month, 14 hours, 42 mins",
             "timestamp": 1775813679000,
             "currentValue": 0,
             "targetValue": 0
@@ -2371,10 +2470,11 @@
             "description": "Learned all Wizardry Spells.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "5/7/2026, 4:44:01 AM",
-            "earnedAge": "3 days, 17 hours, 40 mins",
+            "earnedAge": "3 days, 19 hours, 32 mins",
             "timestamp": 1778129041000,
             "currentValue": 0,
             "targetValue": "70"
@@ -2386,10 +2486,11 @@
             "description": "Interacted with the Five Phases for the first time.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/14/2026, 5:11:49 AM",
-            "earnedAge": "3 weeks, 5 days, 17 hours, 13 mins",
+            "earnedAge": "3 weeks, 5 days, 19 hours, 4 mins",
             "timestamp": 1776143509000,
             "currentValue": 0,
             "targetValue": 0
@@ -2401,10 +2502,11 @@
             "description": "Raised Morale Rank to 20 for the first time.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/11/2026, 5:32:50 AM",
-            "earnedAge": "4 weeks, 1 day, 16 hours, 52 mins",
+            "earnedAge": "4 weeks, 1 day, 18 hours, 43 mins",
             "timestamp": 1775885570000,
             "currentValue": 0,
             "targetValue": 0
@@ -2416,10 +2518,11 @@
             "description": "Received a sworn brothers' boon for the first time.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/19/2026, 11:07:08 PM",
-            "earnedAge": "2 weeks, 6 days, 23 hours, 17 mins",
+            "earnedAge": "3 weeks, 1 hour, 9 mins",
             "timestamp": 1776640028000,
             "currentValue": 0,
             "targetValue": 0
@@ -2431,6 +2534,7 @@
             "description": "Joined forces with all available warriors.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
@@ -2446,10 +2550,11 @@
             "description": "Equipped a full 4★ set consisting of: melee weapon, ranged weapon, accessory, and 4 armor pieces.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/23/2026, 5:36:12 AM",
-            "earnedAge": "2 weeks, 3 days, 16 hours, 48 mins",
+            "earnedAge": "2 weeks, 3 days, 18 hours, 40 mins",
             "timestamp": 1776922572000,
             "currentValue": 0,
             "targetValue": 0
@@ -2461,6 +2566,7 @@
             "description": "Upgraded the Dragon's Cure Pot to its greatest capacity and effectiveness.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
@@ -2476,6 +2582,7 @@
             "description": "Collected all tablets.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
@@ -2491,10 +2598,11 @@
             "description": "Raised your first Battle Flag.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/10/2026, 8:50:40 AM",
-            "earnedAge": "1 month, 13 hours, 34 mins",
+            "earnedAge": "1 month, 15 hours, 26 mins",
             "timestamp": 1775811040000,
             "currentValue": 0,
             "targetValue": 0
@@ -2506,6 +2614,7 @@
             "description": "Raised all Battle Flags.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
@@ -2521,10 +2630,11 @@
             "description": "Fed your first Shitieshou.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/23/2026, 5:36:33 AM",
-            "earnedAge": "2 weeks, 3 days, 16 hours, 48 mins",
+            "earnedAge": "2 weeks, 3 days, 18 hours, 40 mins",
             "timestamp": 1776922593000,
             "currentValue": 0,
             "targetValue": 0
@@ -2536,6 +2646,7 @@
             "description": "Fed all of the Shitieshou.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
@@ -2551,10 +2662,11 @@
             "description": "Successfully deflected 10 critical blows.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/10/2026, 10:09:22 AM",
-            "earnedAge": "1 month, 12 hours, 15 mins",
+            "earnedAge": "1 month, 14 hours, 7 mins",
             "timestamp": 1775815762000,
             "currentValue": 0,
             "targetValue": "10"
@@ -2566,10 +2678,11 @@
             "description": "Landed 50 Fatal Strikes.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/12/2026, 7:03:11 AM",
-            "earnedAge": "4 weeks, 15 hours, 21 mins",
+            "earnedAge": "4 weeks, 17 hours, 13 mins",
             "timestamp": 1775977391000,
             "currentValue": 0,
             "targetValue": "50"
@@ -2581,10 +2694,11 @@
             "description": "Dominated 10 battlefields with a companion.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/30/2026, 1:58:25 AM",
-            "earnedAge": "1 week, 3 days, 20 hours, 26 mins",
+            "earnedAge": "1 week, 3 days, 22 hours, 18 mins",
             "timestamp": 1777514305000,
             "currentValue": 0,
             "targetValue": "10"
@@ -2596,10 +2710,11 @@
             "description": "Fended off invaders 10 times.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "5/8/2026, 5:28:37 AM",
-            "earnedAge": "2 days, 16 hours, 56 mins",
+            "earnedAge": "2 days, 18 hours, 48 mins",
             "timestamp": 1778218117000,
             "currentValue": 0,
             "targetValue": "10"
@@ -2611,10 +2726,11 @@
             "description": "Exacted vengeance 10 times.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/12/2026, 4:54:09 AM",
-            "earnedAge": "4 weeks, 17 hours, 30 mins",
+            "earnedAge": "4 weeks, 19 hours, 22 mins",
             "timestamp": 1775969649000,
             "currentValue": 0,
             "targetValue": "10"
@@ -2626,10 +2742,11 @@
             "description": "Used 10 Tiger Seals.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/19/2026, 11:36:40 PM",
-            "earnedAge": "2 weeks, 6 days, 22 hours, 48 mins",
+            "earnedAge": "3 weeks, 40 mins",
             "timestamp": 1776641800000,
             "currentValue": 0,
             "targetValue": "10"
@@ -2641,10 +2758,11 @@
             "description": "Repelled Xielong in \"Centuries of Glory Burned Away.\"",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/24/2026, 1:47:15 AM",
-            "earnedAge": "2 weeks, 2 days, 20 hours, 37 mins",
+            "earnedAge": "2 weeks, 2 days, 22 hours, 29 mins",
             "timestamp": 1776995235000,
             "currentValue": 0,
             "targetValue": 0
@@ -2656,10 +2774,11 @@
             "description": "Defeated all Warlocks performing the ritual in \"The Valley of Crying Wraiths.\"",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/14/2026, 5:35:05 AM",
-            "earnedAge": "3 weeks, 5 days, 16 hours, 49 mins",
+            "earnedAge": "3 weeks, 5 days, 18 hours, 41 mins",
             "timestamp": 1776144905000,
             "currentValue": 0,
             "targetValue": 0
@@ -2671,10 +2790,11 @@
             "description": "Saved the captured Hermits in \"Fall of the Corrupted Eunuch.\"",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/20/2026, 1:41:16 AM",
-            "earnedAge": "2 weeks, 6 days, 20 hours, 43 mins",
+            "earnedAge": "2 weeks, 6 days, 22 hours, 35 mins",
             "timestamp": 1776649276000,
             "currentValue": 0,
             "targetValue": 0
@@ -2686,10 +2806,11 @@
             "description": "Defeated 5 foes with a ballista in \"The Battle of Hulaoguan Pass.\"",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": true,
             "earnedDate": "4/21/2026, 5:49:18 AM",
-            "earnedAge": "2 weeks, 5 days, 16 hours, 35 mins",
+            "earnedAge": "2 weeks, 5 days, 18 hours, 27 mins",
             "timestamp": 1776750558000,
             "currentValue": 0,
             "targetValue": 0
@@ -2701,6 +2822,7 @@
             "description": "Gave a certain someone the maximum amount of Golden Cicada Shells.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty",
             "earned": false,
             "earnedDate": null,
@@ -2716,6 +2838,7 @@
             "description": "Remedied Xu Chu's misunderstanding.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
@@ -2731,6 +2854,7 @@
             "description": "Quelled the Yellow Turban Rebellion in Qing Province.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
@@ -2746,6 +2870,7 @@
             "description": "Swore an oath with Dian Wei.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
@@ -2761,6 +2886,7 @@
             "description": "Tested Xu Chu's worthiness to be Dian Wei's successor.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
@@ -2776,6 +2902,7 @@
             "description": "Eliminated the phantoms of the Yellow Turban leaders.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
@@ -2791,6 +2918,7 @@
             "description": "Conquered 5 main and sub battlefields of Battle of Zhongyuan.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
@@ -2806,6 +2934,7 @@
             "description": "Conquered all main and sub battlefields of Battle of Zhongyuan.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
@@ -2821,6 +2950,7 @@
             "description": "Raised every Battle Flag in Battle of Zhongyuan.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
@@ -2836,6 +2966,7 @@
             "description": "Defeated 100 enemies using cestuses.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
@@ -2851,6 +2982,7 @@
             "description": "Summoned Feilian for the first time.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
@@ -2866,6 +2998,7 @@
             "description": "Swore oaths with all of the new allies in Battle of Zhongyuan.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
@@ -2881,6 +3014,7 @@
             "description": "Fed every Shitieshou in Battle of Zhongyuan.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
@@ -2896,6 +3030,7 @@
             "description": "Struck 3 enemies with a single Oil Pot explosion in Yuan City.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Battle of Zhongyuan",
             "earned": false,
             "earnedDate": null,
@@ -2911,6 +3046,7 @@
             "description": "Repelled Gan Ning.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
@@ -2926,6 +3062,7 @@
             "description": "Crossed swords with Taishi Ci.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
@@ -2941,6 +3078,7 @@
             "description": "Swore an oath with Taishi Ci.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
@@ -2956,6 +3094,7 @@
             "description": "Defeated Yan Baihu.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
@@ -2971,6 +3110,7 @@
             "description": "Listened to Sun Quan's resolution.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
@@ -2986,6 +3126,7 @@
             "description": "Conquered all main and sub battlefields in Conqueror of Jiangdong.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
@@ -3001,6 +3142,7 @@
             "description": "Raised every Battle Flag in Conqueror of Jiangdong.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
@@ -3016,6 +3158,7 @@
             "description": "Defeated 100 enemies using long swords.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
@@ -3031,6 +3174,7 @@
             "description": "Summoned Kunpeng for the first time.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
@@ -3046,6 +3190,7 @@
             "description": "Swore oaths with all of the new allies in Conqueror of Jiangdong.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
@@ -3061,6 +3206,7 @@
             "description": "Fed every Shitieshou in Conqueror of Jiangdong.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
@@ -3076,6 +3222,7 @@
             "description": "Sank all enemy ships by sending out fireships in \"A Dark Tide Rolls In.\"",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
@@ -3091,6 +3238,7 @@
             "description": "Defeated 5 enemies while hiding in the grass in the Shentingling Hills.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Conqueror of Jiangdong",
             "earned": false,
             "earnedDate": null,
@@ -3106,6 +3254,7 @@
             "description": "Fought alongside Guan Ping.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
@@ -3121,6 +3270,7 @@
             "description": "Proved your worth to Danfu.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
@@ -3136,6 +3286,7 @@
             "description": "Defeated Yuan Shu.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
@@ -3151,6 +3302,7 @@
             "description": "Kept Lady Mi's habits in check.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
@@ -3166,6 +3318,7 @@
             "description": "Emerged victorious in a duel against Guan Yu.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
@@ -3181,6 +3334,7 @@
             "description": "Conquered all main and sub battlefields in Upheaval in Jingxiang.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
@@ -3196,6 +3350,7 @@
             "description": "Raised every Battle Flag in Upheaval in Jingxiang.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
@@ -3211,6 +3366,7 @@
             "description": "Defeated 100 enemies using whips.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
@@ -3226,6 +3382,7 @@
             "description": "Summoned Chenghuang for the first time.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
@@ -3241,6 +3398,7 @@
             "description": "Swore oaths with all of the new allies in Upheaval in Jingxiang.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
@@ -3256,6 +3414,7 @@
             "description": "Fed every Shitieshou in Upheaval in Jingxiang.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
@@ -3271,6 +3430,7 @@
             "description": "Defeated all Shrimp Soldiers polluting the water in \"Desolate Waterside Village.\"",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
@@ -3286,6 +3446,7 @@
             "description": "Destroyed all resonating crystals in \"The Rampant Demon Emperor.\"",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Wo Long: Fallen Dynasty Upheaval in Jingxiang",
             "earned": false,
             "earnedDate": null,
@@ -3304,7 +3465,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/fcb7bb24-a9d5-4086-b683-a1b0aae92aa9.png",
           "timestamp": 1778424239000,
           "date": "5/10/2026, 2:43:59 PM",
-          "age": "7 hours, 40 mins"
+          "age": "9 hours, 32 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -3312,7 +3473,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/4473223f-f110-4676-9de5-cecd5f4344b2.png",
           "timestamp": 1778218117000,
           "date": "5/8/2026, 5:28:37 AM",
-          "age": "2 days, 16 hours, 56 mins"
+          "age": "2 days, 18 hours, 48 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -3320,7 +3481,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/1afc8198-f583-40e3-9aa1-001012a87ca1.png",
           "timestamp": 1778134126000,
           "date": "5/7/2026, 6:08:46 AM",
-          "age": "3 days, 16 hours, 16 mins"
+          "age": "3 days, 18 hours, 7 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -3328,7 +3489,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/236d6651-8585-4f0a-a7a4-9281fd579fd3.png",
           "timestamp": 1778130357000,
           "date": "5/7/2026, 5:05:57 AM",
-          "age": "3 days, 17 hours, 19 mins"
+          "age": "3 days, 19 hours, 10 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -3336,7 +3497,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/39460f3f-5770-4d2d-876b-1673e17b8515.png",
           "timestamp": 1778129041000,
           "date": "5/7/2026, 4:44:01 AM",
-          "age": "3 days, 17 hours, 40 mins"
+          "age": "3 days, 19 hours, 32 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -3344,7 +3505,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/c59f0116-39b5-40db-b00c-83bd5cf9a6fb.png",
           "timestamp": 1778046213000,
           "date": "5/6/2026, 5:43:33 AM",
-          "age": "4 days, 16 hours, 41 mins"
+          "age": "4 days, 18 hours, 33 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -3352,7 +3513,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/73c398c1-bca4-4b15-9065-04e91a134c21.png",
           "timestamp": 1778046188000,
           "date": "5/6/2026, 5:43:08 AM",
-          "age": "4 days, 16 hours, 41 mins"
+          "age": "4 days, 18 hours, 33 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -3360,7 +3521,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/7c66dca1-5c3e-489f-8c19-4a01a9d05647.png",
           "timestamp": 1777794142000,
           "date": "5/3/2026, 7:42:22 AM",
-          "age": "1 week, 14 hours, 42 mins"
+          "age": "1 week, 16 hours, 34 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -3368,7 +3529,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/cb75ea2c-742e-441a-b6de-c08295951c00.png",
           "timestamp": 1777791050000,
           "date": "5/3/2026, 6:50:50 AM",
-          "age": "1 week, 15 hours, 34 mins"
+          "age": "1 week, 17 hours, 25 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -3376,10 +3537,10 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/896a0fdd-2c92-4638-ac57-8a433d47b8ef.png",
           "timestamp": 1777514305000,
           "date": "4/30/2026, 1:58:25 AM",
-          "age": "1 week, 3 days, 20 hours, 26 mins"
+          "age": "1 week, 3 days, 22 hours, 18 mins"
         }
       ],
-      "lastUpdated": "5/10/2026, 10:24:59 PM"
+      "lastUpdated": "5/11/2026, 12:16:45 AM"
     },
     "marc": {
       "onlineId": "DesdemonaTiger",
@@ -3416,7 +3577,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands&tag=psngaming-20",
           "npCommunicationId": "NPWR09395_00",
           "lastPlayed": "2026-05-10T00:48:41Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -3427,7 +3587,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Test%20Drive%20Unlimited%20-%20Solar%20Crown&tag=psngaming-20",
           "npCommunicationId": "NPWR27427_00",
           "lastPlayed": "2026-05-08T11:44:49Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -3438,7 +3597,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Crossout&tag=psngaming-20",
           "npCommunicationId": "NPWR24327_00",
           "lastPlayed": "2026-05-07T18:17:23Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -3449,7 +3607,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Where%20Winds%20Meet&tag=psngaming-20",
           "npCommunicationId": "NPWR50887_00",
           "lastPlayed": "2026-05-04T17:47:48Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -3460,7 +3617,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Neverness%20to%20Everness&tag=psngaming-20",
           "npCommunicationId": "NPWR51218_00",
           "lastPlayed": "2026-05-03T13:37:23Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -3471,7 +3627,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=SWORD%20ART%20ONLINE%20Fractured%20Daydream&tag=psngaming-20",
           "npCommunicationId": "NPWR28127_00",
           "lastPlayed": "2026-04-18T00:14:26Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         }
       ],
@@ -3482,8 +3637,7 @@
           "firstEarned": "9/3/2022, 5:49:10 PM",
           "huntingDuration": "1345 days",
           "hunterPersona": "Casual Pursuit",
-          "completionStatus": "14/58",
-          "totalPlaytime": "Unknown"
+          "completionStatus": "14/58"
         },
         "groups": [
           {
@@ -3510,6 +3664,7 @@
             "description": "Collected all the trophies.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3525,10 +3680,11 @@
             "description": "Skydived 10 times.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/27/2026, 6:48:34 PM",
-            "earnedAge": "1 week, 6 days, 3 hours, 36 mins",
+            "earnedAge": "1 week, 6 days, 5 hours, 28 mins",
             "timestamp": 1777315714000,
             "currentValue": 0,
             "targetValue": 0
@@ -3540,6 +3696,7 @@
             "description": "Shot an enemy chopper out of the air with a mortar.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3555,10 +3712,11 @@
             "description": "Drove a vehicle for 100 km.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "5/1/2026, 1:12:12 AM",
-            "earnedAge": "1 week, 2 days, 21 hours, 12 mins",
+            "earnedAge": "1 week, 2 days, 23 hours, 4 mins",
             "timestamp": 1777597932000,
             "currentValue": 0,
             "targetValue": 0
@@ -3570,6 +3728,7 @@
             "description": "Interrogated 20 sources.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3585,6 +3744,7 @@
             "description": "Found 50% of the documents in the game.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3600,6 +3760,7 @@
             "description": "Found all documents.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3615,10 +3776,11 @@
             "description": "Defeated your first boss.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/28/2026, 3:56:18 PM",
-            "earnedAge": "1 week, 5 days, 6 hours, 28 mins",
+            "earnedAge": "1 week, 5 days, 8 hours, 20 mins",
             "timestamp": 1777391778000,
             "currentValue": 0,
             "targetValue": 0
@@ -3630,6 +3792,7 @@
             "description": "Finished the story.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3645,6 +3808,7 @@
             "description": "Completed the Smuggling operation.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3660,6 +3824,7 @@
             "description": "Completed the Production operation.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3675,6 +3840,7 @@
             "description": "Completed the Security operation.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3690,6 +3856,7 @@
             "description": "Completed the Influence operation.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3705,6 +3872,7 @@
             "description": "Completed all Story missions.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3720,10 +3888,11 @@
             "description": "Campaign: Took out a sniper with a pistol.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/26/2026, 6:29:30 PM",
-            "earnedAge": "2 weeks, 3 hours, 55 mins",
+            "earnedAge": "2 weeks, 5 hours, 47 mins",
             "timestamp": 1777228170000,
             "currentValue": 0,
             "targetValue": 0
@@ -3735,10 +3904,11 @@
             "description": "Completed 3 missions with another player.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/19/2026, 3:40:28 AM",
-            "earnedAge": "3 weeks, 18 hours, 44 mins",
+            "earnedAge": "3 weeks, 20 hours, 36 mins",
             "timestamp": 1776570028000,
             "currentValue": 0,
             "targetValue": 0
@@ -3750,10 +3920,11 @@
             "description": "Completed the first mission \"Amaru's rescue\".",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "9/3/2022, 5:49:10 PM",
-            "earnedAge": "3 yrs, 8 months, 1 week, 3 days, 4 hours, 35 mins",
+            "earnedAge": "3 yrs, 8 months, 1 week, 3 days, 6 hours, 27 mins",
             "timestamp": 1662227350000,
             "currentValue": 0,
             "targetValue": 0
@@ -3765,10 +3936,11 @@
             "description": "Campaign: Marked 100 enemies with a drone.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "5/9/2026, 11:25:41 PM",
-            "earnedAge": "22 hours, 59 mins",
+            "earnedAge": "1 day, 51 mins",
             "timestamp": 1778369141000,
             "currentValue": 0,
             "targetValue": 0
@@ -3780,6 +3952,7 @@
             "description": "Campaign: Marked 100 enemies with the binoculars.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3795,6 +3968,7 @@
             "description": "Campaign: Killed 7 enemies with a single C4 blast.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3810,6 +3984,7 @@
             "description": "Campaign: Killed 7 enemies with a single mine.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3825,10 +4000,11 @@
             "description": "Discovered one legend.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/26/2026, 1:43:58 AM",
-            "earnedAge": "2 weeks, 20 hours, 41 mins",
+            "earnedAge": "2 weeks, 22 hours, 32 mins",
             "timestamp": 1777167838000,
             "currentValue": 0,
             "targetValue": 0
@@ -3840,6 +4016,7 @@
             "description": "Discovered all  legends.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3855,10 +4032,11 @@
             "description": "Played each type of side mission.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/26/2026, 5:28:11 PM",
-            "earnedAge": "2 weeks, 4 hours, 56 mins",
+            "earnedAge": "2 weeks, 6 hours, 48 mins",
             "timestamp": 1777224491000,
             "currentValue": 0,
             "targetValue": 0
@@ -3870,10 +4048,11 @@
             "description": "Tagged 10 convoys.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/27/2026, 7:59:00 PM",
-            "earnedAge": "1 week, 6 days, 2 hours, 26 mins",
+            "earnedAge": "1 week, 6 days, 4 hours, 17 mins",
             "timestamp": 1777319940000,
             "currentValue": 0,
             "targetValue": 0
@@ -3885,6 +4064,7 @@
             "description": "Campaign: Bought all the upgrades of a Skill branch.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3900,6 +4080,7 @@
             "description": "Campaign: Bought all upgrades.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3915,6 +4096,7 @@
             "description": "Campaign: Bought all drone-related upgrades.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3930,6 +4112,7 @@
             "description": "Collected all the bonus medals.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3945,10 +4128,11 @@
             "description": "Unlocked a Rebel skill.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/19/2026, 3:40:26 AM",
-            "earnedAge": "3 weeks, 18 hours, 44 mins",
+            "earnedAge": "3 weeks, 20 hours, 36 mins",
             "timestamp": 1776570026000,
             "currentValue": 0,
             "targetValue": 0
@@ -3960,10 +4144,11 @@
             "description": "Unlocked all the Rebel skills.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/26/2026, 5:28:10 PM",
-            "earnedAge": "2 weeks, 4 hours, 56 mins",
+            "earnedAge": "2 weeks, 6 hours, 48 mins",
             "timestamp": 1777224490000,
             "currentValue": 0,
             "targetValue": 0
@@ -3975,6 +4160,7 @@
             "description": "Maxed out each Rebel skill.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -3990,6 +4176,7 @@
             "description": "Campaign: Collected all shotguns models.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -4005,6 +4192,7 @@
             "description": "Campaign: Collected all handguns models.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -4020,6 +4208,7 @@
             "description": "Campaign: Maxed out your XP and levels.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -4035,10 +4224,11 @@
             "description": "Campaign: Hit a target more than 400m away.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "5/10/2026, 12:48:39 AM",
-            "earnedAge": "21 hours, 36 mins",
+            "earnedAge": "23 hours, 28 mins",
             "timestamp": 1778374119000,
             "currentValue": 0,
             "targetValue": 0
@@ -4050,10 +4240,11 @@
             "description": "Campaign: Made a close-combat kill at night.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/27/2026, 8:07:58 PM",
-            "earnedAge": "1 week, 6 days, 2 hours, 17 mins",
+            "earnedAge": "1 week, 6 days, 4 hours, 8 mins",
             "timestamp": 1777320478000,
             "currentValue": 0,
             "targetValue": 0
@@ -4065,6 +4256,7 @@
             "description": "Campaign: Killed an enemy in close combat who was hurt by another player .",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -4080,6 +4272,7 @@
             "description": "Campaign: Killed an enemy with a drone.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -4095,6 +4288,7 @@
             "description": "Campaign: Destroyed a generator with a C4 blast.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -4110,6 +4304,7 @@
             "description": "Campaign: Collected all submachine-gun models.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -4125,6 +4320,7 @@
             "description": "Campaign: Collected all light machine-gun models.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -4140,6 +4336,7 @@
             "description": "Campaign: Collected all sniper rifle models.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -4155,6 +4352,7 @@
             "description": "Campaign: Collected all assault rifle models.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
@@ -4170,6 +4368,7 @@
             "description": "Operation Narco Road: Kill One boss of the cartel",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Ghost Recon® Wildlands: Narco Road",
             "earned": false,
             "earnedDate": null,
@@ -4185,6 +4384,7 @@
             "description": "Operation Narco Road: Kill the final target",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Ghost Recon® Wildlands: Narco Road",
             "earned": false,
             "earnedDate": null,
@@ -4200,6 +4400,7 @@
             "description": "Operation Narco Road: Fill the Followers Gauge of all regions to 100%",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Ghost Recon® Wildlands: Narco Road",
             "earned": false,
             "earnedDate": null,
@@ -4215,6 +4416,7 @@
             "description": "Narco Road: Go from Eddie's party villa to Arturo's bar in 8 minutes or less in a ground vehicle",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Ghost Recon® Wildlands: Narco Road",
             "earned": false,
             "earnedDate": null,
@@ -4230,6 +4432,7 @@
             "description": "Operation Narco Road: Kill 50 enemies with any gang's vehicle",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Ghost Recon® Wildlands: Narco Road",
             "earned": false,
             "earnedDate": null,
@@ -4245,6 +4448,7 @@
             "description": "Operation Narco Road: Complete an Electro™ challenge while freefalling",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Ghost Recon® Wildlands: Narco Road",
             "earned": false,
             "earnedDate": null,
@@ -4260,6 +4464,7 @@
             "description": "Operation Narco Road: Complete a trial without using the brakes",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Ghost Recon® Wildlands: Narco Road",
             "earned": false,
             "earnedDate": null,
@@ -4275,6 +4480,7 @@
             "description": "Fallen Ghosts: Kill one of each Extranjeros squad archetypes",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
             "earned": false,
             "earnedDate": null,
@@ -4290,6 +4496,7 @@
             "description": "Fallen Ghosts: complete the operation",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
             "earned": false,
             "earnedDate": null,
@@ -4305,6 +4512,7 @@
             "description": "Fallen Ghosts: Complete every Rebel Op and Mission",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
             "earned": false,
             "earnedDate": null,
@@ -4320,6 +4528,7 @@
             "description": "Fallen Ghosts: Complete a Final Rebel Op",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
             "earned": false,
             "earnedDate": null,
@@ -4335,6 +4544,7 @@
             "description": "Fallen Ghosts: Blind yourself using the Flash Drone",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
             "earned": false,
             "earnedDate": null,
@@ -4350,6 +4560,7 @@
             "description": "Fallen Ghosts: Kill 10 Covert Ops Extranjeros using your knife",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
             "earned": false,
             "earnedDate": null,
@@ -4365,6 +4576,7 @@
             "description": "Fallen Ghosts: Destroy an enemy helicopter using an explosive bolt.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
             "earned": false,
             "earnedDate": null,
@@ -4383,7 +4595,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/A88761F7E2D78BCCF278B6581233F2D0333EF916.PNG",
           "timestamp": 1778374119000,
           "date": "5/10/2026, 12:48:39 AM",
-          "age": "21 hours, 36 mins"
+          "age": "23 hours, 28 mins"
         },
         {
           "game": "Tom Clancy’s Ghost Recon® Wildlands",
@@ -4391,7 +4603,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/34EFDF706D89ED25A0498926C055F4D127443A9A.PNG",
           "timestamp": 1778369141000,
           "date": "5/9/2026, 11:25:41 PM",
-          "age": "22 hours, 59 mins"
+          "age": "1 day, 51 mins"
         },
         {
           "game": "Test Drive Unlimited - Solar Crown",
@@ -4399,7 +4611,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27427_00/97db7c76-29f9-4f06-9bc8-ddd72ea6c3bc.png",
           "timestamp": 1778240690000,
           "date": "5/8/2026, 11:44:50 AM",
-          "age": "2 days, 10 hours, 40 mins"
+          "age": "2 days, 12 hours, 31 mins"
         },
         {
           "game": "Test Drive Unlimited - Solar Crown",
@@ -4407,7 +4619,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27427_00/072067a4-c602-44f4-ac1f-e7e403a15695.png",
           "timestamp": 1778239117000,
           "date": "5/8/2026, 11:18:37 AM",
-          "age": "2 days, 11 hours, 6 mins"
+          "age": "2 days, 12 hours, 58 mins"
         },
         {
           "game": "Test Drive Unlimited - Solar Crown",
@@ -4415,7 +4627,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27427_00/846bbe39-a2fa-43ff-95a2-bcc2f1121843.png",
           "timestamp": 1778238907000,
           "date": "5/8/2026, 11:15:07 AM",
-          "age": "2 days, 11 hours, 9 mins"
+          "age": "2 days, 13 hours, 1 min"
         },
         {
           "game": "Test Drive Unlimited - Solar Crown",
@@ -4423,7 +4635,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27427_00/e50dd5d1-022b-4de1-8af3-0ad0d5b28885.png",
           "timestamp": 1778238764000,
           "date": "5/8/2026, 11:12:44 AM",
-          "age": "2 days, 11 hours, 12 mins"
+          "age": "2 days, 13 hours, 4 mins"
         },
         {
           "game": "Crossout",
@@ -4431,7 +4643,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/1c8aebae-d462-4fab-8577-c8dda04933ef.png",
           "timestamp": 1778177843000,
           "date": "5/7/2026, 6:17:23 PM",
-          "age": "3 days, 4 hours, 7 mins"
+          "age": "3 days, 5 hours, 59 mins"
         },
         {
           "game": "Crossout",
@@ -4439,7 +4651,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/19096278-a1db-4588-ae46-4f17f0868dd9.png",
           "timestamp": 1777810398000,
           "date": "5/3/2026, 12:13:18 PM",
-          "age": "1 week, 10 hours, 11 mins"
+          "age": "1 week, 12 hours, 3 mins"
         },
         {
           "game": "Crossout",
@@ -4447,7 +4659,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/41837e71-3f2f-4b66-bc82-debedd0324b6.png",
           "timestamp": 1777689814000,
           "date": "5/2/2026, 2:43:34 AM",
-          "age": "1 week, 1 day, 19 hours, 41 mins"
+          "age": "1 week, 1 day, 21 hours, 33 mins"
         },
         {
           "game": "Crossout",
@@ -4455,10 +4667,10 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/07658c24-ac94-4365-ae35-dc51fe61d596.png",
           "timestamp": 1777638677000,
           "date": "5/1/2026, 12:31:17 PM",
-          "age": "1 week, 2 days, 9 hours, 53 mins"
+          "age": "1 week, 2 days, 11 hours, 45 mins"
         }
       ],
-      "lastUpdated": "5/10/2026, 10:25:04 PM"
+      "lastUpdated": "5/11/2026, 12:16:49 AM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -4495,7 +4707,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Battlefield%206&tag=psngaming-20",
           "npCommunicationId": "NPWR50656_00",
           "lastPlayed": "2026-05-09T05:51:41Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -4506,7 +4717,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Minecraft%3A%20PlayStation5%20Edition&tag=psngaming-20",
           "npCommunicationId": "NPWR41319_00",
           "lastPlayed": "2026-04-02T04:32:33Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -4517,7 +4727,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
           "npCommunicationId": "NPWR44827_00",
           "lastPlayed": "2026-02-19T03:08:00Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -4528,7 +4737,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=theHunter%3A%20Call%20of%20the%20Wild&tag=psngaming-20",
           "npCommunicationId": "NPWR13211_00",
           "lastPlayed": "2025-12-02T02:17:44Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -4539,7 +4747,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sea%20of%20Thieves&tag=psngaming-20",
           "npCommunicationId": "NPWR40455_00",
           "lastPlayed": "2025-11-09T02:28:43Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -4550,7 +4757,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Call%20of%20Duty%20Modern%20Warfare%20II&tag=psngaming-20",
           "npCommunicationId": "NPWR24223_00",
           "lastPlayed": "2025-10-19T20:00:25Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         }
       ],
@@ -4561,8 +4767,7 @@
           "firstEarned": "2/26/2026, 11:27:40 PM",
           "huntingDuration": "72 days",
           "hunterPersona": "Casual Pursuit",
-          "completionStatus": "2/54",
-          "totalPlaytime": "Unknown"
+          "completionStatus": "2/54"
         },
         "groups": [
           {
@@ -4584,6 +4789,7 @@
             "description": "Collected all other trophies",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4599,6 +4805,7 @@
             "description": "Complete Always Faithful",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4614,6 +4821,7 @@
             "description": "Complete The Rock and Operation Gladius",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4629,6 +4837,7 @@
             "description": "Complete Night Raid",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4644,6 +4853,7 @@
             "description": "Complete No Sleep and Moving Mountains",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4659,6 +4869,7 @@
             "description": "Complete Nile Guard",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4674,6 +4885,7 @@
             "description": "Complete Operation Ember Strike",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4689,6 +4901,7 @@
             "description": "Complete the Battlefield 6 Campaign",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4704,6 +4917,7 @@
             "description": "Pick up a Campaign collectible",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4719,6 +4933,7 @@
             "description": "Pick up 5 Campaign collectibles",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4734,6 +4949,7 @@
             "description": "Pick up 10 Campaign collectibles",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4749,6 +4965,7 @@
             "description": "Pick up 20 Campaign collectibles",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4764,6 +4981,7 @@
             "description": "Pick up all Campaign collectibles",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4779,6 +4997,7 @@
             "description": "Complete a Single Player mission on the hardest difficulty",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4794,6 +5013,7 @@
             "description": "Headshot kill 50 Enemies in the Campaign.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4809,6 +5029,7 @@
             "description": "Eliminate 3 enemies with a single grenade in Single Player",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4824,6 +5045,7 @@
             "description": "Destroy 10 enemy vehicles in Single Player",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4839,6 +5061,7 @@
             "description": "Find the dinosaur figurine in the NATO base in Always Faithful",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4854,6 +5077,7 @@
             "description": "Destroy 10 mannequins in The Rock",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4869,6 +5093,7 @@
             "description": "Destroy 3 floating mines in Operation Gladius",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4884,6 +5109,7 @@
             "description": "Complete Night Raid using only pistols, knives, or gadgets",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4899,6 +5125,7 @@
             "description": "Kill five enemies with a sledgehammer in No Sleep",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4914,6 +5141,7 @@
             "description": "Land six consecutive headshots in Moving Mountains",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4929,6 +5157,7 @@
             "description": "Collapse an overpass on a tank in Nile Guard",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4944,6 +5173,7 @@
             "description": "Spot a total of 20 enemies with your drone in Operation Ember Strike",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4959,6 +5189,7 @@
             "description": "Shoot down the reinforcement chopper with a tank during Always Forward",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4974,6 +5205,7 @@
             "description": "Reach Rank 9",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -4989,6 +5221,7 @@
             "description": "Reach Rank 14",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5004,6 +5237,7 @@
             "description": "Reach Rank 25",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5019,6 +5253,7 @@
             "description": "Capture 128 objectives in Conquest",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5034,6 +5269,7 @@
             "description": "Take or Defend 41 sectors in Breakthrough",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5049,6 +5285,7 @@
             "description": "Arm or disarm 5 M-COM explosives in a Multiplayer match",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5064,6 +5301,7 @@
             "description": "Get 5 multi-kills as Assault in Multiplayer",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5079,6 +5317,7 @@
             "description": "Repair vehicles for 2042 damage in Multiplayer",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5094,6 +5333,7 @@
             "description": "Get 250 sniper rifle kills as Recon in Multiplayer",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5109,6 +5349,7 @@
             "description": "Revive 1996 players as Support in Multiplayer",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5124,6 +5365,7 @@
             "description": "Commit 414 acts of valor in Multiplayer",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5139,6 +5381,7 @@
             "description": "Get 5 kills with LMGs without reloading in Multiplayer",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5154,6 +5397,7 @@
             "description": "Get 6 sidearm headshot kills in a Multiplayer match",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5169,6 +5413,7 @@
             "description": "Get a Roadkill with vehicles in Multiplayer",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5184,6 +5429,7 @@
             "description": "Deal 2000 damage to enemy vehicles with the Demolition Charge",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5199,6 +5445,7 @@
             "description": "Perform 10 takedowns in a Multiplayer match",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5214,6 +5461,7 @@
             "description": "Get 129 kills in Multiplayer.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Battlefield™ 6",
             "earned": false,
             "earnedDate": null,
@@ -5229,10 +5477,11 @@
             "description": "Play 74 matches in any version of Battle Royale.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": true,
             "earnedDate": "5/9/2026, 5:51:40 AM",
-            "earnedAge": "1 day, 16 hours, 33 mins",
+            "earnedAge": "1 day, 18 hours, 25 mins",
             "timestamp": 1778305900000,
             "currentValue": 0,
             "targetValue": 0
@@ -5244,6 +5493,7 @@
             "description": "Deploy 42 call-ins.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": false,
             "earnedDate": null,
@@ -5259,10 +5509,11 @@
             "description": "Loot 10 Superior or Custom items.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": true,
             "earnedDate": "2/26/2026, 11:27:40 PM",
-            "earnedAge": "2 months, 1 week, 5 days, 22 hours, 57 mins",
+            "earnedAge": "2 months, 1 week, 6 days, 49 mins",
             "timestamp": 1772148460000,
             "currentValue": 0,
             "targetValue": 0
@@ -5274,6 +5525,7 @@
             "description": "Stun enemies 316 times in Battle Royale or Gauntlet.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": false,
             "earnedDate": null,
@@ -5289,6 +5541,7 @@
             "description": "Revive teammates 1988 times in Battle Royale or Gauntlet.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": false,
             "earnedDate": null,
@@ -5304,6 +5557,7 @@
             "description": "Win 7 matches in Battle Royale: Duos.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": false,
             "earnedDate": null,
@@ -5319,6 +5573,7 @@
             "description": "Play 125 rounds of Gauntlet.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": false,
             "earnedDate": null,
@@ -5334,6 +5589,7 @@
             "description": "Win a Battle Royale match as a full squad with total squad survival.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": false,
             "earnedDate": null,
@@ -5349,6 +5605,7 @@
             "description": "Complete 214 missions in any version of Battle Royale.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": false,
             "earnedDate": null,
@@ -5364,6 +5621,7 @@
             "description": "Collect 9 dog tags in Battle Royale or Gauntlet.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": false,
             "earnedDate": null,
@@ -5379,6 +5637,7 @@
             "description": "Ping a Shotgun in Battle Royale.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": false,
             "earnedDate": null,
@@ -5397,7 +5656,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50656_00/7bce7c84-1f32-44ed-be26-17be00da9444.png",
           "timestamp": 1778305900000,
           "date": "5/9/2026, 5:51:40 AM",
-          "age": "1 day, 16 hours, 33 mins"
+          "age": "1 day, 18 hours, 25 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -5405,7 +5664,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/6575de8d-3035-4497-9ab8-761d0f89d8e1.PNG",
           "timestamp": 1775104350000,
           "date": "4/2/2026, 4:32:30 AM",
-          "age": "1 month, 1 week, 1 day, 17 hours, 52 mins"
+          "age": "1 month, 1 week, 1 day, 19 hours, 44 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -5413,7 +5672,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/63dc02ce-bd45-45f9-b0b3-ec139df08d1a.PNG",
           "timestamp": 1775098413000,
           "date": "4/2/2026, 2:53:33 AM",
-          "age": "1 month, 1 week, 1 day, 19 hours, 31 mins"
+          "age": "1 month, 1 week, 1 day, 21 hours, 23 mins"
         },
         {
           "game": "Battlefield™ 6",
@@ -5421,7 +5680,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50656_00/f7cec518-b561-467e-919f-413dba869d04.png",
           "timestamp": 1772148460000,
           "date": "2/26/2026, 11:27:40 PM",
-          "age": "2 months, 1 week, 5 days, 22 hours, 57 mins"
+          "age": "2 months, 1 week, 6 days, 49 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -5429,7 +5688,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/7ea0f9c8-9a2c-425f-a70d-82d938c17096.PNG",
           "timestamp": 1768963125000,
           "date": "1/21/2026, 2:38:45 AM",
-          "age": "3 months, 2 weeks, 5 days, 19 hours, 46 mins"
+          "age": "3 months, 2 weeks, 5 days, 21 hours, 38 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -5437,7 +5696,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/c49e2529-5f55-429d-95bd-705264f1e725.PNG",
           "timestamp": 1768428250000,
           "date": "1/14/2026, 10:04:10 PM",
-          "age": "3 months, 3 weeks, 5 days, 20 mins"
+          "age": "3 months, 3 weeks, 5 days, 2 hours, 12 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -5445,7 +5704,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/d042261f-a1d3-4173-b2b7-b7bae15b9c0f.PNG",
           "timestamp": 1768361542000,
           "date": "1/14/2026, 3:32:22 AM",
-          "age": "3 months, 3 weeks, 5 days, 18 hours, 52 mins"
+          "age": "3 months, 3 weeks, 5 days, 20 hours, 44 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -5453,7 +5712,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/b3890925-6c3c-423d-89e6-529abb22c728.PNG",
           "timestamp": 1768356898000,
           "date": "1/14/2026, 2:14:58 AM",
-          "age": "3 months, 3 weeks, 5 days, 20 hours, 10 mins"
+          "age": "3 months, 3 weeks, 5 days, 22 hours, 1 min"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -5461,7 +5720,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/4cd20426-649c-46bb-a90b-0c93feae4c2e.PNG",
           "timestamp": 1767838535000,
           "date": "1/8/2026, 2:15:35 AM",
-          "age": "4 months, 2 days, 20 hours, 9 mins"
+          "age": "4 months, 2 days, 22 hours, 1 min"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -5469,10 +5728,10 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/397095ac-c631-4e68-9e91-5d8fa8bba17b.PNG",
           "timestamp": 1767751478000,
           "date": "1/7/2026, 2:04:38 AM",
-          "age": "4 months, 3 days, 20 hours, 20 mins"
+          "age": "4 months, 3 days, 22 hours, 12 mins"
         }
       ],
-      "lastUpdated": "5/10/2026, 10:25:08 PM"
+      "lastUpdated": "5/11/2026, 12:16:53 AM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -5509,7 +5768,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Trash%20Goblin&tag=psngaming-20",
           "npCommunicationId": "NPWR56684_00",
           "lastPlayed": "2026-05-04T22:49:51Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -5520,7 +5778,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Untitled%20Goose%20Game&tag=psngaming-20",
           "npCommunicationId": "NPWR19514_00",
           "lastPlayed": "2026-04-12T05:27:06Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -5531,7 +5788,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Planet%20Zoo&tag=psngaming-20",
           "npCommunicationId": "NPWR39871_00",
           "lastPlayed": "2026-04-06T01:32:29Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -5542,7 +5798,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Dragon%20Age%3A%20The%20Veilguard&tag=psngaming-20",
           "npCommunicationId": "NPWR25659_00",
           "lastPlayed": "2026-03-22T06:13:40Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -5553,7 +5808,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Avowed&tag=psngaming-20",
           "npCommunicationId": "NPWR47309_00",
           "lastPlayed": "2026-03-21T04:54:34Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         },
         {
@@ -5564,7 +5818,6 @@
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Prey&tag=psngaming-20",
           "npCommunicationId": "NPWR12023_00",
           "lastPlayed": "2026-03-19T23:11:13Z",
-          "playHours": "Unknown",
           "bootCount": "Unknown"
         }
       ],
@@ -5575,8 +5828,7 @@
           "firstEarned": "5/4/2026, 12:47:33 AM",
           "huntingDuration": "1 day",
           "hunterPersona": "Steady Hunter",
-          "completionStatus": "12/41",
-          "totalPlaytime": "Unknown"
+          "completionStatus": "12/41"
         },
         "groups": [
           {
@@ -5593,6 +5845,7 @@
             "description": "Collect all trophies.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5608,10 +5861,11 @@
             "description": "Use a sponge to clean a trinket.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:47:33 AM",
-            "earnedAge": "6 days, 21 hours, 37 mins",
+            "earnedAge": "6 days, 23 hours, 29 mins",
             "timestamp": 1777855653000,
             "currentValue": 0,
             "targetValue": 0
@@ -5623,10 +5877,11 @@
             "description": "Use a chisel to uncover a trinket.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:03:28 AM",
-            "earnedAge": "6 days, 19 hours, 21 mins",
+            "earnedAge": "6 days, 21 hours, 13 mins",
             "timestamp": 1777863808000,
             "currentValue": 0,
             "targetValue": 0
@@ -5638,10 +5893,11 @@
             "description": "Use the upcycler to create a unique trinket.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:22:57 AM",
-            "earnedAge": "6 days, 19 hours, 2 mins",
+            "earnedAge": "6 days, 20 hours, 53 mins",
             "timestamp": 1777864977000,
             "currentValue": 0,
             "targetValue": 0
@@ -5653,10 +5909,11 @@
             "description": "Sell a trinket to a customer.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:48:53 AM",
-            "earnedAge": "6 days, 21 hours, 36 mins",
+            "earnedAge": "6 days, 23 hours, 28 mins",
             "timestamp": 1777855733000,
             "currentValue": 0,
             "targetValue": 0
@@ -5668,6 +5925,7 @@
             "description": "Clean 100 trinkets.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5683,6 +5941,7 @@
             "description": "Uncover 100 trinkets.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5698,6 +5957,7 @@
             "description": "Upcycle 100 trinkets.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5713,6 +5973,7 @@
             "description": "Sell 100 trinkets.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5728,10 +5989,11 @@
             "description": "Upgrade one of your tools.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:37:55 AM",
-            "earnedAge": "6 days, 17 hours, 47 mins",
+            "earnedAge": "6 days, 19 hours, 39 mins",
             "timestamp": 1777869475000,
             "currentValue": 0,
             "targetValue": 0
@@ -5743,10 +6005,11 @@
             "description": "Complete the tutorial.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:23:29 AM",
-            "earnedAge": "6 days, 19 hours, 1 min",
+            "earnedAge": "6 days, 20 hours, 53 mins",
             "timestamp": 1777865009000,
             "currentValue": 0,
             "targetValue": 0
@@ -5758,6 +6021,7 @@
             "description": "Save Aimon's soul from the armoire lich.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5773,10 +6037,11 @@
             "description": "Upgrade your Aunty's Delver Licence.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 10:49:51 PM",
-            "earnedAge": "5 days, 23 hours, 35 mins",
+            "earnedAge": "6 days, 1 hour, 27 mins",
             "timestamp": 1777934991000,
             "currentValue": 0,
             "targetValue": 0
@@ -5788,10 +6053,11 @@
             "description": "Ask the Hullifers to retrieve a trinket via the Fetching Fungi Beta Program.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:14:40 AM",
-            "earnedAge": "6 days, 16 hours, 10 mins",
+            "earnedAge": "6 days, 18 hours, 2 mins",
             "timestamp": 1777875280000,
             "currentValue": 0,
             "targetValue": 0
@@ -5803,10 +6069,11 @@
             "description": "Take Aimon's cart and visit a new district.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:47:31 AM",
-            "earnedAge": "6 days, 15 hours, 37 mins",
+            "earnedAge": "6 days, 17 hours, 29 mins",
             "timestamp": 1777877251000,
             "currentValue": 0,
             "targetValue": 0
@@ -5818,10 +6085,11 @@
             "description": "Purchase an item from expansion mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:03:37 AM",
-            "earnedAge": "6 days, 18 hours, 21 mins",
+            "earnedAge": "6 days, 20 hours, 13 mins",
             "timestamp": 1777867417000,
             "currentValue": 0,
             "targetValue": 0
@@ -5833,10 +6101,11 @@
             "description": "Decorate your home with an option from customisation mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 5:22:06 AM",
-            "earnedAge": "6 days, 17 hours, 3 mins",
+            "earnedAge": "6 days, 18 hours, 54 mins",
             "timestamp": 1777872126000,
             "currentValue": 0,
             "targetValue": 0
@@ -5848,6 +6117,7 @@
             "description": "Sell a trinket for at least 500 Gold.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5863,6 +6133,7 @@
             "description": "Sell a trinket for at least 1000 Gold.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5878,6 +6149,7 @@
             "description": "Close the shop for 3 days.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5893,6 +6165,7 @@
             "description": "Spend a whole day doing nothing but Chipping.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5908,6 +6181,7 @@
             "description": "Spend a whole day doing nothing but Cleaning.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5923,6 +6197,7 @@
             "description": "Spend a whole day doing nothing but Upcycling.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5938,6 +6213,7 @@
             "description": "Help the Spirit of Lost Things build a new body and see the results.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5953,6 +6229,7 @@
             "description": "Help bring about Success for Donoval.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5968,6 +6245,7 @@
             "description": "Customise the shop sign.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5983,6 +6261,7 @@
             "description": "Help Esme with her pest problem.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -5998,6 +6277,7 @@
             "description": "Max out the Reputation for Frogs.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -6013,6 +6293,7 @@
             "description": "Max out the Reputation for Humans.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -6028,6 +6309,7 @@
             "description": "Max out the Reputation for Lizards.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -6043,6 +6325,7 @@
             "description": "Max out the Reputation for Mushrooms.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -6058,6 +6341,7 @@
             "description": "Max out the Reputation for Spirits.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -6073,6 +6357,7 @@
             "description": "Max out the Reputation of all five species.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -6088,6 +6373,7 @@
             "description": "Sell items below market price for 8 sales in a row.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -6103,10 +6389,11 @@
             "description": "Sell items at market price for 8 sales in a row.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:30:33 AM",
-            "earnedAge": "6 days, 15 hours, 54 mins",
+            "earnedAge": "6 days, 17 hours, 46 mins",
             "timestamp": 1777876233000,
             "currentValue": 0,
             "targetValue": 0
@@ -6118,6 +6405,7 @@
             "description": "Welcome Aimon back from their extended break.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -6133,6 +6421,7 @@
             "description": "Make 5000 Gold in a day.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -6148,6 +6437,7 @@
             "description": "Ring the customer bell 24 times.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": true,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -6163,6 +6453,7 @@
             "description": "Purchase the Customer Bench, Display Mat, Soak Tub, and the Pay-What-You-Can Box.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -6178,6 +6469,7 @@
             "description": "Dismiss 10 customers in a row.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -6193,6 +6485,7 @@
             "description": "Discover, clean, upcycle and sell all trinkets in the Trinketpedia.",
             "rarity": "Rare",
             "earnedRate": "0.0",
+            "hidden": false,
             "groupName": "Trash Goblin",
             "earned": false,
             "earnedDate": null,
@@ -6211,7 +6504,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/492e702d-d33c-48c3-a2d3-19075180c76f.png",
           "timestamp": 1777934991000,
           "date": "5/4/2026, 10:49:51 PM",
-          "age": "5 days, 23 hours, 35 mins"
+          "age": "6 days, 1 hour, 27 mins"
         },
         {
           "game": "Trash Goblin",
@@ -6219,7 +6512,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/bbb648f0-902a-483d-a9a1-30c6b3f87bf4.png",
           "timestamp": 1777877251000,
           "date": "5/4/2026, 6:47:31 AM",
-          "age": "6 days, 15 hours, 37 mins"
+          "age": "6 days, 17 hours, 29 mins"
         },
         {
           "game": "Trash Goblin",
@@ -6227,7 +6520,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/28baea49-5915-4b1b-89db-bf1d84bf1afd.png",
           "timestamp": 1777876233000,
           "date": "5/4/2026, 6:30:33 AM",
-          "age": "6 days, 15 hours, 54 mins"
+          "age": "6 days, 17 hours, 46 mins"
         },
         {
           "game": "Trash Goblin",
@@ -6235,7 +6528,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/b2e3576d-a71a-459e-8035-ada1e3ef774b.png",
           "timestamp": 1777875280000,
           "date": "5/4/2026, 6:14:40 AM",
-          "age": "6 days, 16 hours, 10 mins"
+          "age": "6 days, 18 hours, 2 mins"
         },
         {
           "game": "Trash Goblin",
@@ -6243,7 +6536,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/791a3e33-6019-4253-9bfa-5de6d1ad58a2.png",
           "timestamp": 1777872126000,
           "date": "5/4/2026, 5:22:06 AM",
-          "age": "6 days, 17 hours, 3 mins"
+          "age": "6 days, 18 hours, 54 mins"
         },
         {
           "game": "Trash Goblin",
@@ -6251,7 +6544,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/468002bc-35f9-43f1-add4-c4f9e45a943c.png",
           "timestamp": 1777869475000,
           "date": "5/4/2026, 4:37:55 AM",
-          "age": "6 days, 17 hours, 47 mins"
+          "age": "6 days, 19 hours, 39 mins"
         },
         {
           "game": "Trash Goblin",
@@ -6259,7 +6552,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/0ae703ef-cc71-4353-9f33-00190ca95e9d.png",
           "timestamp": 1777867417000,
           "date": "5/4/2026, 4:03:37 AM",
-          "age": "6 days, 18 hours, 21 mins"
+          "age": "6 days, 20 hours, 13 mins"
         },
         {
           "game": "Trash Goblin",
@@ -6267,7 +6560,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/7cd3ebe1-c396-43ad-bbc3-c4364bc5d856.png",
           "timestamp": 1777865009000,
           "date": "5/4/2026, 3:23:29 AM",
-          "age": "6 days, 19 hours, 1 min"
+          "age": "6 days, 20 hours, 53 mins"
         },
         {
           "game": "Trash Goblin",
@@ -6275,7 +6568,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/9d995876-c567-4a56-bf14-e8855e61f9ec.png",
           "timestamp": 1777864977000,
           "date": "5/4/2026, 3:22:57 AM",
-          "age": "6 days, 19 hours, 2 mins"
+          "age": "6 days, 20 hours, 53 mins"
         },
         {
           "game": "Trash Goblin",
@@ -6283,10 +6576,10 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/72494268-9bbc-4491-abdc-c1bde8d15b09.png",
           "timestamp": 1777863808000,
           "date": "5/4/2026, 3:03:28 AM",
-          "age": "6 days, 19 hours, 21 mins"
+          "age": "6 days, 21 hours, 13 mins"
         }
       ],
-      "lastUpdated": "5/10/2026, 10:25:11 PM"
+      "lastUpdated": "5/11/2026, 12:16:58 AM"
     },
     "mjolnir": {
       "onlineId": "Michael (Mjolnir)",
@@ -6310,7 +6603,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/10/2026, 10:25:11 PM",
+      "lastUpdated": "5/11/2026, 12:16:59 AM",
       "note": "Twitch-Master Presence"
     },
     "phoenix": {
@@ -6335,7 +6628,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/10/2026, 10:25:12 PM",
+      "lastUpdated": "5/11/2026, 12:16:59 AM",
       "note": "Twitch-Master Presence"
     },
     "queen": {
@@ -6360,7 +6653,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/10/2026, 10:25:12 PM",
+      "lastUpdated": "5/11/2026, 12:16:59 AM",
       "note": "Twitch-Master Presence"
     },
     "kfruti": {
@@ -6385,7 +6678,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/10/2026, 10:24:51 PM",
+      "lastUpdated": "5/11/2026, 12:16:37 AM",
       "note": "Twitch-Master Presence"
     },
     "balto": {
@@ -6410,7 +6703,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/10/2026, 10:25:12 PM",
+      "lastUpdated": "5/11/2026, 12:16:59 AM",
       "note": "Twitch-Master Presence"
     },
     "oldman": {
@@ -6422,7 +6715,7 @@
       "amazonAffiliateUrl": null,
       "bio": "Official Pack Member Profile",
       "twitch": null,
-      "lastUpdated": "5/10/2026, 10:25:12 PM",
+      "lastUpdated": "5/11/2026, 12:16:59 AM",
       "note": "Twitch-Master Presence"
     },
     "darkterro": {
@@ -6447,7 +6740,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/10/2026, 10:24:59 PM",
+      "lastUpdated": "5/11/2026, 12:16:45 AM",
       "note": "Twitch-Master Presence"
     }
   },
@@ -6460,14 +6753,14 @@
         "platinum": 5,
         "gold": 77,
         "silver": 215,
-        "bronze": 984,
-        "total": 1281
+        "bronze": 985,
+        "total": 1282
       },
       "maxLevel": 232,
       "legacyAge": "1 years, 4 months",
       "legacyRange": {
         "start": "1/5/2025, 1:27:35 AM",
-        "end": "5/9/2026, 4:54:34 AM"
+        "end": "5/10/2026, 11:46:36 PM"
       },
       "currentGame": "Farming Simulator 25",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
@@ -6478,7 +6771,7 @@
         "werewolf",
         "kfruti"
       ],
-      "lastUpdated": "5/10/2026, 10:25:12 PM"
+      "lastUpdated": "5/11/2026, 12:16:59 AM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -6506,7 +6799,7 @@
         "darkwing",
         "darkterro"
       ],
-      "lastUpdated": "5/10/2026, 10:25:12 PM"
+      "lastUpdated": "5/11/2026, 12:16:59 AM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -6533,7 +6826,7 @@
       "accounts": [
         "ray"
       ],
-      "lastUpdated": "5/10/2026, 10:25:12 PM"
+      "lastUpdated": "5/11/2026, 12:16:59 AM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -6550,7 +6843,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/10/2026, 10:25:12 PM"
+        "end": "5/11/2026, 12:16:59 AM"
       },
       "currentGame": "Marvel's Spider-Man",
       "currentGameArt": null,
@@ -6559,7 +6852,7 @@
       "accounts": [
         "phoenix"
       ],
-      "lastUpdated": "5/10/2026, 10:25:12 PM"
+      "lastUpdated": "5/11/2026, 12:16:59 AM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -6586,7 +6879,7 @@
       "accounts": [
         "marc"
       ],
-      "lastUpdated": "5/10/2026, 10:25:12 PM"
+      "lastUpdated": "5/11/2026, 12:16:59 AM"
     },
     "JCrow": {
       "displayName": "JCrow",
@@ -6613,7 +6906,7 @@
       "accounts": [
         "jcrow"
       ],
-      "lastUpdated": "5/10/2026, 10:25:12 PM"
+      "lastUpdated": "5/11/2026, 12:16:59 AM"
     },
     "Shiv": {
       "displayName": "Shiv",
@@ -6640,7 +6933,7 @@
       "accounts": [
         "bunny"
       ],
-      "lastUpdated": "5/10/2026, 10:25:12 PM"
+      "lastUpdated": "5/11/2026, 12:16:59 AM"
     },
     "Michael": {
       "displayName": "Michael",
@@ -6657,7 +6950,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/10/2026, 10:25:12 PM"
+        "end": "5/11/2026, 12:16:59 AM"
       },
       "currentGame": "Police Simulator: Patrol Officers",
       "currentGameArt": null,
@@ -6666,7 +6959,7 @@
       "accounts": [
         "mjolnir"
       ],
-      "lastUpdated": "5/10/2026, 10:25:12 PM"
+      "lastUpdated": "5/11/2026, 12:16:59 AM"
     },
     "Queen": {
       "displayName": "Queen",
@@ -6683,7 +6976,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/10/2026, 10:25:12 PM"
+        "end": "5/11/2026, 12:16:59 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -6692,7 +6985,7 @@
       "accounts": [
         "queen"
       ],
-      "lastUpdated": "5/10/2026, 10:25:12 PM"
+      "lastUpdated": "5/11/2026, 12:16:59 AM"
     },
     "Balto": {
       "displayName": "Balto",
@@ -6709,7 +7002,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/10/2026, 10:25:12 PM"
+        "end": "5/11/2026, 12:16:59 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -6718,7 +7011,7 @@
       "accounts": [
         "balto"
       ],
-      "lastUpdated": "5/10/2026, 10:25:12 PM"
+      "lastUpdated": "5/11/2026, 12:16:59 AM"
     },
     "Memorial": {
       "displayName": "Memorial",
@@ -6735,7 +7028,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/10/2026, 10:25:12 PM"
+        "end": "5/11/2026, 12:16:59 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -6744,7 +7037,7 @@
       "accounts": [
         "oldman"
       ],
-      "lastUpdated": "5/10/2026, 10:25:12 PM"
+      "lastUpdated": "5/11/2026, 12:16:59 AM"
     }
   },
   "mutualSquadFollowers": [
@@ -6753,7 +7046,7 @@
       "sharedConnections": 2
     }
   ],
-  "lastGlobalUpdate": "5/10/2026, 10:24:46 PM",
-  "engineVersion": "13.8.1",
-  "codeTimestamp": "Sunday, May 10, 2026 | 6:22 PM EDT"
+  "lastGlobalUpdate": "5/11/2026, 12:16:30 AM",
+  "engineVersion": "13.8.4",
+  "codeTimestamp": "Sunday, May 10, 2026 | 8:20 PM EDT"
 }
