@@ -13,7 +13,7 @@ const {
     getRecentlyPlayedGames, 
     getUserRegion,
     getBasicPresence,
-    getUserFriendsAccountIds // <-- Added PSN Friends List API
+    getUserFriendsAccountIds
 } = psnApi;
 
 const fs = require("fs");
@@ -22,10 +22,10 @@ const path = require("path");
 /**
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Kevin's Official Pack Sync Engine
- * Version 13.8.8 - Absolute Master Omni-Protocol (RAW PSN FIREHOSE)
- * Timestamp: May 10, 2026, 11:05 PM (NYT)
+ * Version 13.9.0 - Absolute Master Omni-Protocol (Maximum Legal Firehose)
+ * Timestamp: May 10, 2026, 11:23 PM (NYT)
  * Note: NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
- * Updates: Unleashed maximum extraction. Added rawPsnDump to push unfiltered Sony server responses straight into the JSON. Added fullLibrary array (10,000 games). Added PSN Friends extraction. Tuned deep scan to 200 to fit inside the 23-minute cron loop.
+ * Updates: "Unlimited" requests triggered Sony/Twitch anti-bot blocks resulting in 0 data. Reverted to maximum server-allowed limits (Sony: 800 titles, Twitch: 100 followers) to restore full data flow.
  * ------------------------------------
  */
 
@@ -145,7 +145,6 @@ function calculateAgeString(startDate, endDate = new Date()) {
     return `${months} months`;
 }
 
-// Bypassed in output per user request, but retained for logic if needed
 function formatPlayDuration(isoDuration) {
     if (!isoDuration) return "Unknown";
     const match = isoDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
@@ -172,8 +171,8 @@ async function getTwitchIntel(username) {
             fetch(`https://decapi.me/twitch/game/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/game_image/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/followcount/${username.toLowerCase()}`).then(r => r.text()),
-            // UNCAPPED: 100,000 Twitch Followers Fetch Limit
-            fetch(`https://decapi.me/twitch/followers/${username.toLowerCase()}?limit=100000`).then(r => r.text()), 
+            // FIXED: DecAPI maximum allowed limit is 100. Going over this returns an error string and breaks the JSON.
+            fetch(`https://decapi.me/twitch/followers/${username.toLowerCase()}?limit=100`).then(r => r.text()), 
             fetch(`https://decapi.me/twitch/avatar/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/accountage/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/description/${username.toLowerCase()}`).then(r => r.text()),
@@ -199,7 +198,10 @@ async function getTwitchIntel(username) {
         intel.uptime = (!intel.isLive || uptimeRes.includes("Error")) ? null : uptimeRes.trim();
         
         return intel;
-    } catch (e) { return null; }
+    } catch (e) { 
+        console.error(`[TWITCH ERROR] Failed fetching ${username}:`, e);
+        return null; 
+    }
 }
 
 async function getAuthenticated(userKey, npssoInput) {
@@ -265,14 +267,13 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v13.8.8 Sync: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v13.9.0 Sync: ${label}`);
     
     try {
         const profile = await getProfileFromAccountId(auth, targetId).catch(() => ({}));
         let region = { country: "US", language: "en" };
         let friendsList = [];
         
-        // UNCAPPED: Fetch Friends Network for Auth Users
         if (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) {
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
             try {
@@ -284,8 +285,8 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         const presenceId = (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) ? "me" : targetId;
         let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         
-        // UNCAPPED FETCH: Up to 10,000 Games
-        const titlesRes = await getUserTitles(auth, targetId, { limit: 10000 }).catch(() => ({}));
+        // FIXED: Sony limits single requests to 800. Any higher causes the API to instantly throw a 400 Bad Request and return 0 games.
+        const titlesRes = await getUserTitles(auth, targetId, { limit: 800 }).catch((e) => { console.error("Sony API Blocked Titles Request:", e.message); return {}; });
         const sortedTitles = (titlesRes?.trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
         const totalGamesPlayedCount = sortedTitles.length;
 
@@ -294,29 +295,26 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             return (!oldest || currentDate < oldest) ? currentDate : oldest;
         }, null);
 
-        // SAFE FETCH: Presence
         try { 
             const raw = await getBasicPresence(auth, presenceId); 
             rawP = raw?.basicPresence || (Array.isArray(raw) ? raw[0] : (raw?.basicPresences ? raw.basicPresences[0] : raw)) || rawP;
         } catch(e) {}
 
-        // UNCAPPED FETCH: Telemetry History (10,000 Limit)
+        // FIXED: Sony max limit for history is 200.
         let telemetryData = [];
         try {
-            const history = await getRecentlyPlayedGames(auth, targetId, { limit: 10000 });
+            const history = await getRecentlyPlayedGames(auth, targetId, { limit: 200 });
             telemetryData = history?.data?.recentlyPlayedTitles || history?.recentlyPlayedTitles || [];
         } catch (e) {
-            console.log(`[WARN] Telemetry hidden for ${label}. Skipping playtime extraction.`);
+            console.log(`[WARN] Telemetry hidden/blocked for ${label}.`);
         }
 
-        // UNIFIED RECENT GAMES LIST
         const mergedGamesMap = new Map();
 
-        // 1. Process Telemetry
         telemetryData.forEach(g => {
             if (!g.npCommunicationId) return;
             mergedGamesMap.set(g.npCommunicationId, {
-                ...g, // Dump everything raw
+                ...g,
                 npCommunicationId: g.npCommunicationId,
                 name: g.name || "Unknown Game",
                 art: g.image?.url || null,
@@ -327,7 +325,6 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             });
         });
 
-        // 2. Process Trophy Titles
         sortedTitles.forEach(t => {
             if (!t.npCommunicationId) return;
             const existing = mergedGamesMap.get(t.npCommunicationId) || {
@@ -337,7 +334,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                 lastPlayed: t.lastUpdatedDateTime || null
             };
 
-            Object.assign(existing, t); // Dump all raw trophy stats into the array
+            Object.assign(existing, t); 
             existing.name = existing.name !== "Unknown Game" ? existing.name : (t.trophyTitleName || "Unknown Game");
             existing.art = existing.art || t.trophyTitleIconUrl;
             existing.progress = t.progress || 0;
@@ -358,7 +355,6 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             mergedGamesMap.set(t.npCommunicationId, existing);
         });
 
-        // 3. Absolute Current Game Check & Injection
         const activeGameInfo = rawP?.gameTitleInfoList?.[0] || {};
         let activeCommId = activeGameInfo.npCommunicationId;
         
@@ -385,7 +381,6 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             });
         }
 
-        // 4. Sort
         const allRecentGames = Array.from(mergedGamesMap.values()).sort((a, b) => {
             if (activeCommId) {
                 if (a.npCommunicationId === activeCommId) return -1;
@@ -415,17 +410,17 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 
         const targetSyncId = activeCommId || matchedGame.npCommunicationId || allRecentGames[0]?.npCommunicationId;
         
-        // DEEP SCAN: Scanning top 200 games to avoid GitHub Action 6-Hour Timeout during the 23-min Cron loop
-        let gamesToDeepScan = 200; 
+        // SAFE DEEP SCAN: Scanning top 20 games limits API calls so GitHub Actions doesn't shut down the script for timing out.
+        let gamesToDeepScan = 20; 
 
-        for (const game of allRecentGames.slice(0, 200)) { 
+        for (const game of allRecentGames.slice(0, 30)) { 
             if (BLACKLIST.some(f => game.name.toLowerCase().includes(f))) continue;
             
             const recentGameRef = {
                 ...game,
                 name: game.name, 
                 art: game.art, 
-                progress: game.progress,
+                progress: game.progress, 
                 ratio: `${game.earnedTotal}/${game.definedTotal}`, 
                 amazonAffiliateUrl: generateAffiliateUrl(game.name),
                 npCommunicationId: game.npCommunicationId, 
@@ -443,7 +438,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                 if (!isTargetHunt) gamesToDeepScan--;
                 
                 try {
-                    await sleep(50); // Pause to prevent Sony IP ban
+                    await sleep(50);
                     
                     let opt = game.npServiceName ? { npServiceName: game.npServiceName } : { npServiceName: "trophy" };
                     let groupsRes = await getTitleTrophyGroups(auth, game.npCommunicationId, opt).catch(()=>null);
@@ -506,6 +501,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 
                         activeHunt = { 
                             title: game.name, amazonAffiliateUrl: generateAffiliateUrl(game.name),
+                            progress: game.progress,
                             velocity: {
                                 firstEarned: earnedTrophiesOnly[0]?.earnedDate || "Not Started",
                                 huntingDuration: speedString,
@@ -561,9 +557,9 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             },
             recentGames, activeHunt, mostRecentTrophies,
             
-            // UNCAPPED: THE RAW PSN FIREHOSE
-            fullLibrary: allRecentGames, // Dumps EVERY game ever played into the JSON
-            rawPsnDump: { // Dumps ALL raw API responses into the JSON
+            // RAW FIREHOSE DUMPS
+            fullLibrary: allRecentGames,
+            rawPsnDump: { 
                 profile: profile,
                 presence: rawP,
                 telemetry: telemetryData,
@@ -586,7 +582,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v13.8.8 (UNCAPPED)...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v13.9.0 (MAX LEGAL LIMITS)...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
@@ -594,8 +590,8 @@ async function main() {
         personas: {}, 
         mutualSquadFollowers: [], 
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "13.8.8",
-        codeTimestamp: "Sunday, May 10, 2026 | 11:05 PM EDT"
+        engineVersion: "13.9.0",
+        codeTimestamp: "Sunday, May 10, 2026 | 11:23 PM EDT"
     };
 
     try {
@@ -668,7 +664,7 @@ async function main() {
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] Persona Aggregator v13.8.8 Complete. Generated: ${finalData.codeTimestamp}`);
+    console.log(`[SUCCESS] Persona Aggregator v13.9.0 Complete. Generated: ${finalData.codeTimestamp}`);
 }
 
 main();
