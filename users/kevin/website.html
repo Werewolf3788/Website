@@ -5,9 +5,9 @@
     Global Standards: S:50 R:30 B:14 H:30
     Author: Kevin (Werewolf3788) Admin Engine
     Engine Version: 13.9.1 UI Sync
-    Timestamp: May 11, 2026, 12:15 AM (NYT)
+    Timestamp: May 11, 2026, 10:08 AM (NYT)
     Note: NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
-    Updates: Moved Twitch API fetching entirely to the client-side HTML for real-time live status and follower counts. Added specific `currentValue / targetValue` UI tracker for PS5 objective-based trophies in the Checklist.
+    Updates: Fixed Twitch API fetch endpoint from /status/ to /uptime/ to accurately capture "offline" state and prevent false-positives from 404 errors.
 -->
 <html lang="en">
 <head>
@@ -395,14 +395,22 @@
         async function fetchLiveTwitch() {
             try {
                 const username = "werewolf3788";
+                
+                // FIXED: Changed /status/ to /uptime/ endpoint
+                // DecAPI doesn't have a reliable /status/ endpoint. The /uptime/ endpoint 
+                // explicitly returns "[Channel] is offline" when a stream is down.
                 const [statusRes, gameRes, followRes, titleRes] = await Promise.all([
-                    fetch(`https://decapi.me/twitch/status/${username}`).then(r=>r.text()),
+                    fetch(`https://decapi.me/twitch/uptime/${username}`).then(r=>r.text()),
                     fetch(`https://decapi.me/twitch/game/${username}`).then(r=>r.text()),
                     fetch(`https://decapi.me/twitch/followcount/${username}`).then(r=>r.text()),
                     fetch(`https://decapi.me/twitch/title/${username}`).then(r=>r.text())
                 ]);
 
-                const isLive = !statusRes.toLowerCase().includes("offline") && !statusRes.includes("Error");
+                // Added strict safety checks to prevent 404s/API Errors from triggering LIVE
+                const isLive = !statusRes.toLowerCase().includes("offline") && 
+                               !statusRes.toLowerCase().includes("error") && 
+                               !statusRes.toLowerCase().includes("not found");
+                               
                 const game = gameRes.includes("Error") ? null : gameRes.trim();
                 const followers = followRes.includes("Error") ? "0" : followRes.trim();
                 const title = titleRes.includes("Error") ? "Offline" : titleRes.trim();
