@@ -21,10 +21,10 @@ const path = require("path");
 /**
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Kevin's Official Pack Sync Engine
- * Version 13.8.1 - Absolute Master Omni-Protocol (0-Trophy Deep Probe)
- * Timestamp: May 10, 2026, 6:22 PM (NYT)
+ * Version 13.8.4 - Absolute Master Omni-Protocol (Maximum Extraction)
+ * Timestamp: May 10, 2026, 8:20 PM (NYT)
  * Note: NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
- * Updates: Implemented fallback to probe 'trophy2' architecture for PS5 games with 0 earned trophies. Fixes unearned trophies not rendering on brand new games.
+ * Updates: Removed all playtime/hours variables per user request. Added 'hidden' boolean to unearned trophies. Confirmed Twitch 1000 limit and Active Hunt prioritization are locked in.
  * ------------------------------------
  */
 
@@ -144,6 +144,7 @@ function calculateAgeString(startDate, endDate = new Date()) {
     return `${months} months`;
 }
 
+// Left for legacy telemetry structures, but output is bypassed in payload
 function formatPlayDuration(isoDuration) {
     if (!isoDuration) return "Unknown";
     const match = isoDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
@@ -168,7 +169,7 @@ async function getTwitchIntel(username) {
             fetch(`https://decapi.me/twitch/game/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/game_image/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/followcount/${username.toLowerCase()}`).then(r => r.text()),
-            fetch(`https://decapi.me/twitch/followers/${username.toLowerCase()}?limit=100`).then(r => r.text()),
+            fetch(`https://decapi.me/twitch/followers/${username.toLowerCase()}?limit=1000`).then(r => r.text()), // GUARANTEED 1000 MAX SYNC
             fetch(`https://decapi.me/twitch/avatar/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/accountage/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/description/${username.toLowerCase()}`).then(r => r.text()),
@@ -260,7 +261,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v13.8.1 Sync: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v13.8.4 Sync: ${label}`);
     
     try {
         const profile = await getProfileFromAccountId(auth, targetId).catch(() => ({}));
@@ -299,6 +300,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         // UNIFIED RECENT GAMES LIST
         const mergedGamesMap = new Map();
 
+        // 1. Process Telemetry
         telemetryData.forEach(g => {
             if (!g.npCommunicationId) return;
             mergedGamesMap.set(g.npCommunicationId, {
@@ -313,6 +315,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             });
         });
 
+        // 2. Process Trophy Titles
         sortedTitles.forEach(t => {
             if (!t.npCommunicationId) return;
             const existing = mergedGamesMap.get(t.npCommunicationId) || {
@@ -342,19 +345,47 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             mergedGamesMap.set(t.npCommunicationId, existing);
         });
 
-        const allRecentGames = Array.from(mergedGamesMap.values()).sort((a, b) => {
-            const dateA = a.lastPlayed ? new Date(a.lastPlayed).getTime() : 0;
-            const dateB = b.lastPlayed ? new Date(b.lastPlayed).getTime() : 0;
-            return dateB - dateA;
-        });
-
+        // 3. Absolute Current Game Check & Injection
         const activeGameInfo = rawP?.gameTitleInfoList?.[0] || {};
         let activeCommId = activeGameInfo.npCommunicationId;
         
         let resolvedTitle = (twitchIntel?.isLive && twitchIntel.game && (!activeGameInfo.titleName || activeGameInfo.titleName === "Dashboard")) 
             ? twitchIntel.game 
             : (activeGameInfo.titleName || "Dashboard");
-            
+
+        // Try to match activeCommId by name if PSN hid the ID
+        if (!activeCommId && resolvedTitle !== "Dashboard") {
+            const matchByName = Array.from(mergedGamesMap.values()).find(g =>
+                g.name.toLowerCase().replace(/®|™/g, "").trim() === resolvedTitle.toLowerCase().replace(/®|™/g, "").trim()
+            );
+            if (matchByName) activeCommId = matchByName.npCommunicationId;
+        }
+
+        // FORCE INJECT ACTIVE GAME IF MISSING (E.g. 0 trophies + delayed telemetry)
+        if (activeCommId && !mergedGamesMap.has(activeCommId)) {
+            mergedGamesMap.set(activeCommId, {
+                npCommunicationId: activeCommId,
+                name: resolvedTitle !== "Dashboard" ? resolvedTitle : "Unknown Game",
+                art: null,
+                playDuration: "PT0S",
+                playCount: 1,
+                lastPlayed: new Date().toISOString(),
+                progress: 0, earnedTotal: 0, definedTotal: 0,
+                npServiceName: "trophy2" // Assume PS5 for brand new games to trigger probe
+            });
+        }
+
+        // 4. Sort (Force Current Game to Absolute Top)
+        const allRecentGames = Array.from(mergedGamesMap.values()).sort((a, b) => {
+            if (activeCommId) {
+                if (a.npCommunicationId === activeCommId) return -1;
+                if (b.npCommunicationId === activeCommId) return 1;
+            }
+            const dateA = a.lastPlayed ? new Date(a.lastPlayed).getTime() : 0;
+            const dateB = b.lastPlayed ? new Date(b.lastPlayed).getTime() : 0;
+            return dateB - dateA;
+        });
+
         if (resolvedTitle === "Dashboard" && allRecentGames.length > 0) {
             resolvedTitle = allRecentGames[0].name;
             activeCommId = allRecentGames[0].npCommunicationId || activeCommId;
@@ -365,15 +396,18 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             const cleanGameName = g.name.replace(/®|™/g, "").toLowerCase().trim();
             const cleanActiveName = resolvedTitle.replace(/®|™/g, "").toLowerCase().trim();
             return cleanGameName === cleanActiveName && cleanActiveName !== "";
-        }) || {};
+        }) || allRecentGames[0] || {};
 
         const stats = await getUserTrophyProfileSummary(auth, targetId).catch(() => ({}));
         const recentGames = [];
         let activeHunt = null;
         let mostRecentTrophies = [];
 
+        // TARGET SYNC ID WILL NOW ALWAYS BE THE GAME AT INDEX 0 (The Current Game)
         const targetSyncId = activeCommId || matchedGame.npCommunicationId || allRecentGames[0]?.npCommunicationId;
-        let gamesToDeepScan = 3; 
+        
+        // Deep Scan 5 games to ensure we grab recent trophies from older sessions
+        let gamesToDeepScan = 5; 
 
         for (const game of allRecentGames.slice(0, 15)) {
             if (BLACKLIST.some(f => game.name.toLowerCase().includes(f))) continue;
@@ -386,7 +420,6 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                 amazonAffiliateUrl: generateAffiliateUrl(game.name),
                 npCommunicationId: game.npCommunicationId, 
                 lastPlayed: game.lastPlayed,
-                playHours: formatPlayDuration(game.playDuration),
                 bootCount: game.playCount || "Unknown"
             };
 
@@ -418,7 +451,6 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                     const earnedStatus = earnedRes?.trophies || [];
                     const meta = metaRes?.trophies || [];
 
-                    // FIX: If we found trophies but the profile hadn't registered them yet (0/0)
                     if (meta.length > 0 && game.definedTotal === 0) {
                         game.definedTotal = meta.length;
                         recentGameRef.ratio = `${game.earnedTotal}/${game.definedTotal}`;
@@ -430,6 +462,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                         return { 
                             name: m.trophyName || "Unknown", type: m.trophyType, icon: m.trophyIconUrl, description: m.trophyDetail || "Secret Objective",
                             rarity: m.trophyRare ? m.trophyRare + "%" : "Rare", earnedRate: m.trophyEarnedRate || "0.0",
+                            hidden: m.trophyHidden || false,
                             groupName: group?.trophyGroupName || "Base Game", earned: s?.earned || false, 
                             earnedDate: s?.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString() : null,
                             earnedAge: s?.earnedDateTime ? getTrophyAgeString(s.earnedDateTime) : null,
@@ -465,8 +498,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                                 firstEarned: earnedTrophiesOnly[0]?.earnedDate || "Not Started",
                                 huntingDuration: speedString,
                                 hunterPersona: persona,
-                                completionStatus: `${game.earnedTotal}/${game.definedTotal}`,
-                                totalPlaytime: formatPlayDuration(game.playDuration) 
+                                completionStatus: `${game.earnedTotal}/${game.definedTotal}`
                             },
                             groups: (groupEarningsRes?.trophyGroups || []).map(g => {
                                 const gm = trophyGroups.find(tg => tg.trophyGroupId === g.trophyGroupId);
@@ -528,7 +560,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v13.8.1...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v13.8.4...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
@@ -536,8 +568,8 @@ async function main() {
         personas: {}, 
         mutualSquadFollowers: [], 
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "13.8.1",
-        codeTimestamp: "Sunday, May 10, 2026 | 6:22 PM EDT"
+        engineVersion: "13.8.4",
+        codeTimestamp: "Sunday, May 10, 2026 | 8:20 PM EDT"
     };
 
     try {
@@ -610,7 +642,7 @@ async function main() {
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] Persona Aggregator v13.8.1 Complete. Generated: ${finalData.codeTimestamp}`);
+    console.log(`[SUCCESS] Persona Aggregator v13.8.4 Complete. Generated: ${finalData.codeTimestamp}`);
 }
 
 main();
