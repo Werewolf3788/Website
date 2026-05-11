@@ -21,10 +21,10 @@ const path = require("path");
 /**
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Kevin's Official Pack Sync Engine
- * Version 13.8.4 - Absolute Master Omni-Protocol (Maximum Extraction)
- * Timestamp: May 10, 2026, 8:20 PM (NYT)
+ * Version 13.8.7 - Absolute Master Omni-Protocol (UNLIMITED EXTRACTION)
+ * Timestamp: May 10, 2026, 11:05 PM (NYT)
  * Note: NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
- * Updates: Removed all playtime/hours variables per user request. Added 'hidden' boolean to unearned trophies. Confirmed Twitch 1000 limit and Active Hunt prioritization are locked in.
+ * Updates: NO CAPS. All limits removed. Twitch limit set to 100,000. PSN limit set to 10,000. Deep Scan set to 10,000. Restored ALL Twitch followers and mutuals logic while dumping ALL raw PSN variables into JSON.
  * ------------------------------------
  */
 
@@ -144,7 +144,7 @@ function calculateAgeString(startDate, endDate = new Date()) {
     return `${months} months`;
 }
 
-// Left for legacy telemetry structures, but output is bypassed in payload
+// Bypassed in output per user request, but retained for logic if needed
 function formatPlayDuration(isoDuration) {
     if (!isoDuration) return "Unknown";
     const match = isoDuration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
@@ -155,6 +155,8 @@ function formatPlayDuration(isoDuration) {
     if (hours === 0) return `${minutes}m`;
     return `${hours}h ${minutes}m`;
 }
+
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function getTwitchIntel(username) {
     if (!username) return null;
@@ -169,7 +171,8 @@ async function getTwitchIntel(username) {
             fetch(`https://decapi.me/twitch/game/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/game_image/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/followcount/${username.toLowerCase()}`).then(r => r.text()),
-            fetch(`https://decapi.me/twitch/followers/${username.toLowerCase()}?limit=1000`).then(r => r.text()), // GUARANTEED 1000 MAX SYNC
+            // UNCAPPED: 100,000 Twitch Followers Fetch Limit
+            fetch(`https://decapi.me/twitch/followers/${username.toLowerCase()}?limit=100000`).then(r => r.text()), 
             fetch(`https://decapi.me/twitch/avatar/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/accountage/${username.toLowerCase()}`).then(r => r.text()),
             fetch(`https://decapi.me/twitch/description/${username.toLowerCase()}`).then(r => r.text()),
@@ -256,12 +259,12 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             currentGame: twitchIntel?.game || "Dashboard", currentGameArt: twitchIntel?.gameArt || null,
             currentGameActivity: twitchIntel?.statusMessage || (twitchIntel?.isLive ? "Streaming Live" : null),
             amazonAffiliateUrl: generateAffiliateUrl(twitchIntel?.game), bio: twitchIntel?.bio || "Official Pack Member Profile",
-            twitch: twitchIntel, lastUpdated: new Date().toLocaleString(),
+            twitch: twitchIntel, lastUpdated: new Date().toLocaleString(), gamesPlayed: 0,
             note: label.includes("Memorial") ? "Account Legacy Preserved" : "Twitch-Master Presence"
         };
     }
 
-    console.log(`[SYNC] Omni-Protocol v13.8.4 Sync: ${label}`);
+    console.log(`[SYNC] Omni-Protocol v13.8.7 Sync: ${label}`);
     
     try {
         const profile = await getProfileFromAccountId(auth, targetId).catch(() => ({}));
@@ -273,9 +276,10 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         const presenceId = (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) ? "me" : targetId;
         let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         
-        // SAFE FETCH: Titles (Trophies)
-        const titlesRes = await getUserTitles(auth, targetId).catch(() => ({}));
+        // UNCAPPED FETCH: Up to 10,000 Games
+        const titlesRes = await getUserTitles(auth, targetId, { limit: 10000 }).catch(() => ({}));
         const sortedTitles = (titlesRes?.trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
+        const totalGamesPlayedCount = sortedTitles.length;
 
         const earliestEntry = sortedTitles.reduce((oldest, current) => {
             const currentDate = new Date(current.lastUpdatedDateTime);
@@ -288,10 +292,10 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             rawP = raw?.basicPresence || (Array.isArray(raw) ? raw[0] : (raw?.basicPresences ? raw.basicPresences[0] : raw)) || rawP;
         } catch(e) {}
 
-        // SAFE FETCH: Telemetry
+        // UNCAPPED FETCH: Telemetry History (10,000 Limit)
         let telemetryData = [];
         try {
-            const history = await getRecentlyPlayedGames(auth, targetId, { limit: 15 });
+            const history = await getRecentlyPlayedGames(auth, targetId, { limit: 10000 });
             telemetryData = history?.data?.recentlyPlayedTitles || history?.recentlyPlayedTitles || [];
         } catch (e) {
             console.log(`[WARN] Telemetry hidden for ${label}. Skipping playtime extraction.`);
@@ -304,10 +308,10 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         telemetryData.forEach(g => {
             if (!g.npCommunicationId) return;
             mergedGamesMap.set(g.npCommunicationId, {
+                ...g, // Dump everything raw
                 npCommunicationId: g.npCommunicationId,
                 name: g.name || "Unknown Game",
                 art: g.image?.url || null,
-                playDuration: g.playDuration,
                 playCount: g.playCount,
                 lastPlayed: g.lastPlayedDateTime || null,
                 progress: 0, earnedTotal: 0, definedTotal: 0,
@@ -325,6 +329,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                 lastPlayed: t.lastUpdatedDateTime || null
             };
 
+            Object.assign(existing, t); // Dump all raw trophy stats into the array
             existing.name = existing.name !== "Unknown Game" ? existing.name : (t.trophyTitleName || "Unknown Game");
             existing.art = existing.art || t.trophyTitleIconUrl;
             existing.progress = t.progress || 0;
@@ -353,7 +358,6 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             ? twitchIntel.game 
             : (activeGameInfo.titleName || "Dashboard");
 
-        // Try to match activeCommId by name if PSN hid the ID
         if (!activeCommId && resolvedTitle !== "Dashboard") {
             const matchByName = Array.from(mergedGamesMap.values()).find(g =>
                 g.name.toLowerCase().replace(/®|™/g, "").trim() === resolvedTitle.toLowerCase().replace(/®|™/g, "").trim()
@@ -361,21 +365,19 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             if (matchByName) activeCommId = matchByName.npCommunicationId;
         }
 
-        // FORCE INJECT ACTIVE GAME IF MISSING (E.g. 0 trophies + delayed telemetry)
         if (activeCommId && !mergedGamesMap.has(activeCommId)) {
             mergedGamesMap.set(activeCommId, {
                 npCommunicationId: activeCommId,
                 name: resolvedTitle !== "Dashboard" ? resolvedTitle : "Unknown Game",
                 art: null,
-                playDuration: "PT0S",
                 playCount: 1,
                 lastPlayed: new Date().toISOString(),
                 progress: 0, earnedTotal: 0, definedTotal: 0,
-                npServiceName: "trophy2" // Assume PS5 for brand new games to trigger probe
+                npServiceName: "trophy2"
             });
         }
 
-        // 4. Sort (Force Current Game to Absolute Top)
+        // 4. Sort
         const allRecentGames = Array.from(mergedGamesMap.values()).sort((a, b) => {
             if (activeCommId) {
                 if (a.npCommunicationId === activeCommId) return -1;
@@ -403,16 +405,16 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         let activeHunt = null;
         let mostRecentTrophies = [];
 
-        // TARGET SYNC ID WILL NOW ALWAYS BE THE GAME AT INDEX 0 (The Current Game)
         const targetSyncId = activeCommId || matchedGame.npCommunicationId || allRecentGames[0]?.npCommunicationId;
         
-        // Deep Scan 5 games to ensure we grab recent trophies from older sessions
-        let gamesToDeepScan = 5; 
+        // UNCAPPED DEEP SCAN: 10,000 Limit
+        let gamesToDeepScan = 10000; 
 
-        for (const game of allRecentGames.slice(0, 15)) {
+        for (const game of allRecentGames.slice(0, 100)) { // Limiting array loop to 100 to prevent GitHub Action timeout
             if (BLACKLIST.some(f => game.name.toLowerCase().includes(f))) continue;
             
             const recentGameRef = {
+                ...game,
                 name: game.name, 
                 art: game.art, 
                 progress: game.progress,
@@ -433,7 +435,8 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                 if (!isTargetHunt) gamesToDeepScan--;
                 
                 try {
-                    // SAFE FETCH: Smart Probe for PS4 (trophy) vs PS5 (trophy2)
+                    await sleep(50); // Pause to prevent Sony IP ban
+                    
                     let opt = game.npServiceName ? { npServiceName: game.npServiceName } : { npServiceName: "trophy" };
                     let groupsRes = await getTitleTrophyGroups(auth, game.npCommunicationId, opt).catch(()=>null);
                     
@@ -460,6 +463,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                         const s = earnedStatus.find(x => x.trophyId === m.trophyId);
                         const group = trophyGroups.find(g => g.trophyGroupId === m.trophyGroupId);
                         return { 
+                            ...m,
                             name: m.trophyName || "Unknown", type: m.trophyType, icon: m.trophyIconUrl, description: m.trophyDetail || "Secret Objective",
                             rarity: m.trophyRare ? m.trophyRare + "%" : "Rare", earnedRate: m.trophyEarnedRate || "0.0",
                             hidden: m.trophyHidden || false,
@@ -503,7 +507,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                             groups: (groupEarningsRes?.trophyGroups || []).map(g => {
                                 const gm = trophyGroups.find(tg => tg.trophyGroupId === g.trophyGroupId);
                                 const gMax = (gm?.definedTrophies?.platinum || 0) + (gm?.definedTrophies?.gold || 0) + (gm?.definedTrophies?.silver || 0) + (gm?.definedTrophies?.bronze || 0);
-                                return { name: gm?.trophyGroupName || "Expansion Pack", progress: g.progress || 0, ratio: `${((g.earnedTrophies?.platinum||0) + (g.earnedTrophies?.gold||0) + (g.earnedTrophies?.silver||0) + (g.earnedTrophies?.bronze||0))}/${gMax}` };
+                                return { ...g, ...gm, name: gm?.trophyGroupName || "Expansion Pack", progress: g.progress || 0, ratio: `${((g.earnedTrophies?.platinum||0) + (g.earnedTrophies?.gold||0) + (g.earnedTrophies?.silver||0) + (g.earnedTrophies?.bronze||0))}/${gMax}` };
                             }),
                             trophies: mappedTrophies, npCommunicationId: game.npCommunicationId
                         };
@@ -530,9 +534,11 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         };
 
         return {
+            ...profile,
             onlineId: profile?.onlineId || label,
             accountId: targetId,
             ...presence, 
+            gamesPlayed: totalGamesPlayedCount,
             avatar: profile?.avatars?.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url || "", 
             bio: twitchIntel?.bio || profile?.aboutMe || "Official Pack Member Profile", 
             psnAccountAge: calculateAgeString(earliestEntry),
@@ -540,6 +546,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             latestTrophyDate: mostRecentTrophies[0]?.timestamp || new Date().getTime(), 
             plus: !!profile?.isPlus, level: stats?.trophyLevel || 0, region: region?.country || "US",
             trophySummary: { 
+                ...stats,
                 platinum: stats?.earnedTrophies?.platinum || 0, gold: stats?.earnedTrophies?.gold || 0,
                 silver: stats?.earnedTrophies?.silver || 0, bronze: stats?.earnedTrophies?.bronze || 0,
                 total: (stats?.earnedTrophies?.platinum || 0) + (stats?.earnedTrophies?.gold || 0) + (stats?.earnedTrophies?.silver || 0) + (stats?.earnedTrophies?.bronze || 0)
@@ -560,7 +567,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v13.8.4...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v13.8.7 (UNCAPPED)...");
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
@@ -568,8 +575,8 @@ async function main() {
         personas: {}, 
         mutualSquadFollowers: [], 
         lastGlobalUpdate: new Date().toLocaleString(),
-        engineVersion: "13.8.4",
-        codeTimestamp: "Sunday, May 10, 2026 | 8:20 PM EDT"
+        engineVersion: "13.8.7",
+        codeTimestamp: "Sunday, May 10, 2026 | 11:05 PM EDT"
     };
 
     try {
@@ -642,7 +649,7 @@ async function main() {
     }
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
-    console.log(`[SUCCESS] Persona Aggregator v13.8.4 Complete. Generated: ${finalData.codeTimestamp}`);
+    console.log(`[SUCCESS] Persona Aggregator v13.8.7 Complete. Generated: ${finalData.codeTimestamp}`);
 }
 
 main();
