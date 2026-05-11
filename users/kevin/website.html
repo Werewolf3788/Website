@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!-- 
     --- PRECISION INTEGRITY PROTOCOL ---
-    Version: 9.4.4-Wolf - PSN Level Fix | Legacy Merger | Smart G-Tag | Twitch Restoration
+    Version: 9.5.0-Wolf - Client-Side Twitch Engine | Individual PS5 Trophy Trackers (##/###)
     Global Standards: S:50 R:30 B:14 H:30
     Author: Kevin (Werewolf3788) Admin Engine
-    Engine Version: 13.8.6 UI Sync
-    Timestamp: May 10, 2026, 10:07 PM (NYT)
+    Engine Version: 13.9.1 UI Sync
+    Timestamp: May 11, 2026, 12:15 AM (NYT)
     Note: NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
-    Updates: Restored Twitch Status box (Live/Offline, Game, Age) without the buggy followers count. Expanded header grid to 5 columns.
+    Updates: Moved Twitch API fetching entirely to the client-side HTML for real-time live status and follower counts. Added specific `currentValue / targetValue` UI tracker for PS5 objective-based trophies in the Checklist.
 -->
 <html lang="en">
 <head>
@@ -32,7 +32,7 @@
             'stream_id': '13278632388',
             'page_type': 'admin_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '9.4.4',
+            'layout_version': '9.5.0',
             'user_id': 'Werewolf3788',
             'engagement_timezone': 'Eastern Time (New York)',
             'engagement_timestamp_ny': getNYTime(),
@@ -149,19 +149,34 @@
         #trophy-lightbox { position: fixed; inset: 0; z-index: 21000; background: rgba(0,0,0,0.98); display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); padding: 20px; }
         .modal-content { background: var(--wolf-gray); width: 100%; max-width: 500px; border-radius: 2rem; border: 1px solid rgba(255, 255, 255, 0.1); overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); }
 
+        .avatar-stack { display: flex; align-items: center; justify-content: center; }
+        .avatar-stack-item { width: 32px; height: 32px; border-radius: 50%; border: 2px solid var(--wolf-gray); margin-left: -8px; transition: transform 0.3s; }
+        .avatar-stack-item:hover { transform: translateY(-5px); z-index: 10; }
+
         .support-img-icon { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 2px solid rgba(255,255,255,0.05); }
 
         /* PS PLUS GLOW & BADGE */
         .ps-plus-active { box-shadow: 0 0 25px rgba(0, 67, 156, 0.6); border-color: var(--ps-blue) !important; }
         .ps-plus-badge { position: absolute; bottom: 0; left: 50%; transform: translate(-50%, 50%); background: var(--ps-blue); color: white; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 900; letter-spacing: 0.1em; border: 2px solid var(--bg-dark); z-index: 10; display: none; white-space: nowrap;}
+        
+        /* KF BRAND WATERMARK */
+        .kf-watermark { position: fixed; bottom: 16px; left: 24px; z-index: 9999; opacity: 0.5; transition: opacity 0.3s; display: flex; align-items: center; pointer-events: none; }
+        .kf-watermark:hover { opacity: 1; }
+        .kf-k { color: #FF4500; transform: scaleX(-1); z-index: 2; font-weight: 900; font-size: 24px; display: inline-block; }
+        .kf-f { color: #ffffff; margin-left: -0.22em; z-index: 1; font-weight: 900; font-size: 24px; text-shadow: 1px 1px 0px rgba(0,0,0,0.8); display: inline-block; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
+    <!-- KF WATERMARK -->
+    <div class="kf-watermark">
+        <span class="kf-k">K</span><span class="kf-f">F</span>
+    </div>
+
     <!-- --- NAVIGATION --- -->
     <nav class="nav-bar">
         <div class="nav-container">
-            <a href="https://werewolf3788.github.io/Website/" class="text-white font-black text-lg flex items-center gap-2">
+            <a href="https://werewolf3788.github.io/Website/" target="pack_hub_window" class="text-white font-black text-lg flex items-center gap-2">
                 <i class="fab fa-playstation text-orange-500"></i> PACK HUB
             </a>
             <button class="mobile-toggle text-white text-2xl" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
@@ -191,12 +206,12 @@
             <div class="text-[10px] lg:text-[18px] font-black text-gray-400 uppercase tracking-[0.5em] mb-12">Official Pack Admin Hub</div>
             
             <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 max-w-7xl mx-auto text-center">
-                <!-- TWITCH STATUS (Restored) -->
+                <!-- TWITCH STATUS (Client-Side HTML API Fetch) -->
                 <div class="glass-card header-stat-card p-5 lg:p-8 border-b-4 border-purple-500">
                     <div class="text-[11px] lg:text-[13px] text-purple-400 font-black mb-1 uppercase text-center w-full tracking-widest">Twitch Status</div>
                     <div id="twitch-live-status" class="text-3xl lg:text-5xl font-black text-gray-500">OFFLINE</div>
                     <div id="twitch-status-msg" class="text-[10px] text-gray-300 font-bold uppercase mt-2 italic whitespace-normal leading-tight">"--"</div>
-                    <div id="twitch-age" class="text-[10px] text-gray-400 font-black uppercase mt-1">Age: --</div>
+                    <div id="twitch-age" class="text-[10px] text-gray-400 font-black uppercase mt-1">Followers: --</div>
                 </div>
 
                 <!-- PSN LIBRARY STATS -->
@@ -253,8 +268,8 @@
 
                         <!-- LAST PLAYED HERO -->
                         <section id="last-played-hero" class="glass-card overflow-hidden">
-                            <div class="p-8 lg:p-12 pb-4"><h2 class="mb-6 text-orange-500 flex items-center gap-3 uppercase"><i class="fas fa-history"></i> Last Played</h2></div>
-                            <a id="active-game-store-link" href="#" target="_blank" class="block relative w-full aspect-video bg-orange-900/10 border-y border-white/5 group">
+                            <div class="p-8 lg:p-12 pb-4"><h2 class="mb-6 text-orange-500 flex items-center gap-3 uppercase"><i class="fas fa-history"></i> Active Hunt</h2></div>
+                            <a id="active-game-store-link" href="#" target="psn_store_window" class="block relative w-full aspect-video bg-orange-900/10 border-y border-white/5 group">
                                 <img id="active-game-art" src="" class="w-full h-full object-cover hidden">
                                 <div id="active-game-fallback" class="w-full h-full flex items-center justify-center"><i class="fab fa-playstation text-7xl text-orange-500/30"></i></div>
                                 <div class="absolute inset-0 bg-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
@@ -287,7 +302,7 @@
                 </div>
 
                 <section id="mission-log-container" class="glass-card overflow-hidden">
-                    <div class="p-8 lg:p-12 border-b border-white/5"><h2 class="text-white flex items-center gap-3 uppercase"><i class="fas fa-list-check text-orange-500"></i> Trophy Checklist</h2></div>
+                    <div class="p-8 lg:p-12 border-b border-white/5"><h2 id="checklist-header-text" class="text-white flex items-center gap-3 uppercase"><i class="fas fa-list-check text-orange-500"></i> Trophy Checklist</h2></div>
                     <div id="trophy-checklist-container" class="max-h-[800px] overflow-y-auto divide-y divide-white/5 no-scrollbar"></div>
                 </section>
             </div>
@@ -307,13 +322,13 @@
 
                 <section id="ps-plus-card" class="glass-card p-8 border-b-4 border-blue-600 text-center transition-all">
                     <h2 class="mb-6 text-blue-500 flex items-center justify-center gap-3 uppercase tracking-tighter"><i class="fab fa-playstation"></i> PS Plus Premium</h2>
-                    <div class="flex justify-center group"><a href="https://www.playstation.com/en-us/ps-plus/" target="_blank"><img src="https://gmedia.playstation.com/is/image/SIEPDC/ps-plus-black-badge-01-22sep20?$400px--t$" alt="PS Plus" class="rounded-2xl border border-white/10 group-hover:border-blue-500 transition-all duration-300 shadow-2xl"></a></div>
+                    <div class="flex justify-center group"><a href="https://www.playstation.com/en-us/ps-plus/" target="psn_store_window"><img src="https://gmedia.playstation.com/is/image/SIEPDC/ps-plus-black-badge-01-22sep20?$400px--t$" alt="PS Plus" class="rounded-2xl border border-white/10 group-hover:border-blue-500 transition-all duration-300 shadow-2xl"></a></div>
                 </section>
 
                 <section id="music-section" class="glass-card p-8 text-center border-b-4 border-pink-500">
                     <h2 class="mb-8 text-pink-400 flex items-center justify-center gap-4"><i class="fas fa-headphones"></i> Now Playing</h2>
                     <div class="flex justify-center">
-                        <a id="music-link" href="https://www.last.fm/user/KR888434" target="_blank">
+                        <a id="music-link" href="https://www.last.fm/user/KR888434" target="lastfm_window">
                             <img id="music-widget-img" src="" class="rounded-2xl shadow-2xl border border-white/10">
                         </a>
                     </div>
@@ -322,7 +337,7 @@
                 <section class="glass-card p-8 lg:p-12 space-y-5">
                     <h2 class="mb-8 opacity-70 text-center tracking-[0.2em] uppercase text-[11px] font-black leading-relaxed block h-auto text-gray-300">Support & Socials</h2>
                     <div id="dynamic-support-links" class="space-y-4"></div>
-                    <a href="https://amzn.to/4n3OpPL" target="_blank" class="flex items-center p-6 rounded-2xl bg-[#FF9900]/10 border border-[#FF9900]/30 hover:border-[#FF9900] transition-all group h-auto">
+                    <a href="https://amzn.to/4n3OpPL" target="amazon_store_window" class="flex items-center p-6 rounded-2xl bg-[#FF9900]/10 border border-[#FF9900]/30 hover:border-[#FF9900] transition-all group h-auto">
                         <i class="fab fa-amazon text-4xl text-[#FF9900] group-hover:scale-110 transition-transform"></i>
                         <div class="flex-1 ml-5 text-left"><div class="font-black lg:text-xl text-white leading-tight">Amazon Store</div><div class="text-[11px] text-gray-300 font-bold uppercase leading-normal">Support the Pack</div></div>
                     </a>
@@ -372,7 +387,43 @@
             const img = document.getElementById('music-widget-img');
             if(!img) return;
             const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=9.4.4`;
+            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=9.5.0`;
+        }
+
+        // --- CLIENT-SIDE TWITCH FETCH ---
+        // This runs instantly on page load and every 60s without relying on the GitHub Action
+        async function fetchLiveTwitch() {
+            try {
+                const username = "werewolf3788";
+                const [statusRes, gameRes, followRes, titleRes] = await Promise.all([
+                    fetch(`https://decapi.me/twitch/status/${username}`).then(r=>r.text()),
+                    fetch(`https://decapi.me/twitch/game/${username}`).then(r=>r.text()),
+                    fetch(`https://decapi.me/twitch/followcount/${username}`).then(r=>r.text()),
+                    fetch(`https://decapi.me/twitch/title/${username}`).then(r=>r.text())
+                ]);
+
+                const isLive = !statusRes.toLowerCase().includes("offline") && !statusRes.includes("Error");
+                const game = gameRes.includes("Error") ? null : gameRes.trim();
+                const followers = followRes.includes("Error") ? "0" : followRes.trim();
+                const title = titleRes.includes("Error") ? "Offline" : titleRes.trim();
+
+                const twLive = document.getElementById('twitch-live-status');
+                const twMsg = document.getElementById('twitch-status-msg');
+                const twAge = document.getElementById('twitch-age');
+
+                if (twLive) {
+                    twLive.innerText = isLive ? "LIVE" : "OFFLINE";
+                    twLive.className = isLive ? "text-3xl lg:text-5xl font-black text-purple-400" : "text-3xl lg:text-5xl font-black text-gray-500";
+                }
+                if (twAge) {
+                    twAge.innerText = `Followers: ${followers}`;
+                }
+                if (twMsg) {
+                    twMsg.innerText = isLive ? `Streaming: ${game}` : `"${title}"`;
+                }
+            } catch (e) {
+                console.error("Twitch Client-Side Fetch Error:", e);
+            }
         }
 
         async function buildSmartMenu() {
@@ -396,7 +447,7 @@
 
                         if (MY_TAGS.includes(tag)) {
                             supportHtml += `
-                                <a href="${url}" target="_blank" onclick="logSmartEvent('click_support_link', {'link_name': '${name}'})" class="support-card flex items-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-orange-500 transition-all group h-auto mb-4">
+                                <a href="${url}" target="support_window" onclick="logSmartEvent('click_support_link', {'link_name': '${name}'})" class="support-card flex items-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-orange-500 transition-all group h-auto mb-4">
                                     ${img ? `<img src="${img}" class="support-img-icon mr-4">` : `<i class="fas fa-external-link-alt text-2xl text-orange-500 mr-4"></i>`}
                                     <div class="flex-1 text-left">
                                         <div class="font-black text-white leading-tight uppercase text-xs">${name}</div>
@@ -415,10 +466,10 @@
                     }
                 });
 
-                let navHtml = flatLinks.map(i => `<a href="${i.url}" class="nav-link">${i.name}</a>`).join('');
+                let navHtml = flatLinks.map(i => `<a href="${i.url}" target="pack_hub_window" class="nav-link">${i.name}</a>`).join('');
                 for (const g in groupedLinks) {
                     const label = g.charAt(0).toUpperCase() + g.slice(1);
-                    navHtml += `<div class="dropdown"><span class="nav-link">${label} <i class="fas fa-chevron-down ml-1 text-[8px]"></i></span><div class="dropdown-content">${groupedLinks[g].map(i => `<a href="${i.url}">${i.img ? `<img src="${i.img}" class="nav-thumb">` : ''}${i.name}</a>`).join('')}</div></div>`;
+                    navHtml += `<div class="dropdown"><span class="nav-link">${label} <i class="fas fa-chevron-down ml-1 text-[8px]"></i></span><div class="dropdown-content">${groupedLinks[g].map(i => `<a href="${i.url}" target="pack_hub_window">${i.img ? `<img src="${i.img}" class="nav-thumb">` : ''}${i.name}</a>`).join('')}</div></div>`;
                 }
                 if (menuContainer) menuContainer.innerHTML = navHtml;
                 if (supportContainer) supportContainer.innerHTML = supportHtml;
@@ -426,10 +477,12 @@
         }
 
         function toggleNav() { const nav = document.getElementById('nav-links'); if(nav) nav.classList.toggle('active'); }
+        
         function openStore(gameName, affiliateUrl, source) { 
             logSmartEvent('click_game_link', { 'game_name': gameName, 'link_url': affiliateUrl || 'PSN_Store', 'click_source': source || 'recent_hunts' });
-            window.open(affiliateUrl || `https://store.playstation.com/en-us/search/${encodeURIComponent(gameName)}`, '_blank'); 
+            window.open(affiliateUrl || `https://store.playstation.com/en-us/search/${encodeURIComponent(gameName)}`, 'psn_store_window'); 
         }
+        
         function closeTrophyLightbox() { const lb = document.getElementById('trophy-lightbox'); if(lb) lb.style.display = 'none'; }
 
         function openTrophyLightbox(idx) {
@@ -442,7 +495,7 @@
 
         async function updateHub() {
             try {
-                const res = await fetch(REPO_BASE + "Playstation/psn_data.json?v=9.4.4&t=" + Date.now());
+                const res = await fetch(REPO_BASE + "Playstation/psn_data.json?v=9.5.0&t=" + Date.now());
                 const data = await res.json();
                 
                 const wolf = data.users.werewolf || data.users.Werewolf;
@@ -474,19 +527,6 @@
                     }
 
                     const syncEl = document.getElementById('sync-time'); if(syncEl) syncEl.innerText = wolf.lastUpdated || "--";
-
-                    // TWITCH STATUS INJECTION
-                    const twLive = document.getElementById('twitch-live-status');
-                    const twMsg = document.getElementById('twitch-status-msg');
-                    const twAge = document.getElementById('twitch-age');
-                    if (wolf.twitch) {
-                        if(twLive) {
-                            twLive.innerText = wolf.twitch.isLive ? "LIVE" : "OFFLINE";
-                            twLive.className = wolf.twitch.isLive ? "text-3xl lg:text-5xl font-black text-purple-400" : "text-3xl lg:text-5xl font-black text-gray-500";
-                        }
-                        if(twAge) twAge.innerText = "Age: " + (wolf.twitch.age || "Unknown");
-                        if(twMsg) twMsg.innerText = wolf.twitch.isLive ? `Streaming: ${wolf.twitch.game}` : `"${wolf.twitch.statusMessage || 'Offline'}"`;
-                    }
 
                     // PSN LIBRARY COUNT
                     const gamesPlayedEl = document.getElementById('games-played-count');
@@ -540,15 +580,33 @@
 
                         const storeLink = document.getElementById('active-game-store-link');
                         if(storeLink) storeLink.href = `https://store.playstation.com/en-us/search/${encodeURIComponent(hunt.title)}`;
-                        const ratio = document.getElementById('active-game-ratio'); if(ratio) ratio.innerText = `${earnedT.length}/${currentTrophyData.length}`;
                         
-                        const pct = Math.round((earnedT.length / Math.max(currentTrophyData.length, 1)) * 100);
-                        const pText = document.getElementById('active-game-progress-text'); if(pText) pText.innerText = pct + "%";
-                        const pFill = document.getElementById('active-game-progress-fill'); if(pFill) pFill.style.width = pct + "%";
+                        // EXPLICIT RATIO MATH EXPOSED EVERYWHERE
+                        const completionFraction = (hunt.velocity && hunt.velocity.completionStatus) ? hunt.velocity.completionStatus : `${earnedT.length}/${currentTrophyData.length}`;
+                        
+                        const ratio = document.getElementById('active-game-ratio'); 
+                        if(ratio) ratio.innerText = completionFraction;
+                        
+                        const pct = hunt.progress !== undefined ? hunt.progress : Math.round((earnedT.length / Math.max(currentTrophyData.length, 1)) * 100);
+                        const pText = document.getElementById('active-game-progress-text'); 
+                        if(pText) pText.innerHTML = `${pct}% <span class="text-[14px] text-gray-400 ml-1 tracking-widest">(${completionFraction})</span>`;
+                        
+                        const pFill = document.getElementById('active-game-progress-fill'); 
+                        if(pFill) pFill.style.width = pct + "%";
+
+                        const checklistHeader = document.querySelector('#checklist-header-text');
+                        if(checklistHeader) checklistHeader.innerHTML = `<i class="fas fa-list-check text-orange-500"></i> Trophy Checklist <span class="text-gray-500 ml-2 tracking-widest text-sm">(${completionFraction})</span>`;
 
                         const checklist = document.getElementById('trophy-checklist-container');
                         if(checklist) {
-                            checklist.innerHTML = currentTrophyData.map((t, idx) => `
+                            checklist.innerHTML = currentTrophyData.map((t, idx) => {
+                                // INDIVIDUAL PS5 TROPHY PROGRESS (e.g. 22/100)
+                                let individualProgressTracker = "";
+                                if (!t.earned && t.targetValue > 1) {
+                                    individualProgressTracker = `<div class="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Progress: ${t.currentValue || 0} / ${t.targetValue}</div>`;
+                                }
+
+                                return `
                                 <div class="trophy-row" onclick="openTrophyLightbox(${idx})">
                                     <img src="${t.icon}" class="trophy-icon-sq ${!t.earned && t.hidden ? 'opacity-30 blur-[2px]' : ''}">
                                     <div class="min-w-0 flex-1">
@@ -558,12 +616,14 @@
                                         <div class="trophy-desc-text truncate text-[10px] opacity-70">
                                             ${!t.earned && t.hidden ? 'Keep playing to discover this secret.' : t.description}
                                         </div>
+                                        ${individualProgressTracker}
                                         <div class="text-[8px] font-black text-gray-500 uppercase mt-1 tracking-widest">${t.earnedRate || '0.0'}% Global Earn Rate</div>
                                     </div>
                                     <div class="min-w-[100px] text-right">
                                         ${t.earned ? `<div class="font-black text-[9px] text-green-500 uppercase">EARNED</div><div class="text-[8px] text-gray-500 uppercase">${getRelativeTime(t.timestamp)}</div>` : `<div class="text-[9px] font-black uppercase text-gray-600">${t.rarity || t.type}</div>`}
                                     </div>
-                                </div>`).join('');
+                                </div>`;
+                            }).join('');
                         }
                     }
 
@@ -594,8 +654,10 @@
 
         buildSmartMenu();
         refreshMusic();
+        fetchLiveTwitch(); // Call Twitch instantly on load
         updateHub();
         setInterval(refreshMusic, 60000);
+        setInterval(fetchLiveTwitch, 60000); // Poll Twitch every 60s directly from browser
         setInterval(updateHub, 30000);
     </script>
 </body>
