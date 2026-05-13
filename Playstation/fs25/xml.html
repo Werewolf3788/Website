@@ -119,6 +119,7 @@
                     <option value="farmland">farmland.xml (Parcel Ownership)</option>
                     <option value="careerSavegame">careerSavegame.xml (Server Settings & Field Prep)</option>
                     <option value="precisionFarming">precisionFarming.xml (Deep Soil Data)</option>
+                    <option value="collectibles">collectibles.xml (Found Hidden Items)</option>
                 </select>
             </div>
             
@@ -144,7 +145,6 @@
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     
     <script>
-        // FULL FIREBASE CONFIGURATION (Authenticated)
         const firebaseConfig = {
             apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
             authDomain: "game-tracker-5b2ef.firebaseapp.com",
@@ -163,7 +163,6 @@
             el.style.color = color;
         }
 
-        // --- MAIN UPLOAD HANDLER ---
         function handleManualXMLUpload() {
             const xmlInput = document.getElementById('manual-xml-input').value.trim();
             const fileType = document.getElementById('xml-file-type').value;
@@ -215,6 +214,9 @@
                         break;
                     case 'precisionFarming':
                         payload = { PrecisionSoil: parsePrecisionFarming(xmlDoc) };
+                        break;
+                    case 'collectibles':
+                        payload = { Collectibles: parseCollectibles(xmlDoc) };
                         break;
                     default:
                         updateConsole("ERROR: Unknown file type.", "#FF4500");
@@ -377,8 +379,32 @@
         }
 
         function parsePrecisionFarming(xmlDoc) {
-            // Precision Farming heavily utilizes binary files, but any readable XML metadata will go here.
             return { parsed: true, timestamp: new Date().toISOString(), note: "Soil Map Updated" };
+        }
+
+        function parseCollectibles(xmlDoc) {
+            const collectibles = xmlDoc.querySelectorAll("collectible");
+            let foundCount = 0;
+            let totalCount = 0;
+            
+            // Checking standard formats for FS hidden objects
+            const collectedStrNode = xmlDoc.querySelector("collected");
+            if (collectedStrNode) {
+                 const str = collectedStrNode.textContent || "";
+                 totalCount = str.length;
+                 foundCount = (str.match(/1/g) || []).length;
+            } else if (collectibles.length > 0) {
+                 totalCount = collectibles.length;
+                 collectibles.forEach(c => {
+                     if (c.getAttribute("isFound") === "true" || c.getAttribute("isFound") === "1") foundCount++;
+                 });
+            }
+
+            return {
+                found: foundCount,
+                total: totalCount > 0 ? totalCount : "Unknown",
+                status: foundCount > 0 ? "SEARCH ACTIVE" : "NO INTEL"
+            };
         }
     </script>
 </body>
