@@ -314,17 +314,17 @@
             appId: "1:555667047127:web:af6f468ca3cf06759aa692"
         };
 
-        // Standardized App IDs for the "Hunter:COTW thing" structure in Firestore
-        const MASTER_ID = 'hunter-cotw';
-        const LEGACY_ID = 'hunter-cotw-legacy';
+        const MASTER_ID = 'cotw-master';
+        const LEGACY_ID = 'cotw-trophy-display';
 
+        // Replaced broken PSNProfiles links with clean placeholders until your GitHub JSON loads
         const ICONS = {
-            GAME: "https://img.psnprofiles.com/trophy/s/6622/ab71d597-4a98-4891-9f93-5e26fbd42d03.png",
-            ARC: "https://img.psnprofiles.com/trophy/s/6622/716af6c9-1cf7-4d32-b567-7c06503e9be6.png",
-            PHOTO: "https://img.psnprofiles.com/trophy/s/6622/926946c4-009b-4da6-b01b-2773be793e61.png",
-            TRAVEL: "https://img.psnprofiles.com/trophy/s/6622/62637094-d904-493b-9c5f-0a56453e3146.png",
-            MARK: "https://img.psnprofiles.com/trophy/s/6622/0c34b625-1c04-4343-bf57-606cad61b625.png",
-            TRACK: "https://img.psnprofiles.com/trophy/s/6622/1665d213-9e64-4f4a-8711-d0bd509f618f.png"
+            GAME: "https://placehold.co/44x44/1e293b/ff8800?text=GAME",
+            ARC: "https://placehold.co/44x44/1e293b/a855f7?text=ARC",
+            PHOTO: "https://placehold.co/44x44/1e293b/ef4444?text=PIC",
+            TRAVEL: "https://placehold.co/44x44/1e293b/3b82f6?text=MOVE",
+            MARK: "https://placehold.co/44x44/1e293b/22c55e?text=AIM",
+            TRACK: "https://placehold.co/44x44/1e293b/facc15?text=TRK"
         };
 
         const checkSet = (items) => items.map(name => ({name, done: false}));
@@ -476,9 +476,12 @@
         const appState = {
             activeHunter: 'Werewolf3788',
             hunterData: JSON.parse(JSON.stringify(trophyData)),
-            animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0 },
+            animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
             auth: null, db: null,
             collapsedSections: {},
+            psnSynced: false,
+            masterUnsub: null,
+            legacyUnsub: null,
 
             parseCSV: function(str) {
                 const arr = [];
@@ -519,9 +522,17 @@
                         const name = row[0]?.trim();
                         const group = row[1]?.trim();
                         const url = row[2]?.trim();
-                        const image = row[3]?.trim();
+                        let image = row[3]?.trim();
 
                         if (!name || !url) return;
+
+                        // Auto-convert Google Drive links into direct image URLs
+                        if (image) {
+                            const driveMatch = image.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || image.match(/id=([a-zA-Z0-9_-]+)/);
+                            if (image.includes('drive.google.com') && driveMatch) {
+                                image = `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+                            }
+                        }
                         
                         const itemObj = { name, url, image };
 
@@ -581,23 +592,83 @@
                         if (user) {
                             this.loadHunter(this.activeHunter);
                             document.getElementById('stat-line').innerText = `SYNCED DB: ${firebaseConfig.projectId} | USER: ${user.uid}`;
+                            
+                            // Trigger the automatic PSN JSON check shortly after login
+                            setTimeout(() => this.syncWithPSNData(), 2500);
                         }
                     });
                 } catch (err) { console.error(err); }
                 this.render();
             },
 
+            syncWithPSNData: async function() {
+                // ONLY run PSN sync for Werewolf since it's pulling from Werewolf's GitHub
+                if (this.psnSynced || this.activeHunter !== 'Werewolf3788') return;
+                try {
+                    // Must use raw.githubusercontent to read actual JSON data, not the GitHub HTML webpage
+                    const url = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/Playstation/psn_data.json';
+                    const response = await fetch(url, { cache: 'no-store' });
+                    
+                    if (!response.ok) throw new Error("JSON not populated yet");
+                    
+                    const data = await response.json();
+                    
+                    // Flexible parsing just in case the JSON structure varies
+                    let psnTrophies = Array.isArray(data) ? data : (data.trophies || data.data || []);
+                    let updated = false;
+
+                    this.hunterData.forEach(t => {
+                        const match = psnTrophies.find(p => p.name && p.name.toLowerCase() === t.name.toLowerCase());
+                        if (match) {
+                            // 1. Map the custom image if it exists in the JSON
+                            const imgUrl = match.iconUrl || match.icon || match.image;
+                            if (imgUrl && t.psnImage !== imgUrl) {
+                                t.psnImage = imgUrl;
+                                updated = true;
+                            }
+                            
+                            // 2. Auto-mark as complete if PSN says it's earned
+                            const isEarned = match.earned === true || match.unlocked === true || match.achieved === true;
+                            if (isEarned && t.current < t.goal && t.type !== 'checklist') {
+                                t.current = t.goal;
+                                updated = true;
+                            }
+                        }
+                    });
+
+                    if (updated) {
+                        this.sync(); // Instantly save new images and auto-completions to Firebase
+                    }
+                    this.psnSynced = true;
+                    document.getElementById('stat-line').innerText += " | PSN AUTO-SYNC ACTIVE";
+                } catch (err) {
+                    console.log("PSN Auto-Sync pending: waiting for JSON file to be generated on GitHub.");
+                }
+            },
+
             loadHunter: function(name) {
                 if (!this.auth.currentUser) return;
+
+                // FIX: Wipe the slate clean before loading a new profile so data doesn't bleed over
+                this.hunterData = JSON.parse(JSON.stringify(trophyData));
+                this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
 
                 this.activeHunter = name;
                 localStorage.setItem('cotw_master_active_id', name);
                 document.getElementById('hunter-name').innerText = name.toUpperCase();
                 document.getElementById('master-body').className = `theme-${name === 'Werewolf3788' ? 'werewolf' : name === 'Raymystyro' ? 'ray' : 'tj'}`;
                 
+                // Clear screen immediately
+                this.render();
+                this.updateRankUI();
+
+                // Disconnect from the previous user's database stream so they don't overwrite each other
+                if (this.masterUnsub) this.masterUnsub();
+                if (this.legacyUnsub) this.legacyUnsub();
+
                 // Matches standard structure /artifacts/{appId}/public/data/{collectionName}/{documentId}
                 const masterRef = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', name);
-                onSnapshot(masterRef, (snap) => {
+                this.masterUnsub = onSnapshot(masterRef, (snap) => {
                     if (snap.exists()) {
                         const incoming = snap.data().trophies || [];
                         this.hunterData = JSON.parse(JSON.stringify(trophyData)).map(dt => {
@@ -622,8 +693,11 @@
                 });
 
                 const legacyRef = doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', name);
-                onSnapshot(legacyRef, (snap) => {
-                    if (snap.exists()) { this.animalRankData = snap.data(); this.updateRankUI(); }
+                this.legacyUnsub = onSnapshot(legacyRef, (snap) => {
+                    if (snap.exists()) { 
+                        this.animalRankData = snap.data(); 
+                        this.updateRankUI(); 
+                    }
                 }, (error) => {
                     console.error("Legacy Sync Error: ", error);
                 });
@@ -691,7 +765,8 @@
                 document.getElementById('percent-text').innerText = `Master Platinum Progress ${overall}%`;
             },
 
-            getIcon: (t) => t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME,
+            // Updated getIcon to prioritize the PSN image if we successfully pulled it from GitHub
+            getIcon: (t) => t.psnImage ? t.psnImage : (t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
             adj: function(id, val) { const t = this.hunterData.find(x => x.id === id); t.current = Math.max(0, t.current + val); this.sync(); },
             tog: function(id) { const t = this.hunterData.find(x => x.id === id); t.current = t.current === 0 ? 1 : 0; this.sync(); },
             check: function(id, idx) { const t = this.hunterData.find(x => x.id === id); t.subItems[idx].done = !t.subItems[idx].done; this.sync(); },
