@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>618 ADMIN | MANUAL UPLINK</title>
+    <style>
+        :root {
+            --jet-orange: #FF4500;
+            --solid-black: #000000;
+            --bg-base: #0d120d; 
+            --card-gradient: linear-gradient(145deg, #182018, #111611);
+            --card-border: #232b23;
+            --text-main: #e8eee8;
+        }
+
+        body {
+            margin: 0;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Segoe UI', sans-serif;
+            padding: 40px;
+        }
+
+        .main-container { max-width: 900px; margin: 0 auto; }
+
+        .outlined-text {
+            text-shadow: -1px -1px 0 var(--solid-black), 1px -1px 0 var(--solid-black),
+                         -1px 1px 0 var(--solid-black), 1px 1px 0 var(--solid-black);
+            color: #fff;
+        }
+
+        .override-panel {
+            background: var(--card-gradient);
+            border: 2px dashed var(--jet-orange);
+            border-radius: 12px;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group { display: flex; flex-direction: column; gap: 8px; }
+        
+        select, textarea {
+            background: #000;
+            border: 1px solid var(--card-border);
+            color: var(--text-main);
+            padding: 15px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+
+        textarea { height: 250px; resize: vertical; }
+        select { color: var(--jet-orange); font-weight: bold; }
+
+        .action-btn {
+            background: var(--jet-orange);
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            align-self: flex-start;
+        }
+
+        #upload-status {
+            margin-top: 15px;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 6px;
+            background: #000;
+            border: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <header style="margin-bottom: 30px;">
+            <h1 class="outlined-text">MANUAL G-PORTAL UPLINK</h1>
+            <p style="color: #888;">Paste raw XML from G-Portal directly into this console to force a database sync.</p>
+        </header>
+
+        <section class="override-panel">
+            <div class="input-group">
+                <label class="outlined-text">SELECT XML SOURCE</label>
+                <select id="xml-file-type">
+                    <option value="careerSavegame">careerSavegame.xml (Money & Fields)</option>
+                    <option value="economy">economy.xml (Market Prices)</option>
+                    <option value="placeables">placeables.xml (Factories)</option>
+                </select>
+            </div>
+            
+            <div class="input-group">
+                <label class="outlined-text">PASTE RAW XML DATA</label>
+                <textarea id="manual-xml-input" placeholder="<?xml version='1.0' encoding='utf-8'?>..."></textarea>
+            </div>
+            
+            <button class="action-btn" onclick="handleManualXMLUpload()">EXECUTE OVERRIDE</button>
+            
+            <div id="upload-status" style="color: #FF4500;">SYSTEM READY. AWAITING INPUT.</div>
+        </section>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = { databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com" };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        function updateConsole(msg, color) {
+            const el = document.getElementById('upload-status');
+            el.innerText = msg;
+            el.style.color = color;
+        }
+
+        function handleManualXMLUpload() {
+            const xmlInput = document.getElementById('manual-xml-input').value;
+            const fileType = document.getElementById('xml-file-type').value;
+
+            if (!xmlInput) {
+                updateConsole("ERROR: No XML data provided.", "#FF4500");
+                return;
+            }
+
+            try {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlInput, "text/xml");
+
+                if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
+                    updateConsole("ERROR: Invalid XML format detected. Check your paste.", "#FF4500");
+                    return;
+                }
+
+                updateConsole(`Processing ${fileType}...`, "#00D2FF");
+                
+                // Route parsing based on dropdown
+                if (fileType === 'careerSavegame') {
+                    const statsNode = xmlDoc.querySelector("statistics");
+                    if (statsNode) {
+                        const moneyNode = statsNode.querySelector("money");
+                        if (moneyNode) {
+                            const totalMoney = parseInt(moneyNode.textContent) || 0;
+                            // Push money directly to Farm 1 as a test override
+                            db.ref('fs25/live_stats/Strategic Ops/Server/money').update({ farm_1: totalMoney })
+                                .then(() => updateConsole(`SUCCESS: Money ($${totalMoney}) pushed to Firebase.`, "#00FF00"))
+                                .catch(e => updateConsole("FIREBASE ERROR: " + e.message, "#FF4500"));
+                            return;
+                        }
+                    }
+                    updateConsole("ERROR: Could not find <money> tag in XML.", "#FF4500");
+                } else {
+                    updateConsole(`Notice: Parsing logic for ${fileType} is pending.`, "#FFD700");
+                }
+
+            } catch (e) {
+                updateConsole(`CRITICAL ERROR: ${e.message}`, "#FF4500");
+            }
+        }
+    </script>
+</body>
+</html>
