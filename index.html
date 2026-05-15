@@ -111,7 +111,6 @@
             z-index: 10;
         }
 
-        /* Dynamic Weather Backgrounds */
         .bg-rain { background: linear-gradient(to bottom, #1e293b, #0f172a); }
         .bg-cloudy { background: linear-gradient(to bottom, #475569, #1e293b); }
         .bg-sunny { background: linear-gradient(to bottom, #fbbf24, #f59e0b); }
@@ -137,7 +136,6 @@
             animation: float 10s ease-in-out infinite;
         }
 
-        /* Sun Effect */
         .sun-glow {
             position: absolute;
             top: -20px;
@@ -148,7 +146,6 @@
             animation: pulse-sun 4s ease-in-out infinite;
         }
 
-        /* Snow Particles */
         .snow-ground {
             position: absolute;
             bottom: 0;
@@ -179,7 +176,6 @@
             50% { transform: scale(1.3); opacity: 0.8; }
         }
 
-        /* Status & Colors */
         .status-pulse {
             display: inline-block;
             width: 8px;
@@ -196,7 +192,6 @@
             100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
 
-        /* Theme Accents */
         .border-werewolf { border-color: var(--color-werewolf); }
         .text-werewolf { color: var(--color-werewolf); }
         .shadow-werewolf { box-shadow: 0 10px 15px -3px rgba(255, 95, 31, 0.4); }
@@ -205,7 +200,6 @@
         .text-ray { color: var(--color-ray); }
         .shadow-ray { box-shadow: 0 10px 15px -3px rgba(196, 30, 58, 0.4); }
 
-        /* Phoenix "Blue Flame" Styling */
         .border-phoenix { border-color: var(--color-phoenix); }
         .text-phoenix { 
             color: var(--color-phoenix); 
@@ -217,20 +211,17 @@
         .text-terrdog { color: var(--color-terrdog); }
         .shadow-terrdog { box-shadow: 0 10px 15px -3px rgba(147, 51, 234, 0.4); }
 
-        /* Visibility for sunny backgrounds */
         .is-sunny h3 { color: #0f172a !important; }
         .is-sunny p { color: #1e293b !important; }
         .is-sunny .weather-desc { color: #334155 !important; opacity: 0.9; }
         .is-sunny .border-terrdog, .is-sunny .border-werewolf, .is-sunny .border-ray, .is-sunny .border-phoenix { border-color: rgba(0,0,0,0.4); }
         .is-sunny .visit-link { color: #0f172a !important; border-color: rgba(0,0,0,0.3) !important; }
         
-        /* Ensure Phoenix's blue flame is visible on bright backgrounds */
         .is-sunny .text-phoenix { 
             color: #007788 !important; 
             text-shadow: none;
         }
 
-        /* KF Signature Branding */
         .kf-watermark {
             position: fixed;
             bottom: 10px;
@@ -256,28 +247,13 @@
                     <span class="text-xl font-black tracking-tighter text-sky-400">WEREWOLF<span class="text-white">PROJECT</span></span>
                 </div>
 
-                <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="https://werewolf3788.github.io/Website/users/kevin/website.html" class="nav-link text-slate-300 hover:text-white">Werewolf3788</a>
-                    <a href="https://werewolf3788.github.io/Website/users/ray/website.html" class="nav-link text-slate-300 hover:text-white">Raymystyro</a>
-                    <!-- HIDDEN: Phoenix Darkfire
-                    <a href="https://werewolf3788.github.io/Website/users/seth/phoenix_darkfire.html" class="nav-link text-slate-300 hover:text-white">Phoenix_Darkfire</a>
-                    -->
-                    <a href="https://werewolf3788.github.io/Website/users/terrodog/index.html" class="nav-link text-slate-300 hover:text-white">Terrdog420</a>
-                    
-                    <!-- Movies Link with ITC -->
-                    <a href="https://werewolf3788.github.io/Website/Movies.html" target="werewolf_cinema_window" class="nav-link text-orange-400 hover:text-orange-300 font-bold">Movies</a>
-                    
-                    <div class="relative group dropdown">
-                        <button class="flex items-center space-x-1 text-slate-300 hover:text-white focus:outline-none py-4">
-                            <span>Games</span>
-                            <i class="fa-solid fa-chevron-down text-xs"></i>
-                        </button>
-                        <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
-                            <a href="./games/sniper-elite-resistance.html" class="block px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-sky-400">
-                                Sniper-Elite-Resistance
-                            </a>
-                        </div>
+                <!-- Desktop Menu (Populated dynamically via JS) -->
+                <div id="desktop-nav-links" class="hidden md:flex items-center space-x-8">
+                    <!-- Placeholder loading state -->
+                    <div class="flex items-center space-x-4 animate-pulse">
+                        <div class="h-4 w-16 bg-slate-700 rounded"></div>
+                        <div class="h-4 w-16 bg-slate-700 rounded"></div>
+                        <div class="h-4 w-20 bg-slate-700 rounded"></div>
                     </div>
                 </div>
 
@@ -289,17 +265,12 @@
             </div>
         </div>
 
-        <!-- Mobile Menu -->
+        <!-- Mobile Menu (Populated dynamically via JS) -->
         <div id="mobile-menu" class="md:hidden hidden bg-slate-900 border-b border-slate-700">
-            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                <a href="./users/kevin/website.html" class="block px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">Werewolf3788</a>
-                <a href="./users/ray/website.html" class="block px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">Raymystyro</a>
-                <!-- HIDDEN: Phoenix Darkfire
-                <a href="./users/seth/phoenix_darkfire.html" class="block px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">Phoenix_Darkfire</a>
-                -->
-                <a href="./users/tj/overlay.html" class="block px-3 py-2 rounded-md text-slate-300 hover:bg-slate-800">Terrdog420</a>
-                <!-- Mobile Movies Link -->
-                <a href="https://werewolf3788.github.io/Website/Movies.html" target="werewolf_cinema_window" class="block px-3 py-2 rounded-md text-orange-400 font-bold hover:bg-slate-800">Movies</a>
+            <div id="mobile-nav-links" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                 <!-- Placeholder loading state -->
+                 <div class="h-4 w-24 bg-slate-700/50 rounded mb-2 ml-3 animate-pulse"></div>
+                 <div class="h-4 w-24 bg-slate-700/50 rounded ml-3 animate-pulse"></div>
             </div>
         </div>
     </nav>
@@ -322,7 +293,6 @@
                 <div class="h-1 w-20 bg-sky-500 mx-auto mt-4 rounded-full"></div>
             </div>
 
-            <!-- Changed from grid-cols-4 to grid-cols-3 to center the remaining 3 cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Werewolf3788 -->
                 <div id="card-werewolf" class="custom-card p-6 text-center shadow-werewolf">
@@ -366,28 +336,6 @@
                     </div>
                 </div>
 
-                <!-- HIDDEN: Phoenix_Darkfire
-                <div id="card-phoenix" class="custom-card p-6 text-center shadow-phoenix">
-                    <div class="weather-layer" id="layer-phoenix"></div>
-                    <div class="card-content">
-                        <div class="w-24 h-24 mx-auto mb-4 relative">
-                            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png" 
-                                 class="w-full h-full rounded-full border-2 border-phoenix object-cover shadow-lg">
-                            <div id="twitch-status-indicator-phoenix" class="hidden absolute bottom-1 right-1">
-                                <span class="status-pulse"></span>
-                            </div>
-                        </div>
-                        <h3 class="text-xl mb-1 text-white">Phoenix_Darkfire</h3>
-                        <p class="text-phoenix text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
-                        <p id="weather-desc-phoenix" class="weather-desc text-[10px] opacity-70 mb-2 italic">Updating weather...</p>
-                        <div class="mb-4 min-h-[20px]">
-                            <p id="twitch-game-phoenix" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking Twitch...</p>
-                        </div>
-                        <a href="./users/seth/phoenix_darkfire.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-phoenix text-xs transition-colors">Visit Profile</a>
-                    </div>
-                </div>
-                -->
-
                 <!-- Terrdog420 -->
                 <div id="card-tj" class="custom-card p-6 text-center shadow-terrdog">
                     <div class="weather-layer" id="layer-tj"></div>
@@ -412,12 +360,11 @@
         </div>
     </section>
 
-    <!-- Movie Library Section (Added to original aesthetic) -->
+    <!-- Movie Library Section -->
     <section class="section-padding bg-slate-900/30">
         <div class="max-w-7xl mx-auto px-4">
             <div id="cinema-container" class="custom-card p-10 border border-orange-500/30 flex flex-col items-center justify-center shadow-orange-500/10 shadow-2xl text-center relative overflow-hidden min-h-[500px]">
                 
-                <!-- Slideshow Background Layers (Ambient Fill + Sharp Centered) -->
                 <div id="cinema-layer-1" class="absolute inset-0 transition-opacity duration-1000 opacity-100 z-0">
                     <div class="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-50"></div>
                     <div class="absolute inset-0 bg-contain bg-center bg-no-repeat drop-shadow-2xl"></div>
@@ -427,10 +374,8 @@
                     <div class="absolute inset-0 bg-contain bg-center bg-no-repeat drop-shadow-2xl"></div>
                 </div>
                 
-                <!-- Heavy Dark Overlay for Maximum Text Visibility -->
                 <div class="absolute inset-0 bg-slate-950/70 z-0"></div>
                 
-                <!-- Content Layer -->
                 <div class="relative z-10 flex flex-col items-center justify-center gap-6 w-full">
                     <h2 class="text-orange-500 outline-text">Werewolf Cinema</h2>
                     <p class="text-slate-200 font-bold outline-text max-w-md">Access the list of Movie's I own digitally, plus see what they're streaming on, the major brands like google, youtube, apple fandango, and Movies anywhere are all manually added, Amazon is sorta both  manually added or search for Amazon is a Affilated account. Hope you enjoy this setup.</p>
@@ -483,7 +428,6 @@
             </p>
         </div>
         
-        <!-- KF Signature Branding -->
         <div class="kf-watermark">
             <span class="k-sig">K</span><span class="f-sig">F</span>
         </div>
@@ -497,7 +441,6 @@
         const users = [
             { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf', twitch: 'werewolf3788', theme: 'text-werewolf' },
             { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray', twitch: 'raymystyro', theme: 'text-ray' },
-            // HIDDEN: { id: 'phoenix', user: 'phoenix_darkfire', lat: 38.8681, lon: -88.8509, cardId: 'card-phoenix', layerId: 'layer-phoenix', descId: 'weather-desc-phoenix', twitch: 'phoenix_darkfire', theme: 'text-phoenix' },
             { id: 'tj', user: 'terrdog420', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', layerId: 'layer-tj', descId: 'weather-desc-tj', twitch: 'terrdog420', theme: 'text-terrdog' }
         ];
 
@@ -523,6 +466,115 @@
                     delay *= 2;
                 }
             }
+        }
+
+        // --- DYNAMIC NAVIGATION LOGIC ---
+        const navCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv';
+
+        async function fetchNavData() {
+            try {
+                const response = await fetchWithRetry(navCsvUrl);
+                const data = await response.text();
+                const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
+
+                const navOrder = [];
+                const groupIndexMap = {};
+
+                // Skip header (assuming row 0 is header)
+                for (let i = 1; i < rows.length; i++) {
+                    const columns = parseCSVLine(rows[i]);
+                    if (columns.length >= 3) {
+                        const name = columns[0] ? columns[0].trim() : '';
+                        if (!name) continue;
+                        
+                        const group = columns[1] ? columns[1].trim() : '';
+                        const url = columns[2] ? columns[2].trim() : '#';
+                        const img = columns[3] ? columns[3].trim() : '';
+
+                        const item = { name, url, img };
+
+                        if (group === '') {
+                            navOrder.push({ type: 'standalone', data: item });
+                        } else {
+                            if (groupIndexMap[group] === undefined) {
+                                groupIndexMap[group] = navOrder.length;
+                                navOrder.push({ type: 'group', name: group, items: [] });
+                            }
+                            navOrder[groupIndexMap[group]].items.push(item);
+                        }
+                    }
+                }
+                renderNav(navOrder);
+            } catch (error) {
+                console.error("Failed to fetch navigation data:", error);
+                document.getElementById('desktop-nav-links').innerHTML = `<span class="text-red-400 text-sm">Navigation offline</span>`;
+            }
+        }
+
+        function renderNav(navOrder) {
+            const desktopContainer = document.getElementById('desktop-nav-links');
+            const mobileContainer = document.getElementById('mobile-nav-links');
+
+            let desktopHTML = '';
+            let mobileHTML = '';
+
+            navOrder.forEach(node => {
+                if (node.type === 'standalone') {
+                    const item = node.data;
+                    const imgTag = item.img ? `<img src="${item.img}" class="w-5 h-5 rounded-full object-cover">` : '';
+                    
+                    // Specific override to keep your 'Movies' link style if it's named exactly that in the sheet
+                    const isMovies = item.name.toLowerCase() === 'movies';
+                    const textClass = isMovies ? 'text-orange-400 hover:text-orange-300 font-bold' : 'text-slate-300 hover:text-white';
+                    const targetAttr = isMovies ? 'target="werewolf_cinema_window"' : '';
+
+                    desktopHTML += `
+                        <a href="${item.url}" ${targetAttr} class="nav-link flex items-center gap-2 ${textClass} transition-colors">
+                            ${imgTag}<span>${item.name}</span>
+                        </a>
+                    `;
+
+                    mobileHTML += `
+                        <a href="${item.url}" ${targetAttr} class="flex items-center gap-2 px-3 py-2 rounded-md ${textClass} hover:bg-slate-800">
+                            ${imgTag}<span>${item.name}</span>
+                        </a>
+                    `;
+                } else if (node.type === 'group') {
+                    // Render Desktop Dropdown
+                    desktopHTML += `
+                    <div class="relative group dropdown">
+                        <button class="flex items-center space-x-1 text-slate-300 hover:text-white focus:outline-none py-4">
+                            <span>${node.name}</span>
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                    `;
+                    
+                    // Render Mobile Group Header
+                    mobileHTML += `<div class="px-3 py-2 mt-2 text-sky-400 font-bold uppercase text-xs tracking-wider border-b border-slate-700/50">${node.name}</div>`;
+
+                    node.items.forEach(item => {
+                        const imgTag = item.img ? `<img src="${item.img}" class="w-5 h-5 rounded-md object-cover border border-slate-600">` : '';
+                        
+                        desktopHTML += `
+                            <a href="${item.url}" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-sky-400 transition-colors">
+                                ${imgTag}<span>${item.name}</span>
+                            </a>
+                        `;
+
+                        mobileHTML += `
+                            <a href="${item.url}" class="flex items-center gap-3 px-3 py-2 pl-6 rounded-md text-sm text-slate-300 hover:bg-slate-800">
+                                ${imgTag}<span>${item.name}</span>
+                            </a>
+                        `;
+                    });
+
+                    desktopHTML += `</div></div>`;
+                }
+            });
+
+            desktopContainer.innerHTML = desktopHTML;
+            mobileContainer.innerHTML = mobileHTML;
         }
 
         // --- FETCH MOVIE CSV COUNT & SLIDESHOW LOGIC ---
@@ -561,23 +613,31 @@
                 const data = await response.text();
                 
                 const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
-                const totalItems = Math.max(0, rows.length - 1);
+                
+                let validMovieCount = 0;
+                cinemaImages = [];
+
+                // Parse rows and count only if Column A has content
+                for (let i = 1; i < rows.length; i++) {
+                    const columns = parseCSVLine(rows[i]);
+                    
+                    // Check if Column A (index 0) exists and is not empty
+                    if (columns.length > 0 && columns[0].trim() !== '') {
+                        validMovieCount++;
+                        
+                        // Extract Poster URLs from Column B (index 1) for the slideshow
+                        if (columns.length > 1 && columns[1] && columns[1].startsWith('http')) {
+                            cinemaImages.push(columns[1]);
+                        }
+                    }
+                }
 
                 if (countDisplay) {
-                    countDisplay.textContent = totalItems.toLocaleString();
+                    countDisplay.textContent = validMovieCount.toLocaleString();
                 }
                 
                 // Inter-Tab Communication (ITC)
-                localStorage.setItem('werewolf_library_count', totalItems);
-
-                // Extract Poster URLs from Column B (Index 1)
-                cinemaImages = [];
-                for (let i = 1; i < rows.length; i++) {
-                    const columns = parseCSVLine(rows[i]);
-                    if (columns.length > 1 && columns[1] && columns[1].startsWith('http')) {
-                        cinemaImages.push(columns[1]);
-                    }
-                }
+                localStorage.setItem('werewolf_library_count', validMovieCount);
 
                 if (cinemaImages.length > 0) {
                     // Randomize the slideshow order
@@ -597,14 +657,12 @@
             const layer1 = document.getElementById('cinema-layer-1');
             const layer2 = document.getElementById('cinema-layer-2');
             
-            // Helper function to set background on both the blurred ambient layer and sharp centered layer
             const setSlideImage = (layer, url) => {
                 layer.querySelectorAll('div').forEach(el => {
                     el.style.backgroundImage = `url('${url}')`;
                 });
             };
 
-            // Set initial image
             setSlideImage(layer1, cinemaImages[0]);
             layer1.style.opacity = 1;
             layer2.style.opacity = 0;
@@ -624,7 +682,7 @@
                     layer2.style.opacity = 0;
                     activeBgId = 1;
                 }
-            }, 6000); // Crossfade every 6 seconds
+            }, 6000);
         }
 
         // --- WEATHER LOGIC ---
@@ -731,9 +789,10 @@
 
         // --- DATA REFRESH ---
         function refreshData() {
+            fetchNavData();  // Automatically populates header
             updateWeather();
             users.forEach(updateTwitchStatus);
-            fetchMovieData(); // Updated to run the new unified data fetch
+            fetchMovieData(); 
         }
 
         window.onload = () => {
