@@ -118,7 +118,7 @@
         /* Theme Engine */
         .theme-werewolf { --hunter-color: #ff8800; --hunter-glow: rgba(255, 136, 0, 0.6); }
         .theme-ray { --hunter-color: #ef4444; --hunter-glow: rgba(239, 68, 68, 0.6); }
-        .theme-tj { --hunter-color: #a855f7; --hunter-glow: rgba(168, 85, 247, 0.6); }
+        .theme-Adam { --hunter-color: #a855f7; --hunter-glow: rgba(168, 85, 247, 0.6); }
 
         /* Profile Header */
         .profile-header {
@@ -247,7 +247,7 @@
             <div class="profile-actions">
                 <button class="profile-btn" onclick="appState.switchHunter('Werewolf3788')">Werewolf</button>
                 <button class="profile-btn" onclick="appState.switchHunter('Raymystyro')">Ray</button>
-                <button class="profile-btn" onclick="appState.switchHunter('terrdog420')">TJ</button>
+                <button class="profile-btn" onclick="appState.switchHunter('RedBirdFever')">Adam</button>
             </div>
         </div>
 
@@ -656,7 +656,7 @@
                 this.activeHunter = name;
                 localStorage.setItem('cotw_master_active_id', name);
                 document.getElementById('hunter-name').innerText = name.toUpperCase();
-                document.getElementById('master-body').className = `theme-${name === 'Werewolf3788' ? 'werewolf' : name === 'Raymystyro' ? 'ray' : 'tj'}`;
+                document.getElementById('master-body').className = `theme-${name === 'Werewolf3788' ? 'werewolf' : name === 'Raymystyro' ? 'ray' : 'Adam'}`;
                 
                 // Clear screen immediately
                 this.render();
