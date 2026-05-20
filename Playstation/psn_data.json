@@ -50,7 +50,7 @@
       "isOfficiallyVerified": false,
       "isMe": true,
       "accountId": "3728215008151724560",
-      "online": false,
+      "online": true,
       "currentGame": "Sniper Elite: Resistance",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
       "currentGameActivity": null,
@@ -77,20 +77,20 @@
       "bio": "6C3RG",
       "psnAccountAge": "3 years, 1 months",
       "earliestTrophyDate": "2023-04-18T23:05:50.000Z",
-      "latestTrophyDate": 1778809267000,
+      "latestTrophyDate": 1779301654000,
       "plus": true,
       "level": 233,
       "region": "US",
       "trophySummary": {
         "accountId": "3728215008151724560",
         "trophyLevel": 233,
-        "trophyPoint": 29865,
+        "trophyPoint": 29880,
         "trophyLevelBasePoint": 29790,
         "trophyLevelNextPoint": 30240,
-        "progress": 16,
+        "progress": 20,
         "tier": 3,
         "earnedTrophies": {
-          "bronze": 993,
+          "bronze": 994,
           "silver": 218,
           "gold": 77,
           "platinum": 5
@@ -98,15 +98,15 @@
         "platinum": 5,
         "gold": 77,
         "silver": 218,
-        "bronze": 993,
-        "total": 1293
+        "bronze": 994,
+        "total": 1294
       },
       "recentGames": [
         {
           "npCommunicationId": "NPWR40813_00",
           "name": "Sniper Elite: Resistance",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
-          "lastPlayed": "2026-05-20T08:00:38Z",
+          "lastPlayed": "2026-05-20T19:27:27Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite: Resistance",
@@ -120,18 +120,18 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 31,
+          "progress": 32,
           "earnedTrophies": {
-            "bronze": 24,
+            "bronze": 25,
             "silver": 2,
             "gold": 1,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-05-20T08:00:38Z",
-          "earnedTotal": 27,
+          "lastUpdatedDateTime": "2026-05-20T19:27:27Z",
+          "earnedTotal": 28,
           "definedTotal": 71,
-          "ratio": "27/71",
+          "ratio": "28/71",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%3A%20Resistance&tag=psngaming-20",
           "bootCount": "Unknown"
         },
@@ -305,24 +305,24 @@
       "activeHunt": {
         "title": "Sniper Elite: Resistance",
         "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%3A%20Resistance&tag=psngaming-20",
-        "progress": 31,
+        "progress": 32,
         "velocity": {
           "firstEarned": "3/11/2025, 9:55:56 PM",
-          "huntingDuration": "424 days",
+          "huntingDuration": "435 days",
           "hunterPersona": "Casual Pursuit",
-          "completionStatus": "27/71"
+          "completionStatus": "28/71"
         },
         "groups": [
           {
             "trophyGroupId": "default",
-            "progress": 48,
+            "progress": 50,
             "earnedTrophies": {
-              "bronze": 24,
+              "bronze": 25,
               "silver": 2,
               "gold": 1,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-05-20T08:00:37Z",
+            "lastUpdatedDateTime": "2026-05-20T19:27:26Z",
             "trophyGroupName": "Sniper Elite: Resistance",
             "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
             "definedTrophies": {
@@ -332,7 +332,7 @@
               "platinum": 1
             },
             "name": "Sniper Elite: Resistance",
-            "ratio": "27/54"
+            "ratio": "28/54"
           },
           {
             "trophyGroupId": "001",
@@ -457,7 +457,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "3/11/2025, 9:55:56 PM",
-            "earnedAge": "1 yr, 2 months, 1 week, 2 days, 12 hours, 40 mins",
+            "earnedAge": "1 yr, 2 months, 1 week, 2 days, 21 hours, 37 mins",
             "timestamp": 1741730156000,
             "currentValue": 0,
             "targetValue": 0
@@ -480,7 +480,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/16/2025, 5:53:48 AM",
-            "earnedAge": "11 months, 1 week, 1 day, 4 hours, 42 mins",
+            "earnedAge": "11 months, 1 week, 1 day, 13 hours, 39 mins",
             "timestamp": 1750053228000,
             "currentValue": 0,
             "targetValue": 0
@@ -503,7 +503,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/16/2025, 7:49:06 PM",
-            "earnedAge": "11 months, 1 week, 14 hours, 47 mins",
+            "earnedAge": "11 months, 1 week, 23 hours, 44 mins",
             "timestamp": 1750103346000,
             "currentValue": 0,
             "targetValue": 0
@@ -526,7 +526,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/17/2025, 11:00:04 PM",
-            "earnedAge": "11 months, 6 days, 11 hours, 36 mins",
+            "earnedAge": "11 months, 6 days, 20 hours, 33 mins",
             "timestamp": 1750201204000,
             "currentValue": 0,
             "targetValue": 0
@@ -549,7 +549,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/18/2025, 12:14:40 AM",
-            "earnedAge": "11 months, 6 days, 10 hours, 21 mins",
+            "earnedAge": "11 months, 6 days, 19 hours, 19 mins",
             "timestamp": 1750205680000,
             "currentValue": 0,
             "targetValue": 0
@@ -572,7 +572,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "7/26/2025, 3:39:05 AM",
-            "earnedAge": "9 months, 4 weeks, 6 hours, 57 mins",
+            "earnedAge": "9 months, 4 weeks, 15 hours, 54 mins",
             "timestamp": 1753501145000,
             "currentValue": 0,
             "targetValue": 0
@@ -595,7 +595,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/28/2025, 11:29:53 PM",
-            "earnedAge": "7 months, 3 weeks, 2 days, 11 hours, 6 mins",
+            "earnedAge": "7 months, 3 weeks, 2 days, 20 hours, 3 mins",
             "timestamp": 1759102193000,
             "currentValue": 0,
             "targetValue": 0
@@ -618,7 +618,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/29/2025, 1:53:24 AM",
-            "earnedAge": "7 months, 3 weeks, 2 days, 8 hours, 43 mins",
+            "earnedAge": "7 months, 3 weeks, 2 days, 17 hours, 40 mins",
             "timestamp": 1759110804000,
             "currentValue": 0,
             "targetValue": 0
@@ -644,7 +644,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "38",
+            "currentValue": "39",
             "targetValue": "40"
           },
           {
@@ -665,7 +665,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/29/2025, 2:01:12 AM",
-            "earnedAge": "7 months, 3 weeks, 2 days, 8 hours, 35 mins",
+            "earnedAge": "7 months, 3 weeks, 2 days, 17 hours, 32 mins",
             "timestamp": 1759111272000,
             "currentValue": 0,
             "targetValue": 0
@@ -712,7 +712,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/29/2025, 1:40:08 AM",
-            "earnedAge": "7 months, 3 weeks, 2 days, 8 hours, 56 mins",
+            "earnedAge": "7 months, 3 weeks, 2 days, 17 hours, 53 mins",
             "timestamp": 1759110008000,
             "currentValue": 0,
             "targetValue": "11"
@@ -735,7 +735,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/9/2026, 4:02:14 AM",
-            "earnedAge": "1 week, 4 days, 6 hours, 34 mins",
+            "earnedAge": "1 week, 4 days, 15 hours, 31 mins",
             "timestamp": 1778299334000,
             "currentValue": 0,
             "targetValue": 0
@@ -758,7 +758,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/9/2026, 3:36:59 AM",
-            "earnedAge": "1 week, 4 days, 6 hours, 59 mins",
+            "earnedAge": "1 week, 4 days, 15 hours, 56 mins",
             "timestamp": 1778297819000,
             "currentValue": 0,
             "targetValue": 0
@@ -804,7 +804,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/17/2025, 11:00:05 PM",
-            "earnedAge": "11 months, 6 days, 11 hours, 36 mins",
+            "earnedAge": "11 months, 6 days, 20 hours, 33 mins",
             "timestamp": 1750201205000,
             "currentValue": 0,
             "targetValue": 0
@@ -827,7 +827,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "7/26/2025, 1:07:42 AM",
-            "earnedAge": "9 months, 4 weeks, 9 hours, 28 mins",
+            "earnedAge": "9 months, 4 weeks, 18 hours, 26 mins",
             "timestamp": 1753492062000,
             "currentValue": 0,
             "targetValue": 0
@@ -996,7 +996,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "82",
+            "currentValue": "87",
             "targetValue": "300"
           },
           {
@@ -1018,7 +1018,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/26/2025, 4:46:15 AM",
-            "earnedAge": "7 months, 3 weeks, 5 days, 5 hours, 50 mins",
+            "earnedAge": "7 months, 3 weeks, 5 days, 14 hours, 47 mins",
             "timestamp": 1758861975000,
             "currentValue": 0,
             "targetValue": "350"
@@ -1044,7 +1044,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "55088",
+            "currentValue": "58231",
             "targetValue": "100000"
           },
           {
@@ -1066,7 +1066,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/28/2025, 9:22:31 PM",
-            "earnedAge": "7 months, 3 weeks, 2 days, 13 hours, 13 mins",
+            "earnedAge": "7 months, 3 weeks, 2 days, 22 hours, 11 mins",
             "timestamp": 1759094551000,
             "currentValue": 0,
             "targetValue": "50"
@@ -1088,11 +1088,11 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Sniper Elite: Resistance",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "148",
+            "earned": true,
+            "earnedDate": "5/20/2026, 6:27:34 PM",
+            "earnedAge": "1 hour, 6 mins",
+            "timestamp": 1779301654000,
+            "currentValue": 0,
             "targetValue": "150"
           },
           {
@@ -1138,7 +1138,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/28/2025, 11:12:14 PM",
-            "earnedAge": "7 months, 3 weeks, 2 days, 11 hours, 24 mins",
+            "earnedAge": "7 months, 3 weeks, 2 days, 20 hours, 21 mins",
             "timestamp": 1759101134000,
             "currentValue": 0,
             "targetValue": "20"
@@ -1185,7 +1185,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/9/2026, 4:20:40 AM",
-            "earnedAge": "1 week, 4 days, 6 hours, 15 mins",
+            "earnedAge": "1 week, 4 days, 15 hours, 13 mins",
             "timestamp": 1778300440000,
             "currentValue": 0,
             "targetValue": 0
@@ -1209,7 +1209,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/17/2025, 11:14:23 PM",
-            "earnedAge": "11 months, 6 days, 11 hours, 22 mins",
+            "earnedAge": "11 months, 6 days, 20 hours, 19 mins",
             "timestamp": 1750202063000,
             "currentValue": 0,
             "targetValue": "20"
@@ -1232,7 +1232,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/8/2026, 5:47:06 AM",
-            "earnedAge": "1 week, 5 days, 4 hours, 49 mins",
+            "earnedAge": "1 week, 5 days, 13 hours, 46 mins",
             "timestamp": 1778219226000,
             "currentValue": 0,
             "targetValue": 0
@@ -1256,7 +1256,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/28/2025, 9:48:38 PM",
-            "earnedAge": "7 months, 3 weeks, 2 days, 12 hours, 47 mins",
+            "earnedAge": "7 months, 3 weeks, 2 days, 21 hours, 45 mins",
             "timestamp": 1759096118000,
             "currentValue": 0,
             "targetValue": "50"
@@ -1280,7 +1280,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/29/2025, 12:55:33 AM",
-            "earnedAge": "7 months, 3 weeks, 2 days, 9 hours, 40 mins",
+            "earnedAge": "7 months, 3 weeks, 2 days, 18 hours, 38 mins",
             "timestamp": 1759107333000,
             "currentValue": 0,
             "targetValue": "250"
@@ -1304,7 +1304,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "9/26/2025, 5:02:16 AM",
-            "earnedAge": "7 months, 3 weeks, 5 days, 5 hours, 34 mins",
+            "earnedAge": "7 months, 3 weeks, 5 days, 14 hours, 31 mins",
             "timestamp": 1758862936000,
             "currentValue": 0,
             "targetValue": "50"
@@ -1330,7 +1330,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "78",
+            "currentValue": "95",
             "targetValue": "100"
           },
           {
@@ -1354,7 +1354,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "33",
+            "currentValue": "34",
             "targetValue": "50"
           },
           {
@@ -1495,7 +1495,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/9/2026, 4:54:34 AM",
-            "earnedAge": "1 week, 4 days, 5 hours, 41 mins",
+            "earnedAge": "1 week, 4 days, 14 hours, 39 mins",
             "timestamp": 1778302474000,
             "currentValue": 0,
             "targetValue": 0
@@ -1518,7 +1518,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/16/2025, 5:46:57 AM",
-            "earnedAge": "11 months, 1 week, 1 day, 4 hours, 49 mins",
+            "earnedAge": "11 months, 1 week, 1 day, 13 hours, 46 mins",
             "timestamp": 1750052817000,
             "currentValue": 0,
             "targetValue": 0
@@ -1541,7 +1541,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/17/2025, 10:29:28 PM",
-            "earnedAge": "11 months, 6 days, 12 hours, 6 mins",
+            "earnedAge": "11 months, 6 days, 21 hours, 4 mins",
             "timestamp": 1750199368000,
             "currentValue": 0,
             "targetValue": 0
@@ -1564,7 +1564,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "6/17/2025, 11:37:37 PM",
-            "earnedAge": "11 months, 6 days, 10 hours, 58 mins",
+            "earnedAge": "11 months, 6 days, 19 hours, 56 mins",
             "timestamp": 1750203457000,
             "currentValue": 0,
             "targetValue": 0
@@ -2083,12 +2083,20 @@
       },
       "mostRecentTrophies": [
         {
+          "game": "Sniper Elite: Resistance",
+          "name": "Eyes on the Prize",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/705f9ed7-4f7c-4e19-a8e5-022022bf32da.png",
+          "timestamp": 1779301654000,
+          "date": "5/20/2026, 6:27:34 PM",
+          "age": "1 hour, 6 mins"
+        },
+        {
           "game": "Where Winds Meet",
           "name": "Speedrun in Granary",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50887_00/b053ac97-4937-467a-9f48-fe4aa527a19a.png",
           "timestamp": 1778809267000,
           "date": "5/15/2026, 1:41:07 AM",
-          "age": "5 days, 8 hours, 55 mins"
+          "age": "5 days, 17 hours, 52 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2096,7 +2104,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/15624fa3-4f20-4b56-bf96-5471506e1ffd.png",
           "timestamp": 1778473287000,
           "date": "5/11/2026, 4:21:27 AM",
-          "age": "1 week, 2 days, 6 hours, 15 mins"
+          "age": "1 week, 2 days, 15 hours, 12 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2104,7 +2112,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/bc011536-8ebd-42b9-944a-7736fe8deb45.png",
           "timestamp": 1778470010000,
           "date": "5/11/2026, 3:26:50 AM",
-          "age": "1 week, 2 days, 7 hours, 9 mins"
+          "age": "1 week, 2 days, 16 hours, 6 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2112,7 +2120,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/4933c0b4-27e4-4001-af94-e2d0c229f78b.png",
           "timestamp": 1778469919000,
           "date": "5/11/2026, 3:25:19 AM",
-          "age": "1 week, 2 days, 7 hours, 11 mins"
+          "age": "1 week, 2 days, 16 hours, 8 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2120,7 +2128,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/29d6d47f-5bdb-4950-ab52-615f2e0791b2.png",
           "timestamp": 1778469318000,
           "date": "5/11/2026, 3:15:18 AM",
-          "age": "1 week, 2 days, 7 hours, 21 mins"
+          "age": "1 week, 2 days, 16 hours, 18 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2128,7 +2136,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1ae23dce-af16-449d-b314-1d045b230954.png",
           "timestamp": 1778468006000,
           "date": "5/11/2026, 2:53:26 AM",
-          "age": "1 week, 2 days, 7 hours, 43 mins"
+          "age": "1 week, 2 days, 16 hours, 40 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2136,7 +2144,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/fba558c2-4df3-4660-a326-d6d8aea66af1.png",
           "timestamp": 1778467913000,
           "date": "5/11/2026, 2:51:53 AM",
-          "age": "1 week, 2 days, 7 hours, 44 mins"
+          "age": "1 week, 2 days, 16 hours, 41 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2144,7 +2152,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a7b100a3-62d7-4549-a8ca-34bb714c904f.png",
           "timestamp": 1778464797000,
           "date": "5/11/2026, 1:59:57 AM",
-          "age": "1 week, 2 days, 8 hours, 36 mins"
+          "age": "1 week, 2 days, 17 hours, 33 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2152,15 +2160,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/31211522-8f49-4b5a-abde-7c49ee31f04a.png",
           "timestamp": 1778464633000,
           "date": "5/11/2026, 1:57:13 AM",
-          "age": "1 week, 2 days, 8 hours, 39 mins"
-        },
-        {
-          "game": "Farming Simulator 25",
-          "name": "That's a wrap",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/2f367fad-fd57-4d24-8650-93fdf1357ac9.png",
-          "timestamp": 1778464183000,
-          "date": "5/11/2026, 1:49:43 AM",
-          "age": "1 week, 2 days, 8 hours, 46 mins"
+          "age": "1 week, 2 days, 17 hours, 36 mins"
         }
       ],
       "fullLibrary": [
@@ -2168,7 +2168,7 @@
           "npCommunicationId": "NPWR40813_00",
           "name": "Sniper Elite: Resistance",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
-          "lastPlayed": "2026-05-20T08:00:38Z",
+          "lastPlayed": "2026-05-20T19:27:27Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite: Resistance",
@@ -2182,16 +2182,16 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 31,
+          "progress": 32,
           "earnedTrophies": {
-            "bronze": 24,
+            "bronze": 25,
             "silver": 2,
             "gold": 1,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-05-20T08:00:38Z",
-          "earnedTotal": 27,
+          "lastUpdatedDateTime": "2026-05-20T19:27:27Z",
+          "earnedTotal": 28,
           "definedTotal": 71
         },
         {
@@ -5215,7 +5215,7 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
           "lastPlayed": "2025-01-05T00:59:39Z",
           "npServiceName": "trophy",
-          "trophySetVersion": "01.00",
+          "trophySetVersion": "01.01",
           "trophyTitleName": "UNO®",
           "trophyTitleDetail": "It's a race to the finish as you try to empty your hand before everyone else. Play with friends and family the way you want to play with an assortment of House Rules as well as, for the first time, Themes with updated visuals and never-before-seen Theme Cards that introduce crazy effects and powers to the game. It's the UNO you know and love--and so much more!",
           "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
@@ -7670,13 +7670,21 @@
           "isMe": true
         },
         "presence": {
-          "availability": "unavailable",
-          "lastAvailableDate": "2026-05-20T08:38:41.947Z",
+          "availability": "availableToPlay",
           "primaryPlatformInfo": {
-            "onlineStatus": "offline",
+            "onlineStatus": "online",
             "platform": "PS5",
             "lastOnlineDate": "2026-05-20T08:38:41.947Z"
-          }
+          },
+          "gameTitleInfoList": [
+            {
+              "npTitleId": "PPSA17232_00",
+              "titleName": "Sniper Elite: Resistance",
+              "format": "PS5",
+              "launchPlatform": "PS5",
+              "conceptIconUrl": "https://image.api.playstation.com/vulcan/ap/rnd/202408/1309/05d041f5216b1cd55a4587729534ce8ac8c557877b4d1483.png"
+            }
+          ]
         },
         "telemetry": [],
         "titles": [
@@ -7695,15 +7703,15 @@
               "gold": 5,
               "platinum": 1
             },
-            "progress": 31,
+            "progress": 32,
             "earnedTrophies": {
-              "bronze": 24,
+              "bronze": 25,
               "silver": 2,
               "gold": 1,
               "platinum": 0
             },
             "hiddenFlag": false,
-            "lastUpdatedDateTime": "2026-05-20T08:00:38Z"
+            "lastUpdatedDateTime": "2026-05-20T19:27:27Z"
           },
           {
             "npServiceName": "trophy2",
@@ -10228,7 +10236,7 @@
           {
             "npServiceName": "trophy",
             "npCommunicationId": "NPWR10270_00",
-            "trophySetVersion": "01.00",
+            "trophySetVersion": "01.01",
             "trophyTitleName": "UNO®",
             "trophyTitleDetail": "It's a race to the finish as you try to empty your hand before everyone else. Play with friends and family the way you want to play with an assortment of House Rules as well as, for the first time, Themes with updated visuals and never-before-seen Theme Cards that introduce crazy effects and powers to the game. It's the UNO you know and love--and so much more!",
             "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
@@ -12267,7 +12275,7 @@
           "totalItemCount": 17
         }
       },
-      "lastUpdated": "5/20/2026, 10:36:37 AM"
+      "lastUpdated": "5/20/2026, 7:33:59 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -12301,7 +12309,7 @@
       "isOfficiallyVerified": false,
       "isMe": true,
       "accountId": "2732733730346312494",
-      "online": false,
+      "online": true,
       "currentGame": "Sniper Elite: Resistance",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
       "currentGameActivity": null,
@@ -12357,7 +12365,7 @@
           "npCommunicationId": "NPWR40813_00",
           "name": "Sniper Elite: Resistance",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
-          "lastPlayed": "2026-05-20T08:33:59Z",
+          "lastPlayed": "2026-05-20T19:33:15Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite: Resistance",
@@ -12379,7 +12387,7 @@
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-05-20T08:33:59Z",
+          "lastUpdatedDateTime": "2026-05-20T19:33:15Z",
           "earnedTotal": 4,
           "definedTotal": 71,
           "ratio": "4/71",
@@ -12574,7 +12582,7 @@
               "gold": 0,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-05-20T08:33:58Z",
+            "lastUpdatedDateTime": "2026-05-20T19:33:15Z",
             "trophyGroupName": "Sniper Elite: Resistance",
             "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
             "definedTrophies": {
@@ -12709,7 +12717,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/20/2026, 5:38:12 AM",
-            "earnedAge": "4 hours, 58 mins",
+            "earnedAge": "13 hours, 55 mins",
             "timestamp": 1779255492000,
             "currentValue": 0,
             "targetValue": 0
@@ -12732,7 +12740,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/20/2026, 8:33:56 AM",
-            "earnedAge": "2 hours, 2 mins",
+            "earnedAge": "11 hours",
             "timestamp": 1779266036000,
             "currentValue": 0,
             "targetValue": 0
@@ -12896,7 +12904,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "5",
+            "currentValue": "7",
             "targetValue": "40"
           },
           {
@@ -13056,7 +13064,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/20/2026, 8:33:57 AM",
-            "earnedAge": "2 hours, 2 mins",
+            "earnedAge": "11 hours",
             "timestamp": 1779266037000,
             "currentValue": 0,
             "targetValue": 0
@@ -13248,7 +13256,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "11",
+            "currentValue": "12",
             "targetValue": "300"
           },
           {
@@ -13272,7 +13280,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "37",
+            "currentValue": "60",
             "targetValue": "350"
           },
           {
@@ -13296,7 +13304,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "6120",
+            "currentValue": "8304",
             "targetValue": "100000"
           },
           {
@@ -13344,7 +13352,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "14",
+            "currentValue": "15",
             "targetValue": "150"
           },
           {
@@ -13463,7 +13471,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "9",
+            "currentValue": "11",
             "targetValue": "20"
           },
           {
@@ -13510,7 +13518,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "7",
+            "currentValue": "11",
             "targetValue": "50"
           },
           {
@@ -13534,7 +13542,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "34",
+            "currentValue": "48",
             "targetValue": "250"
           },
           {
@@ -13582,7 +13590,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "2",
+            "currentValue": "4",
             "targetValue": "100"
           },
           {
@@ -13630,7 +13638,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "5",
+            "currentValue": "8",
             "targetValue": "35"
           },
           {
@@ -13654,7 +13662,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "5",
+            "currentValue": "9",
             "targetValue": "35"
           },
           {
@@ -13678,7 +13686,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "4",
+            "currentValue": "7",
             "targetValue": "22"
           },
           {
@@ -13702,7 +13710,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "3",
+            "currentValue": "5",
             "targetValue": "21"
           },
           {
@@ -13726,7 +13734,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "4",
+            "currentValue": "6",
             "targetValue": "21"
           },
           {
@@ -13770,7 +13778,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/20/2026, 8:03:18 AM",
-            "earnedAge": "2 hours, 33 mins",
+            "earnedAge": "11 hours, 30 mins",
             "timestamp": 1779264198000,
             "currentValue": 0,
             "targetValue": 0
@@ -14340,7 +14348,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/8d432ce6-b456-4e0b-a406-7b84e4c5171e.png",
           "timestamp": 1779266037000,
           "date": "5/20/2026, 8:33:57 AM",
-          "age": "2 hours, 2 mins"
+          "age": "11 hours"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -14348,7 +14356,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/4a180d97-6657-4945-9066-a9b5eaee9060.png",
           "timestamp": 1779266036000,
           "date": "5/20/2026, 8:33:56 AM",
-          "age": "2 hours, 2 mins"
+          "age": "11 hours"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -14356,7 +14364,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/31589849-6c41-440d-b09b-b5b3aebc3a60.png",
           "timestamp": 1779264198000,
           "date": "5/20/2026, 8:03:18 AM",
-          "age": "2 hours, 33 mins"
+          "age": "11 hours, 30 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -14364,7 +14372,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/7060e573-5ef3-411e-a975-677e6b6ac02e.png",
           "timestamp": 1779255492000,
           "date": "5/20/2026, 5:38:12 AM",
-          "age": "4 hours, 58 mins"
+          "age": "13 hours, 55 mins"
         },
         {
           "game": "Mahjong",
@@ -14372,7 +14380,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/4b6d04d8-59c7-4280-afcf-808d94619e59.png",
           "timestamp": 1778276288000,
           "date": "5/8/2026, 9:38:08 PM",
-          "age": "1 week, 4 days, 12 hours, 58 mins"
+          "age": "1 week, 4 days, 21 hours, 55 mins"
         },
         {
           "game": "Mahjong",
@@ -14380,7 +14388,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/68c284db-85b4-4d52-ba00-21d5621caa32.png",
           "timestamp": 1778268262000,
           "date": "5/8/2026, 7:24:22 PM",
-          "age": "1 week, 4 days, 15 hours, 12 mins"
+          "age": "1 week, 5 days, 9 mins"
         },
         {
           "game": "Mahjong",
@@ -14388,7 +14396,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/86127749-7a5e-4a71-ae20-83bcb08cd044.png",
           "timestamp": 1777996589000,
           "date": "5/5/2026, 3:56:29 PM",
-          "age": "2 weeks, 18 hours, 40 mins"
+          "age": "2 weeks, 1 day, 3 hours, 37 mins"
         },
         {
           "game": "Mahjong",
@@ -14396,7 +14404,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/de222a3e-5ebb-493c-96ba-a1fe844befa0.png",
           "timestamp": 1777989355000,
           "date": "5/5/2026, 1:55:55 PM",
-          "age": "2 weeks, 20 hours, 40 mins"
+          "age": "2 weeks, 1 day, 5 hours, 38 mins"
         },
         {
           "game": "Mahjong",
@@ -14404,7 +14412,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/6fd426e8-81b3-4b7d-990f-31583f266bf4.png",
           "timestamp": 1777938161000,
           "date": "5/4/2026, 11:42:41 PM",
-          "age": "2 weeks, 1 day, 10 hours, 53 mins"
+          "age": "2 weeks, 1 day, 19 hours, 51 mins"
         },
         {
           "game": "Mahjong",
@@ -14412,7 +14420,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR28141_00/5c335c31-75f7-4194-8867-163a13a15071.png",
           "timestamp": 1777792873000,
           "date": "5/3/2026, 7:21:13 AM",
-          "age": "2 weeks, 3 days, 3 hours, 15 mins"
+          "age": "2 weeks, 3 days, 12 hours, 12 mins"
         }
       ],
       "fullLibrary": [
@@ -14420,7 +14428,7 @@
           "npCommunicationId": "NPWR40813_00",
           "name": "Sniper Elite: Resistance",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
-          "lastPlayed": "2026-05-20T08:33:59Z",
+          "lastPlayed": "2026-05-20T19:33:15Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite: Resistance",
@@ -14442,7 +14450,7 @@
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-05-20T08:33:59Z",
+          "lastUpdatedDateTime": "2026-05-20T19:33:15Z",
           "earnedTotal": 4,
           "definedTotal": 71
         },
@@ -15098,7 +15106,7 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
           "lastPlayed": "2025-01-02T00:15:08Z",
           "npServiceName": "trophy",
-          "trophySetVersion": "01.00",
+          "trophySetVersion": "01.01",
           "trophyTitleName": "UNO®",
           "trophyTitleDetail": "It's a race to the finish as you try to empty your hand before everyone else. Play with friends and family the way you want to play with an assortment of House Rules as well as, for the first time, Themes with updated visuals and never-before-seen Theme Cards that introduce crazy effects and powers to the game. It's the UNO you know and love--and so much more!",
           "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
@@ -16243,13 +16251,21 @@
           "isMe": true
         },
         "presence": {
-          "availability": "unavailable",
-          "lastAvailableDate": "2026-05-20T08:35:42.619Z",
+          "availability": "availableToPlay",
           "primaryPlatformInfo": {
-            "onlineStatus": "offline",
+            "onlineStatus": "online",
             "platform": "PS5",
             "lastOnlineDate": "2026-05-20T08:35:42.619Z"
-          }
+          },
+          "gameTitleInfoList": [
+            {
+              "npTitleId": "PPSA17232_00",
+              "titleName": "Sniper Elite: Resistance",
+              "format": "PS5",
+              "launchPlatform": "PS5",
+              "conceptIconUrl": "https://image.api.playstation.com/vulcan/ap/rnd/202408/1309/05d041f5216b1cd55a4587729534ce8ac8c557877b4d1483.png"
+            }
+          ]
         },
         "telemetry": [],
         "titles": [
@@ -16276,7 +16292,7 @@
               "platinum": 0
             },
             "hiddenFlag": false,
-            "lastUpdatedDateTime": "2026-05-20T08:33:59Z"
+            "lastUpdatedDateTime": "2026-05-20T19:33:15Z"
           },
           {
             "npServiceName": "trophy",
@@ -16822,7 +16838,7 @@
           {
             "npServiceName": "trophy",
             "npCommunicationId": "NPWR10270_00",
-            "trophySetVersion": "01.00",
+            "trophySetVersion": "01.01",
             "trophyTitleName": "UNO®",
             "trophyTitleDetail": "It's a race to the finish as you try to empty your hand before everyone else. Play with friends and family the way you want to play with an assortment of House Rules as well as, for the first time, Themes with updated visuals and never-before-seen Theme Cards that introduce crazy effects and powers to the game. It's the UNO you know and love--and so much more!",
             "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
@@ -17798,7 +17814,7 @@
           "totalItemCount": 36
         }
       },
-      "lastUpdated": "5/20/2026, 10:36:50 AM"
+      "lastUpdated": "5/20/2026, 7:34:15 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -17853,7 +17869,7 @@
       "gamesPlayed": 15,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
       "bio": "Official Pack Member Profile",
-      "psnAccountAge": "4 months",
+      "psnAccountAge": "5 months",
       "earliestTrophyDate": "2025-12-22T11:15:30.000Z",
       "latestTrophyDate": 1778424239000,
       "plus": true,
@@ -18157,7 +18173,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/15/2026, 4:32:55 AM",
-            "earnedAge": "3 months, 4 days, 6 hours, 3 mins",
+            "earnedAge": "3 months, 4 days, 15 hours, 1 min",
             "timestamp": 1771129975000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18181,7 +18197,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "12/26/2025, 6:41:52 AM",
-            "earnedAge": "4 months, 3 weeks, 4 days, 3 hours, 55 mins",
+            "earnedAge": "4 months, 3 weeks, 4 days, 12 hours, 52 mins",
             "timestamp": 1766731312000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18205,7 +18221,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/14/2026, 6:51:11 AM",
-            "earnedAge": "3 months, 5 days, 3 hours, 45 mins",
+            "earnedAge": "3 months, 5 days, 12 hours, 43 mins",
             "timestamp": 1771051871000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18325,7 +18341,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/12/2026, 9:29:10 PM",
-            "earnedAge": "3 months, 6 days, 13 hours, 7 mins",
+            "earnedAge": "3 months, 6 days, 22 hours, 5 mins",
             "timestamp": 1770931750000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18373,7 +18389,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/13/2026, 4:36:23 AM",
-            "earnedAge": "3 months, 6 days, 6 hours",
+            "earnedAge": "3 months, 6 days, 14 hours, 57 mins",
             "timestamp": 1770957383000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18397,7 +18413,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/13/2026, 8:29:58 AM",
-            "earnedAge": "3 months, 6 days, 2 hours, 6 mins",
+            "earnedAge": "3 months, 6 days, 11 hours, 4 mins",
             "timestamp": 1770971398000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18421,7 +18437,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/15/2026, 11:34:20 AM",
-            "earnedAge": "3 months, 3 days, 23 hours, 2 mins",
+            "earnedAge": "3 months, 4 days, 7 hours, 59 mins",
             "timestamp": 1771155260000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18445,7 +18461,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "12/26/2025, 4:40:17 AM",
-            "earnedAge": "4 months, 3 weeks, 4 days, 5 hours, 56 mins",
+            "earnedAge": "4 months, 3 weeks, 4 days, 14 hours, 54 mins",
             "timestamp": 1766724017000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18469,7 +18485,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/13/2026, 6:05:27 AM",
-            "earnedAge": "3 months, 6 days, 4 hours, 31 mins",
+            "earnedAge": "3 months, 6 days, 13 hours, 28 mins",
             "timestamp": 1770962727000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18493,7 +18509,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/13/2026, 8:18:57 AM",
-            "earnedAge": "3 months, 6 days, 2 hours, 17 mins",
+            "earnedAge": "3 months, 6 days, 11 hours, 15 mins",
             "timestamp": 1770970737000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18517,7 +18533,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/13/2026, 8:32:59 AM",
-            "earnedAge": "3 months, 6 days, 2 hours, 3 mins",
+            "earnedAge": "3 months, 6 days, 11 hours, 1 min",
             "timestamp": 1770971579000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18541,7 +18557,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "3/6/2026, 6:39:31 AM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 3 hours, 57 mins",
+            "earnedAge": "2 months, 2 weeks, 1 day, 12 hours, 54 mins",
             "timestamp": 1772779171000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18565,7 +18581,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/14/2026, 2:28:16 AM",
-            "earnedAge": "3 months, 5 days, 8 hours, 8 mins",
+            "earnedAge": "3 months, 5 days, 17 hours, 6 mins",
             "timestamp": 1771036096000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18613,7 +18629,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "3/1/2026, 6:59:31 AM",
-            "earnedAge": "2 months, 2 weeks, 6 days, 3 hours, 37 mins",
+            "earnedAge": "2 months, 2 weeks, 6 days, 12 hours, 34 mins",
             "timestamp": 1772348371000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18661,7 +18677,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "3/3/2026, 6:03:31 PM",
-            "earnedAge": "2 months, 2 weeks, 3 days, 16 hours, 33 mins",
+            "earnedAge": "2 months, 2 weeks, 4 days, 1 hour, 30 mins",
             "timestamp": 1772561011000,
             "currentValue": 0,
             "targetValue": "100"
@@ -18805,7 +18821,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/14/2026, 4:13:10 AM",
-            "earnedAge": "3 months, 5 days, 6 hours, 23 mins",
+            "earnedAge": "3 months, 5 days, 15 hours, 21 mins",
             "timestamp": 1771042390000,
             "currentValue": 0,
             "targetValue": "100"
@@ -19228,7 +19244,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/fcb7bb24-a9d5-4086-b683-a1b0aae92aa9.png",
           "timestamp": 1778424239000,
           "date": "5/10/2026, 2:43:59 PM",
-          "age": "1 week, 2 days, 19 hours, 52 mins"
+          "age": "1 week, 3 days, 4 hours, 50 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -19236,7 +19252,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/4473223f-f110-4676-9de5-cecd5f4344b2.png",
           "timestamp": 1778218117000,
           "date": "5/8/2026, 5:28:37 AM",
-          "age": "1 week, 5 days, 5 hours, 8 mins"
+          "age": "1 week, 5 days, 14 hours, 5 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -19244,7 +19260,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/1afc8198-f583-40e3-9aa1-001012a87ca1.png",
           "timestamp": 1778134126000,
           "date": "5/7/2026, 6:08:46 AM",
-          "age": "1 week, 6 days, 4 hours, 28 mins"
+          "age": "1 week, 6 days, 13 hours, 25 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -19252,7 +19268,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/236d6651-8585-4f0a-a7a4-9281fd579fd3.png",
           "timestamp": 1778130357000,
           "date": "5/7/2026, 5:05:57 AM",
-          "age": "1 week, 6 days, 5 hours, 30 mins"
+          "age": "1 week, 6 days, 14 hours, 28 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -19260,7 +19276,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/39460f3f-5770-4d2d-876b-1673e17b8515.png",
           "timestamp": 1778129041000,
           "date": "5/7/2026, 4:44:01 AM",
-          "age": "1 week, 6 days, 5 hours, 52 mins"
+          "age": "1 week, 6 days, 14 hours, 50 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -19268,7 +19284,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/c59f0116-39b5-40db-b00c-83bd5cf9a6fb.png",
           "timestamp": 1778046213000,
           "date": "5/6/2026, 5:43:33 AM",
-          "age": "2 weeks, 4 hours, 53 mins"
+          "age": "2 weeks, 13 hours, 50 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -19276,7 +19292,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/73c398c1-bca4-4b15-9065-04e91a134c21.png",
           "timestamp": 1778046188000,
           "date": "5/6/2026, 5:43:08 AM",
-          "age": "2 weeks, 4 hours, 53 mins"
+          "age": "2 weeks, 13 hours, 51 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -19284,7 +19300,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/7c66dca1-5c3e-489f-8c19-4a01a9d05647.png",
           "timestamp": 1777794142000,
           "date": "5/3/2026, 7:42:22 AM",
-          "age": "2 weeks, 3 days, 2 hours, 54 mins"
+          "age": "2 weeks, 3 days, 11 hours, 51 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -19292,7 +19308,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/cb75ea2c-742e-441a-b6de-c08295951c00.png",
           "timestamp": 1777791050000,
           "date": "5/3/2026, 6:50:50 AM",
-          "age": "2 weeks, 3 days, 3 hours, 46 mins"
+          "age": "2 weeks, 3 days, 12 hours, 43 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -19300,7 +19316,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/896a0fdd-2c92-4638-ac57-8a433d47b8ef.png",
           "timestamp": 1777514305000,
           "date": "4/30/2026, 1:58:25 AM",
-          "age": "2 weeks, 6 days, 8 hours, 38 mins"
+          "age": "2 weeks, 6 days, 17 hours, 35 mins"
         }
       ],
       "fullLibrary": [
@@ -20185,7 +20201,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "5/20/2026, 10:37:00 AM"
+      "lastUpdated": "5/20/2026, 7:34:25 PM"
     },
     "marc": {
       "onlineId": "DesdemonaTiger",
@@ -20593,7 +20609,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/27/2026, 6:48:34 PM",
-            "earnedAge": "3 weeks, 1 day, 15 hours, 48 mins",
+            "earnedAge": "3 weeks, 2 days, 45 mins",
             "timestamp": 1777315714000,
             "currentValue": 0,
             "targetValue": 0
@@ -20639,7 +20655,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "5/1/2026, 1:12:12 AM",
-            "earnedAge": "2 weeks, 5 days, 9 hours, 24 mins",
+            "earnedAge": "2 weeks, 5 days, 18 hours, 22 mins",
             "timestamp": 1777597932000,
             "currentValue": 0,
             "targetValue": 0
@@ -20731,7 +20747,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/28/2026, 3:56:18 PM",
-            "earnedAge": "3 weeks, 18 hours, 40 mins",
+            "earnedAge": "3 weeks, 1 day, 3 hours, 38 mins",
             "timestamp": 1777391778000,
             "currentValue": 0,
             "targetValue": 0
@@ -20892,7 +20908,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/26/2026, 6:29:30 PM",
-            "earnedAge": "3 weeks, 2 days, 16 hours, 7 mins",
+            "earnedAge": "3 weeks, 3 days, 1 hour, 4 mins",
             "timestamp": 1777228170000,
             "currentValue": 0,
             "targetValue": 0
@@ -20915,7 +20931,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/19/2026, 3:40:28 AM",
-            "earnedAge": "1 month, 1 day, 6 hours, 56 mins",
+            "earnedAge": "1 month, 1 day, 15 hours, 53 mins",
             "timestamp": 1776570028000,
             "currentValue": 0,
             "targetValue": 0
@@ -20938,7 +20954,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "9/3/2022, 5:49:10 PM",
-            "earnedAge": "3 yrs, 8 months, 2 weeks, 5 days, 16 hours, 47 mins",
+            "earnedAge": "3 yrs, 8 months, 2 weeks, 6 days, 1 hour, 45 mins",
             "timestamp": 1662227350000,
             "currentValue": 0,
             "targetValue": 0
@@ -20961,7 +20977,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "5/9/2026, 11:25:41 PM",
-            "earnedAge": "1 week, 3 days, 11 hours, 11 mins",
+            "earnedAge": "1 week, 3 days, 20 hours, 8 mins",
             "timestamp": 1778369141000,
             "currentValue": 0,
             "targetValue": 0
@@ -21053,7 +21069,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/26/2026, 1:43:58 AM",
-            "earnedAge": "3 weeks, 3 days, 8 hours, 53 mins",
+            "earnedAge": "3 weeks, 3 days, 17 hours, 50 mins",
             "timestamp": 1777167838000,
             "currentValue": 0,
             "targetValue": 0
@@ -21099,7 +21115,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/26/2026, 5:28:11 PM",
-            "earnedAge": "3 weeks, 2 days, 17 hours, 8 mins",
+            "earnedAge": "3 weeks, 3 days, 2 hours, 6 mins",
             "timestamp": 1777224491000,
             "currentValue": 0,
             "targetValue": 0
@@ -21122,7 +21138,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/27/2026, 7:59:00 PM",
-            "earnedAge": "3 weeks, 1 day, 14 hours, 38 mins",
+            "earnedAge": "3 weeks, 1 day, 23 hours, 35 mins",
             "timestamp": 1777319940000,
             "currentValue": 0,
             "targetValue": 0
@@ -21237,7 +21253,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/19/2026, 3:40:26 AM",
-            "earnedAge": "1 month, 1 day, 6 hours, 56 mins",
+            "earnedAge": "1 month, 1 day, 15 hours, 54 mins",
             "timestamp": 1776570026000,
             "currentValue": 0,
             "targetValue": 0
@@ -21260,7 +21276,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/26/2026, 5:28:10 PM",
-            "earnedAge": "3 weeks, 2 days, 17 hours, 8 mins",
+            "earnedAge": "3 weeks, 3 days, 2 hours, 6 mins",
             "timestamp": 1777224490000,
             "currentValue": 0,
             "targetValue": 0
@@ -21375,7 +21391,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "5/10/2026, 12:48:39 AM",
-            "earnedAge": "1 week, 3 days, 9 hours, 48 mins",
+            "earnedAge": "1 week, 3 days, 18 hours, 45 mins",
             "timestamp": 1778374119000,
             "currentValue": 0,
             "targetValue": 0
@@ -21398,7 +21414,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "4/27/2026, 8:07:58 PM",
-            "earnedAge": "3 weeks, 1 day, 14 hours, 29 mins",
+            "earnedAge": "3 weeks, 1 day, 23 hours, 26 mins",
             "timestamp": 1777320478000,
             "currentValue": 0,
             "targetValue": 0
@@ -21421,7 +21437,7 @@
             "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
             "earnedDate": "5/15/2026, 12:16:43 AM",
-            "earnedAge": "5 days, 10 hours, 20 mins",
+            "earnedAge": "5 days, 19 hours, 17 mins",
             "timestamp": 1778804203000,
             "currentValue": 0,
             "targetValue": 0
@@ -21896,7 +21912,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/CCE26C6C72940D8F7B69CFF59E51136B28A25714.PNG",
           "timestamp": 1778804203000,
           "date": "5/15/2026, 12:16:43 AM",
-          "age": "5 days, 10 hours, 20 mins"
+          "age": "5 days, 19 hours, 17 mins"
         },
         {
           "game": "Tom Clancy’s Ghost Recon® Wildlands",
@@ -21904,7 +21920,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/A88761F7E2D78BCCF278B6581233F2D0333EF916.PNG",
           "timestamp": 1778374119000,
           "date": "5/10/2026, 12:48:39 AM",
-          "age": "1 week, 3 days, 9 hours, 48 mins"
+          "age": "1 week, 3 days, 18 hours, 45 mins"
         },
         {
           "game": "Tom Clancy’s Ghost Recon® Wildlands",
@@ -21912,7 +21928,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/34EFDF706D89ED25A0498926C055F4D127443A9A.PNG",
           "timestamp": 1778369141000,
           "date": "5/9/2026, 11:25:41 PM",
-          "age": "1 week, 3 days, 11 hours, 11 mins"
+          "age": "1 week, 3 days, 20 hours, 8 mins"
         },
         {
           "game": "Test Drive Unlimited - Solar Crown",
@@ -21920,7 +21936,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27427_00/97db7c76-29f9-4f06-9bc8-ddd72ea6c3bc.png",
           "timestamp": 1778240690000,
           "date": "5/8/2026, 11:44:50 AM",
-          "age": "1 week, 4 days, 22 hours, 52 mins"
+          "age": "1 week, 5 days, 7 hours, 49 mins"
         },
         {
           "game": "Test Drive Unlimited - Solar Crown",
@@ -21928,7 +21944,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27427_00/072067a4-c602-44f4-ac1f-e7e403a15695.png",
           "timestamp": 1778239117000,
           "date": "5/8/2026, 11:18:37 AM",
-          "age": "1 week, 4 days, 23 hours, 18 mins"
+          "age": "1 week, 5 days, 8 hours, 15 mins"
         },
         {
           "game": "Test Drive Unlimited - Solar Crown",
@@ -21936,7 +21952,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27427_00/846bbe39-a2fa-43ff-95a2-bcc2f1121843.png",
           "timestamp": 1778238907000,
           "date": "5/8/2026, 11:15:07 AM",
-          "age": "1 week, 4 days, 23 hours, 21 mins"
+          "age": "1 week, 5 days, 8 hours, 19 mins"
         },
         {
           "game": "Test Drive Unlimited - Solar Crown",
@@ -21944,7 +21960,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27427_00/e50dd5d1-022b-4de1-8af3-0ad0d5b28885.png",
           "timestamp": 1778238764000,
           "date": "5/8/2026, 11:12:44 AM",
-          "age": "1 week, 4 days, 23 hours, 24 mins"
+          "age": "1 week, 5 days, 8 hours, 21 mins"
         },
         {
           "game": "Crossout",
@@ -21952,7 +21968,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/1c8aebae-d462-4fab-8577-c8dda04933ef.png",
           "timestamp": 1778177843000,
           "date": "5/7/2026, 6:17:23 PM",
-          "age": "1 week, 5 days, 16 hours, 19 mins"
+          "age": "1 week, 6 days, 1 hour, 17 mins"
         },
         {
           "game": "Crossout",
@@ -21960,7 +21976,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/19096278-a1db-4588-ae46-4f17f0868dd9.png",
           "timestamp": 1777810398000,
           "date": "5/3/2026, 12:13:18 PM",
-          "age": "2 weeks, 2 days, 22 hours, 23 mins"
+          "age": "2 weeks, 3 days, 7 hours, 21 mins"
         },
         {
           "game": "Crossout",
@@ -21968,7 +21984,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24327_00/41837e71-3f2f-4b66-bc82-debedd0324b6.png",
           "timestamp": 1777689814000,
           "date": "5/2/2026, 2:43:34 AM",
-          "age": "2 weeks, 4 days, 7 hours, 53 mins"
+          "age": "2 weeks, 4 days, 16 hours, 50 mins"
         }
       ],
       "fullLibrary": [
@@ -30820,7 +30836,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "5/20/2026, 10:37:13 AM"
+      "lastUpdated": "5/20/2026, 7:34:39 PM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -32149,7 +32165,7 @@
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": true,
             "earnedDate": "5/9/2026, 5:51:40 AM",
-            "earnedAge": "1 week, 4 days, 4 hours, 45 mins",
+            "earnedAge": "1 week, 4 days, 13 hours, 43 mins",
             "timestamp": 1778305900000,
             "currentValue": 0,
             "targetValue": 0
@@ -32195,7 +32211,7 @@
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": true,
             "earnedDate": "2/26/2026, 11:27:40 PM",
-            "earnedAge": "2 months, 3 weeks, 1 day, 11 hours, 9 mins",
+            "earnedAge": "2 months, 3 weeks, 1 day, 20 hours, 7 mins",
             "timestamp": 1772148460000,
             "currentValue": 0,
             "targetValue": 0
@@ -32394,7 +32410,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50656_00/7bce7c84-1f32-44ed-be26-17be00da9444.png",
           "timestamp": 1778305900000,
           "date": "5/9/2026, 5:51:40 AM",
-          "age": "1 week, 4 days, 4 hours, 45 mins"
+          "age": "1 week, 4 days, 13 hours, 43 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -32402,7 +32418,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/6575de8d-3035-4497-9ab8-761d0f89d8e1.PNG",
           "timestamp": 1775104350000,
           "date": "4/2/2026, 4:32:30 AM",
-          "age": "1 month, 2 weeks, 4 days, 6 hours, 4 mins"
+          "age": "1 month, 2 weeks, 4 days, 15 hours, 2 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -32410,7 +32426,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/63dc02ce-bd45-45f9-b0b3-ec139df08d1a.PNG",
           "timestamp": 1775098413000,
           "date": "4/2/2026, 2:53:33 AM",
-          "age": "1 month, 2 weeks, 4 days, 7 hours, 43 mins"
+          "age": "1 month, 2 weeks, 4 days, 16 hours, 41 mins"
         },
         {
           "game": "Battlefield™ 6",
@@ -32418,7 +32434,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50656_00/f7cec518-b561-467e-919f-413dba869d04.png",
           "timestamp": 1772148460000,
           "date": "2/26/2026, 11:27:40 PM",
-          "age": "2 months, 3 weeks, 1 day, 11 hours, 9 mins"
+          "age": "2 months, 3 weeks, 1 day, 20 hours, 7 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -32426,7 +32442,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/7ea0f9c8-9a2c-425f-a70d-82d938c17096.PNG",
           "timestamp": 1768963125000,
           "date": "1/21/2026, 2:38:45 AM",
-          "age": "3 months, 4 weeks, 1 day, 7 hours, 58 mins"
+          "age": "3 months, 4 weeks, 1 day, 16 hours, 55 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -32434,7 +32450,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/c49e2529-5f55-429d-95bd-705264f1e725.PNG",
           "timestamp": 1768428250000,
           "date": "1/14/2026, 10:04:10 PM",
-          "age": "4 months, 5 days, 12 hours, 33 mins"
+          "age": "4 months, 5 days, 21 hours, 30 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -32442,7 +32458,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/d042261f-a1d3-4173-b2b7-b7bae15b9c0f.PNG",
           "timestamp": 1768361542000,
           "date": "1/14/2026, 3:32:22 AM",
-          "age": "4 months, 6 days, 7 hours, 4 mins"
+          "age": "4 months, 6 days, 16 hours, 2 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -32450,7 +32466,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/b3890925-6c3c-423d-89e6-529abb22c728.PNG",
           "timestamp": 1768356898000,
           "date": "1/14/2026, 2:14:58 AM",
-          "age": "4 months, 6 days, 8 hours, 22 mins"
+          "age": "4 months, 6 days, 17 hours, 19 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -32458,7 +32474,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/4cd20426-649c-46bb-a90b-0c93feae4c2e.PNG",
           "timestamp": 1767838535000,
           "date": "1/8/2026, 2:15:35 AM",
-          "age": "4 months, 1 week, 5 days, 8 hours, 21 mins"
+          "age": "4 months, 1 week, 5 days, 17 hours, 19 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -32466,7 +32482,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/397095ac-c631-4e68-9e91-5d8fa8bba17b.PNG",
           "timestamp": 1767751478000,
           "date": "1/7/2026, 2:04:38 AM",
-          "age": "4 months, 1 week, 6 days, 8 hours, 32 mins"
+          "age": "4 months, 1 week, 6 days, 17 hours, 30 mins"
         }
       ],
       "fullLibrary": [
@@ -33514,7 +33530,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "5/20/2026, 10:37:23 AM"
+      "lastUpdated": "5/20/2026, 7:34:50 PM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -33858,7 +33874,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:47:33 AM",
-            "earnedAge": "2 weeks, 2 days, 9 hours, 49 mins",
+            "earnedAge": "2 weeks, 2 days, 18 hours, 47 mins",
             "timestamp": 1777855653000,
             "currentValue": 0,
             "targetValue": 0
@@ -33881,7 +33897,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:03:28 AM",
-            "earnedAge": "2 weeks, 2 days, 7 hours, 33 mins",
+            "earnedAge": "2 weeks, 2 days, 16 hours, 31 mins",
             "timestamp": 1777863808000,
             "currentValue": 0,
             "targetValue": 0
@@ -33904,7 +33920,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:22:57 AM",
-            "earnedAge": "2 weeks, 2 days, 7 hours, 14 mins",
+            "earnedAge": "2 weeks, 2 days, 16 hours, 11 mins",
             "timestamp": 1777864977000,
             "currentValue": 0,
             "targetValue": 0
@@ -33927,7 +33943,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:48:53 AM",
-            "earnedAge": "2 weeks, 2 days, 9 hours, 48 mins",
+            "earnedAge": "2 weeks, 2 days, 18 hours, 45 mins",
             "timestamp": 1777855733000,
             "currentValue": 0,
             "targetValue": 0
@@ -33950,7 +33966,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:42:00 AM",
-            "earnedAge": "1 week, 2 days, 6 hours, 55 mins",
+            "earnedAge": "1 week, 2 days, 15 hours, 52 mins",
             "timestamp": 1778470920000,
             "currentValue": 0,
             "targetValue": 0
@@ -33973,7 +33989,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:18:57 AM",
-            "earnedAge": "1 week, 2 days, 7 hours, 18 mins",
+            "earnedAge": "1 week, 2 days, 16 hours, 15 mins",
             "timestamp": 1778469537000,
             "currentValue": 0,
             "targetValue": 0
@@ -34042,7 +34058,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:37:55 AM",
-            "earnedAge": "2 weeks, 2 days, 5 hours, 59 mins",
+            "earnedAge": "2 weeks, 2 days, 14 hours, 56 mins",
             "timestamp": 1777869475000,
             "currentValue": 0,
             "targetValue": 0
@@ -34065,7 +34081,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:23:29 AM",
-            "earnedAge": "2 weeks, 2 days, 7 hours, 13 mins",
+            "earnedAge": "2 weeks, 2 days, 16 hours, 11 mins",
             "timestamp": 1777865009000,
             "currentValue": 0,
             "targetValue": 0
@@ -34111,7 +34127,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 10:49:51 PM",
-            "earnedAge": "2 weeks, 1 day, 11 hours, 47 mins",
+            "earnedAge": "2 weeks, 1 day, 20 hours, 45 mins",
             "timestamp": 1777934991000,
             "currentValue": 0,
             "targetValue": 0
@@ -34134,7 +34150,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:14:40 AM",
-            "earnedAge": "2 weeks, 2 days, 4 hours, 22 mins",
+            "earnedAge": "2 weeks, 2 days, 13 hours, 20 mins",
             "timestamp": 1777875280000,
             "currentValue": 0,
             "targetValue": 0
@@ -34157,7 +34173,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:47:31 AM",
-            "earnedAge": "2 weeks, 2 days, 3 hours, 49 mins",
+            "earnedAge": "2 weeks, 2 days, 12 hours, 47 mins",
             "timestamp": 1777877251000,
             "currentValue": 0,
             "targetValue": 0
@@ -34180,7 +34196,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:03:37 AM",
-            "earnedAge": "2 weeks, 2 days, 6 hours, 33 mins",
+            "earnedAge": "2 weeks, 2 days, 15 hours, 31 mins",
             "timestamp": 1777867417000,
             "currentValue": 0,
             "targetValue": 0
@@ -34203,7 +34219,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 5:22:06 AM",
-            "earnedAge": "2 weeks, 2 days, 5 hours, 15 mins",
+            "earnedAge": "2 weeks, 2 days, 14 hours, 12 mins",
             "timestamp": 1777872126000,
             "currentValue": 0,
             "targetValue": 0
@@ -34341,7 +34357,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:29:38 AM",
-            "earnedAge": "1 week, 2 days, 7 hours, 7 mins",
+            "earnedAge": "1 week, 2 days, 16 hours, 5 mins",
             "timestamp": 1778470178000,
             "currentValue": 0,
             "targetValue": 0
@@ -34617,7 +34633,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:30:33 AM",
-            "earnedAge": "2 weeks, 2 days, 4 hours, 6 mins",
+            "earnedAge": "2 weeks, 2 days, 13 hours, 4 mins",
             "timestamp": 1777876233000,
             "currentValue": 0,
             "targetValue": 0
@@ -34770,7 +34786,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/21da5d74-5c49-48d4-8d84-85b1fc955825.png",
           "timestamp": 1778470920000,
           "date": "5/11/2026, 3:42:00 AM",
-          "age": "1 week, 2 days, 6 hours, 55 mins"
+          "age": "1 week, 2 days, 15 hours, 52 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34778,7 +34794,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/79c313b7-af03-4096-b3d1-86090e12f841.png",
           "timestamp": 1778470178000,
           "date": "5/11/2026, 3:29:38 AM",
-          "age": "1 week, 2 days, 7 hours, 7 mins"
+          "age": "1 week, 2 days, 16 hours, 5 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34786,7 +34802,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/5de40386-ae1c-4294-a4d4-f2e922b8d961.png",
           "timestamp": 1778469537000,
           "date": "5/11/2026, 3:18:57 AM",
-          "age": "1 week, 2 days, 7 hours, 18 mins"
+          "age": "1 week, 2 days, 16 hours, 15 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34794,7 +34810,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/492e702d-d33c-48c3-a2d3-19075180c76f.png",
           "timestamp": 1777934991000,
           "date": "5/4/2026, 10:49:51 PM",
-          "age": "2 weeks, 1 day, 11 hours, 47 mins"
+          "age": "2 weeks, 1 day, 20 hours, 45 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34802,7 +34818,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/bbb648f0-902a-483d-a9a1-30c6b3f87bf4.png",
           "timestamp": 1777877251000,
           "date": "5/4/2026, 6:47:31 AM",
-          "age": "2 weeks, 2 days, 3 hours, 49 mins"
+          "age": "2 weeks, 2 days, 12 hours, 47 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34810,7 +34826,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/28baea49-5915-4b1b-89db-bf1d84bf1afd.png",
           "timestamp": 1777876233000,
           "date": "5/4/2026, 6:30:33 AM",
-          "age": "2 weeks, 2 days, 4 hours, 6 mins"
+          "age": "2 weeks, 2 days, 13 hours, 4 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34818,7 +34834,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/b2e3576d-a71a-459e-8035-ada1e3ef774b.png",
           "timestamp": 1777875280000,
           "date": "5/4/2026, 6:14:40 AM",
-          "age": "2 weeks, 2 days, 4 hours, 22 mins"
+          "age": "2 weeks, 2 days, 13 hours, 20 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34826,7 +34842,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/791a3e33-6019-4253-9bfa-5de6d1ad58a2.png",
           "timestamp": 1777872126000,
           "date": "5/4/2026, 5:22:06 AM",
-          "age": "2 weeks, 2 days, 5 hours, 15 mins"
+          "age": "2 weeks, 2 days, 14 hours, 12 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34834,7 +34850,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/468002bc-35f9-43f1-add4-c4f9e45a943c.png",
           "timestamp": 1777869475000,
           "date": "5/4/2026, 4:37:55 AM",
-          "age": "2 weeks, 2 days, 5 hours, 59 mins"
+          "age": "2 weeks, 2 days, 14 hours, 56 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34842,7 +34858,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/0ae703ef-cc71-4353-9f33-00190ca95e9d.png",
           "timestamp": 1777867417000,
           "date": "5/4/2026, 4:03:37 AM",
-          "age": "2 weeks, 2 days, 6 hours, 33 mins"
+          "age": "2 weeks, 2 days, 15 hours, 31 mins"
         }
       ],
       "fullLibrary": [
@@ -36604,16 +36620,16 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR13317_00_00E4B29A52980C891B98C9614C8C763CBF06B4A380/B5021CD0BEA80E90D2158A60A801349D8CBD64D2.PNG",
           "lastPlayed": "2023-08-08T04:44:38Z",
           "npServiceName": "trophy",
-          "trophySetVersion": "01.09",
+          "trophySetVersion": "01.10",
           "trophyTitleName": "The Long Dark",
           "trophyTitleDetail": "The trophy set for The Long Dark.",
           "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR13317_00_00E4B29A52980C891B98C9614C8C763CBF06B4A380/B5021CD0BEA80E90D2158A60A801349D8CBD64D2.PNG",
           "trophyTitlePlatform": "PS4",
           "hasTrophyGroups": true,
-          "trophyGroupCount": 5,
+          "trophyGroupCount": 6,
           "definedTrophies": {
-            "bronze": 56,
-            "silver": 15,
+            "bronze": 67,
+            "silver": 16,
             "gold": 4,
             "platinum": 1
           },
@@ -36627,7 +36643,7 @@
           "hiddenFlag": false,
           "lastUpdatedDateTime": "2023-08-08T04:44:38Z",
           "earnedTotal": 2,
-          "definedTotal": 76
+          "definedTotal": 88
         },
         {
           "npCommunicationId": "NPWR16156_00",
@@ -39251,16 +39267,16 @@
           {
             "npServiceName": "trophy",
             "npCommunicationId": "NPWR13317_00",
-            "trophySetVersion": "01.09",
+            "trophySetVersion": "01.10",
             "trophyTitleName": "The Long Dark",
             "trophyTitleDetail": "The trophy set for The Long Dark.",
             "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR13317_00_00E4B29A52980C891B98C9614C8C763CBF06B4A380/B5021CD0BEA80E90D2158A60A801349D8CBD64D2.PNG",
             "trophyTitlePlatform": "PS4",
             "hasTrophyGroups": true,
-            "trophyGroupCount": 5,
+            "trophyGroupCount": 6,
             "definedTrophies": {
-              "bronze": 56,
-              "silver": 15,
+              "bronze": 67,
+              "silver": 16,
               "gold": 4,
               "platinum": 1
             },
@@ -40213,7 +40229,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "5/20/2026, 10:37:36 AM"
+      "lastUpdated": "5/20/2026, 7:35:03 PM"
     },
     "mjolnir": {
       "onlineId": "Michael (Mjolnir)",
@@ -40238,7 +40254,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/20/2026, 10:37:36 AM",
+      "lastUpdated": "5/20/2026, 7:35:03 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -40265,7 +40281,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/20/2026, 10:37:36 AM",
+      "lastUpdated": "5/20/2026, 7:35:04 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -40292,7 +40308,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/20/2026, 10:37:36 AM",
+      "lastUpdated": "5/20/2026, 7:35:04 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -40319,7 +40335,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/20/2026, 10:36:37 AM",
+      "lastUpdated": "5/20/2026, 7:34:00 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -40346,7 +40362,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/20/2026, 10:37:37 AM",
+      "lastUpdated": "5/20/2026, 7:35:04 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -40359,7 +40375,7 @@
       "amazonAffiliateUrl": null,
       "bio": "Official Pack Member Profile",
       "twitch": null,
-      "lastUpdated": "5/20/2026, 10:37:37 AM",
+      "lastUpdated": "5/20/2026, 7:35:04 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -40386,7 +40402,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/20/2026, 10:37:00 AM",
+      "lastUpdated": "5/20/2026, 7:34:25 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     }
@@ -40394,20 +40410,20 @@
   "personas": {
     "Kevin": {
       "displayName": "Kevin",
-      "isOnline": false,
+      "isOnline": true,
       "primaryOnlineId": "Werewolf3788",
       "combinedTrophies": {
         "platinum": 5,
         "gold": 77,
         "silver": 218,
-        "bronze": 993,
-        "total": 1293
+        "bronze": 994,
+        "total": 1294
       },
       "maxLevel": 233,
-      "legacyAge": "3 years, 0 months",
+      "legacyAge": "3 years, 1 months",
       "legacyRange": {
         "start": "4/18/2023, 11:05:50 PM",
-        "end": "5/15/2026, 1:41:07 AM"
+        "end": "5/20/2026, 6:27:34 PM"
       },
       "currentGame": "Sniper Elite: Resistance",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/85041919-33ed-41b4-8f8a-527d92554e01.png",
@@ -40418,7 +40434,7 @@
         "werewolf",
         "kfruti"
       ],
-      "lastUpdated": "5/20/2026, 10:37:37 AM"
+      "lastUpdated": "5/20/2026, 7:35:04 PM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -40446,11 +40462,11 @@
         "darkwing",
         "darkterro"
       ],
-      "lastUpdated": "5/20/2026, 10:37:37 AM"
+      "lastUpdated": "5/20/2026, 7:35:04 PM"
     },
     "Ray": {
       "displayName": "Ray",
-      "isOnline": false,
+      "isOnline": true,
       "primaryOnlineId": "OneLIVIDMAN",
       "combinedTrophies": {
         "platinum": 5,
@@ -40473,7 +40489,7 @@
       "accounts": [
         "ray"
       ],
-      "lastUpdated": "5/20/2026, 10:37:37 AM"
+      "lastUpdated": "5/20/2026, 7:35:04 PM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -40490,7 +40506,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/20/2026, 10:37:37 AM"
+        "end": "5/20/2026, 7:35:04 PM"
       },
       "currentGame": "Marvel's Spider-Man: Miles Morales",
       "currentGameArt": null,
@@ -40499,7 +40515,7 @@
       "accounts": [
         "phoenix"
       ],
-      "lastUpdated": "5/20/2026, 10:37:37 AM"
+      "lastUpdated": "5/20/2026, 7:35:04 PM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -40526,7 +40542,7 @@
       "accounts": [
         "marc"
       ],
-      "lastUpdated": "5/20/2026, 10:37:37 AM"
+      "lastUpdated": "5/20/2026, 7:35:04 PM"
     },
     "JCrow": {
       "displayName": "JCrow",
@@ -40553,7 +40569,7 @@
       "accounts": [
         "jcrow"
       ],
-      "lastUpdated": "5/20/2026, 10:37:37 AM"
+      "lastUpdated": "5/20/2026, 7:35:04 PM"
     },
     "Shiv": {
       "displayName": "Shiv",
@@ -40580,7 +40596,7 @@
       "accounts": [
         "bunny"
       ],
-      "lastUpdated": "5/20/2026, 10:37:37 AM"
+      "lastUpdated": "5/20/2026, 7:35:04 PM"
     },
     "Michael": {
       "displayName": "Michael",
@@ -40597,7 +40613,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/20/2026, 10:37:37 AM"
+        "end": "5/20/2026, 7:35:04 PM"
       },
       "currentGame": "Police Simulator: Patrol Officers",
       "currentGameArt": null,
@@ -40606,7 +40622,7 @@
       "accounts": [
         "mjolnir"
       ],
-      "lastUpdated": "5/20/2026, 10:37:37 AM"
+      "lastUpdated": "5/20/2026, 7:35:04 PM"
     },
     "Queen": {
       "displayName": "Queen",
@@ -40623,7 +40639,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/20/2026, 10:37:37 AM"
+        "end": "5/20/2026, 7:35:04 PM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -40632,7 +40648,7 @@
       "accounts": [
         "queen"
       ],
-      "lastUpdated": "5/20/2026, 10:37:37 AM"
+      "lastUpdated": "5/20/2026, 7:35:04 PM"
     },
     "Balto": {
       "displayName": "Balto",
@@ -40649,7 +40665,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/20/2026, 10:37:37 AM"
+        "end": "5/20/2026, 7:35:04 PM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -40658,7 +40674,7 @@
       "accounts": [
         "balto"
       ],
-      "lastUpdated": "5/20/2026, 10:37:37 AM"
+      "lastUpdated": "5/20/2026, 7:35:04 PM"
     },
     "Memorial": {
       "displayName": "Memorial",
@@ -40675,7 +40691,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/20/2026, 10:37:37 AM"
+        "end": "5/20/2026, 7:35:04 PM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -40684,7 +40700,7 @@
       "accounts": [
         "oldman"
       ],
-      "lastUpdated": "5/20/2026, 10:37:37 AM"
+      "lastUpdated": "5/20/2026, 7:35:04 PM"
     }
   },
   "mutualSquadFollowers": [
@@ -40693,7 +40709,7 @@
       "sharedConnections": 2
     }
   ],
-  "lastGlobalUpdate": "5/20/2026, 10:36:23 AM",
+  "lastGlobalUpdate": "5/20/2026, 7:33:38 PM",
   "engineVersion": "13.9.1",
   "codeTimestamp": "Sunday, May 10, 2026 | 11:45 PM EDT"
 }
