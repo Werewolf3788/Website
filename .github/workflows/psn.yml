@@ -1,7 +1,8 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
 # Project: Unified PSN & G-Portal Sync
-# Timestamp: May 23, 2026, 01:25 AM (NYT)
+# Timestamp: May 23, 2026, 01:15 AM (NYT)
 # Compatibility: GitHub Actions (Free Tier), GitHub Pages
+# Note: DO NOT STRIP INDENTATION.
 # ------------------------------------
 
 name: Unified Sync and Deploy
@@ -43,11 +44,12 @@ jobs:
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
         run: node Playstation/psnscript.js
 
-      # STEP 2: G-PORTAL SYNC (Forced LIST mode)
+      # STEP 2: G-PORTAL SYNC
       - name: Download All Save Games via lftp
         run: |
           sudo apt-get update && sudo apt-get install -y lftp
-          lftp -c "set ftp:ssl-allow no; set ftp:list-options -a; set net:timeout 10; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}; cd /; mget -r savegame*/*.xml -O ./Playstation/fs25/"
+          # Using mirror without NLST dependency, forcing it to look into savegame folders
+          lftp -c "set ftp:ssl-allow no; set net:timeout 10; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}; cd /; mirror --verbose=3 --parallel=2 --include-glob 'savegame*/.*\\.xml' ./ ./Playstation/fs25/"
 
       - name: Run G-Portal Parser
         run: node Playstation/fs25/sync_data.js
