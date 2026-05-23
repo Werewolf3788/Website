@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<!-- 
+  ========================================================
+  MASTER DEV PROTOCOL INTEGRATED
+  ========================================================
+  NEW YORK TIME TIMESTAMP: 2026-05-22 20:52:00 EDT
+  INTEGRITY CHECK: NO CODE STRIPPED, ALL FEATURES RETAINED.
+  ENHANCEMENTS APPLIED:
+   - FIREBASE UPLINK RESTORED (Consuming Google Apps Script Payload)
+   - Deep Fleet Extraction (Fuel, Wear, Hauling, Attachments)
+   - Farm ID coloring (Werewolf = Jet Orange, Ray = Cardinal Red)
+   - Auto-Night Mode (Local Time check 6PM-6AM)
+   - KF Signature Watermark & Fluid Footer Height
+   - Google Analytics (G-Tag) Integration
+  ========================================================
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zieonka Strategic Ops - FIREBASE TELEMETRY</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google tag (gtag.js) - Personal Projects -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9M5LXQ5XN');
+    </script>
+
+    <!-- ======================================================== -->
+    <!-- ================= CSS STYLESHEET ======================= -->
+    <!-- ======================================================== -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&display=swap');
+        
+        :root {
+            --jet-orange: #FF4500;
+            --cardinal-red: #C41E3A;
+            --bg-base: #f1f5f9;
+            --text-base: #0f172a;
+            --glass-bg: rgba(255, 255, 255, 0.90);
+            --glass-border: rgba(0, 0, 0, 0.1);
+            --th-bg: rgba(0,0,0,0.05);
+            --td-border: rgba(0,0,0,0.05);
+            --bar-height: auto; /* Fluid Footer per Protocol */
+        }
+
+        html.dark {
+            --bg-base: #020202;
+            --text-base: #cbd5e1;
+            --glass-bg: rgba(15, 17, 20, 0.98);
+            --glass-border: rgba(255, 255, 255, 0.05);
+            --th-bg: rgba(255,255,255,0.03);
+            --td-border: rgba(255,255,255,0.05);
+        }
+
+        body { 
+            background: var(--bg-base); 
+            color: var(--text-base); 
+            font-family: 'Inter', sans-serif; 
+            font-size: 11px; 
+            margin: 0; 
+            padding: 30px; 
+            line-height: 1.5; 
+            background-image: radial-gradient(circle at top right, rgba(255, 69, 0, 0.05), transparent 40%),
+                              radial-gradient(circle at bottom left, rgba(196, 30, 58, 0.05), transparent 40%);
+            transition: background 0.3s, color 0.3s;
+        }
+        
+        /* Master Dev Protocol: 80% Width */
+        .main-wrapper {
+            width: 80%; 
+            margin: 0 auto;
+            max-width: 1850px;
+        }
+
+        .glass { 
+            background: var(--glass-bg); 
+            border: 2px solid var(--glass-border); 
+            border-radius: 8px; 
+            padding: 40px; 
+            position: relative; 
+            margin-bottom: 50px; 
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        /* Black Outlined Text */
+        .outlined-text { text-shadow: -1.5px -1.5px 0 #000, 1.5px -1.5px 0 #000, -1.5px 1.5px 0 #000, 1.5px 1.5px 0 #000; color: #fff; }
+
+        /* Persona Variables */
+        .f1-text { color: var(--jet-orange) !important; } 
+        .f2-text { color: var(--cardinal-red) !important; }
+        .f1-bg { background: var(--jet-orange) !important; } 
+        .f2-bg { background: var(--cardinal-red) !important; }
+        .f1-border { border-left: 10px solid var(--jet-orange) !important; } 
+        .f2-border { border-left: 10px solid var(--cardinal-red) !important; }
+        
+        /* Tables */
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; table-layout: auto; }
+        th { text-align: left; color: #64748b; font-size: 10px; text-transform: uppercase; border-bottom: 3px solid var(--glass-border); padding: 15px; background: var(--th-bg); letter-spacing: 1px; }
+        td { padding: 15px; border-bottom: 1px solid var(--td-border); word-wrap: break-word; vertical-align: top; }
+        tr:hover td { background: rgba(125,125,125,0.1); }
+        
+        .mono { font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+        .ts { position: absolute; top: 20px; right: 40px; font-size: 10px; color: #475569; font-family: 'JetBrains Mono', monospace; font-weight: 800; border: 1px solid #334155; padding: 4px 10px; border-radius: 4px; }
+        
+        h3 { font-size: 24px; font-weight: 900; letter-spacing: 3px; color: inherit; text-transform: uppercase; margin-bottom: 30px; display: flex; align-items: center; gap: 15px; }
+        h3::after { content: ''; flex-grow: 1; height: 2px; background: var(--glass-border); }
+
+        .critical-badge { background: #ef4444; color: white; padding: 5px 12px; border-radius: 4px; font-weight: 900; font-size: 11px; animation: pulse 2s infinite; display: inline-block; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        
+        /* KF Branding Footer */
+        .kf-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 50px; padding-top: 20px; border-top: 2px solid var(--glass-border); height: var(--bar-height); }
+        .kf-signature { font-size: 40px; font-weight: 900; position: relative; }
+        .k-letter { color: var(--jet-orange); display: inline-block; transform: scaleX(-1); z-index: 2; position: relative; }
+        .f-letter { color: #000000; margin-left: -0.22em; z-index: 1; position: relative; text-shadow: 0 0 2px rgba(255,255,255,0.5); }
+        html.dark .f-letter { color: #ffffff; text-shadow: 0 0 5px rgba(0,0,0,0.8); }
+    </style>
+</head>
+<body>
+
+<!-- ======================================================== -->
+<!-- ================= HTML STRUCTURE ======================= -->
+<!-- ======================================================== -->
+<div class="main-wrapper">
+    
+    <div class="flex justify-end mb-4 gap-4">
+        <button onclick="toggleTheme()" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded mono text-xs uppercase border border-white/20 transition-all font-bold">
+            Toggle Display Mode
+        </button>
+    </div>
+
+    <header class="flex flex-col xl:flex-row justify-between items-center bg-white/5 p-12 rounded-lg border-2 border-white/10 mb-12 shadow-2xl backdrop-blur-md">
+        <div class="flex flex-col md:flex-row gap-16 md:gap-32 w-full xl:w-auto">
+            <div class="text-center md:text-left flex-1">
+                <p class="text-sm uppercase text-slate-500 font-black mb-4 tracking-[0.2em]">FARM 01 TOTAL LIQUIDITY</p>
+                <p id="f1-money" class="text-7xl font-black f1-text tracking-tighter shadow-orange-900/20 drop-shadow-xl outlined-text">SYNCING...</p>
+                <p class="mono text-slate-400 mt-2 font-bold">ACCOUNT: WEREWOLF3788</p>
+            </div>
+            <div class="md:border-l-2 border-white/10 md:pl-32 text-center md:text-left flex-1">
+                <p class="text-sm uppercase text-slate-500 font-black mb-4 tracking-[0.2em]">FARM 02 TOTAL LIQUIDITY</p>
+                <p id="f2-money" class="text-7xl font-black f2-text tracking-tighter shadow-red-900/20 drop-shadow-xl outlined-text">SYNCING...</p>
+                <p class="mono text-slate-400 mt-2 font-bold">ACCOUNT: RAY</p>
+            </div>
+        </div>
+        <div class="mt-12 xl:mt-0 text-center xl:text-right border-t-2 xl:border-t-0 xl:border-l-2 border-white/10 pt-8 xl:pt-0 xl:pl-16">
+            <h1 class="text-5xl font-black italic uppercase tracking-tighter mb-2 outlined-text" style="color: white;">Strategic Operations</h1>
+            <p class="text-2xl font-bold text-slate-500 italic mb-4">Firebase Database Uplink</p>
+            <p id="sync-status" class="mono text-sm bg-white/10 px-4 py-2 rounded inline-block font-bold">UPLINK: WAITING FOR GOOGLE APPS SCRIPT...</p>
+            <div class="mt-4 rounded border border-white/10 overflow-hidden shadow-lg w-[200px] inline-block">
+                <!-- Using wsrv.nl image proxy to safely render HTTP images on HTTPS sites, with a fallback to AllOrigins -->
+                <img src="https://wsrv.nl/?url=http%3A%2F%2F207.244.243.68%3A8500%2Ffeed%2Fdedicated-server-stats-map.jpg%3Fcode%3DjeRZKn2jNdgJNqqs%26quality%3D60%26size%3D512" 
+                     onerror="this.onerror=null; this.src='https://api.allorigins.win/raw?url=http%3A%2F%2F207.244.243.68%3A8500%2Ffeed%2Fdedicated-server-stats-map.jpg%3Fcode%3DjeRZKn2jNdgJNqqs%26quality%3D60%26size%3D512';" 
+                     alt="Live Map" class="w-full h-auto opacity-70 hover:opacity-100 transition-opacity">
+            </div>
+        </div>
+    </header>
+
+    <main id="dynamic-dump-zone">
+        <!-- Firebase parsed data injected here -->
+    </main>
+
+    <footer class="kf-footer">
+        <div class="kf-signature">
+            <span class="k-letter">K</span><span class="f-letter">F</span>
+        </div>
+        <div class="text-right">
+            <p class="mono text-slate-500 uppercase text-xs font-bold tracking-widest">618 CREW | Strategic Command</p>
+            <p class="mono text-slate-600 text-[10px]">G-Tag Active | Precision Integration (GAS Firebase Protocol)</p>
+        </div>
+    </footer>
+
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
+
+<!-- ======================================================== -->
+<!-- ================= JAVASCRIPT LOGIC ===================== -->
+<!-- ======================================================== -->
+<script>
+    // --- AUTO NIGHT MODE LOGIC (Master Dev Protocol) ---
+    function applyAutoTheme() {
+        const hour = new Date().getHours();
+        const isNight = (hour >= 18 || hour < 6);
+        const savedTheme = localStorage.getItem('site_theme');
+        
+        if (savedTheme === 'light') document.documentElement.classList.remove('dark');
+        else if (savedTheme === 'dark') document.documentElement.classList.add('dark');
+        else if (isNight) document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+    }
+    applyAutoTheme();
+
+    function toggleTheme() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('site_theme', isDark ? 'dark' : 'light');
+    }
+
+    // --- FIREBASE UPLINK LOGIC ---
+    const firebaseConfig = { 
+        databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com" 
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function formatNumber(num) {
+        let n = parseFloat(num);
+        return isNaN(n) ? "0" : n.toLocaleString();
+    }
+
+    function getFarmClass(farmId) {
+        if (farmId === "1" || farmId === 1) return "f1-text font-black";
+        if (farmId === "2" || farmId === 2) return "f2-text font-black";
+        return "";
+    }
+
+    // Listen directly to the path your Google Apps Script pushes to
+    db.ref('fs25/live_stats/Strategic Ops').on('value', (snapshot) => {
+        const data = snapshot.val();
+        const statusEl = document.getElementById('sync-status');
+        const dumpZone = document.getElementById('dynamic-dump-zone');
+        
+        if (!data) {
+            statusEl.innerText = "UPLINK: AWAITING DATA FROM APPS SCRIPT...";
+            statusEl.style.color = "#FFD700";
+            return;
+        }
+
+        statusEl.innerText = `UPLINK: ONLINE [GAS SYNCED @ ${data.Sync || new Date().toLocaleTimeString()}]`;
+        statusEl.style.color = "#22c55e"; 
+        dumpZone.innerHTML = "";
+
+        // 1. UPDATE LIQUIDITY
+        if (data.Server && data.Server.money) {
+            const m1 = data.Server.money.farm_1 || 0;
+            const m2 = data.Server.money.farm_2 || 0;
+            document.getElementById('f1-money').innerText = `$${formatNumber(m1)}`;
+            document.getElementById('f2-money').innerText = `$${formatNumber(m2)}`;
+        }
+
+        // 2. BUILD FLEET TABLE (Consuming your Apps Script payload)
+        if (data.Fleet && Array.isArray(data.Fleet)) {
+            let fleetHtml = `<div class="glass border-l-4 border-white/20"><span class="ts">FLEET TRACKER</span><h3>Asset Telemetry & Diagnostics</h3><table><thead><tr><th>Unit Identity</th><th>Farm Assignment</th><th>Fuel Level</th><th>Wear / Damage</th><th>Payload Status</th><th>Attached Implements</th></tr></thead><tbody>`;
+            
+            data.Fleet.forEach(veh => {
+                if (veh.farmId === "0") return; // Skip NPCs
+
+                const farmId = String(veh.farmId);
+                const cssClass = getFarmClass(farmId);
+                const ownerLabel = farmId === "1" ? "WEREWOLF" : (farmId === "2" ? "RAY" : `FARM ${farmId}`);
+
+                // Visual Formatting
+                let wearVal = parseFloat(veh.wear);
+                let wearHtml = `<span class="text-green-500 font-bold opacity-50">Pristine</span>`;
+                if (!isNaN(wearVal)) {
+                    if (wearVal > 10.0) wearHtml = `<span class="critical-badge">${wearVal.toFixed(1)}% DMG</span>`;
+                    else if (wearVal > 0.0) wearHtml = `<span class="text-orange-400">${wearVal.toFixed(1)}% Wear</span>`;
+                }
+
+                let haulingHtml = veh.hauling === "EMPTY" || !veh.hauling ? `<span class="opacity-50">Empty</span>` : `<span class="text-blue-400 font-bold">${veh.hauling}</span>`;
+                
+                let attachHtml = `<span class="opacity-30">None</span>`;
+                if (veh.attachmentCount && parseInt(veh.attachmentCount) > 0) {
+                    attachHtml = `<span class="text-yellow-400 font-bold uppercase">${veh.attachmentCount} Mounted</span>`;
+                }
+
+                let fuelHtml = `<span class="mono">${veh.fuel}%</span>`;
+                if (parseFloat(veh.fuel) < 15) fuelHtml = `<span class="text-red-500 font-bold mono animate-pulse">${veh.fuel}% (LOW)</span>`;
+
+                fleetHtml += `<tr class="${cssClass}">
+                    <td><span class="font-bold text-md">${veh.type}</span></td>
+                    <td><span class="${farmId==="1"?'f1-bg':(farmId==="2"?'f2-bg':'bg-slate-700')} text-black px-2 py-1 rounded font-black text-[10px]">${ownerLabel}</span></td>
+                    <td>${fuelHtml}</td>
+                    <td>${wearHtml}</td>
+                    <td>${haulingHtml}</td>
+                    <td>${attachHtml}</td>
+                </tr>`;
+            });
+            fleetHtml += `</tbody></table></div>`;
+            dumpZone.insertAdjacentHTML('beforeend', fleetHtml);
+        }
+    });
+</script>
+</body>
+</html>
