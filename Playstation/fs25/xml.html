@@ -3,147 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>618 ADMIN | TOTAL RECON UPLINK</title>
+    <title>618 ADMIN | TOTAL RECON UPLINK v2.2</title>
     <style>
-        /* --- CSS: AGRI-TECH GLOSS PROTOCOL --- */
-        :root {
-            --jet-orange: #FF4500;
-            --solid-black: #000000;
-            --livid-blue: #00D2FF;
-            --bg-base: #0d120d; 
-            --card-gradient: linear-gradient(145deg, #182018, #111611);
-            --card-border: #232b23;
-            --text-main: #e8eee8;
-        }
-
-        body {
-            margin: 0;
-            background-color: var(--bg-base);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 40px 20px;
-            background-image: radial-gradient(circle at top left, rgba(255, 69, 0, 0.05), transparent 50%);
-        }
-
+        :root { --jet-orange: #FF4500; --solid-black: #000000; --livid-blue: #00D2FF; --bg-base: #0d120d; --card-gradient: linear-gradient(145deg, #182018, #111611); --text-main: #e8eee8; }
+        body { margin: 0; background-color: var(--bg-base); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px 20px; }
         .main-container { max-width: 1000px; margin: 0 auto; }
-
-        .outlined-text {
-            text-shadow: -1.5px -1.5px 0 var(--solid-black), 1.5px -1.5px 0 var(--solid-black),
-                         -1.5px 1.5px 0 var(--solid-black), 1.5px 1.5px 0 var(--solid-black);
-            color: #fff;
-        }
-
-        header { border-bottom: 3px solid var(--jet-orange); padding-bottom: 20px; margin-bottom: 30px; }
-        
-        .override-panel {
-            background: var(--card-gradient);
-            border: 1px solid var(--card-border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
-            border-radius: 12px;
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 25px;
-        }
-
-        .input-group { display: flex; flex-direction: column; gap: 10px; }
-        
-        select, textarea {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid var(--card-border);
-            color: var(--text-main);
-            padding: 15px;
-            border-radius: 6px;
-            font-family: monospace;
-            font-size: 15px;
-            outline: none;
-        }
-
-        select { color: var(--jet-orange); font-weight: bold; cursor: pointer; border-left: 4px solid var(--jet-orange); }
-        select option { background: var(--solid-black); color: #fff; }
-        
-        textarea { height: 350px; resize: vertical; border-left: 4px solid var(--livid-blue); white-space: pre; }
-        textarea:focus { border-color: var(--livid-blue); }
-
-        .action-btn {
-            background: var(--jet-orange);
-            color: #fff;
-            border: 2px solid var(--solid-black);
-            padding: 15px 30px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 900;
-            font-size: 18px;
-            letter-spacing: 1px;
-            align-self: flex-start;
-            transition: all 0.2s ease;
-        }
-
-        .action-btn:hover { background: #fff; color: var(--jet-orange); transform: translateY(-2px); }
-
-        #upload-status {
-            margin-top: 10px;
-            font-weight: bold;
-            padding: 20px;
-            border-radius: 6px;
-            background: #000;
-            border: 1px solid #333;
-            font-family: monospace;
-            white-space: pre-wrap;
-            color: var(--livid-blue);
-        }
-        
-        .footer-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 40px; }
-        .kf-signature { font-size: 36px; font-weight: 900; }
-        .k-letter { color: var(--jet-orange); display: inline-block; transform: scaleX(-1); }
-        .f-letter { color: var(--solid-black); margin-left: -0.22em; }
+        .override-panel { background: var(--card-gradient); border-radius: 12px; padding: 30px; display: flex; flex-direction: column; gap: 20px; border: 1px solid #333; }
+        textarea { background: rgba(0,0,0,0.5); border: 1px solid #333; color: var(--livid-blue); padding: 15px; border-radius: 6px; font-family: monospace; height: 400px; }
+        .action-btn { background: var(--jet-orange); color: white; padding: 15px; border: none; cursor: pointer; font-weight: bold; border-radius: 6px; }
     </style>
 </head>
 <body>
     <div class="main-container">
-        <header>
-            <h1 class="outlined-text" style="font-size: 2.5rem; margin:0;">MANUAL G-PORTAL UPLINK</h1>
-            <p style="color: #aaa; font-size: 1.1rem;">Bypass Web API Limits. Paste raw XML contents directly from G-Portal File Manager.</p>
-        </header>
-
+        <h1>MANUAL G-PORTAL UPLINK v2.2</h1>
         <section class="override-panel">
-            <div class="input-group">
-                <label class="outlined-text">1. SELECT XML SOURCE FILE</label>
-                <select id="xml-file-type">
-                    <option value="farms">farms.xml (Farm 1 & 2 Liquidity)</option>
-                    <option value="vehicles">vehicles.xml (Fleet, Fuel, Wear, Cargo & Attachments)</option>
-                    <option value="placeables">placeables.xml (Factories & Production Status)</option>
-                    <option value="missions">missions.xml (Active/Available Contracts)</option>
-                    <option value="animals">animals.xml (Livestock Health & Counts)</option>
-                    <option value="economy">economy.xml (Market Prices)</option>
-                    <option value="farmland">farmland.xml (Parcel Ownership)</option>
-                    <option value="careerSavegame">careerSavegame.xml (Server Settings & Field Prep)</option>
-                    <option value="precisionFarming">precisionFarming.xml (Deep Soil Data)</option>
-                    <option value="collectibles">collectibles.xml (Found Hidden Items)</option>
-                </select>
-            </div>
-            
-            <div class="input-group">
-                <label class="outlined-text">2. PASTE RAW XML CODE</label>
-                <textarea id="manual-xml-input" placeholder="Paste the entire contents of the selected file here (starting with <?xml version='1.0'...>)"></textarea>
-            </div>
-            
-            <button class="action-btn" onclick="handleManualXMLUpload()">EXECUTE FULL PARSE</button>
-            <div id="upload-status">SYSTEM READY. AWAITING DATA INPUT.</div>
+            <label>TARGET DATASET (Full Directory Coverage):</label>
+            <select id="xml-file-type">
+                <!-- Core Save Files -->
+                <option value="vehicles">vehicles.xml</option>
+                <option value="economy">economy.xml</option>
+                <option value="careerSavegame">careerSavegame.xml</option>
+                <option value="farms">farms.xml</option>
+                <option value="placeables">placeables.xml</option>
+                <option value="missions">missions.xml</option>
+                <option value="animals">animals.xml</option>
+                <option value="farmland">farmland.xml</option>
+                <option value="precisionFarming">precisionFarming.xml</option>
+                <option value="collectibles">collectibles.xml</option>
+                <!-- Additional Files identified from Directory -->
+                <option value="cultivator">cultivator.xml</option>
+                <option value="items">items.xml</option>
+                <option value="pedestrians">pedestrians.xml</option>
+                <option value="silo">silo.xml</option>
+                <option value="trafficSystem">trafficSystem.xml</option>
+                <option value="vehicleTypes">vehicleTypes.xml</option>
+            </select>
+            <textarea id="manual-xml-input" placeholder="Paste raw XML here..."></textarea>
+            <button class="action-btn" onclick="executeAdvancedSync()">EXECUTE DEEP SYNC</button>
+            <div id="upload-status">READY</div>
         </section>
-
-        <footer class="footer-bar">
-            <div class="kf-signature">
-                <span class="k-letter">K</span><span class="f-letter">F</span>
-            </div>
-            <div class="outlined-text">618 CREW | STRATEGIC COMMAND</div>
-        </footer>
     </div>
 
-    <!-- FIREBASE SDKS -->
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
-    
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
@@ -157,254 +59,52 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        function updateConsole(msg, color) {
-            const el = document.getElementById('upload-status');
-            el.innerText = msg;
-            el.style.color = color;
-        }
-
-        function handleManualXMLUpload() {
-            const xmlInput = document.getElementById('manual-xml-input').value.trim();
-            const fileType = document.getElementById('xml-file-type').value;
-
-            if (!xmlInput) {
-                updateConsole("ERROR: No XML data provided. Please paste the raw code from G-Portal.", "#FF4500");
-                return;
-            }
-
-            try {
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlInput, "text/xml");
-
-                if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
-                    updateConsole("ERROR: Invalid XML format detected. Ensure you copied the entire file.", "#FF4500");
-                    return;
-                }
-
-                updateConsole(`Extracting deep data from ${fileType}.xml...`, "#00D2FF");
-                
-                let targetPath = 'fs25/live_stats/Strategic Ops';
-                let payload = {};
-
-                // --- ROUTING ENGINE ---
-                switch (fileType) {
-                    case 'farms':
-                        payload = { Server: { money: parseFarms(xmlDoc) } };
-                        break;
-                    case 'vehicles':
-                        payload = { Fleet: parseVehicles(xmlDoc) };
-                        break;
-                    case 'placeables':
-                        payload = { Production: parsePlaceables(xmlDoc) };
-                        break;
-                    case 'missions':
-                        payload = { Contracts: parseMissions(xmlDoc) };
-                        break;
-                    case 'animals':
-                        payload = { "Herd Intel": parseAnimals(xmlDoc) };
-                        break;
-                    case 'economy':
-                        payload = { EconomyMarket: parseEconomy(xmlDoc) };
-                        break;
-                    case 'farmland':
-                        payload = { ParcelOwnership: parseFarmland(xmlDoc) };
-                        break;
-                    case 'careerSavegame':
-                        payload = { Agronomy: parseCareerSavegame(xmlDoc) };
-                        break;
-                    case 'precisionFarming':
-                        payload = { PrecisionSoil: parsePrecisionFarming(xmlDoc) };
-                        break;
-                    case 'collectibles':
-                        payload = { Collectibles: parseCollectibles(xmlDoc) };
-                        break;
-                    default:
-                        updateConsole("ERROR: Unknown file type.", "#FF4500");
-                        return;
-                }
-
-                // Add Timestamp
-                payload.Sync = new Date().toISOString();
-
-                // Patch Firebase to preserve other data
-                db.ref(targetPath).update(payload)
-                    .then(() => {
-                        updateConsole(`✅ SUCCESS: ${fileType.toUpperCase()} parsed and synced to Firebase.\nYour dashboard will update immediately.`, "#00FF00");
-                        document.getElementById('manual-xml-input').value = ""; // Clear box on success
-                    })
-                    .catch(e => updateConsole("FIREBASE UPLINK ERROR: " + e.message, "#FF4500"));
-
-            } catch (e) {
-                updateConsole(`CRITICAL SCRIPT ERROR: ${e.message}`, "#FF4500");
-            }
-        }
-
-        // ==========================================
-        // XML SPECIFIC EXTRACTION HUNTERS
-        // ==========================================
-
-        function parseFarms(xmlDoc) {
-            const farms = xmlDoc.querySelectorAll("farm");
-            let balances = { farm_1: 0, farm_2: 0 };
-            farms.forEach(f => {
-                const id = f.getAttribute("farmId");
-                const money = parseFloat(f.getAttribute("money") || "0");
-                if (id) balances[`farm_${id}`] = Math.round(money);
-            });
-            return balances;
-        }
-
-        function parseVehicles(xmlDoc) {
-            const vehicles = xmlDoc.querySelectorAll("vehicle");
-            let fleet = [];
-            vehicles.forEach(v => {
-                const filename = v.getAttribute("filename");
-                if(!filename) return;
-
-                const type = filename.split('/').pop().replace('.xml', '').toUpperCase();
-                const farmId = v.getAttribute("farmId") || "0";
-                const fuel = parseFloat(v.getAttribute("fuelLevel") || 100).toFixed(0);
-                const wear = (parseFloat(v.getAttribute("wear") || 0) * 100).toFixed(1) + "%";
-                
-                let hauling = "EMPTY";
-                const fillUnits = v.querySelectorAll("fillUnit");
-                fillUnits.forEach(fu => {
-                    const fillType = fu.getAttribute("fillType");
-                    const fillLevel = fu.getAttribute("fillLevel");
-                    if (fillType && fillLevel && parseFloat(fillLevel) > 0) {
-                        hauling = `${Math.round(parseFloat(fillLevel))}L ${fillType.toUpperCase()}`;
+        function xmlToJson(node) {
+            let obj = {};
+            if (node.nodeType === 1) {
+                if (node.attributes.length > 0) {
+                    for (let j = 0; j < node.attributes.length; j++) {
+                        let attribute = node.attributes.item(j);
+                        obj["@" + attribute.nodeName] = attribute.nodeValue;
                     }
-                });
-
-                const attachments = v.querySelectorAll("attachedImplement");
-
-                fleet.push({ type, farmId, fuel, wear, hauling, attachmentCount: attachments.length });
-            });
-            return fleet;
-        }
-
-        function parsePlaceables(xmlDoc) {
-            const productionPoints = xmlDoc.querySelectorAll("productionPoint");
-            let prodData = [];
-            productionPoints.forEach(p => {
-                const name = p.getAttribute("productionPointName") || "Facility";
-                const active = p.getAttribute("isActive") === "true";
-                prodData.push({ name: name.toUpperCase(), active: active, alerts: active ? "NORMAL" : "HALTED" });
-            });
-            return prodData;
-        }
-
-        function parseMissions(xmlDoc) {
-            const missions = xmlDoc.querySelectorAll("mission");
-            let contractData = [];
-            missions.forEach(m => {
-                const type = m.getAttribute("type") || "Work";
-                const fieldId = m.getAttribute("fieldId") || "N/A";
-                const reward = parseInt(m.getAttribute("reward") || "0");
-                const statusStr = m.getAttribute("status"); // 0=Available, 1=Active
-                const fruit = m.getAttribute("fruitType") || "";
-
-                if (statusStr === "0" || statusStr === "1") {
-                    contractData.push({
-                        description: `${type.toUpperCase()} ${fruit.toUpperCase()} ON FIELD ${fieldId}`,
-                        reward: `$${reward.toLocaleString()}`,
-                        status: statusStr === "1" ? "ACTIVE" : "OPEN",
-                        field: fieldId
-                    });
                 }
-            });
-            return contractData;
-        }
-
-        function parseAnimals(xmlDoc) {
-            const animals = xmlDoc.querySelectorAll("animal");
-            let herd = { cows: { head: 0, health: 0 }, pigs: { head: 0, health: 0 } };
-            let cowHealthSum = 0, pigHealthSum = 0;
-
-            animals.forEach(a => {
-                const type = a.getAttribute("type");
-                const health = parseFloat(a.getAttribute("health") || "0");
-                
-                if (type === "COW") { herd.cows.head++; cowHealthSum += health; }
-                else if (type === "PIG") { herd.pigs.head++; pigHealthSum += health; }
-            });
-
-            if(herd.cows.head > 0) herd.cows.health = Math.round(cowHealthSum / herd.cows.head);
-            if(herd.pigs.head > 0) herd.pigs.health = Math.round(pigHealthSum / herd.pigs.head);
-            return herd;
-        }
-
-        function parseCareerSavegame(xmlDoc) {
-            const fields = xmlDoc.querySelectorAll("fieldData");
-            let agronomyData = [];
-            fields.forEach(f => {
-                const id = f.getAttribute("fieldId");
-                const fruit = (f.getAttribute("fruitType") || "FALLOW").toUpperCase();
-                const state = parseInt(f.getAttribute("growthState") || "0");
-                const nitro = parseFloat(f.getAttribute("nitrogenLevel") || "0").toFixed(1);
-                
-                let status = "PREP";
-                if (state > 0) status = "GROWING";
-                if (state >= 6) status = "READY";
-
-                agronomyData.push({ id, crop: fruit, status, nitrogen: `${nitro} kg/ha` });
-            });
-            return agronomyData;
-        }
-
-        function parseFarmland(xmlDoc) {
-            const lands = xmlDoc.querySelectorAll("farmland");
-            let ownership = [];
-            lands.forEach(l => {
-                const id = l.getAttribute("id");
-                const farmId = l.getAttribute("farmId");
-                if (farmId && farmId !== "0") {
-                    ownership.push({ parcelId: id, ownerId: farmId });
-                }
-            });
-            return ownership;
-        }
-
-        function parseEconomy(xmlDoc) {
-            const items = xmlDoc.querySelectorAll("item");
-            let market = [];
-            items.forEach(i => {
-                const type = i.getAttribute("type");
-                const price = parseFloat(i.getAttribute("price") || "0");
-                if (type && price > 0) {
-                    market.push({ item: type.toUpperCase(), price: price.toFixed(2) });
-                }
-            });
-            return market;
-        }
-
-        function parsePrecisionFarming(xmlDoc) {
-            return { parsed: true, timestamp: new Date().toISOString(), note: "Soil Map Updated" };
-        }
-
-        function parseCollectibles(xmlDoc) {
-            const collectibles = xmlDoc.querySelectorAll("collectible");
-            let foundCount = 0;
-            let totalCount = 0;
-            
-            // Checking standard formats for FS hidden objects
-            const collectedStrNode = xmlDoc.querySelector("collected");
-            if (collectedStrNode) {
-                 const str = collectedStrNode.textContent || "";
-                 totalCount = str.length;
-                 foundCount = (str.match(/1/g) || []).length;
-            } else if (collectibles.length > 0) {
-                 totalCount = collectibles.length;
-                 collectibles.forEach(c => {
-                     if (c.getAttribute("isFound") === "true" || c.getAttribute("isFound") === "1") foundCount++;
-                 });
+            } else if (node.nodeType === 3) {
+                obj = node.nodeValue;
             }
+            if (node.hasChildNodes()) {
+                for (let i = 0; i < node.childNodes.length; i++) {
+                    let item = node.childNodes.item(i);
+                    let nodeName = item.nodeName;
+                    if (typeof (obj[nodeName]) === "undefined") {
+                        obj[nodeName] = xmlToJson(item);
+                    } else {
+                        if (typeof (obj[nodeName].push) === "undefined") {
+                            let old = obj[nodeName];
+                            obj[nodeName] = [];
+                            obj[nodeName].push(old);
+                        }
+                        obj[nodeName].push(xmlToJson(item));
+                    }
+                }
+            }
+            return obj;
+        }
 
-            return {
-                found: foundCount,
-                total: totalCount > 0 ? totalCount : "Unknown",
-                status: foundCount > 0 ? "SEARCH ACTIVE" : "NO INTEL"
-            };
+        async function executeAdvancedSync() {
+            const xmlInput = document.getElementById('manual-xml-input').value;
+            const fileType = document.getElementById('xml-file-type').value;
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlInput, "text/xml");
+            
+            const jsonData = xmlToJson(xmlDoc.documentElement);
+            
+            const path = `fs25/live_stats/Strategic Ops/${fileType}`;
+            try {
+                await db.ref(path).set(jsonData);
+                document.getElementById('upload-status').innerText = "✅ SYNCED: " + fileType;
+            } catch (e) {
+                document.getElementById('upload-status').innerText = "❌ ERROR: " + e.message;
+            }
         }
     </script>
 </body>
