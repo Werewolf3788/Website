@@ -1,10 +1,9 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
-# Project: PSN Sync (G-Portal data moved to client-side fetch)
-# Timestamp: May 23, 2026, 01:00 AM (NYT)
-# Note: DO NOT STRIP.
+# Project: Unified PSN & G-Portal Sync
+# Timestamp: May 23, 2026, 01:30 AM (NYT)
 # ------------------------------------
 
-name: PSN Sync and Deploy
+name: Unified Sync and Deploy
 
 on:
   push:
@@ -20,7 +19,7 @@ permissions:
   id-token: write
 
 jobs:
-  psn-sync-job:
+  sync-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -34,22 +33,32 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm install psn-api
+        run: npm install psn-api xml2js
 
+      # PSN Sync
       - name: Run PSN Sync Script
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
         run: node Playstation/psnscript.js
 
-      - name: Commit and Push PSN Data
+      # G-Portal Sync
+      - name: Download Config and Save Files
+        run: |
+          sudo apt-get update && sudo apt-get install -y lftp
+          lftp -c "set ftp:ssl-allow no; set net:timeout 10; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}; get /gameserver.xml -o ./Playstation/fs25/gameserver.xml; mirror --include-glob 'savegame3/.*\\.xml' /savegame3/ ./Playstation/fs25/savegame3/"
+
+      - name: Run G-Portal Parser
+        run: node Playstation/fs25/sync_data.js
+
+      - name: Commit and Push All Data
         run: |
           git config --global user.name "Werewolf3788-Bot"
           git config --global user.email "bot@werewolf.ourflora.com"
-          git add Playstation/psn_data.json Playstation/tokens.json .nojekyll
+          git add Playstation/psn_data.json Playstation/tokens.json Playstation/fs25/server_data.json .nojekyll
           
           if ! git diff --cached --quiet; then
-            git commit -m "Automated PSN Sync: $(date)"
+            git commit -m "Automated Sync: PSN & G-Portal $(date)"
             git pull --rebase origin main
             git push origin main
           fi
