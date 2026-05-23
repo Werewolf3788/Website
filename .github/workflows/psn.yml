@@ -1,7 +1,8 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
-# Project: Combined Sync Workflow (PSN + G-Portal)
-# Target: Playstation/fs25/server_data.json
-# Timestamp: May 23, 2026, 12:20 AM (NYT)
+# Project: Unified PSN & G-Portal Sync
+# Timestamp: May 23, 2026, 12:45 AM (NYT)
+# Compatibility: GitHub Actions (Free Tier), GitHub Pages
+# Note: DO NOT STRIP INDENTATION. YAML REQUIRES 2-SPACE SPACING.
 # ------------------------------------
 
 name: Unified Sync and Deploy
@@ -44,18 +45,13 @@ jobs:
         run: node Playstation/psnscript.js
 
       # STEP 2: G-PORTAL SYNC
-      - name: Download XMLs via FTP
-        uses: kevin-schoen/ftp-action@v1
-        with:
-          host: ${{ secrets.FTP_HOST }}
-          user: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASS }}
-          download: true
-          src: '/gameserver.xml'
-          dest: './Playstation/fs25/' # Saved directly to target folder
+      - name: Download XMLs via lftp
+        run: |
+          sudo apt-get update && sudo apt-get install -y lftp
+          lftp -c "set ftp:ssl-allow no; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}; get /gameserver.xml -o ./Playstation/fs25/gameserver.xml"
 
       - name: Run G-Portal Parser
-        run: node sync_data.js # Ensure this script writes to ./Playstation/fs25/server_data.json
+        run: node sync_data.js
 
       # STEP 3: COMMIT EVERYTHING
       - name: Commit and Push All Data
@@ -68,9 +64,18 @@ jobs:
             git commit -m "Automated Sync: PSN & G-Portal $(date)"
             git pull --rebase origin main
             git push origin main
+          else
+            echo "No data changes detected. Skipping commit."
           fi
 
-      - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          artifact_name: github-pages-artifact
+          path: '.'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
