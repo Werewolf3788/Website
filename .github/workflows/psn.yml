@@ -1,6 +1,6 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
 # Project: Unified PSN & G-Portal Sync
-# Timestamp: May 23, 2026, 12:45 AM (NYT)
+# Timestamp: May 23, 2026, 00:45 AM (NYT)
 # Compatibility: GitHub Actions (Free Tier), GitHub Pages
 # Note: DO NOT STRIP INDENTATION. YAML REQUIRES 2-SPACE SPACING.
 # ------------------------------------
@@ -44,11 +44,11 @@ jobs:
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
         run: node Playstation/psnscript.js
 
-      # STEP 2: G-PORTAL SYNC
-      - name: Download XMLs via lftp
+      # STEP 2: G-PORTAL SYNC (Mirroring all savegame folders)
+      - name: Download All Save Games via lftp
         run: |
           sudo apt-get update && sudo apt-get install -y lftp
-          lftp -c "set ftp:ssl-allow no; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}; get /gameserver.xml -o ./Playstation/fs25/gameserver.xml"
+          lftp -c "set ftp:ssl-allow no; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}; mirror --only-newer --include-glob 'savegame*/' / ./Playstation/fs25/"
 
       - name: Run G-Portal Parser
         run: node sync_data.js
@@ -65,7 +65,7 @@ jobs:
             git pull --rebase origin main
             git push origin main
           else
-            echo "No data changes detected. Skipping commit."
+            echo "No changes detected. Skipping commit."
           fi
 
       - name: Setup Pages
