@@ -1,8 +1,6 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
 # Project: Unified PSN & G-Portal Sync
-# Timestamp: May 23, 2026, 01:15 AM (NYT)
-# Compatibility: GitHub Actions (Free Tier), GitHub Pages
-# Note: DO NOT STRIP INDENTATION.
+# Timestamp: May 23, 2026, 01:45 AM (NYT)
 # ------------------------------------
 
 name: Unified Sync and Deploy
@@ -37,24 +35,20 @@ jobs:
       - name: Install Dependencies
         run: npm install psn-api xml2js
 
-      # STEP 1: PSN SYNC
       - name: Run PSN Sync Script
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
         run: node Playstation/psnscript.js
 
-      # STEP 2: G-PORTAL SYNC
-      - name: Download All Save Games via lftp
+      - name: Download Config and Save Files
         run: |
           sudo apt-get update && sudo apt-get install -y lftp
-          # Using mirror without NLST dependency, forcing it to look into savegame folders
-          lftp -c "set ftp:ssl-allow no; set net:timeout 10; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}; cd /; mirror --verbose=3 --parallel=2 --include-glob 'savegame*/.*\\.xml' ./ ./Playstation/fs25/"
+          lftp -c "set ftp:ssl-allow no; set net:timeout 10; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}; get /gameserver.xml -o ./Playstation/fs25/gameserver.xml; mirror --include-glob 'savegame3/.*\\.xml' /savegame3/ ./Playstation/fs25/savegame3/"
 
       - name: Run G-Portal Parser
         run: node Playstation/fs25/sync_data.js
 
-      # STEP 3: COMMIT EVERYTHING
       - name: Commit and Push All Data
         run: |
           git config --global user.name "Werewolf3788-Bot"
