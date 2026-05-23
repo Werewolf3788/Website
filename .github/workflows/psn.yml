@@ -1,6 +1,7 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
 # Project: Combined Sync Workflow (PSN + G-Portal)
-# Note: Single-job execution to optimize free-tier minutes.
+# Target: Playstation/fs25/server_data.json
+# Timestamp: May 23, 2026, 12:20 AM (NYT)
 # ------------------------------------
 
 name: Unified Sync and Deploy
@@ -11,7 +12,7 @@ on:
       - main
   workflow_dispatch:
   schedule:
-    - cron: '*/23 * * * *' # Optimized 23-min cadence
+    - cron: '*/23 * * * *'
 
 permissions:
   contents: write
@@ -51,34 +52,25 @@ jobs:
           password: ${{ secrets.FTP_PASS }}
           download: true
           src: '/gameserver.xml'
-          dest: './data/'
+          dest: './Playstation/fs25/' # Saved directly to target folder
 
       - name: Run G-Portal Parser
-        run: node sync_data.js # Ensure this script points to ./data/gameserver.xml
+        run: node sync_data.js # Ensure this script writes to ./Playstation/fs25/server_data.json
 
-      # STEP 3: COMMIT EVERYTHING AT ONCE
+      # STEP 3: COMMIT EVERYTHING
       - name: Commit and Push All Data
         run: |
           git config --global user.name "Werewolf3788-Bot"
           git config --global user.email "bot@werewolf.ourflora.com"
-          git add Playstation/psn_data.json Playstation/tokens.json server_data.json .nojekyll
+          git add Playstation/psn_data.json Playstation/tokens.json Playstation/fs25/server_data.json .nojekyll
           
           if ! git diff --cached --quiet; then
             git commit -m "Automated Sync: PSN & G-Portal $(date)"
             git pull --rebase origin main
             git push origin main
-          else
-            echo "No changes detected. Skipping commit."
           fi
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
-      - name: Upload Artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: '.'
-
       - name: Deploy to GitHub Pages
-        id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-artifact
