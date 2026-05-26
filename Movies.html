@@ -1,9 +1,9 @@
 <!-- 
- * NYT Timestamp: Tuesday, May 26, 2026 at 3:19 AM EDT
- * PROJECT: WEREWOLF CINEMA LIBRARY (v36.00 - Dynamic Badging & TV Series Tracker)
+ * NYT Timestamp: Tuesday, May 26, 2026 at 4:03 AM EDT
+ * PROJECT: WEREWOLF CINEMA LIBRARY (v37.00 - Column T Holiday Overrides)
  * MASTER DEV PROTOCOL APPLIED:
  * - NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
- * - Source data: Google Sheets CSV (Columns A-S Mapping).
+ * - Source data: Google Sheets CSV (Columns A-T Mapping).
  * - 85% WIDTH: Fluid container centered for all screens.
  * - MOBILE OPTIMIZATION: Forced 2-column poster grid for side-by-side view.
  * - FIXED SORTING: "Oldest Added" and "Recently Added" strictly mapped to Column J (MM/DD/YYYY) with csvIndex fallback.
@@ -494,6 +494,33 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     }
 
     function detectHoliday(m) {
+        // High-Priority Override: Column T direct label matching
+        if (m.holidayTag) {
+            const tag = m.holidayTag.trim().toLowerCase();
+            if (/\b(christmas|xmas)\b/i.test(tag)) {
+                return { emoji: '🎄', name: 'Christmas', color: '#15803d', border: '#22c55e' };
+            }
+            if (/\b(halloween|spooky)\b/i.test(tag)) {
+                return { emoji: '🎃', name: 'Halloween', color: '#ea580c', border: '#f97316' };
+            }
+            if (/\bthanksgiving\b/i.test(tag)) {
+                return { emoji: '🦃', name: 'Thanksgiving', color: '#b45309', border: '#f59e0b' };
+            }
+            if (/\b(independence\s+day|4th\s+of\s+july|fourth\s+of\s+july|july\s+4)\b/i.test(tag)) {
+                return { emoji: '🎆', name: '4th of July', color: '#1d4ed8', border: '#3b82f6' };
+            }
+            if (/\b(valentine|valentines\s+day|cupid)\b/i.test(tag)) {
+                return { emoji: '💝', name: 'Valentine\'s', color: '#be185d', border: '#ec4899' };
+            }
+            if (/\b(st\s*.\s*patrick|leprechaun|shamrock|irish)\b/i.test(tag)) {
+                return { emoji: '🍀', name: 'St. Patrick\'s', color: '#047857', border: '#10b981' };
+            }
+            if (/\beaster\b/i.test(tag)) {
+                return { emoji: '🐰', name: 'Easter', color: '#a21caf', border: '#d946ef' };
+            }
+        }
+
+        // Secondary Fallback: Precise Regex text matches
         const textToSearch = [
             m.title,
             m.description,
@@ -501,27 +528,27 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             m.collection
         ].join(' ').toLowerCase();
 
-        // Christmas / Holiday Classics (Strictly Christmas terms - removed generic "winter", "holiday", "elves", "snowy", "december")
+        // Christmas / Holiday Classics (Strictly Christmas terms)
         if (/\b(christmas|xmas|santa\s+claus|santa|grinch|scrooge|mistletoe|north\s+pole|advent|nativity)\b/i.test(textToSearch)) {
             return { emoji: '🎄', name: 'Christmas', color: '#15803d', border: '#22c55e' };
         }
-        // Halloween / Spooky Films (Strictly Halloween terms - removed generic "scary", "horror", "fright", "witch", "ghost", "vampire")
+        // Halloween / Spooky Films (Strictly Halloween terms)
         else if (/\b(halloween|michael\s+myers|hocus\s+pocus|trick\s+or\s+treat|jack-o-lantern|samhain)\b/i.test(textToSearch)) {
             return { emoji: '🎃', name: 'Halloween', color: '#ea580c', border: '#f97316' };
         }
-        // Thanksgiving (Strictly Thanksgiving terms - removed generic "november")
+        // Thanksgiving (Strictly Thanksgiving terms)
         else if (/\b(thanksgiving|thanksgiving\s+day|pilgrim|gobble)\b/i.test(textToSearch)) {
             return { emoji: '🦃', name: 'Thanksgiving', color: '#b45309', border: '#f59e0b' };
         }
-        // 4th of July / Independence Day (Strictly Independence Day terms - removed generic "firework")
+        // 4th of July / Independence Day (Strictly Independence Day terms)
         else if (/\b(independence\s+day|4th\s+of\s+july|fourth\s+of\s+july)\b/i.test(textToSearch)) {
             return { emoji: '🎆', name: '4th of July', color: '#1d4ed8', border: '#3b82f6' };
         }
-        // Valentine's Day (Strictly Valentine's terms - removed generic "love", "romance", "romantic")
+        // Valentine's Day (Strictly Valentine's terms)
         else if (/\b(valentine|valentines\s+day|cupid)\b/i.test(textToSearch)) {
             return { emoji: '💝', name: 'Valentine\'s', color: '#be185d', border: '#ec4899' };
         }
-        // St. Patrick's Day (Strictly St. Patrick's terms - removed generic "irish")
+        // St. Patrick's Day (Strictly St. Patrick's terms)
         else if (/\b(st\s*.\s*patrick|leprechaun|shamrock)\b/i.test(textToSearch)) {
             return { emoji: '🍀', name: 'St. Patrick\'s', color: '#047857', border: '#10b981' };
         }
@@ -666,7 +693,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         }
     }
 
-    // --- STREAMING_CHUNK: Restructuring spreadsheet rows parser... ---
     function parseCSV(data) {
         let newHash = hashString(data);
         if (currentDataHash === newHash) return; 
@@ -703,6 +729,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 cast: v[11] ? v[11].split(',').map(s=>s.trim()).filter(Boolean) : [],
                 edition: v[12]||'', collection: v[13]||'', genre: v[14]||'', runtime: v[15]||'',
                 type: v[16]||'', streaming: v[17]||'', description: v[18]||'',
+                holidayTag: v[19]||'', // Column T: Explicit Holiday Override Tag
                 timestamp: getSafeTimestamp(v[9]),
                 csvIndex: index
             };
