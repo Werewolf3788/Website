@@ -294,10 +294,10 @@ body.theme-dark {
         movies = rows.slice(1).map(v => ({
             title: v[0]||'', image: v[1]||'', year: v[2]||'', 
             platforms: { amazon:v[3], google:v[4], youtube:v[5], moviesanywhere:v[6], apple:v[7], fandango:v[8] },
-            dateAdded: v[10]||'', imdbId: v[11]||'', 
-            cast: v[12] ? v[12].split(',').map(s=>s.trim()).filter(Boolean) : [],
-            edition: v[13]||'', collection: v[14]||'', genre: v[15]||'', runtime: v[16]||'',
-            type: v[17]||'', streaming: v[18]||'', description: v[19]||'',
+            dateAdded: v[9]||'', imdbId: v[10]||'', 
+            cast: v[11] ? v[11].split(',').map(s=>s.trim()).filter(Boolean) : [],
+            edition: v[12]||'', collection: v[13]||'', genre: v[14]||'', runtime: v[15]||'',
+            type: v[16]||'', streaming: v[17]||'', description: v[18]||'',
             timestamp: getSafeTimestamp(v[9])
         })).filter(m => m.title && m.title.length < 120);
 
