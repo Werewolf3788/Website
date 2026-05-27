@@ -1,48 +1,84 @@
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connecting to DJ Werewolf Tracks...</title>
 
-  // Default configuration initialization
-  gtag('config', 'G-Z9M5LXQ5XN', { 'transport_type': 'beacon' });
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-L376P3NPY4"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-L376P3NPY4', { 'transport_type': 'beacon' });
+    </script>
 
-<script>
-/**
- * DJ Werewolf Smart Routing Engine
- * Intercepts ?id= parameters and drops analytics packets before forwarding traffic
- */
-(function() {
-    // 1. Map out your IDs to match Column A of your spreadsheet precisely
-    const routingDatabase = {
-        "morning-sun": "https://www.youtube.com/watch?v=YOUR_YOUTUBE_VIDEO_URL_HERE",
-        "soundcloud-mix": "https://soundcloud.com/YOUR_SOUNDCLOUD_TRACK_URL_HERE",
-        "default": "https://werewolf3788.github.io/Website/" // Fallback loop if ID is missing
-    };
+    <script>
+    (function() {
+        // Robust URL Parameter Extraction
+        const urlParams = new URLSearchParams(window.location.search);
+        const assetId = urlParams.get('id') || 'unknown_asset';
+        
+        // Target the absolute end of the query string to bypass messy string handling
+        const currentUrl = window.location.href;
+        const destMarker = "title_or_id&dest=";
+        let redirectTarget = urlParams.get('dest');
 
-    // 2. Parse out incoming URL query string parameters
-    const urlParams = new URLSearchParams(window.location.search);
-    const assetId = urlParams.get('id');
+        // Fail-safe manual fallback parser if standard query string extraction encounters symbol conflicts
+        if (!redirectTarget && currentUrl.includes('dest=')) {
+            redirectTarget = currentUrl.split('dest=')[1];
+        }
 
-    if (assetId && routingDatabase[assetId]) {
-        const redirectTarget = routingDatabase[assetId];
+        const fallbackURL = "https://werewolf3788.github.io/Website/";
 
-        // 3. Fire a custom analytics event to register the click or scan segment
-        gtag('event', 'qr_scan_redirect', {
-            'event_category': 'Engagement',
-            'event_label': assetId,
-            'target_destination': redirectTarget,
-            'event_callback': function() {
-                // Instantly executes the hop once the tracking packet is secure
-                window.location.href = redirectTarget;
-            }
-        });
+        if (redirectTarget) {
+            // Unescape both raw and nested URI encodings safely
+            const cleanDestination = decodeURIComponent(decodeURIComponent(redirectTarget));
 
-        // Safety backup redirect loop in case the GA callback tracker experiences latency
-        setTimeout(function() {
-            window.location.href = redirectTarget;
-        }, 400);
-    }
-})();
-</script>
+            // Fire tracking event to your Google Analytics Stream
+            gtag('event', 'qr_scan_redirect', {
+                'event_category': 'QR Code Engagement',
+                'event_label': decodeURIComponent(assetId),
+                'target_destination': cleanDestination,
+                'event_callback': function() {
+                    window.location.replace(cleanDestination);
+                }
+            });
+
+            // Guaranteed backup hop trigger execution loop
+            setTimeout(function() {
+                window.location.replace(cleanDestination);
+            }, 300);
+        } else {
+            window.location.replace(fallbackURL);
+        }
+    })();
+    </script>
+
+    <style>
+        body {
+            margin: 0; padding: 0;
+            background-color: #000000; color: #FF4500;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex; justify-content: center; align-items: center;
+            height: 100vh; text-align: center;
+        }
+        .container { width: 80%; max-width: 600px; }
+        h1 { font-size: 30px; text-transform: uppercase; letter-spacing: 2px; -webkit-text-stroke: 1px #000000; text-shadow: 2px 2px 0px #000000; }
+        .spinner { width: 50px; height: 50px; border: 5px solid #000000; border-top: 5px solid #FF4500; border-radius: 50%; margin: 20px auto; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        footer { position: absolute; bottom: 15px; left: 15px; font-size: 14px; font-weight: bold; }
+        .k-sig { color: #FF4500; display: inline-block; transform: scaleX(-1); z-index: 2; }
+        .f-sig { color: #000000; display: inline-block; margin-left: -0.22em; z-index: 1; -webkit-text-stroke: 0.5px #FF4500; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Routing Track...</h1>
+        <div class="spinner"></div>
+    </div>
+    <footer>
+        <span class="k-sig">K</span><span class="f-sig">F</span>
+    </footer>
+</body>
+</html>
