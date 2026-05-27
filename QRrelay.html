@@ -15,54 +15,46 @@
 
     <script>
     (function() {
-        // Robust URL Parameter Extraction
         const urlParams = new URLSearchParams(window.location.search);
+        // assetId is your Project Name
         const assetId = urlParams.get('id') || 'unknown_asset';
-        
-        // Target the absolute end of the query string to bypass messy string handling
-        const currentUrl = window.location.href;
-        const destMarker = "title_or_id&dest=";
+        // source comes from Column A
+        const source = urlParams.get('source') || 'direct'; 
+        // tag comes from your tag list
+        const affiliateTag = urlParams.get('tag') || 'werewolf3788-20'; 
         let redirectTarget = urlParams.get('dest');
 
-        // Fail-safe manual fallback parser if standard query string extraction encounters symbol conflicts
-        if (!redirectTarget && currentUrl.includes('dest=')) {
-            redirectTarget = currentUrl.split('dest=')[1];
-        }
-
-        const fallbackURL = "https://werewolf3788.github.io/Website/";
-
         if (redirectTarget) {
-            // Unescape both raw and nested URI encodings safely
-            const cleanDestination = decodeURIComponent(decodeURIComponent(redirectTarget));
+            let cleanDestination = decodeURIComponent(decodeURIComponent(redirectTarget));
+            
+            // Inject affiliate tag if it's an Amazon link
+            if (cleanDestination.includes('amazon')) {
+                const separator = cleanDestination.includes('?') ? '&' : '?';
+                cleanDestination = `${cleanDestination}${separator}tag=${affiliateTag}&linkCode=sl2`;
+            }
 
-            // Fire tracking event to your Google Analytics Stream
+            // Google Analytics Event
             gtag('event', 'qr_scan_redirect', {
                 'event_category': 'QR Code Engagement',
-                'event_label': decodeURIComponent(assetId),
+                'event_label': decodeURIComponent(source), // Column A (Source) as Label
+                'project_id': decodeURIComponent(assetId),  // Custom dimension for Project
                 'target_destination': cleanDestination,
                 'event_callback': function() {
                     window.location.replace(cleanDestination);
                 }
             });
 
-            // Guaranteed backup hop trigger execution loop
             setTimeout(function() {
                 window.location.replace(cleanDestination);
             }, 300);
         } else {
-            window.location.replace(fallbackURL);
+            window.location.replace("https://werewolf3788.github.io/Website/");
         }
     })();
     </script>
 
     <style>
-        body {
-            margin: 0; padding: 0;
-            background-color: #000000; color: #FF4500;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex; justify-content: center; align-items: center;
-            height: 100vh; text-align: center;
-        }
+        body { margin: 0; padding: 0; background-color: #000000; color: #FF4500; font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; text-align: center; }
         .container { width: 80%; max-width: 600px; }
         h1 { font-size: 30px; text-transform: uppercase; letter-spacing: 2px; -webkit-text-stroke: 1px #000000; text-shadow: 2px 2px 0px #000000; }
         .spinner { width: 50px; height: 50px; border: 5px solid #000000; border-top: 5px solid #FF4500; border-radius: 50%; margin: 20px auto; animation: spin 1s linear infinite; }
