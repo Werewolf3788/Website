@@ -1,0 +1,48 @@
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  // Default configuration initialization
+  gtag('config', 'G-Z9M5LXQ5XN', { 'transport_type': 'beacon' });
+</script>
+
+<script>
+/**
+ * DJ Werewolf Smart Routing Engine
+ * Intercepts ?id= parameters and drops analytics packets before forwarding traffic
+ */
+(function() {
+    // 1. Map out your IDs to match Column A of your spreadsheet precisely
+    const routingDatabase = {
+        "morning-sun": "https://www.youtube.com/watch?v=YOUR_YOUTUBE_VIDEO_URL_HERE",
+        "soundcloud-mix": "https://soundcloud.com/YOUR_SOUNDCLOUD_TRACK_URL_HERE",
+        "default": "https://werewolf3788.github.io/Website/" // Fallback loop if ID is missing
+    };
+
+    // 2. Parse out incoming URL query string parameters
+    const urlParams = new URLSearchParams(window.location.search);
+    const assetId = urlParams.get('id');
+
+    if (assetId && routingDatabase[assetId]) {
+        const redirectTarget = routingDatabase[assetId];
+
+        // 3. Fire a custom analytics event to register the click or scan segment
+        gtag('event', 'qr_scan_redirect', {
+            'event_category': 'Engagement',
+            'event_label': assetId,
+            'target_destination': redirectTarget,
+            'event_callback': function() {
+                // Instantly executes the hop once the tracking packet is secure
+                window.location.href = redirectTarget;
+            }
+        });
+
+        // Safety backup redirect loop in case the GA callback tracker experiences latency
+        setTimeout(function() {
+            window.location.href = redirectTarget;
+        }, 400);
+    }
+})();
+</script>
