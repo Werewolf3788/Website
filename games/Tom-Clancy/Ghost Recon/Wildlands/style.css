@@ -1,11 +1,12 @@
 /* ==========================================================================
-   Ghost Recon Hub Custom Stylesheet (Precision Integration Core)
+   Ghost Recon Hub Custom Stylesheet (Mobile & Desktop Unified Layout)
    ========================================================================== */
 
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -65,15 +66,16 @@ h1, h2, h3 {
     min-width: 350px;
 }
 
-.profile-panel { flex: 1; }
-.skills-panel { flex: 2; }
+.profile-panel { flex: 1; display: flex; flex-direction: column; gap: 15px; }
+.skills-panel { flex: 1.4; }
 .outline-text { font-weight: normal; }
 
 .profile-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 25px;
+    border-bottom: 1px solid #1c2430;
+    padding-bottom: 10px;
 }
 
 .tier-badge-container {
@@ -84,222 +86,239 @@ h1, h2, h3 {
     border: 1px solid #ffffff;
 }
 
-.tier-label {
-    font-size: 10px;
-    display: block;
-    color: #000;
-    font-weight: bold;
+.tier-badge-container.tier-disabled {
+    background-color: #2c3a4e !important;
+    border-color: #4a5568 !important;
+    opacity: 0.6;
 }
 
-.tier-value {
-    font-size: 20px;
-    font-weight: 900;
-    color: #fff;
+.tier-label { font-size: 10px; display: block; color: #000; font-weight: bold; }
+.tier-badge-container.tier-disabled .tier-label { color: #8a99ad; }
+.tier-value { font-size: 20px; font-weight: 900; color: #fff; }
+
+.stat-category-block {
+    background-color: #121820;
+    border: 1px solid #1c2430;
+    border-radius: 4px;
+    padding: 15px;
 }
 
-.progress-bar-container { margin-bottom: 15px; }
-
-.progress-labels {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-}
-
-.bar-bg {
-    background-color: #1c2430;
-    height: 12px;
-    border-radius: 6px;
-    overflow: hidden;
-}
-
-.bar-fill {
-    background-color: #28a745;
-    height: 100%;
-    width: 0%;
-    transition: width 0.5s ease;
-}
-
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin-top: 25px;
-}
-
-.stat-box {
-    background-color: #161d26;
-    padding: 12px;
-    border-left: 3px solid var(--primary-orange);
-}
-
-.stat-box h4 {
-    font-size: 11px;
+.category-header {
+    font-size: 12px;
     color: #8a99ad;
     text-transform: uppercase;
-}
-
-.stat-box p {
-    font-size: 18px;
-    font-weight: bold;
-    margin-top: 4px;
-}
-
-.skills-tabs {
-    display: flex;
-    gap: 5px;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
     border-bottom: 1px solid #1c2430;
-    padding-bottom: 10px;
-    margin-bottom: 20px;
-}
-
-.tab-link {
-    background-color: #161d26;
-    border: 1px solid #1c2430;
-    color: #8a99ad;
-    padding: 8px 16px;
-    cursor: pointer;
-    border-radius: 3px;
-}
-
-.tab-link.active {
-    background-color: var(--node-blue);
-    color: white;
-    border-color: #0096da;
-}
-
-.skills-tree-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 12px;
-}
-
-.skill-card {
-    background-color: var(--node-locked);
-    border: 1px solid #2c3a4e;
-    padding: 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.2s ease;
-}
-
-.skill-card.unlocked {
-    background-color: #1e293b;
-    border-color: var(--node-blue);
-}
-
-.skill-card.maxed {
-    border-color: #28a745;
-    background-color: #112417;
-}
-
-/* Bonus Medal UI Elements Container */
-.skill-meta-row {
+    padding-bottom: 4px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    margin-top: 8px;
 }
 
-.skill-rank-indicators {
+.header-highlight { color: #fff; font-size: 14px; font-weight: bold; }
+
+.stat-row {
     display: flex;
-    gap: 3px;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
 }
 
-.rank-dot {
-    width: 12px;
-    height: 6px;
-    background-color: #3d4f68;
-    border-radius: 1px;
+.stat-val { font-weight: bold; color: #fff; text-align: right; }
+
+.progress-bar-container { margin-bottom: 10px; }
+.progress-labels { display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 12px; }
+.bar-bg { background-color: #1c2430; height: 10px; border-radius: 5px; overflow: hidden; }
+.bar-fill { background-color: #28a745; height: 100%; width: 0%; transition: width 0.5s ease; }
+
+.weapons-fav-row {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #0e131a;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 13px;
+    border-left: 2px solid var(--primary-orange);
 }
 
+.steam-widget-card {
+    background-color: #121820;
+    border: 1px solid #1c2430;
+    border-radius: 4px;
+    overflow: hidden;
+    width: 100%;
+    display: flex;
+}
+.steam-widget-card iframe {
+    border: none;
+    display: block;
+    width: 100%;
+}
+
+.edit-stats-trigger-container { margin-top: 10px; display: flex; min-height: 48px; }
+.edit-panel-btn { background: #1c2430; border: 1px solid #3d4f68; color: #8a99ad; padding: 12px; border-radius: 4px; cursor: pointer; width: 100%; text-align: center; font-size: 14px; font-weight: bold; }
+
+.edit-stats-panel { 
+    background: #0e131a; 
+    border: 1px solid #1c2430; 
+    border-radius: 4px; 
+    padding: 15px; 
+    margin-top: 15px;
+    border-left: 3px solid var(--node-blue);
+}
+
+.panel-divider { border: 0; height: 1px; background: #1c2430; margin: 12px 0; }
+.form-section-title { font-size: 11px; color: var(--primary-orange); text-transform: uppercase; margin: 12px 0 6px 0; letter-spacing: 0.5px; }
+
+.edit-row { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.edit-row label { font-size: 12px; color: #8a99ad; width: 120px; }
+.edit-stats-panel input, .edit-stats-panel select { background: #161d26; border: 1px solid #2c3a4e; color: #fff; padding: 10px; border-radius: 4px; font-size: 14px; min-height: 44px; width: 100%; }
+.edit-row input[type="number"] { width: 80px; }
+
+.edit-grid-inputs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.edit-grid-inputs div { display: flex; flex-direction: column; gap: 4px; }
+.edit-grid-inputs label { font-size: 11px; color: #8a99ad; }
+
+.save-stats-btn { background: var(--node-blue); color: #fff; border: 1px solid #0096da; width: 100%; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 15px; min-height: 46px; font-size: 14px; }
+
+.skills-tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid #1c2430; padding-bottom: 12px; margin-bottom: 20px; }
+.tab-link { background-color: #161d26; border: 1px solid #1c2430; color: #8a99ad; padding: 12px 14px; cursor: pointer; border-radius: 4px; font-size: 13px; font-weight: bold; min-height: 44px; display: flex; align-items: center; justify-content: center; flex: 1; min-width: 90px; }
+.tab-link.active { background-color: var(--node-blue); color: white; border-color: #0096da; }
+
+.skills-tree-grid { 
+    display: grid; 
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); 
+    gap: 16px; 
+}
+
+.skill-card { 
+    background-color: var(--node-locked); 
+    border: 1px solid #2c3a4e; 
+    border-radius: 6px; 
+    position: relative; 
+    min-height: 135px; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: space-between; 
+    overflow: hidden;
+    margin-bottom: 2px;
+}
+.skill-card.unlocked { background-color: #1e293b; border-color: var(--node-blue); }
+.skill-card.maxed { border-color: #28a745; background-color: #112417; }
+
+/* Dedicated Trophy Card Variant Design Hooks */
+.skill-card.trophy-node {
+    min-height: 110px;
+    border-left: 3px solid #4a5568;
+}
+.skill-card.trophy-node.unlocked {
+    border-left-color: #ffcc00;
+    background-color: #1a1e15;
+}
+
+.card-top-action {
+    padding: 16px 14px 10px 14px;
+    flex: 1;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.card-bottom-action {
+    padding: 6px 14px 14px 14px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    border-top: 1px solid rgba(255, 255, 255, 0.02);
+    min-height: 44px;
+}
+
+.skill-meta-row { display: flex; width: 100%; align-items: center; min-height: 16px; }
+.skill-rank-indicators { display: flex; gap: 5px; }
+.rank-dot { width: 14px; height: 8px; background-color: #3d4f68; border-radius: 1.5px; }
 .rank-dot.active { background-color: var(--node-blue); }
 .skill-card.maxed .rank-dot.active { background-color: #28a745; }
 
-/* Medal Asset Indicator Style */
-.medal-badge {
-    font-size: 14px;
-    color: #4a5568;
-    user-select: none;
-    line-height: 1;
-}
+.medal-toggle-btn { background: #161d26; border: 1px solid #2c3a4e; font-size: 16px; color: #4a5568; cursor: pointer; padding: 6px 14px; border-radius: 4px; line-height: 1; user-select: none; min-height: 38px; min-width: 44px; display: flex; align-items: center; justify-content: center; }
+.medal-toggle-btn.medal-earned { color: var(--medal-gold) !important; background-color: #242415; border-color: var(--medal-gold); text-shadow: 0 0 6px rgba(255, 204, 0, 0.6); animation: pulseGlow 2s infinite alternate; }
 
-.medal-badge.earned {
-    color: var(--medal-gold);
-    text-shadow: 0 0 4px rgba(255, 204, 0, 0.4);
-    animation: pulseGlow 2s infinite alternate;
-}
-
-@keyframes pulseGlow {
-    from { transform: scale(1); }
-    to { transform: scale(1.15); }
-}
-
-body.bright-mode {
-    background-color: #eef2f5;
-    color: #111111;
-}
-body.bright-mode .card-panel {
-    background-color: #ffffff;
-    border-color: #cfd8dc;
-}
-body.bright-mode .stat-box {
-    background-color: #f5f7f8;
-}
-
-.styled-select {
-    background: #161d26;
-    color: #fff;
-    border: 1px solid #1c2430;
-    padding: 6px 12px;
+/* Trophy Completed Checkbox Indicator */
+.trophy-checkbox-status {
+    background-color: #161d26;
+    border: 1px solid #2c3a4e;
     border-radius: 3px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #8a99ad;
 }
+.unlocked .trophy-checkbox-status {
+    background-color: #ffcc00;
+    color: #000;
+    border-color: #ffffff;
+}
+
+@keyframes pulseGlow { from { transform: scale(1); } to { transform: scale(1.08); } }
+
+h4, .outline-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.bright-mode { background-color: #eef2f5; color: #111111; }
+body.bright-mode .card-panel, body.bright-mode .stat-category-block { background-color: #ffffff; border-color: #cfd8dc; }
+body.bright-mode .stat-box, body.bright-mode .edit-stats-panel, body.bright-mode .weapons-fav-row { background-color: #f5f7f8; }
+
+.styled-select { background: #161d26; color: #fff; border: 1px solid #1c2430; padding: 10px 14px; border-radius: 4px; font-size: 14px; min-height: 44px; }
 .ui-controls { position: relative; }
-.control-btn { background: #161d26; color: white; border: 1px solid #1c2430; padding: 8px 12px; cursor: pointer; }
-.settings-dropdown { position: absolute; right: 0; top: 45px; background: #121820; border: 1px solid #1c2430; padding: 15px; border-radius: 4px; width: 250px; z-index: 200; }
+.control-btn { background: #161d26; color: white; border: 1px solid #1c2430; padding: 10px 14px; cursor: pointer; min-height: 44px; font-size: 16px; border-radius: 4px; }
+.settings-dropdown { position: absolute; right: 0; top: 50px; background: #121820; border: 1px solid #1c2430; padding: 15px; border-radius: 4px; width: 260px; z-index: 200; }
 .setting-item { margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px; }
 .hidden { display: none !important; }
 
+/* ==========================================================================
+   TABLET / MOBILE RESPONSIVE MATRIX (Master Dev Protocol Layout Rules)
+   ========================================================================== */
 @media (max-width: 1024px) {
-    .hub-container, .header-container, .footer-container { width: 95%; }
-    .hub-container { flex-direction: column; }
+    .hub-container, .header-container, .footer-container { width: 92%; }
+    .hub-container { flex-direction: column; gap: 15px; }
+    h1 { font-size: 24px; }
 }
 
-.hub-footer {
-    height: var(--bar-height);
-    background-color: #0b0f14;
-    border-top: 1px solid #1c2430;
-    margin-top: auto;
-    display: flex;
-    align-items: center;
+@media (max-width: 768px) {
+    :root { --bar-height: 70px; }
+    .hub-container, .header-container, .footer-container { width: 100%; padding: 0 12px; }
+    .hub-container { margin: 10px auto; }
+    .card-panel { padding: 15px; min-width: 100%; }
+    
+    .edit-stats-panel {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    .cinematic-wrapper {
+        aspect-ratio: 16 / 9;
+        min-height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+    
+    .skills-tree-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .tab-link { padding: 10px 6px; font-size: 12px; min-width: 75px; }
 }
 
-.kf-watermark {
-    display: inline-flex;
-    align-items: center;
-    font-family: 'Impact', 'Arial Black', sans-serif;
-    font-size: 24px;
-    font-weight: 900;
-    user-select: none;
+@media (max-width: 360px) {
+    .skills-tree-grid { grid-template-columns: repeat(1, 1fr); }
 }
 
-.k-letter {
-    color: #FF4500;
-    transform: scaleX(-1);
-    display: inline-block;
-    position: relative;
-    z-index: 2;
-}
-
-.f-letter {
-    color: #000000;
-    margin-left: -0.22em;
-    position: relative;
-    z-index: 1;
-    text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
-}
-
-.timestamp-note {
-    font-size: 11px;
-    color: #4a5568;
-}
+.hub-footer { height: var(--bar-height); background-color: #0b0f14; border-top: 1px solid #1c2430; margin-top: auto; display: flex; align-items: center; }
+.kf-watermark { display: inline-flex; align-items: center; font-family: 'Impact', 'Arial Black', sans-serif; font-size: 24px; font-weight: 900; user-select: none; }
+.k-letter { color: #FF4500; transform: scaleX(-1); display: inline-block; position: relative; z-index: 2; }
+.f-letter { color: #000000; margin-left: -0.22em; position: relative; z-index: 1; text-shadow: -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff; }
+.timestamp-note { font-size: 11px; color: #4a5568; }
