@@ -6,7 +6,6 @@
     <title>Ghost Recon Wildlands Squad Hub</title>
     <link rel="manifest" href="manifest.json">
     <style>
-        /* Embedding primary layout rules directly for fallback stability */
         :root {
             --bar-height: clamp(50px, 8vh, 90px);
             --primary-orange: #FF4500;
@@ -14,9 +13,10 @@
             --ghost-blue: #28a745;
             --node-blue: #0076a8;
             --node-locked: #1c2430;
+            --medal-gold: #ffcc00;
         }
     </style>
-    <link rel="stylesheet" href="style.css?v=1.1">
+    <link rel="stylesheet" href="style.css?v=1.2">
 </head>
 <body>
 
@@ -112,15 +112,14 @@
             <div class="kf-watermark">
                 <span class="k-letter">K</span><span class="f-letter">F</span>
             </div>
-            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-0225</p>
+            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-0242</p>
         </div>
     </footer>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="app.js?v=1.1"></script>
+    <script src="app.js?v=1.2"></script>
     <script>
-        // PWA Service Worker Registration
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
