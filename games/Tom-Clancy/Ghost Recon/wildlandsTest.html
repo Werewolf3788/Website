@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ghost Recon Wildlands Squad Hub</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        :root {
+            --bar-height: clamp(60px, 10vh, 90px);
+            --primary-orange: #FF4500;
+            --solid-black: #000000;
+            --ghost-blue: #28a745;
+            --node-blue: #0076a8;
+            --node-locked: #1c2430;
+            --medal-gold: #ffcc00;
+        }
+    </style>
+    <link rel="stylesheet" href="style.css?v=2.2">
+</head>
+<body>
+
+    <div id="authOverlay" class="auth-overlay">
+        <div class="auth-card">
+            <h2 class="outline-text">GHOST SQUAD HUB GATEWAY</h2>
+            <p>Authorization Required. Sign in with your registered Google account to access your tactical profile data.</p>
+            <button id="googleSignInBtn" class="google-btn">🔐 Sign In with Google</button>
+        </div>
+    </div>
+
+    <header class="hub-header">
+        <div class="header-container">
+            <h1 class="logo-text">GHOST HUB</h1>
+            <div class="user-selector-wrapper">
+                <select id="userSelect" class="styled-select"></select>
+            </div>
+            <div class="ui-controls" style="display: flex; gap: 10px; align-items: center;">
+                <button id="logoutBtn" class="control-btn" style="background-color: #721c24; border-color: #f5c6cb; font-size:12px; font-weight:bold;">Logout</button>
+                <button id="toggleUiSettings" class="control-btn">🔧</button>
+                <div id="uiSettingsPanel" class="settings-dropdown hidden">
+                    <div class="setting-item">
+                        <label>Theme Mode:</label>
+                        <select id="themeModeSelect">
+                            <option value="bright">Bright</option>
+                            <option value="dark">Dark</option>
+                            <option value="system">Match System</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Text Outline Color:</label>
+                        <input type="color" id="outlineColorPicker" value="#000000">
+                    </div>
+                    <div class="setting-item">
+                        <label>Font Style:</label>
+                        <select id="fontStyleSelect">
+                            <option value="default">Ghost Default</option>
+                            <option value="monospace">Tactical Mono</option>
+                            <option value="sans-serif">Clean Sans</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="hub-container">
+        
+        <section class="card-panel profile-panel">
+            <div class="profile-header">
+                <h2 id="operatorName" class="outline-text">Operator</h2>
+                <div id="tierContainer" class="tier-badge-container">
+                    <span class="tier-label">TIER</span>
+                    <span id="tierLevel" class="tier-value">--</span>
+                </div>
+            </div>
+            
+            <div class="stat-category-block">
+                <h3 class="category-header">PLAYSTYLE <span id="playstyleType" class="header-highlight">--</span></h3>
+                <div class="stat-row">
+                    <span>Average Kill Distance</span>
+                    <span id="avgKillDist" class="stat-val">--</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-labels">
+                        <span>Tactical Precision</span>
+                        <span id="tacticalValue">0%</span>
+                    </div>
+                    <div class="bar-bg"><div id="tacticalBar" class="bar-fill"></div></div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-labels">
+                        <span>Stealth Kills</span>
+                        <span id="stealthValue">0%</span>
+                    </div>
+                    <div class="bar-bg"><div id="stealthBar" class="bar-fill"></div></div>
+                </div>
+            </div>
+
+            <div class="stat-category-block cinematic-wrapper">
+                <h3 class="category-header">COMBAT</h3>
+                <div class="stat-row">
+                    <span>Lifetime</span>
+                    <span id="statLifetime" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Longest Shot</span>
+                    <span id="longestShot" class="stat-val">--</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-labels">
+                        <span>Precision</span>
+                        <span id="precisionValue">0%</span>
+                    </div>
+                    <div class="bar-bg"><div id="precisionBar" class="bar-fill"></div></div>
+                </div>
+                <div class="weapons-fav-row">
+                    <div class="weapon-tag"><strong>Favorite Weapon:</strong> <span id="favWeapon">--</span></div>
+                    <div class="weapon-tag"><strong>2nd Favorite Weapon:</strong> <span id="favWeapon2">--</span></div>
+                </div>
+            </div>
+
+            <div class="stat-category-block">
+                <h3 class="category-header">SUPPORT</h3>
+                <div class="stat-row">
+                    <span>Teammates Revived</span>
+                    <span id="teammatesRevived" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>C4/Mine Kills</span>
+                    <span id="c4MineKills" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Drone Used</span>
+                    <span id="statDroneUsed" class="stat-val">--</span>
+                </div>
+            </div>
+
+            <div class="stat-category-block">
+                <h3 class="category-header">TRAVEL</h3>
+                <div class="stat-row">
+                    <span>Air</span>
+                    <span id="travelAir" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Ground</span>
+                    <span id="travelGround" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Parachute</span>
+                    <span id="travelPara" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Map Discovered</span>
+                    <span id="travelMap" class="stat-val">--</span>
+                </div>
+            </div>
+
+            <div class="steam-widget-card">
+                <iframe src="https://store.steampowered.com/widget/460930/" frameborder="0" width="100%" height="190"></iframe>
+            </div>
+
+            <div class="edit-stats-trigger-container">
+                <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Comprehensive Ghost Profile</button>
+            </div>
+
+            <div id="editStatsPanel" class="edit-stats-panel hidden">
+                <div class="edit-row">
+                    <label>Tier One Mode:</label>
+                    <select id="editTierMode">
+                        <option value="off">Off / Not Reached</option>
+                        <option value="on">Active</option>
+                    </select>
+                    <input type="number" id="editTierLevel" min="1" max="50" placeholder="Lvl">
+                </div>
+                <hr class="panel-divider">
+                
+                <h4 class="form-section-title">Playstyle & Combat</h4>
+                <div class="edit-grid-inputs">
+                    <div><label>Playstyle Title</label><input type="text" id="editPlaystyle"></div>
+                    <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist"></div>
+                    <div><label>Tactical %</label><input type="number" id="editTactical"></div>
+                    <div><label>Stealth %</label><input type="number" id="editStealth"></div>
+                    <div><label>Lifetime</label><input type="text" id="editLifetime"></div>
+                    <div><label>Longest Shot</label><input type="text" id="editLongest"></div>
+                    <div><label>Precision %</label><input type="number" id="editPrecision"></div>
+                    <div><label>Fav Weapon</label><input type="text" id="editFav1"></div>
+                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><input type="text" id="editFav2"></div>
+                </div>
+
+                <h4 class="form-section-title">Support & Travel</h4>
+                <div class="edit-grid-inputs">
+                    <div><label>Revived</label><input type="number" id="editRevives"></div>
+                    <div><label>Explosive Kills</label><input type="number" id="editExplosiveKills"></div>
+                    <div><label>Drone Used</label><input type="text" id="editDroneTime"></div>
+                    <div><label>Air Travel</label><input type="text" id="editAir"></div>
+                    <div><label>Ground Travel</label><input type="text" id="editGround"></div>
+                    <div><label>Parachute</label><input type="text" id="editPara"></div>
+                    <div><label>Map Disc. %</label><input type="text" id="editMap"></div>
+                </div>
+
+                <button id="saveStatsBtn" class="save-stats-btn">Save Tactical Update</button>
+            </div>
+        </section>
+
+        <section class="card-panel skills-panel">
+            <div class="skills-tabs">
+                <button class="tab-link active" onclick="switchSkillCategory('WEAPON')">Weapon</button>
+                <button class="tab-link" onclick="switchSkillCategory('DRONE')">Drone</button>
+                <button class="tab-link" onclick="switchSkillCategory('ITEM')">Item</button>
+                <button class="tab-link" onclick="switchSkillCategory('PHYSICAL')">Physical</button>
+                <button class="tab-link" onclick="switchSkillCategory('SQUAD')">Squad</button>
+                <button class="tab-link" onclick="switchSkillCategory('REBEL')">Rebel</button>
+                <button class="tab-link" onclick="switchSkillCategory('TROPHY')">Trophies & Recon</button>
+            </div>
+            
+            <div id="skillsTreeGrid" class="skills-tree-grid"></div>
+        </section>
+
+    </main>
+
+    <footer class="hub-footer">
+        <div class="footer-container">
+            <div class="kf-watermark">
+                <span class="k-letter">K</span><span class="f-letter">F</span>
+            </div>
+            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-0435</p>
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="app.js?v=2.2"></script>
+</body>
+</html>
