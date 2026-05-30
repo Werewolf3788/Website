@@ -51,15 +51,15 @@
       "isMe": true,
       "accountId": "3728215008151724560",
       "online": false,
-      "currentGame": "World of Tanks: HEAT",
-      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/5de5e7ae-c3d7-48da-97e3-50890c5f86fb.png",
+      "currentGame": "Tom Clancy’s Ghost Recon® Wildlands",
+      "currentGameArt": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
       "currentGameActivity": null,
-      "amazonAffiliateUrl": "https://www.amazon.com/s?k=World%20of%20Tanks%3A%20HEAT&tag=psngaming-20",
-      "currentCommunicationId": "NPWR51848_00",
+      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands&tag=psngaming-20",
+      "currentCommunicationId": "NPWR09395_00",
       "platform": "PS5",
       "twitch": {
         "isLive": false,
-        "game": "Tom Clancy's Ghost Recon: Wildlands",
+        "game": "Ghost of Tsushima",
         "gameArt": null,
         "followers": "98",
         "latestFollower": "404 Page Not Found",
@@ -77,20 +77,20 @@
       "bio": "6C3RG",
       "psnAccountAge": "3 years, 1 months",
       "earliestTrophyDate": "2023-04-18T23:05:50.000Z",
-      "latestTrophyDate": 1780022636000,
+      "latestTrophyDate": 1780120346000,
       "plus": true,
       "level": 234,
       "region": "US",
       "trophySummary": {
         "accountId": "3728215008151724560",
         "trophyLevel": 234,
-        "trophyPoint": 30375,
+        "trophyPoint": 30390,
         "trophyLevelBasePoint": 30240,
         "trophyLevelNextPoint": 30690,
-        "progress": 30,
+        "progress": 33,
         "tier": 3,
         "earnedTrophies": {
-          "bronze": 1013,
+          "bronze": 1014,
           "silver": 222,
           "gold": 78,
           "platinum": 5
@@ -98,10 +98,44 @@
         "platinum": 5,
         "gold": 78,
         "silver": 222,
-        "bronze": 1013,
-        "total": 1318
+        "bronze": 1014,
+        "total": 1319
       },
       "recentGames": [
+        {
+          "npCommunicationId": "NPWR09395_00",
+          "name": "Tom Clancy’s Ghost Recon® Wildlands",
+          "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+          "lastPlayed": "2026-05-30T05:52:29Z",
+          "npServiceName": "trophy",
+          "trophySetVersion": "01.04",
+          "trophyTitleName": "Tom Clancy’s Ghost Recon® Wildlands",
+          "trophyTitleDetail": "Tom Clancy’s Ghost Recon® Wildlands is the very first military shooter in a massive, dangerous and responsive open world that you can play entirely solo or in four-player co-op.",
+          "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+          "trophyTitlePlatform": "PS4",
+          "hasTrophyGroups": true,
+          "trophyGroupCount": 3,
+          "definedTrophies": {
+            "bronze": 42,
+            "silver": 10,
+            "gold": 5,
+            "platinum": 1
+          },
+          "progress": 31,
+          "earnedTrophies": {
+            "bronze": 19,
+            "silver": 2,
+            "gold": 1,
+            "platinum": 0
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-05-30T05:52:29Z",
+          "earnedTotal": 22,
+          "definedTotal": 58,
+          "ratio": "22/58",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands&tag=psngaming-20",
+          "bootCount": "Unknown"
+        },
         {
           "npCommunicationId": "NPWR51848_00",
           "name": "World of Tanks: HEAT",
@@ -133,40 +167,6 @@
           "definedTotal": 33,
           "ratio": "14/33",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=World%20of%20Tanks%3A%20HEAT&tag=psngaming-20",
-          "bootCount": "Unknown"
-        },
-        {
-          "npCommunicationId": "NPWR09395_00",
-          "name": "Tom Clancy’s Ghost Recon® Wildlands",
-          "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
-          "lastPlayed": "2026-05-28T14:59:58Z",
-          "npServiceName": "trophy",
-          "trophySetVersion": "01.04",
-          "trophyTitleName": "Tom Clancy’s Ghost Recon® Wildlands",
-          "trophyTitleDetail": "Tom Clancy’s Ghost Recon® Wildlands is the very first military shooter in a massive, dangerous and responsive open world that you can play entirely solo or in four-player co-op.",
-          "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
-          "trophyTitlePlatform": "PS4",
-          "hasTrophyGroups": true,
-          "trophyGroupCount": 3,
-          "definedTrophies": {
-            "bronze": 42,
-            "silver": 10,
-            "gold": 5,
-            "platinum": 1
-          },
-          "progress": 30,
-          "earnedTrophies": {
-            "bronze": 18,
-            "silver": 2,
-            "gold": 1,
-            "platinum": 0
-          },
-          "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-05-28T14:59:58Z",
-          "earnedTotal": 21,
-          "definedTotal": 58,
-          "ratio": "21/58",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands&tag=psngaming-20",
           "bootCount": "Unknown"
         },
         {
@@ -303,36 +303,80 @@
         }
       ],
       "activeHunt": {
-        "title": "World of Tanks: HEAT",
-        "amazonAffiliateUrl": "https://www.amazon.com/s?k=World%20of%20Tanks%3A%20HEAT&tag=psngaming-20",
-        "progress": 30,
+        "title": "Tom Clancy’s Ghost Recon® Wildlands",
+        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands&tag=psngaming-20",
+        "progress": 31,
         "velocity": {
-          "firstEarned": "5/29/2026, 12:43:48 AM",
-          "huntingDuration": "1 day",
-          "hunterPersona": "Steady Hunter",
-          "completionStatus": "14/33"
+          "firstEarned": "4/19/2023, 12:09:33 AM",
+          "huntingDuration": "1138 days",
+          "hunterPersona": "Casual Pursuit",
+          "completionStatus": "22/58"
         },
         "groups": [
           {
             "trophyGroupId": "default",
-            "progress": 30,
+            "progress": 42,
             "earnedTrophies": {
-              "bronze": 11,
+              "bronze": 18,
               "silver": 2,
               "gold": 1,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-05-29T03:03:58Z",
-            "trophyGroupName": "World of Tanks: HEAT",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/5de5e7ae-c3d7-48da-97e3-50890c5f86fb.png",
+            "lastUpdatedDateTime": "2026-05-30T05:52:26Z",
+            "trophyGroupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "trophyGroupDetail": "Tom Clancy’s Ghost Recon® Wildlands is the very first military shooter in a massive, dangerous and responsive open world that you can play entirely solo or in four-player co-op.",
+            "trophyGroupIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
             "definedTrophies": {
-              "bronze": 16,
-              "silver": 11,
-              "gold": 5,
+              "bronze": 32,
+              "silver": 8,
+              "gold": 3,
               "platinum": 1
             },
-            "name": "World of Tanks: HEAT",
-            "ratio": "14/33"
+            "name": "Tom Clancy’s Ghost Recon® Wildlands",
+            "ratio": "21/44"
+          },
+          {
+            "trophyGroupId": "001",
+            "progress": 0,
+            "earnedTrophies": {
+              "bronze": 0,
+              "silver": 0,
+              "gold": 0,
+              "platinum": 0
+            },
+            "trophyGroupName": "Ghost Recon® Wildlands: Narco Road",
+            "trophyGroupDetail": "Trophy set for Tom Clancy's Ghost Recon® Wildlands : Narco Road",
+            "trophyGroupIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/AD34538E797A970FAD156201601BA6338D8B3C54.PNG",
+            "definedTrophies": {
+              "bronze": 5,
+              "silver": 1,
+              "gold": 1,
+              "platinum": 0
+            },
+            "name": "Ghost Recon® Wildlands: Narco Road",
+            "ratio": "0/7"
+          },
+          {
+            "trophyGroupId": "002",
+            "progress": 7,
+            "earnedTrophies": {
+              "bronze": 1,
+              "silver": 0,
+              "gold": 0,
+              "platinum": 0
+            },
+            "lastUpdatedDateTime": "2026-05-28T14:59:55Z",
+            "trophyGroupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "trophyGroupDetail": "Trophy set for Tom Clancy's Ghost Recon® Wildlands : Fallen Ghosts",
+            "trophyGroupIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/D6EA172CD0CAFBEECBF3D023EBDC3C1AC6FA6FB1.PNG",
+            "definedTrophies": {
+              "bronze": 5,
+              "silver": 1,
+              "gold": 1,
+              "platinum": 0
+            },
+            "name": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "ratio": "1/7"
           }
         ],
         "trophies": [
@@ -340,18 +384,18 @@
             "trophyId": 0,
             "trophyHidden": false,
             "trophyType": "platinum",
-            "trophyName": "HEAT Legend",
-            "trophyDetail": "Collect all trophies",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/d2833068-24de-4bb1-94e6-26fe013e1317.png",
+            "trophyName": "Master of the Wildlands",
+            "trophyDetail": "Collected all the trophies.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/D3CDD188DB0F461213A92FB17A51B1FDE140A927.PNG",
             "trophyGroupId": "default",
-            "name": "HEAT Legend",
+            "name": "Master of the Wildlands",
             "type": "platinum",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/d2833068-24de-4bb1-94e6-26fe013e1317.png",
-            "description": "Collect all trophies",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/D3CDD188DB0F461213A92FB17A51B1FDE140A927.PNG",
+            "description": "Collected all the trophies.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -363,142 +407,137 @@
             "trophyId": 1,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Bullet Sponge",
-            "trophyDetail": "Block 20,000 damage from enemy main guns with your armor",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/08aa8bfb-df5b-4347-a043-03ac3c18199d.png",
+            "trophyName": "Fearless",
+            "trophyDetail": "Skydived 10 times.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/83F774596CAFC63CAA63F84E45C8DA386A8F727D.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Bullet Sponge",
+            "name": "Fearless",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/08aa8bfb-df5b-4347-a043-03ac3c18199d.png",
-            "description": "Block 20,000 damage from enemy main guns with your armor",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/83F774596CAFC63CAA63F84E45C8DA386A8F727D.PNG",
+            "description": "Skydived 10 times.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "5/29/2026, 2:07:43 AM",
-            "earnedAge": "22 hours, 16 mins",
-            "timestamp": 1780020463000,
+            "earnedDate": "4/19/2026, 3:55:54 AM",
+            "earnedAge": "1 month, 1 week, 4 days, 2 hours, 33 mins",
+            "timestamp": 1776570954000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 2,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Sharing Is Caring",
-            "trophyDetail": "Assist in destroying 30 enemies",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/3624178c-ef78-40fa-b687-6ed48d53e9c3.png",
+            "trophyType": "silver",
+            "trophyName": "Pull!",
+            "trophyDetail": "Shot an enemy chopper out of the air with a mortar.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/C4ECAADEAC2705EF8B2949F5976F40B449B8BD80.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Sharing Is Caring",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/3624178c-ef78-40fa-b687-6ed48d53e9c3.png",
-            "description": "Assist in destroying 30 enemies",
+            "name": "Pull!",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/C4ECAADEAC2705EF8B2949F5976F40B449B8BD80.PNG",
+            "description": "Shot an enemy chopper out of the air with a mortar.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "5/29/2026, 2:09:19 AM",
-            "earnedAge": "22 hours, 14 mins",
-            "timestamp": 1780020559000,
+            "earnedDate": "12/27/2024, 2:28:25 AM",
+            "earnedAge": "1 yr, 5 months, 4 days, 4 hours",
+            "timestamp": 1735266505000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 3,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Settling Scores",
-            "trophyDetail": "Get 20 payback kills across matches",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/516a8901-9039-4e31-8234-a6e544b87af8.png",
+            "trophyName": "Road Warrior",
+            "trophyDetail": "Drove a vehicle for 100 km.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/EFF6747E511994848336E9DC6027743B656555E0.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Settling Scores",
+            "name": "Road Warrior",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/516a8901-9039-4e31-8234-a6e544b87af8.png",
-            "description": "Get 20 payback kills across matches",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/EFF6747E511994848336E9DC6027743B656555E0.PNG",
+            "description": "Drove a vehicle for 100 km.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "10",
-            "targetValue": "100"
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/24/2024, 1:15:37 AM",
+            "earnedAge": "1 yr, 5 months, 1 week, 5 hours, 13 mins",
+            "timestamp": 1735002937000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 4,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Battle Scars",
-            "trophyDetail": "Withstand 15 critical hits",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/c0aa2e83-22b1-44c1-ac13-797343fcea60.png",
+            "trophyName": "Deadly Curious",
+            "trophyDetail": "Interrogated 20 sources.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B2DEC91347E78F52D8E6414B0DECDE412F82CC9F.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Battle Scars",
+            "name": "Deadly Curious",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/c0aa2e83-22b1-44c1-ac13-797343fcea60.png",
-            "description": "Withstand 15 critical hits",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B2DEC91347E78F52D8E6414B0DECDE412F82CC9F.PNG",
+            "description": "Interrogated 20 sources.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "5/29/2026, 1:09:16 AM",
-            "earnedAge": "23 hours, 14 mins",
-            "timestamp": 1780016956000,
+            "earnedDate": "4/29/2026, 1:12:58 AM",
+            "earnedAge": "1 month, 1 day, 5 hours, 16 mins",
+            "timestamp": 1777425178000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 5,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Getting Personal",
-            "trophyDetail": "Get 10 kills within close-quarters distance",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/d158d368-a8aa-4863-8105-885a305729d1.png",
+            "trophyName": "Serious Collector",
+            "trophyDetail": "Found 50% of the documents in the game.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/3165981DE91E09CEDB50150919237262A39E0A03.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Getting Personal",
+            "name": "Serious Collector",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/d158d368-a8aa-4863-8105-885a305729d1.png",
-            "description": "Get 10 kills within close-quarters distance",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/3165981DE91E09CEDB50150919237262A39E0A03.PNG",
+            "description": "Found 50% of the documents in the game.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "5/29/2026, 1:41:17 AM",
-            "earnedAge": "22 hours, 42 mins",
-            "timestamp": 1780018877000,
+            "earnedDate": "4/27/2026, 7:41:10 PM",
+            "earnedAge": "1 month, 2 days, 10 hours, 48 mins",
+            "timestamp": 1777318870000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 6,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Top Critic",
-            "trophyDetail": "Deal 10 critical hits in a single match",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/a7360923-cf45-4bd2-b48a-cdd2f381a1e0.png",
+            "trophyType": "silver",
+            "trophyName": "The Whole Story",
+            "trophyDetail": "Found all documents.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/6D04BE193654C884A40B07A7E9A72E170883FF3D.PNG",
             "trophyGroupId": "default",
-            "name": "Top Critic",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/a7360923-cf45-4bd2-b48a-cdd2f381a1e0.png",
-            "description": "Deal 10 critical hits in a single match",
+            "name": "The Whole Story",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/6D04BE193654C884A40B07A7E9A72E170883FF3D.PNG",
+            "description": "Found all documents.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": true,
-            "earnedDate": "5/29/2026, 2:32:03 AM",
-            "earnedAge": "21 hours, 52 mins",
-            "timestamp": 1780021923000,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -506,137 +545,133 @@
             "trophyId": 7,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "RnD",
-            "trophyDetail": "Deal all types of critical hits in a single match",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/1496f035-440e-4aba-b9b8-dc2a9a4e3e93.png",
+            "trophyName": "Beat the Boss",
+            "trophyDetail": "Defeated your first boss.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/8B5FE3FAF561A0E52ADEA150797641BA9281CAD7.PNG",
             "trophyGroupId": "default",
-            "name": "RnD",
+            "name": "Beat the Boss",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/1496f035-440e-4aba-b9b8-dc2a9a4e3e93.png",
-            "description": "Deal all types of critical hits in a single match",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/8B5FE3FAF561A0E52ADEA150797641BA9281CAD7.PNG",
+            "description": "Defeated your first boss.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "5/29/2026, 12:53:24 AM",
-            "earnedAge": "23 hours, 30 mins",
-            "timestamp": 1780016004000,
+            "earnedDate": "12/22/2024, 2:08:36 PM",
+            "earnedAge": "1 yr, 5 months, 1 week, 1 day, 16 hours, 20 mins",
+            "timestamp": 1734876516000,
             "currentValue": 0,
             "targetValue": 0
           },
           {
             "trophyId": 8,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Stress Test",
-            "trophyDetail": "Deal 30 critical hits",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/cfd7cf34-dcd0-4fcb-955b-bf2fa0d508c0.png",
+            "trophyType": "gold",
+            "trophyName": "The End",
+            "trophyDetail": "Finished the story.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/41196D5781CFE2D21ED16413C6EA6F5E8F35FE5E.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Stress Test",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/cfd7cf34-dcd0-4fcb-955b-bf2fa0d508c0.png",
-            "description": "Deal 30 critical hits",
+            "name": "The End",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/41196D5781CFE2D21ED16413C6EA6F5E8F35FE5E.PNG",
+            "description": "Finished the story.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": true,
-            "earnedDate": "5/29/2026, 2:09:43 AM",
-            "earnedAge": "22 hours, 14 mins",
-            "timestamp": 1780020583000,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 9,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Powder Keg",
-            "trophyDetail": "Deal 15 critical hits to ammo",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/f58b35f1-b7ed-4955-aef0-1694205e33c2.png",
+            "trophyName": "Smuggler's Blues",
+            "trophyDetail": "Completed the Smuggling operation.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/377DC93AF5AF40E0CF2EACFE2BAD32EEB649D711.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Powder Keg",
+            "name": "Smuggler's Blues",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/f58b35f1-b7ed-4955-aef0-1694205e33c2.png",
-            "description": "Deal 15 critical hits to ammo",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/377DC93AF5AF40E0CF2EACFE2BAD32EEB649D711.PNG",
+            "description": "Completed the Smuggling operation.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "93",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 10,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Fuel the Fire",
-            "trophyDetail": "Deal 15 critical hits to the fuel tank",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/1c1ed736-9306-4c16-a7d6-a267cf9b9468.png",
+            "trophyName": "Shut Down",
+            "trophyDetail": "Completed the Production operation.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/67847CDF477F060BD9DF301151B38C33BBC454F0.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Fuel the Fire",
+            "name": "Shut Down",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/1c1ed736-9306-4c16-a7d6-a267cf9b9468.png",
-            "description": "Deal 15 critical hits to the fuel tank",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/67847CDF477F060BD9DF301151B38C33BBC454F0.PNG",
+            "description": "Completed the Production operation.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": true,
-            "earnedDate": "5/29/2026, 2:28:22 AM",
-            "earnedAge": "21 hours, 55 mins",
-            "timestamp": 1780021702000,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 11,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Crisis Engineer",
-            "trophyDetail": "Deal 15 critical hits to the engine",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/685203f0-56c5-4e45-81e3-2b89451e7380.png",
+            "trophyName": "Broken Locks",
+            "trophyDetail": "Completed the Security operation.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/EFFAA4F9F6F59FD61867D844B1CCC5355FF30423.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Crisis Engineer",
+            "name": "Broken Locks",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/685203f0-56c5-4e45-81e3-2b89451e7380.png",
-            "description": "Deal 15 critical hits to the engine",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/EFFAA4F9F6F59FD61867D844B1CCC5355FF30423.PNG",
+            "description": "Completed the Security operation.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": true,
-            "earnedDate": "5/29/2026, 2:19:05 AM",
-            "earnedAge": "22 hours, 5 mins",
-            "timestamp": 1780021145000,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 12,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Close and Far",
-            "trophyDetail": "Get a close-quarters kill and a longshot kill in a single match",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/2f3257dd-0164-408a-808b-be44ec949835.png",
+            "trophyName": "Bad Reputation",
+            "trophyDetail": "Completed the Influence operation.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9855BDCA4B572659656319A6FC6C5D037B96C88C.PNG",
             "trophyGroupId": "default",
-            "name": "Close and Far",
+            "name": "Bad Reputation",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/2f3257dd-0164-408a-808b-be44ec949835.png",
-            "description": "Get a close-quarters kill and a longshot kill in a single match",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9855BDCA4B572659656319A6FC6C5D037B96C88C.PNG",
+            "description": "Completed the Influence operation.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -647,19 +682,19 @@
           {
             "trophyId": 13,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Damage Control",
-            "trophyDetail": "Deal 5,000 damage and restore 5,000 HP in a single match",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/60e68df1-4252-4572-9423-fe265f83b6c9.png",
+            "trophyType": "gold",
+            "trophyName": "Mission Master",
+            "trophyDetail": "Completed all Story missions.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1448A437D92EFB2CF2D5B414BB86CDB0B1619C87.PNG",
             "trophyGroupId": "default",
-            "name": "Damage Control",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/60e68df1-4252-4572-9423-fe265f83b6c9.png",
-            "description": "Deal 5,000 damage and restore 5,000 HP in a single match",
+            "name": "Mission Master",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1448A437D92EFB2CF2D5B414BB86CDB0B1619C87.PNG",
+            "description": "Completed all Story missions.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -671,22 +706,22 @@
             "trophyId": 14,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Self-Made Tank",
-            "trophyDetail": "Take critical damage and repair yourself in the same respawn",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/13b04e50-3438-4dd4-80e9-fc57de7c6965.png",
+            "trophyName": "With a Pistol!",
+            "trophyDetail": "Campaign: Took out a sniper with a pistol.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/CD0E23BAB15CADEF9E7826E021C0AF612B55CAEE.PNG",
             "trophyGroupId": "default",
-            "name": "Self-Made Tank",
+            "name": "With a Pistol!",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/13b04e50-3438-4dd4-80e9-fc57de7c6965.png",
-            "description": "Take critical damage and repair yourself in the same respawn",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/CD0E23BAB15CADEF9E7826E021C0AF612B55CAEE.PNG",
+            "description": "Campaign: Took out a sniper with a pistol.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "5/29/2026, 12:43:48 AM",
-            "earnedAge": "23 hours, 40 mins",
-            "timestamp": 1780015428000,
+            "earnedDate": "12/26/2024, 11:30:43 PM",
+            "earnedAge": "1 yr, 5 months, 4 days, 6 hours, 58 mins",
+            "timestamp": 1735255843000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -694,138 +729,133 @@
             "trophyId": 15,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Signature Move",
-            "trophyDetail": "Deal 20 critical hits using abilities",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/2e988e6d-227e-4368-828f-294e16c31d8a.png",
+            "trophyName": "Teamwork!",
+            "trophyDetail": "Completed 3 missions with another player.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B145525E8E3F52FCA30968F6FD727E1414A65A05.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Signature Move",
+            "name": "Teamwork!",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/2e988e6d-227e-4368-828f-294e16c31d8a.png",
-            "description": "Deal 20 critical hits using abilities",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B145525E8E3F52FCA30968F6FD727E1414A65A05.PNG",
+            "description": "Completed 3 missions with another player.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/22/2024, 1:57:24 PM",
+            "earnedAge": "1 yr, 5 months, 1 week, 1 day, 16 hours, 31 mins",
+            "timestamp": 1734875844000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 16,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "First Blood",
-            "trophyDetail": "Win 5 matches",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/6b0b573c-aeea-4057-8f0b-9cd4f49392e3.png",
+            "trophyName": "A Good Start",
+            "trophyDetail": "Completed the first mission \"Amaru's rescue\".",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9D5CC2F2EE3EBB4BCE12C8C66C48A1552CD1C393.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "First Blood",
+            "name": "A Good Start",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/6b0b573c-aeea-4057-8f0b-9cd4f49392e3.png",
-            "description": "Win 5 matches",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9D5CC2F2EE3EBB4BCE12C8C66C48A1552CD1C393.PNG",
+            "description": "Completed the first mission \"Amaru's rescue\".",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "5/29/2026, 1:42:58 AM",
-            "earnedAge": "22 hours, 41 mins",
-            "timestamp": 1780018978000,
+            "earnedDate": "4/19/2023, 12:09:33 AM",
+            "earnedAge": "3 yrs, 1 month, 1 week, 5 days, 6 hours, 19 mins",
+            "timestamp": 1681862973000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 17,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Mine Now!",
-            "trophyDetail": "Capture 60 bases in any mode",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/e0bb0903-07b1-4b51-aaf9-35a9540423d5.png",
+            "trophyType": "bronze",
+            "trophyName": "Eye in the Sky",
+            "trophyDetail": "Campaign: Marked 100 enemies with a drone.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/34EFDF706D89ED25A0498926C055F4D127443A9A.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Mine Now!",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/e0bb0903-07b1-4b51-aaf9-35a9540423d5.png",
-            "description": "Capture 60 bases in any mode",
+            "name": "Eye in the Sky",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/34EFDF706D89ED25A0498926C055F4D127443A9A.PNG",
+            "description": "Campaign: Marked 100 enemies with a drone.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "20",
-            "targetValue": "100"
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "8/12/2023, 7:38:50 PM",
+            "earnedAge": "2 yrs, 9 months, 3 weeks, 10 hours, 50 mins",
+            "timestamp": 1691869130000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 18,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Push Back",
-            "trophyDetail": "Recapture 30 bases in any mode",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/809e04a4-4c5e-46c3-9e34-978cf22a601f.png",
+            "trophyType": "bronze",
+            "trophyName": "Eagle-Eyed",
+            "trophyDetail": "Campaign: Marked 100 enemies with the binoculars.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1D68CD01783B4ADEA8BD1487AA2F202BBE84F047.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Push Back",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/809e04a4-4c5e-46c3-9e34-978cf22a601f.png",
-            "description": "Recapture 30 bases in any mode",
+            "name": "Eagle-Eyed",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1D68CD01783B4ADEA8BD1487AA2F202BBE84F047.PNG",
+            "description": "Campaign: Marked 100 enemies with the binoculars.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "13",
-            "targetValue": "100"
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/27/2024, 12:46:52 AM",
+            "earnedAge": "1 yr, 5 months, 4 days, 5 hours, 42 mins",
+            "timestamp": 1735260412000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 19,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "And Bullets for All",
-            "trophyDetail": "Deal 100,000 damage",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/164b7958-37d8-4a74-8224-882a1ac7291b.png",
+            "trophyType": "bronze",
+            "trophyName": "Cluster Bomber",
+            "trophyDetail": "Campaign: Killed 7 enemies with a single C4 blast.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/40B38719132CD8018529241C06367A76979C1F8C.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "And Bullets for All",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/164b7958-37d8-4a74-8224-882a1ac7291b.png",
-            "description": "Deal 100,000 damage",
+            "name": "Cluster Bomber",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/40B38719132CD8018529241C06367A76979C1F8C.PNG",
+            "description": "Campaign: Killed 7 enemies with a single C4 blast.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": true,
-            "earnedDate": "5/29/2026, 2:43:56 AM",
-            "earnedAge": "21 hours, 40 mins",
-            "timestamp": 1780022636000,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 20,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Reach Out and Touch",
-            "trophyDetail": "Deal 5,000 longshot damage in a single match",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/ff8629d5-5cca-44c2-b09f-2074bf121176.png",
+            "trophyType": "bronze",
+            "trophyName": "A Better Mousetrap",
+            "trophyDetail": "Campaign: Killed 7 enemies with a single mine.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/7E0759E1E4A8F978D225BC0B57552133FF95960C.PNG",
             "trophyGroupId": "default",
-            "name": "Reach Out and Touch",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/ff8629d5-5cca-44c2-b09f-2074bf121176.png",
-            "description": "Deal 5,000 longshot damage in a single match",
+            "name": "A Better Mousetrap",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/7E0759E1E4A8F978D225BC0B57552133FF95960C.PNG",
+            "description": "Campaign: Killed 7 enemies with a single mine.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -836,115 +866,111 @@
           {
             "trophyId": 21,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "For All Mankind",
-            "trophyDetail": "Win 50 matches",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/4aec0af7-88e4-4a6b-8026-05c5bcc9e0ca.png",
+            "trophyType": "bronze",
+            "trophyName": "Legend Hunter",
+            "trophyDetail": "Discovered one legend.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/2A67FCD6DD8461F523A349C8E5EE95329E3F07D3.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "For All Mankind",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/4aec0af7-88e4-4a6b-8026-05c5bcc9e0ca.png",
-            "description": "Win 50 matches",
+            "name": "Legend Hunter",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/2A67FCD6DD8461F523A349C8E5EE95329E3F07D3.PNG",
+            "description": "Discovered one legend.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "26",
-            "targetValue": "100"
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "8/12/2023, 4:39:14 AM",
+            "earnedAge": "2 yrs, 9 months, 3 weeks, 1 day, 1 hour, 50 mins",
+            "timestamp": 1691815154000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 22,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "Hat-Trick Hero",
-            "trophyDetail": "Get 3 kills in a single respawn, 10 times",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/b38c5fde-cb03-49cb-922e-91c1b5c3da89.png",
+            "trophyName": "Legendary Hunter",
+            "trophyDetail": "Discovered all  legends.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/DDB5539EE72CF22D9DB5D6BC28AF2863862C7E1E.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Hat-Trick Hero",
+            "name": "Legendary Hunter",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/b38c5fde-cb03-49cb-922e-91c1b5c3da89.png",
-            "description": "Get 3 kills in a single respawn, 10 times",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/DDB5539EE72CF22D9DB5D6BC28AF2863862C7E1E.PNG",
+            "description": "Discovered all  legends.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "30",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 23,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Deadeye",
-            "trophyDetail": "Deal 20 critical longshots",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/e3c3f8b6-4021-4e1d-aedf-f4a37f001eda.png",
+            "trophyType": "bronze",
+            "trophyName": "Spice of Life",
+            "trophyDetail": "Played each type of side mission.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1D0B54712D4CB05BB9510178BED171878CBDE711.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Deadeye",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/e3c3f8b6-4021-4e1d-aedf-f4a37f001eda.png",
-            "description": "Deal 20 critical longshots",
+            "name": "Spice of Life",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1D0B54712D4CB05BB9510178BED171878CBDE711.PNG",
+            "description": "Played each type of side mission.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/23/2024, 7:30:01 AM",
+            "earnedAge": "1 yr, 5 months, 1 week, 22 hours, 59 mins",
+            "timestamp": 1734939001000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 24,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Tech Savant",
-            "trophyDetail": "Repair yourself with equipment 500 times",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/f04ad014-3c2d-4026-b9eb-90f520af67e4.png",
+            "trophyType": "bronze",
+            "trophyName": "Highway Bandit",
+            "trophyDetail": "Tagged 10 convoys.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/8F3AD7913A5BD3182D9010B207E509A3EEDE5F34.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Tech Savant",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/f04ad014-3c2d-4026-b9eb-90f520af67e4.png",
-            "description": "Repair yourself with equipment 500 times",
+            "name": "Highway Bandit",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/8F3AD7913A5BD3182D9010B207E509A3EEDE5F34.PNG",
+            "description": "Tagged 10 convoys.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "13",
-            "targetValue": "100"
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/25/2024, 10:15:29 PM",
+            "earnedAge": "1 yr, 5 months, 5 days, 8 hours, 13 mins",
+            "timestamp": 1735164929000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 25,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Reckoning Day",
-            "trophyDetail": "Get 5 payback kills in a single match",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/44746038-4f44-49ad-aa26-5065eb9b7826.png",
+            "trophyType": "bronze",
+            "trophyName": "Ultimate Skill",
+            "trophyDetail": "Campaign: Bought all the upgrades of a Skill branch.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/479DC41BB6B69EB026476010E5FC23B0CD1A888C.PNG",
             "trophyGroupId": "default",
-            "name": "Reckoning Day",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/44746038-4f44-49ad-aa26-5065eb9b7826.png",
-            "description": "Get 5 payback kills in a single match",
+            "name": "Ultimate Skill",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/479DC41BB6B69EB026476010E5FC23B0CD1A888C.PNG",
+            "description": "Campaign: Bought all the upgrades of a Skill branch.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -956,18 +982,18 @@
             "trophyId": 26,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "Patch and Pray",
-            "trophyDetail": "Restore 15,000 HP in a single match",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/29113060-0956-4c42-8826-3d377c2f75ca.png",
+            "trophyName": "Only the Best",
+            "trophyDetail": "Campaign: Bought all upgrades.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/D5F445BFA8C87BF084962D42DA93482E0137D0E6.PNG",
             "trophyGroupId": "default",
-            "name": "Patch and Pray",
+            "name": "Only the Best",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/29113060-0956-4c42-8826-3d377c2f75ca.png",
-            "description": "Restore 15,000 HP in a single match",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/D5F445BFA8C87BF084962D42DA93482E0137D0E6.PNG",
+            "description": "Campaign: Bought all upgrades.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -978,19 +1004,19 @@
           {
             "trophyId": 27,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Juggernaut",
-            "trophyDetail": "Get 10 kills in a single match",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/e32771b6-985c-4684-aa95-37e928686489.png",
+            "trophyType": "bronze",
+            "trophyName": "Top Drone",
+            "trophyDetail": "Campaign: Bought all drone-related upgrades.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/0621F339D6ECE7942490A5E1F41BEBE33BFE4C85.PNG",
             "trophyGroupId": "default",
-            "name": "Juggernaut",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/e32771b6-985c-4684-aa95-37e928686489.png",
-            "description": "Get 10 kills in a single match",
+            "name": "Top Drone",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/0621F339D6ECE7942490A5E1F41BEBE33BFE4C85.PNG",
+            "description": "Campaign: Bought all drone-related upgrades.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1002,112 +1028,685 @@
             "trophyId": 28,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "Point Blank",
-            "trophyDetail": "Get 5 kills within close-quarters distance in a single match",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/13d901e1-fb80-4038-aeb2-aa45da2186b5.png",
+            "trophyName": "Heavy Medals",
+            "trophyDetail": "Collected all the bonus medals.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9FDEEEA7E27C85F5EE39D6587FD8F4CF52F0F702.PNG",
             "trophyGroupId": "default",
-            "name": "Point Blank",
+            "name": "Heavy Medals",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/13d901e1-fb80-4038-aeb2-aa45da2186b5.png",
-            "description": "Get 5 kills within close-quarters distance in a single match",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9FDEEEA7E27C85F5EE39D6587FD8F4CF52F0F702.PNG",
+            "description": "Collected all the bonus medals.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": true,
-            "earnedDate": "5/29/2026, 2:02:35 AM",
-            "earnedAge": "22 hours, 21 mins",
-            "timestamp": 1780020155000,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
           },
           {
             "trophyId": 29,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "HEAT Certified",
-            "trophyDetail": "Finish 30 matches",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/1c3f7af3-97bd-4d98-8eee-47bcd691e89f.png",
+            "trophyType": "bronze",
+            "trophyName": "Rebel Sympathizer",
+            "trophyDetail": "Unlocked a Rebel skill.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/E345138D06B97957C93BD3FACA4E2EE810609925.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "HEAT Certified",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/1c3f7af3-97bd-4d98-8eee-47bcd691e89f.png",
-            "description": "Finish 30 matches",
+            "name": "Rebel Sympathizer",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/E345138D06B97957C93BD3FACA4E2EE810609925.PNG",
+            "description": "Unlocked a Rebel skill.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "43",
-            "targetValue": "100"
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "8/12/2023, 3:26:55 AM",
+            "earnedAge": "2 yrs, 9 months, 3 weeks, 1 day, 3 hours, 2 mins",
+            "timestamp": 1691810815000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 30,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "Contact Parking",
-            "trophyDetail": "Deal 5,000 damage by ramming",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/f5d4edc7-e519-4a92-9e7e-0350faebb25d.png",
+            "trophyName": "Real Rebel",
+            "trophyDetail": "Unlocked all the Rebel skills.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/5991A115F397B9CAED015879FAB8CB92FAEE6C31.PNG",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Contact Parking",
+            "name": "Real Rebel",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/f5d4edc7-e519-4a92-9e7e-0350faebb25d.png",
-            "description": "Deal 5,000 damage by ramming",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/5991A115F397B9CAED015879FAB8CB92FAEE6C31.PNG",
+            "description": "Unlocked all the Rebel skills.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "21",
-            "targetValue": "100"
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/23/2024, 7:29:56 AM",
+            "earnedAge": "1 yr, 5 months, 1 week, 22 hours, 59 mins",
+            "timestamp": 1734938996000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 31,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "In Your Element",
-            "trophyDetail": "Deal 3,000 damage using abilities in a single match",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/113d9299-55d4-4dca-9060-16e77703cd1d.png",
+            "trophyName": "No Better Rebel",
+            "trophyDetail": "Maxed out each Rebel skill.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/2308D5BB31DD77A0930ED2DAD989B3840C79B044.PNG",
             "trophyGroupId": "default",
-            "name": "In Your Element",
+            "name": "No Better Rebel",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/113d9299-55d4-4dca-9060-16e77703cd1d.png",
-            "description": "Deal 3,000 damage using abilities in a single match",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/2308D5BB31DD77A0930ED2DAD989B3840C79B044.PNG",
+            "description": "Maxed out each Rebel skill.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
-            "earned": true,
-            "earnedDate": "5/29/2026, 2:27:35 AM",
-            "earnedAge": "21 hours, 56 mins",
-            "timestamp": 1780021655000,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
           },
           {
             "trophyId": 32,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Cross-Trained",
-            "trophyDetail": "Win at least one match while playing each role",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/0f98092d-1ed3-45b6-b96f-401b020b738f.png",
+            "trophyType": "bronze",
+            "trophyName": "Shotguns Fanatic",
+            "trophyDetail": "Campaign: Collected all shotguns models.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1A8731BABA2E559651304D6DF521AB5B73052875.PNG",
             "trophyGroupId": "default",
-            "name": "Cross-Trained",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/0f98092d-1ed3-45b6-b96f-401b020b738f.png",
-            "description": "Win at least one match while playing each role",
+            "name": "Shotguns Fanatic",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1A8731BABA2E559651304D6DF521AB5B73052875.PNG",
+            "description": "Campaign: Collected all shotguns models.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "World of Tanks: HEAT",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 33,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Handgun Fanatic",
+            "trophyDetail": "Campaign: Collected all handguns models.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/3243404141B20E12AD65B500B95C37378552D51F.PNG",
+            "trophyGroupId": "default",
+            "name": "Handgun Fanatic",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/3243404141B20E12AD65B500B95C37378552D51F.PNG",
+            "description": "Campaign: Collected all handguns models.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 34,
+            "trophyHidden": false,
+            "trophyType": "gold",
+            "trophyName": "The Champion",
+            "trophyDetail": "Campaign: Maxed out your XP and levels.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/6BB7E34F06D6724DDB6C04E4915280AF802F401E.PNG",
+            "trophyGroupId": "default",
+            "name": "The Champion",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/6BB7E34F06D6724DDB6C04E4915280AF802F401E.PNG",
+            "description": "Campaign: Maxed out your XP and levels.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "4/12/2026, 10:45:04 AM",
+            "earnedAge": "1 month, 2 weeks, 3 days, 19 hours, 44 mins",
+            "timestamp": 1775990704000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 35,
+            "trophyHidden": false,
+            "trophyType": "silver",
+            "trophyName": "Long Shot",
+            "trophyDetail": "Campaign: Hit a target more than 400m away.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/A88761F7E2D78BCCF278B6581233F2D0333EF916.PNG",
+            "trophyGroupId": "default",
+            "name": "Long Shot",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/A88761F7E2D78BCCF278B6581233F2D0333EF916.PNG",
+            "description": "Campaign: Hit a target more than 400m away.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 36,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Death in the Dark",
+            "trophyDetail": "Campaign: Made a close-combat kill at night.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/DE459E9450AD61F9AADB1615DD4EDC3A074DB290.PNG",
+            "trophyGroupId": "default",
+            "name": "Death in the Dark",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/DE459E9450AD61F9AADB1615DD4EDC3A074DB290.PNG",
+            "description": "Campaign: Made a close-combat kill at night.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/25/2024, 7:10:54 PM",
+            "earnedAge": "1 yr, 5 months, 5 days, 11 hours, 18 mins",
+            "timestamp": 1735153854000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 37,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Finished the Job",
+            "trophyDetail": "Campaign: Killed an enemy in close combat who was hurt by another player .",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/CCE26C6C72940D8F7B69CFF59E51136B28A25714.PNG",
+            "trophyGroupId": "default",
+            "name": "Finished the Job",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/CCE26C6C72940D8F7B69CFF59E51136B28A25714.PNG",
+            "description": "Campaign: Killed an enemy in close combat who was hurt by another player .",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "4/27/2026, 6:09:10 PM",
+            "earnedAge": "1 month, 2 days, 12 hours, 20 mins",
+            "timestamp": 1777313350000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 38,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Death from Above",
+            "trophyDetail": "Campaign: Killed an enemy with a drone.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/CBE034CDBF3F09C5EDF1C712C7B68A4377EFE104.PNG",
+            "trophyGroupId": "default",
+            "name": "Death from Above",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/CBE034CDBF3F09C5EDF1C712C7B68A4377EFE104.PNG",
+            "description": "Campaign: Killed an enemy with a drone.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/25/2024, 9:08:01 PM",
+            "earnedAge": "1 yr, 5 months, 5 days, 9 hours, 21 mins",
+            "timestamp": 1735160881000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 39,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Black-out Boomer",
+            "trophyDetail": "Campaign: Destroyed a generator with a C4 blast.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B15E218F1E02E4CEED69372507F0EB70DE5B0381.PNG",
+            "trophyGroupId": "default",
+            "name": "Black-out Boomer",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B15E218F1E02E4CEED69372507F0EB70DE5B0381.PNG",
+            "description": "Campaign: Destroyed a generator with a C4 blast.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "5/30/2026, 5:52:26 AM",
+            "earnedAge": "36 mins",
+            "timestamp": 1780120346000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 40,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Submachine-Gun Fanatic",
+            "trophyDetail": "Campaign: Collected all submachine-gun models.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/F7590CEF42BBD21F5A16F2F1E47078BC4FBDD85B.PNG",
+            "trophyGroupId": "default",
+            "name": "Submachine-Gun Fanatic",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/F7590CEF42BBD21F5A16F2F1E47078BC4FBDD85B.PNG",
+            "description": "Campaign: Collected all submachine-gun models.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 41,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Light Machine-Gun Fanatic",
+            "trophyDetail": "Campaign: Collected all light machine-gun models.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/45C9494B8E0BCCECC4E0069FE9EA83626F73C725.PNG",
+            "trophyGroupId": "default",
+            "name": "Light Machine-Gun Fanatic",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/45C9494B8E0BCCECC4E0069FE9EA83626F73C725.PNG",
+            "description": "Campaign: Collected all light machine-gun models.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 42,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Sniper Rifle Fanatic",
+            "trophyDetail": "Campaign: Collected all sniper rifle models.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/C15162CA9FC813D08B251EE1D5BFF8F4001FDF80.PNG",
+            "trophyGroupId": "default",
+            "name": "Sniper Rifle Fanatic",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/C15162CA9FC813D08B251EE1D5BFF8F4001FDF80.PNG",
+            "description": "Campaign: Collected all sniper rifle models.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 43,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Assault Rifle Fanatic",
+            "trophyDetail": "Campaign: Collected all assault rifle models.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/541FC73C56F76CBA04B71C90FFEA794F79BDC39A.PNG",
+            "trophyGroupId": "default",
+            "name": "Assault Rifle Fanatic",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/541FC73C56F76CBA04B71C90FFEA794F79BDC39A.PNG",
+            "description": "Campaign: Collected all assault rifle models.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 44,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Gang Leader",
+            "trophyDetail": "Operation Narco Road: Kill One boss of the cartel",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/EC88E8B79F2814AD4363F9D44F60A1C8B6C0F0F3.PNG",
+            "trophyGroupId": "001",
+            "name": "Gang Leader",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/EC88E8B79F2814AD4363F9D44F60A1C8B6C0F0F3.PNG",
+            "description": "Operation Narco Road: Kill One boss of the cartel",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 45,
+            "trophyHidden": true,
+            "trophyType": "silver",
+            "trophyName": "El Visible",
+            "trophyDetail": "Operation Narco Road: Kill the final target",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FF82C856778482E739E17EA294A99449E0942088.PNG",
+            "trophyGroupId": "001",
+            "name": "El Visible",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FF82C856778482E739E17EA294A99449E0942088.PNG",
+            "description": "Operation Narco Road: Kill the final target",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": true,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 46,
+            "trophyHidden": false,
+            "trophyType": "gold",
+            "trophyName": "More Followers than Escobar",
+            "trophyDetail": "Operation Narco Road: Fill the Followers Gauge of all regions to 100%",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B5CA2A50E648677AA603B391A523D206DBB05798.PNG",
+            "trophyGroupId": "001",
+            "name": "More Followers than Escobar",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B5CA2A50E648677AA603B391A523D206DBB05798.PNG",
+            "description": "Operation Narco Road: Fill the Followers Gauge of all regions to 100%",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 47,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Scenic Route",
+            "trophyDetail": "Narco Road: Go from Eddie's party villa to Arturo's bar in 8 minutes or less in a ground vehicle",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/62A6AF6BACD4B6DE3E000DE5DE41366051049034.PNG",
+            "trophyGroupId": "001",
+            "name": "Scenic Route",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/62A6AF6BACD4B6DE3E000DE5DE41366051049034.PNG",
+            "description": "Narco Road: Go from Eddie's party villa to Arturo's bar in 8 minutes or less in a ground vehicle",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 48,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Cristina",
+            "trophyDetail": "Operation Narco Road: Kill 50 enemies with any gang's vehicle",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/E79CDEC5B4EBE844A5B7293E15F735C0D7BE8606.PNG",
+            "trophyGroupId": "001",
+            "name": "Cristina",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/E79CDEC5B4EBE844A5B7293E15F735C0D7BE8606.PNG",
+            "description": "Operation Narco Road: Kill 50 enemies with any gang's vehicle",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 49,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Mal Rodilla-Ternera",
+            "trophyDetail": "Operation Narco Road: Complete an Electro™ challenge while freefalling",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/5FCEE3478D38C195CBBB20D082FA0298A8264B03.PNG",
+            "trophyGroupId": "001",
+            "name": "Mal Rodilla-Ternera",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/5FCEE3478D38C195CBBB20D082FA0298A8264B03.PNG",
+            "description": "Operation Narco Road: Complete an Electro™ challenge while freefalling",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 50,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Brake a leg",
+            "trophyDetail": "Operation Narco Road: Complete a trial without using the brakes",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/792466DDFF36FEA9A86EBC368598A6C972DA1A12.PNG",
+            "trophyGroupId": "001",
+            "name": "Brake a leg",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/792466DDFF36FEA9A86EBC368598A6C972DA1A12.PNG",
+            "description": "Operation Narco Road: Complete a trial without using the brakes",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 51,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Kill list",
+            "trophyDetail": "Fallen Ghosts: Kill one of each Extranjeros squad archetypes",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/531102B911D983E0259ED0222843C3BD669510B2.PNG",
+            "trophyGroupId": "002",
+            "name": "Kill list",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/531102B911D983E0259ED0222843C3BD669510B2.PNG",
+            "description": "Fallen Ghosts: Kill one of each Extranjeros squad archetypes",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "earned": true,
+            "earnedDate": "5/28/2026, 2:59:55 PM",
+            "earnedAge": "1 day, 15 hours, 29 mins",
+            "timestamp": 1779980395000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 52,
+            "trophyHidden": true,
+            "trophyType": "silver",
+            "trophyName": "A hero once, a hero twice",
+            "trophyDetail": "Fallen Ghosts: complete the operation",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/7A696F34F7FAC071C04E9788506457F1D70D697C.PNG",
+            "trophyGroupId": "002",
+            "name": "A hero once, a hero twice",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/7A696F34F7FAC071C04E9788506457F1D70D697C.PNG",
+            "description": "Fallen Ghosts: complete the operation",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": true,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 53,
+            "trophyHidden": false,
+            "trophyType": "gold",
+            "trophyName": "Thorough supporter",
+            "trophyDetail": "Fallen Ghosts: Complete every Rebel Op and Mission",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/7A1D0595D93CBD1078E7FE8E443F64D806705CEA.PNG",
+            "trophyGroupId": "002",
+            "name": "Thorough supporter",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/7A1D0595D93CBD1078E7FE8E443F64D806705CEA.PNG",
+            "description": "Fallen Ghosts: Complete every Rebel Op and Mission",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 54,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Rebel leader",
+            "trophyDetail": "Fallen Ghosts: Complete a Final Rebel Op",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/BBE7C0D8C99BC1A63484B138E6CB353E69E04695.PNG",
+            "trophyGroupId": "002",
+            "name": "Rebel leader",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/BBE7C0D8C99BC1A63484B138E6CB353E69E04695.PNG",
+            "description": "Fallen Ghosts: Complete a Final Rebel Op",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 55,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Tactical genius",
+            "trophyDetail": "Fallen Ghosts: Blind yourself using the Flash Drone",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/00D1844628C987844AFB85583A22669041CD1647.PNG",
+            "trophyGroupId": "002",
+            "name": "Tactical genius",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/00D1844628C987844AFB85583A22669041CD1647.PNG",
+            "description": "Fallen Ghosts: Blind yourself using the Flash Drone",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 56,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Nondescript jungle hero",
+            "trophyDetail": "Fallen Ghosts: Kill 10 Covert Ops Extranjeros using your knife",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/814ACC5D9541D15C0FFC8EBCDE2E5C02D5FD0796.PNG",
+            "trophyGroupId": "002",
+            "name": "Nondescript jungle hero",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/814ACC5D9541D15C0FFC8EBCDE2E5C02D5FD0796.PNG",
+            "description": "Fallen Ghosts: Kill 10 Covert Ops Extranjeros using your knife",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 57,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Artisanal SAM",
+            "trophyDetail": "Fallen Ghosts: Destroy an enemy helicopter using an explosive bolt.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/5723D00B72A86B7E23D058B8BE75B529BDD2FF63.PNG",
+            "trophyGroupId": "002",
+            "name": "Artisanal SAM",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/5723D00B72A86B7E23D058B8BE75B529BDD2FF63.PNG",
+            "description": "Fallen Ghosts: Destroy an enemy helicopter using an explosive bolt.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1116,16 +1715,24 @@
             "targetValue": 0
           }
         ],
-        "npCommunicationId": "NPWR51848_00"
+        "npCommunicationId": "NPWR09395_00"
       },
       "mostRecentTrophies": [
+        {
+          "game": "Tom Clancy’s Ghost Recon® Wildlands",
+          "name": "Black-out Boomer",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B15E218F1E02E4CEED69372507F0EB70DE5B0381.PNG",
+          "timestamp": 1780120346000,
+          "date": "5/30/2026, 5:52:26 AM",
+          "age": "36 mins"
+        },
         {
           "game": "World of Tanks: HEAT",
           "name": "And Bullets for All",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/164b7958-37d8-4a74-8224-882a1ac7291b.png",
           "timestamp": 1780022636000,
           "date": "5/29/2026, 2:43:56 AM",
-          "age": "21 hours, 40 mins"
+          "age": "1 day, 3 hours, 45 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -1133,7 +1740,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/a7360923-cf45-4bd2-b48a-cdd2f381a1e0.png",
           "timestamp": 1780021923000,
           "date": "5/29/2026, 2:32:03 AM",
-          "age": "21 hours, 52 mins"
+          "age": "1 day, 3 hours, 57 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -1141,7 +1748,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/1c1ed736-9306-4c16-a7d6-a267cf9b9468.png",
           "timestamp": 1780021702000,
           "date": "5/29/2026, 2:28:22 AM",
-          "age": "21 hours, 55 mins"
+          "age": "1 day, 4 hours, 1 min"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -1149,7 +1756,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/113d9299-55d4-4dca-9060-16e77703cd1d.png",
           "timestamp": 1780021655000,
           "date": "5/29/2026, 2:27:35 AM",
-          "age": "21 hours, 56 mins"
+          "age": "1 day, 4 hours, 1 min"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -1157,7 +1764,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/685203f0-56c5-4e45-81e3-2b89451e7380.png",
           "timestamp": 1780021145000,
           "date": "5/29/2026, 2:19:05 AM",
-          "age": "22 hours, 5 mins"
+          "age": "1 day, 4 hours, 10 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -1165,7 +1772,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/cfd7cf34-dcd0-4fcb-955b-bf2fa0d508c0.png",
           "timestamp": 1780020583000,
           "date": "5/29/2026, 2:09:43 AM",
-          "age": "22 hours, 14 mins"
+          "age": "1 day, 4 hours, 19 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -1173,7 +1780,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/3624178c-ef78-40fa-b687-6ed48d53e9c3.png",
           "timestamp": 1780020559000,
           "date": "5/29/2026, 2:09:19 AM",
-          "age": "22 hours, 14 mins"
+          "age": "1 day, 4 hours, 20 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -1181,7 +1788,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/08aa8bfb-df5b-4347-a043-03ac3c18199d.png",
           "timestamp": 1780020463000,
           "date": "5/29/2026, 2:07:43 AM",
-          "age": "22 hours, 16 mins"
+          "age": "1 day, 4 hours, 21 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -1189,18 +1796,41 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/13d901e1-fb80-4038-aeb2-aa45da2186b5.png",
           "timestamp": 1780020155000,
           "date": "5/29/2026, 2:02:35 AM",
-          "age": "22 hours, 21 mins"
-        },
-        {
-          "game": "World of Tanks: HEAT",
-          "name": "First Blood",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/6b0b573c-aeea-4057-8f0b-9cd4f49392e3.png",
-          "timestamp": 1780018978000,
-          "date": "5/29/2026, 1:42:58 AM",
-          "age": "22 hours, 41 mins"
+          "age": "1 day, 4 hours, 26 mins"
         }
       ],
       "fullLibrary": [
+        {
+          "npCommunicationId": "NPWR09395_00",
+          "name": "Tom Clancy’s Ghost Recon® Wildlands",
+          "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+          "lastPlayed": "2026-05-30T05:52:29Z",
+          "npServiceName": "trophy",
+          "trophySetVersion": "01.04",
+          "trophyTitleName": "Tom Clancy’s Ghost Recon® Wildlands",
+          "trophyTitleDetail": "Tom Clancy’s Ghost Recon® Wildlands is the very first military shooter in a massive, dangerous and responsive open world that you can play entirely solo or in four-player co-op.",
+          "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+          "trophyTitlePlatform": "PS4",
+          "hasTrophyGroups": true,
+          "trophyGroupCount": 3,
+          "definedTrophies": {
+            "bronze": 42,
+            "silver": 10,
+            "gold": 5,
+            "platinum": 1
+          },
+          "progress": 31,
+          "earnedTrophies": {
+            "bronze": 19,
+            "silver": 2,
+            "gold": 1,
+            "platinum": 0
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-05-30T05:52:29Z",
+          "earnedTotal": 22,
+          "definedTotal": 58
+        },
         {
           "npCommunicationId": "NPWR51848_00",
           "name": "World of Tanks: HEAT",
@@ -1230,37 +1860,6 @@
           "lastUpdatedDateTime": "2026-05-29T03:03:58Z",
           "earnedTotal": 14,
           "definedTotal": 33
-        },
-        {
-          "npCommunicationId": "NPWR09395_00",
-          "name": "Tom Clancy’s Ghost Recon® Wildlands",
-          "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
-          "lastPlayed": "2026-05-28T14:59:58Z",
-          "npServiceName": "trophy",
-          "trophySetVersion": "01.04",
-          "trophyTitleName": "Tom Clancy’s Ghost Recon® Wildlands",
-          "trophyTitleDetail": "Tom Clancy’s Ghost Recon® Wildlands is the very first military shooter in a massive, dangerous and responsive open world that you can play entirely solo or in four-player co-op.",
-          "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
-          "trophyTitlePlatform": "PS4",
-          "hasTrophyGroups": true,
-          "trophyGroupCount": 3,
-          "definedTrophies": {
-            "bronze": 42,
-            "silver": 10,
-            "gold": 5,
-            "platinum": 1
-          },
-          "progress": 30,
-          "earnedTrophies": {
-            "bronze": 18,
-            "silver": 2,
-            "gold": 1,
-            "platinum": 0
-          },
-          "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-05-28T14:59:58Z",
-          "earnedTotal": 21,
-          "definedTotal": 58
         },
         {
           "npCommunicationId": "NPWR40813_00",
@@ -4282,7 +4881,7 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
           "lastPlayed": "2025-01-05T00:59:39Z",
           "npServiceName": "trophy",
-          "trophySetVersion": "01.01",
+          "trophySetVersion": "01.00",
           "trophyTitleName": "UNO®",
           "trophyTitleDetail": "It's a race to the finish as you try to empty your hand before everyone else. Play with friends and family the way you want to play with an assortment of House Rules as well as, for the first time, Themes with updated visuals and never-before-seen Theme Cards that introduce crazy effects and powers to the game. It's the UNO you know and love--and so much more!",
           "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
@@ -6738,15 +7337,41 @@
         },
         "presence": {
           "availability": "unavailable",
-          "lastAvailableDate": "2026-05-29T19:41:12.476Z",
+          "lastAvailableDate": "2026-05-30T06:16:22.979Z",
           "primaryPlatformInfo": {
             "onlineStatus": "offline",
             "platform": "PS5",
-            "lastOnlineDate": "2026-05-29T19:41:12.476Z"
+            "lastOnlineDate": "2026-05-30T06:16:22.979Z"
           }
         },
         "telemetry": [],
         "titles": [
+          {
+            "npServiceName": "trophy",
+            "npCommunicationId": "NPWR09395_00",
+            "trophySetVersion": "01.04",
+            "trophyTitleName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "trophyTitleDetail": "Tom Clancy’s Ghost Recon® Wildlands is the very first military shooter in a massive, dangerous and responsive open world that you can play entirely solo or in four-player co-op.",
+            "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+            "trophyTitlePlatform": "PS4",
+            "hasTrophyGroups": true,
+            "trophyGroupCount": 3,
+            "definedTrophies": {
+              "bronze": 42,
+              "silver": 10,
+              "gold": 5,
+              "platinum": 1
+            },
+            "progress": 31,
+            "earnedTrophies": {
+              "bronze": 19,
+              "silver": 2,
+              "gold": 1,
+              "platinum": 0
+            },
+            "hiddenFlag": false,
+            "lastUpdatedDateTime": "2026-05-30T05:52:29Z"
+          },
           {
             "npServiceName": "trophy2",
             "npCommunicationId": "NPWR51848_00",
@@ -6771,32 +7396,6 @@
             },
             "hiddenFlag": false,
             "lastUpdatedDateTime": "2026-05-29T03:03:58Z"
-          },
-          {
-            "npServiceName": "trophy",
-            "npCommunicationId": "NPWR09395_00",
-            "trophySetVersion": "01.04",
-            "trophyTitleName": "Tom Clancy’s Ghost Recon® Wildlands",
-            "trophyTitleDetail": "Tom Clancy’s Ghost Recon® Wildlands is the very first military shooter in a massive, dangerous and responsive open world that you can play entirely solo or in four-player co-op.",
-            "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
-            "trophyTitlePlatform": "PS4",
-            "hasTrophyGroups": true,
-            "trophyGroupCount": 3,
-            "definedTrophies": {
-              "bronze": 42,
-              "silver": 10,
-              "gold": 5,
-              "platinum": 1
-            },
-            "progress": 30,
-            "earnedTrophies": {
-              "bronze": 18,
-              "silver": 2,
-              "gold": 1,
-              "platinum": 0
-            },
-            "hiddenFlag": false,
-            "lastUpdatedDateTime": "2026-05-28T14:59:58Z"
           },
           {
             "npServiceName": "trophy2",
@@ -9320,7 +9919,7 @@
           {
             "npServiceName": "trophy",
             "npCommunicationId": "NPWR10270_00",
-            "trophySetVersion": "01.01",
+            "trophySetVersion": "01.00",
             "trophyTitleName": "UNO®",
             "trophyTitleDetail": "It's a race to the finish as you try to empty your hand before everyone else. Play with friends and family the way you want to play with an assortment of House Rules as well as, for the first time, Themes with updated visuals and never-before-seen Theme Cards that introduce crazy effects and powers to the game. It's the UNO you know and love--and so much more!",
             "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
@@ -11359,7 +11958,7 @@
           "totalItemCount": 17
         }
       },
-      "lastUpdated": "5/30/2026, 12:24:21 AM"
+      "lastUpdated": "5/30/2026, 6:29:31 AM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -11801,7 +12400,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/20/2026, 5:38:12 AM",
-            "earnedAge": "1 week, 2 days, 18 hours, 46 mins",
+            "earnedAge": "1 week, 3 days, 51 mins",
             "timestamp": 1779255492000,
             "currentValue": 0,
             "targetValue": 0
@@ -11824,7 +12423,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/20/2026, 8:33:56 AM",
-            "earnedAge": "1 week, 2 days, 15 hours, 50 mins",
+            "earnedAge": "1 week, 2 days, 21 hours, 55 mins",
             "timestamp": 1779266036000,
             "currentValue": 0,
             "targetValue": 0
@@ -11847,7 +12446,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/20/2026, 7:52:57 PM",
-            "earnedAge": "1 week, 2 days, 4 hours, 31 mins",
+            "earnedAge": "1 week, 2 days, 10 hours, 36 mins",
             "timestamp": 1779306777000,
             "currentValue": 0,
             "targetValue": 0
@@ -11893,7 +12492,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/20/2026, 10:59:18 PM",
-            "earnedAge": "1 week, 2 days, 1 hour, 25 mins",
+            "earnedAge": "1 week, 2 days, 7 hours, 30 mins",
             "timestamp": 1779317958000,
             "currentValue": 0,
             "targetValue": 0
@@ -11916,7 +12515,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/21/2026, 2:03:55 AM",
-            "earnedAge": "1 week, 1 day, 22 hours, 20 mins",
+            "earnedAge": "1 week, 2 days, 4 hours, 25 mins",
             "timestamp": 1779329035000,
             "currentValue": 0,
             "targetValue": 0
@@ -11939,7 +12538,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/21/2026, 5:30:56 AM",
-            "earnedAge": "1 week, 1 day, 18 hours, 53 mins",
+            "earnedAge": "1 week, 2 days, 58 mins",
             "timestamp": 1779341456000,
             "currentValue": 0,
             "targetValue": 0
@@ -11962,7 +12561,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/21/2026, 7:27:41 AM",
-            "earnedAge": "1 week, 1 day, 16 hours, 56 mins",
+            "earnedAge": "1 week, 1 day, 23 hours, 1 min",
             "timestamp": 1779348461000,
             "currentValue": 0,
             "targetValue": 0
@@ -12056,7 +12655,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/21/2026, 6:30:26 AM",
-            "earnedAge": "1 week, 1 day, 17 hours, 53 mins",
+            "earnedAge": "1 week, 1 day, 23 hours, 59 mins",
             "timestamp": 1779345026000,
             "currentValue": 0,
             "targetValue": "11"
@@ -12148,7 +12747,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/20/2026, 8:33:57 AM",
-            "earnedAge": "1 week, 2 days, 15 hours, 50 mins",
+            "earnedAge": "1 week, 2 days, 21 hours, 55 mins",
             "timestamp": 1779266037000,
             "currentValue": 0,
             "targetValue": 0
@@ -12171,7 +12770,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/21/2026, 2:19:11 AM",
-            "earnedAge": "1 week, 1 day, 22 hours, 5 mins",
+            "earnedAge": "1 week, 2 days, 4 hours, 10 mins",
             "timestamp": 1779329951000,
             "currentValue": 0,
             "targetValue": 0
@@ -12553,7 +13152,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/21/2026, 5:25:10 AM",
-            "earnedAge": "1 week, 1 day, 18 hours, 59 mins",
+            "earnedAge": "1 week, 2 days, 1 hour, 4 mins",
             "timestamp": 1779341110000,
             "currentValue": 0,
             "targetValue": "20"
@@ -12720,7 +13319,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/21/2026, 7:20:52 AM",
-            "earnedAge": "1 week, 1 day, 17 hours, 3 mins",
+            "earnedAge": "1 week, 1 day, 23 hours, 8 mins",
             "timestamp": 1779348052000,
             "currentValue": 0,
             "targetValue": "35"
@@ -12744,7 +13343,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/21/2026, 7:23:51 AM",
-            "earnedAge": "1 week, 1 day, 17 hours",
+            "earnedAge": "1 week, 1 day, 23 hours, 5 mins",
             "timestamp": 1779348231000,
             "currentValue": 0,
             "targetValue": "35"
@@ -12768,7 +13367,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/21/2026, 7:08:48 AM",
-            "earnedAge": "1 week, 1 day, 17 hours, 15 mins",
+            "earnedAge": "1 week, 1 day, 23 hours, 20 mins",
             "timestamp": 1779347328000,
             "currentValue": 0,
             "targetValue": "22"
@@ -12792,7 +13391,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/21/2026, 6:33:14 AM",
-            "earnedAge": "1 week, 1 day, 17 hours, 51 mins",
+            "earnedAge": "1 week, 1 day, 23 hours, 56 mins",
             "timestamp": 1779345194000,
             "currentValue": 0,
             "targetValue": "21"
@@ -12862,7 +13461,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/20/2026, 8:03:18 AM",
-            "earnedAge": "1 week, 2 days, 16 hours, 21 mins",
+            "earnedAge": "1 week, 2 days, 22 hours, 26 mins",
             "timestamp": 1779264198000,
             "currentValue": 0,
             "targetValue": 0
@@ -12931,7 +13530,7 @@
             "groupName": "Sniper Elite: Resistance",
             "earned": true,
             "earnedDate": "5/20/2026, 9:14:26 PM",
-            "earnedAge": "1 week, 2 days, 3 hours, 9 mins",
+            "earnedAge": "1 week, 2 days, 9 hours, 15 mins",
             "timestamp": 1779311666000,
             "currentValue": 0,
             "targetValue": 0
@@ -13432,7 +14031,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/26115f96-aeab-40c1-aa38-a9173be1e236.png",
           "timestamp": 1779348461000,
           "date": "5/21/2026, 7:27:41 AM",
-          "age": "1 week, 1 day, 16 hours, 56 mins"
+          "age": "1 week, 1 day, 23 hours, 1 min"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -13440,7 +14039,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/f9b29c1b-ace6-4628-ac80-ba61a18804bb.png",
           "timestamp": 1779348231000,
           "date": "5/21/2026, 7:23:51 AM",
-          "age": "1 week, 1 day, 17 hours"
+          "age": "1 week, 1 day, 23 hours, 5 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -13448,7 +14047,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/cc179f73-ffc5-415a-9252-92f6c63c6590.png",
           "timestamp": 1779348052000,
           "date": "5/21/2026, 7:20:52 AM",
-          "age": "1 week, 1 day, 17 hours, 3 mins"
+          "age": "1 week, 1 day, 23 hours, 8 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -13456,7 +14055,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/726953a1-4a76-4df5-80f7-f06143634823.png",
           "timestamp": 1779347328000,
           "date": "5/21/2026, 7:08:48 AM",
-          "age": "1 week, 1 day, 17 hours, 15 mins"
+          "age": "1 week, 1 day, 23 hours, 20 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -13464,7 +14063,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/0958da41-e682-4115-bea0-31786a2d7110.png",
           "timestamp": 1779345194000,
           "date": "5/21/2026, 6:33:14 AM",
-          "age": "1 week, 1 day, 17 hours, 51 mins"
+          "age": "1 week, 1 day, 23 hours, 56 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -13472,7 +14071,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/b678831c-f34e-48b7-82a6-9faf8dc91683.png",
           "timestamp": 1779345026000,
           "date": "5/21/2026, 6:30:26 AM",
-          "age": "1 week, 1 day, 17 hours, 53 mins"
+          "age": "1 week, 1 day, 23 hours, 59 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -13480,7 +14079,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/d68ca53b-2500-4e29-b7a5-09d05bf4c419.png",
           "timestamp": 1779341456000,
           "date": "5/21/2026, 5:30:56 AM",
-          "age": "1 week, 1 day, 18 hours, 53 mins"
+          "age": "1 week, 2 days, 58 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -13488,7 +14087,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/b6c1242f-96f4-43fd-8c09-1594116baa56.png",
           "timestamp": 1779341110000,
           "date": "5/21/2026, 5:25:10 AM",
-          "age": "1 week, 1 day, 18 hours, 59 mins"
+          "age": "1 week, 2 days, 1 hour, 4 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -13496,7 +14095,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/3c713fb3-35ed-4e74-92d6-4d7af64b97ca.png",
           "timestamp": 1779329951000,
           "date": "5/21/2026, 2:19:11 AM",
-          "age": "1 week, 1 day, 22 hours, 5 mins"
+          "age": "1 week, 2 days, 4 hours, 10 mins"
         },
         {
           "game": "Sniper Elite: Resistance",
@@ -13504,7 +14103,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40813_00/8b480898-bf2e-4198-9d32-bd01cfc62481.png",
           "timestamp": 1779329035000,
           "date": "5/21/2026, 2:03:55 AM",
-          "age": "1 week, 1 day, 22 hours, 20 mins"
+          "age": "1 week, 2 days, 4 hours, 25 mins"
         }
       ],
       "fullLibrary": [
@@ -14190,7 +14789,7 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
           "lastPlayed": "2025-01-02T00:15:08Z",
           "npServiceName": "trophy",
-          "trophySetVersion": "01.01",
+          "trophySetVersion": "01.00",
           "trophyTitleName": "UNO®",
           "trophyTitleDetail": "It's a race to the finish as you try to empty your hand before everyone else. Play with friends and family the way you want to play with an assortment of House Rules as well as, for the first time, Themes with updated visuals and never-before-seen Theme Cards that introduce crazy effects and powers to the game. It's the UNO you know and love--and so much more!",
           "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
@@ -15914,7 +16513,7 @@
           {
             "npServiceName": "trophy",
             "npCommunicationId": "NPWR10270_00",
-            "trophySetVersion": "01.01",
+            "trophySetVersion": "01.00",
             "trophyTitleName": "UNO®",
             "trophyTitleDetail": "It's a race to the finish as you try to empty your hand before everyone else. Play with friends and family the way you want to play with an assortment of House Rules as well as, for the first time, Themes with updated visuals and never-before-seen Theme Cards that introduce crazy effects and powers to the game. It's the UNO you know and love--and so much more!",
             "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
@@ -16890,7 +17489,7 @@
           "totalItemCount": 36
         }
       },
-      "lastUpdated": "5/30/2026, 12:24:33 AM"
+      "lastUpdated": "5/30/2026, 6:29:42 AM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -16947,20 +17546,20 @@
       "bio": "Official Pack Member Profile",
       "psnAccountAge": "5 months",
       "earliestTrophyDate": "2025-12-22T11:15:30.000Z",
-      "latestTrophyDate": 1780093318000,
+      "latestTrophyDate": 1780119873000,
       "plus": true,
       "level": 66,
       "region": "US",
       "trophySummary": {
         "accountId": "4398462806362115916",
         "trophyLevel": 66,
-        "trophyPoint": 3900,
+        "trophyPoint": 3945,
         "trophyLevelBasePoint": 3900,
         "trophyLevelNextPoint": 3960,
-        "progress": 0,
+        "progress": 75,
         "tier": 1,
         "earnedTrophies": {
-          "bronze": 138,
+          "bronze": 141,
           "silver": 34,
           "gold": 9,
           "platinum": 0
@@ -16968,15 +17567,15 @@
         "platinum": 0,
         "gold": 9,
         "silver": 34,
-        "bronze": 138,
-        "total": 181
+        "bronze": 141,
+        "total": 184
       },
       "recentGames": [
         {
           "npCommunicationId": "NPWR25227_00",
           "name": "Construction Simulator",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
-          "lastPlayed": "2026-05-29T22:21:59Z",
+          "lastPlayed": "2026-05-30T05:44:32Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Construction Simulator",
@@ -16990,18 +17589,18 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 3,
+          "progress": 7,
           "earnedTrophies": {
-            "bronze": 2,
+            "bronze": 5,
             "silver": 0,
             "gold": 0,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-05-29T22:21:59Z",
-          "earnedTotal": 2,
+          "lastUpdatedDateTime": "2026-05-30T05:44:32Z",
+          "earnedTotal": 5,
           "definedTotal": 33,
-          "ratio": "2/33",
+          "ratio": "5/33",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Construction%20Simulator&tag=psngaming-20",
           "bootCount": "Unknown"
         },
@@ -17175,24 +17774,24 @@
       "activeHunt": {
         "title": "Construction Simulator",
         "amazonAffiliateUrl": "https://www.amazon.com/s?k=Construction%20Simulator&tag=psngaming-20",
-        "progress": 3,
+        "progress": 7,
         "velocity": {
           "firstEarned": "5/29/2026, 5:26:17 AM",
-          "huntingDuration": "1 day",
+          "huntingDuration": "2 days",
           "hunterPersona": "Steady Hunter",
-          "completionStatus": "2/33"
+          "completionStatus": "5/33"
         },
         "groups": [
           {
             "trophyGroupId": "default",
-            "progress": 3,
+            "progress": 7,
             "earnedTrophies": {
-              "bronze": 2,
+              "bronze": 5,
               "silver": 0,
               "gold": 0,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-05-29T22:21:58Z",
+            "lastUpdatedDateTime": "2026-05-30T05:44:33Z",
             "trophyGroupName": "Construction Simulator",
             "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
             "definedTrophies": {
@@ -17202,7 +17801,7 @@
               "platinum": 1
             },
             "name": "Construction Simulator",
-            "ratio": "2/33"
+            "ratio": "5/33"
           }
         ],
         "trophies": [
@@ -17477,7 +18076,7 @@
             "groupName": "Construction Simulator",
             "earned": true,
             "earnedDate": "5/29/2026, 10:21:58 PM",
-            "earnedAge": "2 hours, 2 mins",
+            "earnedAge": "8 hours, 7 mins",
             "timestamp": 1780093318000,
             "currentValue": 0,
             "targetValue": 0
@@ -17705,10 +18304,10 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Construction Simulator",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "earned": true,
+            "earnedDate": "5/30/2026, 4:28:36 AM",
+            "earnedAge": "2 hours, 1 min",
+            "timestamp": 1780115316000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -17728,10 +18327,10 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Construction Simulator",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "earned": true,
+            "earnedDate": "5/30/2026, 5:44:33 AM",
+            "earnedAge": "45 mins",
+            "timestamp": 1780119873000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -17774,10 +18373,10 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Construction Simulator",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "earned": true,
+            "earnedDate": "5/30/2026, 5:18:52 AM",
+            "earnedAge": "1 hour, 10 mins",
+            "timestamp": 1780118332000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -17914,7 +18513,7 @@
             "groupName": "Construction Simulator",
             "earned": true,
             "earnedDate": "5/29/2026, 5:26:17 AM",
-            "earnedAge": "18 hours, 58 mins",
+            "earnedAge": "1 day, 1 hour, 3 mins",
             "timestamp": 1780032377000,
             "currentValue": 0,
             "targetValue": 0
@@ -17971,11 +18570,35 @@
       "mostRecentTrophies": [
         {
           "game": "Construction Simulator",
+          "name": "Beam Me Up, Hape",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/c0a71cc9-a392-4e09-91eb-34b87578e883.png",
+          "timestamp": 1780119873000,
+          "date": "5/30/2026, 5:44:33 AM",
+          "age": "45 mins"
+        },
+        {
+          "game": "Construction Simulator",
+          "name": "Can't Touch This",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/633561d7-3e49-4736-9c42-1c7180aed1b9.png",
+          "timestamp": 1780118332000,
+          "date": "5/30/2026, 5:18:52 AM",
+          "age": "1 hour, 10 mins"
+        },
+        {
+          "game": "Construction Simulator",
+          "name": "These Boots Are Made For Walkin'",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/e66c02f8-5814-4891-8bfc-d59d29ae8d2c.png",
+          "timestamp": 1780115316000,
+          "date": "5/30/2026, 4:28:36 AM",
+          "age": "2 hours, 1 min"
+        },
+        {
+          "game": "Construction Simulator",
           "name": "Neighbourhood Assistance",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/8f828a00-c053-43bc-8a34-77e05c9181b1.png",
           "timestamp": 1780093318000,
           "date": "5/29/2026, 10:21:58 PM",
-          "age": "2 hours, 2 mins"
+          "age": "8 hours, 7 mins"
         },
         {
           "game": "Construction Simulator",
@@ -17983,7 +18606,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/cfeb0601-6266-4dea-8c71-1a2d2d1f199c.png",
           "timestamp": 1780032377000,
           "date": "5/29/2026, 5:26:17 AM",
-          "age": "18 hours, 58 mins"
+          "age": "1 day, 1 hour, 3 mins"
         },
         {
           "game": "MudRunner",
@@ -17991,7 +18614,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR14211_00_0003A4BC039EF43E6D43B5D0B1470D4931ACA09A52/A4FAD7647ECFFA21F0D033A8794F5937BA04919A.PNG",
           "timestamp": 1779952602000,
           "date": "5/28/2026, 7:16:42 AM",
-          "age": "1 day, 17 hours, 7 mins"
+          "age": "1 day, 23 hours, 13 mins"
         },
         {
           "game": "MudRunner",
@@ -17999,7 +18622,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR14211_00_0003A4BC039EF43E6D43B5D0B1470D4931ACA09A52/6E4FE0C8444EA15A793DA72A7656120D6EC43FFE.PNG",
           "timestamp": 1779949820000,
           "date": "5/28/2026, 6:30:20 AM",
-          "age": "1 day, 17 hours, 54 mins"
+          "age": "1 day, 23 hours, 59 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -18007,7 +18630,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/37e0cdc9-578a-45a7-929f-6374a22d9bd7.png",
           "timestamp": 1779433403000,
           "date": "5/22/2026, 7:03:23 AM",
-          "age": "1 week, 17 hours, 21 mins"
+          "age": "1 week, 23 hours, 26 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -18015,7 +18638,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/fcb7bb24-a9d5-4086-b683-a1b0aae92aa9.png",
           "timestamp": 1778424239000,
           "date": "5/10/2026, 2:43:59 PM",
-          "age": "2 weeks, 5 days, 9 hours, 40 mins"
+          "age": "2 weeks, 5 days, 15 hours, 45 mins"
         },
         {
           "game": "Wo Long: Fallen Dynasty",
@@ -18023,31 +18646,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/4473223f-f110-4676-9de5-cecd5f4344b2.png",
           "timestamp": 1778218117000,
           "date": "5/8/2026, 5:28:37 AM",
-          "age": "3 weeks, 18 hours, 56 mins"
-        },
-        {
-          "game": "Wo Long: Fallen Dynasty",
-          "name": "Open Eyes",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/1afc8198-f583-40e3-9aa1-001012a87ca1.png",
-          "timestamp": 1778134126000,
-          "date": "5/7/2026, 6:08:46 AM",
-          "age": "3 weeks, 1 day, 18 hours, 15 mins"
-        },
-        {
-          "game": "Wo Long: Fallen Dynasty",
-          "name": "Annihilator of Evil",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/236d6651-8585-4f0a-a7a4-9281fd579fd3.png",
-          "timestamp": 1778130357000,
-          "date": "5/7/2026, 5:05:57 AM",
-          "age": "3 weeks, 1 day, 19 hours, 18 mins"
-        },
-        {
-          "game": "Wo Long: Fallen Dynasty",
-          "name": "Wizardry Master",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/39460f3f-5770-4d2d-876b-1673e17b8515.png",
-          "timestamp": 1778129041000,
-          "date": "5/7/2026, 4:44:01 AM",
-          "age": "3 weeks, 1 day, 19 hours, 40 mins"
+          "age": "3 weeks, 1 day, 1 hour, 1 min"
         }
       ],
       "fullLibrary": [
@@ -18055,7 +18654,7 @@
           "npCommunicationId": "NPWR25227_00",
           "name": "Construction Simulator",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
-          "lastPlayed": "2026-05-29T22:21:59Z",
+          "lastPlayed": "2026-05-30T05:44:32Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Construction Simulator",
@@ -18069,16 +18668,16 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 3,
+          "progress": 7,
           "earnedTrophies": {
-            "bronze": 2,
+            "bronze": 5,
             "silver": 0,
             "gold": 0,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-05-29T22:21:59Z",
-          "earnedTotal": 2,
+          "lastUpdatedDateTime": "2026-05-30T05:44:32Z",
+          "earnedTotal": 5,
           "definedTotal": 33
         },
         {
@@ -18603,7 +19202,7 @@
           "primaryPlatformInfo": {
             "onlineStatus": "online",
             "platform": "PS5",
-            "lastOnlineDate": "2026-05-29T09:45:31.472Z"
+            "lastOnlineDate": "2026-05-30T01:13:09.552Z"
           },
           "gameTitleInfoList": [
             {
@@ -18632,15 +19231,15 @@
               "gold": 5,
               "platinum": 1
             },
-            "progress": 3,
+            "progress": 7,
             "earnedTrophies": {
-              "bronze": 2,
+              "bronze": 5,
               "silver": 0,
               "gold": 0,
               "platinum": 0
             },
             "hiddenFlag": false,
-            "lastUpdatedDateTime": "2026-05-29T22:21:59Z"
+            "lastUpdatedDateTime": "2026-05-30T05:44:32Z"
           },
           {
             "npServiceName": "trophy",
@@ -19052,7 +19651,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "5/30/2026, 12:24:43 AM"
+      "lastUpdated": "5/30/2026, 6:29:50 AM"
     },
     "marc": {
       "onlineId": "DesdemonaTiger",
@@ -19437,7 +20036,7 @@
             "groupName": "Cyberpunk 2077",
             "earned": true,
             "earnedDate": "5/29/2026, 1:21:21 PM",
-            "earnedAge": "11 hours, 3 mins",
+            "earnedAge": "17 hours, 8 mins",
             "timestamp": 1780060881000,
             "currentValue": 0,
             "targetValue": 0
@@ -20740,7 +21339,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24695_00/9e51220d-031d-4e1d-b061-dcee0a2c22eb.png",
           "timestamp": 1780060881000,
           "date": "5/29/2026, 1:21:21 PM",
-          "age": "11 hours, 3 mins"
+          "age": "17 hours, 8 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -20748,7 +21347,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/e3c3f8b6-4021-4e1d-aedf-f4a37f001eda.png",
           "timestamp": 1780015575000,
           "date": "5/29/2026, 12:46:15 AM",
-          "age": "23 hours, 38 mins"
+          "age": "1 day, 5 hours, 43 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -20756,7 +21355,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/b38c5fde-cb03-49cb-922e-91c1b5c3da89.png",
           "timestamp": 1780013436000,
           "date": "5/29/2026, 12:10:36 AM",
-          "age": "1 day, 14 mins"
+          "age": "1 day, 6 hours, 19 mins"
         },
         {
           "game": "Tom Clancy’s Ghost Recon® Wildlands",
@@ -20764,7 +21363,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/531102B911D983E0259ED0222843C3BD669510B2.PNG",
           "timestamp": 1779979478000,
           "date": "5/28/2026, 2:44:38 PM",
-          "age": "1 day, 9 hours, 40 mins"
+          "age": "1 day, 15 hours, 45 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -20772,7 +21371,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/6b0b573c-aeea-4057-8f0b-9cd4f49392e3.png",
           "timestamp": 1779921632000,
           "date": "5/27/2026, 10:40:32 PM",
-          "age": "2 days, 1 hour, 44 mins"
+          "age": "2 days, 7 hours, 49 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -20780,7 +21379,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/0f98092d-1ed3-45b6-b96f-401b020b738f.png",
           "timestamp": 1779921632000,
           "date": "5/27/2026, 10:40:32 PM",
-          "age": "2 days, 1 hour, 44 mins"
+          "age": "2 days, 7 hours, 49 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -20788,7 +21387,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/08aa8bfb-df5b-4347-a043-03ac3c18199d.png",
           "timestamp": 1779921179000,
           "date": "5/27/2026, 10:32:59 PM",
-          "age": "2 days, 1 hour, 51 mins"
+          "age": "2 days, 7 hours, 56 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -20796,7 +21395,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/d158d368-a8aa-4863-8105-885a305729d1.png",
           "timestamp": 1779920706000,
           "date": "5/27/2026, 10:25:06 PM",
-          "age": "2 days, 1 hour, 59 mins"
+          "age": "2 days, 8 hours, 4 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -20804,7 +21403,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/1c1ed736-9306-4c16-a7d6-a267cf9b9468.png",
           "timestamp": 1779920650000,
           "date": "5/27/2026, 10:24:10 PM",
-          "age": "2 days, 2 hours"
+          "age": "2 days, 8 hours, 5 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -20812,7 +21411,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/f58b35f1-b7ed-4955-aef0-1694205e33c2.png",
           "timestamp": 1779920316000,
           "date": "5/27/2026, 10:18:36 PM",
-          "age": "2 days, 2 hours, 6 mins"
+          "age": "2 days, 8 hours, 11 mins"
         }
       ],
       "fullLibrary": [
@@ -25711,11 +26310,11 @@
         },
         "presence": {
           "availability": "unavailable",
-          "lastAvailableDate": "2026-05-11T11:09:31.330Z",
+          "lastAvailableDate": "2026-05-30T03:46:41.454Z",
           "primaryPlatformInfo": {
             "onlineStatus": "offline",
             "platform": "PS5",
-            "lastOnlineDate": "2026-05-11T11:09:31.330Z"
+            "lastOnlineDate": "2026-05-30T03:46:41.454Z"
           }
         },
         "telemetry": [],
@@ -29774,7 +30373,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "5/30/2026, 12:24:54 AM"
+      "lastUpdated": "5/30/2026, 6:30:00 AM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -31103,7 +31702,7 @@
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": true,
             "earnedDate": "5/9/2026, 5:51:40 AM",
-            "earnedAge": "2 weeks, 6 days, 18 hours, 33 mins",
+            "earnedAge": "3 weeks, 38 mins",
             "timestamp": 1778305900000,
             "currentValue": 0,
             "targetValue": 0
@@ -31149,7 +31748,7 @@
             "groupName": "BATTLEFIELD™ REDSEC",
             "earned": true,
             "earnedDate": "2/26/2026, 11:27:40 PM",
-            "earnedAge": "3 months, 2 days, 57 mins",
+            "earnedAge": "3 months, 2 days, 7 hours, 2 mins",
             "timestamp": 1772148460000,
             "currentValue": 0,
             "targetValue": 0
@@ -31348,7 +31947,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50656_00/7bce7c84-1f32-44ed-be26-17be00da9444.png",
           "timestamp": 1778305900000,
           "date": "5/9/2026, 5:51:40 AM",
-          "age": "2 weeks, 6 days, 18 hours, 33 mins"
+          "age": "3 weeks, 38 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -31356,7 +31955,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/6575de8d-3035-4497-9ab8-761d0f89d8e1.PNG",
           "timestamp": 1775104350000,
           "date": "4/2/2026, 4:32:30 AM",
-          "age": "1 month, 3 weeks, 6 days, 19 hours, 52 mins"
+          "age": "1 month, 4 weeks, 1 hour, 57 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -31364,7 +31963,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/63dc02ce-bd45-45f9-b0b3-ec139df08d1a.PNG",
           "timestamp": 1775098413000,
           "date": "4/2/2026, 2:53:33 AM",
-          "age": "1 month, 3 weeks, 6 days, 21 hours, 31 mins"
+          "age": "1 month, 4 weeks, 3 hours, 36 mins"
         },
         {
           "game": "Battlefield™ 6",
@@ -31372,7 +31971,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR50656_00/f7cec518-b561-467e-919f-413dba869d04.png",
           "timestamp": 1772148460000,
           "date": "2/26/2026, 11:27:40 PM",
-          "age": "3 months, 2 days, 57 mins"
+          "age": "3 months, 2 days, 7 hours, 2 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -31380,7 +31979,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/7ea0f9c8-9a2c-425f-a70d-82d938c17096.PNG",
           "timestamp": 1768963125000,
           "date": "1/21/2026, 2:38:45 AM",
-          "age": "4 months, 1 week, 1 day, 21 hours, 46 mins"
+          "age": "4 months, 1 week, 2 days, 3 hours, 51 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -31388,7 +31987,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/c49e2529-5f55-429d-95bd-705264f1e725.PNG",
           "timestamp": 1768428250000,
           "date": "1/14/2026, 10:04:10 PM",
-          "age": "4 months, 2 weeks, 1 day, 2 hours, 20 mins"
+          "age": "4 months, 2 weeks, 1 day, 8 hours, 25 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -31396,7 +31995,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/d042261f-a1d3-4173-b2b7-b7bae15b9c0f.PNG",
           "timestamp": 1768361542000,
           "date": "1/14/2026, 3:32:22 AM",
-          "age": "4 months, 2 weeks, 1 day, 20 hours, 52 mins"
+          "age": "4 months, 2 weeks, 2 days, 2 hours, 57 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -31404,7 +32003,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/b3890925-6c3c-423d-89e6-529abb22c728.PNG",
           "timestamp": 1768356898000,
           "date": "1/14/2026, 2:14:58 AM",
-          "age": "4 months, 2 weeks, 1 day, 22 hours, 9 mins"
+          "age": "4 months, 2 weeks, 2 days, 4 hours, 15 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -31412,7 +32011,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/4cd20426-649c-46bb-a90b-0c93feae4c2e.PNG",
           "timestamp": 1767838535000,
           "date": "1/8/2026, 2:15:35 AM",
-          "age": "4 months, 3 weeks, 22 hours, 9 mins"
+          "age": "4 months, 3 weeks, 1 day, 4 hours, 14 mins"
         },
         {
           "game": "Minecraft: PlayStation®5 Edition",
@@ -31420,7 +32019,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR41319_00/397095ac-c631-4e68-9e91-5d8fa8bba17b.PNG",
           "timestamp": 1767751478000,
           "date": "1/7/2026, 2:04:38 AM",
-          "age": "4 months, 3 weeks, 1 day, 22 hours, 20 mins"
+          "age": "4 months, 3 weeks, 2 days, 4 hours, 25 mins"
         }
       ],
       "fullLibrary": [
@@ -32468,7 +33067,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "5/30/2026, 12:25:03 AM"
+      "lastUpdated": "5/30/2026, 6:30:08 AM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -32498,7 +33097,7 @@
       "isOfficiallyVerified": false,
       "isMe": false,
       "accountId": "7742137722487951585",
-      "online": false,
+      "online": true,
       "currentGame": "Trash Goblin",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/11d8eb80-114c-41e4-a719-407c2ac3d551.png",
       "currentGameActivity": null,
@@ -32812,7 +33411,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:47:33 AM",
-            "earnedAge": "3 weeks, 4 days, 23 hours, 37 mins",
+            "earnedAge": "3 weeks, 5 days, 5 hours, 42 mins",
             "timestamp": 1777855653000,
             "currentValue": 0,
             "targetValue": 0
@@ -32835,7 +33434,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:03:28 AM",
-            "earnedAge": "3 weeks, 4 days, 21 hours, 21 mins",
+            "earnedAge": "3 weeks, 5 days, 3 hours, 26 mins",
             "timestamp": 1777863808000,
             "currentValue": 0,
             "targetValue": 0
@@ -32858,7 +33457,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:22:57 AM",
-            "earnedAge": "3 weeks, 4 days, 21 hours, 2 mins",
+            "earnedAge": "3 weeks, 5 days, 3 hours, 7 mins",
             "timestamp": 1777864977000,
             "currentValue": 0,
             "targetValue": 0
@@ -32881,7 +33480,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:48:53 AM",
-            "earnedAge": "3 weeks, 4 days, 23 hours, 36 mins",
+            "earnedAge": "3 weeks, 5 days, 5 hours, 41 mins",
             "timestamp": 1777855733000,
             "currentValue": 0,
             "targetValue": 0
@@ -32904,7 +33503,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:42:00 AM",
-            "earnedAge": "2 weeks, 4 days, 20 hours, 43 mins",
+            "earnedAge": "2 weeks, 5 days, 2 hours, 48 mins",
             "timestamp": 1778470920000,
             "currentValue": 0,
             "targetValue": 0
@@ -32927,7 +33526,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:18:57 AM",
-            "earnedAge": "2 weeks, 4 days, 21 hours, 6 mins",
+            "earnedAge": "2 weeks, 5 days, 3 hours, 11 mins",
             "timestamp": 1778469537000,
             "currentValue": 0,
             "targetValue": 0
@@ -32996,7 +33595,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:37:55 AM",
-            "earnedAge": "3 weeks, 4 days, 19 hours, 47 mins",
+            "earnedAge": "3 weeks, 5 days, 1 hour, 52 mins",
             "timestamp": 1777869475000,
             "currentValue": 0,
             "targetValue": 0
@@ -33019,7 +33618,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:23:29 AM",
-            "earnedAge": "3 weeks, 4 days, 21 hours, 1 min",
+            "earnedAge": "3 weeks, 5 days, 3 hours, 6 mins",
             "timestamp": 1777865009000,
             "currentValue": 0,
             "targetValue": 0
@@ -33065,7 +33664,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 10:49:51 PM",
-            "earnedAge": "3 weeks, 4 days, 1 hour, 35 mins",
+            "earnedAge": "3 weeks, 4 days, 7 hours, 40 mins",
             "timestamp": 1777934991000,
             "currentValue": 0,
             "targetValue": 0
@@ -33088,7 +33687,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:14:40 AM",
-            "earnedAge": "3 weeks, 4 days, 18 hours, 10 mins",
+            "earnedAge": "3 weeks, 5 days, 15 mins",
             "timestamp": 1777875280000,
             "currentValue": 0,
             "targetValue": 0
@@ -33111,7 +33710,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:47:31 AM",
-            "earnedAge": "3 weeks, 4 days, 17 hours, 37 mins",
+            "earnedAge": "3 weeks, 4 days, 23 hours, 42 mins",
             "timestamp": 1777877251000,
             "currentValue": 0,
             "targetValue": 0
@@ -33134,7 +33733,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:03:37 AM",
-            "earnedAge": "3 weeks, 4 days, 20 hours, 21 mins",
+            "earnedAge": "3 weeks, 5 days, 2 hours, 26 mins",
             "timestamp": 1777867417000,
             "currentValue": 0,
             "targetValue": 0
@@ -33157,7 +33756,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 5:22:06 AM",
-            "earnedAge": "3 weeks, 4 days, 19 hours, 2 mins",
+            "earnedAge": "3 weeks, 5 days, 1 hour, 8 mins",
             "timestamp": 1777872126000,
             "currentValue": 0,
             "targetValue": 0
@@ -33295,7 +33894,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:29:38 AM",
-            "earnedAge": "2 weeks, 4 days, 20 hours, 55 mins",
+            "earnedAge": "2 weeks, 5 days, 3 hours",
             "timestamp": 1778470178000,
             "currentValue": 0,
             "targetValue": 0
@@ -33571,7 +34170,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:30:33 AM",
-            "earnedAge": "3 weeks, 4 days, 17 hours, 54 mins",
+            "earnedAge": "3 weeks, 4 days, 23 hours, 59 mins",
             "timestamp": 1777876233000,
             "currentValue": 0,
             "targetValue": 0
@@ -33724,7 +34323,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/21da5d74-5c49-48d4-8d84-85b1fc955825.png",
           "timestamp": 1778470920000,
           "date": "5/11/2026, 3:42:00 AM",
-          "age": "2 weeks, 4 days, 20 hours, 43 mins"
+          "age": "2 weeks, 5 days, 2 hours, 48 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33732,7 +34331,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/79c313b7-af03-4096-b3d1-86090e12f841.png",
           "timestamp": 1778470178000,
           "date": "5/11/2026, 3:29:38 AM",
-          "age": "2 weeks, 4 days, 20 hours, 55 mins"
+          "age": "2 weeks, 5 days, 3 hours"
         },
         {
           "game": "Trash Goblin",
@@ -33740,7 +34339,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/5de40386-ae1c-4294-a4d4-f2e922b8d961.png",
           "timestamp": 1778469537000,
           "date": "5/11/2026, 3:18:57 AM",
-          "age": "2 weeks, 4 days, 21 hours, 6 mins"
+          "age": "2 weeks, 5 days, 3 hours, 11 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33748,7 +34347,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/492e702d-d33c-48c3-a2d3-19075180c76f.png",
           "timestamp": 1777934991000,
           "date": "5/4/2026, 10:49:51 PM",
-          "age": "3 weeks, 4 days, 1 hour, 35 mins"
+          "age": "3 weeks, 4 days, 7 hours, 40 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33756,7 +34355,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/bbb648f0-902a-483d-a9a1-30c6b3f87bf4.png",
           "timestamp": 1777877251000,
           "date": "5/4/2026, 6:47:31 AM",
-          "age": "3 weeks, 4 days, 17 hours, 37 mins"
+          "age": "3 weeks, 4 days, 23 hours, 42 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33764,7 +34363,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/28baea49-5915-4b1b-89db-bf1d84bf1afd.png",
           "timestamp": 1777876233000,
           "date": "5/4/2026, 6:30:33 AM",
-          "age": "3 weeks, 4 days, 17 hours, 54 mins"
+          "age": "3 weeks, 4 days, 23 hours, 59 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33772,7 +34371,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/b2e3576d-a71a-459e-8035-ada1e3ef774b.png",
           "timestamp": 1777875280000,
           "date": "5/4/2026, 6:14:40 AM",
-          "age": "3 weeks, 4 days, 18 hours, 10 mins"
+          "age": "3 weeks, 5 days, 15 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33780,7 +34379,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/791a3e33-6019-4253-9bfa-5de6d1ad58a2.png",
           "timestamp": 1777872126000,
           "date": "5/4/2026, 5:22:06 AM",
-          "age": "3 weeks, 4 days, 19 hours, 2 mins"
+          "age": "3 weeks, 5 days, 1 hour, 8 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33788,7 +34387,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/468002bc-35f9-43f1-add4-c4f9e45a943c.png",
           "timestamp": 1777869475000,
           "date": "5/4/2026, 4:37:55 AM",
-          "age": "3 weeks, 4 days, 19 hours, 47 mins"
+          "age": "3 weeks, 5 days, 1 hour, 52 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33796,7 +34395,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/0ae703ef-cc71-4353-9f33-00190ca95e9d.png",
           "timestamp": 1777867417000,
           "date": "5/4/2026, 4:03:37 AM",
-          "age": "3 weeks, 4 days, 20 hours, 21 mins"
+          "age": "3 weeks, 5 days, 2 hours, 26 mins"
         }
       ],
       "fullLibrary": [
@@ -35558,16 +36157,16 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR13317_00_00E4B29A52980C891B98C9614C8C763CBF06B4A380/B5021CD0BEA80E90D2158A60A801349D8CBD64D2.PNG",
           "lastPlayed": "2023-08-08T04:44:38Z",
           "npServiceName": "trophy",
-          "trophySetVersion": "01.10",
+          "trophySetVersion": "01.09",
           "trophyTitleName": "The Long Dark",
           "trophyTitleDetail": "The trophy set for The Long Dark.",
           "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR13317_00_00E4B29A52980C891B98C9614C8C763CBF06B4A380/B5021CD0BEA80E90D2158A60A801349D8CBD64D2.PNG",
           "trophyTitlePlatform": "PS4",
           "hasTrophyGroups": true,
-          "trophyGroupCount": 6,
+          "trophyGroupCount": 5,
           "definedTrophies": {
-            "bronze": 67,
-            "silver": 16,
+            "bronze": 56,
+            "silver": 15,
             "gold": 4,
             "platinum": 1
           },
@@ -35581,7 +36180,7 @@
           "hiddenFlag": false,
           "lastUpdatedDateTime": "2023-08-08T04:44:38Z",
           "earnedTotal": 2,
-          "definedTotal": 88
+          "definedTotal": 76
         },
         {
           "npCommunicationId": "NPWR16156_00",
@@ -36730,10 +37329,9 @@
           "isMe": false
         },
         "presence": {
-          "availability": "unavailable",
-          "lastAvailableDate": "2026-05-29T09:02:50.266Z",
+          "availability": "availableToPlay",
           "primaryPlatformInfo": {
-            "onlineStatus": "offline",
+            "onlineStatus": "online",
             "platform": "PS5",
             "lastOnlineDate": "2026-05-29T09:02:50.266Z"
           }
@@ -38205,16 +38803,16 @@
           {
             "npServiceName": "trophy",
             "npCommunicationId": "NPWR13317_00",
-            "trophySetVersion": "01.10",
+            "trophySetVersion": "01.09",
             "trophyTitleName": "The Long Dark",
             "trophyTitleDetail": "The trophy set for The Long Dark.",
             "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR13317_00_00E4B29A52980C891B98C9614C8C763CBF06B4A380/B5021CD0BEA80E90D2158A60A801349D8CBD64D2.PNG",
             "trophyTitlePlatform": "PS4",
             "hasTrophyGroups": true,
-            "trophyGroupCount": 6,
+            "trophyGroupCount": 5,
             "definedTrophies": {
-              "bronze": 67,
-              "silver": 16,
+              "bronze": 56,
+              "silver": 15,
               "gold": 4,
               "platinum": 1
             },
@@ -39167,7 +39765,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "5/30/2026, 12:25:15 AM"
+      "lastUpdated": "5/30/2026, 6:30:20 AM"
     },
     "mjolnir": {
       "onlineId": "Michael (Mjolnir)",
@@ -39192,7 +39790,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/30/2026, 12:25:15 AM",
+      "lastUpdated": "5/30/2026, 6:30:20 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -39208,7 +39806,7 @@
         "isLive": false,
         "game": "Nioh",
         "gameArt": null,
-        "followers": "70",
+        "followers": "71",
         "latestFollower": "404 Page Not Found",
         "followerNames": [
           "[DecAPI - /twitch/followers/phoenix_darkfire] 410 Gone - This API has been deprecated/removed"
@@ -39219,7 +39817,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/30/2026, 12:25:15 AM",
+      "lastUpdated": "5/30/2026, 6:30:20 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -39246,7 +39844,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/30/2026, 12:25:15 AM",
+      "lastUpdated": "5/30/2026, 6:30:20 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -39268,12 +39866,12 @@
           "[DecAPI - /twitch/followers/kfruti88] 410 Gone - This API has been deprecated/removed"
         ],
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/2f5a9d7a-b651-4ad4-8af1-b9f0c8fac7b7-profile_image-300x300.png",
-        "age": "12 years, 2 days",
+        "age": "12 years, 3 days",
         "bio": null,
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/30/2026, 12:24:21 AM",
+      "lastUpdated": "5/30/2026, 6:29:31 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -39300,7 +39898,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/30/2026, 12:25:15 AM",
+      "lastUpdated": "5/30/2026, 6:30:21 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -39313,7 +39911,7 @@
       "amazonAffiliateUrl": null,
       "bio": "Official Pack Member Profile",
       "twitch": null,
-      "lastUpdated": "5/30/2026, 12:25:15 AM",
+      "lastUpdated": "5/30/2026, 6:30:21 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -39340,7 +39938,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "5/30/2026, 12:24:43 AM",
+      "lastUpdated": "5/30/2026, 6:29:50 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     }
@@ -39354,17 +39952,17 @@
         "platinum": 5,
         "gold": 78,
         "silver": 222,
-        "bronze": 1013,
-        "total": 1318
+        "bronze": 1014,
+        "total": 1319
       },
       "maxLevel": 234,
       "legacyAge": "3 years, 1 months",
       "legacyRange": {
         "start": "4/18/2023, 11:05:50 PM",
-        "end": "5/29/2026, 2:43:56 AM"
+        "end": "5/30/2026, 5:52:26 AM"
       },
-      "currentGame": "World of Tanks: HEAT",
-      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/5de5e7ae-c3d7-48da-97e3-50890c5f86fb.png",
+      "currentGame": "Tom Clancy’s Ghost Recon® Wildlands",
+      "currentGameArt": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
       "currentActivity": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_E/E0004_s.png",
       "bio": "6C3RG",
@@ -39372,7 +39970,7 @@
         "werewolf",
         "kfruti"
       ],
-      "lastUpdated": "5/30/2026, 12:25:15 AM"
+      "lastUpdated": "5/30/2026, 6:30:21 AM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -39382,14 +39980,14 @@
         "platinum": 0,
         "gold": 9,
         "silver": 34,
-        "bronze": 138,
-        "total": 181
+        "bronze": 141,
+        "total": 184
       },
       "maxLevel": 66,
       "legacyAge": "5 months",
       "legacyRange": {
         "start": "12/22/2025, 11:15:30 AM",
-        "end": "5/29/2026, 10:21:58 PM"
+        "end": "5/30/2026, 5:44:33 AM"
       },
       "currentGame": "Construction Simulator",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
@@ -39400,7 +39998,7 @@
         "darkwing",
         "darkterro"
       ],
-      "lastUpdated": "5/30/2026, 12:25:15 AM"
+      "lastUpdated": "5/30/2026, 6:30:21 AM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -39427,7 +40025,7 @@
       "accounts": [
         "ray"
       ],
-      "lastUpdated": "5/30/2026, 12:25:15 AM"
+      "lastUpdated": "5/30/2026, 6:30:21 AM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -39444,7 +40042,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/30/2026, 12:25:15 AM"
+        "end": "5/30/2026, 6:30:21 AM"
       },
       "currentGame": "Nioh",
       "currentGameArt": null,
@@ -39453,7 +40051,7 @@
       "accounts": [
         "phoenix"
       ],
-      "lastUpdated": "5/30/2026, 12:25:15 AM"
+      "lastUpdated": "5/30/2026, 6:30:21 AM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -39480,7 +40078,7 @@
       "accounts": [
         "marc"
       ],
-      "lastUpdated": "5/30/2026, 12:25:15 AM"
+      "lastUpdated": "5/30/2026, 6:30:21 AM"
     },
     "JCrow": {
       "displayName": "JCrow",
@@ -39507,11 +40105,11 @@
       "accounts": [
         "jcrow"
       ],
-      "lastUpdated": "5/30/2026, 12:25:15 AM"
+      "lastUpdated": "5/30/2026, 6:30:21 AM"
     },
     "Shiv": {
       "displayName": "Shiv",
-      "isOnline": false,
+      "isOnline": true,
       "primaryOnlineId": "UnicornBunnyShiv",
       "combinedTrophies": {
         "platinum": 0,
@@ -39534,7 +40132,7 @@
       "accounts": [
         "bunny"
       ],
-      "lastUpdated": "5/30/2026, 12:25:15 AM"
+      "lastUpdated": "5/30/2026, 6:30:21 AM"
     },
     "Michael": {
       "displayName": "Michael",
@@ -39551,7 +40149,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/30/2026, 12:25:15 AM"
+        "end": "5/30/2026, 6:30:21 AM"
       },
       "currentGame": "Police Simulator: Patrol Officers",
       "currentGameArt": null,
@@ -39560,7 +40158,7 @@
       "accounts": [
         "mjolnir"
       ],
-      "lastUpdated": "5/30/2026, 12:25:15 AM"
+      "lastUpdated": "5/30/2026, 6:30:21 AM"
     },
     "Queen": {
       "displayName": "Queen",
@@ -39577,7 +40175,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/30/2026, 12:25:15 AM"
+        "end": "5/30/2026, 6:30:21 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -39586,7 +40184,7 @@
       "accounts": [
         "queen"
       ],
-      "lastUpdated": "5/30/2026, 12:25:15 AM"
+      "lastUpdated": "5/30/2026, 6:30:21 AM"
     },
     "Balto": {
       "displayName": "Balto",
@@ -39603,7 +40201,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/30/2026, 12:25:15 AM"
+        "end": "5/30/2026, 6:30:21 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -39612,7 +40210,7 @@
       "accounts": [
         "balto"
       ],
-      "lastUpdated": "5/30/2026, 12:25:15 AM"
+      "lastUpdated": "5/30/2026, 6:30:21 AM"
     },
     "Memorial": {
       "displayName": "Memorial",
@@ -39629,7 +40227,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "5/30/2026, 12:25:15 AM"
+        "end": "5/30/2026, 6:30:21 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -39638,7 +40236,7 @@
       "accounts": [
         "oldman"
       ],
-      "lastUpdated": "5/30/2026, 12:25:15 AM"
+      "lastUpdated": "5/30/2026, 6:30:21 AM"
     }
   },
   "mutualSquadFollowers": [
@@ -39647,7 +40245,7 @@
       "sharedConnections": 2
     }
   ],
-  "lastGlobalUpdate": "5/30/2026, 12:24:06 AM",
+  "lastGlobalUpdate": "5/30/2026, 6:29:18 AM",
   "engineVersion": "13.9.1",
   "codeTimestamp": "Sunday, May 10, 2026 | 11:45 PM EDT"
 }
