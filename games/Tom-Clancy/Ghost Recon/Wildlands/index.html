@@ -18,16 +18,25 @@
             --medal-gold: #ffcc00;
         }
     </style>
-    <link rel="stylesheet" href="style.css?v=2.3">
+    <link rel="stylesheet" href="style.css?v=2.4">
 </head>
 <body>
 
     <header class="hub-header">
         <div class="header-container">
             <h1 class="logo-text">GHOST HUB</h1>
+            
+            <div class="directory-dropdown-wrapper">
+                <button id="directoryMenuBtn" class="control-btn outline-text" style="font-weight:bold; border-color:var(--primary-orange); color:var(--primary-orange);">📁 Intel Directory</button>
+                <div id="directoryDropdownContent" class="directory-menu-pane hidden">
+                    <div id="directoryLoading" style="padding:12px; font-size:12px; color:#8a99ad; text-align:center;">Fetching tactical assets...</div>
+                    </div>
+            </div>
+
             <div class="user-selector-wrapper">
                 <select id="userSelect" class="styled-select"></select>
             </div>
+            
             <div class="ui-controls">
                 <button id="toggleUiSettings" class="control-btn">🔧</button>
                 <div id="uiSettingsPanel" class="settings-dropdown hidden">
@@ -216,12 +225,12 @@
             <div class="kf-watermark">
                 <span class="k-letter">K</span><span class="f-letter">F</span>
             </div>
-            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-0445</p>
+            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-0453</p>
         </div>
     </footer>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="app.js?v=2.3"></script>
+    <script src="app.js?v=2.4"></script>
 </body>
 </html>
