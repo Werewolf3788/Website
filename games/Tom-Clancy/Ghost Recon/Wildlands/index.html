@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9M5LXQ5XN');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ghost Recon Wildlands Squad Hub</title>
+    <title>Ghost Recon Wildlands Squad Operations Hub</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -30,7 +37,7 @@
                 <button id="directoryMenuBtn" class="control-btn outline-text" style="font-weight:bold; border-color:var(--primary-orange); color:var(--primary-orange);">📁 Intel Directory</button>
                 <div id="directoryDropdownContent" class="directory-menu-pane hidden">
                     <div id="directoryLoading" style="padding:12px; font-size:12px; color:#8a99ad; text-align:center;">Fetching tactical assets...</div>
-                    </div>
+                </div>
             </div>
 
             <div class="user-selector-wrapper">
@@ -43,9 +50,9 @@
                     <div class="setting-item">
                         <label>Theme Mode:</label>
                         <select id="themeModeSelect">
+                            <option value="system" selected>Match System</option>
                             <option value="bright">Bright</option>
                             <option value="dark">Dark</option>
-                            <option value="system">Match System</option>
                         </select>
                     </div>
                     <div class="setting-item">
@@ -225,12 +232,19 @@
             <div class="kf-watermark">
                 <span class="k-letter">K</span><span class="f-letter">F</span>
             </div>
-            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-0453</p>
+            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-1402</p>
         </div>
     </footer>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="app.js?v=2.4"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+            });
+        }
+    </script>
 </body>
 </html>
