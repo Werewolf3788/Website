@@ -1,8 +1,8 @@
 /**
  * Ghost Recon Wildlands Progression Hub Engine
- * Verification: NYT-20260530-0227
+ * Verification: NYT-20260530-0239
  * * NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE
- * (Appended live configuration parameters into initialization routine block)
+ * (Updated Drone tree data tracking structure array to represent 13 specific skill lines)
  */
 
 // Global Variables Configuration Space Definitions
@@ -31,10 +31,19 @@ const DEFAULT_SQUAD_PROFILES = {
                 { id: "vhc_destruction", name: "VHC Destruction", current: 4, max: 4 }
             ],
             "DRONE": [
-                { id: "battery", name: "Battery Increase", current: 4, max: 4 },
-                { id: "cooldown", name: "Cooldown Speed", current: 3, max: 4 },
-                { id: "stealth_drone", name: "Drone Stealth", current: 2, max: 4 },
-                { id: "mark_area", name: "Mark Area Expansion", current: 3, max: 4 }
+                { id: "battery_increase", name: "Battery Increase", current: 4, max: 4 },
+                { id: "night_vision", name: "Night Vision", current: 1, max: 1 },
+                { id: "range", name: "Range", current: 4, max: 5 }, // 4 + Bonus Medal
+                { id: "speed", name: "Speed", current: 2, max: 3 }, // 2 + Bonus Medal
+                { id: "mark_area", name: "Mark Area", current: 4, max: 5 }, // 4 + Bonus Medal
+                { id: "stealth", name: "Stealth", current: 1, max: 1 },
+                { id: "cooldown", name: "Cooldown", current: 5, max: 5 }, // 4 + Bonus Medal (Maxed)
+                { id: "noisemaker", name: "NoiseMaker", current: 2, max: 4 },
+                { id: "zoom", name: "Zoom", current: 1, max: 1 },
+                { id: "explosive", name: "Explosive", current: 2, max: 4 },
+                { id: "emp", name: "EMP", current: 3, max: 4 },
+                { id: "armor", name: "Armor", current: 4, max: 5 }, // 3 + Bonus Medal (Represented as 4/5)
+                { id: "thermal_vision", name: "Thermal Vision", current: 1, max: 1 }
             ],
             "ITEM": [
                 { id: "parachute", name: "Parachute Deployment", current: 1, max: 1 },
@@ -72,8 +81,8 @@ const DEFAULT_SQUAD_PROFILES = {
                 { id: "grenade_launcher", name: "Grenade Launcher", current: 0, max: 1 }
             ],
             "DRONE": [
-                { id: "battery", name: "Battery Increase", current: 2, max: 4 },
-                { id: "cooldown", name: "Cooldown Speed", current: 4, max: 4 }
+                { id: "battery_increase", name: "Battery Increase", current: 4, max: 4 },
+                { id: "night_vision", name: "Night Vision", current: 1, max: 1 }
             ]
         }
     }
@@ -89,7 +98,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function initializeFirebaseApp() {
-    // Integrated active live target Firebase credentials smoothly without modifying operational frameworks
     const firebaseConfig = {
         apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
         authDomain: "game-tracker-5b2ef.firebaseapp.com",
@@ -326,74 +334,4 @@ function evaluateDynamicTimeTheme() {
     
     if (isNighttime) {
         executeThemeChangeLogic("dark");
-        document.getElementById("themeModeSelect").value = "dark";
-    } else {
-        executeThemeChangeLogic("bright");
-        document.getElementById("themeModeSelect").value = "bright";
-    }
-}
-
-function executeThemeChangeLogic(themeMode) {
-    if (themeMode === "dark") {
-        document.body.classList.remove("bright-mode");
-    } else if (themeMode === "bright") {
-        document.body.classList.add("bright-mode");
-    } else if (themeMode === "system") {
-        const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        document.body.classList.toggle("bright-mode", !systemPrefersDark);
-    }
-}
-
-// 8. Named Window Targeting / Cross-Tab State Synchronization Interface Module
-function setupInterTabSynchronization() {
-    window.addEventListener("storage", (event) => {
-        if (event.key === "itc_active_ghost_operator" && event.newValue) {
-            const incomingOperatorTargetKey = event.newValue;
-            const selectorElement = document.getElementById("userSelect");
-            if (selectorElement && selectorElement.value !== incomingOperatorTargetKey) {
-                selectorElement.value = incomingOperatorTargetKey;
-                currentSelectedUser = incomingOperatorTargetKey;
-                
-                if (database) {
-                    database.ref(`ghost_squad/operators/${incomingOperatorTargetKey}`).once("value", snapshot => {
-                        if (snapshot.exists()) renderTargetProfileData(snapshot.val());
-                    });
-                } else {
-                    renderTargetProfileData(DEFAULT_SQUAD_PROFILES[incomingOperatorTargetKey]);
-                }
-            }
-        }
-    });
-}
-
-// 9. Persistence Helper Functions (Cookie Operations Base Layer Definitions)
-function setCookiePreference(name, value, days) {
-    const date = new Date();
-    date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-    const expires = "; expires=" + date.toUTCString();
-    document.cookie = name + "=" + (value || "") + expires + "; path=/; SameSite=Strict";
-}
-
-// Simple internal parsing rule tracking structure loop
-function getCookiePreference(name) {
-    const nameEQ = name + "=";
-    const ca = document.cookie.split(';');
-    for(let i=0; i < ca.length; i++) {
-        let c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
-}
-
-function loadTypographyPreferences() {
-    const savedOutlineColor = getCookiePreference("ui_text_outline_color") || "#000000";
-    const savedFontStyle = getCookiePreference("ui_font_style_setting") || "default";
-    
-    document.getElementById("outlineColorPicker").value = savedOutlineColor;
-    document.getElementById("fontStyleSelect").value = savedFontStyle;
-    
-    setTimeout(() => {
-        applyConditionalTypographyLogic(savedOutlineColor, savedFontStyle);
-    }, 200);
-}
+        document.getElementById("themeMode
