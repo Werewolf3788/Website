@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghost Recon Wildlands Squad Hub</title>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        /* Embedding primary layout rules directly for fallback stability */
+        :root {
+            --bar-height: clamp(50px, 8vh, 90px);
+            --primary-orange: #FF4500;
+            --solid-black: #000000;
+            --ghost-blue: #28a745;
+            --node-blue: #0076a8;
+            --node-locked: #1c2430;
+        }
+    </style>
+    <link rel="stylesheet" href="style.css?v=1.1">
+</head>
+<body>
+
+    <header class="hub-header">
+        <div class="header-container">
+            <h1 class="logo-text">GHOST SQUAD HUB</h1>
+            <div class="user-selector-wrapper">
+                <label for="userSelect" class="outline-text">Operator:</label>
+                <select id="userSelect" class="styled-select"></select>
+            </div>
+            <div class="ui-controls">
+                <button id="toggleUiSettings" class="control-btn">🔧 Settings</button>
+                <div id="uiSettingsPanel" class="settings-dropdown hidden">
+                    <div class="setting-item">
+                        <label>Theme Mode:</label>
+                        <select id="themeModeSelect">
+                            <option value="bright">Bright</option>
+                            <option value="dark">Dark</option>
+                            <option value="system">Match System</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Text Outline Color:</label>
+                        <input type="color" id="outlineColorPicker" value="#000000">
+                    </div>
+                    <div class="setting-item">
+                        <label>Font Style:</label>
+                        <select id="fontStyleSelect">
+                            <option value="default">Ghost Default</option>
+                            <option value="monospace">Tactical Mono</option>
+                            <option value="sans-serif">Clean Sans</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="hub-container">
+        
+        <section class="card-panel profile-panel">
+            <div class="profile-header">
+                <h2 id="operatorName" class="outline-text">Operator</h2>
+                <div class="tier-badge-container">
+                    <span class="tier-label">TIER</span>
+                    <span id="tierLevel" class="tier-value">--</span>
+                </div>
+            </div>
+            
+            <div class="stat-group">
+                <h3>Playstyle: <span id="playstyleType">Overwatch</span></h3>
+                <div class="progress-bar-container">
+                    <div class="progress-labels">
+                        <span>Tactical Precision</span>
+                        <span id="tacticalValue">0%</span>
+                    </div>
+                    <div class="bar-bg"><div id="tacticalBar" class="bar-fill"></div></div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-labels">
+                        <span>Stealth Kills</span>
+                        <span id="stealthValue">0%</span>
+                    </div>
+                    <div class="bar-bg"><div id="stealthBar" class="bar-fill"></div></div>
+                </div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box"><h4>Avg Kill Distance</h4><p id="avgKillDist">--</p></div>
+                <div class="stat-box"><h4>Longest Shot</h4><p id="longestShot">--</p></div>
+                <div class="stat-box"><h4>Teammates Revived</h4><p id="teammatesRevived">--</p></div>
+                <div class="stat-box"><h4>C4/Mine Kills</h4><p id="c4MineKills">--</p></div>
+            </div>
+        </section>
+
+        <section class="card-panel skills-panel">
+            <div class="skills-tabs">
+                <button class="tab-link active" onclick="switchSkillCategory('WEAPON')">Weapon</button>
+                <button class="tab-link" onclick="switchSkillCategory('DRONE')">Drone</button>
+                <button class="tab-link" onclick="switchSkillCategory('ITEM')">Item</button>
+                <button class="tab-link" onclick="switchSkillCategory('PHYSICAL')">Physical</button>
+                <button class="tab-link" onclick="switchSkillCategory('SQUAD')">Squad</button>
+            </div>
+            
+            <div id="skillsTreeGrid" class="skills-tree-grid">
+                </div>
+        </section>
+
+    </main>
+
+    <footer class="hub-footer">
+        <div class="footer-container">
+            <div class="kf-watermark">
+                <span class="k-letter">K</span><span class="f-letter">F</span>
+            </div>
+            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-0225</p>
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="app.js?v=1.1"></script>
+    <script>
+        // PWA Service Worker Registration
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+            });
+        }
+    </script>
+</body>
+</html>
