@@ -1,8 +1,8 @@
 /**
  * Ghost Recon Wildlands Progression Hub Engine
- * Verification: NYT-20260530-0445
+ * Verification: NYT-20260530-0453
  * * NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE
- * (Restored unrestricted access layout loops while keeping the complete database structures completely intact)
+ * (Added dynamic Google Spreadsheets CSV publishing scraper parser tool routines)
  */
 
 let database;
@@ -74,7 +74,6 @@ const BASELINE_SKILLS_BLUEPRINT = {
         { id: "spotting", name: "Rebel Spotting", max: 9, hasMedal: false }
     ],
     "TROPHY": [
-        /* === REGIONAL INTEL MAP CHEST OVERLAYS === */
         { id: "col_av_sr3m", name: "SR3M (Assault Rifle)", desc: "Weapon Casing Location: Agua Verde", max: 1, sub: "WEAPONS" },
         { id: "col_av_pp19", name: "PP19 (Submachine Gun)", desc: "Weapon Casing Location: Agua Verde", max: 1, sub: "WEAPONS" },
         { id: "col_av_sasg12", name: "SASG-12 (Shotgun)", desc: "Weapon Casing Location: Agua Verde", max: 1, sub: "WEAPONS" },
@@ -126,8 +125,6 @@ const BASELINE_SKILLS_BLUEPRINT = {
         { id: "col_vv_805bren", name: "805 Bren A2 (Assault)", desc: "Weapon Casing Location: Villa Verde", max: 1, sub: "WEAPONS" },
         { id: "col_vv_svd", name: "Dragunov (SVD) (Sniper)", desc: "Weapon Casing Location: Villa Verde", max: 1, sub: "WEAPONS" },
         { id: "col_vv_m9", name: "M9 (Handgun)", desc: "Weapon Casing Location: Villa Verde", max: 1, sub: "WEAPONS" },
-
-        /* === MAP BONUS MEDALS === */
         { id: "md_air_sh", name: "Aircraft Shield", desc: "Bonus Medal Location: Barvechos", max: 1, sub: "MEDALS" },
         { id: "md_ammo_cap", name: "Ammo Capacity", desc: "Bonus Medal Location: Barvechos", max: 1, sub: "MEDALS" },
         { id: "md_bin_rec", name: "Binocular Recon", desc: "Bonus Medal Location: Caimanes", max: 1, sub: "MEDALS" },
@@ -153,8 +150,6 @@ const BASELINE_SKILLS_BLUEPRINT = {
         { id: "md_resil", name: "Squad Resilience", desc: "Bonus Medal Location: Remanzo", max: 1, sub: "MEDALS" },
         { id: "md_aim", name: "Stable Aim", desc: "Bonus Medal Location: San Mateo", max: 1, sub: "MEDALS" },
         { id: "md_time_aim", name: "Time To Aim", desc: "Bonus Medal Location: Tabacal", max: 1, sub: "MEDALS" },
-
-        /* === ACCESSORY CASE PARTS === */
         { id: "sc_ta31h", name: "TA31H Scope", desc: "Location: Espiritu Santo (AR, Sniper)", max: 1, sub: "SCOPES" },
         { id: "sc_pkas", name: "PK-AS Scope", desc: "Location: Itacua (SMG, AR)", max: 1, sub: "SCOPES" },
         { id: "sc_panoramic", name: "Panoramic Sight", desc: "Location: Itacua (SMG, Shotgun, AR, LMG)", max: 1, sub: "SCOPES" },
@@ -168,8 +163,6 @@ const BASELINE_SKILLS_BLUEPRINT = {
         { id: "sc_micro", name: "Micro T-1 Scope", desc: "Location: Malaca (SMG, Shotgun, AR, LMG)", max: 1, sub: "SCOPES" },
         { id: "sc_compm4", name: "CompM4 Scope", desc: "Location: Ocoro (SMG, AR)", max: 1, sub: "SCOPES" },
         { id: "sc_posp", name: "POSP Scope", desc: "Location: Koani (AR, Sniper)", max: 1, sub: "SCOPES" },
-
-        /* === BASE IN-GAME ACHIEVEMENTS === */
         { id: "tr_amaru", name: "A Good Start", desc: "Completed the first mission 'Amaru's rescue'.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "A Good Start" },
         { id: "tr_symp", name: "Rebel Sympathizer", desc: "Unlocked a Rebel skill.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Rebel Sympathizer" },
         { id: "tr_boss", name: "Beat the Boss", desc: "Defeated your first boss.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Beat the Boss" },
@@ -262,6 +255,8 @@ document.addEventListener("DOMContentLoaded", () => {
     evaluateDynamicTimeTheme();
     loadTypographyPreferences();
     setupInterTabSynchronization();
+    // Instantly bootstrap dynamic spreadsheet data retrieval channels on startup
+    fetchTacticalIntelDirectory();
 });
 
 function initializeFirebaseApp() {
@@ -278,6 +273,97 @@ function initializeFirebaseApp() {
     database = firebase.database();
     synchronizeWithFirebaseDatabase();
     executeLivePsnTrophySync();
+}
+
+// GOOGLE SPREADSHEETS CSV PARSING AND RENDERING LOGIC LAYER
+function fetchTacticalIntelDirectory() {
+    const targetPublishedCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
+
+    fetch(targetPublishedCsvUrl)
+        .then(res => { if (!res.ok) throw new Error("CSV sheet unreadable"); return res.text(); })
+        .then(csvRawText => {
+            document.getElementById("directoryLoading").remove();
+            processAndRenderDirectoryRows(csvRawText);
+        })
+        .catch(err => {
+            document.getElementById("directoryLoading").textContent = "Intel Directory Offline.";
+        });
+}
+
+function processAndRenderDirectoryRows(csvText) {
+    const menuContainer = document.getElementById("directoryDropdownContent");
+    
+    // Split text cleanly by line breaks into array slots
+    const rawLines = csvText.split(/\r?\n/);
+    const folderGroupMaps = {};
+    const standaloneDirectLinks = [];
+
+    // Parse loop skips header row index 0 seamlessly
+    for (let i = 1; i < rawLines.length; i++) {
+        const line = rawLines[i].trim();
+        if (!line) continue;
+
+        // Clean split commas tracking quotes safely
+        const columns = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+        if (columns.length < 3) continue;
+
+        const nameStr = columns[0].replace(/^"|"$/g, '').trim();
+        const folderStr = columns[1].replace(/^"|"$/g, '').trim();
+        const targetUrl = columns[2].replace(/^"|"$/g, '').trim();
+        const thumbUrl = columns[3] ? columns[3].replace(/^"|"$/g, '').trim() : "";
+
+        if (!nameStr || !targetUrl) continue;
+
+        const linkObjectData = { name: nameStr, url: targetUrl, img: thumbUrl };
+
+        if (folderStr) {
+            if (!folderGroupMaps[folderStr]) folderGroupMaps[folderStr] = [];
+            folderGroupMaps[folderStr].push(linkObjectData);
+        } else {
+            standaloneDirectLinks.push(linkObjectData);
+        }
+    }
+
+    // Render grouped folders cleanly into the container dropdown
+    Object.keys(folderGroupMaps).forEach(folderName => {
+        const folderBlock = document.createElement("div");
+        folderBlock.className = "dir-folder-container";
+
+        const folderTitle = document.createElement("div");
+        folderTitle.className = "dir-folder-title";
+        folderTitle.innerHTML = `📁 ${folderName}`;
+        folderBlock.appendChild(folderTitle);
+
+        folderGroupMaps[folderName].forEach(item => {
+            folderBlock.appendChild(createDirectoryItemAnchorElement(item));
+        });
+
+        menuContainer.appendChild(folderBlock);
+    });
+
+    // Append standard loose individual links onto the container dropdown bounds
+    standaloneDirectLinks.forEach(item => {
+        menuContainer.appendChild(createDirectoryItemAnchorElement(item));
+    });
+}
+
+function createDirectoryItemAnchorElement(item) {
+    const anchor = document.createElement("a");
+    anchor.className = "dir-item-link";
+    anchor.href = item.url;
+    anchor.target = "_blank"; // Implement Cross-Tab Named targeting behavior safely
+    anchor.setAttribute("rel", "noopener noreferrer");
+
+    let imgHtml = "";
+    if (item.img) {
+        imgHtml = `<img src="${item.img}" class="dir-thumb-img" alt="">`;
+    }
+
+    anchor.innerHTML = `
+        ${imgHtml}
+        <span>${item.name}</span>
+    `;
+    return anchor;
 }
 
 function executeLivePsnTrophySync() {
@@ -517,6 +603,21 @@ function toggleSkillMedalStatus(category, skillId, currentLevel, nextMedalState)
 }
 
 function setupInterfaceControls() {
+    // Dynamic Intel Directory popup click listener
+    document.getElementById("directoryMenuBtn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        document.getElementById("directoryDropdownContent").classList.toggle("hidden");
+    });
+
+    // Close directory click listener if tapping blank container fields outside drop pane boundaries
+    document.addEventListener("click", () => {
+        document.getElementById("directoryDropdownContent").classList.add("hidden");
+    });
+
+    document.getElementById("directoryDropdownContent").addEventListener("click", (e) => {
+        e.stopPropagation();
+    });
+
     const userSelect = document.getElementById("userSelect");
     userSelect.addEventListener("change", (e) => {
         currentSelectedUser = e.target.value; localStorage.setItem("itc_active_ghost_operator", currentSelectedUser);
