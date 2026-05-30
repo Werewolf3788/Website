@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ghost Recon Wildlands Squad Hub</title>
     <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <style>
         :root {
-            --bar-height: clamp(50px, 8vh, 90px);
+            --bar-height: clamp(60px, 10vh, 90px);
             --primary-orange: #FF4500;
             --solid-black: #000000;
             --ghost-blue: #28a745;
@@ -16,19 +18,18 @@
             --medal-gold: #ffcc00;
         }
     </style>
-    <link rel="stylesheet" href="style.css?v=1.3">
+    <link rel="stylesheet" href="style.css?v=2.1">
 </head>
 <body>
 
     <header class="hub-header">
         <div class="header-container">
-            <h1 class="logo-text">GHOST SQUAD HUB</h1>
+            <h1 class="logo-text">GHOST HUB</h1>
             <div class="user-selector-wrapper">
-                <label for="userSelect" class="outline-text">Operator:</label>
                 <select id="userSelect" class="styled-select"></select>
             </div>
             <div class="ui-controls">
-                <button id="toggleUiSettings" class="control-btn">🔧 Settings</button>
+                <button id="toggleUiSettings" class="control-btn">🔧</button>
                 <div id="uiSettingsPanel" class="settings-dropdown hidden">
                     <div class="setting-item">
                         <label>Theme Mode:</label>
@@ -60,14 +61,18 @@
         <section class="card-panel profile-panel">
             <div class="profile-header">
                 <h2 id="operatorName" class="outline-text">Operator</h2>
-                <div class="tier-badge-container">
+                <div id="tierContainer" class="tier-badge-container">
                     <span class="tier-label">TIER</span>
                     <span id="tierLevel" class="tier-value">--</span>
                 </div>
             </div>
             
-            <div class="stat-group">
-                <h3>Playstyle: <span id="playstyleType">Unassigned</span></h3>
+            <div class="stat-category-block">
+                <h3 class="category-header">PLAYSTYLE <span id="playstyleType" class="header-highlight">--</span></h3>
+                <div class="stat-row">
+                    <span>Average Kill Distance</span>
+                    <span id="avgKillDist" class="stat-val">--</span>
+                </div>
                 <div class="progress-bar-container">
                     <div class="progress-labels">
                         <span>Tactical Precision</span>
@@ -84,11 +89,109 @@
                 </div>
             </div>
 
-            <div class="stats-grid">
-                <div class="stat-box"><h4>Avg Kill Distance</h4><p id="avgKillDist">--</p></div>
-                <div class="stat-box"><h4>Longest Shot</h4><p id="longestShot">--</p></div>
-                <div class="stat-box"><h4>Teammates Revived</h4><p id="teammatesRevived">--</p></div>
-                <div class="stat-box"><h4>C4/Mine Kills</h4><p id="c4MineKills">--</p></div>
+            <div class="stat-category-block cinematic-wrapper">
+                <h3 class="category-header">COMBAT</h3>
+                <div class="stat-row">
+                    <span>Lifetime</span>
+                    <span id="statLifetime" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Longest Shot</span>
+                    <span id="longestShot" class="stat-val">--</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-labels">
+                        <span>Precision</span>
+                        <span id="precisionValue">0%</span>
+                    </div>
+                    <div class="bar-bg"><div id="precisionBar" class="bar-fill"></div></div>
+                </div>
+                <div class="weapons-fav-row">
+                    <div class="weapon-tag"><strong>Favorite Weapon:</strong> <span id="favWeapon">--</span></div>
+                    <div class="weapon-tag"><strong>2nd Favorite Weapon:</strong> <span id="favWeapon2">--</span></div>
+                </div>
+            </div>
+
+            <div class="stat-category-block">
+                <h3 class="category-header">SUPPORT</h3>
+                <div class="stat-row">
+                    <span>Teammates Revived</span>
+                    <span id="teammatesRevived" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>C4/Mine Kills</span>
+                    <span id="c4MineKills" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Drone Used</span>
+                    <span id="statDroneUsed" class="stat-val">--</span>
+                </div>
+            </div>
+
+            <div class="stat-category-block">
+                <h3 class="category-header">TRAVEL</h3>
+                <div class="stat-row">
+                    <span>Air</span>
+                    <span id="travelAir" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Ground</span>
+                    <span id="travelGround" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Parachute</span>
+                    <span id="travelPara" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Map Discovered</span>
+                    <span id="travelMap" class="stat-val">--</span>
+                </div>
+            </div>
+
+            <div class="steam-widget-card">
+                <iframe src="https://store.steampowered.com/widget/460930/" frameborder="0" width="100%" height="190"></iframe>
+            </div>
+
+            <div class="edit-stats-trigger-container">
+                <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Comprehensive Ghost Profile</button>
+            </div>
+
+            <div id="editStatsPanel" class="edit-stats-panel hidden">
+                <div class="edit-row">
+                    <label>Tier One Mode:</label>
+                    <select id="editTierMode">
+                        <option value="off">Off / Not Reached</option>
+                        <option value="on">Active</option>
+                    </select>
+                    <input type="number" id="editTierLevel" min="1" max="50" placeholder="Lvl">
+                </div>
+                <hr class="panel-divider">
+                
+                <h4 class="form-section-title">Playstyle & Combat</h4>
+                <div class="edit-grid-inputs">
+                    <div><label>Playstyle Title</label><input type="text" id="editPlaystyle"></div>
+                    <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist"></div>
+                    <div><label>Tactical %</label><input type="number" id="editTactical"></div>
+                    <div><label>Stealth %</label><input type="number" id="editStealth"></div>
+                    <div><label>Lifetime</label><input type="text" id="editLifetime"></div>
+                    <div><label>Longest Shot</label><input type="text" id="editLongest"></div>
+                    <div><label>Precision %</label><input type="number" id="editPrecision"></div>
+                    <div><label>Fav Weapon</label><input type="text" id="editFav1"></div>
+                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><input type="text" id="editFav2"></div>
+                </div>
+
+                <h4 class="form-section-title">Support & Travel</h4>
+                <div class="edit-grid-inputs">
+                    <div><label>Revived</label><input type="number" id="editRevives"></div>
+                    <div><label>Explosive Kills</label><input type="number" id="editExplosiveKills"></div>
+                    <div><label>Drone Used</label><input type="text" id="editDroneTime"></div>
+                    <div><label>Air Travel</label><input type="text" id="editAir"></div>
+                    <div><label>Ground Travel</label><input type="text" id="editGround"></div>
+                    <div><label>Parachute</label><input type="text" id="editPara"></div>
+                    <div><label>Map Disc. %</label><input type="text" id="editMap"></div>
+                </div>
+
+                <button id="saveStatsBtn" class="save-stats-btn">Save Tactical Update</button>
             </div>
         </section>
 
@@ -99,10 +202,11 @@
                 <button class="tab-link" onclick="switchSkillCategory('ITEM')">Item</button>
                 <button class="tab-link" onclick="switchSkillCategory('PHYSICAL')">Physical</button>
                 <button class="tab-link" onclick="switchSkillCategory('SQUAD')">Squad</button>
+                <button class="tab-link" onclick="switchSkillCategory('REBEL')">Rebel</button>
+                <button class="tab-link" onclick="switchSkillCategory('TROPHY')">Trophies & Recon</button>
             </div>
             
-            <div id="skillsTreeGrid" class="skills-tree-grid">
-                </div>
+            <div id="skillsTreeGrid" class="skills-tree-grid"></div>
         </section>
 
     </main>
@@ -112,19 +216,12 @@
             <div class="kf-watermark">
                 <span class="k-letter">K</span><span class="f-letter">F</span>
             </div>
-            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-0243</p>
+            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-0403</p>
         </div>
     </footer>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="app.js?v=1.3"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
-            });
-        }
-    </script>
+    <script src="app.js?v=2.1"></script>
 </body>
 </html>
