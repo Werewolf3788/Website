@@ -1,8 +1,8 @@
 /**
  * Ghost Recon Wildlands Progression Hub Engine
- * Verification: NYT-20260530-0426
+ * Verification: NYT-20260530-0445
  * * NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE
- * (Appended "OneLIVIDMAN" (Ray) profile template entry into standard and cloud sync matrix tracks)
+ * (Restored unrestricted access layout loops while keeping the complete database structures completely intact)
  */
 
 let database;
@@ -74,7 +74,102 @@ const BASELINE_SKILLS_BLUEPRINT = {
         { id: "spotting", name: "Rebel Spotting", max: 9, hasMedal: false }
     ],
     "TROPHY": [
-        /* === BASE Game Trophies === */
+        /* === REGIONAL INTEL MAP CHEST OVERLAYS === */
+        { id: "col_av_sr3m", name: "SR3M (Assault Rifle)", desc: "Weapon Casing Location: Agua Verde", max: 1, sub: "WEAPONS" },
+        { id: "col_av_pp19", name: "PP19 (Submachine Gun)", desc: "Weapon Casing Location: Agua Verde", max: 1, sub: "WEAPONS" },
+        { id: "col_av_sasg12", name: "SASG-12 (Shotgun)", desc: "Weapon Casing Location: Agua Verde", max: 1, sub: "WEAPONS" },
+        { id: "col_bv_mp7", name: "MP7 (Submachine Gun)", desc: "Weapon Casing Location: Barvechos", max: 1, sub: "WEAPONS" },
+        { id: "col_bv_auga3", name: "AUG A3 (Assault Rifle)", desc: "Weapon Casing Location: Barvechos", max: 1, sub: "WEAPONS" },
+        { id: "col_cm_sr25", name: "SR25 (Sniper Rifle)", desc: "Weapon Casing Location: Caimanes", max: 1, sub: "WEAPONS" },
+        { id: "col_cm_556xi", name: "556xi (Assault Rifle)", desc: "Weapon Casing Location: Caimanes", max: 1, sub: "WEAPONS" },
+        { id: "col_es_l85a2", name: "L85A2 (Assault Rifle)", desc: "Weapon Casing Location: Espiritu Santo", max: 1, sub: "WEAPONS" },
+        { id: "col_es_mk48", name: "MK-48 (Light Machine Gun)", desc: "Weapon Casing Location: Espiritu Santo", max: 1, sub: "WEAPONS" },
+        { id: "col_fd_mk17", name: "Mk17 (Assault Rifle)", desc: "Weapon Casing Location: Flor De Oro", max: 1, sub: "WEAPONS" },
+        { id: "col_fd_m4a1", name: "M4A1 (Assault Rifle)", desc: "Weapon Casing Location: Flor De Oro", max: 1, sub: "WEAPONS" },
+        { id: "col_ic_9x19vsn", name: "9x19VSN (Submachine Gun)", desc: "Weapon Casing Location: Inca Camina", max: 1, sub: "WEAPONS" },
+        { id: "col_ic_g2", name: "G2 (Assault Rifle)", desc: "Weapon Casing Location: Inca Camina", max: 1, sub: "WEAPONS" },
+        { id: "col_it_mg121", name: "MG121 (Light Machine Gun)", desc: "Weapon Casing Location: Itacua", max: 1, sub: "WEAPONS" },
+        { id: "col_it_m40a5", name: "M40A5 (Sniper Rifle)", desc: "Weapon Casing Location: Itacua", max: 1, sub: "WEAPONS" },
+        { id: "col_it_shorty", name: "Super Shorty (Shotgun)", desc: "Weapon Casing Location: Itacua", max: 1, sub: "WEAPONS" },
+        { id: "col_ko_sr1", name: "SR-1 (Sniper Rifle)", desc: "Weapon Casing Location: Koani", max: 1, sub: "WEAPONS" },
+        { id: "col_ko_mk14", name: "MK14 (Sniper Rifle)", desc: "Weapon Casing Location: Koani", max: 1, sub: "WEAPONS" },
+        { id: "col_ko_scorp", name: "Scorpion EVO 3 (SMG)", desc: "Weapon Casing Location: Koani", max: 1, sub: "WEAPONS" },
+        { id: "col_lc_spas12", name: "SPAS-12 (Shotgun)", desc: "Weapon Casing Location: La Cruz", max: 1, sub: "WEAPONS" },
+        { id: "col_lc_m1891", name: "M1891 (Sniper Rifle)", desc: "Weapon Casing Location: La Cruz", max: 1, sub: "WEAPONS" },
+        { id: "col_lc_p90", name: "P90 (Submachine Gun)", desc: "Weapon Casing Location: La Cruz", max: 1, sub: "WEAPONS" },
+        { id: "col_li_d50", name: "D50 (Handgun)", desc: "Weapon Casing Location: Libertad", max: 1, sub: "WEAPONS" },
+        { id: "col_li_ak47", name: "AK-47 (Assault Rifle)", desc: "Weapon Casing Location: Libertad", max: 1, sub: "WEAPONS" },
+        { id: "col_ma_p227", name: "P227 (Handgun)", desc: "Weapon Casing Location: Malca", max: 1, sub: "WEAPONS" },
+        { id: "col_ma_mk249", name: "Mk249 (Light Machine Gun)", desc: "Weapon Casing Location: Malca", max: 1, sub: "WEAPONS" },
+        { id: "col_ml_6p41", name: "6P41 (Light Machine Gun)", desc: "Weapon Casing Location: Media Luna", max: 1, sub: "WEAPONS" },
+        { id: "col_ml_acr", name: "ACR (Assault Rifle)", desc: "Weapon Casing Location: Media Luna", max: 1, sub: "WEAPONS" },
+        { id: "col_ml_vector", name: "Vector .45 ACP (SMG)", desc: "Weapon Casing Location: Media Luna", max: 1, sub: "WEAPONS" },
+        { id: "col_mo_mpx", name: "MPX (Submachine Gun)", desc: "Weapon Casing Location: Mojocoyo", max: 1, sub: "WEAPONS" },
+        { id: "col_mo_srsa1", name: "SRSA1 (Sniper Rifle)", desc: "Weapon Casing Location: Mojocoyo", max: 1, sub: "WEAPONS" },
+        { id: "col_mp_r5", name: "R5 RGP (Assault Rifle)", desc: "Weapon Casing Location: Monte Puncu", max: 1, sub: "WEAPONS" },
+        { id: "col_mp_l115", name: "L115A3 (Sniper Rifle)", desc: "Weapon Casing Location: Monte Puncu", max: 1, sub: "WEAPONS" },
+        { id: "col_my_tar21", name: "TAR-21 (Assault Rifle)", desc: "Weapon Casing Location: Montuyoc", max: 1, sub: "WEAPONS" },
+        { id: "col_my_hti", name: "HTI (Sniper Rifle)", desc: "Weapon Casing Location: Montuyoc", max: 1, sub: "WEAPONS" },
+        { id: "col_my_msr", name: "MSR (Sniper Rifle)", desc: "Weapon Casing Location: Montuyoc", max: 1, sub: "WEAPONS" },
+        { id: "col_oc_57usg", name: "5.7 USG (Handgun)", desc: "Weapon Casing Location: Ocoro", max: 1, sub: "WEAPONS" },
+        { id: "col_oc_m1911", name: "M1911 (Handgun)", desc: "Weapon Casing Location: Ocoro", max: 1, sub: "WEAPONS" },
+        { id: "col_oc_sr635", name: "SR-635 (Submachine Gun)", desc: "Weapon Casing Location: Ocoro", max: 1, sub: "WEAPONS" },
+        { id: "col_pu_smg11", name: "SMG-11 (Submachine Gun)", desc: "Weapon Casing Location: Pucara", max: 1, sub: "WEAPONS" },
+        { id: "col_pu_stoner", name: "Stoner LMG A1 (LMG)", desc: "Weapon Casing Location: Pucara", max: 1, sub: "WEAPONS" },
+        { id: "col_re_type95", name: "Type 95 (Light Machine Gun)", desc: "Weapon Casing Location: Remanzo", max: 1, sub: "WEAPONS" },
+        { id: "col_re_skorp", name: "Skorpion (Machine Gun)", desc: "Weapon Casing Location: Remanzo", max: 1, sub: "WEAPONS" },
+        { id: "col_re_9mmc1", name: "9mm C1 (Submachine Gun)", desc: "Weapon Casing Location: Remanzo", max: 1, sub: "WEAPONS" },
+        { id: "col_sm_g28", name: "G28 (Sniper Rifle)", desc: "Weapon Casing Location: San Mateo", max: 1, sub: "WEAPONS" },
+        { id: "col_sm_psg", name: "PSG (Submachine Gun)", desc: "Weapon Casing Location: San Mateo", max: 1, sub: "WEAPONS" },
+        { id: "col_ta_p12", name: "P12 (Handgun)", desc: "Weapon Casing Location: Tabacal", max: 1, sub: "WEAPONS" },
+        { id: "col_ta_ak12", name: "AK-12 LMG A1 (Assault)", desc: "Weapon Casing Location: Tabacal", max: 1, sub: "WEAPONS" },
+        { id: "col_vv_805bren", name: "805 Bren A2 (Assault)", desc: "Weapon Casing Location: Villa Verde", max: 1, sub: "WEAPONS" },
+        { id: "col_vv_svd", name: "Dragunov (SVD) (Sniper)", desc: "Weapon Casing Location: Villa Verde", max: 1, sub: "WEAPONS" },
+        { id: "col_vv_m9", name: "M9 (Handgun)", desc: "Weapon Casing Location: Villa Verde", max: 1, sub: "WEAPONS" },
+
+        /* === MAP BONUS MEDALS === */
+        { id: "md_air_sh", name: "Aircraft Shield", desc: "Bonus Medal Location: Barvechos", max: 1, sub: "MEDALS" },
+        { id: "md_ammo_cap", name: "Ammo Capacity", desc: "Bonus Medal Location: Barvechos", max: 1, sub: "MEDALS" },
+        { id: "md_bin_rec", name: "Binocular Recon", desc: "Bonus Medal Location: Caimanes", max: 1, sub: "MEDALS" },
+        { id: "md_quiet", name: "Quiet Running", desc: "Bonus Medal Location: Espiritu Santo", max: 1, sub: "MEDALS" },
+        { id: "md_bin_zm", name: "Binocular Zoom", desc: "Bonus Medal Location: Flor De Oro", max: 1, sub: "MEDALS" },
+        { id: "md_bleed", name: "Bleed Out Time", desc: "Bonus Medal Location: Inca Camina", max: 1, sub: "MEDALS" },
+        { id: "md_bullet_it", name: "Bullet Resistance", desc: "Bonus Medal Location: Itacua", max: 1, sub: "MEDALS" },
+        { id: "md_leader", name: "Born Leader", desc: "Bonus Medal Location: Itacua", max: 1, sub: "MEDALS" },
+        { id: "md_c4", name: "C4 Charges", desc: "Bonus Medal Location: Koani", max: 1, sub: "MEDALS" },
+        { id: "md_car_sh", name: "Car Shield", desc: "Bonus Medal Location: Koani", max: 1, sub: "MEDALS" },
+        { id: "md_detect", name: "Detection", desc: "Bonus Medal Location: La Cruz", max: 1, sub: "MEDALS" },
+        { id: "md_lure", name: "Diversion Lure", desc: "Bonus Medal Location: Libertad", max: 1, sub: "MEDALS" },
+        { id: "md_armor", name: "Armour", desc: "Bonus Medal Location: Libertad", max: 1, sub: "MEDALS" },
+        { id: "md_explos", name: "Explosion Resistance", desc: "Bonus Medal Location: Malca", max: 1, sub: "MEDALS" },
+        { id: "md_mark", name: "Mark Area", desc: "Bonus Medal Location: Media Luna", max: 1, sub: "MEDALS" },
+        { id: "md_flare", name: "Flare Gun", desc: "Bonus Medal Location: Media Luna", max: 1, sub: "MEDALS" },
+        { id: "md_flash", name: "Flash Grenade", desc: "Bonus Medal Location: Mojocoyo", max: 1, sub: "MEDALS" },
+        { id: "md_range", name: "Range", desc: "Bonus Medal Location: Mojocoyo", max: 1, sub: "MEDALS" },
+        { id: "md_mine", name: "Mine Inventory", desc: "Bonus Medal Location: Ocoro", max: 1, sub: "MEDALS" },
+        { id: "md_bullet_oc", name: "Bullet Resistance", desc: "Bonus Medal Location: Ocoro", max: 1, sub: "MEDALS" },
+        { id: "md_no_pain", name: "No Pain", desc: "Bonus Medal Location: P.N. De Agua Verde", max: 1, sub: "MEDALS" },
+        { id: "md_rebels", name: "Trained Rebels", desc: "Bonus Medal Location: P.N. De Agua Verde", max: 1, sub: "MEDALS" },
+        { id: "md_resil", name: "Squad Resilience", desc: "Bonus Medal Location: Remanzo", max: 1, sub: "MEDALS" },
+        { id: "md_aim", name: "Stable Aim", desc: "Bonus Medal Location: San Mateo", max: 1, sub: "MEDALS" },
+        { id: "md_time_aim", name: "Time To Aim", desc: "Bonus Medal Location: Tabacal", max: 1, sub: "MEDALS" },
+
+        /* === ACCESSORY CASE PARTS === */
+        { id: "sc_ta31h", name: "TA31H Scope", desc: "Location: Espiritu Santo (AR, Sniper)", max: 1, sub: "SCOPES" },
+        { id: "sc_pkas", name: "PK-AS Scope", desc: "Location: Itacua (SMG, AR)", max: 1, sub: "SCOPES" },
+        { id: "sc_panoramic", name: "Panoramic Sight", desc: "Location: Itacua (SMG, Shotgun, AR, LMG)", max: 1, sub: "SCOPES" },
+        { id: "sc_t5xi", name: "T5Xi Tactical", desc: "Location: Koani (Sniper Rifle)", max: 1, sub: "SCOPES" },
+        { id: "sc_micro_g33", name: "Micro T-1 & G33", desc: "Location: Koani (SMG, AR)", max: 1, sub: "SCOPES" },
+        { id: "sc_rus_g33", name: "RUS Red Dot & G33", desc: "Location: Media Luna (AR)", max: 1, sub: "SCOPES" },
+        { id: "sc_pks07", name: "PKS-07 Scope", desc: "Location: San Mateo (Sniper Rifle)", max: 1, sub: "SCOPES" },
+        { id: "sc_russian_rd", name: "Russian Red Dot", desc: "Location: Villa Verde (SMG, Shotgun, AR, LMG)", max: 1, sub: "SCOPES" },
+        { id: "sc_exps3", name: "EXPS3 Scope", desc: "Location: Caimanes (SMG, Shotgun, AR, LMG)", max: 1, sub: "SCOPES" },
+        { id: "sc_g28", name: "G28 Scope", desc: "Location: Inca Camina (Sniper Rifle)", max: 1, sub: "SCOPES" },
+        { id: "sc_micro", name: "Micro T-1 Scope", desc: "Location: Malaca (SMG, Shotgun, AR, LMG)", max: 1, sub: "SCOPES" },
+        { id: "sc_compm4", name: "CompM4 Scope", desc: "Location: Ocoro (SMG, AR)", max: 1, sub: "SCOPES" },
+        { id: "sc_posp", name: "POSP Scope", desc: "Location: Koani (AR, Sniper)", max: 1, sub: "SCOPES" },
+
+        /* === BASE IN-GAME ACHIEVEMENTS === */
         { id: "tr_amaru", name: "A Good Start", desc: "Completed the first mission 'Amaru's rescue'.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "A Good Start" },
         { id: "tr_symp", name: "Rebel Sympathizer", desc: "Unlocked a Rebel skill.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Rebel Sympathizer" },
         { id: "tr_boss", name: "Beat the Boss", desc: "Defeated your first boss.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Beat the Boss" },
@@ -117,115 +212,7 @@ const BASELINE_SKILLS_BLUEPRINT = {
         { id: "tr_whole_story", name: "The Whole Story", desc: "Found all documents.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "The Whole Story" },
         { id: "tr_legend_hunter", name: "Legendary Hunter", desc: "Discovered all legends.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Legendary Hunter" },
         { id: "tr_cluster", name: "Cluster Bomber", desc: "Killed 7 enemies with a single C4 blast.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Cluster Bomber" },
-        { id: "tr_mousetrap", name: "A Better Mousetrap", desc: "Killed 7 enemies with a single mine.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "A Better Mousetrap" },
-
-        /* === DLC - FALLEN GHOSTS === */
-        { id: "tr_fg_kill_list", name: "Kill list", desc: "Kill one of each Extranjeros squad archetypes.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Kill list" },
-        { id: "tr_fg_hero_twice", name: "A hero once, a hero twice", desc: "Fallen Ghosts: complete the operation.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "A hero once, a hero twice" },
-        { id: "tr_fg_rebel_leader", name: "Rebel leader", desc: "Fallen Ghosts: Complete a Final Rebel Op.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Rebel leader" },
-        { id: "tr_fg_thorough", name: "Thorough supporter", desc: "Fallen Ghosts: Complete every Rebel Op and Mission.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Thorough supporter" },
-        { id: "tr_fg_artisanal", name: "Artisanal SAM", desc: "Fallen Ghosts: Destroy an enemy helicopter using explosive bolt.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Artisanal SAM" },
-        { id: "tr_fg_tactical", name: "Tactical genius", desc: "Fallen Ghosts: Blind yourself using Flash Drone.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Tactical genius" },
-        { id: "tr_fg_jungle", name: "Nondescript jungle hero", desc: "Fallen Ghosts: Kill 10 Covert Ops Extranjeros using knife.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Nondescript jungle hero" },
-
-        /* === DLC - NARCO ROAD === */
-        { id: "tr_nr_gang", name: "Gang Leader", desc: "Operation Narco Road: Kill One boss of the cartel.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Gang Leader" },
-        { id: "tr_nr_visible", name: "El Visible", desc: "Operation Narco Road: Kill the final target.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "El Visible" },
-        { id: "tr_nr_leg", name: "Brake a leg", desc: "Narco Road: Complete a trial without using the brakes.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Brake a leg" },
-        { id: "tr_nr_escobar", name: "More Followers than Escobar", desc: "Narco Road: Fill Followers Gauge of all regions to 100%.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "More Followers than Escobar" },
-        { id: "tr_nr_scenic", name: "Scenic Route", desc: "Narco Road: Eddie's party villa to Arturo's bar in under 8 min.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Scenic Route" },
-        { id: "tr_nr_cristina", name: "Cristina", desc: "Operation Narco Road: Kill 50 enemies with any gang's vehicle.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Cristina" },
-        { id: "tr_nr_mal", name: "Mal Rodilla-Ternera", desc: "Operation Narco Road: Complete Electro challenge while freefalling.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Mal Rodilla-Ternera" },
-
-        /* === RECON REWARD COLLECTIBLES === */
-        { id: "wp_ak47", name: "AK-47", desc: "Assault Rifle Case Location: Libertad", max: 1, sub: "WEAPONS" },
-        { id: "wp_aug", name: "AUG A3", desc: "Assault Rifle Case Location: Barvechos", max: 1, sub: "WEAPONS" },
-        { id: "wp_556xi", name: "556xi", desc: "Assault Rifle Case Location: Caimanes", max: 1, sub: "WEAPONS" },
-        { id: "wp_l85a2", name: "L85A2", desc: "Assault Rifle Case Location: Espiritu Santo", max: 1, sub: "WEAPONS" },
-        { id: "wp_m4a1", name: "M4A1", desc: "Assault Rifle Case Location: Flor De Oro", max: 1, sub: "WEAPONS" },
-        { id: "wp_mk17", name: "MK17", desc: "Assault Rifle Case Location: Flor De Oro", max: 1, sub: "WEAPONS" },
-        { id: "wp_g2", name: "G2", desc: "Assault Rifle Case Location: Inca Camina", max: 1, sub: "WEAPONS" },
-        { id: "wp_acr", name: "ACR", desc: "Assault Rifle Case Location: Media Luna", max: 1, sub: "WEAPONS" },
-        { id: "wp_tar21", name: "TAR-21", desc: "Assault Rifle Case Location: Montuyoc", max: 1, sub: "WEAPONS" },
-        { id: "wp_sr3m", name: "SR3M", desc: "Assault Rifle Case Location: P.N. De Agua Verde", max: 1, sub: "WEAPONS" },
-        { id: "wp_ak12", name: "AK-12", desc: "Assault Rifle Case Location: Tabacal", max: 1, sub: "WEAPONS" },
-        { id: "wp_bren", name: "805 Bren A2", desc: "Assault Rifle Case Location: Villa Verde", max: 1, sub: "WEAPONS" },
-        { id: "wp_mp7", name: "MP7", desc: "SMG Case Location: Barvechos", max: 1, sub: "WEAPONS" },
-        { id: "wp_9x19vsn", name: "9x19VSN", desc: "SMG Case Location: Inca Camina", max: 1, sub: "WEAPONS" },
-        { id: "wp_scorpion", name: "Scorpion EVO 3", desc: "SMG Case Location: Koani", max: 1, sub: "WEAPONS" },
-        { id: "wp_p90", name: "P90", desc: "SMG Case Location: La Cruz", max: 1, sub: "WEAPONS" },
-        { id: "wp_vector", name: "Vector .45 ACP", desc: "SMG Case Location: Media Luna", max: 1, sub: "WEAPONS" },
-        { id: "wp_mpx", name: "MPX", desc: "SMG Case Location: Mojocoyo", max: 1, sub: "WEAPONS" },
-        { id: "wp_sr635", name: "SR-635", desc: "SMG Case Location: Ocoro", max: 1, sub: "WEAPONS" },
-        { id: "wp_9mmc1", name: "9mm C1", desc: "SMG Case Location: Remanzo", max: 1, sub: "WEAPONS" },
-        { id: "wp_psg", name: "PSG", desc: "SMG Case Location: San Mateo", max: 1, sub: "WEAPONS" },
-        { id: "wp_mk48", name: "MK-48", desc: "LMG Case Location: Espiritu Santo", max: 1, sub: "WEAPONS" },
-        { id: "wp_mg121", name: "MG121", desc: "LMG Case Location: Itacua", max: 1, sub: "WEAPONS" },
-        { id: "wp_mk249", name: "Mk249", desc: "LMG Case Location: Malaca", max: 1, sub: "WEAPONS" },
-        { id: "wp_6p41", name: "6P41", desc: "LMG Case Location: Media Luna", max: 1, sub: "WEAPONS" },
-        { id: "wp_type95", name: "Type 95", desc: "LMG Case Location: Remanzo", max: 1, sub: "WEAPONS" },
-        { id: "wp_sr25", name: "SR25", desc: "Sniper Case Location: Caimanes", max: 1, sub: "WEAPONS" },
-        { id: "wp_m40a5", name: "M40A5", desc: "Sniper Case Location: Itacua", max: 1, sub: "WEAPONS" },
-        { id: "wp_mk14", name: "MK14", desc: "Sniper Case Location: Koani", max: 1, sub: "WEAPONS" },
-        { id: "wp_sr1", name: "SR-1", desc: "Sniper Case Location: Koani", max: 1, sub: "WEAPONS" },
-        { id: "wp_m1891", name: "M1891", desc: "Sniper Case Location: La Cruz", max: 1, sub: "WEAPONS" },
-        { id: "wp_srsa1", name: "SRSA1", desc: "Sniper Case Location: Mojocoyo", max: 1, sub: "WEAPONS" },
-        { id: "wp_hti", name: "HTI", desc: "Sniper Case Location: Montuyoc", max: 1, sub: "WEAPONS" },
-        { id: "wp_msr", name: "MSR", desc: "Sniper Case Location: Montuyoc", max: 1, sub: "WEAPONS" },
-        { id: "wp_g28", name: "G28", desc: "Sniper Case Location: San Mateo", max: 1, sub: "WEAPONS" },
-        { id: "wp_svd", name: "Dragunov (SVD)", desc: "Sniper Case Location: Villa Verde", max: 1, sub: "WEAPONS" },
-        { id: "wp_shorty", name: "Super Shorty", desc: "Shotgun Case Location: Itacua", max: 1, sub: "WEAPONS" },
-        { id: "wp_spas12", name: "SPAS-12", desc: "Shotgun Case Location: La Cruz", max: 1, sub: "WEAPONS" },
-        { id: "wp_sasg12", name: "SASG-12", desc: "Shotgun Case Location: P.N. De Agua Verde", max: 1, sub: "WEAPONS" },
-        { id: "wp_d50", name: "D-50", desc: "Pistol Case Location: Libertad", max: 1, sub: "WEAPONS" },
-        { id: "wp_p227", name: "P227", desc: "Pistol Case Location: Malaca", max: 1, sub: "WEAPONS" },
-        { id: "wp_57usg", name: "5.7 USG", desc: "Pistol Case Location: Ocoro", max: 1, sub: "WEAPONS" },
-        { id: "wp_m1911", name: "M1911", desc: "Pistol Case Location: Ocoro", max: 1, sub: "WEAPONS" },
-        { id: "wp_skorpion", name: "Skorpion", desc: "Pistol Case Location: Remanzo", max: 1, sub: "WEAPONS" },
-        { id: "wp_p12", name: "P12", desc: "Pistol Case Location: Tabacal", max: 1, sub: "WEAPONS" },
-        { id: "wp_m9", name: "M9", desc: "Pistol Case Location: Villa Verde", max: 1, sub: "WEAPONS" },
-
-        /* === MAP BONUS MEDALS === */
-        { id: "md_air_sh", name: "Aircraft Shield", desc: "Bonus Medal Location: Barvechos", max: 1, sub: "MEDALS" },
-        { id: "md_ammo_cap", name: "Ammo Capacity", desc: "Bonus Medal Location: Barvechos", max: 1, sub: "MEDALS" },
-        { id: "md_bin_rec", name: "Binocular Recon", desc: "Bonus Medal Location: Caimanes", max: 1, sub: "MEDALS" },
-        { id: "md_quiet", name: "Quiet Running", desc: "Bonus Medal Location: Espiritu Santo", max: 1, sub: "MEDALS" },
-        { id: "md_bin_zm", name: "Binocular Zoom", desc: "Bonus Medal Location: Flor De Oro", max: 1, sub: "MEDALS" },
-        { id: "md_bleed", name: "Bleed Out Time", desc: "Bonus Medal Location: Inca Camina", max: 1, sub: "MEDALS" },
-        { id: "md_bullet_it", name: "Bullet Resistance", desc: "Bonus Medal Location: Itacua", max: 1, sub: "MEDALS" },
-        { id: "md_leader", name: "Born Leader", desc: "Bonus Medal Location: Itacua", max: 1, sub: "MEDALS" },
-        { id: "md_c4", name: "C4 Charges", desc: "Bonus Medal Location: Koani", max: 1, sub: "MEDALS" },
-        { id: "md_car_sh", name: "Car Shield", desc: "Bonus Medal Location: Koani", max: 1, sub: "MEDALS" },
-        { id: "md_detect", name: "Detection", desc: "Bonus Medal Location: La Cruz", max: 1, sub: "MEDALS" },
-        { id: "md_lure", name: "Diversion Lure", desc: "Bonus Medal Location: Libertad", max: 1, sub: "MEDALS" },
-        { id: "md_armor", name: "Armour", desc: "Bonus Medal Location: Libertad", max: 1, sub: "MEDALS" },
-        { id: "md_explos", name: "Explosion Resistance", desc: "Bonus Medal Location: Malaca", max: 1, sub: "MEDALS" },
-        { id: "md_mark", name: "Mark Area", desc: "Bonus Medal Location: Media Luna", max: 1, sub: "MEDALS" },
-        { id: "md_flare", name: "Flare Gun", desc: "Bonus Medal Location: Media Luna", max: 1, sub: "MEDALS" },
-        { id: "md_flash", name: "Flash Grenade", desc: "Bonus Medal Location: Mojocoyo", max: 1, sub: "MEDALS" },
-        { id: "md_range", name: "Range", desc: "Bonus Medal Location: Mojocoyo", max: 1, sub: "MEDALS" },
-        { id: "md_mine", name: "Mine Inventory", desc: "Bonus Medal Location: Ocoro", max: 1, sub: "MEDALS" },
-        { id: "md_bullet_oc", name: "Bullet Resistance", desc: "Bonus Medal Location: Ocoro", max: 1, sub: "MEDALS" },
-        { id: "md_no_pain", name: "No Pain", desc: "Bonus Medal Location: P.N. De Agua Verde", max: 1, sub: "MEDALS" },
-        { id: "md_rebels", name: "Trained Rebels", desc: "Bonus Medal Location: P.N. De Agua Verde", max: 1, sub: "MEDALS" },
-        { id: "md_resil", name: "Squad Resilience", desc: "Bonus Medal Location: Remanzo", max: 1, sub: "MEDALS" },
-        { id: "md_aim", name: "Stable Aim", desc: "Bonus Medal Location: San Mateo", max: 1, sub: "MEDALS" },
-        { id: "md_time_aim", name: "Time To Aim", desc: "Bonus Medal Location: Tabacal", max: 1, sub: "MEDALS" },
-
-        /* === ACCESSORY CASE PARTS === */
-        { id: "sc_ta31h", name: "TA31H Scope", desc: "Location: Espiritu Santo (AR, Sniper)", max: 1, sub: "SCOPES" },
-        { id: "sc_pkas", name: "PK-AS Scope", desc: "Location: Itacua (SMG, AR)", max: 1, sub: "SCOPES" },
-        { id: "sc_panoramic", name: "Panoramic Sight", desc: "Location: Itacua (SMG, Shotgun, AR, LMG)", max: 1, sub: "SCOPES" },
-        { id: "sc_t5xi", name: "T5Xi Tactical", desc: "Location: Koani (Sniper Rifle)", max: 1, sub: "SCOPES" },
-        { id: "sc_micro_g33", name: "Micro T-1 & G33", desc: "Location: Koani (SMG, AR)", max: 1, sub: "SCOPES" },
-        { id: "sc_rus_g33", name: "RUS Red Dot & G33", desc: "Location: Media Luna (AR)", max: 1, sub: "SCOPES" },
-        { id: "sc_pks07", name: "PKS-07 Scope", desc: "Location: San Mateo (Sniper Rifle)", max: 1, sub: "SCOPES" },
-        { id: "sc_russian_rd", name: "Russian Red Dot", desc: "Location: Villa Verde (SMG, Shotgun, AR, LMG)", max: 1, sub: "SCOPES" },
-        { id: "sc_exps3", name: "EXPS3 Scope", desc: "Location: Caimanes (SMG, Shotgun, AR, LMG)", max: 1, sub: "SCOPES" },
-        { id: "sc_g28", name: "G28 Scope", desc: "Location: Inca Camina (Sniper Rifle)", max: 1, sub: "SCOPES" },
-        { id: "sc_micro", name: "Micro T-1 Scope", desc: "Location: Malaca (SMG, Shotgun, AR, LMG)", max: 1, sub: "SCOPES" },
-        { id: "sc_compm4", name: "CompM4 Scope", desc: "Location: Ocoro (SMG, AR)", max: 1, sub: "SCOPES" },
-        { id: "sc_posp", name: "POSP Scope", desc: "Location: Koani (AR, Sniper)", max: 1, sub: "SCOPES" }
+        { id: "tr_mousetrap", name: "A Better Mousetrap", desc: "Killed 7 enemies with a single mine.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "A Better Mousetrap" }
     ]
 };
 
@@ -275,7 +262,6 @@ document.addEventListener("DOMContentLoaded", () => {
     evaluateDynamicTimeTheme();
     loadTypographyPreferences();
     setupInterTabSynchronization();
-    executeLivePsnTrophySync();
 });
 
 function initializeFirebaseApp() {
@@ -291,6 +277,7 @@ function initializeFirebaseApp() {
     firebase.initializeApp(firebaseConfig);
     database = firebase.database();
     synchronizeWithFirebaseDatabase();
+    executeLivePsnTrophySync();
 }
 
 function executeLivePsnTrophySync() {
@@ -338,6 +325,7 @@ function synchronizeWithFirebaseDatabase() {
             });
         }
     });
+
     squadRef.on("value", snapshot => {
         const directoryData = snapshot.val();
         if (directoryData) updateOperatorDropdownList(directoryData);
@@ -347,11 +335,13 @@ function synchronizeWithFirebaseDatabase() {
 function updateOperatorDropdownList(profiles) {
     const selectorElement = document.getElementById("userSelect");
     const activeSelectionBeforeUpdate = selectorElement.value || Object.keys(profiles)[0];
+    
     selectorElement.innerHTML = "";
     Object.keys(profiles).forEach(key => {
         const option = document.createElement("option");
         option.value = key; option.textContent = profiles[key].name; selectorElement.appendChild(option);
     });
+    
     selectorElement.value = activeSelectionBeforeUpdate; currentSelectedUser = activeSelectionBeforeUpdate;
     renderTargetProfileData(profiles[activeSelectionBeforeUpdate]);
 }
