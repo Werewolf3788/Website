@@ -1,0 +1,35 @@
+/* Navigation Styling */
+.main-nav {
+  width: 100%;
+  background: var(--nav-bg, #333);
+  padding: 1rem 0;
+}
+
+.nav-container {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-link {
+  color: white;
+  text-decoration: none;
+  font-size: 16px;
+  padding: 0.5rem 1rem;
+  transition: opacity 0.3s;
+}
+
+.nav-link:hover {
+  opacity: 0.7;
+}
+
+/* Responsive adjustment for mobile */
+@media (max-width: 768px) {
+  .nav-container {
+    justify-content: center;
+    gap: 15px;
+  }
+}
