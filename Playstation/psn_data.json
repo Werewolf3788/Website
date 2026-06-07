@@ -50,7 +50,7 @@
       "isOfficiallyVerified": false,
       "isMe": true,
       "accountId": "3728215008151724560",
-      "online": true,
+      "online": false,
       "currentGame": "Sniper Elite 5",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
       "currentGameActivity": null,
@@ -77,20 +77,20 @@
       "bio": "6C3RG",
       "psnAccountAge": "3 years, 1 months",
       "earliestTrophyDate": "2023-04-18T23:05:50.000Z",
-      "latestTrophyDate": 1780821421000,
+      "latestTrophyDate": 1780826222000,
       "plus": true,
       "level": 235,
       "region": "US",
       "trophySummary": {
         "accountId": "3728215008151724560",
         "trophyLevel": 235,
-        "trophyPoint": 30735,
+        "trophyPoint": 30750,
         "trophyLevelBasePoint": 30690,
         "trophyLevelNextPoint": 31140,
-        "progress": 10,
+        "progress": 13,
         "tier": 3,
         "earnedTrophies": {
-          "bronze": 1035,
+          "bronze": 1036,
           "silver": 223,
           "gold": 78,
           "platinum": 5
@@ -98,15 +98,15 @@
         "platinum": 5,
         "gold": 78,
         "silver": 223,
-        "bronze": 1035,
-        "total": 1341
+        "bronze": 1036,
+        "total": 1342
       },
       "recentGames": [
         {
           "npCommunicationId": "NPWR21465_00",
           "name": "Sniper Elite 5",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-          "lastPlayed": "2026-06-07T09:30:28Z",
+          "lastPlayed": "2026-06-07T10:33:03Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite 5",
@@ -120,18 +120,18 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 21,
+          "progress": 22,
           "earnedTrophies": {
-            "bronze": 19,
+            "bronze": 20,
             "silver": 2,
             "gold": 0,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-06-07T09:30:28Z",
-          "earnedTotal": 21,
+          "lastUpdatedDateTime": "2026-06-07T10:33:03Z",
+          "earnedTotal": 22,
           "definedTotal": 72,
-          "ratio": "21/72",
+          "ratio": "22/72",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=psngaming-20",
           "bootCount": "Unknown"
         },
@@ -305,24 +305,24 @@
       "activeHunt": {
         "title": "Sniper Elite 5",
         "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=psngaming-20",
-        "progress": 21,
+        "progress": 22,
         "velocity": {
           "firstEarned": "9/24/2025, 9:15:26 AM",
-          "huntingDuration": "256 days",
+          "huntingDuration": "257 days",
           "hunterPersona": "Casual Pursuit",
-          "completionStatus": "21/72"
+          "completionStatus": "22/72"
         },
         "groups": [
           {
             "trophyGroupId": "default",
-            "progress": 28,
+            "progress": 30,
             "earnedTrophies": {
-              "bronze": 18,
+              "bronze": 19,
               "silver": 1,
               "gold": 0,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-06-07T09:30:28Z",
+            "lastUpdatedDateTime": "2026-06-07T10:33:03Z",
             "trophyGroupName": "Sniper Elite 5",
             "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
             "definedTrophies": {
@@ -332,7 +332,7 @@
               "platinum": 1
             },
             "name": "Sniper Elite 5",
-            "ratio": "19/54"
+            "ratio": "20/54"
           },
           {
             "trophyGroupId": "001",
@@ -478,7 +478,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/26/2025, 4:31:37 AM",
-            "earnedAge": "8 months, 2 weeks, 5 hours, 10 mins",
+            "earnedAge": "8 months, 2 weeks, 6 hours, 54 mins",
             "timestamp": 1758861097000,
             "currentValue": 0,
             "targetValue": 0
@@ -501,7 +501,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/24/2025, 9:15:26 AM",
-            "earnedAge": "8 months, 2 weeks, 2 days, 27 mins",
+            "earnedAge": "8 months, 2 weeks, 2 days, 2 hours, 10 mins",
             "timestamp": 1758705326000,
             "currentValue": 0,
             "targetValue": 0
@@ -524,7 +524,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 1:11:36 AM",
-            "earnedAge": "8 hours, 30 mins",
+            "earnedAge": "10 hours, 14 mins",
             "timestamp": 1780794696000,
             "currentValue": 0,
             "targetValue": 0
@@ -547,7 +547,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:30:02 AM",
-            "earnedAge": "5 hours, 12 mins",
+            "earnedAge": "6 hours, 56 mins",
             "timestamp": 1780806602000,
             "currentValue": 0,
             "targetValue": 0
@@ -570,7 +570,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "3 hours, 11 mins",
+            "earnedAge": "4 hours, 54 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -593,7 +593,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 hour, 5 mins",
+            "earnedAge": "2 hours, 49 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -759,7 +759,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "11",
+            "currentValue": "12",
             "targetValue": "16"
           },
           {
@@ -803,7 +803,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/25/2025, 9:07:17 PM",
-            "earnedAge": "8 months, 2 weeks, 12 hours, 35 mins",
+            "earnedAge": "8 months, 2 weeks, 14 hours, 19 mins",
             "timestamp": 1758834437000,
             "currentValue": 0,
             "targetValue": 0
@@ -849,7 +849,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:36 AM",
-            "earnedAge": "1 week, 2 mins",
+            "earnedAge": "1 week, 1 hour, 46 mins",
             "timestamp": 1780220376000,
             "currentValue": 0,
             "targetValue": 0
@@ -872,7 +872,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/25/2025, 8:03:12 PM",
-            "earnedAge": "8 months, 2 weeks, 13 hours, 39 mins",
+            "earnedAge": "8 months, 2 weeks, 15 hours, 23 mins",
             "timestamp": 1758830592000,
             "currentValue": 0,
             "targetValue": 0
@@ -1063,7 +1063,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:37:38 AM",
-            "earnedAge": "5 hours, 4 mins",
+            "earnedAge": "6 hours, 48 mins",
             "timestamp": 1780807058000,
             "currentValue": 0,
             "targetValue": "350"
@@ -1089,7 +1089,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "44999",
+            "currentValue": "48556",
             "targetValue": "100000"
           },
           {
@@ -1111,7 +1111,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/26/2025, 7:00:31 AM",
-            "earnedAge": "8 months, 2 weeks, 2 hours, 42 mins",
+            "earnedAge": "8 months, 2 weeks, 4 hours, 25 mins",
             "timestamp": 1758870031000,
             "currentValue": 0,
             "targetValue": "50"
@@ -1183,7 +1183,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/26/2025, 8:43:03 AM",
-            "earnedAge": "8 months, 2 weeks, 59 mins",
+            "earnedAge": "8 months, 2 weeks, 2 hours, 43 mins",
             "timestamp": 1758876183000,
             "currentValue": 0,
             "targetValue": "20"
@@ -1230,7 +1230,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/25/2025, 8:09:02 PM",
-            "earnedAge": "8 months, 2 weeks, 13 hours, 33 mins",
+            "earnedAge": "8 months, 2 weeks, 15 hours, 17 mins",
             "timestamp": 1758830942000,
             "currentValue": 0,
             "targetValue": 0
@@ -1254,7 +1254,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/26/2025, 3:47:48 AM",
-            "earnedAge": "8 months, 2 weeks, 5 hours, 54 mins",
+            "earnedAge": "8 months, 2 weeks, 7 hours, 38 mins",
             "timestamp": 1758858468000,
             "currentValue": 0,
             "targetValue": "20"
@@ -1277,7 +1277,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 7:43:06 AM",
-            "earnedAge": "1 week, 1 hour, 59 mins",
+            "earnedAge": "1 week, 3 hours, 43 mins",
             "timestamp": 1780213386000,
             "currentValue": 0,
             "targetValue": 0
@@ -1325,7 +1325,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:48:15 AM",
-            "earnedAge": "2 hours, 54 mins",
+            "earnedAge": "4 hours, 38 mins",
             "timestamp": 1780814895000,
             "currentValue": 0,
             "targetValue": "250"
@@ -1349,7 +1349,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 7:14:58 AM",
-            "earnedAge": "2 hours, 27 mins",
+            "earnedAge": "4 hours, 11 mins",
             "timestamp": 1780816498000,
             "currentValue": 0,
             "targetValue": "50"
@@ -1373,7 +1373,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 2:46:28 AM",
-            "earnedAge": "6 hours, 56 mins",
+            "earnedAge": "8 hours, 39 mins",
             "timestamp": 1780800388000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1447,7 +1447,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "29",
+            "currentValue": "31",
             "targetValue": "39"
           },
           {
@@ -1495,7 +1495,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "18",
+            "currentValue": "19",
             "targetValue": "24"
           },
           {
@@ -1563,7 +1563,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "5 hours, 45 mins",
+            "earnedAge": "7 hours, 29 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -1585,11 +1585,11 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "1",
+            "earned": true,
+            "earnedDate": "6/7/2026, 9:57:02 AM",
+            "earnedAge": "1 hour, 29 mins",
+            "timestamp": 1780826222000,
+            "currentValue": 0,
             "targetValue": "3"
           },
           {
@@ -1843,7 +1843,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "9/26/2025, 9:44:53 AM",
-            "earnedAge": "8 months, 1 week, 6 days, 23 hours, 57 mins",
+            "earnedAge": "8 months, 2 weeks, 1 hour, 41 mins",
             "timestamp": 1758879893000,
             "currentValue": 0,
             "targetValue": 0
@@ -1867,7 +1867,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "9/26/2025, 9:44:54 AM",
-            "earnedAge": "8 months, 1 week, 6 days, 23 hours, 57 mins",
+            "earnedAge": "8 months, 2 weeks, 1 hour, 41 mins",
             "timestamp": 1758879894000,
             "currentValue": 0,
             "targetValue": "2"
@@ -2131,11 +2131,19 @@
       "mostRecentTrophies": [
         {
           "game": "Sniper Elite 5",
+          "name": "Up Close and Personal",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb348a13-2723-45cc-abba-50a1b68d1838.png",
+          "timestamp": 1780826222000,
+          "date": "6/7/2026, 9:57:02 AM",
+          "age": "1 hour, 29 mins"
+        },
+        {
+          "game": "Sniper Elite 5",
           "name": "Taking it back",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d439e89b-1afb-408d-8257-e1922809047b.png",
           "timestamp": 1780821421000,
           "date": "6/7/2026, 8:37:01 AM",
-          "age": "1 hour, 5 mins"
+          "age": "2 hours, 49 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -2143,7 +2151,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb867a5e-ac51-44d3-89a0-8e35a4f6d191.png",
           "timestamp": 1780816498000,
           "date": "6/7/2026, 7:14:58 AM",
-          "age": "2 hours, 27 mins"
+          "age": "4 hours, 11 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -2151,7 +2159,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/af2c0033-427c-4fff-befc-59eb5ac6a0ca.png",
           "timestamp": 1780814895000,
           "date": "6/7/2026, 6:48:15 AM",
-          "age": "2 hours, 54 mins"
+          "age": "4 hours, 38 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -2159,7 +2167,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c603cb71-3a6d-4f20-8b7c-284cd8b1a8e4.png",
           "timestamp": 1780813893000,
           "date": "6/7/2026, 6:31:33 AM",
-          "age": "3 hours, 11 mins"
+          "age": "4 hours, 54 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -2167,7 +2175,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/179b85d2-7b74-4bee-8d07-28e5710738a0.png",
           "timestamp": 1780807058000,
           "date": "6/7/2026, 4:37:38 AM",
-          "age": "5 hours, 4 mins"
+          "age": "6 hours, 48 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -2175,7 +2183,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/31726dcd-86f5-4e53-9357-7348e9a3d072.png",
           "timestamp": 1780806602000,
           "date": "6/7/2026, 4:30:02 AM",
-          "age": "5 hours, 12 mins"
+          "age": "6 hours, 56 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -2183,7 +2191,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fce57d1c-e739-4be9-9d6e-f0e72a3f6834.png",
           "timestamp": 1780804632000,
           "date": "6/7/2026, 3:57:12 AM",
-          "age": "5 hours, 45 mins"
+          "age": "7 hours, 29 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -2191,7 +2199,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40109781-5a63-4f98-abc0-263fc65548e0.png",
           "timestamp": 1780800388000,
           "date": "6/7/2026, 2:46:28 AM",
-          "age": "6 hours, 56 mins"
+          "age": "8 hours, 39 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -2199,15 +2207,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f238c8de-14fb-40b1-92f3-486f1b8e4e81.png",
           "timestamp": 1780794696000,
           "date": "6/7/2026, 1:11:36 AM",
-          "age": "8 hours, 30 mins"
-        },
-        {
-          "game": "Sniper Elite 5",
-          "name": "Just a Flesh Wound",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f8fadef6-3e73-4368-952e-89549e26cd42.png",
-          "timestamp": 1780220376000,
-          "date": "5/31/2026, 9:39:36 AM",
-          "age": "1 week, 2 mins"
+          "age": "10 hours, 14 mins"
         }
       ],
       "fullLibrary": [
@@ -2215,7 +2215,7 @@
           "npCommunicationId": "NPWR21465_00",
           "name": "Sniper Elite 5",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-          "lastPlayed": "2026-06-07T09:30:28Z",
+          "lastPlayed": "2026-06-07T10:33:03Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite 5",
@@ -2229,16 +2229,16 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 21,
+          "progress": 22,
           "earnedTrophies": {
-            "bronze": 19,
+            "bronze": 20,
             "silver": 2,
             "gold": 0,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-06-07T09:30:28Z",
-          "earnedTotal": 21,
+          "lastUpdatedDateTime": "2026-06-07T10:33:03Z",
+          "earnedTotal": 22,
           "definedTotal": 72
         },
         {
@@ -7777,21 +7777,13 @@
           "isMe": true
         },
         "presence": {
-          "availability": "availableToPlay",
+          "availability": "unavailable",
+          "lastAvailableDate": "2026-06-07T10:36:44.619Z",
           "primaryPlatformInfo": {
-            "onlineStatus": "online",
+            "onlineStatus": "offline",
             "platform": "PS5",
-            "lastOnlineDate": "2026-06-05T04:17:55.836Z"
-          },
-          "gameTitleInfoList": [
-            {
-              "npTitleId": "PPSA01685_00",
-              "titleName": "Sniper Elite 5",
-              "format": "PS5",
-              "launchPlatform": "PS5",
-              "conceptIconUrl": "https://image.api.playstation.com/vulcan/ap/rnd/202202/2116/59jHCjMBRhuRhPUKUUy2gkNd.png"
-            }
-          ]
+            "lastOnlineDate": "2026-06-07T10:36:44.619Z"
+          }
         },
         "telemetry": [],
         "titles": [
@@ -7810,15 +7802,15 @@
               "gold": 5,
               "platinum": 1
             },
-            "progress": 21,
+            "progress": 22,
             "earnedTrophies": {
-              "bronze": 19,
+              "bronze": 20,
               "silver": 2,
               "gold": 0,
               "platinum": 0
             },
             "hiddenFlag": false,
-            "lastUpdatedDateTime": "2026-06-07T09:30:28Z"
+            "lastUpdatedDateTime": "2026-06-07T10:33:03Z"
           },
           {
             "npServiceName": "trophy2",
@@ -12433,7 +12425,7 @@
           "totalItemCount": 18
         }
       },
-      "lastUpdated": "6/7/2026, 9:42:44 AM"
+      "lastUpdated": "6/7/2026, 11:26:34 AM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -12468,11 +12460,11 @@
       "isMe": true,
       "accountId": "2732733730346312494",
       "online": true,
-      "currentGame": "Sniper Elite 5",
-      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
+      "currentGame": "LEGO® Star Wars™ II: The Original Trilogy",
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
       "currentGameActivity": null,
-      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=psngaming-20",
-      "currentCommunicationId": "NPWR21465_00",
+      "amazonAffiliateUrl": "https://www.amazon.com/s?k=LEGO%20Star%20Wars%20II%3A%20The%20Original%20Trilogy&tag=psngaming-20",
+      "currentCommunicationId": "NPWR36496_00",
       "platform": "PS5",
       "twitch": {
         "isLive": false,
@@ -12494,20 +12486,20 @@
       "bio": "exo-ONELIVIDMANKDFC3",
       "psnAccountAge": "9 years, 5 months",
       "earliestTrophyDate": "2016-12-30T18:40:30.000Z",
-      "latestTrophyDate": 1780821421000,
+      "latestTrophyDate": 1780826222000,
       "plus": true,
       "level": 207,
       "region": "US",
       "trophySummary": {
         "accountId": "2732733730346312494",
         "trophyLevel": 207,
-        "trophyPoint": 18120,
+        "trophyPoint": 18135,
         "trophyLevelBasePoint": 18090,
         "trophyLevelNextPoint": 18540,
-        "progress": 6,
+        "progress": 10,
         "tier": 3,
         "earnedTrophies": {
-          "bronze": 592,
+          "bronze": 593,
           "silver": 122,
           "gold": 42,
           "platinum": 6
@@ -12515,15 +12507,48 @@
         "platinum": 6,
         "gold": 42,
         "silver": 122,
-        "bronze": 592,
-        "total": 762
+        "bronze": 593,
+        "total": 763
       },
       "recentGames": [
+        {
+          "npCommunicationId": "NPWR36496_00",
+          "name": "LEGO® Star Wars™ II: The Original Trilogy",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
+          "lastPlayed": "2026-06-03T03:38:24Z",
+          "npServiceName": "trophy2",
+          "trophySetVersion": "01.00",
+          "trophyTitleName": "LEGO® Star Wars™ II: The Original Trilogy",
+          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
+          "trophyTitlePlatform": "PS5",
+          "hasTrophyGroups": false,
+          "trophyGroupCount": 1,
+          "definedTrophies": {
+            "bronze": 12,
+            "silver": 11,
+            "gold": 6,
+            "platinum": 1
+          },
+          "progress": 10,
+          "earnedTrophies": {
+            "bronze": 5,
+            "silver": 1,
+            "gold": 0,
+            "platinum": 0
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-06-03T03:38:24Z",
+          "earnedTotal": 6,
+          "definedTotal": 30,
+          "ratio": "6/30",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=LEGO%20Star%20Wars%20II%3A%20The%20Original%20Trilogy&tag=psngaming-20",
+          "bootCount": "Unknown"
+        },
         {
           "npCommunicationId": "NPWR21465_00",
           "name": "Sniper Elite 5",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-          "lastPlayed": "2026-06-07T09:28:15Z",
+          "lastPlayed": "2026-06-07T10:32:26Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite 5",
@@ -12537,18 +12562,18 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 9,
+          "progress": 10,
           "earnedTrophies": {
-            "bronze": 8,
+            "bronze": 9,
             "silver": 1,
             "gold": 0,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-06-07T09:28:15Z",
-          "earnedTotal": 9,
+          "lastUpdatedDateTime": "2026-06-07T10:32:26Z",
+          "earnedTotal": 10,
           "definedTotal": 72,
-          "ratio": "9/72",
+          "ratio": "10/72",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=psngaming-20",
           "bootCount": "Unknown"
         },
@@ -12583,39 +12608,6 @@
           "definedTotal": 43,
           "ratio": "13/43",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Poker%20Club&tag=psngaming-20",
-          "bootCount": "Unknown"
-        },
-        {
-          "npCommunicationId": "NPWR36496_00",
-          "name": "LEGO® Star Wars™ II: The Original Trilogy",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
-          "lastPlayed": "2026-06-03T03:38:24Z",
-          "npServiceName": "trophy2",
-          "trophySetVersion": "01.00",
-          "trophyTitleName": "LEGO® Star Wars™ II: The Original Trilogy",
-          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
-          "trophyTitlePlatform": "PS5",
-          "hasTrophyGroups": false,
-          "trophyGroupCount": 1,
-          "definedTrophies": {
-            "bronze": 12,
-            "silver": 11,
-            "gold": 6,
-            "platinum": 1
-          },
-          "progress": 10,
-          "earnedTrophies": {
-            "bronze": 5,
-            "silver": 1,
-            "gold": 0,
-            "platinum": 0
-          },
-          "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-06-03T03:38:24Z",
-          "earnedTotal": 6,
-          "definedTotal": 30,
-          "ratio": "6/30",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=LEGO%20Star%20Wars%20II%3A%20The%20Original%20Trilogy&tag=psngaming-20",
           "bootCount": "Unknown"
         },
         {
@@ -12720,136 +12712,36 @@
         }
       ],
       "activeHunt": {
-        "title": "Sniper Elite 5",
-        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=psngaming-20",
-        "progress": 9,
+        "title": "LEGO® Star Wars™ II: The Original Trilogy",
+        "amazonAffiliateUrl": "https://www.amazon.com/s?k=LEGO%20Star%20Wars%20II%3A%20The%20Original%20Trilogy&tag=psngaming-20",
+        "progress": 10,
         "velocity": {
-          "firstEarned": "5/31/2026, 9:39:34 AM",
-          "huntingDuration": "7 days",
+          "firstEarned": "6/2/2026, 11:50:07 PM",
+          "huntingDuration": "1 day",
           "hunterPersona": "Steady Hunter",
-          "completionStatus": "9/72"
+          "completionStatus": "6/30"
         },
         "groups": [
           {
             "trophyGroupId": "default",
-            "progress": 14,
+            "progress": 10,
             "earnedTrophies": {
-              "bronze": 8,
+              "bronze": 5,
               "silver": 1,
               "gold": 0,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-06-07T09:28:15Z",
-            "trophyGroupName": "Sniper Elite 5",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
+            "lastUpdatedDateTime": "2026-06-03T03:38:23Z",
+            "trophyGroupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
             "definedTrophies": {
-              "bronze": 44,
-              "silver": 7,
-              "gold": 2,
+              "bronze": 12,
+              "silver": 11,
+              "gold": 6,
               "platinum": 1
             },
-            "name": "Sniper Elite 5",
-            "ratio": "9/54"
-          },
-          {
-            "trophyGroupId": "001",
-            "progress": 0,
-            "earnedTrophies": {
-              "bronze": 0,
-              "silver": 0,
-              "gold": 0,
-              "platinum": 0
-            },
-            "trophyGroupName": "Wolf Mountain",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/835342ce-169d-4ae2-a705-eac2eedf7df5.png",
-            "definedTrophies": {
-              "bronze": 5,
-              "silver": 3,
-              "gold": 0,
-              "platinum": 0
-            },
-            "name": "Wolf Mountain",
-            "ratio": "0/8"
-          },
-          {
-            "trophyGroupId": "002",
-            "progress": 0,
-            "earnedTrophies": {
-              "bronze": 0,
-              "silver": 0,
-              "gold": 0,
-              "platinum": 0
-            },
-            "trophyGroupName": "Landing Force",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/50620b78-b94d-4630-9dfa-f516d5e31a9e.png",
-            "definedTrophies": {
-              "bronze": 1,
-              "silver": 0,
-              "gold": 0,
-              "platinum": 0
-            },
-            "name": "Landing Force",
-            "ratio": "0/1"
-          },
-          {
-            "trophyGroupId": "003",
-            "progress": 0,
-            "earnedTrophies": {
-              "bronze": 0,
-              "silver": 0,
-              "gold": 0,
-              "platinum": 0
-            },
-            "trophyGroupName": "Conqueror",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c524026c-8684-4196-bce7-ce90f3e791e3.png",
-            "definedTrophies": {
-              "bronze": 1,
-              "silver": 1,
-              "gold": 1,
-              "platinum": 0
-            },
-            "name": "Conqueror",
-            "ratio": "0/3"
-          },
-          {
-            "trophyGroupId": "004",
-            "progress": 0,
-            "earnedTrophies": {
-              "bronze": 0,
-              "silver": 0,
-              "gold": 0,
-              "platinum": 0
-            },
-            "trophyGroupName": "Rough Landing",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9d6702b-fae7-4ddb-b8ab-92bb83cecd40.png",
-            "definedTrophies": {
-              "bronze": 1,
-              "silver": 1,
-              "gold": 1,
-              "platinum": 0
-            },
-            "name": "Rough Landing",
-            "ratio": "0/3"
-          },
-          {
-            "trophyGroupId": "005",
-            "progress": 0,
-            "earnedTrophies": {
-              "bronze": 0,
-              "silver": 0,
-              "gold": 0,
-              "platinum": 0
-            },
-            "trophyGroupName": "Kraken Awakes",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/35ec92a3-403e-4c74-bcf1-3c64575e6521.png",
-            "definedTrophies": {
-              "bronze": 1,
-              "silver": 1,
-              "gold": 1,
-              "platinum": 0
-            },
-            "name": "Kraken Awakes",
-            "ratio": "0/3"
+            "name": "LEGO® Star Wars™ II: The Original Trilogy",
+            "ratio": "6/30"
           }
         ],
         "trophies": [
@@ -12857,18 +12749,18 @@
             "trophyId": 0,
             "trophyHidden": false,
             "trophyType": "platinum",
-            "trophyName": "Sniper Elite",
-            "trophyDetail": "Obtain all Trophies.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4426c421-cb2a-47c4-b1eb-8713c5826aaf.png",
+            "trophyName": "May the Force Brick With You",
+            "trophyDetail": "Unlock all trophies in LEGO® Star Wars™ II: The Original Trilogy.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f122abd4-1461-49b5-be24-80188df91a80.png",
             "trophyGroupId": "default",
-            "name": "Sniper Elite",
+            "name": "May the Force Brick With You",
             "type": "platinum",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4426c421-cb2a-47c4-b1eb-8713c5826aaf.png",
-            "description": "Obtain all Trophies.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f122abd4-1461-49b5-be24-80188df91a80.png",
+            "description": "Unlock all trophies in LEGO® Star Wars™ II: The Original Trilogy.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -12879,69 +12771,69 @@
           {
             "trophyId": 1,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Meeting Resistance",
-            "trophyDetail": "Weaken the Atlantic wall and rendezvous with Blue Viper.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/17d25bb5-bc66-4bb1-b738-0222980cdc4a.png",
+            "trophyType": "silver",
+            "trophyName": "Putting the Death in Death Star",
+            "trophyDetail": "Complete STAR WARS Episode IV: A New Hope in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/9ac1527a-d70b-4bca-88e6-f5ad17e2931e.png",
             "trophyGroupId": "default",
-            "name": "Meeting Resistance",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/17d25bb5-bc66-4bb1-b738-0222980cdc4a.png",
-            "description": "Weaken the Atlantic wall and rendezvous with Blue Viper.",
+            "name": "Putting the Death in Death Star",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/9ac1527a-d70b-4bca-88e6-f5ad17e2931e.png",
+            "description": "Complete STAR WARS Episode IV: A New Hope in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "1 week, 3 mins",
-            "timestamp": 1780220374000,
+            "earnedDate": "6/3/2026, 3:35:39 AM",
+            "earnedAge": "4 days, 7 hours, 50 mins",
+            "timestamp": 1780457739000,
             "currentValue": 0,
             "targetValue": 0
           },
           {
             "trophyId": 2,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Confirming Suspicions",
-            "trophyDetail": "Raid Chateau de Berengar and Möller's Office.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/1aa67e71-276b-41ac-a5c7-f3387add22d5.png",
+            "trophyType": "silver",
+            "trophyName": "Into Hiding",
+            "trophyDetail": "Complete STAR WARS Episode V: The Empire Strikes Back in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/cb79cd2a-a989-483d-94db-69d50d5bc393.png",
             "trophyGroupId": "default",
-            "name": "Confirming Suspicions",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/1aa67e71-276b-41ac-a5c7-f3387add22d5.png",
-            "description": "Raid Chateau de Berengar and Möller's Office.",
+            "name": "Into Hiding",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/cb79cd2a-a989-483d-94db-69d50d5bc393.png",
+            "description": "Complete STAR WARS Episode V: The Empire Strikes Back in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": true,
-            "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "6 days, 22 hours, 32 mins",
-            "timestamp": 1780225837000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
           },
           {
             "trophyId": 3,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "The Kraken Wakes",
-            "trophyDetail": "Infiltrate Beaumont-Saint-Denis and Uncover Operation Kraken.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f238c8de-14fb-40b1-92f3-486f1b8e4e81.png",
+            "trophyType": "silver",
+            "trophyName": "Two Stars Down",
+            "trophyDetail": "Complete STAR WARS Episode VI: Return of the Jedi in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/c1d46ffd-6a43-47c8-8d4d-c00cb3d2ee6b.png",
             "trophyGroupId": "default",
-            "name": "The Kraken Wakes",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f238c8de-14fb-40b1-92f3-486f1b8e4e81.png",
-            "description": "Infiltrate Beaumont-Saint-Denis and Uncover Operation Kraken.",
+            "name": "Two Stars Down",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/c1d46ffd-6a43-47c8-8d4d-c00cb3d2ee6b.png",
+            "description": "Complete STAR WARS Episode VI: Return of the Jedi in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": true,
-            "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "6 days, 20 hours, 19 mins",
-            "timestamp": 1780233777000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -12949,45 +12841,45 @@
             "trophyId": 4,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "It's Starting to Crack",
-            "trophyDetail": "Destroy Operation Kraken's production facility at Martressac.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/31726dcd-86f5-4e53-9357-7348e9a3d072.png",
+            "trophyName": "Storied Jedi",
+            "trophyDetail": "Complete a chapter with a full True Jedi meter in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/221e844f-d5ab-48bd-92e6-77f4d8fb6cf5.png",
             "trophyGroupId": "default",
-            "name": "It's Starting to Crack",
+            "name": "Storied Jedi",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/31726dcd-86f5-4e53-9357-7348e9a3d072.png",
-            "description": "Destroy Operation Kraken's production facility at Martressac.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/221e844f-d5ab-48bd-92e6-77f4d8fb6cf5.png",
+            "description": "Complete a chapter with a full True Jedi meter in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "6/7/2026, 4:30:03 AM",
-            "earnedAge": "5 hours, 12 mins",
-            "timestamp": 1780806603000,
+            "earnedDate": "6/2/2026, 11:50:07 PM",
+            "earnedAge": "4 days, 11 hours, 36 mins",
+            "timestamp": 1780444207000,
             "currentValue": 0,
             "targetValue": 0
           },
           {
             "trophyId": 5,
-            "trophyHidden": true,
+            "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Change the Channel",
-            "trophyDetail": "Destroy the Prototype Stealth U-Boat hidden in Festung Guernsey.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c603cb71-3a6d-4f20-8b7c-284cd8b1a8e4.png",
+            "trophyName": "Finding the Last Piece",
+            "trophyDetail": "Complete a chapter with all Minikits collected in Story or Free Play modes.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/60207a2c-adf7-4aea-a20d-5cf5246bcc48.png",
             "trophyGroupId": "default",
-            "name": "Change the Channel",
+            "name": "Finding the Last Piece",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c603cb71-3a6d-4f20-8b7c-284cd8b1a8e4.png",
-            "description": "Destroy the Prototype Stealth U-Boat hidden in Festung Guernsey.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/60207a2c-adf7-4aea-a20d-5cf5246bcc48.png",
+            "description": "Complete a chapter with all Minikits collected in Story or Free Play modes.",
             "rarity": "Rare",
             "earnedRate": "0.0",
-            "hidden": true,
-            "groupName": "Sniper Elite 5",
-            "earned": true,
-            "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "3 hours, 11 mins",
-            "timestamp": 1780813893000,
+            "hidden": false,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -12995,41 +12887,41 @@
             "trophyId": 6,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Taking it back",
-            "trophyDetail": "Liberate Desponts-sur-Douve and secure Allied transport routes.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d439e89b-1afb-408d-8257-e1922809047b.png",
+            "trophyName": "Quick Game of Find the Canisters",
+            "trophyDetail": "Earn a Gold Brick in Challenge mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/caf00700-ffb5-417d-a4db-377ba7a5d6a0.png",
             "trophyGroupId": "default",
-            "name": "Taking it back",
+            "name": "Quick Game of Find the Canisters",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d439e89b-1afb-408d-8257-e1922809047b.png",
-            "description": "Liberate Desponts-sur-Douve and secure Allied transport routes.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/caf00700-ffb5-417d-a4db-377ba7a5d6a0.png",
+            "description": "Earn a Gold Brick in Challenge mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": true,
-            "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 hour, 5 mins",
-            "timestamp": 1780821421000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
           },
           {
             "trophyId": 7,
-            "trophyHidden": true,
+            "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Target America",
-            "trophyDetail": "Destroy the V2 Launch Sites and Uncover the target of Operation Kraken.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
+            "trophyName": "Free Range Jedi",
+            "trophyDetail": "Complete a chapter with a full True Jedi meter in Free Play mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/4fefc9f5-3760-4951-81c3-687680ab244f.png",
             "trophyGroupId": "default",
-            "name": "Target America",
+            "name": "Free Range Jedi",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
-            "description": "Destroy the V2 Launch Sites and Uncover the target of Operation Kraken.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/4fefc9f5-3760-4951-81c3-687680ab244f.png",
+            "description": "Complete a chapter with a full True Jedi meter in Free Play mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
-            "hidden": true,
-            "groupName": "Sniper Elite 5",
+            "hidden": false,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -13039,20 +12931,43 @@
           },
           {
             "trophyId": 8,
-            "trophyHidden": true,
+            "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "The Kraken Sleeps",
-            "trophyDetail": "Stop Operation Kraken and sink its deadly fleet.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ba205084-5d0a-4648-8657-aaa38dd43533.png",
+            "trophyName": "Limited Power at a Price",
+            "trophyDetail": "Collect a Power Brick.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f82d4209-1081-4759-84e7-7daf8ae333a7.png",
             "trophyGroupId": "default",
-            "name": "The Kraken Sleeps",
+            "name": "Limited Power at a Price",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ba205084-5d0a-4648-8657-aaa38dd43533.png",
-            "description": "Stop Operation Kraken and sink its deadly fleet.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f82d4209-1081-4759-84e7-7daf8ae333a7.png",
+            "description": "Collect a Power Brick.",
             "rarity": "Rare",
             "earnedRate": "0.0",
-            "hidden": true,
-            "groupName": "Sniper Elite 5",
+            "hidden": false,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": true,
+            "earnedDate": "6/3/2026, 12:51:30 AM",
+            "earnedAge": "4 days, 10 hours, 35 mins",
+            "timestamp": 1780447890000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 9,
+            "trophyHidden": false,
+            "trophyType": "silver",
+            "trophyName": "Marathon Runner",
+            "trophyDetail": "Complete any Super Story.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/5d440aab-1d77-4047-8a5c-c89493b4b4ef.png",
+            "trophyGroupId": "default",
+            "name": "Marathon Runner",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/5d440aab-1d77-4047-8a5c-c89493b4b4ef.png",
+            "description": "Complete any Super Story.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -13061,69 +12976,44 @@
             "targetValue": 0
           },
           {
-            "trophyId": 9,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Can't Outrun A Bullet",
-            "trophyDetail": "Kill Möller with a rifle at a distance of 600 meters or more.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8dc0e66c-4e79-44fd-95c5-9447c8ca0008.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "600",
-            "name": "Can't Outrun A Bullet",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8dc0e66c-4e79-44fd-95c5-9447c8ca0008.png",
-            "description": "Kill Möller with a rifle at a distance of 600 meters or more.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "600"
-          },
-          {
             "trophyId": 10,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "Climbing the Ladder",
-            "trophyDetail": "Reach rank 40.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/761c0fa3-7ed7-4f99-a0e1-3de4d8157aae.png",
+            "trophyName": "Marathon Speed Runner",
+            "trophyDetail": "Beat the best time for any Super Story.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/b0ca698e-82c6-4134-8c74-151eb07c6911.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "40",
-            "name": "Climbing the Ladder",
+            "name": "Marathon Speed Runner",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/761c0fa3-7ed7-4f99-a0e1-3de4d8157aae.png",
-            "description": "Reach rank 40.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/b0ca698e-82c6-4134-8c74-151eb07c6911.png",
+            "description": "Beat the best time for any Super Story.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "23",
-            "targetValue": "40"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 11,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Liberté",
-            "trophyDetail": "Complete the campaign.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c6fe9f95-9c4b-463c-bad5-e797cc3a39f7.png",
+            "trophyType": "silver",
+            "trophyName": "High Speed Shootout",
+            "trophyDetail": "Beat the best time for any Character Bonus.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/7bc6d8f9-6a40-4a9a-bb1f-b95be45a7698.png",
             "trophyGroupId": "default",
-            "name": "Liberté",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c6fe9f95-9c4b-463c-bad5-e797cc3a39f7.png",
-            "description": "Complete the campaign.",
+            "name": "High Speed Shootout",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/7bc6d8f9-6a40-4a9a-bb1f-b95be45a7698.png",
+            "description": "Beat the best time for any Character Bonus.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -13134,19 +13024,19 @@
           {
             "trophyId": 12,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Best of the Best",
-            "trophyDetail": "Complete the entire campaign on Authentic difficulty.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/87712b89-9024-449a-a49f-6dde1525dbc1.png",
+            "trophyType": "silver",
+            "trophyName": "Minikit Mayhem",
+            "trophyDetail": "Beat the best time for any Minikit Bonus.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/83859c7e-7000-4751-8e40-b1fecc2f4ea8.png",
             "trophyGroupId": "default",
-            "name": "Best of the Best",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/87712b89-9024-449a-a49f-6dde1525dbc1.png",
-            "description": "Complete the entire campaign on Authentic difficulty.",
+            "name": "Minikit Mayhem",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/83859c7e-7000-4751-8e40-b1fecc2f4ea8.png",
+            "description": "Beat the best time for any Minikit Bonus.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -13157,43 +13047,42 @@
           {
             "trophyId": 13,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "No Stone Unturned",
-            "trophyDetail": "Complete 16 optional objectives.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8c66d9c8-46f8-4612-b3be-9d4c98df287a.png",
+            "trophyType": "gold",
+            "trophyName": "Golden Hope",
+            "trophyDetail": "Collect all Gold Bricks for STAR WARS Episode IV: A New Hope.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f942e3da-a4de-480f-9ff2-d5d685df645f.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "16",
-            "name": "No Stone Unturned",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8c66d9c8-46f8-4612-b3be-9d4c98df287a.png",
-            "description": "Complete 16 optional objectives.",
+            "name": "Golden Hope",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f942e3da-a4de-480f-9ff2-d5d685df645f.png",
+            "description": "Collect all Gold Bricks for STAR WARS Episode IV: A New Hope.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "11",
-            "targetValue": "16"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 14,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Opposing Force",
-            "trophyDetail": "Win one Axis Invasion as an Invader.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c95870e7-4545-4eb0-9c94-26d48461b9fc.png",
+            "trophyType": "gold",
+            "trophyName": "Golden Empire",
+            "trophyDetail": "Collect all Gold Bricks for STAR WARS Episode V: The Empire Strikes Back.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/1a6f632e-07ef-4079-a797-b077cc2e22a4.png",
             "trophyGroupId": "default",
-            "name": "Opposing Force",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c95870e7-4545-4eb0-9c94-26d48461b9fc.png",
-            "description": "Win one Axis Invasion as an Invader.",
+            "name": "Golden Empire",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/1a6f632e-07ef-4079-a797-b077cc2e22a4.png",
+            "description": "Collect all Gold Bricks for STAR WARS Episode V: The Empire Strikes Back.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -13204,19 +13093,19 @@
           {
             "trophyId": 15,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Enemy at the Gates",
-            "trophyDetail": "Defeat an invading Sniper Jager.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d30e7fed-73bb-427e-80f2-5b199eb625ee.png",
+            "trophyType": "gold",
+            "trophyName": "Golden Return",
+            "trophyDetail": "Collect all Gold Bricks in STAR WARS Episode VI: Return of the Jedi.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f8b5477e-26f9-4ae1-9532-5f88aa2f4d15.png",
             "trophyGroupId": "default",
-            "name": "Enemy at the Gates",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d30e7fed-73bb-427e-80f2-5b199eb625ee.png",
-            "description": "Defeat an invading Sniper Jager.",
+            "name": "Golden Return",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f8b5477e-26f9-4ae1-9532-5f88aa2f4d15.png",
+            "description": "Collect all Gold Bricks in STAR WARS Episode VI: Return of the Jedi.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -13227,19 +13116,19 @@
           {
             "trophyId": 16,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Fields of Glory",
-            "trophyDetail": "Play one team-based PVP match",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/5c6a440a-5675-42b0-8105-b8f611dcc67d.png",
+            "trophyType": "gold",
+            "trophyName": "In a Galaxy Nearby",
+            "trophyDetail": "Complete the Lego City level.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f78f173d-9492-4c2b-8a63-184aaabf368d.png",
             "trophyGroupId": "default",
-            "name": "Fields of Glory",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/5c6a440a-5675-42b0-8105-b8f611dcc67d.png",
-            "description": "Play one team-based PVP match",
+            "name": "In a Galaxy Nearby",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f78f173d-9492-4c2b-8a63-184aaabf368d.png",
+            "description": "Complete the Lego City level.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -13250,23 +13139,23 @@
           {
             "trophyId": 17,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Just a Flesh Wound",
-            "trophyDetail": "Complete a mission, excluding the \"Loose Ends\" mission, in any difficulty without healing.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f8fadef6-3e73-4368-952e-89549e26cd42.png",
+            "trophyType": "bronze",
+            "trophyName": "Hints of Power",
+            "trophyDetail": "Purchase all hints.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/3a63be2d-8ebe-4eab-9b38-4696f0d5e8f2.png",
             "trophyGroupId": "default",
-            "name": "Just a Flesh Wound",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f8fadef6-3e73-4368-952e-89549e26cd42.png",
-            "description": "Complete a mission, excluding the \"Loose Ends\" mission, in any difficulty without healing.",
+            "name": "Hints of Power",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/3a63be2d-8ebe-4eab-9b38-4696f0d5e8f2.png",
+            "description": "Purchase all hints.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": true,
-            "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "1 week, 3 mins",
-            "timestamp": 1780220375000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -13274,41 +13163,41 @@
             "trophyId": 18,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Organ Grinder",
-            "trophyDetail": "Hit every organ at least once with a rifle.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2d66ad9-d7cc-4e79-a4dd-ef6bdc0f5ed8.png",
+            "trophyName": "Minifigure Booster Pack",
+            "trophyDetail": "Purchase any character.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/2f7d21a1-ed16-49c5-8cba-75cdcce12154.png",
             "trophyGroupId": "default",
-            "name": "Organ Grinder",
+            "name": "Minifigure Booster Pack",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2d66ad9-d7cc-4e79-a4dd-ef6bdc0f5ed8.png",
-            "description": "Hit every organ at least once with a rifle.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/2f7d21a1-ed16-49c5-8cba-75cdcce12154.png",
+            "description": "Purchase any character.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "6 days, 20 hours, 34 mins",
-            "timestamp": 1780232880000,
+            "earnedDate": "6/3/2026, 2:16:23 AM",
+            "earnedAge": "4 days, 9 hours, 10 mins",
+            "timestamp": 1780452983000,
             "currentValue": 0,
             "targetValue": 0
           },
           {
             "trophyId": 19,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Strategist",
-            "trophyDetail": "Make a tank shoot and destroy another enemy vehicle.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/eb1b1d0e-ccc9-4294-9410-e81aa1821dfe.png",
+            "trophyType": "silver",
+            "trophyName": "Ghosts of Jedi Past",
+            "trophyDetail": "Purchase a ghost character.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/608f4d8d-0af3-45c0-9688-63dd5a20dc82.png",
             "trophyGroupId": "default",
-            "name": "Strategist",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/eb1b1d0e-ccc9-4294-9410-e81aa1821dfe.png",
-            "description": "Make a tank shoot and destroy another enemy vehicle.",
+            "name": "Ghosts of Jedi Past",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/608f4d8d-0af3-45c0-9688-63dd5a20dc82.png",
+            "description": "Purchase a ghost character.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -13320,1220 +13209,225 @@
             "trophyId": 20,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Master of Pistols",
-            "trophyDetail": "Obtain six pistol-related mastery medals.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2d3b605-6157-4096-8a41-d6f92a40e5cf.png",
+            "trophyName": "Just for Fun",
+            "trophyDetail": "Purchase any extra toggle.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/a78a706f-11ad-4dec-88e9-2e56d6140160.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "6",
-            "name": "Master of Pistols",
+            "name": "Just for Fun",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2d3b605-6157-4096-8a41-d6f92a40e5cf.png",
-            "description": "Obtain six pistol-related mastery medals.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/a78a706f-11ad-4dec-88e9-2e56d6140160.png",
+            "description": "Purchase any extra toggle.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "6"
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": true,
+            "earnedDate": "6/3/2026, 2:15:45 AM",
+            "earnedAge": "4 days, 9 hours, 10 mins",
+            "timestamp": 1780452945000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 21,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Master of Secondaries",
-            "trophyDetail": "Obtain six secondary-related mastery medals.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e8a96b81-4b53-48d9-bf61-9163168b9994.png",
+            "trophyType": "silver",
+            "trophyName": "Bowl of Studs",
+            "trophyDetail": "Hold two million studs at one time.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/a8f3dc16-0b5e-4828-acde-6faa2274d6b6.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "6",
-            "name": "Master of Secondaries",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e8a96b81-4b53-48d9-bf61-9163168b9994.png",
-            "description": "Obtain six secondary-related mastery medals.",
+            "name": "Bowl of Studs",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/a8f3dc16-0b5e-4828-acde-6faa2274d6b6.png",
+            "description": "Hold two million studs at one time.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "6"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 22,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Master of Rifles",
-            "trophyDetail": "Obtain six rifle-related mastery medals.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/81573a9b-8e89-4c91-8d41-d820f767377e.png",
+            "trophyType": "gold",
+            "trophyName": "Bucket of Studs",
+            "trophyDetail": "Hold six million studs at one time.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/901f5ec0-143b-47bd-92dc-835d7c750421.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "6",
-            "name": "Master of Rifles",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/81573a9b-8e89-4c91-8d41-d820f767377e.png",
-            "description": "Obtain six rifle-related mastery medals.",
+            "name": "Bucket of Studs",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/901f5ec0-143b-47bd-92dc-835d7c750421.png",
+            "description": "Hold six million studs at one time.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "6"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 23,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Master-at-arms",
-            "trophyDetail": "Become the Master of each weapon.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0439ecde-a54d-43d0-9073-73e4fd68d197.png",
+            "trophyType": "bronze",
+            "trophyName": "Teamwork Makes the Dream Work",
+            "trophyDetail": "Complete Episode I: Darth Maul in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/64aeea65-eb3f-4687-beb4-5c7a3c04d518.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "3",
-            "name": "Master-at-arms",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0439ecde-a54d-43d0-9073-73e4fd68d197.png",
-            "description": "Become the Master of each weapon.",
+            "name": "Teamwork Makes the Dream Work",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/64aeea65-eb3f-4687-beb4-5c7a3c04d518.png",
+            "description": "Complete Episode I: Darth Maul in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "3"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 24,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Gunslinger",
-            "trophyDetail": "Kill 150 enemies with a Pistol.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e1cbccd2-5c90-41ec-9653-3e39e56ae689.png",
+            "trophyName": "Not the Arm!",
+            "trophyDetail": "Complete Episode II: Count Dooku in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/dfea8051-1069-4b36-aa19-ad69bf37e018.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "150",
-            "name": "Gunslinger",
+            "name": "Not the Arm!",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e1cbccd2-5c90-41ec-9653-3e39e56ae689.png",
-            "description": "Kill 150 enemies with a Pistol.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/dfea8051-1069-4b36-aa19-ad69bf37e018.png",
+            "description": "Complete Episode II: Count Dooku in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "26",
-            "targetValue": "150"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 25,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Skirmisher",
-            "trophyDetail": "Kill 300 enemies with a Secondary Weapon.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e2e38296-39e7-46f8-ac29-64746b727036.png",
+            "trophyName": "End of the Beginning",
+            "trophyDetail": "Complete Episode III: Darth Vader in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "300",
-            "name": "Skirmisher",
+            "name": "End of the Beginning",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e2e38296-39e7-46f8-ac29-64746b727036.png",
-            "description": "Kill 300 enemies with a Secondary Weapon.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
+            "description": "Complete Episode III: Darth Vader in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "29",
-            "targetValue": "300"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 26,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Sharpshooter",
-            "trophyDetail": "Kill 350 enemies with a Rifle.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/179b85d2-7b74-4bee-8d07-28e5710738a0.png",
+            "trophyName": "My Own Jedi",
+            "trophyDetail": "Create a custom character.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/3a2db3b0-6ae1-4979-91a3-c7b5e082c04d.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "350",
-            "name": "Sharpshooter",
+            "name": "My Own Jedi",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/179b85d2-7b74-4bee-8d07-28e5710738a0.png",
-            "description": "Kill 350 enemies with a Rifle.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/3a2db3b0-6ae1-4979-91a3-c7b5e082c04d.png",
+            "description": "Create a custom character.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "228",
-            "targetValue": "350"
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": true,
+            "earnedDate": "6/3/2026, 3:38:23 AM",
+            "earnedAge": "4 days, 7 hours, 48 mins",
+            "timestamp": 1780457903000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 27,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "The Long Game",
-            "trophyDetail": "Total kill distance of 100000 meters.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fe3a0ec8-7699-4fae-b840-85670b1cf11b.png",
+            "trophyName": "Full Cast",
+            "trophyDetail": "Purchase all characters.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/46573a38-a5be-4089-b9c3-6a19d8c1d211.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100000",
-            "name": "The Long Game",
+            "name": "Full Cast",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fe3a0ec8-7699-4fae-b840-85670b1cf11b.png",
-            "description": "Total kill distance of 100000 meters.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/46573a38-a5be-4089-b9c3-6a19d8c1d211.png",
+            "description": "Purchase all characters.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "22943",
-            "targetValue": "100000"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 28,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Set Europe Ablaze",
-            "trophyDetail": "Kill 50 enemies with traps.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
+            "trophyType": "silver",
+            "trophyName": "Forceful Charm",
+            "trophyDetail": "Purchase all vehicles.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/b4880030-febc-46af-a2a5-42e5e28cbd57.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "50",
-            "name": "Set Europe Ablaze",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
-            "description": "Kill 50 enemies with traps.",
+            "name": "Forceful Charm",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/b4880030-febc-46af-a2a5-42e5e28cbd57.png",
+            "description": "Purchase all vehicles.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Sniper Elite 5",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "29",
-            "targetValue": "50"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 29,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Precision Is Key",
-            "trophyDetail": "Kill 150  enemies with any weapon while in Iron Sights.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f0446d48-10f4-4bde-be46-d8019bea9311.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "150",
-            "name": "Precision Is Key",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f0446d48-10f4-4bde-be46-d8019bea9311.png",
-            "description": "Kill 150  enemies with any weapon while in Iron Sights.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "27",
-            "targetValue": "150"
-          },
-          {
-            "trophyId": 30,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Out of Scope",
-            "trophyDetail": "Kill 150 enemies with a rifle while in Iron Sights.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8e8778a5-cd3f-48c1-a6e4-a8920316dbc6.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "150",
-            "name": "Out of Scope",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8e8778a5-cd3f-48c1-a6e4-a8920316dbc6.png",
-            "description": "Kill 150 enemies with a rifle while in Iron Sights.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "150"
-          },
-          {
-            "trophyId": 31,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Rigged to Blow",
-            "trophyDetail": "Kill 20 soldiers using booby traps.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "20",
-            "name": "Rigged to Blow",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
-            "description": "Kill 20 soldiers using booby traps.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "19",
-            "targetValue": "20"
-          },
-          {
-            "trophyId": 32,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "My Little Friend",
-            "trophyDetail": "Kill 50 soldiers with heavy weapons.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6f30398b-e22a-406e-8858-b724b01ddcf5.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "50",
-            "name": "My Little Friend",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6f30398b-e22a-406e-8858-b724b01ddcf5.png",
-            "description": "Kill 50 soldiers with heavy weapons.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "23",
-            "targetValue": "50"
-          },
-          {
-            "trophyId": 33,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Explosive Efficiency",
-            "trophyDetail": "Kill 3 on-foot soldiers with one grenade.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
-            "trophyGroupId": "default",
-            "name": "Explosive Efficiency",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
-            "description": "Kill 3 on-foot soldiers with one grenade.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 34,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Lord of War",
-            "trophyDetail": "Get a kill with 20 different weapons.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/134f9030-0fee-4b0e-9efc-79a603aee163.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "20",
-            "name": "Lord of War",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/134f9030-0fee-4b0e-9efc-79a603aee163.png",
-            "description": "Get a kill with 20 different weapons.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "14",
-            "targetValue": "20"
-          },
-          {
-            "trophyId": 35,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Die Nussknacker Sweet!",
-            "trophyDetail": "Get a testicle shot with a rifle from a distance of 100 meters or more.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0bb96f58-bc48-404f-b396-33995fdd456d.png",
-            "trophyGroupId": "default",
-            "name": "Die Nussknacker Sweet!",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0bb96f58-bc48-404f-b396-33995fdd456d.png",
-            "description": "Get a testicle shot with a rifle from a distance of 100 meters or more.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 36,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Resourceful",
-            "trophyDetail": "Kill 50 enemy soldiers with Found Weapons.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ecd5a5ce-ab47-4165-b965-4704b194e2af.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "50",
-            "name": "Resourceful",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ecd5a5ce-ab47-4165-b965-4704b194e2af.png",
-            "description": "Kill 50 enemy soldiers with Found Weapons.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "32",
-            "targetValue": "50"
-          },
-          {
-            "trophyId": 37,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Der Geist",
-            "trophyDetail": "Achieve 250 ghost kills.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/af2c0033-427c-4fff-befc-59eb5ac6a0ca.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "250",
-            "name": "Der Geist",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/af2c0033-427c-4fff-befc-59eb5ac6a0ca.png",
-            "description": "Achieve 250 ghost kills.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "120",
-            "targetValue": "250"
-          },
-          {
-            "trophyId": 38,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "As Quiet as a Mouse",
-            "trophyDetail": "Kill 50 enemies during a Sound Mask.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb867a5e-ac51-44d3-89a0-8e35a4f6d191.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "50",
-            "name": "As Quiet as a Mouse",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb867a5e-ac51-44d3-89a0-8e35a4f6d191.png",
-            "description": "Kill 50 enemies during a Sound Mask.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "29",
-            "targetValue": "50"
-          },
-          {
-            "trophyId": 39,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Close Quarters",
-            "trophyDetail": "Perform 100 lethal takedowns.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40109781-5a63-4f98-abc0-263fc65548e0.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Close Quarters",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40109781-5a63-4f98-abc0-263fc65548e0.png",
-            "description": "Perform 100 lethal takedowns.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "69",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 40,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Snake in the Grass",
-            "trophyDetail": "While in Tall Grass, kill 50 soldiers.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c5f3010a-c566-4bc9-8ea8-aad2c53c7b21.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "50",
-            "name": "Snake in the Grass",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c5f3010a-c566-4bc9-8ea8-aad2c53c7b21.png",
-            "description": "While in Tall Grass, kill 50 soldiers.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "3",
-            "targetValue": "50"
-          },
-          {
-            "trophyId": 41,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "From Paris with Love",
-            "trophyDetail": "Collect 41 Personal letters.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f3a31a12-29c7-4f70-899e-2d800aec3489.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "41",
-            "name": "From Paris with Love",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f3a31a12-29c7-4f70-899e-2d800aec3489.png",
-            "description": "Collect 41 Personal letters.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "31",
-            "targetValue": "41"
-          },
-          {
-            "trophyId": 42,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Burn after reading",
-            "trophyDetail": "Collect 39 classified documents.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c7fd0246-3d96-47fd-8ea8-4f6a96aec5c2.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "39",
-            "name": "Burn after reading",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c7fd0246-3d96-47fd-8ea8-4f6a96aec5c2.png",
-            "description": "Collect 39 classified documents.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "29",
-            "targetValue": "39"
-          },
-          {
-            "trophyId": 43,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Souvenir hunter",
-            "trophyDetail": "Collect 24 Hidden Items.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d1b43e92-5d28-4cc9-9ac5-d3ce63f7b8bf.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "24",
-            "name": "Souvenir hunter",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d1b43e92-5d28-4cc9-9ac5-d3ce63f7b8bf.png",
-            "description": "Collect 24 Hidden Items.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "18",
-            "targetValue": "24"
-          },
-          {
-            "trophyId": 44,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Eagle Eyed",
-            "trophyDetail": "Destroy 24 Dead-eye Targets.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/83ec1770-119f-4cda-b294-cf93cfc5bdb3.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "24",
-            "name": "Eagle Eyed",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/83ec1770-119f-4cda-b294-cf93cfc5bdb3.png",
-            "description": "Destroy 24 Dead-eye Targets.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "18",
-            "targetValue": "24"
-          },
-          {
-            "trophyId": 45,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Tinkerer",
-            "trophyDetail": "Interact with 24 workbenches.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3183744c-91c8-4340-ac4a-5e429c0a61f4.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "24",
-            "name": "Tinkerer",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3183744c-91c8-4340-ac4a-5e429c0a61f4.png",
-            "description": "Interact with 24 workbenches.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "13",
-            "targetValue": "24"
-          },
-          {
-            "trophyId": 46,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "It'll Buff Right Out",
-            "trophyDetail": "Destroy Möller's shiny new car.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2bc77bf-3b96-4b1f-8bbf-9035d5c424a4.png",
-            "trophyGroupId": "default",
-            "name": "It'll Buff Right Out",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2bc77bf-3b96-4b1f-8bbf-9035d5c424a4.png",
-            "description": "Destroy Möller's shiny new car.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 47,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Locomotion Commotion",
-            "trophyDetail": "In Martressac, create an accident that destroys the train in the storage area.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fce57d1c-e739-4be9-9d6e-f0e72a3f6834.png",
-            "trophyGroupId": "default",
-            "name": "Locomotion Commotion",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fce57d1c-e739-4be9-9d6e-f0e72a3f6834.png",
-            "description": "In Martressac, create an accident that destroys the train in the storage area.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": true,
-            "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "5 hours, 45 mins",
-            "timestamp": 1780804632000,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 48,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Up Close and Personal",
-            "trophyDetail": "Melee takedown each one of the three snipers guarding the bridge.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb348a13-2723-45cc-abba-50a1b68d1838.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "3",
-            "name": "Up Close and Personal",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb348a13-2723-45cc-abba-50a1b68d1838.png",
-            "description": "Melee takedown each one of the three snipers guarding the bridge.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "1",
-            "targetValue": "3"
-          },
-          {
-            "trophyId": 49,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Road Rage",
-            "trophyDetail": "In Secret Weapons, find and destroy one of each type of vehicle present in this mission.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/19e22a01-afc5-4a75-8bc0-13fd4ab00e26.png",
-            "trophyGroupId": "default",
-            "name": "Road Rage",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/19e22a01-afc5-4a75-8bc0-13fd4ab00e26.png",
-            "description": "In Secret Weapons, find and destroy one of each type of vehicle present in this mission.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 50,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Don't hold your breath",
-            "trophyDetail": "Make the final shot in St Nazaire without using Empty Lung.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/99edab93-7005-4634-b8ce-0de72d8c7df9.png",
-            "trophyGroupId": "default",
-            "name": "Don't hold your breath",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/99edab93-7005-4634-b8ce-0de72d8c7df9.png",
-            "description": "Make the final shot in St Nazaire without using Empty Lung.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 51,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Brains of the Operation",
-            "trophyDetail": "Kill Möller with a headshot.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/368221f5-a2a4-4696-9bcb-cdea5a482b82.png",
-            "trophyGroupId": "default",
-            "name": "Brains of the Operation",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/368221f5-a2a4-4696-9bcb-cdea5a482b82.png",
-            "description": "Kill Möller with a headshot.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 52,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Sight Beyond Sights",
-            "trophyDetail": "Kill Möller with a rifle, while in Iron Sights.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/48b54ce3-510d-4cd1-a6d6-81fa7e864ada.png",
-            "trophyGroupId": "default",
-            "name": "Sight Beyond Sights",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/48b54ce3-510d-4cd1-a6d6-81fa7e864ada.png",
-            "description": "Kill Möller with a rifle, while in Iron Sights.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 53,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Shoot for the Moon",
-            "trophyDetail": "Complete three Survival missions.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0178d710-329a-4535-9acb-4e6e7661f29a.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "3",
-            "name": "Shoot for the Moon",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0178d710-329a-4535-9acb-4e6e7661f29a.png",
-            "description": "Complete three Survival missions.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "3"
-          },
-          {
-            "trophyId": 54,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Führerious Repetition",
-            "trophyDetail": "Wolf Mountain - Kill Hitler 5 times.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/66508739-96e8-487d-94fc-1a4d6fff188b.png",
-            "trophyGroupId": "001",
-            "trophyProgressTargetValue": "5",
-            "name": "Führerious Repetition",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/66508739-96e8-487d-94fc-1a4d6fff188b.png",
-            "description": "Wolf Mountain - Kill Hitler 5 times.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "5"
-          },
-          {
-            "trophyId": 55,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Reich To The Point",
-            "trophyDetail": "Wolf Mountain - Kill only Hitler and exfiltrate.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d1b0be2c-a414-410e-abc2-7754676cc9fc.png",
-            "trophyGroupId": "001",
-            "name": "Reich To The Point",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d1b0be2c-a414-410e-abc2-7754676cc9fc.png",
-            "description": "Wolf Mountain - Kill only Hitler and exfiltrate.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 56,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "From Führer Away",
-            "trophyDetail": "Wolf Mountain - Kill Hitler at a distance of 300 meters or more.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4aceafe9-e503-40b1-b709-085a2530f25f.png",
-            "trophyGroupId": "001",
-            "trophyProgressTargetValue": "300",
-            "name": "From Führer Away",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4aceafe9-e503-40b1-b709-085a2530f25f.png",
-            "description": "Wolf Mountain - Kill Hitler at a distance of 300 meters or more.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "300"
-          },
-          {
-            "trophyId": 57,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Covert Elimination",
-            "trophyDetail": "Wolf Mountain - Kill Hitler and exfiltrate without ever being detected.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/881d5abb-ffe0-4f1c-adb8-e21d526acc33.png",
-            "trophyGroupId": "001",
-            "name": "Covert Elimination",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/881d5abb-ffe0-4f1c-adb8-e21d526acc33.png",
-            "description": "Wolf Mountain - Kill Hitler and exfiltrate without ever being detected.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 58,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Alpha",
-            "trophyDetail": "Wolf Mountain - Complete the mission on Authentic difficulty.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/85bd7b47-ee24-4444-9184-bdf08bc27d8a.png",
-            "trophyGroupId": "001",
-            "name": "Alpha",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/85bd7b47-ee24-4444-9184-bdf08bc27d8a.png",
-            "description": "Wolf Mountain - Complete the mission on Authentic difficulty.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 59,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Herr Today, Gone Tomorrow",
-            "trophyDetail": "Wolf Mountain - Complete the mission.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3552602f-8568-4f5a-98bd-ff686db0a6fc.png",
-            "trophyGroupId": "001",
-            "name": "Herr Today, Gone Tomorrow",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3552602f-8568-4f5a-98bd-ff686db0a6fc.png",
-            "description": "Wolf Mountain - Complete the mission.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 60,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Operation Foxley",
-            "trophyDetail": "Wolf Mountain - Complete the mission with a 2 star rating.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c212cf07-0bf2-4b56-a617-e10e7f524dbe.png",
-            "trophyGroupId": "001",
-            "trophyProgressTargetValue": "2",
-            "name": "Operation Foxley",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c212cf07-0bf2-4b56-a617-e10e7f524dbe.png",
-            "description": "Wolf Mountain - Complete the mission with a 2 star rating.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "2"
-          },
-          {
-            "trophyId": 61,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Das Familienjuwel",
-            "trophyDetail": "Wolf Mountain - Kill Hitler with a testicle shot.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/58c913a6-18d0-4739-bee3-089c95040b77.png",
-            "trophyGroupId": "001",
-            "name": "Das Familienjuwel",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/58c913a6-18d0-4739-bee3-089c95040b77.png",
-            "description": "Wolf Mountain - Kill Hitler with a testicle shot.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 62,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Last Resort",
-            "trophyDetail": "Complete the campaign mission - Landing Force.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/702698d3-3b28-443f-a6da-0bf8087a7456.png",
-            "trophyGroupId": "002",
-            "name": "Last Resort",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/702698d3-3b28-443f-a6da-0bf8087a7456.png",
-            "description": "Complete the campaign mission - Landing Force.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Landing Force",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 63,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Siegebreaker",
-            "trophyDetail": "Complete the campaign mission - Conqueror.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/9492857a-51c1-40f6-badc-5f4974b15679.png",
-            "trophyGroupId": "003",
-            "name": "Siegebreaker",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/9492857a-51c1-40f6-badc-5f4974b15679.png",
-            "description": "Complete the campaign mission - Conqueror.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Conqueror",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 64,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Ghost of Falaise",
-            "trophyDetail": "Conqueror - Complete the mission with a 2 star rating.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/48139b34-ced4-4c93-9e98-6f22b1701bd1.png",
-            "trophyGroupId": "003",
-            "name": "Ghost of Falaise",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/48139b34-ced4-4c93-9e98-6f22b1701bd1.png",
-            "description": "Conqueror - Complete the mission with a 2 star rating.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Conqueror",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 65,
-            "trophyHidden": false,
             "trophyType": "gold",
-            "trophyName": "Operation Overlord",
-            "trophyDetail": "Conqueror - Complete the mission on Authentic difficulty.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d085c761-9f11-459b-b712-46169c7b5f21.png",
-            "trophyGroupId": "003",
-            "name": "Operation Overlord",
+            "trophyName": "All Studded Out",
+            "trophyDetail": "Hold four billion studs at one time.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/5a8e53d6-d8f5-4490-8048-c2961b11f796.png",
+            "trophyGroupId": "default",
+            "name": "All Studded Out",
             "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d085c761-9f11-459b-b712-46169c7b5f21.png",
-            "description": "Conqueror - Complete the mission on Authentic difficulty.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/5a8e53d6-d8f5-4490-8048-c2961b11f796.png",
+            "description": "Hold four billion studs at one time.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Conqueror",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 66,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "If You Go Down To The Woods Today",
-            "trophyDetail": "Complete the campaign mission - Rough Landing",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e0029b2f-dc59-4f2f-9781-b744f4b1804b.png",
-            "trophyGroupId": "004",
-            "name": "If You Go Down To The Woods Today",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e0029b2f-dc59-4f2f-9781-b744f4b1804b.png",
-            "description": "Complete the campaign mission - Rough Landing",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Rough Landing",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 67,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Fight Another Day",
-            "trophyDetail": "Rough Landing - Complete the mission with a 2 star rating.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/43bb4783-28ca-4f35-9b74-3b0c56dd8994.png",
-            "trophyGroupId": "004",
-            "name": "Fight Another Day",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/43bb4783-28ca-4f35-9b74-3b0c56dd8994.png",
-            "description": "Rough Landing - Complete the mission with a 2 star rating.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Rough Landing",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 68,
-            "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Stroll in the Woods",
-            "trophyDetail": "Rough Landing - Complete the mission on Authentic difficulty.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/73b5263e-3a2f-4874-8739-e2dc9c386e7b.png",
-            "trophyGroupId": "004",
-            "name": "Stroll in the Woods",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/73b5263e-3a2f-4874-8739-e2dc9c386e7b.png",
-            "description": "Rough Landing - Complete the mission on Authentic difficulty.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Rough Landing",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 69,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Shipbreaker",
-            "trophyDetail": "Complete the campaign mission - Kraken Awakes.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f8c33498-f881-44bd-843c-2bf78141c1ab.png",
-            "trophyGroupId": "005",
-            "name": "Shipbreaker",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f8c33498-f881-44bd-843c-2bf78141c1ab.png",
-            "description": "Complete the campaign mission - Kraken Awakes.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Kraken Awakes",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 70,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Sink or Swim",
-            "trophyDetail": "Kraken Awakes - Complete the mission with a 2 star rating.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c1842419-7765-45a0-9ccd-3358032dcb8f.png",
-            "trophyGroupId": "005",
-            "name": "Sink or Swim",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c1842419-7765-45a0-9ccd-3358032dcb8f.png",
-            "description": "Kraken Awakes - Complete the mission with a 2 star rating.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Kraken Awakes",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 71,
-            "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Going Overboard",
-            "trophyDetail": "Kraken Awakes - Complete the mission on Authentic difficulty.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/789513b5-16b8-4d8f-8b42-546218d08fa8.png",
-            "trophyGroupId": "005",
-            "name": "Going Overboard",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/789513b5-16b8-4d8f-8b42-546218d08fa8.png",
-            "description": "Kraken Awakes - Complete the mission on Authentic difficulty.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Kraken Awakes",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -14542,16 +13436,24 @@
             "targetValue": 0
           }
         ],
-        "npCommunicationId": "NPWR21465_00"
+        "npCommunicationId": "NPWR36496_00"
       },
       "mostRecentTrophies": [
+        {
+          "game": "Sniper Elite 5",
+          "name": "Up Close and Personal",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb348a13-2723-45cc-abba-50a1b68d1838.png",
+          "timestamp": 1780826222000,
+          "date": "6/7/2026, 9:57:02 AM",
+          "age": "1 hour, 29 mins"
+        },
         {
           "game": "Sniper Elite 5",
           "name": "Taking it back",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d439e89b-1afb-408d-8257-e1922809047b.png",
           "timestamp": 1780821421000,
           "date": "6/7/2026, 8:37:01 AM",
-          "age": "1 hour, 5 mins"
+          "age": "2 hours, 49 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -14559,7 +13461,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c603cb71-3a6d-4f20-8b7c-284cd8b1a8e4.png",
           "timestamp": 1780813893000,
           "date": "6/7/2026, 6:31:33 AM",
-          "age": "3 hours, 11 mins"
+          "age": "4 hours, 55 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -14567,7 +13469,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/31726dcd-86f5-4e53-9357-7348e9a3d072.png",
           "timestamp": 1780806603000,
           "date": "6/7/2026, 4:30:03 AM",
-          "age": "5 hours, 12 mins"
+          "age": "6 hours, 56 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -14575,7 +13477,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fce57d1c-e739-4be9-9d6e-f0e72a3f6834.png",
           "timestamp": 1780804632000,
           "date": "6/7/2026, 3:57:12 AM",
-          "age": "5 hours, 45 mins"
+          "age": "7 hours, 29 mins"
         },
         {
           "game": "Poker Club",
@@ -14583,7 +13485,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22138_00/df6cb640-b0f9-484f-b181-b3503e4de96b.png",
           "timestamp": 1780784055000,
           "date": "6/6/2026, 10:14:15 PM",
-          "age": "11 hours, 28 mins"
+          "age": "13 hours, 12 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -14591,7 +13493,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/3a2db3b0-6ae1-4979-91a3-c7b5e082c04d.png",
           "timestamp": 1780457903000,
           "date": "6/3/2026, 3:38:23 AM",
-          "age": "4 days, 6 hours, 4 mins"
+          "age": "4 days, 7 hours, 48 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -14599,7 +13501,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/9ac1527a-d70b-4bca-88e6-f5ad17e2931e.png",
           "timestamp": 1780457739000,
           "date": "6/3/2026, 3:35:39 AM",
-          "age": "4 days, 6 hours, 7 mins"
+          "age": "4 days, 7 hours, 50 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -14607,7 +13509,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/2f7d21a1-ed16-49c5-8cba-75cdcce12154.png",
           "timestamp": 1780452983000,
           "date": "6/3/2026, 2:16:23 AM",
-          "age": "4 days, 7 hours, 26 mins"
+          "age": "4 days, 9 hours, 10 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -14615,23 +13517,45 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/a78a706f-11ad-4dec-88e9-2e56d6140160.png",
           "timestamp": 1780452945000,
           "date": "6/3/2026, 2:15:45 AM",
-          "age": "4 days, 7 hours, 27 mins"
-        },
-        {
-          "game": "LEGO® Star Wars™ II: The Original Trilogy",
-          "name": "Limited Power at a Price",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f82d4209-1081-4759-84e7-7daf8ae333a7.png",
-          "timestamp": 1780447890000,
-          "date": "6/3/2026, 12:51:30 AM",
-          "age": "4 days, 8 hours, 51 mins"
+          "age": "4 days, 9 hours, 10 mins"
         }
       ],
       "fullLibrary": [
         {
+          "npCommunicationId": "NPWR36496_00",
+          "name": "LEGO® Star Wars™ II: The Original Trilogy",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
+          "lastPlayed": "2026-06-03T03:38:24Z",
+          "npServiceName": "trophy2",
+          "trophySetVersion": "01.00",
+          "trophyTitleName": "LEGO® Star Wars™ II: The Original Trilogy",
+          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
+          "trophyTitlePlatform": "PS5",
+          "hasTrophyGroups": false,
+          "trophyGroupCount": 1,
+          "definedTrophies": {
+            "bronze": 12,
+            "silver": 11,
+            "gold": 6,
+            "platinum": 1
+          },
+          "progress": 10,
+          "earnedTrophies": {
+            "bronze": 5,
+            "silver": 1,
+            "gold": 0,
+            "platinum": 0
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-06-03T03:38:24Z",
+          "earnedTotal": 6,
+          "definedTotal": 30
+        },
+        {
           "npCommunicationId": "NPWR21465_00",
           "name": "Sniper Elite 5",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-          "lastPlayed": "2026-06-07T09:28:15Z",
+          "lastPlayed": "2026-06-07T10:32:26Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite 5",
@@ -14645,16 +13569,16 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 9,
+          "progress": 10,
           "earnedTrophies": {
-            "bronze": 8,
+            "bronze": 9,
             "silver": 1,
             "gold": 0,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-06-07T09:28:15Z",
-          "earnedTotal": 9,
+          "lastUpdatedDateTime": "2026-06-07T10:32:26Z",
+          "earnedTotal": 10,
           "definedTotal": 72
         },
         {
@@ -14686,36 +13610,6 @@
           "lastUpdatedDateTime": "2026-06-06T22:14:15Z",
           "earnedTotal": 13,
           "definedTotal": 43
-        },
-        {
-          "npCommunicationId": "NPWR36496_00",
-          "name": "LEGO® Star Wars™ II: The Original Trilogy",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
-          "lastPlayed": "2026-06-03T03:38:24Z",
-          "npServiceName": "trophy2",
-          "trophySetVersion": "01.00",
-          "trophyTitleName": "LEGO® Star Wars™ II: The Original Trilogy",
-          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
-          "trophyTitlePlatform": "PS5",
-          "hasTrophyGroups": false,
-          "trophyGroupCount": 1,
-          "definedTrophies": {
-            "bronze": 12,
-            "silver": 11,
-            "gold": 6,
-            "platinum": 1
-          },
-          "progress": 10,
-          "earnedTrophies": {
-            "bronze": 5,
-            "silver": 1,
-            "gold": 0,
-            "platinum": 0
-          },
-          "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-06-03T03:38:24Z",
-          "earnedTotal": 6,
-          "definedTotal": 30
         },
         {
           "npCommunicationId": "NPWR09395_00",
@@ -16639,15 +15533,15 @@
           "primaryPlatformInfo": {
             "onlineStatus": "online",
             "platform": "PS5",
-            "lastOnlineDate": "2026-06-05T05:07:47.017Z"
+            "lastOnlineDate": "2026-06-07T10:37:10.049Z"
           },
           "gameTitleInfoList": [
             {
-              "npTitleId": "PPSA01685_00",
-              "titleName": "Sniper Elite 5",
+              "npTitleId": "PPSA14300_00",
+              "titleName": "LEGO® Star Wars™ II: The Original Trilogy",
               "format": "PS5",
               "launchPlatform": "PS5",
-              "conceptIconUrl": "https://image.api.playstation.com/vulcan/ap/rnd/202202/2116/59jHCjMBRhuRhPUKUUy2gkNd.png"
+              "conceptIconUrl": "https://image.api.playstation.com/vulcan/ap/rnd/202405/1516/e511784f7e7ecd26d2c350ed03809a8ef15ab56071cbf7b0.png"
             }
           ]
         },
@@ -16668,15 +15562,15 @@
               "gold": 5,
               "platinum": 1
             },
-            "progress": 9,
+            "progress": 10,
             "earnedTrophies": {
-              "bronze": 8,
+              "bronze": 9,
               "silver": 1,
               "gold": 0,
               "platinum": 0
             },
             "hiddenFlag": false,
-            "lastUpdatedDateTime": "2026-06-07T09:28:15Z"
+            "lastUpdatedDateTime": "2026-06-07T10:32:26Z"
           },
           {
             "npServiceName": "trophy2",
@@ -18349,7 +17243,7 @@
           "totalItemCount": 36
         }
       },
-      "lastUpdated": "6/7/2026, 9:42:58 AM"
+      "lastUpdated": "6/7/2026, 11:26:47 AM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -18936,7 +17830,7 @@
             "groupName": "Construction Simulator",
             "earned": true,
             "earnedDate": "5/29/2026, 10:21:58 PM",
-            "earnedAge": "1 week, 1 day, 11 hours, 21 mins",
+            "earnedAge": "1 week, 1 day, 13 hours, 4 mins",
             "timestamp": 1780093318000,
             "currentValue": 0,
             "targetValue": 0
@@ -19005,7 +17899,7 @@
             "groupName": "Construction Simulator",
             "earned": true,
             "earnedDate": "6/7/2026, 6:08:49 AM",
-            "earnedAge": "3 hours, 34 mins",
+            "earnedAge": "5 hours, 18 mins",
             "timestamp": 1780812529000,
             "currentValue": 0,
             "targetValue": 0
@@ -19166,7 +18060,7 @@
             "groupName": "Construction Simulator",
             "earned": true,
             "earnedDate": "5/30/2026, 4:28:36 AM",
-            "earnedAge": "1 week, 1 day, 5 hours, 14 mins",
+            "earnedAge": "1 week, 1 day, 6 hours, 58 mins",
             "timestamp": 1780115316000,
             "currentValue": 0,
             "targetValue": 0
@@ -19189,7 +18083,7 @@
             "groupName": "Construction Simulator",
             "earned": true,
             "earnedDate": "5/30/2026, 5:44:33 AM",
-            "earnedAge": "1 week, 1 day, 3 hours, 58 mins",
+            "earnedAge": "1 week, 1 day, 5 hours, 42 mins",
             "timestamp": 1780119873000,
             "currentValue": 0,
             "targetValue": 0
@@ -19235,7 +18129,7 @@
             "groupName": "Construction Simulator",
             "earned": true,
             "earnedDate": "5/30/2026, 5:18:52 AM",
-            "earnedAge": "1 week, 1 day, 4 hours, 24 mins",
+            "earnedAge": "1 week, 1 day, 6 hours, 7 mins",
             "timestamp": 1780118332000,
             "currentValue": 0,
             "targetValue": 0
@@ -19281,7 +18175,7 @@
             "groupName": "Construction Simulator",
             "earned": true,
             "earnedDate": "6/2/2026, 9:29:44 AM",
-            "earnedAge": "5 days, 13 mins",
+            "earnedAge": "5 days, 1 hour, 57 mins",
             "timestamp": 1780392584000,
             "currentValue": 0,
             "targetValue": 0
@@ -19373,7 +18267,7 @@
             "groupName": "Construction Simulator",
             "earned": true,
             "earnedDate": "5/29/2026, 5:26:17 AM",
-            "earnedAge": "1 week, 2 days, 4 hours, 16 mins",
+            "earnedAge": "1 week, 2 days, 6 hours",
             "timestamp": 1780032377000,
             "currentValue": 0,
             "targetValue": 0
@@ -19434,7 +18328,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/a83370ab-36d4-46ca-87ee-370c669ecbe9.png",
           "timestamp": 1780812529000,
           "date": "6/7/2026, 6:08:49 AM",
-          "age": "3 hours, 34 mins"
+          "age": "5 hours, 18 mins"
         },
         {
           "game": "Construction Simulator",
@@ -19442,7 +18336,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/2f92bbbc-9304-4821-8df7-780d56413730.png",
           "timestamp": 1780392584000,
           "date": "6/2/2026, 9:29:44 AM",
-          "age": "5 days, 13 mins"
+          "age": "5 days, 1 hour, 57 mins"
         },
         {
           "game": "Construction Simulator",
@@ -19450,7 +18344,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/c0a71cc9-a392-4e09-91eb-34b87578e883.png",
           "timestamp": 1780119873000,
           "date": "5/30/2026, 5:44:33 AM",
-          "age": "1 week, 1 day, 3 hours, 58 mins"
+          "age": "1 week, 1 day, 5 hours, 42 mins"
         },
         {
           "game": "Construction Simulator",
@@ -19458,7 +18352,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/633561d7-3e49-4736-9c42-1c7180aed1b9.png",
           "timestamp": 1780118332000,
           "date": "5/30/2026, 5:18:52 AM",
-          "age": "1 week, 1 day, 4 hours, 24 mins"
+          "age": "1 week, 1 day, 6 hours, 7 mins"
         },
         {
           "game": "Construction Simulator",
@@ -19466,7 +18360,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/e66c02f8-5814-4891-8bfc-d59d29ae8d2c.png",
           "timestamp": 1780115316000,
           "date": "5/30/2026, 4:28:36 AM",
-          "age": "1 week, 1 day, 5 hours, 14 mins"
+          "age": "1 week, 1 day, 6 hours, 58 mins"
         },
         {
           "game": "Construction Simulator",
@@ -19474,7 +18368,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/8f828a00-c053-43bc-8a34-77e05c9181b1.png",
           "timestamp": 1780093318000,
           "date": "5/29/2026, 10:21:58 PM",
-          "age": "1 week, 1 day, 11 hours, 21 mins"
+          "age": "1 week, 1 day, 13 hours, 4 mins"
         },
         {
           "game": "Construction Simulator",
@@ -19482,7 +18376,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/cfeb0601-6266-4dea-8c71-1a2d2d1f199c.png",
           "timestamp": 1780032377000,
           "date": "5/29/2026, 5:26:17 AM",
-          "age": "1 week, 2 days, 4 hours, 16 mins"
+          "age": "1 week, 2 days, 6 hours"
         },
         {
           "game": "MudRunner",
@@ -19490,7 +18384,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR14211_00_0003A4BC039EF43E6D43B5D0B1470D4931ACA09A52/A4FAD7647ECFFA21F0D033A8794F5937BA04919A.PNG",
           "timestamp": 1779952602000,
           "date": "5/28/2026, 7:16:42 AM",
-          "age": "1 week, 3 days, 2 hours, 26 mins"
+          "age": "1 week, 3 days, 4 hours, 10 mins"
         },
         {
           "game": "MudRunner",
@@ -19498,7 +18392,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR14211_00_0003A4BC039EF43E6D43B5D0B1470D4931ACA09A52/6E4FE0C8444EA15A793DA72A7656120D6EC43FFE.PNG",
           "timestamp": 1779949820000,
           "date": "5/28/2026, 6:30:20 AM",
-          "age": "1 week, 3 days, 3 hours, 12 mins"
+          "age": "1 week, 3 days, 4 hours, 56 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -19506,7 +18400,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/37e0cdc9-578a-45a7-929f-6374a22d9bd7.png",
           "timestamp": 1779433403000,
           "date": "5/22/2026, 7:03:23 AM",
-          "age": "2 weeks, 2 days, 2 hours, 39 mins"
+          "age": "2 weeks, 2 days, 4 hours, 23 mins"
         }
       ],
       "fullLibrary": [
@@ -20503,7 +19397,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/7/2026, 9:43:07 AM"
+      "lastUpdated": "6/7/2026, 11:26:58 AM"
     },
     "marc": {
       "onlineId": "DesdemonaTiger",
@@ -20970,7 +19864,7 @@
             "groupName": "Ghost of Tsushima",
             "earned": true,
             "earnedDate": "2/28/2026, 11:32:48 AM",
-            "earnedAge": "3 months, 1 week, 1 day, 22 hours, 10 mins",
+            "earnedAge": "3 months, 1 week, 1 day, 23 hours, 54 mins",
             "timestamp": 1772278368000,
             "currentValue": 0,
             "targetValue": 0
@@ -20993,7 +19887,7 @@
             "groupName": "Ghost of Tsushima",
             "earned": true,
             "earnedDate": "2/28/2026, 12:42:10 PM",
-            "earnedAge": "3 months, 1 week, 1 day, 21 hours",
+            "earnedAge": "3 months, 1 week, 1 day, 22 hours, 44 mins",
             "timestamp": 1772282530000,
             "currentValue": 0,
             "targetValue": 0
@@ -21453,7 +20347,7 @@
             "groupName": "Ghost of Tsushima",
             "earned": true,
             "earnedDate": "3/25/2026, 8:33:39 PM",
-            "earnedAge": "2 months, 1 week, 6 days, 13 hours, 9 mins",
+            "earnedAge": "2 months, 1 week, 6 days, 14 hours, 53 mins",
             "timestamp": 1774470819000,
             "currentValue": 0,
             "targetValue": 0
@@ -21798,7 +20692,7 @@
             "groupName": "Ghost of Tsushima",
             "earned": true,
             "earnedDate": "3/25/2026, 8:18:38 PM",
-            "earnedAge": "2 months, 1 week, 6 days, 13 hours, 24 mins",
+            "earnedAge": "2 months, 1 week, 6 days, 15 hours, 8 mins",
             "timestamp": 1774469918000,
             "currentValue": 0,
             "targetValue": 0
@@ -22166,7 +21060,7 @@
             "groupName": "Ghost of Tsushima: Legends Mode",
             "earned": true,
             "earnedDate": "5/31/2026, 1:11:38 AM",
-            "earnedAge": "1 week, 8 hours, 31 mins",
+            "earnedAge": "1 week, 10 hours, 15 mins",
             "timestamp": 1780189898000,
             "currentValue": 0,
             "targetValue": 0
@@ -22189,7 +21083,7 @@
             "groupName": "Ghost of Tsushima: Legends Mode",
             "earned": true,
             "earnedDate": "3/23/2026, 7:04:41 PM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 14 hours, 38 mins",
+            "earnedAge": "2 months, 2 weeks, 1 day, 16 hours, 22 mins",
             "timestamp": 1774292681000,
             "currentValue": 0,
             "targetValue": 0
@@ -22212,7 +21106,7 @@
             "groupName": "Ghost of Tsushima: Legends Mode",
             "earned": true,
             "earnedDate": "2/28/2026, 2:42:06 PM",
-            "earnedAge": "3 months, 1 week, 1 day, 19 hours, 1 min",
+            "earnedAge": "3 months, 1 week, 1 day, 20 hours, 44 mins",
             "timestamp": 1772289726000,
             "currentValue": 0,
             "targetValue": 0
@@ -22235,7 +21129,7 @@
             "groupName": "Ghost of Tsushima: Legends Mode",
             "earned": true,
             "earnedDate": "3/21/2026, 2:43:36 PM",
-            "earnedAge": "2 months, 2 weeks, 3 days, 18 hours, 59 mins",
+            "earnedAge": "2 months, 2 weeks, 3 days, 20 hours, 43 mins",
             "timestamp": 1774104216000,
             "currentValue": 0,
             "targetValue": 0
@@ -22258,7 +21152,7 @@
             "groupName": "Ghost of Tsushima: Legends Mode",
             "earned": true,
             "earnedDate": "3/22/2026, 1:38:56 PM",
-            "earnedAge": "2 months, 2 weeks, 2 days, 20 hours, 4 mins",
+            "earnedAge": "2 months, 2 weeks, 2 days, 21 hours, 48 mins",
             "timestamp": 1774186736000,
             "currentValue": 0,
             "targetValue": 0
@@ -22626,7 +21520,7 @@
             "groupName": "Legends: Rivals and Mastery Challenges",
             "earned": true,
             "earnedDate": "3/23/2026, 10:44:01 AM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 22 hours, 59 mins",
+            "earnedAge": "2 months, 2 weeks, 2 days, 43 mins",
             "timestamp": 1774262641000,
             "currentValue": 0,
             "targetValue": 0
@@ -22649,7 +21543,7 @@
             "groupName": "Legends: Rivals and Mastery Challenges",
             "earned": true,
             "earnedDate": "3/3/2026, 3:18:18 AM",
-            "earnedAge": "3 months, 6 days, 6 hours, 24 mins",
+            "earnedAge": "3 months, 6 days, 8 hours, 8 mins",
             "timestamp": 1772507898000,
             "currentValue": 0,
             "targetValue": 0
@@ -22672,7 +21566,7 @@
             "groupName": "Legends: Rivals and Mastery Challenges",
             "earned": true,
             "earnedDate": "3/23/2026, 3:07:24 PM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 18 hours, 35 mins",
+            "earnedAge": "2 months, 2 weeks, 1 day, 20 hours, 19 mins",
             "timestamp": 1774278444000,
             "currentValue": 0,
             "targetValue": 0
@@ -22710,7 +21604,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22859_00/493cfcac-aefe-4bab-a356-62557a048d74.png",
           "timestamp": 1780189898000,
           "date": "5/31/2026, 1:11:38 AM",
-          "age": "1 week, 8 hours, 31 mins"
+          "age": "1 week, 10 hours, 15 mins"
         },
         {
           "game": "Cyberpunk 2077",
@@ -22718,7 +21612,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24695_00/9e51220d-031d-4e1d-b061-dcee0a2c22eb.png",
           "timestamp": 1780060881000,
           "date": "5/29/2026, 1:21:21 PM",
-          "age": "1 week, 1 day, 20 hours, 21 mins"
+          "age": "1 week, 1 day, 22 hours, 5 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -22726,7 +21620,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/e3c3f8b6-4021-4e1d-aedf-f4a37f001eda.png",
           "timestamp": 1780015575000,
           "date": "5/29/2026, 12:46:15 AM",
-          "age": "1 week, 2 days, 8 hours, 56 mins"
+          "age": "1 week, 2 days, 10 hours, 40 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -22734,7 +21628,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/b38c5fde-cb03-49cb-922e-91c1b5c3da89.png",
           "timestamp": 1780013436000,
           "date": "5/29/2026, 12:10:36 AM",
-          "age": "1 week, 2 days, 9 hours, 32 mins"
+          "age": "1 week, 2 days, 11 hours, 16 mins"
         },
         {
           "game": "Tom Clancy’s Ghost Recon® Wildlands",
@@ -22742,7 +21636,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/531102B911D983E0259ED0222843C3BD669510B2.PNG",
           "timestamp": 1779979478000,
           "date": "5/28/2026, 2:44:38 PM",
-          "age": "1 week, 2 days, 18 hours, 58 mins"
+          "age": "1 week, 2 days, 20 hours, 42 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -22750,7 +21644,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/6b0b573c-aeea-4057-8f0b-9cd4f49392e3.png",
           "timestamp": 1779921632000,
           "date": "5/27/2026, 10:40:32 PM",
-          "age": "1 week, 3 days, 11 hours, 2 mins"
+          "age": "1 week, 3 days, 12 hours, 46 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -22758,7 +21652,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/0f98092d-1ed3-45b6-b96f-401b020b738f.png",
           "timestamp": 1779921632000,
           "date": "5/27/2026, 10:40:32 PM",
-          "age": "1 week, 3 days, 11 hours, 2 mins"
+          "age": "1 week, 3 days, 12 hours, 46 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -22766,7 +21660,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/08aa8bfb-df5b-4347-a043-03ac3c18199d.png",
           "timestamp": 1779921179000,
           "date": "5/27/2026, 10:32:59 PM",
-          "age": "1 week, 3 days, 11 hours, 10 mins"
+          "age": "1 week, 3 days, 12 hours, 54 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -22774,7 +21668,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/d158d368-a8aa-4863-8105-885a305729d1.png",
           "timestamp": 1779920706000,
           "date": "5/27/2026, 10:25:06 PM",
-          "age": "1 week, 3 days, 11 hours, 18 mins"
+          "age": "1 week, 3 days, 13 hours, 1 min"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -22782,7 +21676,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/1c1ed736-9306-4c16-a7d6-a267cf9b9468.png",
           "timestamp": 1779920650000,
           "date": "5/27/2026, 10:24:10 PM",
-          "age": "1 week, 3 days, 11 hours, 19 mins"
+          "age": "1 week, 3 days, 13 hours, 2 mins"
         }
       ],
       "fullLibrary": [
@@ -31744,7 +30638,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/7/2026, 9:43:20 AM"
+      "lastUpdated": "6/7/2026, 11:27:10 AM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -34438,7 +33332,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/7/2026, 9:43:20 AM"
+      "lastUpdated": "6/7/2026, 11:27:10 AM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -34782,7 +33676,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:47:33 AM",
-            "earnedAge": "1 month, 4 days, 8 hours, 55 mins",
+            "earnedAge": "1 month, 4 days, 10 hours, 39 mins",
             "timestamp": 1777855653000,
             "currentValue": 0,
             "targetValue": 0
@@ -34805,7 +33699,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:03:28 AM",
-            "earnedAge": "1 month, 4 days, 6 hours, 39 mins",
+            "earnedAge": "1 month, 4 days, 8 hours, 23 mins",
             "timestamp": 1777863808000,
             "currentValue": 0,
             "targetValue": 0
@@ -34828,7 +33722,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:22:57 AM",
-            "earnedAge": "1 month, 4 days, 6 hours, 20 mins",
+            "earnedAge": "1 month, 4 days, 8 hours, 4 mins",
             "timestamp": 1777864977000,
             "currentValue": 0,
             "targetValue": 0
@@ -34851,7 +33745,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:48:53 AM",
-            "earnedAge": "1 month, 4 days, 8 hours, 54 mins",
+            "earnedAge": "1 month, 4 days, 10 hours, 38 mins",
             "timestamp": 1777855733000,
             "currentValue": 0,
             "targetValue": 0
@@ -34874,7 +33768,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:42:00 AM",
-            "earnedAge": "3 weeks, 6 days, 6 hours, 1 min",
+            "earnedAge": "3 weeks, 6 days, 7 hours, 45 mins",
             "timestamp": 1778470920000,
             "currentValue": 0,
             "targetValue": 0
@@ -34897,7 +33791,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:18:57 AM",
-            "earnedAge": "3 weeks, 6 days, 6 hours, 24 mins",
+            "earnedAge": "3 weeks, 6 days, 8 hours, 8 mins",
             "timestamp": 1778469537000,
             "currentValue": 0,
             "targetValue": 0
@@ -34966,7 +33860,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:37:55 AM",
-            "earnedAge": "1 month, 4 days, 5 hours, 5 mins",
+            "earnedAge": "1 month, 4 days, 6 hours, 49 mins",
             "timestamp": 1777869475000,
             "currentValue": 0,
             "targetValue": 0
@@ -34989,7 +33883,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:23:29 AM",
-            "earnedAge": "1 month, 4 days, 6 hours, 19 mins",
+            "earnedAge": "1 month, 4 days, 8 hours, 3 mins",
             "timestamp": 1777865009000,
             "currentValue": 0,
             "targetValue": 0
@@ -35035,7 +33929,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 10:49:51 PM",
-            "earnedAge": "1 month, 3 days, 10 hours, 53 mins",
+            "earnedAge": "1 month, 3 days, 12 hours, 37 mins",
             "timestamp": 1777934991000,
             "currentValue": 0,
             "targetValue": 0
@@ -35058,7 +33952,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:14:40 AM",
-            "earnedAge": "1 month, 4 days, 3 hours, 28 mins",
+            "earnedAge": "1 month, 4 days, 5 hours, 12 mins",
             "timestamp": 1777875280000,
             "currentValue": 0,
             "targetValue": 0
@@ -35081,7 +33975,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:47:31 AM",
-            "earnedAge": "1 month, 4 days, 2 hours, 55 mins",
+            "earnedAge": "1 month, 4 days, 4 hours, 39 mins",
             "timestamp": 1777877251000,
             "currentValue": 0,
             "targetValue": 0
@@ -35104,7 +33998,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:03:37 AM",
-            "earnedAge": "1 month, 4 days, 5 hours, 39 mins",
+            "earnedAge": "1 month, 4 days, 7 hours, 23 mins",
             "timestamp": 1777867417000,
             "currentValue": 0,
             "targetValue": 0
@@ -35127,7 +34021,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 5:22:06 AM",
-            "earnedAge": "1 month, 4 days, 4 hours, 21 mins",
+            "earnedAge": "1 month, 4 days, 6 hours, 5 mins",
             "timestamp": 1777872126000,
             "currentValue": 0,
             "targetValue": 0
@@ -35265,7 +34159,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:29:38 AM",
-            "earnedAge": "3 weeks, 6 days, 6 hours, 13 mins",
+            "earnedAge": "3 weeks, 6 days, 7 hours, 57 mins",
             "timestamp": 1778470178000,
             "currentValue": 0,
             "targetValue": 0
@@ -35541,7 +34435,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:30:33 AM",
-            "earnedAge": "1 month, 4 days, 3 hours, 12 mins",
+            "earnedAge": "1 month, 4 days, 4 hours, 56 mins",
             "timestamp": 1777876233000,
             "currentValue": 0,
             "targetValue": 0
@@ -35694,7 +34588,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/21da5d74-5c49-48d4-8d84-85b1fc955825.png",
           "timestamp": 1778470920000,
           "date": "5/11/2026, 3:42:00 AM",
-          "age": "3 weeks, 6 days, 6 hours, 1 min"
+          "age": "3 weeks, 6 days, 7 hours, 45 mins"
         },
         {
           "game": "Trash Goblin",
@@ -35702,7 +34596,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/79c313b7-af03-4096-b3d1-86090e12f841.png",
           "timestamp": 1778470178000,
           "date": "5/11/2026, 3:29:38 AM",
-          "age": "3 weeks, 6 days, 6 hours, 13 mins"
+          "age": "3 weeks, 6 days, 7 hours, 57 mins"
         },
         {
           "game": "Trash Goblin",
@@ -35710,7 +34604,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/5de40386-ae1c-4294-a4d4-f2e922b8d961.png",
           "timestamp": 1778469537000,
           "date": "5/11/2026, 3:18:57 AM",
-          "age": "3 weeks, 6 days, 6 hours, 24 mins"
+          "age": "3 weeks, 6 days, 8 hours, 8 mins"
         },
         {
           "game": "Trash Goblin",
@@ -35718,7 +34612,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/492e702d-d33c-48c3-a2d3-19075180c76f.png",
           "timestamp": 1777934991000,
           "date": "5/4/2026, 10:49:51 PM",
-          "age": "1 month, 3 days, 10 hours, 53 mins"
+          "age": "1 month, 3 days, 12 hours, 37 mins"
         },
         {
           "game": "Trash Goblin",
@@ -35726,7 +34620,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/bbb648f0-902a-483d-a9a1-30c6b3f87bf4.png",
           "timestamp": 1777877251000,
           "date": "5/4/2026, 6:47:31 AM",
-          "age": "1 month, 4 days, 2 hours, 55 mins"
+          "age": "1 month, 4 days, 4 hours, 39 mins"
         },
         {
           "game": "Trash Goblin",
@@ -35734,7 +34628,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/28baea49-5915-4b1b-89db-bf1d84bf1afd.png",
           "timestamp": 1777876233000,
           "date": "5/4/2026, 6:30:33 AM",
-          "age": "1 month, 4 days, 3 hours, 12 mins"
+          "age": "1 month, 4 days, 4 hours, 56 mins"
         },
         {
           "game": "Trash Goblin",
@@ -35742,7 +34636,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/b2e3576d-a71a-459e-8035-ada1e3ef774b.png",
           "timestamp": 1777875280000,
           "date": "5/4/2026, 6:14:40 AM",
-          "age": "1 month, 4 days, 3 hours, 28 mins"
+          "age": "1 month, 4 days, 5 hours, 12 mins"
         },
         {
           "game": "Trash Goblin",
@@ -35750,7 +34644,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/791a3e33-6019-4253-9bfa-5de6d1ad58a2.png",
           "timestamp": 1777872126000,
           "date": "5/4/2026, 5:22:06 AM",
-          "age": "1 month, 4 days, 4 hours, 21 mins"
+          "age": "1 month, 4 days, 6 hours, 5 mins"
         },
         {
           "game": "Trash Goblin",
@@ -35758,7 +34652,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/468002bc-35f9-43f1-add4-c4f9e45a943c.png",
           "timestamp": 1777869475000,
           "date": "5/4/2026, 4:37:55 AM",
-          "age": "1 month, 4 days, 5 hours, 5 mins"
+          "age": "1 month, 4 days, 6 hours, 49 mins"
         },
         {
           "game": "Trash Goblin",
@@ -35766,7 +34660,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/0ae703ef-cc71-4353-9f33-00190ca95e9d.png",
           "timestamp": 1777867417000,
           "date": "5/4/2026, 4:03:37 AM",
-          "age": "1 month, 4 days, 5 hours, 39 mins"
+          "age": "1 month, 4 days, 7 hours, 23 mins"
         }
       ],
       "fullLibrary": [
@@ -41137,7 +40031,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/7/2026, 9:43:32 AM"
+      "lastUpdated": "6/7/2026, 11:27:21 AM"
     },
     "mjolnir": {
       "onlineId": "Michael (Mjolnir)",
@@ -41162,7 +40056,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/7/2026, 9:43:33 AM",
+      "lastUpdated": "6/7/2026, 11:27:21 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -41189,7 +40083,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/7/2026, 9:43:33 AM",
+      "lastUpdated": "6/7/2026, 11:27:22 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -41216,7 +40110,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/7/2026, 9:43:33 AM",
+      "lastUpdated": "6/7/2026, 11:27:23 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -41243,7 +40137,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/7/2026, 9:42:45 AM",
+      "lastUpdated": "6/7/2026, 11:26:36 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -41270,7 +40164,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/7/2026, 9:43:33 AM",
+      "lastUpdated": "6/7/2026, 11:27:24 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -41283,7 +40177,7 @@
       "amazonAffiliateUrl": null,
       "bio": "Official Pack Member Profile",
       "twitch": null,
-      "lastUpdated": "6/7/2026, 9:43:33 AM",
+      "lastUpdated": "6/7/2026, 11:27:24 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -41310,7 +40204,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/7/2026, 9:43:07 AM",
+      "lastUpdated": "6/7/2026, 11:26:58 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     }
@@ -41318,20 +40212,20 @@
   "personas": {
     "Kevin": {
       "displayName": "Kevin",
-      "isOnline": true,
+      "isOnline": false,
       "primaryOnlineId": "Werewolf3788",
       "combinedTrophies": {
         "platinum": 5,
         "gold": 78,
         "silver": 223,
-        "bronze": 1035,
-        "total": 1341
+        "bronze": 1036,
+        "total": 1342
       },
       "maxLevel": 235,
       "legacyAge": "3 years, 1 months",
       "legacyRange": {
         "start": "4/18/2023, 11:05:50 PM",
-        "end": "6/7/2026, 8:37:01 AM"
+        "end": "6/7/2026, 9:57:02 AM"
       },
       "currentGame": "Sniper Elite 5",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
@@ -41342,7 +40236,7 @@
         "werewolf",
         "kfruti"
       ],
-      "lastUpdated": "6/7/2026, 9:43:33 AM"
+      "lastUpdated": "6/7/2026, 11:27:24 AM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -41370,7 +40264,7 @@
         "darkwing",
         "darkterro"
       ],
-      "lastUpdated": "6/7/2026, 9:43:33 AM"
+      "lastUpdated": "6/7/2026, 11:27:24 AM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -41380,24 +40274,24 @@
         "platinum": 6,
         "gold": 42,
         "silver": 122,
-        "bronze": 592,
-        "total": 762
+        "bronze": 593,
+        "total": 763
       },
       "maxLevel": 207,
       "legacyAge": "9 years, 5 months",
       "legacyRange": {
         "start": "12/30/2016, 6:40:30 PM",
-        "end": "6/7/2026, 8:37:01 AM"
+        "end": "6/7/2026, 9:57:02 AM"
       },
-      "currentGame": "Sniper Elite 5",
-      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
+      "currentGame": "LEGO® Star Wars™ II: The Original Trilogy",
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
       "currentActivity": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png",
       "bio": "exo-ONELIVIDMANKDFC3",
       "accounts": [
         "ray"
       ],
-      "lastUpdated": "6/7/2026, 9:43:33 AM"
+      "lastUpdated": "6/7/2026, 11:27:24 AM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -41414,7 +40308,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/7/2026, 9:43:33 AM"
+        "end": "6/7/2026, 11:27:24 AM"
       },
       "currentGame": "Dead Rising",
       "currentGameArt": null,
@@ -41423,7 +40317,7 @@
       "accounts": [
         "phoenix"
       ],
-      "lastUpdated": "6/7/2026, 9:43:33 AM"
+      "lastUpdated": "6/7/2026, 11:27:24 AM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -41450,7 +40344,7 @@
       "accounts": [
         "marc"
       ],
-      "lastUpdated": "6/7/2026, 9:43:33 AM"
+      "lastUpdated": "6/7/2026, 11:27:24 AM"
     },
     "JCrow": {
       "displayName": "JCrow",
@@ -41477,7 +40371,7 @@
       "accounts": [
         "jcrow"
       ],
-      "lastUpdated": "6/7/2026, 9:43:33 AM"
+      "lastUpdated": "6/7/2026, 11:27:24 AM"
     },
     "Shiv": {
       "displayName": "Shiv",
@@ -41504,7 +40398,7 @@
       "accounts": [
         "bunny"
       ],
-      "lastUpdated": "6/7/2026, 9:43:33 AM"
+      "lastUpdated": "6/7/2026, 11:27:24 AM"
     },
     "Michael": {
       "displayName": "Michael",
@@ -41521,7 +40415,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/7/2026, 9:43:33 AM"
+        "end": "6/7/2026, 11:27:24 AM"
       },
       "currentGame": "Police Simulator: Patrol Officers",
       "currentGameArt": null,
@@ -41530,7 +40424,7 @@
       "accounts": [
         "mjolnir"
       ],
-      "lastUpdated": "6/7/2026, 9:43:33 AM"
+      "lastUpdated": "6/7/2026, 11:27:24 AM"
     },
     "Queen": {
       "displayName": "Queen",
@@ -41547,7 +40441,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/7/2026, 9:43:33 AM"
+        "end": "6/7/2026, 11:27:24 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -41556,7 +40450,7 @@
       "accounts": [
         "queen"
       ],
-      "lastUpdated": "6/7/2026, 9:43:33 AM"
+      "lastUpdated": "6/7/2026, 11:27:24 AM"
     },
     "Balto": {
       "displayName": "Balto",
@@ -41573,7 +40467,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/7/2026, 9:43:33 AM"
+        "end": "6/7/2026, 11:27:24 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -41582,7 +40476,7 @@
       "accounts": [
         "balto"
       ],
-      "lastUpdated": "6/7/2026, 9:43:33 AM"
+      "lastUpdated": "6/7/2026, 11:27:24 AM"
     },
     "Memorial": {
       "displayName": "Memorial",
@@ -41599,7 +40493,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/7/2026, 9:43:33 AM"
+        "end": "6/7/2026, 11:27:24 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -41608,7 +40502,7 @@
       "accounts": [
         "oldman"
       ],
-      "lastUpdated": "6/7/2026, 9:43:33 AM"
+      "lastUpdated": "6/7/2026, 11:27:24 AM"
     }
   },
   "mutualSquadFollowers": [
@@ -41617,7 +40511,7 @@
       "sharedConnections": 2
     }
   ],
-  "lastGlobalUpdate": "6/7/2026, 9:42:32 AM",
+  "lastGlobalUpdate": "6/7/2026, 11:26:20 AM",
   "engineVersion": "13.9.2",
   "codeTimestamp": "Saturday, May 30, 2026 | 11:39 PM EDT"
 }
