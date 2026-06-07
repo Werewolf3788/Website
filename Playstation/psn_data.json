@@ -77,20 +77,20 @@
       "bio": "6C3RG",
       "psnAccountAge": "3 years, 1 months",
       "earliestTrophyDate": "2023-04-18T23:05:50.000Z",
-      "latestTrophyDate": 1780794696000,
+      "latestTrophyDate": 1780807058000,
       "plus": true,
       "level": 234,
       "region": "US",
       "trophySummary": {
         "accountId": "3728215008151724560",
         "trophyLevel": 234,
-        "trophyPoint": 30615,
+        "trophyPoint": 30675,
         "trophyLevelBasePoint": 30240,
         "trophyLevelNextPoint": 30690,
-        "progress": 83,
+        "progress": 96,
         "tier": 3,
         "earnedTrophies": {
-          "bronze": 1027,
+          "bronze": 1031,
           "silver": 223,
           "gold": 78,
           "platinum": 5
@@ -98,15 +98,15 @@
         "platinum": 5,
         "gold": 78,
         "silver": 223,
-        "bronze": 1027,
-        "total": 1333
+        "bronze": 1031,
+        "total": 1337
       },
       "recentGames": [
         {
           "npCommunicationId": "NPWR21465_00",
           "name": "Sniper Elite 5",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-          "lastPlayed": "2026-06-07T01:43:13Z",
+          "lastPlayed": "2026-06-07T06:17:26Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite 5",
@@ -120,18 +120,18 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 13,
+          "progress": 17,
           "earnedTrophies": {
-            "bronze": 11,
+            "bronze": 15,
             "silver": 2,
             "gold": 0,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-06-07T01:43:13Z",
-          "earnedTotal": 13,
+          "lastUpdatedDateTime": "2026-06-07T06:17:26Z",
+          "earnedTotal": 17,
           "definedTotal": 72,
-          "ratio": "13/72",
+          "ratio": "17/72",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=psngaming-20",
           "bootCount": "Unknown"
         },
@@ -305,24 +305,24 @@
       "activeHunt": {
         "title": "Sniper Elite 5",
         "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=psngaming-20",
-        "progress": 13,
+        "progress": 17,
         "velocity": {
           "firstEarned": "9/24/2025, 9:15:26 AM",
           "huntingDuration": "256 days",
           "hunterPersona": "Casual Pursuit",
-          "completionStatus": "13/72"
+          "completionStatus": "17/72"
         },
         "groups": [
           {
             "trophyGroupId": "default",
-            "progress": 17,
+            "progress": 22,
             "earnedTrophies": {
-              "bronze": 10,
+              "bronze": 14,
               "silver": 1,
               "gold": 0,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-06-07T01:43:12Z",
+            "lastUpdatedDateTime": "2026-06-07T06:17:26Z",
             "trophyGroupName": "Sniper Elite 5",
             "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
             "definedTrophies": {
@@ -332,7 +332,7 @@
               "platinum": 1
             },
             "name": "Sniper Elite 5",
-            "ratio": "11/54"
+            "ratio": "15/54"
           },
           {
             "trophyGroupId": "001",
@@ -478,7 +478,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/26/2025, 4:31:37 AM",
-            "earnedAge": "8 months, 1 week, 6 days, 21 hours, 23 mins",
+            "earnedAge": "8 months, 2 weeks, 1 hour, 47 mins",
             "timestamp": 1758861097000,
             "currentValue": 0,
             "targetValue": 0
@@ -501,7 +501,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/24/2025, 9:15:26 AM",
-            "earnedAge": "8 months, 2 weeks, 1 day, 16 hours, 39 mins",
+            "earnedAge": "8 months, 2 weeks, 1 day, 21 hours, 3 mins",
             "timestamp": 1758705326000,
             "currentValue": 0,
             "targetValue": 0
@@ -524,7 +524,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 1:11:36 AM",
-            "earnedAge": "43 mins",
+            "earnedAge": "5 hours, 7 mins",
             "timestamp": 1780794696000,
             "currentValue": 0,
             "targetValue": 0
@@ -545,10 +545,10 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "earned": true,
+            "earnedDate": "6/7/2026, 4:30:02 AM",
+            "earnedAge": "1 hour, 49 mins",
+            "timestamp": 1780806602000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -689,7 +689,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "26",
+            "currentValue": "30",
             "targetValue": "40"
           },
           {
@@ -759,7 +759,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "6",
+            "currentValue": "8",
             "targetValue": "16"
           },
           {
@@ -803,7 +803,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/25/2025, 9:07:17 PM",
-            "earnedAge": "8 months, 2 weeks, 4 hours, 47 mins",
+            "earnedAge": "8 months, 2 weeks, 9 hours, 11 mins",
             "timestamp": 1758834437000,
             "currentValue": 0,
             "targetValue": 0
@@ -849,7 +849,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:36 AM",
-            "earnedAge": "6 days, 16 hours, 15 mins",
+            "earnedAge": "6 days, 20 hours, 39 mins",
             "timestamp": 1780220376000,
             "currentValue": 0,
             "targetValue": 0
@@ -872,7 +872,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/25/2025, 8:03:12 PM",
-            "earnedAge": "8 months, 2 weeks, 5 hours, 51 mins",
+            "earnedAge": "8 months, 2 weeks, 10 hours, 15 mins",
             "timestamp": 1758830592000,
             "currentValue": 0,
             "targetValue": 0
@@ -1041,7 +1041,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "29",
+            "currentValue": "30",
             "targetValue": "300"
           },
           {
@@ -1061,11 +1061,11 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "315",
+            "earned": true,
+            "earnedDate": "6/7/2026, 4:37:38 AM",
+            "earnedAge": "1 hour, 41 mins",
+            "timestamp": 1780807058000,
+            "currentValue": 0,
             "targetValue": "350"
           },
           {
@@ -1089,7 +1089,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "31393",
+            "currentValue": "37872",
             "targetValue": "100000"
           },
           {
@@ -1111,7 +1111,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/26/2025, 7:00:31 AM",
-            "earnedAge": "8 months, 1 week, 6 days, 18 hours, 54 mins",
+            "earnedAge": "8 months, 1 week, 6 days, 23 hours, 18 mins",
             "timestamp": 1758870031000,
             "currentValue": 0,
             "targetValue": "50"
@@ -1183,7 +1183,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/26/2025, 8:43:03 AM",
-            "earnedAge": "8 months, 1 week, 6 days, 17 hours, 11 mins",
+            "earnedAge": "8 months, 1 week, 6 days, 21 hours, 36 mins",
             "timestamp": 1758876183000,
             "currentValue": 0,
             "targetValue": "20"
@@ -1209,7 +1209,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "9",
+            "currentValue": "10",
             "targetValue": "50"
           },
           {
@@ -1230,7 +1230,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/25/2025, 8:09:02 PM",
-            "earnedAge": "8 months, 2 weeks, 5 hours, 45 mins",
+            "earnedAge": "8 months, 2 weeks, 10 hours, 10 mins",
             "timestamp": 1758830942000,
             "currentValue": 0,
             "targetValue": 0
@@ -1254,7 +1254,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "9/26/2025, 3:47:48 AM",
-            "earnedAge": "8 months, 1 week, 6 days, 22 hours, 7 mins",
+            "earnedAge": "8 months, 2 weeks, 2 hours, 31 mins",
             "timestamp": 1758858468000,
             "currentValue": 0,
             "targetValue": "20"
@@ -1277,7 +1277,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 7:43:06 AM",
-            "earnedAge": "6 days, 18 hours, 11 mins",
+            "earnedAge": "6 days, 22 hours, 36 mins",
             "timestamp": 1780213386000,
             "currentValue": 0,
             "targetValue": 0
@@ -1303,7 +1303,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "33",
+            "currentValue": "40",
             "targetValue": "50"
           },
           {
@@ -1327,7 +1327,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "218",
+            "currentValue": "245",
             "targetValue": "250"
           },
           {
@@ -1351,7 +1351,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "33",
+            "currentValue": "49",
             "targetValue": "50"
           },
           {
@@ -1371,11 +1371,11 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "82",
+            "earned": true,
+            "earnedDate": "6/7/2026, 2:46:28 AM",
+            "earnedAge": "3 hours, 32 mins",
+            "timestamp": 1780800388000,
+            "currentValue": 0,
             "targetValue": "100"
           },
           {
@@ -1423,7 +1423,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "19",
+            "currentValue": "24",
             "targetValue": "41"
           },
           {
@@ -1447,7 +1447,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "18",
+            "currentValue": "23",
             "targetValue": "39"
           },
           {
@@ -1471,7 +1471,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "10",
+            "currentValue": "15",
             "targetValue": "24"
           },
           {
@@ -1495,7 +1495,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "9",
+            "currentValue": "15",
             "targetValue": "24"
           },
           {
@@ -1519,7 +1519,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "9",
+            "currentValue": "10",
             "targetValue": "24"
           },
           {
@@ -1561,10 +1561,10 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "earned": true,
+            "earnedDate": "6/7/2026, 3:57:12 AM",
+            "earnedAge": "2 hours, 21 mins",
+            "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -1843,7 +1843,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "9/26/2025, 9:44:53 AM",
-            "earnedAge": "8 months, 1 week, 6 days, 16 hours, 10 mins",
+            "earnedAge": "8 months, 1 week, 6 days, 20 hours, 34 mins",
             "timestamp": 1758879893000,
             "currentValue": 0,
             "targetValue": 0
@@ -1867,7 +1867,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "9/26/2025, 9:44:54 AM",
-            "earnedAge": "8 months, 1 week, 6 days, 16 hours, 10 mins",
+            "earnedAge": "8 months, 1 week, 6 days, 20 hours, 34 mins",
             "timestamp": 1758879894000,
             "currentValue": 0,
             "targetValue": "2"
@@ -2131,11 +2131,43 @@
       "mostRecentTrophies": [
         {
           "game": "Sniper Elite 5",
+          "name": "Sharpshooter",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/179b85d2-7b74-4bee-8d07-28e5710738a0.png",
+          "timestamp": 1780807058000,
+          "date": "6/7/2026, 4:37:38 AM",
+          "age": "1 hour, 41 mins"
+        },
+        {
+          "game": "Sniper Elite 5",
+          "name": "It's Starting to Crack",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/31726dcd-86f5-4e53-9357-7348e9a3d072.png",
+          "timestamp": 1780806602000,
+          "date": "6/7/2026, 4:30:02 AM",
+          "age": "1 hour, 49 mins"
+        },
+        {
+          "game": "Sniper Elite 5",
+          "name": "Locomotion Commotion",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fce57d1c-e739-4be9-9d6e-f0e72a3f6834.png",
+          "timestamp": 1780804632000,
+          "date": "6/7/2026, 3:57:12 AM",
+          "age": "2 hours, 21 mins"
+        },
+        {
+          "game": "Sniper Elite 5",
+          "name": "Close Quarters",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40109781-5a63-4f98-abc0-263fc65548e0.png",
+          "timestamp": 1780800388000,
+          "date": "6/7/2026, 2:46:28 AM",
+          "age": "3 hours, 32 mins"
+        },
+        {
+          "game": "Sniper Elite 5",
           "name": "The Kraken Wakes",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f238c8de-14fb-40b1-92f3-486f1b8e4e81.png",
           "timestamp": 1780794696000,
           "date": "6/7/2026, 1:11:36 AM",
-          "age": "43 mins"
+          "age": "5 hours, 7 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -2143,7 +2175,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f8fadef6-3e73-4368-952e-89549e26cd42.png",
           "timestamp": 1780220376000,
           "date": "5/31/2026, 9:39:36 AM",
-          "age": "6 days, 16 hours, 15 mins"
+          "age": "6 days, 20 hours, 39 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -2151,7 +2183,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0bb96f58-bc48-404f-b396-33995fdd456d.png",
           "timestamp": 1780213386000,
           "date": "5/31/2026, 7:43:06 AM",
-          "age": "6 days, 18 hours, 11 mins"
+          "age": "6 days, 22 hours, 36 mins"
         },
         {
           "game": "Poker Club",
@@ -2159,7 +2191,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22138_00/0a9af9d5-d05c-49b5-8977-23d387825da3.png",
           "timestamp": 1780196365000,
           "date": "5/31/2026, 2:59:25 AM",
-          "age": "6 days, 22 hours, 55 mins"
+          "age": "1 week, 3 hours, 19 mins"
         },
         {
           "game": "Poker Club",
@@ -2167,7 +2199,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22138_00/a70c42aa-214b-4e37-b177-d539a94bdf30.png",
           "timestamp": 1780193798000,
           "date": "5/31/2026, 2:16:38 AM",
-          "age": "6 days, 23 hours, 38 mins"
+          "age": "1 week, 4 hours, 2 mins"
         },
         {
           "game": "Poker Club",
@@ -2175,39 +2207,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22138_00/28355183-7368-4df3-9535-68b9dcba6171.png",
           "timestamp": 1780193697000,
           "date": "5/31/2026, 2:14:57 AM",
-          "age": "6 days, 23 hours, 40 mins"
-        },
-        {
-          "game": "Poker Club",
-          "name": "Give Your Regards To Broadway",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22138_00/6104fc6e-a8cc-4fa5-ba18-ba2e748fdbcf.png",
-          "timestamp": 1780193697000,
-          "date": "5/31/2026, 2:14:57 AM",
-          "age": "6 days, 23 hours, 40 mins"
-        },
-        {
-          "game": "Poker Club",
-          "name": "Quack Quack",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22138_00/53185de4-4221-4095-8750-cb48ea0f81ba.png",
-          "timestamp": 1780191823000,
-          "date": "5/31/2026, 1:43:43 AM",
-          "age": "1 week, 11 mins"
-        },
-        {
-          "game": "Poker Club",
-          "name": "Three Way",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22138_00/3d11bcc7-3d8f-47c6-87ee-08bba0bb6456.png",
-          "timestamp": 1780190876000,
-          "date": "5/31/2026, 1:27:56 AM",
-          "age": "1 week, 27 mins"
-        },
-        {
-          "game": "Poker Club",
-          "name": "Rank Amateur",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22138_00/70c19690-359c-49bb-8cf6-2c2c5ed5699b.png",
-          "timestamp": 1780187611000,
-          "date": "5/31/2026, 12:33:31 AM",
-          "age": "1 week, 1 hour, 21 mins"
+          "age": "1 week, 4 hours, 4 mins"
         }
       ],
       "fullLibrary": [
@@ -2215,7 +2215,7 @@
           "npCommunicationId": "NPWR21465_00",
           "name": "Sniper Elite 5",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-          "lastPlayed": "2026-06-07T01:43:13Z",
+          "lastPlayed": "2026-06-07T06:17:26Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite 5",
@@ -2229,16 +2229,16 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 13,
+          "progress": 17,
           "earnedTrophies": {
-            "bronze": 11,
+            "bronze": 15,
             "silver": 2,
             "gold": 0,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-06-07T01:43:13Z",
-          "earnedTotal": 13,
+          "lastUpdatedDateTime": "2026-06-07T06:17:26Z",
+          "earnedTotal": 17,
           "definedTotal": 72
         },
         {
@@ -5322,7 +5322,7 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
           "lastPlayed": "2025-01-05T00:59:39Z",
           "npServiceName": "trophy",
-          "trophySetVersion": "01.01",
+          "trophySetVersion": "01.00",
           "trophyTitleName": "UNO®",
           "trophyTitleDetail": "It's a race to the finish as you try to empty your hand before everyone else. Play with friends and family the way you want to play with an assortment of House Rules as well as, for the first time, Themes with updated visuals and never-before-seen Theme Cards that introduce crazy effects and powers to the game. It's the UNO you know and love--and so much more!",
           "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
@@ -7810,15 +7810,15 @@
               "gold": 5,
               "platinum": 1
             },
-            "progress": 13,
+            "progress": 17,
             "earnedTrophies": {
-              "bronze": 11,
+              "bronze": 15,
               "silver": 2,
               "gold": 0,
               "platinum": 0
             },
             "hiddenFlag": false,
-            "lastUpdatedDateTime": "2026-06-07T01:43:13Z"
+            "lastUpdatedDateTime": "2026-06-07T06:17:26Z"
           },
           {
             "npServiceName": "trophy2",
@@ -10393,7 +10393,7 @@
           {
             "npServiceName": "trophy",
             "npCommunicationId": "NPWR10270_00",
-            "trophySetVersion": "01.01",
+            "trophySetVersion": "01.00",
             "trophyTitleName": "UNO®",
             "trophyTitleDetail": "It's a race to the finish as you try to empty your hand before everyone else. Play with friends and family the way you want to play with an assortment of House Rules as well as, for the first time, Themes with updated visuals and never-before-seen Theme Cards that introduce crazy effects and powers to the game. It's the UNO you know and love--and so much more!",
             "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
@@ -12433,7 +12433,7 @@
           "totalItemCount": 18
         }
       },
-      "lastUpdated": "6/7/2026, 1:55:08 AM"
+      "lastUpdated": "6/7/2026, 6:19:16 AM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -12494,20 +12494,20 @@
       "bio": "exo-ONELIVIDMANKDFC3",
       "psnAccountAge": "9 years, 5 months",
       "earliestTrophyDate": "2016-12-30T18:40:30.000Z",
-      "latestTrophyDate": 1780784055000,
+      "latestTrophyDate": 1780806603000,
       "plus": true,
-      "level": 206,
+      "level": 207,
       "region": "US",
       "trophySummary": {
         "accountId": "2732733730346312494",
-        "trophyLevel": 206,
-        "trophyPoint": 18060,
-        "trophyLevelBasePoint": 17640,
-        "trophyLevelNextPoint": 18090,
-        "progress": 93,
+        "trophyLevel": 207,
+        "trophyPoint": 18090,
+        "trophyLevelBasePoint": 18090,
+        "trophyLevelNextPoint": 18540,
+        "progress": 0,
         "tier": 3,
         "earnedTrophies": {
-          "bronze": 588,
+          "bronze": 590,
           "silver": 122,
           "gold": 42,
           "platinum": 6
@@ -12515,15 +12515,15 @@
         "platinum": 6,
         "gold": 42,
         "silver": 122,
-        "bronze": 588,
-        "total": 758
+        "bronze": 590,
+        "total": 760
       },
       "recentGames": [
         {
           "npCommunicationId": "NPWR21465_00",
           "name": "Sniper Elite 5",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-          "lastPlayed": "2026-06-07T01:52:11Z",
+          "lastPlayed": "2026-06-07T06:17:26Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite 5",
@@ -12537,18 +12537,18 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 5,
+          "progress": 7,
           "earnedTrophies": {
-            "bronze": 4,
+            "bronze": 6,
             "silver": 1,
             "gold": 0,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-06-07T01:52:11Z",
-          "earnedTotal": 5,
+          "lastUpdatedDateTime": "2026-06-07T06:17:26Z",
+          "earnedTotal": 7,
           "definedTotal": 72,
-          "ratio": "5/72",
+          "ratio": "7/72",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=psngaming-20",
           "bootCount": "Unknown"
         },
@@ -12722,24 +12722,24 @@
       "activeHunt": {
         "title": "Sniper Elite 5",
         "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=psngaming-20",
-        "progress": 5,
+        "progress": 7,
         "velocity": {
           "firstEarned": "5/31/2026, 9:39:34 AM",
-          "huntingDuration": "1 day",
+          "huntingDuration": "7 days",
           "hunterPersona": "Steady Hunter",
-          "completionStatus": "5/72"
+          "completionStatus": "7/72"
         },
         "groups": [
           {
             "trophyGroupId": "default",
-            "progress": 8,
+            "progress": 11,
             "earnedTrophies": {
-              "bronze": 4,
+              "bronze": 6,
               "silver": 1,
               "gold": 0,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-06-07T01:52:11Z",
+            "lastUpdatedDateTime": "2026-06-07T06:17:26Z",
             "trophyGroupName": "Sniper Elite 5",
             "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
             "definedTrophies": {
@@ -12749,7 +12749,7 @@
               "platinum": 1
             },
             "name": "Sniper Elite 5",
-            "ratio": "5/54"
+            "ratio": "7/54"
           },
           {
             "trophyGroupId": "001",
@@ -12894,7 +12894,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "6 days, 16 hours, 15 mins",
+            "earnedAge": "6 days, 20 hours, 39 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -12917,7 +12917,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "6 days, 14 hours, 44 mins",
+            "earnedAge": "6 days, 19 hours, 8 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -12940,7 +12940,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "6 days, 12 hours, 32 mins",
+            "earnedAge": "6 days, 16 hours, 56 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -12961,10 +12961,10 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "earned": true,
+            "earnedDate": "6/7/2026, 4:30:03 AM",
+            "earnedAge": "1 hour, 49 mins",
+            "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -13105,7 +13105,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "14",
+            "currentValue": "19",
             "targetValue": "40"
           },
           {
@@ -13175,7 +13175,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "5",
+            "currentValue": "8",
             "targetValue": "16"
           },
           {
@@ -13265,7 +13265,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "6 days, 16 hours, 15 mins",
+            "earnedAge": "6 days, 20 hours, 39 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -13288,7 +13288,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "6 days, 12 hours, 47 mins",
+            "earnedAge": "6 days, 17 hours, 11 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -13433,7 +13433,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "21",
+            "currentValue": "23",
             "targetValue": "150"
           },
           {
@@ -13457,7 +13457,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "23",
+            "currentValue": "26",
             "targetValue": "300"
           },
           {
@@ -13481,7 +13481,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "161",
+            "currentValue": "207",
             "targetValue": "350"
           },
           {
@@ -13505,7 +13505,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "16431",
+            "currentValue": "20558",
             "targetValue": "100000"
           },
           {
@@ -13529,7 +13529,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "22",
+            "currentValue": "28",
             "targetValue": "50"
           },
           {
@@ -13553,7 +13553,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "20",
+            "currentValue": "23",
             "targetValue": "150"
           },
           {
@@ -13601,7 +13601,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "17",
+            "currentValue": "19",
             "targetValue": "20"
           },
           {
@@ -13625,7 +13625,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "11",
+            "currentValue": "15",
             "targetValue": "50"
           },
           {
@@ -13672,7 +13672,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "13",
+            "currentValue": "14",
             "targetValue": "20"
           },
           {
@@ -13719,7 +13719,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "18",
+            "currentValue": "23",
             "targetValue": "50"
           },
           {
@@ -13743,7 +13743,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "76",
+            "currentValue": "106",
             "targetValue": "250"
           },
           {
@@ -13767,7 +13767,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "25",
+            "currentValue": "29",
             "targetValue": "50"
           },
           {
@@ -13791,7 +13791,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "23",
+            "currentValue": "57",
             "targetValue": "100"
           },
           {
@@ -13839,7 +13839,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "14",
+            "currentValue": "24",
             "targetValue": "41"
           },
           {
@@ -13863,7 +13863,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "15",
+            "currentValue": "23",
             "targetValue": "39"
           },
           {
@@ -13887,7 +13887,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "9",
+            "currentValue": "15",
             "targetValue": "24"
           },
           {
@@ -13911,7 +13911,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "9",
+            "currentValue": "15",
             "targetValue": "24"
           },
           {
@@ -13935,7 +13935,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "6",
+            "currentValue": "10",
             "targetValue": "24"
           },
           {
@@ -13977,10 +13977,10 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Sniper Elite 5",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "earned": true,
+            "earnedDate": "6/7/2026, 3:57:12 AM",
+            "earnedAge": "2 hours, 22 mins",
+            "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -14546,12 +14546,28 @@
       },
       "mostRecentTrophies": [
         {
+          "game": "Sniper Elite 5",
+          "name": "It's Starting to Crack",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/31726dcd-86f5-4e53-9357-7348e9a3d072.png",
+          "timestamp": 1780806603000,
+          "date": "6/7/2026, 4:30:03 AM",
+          "age": "1 hour, 49 mins"
+        },
+        {
+          "game": "Sniper Elite 5",
+          "name": "Locomotion Commotion",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fce57d1c-e739-4be9-9d6e-f0e72a3f6834.png",
+          "timestamp": 1780804632000,
+          "date": "6/7/2026, 3:57:12 AM",
+          "age": "2 hours, 22 mins"
+        },
+        {
           "game": "Poker Club",
           "name": "Bet Bet Bet",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22138_00/df6cb640-b0f9-484f-b181-b3503e4de96b.png",
           "timestamp": 1780784055000,
           "date": "6/6/2026, 10:14:15 PM",
-          "age": "3 hours, 40 mins"
+          "age": "8 hours, 5 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -14559,7 +14575,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/3a2db3b0-6ae1-4979-91a3-c7b5e082c04d.png",
           "timestamp": 1780457903000,
           "date": "6/3/2026, 3:38:23 AM",
-          "age": "3 days, 22 hours, 16 mins"
+          "age": "4 days, 2 hours, 40 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -14567,7 +14583,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/9ac1527a-d70b-4bca-88e6-f5ad17e2931e.png",
           "timestamp": 1780457739000,
           "date": "6/3/2026, 3:35:39 AM",
-          "age": "3 days, 22 hours, 19 mins"
+          "age": "4 days, 2 hours, 43 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -14575,7 +14591,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/2f7d21a1-ed16-49c5-8cba-75cdcce12154.png",
           "timestamp": 1780452983000,
           "date": "6/3/2026, 2:16:23 AM",
-          "age": "3 days, 23 hours, 38 mins"
+          "age": "4 days, 4 hours, 2 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -14583,7 +14599,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/a78a706f-11ad-4dec-88e9-2e56d6140160.png",
           "timestamp": 1780452945000,
           "date": "6/3/2026, 2:15:45 AM",
-          "age": "3 days, 23 hours, 39 mins"
+          "age": "4 days, 4 hours, 3 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -14591,7 +14607,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f82d4209-1081-4759-84e7-7daf8ae333a7.png",
           "timestamp": 1780447890000,
           "date": "6/3/2026, 12:51:30 AM",
-          "age": "4 days, 1 hour, 3 mins"
+          "age": "4 days, 5 hours, 27 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -14599,7 +14615,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/221e844f-d5ab-48bd-92e6-77f4d8fb6cf5.png",
           "timestamp": 1780444207000,
           "date": "6/2/2026, 11:50:07 PM",
-          "age": "4 days, 2 hours, 5 mins"
+          "age": "4 days, 6 hours, 29 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -14607,23 +14623,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f238c8de-14fb-40b1-92f3-486f1b8e4e81.png",
           "timestamp": 1780233777000,
           "date": "5/31/2026, 1:22:57 PM",
-          "age": "6 days, 12 hours, 32 mins"
-        },
-        {
-          "game": "Sniper Elite 5",
-          "name": "Organ Grinder",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2d66ad9-d7cc-4e79-a4dd-ef6bdc0f5ed8.png",
-          "timestamp": 1780232880000,
-          "date": "5/31/2026, 1:08:00 PM",
-          "age": "6 days, 12 hours, 47 mins"
-        },
-        {
-          "game": "Sniper Elite 5",
-          "name": "Confirming Suspicions",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/1aa67e71-276b-41ac-a5c7-f3387add22d5.png",
-          "timestamp": 1780225837000,
-          "date": "5/31/2026, 11:10:37 AM",
-          "age": "6 days, 14 hours, 44 mins"
+          "age": "6 days, 16 hours, 56 mins"
         }
       ],
       "fullLibrary": [
@@ -14631,7 +14631,7 @@
           "npCommunicationId": "NPWR21465_00",
           "name": "Sniper Elite 5",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-          "lastPlayed": "2026-06-07T01:52:11Z",
+          "lastPlayed": "2026-06-07T06:17:26Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite 5",
@@ -14645,16 +14645,16 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 5,
+          "progress": 7,
           "earnedTrophies": {
-            "bronze": 4,
+            "bronze": 6,
             "silver": 1,
             "gold": 0,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-06-07T01:52:11Z",
-          "earnedTotal": 5,
+          "lastUpdatedDateTime": "2026-06-07T06:17:26Z",
+          "earnedTotal": 7,
           "definedTotal": 72
         },
         {
@@ -15490,7 +15490,7 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
           "lastPlayed": "2025-01-02T00:15:08Z",
           "npServiceName": "trophy",
-          "trophySetVersion": "01.01",
+          "trophySetVersion": "01.00",
           "trophyTitleName": "UNO®",
           "trophyTitleDetail": "It's a race to the finish as you try to empty your hand before everyone else. Play with friends and family the way you want to play with an assortment of House Rules as well as, for the first time, Themes with updated visuals and never-before-seen Theme Cards that introduce crazy effects and powers to the game. It's the UNO you know and love--and so much more!",
           "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
@@ -16668,15 +16668,15 @@
               "gold": 5,
               "platinum": 1
             },
-            "progress": 5,
+            "progress": 7,
             "earnedTrophies": {
-              "bronze": 4,
+              "bronze": 6,
               "silver": 1,
               "gold": 0,
               "platinum": 0
             },
             "hiddenFlag": false,
-            "lastUpdatedDateTime": "2026-06-07T01:52:11Z"
+            "lastUpdatedDateTime": "2026-06-07T06:17:26Z"
           },
           {
             "npServiceName": "trophy2",
@@ -17373,7 +17373,7 @@
           {
             "npServiceName": "trophy",
             "npCommunicationId": "NPWR10270_00",
-            "trophySetVersion": "01.01",
+            "trophySetVersion": "01.00",
             "trophyTitleName": "UNO®",
             "trophyTitleDetail": "It's a race to the finish as you try to empty your hand before everyone else. Play with friends and family the way you want to play with an assortment of House Rules as well as, for the first time, Themes with updated visuals and never-before-seen Theme Cards that introduce crazy effects and powers to the game. It's the UNO you know and love--and so much more!",
             "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR10270_00_0026A35CEAECDC86E783BCCA3476A497D5ECE70541/90FC4EE7AD38DFA58CC0C8A2C9424E9FC9E6129C.PNG",
@@ -18349,7 +18349,7 @@
           "totalItemCount": 36
         }
       },
-      "lastUpdated": "6/7/2026, 1:55:20 AM"
+      "lastUpdated": "6/7/2026, 6:19:26 AM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -18379,12 +18379,12 @@
       "isOfficiallyVerified": false,
       "isMe": false,
       "accountId": "4398462806362115916",
-      "online": false,
-      "currentGame": "Farming Simulator 25",
-      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
-      "currentGameActivity": null,
-      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
-      "currentCommunicationId": "NPWR44827_00",
+      "online": true,
+      "currentGame": "Construction Simulator",
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
+      "currentGameActivity": "Active Hunting",
+      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Construction%20Simulator&tag=psngaming-20",
+      "currentCommunicationId": "NPWR25227_00",
       "platform": "PS5",
       "twitch": {
         "isLive": false,
@@ -18406,20 +18406,20 @@
       "bio": "Official Pack Member Profile",
       "psnAccountAge": "5 months",
       "earliestTrophyDate": "2025-12-22T11:15:30.000Z",
-      "latestTrophyDate": 1780392584000,
+      "latestTrophyDate": 1780812529000,
       "plus": true,
       "level": 67,
       "region": "US",
       "trophySummary": {
         "accountId": "4398462806362115916",
         "trophyLevel": 67,
-        "trophyPoint": 3960,
+        "trophyPoint": 3975,
         "trophyLevelBasePoint": 3960,
         "trophyLevelNextPoint": 4020,
-        "progress": 0,
+        "progress": 25,
         "tier": 1,
         "earnedTrophies": {
-          "bronze": 142,
+          "bronze": 143,
           "silver": 34,
           "gold": 9,
           "platinum": 0
@@ -18427,10 +18427,43 @@
         "platinum": 0,
         "gold": 9,
         "silver": 34,
-        "bronze": 142,
-        "total": 185
+        "bronze": 143,
+        "total": 186
       },
       "recentGames": [
+        {
+          "npCommunicationId": "NPWR25227_00",
+          "name": "Construction Simulator",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
+          "lastPlayed": "2026-06-07T06:08:49Z",
+          "npServiceName": "trophy2",
+          "trophySetVersion": "01.00",
+          "trophyTitleName": "Construction Simulator",
+          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
+          "trophyTitlePlatform": "PS5",
+          "hasTrophyGroups": false,
+          "trophyGroupCount": 1,
+          "definedTrophies": {
+            "bronze": 18,
+            "silver": 9,
+            "gold": 5,
+            "platinum": 1
+          },
+          "progress": 10,
+          "earnedTrophies": {
+            "bronze": 7,
+            "silver": 0,
+            "gold": 0,
+            "platinum": 0
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-06-07T06:08:49Z",
+          "earnedTotal": 7,
+          "definedTotal": 33,
+          "ratio": "7/33",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Construction%20Simulator&tag=psngaming-20",
+          "bootCount": "Unknown"
+        },
         {
           "npCommunicationId": "NPWR44827_00",
           "name": "Farming Simulator 25",
@@ -18462,39 +18495,6 @@
           "definedTotal": 46,
           "ratio": "17/46",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
-          "bootCount": "Unknown"
-        },
-        {
-          "npCommunicationId": "NPWR25227_00",
-          "name": "Construction Simulator",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
-          "lastPlayed": "2026-06-02T09:29:45Z",
-          "npServiceName": "trophy2",
-          "trophySetVersion": "01.00",
-          "trophyTitleName": "Construction Simulator",
-          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
-          "trophyTitlePlatform": "PS5",
-          "hasTrophyGroups": false,
-          "trophyGroupCount": 1,
-          "definedTrophies": {
-            "bronze": 18,
-            "silver": 9,
-            "gold": 5,
-            "platinum": 1
-          },
-          "progress": 9,
-          "earnedTrophies": {
-            "bronze": 6,
-            "silver": 0,
-            "gold": 0,
-            "platinum": 0
-          },
-          "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-06-02T09:29:45Z",
-          "earnedTotal": 6,
-          "definedTotal": 33,
-          "ratio": "6/33",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Construction%20Simulator&tag=psngaming-20",
           "bootCount": "Unknown"
         },
         {
@@ -18632,36 +18632,36 @@
         }
       ],
       "activeHunt": {
-        "title": "Farming Simulator 25",
-        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
-        "progress": 28,
+        "title": "Construction Simulator",
+        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Construction%20Simulator&tag=psngaming-20",
+        "progress": 10,
         "velocity": {
-          "firstEarned": "12/26/2025, 4:40:17 AM",
-          "huntingDuration": "148 days",
-          "hunterPersona": "Casual Pursuit",
-          "completionStatus": "17/46"
+          "firstEarned": "5/29/2026, 5:26:17 AM",
+          "huntingDuration": "10 days",
+          "hunterPersona": "Steady Hunter",
+          "completionStatus": "7/33"
         },
         "groups": [
           {
             "trophyGroupId": "default",
-            "progress": 28,
+            "progress": 10,
             "earnedTrophies": {
-              "bronze": 14,
-              "silver": 3,
+              "bronze": 7,
+              "silver": 0,
               "gold": 0,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-06-06T15:48:42Z",
-            "trophyGroupName": "Farming Simulator 25",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+            "lastUpdatedDateTime": "2026-06-07T06:08:49Z",
+            "trophyGroupName": "Construction Simulator",
+            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
             "definedTrophies": {
-              "bronze": 28,
-              "silver": 15,
-              "gold": 2,
+              "bronze": 18,
+              "silver": 9,
+              "gold": 5,
               "platinum": 1
             },
-            "name": "Farming Simulator 25",
-            "ratio": "17/46"
+            "name": "Construction Simulator",
+            "ratio": "7/33"
           }
         ],
         "trophies": [
@@ -18669,18 +18669,18 @@
             "trophyId": 0,
             "trophyHidden": false,
             "trophyType": "platinum",
-            "trophyName": "Farming is in our nature",
-            "trophyDetail": "Plant today - harvest tomorrow.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/d07f4a23-2e38-4b5a-8fd7-b2521bd3ee5d.png",
+            "trophyName": "Game completed",
+            "trophyDetail": "All challenges mastered.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/8a480be5-2ac0-4b05-a19f-6bd93d0c6990.png",
             "trophyGroupId": "default",
-            "name": "Farming is in our nature",
+            "name": "Game completed",
             "type": "platinum",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/d07f4a23-2e38-4b5a-8fd7-b2521bd3ee5d.png",
-            "description": "Plant today - harvest tomorrow.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/8a480be5-2ac0-4b05-a19f-6bd93d0c6990.png",
+            "description": "All challenges mastered.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -18692,1093 +18692,757 @@
             "trophyId": 1,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Road Trip",
-            "trophyDetail": "That thing wouldn't have fit onto the street anyway.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/d5364257-4989-4b52-a946-38b6f30e6016.png",
+            "trophyName": "Rescue in Need",
+            "trophyDetail": "Opening Campaign in Europe completed.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/6c5a6f2d-3137-4b8b-8340-a7322efb9e0c.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Road Trip",
+            "name": "Rescue in Need",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/d5364257-4989-4b52-a946-38b6f30e6016.png",
-            "description": "That thing wouldn't have fit onto the street anyway.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/6c5a6f2d-3137-4b8b-8340-a7322efb9e0c.png",
+            "description": "Opening Campaign in Europe completed.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "2/15/2026, 4:32:55 AM",
-            "earnedAge": "3 months, 3 weeks, 21 hours, 22 mins",
-            "timestamp": 1771129975000,
+            "groupName": "Construction Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 2,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Plant get enough",
-            "trophyDetail": "A little help can go a long way.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/66890b54-bf5d-4d85-bf72-641077f25596.png",
+            "trophyType": "gold",
+            "trophyName": "A Better World",
+            "trophyDetail": "All European Campaigns completed.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/9260b60d-9c3a-4379-9d67-23c924f4a978.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Plant get enough",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/66890b54-bf5d-4d85-bf72-641077f25596.png",
-            "description": "A little help can go a long way.",
+            "name": "A Better World",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/9260b60d-9c3a-4379-9d67-23c924f4a978.png",
+            "description": "All European Campaigns completed.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "12/26/2025, 6:41:52 AM",
-            "earnedAge": "5 months, 1 week, 5 days, 19 hours, 13 mins",
-            "timestamp": 1766731312000,
+            "groupName": "Construction Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 3,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "The plot thickens",
-            "trophyDetail": "You won't rest until you've reached maximum efficiency.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/7d7d8e15-f4a6-4cfe-a172-0d771be2c65a.png",
+            "trophyName": "No Pain, no Gain!",
+            "trophyDetail": "25 Contracts in Europe completed.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/ef5e1c07-3daa-4548-a94f-2dad597041d6.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "The plot thickens",
+            "name": "No Pain, no Gain!",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/7d7d8e15-f4a6-4cfe-a172-0d771be2c65a.png",
-            "description": "You won't rest until you've reached maximum efficiency.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/ef5e1c07-3daa-4548-a94f-2dad597041d6.png",
+            "description": "25 Contracts in Europe completed.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "2/14/2026, 6:51:11 AM",
-            "earnedAge": "3 months, 3 weeks, 1 day, 19 hours, 4 mins",
-            "timestamp": 1771051871000,
+            "groupName": "Construction Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 4,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Allez hopp",
-            "trophyDetail": "Oh, they can do THAT as well?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/74cb1bad-62b3-40c7-88e7-33f5630919b5.png",
+            "trophyName": "Waistcoat Pocket",
+            "trophyDetail": "Every Location in Europe discovered.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/8ba10ab9-60ab-4461-8874-1b52f302367c.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Allez hopp",
+            "name": "Waistcoat Pocket",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/74cb1bad-62b3-40c7-88e7-33f5630919b5.png",
-            "description": "Oh, they can do THAT as well?",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/8ba10ab9-60ab-4461-8874-1b52f302367c.png",
+            "description": "Every Location in Europe discovered.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 5,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "You are not a kangaroo",
-            "trophyDetail": "Seriously, think of the poor animal!",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/72c4651f-319b-45ef-9428-262b105ae639.png",
+            "trophyName": "Golden Times",
+            "trophyDetail": "A Fortune of 25,000,000 in Europe earned.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/d7a16a0f-9fa8-48b4-992b-be8d1c7a96b0.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "You are not a kangaroo",
+            "name": "Golden Times",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/72c4651f-319b-45ef-9428-262b105ae639.png",
-            "description": "Seriously, think of the poor animal!",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/d7a16a0f-9fa8-48b4-992b-be8d1c7a96b0.png",
+            "description": "A Fortune of 25,000,000 in Europe earned.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 6,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Giddy-up!",
-            "trophyDetail": "I could get used to getting around like this…",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/0b5b0eea-a076-4c0a-8c40-0beb81f9cb53.png",
+            "trophyType": "silver",
+            "trophyName": "Treasure Hunt",
+            "trophyDetail": "All Collectibles in Europe found.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/b5fbf752-38b8-42b3-9eea-367ef50adf50.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Giddy-up!",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/0b5b0eea-a076-4c0a-8c40-0beb81f9cb53.png",
-            "description": "I could get used to getting around like this…",
+            "name": "Treasure Hunt",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/b5fbf752-38b8-42b3-9eea-367ef50adf50.png",
+            "description": "All Collectibles in Europe found.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 7,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Thoroughbred!",
-            "trophyDetail": "I'm a real cowboy, mom!",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/37990351-3d01-4750-a4ab-a57b44a69aea.png",
+            "trophyType": "bronze",
+            "trophyName": "One of Each",
+            "trophyDetail": "One Machine from each Class in Europe owned.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/e751ef4a-553c-48c2-ba27-8c3e3a25040d.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Thoroughbred!",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/37990351-3d01-4750-a4ab-a57b44a69aea.png",
-            "description": "I'm a real cowboy, mom!",
+            "name": "One of Each",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/e751ef4a-553c-48c2-ba27-8c3e3a25040d.png",
+            "description": "One Machine from each Class in Europe owned.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 8,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Help me to help you",
-            "trophyDetail": "Sure, I can take care of that, neighbor.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/abdafcab-a032-4c14-aebb-35a725196a88.png",
+            "trophyName": "Ambitious",
+            "trophyDetail": "All Extensions of your Company in Europe owned.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/4aa7f60f-c98a-45f3-9bbe-546aa5dfc796.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Help me to help you",
+            "name": "Ambitious",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/abdafcab-a032-4c14-aebb-35a725196a88.png",
-            "description": "Sure, I can take care of that, neighbor.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/4aa7f60f-c98a-45f3-9bbe-546aa5dfc796.png",
+            "description": "All Extensions of your Company in Europe owned.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "2/12/2026, 9:29:10 PM",
-            "earnedAge": "3 months, 3 weeks, 3 days, 4 hours, 26 mins",
-            "timestamp": 1770931750000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 9,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Helper A does not stop … ever",
-            "trophyDetail": "What do you mean \"take care of my own farm as well\"?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/ae333111-adf1-4f32-96e6-29028ddabe8f.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Helper A does not stop … ever",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/ae333111-adf1-4f32-96e6-29028ddabe8f.png",
-            "description": "What do you mean \"take care of my own farm as well\"?",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "48",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 9,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Silvertongue",
+            "trophyDetail": "All Milestones in Europe reached.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/342fb3a9-87ae-438d-b393-ef3460837f7f.png",
+            "trophyGroupId": "default",
+            "name": "Silvertongue",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/342fb3a9-87ae-438d-b393-ef3460837f7f.png",
+            "description": "All Milestones in Europe reached.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Construction Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 10,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "It's just the beginning",
-            "trophyDetail": "I've never felt happier than here.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/3ac07e97-4380-4a9c-a11a-5086d2e63319.png",
+            "trophyName": "Lead Wolf",
+            "trophyDetail": "10 Games hosted in Multiplayer in the European scenario.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/a155b0e5-eb37-446d-ba2d-fc497fbcc78b.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "It's just the beginning",
+            "name": "Lead Wolf",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/3ac07e97-4380-4a9c-a11a-5086d2e63319.png",
-            "description": "I've never felt happier than here.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/a155b0e5-eb37-446d-ba2d-fc497fbcc78b.png",
+            "description": "10 Games hosted in Multiplayer in the European scenario.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "2/13/2026, 4:36:23 AM",
-            "earnedAge": "3 months, 3 weeks, 2 days, 21 hours, 18 mins",
-            "timestamp": 1770957383000,
+            "groupName": "Construction Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 11,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Just a sprinkle",
-            "trophyDetail": "You have to think about the future.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/2eb8774d-737d-4a82-ad1e-796e90a9b8a1.png",
+            "trophyName": "Neighbourhood Assistance",
+            "trophyDetail": "Opening Campaign in the USA completed.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/8f828a00-c053-43bc-8a34-77e05c9181b1.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Just a sprinkle",
+            "name": "Neighbourhood Assistance",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/2eb8774d-737d-4a82-ad1e-796e90a9b8a1.png",
-            "description": "You have to think about the future.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/8f828a00-c053-43bc-8a34-77e05c9181b1.png",
+            "description": "Opening Campaign in the USA completed.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": true,
-            "earnedDate": "2/13/2026, 8:29:58 AM",
-            "earnedAge": "3 months, 3 weeks, 2 days, 17 hours, 25 mins",
-            "timestamp": 1770971398000,
+            "earnedDate": "5/29/2026, 10:21:58 PM",
+            "earnedAge": "1 week, 1 day, 7 hours, 57 mins",
+            "timestamp": 1780093318000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 12,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "It's sow easy",
-            "trophyDetail": "Planting one bean will yield much green.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/39636e9e-ef3c-4616-a3c3-358d52995c61.png",
+            "trophyType": "gold",
+            "trophyName": "Revolutionary",
+            "trophyDetail": "All American Campaigns completed.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/88c5d5c1-9a28-42d4-8114-88e0bbb44364.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "It's sow easy",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/39636e9e-ef3c-4616-a3c3-358d52995c61.png",
-            "description": "Planting one bean will yield much green.",
+            "name": "Revolutionary",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/88c5d5c1-9a28-42d4-8114-88e0bbb44364.png",
+            "description": "All American Campaigns completed.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "2/15/2026, 11:34:20 AM",
-            "earnedAge": "3 months, 3 weeks, 14 hours, 21 mins",
-            "timestamp": 1771155260000,
+            "groupName": "Construction Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 13,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Own use",
-            "trophyDetail": "Reap what you sow.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/51729b88-7ee0-4327-8eac-8795d7d89434.png",
+            "trophyType": "silver",
+            "trophyName": "Busy Bee",
+            "trophyDetail": "25 Contracts in the USA completed.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/7594fa06-4b25-45a1-8ae4-3b0690414006.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Own use",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/51729b88-7ee0-4327-8eac-8795d7d89434.png",
-            "description": "Reap what you sow.",
+            "name": "Busy Bee",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/7594fa06-4b25-45a1-8ae4-3b0690414006.png",
+            "description": "25 Contracts in the USA completed.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "12/26/2025, 4:40:17 AM",
-            "earnedAge": "5 months, 1 week, 5 days, 21 hours, 15 mins",
-            "timestamp": 1766724017000,
+            "groupName": "Construction Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 14,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Large-scale supplier",
-            "trophyDetail": "These are the fruits of your labor.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/34786d5c-9237-48f0-a2ad-24d65ec8f053.png",
+            "trophyType": "bronze",
+            "trophyName": "Cartography",
+            "trophyDetail": "Every Location in the USA discovered.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/a83370ab-36d4-46ca-87ee-370c669ecbe9.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Large-scale supplier",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/34786d5c-9237-48f0-a2ad-24d65ec8f053.png",
-            "description": "These are the fruits of your labor.",
+            "name": "Cartography",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/a83370ab-36d4-46ca-87ee-370c669ecbe9.png",
+            "description": "Every Location in the USA discovered.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": true,
-            "earnedDate": "2/13/2026, 6:05:27 AM",
-            "earnedAge": "3 months, 3 weeks, 2 days, 19 hours, 49 mins",
-            "timestamp": 1770962727000,
+            "earnedDate": "6/7/2026, 6:08:49 AM",
+            "earnedAge": "10 mins",
+            "timestamp": 1780812529000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 15,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Field Trip",
-            "trophyDetail": "One vehicle for all of your needs.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/66ab2ba1-587a-4336-9fcb-2d7f98675a3b.png",
+            "trophyType": "silver",
+            "trophyName": "Business is buzzing!",
+            "trophyDetail": "A Fortune of 25,000,000 in the USA earned.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/61ca4e73-55ed-460e-8a39-d813f2371863.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Field Trip",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/66ab2ba1-587a-4336-9fcb-2d7f98675a3b.png",
-            "description": "One vehicle for all of your needs.",
+            "name": "Business is buzzing!",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/61ca4e73-55ed-460e-8a39-d813f2371863.png",
+            "description": "A Fortune of 25,000,000 in the USA earned.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "2/13/2026, 8:18:57 AM",
-            "earnedAge": "3 months, 3 weeks, 2 days, 17 hours, 36 mins",
-            "timestamp": 1770970737000,
+            "groupName": "Construction Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 16,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Long haul",
-            "trophyDetail": "In it for the long game, I see.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/f159965d-54f1-48a6-9d49-8da31b80b55b.png",
+            "trophyType": "silver",
+            "trophyName": "This belongs in a Museum!",
+            "trophyDetail": "All Collectibles in the USA found.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/76bc2cf8-0270-44a0-9882-0891caecb188.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Long haul",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/f159965d-54f1-48a6-9d49-8da31b80b55b.png",
-            "description": "In it for the long game, I see.",
+            "name": "This belongs in a Museum!",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/76bc2cf8-0270-44a0-9882-0891caecb188.png",
+            "description": "All Collectibles in the USA found.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "2/13/2026, 8:32:59 AM",
-            "earnedAge": "3 months, 3 weeks, 2 days, 17 hours, 22 mins",
-            "timestamp": 1770971579000,
+            "groupName": "Construction Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 17,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "van Gogh",
-            "trophyDetail": "Look at Mr. Fancypants over there.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/84664055-5132-40c9-8fa9-13582d5dd378.png",
+            "trophyName": "Machine Park",
+            "trophyDetail": "One Machine from each Class in the USA owned.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/94c88dbc-d35b-492c-aac5-60df260064a0.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "van Gogh",
+            "name": "Machine Park",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/84664055-5132-40c9-8fa9-13582d5dd378.png",
-            "description": "Look at Mr. Fancypants over there.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/94c88dbc-d35b-492c-aac5-60df260064a0.png",
+            "description": "One Machine from each Class in the USA owned.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "3/6/2026, 6:39:31 AM",
-            "earnedAge": "3 months, 2 days, 19 hours, 15 mins",
-            "timestamp": 1772779171000,
+            "groupName": "Construction Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 18,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "It just fell off",
-            "trophyDetail": "It was only a matter of time…",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/bd232186-4d31-43e6-aaa7-6b61c3bbad7e.png",
+            "trophyName": "Good in Business",
+            "trophyDetail": "All Extensions of your Company in the USA owned.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/606b266b-5153-4652-97f8-950472605982.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "It just fell off",
+            "name": "Good in Business",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/bd232186-4d31-43e6-aaa7-6b61c3bbad7e.png",
-            "description": "It was only a matter of time…",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/606b266b-5153-4652-97f8-950472605982.png",
+            "description": "All Extensions of your Company in the USA owned.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "2/14/2026, 2:28:16 AM",
-            "earnedAge": "3 months, 3 weeks, 1 day, 23 hours, 27 mins",
-            "timestamp": 1771036096000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 19,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Fix me up",
-            "trophyDetail": "Seriously, you should consider a membership card.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/6036822d-efc3-435c-98ea-08d0ed604b70.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Fix me up",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/6036822d-efc3-435c-98ea-08d0ed604b70.png",
-            "description": "Seriously, you should consider a membership card.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "72",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 19,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Regular Customers",
+            "trophyDetail": "All Milestones in the USA reached.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/65488622-5124-44ca-91bc-af0674c577dd.png",
+            "trophyGroupId": "default",
+            "name": "Regular Customers",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/65488622-5124-44ca-91bc-af0674c577dd.png",
+            "description": "All Milestones in the USA reached.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Construction Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 20,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Fluffiness",
-            "trophyDetail": "Building up my wool empire.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1ae23dce-af16-449d-b314-1d045b230954.png",
+            "trophyName": "Alpha Dog",
+            "trophyDetail": "10 Games hosted in Multiplayer in the American scenario.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/286754c8-2197-4560-a7cc-cd85822733b8.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Fluffiness",
+            "name": "Alpha Dog",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1ae23dce-af16-449d-b314-1d045b230954.png",
-            "description": "Building up my wool empire.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/286754c8-2197-4560-a7cc-cd85822733b8.png",
+            "description": "10 Games hosted in Multiplayer in the American scenario.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "3/1/2026, 6:59:31 AM",
-            "earnedAge": "3 months, 1 week, 18 hours, 55 mins",
-            "timestamp": 1772348371000,
+            "groupName": "Construction Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 21,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Three little piggies…",
-            "trophyDetail": "You'll be amazed how much food they need.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/31211522-8f49-4b5a-abde-7c49ee31f04a.png",
+            "trophyName": "These Boots Are Made For Walkin'",
+            "trophyDetail": "10 km run.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/e66c02f8-5814-4891-8bfc-d59d29ae8d2c.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Three little piggies…",
+            "name": "These Boots Are Made For Walkin'",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/31211522-8f49-4b5a-abde-7c49ee31f04a.png",
-            "description": "You'll be amazed how much food they need.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/e66c02f8-5814-4891-8bfc-d59d29ae8d2c.png",
+            "description": "10 km run.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
+            "groupName": "Construction Simulator",
+            "earned": true,
+            "earnedDate": "5/30/2026, 4:28:36 AM",
+            "earnedAge": "1 week, 1 day, 1 hour, 50 mins",
+            "timestamp": 1780115316000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 22,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Clucky Streak",
-            "trophyDetail": "Now that's a lot of Easter eggs.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/fba558c2-4df3-4660-a326-d6d8aea66af1.png",
+            "trophyName": "Beam Me Up, Hape",
+            "trophyDetail": "Used Fast Travel 100 times.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/c0a71cc9-a392-4e09-91eb-34b87578e883.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Clucky Streak",
+            "name": "Beam Me Up, Hape",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/fba558c2-4df3-4660-a326-d6d8aea66af1.png",
-            "description": "Now that's a lot of Easter eggs.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/c0a71cc9-a392-4e09-91eb-34b87578e883.png",
+            "description": "Used Fast Travel 100 times.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": true,
-            "earnedDate": "3/3/2026, 6:03:31 PM",
-            "earnedAge": "3 months, 5 days, 7 hours, 51 mins",
-            "timestamp": 1772561011000,
+            "earnedDate": "5/30/2026, 5:44:33 AM",
+            "earnedAge": "1 week, 1 day, 34 mins",
+            "timestamp": 1780119873000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 23,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Bringing in the Honey",
-            "trophyDetail": "Well you've been one busy bee, haven't you?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/63db2207-5de2-436b-ab9d-0a1561203da1.png",
+            "trophyName": "All in View",
+            "trophyDetail": "5 h Ego/Cockpit View used.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/408144a4-70ab-4072-9958-e2adf54e1aae.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Bringing in the Honey",
+            "name": "All in View",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/63db2207-5de2-436b-ab9d-0a1561203da1.png",
-            "description": "Well you've been one busy bee, haven't you?",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/408144a4-70ab-4072-9958-e2adf54e1aae.png",
+            "description": "5 h Ego/Cockpit View used.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 24,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Cowherd",
-            "trophyDetail": "Bet you didn't think they'd be that much work, right?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/181a79cb-3721-443f-89a7-97c836a54c3c.png",
+            "trophyType": "bronze",
+            "trophyName": "Can't Touch This",
+            "trophyDetail": "1 h Accident-Free Driving.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/633561d7-3e49-4736-9c42-1c7180aed1b9.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Cowherd",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/181a79cb-3721-443f-89a7-97c836a54c3c.png",
-            "description": "Bet you didn't think they'd be that much work, right?",
+            "name": "Can't Touch This",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/633561d7-3e49-4736-9c42-1c7180aed1b9.png",
+            "description": "1 h Accident-Free Driving.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
+            "groupName": "Construction Simulator",
+            "earned": true,
+            "earnedDate": "5/30/2026, 5:18:52 AM",
+            "earnedAge": "1 week, 1 day, 1 hour",
+            "timestamp": 1780118332000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 25,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "I like to switch it up",
-            "trophyDetail": "We're slowly getting there.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/99255d15-c101-4bea-9599-b2b47a4891a6.png",
+            "trophyType": "silver",
+            "trophyName": "All Brands",
+            "trophyDetail": "One Machine from each brand.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/ed94bdbd-364a-428e-a7cb-10f73f1f52dc.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "I like to switch it up",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/99255d15-c101-4bea-9599-b2b47a4891a6.png",
-            "description": "We're slowly getting there.",
+            "name": "All Brands",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/ed94bdbd-364a-428e-a7cb-10f73f1f52dc.png",
+            "description": "One Machine from each brand.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "93",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 26,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "This is just my weekend vehicle",
-            "trophyDetail": "Yes, I need each and every one of these.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/37e0cdc9-578a-45a7-929f-6374a22d9bd7.png",
+            "trophyName": "First Joyride",
+            "trophyDetail": "100 km driven.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/2f92bbbc-9304-4821-8df7-780d56413730.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "This is just my weekend vehicle",
+            "name": "First Joyride",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/37e0cdc9-578a-45a7-929f-6374a22d9bd7.png",
-            "description": "Yes, I need each and every one of these.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/2f92bbbc-9304-4821-8df7-780d56413730.png",
+            "description": "100 km driven.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": true,
-            "earnedDate": "5/22/2026, 7:03:23 AM",
-            "earnedAge": "2 weeks, 1 day, 18 hours, 51 mins",
-            "timestamp": 1779433403000,
+            "earnedDate": "6/2/2026, 9:29:44 AM",
+            "earnedAge": "4 days, 20 hours, 49 mins",
+            "timestamp": 1780392584000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 27,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Vehicle fleet",
-            "trophyDetail": "Ok, I might have a problem…",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/064b0e5c-a6f2-4de4-876d-ab8e47faffd4.png",
+            "trophyType": "silver",
+            "trophyName": "Just keep moving",
+            "trophyDetail": "500 km driven.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/e652f8cf-a891-4f7b-a9ff-fb1f88a42e3f.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Vehicle fleet",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/064b0e5c-a6f2-4de4-876d-ab8e47faffd4.png",
-            "description": "Ok, I might have a problem…",
+            "name": "Just keep moving",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/e652f8cf-a891-4f7b-a9ff-fb1f88a42e3f.png",
+            "description": "500 km driven.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "53",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 28,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "I read Shakespeare and stuff",
-            "trophyDetail": "The first step of any farmer.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/15624fa3-4f20-4b56-bf96-5471506e1ffd.png",
+            "trophyType": "gold",
+            "trophyName": "Longrunner",
+            "trophyDetail": "1000 km driven.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/9712fc77-2296-4e4a-af43-d37394219daf.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "I read Shakespeare and stuff",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/15624fa3-4f20-4b56-bf96-5471506e1ffd.png",
-            "description": "The first step of any farmer.",
+            "name": "Longrunner",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/9712fc77-2296-4e4a-af43-d37394219daf.png",
+            "description": "1000 km driven.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "2/14/2026, 4:13:10 AM",
-            "earnedAge": "3 months, 3 weeks, 1 day, 21 hours, 42 mins",
-            "timestamp": 1771042390000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 29,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Highly cultivated",
-            "trophyDetail": "I'm a little proud of this one myself.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a2da6ef1-3be2-4c37-940f-413ce501dbe7.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Highly cultivated",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a2da6ef1-3be2-4c37-940f-413ce501dbe7.png",
-            "description": "I'm a little proud of this one myself.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "78",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 29,
+            "trophyHidden": false,
+            "trophyType": "gold",
+            "trophyName": "Trained!",
+            "trophyDetail": "All Skills fully developed.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/fba993c3-5747-408f-bc01-aff071a1dfdc.png",
+            "trophyGroupId": "default",
+            "name": "Trained!",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/fba993c3-5747-408f-bc01-aff071a1dfdc.png",
+            "description": "All Skills fully developed.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Construction Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 30,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Ultimutt Pawesomeness",
-            "trophyDetail": "Who's a good boy?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/b6f76eeb-0479-4806-8bae-753da6b87d77.png",
+            "trophyName": "Trial Course Completed",
+            "trophyDetail": "2 h played",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/cfeb0601-6266-4dea-8c71-1a2d2d1f199c.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Ultimutt Pawesomeness",
+            "name": "Trial Course Completed",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/b6f76eeb-0479-4806-8bae-753da6b87d77.png",
-            "description": "Who's a good boy?",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/cfeb0601-6266-4dea-8c71-1a2d2d1f199c.png",
+            "description": "2 h played",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
+            "groupName": "Construction Simulator",
+            "earned": true,
+            "earnedDate": "5/29/2026, 5:26:17 AM",
+            "earnedAge": "1 week, 2 days, 53 mins",
+            "timestamp": 1780032377000,
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 31,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "That's a wrap",
-            "trophyDetail": "What's in the bale?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/2f367fad-fd57-4d24-8650-93fdf1357ac9.png",
+            "trophyType": "silver",
+            "trophyName": "Just a Normal Week at Work",
+            "trophyDetail": "40 h played.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/c268c5ad-cc87-49ac-9cf6-247e2d8a90fa.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "That's a wrap",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/2f367fad-fd57-4d24-8650-93fdf1357ac9.png",
-            "description": "What's in the bale?",
+            "name": "Just a Normal Week at Work",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/c268c5ad-cc87-49ac-9cf6-247e2d8a90fa.png",
+            "description": "40 h played.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "30",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
           },
           {
             "trophyId": 32,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Gone but not for cotton",
-            "trophyDetail": "Where would you even store them?!",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a7b100a3-62d7-4549-a8ca-34bb714c904f.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Gone but not for cotton",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a7b100a3-62d7-4549-a8ca-34bb714c904f.png",
-            "description": "Where would you even store them?!",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 33,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Raisin the stakes",
-            "trophyDetail": "It's Californian gold!",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/4933c0b4-27e4-4001-af94-e2d0c229f78b.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Raisin the stakes",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/4933c0b4-27e4-4001-af94-e2d0c229f78b.png",
-            "description": "It's Californian gold!",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 34,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Olea europaea",
-            "trophyDetail": "It's a fruit, not a vegetable!",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/29d6d47f-5bdb-4950-ab52-615f2e0791b2.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Olea europaea",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/29d6d47f-5bdb-4950-ab52-615f2e0791b2.png",
-            "description": "It's a fruit, not a vegetable!",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 35,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Original grain",
-            "trophyDetail": "My horses are crazy for it.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/43ab0b63-2c82-4a21-90e0-f155eb9836fc.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Original grain",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/43ab0b63-2c82-4a21-90e0-f155eb9836fc.png",
-            "description": "My horses are crazy for it.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "49",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 36,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Rock on",
-            "trophyDetail": "The path to success is paved with rocks.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/bc011536-8ebd-42b9-944a-7736fe8deb45.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Rock on",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/bc011536-8ebd-42b9-944a-7736fe8deb45.png",
-            "description": "The path to success is paved with rocks.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 37,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "I'm stumped",
-            "trophyDetail": "If a tree falls in a forest and no one is around to hear it, does one hand clap?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/b16c113b-e933-4adc-8b5b-f7f017f6471e.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "I'm stumped",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/b16c113b-e933-4adc-8b5b-f7f017f6471e.png",
-            "description": "If a tree falls in a forest and no one is around to hear it, does one hand clap?",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 38,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "You wood not believe it",
-            "trophyDetail": "Taking a leaf of absence.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/359fa7a3-cfd1-4364-a5a0-965f5320be4c.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "You wood not believe it",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/359fa7a3-cfd1-4364-a5a0-965f5320be4c.png",
-            "description": "Taking a leaf of absence.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 39,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Hard work pays off",
-            "trophyDetail": "You know you can also spend it, right?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1f50f943-df32-4507-badf-0794f2a9a949.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Hard work pays off",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1f50f943-df32-4507-badf-0794f2a9a949.png",
-            "description": "You know you can also spend it, right?",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "61",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 40,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "All out of Land",
-            "trophyDetail": "Everything the light touches...is mine.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/f0be7786-622f-4b8b-b2e0-5e42a256abe8.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "All out of Land",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/f0be7786-622f-4b8b-b2e0-5e42a256abe8.png",
-            "description": "Everything the light touches...is mine.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "85",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 41,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Well-Oiled Machine",
-            "trophyDetail": "Hmm, we could franchise this…",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/741e3b46-1a8d-41eb-a30e-0090026c7549.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Well-Oiled Machine",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/741e3b46-1a8d-41eb-a30e-0090026c7549.png",
-            "description": "Hmm, we could franchise this…",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "70",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 42,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Rusty",
-            "trophyDetail": "The Museum needs help.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a4cf9164-6216-4cf0-a6a7-22cebb6033fd.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Rusty",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a4cf9164-6216-4cf0-a6a7-22cebb6033fd.png",
-            "description": "The Museum needs help.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 43,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Over 9000!",
-            "trophyDetail": "With the power of farm balls for even more yield.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1e424bc8-c93e-4aba-972e-0e754f214b94.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Over 9000!",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1e424bc8-c93e-4aba-972e-0e754f214b94.png",
-            "description": "With the power of farm balls for even more yield.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 44,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Tutti-Frutti",
-            "trophyDetail": "The legend of the golden apple.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/87eb7c66-a107-408a-a399-c697feaec0ec.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Tutti-Frutti",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/87eb7c66-a107-408a-a399-c697feaec0ec.png",
-            "description": "The legend of the golden apple.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 45,
-            "trophyHidden": false,
             "trophyType": "gold",
-            "trophyName": "It's never too late to farm",
-            "trophyDetail": "It feels good to be home.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/3a98f0e8-23da-4b03-8732-beb2142c9884.png",
+            "trophyName": "Workaholic",
+            "trophyDetail": "160 h played.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/734e866a-d784-458f-9a9e-7abaf2a4acdb.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "It's never too late to farm",
+            "name": "Workaholic",
             "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/3a98f0e8-23da-4b03-8732-beb2142c9884.png",
-            "description": "It feels good to be home.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/734e866a-d784-458f-9a9e-7abaf2a4acdb.png",
+            "description": "160 h played.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "Construction Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "33",
-            "targetValue": "100"
+            "currentValue": 0,
+            "targetValue": 0
           }
         ],
-        "npCommunicationId": "NPWR44827_00"
+        "npCommunicationId": "NPWR25227_00"
       },
       "mostRecentTrophies": [
+        {
+          "game": "Construction Simulator",
+          "name": "Cartography",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/a83370ab-36d4-46ca-87ee-370c669ecbe9.png",
+          "timestamp": 1780812529000,
+          "date": "6/7/2026, 6:08:49 AM",
+          "age": "10 mins"
+        },
         {
           "game": "Construction Simulator",
           "name": "First Joyride",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/2f92bbbc-9304-4821-8df7-780d56413730.png",
           "timestamp": 1780392584000,
           "date": "6/2/2026, 9:29:44 AM",
-          "age": "4 days, 16 hours, 25 mins"
+          "age": "4 days, 20 hours, 49 mins"
         },
         {
           "game": "Construction Simulator",
@@ -19786,7 +19450,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/c0a71cc9-a392-4e09-91eb-34b87578e883.png",
           "timestamp": 1780119873000,
           "date": "5/30/2026, 5:44:33 AM",
-          "age": "1 week, 20 hours, 10 mins"
+          "age": "1 week, 1 day, 34 mins"
         },
         {
           "game": "Construction Simulator",
@@ -19794,7 +19458,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/633561d7-3e49-4736-9c42-1c7180aed1b9.png",
           "timestamp": 1780118332000,
           "date": "5/30/2026, 5:18:52 AM",
-          "age": "1 week, 20 hours, 36 mins"
+          "age": "1 week, 1 day, 1 hour"
         },
         {
           "game": "Construction Simulator",
@@ -19802,7 +19466,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/e66c02f8-5814-4891-8bfc-d59d29ae8d2c.png",
           "timestamp": 1780115316000,
           "date": "5/30/2026, 4:28:36 AM",
-          "age": "1 week, 21 hours, 26 mins"
+          "age": "1 week, 1 day, 1 hour, 50 mins"
         },
         {
           "game": "Construction Simulator",
@@ -19810,7 +19474,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/8f828a00-c053-43bc-8a34-77e05c9181b1.png",
           "timestamp": 1780093318000,
           "date": "5/29/2026, 10:21:58 PM",
-          "age": "1 week, 1 day, 3 hours, 33 mins"
+          "age": "1 week, 1 day, 7 hours, 57 mins"
         },
         {
           "game": "Construction Simulator",
@@ -19818,7 +19482,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/cfeb0601-6266-4dea-8c71-1a2d2d1f199c.png",
           "timestamp": 1780032377000,
           "date": "5/29/2026, 5:26:17 AM",
-          "age": "1 week, 1 day, 20 hours, 29 mins"
+          "age": "1 week, 2 days, 53 mins"
         },
         {
           "game": "MudRunner",
@@ -19826,7 +19490,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR14211_00_0003A4BC039EF43E6D43B5D0B1470D4931ACA09A52/A4FAD7647ECFFA21F0D033A8794F5937BA04919A.PNG",
           "timestamp": 1779952602000,
           "date": "5/28/2026, 7:16:42 AM",
-          "age": "1 week, 2 days, 18 hours, 38 mins"
+          "age": "1 week, 2 days, 23 hours, 2 mins"
         },
         {
           "game": "MudRunner",
@@ -19834,7 +19498,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR14211_00_0003A4BC039EF43E6D43B5D0B1470D4931ACA09A52/6E4FE0C8444EA15A793DA72A7656120D6EC43FFE.PNG",
           "timestamp": 1779949820000,
           "date": "5/28/2026, 6:30:20 AM",
-          "age": "1 week, 2 days, 19 hours, 25 mins"
+          "age": "1 week, 2 days, 23 hours, 49 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -19842,18 +19506,40 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/37e0cdc9-578a-45a7-929f-6374a22d9bd7.png",
           "timestamp": 1779433403000,
           "date": "5/22/2026, 7:03:23 AM",
-          "age": "2 weeks, 1 day, 18 hours, 51 mins"
-        },
-        {
-          "game": "Wo Long: Fallen Dynasty",
-          "name": "Battle-hardened",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR27198_00/fcb7bb24-a9d5-4086-b683-a1b0aae92aa9.png",
-          "timestamp": 1778424239000,
-          "date": "5/10/2026, 2:43:59 PM",
-          "age": "3 weeks, 6 days, 11 hours, 11 mins"
+          "age": "2 weeks, 1 day, 23 hours, 16 mins"
         }
       ],
       "fullLibrary": [
+        {
+          "npCommunicationId": "NPWR25227_00",
+          "name": "Construction Simulator",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
+          "lastPlayed": "2026-06-07T06:08:49Z",
+          "npServiceName": "trophy2",
+          "trophySetVersion": "01.00",
+          "trophyTitleName": "Construction Simulator",
+          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
+          "trophyTitlePlatform": "PS5",
+          "hasTrophyGroups": false,
+          "trophyGroupCount": 1,
+          "definedTrophies": {
+            "bronze": 18,
+            "silver": 9,
+            "gold": 5,
+            "platinum": 1
+          },
+          "progress": 10,
+          "earnedTrophies": {
+            "bronze": 7,
+            "silver": 0,
+            "gold": 0,
+            "platinum": 0
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-06-07T06:08:49Z",
+          "earnedTotal": 7,
+          "definedTotal": 33
+        },
         {
           "npCommunicationId": "NPWR44827_00",
           "name": "Farming Simulator 25",
@@ -19883,36 +19569,6 @@
           "lastUpdatedDateTime": "2026-06-06T15:48:43Z",
           "earnedTotal": 17,
           "definedTotal": 46
-        },
-        {
-          "npCommunicationId": "NPWR25227_00",
-          "name": "Construction Simulator",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
-          "lastPlayed": "2026-06-02T09:29:45Z",
-          "npServiceName": "trophy2",
-          "trophySetVersion": "01.00",
-          "trophyTitleName": "Construction Simulator",
-          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
-          "trophyTitlePlatform": "PS5",
-          "hasTrophyGroups": false,
-          "trophyGroupCount": 1,
-          "definedTrophies": {
-            "bronze": 18,
-            "silver": 9,
-            "gold": 5,
-            "platinum": 1
-          },
-          "progress": 9,
-          "earnedTrophies": {
-            "bronze": 6,
-            "silver": 0,
-            "gold": 0,
-            "platinum": 0
-          },
-          "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-06-02T09:29:45Z",
-          "earnedTotal": 6,
-          "definedTotal": 33
         },
         {
           "npCommunicationId": "NPWR14211_00",
@@ -20402,16 +20058,49 @@
           "isMe": false
         },
         "presence": {
-          "availability": "unavailable",
-          "lastAvailableDate": "2026-06-06T16:36:54.853Z",
+          "availability": "availableToPlay",
           "primaryPlatformInfo": {
-            "onlineStatus": "offline",
+            "onlineStatus": "online",
             "platform": "PS5",
             "lastOnlineDate": "2026-06-06T16:36:54.853Z"
-          }
+          },
+          "gameTitleInfoList": [
+            {
+              "npTitleId": "PPSA04379_00",
+              "titleName": "Construction Simulator",
+              "format": "PS5",
+              "launchPlatform": "PS5",
+              "conceptIconUrl": "https://image.api.playstation.com/vulcan/ap/rnd/202204/2908/Zp8GAbXLU7XrgExTCtNhY6Vm.png"
+            }
+          ]
         },
         "telemetry": [],
         "titles": [
+          {
+            "npServiceName": "trophy2",
+            "npCommunicationId": "NPWR25227_00",
+            "trophySetVersion": "01.00",
+            "trophyTitleName": "Construction Simulator",
+            "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
+            "trophyTitlePlatform": "PS5",
+            "hasTrophyGroups": false,
+            "trophyGroupCount": 1,
+            "definedTrophies": {
+              "bronze": 18,
+              "silver": 9,
+              "gold": 5,
+              "platinum": 1
+            },
+            "progress": 10,
+            "earnedTrophies": {
+              "bronze": 7,
+              "silver": 0,
+              "gold": 0,
+              "platinum": 0
+            },
+            "hiddenFlag": false,
+            "lastUpdatedDateTime": "2026-06-07T06:08:49Z"
+          },
           {
             "npServiceName": "trophy2",
             "npCommunicationId": "NPWR44827_00",
@@ -20436,31 +20125,6 @@
             },
             "hiddenFlag": false,
             "lastUpdatedDateTime": "2026-06-06T15:48:43Z"
-          },
-          {
-            "npServiceName": "trophy2",
-            "npCommunicationId": "NPWR25227_00",
-            "trophySetVersion": "01.00",
-            "trophyTitleName": "Construction Simulator",
-            "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
-            "trophyTitlePlatform": "PS5",
-            "hasTrophyGroups": false,
-            "trophyGroupCount": 1,
-            "definedTrophies": {
-              "bronze": 18,
-              "silver": 9,
-              "gold": 5,
-              "platinum": 1
-            },
-            "progress": 9,
-            "earnedTrophies": {
-              "bronze": 6,
-              "silver": 0,
-              "gold": 0,
-              "platinum": 0
-            },
-            "hiddenFlag": false,
-            "lastUpdatedDateTime": "2026-06-02T09:29:45Z"
           },
           {
             "npServiceName": "trophy",
@@ -20847,7 +20511,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/7/2026, 1:55:30 AM"
+      "lastUpdated": "6/7/2026, 6:19:35 AM"
     },
     "marc": {
       "onlineId": "DesdemonaTiger",
@@ -21314,7 +20978,7 @@
             "groupName": "Ghost of Tsushima",
             "earned": true,
             "earnedDate": "2/28/2026, 11:32:48 AM",
-            "earnedAge": "3 months, 1 week, 1 day, 14 hours, 22 mins",
+            "earnedAge": "3 months, 1 week, 1 day, 18 hours, 46 mins",
             "timestamp": 1772278368000,
             "currentValue": 0,
             "targetValue": 0
@@ -21337,7 +21001,7 @@
             "groupName": "Ghost of Tsushima",
             "earned": true,
             "earnedDate": "2/28/2026, 12:42:10 PM",
-            "earnedAge": "3 months, 1 week, 1 day, 13 hours, 13 mins",
+            "earnedAge": "3 months, 1 week, 1 day, 17 hours, 37 mins",
             "timestamp": 1772282530000,
             "currentValue": 0,
             "targetValue": 0
@@ -21797,7 +21461,7 @@
             "groupName": "Ghost of Tsushima",
             "earned": true,
             "earnedDate": "3/25/2026, 8:33:39 PM",
-            "earnedAge": "2 months, 1 week, 6 days, 5 hours, 21 mins",
+            "earnedAge": "2 months, 1 week, 6 days, 9 hours, 45 mins",
             "timestamp": 1774470819000,
             "currentValue": 0,
             "targetValue": 0
@@ -22142,7 +21806,7 @@
             "groupName": "Ghost of Tsushima",
             "earned": true,
             "earnedDate": "3/25/2026, 8:18:38 PM",
-            "earnedAge": "2 months, 1 week, 6 days, 5 hours, 36 mins",
+            "earnedAge": "2 months, 1 week, 6 days, 10 hours",
             "timestamp": 1774469918000,
             "currentValue": 0,
             "targetValue": 0
@@ -22510,7 +22174,7 @@
             "groupName": "Ghost of Tsushima: Legends Mode",
             "earned": true,
             "earnedDate": "5/31/2026, 1:11:38 AM",
-            "earnedAge": "1 week, 43 mins",
+            "earnedAge": "1 week, 5 hours, 7 mins",
             "timestamp": 1780189898000,
             "currentValue": 0,
             "targetValue": 0
@@ -22533,7 +22197,7 @@
             "groupName": "Ghost of Tsushima: Legends Mode",
             "earned": true,
             "earnedDate": "3/23/2026, 7:04:41 PM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 6 hours, 50 mins",
+            "earnedAge": "2 months, 2 weeks, 1 day, 11 hours, 14 mins",
             "timestamp": 1774292681000,
             "currentValue": 0,
             "targetValue": 0
@@ -22556,7 +22220,7 @@
             "groupName": "Ghost of Tsushima: Legends Mode",
             "earned": true,
             "earnedDate": "2/28/2026, 2:42:06 PM",
-            "earnedAge": "3 months, 1 week, 1 day, 11 hours, 13 mins",
+            "earnedAge": "3 months, 1 week, 1 day, 15 hours, 37 mins",
             "timestamp": 1772289726000,
             "currentValue": 0,
             "targetValue": 0
@@ -22579,7 +22243,7 @@
             "groupName": "Ghost of Tsushima: Legends Mode",
             "earned": true,
             "earnedDate": "3/21/2026, 2:43:36 PM",
-            "earnedAge": "2 months, 2 weeks, 3 days, 11 hours, 11 mins",
+            "earnedAge": "2 months, 2 weeks, 3 days, 15 hours, 36 mins",
             "timestamp": 1774104216000,
             "currentValue": 0,
             "targetValue": 0
@@ -22602,7 +22266,7 @@
             "groupName": "Ghost of Tsushima: Legends Mode",
             "earned": true,
             "earnedDate": "3/22/2026, 1:38:56 PM",
-            "earnedAge": "2 months, 2 weeks, 2 days, 12 hours, 16 mins",
+            "earnedAge": "2 months, 2 weeks, 2 days, 16 hours, 40 mins",
             "timestamp": 1774186736000,
             "currentValue": 0,
             "targetValue": 0
@@ -22970,7 +22634,7 @@
             "groupName": "Legends: Rivals and Mastery Challenges",
             "earned": true,
             "earnedDate": "3/23/2026, 10:44:01 AM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 15 hours, 11 mins",
+            "earnedAge": "2 months, 2 weeks, 1 day, 19 hours, 35 mins",
             "timestamp": 1774262641000,
             "currentValue": 0,
             "targetValue": 0
@@ -22993,7 +22657,7 @@
             "groupName": "Legends: Rivals and Mastery Challenges",
             "earned": true,
             "earnedDate": "3/3/2026, 3:18:18 AM",
-            "earnedAge": "3 months, 5 days, 22 hours, 37 mins",
+            "earnedAge": "3 months, 6 days, 3 hours, 1 min",
             "timestamp": 1772507898000,
             "currentValue": 0,
             "targetValue": 0
@@ -23016,7 +22680,7 @@
             "groupName": "Legends: Rivals and Mastery Challenges",
             "earned": true,
             "earnedDate": "3/23/2026, 3:07:24 PM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 10 hours, 48 mins",
+            "earnedAge": "2 months, 2 weeks, 1 day, 15 hours, 12 mins",
             "timestamp": 1774278444000,
             "currentValue": 0,
             "targetValue": 0
@@ -23054,7 +22718,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22859_00/493cfcac-aefe-4bab-a356-62557a048d74.png",
           "timestamp": 1780189898000,
           "date": "5/31/2026, 1:11:38 AM",
-          "age": "1 week, 43 mins"
+          "age": "1 week, 5 hours, 7 mins"
         },
         {
           "game": "Cyberpunk 2077",
@@ -23062,7 +22726,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24695_00/9e51220d-031d-4e1d-b061-dcee0a2c22eb.png",
           "timestamp": 1780060881000,
           "date": "5/29/2026, 1:21:21 PM",
-          "age": "1 week, 1 day, 12 hours, 34 mins"
+          "age": "1 week, 1 day, 16 hours, 58 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -23070,7 +22734,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/e3c3f8b6-4021-4e1d-aedf-f4a37f001eda.png",
           "timestamp": 1780015575000,
           "date": "5/29/2026, 12:46:15 AM",
-          "age": "1 week, 2 days, 1 hour, 9 mins"
+          "age": "1 week, 2 days, 5 hours, 33 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -23078,7 +22742,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/b38c5fde-cb03-49cb-922e-91c1b5c3da89.png",
           "timestamp": 1780013436000,
           "date": "5/29/2026, 12:10:36 AM",
-          "age": "1 week, 2 days, 1 hour, 44 mins"
+          "age": "1 week, 2 days, 6 hours, 9 mins"
         },
         {
           "game": "Tom Clancy’s Ghost Recon® Wildlands",
@@ -23086,7 +22750,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/531102B911D983E0259ED0222843C3BD669510B2.PNG",
           "timestamp": 1779979478000,
           "date": "5/28/2026, 2:44:38 PM",
-          "age": "1 week, 2 days, 11 hours, 10 mins"
+          "age": "1 week, 2 days, 15 hours, 35 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -23094,7 +22758,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/6b0b573c-aeea-4057-8f0b-9cd4f49392e3.png",
           "timestamp": 1779921632000,
           "date": "5/27/2026, 10:40:32 PM",
-          "age": "1 week, 3 days, 3 hours, 15 mins"
+          "age": "1 week, 3 days, 7 hours, 39 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -23102,7 +22766,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/0f98092d-1ed3-45b6-b96f-401b020b738f.png",
           "timestamp": 1779921632000,
           "date": "5/27/2026, 10:40:32 PM",
-          "age": "1 week, 3 days, 3 hours, 15 mins"
+          "age": "1 week, 3 days, 7 hours, 39 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -23110,7 +22774,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/08aa8bfb-df5b-4347-a043-03ac3c18199d.png",
           "timestamp": 1779921179000,
           "date": "5/27/2026, 10:32:59 PM",
-          "age": "1 week, 3 days, 3 hours, 22 mins"
+          "age": "1 week, 3 days, 7 hours, 46 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -23118,7 +22782,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/d158d368-a8aa-4863-8105-885a305729d1.png",
           "timestamp": 1779920706000,
           "date": "5/27/2026, 10:25:06 PM",
-          "age": "1 week, 3 days, 3 hours, 30 mins"
+          "age": "1 week, 3 days, 7 hours, 54 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -23126,7 +22790,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/1c1ed736-9306-4c16-a7d6-a267cf9b9468.png",
           "timestamp": 1779920650000,
           "date": "5/27/2026, 10:24:10 PM",
-          "age": "1 week, 3 days, 3 hours, 31 mins"
+          "age": "1 week, 3 days, 7 hours, 55 mins"
         }
       ],
       "fullLibrary": [
@@ -32088,7 +31752,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/7/2026, 1:55:43 AM"
+      "lastUpdated": "6/7/2026, 6:19:46 AM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -34782,7 +34446,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/7/2026, 1:55:43 AM"
+      "lastUpdated": "6/7/2026, 6:19:46 AM"
     },
     "bunny": {
       "onlineId": "UnicornBunnyShiv",
@@ -34812,7 +34476,7 @@
       "isOfficiallyVerified": false,
       "isMe": false,
       "accountId": "7742137722487951585",
-      "online": false,
+      "online": true,
       "currentGame": "Trash Goblin",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/11d8eb80-114c-41e4-a719-407c2ac3d551.png",
       "currentGameActivity": null,
@@ -35126,7 +34790,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:47:33 AM",
-            "earnedAge": "1 month, 4 days, 1 hour, 8 mins",
+            "earnedAge": "1 month, 4 days, 5 hours, 32 mins",
             "timestamp": 1777855653000,
             "currentValue": 0,
             "targetValue": 0
@@ -35149,7 +34813,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:03:28 AM",
-            "earnedAge": "1 month, 3 days, 22 hours, 52 mins",
+            "earnedAge": "1 month, 4 days, 3 hours, 16 mins",
             "timestamp": 1777863808000,
             "currentValue": 0,
             "targetValue": 0
@@ -35172,7 +34836,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:22:57 AM",
-            "earnedAge": "1 month, 3 days, 22 hours, 32 mins",
+            "earnedAge": "1 month, 4 days, 2 hours, 56 mins",
             "timestamp": 1777864977000,
             "currentValue": 0,
             "targetValue": 0
@@ -35195,7 +34859,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:48:53 AM",
-            "earnedAge": "1 month, 4 days, 1 hour, 6 mins",
+            "earnedAge": "1 month, 4 days, 5 hours, 30 mins",
             "timestamp": 1777855733000,
             "currentValue": 0,
             "targetValue": 0
@@ -35218,7 +34882,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:42:00 AM",
-            "earnedAge": "3 weeks, 5 days, 22 hours, 13 mins",
+            "earnedAge": "3 weeks, 6 days, 2 hours, 37 mins",
             "timestamp": 1778470920000,
             "currentValue": 0,
             "targetValue": 0
@@ -35241,7 +34905,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:18:57 AM",
-            "earnedAge": "3 weeks, 5 days, 22 hours, 36 mins",
+            "earnedAge": "3 weeks, 6 days, 3 hours",
             "timestamp": 1778469537000,
             "currentValue": 0,
             "targetValue": 0
@@ -35310,7 +34974,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:37:55 AM",
-            "earnedAge": "1 month, 3 days, 21 hours, 17 mins",
+            "earnedAge": "1 month, 4 days, 1 hour, 41 mins",
             "timestamp": 1777869475000,
             "currentValue": 0,
             "targetValue": 0
@@ -35333,7 +34997,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:23:29 AM",
-            "earnedAge": "1 month, 3 days, 22 hours, 32 mins",
+            "earnedAge": "1 month, 4 days, 2 hours, 56 mins",
             "timestamp": 1777865009000,
             "currentValue": 0,
             "targetValue": 0
@@ -35379,7 +35043,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 10:49:51 PM",
-            "earnedAge": "1 month, 3 days, 3 hours, 5 mins",
+            "earnedAge": "1 month, 3 days, 7 hours, 29 mins",
             "timestamp": 1777934991000,
             "currentValue": 0,
             "targetValue": 0
@@ -35402,7 +35066,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:14:40 AM",
-            "earnedAge": "1 month, 3 days, 19 hours, 41 mins",
+            "earnedAge": "1 month, 4 days, 5 mins",
             "timestamp": 1777875280000,
             "currentValue": 0,
             "targetValue": 0
@@ -35425,7 +35089,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:47:31 AM",
-            "earnedAge": "1 month, 3 days, 19 hours, 8 mins",
+            "earnedAge": "1 month, 3 days, 23 hours, 32 mins",
             "timestamp": 1777877251000,
             "currentValue": 0,
             "targetValue": 0
@@ -35448,7 +35112,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:03:37 AM",
-            "earnedAge": "1 month, 3 days, 21 hours, 52 mins",
+            "earnedAge": "1 month, 4 days, 2 hours, 16 mins",
             "timestamp": 1777867417000,
             "currentValue": 0,
             "targetValue": 0
@@ -35471,7 +35135,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 5:22:06 AM",
-            "earnedAge": "1 month, 3 days, 20 hours, 33 mins",
+            "earnedAge": "1 month, 4 days, 57 mins",
             "timestamp": 1777872126000,
             "currentValue": 0,
             "targetValue": 0
@@ -35609,7 +35273,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:29:38 AM",
-            "earnedAge": "3 weeks, 5 days, 22 hours, 26 mins",
+            "earnedAge": "3 weeks, 6 days, 2 hours, 50 mins",
             "timestamp": 1778470178000,
             "currentValue": 0,
             "targetValue": 0
@@ -35885,7 +35549,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:30:33 AM",
-            "earnedAge": "1 month, 3 days, 19 hours, 25 mins",
+            "earnedAge": "1 month, 3 days, 23 hours, 49 mins",
             "timestamp": 1777876233000,
             "currentValue": 0,
             "targetValue": 0
@@ -36038,7 +35702,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/21da5d74-5c49-48d4-8d84-85b1fc955825.png",
           "timestamp": 1778470920000,
           "date": "5/11/2026, 3:42:00 AM",
-          "age": "3 weeks, 5 days, 22 hours, 13 mins"
+          "age": "3 weeks, 6 days, 2 hours, 37 mins"
         },
         {
           "game": "Trash Goblin",
@@ -36046,7 +35710,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/79c313b7-af03-4096-b3d1-86090e12f841.png",
           "timestamp": 1778470178000,
           "date": "5/11/2026, 3:29:38 AM",
-          "age": "3 weeks, 5 days, 22 hours, 26 mins"
+          "age": "3 weeks, 6 days, 2 hours, 50 mins"
         },
         {
           "game": "Trash Goblin",
@@ -36054,7 +35718,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/5de40386-ae1c-4294-a4d4-f2e922b8d961.png",
           "timestamp": 1778469537000,
           "date": "5/11/2026, 3:18:57 AM",
-          "age": "3 weeks, 5 days, 22 hours, 36 mins"
+          "age": "3 weeks, 6 days, 3 hours"
         },
         {
           "game": "Trash Goblin",
@@ -36062,7 +35726,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/492e702d-d33c-48c3-a2d3-19075180c76f.png",
           "timestamp": 1777934991000,
           "date": "5/4/2026, 10:49:51 PM",
-          "age": "1 month, 3 days, 3 hours, 5 mins"
+          "age": "1 month, 3 days, 7 hours, 29 mins"
         },
         {
           "game": "Trash Goblin",
@@ -36070,7 +35734,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/bbb648f0-902a-483d-a9a1-30c6b3f87bf4.png",
           "timestamp": 1777877251000,
           "date": "5/4/2026, 6:47:31 AM",
-          "age": "1 month, 3 days, 19 hours, 8 mins"
+          "age": "1 month, 3 days, 23 hours, 32 mins"
         },
         {
           "game": "Trash Goblin",
@@ -36078,7 +35742,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/28baea49-5915-4b1b-89db-bf1d84bf1afd.png",
           "timestamp": 1777876233000,
           "date": "5/4/2026, 6:30:33 AM",
-          "age": "1 month, 3 days, 19 hours, 25 mins"
+          "age": "1 month, 3 days, 23 hours, 49 mins"
         },
         {
           "game": "Trash Goblin",
@@ -36086,7 +35750,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/b2e3576d-a71a-459e-8035-ada1e3ef774b.png",
           "timestamp": 1777875280000,
           "date": "5/4/2026, 6:14:40 AM",
-          "age": "1 month, 3 days, 19 hours, 41 mins"
+          "age": "1 month, 4 days, 5 mins"
         },
         {
           "game": "Trash Goblin",
@@ -36094,7 +35758,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/791a3e33-6019-4253-9bfa-5de6d1ad58a2.png",
           "timestamp": 1777872126000,
           "date": "5/4/2026, 5:22:06 AM",
-          "age": "1 month, 3 days, 20 hours, 33 mins"
+          "age": "1 month, 4 days, 57 mins"
         },
         {
           "game": "Trash Goblin",
@@ -36102,7 +35766,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/468002bc-35f9-43f1-add4-c4f9e45a943c.png",
           "timestamp": 1777869475000,
           "date": "5/4/2026, 4:37:55 AM",
-          "age": "1 month, 3 days, 21 hours, 17 mins"
+          "age": "1 month, 4 days, 1 hour, 41 mins"
         },
         {
           "game": "Trash Goblin",
@@ -36110,7 +35774,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/0ae703ef-cc71-4353-9f33-00190ca95e9d.png",
           "timestamp": 1777867417000,
           "date": "5/4/2026, 4:03:37 AM",
-          "age": "1 month, 3 days, 21 hours, 52 mins"
+          "age": "1 month, 4 days, 2 hours, 16 mins"
         }
       ],
       "fullLibrary": [
@@ -37872,16 +37536,16 @@
           "art": "https://image.api.playstation.com/trophy/np/NPWR13317_00_00E4B29A52980C891B98C9614C8C763CBF06B4A380/B5021CD0BEA80E90D2158A60A801349D8CBD64D2.PNG",
           "lastPlayed": "2023-08-08T04:44:38Z",
           "npServiceName": "trophy",
-          "trophySetVersion": "01.10",
+          "trophySetVersion": "01.09",
           "trophyTitleName": "The Long Dark",
           "trophyTitleDetail": "The trophy set for The Long Dark.",
           "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR13317_00_00E4B29A52980C891B98C9614C8C763CBF06B4A380/B5021CD0BEA80E90D2158A60A801349D8CBD64D2.PNG",
           "trophyTitlePlatform": "PS4",
           "hasTrophyGroups": true,
-          "trophyGroupCount": 6,
+          "trophyGroupCount": 5,
           "definedTrophies": {
-            "bronze": 67,
-            "silver": 16,
+            "bronze": 56,
+            "silver": 15,
             "gold": 4,
             "platinum": 1
           },
@@ -37895,7 +37559,7 @@
           "hiddenFlag": false,
           "lastUpdatedDateTime": "2023-08-08T04:44:38Z",
           "earnedTotal": 2,
-          "definedTotal": 88
+          "definedTotal": 76
         },
         {
           "npCommunicationId": "NPWR16156_00",
@@ -39044,10 +38708,9 @@
           "isMe": false
         },
         "presence": {
-          "availability": "unavailable",
-          "lastAvailableDate": "2026-06-06T07:40:26.338Z",
+          "availability": "availableToPlay",
           "primaryPlatformInfo": {
-            "onlineStatus": "offline",
+            "onlineStatus": "online",
             "platform": "PS5",
             "lastOnlineDate": "2026-06-06T07:40:26.338Z"
           }
@@ -40519,16 +40182,16 @@
           {
             "npServiceName": "trophy",
             "npCommunicationId": "NPWR13317_00",
-            "trophySetVersion": "01.10",
+            "trophySetVersion": "01.09",
             "trophyTitleName": "The Long Dark",
             "trophyTitleDetail": "The trophy set for The Long Dark.",
             "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR13317_00_00E4B29A52980C891B98C9614C8C763CBF06B4A380/B5021CD0BEA80E90D2158A60A801349D8CBD64D2.PNG",
             "trophyTitlePlatform": "PS4",
             "hasTrophyGroups": true,
-            "trophyGroupCount": 6,
+            "trophyGroupCount": 5,
             "definedTrophies": {
-              "bronze": 67,
-              "silver": 16,
+              "bronze": 56,
+              "silver": 15,
               "gold": 4,
               "platinum": 1
             },
@@ -41481,7 +41144,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/7/2026, 1:55:53 AM"
+      "lastUpdated": "6/7/2026, 6:19:57 AM"
     },
     "mjolnir": {
       "onlineId": "Michael (Mjolnir)",
@@ -41506,7 +41169,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/7/2026, 1:55:53 AM",
+      "lastUpdated": "6/7/2026, 6:19:57 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -41533,7 +41196,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/7/2026, 1:55:54 AM",
+      "lastUpdated": "6/7/2026, 6:19:57 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -41560,7 +41223,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/7/2026, 1:55:54 AM",
+      "lastUpdated": "6/7/2026, 6:19:57 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -41587,7 +41250,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/7/2026, 1:55:08 AM",
+      "lastUpdated": "6/7/2026, 6:19:16 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -41614,7 +41277,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/7/2026, 1:55:54 AM",
+      "lastUpdated": "6/7/2026, 6:19:58 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -41627,7 +41290,7 @@
       "amazonAffiliateUrl": null,
       "bio": "Official Pack Member Profile",
       "twitch": null,
-      "lastUpdated": "6/7/2026, 1:55:54 AM",
+      "lastUpdated": "6/7/2026, 6:19:58 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -41654,7 +41317,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/7/2026, 1:55:30 AM",
+      "lastUpdated": "6/7/2026, 6:19:35 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     }
@@ -41668,14 +41331,14 @@
         "platinum": 5,
         "gold": 78,
         "silver": 223,
-        "bronze": 1027,
-        "total": 1333
+        "bronze": 1031,
+        "total": 1337
       },
       "maxLevel": 234,
       "legacyAge": "3 years, 1 months",
       "legacyRange": {
         "start": "4/18/2023, 11:05:50 PM",
-        "end": "6/7/2026, 1:11:36 AM"
+        "end": "6/7/2026, 4:37:38 AM"
       },
       "currentGame": "Sniper Elite 5",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
@@ -41686,35 +41349,35 @@
         "werewolf",
         "kfruti"
       ],
-      "lastUpdated": "6/7/2026, 1:55:54 AM"
+      "lastUpdated": "6/7/2026, 6:19:58 AM"
     },
     "TJ": {
       "displayName": "TJ",
-      "isOnline": false,
+      "isOnline": true,
       "primaryOnlineId": "Darkwing69420",
       "combinedTrophies": {
         "platinum": 0,
         "gold": 9,
         "silver": 34,
-        "bronze": 142,
-        "total": 185
+        "bronze": 143,
+        "total": 186
       },
       "maxLevel": 67,
       "legacyAge": "5 months",
       "legacyRange": {
         "start": "12/22/2025, 11:15:30 AM",
-        "end": "6/2/2026, 9:29:44 AM"
+        "end": "6/7/2026, 6:08:49 AM"
       },
-      "currentGame": "Farming Simulator 25",
-      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
-      "currentActivity": null,
+      "currentGame": "Construction Simulator",
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/39be902f-f0e0-40ca-8aff-46a8a781b56c.png",
+      "currentActivity": "Active Hunting",
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
       "bio": "Official Pack Member Profile",
       "accounts": [
         "darkwing",
         "darkterro"
       ],
-      "lastUpdated": "6/7/2026, 1:55:54 AM"
+      "lastUpdated": "6/7/2026, 6:19:58 AM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -41724,14 +41387,14 @@
         "platinum": 6,
         "gold": 42,
         "silver": 122,
-        "bronze": 588,
-        "total": 758
+        "bronze": 590,
+        "total": 760
       },
-      "maxLevel": 206,
+      "maxLevel": 207,
       "legacyAge": "9 years, 5 months",
       "legacyRange": {
         "start": "12/30/2016, 6:40:30 PM",
-        "end": "6/6/2026, 10:14:15 PM"
+        "end": "6/7/2026, 4:30:03 AM"
       },
       "currentGame": "Sniper Elite 5",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
@@ -41741,7 +41404,7 @@
       "accounts": [
         "ray"
       ],
-      "lastUpdated": "6/7/2026, 1:55:54 AM"
+      "lastUpdated": "6/7/2026, 6:19:58 AM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -41758,7 +41421,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/7/2026, 1:55:54 AM"
+        "end": "6/7/2026, 6:19:58 AM"
       },
       "currentGame": "Dead Rising",
       "currentGameArt": null,
@@ -41767,7 +41430,7 @@
       "accounts": [
         "phoenix"
       ],
-      "lastUpdated": "6/7/2026, 1:55:54 AM"
+      "lastUpdated": "6/7/2026, 6:19:58 AM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -41794,7 +41457,7 @@
       "accounts": [
         "marc"
       ],
-      "lastUpdated": "6/7/2026, 1:55:54 AM"
+      "lastUpdated": "6/7/2026, 6:19:58 AM"
     },
     "JCrow": {
       "displayName": "JCrow",
@@ -41821,11 +41484,11 @@
       "accounts": [
         "jcrow"
       ],
-      "lastUpdated": "6/7/2026, 1:55:54 AM"
+      "lastUpdated": "6/7/2026, 6:19:58 AM"
     },
     "Shiv": {
       "displayName": "Shiv",
-      "isOnline": false,
+      "isOnline": true,
       "primaryOnlineId": "UnicornBunnyShiv",
       "combinedTrophies": {
         "platinum": 0,
@@ -41848,7 +41511,7 @@
       "accounts": [
         "bunny"
       ],
-      "lastUpdated": "6/7/2026, 1:55:54 AM"
+      "lastUpdated": "6/7/2026, 6:19:58 AM"
     },
     "Michael": {
       "displayName": "Michael",
@@ -41865,7 +41528,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/7/2026, 1:55:54 AM"
+        "end": "6/7/2026, 6:19:58 AM"
       },
       "currentGame": "Police Simulator: Patrol Officers",
       "currentGameArt": null,
@@ -41874,7 +41537,7 @@
       "accounts": [
         "mjolnir"
       ],
-      "lastUpdated": "6/7/2026, 1:55:54 AM"
+      "lastUpdated": "6/7/2026, 6:19:58 AM"
     },
     "Queen": {
       "displayName": "Queen",
@@ -41891,7 +41554,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/7/2026, 1:55:54 AM"
+        "end": "6/7/2026, 6:19:58 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -41900,7 +41563,7 @@
       "accounts": [
         "queen"
       ],
-      "lastUpdated": "6/7/2026, 1:55:54 AM"
+      "lastUpdated": "6/7/2026, 6:19:58 AM"
     },
     "Balto": {
       "displayName": "Balto",
@@ -41917,7 +41580,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/7/2026, 1:55:54 AM"
+        "end": "6/7/2026, 6:19:58 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -41926,7 +41589,7 @@
       "accounts": [
         "balto"
       ],
-      "lastUpdated": "6/7/2026, 1:55:54 AM"
+      "lastUpdated": "6/7/2026, 6:19:58 AM"
     },
     "Memorial": {
       "displayName": "Memorial",
@@ -41943,7 +41606,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/7/2026, 1:55:54 AM"
+        "end": "6/7/2026, 6:19:58 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -41952,7 +41615,7 @@
       "accounts": [
         "oldman"
       ],
-      "lastUpdated": "6/7/2026, 1:55:54 AM"
+      "lastUpdated": "6/7/2026, 6:19:58 AM"
     }
   },
   "mutualSquadFollowers": [
@@ -41961,7 +41624,7 @@
       "sharedConnections": 2
     }
   ],
-  "lastGlobalUpdate": "6/7/2026, 1:54:51 AM",
+  "lastGlobalUpdate": "6/7/2026, 6:19:03 AM",
   "engineVersion": "13.9.2",
   "codeTimestamp": "Saturday, May 30, 2026 | 11:39 PM EDT"
 }
