@@ -39,7 +39,7 @@ const checkSet = (items) => items.map(name => ({name, done: false}));
 const trophyData = [
     // --- BASE GAME ---
     { id: 'plat_cotw', cat: 'Base Game', name: 'theHunter', rank: 'platinum', current: 0, goal: 1, type: 'toggle', plat: false, desc: 'Collect every trophy.' },
-     { id: 'head_shoulder_knees_toes', cat: 'Base Game', name: '	Head, Shoulders, Knees, And Toes', rank: 'bronze', current: 0, goal: 6.2, type: 'numeric', plat: true, desc: '	Head, Shoulders, Knees, And Toes' },
+    { id: 'head_shoulder_knees_toes', cat: 'Base Game', name: 'Head, Shoulders, Knees, And Toes', rank: 'bronze', current: 0, goal: 1 type: 'toggle', plat: true, desc: 'Head, Shoulders, Knees, And Toes' },
     { id: 'the_mile', cat: 'Base Game', name: 'The Mile', rank: 'bronze', current: 0, goal: 1, type: 'numeric', plat: true, desc: 'Travel 1 mile on foot.' },
     { id: 'scand_mile', cat: 'Base Game', name: 'Scandinavian Mile', rank: 'bronze', current: 0, goal: 6.2, type: 'numeric', plat: true, desc: 'Travel 6.2 miles on foot.' },
     { id: 'marathon', cat: 'Base Game', name: 'The Marathon', rank: 'silver', current: 0, goal: 26.2, type: 'numeric', plat: true, desc: 'Travel 26.2 miles on foot.' },
