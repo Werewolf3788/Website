@@ -1,9 +1,9 @@
 /*
  * ==========================================
- * NYT TIMESTAMP: Wed, June 10, 2026, 5:45 AM EDT
+ * NYT TIMESTAMP: Wed, June 10, 2026, 6:02 AM EDT
  * PRECISION INTEGRATION: Frontend JS Nervous System (script.js)
- * NOTES: Patched PSN Identity Mapping to look directly inside the "users" object structure
- * from psn_data.json. Fixed profile button alignment for multi-user sync. Fully unstripped.
+ * NOTES: Cleaned up identity maps to completely skip Redbirdfever.
+ * Streamlined profile identifier mapping to strictly map Ray to the single "ray" JSON slot. Fully unstripped.
  * ==========================================
  */
 
@@ -29,8 +29,7 @@ const LEGACY_ID = 'cotw-trophy-display';
 const USER_DATA_MAP = {
     'Werewolf3788': 'werewolf',
     'Ray': 'ray',
-    'Raymystyro': 'ray',
-    'RedBirdFever': 'darkwing' // Assuming Adam's tracking profile key or update if tracking via darkwing/darkterro
+    'Raymystyro': 'ray'
 };
 
 const ICONS = {
@@ -119,7 +118,7 @@ const trophyData = [
     // --- VURHONGA SAVANNA ---
     { id: 'vur_narrative_arc', cat: 'DLC: Vurhonga Savanna', name: 'Narrative Missions Arc', rank: 'silver', current: 0, goal: 16, type: 'checklist', desc: 'Grandfather Njabulo missions.', subItems: checkSet(["Missions 1-4", "Missions 5-8", "Missions 9-12", "Missions 13-16"]) },
     { id: 'vur_side_registry', cat: 'DLC: Vurhonga Savanna', name: 'Side Mission Registry', rank: 'silver', current: 0, goal: 46, type: 'numeric', desc: 'Complete all 46 side missions.' },
-    { id: 'vur_species_audit', cat: 'DLC: Vurhonga Savanna', name: 'Savanna Species Harvest', rank: 'gold', current:Current time is Wednesday, June 10, 2026 at 5:45:18 AM EDT. 0, goal: 10, type: 'checklist', desc: 'Harvest every Savanna species.', subItems: checkSet(["Eurasian Wigeon", "Scrub Hare", "Side-Striped Jackal", "Springbok", "Warthog", "Lesser Kudu", "Blue Wildebeest", "Gemsbok", "Cape Buffalo", "Lion"]) },
+    { id: 'vur_species_audit', cat: 'DLC: Vurhonga Savanna', name: 'Savanna Species Harvest', rank: 'gold', current: 0, goal: 10, type: 'checklist', desc: 'Harvest every Savanna species.', subItems: checkSet(["Eurasian Wigeon", "Scrub Hare", "Side-Striped Jackal", "Springbok", "Warthog", "Lesser Kudu", "Blue Wildebeest", "Gemsbok", "Cape Buffalo", "Lion"]) },
     { id: 'vur_arc', cat: 'DLC: Vurhonga Savanna', name: 'Vurhonga Master Arc', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: 'All arcs.' },
     { id: 'vur_warden', cat: 'DLC: Vurhonga Savanna', name: 'Warden Missions Arc', rank: 'bronze', current: 0, goal: 10, type: 'checklist', desc: 'Main arc.', subItems: checkSet(["Welcome to Vurhonga", "Mind the Traps", "Across the Savanna", "Praise the Ancestors", "The History of All Tribes", "Mucking for Science", "Mampara", "The Last Rhino", "Traffic Jam", "Observe and Report"]) },
     { id: 'vur_mboweni', cat: 'DLC: Vurhonga Savanna', name: 'Mboweni Arc', rank: 'bronze', current: 0, goal: 5, type: 'checklist', desc: "Maria Mboweni.", subItems: checkSet(["Research", "Poachers", "Buffalo", "Tracking the King", "Mboweni's Legacy"]) },
@@ -136,7 +135,7 @@ const trophyData = [
     // --- PARQUE FERNANDO ---
     { id: 'par_narrative_arc', cat: 'DLC: Parque Fernando', name: 'Narrative Missions Arc', rank: 'gold', current: 0, goal: 16, type: 'checklist', desc: 'Complete 16 story missions for Carolina Vargas.', subItems: checkSet(["Narrative 1-4", "Narrative 5-8", "Narrative 9-12", "Narrative 13-16"]) },
     { id: 'par_side_registry', cat: 'DLC: Parque Fernando', name: 'Side Mission Registry', rank: 'gold', current: 0, goal: 39, type: 'numeric', desc: 'Complete all 39 side missions.' },
-    { id: 'par_species_audit', cat: 'DLC: Parque Fernando', name: 'Fernando Species Harvest', rank: 'gold', current: 0, goal: 8, type: 'checklist', desc: 'Harvest every Fernando species.', subItems: checkSet(["Cinnamon Teal", "Blackbuck", "Axis Deer", "Collared Peccary", "Puma", "Mule Deer", "Red Deer", "Water Buffalo"]) },
+    { id: 'par_species_audit', cat: 'DLC: Parque Fernando', name: 'Fernando Species Harvest', rank: 'gold', current: 0, goal: 8, type: 'checklist', desc: 'Harvest every Parque Fernando species.', subItems: checkSet(["Cinnamon Teal", "Blackbuck", "Axis Deer", "Collared Peccary", "Puma", "Mule Deer", "Red Deer", "Water Buffalo"]) },
     { id: 'par_lodge_diamond', cat: 'DLC: Parque Fernando', name: 'Diamond Collection', rank: 'gold', current: 0, goal: 8, type: 'checklist', desc: 'One Diamond from each species for the lodge.', subItems: checkSet(["Teal", "Blackbuck", "Axis", "Peccary", "Puma", "Mule", "Red Deer", "Buffalo"]) },
     { id: 'par_ave_maria', cat: 'DLC: Parque Fernando', name: 'Ave María Arc', rank: 'gold', current: 0, goal: 1, type: 'toggle', desc: 'All arcs.' },
     { id: 'par_milanesa', cat: 'DLC: Parque Fernando', name: 'Milanesa Arc', rank: 'gold', current: 0, goal: 5, type: 'checklist', desc: "Carolina Vargas.", subItems: checkSet(["Welcome", "Mystery", "Puma", "Lake", "Secret"]) },
@@ -324,7 +323,6 @@ const appState = {
     syncWithPSNData: async function() {
         if (this.psnSynced) return;
         
-        // Grab the key inside your scraper JSON corresponding to the active profile name
         const jsonUserKey = USER_DATA_MAP[this.activeHunter];
         if (!jsonUserKey) {
             console.log(`No matching JSON object configuration found for tracker name: ${this.activeHunter}. Skipping PSN Sync.`);
@@ -338,17 +336,14 @@ const appState = {
             
             const fullJsonDump = await response.json();
             
-            // Isolate the exact object user tree from your specific data scheme
             let userWrapper = fullJsonDump?.users?.[jsonUserKey];
             if (!userWrapper) {
                 console.log(`No nested user key matched inside JSON structure for profile lookups: ${jsonUserKey}`);
                 return; 
             }
 
-            // Extract all trophy tracking array collections out of your dynamic dump
             let psnTrophies = userWrapper?.trophies || [];
             
-            // Failsafe: if data is stored deeper under active hunt tree collections
             if (psnTrophies.length === 0 && userWrapper?.activeHunt?.trophies) {
                 psnTrophies = userWrapper.activeHunt.trophies;
             }
