@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>theHunter: Call of the Wild - Need Zone Companion</title>
+    <title>theHunter: Call of the Wild - Need Zone Companion (Console Optimized)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Inter Font -->
@@ -77,7 +77,7 @@
                         <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
                             COTW <span class="text-amber-400 font-light">Need Zone Database</span>
                         </h1>
-                        <p class="text-xs text-forest-400 font-mono">Precision tracking for active reserves</p>
+                        <p class="text-xs text-forest-400 font-mono">Console Companion: Match In-Game Clock</p>
                     </div>
                 </div>
                 
@@ -104,16 +104,29 @@
             </div>
             <div class="relative z-10 space-y-2">
                 <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-circle-info text-amber-400"></i> Hunter's Interactive Assistant
+                    <i class="fa-solid fa-circle-info text-amber-400"></i> PS5 Game Time Coordinator
                 </h2>
                 <p class="text-sm text-forest-200 max-w-3xl leading-relaxed">
-                    This companion parses your specialized hunting database directly from Google Sheets. Change categories, filter by map, search for targeted wildlife, and adjust the hunting clock to see which need zones are active right now!
+                    This assistant does <strong>not</strong> use your real-life clock. Simply look at your PS5 map/pause time, set the game clock below, and the database will automatically calculate which need zones are currently active on your reserve.
                 </p>
                 <div class="text-xs text-forest-300 font-mono pt-2 flex flex-wrap gap-4">
                     <span><strong class="text-amber-400">Rest</strong>: Sleeping times</span>
                     <span><strong class="text-sky-400">Drink</strong>: Watering hole windows</span>
                     <span><strong class="text-emerald-400 font-bold">Food</strong>: Foraging/eating schedules</span>
                 </div>
+            </div>
+        </div>
+
+        <!-- Dynamic Animal Index Card (Wildlife Index) -->
+        <div class="bg-forest-900/40 border border-forest-800 rounded-2xl p-4 sm:p-5 shadow-lg backdrop-blur-sm space-y-3">
+            <div class="flex items-center justify-between border-b border-forest-800/60 pb-2">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2">
+                    <i class="fa-solid fa-paw"></i> Wildlife Index (Tap to filter current reserve)
+                </h4>
+                <span id="active-animal-indicator" class="text-xs text-forest-400 font-mono italic hidden">Filter active</span>
+            </div>
+            <div id="animal-index-list" class="flex flex-wrap gap-2">
+                <div class="text-xs text-forest-400">Synchronizing database animals...</div>
             </div>
         </div>
 
@@ -207,14 +220,15 @@
                 </div>
             </div>
 
+            <!-- In-Game Clock Controls (Consoles Friendly) -->
             <div class="lg:col-span-4">
                 <div class="bg-forest-900/50 border border-forest-800 rounded-2xl p-4 sm:p-5 h-full flex flex-col justify-between shadow-lg backdrop-blur-sm space-y-4">
                     <div>
                         <div class="flex justify-between items-center mb-1">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-forest-400">Active Hunt Window</span>
+                            <span class="text-xs font-semibold uppercase tracking-wider text-forest-400">In-Game PS5 Clock</span>
                             <span id="clock-display" class="font-mono text-lg font-bold text-amber-400 bg-forest-950 px-2.5 py-0.5 rounded-lg border border-forest-800 shadow-inner">08:00</span>
                         </div>
-                        <p class="text-xs text-forest-300 mb-3">Adjust the slider below to highlight which need zones are currently active.</p>
+                        <p class="text-xs text-forest-300 mb-3">Slide to match your in-game PS5 clock.</p>
                         
                         <!-- Range slider -->
                         <div class="relative pt-1">
@@ -228,13 +242,26 @@
                                 <span>24:00</span>
                             </div>
                         </div>
+
+                        <!-- Quick presets -->
+                        <div class="mt-4">
+                            <span class="block text-[10px] font-semibold uppercase tracking-wider text-forest-400 mb-1.5">Quick Presets (COTW Shifts)</span>
+                            <div class="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-3 gap-1.5">
+                                <button onclick="setGameTime(4.0)" class="text-[10px] font-semibold py-1.5 px-2 bg-forest-950 hover:bg-forest-800 border border-forest-800 rounded-lg font-mono text-forest-200 transition-colors">04:00 AM</button>
+                                <button onclick="setGameTime(8.5)" class="text-[10px] font-semibold py-1.5 px-2 bg-forest-950 hover:bg-forest-800 border border-forest-800 rounded-lg font-mono text-forest-200 transition-colors">08:30 AM</button>
+                                <button onclick="setGameTime(12.5)" class="text-[10px] font-semibold py-1.5 px-2 bg-forest-950 hover:bg-forest-800 border border-forest-800 rounded-lg font-mono text-forest-200 transition-colors">12:30 PM</button>
+                                <button onclick="setGameTime(16.0)" class="text-[10px] font-semibold py-1.5 px-2 bg-forest-950 hover:bg-forest-800 border border-forest-800 rounded-lg font-mono text-forest-200 transition-colors">04:00 PM</button>
+                                <button onclick="setGameTime(18.5)" class="text-[10px] font-semibold py-1.5 px-2 bg-forest-950 hover:bg-forest-800 border border-forest-800 rounded-lg font-mono text-forest-200 transition-colors">06:30 PM</button>
+                                <button onclick="setGameTime(22.0)" class="text-[10px] font-semibold py-1.5 px-2 bg-forest-950 hover:bg-forest-800 border border-forest-800 rounded-lg font-mono text-forest-200 transition-colors">10:00 PM</button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Filter States Info -->
                     <div class="bg-forest-950/60 border border-forest-800 p-3 rounded-xl flex items-center justify-between">
                         <div class="flex items-center space-x-2">
                             <i class="fa-solid fa-circle text-amber-500 text-[10px] animate-pulse"></i>
-                            <span class="text-xs text-forest-300">Highlight Active Zones Only</span>
+                            <span class="text-xs text-forest-300">Filter: Active at Game Time Only</span>
                         </div>
                         <label class="relative inline-flex items-center cursor-pointer">
                             <input type="checkbox" id="filter-active-toggle" class="sr-only peer">
@@ -332,7 +359,7 @@
     </footer>
 
     <script>
-        /* NYC/NYT Timestamp: June 9, 2026, 9:20 PM EST */
+        /* NYC/NYT Timestamp: June 9, 2026, 11:22 PM EST */
 
         // Default Mock Data for zero-fail redundancy (CORS protection)
         const mockDatabaseFallback = `Animal,Need Zone,Type,Long,Latitude,Start Time,End Time,Map,Region,,,Land Mark
@@ -348,6 +375,45 @@ Merriam Elk,Drink Zone,Drink,350.4,120.5,06:00,10:00,Silver Ridge Peaks,Sunlight
 Merriam Elk,Feed Zone,Food,420.1,190.2,10:00,14:00,Silver Ridge Peaks,Sunlight Canyon,,,Sunlight Canyon Ridge
 Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prosperous Valley,,,Prosperous Mine`;
 
+        // Map Specific Color Palettes
+        const mapColors = {
+            "layton": { border: "border-emerald-700/60", bg: "bg-emerald-950/30", text: "text-emerald-400", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", headerBg: "bg-emerald-950/60 hover:bg-emerald-900/80" },
+            "hirsch": { border: "border-amber-700/60", bg: "bg-amber-950/30", text: "text-amber-400", badge: "bg-amber-500/10 text-amber-400 border-amber-500/20", headerBg: "bg-amber-950/60 hover:bg-amber-900/80" },
+            "yukon": { border: "border-sky-700/60", bg: "bg-sky-950/30", text: "text-sky-400", badge: "bg-sky-500/10 text-sky-400 border-sky-500/20", headerBg: "bg-sky-950/60 hover:bg-sky-900/80" },
+            "silver": { border: "border-indigo-700/60", bg: "bg-indigo-950/30", text: "text-indigo-400", badge: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20", headerBg: "bg-indigo-950/60 hover:bg-indigo-900/80" },
+            "cuatro": { border: "border-rose-700/60", bg: "bg-rose-950/30", text: "text-rose-400", badge: "bg-rose-500/10 text-rose-400 border-rose-500/20", headerBg: "bg-rose-950/60 hover:bg-rose-900/80" },
+            "medved": { border: "border-slate-600/60", bg: "bg-slate-900/30", text: "text-slate-300", badge: "bg-slate-500/10 text-slate-300 border-slate-500/20", headerBg: "bg-slate-900/60 hover:bg-slate-800/80" },
+            "vurhonga": { border: "border-orange-700/60", bg: "bg-orange-950/30", text: "text-orange-400", badge: "bg-orange-500/10 text-orange-400 border-orange-500/20", headerBg: "bg-orange-950/60 hover:bg-orange-900/80" },
+            "rancho": { border: "border-yellow-700/60", bg: "bg-yellow-950/30", text: "text-yellow-400", badge: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", headerBg: "bg-yellow-950/60 hover:bg-yellow-900/80" },
+            "mississippi": { border: "border-teal-700/60", bg: "bg-teal-950/30", text: "text-teal-400", badge: "bg-teal-500/10 text-teal-400 border-teal-500/20", headerBg: "bg-teal-950/60 hover:bg-teal-900/80" },
+            "revontuli": { border: "border-violet-700/60", bg: "bg-violet-950/30", text: "text-violet-400", badge: "bg-violet-500/10 text-violet-400 border-violet-500/20", headerBg: "bg-violet-950/60 hover:bg-violet-900/80" },
+            "new england": { border: "border-pink-700/60", bg: "bg-pink-950/30", text: "text-pink-400", badge: "bg-pink-500/10 text-pink-400 border-pink-500/20", headerBg: "bg-pink-950/60 hover:bg-pink-900/80" },
+            "emerald": { border: "border-lime-700/60", bg: "bg-lime-950/30", text: "text-lime-400", badge: "bg-lime-500/10 text-lime-400 border-lime-500/20", headerBg: "bg-lime-950/60 hover:bg-lime-900/80" },
+            "sundar": { border: "border-fuchsia-700/60", bg: "bg-fuchsia-950/30", text: "text-fuchsia-400", badge: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20", headerBg: "bg-fuchsia-950/60 hover:bg-fuchsia-900/80" }
+        };
+
+        function getMapColorTheme(mapName) {
+            const lower = mapName.toLowerCase();
+            for (const key in mapColors) {
+                if (lower.includes(key)) return mapColors[key];
+            }
+            // Dynamic theme hashing fallback to support any custom maps
+            const fallbacks = [
+                { border: "border-amber-700/60", bg: "bg-amber-950/30", text: "text-amber-400", badge: "bg-amber-500/10 text-amber-400 border-amber-500/20", headerBg: "bg-amber-950/60 hover:bg-amber-900/80" },
+                { border: "border-emerald-700/60", bg: "bg-emerald-950/30", text: "text-emerald-400", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", headerBg: "bg-emerald-950/60 hover:bg-emerald-900/80" },
+                { border: "border-sky-700/60", bg: "bg-sky-950/30", text: "text-sky-400", badge: "bg-sky-500/10 text-sky-400 border-sky-500/20", headerBg: "bg-sky-950/60 hover:bg-sky-900/80" },
+                { border: "border-orange-700/60", bg: "bg-orange-950/30", text: "text-orange-400", badge: "bg-orange-500/10 text-orange-400 border-orange-500/20", headerBg: "bg-orange-950/60 hover:bg-orange-900/80" },
+                { border: "border-violet-700/60", bg: "bg-violet-950/30", text: "text-violet-400", badge: "bg-violet-500/10 text-violet-400 border-violet-500/20", headerBg: "bg-violet-950/60 hover:bg-violet-900/80" },
+                { border: "border-rose-700/60", bg: "bg-rose-950/30", text: "text-rose-400", badge: "bg-rose-500/10 text-rose-400 border-rose-500/20", headerBg: "bg-rose-950/60 hover:bg-rose-900/80" }
+            ];
+            let hash = 0;
+            for (let i = 0; i < mapName.length; i++) {
+                hash = mapName.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const index = Math.abs(hash) % fallbacks.length;
+            return fallbacks[index];
+        }
+
         // Interactive States
         let databaseRawData = [];
         let parsedRecords = [];
@@ -356,6 +422,7 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
         let mapStates = {}; // Stores collapsible open/closed state: { 'MapName': true/false }
         let regionStates = {}; // Stores collapsible open/closed state: { 'MapName|RegionName': true/false }
         let landmarkStates = {}; // { 'Map|Region|Landmark': true/false }
+        let activeAnimalFilter = null; // Filter state for the animal index directory
         
         let currentMapping = {
             animal: 0,
@@ -518,10 +585,6 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
             showToast("Column mappings reset to automatic detection.");
         }
 
-        /* * MASTER DEV PROTOCOL & PRECISION INTEGRATION
-         * Added support for invisible character / Non-breaking space cleanup
-         * Expanded match patterns for Region and Landmark to handle custom spacing structures
-         */
         function buildHeaderIndices(headers) {
             let mapping = {
                 animal: -1,
@@ -619,6 +682,67 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
             return 'Other';
         }
 
+        // Filters by animal based on user tapping item inside Wildlife Index
+        window.filterByAnimal = function(animalName) {
+            activeAnimalFilter = animalName;
+            
+            const indicator = document.getElementById('active-animal-indicator');
+            if (activeAnimalFilter) {
+                indicator.innerText = `Filtering by: ${animalName}`;
+                indicator.classList.remove('hidden');
+            } else {
+                indicator.classList.add('hidden');
+            }
+
+            renderAnimalIndex();
+            renderTree();
+        }
+
+        function renderAnimalIndex() {
+            const container = document.getElementById('animal-index-list');
+            if (!container) return;
+
+            // Generate precise counts of animals in the parsed record array
+            const counts = {};
+            parsedRecords.forEach(rec => {
+                if (rec.animal) {
+                    counts[rec.animal] = (counts[rec.animal] || 0) + 1;
+                }
+            });
+
+            const uniqueAnimals = Object.keys(counts).sort();
+            if (uniqueAnimals.length === 0) {
+                container.innerHTML = `<span class="text-xs text-forest-500 italic">No wild animals found in current database. Sync to populate.</span>`;
+                return;
+            }
+
+            let html = `
+                <button onclick="filterByAnimal(null)" class="px-3 py-1.5 rounded-xl border text-xs font-semibold tracking-wide transition-all ${
+                    !activeAnimalFilter 
+                        ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 font-bold' 
+                        : 'bg-forest-950 border-forest-800 text-forest-300 hover:bg-forest-800/50'
+                }">
+                    All Species (${parsedRecords.length})
+                </button>
+            `;
+
+            uniqueAnimals.forEach(animal => {
+                const isSelected = activeAnimalFilter === animal;
+                html += `
+                    <button onclick="filterByAnimal('${escapeJSString(animal)}')" class="px-3 py-1.5 rounded-xl border text-xs font-medium transition-all flex items-center gap-1.5 ${
+                        isSelected 
+                            ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 font-extrabold' 
+                            : 'bg-forest-950 border-forest-800 text-forest-300 hover:bg-forest-800/50'
+                    }">
+                        <span>${animal}</span>
+                        <span class="px-1.5 py-0.5 rounded-md bg-forest-900 text-[10px] text-forest-400 font-mono font-bold">${counts[animal]}</span>
+                    </button>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
         function processCSVPayload(text) {
             try {
                 lastLoadedRawCSV = text;
@@ -671,7 +795,14 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
                 }
 
                 parsedRecords = output;
+                
+                // Clean stale filters if current parsed data doesn't contain animal name anymore
+                if (activeAnimalFilter && !parsedRecords.some(r => r.animal === activeAnimalFilter)) {
+                    activeAnimalFilter = null;
+                }
+
                 updateStats();
+                renderAnimalIndex();
                 renderTree();
                 document.getElementById('data-status').innerHTML = `
                     <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-emerald-400"></span>
@@ -755,6 +886,25 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
             showToast(`Copied coords: ${coordStr}`);
         }
 
+        // Console-friendly Preset Setter
+        window.setGameTime = function(val) {
+            currentSimulatedHour = val;
+            const timeSlider = document.getElementById('time-slider');
+            if (timeSlider) {
+                timeSlider.value = val;
+            }
+            const clockDisplay = document.getElementById('clock-display');
+            if (clockDisplay) {
+                const hours = Math.floor(val);
+                const minutes = Math.floor((val % 1) * 60);
+                const strHours = hours.toString().padStart(2, '0');
+                const strMinutes = minutes.toString().padStart(2, '0');
+                clockDisplay.innerText = `${strHours}:${strMinutes}`;
+            }
+            renderTree();
+            showToast(`In-game clock synced to ${clockDisplay.innerText}`);
+        }
+
         // Expand / Collapse state toggles
         window.toggleMapCollapse = function(mapName) {
             mapStates[mapName] = !mapStates[mapName];
@@ -786,6 +936,11 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
 
             // Apply global filtering first
             let filtered = parsedRecords.filter(record => {
+                // Interactive animal index tab filter
+                if (activeAnimalFilter && record.animal !== activeAnimalFilter) {
+                    return false;
+                }
+
                 // Category tabs: rest, drink, food
                 if (activeTab !== 'all' && record.category.toLowerCase() !== activeTab) {
                     return false;
@@ -837,9 +992,9 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
             }
 
             Object.keys(mapGroups).sort().forEach(mapName => {
-                // Initialize default collapsed/expanded state if not defined
+                // INITIALIZE AS COLLAPSED (CLOSED) BY DEFAULT
                 if (mapStates[mapName] === undefined) {
-                    mapStates[mapName] = true; // Open by default
+                    mapStates[mapName] = false; 
                 }
                 
                 const mapCollapsed = !mapStates[mapName];
@@ -857,23 +1012,30 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
                     });
                 });
 
+                // Grab custom map colors based on reserve name
+                const theme = getMapColorTheme(mapName);
+
                 const mapCard = document.createElement('div');
-                mapCard.className = `bg-forest-900/20 border ${mapCollapsed ? 'border-forest-800/60' : 'border-forest-700/60'} rounded-2xl overflow-hidden transition-all shadow-md`;
+                mapCard.className = `border ${theme.border} ${theme.bg} rounded-2xl overflow-hidden transition-all shadow-md`;
 
                 const escapedMapName = escapeJSString(mapName);
 
+                // Added dynamic badge counts & customizable color maps inside header templates
                 const mapHeaderHtml = `
-                    <div onclick="toggleMapCollapse('${escapedMapName}')" class="flex items-center justify-between p-4 bg-forest-900/60 hover:bg-forest-900/90 cursor-pointer transition-all border-b border-forest-800">
+                    <div onclick="toggleMapCollapse('${escapedMapName}')" class="flex items-center justify-between p-4 ${theme.headerBg} cursor-pointer transition-all border-b ${theme.border}">
                         <div class="flex items-center space-x-3">
-                            <i class="fa-solid ${mapCollapsed ? 'fa-chevron-right' : 'fa-chevron-down'} text-amber-500 w-4 transition-transform duration-200"></i>
+                            <i class="fa-solid ${mapCollapsed ? 'fa-chevron-right' : 'fa-chevron-down'} ${theme.text} w-4 transition-transform duration-200"></i>
                             <div>
                                 <h4 class="text-sm sm:text-base font-extrabold text-white tracking-wider uppercase">${mapName}</h4>
-                                <span class="text-xs text-forest-400 font-mono">${mapTotal} Active Listings</span>
+                                <span class="text-xs ${theme.text} font-mono font-bold">${mapTotal} Registered Need Zones</span>
                             </div>
                         </div>
                         <div class="flex items-center space-x-2">
                             <span class="text-[10px] sm:text-xs bg-forest-950 px-2.5 py-1 rounded-full text-forest-300 font-mono border border-forest-800">
-                                Active Now: <strong class="text-amber-400 font-bold">${mapActiveCount}</strong>
+                                Active: <strong class="text-amber-400 font-bold">${mapActiveCount}</strong>
+                            </span>
+                            <span class="text-[10px] sm:text-xs bg-forest-950 px-2.5 py-1 rounded-full ${theme.text} font-mono border ${theme.border} font-bold shadow-inner">
+                                Total: <strong class="text-white">${mapTotal}</strong>
                             </span>
                         </div>
                     </div>
@@ -888,7 +1050,7 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
                     Object.keys(regions).sort().forEach(regionName => {
                         const regionKey = `${mapName}|${regionName}`;
                         if (regionStates[regionKey] === undefined) {
-                            regionStates[regionKey] = true; // Expanded by default
+                            regionStates[regionKey] = true; // Regions inside expanded maps are shown by default
                         }
 
                         const regionCollapsed = !regionStates[regionKey];
@@ -899,14 +1061,14 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
                         Object.values(landmarks).forEach(arr => regionTotal += arr.length);
 
                         const regionDiv = document.createElement('div');
-                        regionDiv.className = "border-l-2 border-forest-800 pl-4 space-y-3";
+                        regionDiv.className = `border-l-2 ${theme.border} pl-4 space-y-3`;
 
                         const escapedRegionName = escapeJSString(regionName);
 
                         const regionHeader = `
                             <div onclick="toggleRegionCollapse('${escapedMapName}', '${escapedRegionName}')" class="flex items-center justify-between cursor-pointer group py-1">
                                 <span class="text-sm font-bold text-forest-200 hover:text-white flex items-center gap-2">
-                                    <i class="fa-solid ${regionCollapsed ? 'fa-plus' : 'fa-minus'} text-xs text-amber-500/80"></i>
+                                    <i class="fa-solid ${regionCollapsed ? 'fa-plus' : 'fa-minus'} text-xs ${theme.text}"></i>
                                     Region: ${regionName}
                                 </span>
                                 <span class="text-xs text-forest-500 font-mono">(${regionTotal} zones)</span>
@@ -922,7 +1084,7 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
                             Object.keys(landmarks).sort().forEach(landmarkName => {
                                 const landmarkKey = `${mapName}|${regionName}|${landmarkName}`;
                                 if (landmarkStates[landmarkKey] === undefined) {
-                                    landmarkStates[landmarkKey] = true; // Expanded by default
+                                    landmarkStates[landmarkKey] = true; // Landmarks are shown by default
                                 }
 
                                 const landmarkCollapsed = !landmarkStates[landmarkKey];
@@ -997,7 +1159,7 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
                                             ${isActive ? `
                                             <div class="bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-lg text-center">
                                                 <span class="text-[10px] font-bold text-amber-400 tracking-wider uppercase">
-                                                    <i class="fa-solid fa-bullseye animate-pulse mr-1"></i> Target Active Now
+                                                    <i class="fa-solid fa-bullseye animate-pulse mr-1"></i> Active at Game Time
                                                 </span>
                                             </div>
                                             ` : ''}
