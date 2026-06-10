@@ -61,7 +61,7 @@
         "isLive": false,
         "game": "theHunter: Call of the Wild",
         "gameArt": null,
-        "followers": "102",
+        "followers": "103",
         "latestFollower": "404 Page Not Found",
         "followerNames": [
           "[DecAPI - /twitch/followers/werewolf3788] 410 Gone - This API has been deprecated/removed"
@@ -509,7 +509,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/5/2024, 8:54:00 PM",
-            "earnedAge": "1 yr, 8 months, 1 week, 12 hours, 44 mins",
+            "earnedAge": "1 yr, 8 months, 1 week, 13 hours, 42 mins",
             "timestamp": 1728161640000,
             "currentValue": 0,
             "targetValue": 0
@@ -532,7 +532,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/6/2024, 2:41:50 AM",
-            "earnedAge": "1 yr, 8 months, 1 week, 6 hours, 56 mins",
+            "earnedAge": "1 yr, 8 months, 1 week, 7 hours, 54 mins",
             "timestamp": 1728182510000,
             "currentValue": 0,
             "targetValue": 0
@@ -555,7 +555,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/6/2024, 3:51:48 PM",
-            "earnedAge": "1 yr, 8 months, 6 days, 17 hours, 46 mins",
+            "earnedAge": "1 yr, 8 months, 6 days, 18 hours, 44 mins",
             "timestamp": 1728229908000,
             "currentValue": 0,
             "targetValue": 0
@@ -578,7 +578,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/12/2024, 7:19:08 AM",
-            "earnedAge": "1 yr, 8 months, 1 day, 2 hours, 19 mins",
+            "earnedAge": "1 yr, 8 months, 1 day, 3 hours, 17 mins",
             "timestamp": 1728717548000,
             "currentValue": 0,
             "targetValue": 0
@@ -877,7 +877,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/5/2024, 8:47:10 PM",
-            "earnedAge": "1 yr, 8 months, 1 week, 12 hours, 51 mins",
+            "earnedAge": "1 yr, 8 months, 1 week, 13 hours, 49 mins",
             "timestamp": 1728161230000,
             "currentValue": 0,
             "targetValue": 0
@@ -900,7 +900,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/6/2024, 2:38:02 AM",
-            "earnedAge": "1 yr, 8 months, 1 week, 7 hours",
+            "earnedAge": "1 yr, 8 months, 1 week, 7 hours, 58 mins",
             "timestamp": 1728182282000,
             "currentValue": 0,
             "targetValue": 0
@@ -923,7 +923,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/6/2024, 4:35:55 AM",
-            "earnedAge": "1 yr, 8 months, 1 week, 5 hours, 2 mins",
+            "earnedAge": "1 yr, 8 months, 1 week, 6 hours",
             "timestamp": 1728189355000,
             "currentValue": 0,
             "targetValue": 0
@@ -946,7 +946,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "6/16/2025, 12:38:58 AM",
-            "earnedAge": "11 months, 4 weeks, 1 day, 8 hours, 59 mins",
+            "earnedAge": "11 months, 4 weeks, 1 day, 9 hours, 57 mins",
             "timestamp": 1750034338000,
             "currentValue": 0,
             "targetValue": 0
@@ -1038,7 +1038,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "3/14/2025, 7:12:52 AM",
-            "earnedAge": "1 yr, 2 months, 4 weeks, 2 hours, 25 mins",
+            "earnedAge": "1 yr, 2 months, 4 weeks, 3 hours, 23 mins",
             "timestamp": 1741936372000,
             "currentValue": 0,
             "targetValue": 0
@@ -1061,7 +1061,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "6/2/2025, 2:00:34 PM",
-            "earnedAge": "1 yr, 1 week, 19 hours, 38 mins",
+            "earnedAge": "1 yr, 1 week, 20 hours, 35 mins",
             "timestamp": 1748872834000,
             "currentValue": 0,
             "targetValue": 0
@@ -1084,7 +1084,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/6/2024, 1:53:05 AM",
-            "earnedAge": "1 yr, 8 months, 1 week, 7 hours, 45 mins",
+            "earnedAge": "1 yr, 8 months, 1 week, 8 hours, 43 mins",
             "timestamp": 1728179585000,
             "currentValue": 0,
             "targetValue": 0
@@ -1107,7 +1107,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/6/2024, 6:44:17 PM",
-            "earnedAge": "1 yr, 8 months, 6 days, 14 hours, 54 mins",
+            "earnedAge": "1 yr, 8 months, 6 days, 15 hours, 51 mins",
             "timestamp": 1728240257000,
             "currentValue": 0,
             "targetValue": 0
@@ -1130,7 +1130,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/12/2024, 8:43:30 AM",
-            "earnedAge": "1 yr, 8 months, 1 day, 55 mins",
+            "earnedAge": "1 yr, 8 months, 1 day, 1 hour, 52 mins",
             "timestamp": 1728722610000,
             "currentValue": 0,
             "targetValue": 0
@@ -1153,7 +1153,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/11/2024, 2:05:42 AM",
-            "earnedAge": "1 yr, 8 months, 2 days, 7 hours, 33 mins",
+            "earnedAge": "1 yr, 8 months, 2 days, 8 hours, 30 mins",
             "timestamp": 1728612342000,
             "currentValue": 0,
             "targetValue": 0
@@ -1176,7 +1176,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/6/2024, 12:33:31 AM",
-            "earnedAge": "1 yr, 8 months, 1 week, 9 hours, 5 mins",
+            "earnedAge": "1 yr, 8 months, 1 week, 10 hours, 2 mins",
             "timestamp": 1728174811000,
             "currentValue": 0,
             "targetValue": 0
@@ -1199,7 +1199,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "5/14/2025, 10:44:32 PM",
-            "earnedAge": "1 yr, 3 weeks, 5 days, 10 hours, 54 mins",
+            "earnedAge": "1 yr, 3 weeks, 5 days, 11 hours, 51 mins",
             "timestamp": 1747262672000,
             "currentValue": 0,
             "targetValue": 0
@@ -1222,7 +1222,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "3/25/2025, 1:00:46 AM",
-            "earnedAge": "1 yr, 2 months, 2 weeks, 3 days, 8 hours, 37 mins",
+            "earnedAge": "1 yr, 2 months, 2 weeks, 3 days, 9 hours, 35 mins",
             "timestamp": 1742864446000,
             "currentValue": 0,
             "targetValue": 0
@@ -1245,7 +1245,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/6/2024, 7:25:19 PM",
-            "earnedAge": "1 yr, 8 months, 6 days, 14 hours, 13 mins",
+            "earnedAge": "1 yr, 8 months, 6 days, 15 hours, 10 mins",
             "timestamp": 1728242719000,
             "currentValue": 0,
             "targetValue": 0
@@ -1291,7 +1291,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "3/15/2025, 2:03:04 AM",
-            "earnedAge": "1 yr, 2 months, 3 weeks, 6 days, 7 hours, 35 mins",
+            "earnedAge": "1 yr, 2 months, 3 weeks, 6 days, 8 hours, 33 mins",
             "timestamp": 1742004184000,
             "currentValue": 0,
             "targetValue": 0
@@ -1337,7 +1337,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/9/2024, 2:03:23 AM",
-            "earnedAge": "1 yr, 8 months, 4 days, 7 hours, 35 mins",
+            "earnedAge": "1 yr, 8 months, 4 days, 8 hours, 32 mins",
             "timestamp": 1728439403000,
             "currentValue": 0,
             "targetValue": 0
@@ -1360,7 +1360,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/6/2024, 8:07:34 AM",
-            "earnedAge": "1 yr, 8 months, 1 week, 1 hour, 31 mins",
+            "earnedAge": "1 yr, 8 months, 1 week, 2 hours, 28 mins",
             "timestamp": 1728202054000,
             "currentValue": 0,
             "targetValue": 0
@@ -1383,7 +1383,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/10/2024, 3:28:42 AM",
-            "earnedAge": "1 yr, 8 months, 3 days, 6 hours, 10 mins",
+            "earnedAge": "1 yr, 8 months, 3 days, 7 hours, 7 mins",
             "timestamp": 1728530922000,
             "currentValue": 0,
             "targetValue": 0
@@ -1406,7 +1406,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/9/2024, 1:26:16 AM",
-            "earnedAge": "1 yr, 8 months, 4 days, 8 hours, 12 mins",
+            "earnedAge": "1 yr, 8 months, 4 days, 9 hours, 9 mins",
             "timestamp": 1728437176000,
             "currentValue": 0,
             "targetValue": 0
@@ -1429,7 +1429,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/6/2024, 6:04:11 AM",
-            "earnedAge": "1 yr, 8 months, 1 week, 3 hours, 34 mins",
+            "earnedAge": "1 yr, 8 months, 1 week, 4 hours, 32 mins",
             "timestamp": 1728194651000,
             "currentValue": 0,
             "targetValue": 0
@@ -1452,7 +1452,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/6/2024, 4:41:51 AM",
-            "earnedAge": "1 yr, 8 months, 1 week, 4 hours, 56 mins",
+            "earnedAge": "1 yr, 8 months, 1 week, 5 hours, 54 mins",
             "timestamp": 1728189711000,
             "currentValue": 0,
             "targetValue": 0
@@ -1498,7 +1498,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/6/2024, 4:06:32 AM",
-            "earnedAge": "1 yr, 8 months, 1 week, 5 hours, 32 mins",
+            "earnedAge": "1 yr, 8 months, 1 week, 6 hours, 29 mins",
             "timestamp": 1728187592000,
             "currentValue": 0,
             "targetValue": 0
@@ -1521,7 +1521,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/6/2024, 3:54:42 AM",
-            "earnedAge": "1 yr, 8 months, 1 week, 5 hours, 44 mins",
+            "earnedAge": "1 yr, 8 months, 1 week, 6 hours, 41 mins",
             "timestamp": 1728186882000,
             "currentValue": 0,
             "targetValue": 0
@@ -1544,7 +1544,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/9/2024, 2:07:47 AM",
-            "earnedAge": "1 yr, 8 months, 4 days, 7 hours, 30 mins",
+            "earnedAge": "1 yr, 8 months, 4 days, 8 hours, 28 mins",
             "timestamp": 1728439667000,
             "currentValue": 0,
             "targetValue": 0
@@ -1567,7 +1567,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "10/9/2024, 2:39:58 AM",
-            "earnedAge": "1 yr, 8 months, 4 days, 6 hours, 58 mins",
+            "earnedAge": "1 yr, 8 months, 4 days, 7 hours, 56 mins",
             "timestamp": 1728441598000,
             "currentValue": 0,
             "targetValue": 0
@@ -1590,7 +1590,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "5/15/2025, 2:36:38 AM",
-            "earnedAge": "1 yr, 3 weeks, 5 days, 7 hours, 2 mins",
+            "earnedAge": "1 yr, 3 weeks, 5 days, 7 hours, 59 mins",
             "timestamp": 1747276598000,
             "currentValue": 0,
             "targetValue": 0
@@ -2027,7 +2027,7 @@
             "groupName": "Vurhonga Savanna",
             "earned": true,
             "earnedDate": "5/5/2025, 12:43:18 AM",
-            "earnedAge": "1 yr, 1 month, 6 days, 8 hours, 55 mins",
+            "earnedAge": "1 yr, 1 month, 6 days, 9 hours, 52 mins",
             "timestamp": 1746405798000,
             "currentValue": 0,
             "targetValue": 0
@@ -2211,7 +2211,7 @@
             "groupName": "Parque Fernando",
             "earned": true,
             "earnedDate": "9/29/2025, 5:22:06 AM",
-            "earnedAge": "8 months, 2 weeks, 4 hours, 16 mins",
+            "earnedAge": "8 months, 2 weeks, 5 hours, 14 mins",
             "timestamp": 1759123326000,
             "currentValue": 0,
             "targetValue": 0
@@ -2602,7 +2602,7 @@
             "groupName": "Yukon Valley Nature Reserve",
             "earned": true,
             "earnedDate": "5/27/2025, 6:38:49 AM",
-            "earnedAge": "1 yr, 2 weeks, 2 hours, 59 mins",
+            "earnedAge": "1 yr, 2 weeks, 3 hours, 57 mins",
             "timestamp": 1748327929000,
             "currentValue": 0,
             "targetValue": 0
@@ -2901,7 +2901,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "5/15/2025, 3:55:28 AM",
-            "earnedAge": "1 yr, 3 weeks, 5 days, 5 hours, 43 mins",
+            "earnedAge": "1 yr, 3 weeks, 5 days, 6 hours, 40 mins",
             "timestamp": 1747281328000,
             "currentValue": 0,
             "targetValue": 0
@@ -2970,7 +2970,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "5/11/2025, 3:17:55 AM",
-            "earnedAge": "1 yr, 1 month, 6 hours, 20 mins",
+            "earnedAge": "1 yr, 1 month, 7 hours, 18 mins",
             "timestamp": 1746933475000,
             "currentValue": 0,
             "targetValue": 0
@@ -2993,7 +2993,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "7/11/2025, 10:07:27 AM",
-            "earnedAge": "11 months, 3 days, 23 hours, 31 mins",
+            "earnedAge": "11 months, 4 days, 28 mins",
             "timestamp": 1752228447000,
             "currentValue": 0,
             "targetValue": 0
@@ -3016,7 +3016,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "10/12/2024, 7:32:21 PM",
-            "earnedAge": "1 yr, 8 months, 14 hours, 6 mins",
+            "earnedAge": "1 yr, 8 months, 15 hours, 3 mins",
             "timestamp": 1728761541000,
             "currentValue": 0,
             "targetValue": 0
@@ -3039,7 +3039,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "10/12/2024, 7:54:48 PM",
-            "earnedAge": "1 yr, 8 months, 13 hours, 43 mins",
+            "earnedAge": "1 yr, 8 months, 14 hours, 41 mins",
             "timestamp": 1728762888000,
             "currentValue": 0,
             "targetValue": 0
@@ -3062,7 +3062,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "10/12/2024, 8:53:00 PM",
-            "earnedAge": "1 yr, 8 months, 12 hours, 45 mins",
+            "earnedAge": "1 yr, 8 months, 13 hours, 43 mins",
             "timestamp": 1728766380000,
             "currentValue": 0,
             "targetValue": 0
@@ -3085,7 +3085,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "10/12/2024, 9:25:40 PM",
-            "earnedAge": "1 yr, 8 months, 12 hours, 13 mins",
+            "earnedAge": "1 yr, 8 months, 13 hours, 10 mins",
             "timestamp": 1728768340000,
             "currentValue": 0,
             "targetValue": 0
@@ -3108,7 +3108,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "5/16/2025, 3:33:22 AM",
-            "earnedAge": "1 yr, 3 weeks, 4 days, 6 hours, 5 mins",
+            "earnedAge": "1 yr, 3 weeks, 4 days, 7 hours, 2 mins",
             "timestamp": 1747366402000,
             "currentValue": 0,
             "targetValue": 0
@@ -3123,7 +3123,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/2f3257dd-0164-408a-808b-be44ec949835.png",
           "timestamp": 1780959349000,
           "date": "6/8/2026, 10:55:49 PM",
-          "age": "1 day, 10 hours, 42 mins"
+          "age": "1 day, 11 hours, 40 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -3131,7 +3131,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/ff8629d5-5cca-44c2-b09f-2074bf121176.png",
           "timestamp": 1780959254000,
           "date": "6/8/2026, 10:54:14 PM",
-          "age": "1 day, 10 hours, 44 mins"
+          "age": "1 day, 11 hours, 41 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -3139,7 +3139,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/b38c5fde-cb03-49cb-922e-91c1b5c3da89.png",
           "timestamp": 1780959165000,
           "date": "6/8/2026, 10:52:45 PM",
-          "age": "1 day, 10 hours, 46 mins"
+          "age": "1 day, 11 hours, 43 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -3147,7 +3147,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/60e68df1-4252-4572-9423-fe265f83b6c9.png",
           "timestamp": 1780878161000,
           "date": "6/8/2026, 12:22:41 AM",
-          "age": "2 days, 9 hours, 16 mins"
+          "age": "2 days, 10 hours, 13 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -3155,7 +3155,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/f58b35f1-b7ed-4955-aef0-1694205e33c2.png",
           "timestamp": 1780876326000,
           "date": "6/7/2026, 11:52:06 PM",
-          "age": "2 days, 9 hours, 46 mins"
+          "age": "2 days, 10 hours, 44 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3163,7 +3163,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb348a13-2723-45cc-abba-50a1b68d1838.png",
           "timestamp": 1780826222000,
           "date": "6/7/2026, 9:57:02 AM",
-          "age": "2 days, 23 hours, 41 mins"
+          "age": "3 days, 39 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3171,7 +3171,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d439e89b-1afb-408d-8257-e1922809047b.png",
           "timestamp": 1780821421000,
           "date": "6/7/2026, 8:37:01 AM",
-          "age": "3 days, 1 hour, 1 min"
+          "age": "3 days, 1 hour, 59 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3179,7 +3179,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb867a5e-ac51-44d3-89a0-8e35a4f6d191.png",
           "timestamp": 1780816498000,
           "date": "6/7/2026, 7:14:58 AM",
-          "age": "3 days, 2 hours, 23 mins"
+          "age": "3 days, 3 hours, 21 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3187,7 +3187,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/af2c0033-427c-4fff-befc-59eb5ac6a0ca.png",
           "timestamp": 1780814895000,
           "date": "6/7/2026, 6:48:15 AM",
-          "age": "3 days, 2 hours, 50 mins"
+          "age": "3 days, 3 hours, 47 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3195,7 +3195,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c603cb71-3a6d-4f20-8b7c-284cd8b1a8e4.png",
           "timestamp": 1780813893000,
           "date": "6/7/2026, 6:31:33 AM",
-          "age": "3 days, 3 hours, 7 mins"
+          "age": "3 days, 4 hours, 4 mins"
         }
       ],
       "fullLibrary": [
@@ -13422,7 +13422,7 @@
           "totalItemCount": 18
         }
       },
-      "lastUpdated": "6/10/2026, 9:38:55 AM"
+      "lastUpdated": "6/10/2026, 10:36:22 AM"
     },
     "kfruti": {
       "onlineId": "KFruti88",
@@ -13447,7 +13447,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/10/2026, 9:38:55 AM",
+      "lastUpdated": "6/10/2026, 10:36:22 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -13940,7 +13940,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/6/2025, 6:31:32 PM",
-            "earnedAge": "1 yr, 2 months, 4 days, 15 hours, 7 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 16 hours, 4 mins",
             "timestamp": 1743964292000,
             "currentValue": 0,
             "targetValue": 0
@@ -13963,7 +13963,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/6/2025, 9:03:45 PM",
-            "earnedAge": "1 yr, 2 months, 4 days, 12 hours, 35 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 13 hours, 32 mins",
             "timestamp": 1743973425000,
             "currentValue": 0,
             "targetValue": 0
@@ -13986,7 +13986,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/12/2025, 8:53:20 AM",
-            "earnedAge": "1 yr, 1 month, 4 weeks, 1 day, 45 mins",
+            "earnedAge": "1 yr, 1 month, 4 weeks, 1 day, 1 hour, 43 mins",
             "timestamp": 1744448000000,
             "currentValue": 0,
             "targetValue": 0
@@ -14009,7 +14009,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/18/2025, 10:12:39 PM",
-            "earnedAge": "1 yr, 1 month, 3 weeks, 1 day, 11 hours, 26 mins",
+            "earnedAge": "1 yr, 1 month, 3 weeks, 1 day, 12 hours, 23 mins",
             "timestamp": 1745014359000,
             "currentValue": 0,
             "targetValue": 0
@@ -14308,7 +14308,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/6/2025, 9:21:14 PM",
-            "earnedAge": "1 yr, 2 months, 4 days, 12 hours, 17 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 13 hours, 15 mins",
             "timestamp": 1743974474000,
             "currentValue": 0,
             "targetValue": 0
@@ -14331,7 +14331,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/6/2025, 9:22:58 PM",
-            "earnedAge": "1 yr, 2 months, 4 days, 12 hours, 16 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 13 hours, 13 mins",
             "timestamp": 1743974578000,
             "currentValue": 0,
             "targetValue": 0
@@ -14354,7 +14354,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/7/2025, 12:22:27 AM",
-            "earnedAge": "1 yr, 2 months, 4 days, 9 hours, 16 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 10 hours, 13 mins",
             "timestamp": 1743985347000,
             "currentValue": 0,
             "targetValue": 0
@@ -14446,7 +14446,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/18/2026, 6:26:04 AM",
-            "earnedAge": "1 month, 3 weeks, 2 days, 3 hours, 12 mins",
+            "earnedAge": "1 month, 3 weeks, 2 days, 4 hours, 10 mins",
             "timestamp": 1776493564000,
             "currentValue": 0,
             "targetValue": 0
@@ -14469,7 +14469,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "7/11/2025, 8:23:03 PM",
-            "earnedAge": "11 months, 3 days, 13 hours, 15 mins",
+            "earnedAge": "11 months, 3 days, 14 hours, 13 mins",
             "timestamp": 1752265383000,
             "currentValue": 0,
             "targetValue": 0
@@ -14515,7 +14515,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/8/2025, 2:32:15 AM",
-            "earnedAge": "1 yr, 2 months, 3 days, 7 hours, 6 mins",
+            "earnedAge": "1 yr, 2 months, 3 days, 8 hours, 4 mins",
             "timestamp": 1744079535000,
             "currentValue": 0,
             "targetValue": 0
@@ -14538,7 +14538,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/13/2025, 6:55:56 PM",
-            "earnedAge": "1 yr, 1 month, 3 weeks, 6 days, 14 hours, 43 mins",
+            "earnedAge": "1 yr, 1 month, 3 weeks, 6 days, 15 hours, 40 mins",
             "timestamp": 1744570556000,
             "currentValue": 0,
             "targetValue": 0
@@ -14561,7 +14561,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "7/11/2025, 9:18:42 AM",
-            "earnedAge": "11 months, 4 days, 20 mins",
+            "earnedAge": "11 months, 4 days, 1 hour, 17 mins",
             "timestamp": 1752225522000,
             "currentValue": 0,
             "targetValue": 0
@@ -14584,7 +14584,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/16/2026, 10:47:50 AM",
-            "earnedAge": "1 month, 3 weeks, 3 days, 22 hours, 51 mins",
+            "earnedAge": "1 month, 3 weeks, 3 days, 23 hours, 48 mins",
             "timestamp": 1776336470000,
             "currentValue": 0,
             "targetValue": 0
@@ -14607,7 +14607,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/6/2025, 10:10:54 PM",
-            "earnedAge": "1 yr, 2 months, 4 days, 11 hours, 28 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 12 hours, 25 mins",
             "timestamp": 1743977454000,
             "currentValue": 0,
             "targetValue": 0
@@ -14630,7 +14630,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "7/11/2025, 6:46:59 PM",
-            "earnedAge": "11 months, 3 days, 14 hours, 51 mins",
+            "earnedAge": "11 months, 3 days, 15 hours, 49 mins",
             "timestamp": 1752259619000,
             "currentValue": 0,
             "targetValue": 0
@@ -14653,7 +14653,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/18/2025, 4:27:27 PM",
-            "earnedAge": "1 yr, 1 month, 3 weeks, 1 day, 17 hours, 11 mins",
+            "earnedAge": "1 yr, 1 month, 3 weeks, 1 day, 18 hours, 8 mins",
             "timestamp": 1744993647000,
             "currentValue": 0,
             "targetValue": 0
@@ -14676,7 +14676,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/7/2025, 12:03:17 AM",
-            "earnedAge": "1 yr, 2 months, 4 days, 9 hours, 35 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 10 hours, 33 mins",
             "timestamp": 1743984197000,
             "currentValue": 0,
             "targetValue": 0
@@ -14699,7 +14699,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "6/16/2025, 5:35:53 AM",
-            "earnedAge": "11 months, 4 weeks, 1 day, 4 hours, 3 mins",
+            "earnedAge": "11 months, 4 weeks, 1 day, 5 hours",
             "timestamp": 1750052153000,
             "currentValue": 0,
             "targetValue": 0
@@ -14722,7 +14722,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/6/2025, 10:48:11 PM",
-            "earnedAge": "1 yr, 2 months, 4 days, 10 hours, 50 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 11 hours, 48 mins",
             "timestamp": 1743979691000,
             "currentValue": 0,
             "targetValue": 0
@@ -14768,7 +14768,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/12/2025, 8:37:30 PM",
-            "earnedAge": "1 yr, 1 month, 4 weeks, 13 hours, 1 min",
+            "earnedAge": "1 yr, 1 month, 4 weeks, 13 hours, 58 mins",
             "timestamp": 1744490250000,
             "currentValue": 0,
             "targetValue": 0
@@ -14791,7 +14791,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/6/2025, 9:50:45 PM",
-            "earnedAge": "1 yr, 2 months, 4 days, 11 hours, 48 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 12 hours, 45 mins",
             "timestamp": 1743976245000,
             "currentValue": 0,
             "targetValue": 0
@@ -14814,7 +14814,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "5/4/2025, 4:54:17 AM",
-            "earnedAge": "1 yr, 1 month, 1 week, 4 hours, 44 mins",
+            "earnedAge": "1 yr, 1 month, 1 week, 5 hours, 42 mins",
             "timestamp": 1746334457000,
             "currentValue": 0,
             "targetValue": 0
@@ -14837,7 +14837,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/6/2025, 10:10:57 PM",
-            "earnedAge": "1 yr, 2 months, 4 days, 11 hours, 28 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 12 hours, 25 mins",
             "timestamp": 1743977457000,
             "currentValue": 0,
             "targetValue": 0
@@ -14860,7 +14860,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/6/2025, 10:11:10 PM",
-            "earnedAge": "1 yr, 2 months, 4 days, 11 hours, 27 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 12 hours, 25 mins",
             "timestamp": 1743977470000,
             "currentValue": 0,
             "targetValue": 0
@@ -14883,7 +14883,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/6/2025, 6:28:06 PM",
-            "earnedAge": "1 yr, 2 months, 4 days, 15 hours, 10 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 16 hours, 8 mins",
             "timestamp": 1743964086000,
             "currentValue": 0,
             "targetValue": 0
@@ -14906,7 +14906,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "6/7/2025, 7:52:07 PM",
-            "earnedAge": "1 yr, 2 days, 13 hours, 46 mins",
+            "earnedAge": "1 yr, 2 days, 14 hours, 44 mins",
             "timestamp": 1749325927000,
             "currentValue": 0,
             "targetValue": 0
@@ -14929,7 +14929,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/12/2025, 9:52:20 AM",
-            "earnedAge": "1 yr, 1 month, 4 weeks, 23 hours, 46 mins",
+            "earnedAge": "1 yr, 1 month, 4 weeks, 1 day, 44 mins",
             "timestamp": 1744451540000,
             "currentValue": 0,
             "targetValue": 0
@@ -14952,7 +14952,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/29/2025, 12:44:50 AM",
-            "earnedAge": "1 yr, 1 month, 1 week, 5 days, 8 hours, 54 mins",
+            "earnedAge": "1 yr, 1 month, 1 week, 5 days, 9 hours, 51 mins",
             "timestamp": 1745887490000,
             "currentValue": 0,
             "targetValue": 0
@@ -14975,7 +14975,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/7/2025, 12:00:09 AM",
-            "earnedAge": "1 yr, 2 months, 4 days, 9 hours, 38 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 10 hours, 36 mins",
             "timestamp": 1743984009000,
             "currentValue": 0,
             "targetValue": 0
@@ -14998,7 +14998,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "4/7/2025, 12:19:28 AM",
-            "earnedAge": "1 yr, 2 months, 4 days, 9 hours, 19 mins",
+            "earnedAge": "1 yr, 2 months, 4 days, 10 hours, 16 mins",
             "timestamp": 1743985168000,
             "currentValue": 0,
             "targetValue": 0
@@ -15021,7 +15021,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "5/24/2025, 2:35:56 AM",
-            "earnedAge": "1 yr, 2 weeks, 3 days, 7 hours, 3 mins",
+            "earnedAge": "1 yr, 2 weeks, 3 days, 8 hours",
             "timestamp": 1748054156000,
             "currentValue": 0,
             "targetValue": 0
@@ -16033,7 +16033,7 @@
             "groupName": "Yukon Valley Nature Reserve",
             "earned": true,
             "earnedDate": "4/22/2026, 11:41:58 PM",
-            "earnedAge": "1 month, 2 weeks, 4 days, 9 hours, 57 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 10 hours, 54 mins",
             "timestamp": 1776901318000,
             "currentValue": 0,
             "targetValue": 0
@@ -16401,7 +16401,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "5/11/2025, 3:51:00 AM",
-            "earnedAge": "1 yr, 1 month, 5 hours, 47 mins",
+            "earnedAge": "1 yr, 1 month, 6 hours, 45 mins",
             "timestamp": 1746935460000,
             "currentValue": 0,
             "targetValue": 0
@@ -16424,7 +16424,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "7/11/2025, 10:39:35 AM",
-            "earnedAge": "11 months, 3 days, 22 hours, 59 mins",
+            "earnedAge": "11 months, 3 days, 23 hours, 56 mins",
             "timestamp": 1752230375000,
             "currentValue": 0,
             "targetValue": 0
@@ -16447,7 +16447,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "5/6/2025, 2:15:26 AM",
-            "earnedAge": "1 yr, 1 month, 5 days, 7 hours, 23 mins",
+            "earnedAge": "1 yr, 1 month, 5 days, 8 hours, 20 mins",
             "timestamp": 1746497726000,
             "currentValue": 0,
             "targetValue": 0
@@ -16470,7 +16470,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "5/6/2025, 2:39:26 AM",
-            "earnedAge": "1 yr, 1 month, 5 days, 6 hours, 59 mins",
+            "earnedAge": "1 yr, 1 month, 5 days, 7 hours, 56 mins",
             "timestamp": 1746499166000,
             "currentValue": 0,
             "targetValue": 0
@@ -16493,7 +16493,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "5/6/2025, 4:03:41 AM",
-            "earnedAge": "1 yr, 1 month, 5 days, 5 hours, 35 mins",
+            "earnedAge": "1 yr, 1 month, 5 days, 6 hours, 32 mins",
             "timestamp": 1746504221000,
             "currentValue": 0,
             "targetValue": 0
@@ -16516,7 +16516,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "5/6/2025, 5:09:58 AM",
-            "earnedAge": "1 yr, 1 month, 5 days, 4 hours, 29 mins",
+            "earnedAge": "1 yr, 1 month, 5 days, 5 hours, 26 mins",
             "timestamp": 1746508198000,
             "currentValue": 0,
             "targetValue": 0
@@ -16539,7 +16539,7 @@
             "groupName": "Silver Ridge Peaks",
             "earned": true,
             "earnedDate": "5/6/2025, 6:06:24 AM",
-            "earnedAge": "1 yr, 1 month, 5 days, 3 hours, 32 mins",
+            "earnedAge": "1 yr, 1 month, 5 days, 4 hours, 30 mins",
             "timestamp": 1746511584000,
             "currentValue": 0,
             "targetValue": 0
@@ -16554,7 +16554,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/cb79cd2a-a989-483d-94db-69d50d5bc393.png",
           "timestamp": 1780838083000,
           "date": "6/7/2026, 1:14:43 PM",
-          "age": "2 days, 20 hours, 24 mins"
+          "age": "2 days, 21 hours, 21 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16562,7 +16562,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb348a13-2723-45cc-abba-50a1b68d1838.png",
           "timestamp": 1780826222000,
           "date": "6/7/2026, 9:57:02 AM",
-          "age": "2 days, 23 hours, 41 mins"
+          "age": "3 days, 39 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16570,7 +16570,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d439e89b-1afb-408d-8257-e1922809047b.png",
           "timestamp": 1780821421000,
           "date": "6/7/2026, 8:37:01 AM",
-          "age": "3 days, 1 hour, 1 min"
+          "age": "3 days, 1 hour, 59 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16578,7 +16578,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c603cb71-3a6d-4f20-8b7c-284cd8b1a8e4.png",
           "timestamp": 1780813893000,
           "date": "6/7/2026, 6:31:33 AM",
-          "age": "3 days, 3 hours, 7 mins"
+          "age": "3 days, 4 hours, 4 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16586,7 +16586,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/31726dcd-86f5-4e53-9357-7348e9a3d072.png",
           "timestamp": 1780806603000,
           "date": "6/7/2026, 4:30:03 AM",
-          "age": "3 days, 5 hours, 8 mins"
+          "age": "3 days, 6 hours, 6 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16594,7 +16594,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fce57d1c-e739-4be9-9d6e-f0e72a3f6834.png",
           "timestamp": 1780804632000,
           "date": "6/7/2026, 3:57:12 AM",
-          "age": "3 days, 5 hours, 41 mins"
+          "age": "3 days, 6 hours, 39 mins"
         },
         {
           "game": "Poker Club",
@@ -16602,7 +16602,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22138_00/df6cb640-b0f9-484f-b181-b3503e4de96b.png",
           "timestamp": 1780784055000,
           "date": "6/6/2026, 10:14:15 PM",
-          "age": "3 days, 11 hours, 24 mins"
+          "age": "3 days, 12 hours, 22 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -16610,7 +16610,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/3a2db3b0-6ae1-4979-91a3-c7b5e082c04d.png",
           "timestamp": 1780457903000,
           "date": "6/3/2026, 3:38:23 AM",
-          "age": "1 week, 6 hours"
+          "age": "1 week, 6 hours, 58 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -16618,7 +16618,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/9ac1527a-d70b-4bca-88e6-f5ad17e2931e.png",
           "timestamp": 1780457739000,
           "date": "6/3/2026, 3:35:39 AM",
-          "age": "1 week, 6 hours, 3 mins"
+          "age": "1 week, 7 hours"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -16626,7 +16626,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/2f7d21a1-ed16-49c5-8cba-75cdcce12154.png",
           "timestamp": 1780452983000,
           "date": "6/3/2026, 2:16:23 AM",
-          "age": "1 week, 7 hours, 22 mins"
+          "age": "1 week, 8 hours, 20 mins"
         }
       ],
       "fullLibrary": [
@@ -20353,7 +20353,7 @@
           "totalItemCount": 36
         }
       },
-      "lastUpdated": "6/10/2026, 9:39:08 AM"
+      "lastUpdated": "6/10/2026, 10:36:34 AM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -20711,7 +20711,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/15/2026, 4:32:55 AM",
-            "earnedAge": "3 months, 3 weeks, 4 days, 5 hours, 6 mins",
+            "earnedAge": "3 months, 3 weeks, 4 days, 6 hours, 3 mins",
             "timestamp": 1771129975000,
             "currentValue": 0,
             "targetValue": "100"
@@ -20735,7 +20735,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "12/26/2025, 6:41:52 AM",
-            "earnedAge": "5 months, 2 weeks, 2 days, 2 hours, 57 mins",
+            "earnedAge": "5 months, 2 weeks, 2 days, 3 hours, 54 mins",
             "timestamp": 1766731312000,
             "currentValue": 0,
             "targetValue": "100"
@@ -20759,7 +20759,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/14/2026, 6:51:11 AM",
-            "earnedAge": "3 months, 3 weeks, 5 days, 2 hours, 47 mins",
+            "earnedAge": "3 months, 3 weeks, 5 days, 3 hours, 45 mins",
             "timestamp": 1771051871000,
             "currentValue": 0,
             "targetValue": "100"
@@ -20879,7 +20879,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/12/2026, 9:29:10 PM",
-            "earnedAge": "3 months, 3 weeks, 6 days, 12 hours, 10 mins",
+            "earnedAge": "3 months, 3 weeks, 6 days, 13 hours, 7 mins",
             "timestamp": 1770931750000,
             "currentValue": 0,
             "targetValue": "100"
@@ -20927,7 +20927,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/13/2026, 4:36:23 AM",
-            "earnedAge": "3 months, 3 weeks, 6 days, 5 hours, 2 mins",
+            "earnedAge": "3 months, 3 weeks, 6 days, 6 hours",
             "timestamp": 1770957383000,
             "currentValue": 0,
             "targetValue": "100"
@@ -20951,7 +20951,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/13/2026, 8:29:58 AM",
-            "earnedAge": "3 months, 3 weeks, 6 days, 1 hour, 9 mins",
+            "earnedAge": "3 months, 3 weeks, 6 days, 2 hours, 6 mins",
             "timestamp": 1770971398000,
             "currentValue": 0,
             "targetValue": "100"
@@ -20975,7 +20975,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/15/2026, 11:34:20 AM",
-            "earnedAge": "3 months, 3 weeks, 3 days, 22 hours, 4 mins",
+            "earnedAge": "3 months, 3 weeks, 3 days, 23 hours, 2 mins",
             "timestamp": 1771155260000,
             "currentValue": 0,
             "targetValue": "100"
@@ -20999,7 +20999,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "12/26/2025, 4:40:17 AM",
-            "earnedAge": "5 months, 2 weeks, 2 days, 4 hours, 58 mins",
+            "earnedAge": "5 months, 2 weeks, 2 days, 5 hours, 56 mins",
             "timestamp": 1766724017000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21023,7 +21023,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/13/2026, 6:05:27 AM",
-            "earnedAge": "3 months, 3 weeks, 6 days, 3 hours, 33 mins",
+            "earnedAge": "3 months, 3 weeks, 6 days, 4 hours, 31 mins",
             "timestamp": 1770962727000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21047,7 +21047,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/13/2026, 8:18:57 AM",
-            "earnedAge": "3 months, 3 weeks, 6 days, 1 hour, 20 mins",
+            "earnedAge": "3 months, 3 weeks, 6 days, 2 hours, 17 mins",
             "timestamp": 1770970737000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21071,7 +21071,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/13/2026, 8:32:59 AM",
-            "earnedAge": "3 months, 3 weeks, 6 days, 1 hour, 6 mins",
+            "earnedAge": "3 months, 3 weeks, 6 days, 2 hours, 3 mins",
             "timestamp": 1770971579000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21095,7 +21095,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "3/6/2026, 6:39:31 AM",
-            "earnedAge": "3 months, 6 days, 2 hours, 59 mins",
+            "earnedAge": "3 months, 6 days, 3 hours, 57 mins",
             "timestamp": 1772779171000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21119,7 +21119,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/14/2026, 2:28:16 AM",
-            "earnedAge": "3 months, 3 weeks, 5 days, 7 hours, 10 mins",
+            "earnedAge": "3 months, 3 weeks, 5 days, 8 hours, 8 mins",
             "timestamp": 1771036096000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21143,7 +21143,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "6/7/2026, 7:03:24 PM",
-            "earnedAge": "2 days, 14 hours, 35 mins",
+            "earnedAge": "2 days, 15 hours, 33 mins",
             "timestamp": 1780859004000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21167,7 +21167,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "3/1/2026, 6:59:31 AM",
-            "earnedAge": "3 months, 1 week, 4 days, 2 hours, 39 mins",
+            "earnedAge": "3 months, 1 week, 4 days, 3 hours, 37 mins",
             "timestamp": 1772348371000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21215,7 +21215,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "3/3/2026, 6:03:31 PM",
-            "earnedAge": "3 months, 1 week, 1 day, 15 hours, 35 mins",
+            "earnedAge": "3 months, 1 week, 1 day, 16 hours, 33 mins",
             "timestamp": 1772561011000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21311,7 +21311,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "5/22/2026, 7:03:23 AM",
-            "earnedAge": "2 weeks, 5 days, 2 hours, 35 mins",
+            "earnedAge": "2 weeks, 5 days, 3 hours, 33 mins",
             "timestamp": 1779433403000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21359,7 +21359,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "2/14/2026, 4:13:10 AM",
-            "earnedAge": "3 months, 3 weeks, 5 days, 5 hours, 26 mins",
+            "earnedAge": "3 months, 3 weeks, 5 days, 6 hours, 23 mins",
             "timestamp": 1771042390000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21527,7 +21527,7 @@
             "groupName": "Farming Simulator 25",
             "earned": true,
             "earnedDate": "6/9/2026, 8:13:55 PM",
-            "earnedAge": "13 hours, 25 mins",
+            "earnedAge": "14 hours, 22 mins",
             "timestamp": 1781036035000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21782,7 +21782,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/43ab0b63-2c82-4a21-90e0-f155eb9836fc.png",
           "timestamp": 1781036035000,
           "date": "6/9/2026, 8:13:55 PM",
-          "age": "13 hours, 25 mins"
+          "age": "14 hours, 22 mins"
         },
         {
           "game": "Construction Simulator",
@@ -21790,7 +21790,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/c268c5ad-cc87-49ac-9cf6-247e2d8a90fa.png",
           "timestamp": 1780891211000,
           "date": "6/8/2026, 4:00:11 AM",
-          "age": "2 days, 5 hours, 39 mins"
+          "age": "2 days, 6 hours, 36 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -21798,7 +21798,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/6036822d-efc3-435c-98ea-08d0ed604b70.png",
           "timestamp": 1780859004000,
           "date": "6/7/2026, 7:03:24 PM",
-          "age": "2 days, 14 hours, 35 mins"
+          "age": "2 days, 15 hours, 33 mins"
         },
         {
           "game": "Construction Simulator",
@@ -21806,7 +21806,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/a83370ab-36d4-46ca-87ee-370c669ecbe9.png",
           "timestamp": 1780812529000,
           "date": "6/7/2026, 6:08:49 AM",
-          "age": "3 days, 3 hours, 30 mins"
+          "age": "3 days, 4 hours, 27 mins"
         },
         {
           "game": "Construction Simulator",
@@ -21814,7 +21814,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/2f92bbbc-9304-4821-8df7-780d56413730.png",
           "timestamp": 1780392584000,
           "date": "6/2/2026, 9:29:44 AM",
-          "age": "1 week, 1 day, 9 mins"
+          "age": "1 week, 1 day, 1 hour, 6 mins"
         },
         {
           "game": "Construction Simulator",
@@ -21822,7 +21822,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/c0a71cc9-a392-4e09-91eb-34b87578e883.png",
           "timestamp": 1780119873000,
           "date": "5/30/2026, 5:44:33 AM",
-          "age": "1 week, 4 days, 3 hours, 54 mins"
+          "age": "1 week, 4 days, 4 hours, 52 mins"
         },
         {
           "game": "Construction Simulator",
@@ -21830,7 +21830,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/633561d7-3e49-4736-9c42-1c7180aed1b9.png",
           "timestamp": 1780118332000,
           "date": "5/30/2026, 5:18:52 AM",
-          "age": "1 week, 4 days, 4 hours, 20 mins"
+          "age": "1 week, 4 days, 5 hours, 17 mins"
         },
         {
           "game": "Construction Simulator",
@@ -21838,7 +21838,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/e66c02f8-5814-4891-8bfc-d59d29ae8d2c.png",
           "timestamp": 1780115316000,
           "date": "5/30/2026, 4:28:36 AM",
-          "age": "1 week, 4 days, 5 hours, 10 mins"
+          "age": "1 week, 4 days, 6 hours, 8 mins"
         },
         {
           "game": "Construction Simulator",
@@ -21846,7 +21846,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/8f828a00-c053-43bc-8a34-77e05c9181b1.png",
           "timestamp": 1780093318000,
           "date": "5/29/2026, 10:21:58 PM",
-          "age": "1 week, 4 days, 11 hours, 17 mins"
+          "age": "1 week, 4 days, 12 hours, 14 mins"
         },
         {
           "game": "Construction Simulator",
@@ -21854,7 +21854,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/cfeb0601-6266-4dea-8c71-1a2d2d1f199c.png",
           "timestamp": 1780032377000,
           "date": "5/29/2026, 5:26:17 AM",
-          "age": "1 week, 5 days, 4 hours, 12 mins"
+          "age": "1 week, 5 days, 5 hours, 10 mins"
         }
       ],
       "fullLibrary": [
@@ -22851,7 +22851,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/10/2026, 9:39:18 AM"
+      "lastUpdated": "6/10/2026, 10:36:44 AM"
     },
     "darkterro": {
       "onlineId": "darkterro420",
@@ -22876,7 +22876,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/10/2026, 9:39:18 AM",
+      "lastUpdated": "6/10/2026, 10:36:44 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -23244,7 +23244,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:32:59 PM",
-            "earnedAge": "1 week, 6 days, 11 hours, 6 mins",
+            "earnedAge": "1 week, 6 days, 12 hours, 3 mins",
             "timestamp": 1779921179000,
             "currentValue": 0,
             "targetValue": "100"
@@ -23268,7 +23268,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:11:13 PM",
-            "earnedAge": "1 week, 6 days, 11 hours, 28 mins",
+            "earnedAge": "1 week, 6 days, 12 hours, 25 mins",
             "timestamp": 1779919873000,
             "currentValue": 0,
             "targetValue": "100"
@@ -23316,7 +23316,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:02:32 PM",
-            "earnedAge": "1 week, 6 days, 11 hours, 36 mins",
+            "earnedAge": "1 week, 6 days, 12 hours, 34 mins",
             "timestamp": 1779919352000,
             "currentValue": 0,
             "targetValue": "100"
@@ -23340,7 +23340,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:25:06 PM",
-            "earnedAge": "1 week, 6 days, 11 hours, 14 mins",
+            "earnedAge": "1 week, 6 days, 12 hours, 11 mins",
             "timestamp": 1779920706000,
             "currentValue": 0,
             "targetValue": "100"
@@ -23363,7 +23363,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:11:07 PM",
-            "earnedAge": "1 week, 6 days, 12 hours, 28 mins",
+            "earnedAge": "1 week, 6 days, 13 hours, 25 mins",
             "timestamp": 1779916267000,
             "currentValue": 0,
             "targetValue": 0
@@ -23386,7 +23386,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:06:20 PM",
-            "earnedAge": "1 week, 6 days, 12 hours, 33 mins",
+            "earnedAge": "1 week, 6 days, 13 hours, 30 mins",
             "timestamp": 1779915980000,
             "currentValue": 0,
             "targetValue": 0
@@ -23410,7 +23410,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:39:20 PM",
-            "earnedAge": "1 week, 6 days, 12 hours",
+            "earnedAge": "1 week, 6 days, 12 hours, 57 mins",
             "timestamp": 1779917960000,
             "currentValue": 0,
             "targetValue": "100"
@@ -23434,7 +23434,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:18:36 PM",
-            "earnedAge": "1 week, 6 days, 11 hours, 20 mins",
+            "earnedAge": "1 week, 6 days, 12 hours, 18 mins",
             "timestamp": 1779920316000,
             "currentValue": 0,
             "targetValue": "100"
@@ -23458,7 +23458,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:24:10 PM",
-            "earnedAge": "1 week, 6 days, 11 hours, 15 mins",
+            "earnedAge": "1 week, 6 days, 12 hours, 12 mins",
             "timestamp": 1779920650000,
             "currentValue": 0,
             "targetValue": "100"
@@ -23482,7 +23482,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:39:20 PM",
-            "earnedAge": "1 week, 6 days, 12 hours",
+            "earnedAge": "1 week, 6 days, 12 hours, 57 mins",
             "timestamp": 1779917960000,
             "currentValue": 0,
             "targetValue": "100"
@@ -23505,7 +23505,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:07:31 PM",
-            "earnedAge": "1 week, 6 days, 12 hours, 31 mins",
+            "earnedAge": "1 week, 6 days, 13 hours, 29 mins",
             "timestamp": 1779916051000,
             "currentValue": 0,
             "targetValue": 0
@@ -23528,7 +23528,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:10:44 PM",
-            "earnedAge": "1 week, 6 days, 12 hours, 28 mins",
+            "earnedAge": "1 week, 6 days, 13 hours, 26 mins",
             "timestamp": 1779916244000,
             "currentValue": 0,
             "targetValue": 0
@@ -23551,7 +23551,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:06:20 PM",
-            "earnedAge": "1 week, 6 days, 12 hours, 33 mins",
+            "earnedAge": "1 week, 6 days, 13 hours, 30 mins",
             "timestamp": 1779915980000,
             "currentValue": 0,
             "targetValue": 0
@@ -23599,7 +23599,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:40:32 PM",
-            "earnedAge": "1 week, 6 days, 10 hours, 58 mins",
+            "earnedAge": "1 week, 6 days, 11 hours, 56 mins",
             "timestamp": 1779921632000,
             "currentValue": 0,
             "targetValue": "100"
@@ -23671,7 +23671,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:11:25 PM",
-            "earnedAge": "1 week, 6 days, 11 hours, 27 mins",
+            "earnedAge": "1 week, 6 days, 12 hours, 25 mins",
             "timestamp": 1779919885000,
             "currentValue": 0,
             "targetValue": "100"
@@ -23694,7 +23694,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:25:15 PM",
-            "earnedAge": "1 week, 6 days, 12 hours, 14 mins",
+            "earnedAge": "1 week, 6 days, 13 hours, 11 mins",
             "timestamp": 1779917115000,
             "currentValue": 0,
             "targetValue": 0
@@ -23742,7 +23742,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/29/2026, 12:10:36 AM",
-            "earnedAge": "1 week, 5 days, 9 hours, 28 mins",
+            "earnedAge": "1 week, 5 days, 10 hours, 26 mins",
             "timestamp": 1780013436000,
             "currentValue": 0,
             "targetValue": "100"
@@ -23766,7 +23766,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/29/2026, 12:46:15 AM",
-            "earnedAge": "1 week, 5 days, 8 hours, 53 mins",
+            "earnedAge": "1 week, 5 days, 9 hours, 50 mins",
             "timestamp": 1780015575000,
             "currentValue": 0,
             "targetValue": "100"
@@ -23859,7 +23859,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:48:01 PM",
-            "earnedAge": "1 week, 6 days, 11 hours, 51 mins",
+            "earnedAge": "1 week, 6 days, 12 hours, 48 mins",
             "timestamp": 1779918481000,
             "currentValue": 0,
             "targetValue": 0
@@ -23882,7 +23882,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:12:31 PM",
-            "earnedAge": "1 week, 6 days, 11 hours, 26 mins",
+            "earnedAge": "1 week, 6 days, 12 hours, 24 mins",
             "timestamp": 1779919951000,
             "currentValue": 0,
             "targetValue": 0
@@ -23906,7 +23906,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "6/8/2026, 1:10:36 AM",
-            "earnedAge": "2 days, 8 hours, 28 mins",
+            "earnedAge": "2 days, 9 hours, 26 mins",
             "timestamp": 1780881036000,
             "currentValue": 0,
             "targetValue": "100"
@@ -23953,7 +23953,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:06:43 PM",
-            "earnedAge": "1 week, 6 days, 11 hours, 32 mins",
+            "earnedAge": "1 week, 6 days, 12 hours, 30 mins",
             "timestamp": 1779919603000,
             "currentValue": 0,
             "targetValue": 0
@@ -23976,7 +23976,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:40:32 PM",
-            "earnedAge": "1 week, 6 days, 10 hours, 58 mins",
+            "earnedAge": "1 week, 6 days, 11 hours, 56 mins",
             "timestamp": 1779921632000,
             "currentValue": 0,
             "targetValue": 0
@@ -23991,7 +23991,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/1c3f7af3-97bd-4d98-8eee-47bcd691e89f.png",
           "timestamp": 1780881036000,
           "date": "6/8/2026, 1:10:36 AM",
-          "age": "2 days, 8 hours, 28 mins"
+          "age": "2 days, 9 hours, 26 mins"
         },
         {
           "game": "Ghost of Tsushima",
@@ -23999,7 +23999,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22859_00/493cfcac-aefe-4bab-a356-62557a048d74.png",
           "timestamp": 1780189898000,
           "date": "5/31/2026, 1:11:38 AM",
-          "age": "1 week, 3 days, 8 hours, 27 mins"
+          "age": "1 week, 3 days, 9 hours, 25 mins"
         },
         {
           "game": "Cyberpunk 2077",
@@ -24007,7 +24007,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24695_00/9e51220d-031d-4e1d-b061-dcee0a2c22eb.png",
           "timestamp": 1780060881000,
           "date": "5/29/2026, 1:21:21 PM",
-          "age": "1 week, 4 days, 20 hours, 18 mins"
+          "age": "1 week, 4 days, 21 hours, 15 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -24015,7 +24015,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/e3c3f8b6-4021-4e1d-aedf-f4a37f001eda.png",
           "timestamp": 1780015575000,
           "date": "5/29/2026, 12:46:15 AM",
-          "age": "1 week, 5 days, 8 hours, 53 mins"
+          "age": "1 week, 5 days, 9 hours, 50 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -24023,7 +24023,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/b38c5fde-cb03-49cb-922e-91c1b5c3da89.png",
           "timestamp": 1780013436000,
           "date": "5/29/2026, 12:10:36 AM",
-          "age": "1 week, 5 days, 9 hours, 28 mins"
+          "age": "1 week, 5 days, 10 hours, 26 mins"
         },
         {
           "game": "Tom Clancy’s Ghost Recon® Wildlands",
@@ -24031,7 +24031,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/531102B911D983E0259ED0222843C3BD669510B2.PNG",
           "timestamp": 1779979478000,
           "date": "5/28/2026, 2:44:38 PM",
-          "age": "1 week, 5 days, 18 hours, 54 mins"
+          "age": "1 week, 5 days, 19 hours, 52 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -24039,7 +24039,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/6b0b573c-aeea-4057-8f0b-9cd4f49392e3.png",
           "timestamp": 1779921632000,
           "date": "5/27/2026, 10:40:32 PM",
-          "age": "1 week, 6 days, 10 hours, 58 mins"
+          "age": "1 week, 6 days, 11 hours, 56 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -24047,7 +24047,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/0f98092d-1ed3-45b6-b96f-401b020b738f.png",
           "timestamp": 1779921632000,
           "date": "5/27/2026, 10:40:32 PM",
-          "age": "1 week, 6 days, 10 hours, 58 mins"
+          "age": "1 week, 6 days, 11 hours, 56 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -24055,7 +24055,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/08aa8bfb-df5b-4347-a043-03ac3c18199d.png",
           "timestamp": 1779921179000,
           "date": "5/27/2026, 10:32:59 PM",
-          "age": "1 week, 6 days, 11 hours, 6 mins"
+          "age": "1 week, 6 days, 12 hours, 3 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -24063,7 +24063,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/d158d368-a8aa-4863-8105-885a305729d1.png",
           "timestamp": 1779920706000,
           "date": "5/27/2026, 10:25:06 PM",
-          "age": "1 week, 6 days, 11 hours, 14 mins"
+          "age": "1 week, 6 days, 12 hours, 11 mins"
         }
       ],
       "fullLibrary": [
@@ -33025,7 +33025,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/10/2026, 9:39:30 AM"
+      "lastUpdated": "6/10/2026, 10:36:56 AM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -33036,7 +33036,7 @@
       "amazonAffiliateUrl": null,
       "bio": "Official Pack Member Profile",
       "twitch": null,
-      "lastUpdated": "6/10/2026, 9:39:30 AM",
+      "lastUpdated": "6/10/2026, 10:36:56 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -33382,7 +33382,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:47:33 AM",
-            "earnedAge": "1 month, 1 week, 8 hours, 51 mins",
+            "earnedAge": "1 month, 1 week, 9 hours, 49 mins",
             "timestamp": 1777855653000,
             "currentValue": 0,
             "targetValue": 0
@@ -33405,7 +33405,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:03:28 AM",
-            "earnedAge": "1 month, 1 week, 6 hours, 36 mins",
+            "earnedAge": "1 month, 1 week, 7 hours, 33 mins",
             "timestamp": 1777863808000,
             "currentValue": 0,
             "targetValue": 0
@@ -33428,7 +33428,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:22:57 AM",
-            "earnedAge": "1 month, 1 week, 6 hours, 16 mins",
+            "earnedAge": "1 month, 1 week, 7 hours, 14 mins",
             "timestamp": 1777864977000,
             "currentValue": 0,
             "targetValue": 0
@@ -33451,7 +33451,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 12:48:53 AM",
-            "earnedAge": "1 month, 1 week, 8 hours, 50 mins",
+            "earnedAge": "1 month, 1 week, 9 hours, 48 mins",
             "timestamp": 1777855733000,
             "currentValue": 0,
             "targetValue": 0
@@ -33474,7 +33474,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:42:00 AM",
-            "earnedAge": "1 month, 5 hours, 57 mins",
+            "earnedAge": "1 month, 6 hours, 54 mins",
             "timestamp": 1778470920000,
             "currentValue": 0,
             "targetValue": 0
@@ -33497,7 +33497,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:18:57 AM",
-            "earnedAge": "1 month, 6 hours, 20 mins",
+            "earnedAge": "1 month, 7 hours, 18 mins",
             "timestamp": 1778469537000,
             "currentValue": 0,
             "targetValue": 0
@@ -33566,7 +33566,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:37:55 AM",
-            "earnedAge": "1 month, 1 week, 5 hours, 1 min",
+            "earnedAge": "1 month, 1 week, 5 hours, 59 mins",
             "timestamp": 1777869475000,
             "currentValue": 0,
             "targetValue": 0
@@ -33589,7 +33589,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 3:23:29 AM",
-            "earnedAge": "1 month, 1 week, 6 hours, 16 mins",
+            "earnedAge": "1 month, 1 week, 7 hours, 13 mins",
             "timestamp": 1777865009000,
             "currentValue": 0,
             "targetValue": 0
@@ -33635,7 +33635,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 10:49:51 PM",
-            "earnedAge": "1 month, 6 days, 10 hours, 49 mins",
+            "earnedAge": "1 month, 6 days, 11 hours, 47 mins",
             "timestamp": 1777934991000,
             "currentValue": 0,
             "targetValue": 0
@@ -33658,7 +33658,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:14:40 AM",
-            "earnedAge": "1 month, 1 week, 3 hours, 24 mins",
+            "earnedAge": "1 month, 1 week, 4 hours, 22 mins",
             "timestamp": 1777875280000,
             "currentValue": 0,
             "targetValue": 0
@@ -33681,7 +33681,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:47:31 AM",
-            "earnedAge": "1 month, 1 week, 2 hours, 52 mins",
+            "earnedAge": "1 month, 1 week, 3 hours, 49 mins",
             "timestamp": 1777877251000,
             "currentValue": 0,
             "targetValue": 0
@@ -33704,7 +33704,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 4:03:37 AM",
-            "earnedAge": "1 month, 1 week, 5 hours, 35 mins",
+            "earnedAge": "1 month, 1 week, 6 hours, 33 mins",
             "timestamp": 1777867417000,
             "currentValue": 0,
             "targetValue": 0
@@ -33727,7 +33727,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 5:22:06 AM",
-            "earnedAge": "1 month, 1 week, 4 hours, 17 mins",
+            "earnedAge": "1 month, 1 week, 5 hours, 14 mins",
             "timestamp": 1777872126000,
             "currentValue": 0,
             "targetValue": 0
@@ -33865,7 +33865,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/11/2026, 3:29:38 AM",
-            "earnedAge": "1 month, 6 hours, 9 mins",
+            "earnedAge": "1 month, 7 hours, 7 mins",
             "timestamp": 1778470178000,
             "currentValue": 0,
             "targetValue": 0
@@ -34141,7 +34141,7 @@
             "groupName": "Trash Goblin",
             "earned": true,
             "earnedDate": "5/4/2026, 6:30:33 AM",
-            "earnedAge": "1 month, 1 week, 3 hours, 8 mins",
+            "earnedAge": "1 month, 1 week, 4 hours, 6 mins",
             "timestamp": 1777876233000,
             "currentValue": 0,
             "targetValue": 0
@@ -34294,7 +34294,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/21da5d74-5c49-48d4-8d84-85b1fc955825.png",
           "timestamp": 1778470920000,
           "date": "5/11/2026, 3:42:00 AM",
-          "age": "1 month, 5 hours, 57 mins"
+          "age": "1 month, 6 hours, 54 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34302,7 +34302,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/79c313b7-af03-4096-b3d1-86090e12f841.png",
           "timestamp": 1778470178000,
           "date": "5/11/2026, 3:29:38 AM",
-          "age": "1 month, 6 hours, 9 mins"
+          "age": "1 month, 7 hours, 7 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34310,7 +34310,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/5de40386-ae1c-4294-a4d4-f2e922b8d961.png",
           "timestamp": 1778469537000,
           "date": "5/11/2026, 3:18:57 AM",
-          "age": "1 month, 6 hours, 20 mins"
+          "age": "1 month, 7 hours, 18 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34318,7 +34318,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/492e702d-d33c-48c3-a2d3-19075180c76f.png",
           "timestamp": 1777934991000,
           "date": "5/4/2026, 10:49:51 PM",
-          "age": "1 month, 6 days, 10 hours, 49 mins"
+          "age": "1 month, 6 days, 11 hours, 47 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34326,7 +34326,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/bbb648f0-902a-483d-a9a1-30c6b3f87bf4.png",
           "timestamp": 1777877251000,
           "date": "5/4/2026, 6:47:31 AM",
-          "age": "1 month, 1 week, 2 hours, 52 mins"
+          "age": "1 month, 1 week, 3 hours, 49 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34334,7 +34334,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/28baea49-5915-4b1b-89db-bf1d84bf1afd.png",
           "timestamp": 1777876233000,
           "date": "5/4/2026, 6:30:33 AM",
-          "age": "1 month, 1 week, 3 hours, 8 mins"
+          "age": "1 month, 1 week, 4 hours, 6 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34342,7 +34342,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/b2e3576d-a71a-459e-8035-ada1e3ef774b.png",
           "timestamp": 1777875280000,
           "date": "5/4/2026, 6:14:40 AM",
-          "age": "1 month, 1 week, 3 hours, 24 mins"
+          "age": "1 month, 1 week, 4 hours, 22 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34350,7 +34350,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/791a3e33-6019-4253-9bfa-5de6d1ad58a2.png",
           "timestamp": 1777872126000,
           "date": "5/4/2026, 5:22:06 AM",
-          "age": "1 month, 1 week, 4 hours, 17 mins"
+          "age": "1 month, 1 week, 5 hours, 14 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34358,7 +34358,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/468002bc-35f9-43f1-add4-c4f9e45a943c.png",
           "timestamp": 1777869475000,
           "date": "5/4/2026, 4:37:55 AM",
-          "age": "1 month, 1 week, 5 hours, 1 min"
+          "age": "1 month, 1 week, 5 hours, 59 mins"
         },
         {
           "game": "Trash Goblin",
@@ -34366,7 +34366,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/0ae703ef-cc71-4353-9f33-00190ca95e9d.png",
           "timestamp": 1777867417000,
           "date": "5/4/2026, 4:03:37 AM",
-          "age": "1 month, 1 week, 5 hours, 35 mins"
+          "age": "1 month, 1 week, 6 hours, 33 mins"
         }
       ],
       "fullLibrary": [
@@ -39737,7 +39737,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/10/2026, 9:39:42 AM"
+      "lastUpdated": "6/10/2026, 10:37:12 AM"
     },
     "mjolnir": {
       "onlineId": "Michael (Mjolnir)",
@@ -39762,7 +39762,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/10/2026, 9:39:43 AM",
+      "lastUpdated": "6/10/2026, 10:37:12 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -39789,7 +39789,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/10/2026, 9:39:43 AM",
+      "lastUpdated": "6/10/2026, 10:37:12 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -39816,7 +39816,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/10/2026, 9:39:43 AM",
+      "lastUpdated": "6/10/2026, 10:37:12 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -39843,7 +39843,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/10/2026, 9:39:44 AM",
+      "lastUpdated": "6/10/2026, 10:37:13 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -39856,7 +39856,7 @@
       "amazonAffiliateUrl": null,
       "bio": "Official Pack Member Profile",
       "twitch": null,
-      "lastUpdated": "6/10/2026, 9:39:44 AM",
+      "lastUpdated": "6/10/2026, 10:37:13 AM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     }
@@ -39888,7 +39888,7 @@
         "werewolf",
         "kfruti"
       ],
-      "lastUpdated": "6/10/2026, 9:39:44 AM"
+      "lastUpdated": "6/10/2026, 10:37:13 AM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -39916,7 +39916,7 @@
         "darkwing",
         "darkterro"
       ],
-      "lastUpdated": "6/10/2026, 9:39:44 AM"
+      "lastUpdated": "6/10/2026, 10:37:13 AM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -39943,7 +39943,7 @@
       "accounts": [
         "ray"
       ],
-      "lastUpdated": "6/10/2026, 9:39:44 AM"
+      "lastUpdated": "6/10/2026, 10:37:13 AM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -39960,7 +39960,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/10/2026, 9:39:44 AM"
+        "end": "6/10/2026, 10:37:13 AM"
       },
       "currentGame": "The Happyhills Homicide 2: Out For Blood",
       "currentGameArt": null,
@@ -39969,7 +39969,7 @@
       "accounts": [
         "phoenix"
       ],
-      "lastUpdated": "6/10/2026, 9:39:44 AM"
+      "lastUpdated": "6/10/2026, 10:37:13 AM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -39996,7 +39996,7 @@
       "accounts": [
         "marc"
       ],
-      "lastUpdated": "6/10/2026, 9:39:44 AM"
+      "lastUpdated": "6/10/2026, 10:37:13 AM"
     },
     "JCrow": {
       "displayName": "JCrow",
@@ -40013,7 +40013,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/10/2026, 9:39:44 AM"
+        "end": "6/10/2026, 10:37:13 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -40022,7 +40022,7 @@
       "accounts": [
         "jcrow"
       ],
-      "lastUpdated": "6/10/2026, 9:39:44 AM"
+      "lastUpdated": "6/10/2026, 10:37:13 AM"
     },
     "Shiv": {
       "displayName": "Shiv",
@@ -40049,7 +40049,7 @@
       "accounts": [
         "bunny"
       ],
-      "lastUpdated": "6/10/2026, 9:39:44 AM"
+      "lastUpdated": "6/10/2026, 10:37:13 AM"
     },
     "Michael": {
       "displayName": "Michael",
@@ -40066,7 +40066,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/10/2026, 9:39:44 AM"
+        "end": "6/10/2026, 10:37:13 AM"
       },
       "currentGame": "Police Simulator: Patrol Officers",
       "currentGameArt": null,
@@ -40075,7 +40075,7 @@
       "accounts": [
         "mjolnir"
       ],
-      "lastUpdated": "6/10/2026, 9:39:44 AM"
+      "lastUpdated": "6/10/2026, 10:37:13 AM"
     },
     "Queen": {
       "displayName": "Queen",
@@ -40092,7 +40092,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/10/2026, 9:39:44 AM"
+        "end": "6/10/2026, 10:37:13 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -40101,7 +40101,7 @@
       "accounts": [
         "queen"
       ],
-      "lastUpdated": "6/10/2026, 9:39:44 AM"
+      "lastUpdated": "6/10/2026, 10:37:13 AM"
     },
     "Balto": {
       "displayName": "Balto",
@@ -40118,7 +40118,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/10/2026, 9:39:44 AM"
+        "end": "6/10/2026, 10:37:13 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -40127,7 +40127,7 @@
       "accounts": [
         "balto"
       ],
-      "lastUpdated": "6/10/2026, 9:39:44 AM"
+      "lastUpdated": "6/10/2026, 10:37:13 AM"
     },
     "Memorial": {
       "displayName": "Memorial",
@@ -40144,7 +40144,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/10/2026, 9:39:44 AM"
+        "end": "6/10/2026, 10:37:13 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -40153,7 +40153,7 @@
       "accounts": [
         "oldman"
       ],
-      "lastUpdated": "6/10/2026, 9:39:44 AM"
+      "lastUpdated": "6/10/2026, 10:37:13 AM"
     }
   },
   "mutualSquadFollowers": [
@@ -40162,7 +40162,7 @@
       "sharedConnections": 2
     }
   ],
-  "lastGlobalUpdate": "6/10/2026, 9:38:40 AM",
+  "lastGlobalUpdate": "6/10/2026, 10:36:08 AM",
   "engineVersion": "13.9.2",
   "codeTimestamp": "Saturday, May 30, 2026 | 11:39 PM EDT"
 }
