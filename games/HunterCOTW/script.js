@@ -1,9 +1,9 @@
-
 /*
  * ==========================================
- * NYT TIMESTAMP: Tue, June 9, 2026, 3:54 PM EDT
- * PRECISION INTEGRATION: JS Nervous System
- * NOTES: Unstripped JS handling data sync and UI rendering.
+ * NYT TIMESTAMP: Wed, June 10, 2026, 5:45 AM EDT
+ * PRECISION INTEGRATION: Frontend JS Nervous System (script.js)
+ * NOTES: Patched PSN Identity Mapping to look directly inside the "users" object structure
+ * from psn_data.json. Fixed profile button alignment for multi-user sync. Fully unstripped.
  * ==========================================
  */
 
@@ -23,6 +23,15 @@ const firebaseConfig = {
 
 const MASTER_ID = 'cotw-master';
 const LEGACY_ID = 'cotw-trophy-display';
+
+// --- FRONTEND PROFILE TO BACKEND SCRAPER JSON MAP ---
+// Maps the exact activeHunter string used by your site buttons to the key inside users object
+const USER_DATA_MAP = {
+    'Werewolf3788': 'werewolf',
+    'Ray': 'ray',
+    'Raymystyro': 'ray',
+    'RedBirdFever': 'darkwing' // Assuming Adam's tracking profile key or update if tracking via darkwing/darkterro
+};
 
 const ICONS = {
     GAME: "https://placehold.co/44x44/1e293b/ff8800?text=GAME",
@@ -110,7 +119,7 @@ const trophyData = [
     // --- VURHONGA SAVANNA ---
     { id: 'vur_narrative_arc', cat: 'DLC: Vurhonga Savanna', name: 'Narrative Missions Arc', rank: 'silver', current: 0, goal: 16, type: 'checklist', desc: 'Grandfather Njabulo missions.', subItems: checkSet(["Missions 1-4", "Missions 5-8", "Missions 9-12", "Missions 13-16"]) },
     { id: 'vur_side_registry', cat: 'DLC: Vurhonga Savanna', name: 'Side Mission Registry', rank: 'silver', current: 0, goal: 46, type: 'numeric', desc: 'Complete all 46 side missions.' },
-    { id: 'vur_species_audit', cat: 'DLC: Vurhonga Savanna', name: 'Savanna Species Harvest', rank: 'gold', current: 0, goal: 10, type: 'checklist', desc: 'Harvest every Savanna species.', subItems: checkSet(["Eurasian Wigeon", "Scrub Hare", "Side-Striped Jackal", "Springbok", "Warthog", "Lesser Kudu", "Blue Wildebeest", "Gemsbok", "Cape Buffalo", "Lion"]) },
+    { id: 'vur_species_audit', cat: 'DLC: Vurhonga Savanna', name: 'Savanna Species Harvest', rank: 'gold', current:Current time is Wednesday, June 10, 2026 at 5:45:18 AM EDT. 0, goal: 10, type: 'checklist', desc: 'Harvest every Savanna species.', subItems: checkSet(["Eurasian Wigeon", "Scrub Hare", "Side-Striped Jackal", "Springbok", "Warthog", "Lesser Kudu", "Blue Wildebeest", "Gemsbok", "Cape Buffalo", "Lion"]) },
     { id: 'vur_arc', cat: 'DLC: Vurhonga Savanna', name: 'Vurhonga Master Arc', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: 'All arcs.' },
     { id: 'vur_warden', cat: 'DLC: Vurhonga Savanna', name: 'Warden Missions Arc', rank: 'bronze', current: 0, goal: 10, type: 'checklist', desc: 'Main arc.', subItems: checkSet(["Welcome to Vurhonga", "Mind the Traps", "Across the Savanna", "Praise the Ancestors", "The History of All Tribes", "Mucking for Science", "Mampara", "The Last Rhino", "Traffic Jam", "Observe and Report"]) },
     { id: 'vur_mboweni', cat: 'DLC: Vurhonga Savanna', name: 'Mboweni Arc', rank: 'bronze', current: 0, goal: 5, type: 'checklist', desc: "Maria Mboweni.", subItems: checkSet(["Research", "Poachers", "Buffalo", "Tracking the King", "Mboweni's Legacy"]) },
@@ -218,7 +227,7 @@ const appState = {
 
             let data = rows;
             if (data[0] && data[0][0] && data[0][0].toLowerCase().includes('name')) {
-                data.shift(); // Skip the header row
+                data.shift();
             }
 
             const navContainer = document.getElementById('dynamic-nav-links');
@@ -227,7 +236,7 @@ const appState = {
             const standalone = [];
 
             data.forEach(row => {
-                if (row.length < 3) return; // Skip invalid or empty rows
+                if (row.length < 3) return;
                 const name = row[0]?.trim();
                 const group = row[1]?.trim();
                 const url = row[2]?.trim();
@@ -235,7 +244,6 @@ const appState = {
 
                 if (!name || !url) return;
 
-                // Auto-convert Google Drive links into direct image URLs
                 if (image) {
                     const driveMatch = image.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || image.match(/id=([a-zA-Z0-9_-]+)/);
                     if (image.includes('drive.google.com') && driveMatch) {
@@ -253,7 +261,6 @@ const appState = {
                 }
             });
 
-            // Render Dropdowns First
             Object.keys(groups).forEach(groupName => {
                 let dropItems = groups[groupName].map(item => {
                     const imgTag = item.image ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
@@ -270,7 +277,6 @@ const appState = {
                 `;
             });
 
-            // Render Standalone Items After
             standalone.forEach(item => {
                 const imgTag = item.image ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
                 navHTML += `<a href="${item.url}">${imgTag}${item.name}</a>`;
@@ -287,16 +293,15 @@ const appState = {
         const saved = localStorage.getItem('cotw_master_active_id');
         if (saved) this.activeHunter = saved;
         
-        this.loadNavigation(); // Load the Google Sheets Menu
+        this.loadNavigation();
         
         try {
             const app = initializeApp(firebaseConfig, 'COTW-Master-named');
             this.auth = getAuth(app);
             this.db = getFirestore(app);
             
-            // Added direct error catching to auth to surface Anonymous Sign-in issues
             signInAnonymously(this.auth).catch(err => {
-                console.error("FIREBASE AUTH ERROR: Is Anonymous Sign-In enabled in Firebase Console?", err);
+                console.error("FIREBASE AUTH ERROR:", err);
                 document.getElementById('stat-line').innerText = `AUTH FAILED: ${err.message}`;
             });
 
@@ -305,7 +310,6 @@ const appState = {
                     this.loadHunter(this.activeHunter);
                     document.getElementById('stat-line').innerText = `SYNCED DB: ${firebaseConfig.projectId} | USER: ${user.uid}`;
                     
-                    // Trigger the automatic PSN JSON check shortly after login
                     setTimeout(() => this.syncWithPSNData(), 2500);
                 } else {
                     document.getElementById('stat-line').innerText = `AUDIT STATUS: WAITING FOR AUTHENTICATION...`;
@@ -318,68 +322,96 @@ const appState = {
     },
 
     syncWithPSNData: async function() {
-        // ONLY run PSN sync for Werewolf since it's pulling from Werewolf's GitHub
-        if (this.psnSynced || this.activeHunter !== 'Werewolf3788') return;
+        if (this.psnSynced) return;
+        
+        // Grab the key inside your scraper JSON corresponding to the active profile name
+        const jsonUserKey = USER_DATA_MAP[this.activeHunter];
+        if (!jsonUserKey) {
+            console.log(`No matching JSON object configuration found for tracker name: ${this.activeHunter}. Skipping PSN Sync.`);
+            return;
+        }
+
         try {
-            // Must use raw.githubusercontent to read actual JSON data, not the GitHub HTML webpage
             const url = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/Playstation/psn_data.json';
-            const response = await fetch(url, { cache: 'no-store' });
+            const response = await fetch(url + '?nocache=' + new Date().getTime());
+            if (!response.ok) throw new Error("JSON profile payload missing on GitHub repository.");
             
-            if (!response.ok) throw new Error("JSON not populated yet");
+            const fullJsonDump = await response.json();
             
-            const data = await response.json();
+            // Isolate the exact object user tree from your specific data scheme
+            let userWrapper = fullJsonDump?.users?.[jsonUserKey];
+            if (!userWrapper) {
+                console.log(`No nested user key matched inside JSON structure for profile lookups: ${jsonUserKey}`);
+                return; 
+            }
+
+            // Extract all trophy tracking array collections out of your dynamic dump
+            let psnTrophies = userWrapper?.trophies || [];
             
-            // Flexible parsing just in case the JSON structure varies
-            let psnTrophies = Array.isArray(data) ? data : (data.trophies || data.data || []);
+            // Failsafe: if data is stored deeper under active hunt tree collections
+            if (psnTrophies.length === 0 && userWrapper?.activeHunt?.trophies) {
+                psnTrophies = userWrapper.activeHunt.trophies;
+            }
+
             let updated = false;
 
             this.hunterData.forEach(t => {
-                const match = psnTrophies.find(p => p.name && p.name.toLowerCase() === t.name.toLowerCase());
+                const match = psnTrophies.find(p => p.name && p.name.toLowerCase().trim() === t.name.toLowerCase().trim());
+                
                 if (match) {
-                    // 1. Map the custom image if it exists in the JSON
                     const imgUrl = match.iconUrl || match.icon || match.image;
                     if (imgUrl && t.psnImage !== imgUrl) {
                         t.psnImage = imgUrl;
                         updated = true;
                     }
                     
-                    // 2. Auto-mark as complete if PSN says it's earned
-                    const isEarned = match.earned === true || match.unlocked === true || match.achieved === true;
-                    if (isEarned && t.current < t.goal && t.type !== 'checklist') {
-                        t.current = t.goal;
-                        updated = true;
+                    const isEarned = match.earned === true || match.unlocked === true || match.achieved === true || match.progress >= 100;
+                    
+                    if (isEarned) {
+                        if (t.type === 'checklist') {
+                            const allDone = t.subItems.every(s => s.done);
+                            if (!allDone) {
+                                t.subItems.forEach(s => s.done = true);
+                                t.current = t.goal;
+                                updated = true;
+                            }
+                        } else {
+                            if (t.current < t.goal) {
+                                t.current = t.goal;
+                                updated = true;
+                            }
+                        }
                     }
                 }
             });
 
             if (updated) {
-                this.sync(); // Instantly save new images and auto-completions to Firebase
+                this.sync(); 
             }
+            
             this.psnSynced = true;
-            document.getElementById('stat-line').innerText += " | PSN AUTO-SYNC ACTIVE";
+            document.getElementById('stat-line').innerText = document.getElementById('stat-line').innerText.replace(' | PSN AUTO-SYNC ACTIVE', '') + " | PSN AUTO-SYNC ACTIVE";
+            
         } catch (err) {
-            console.log("PSN Auto-Sync pending: waiting for JSON file to be generated on GitHub.");
+            console.log("PSN Auto-Sync processing delay:", err);
         }
     },
 
     loadHunter: function(name) {
         if (!this.auth.currentUser) return;
 
-        // FIX: Wipe the slate clean before loading a new profile
         this.hunterData = JSON.parse(JSON.stringify(trophyData));
         this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
-        this.dataLoaded = false; // Safety lock to prevent accidental overwrites during load
+        this.dataLoaded = false;
 
         this.activeHunter = name;
         localStorage.setItem('cotw_master_active_id', name);
         document.getElementById('hunter-name').innerText = name.toUpperCase();
-        document.getElementById('master-body').className = `theme-${name === 'Werewolf3788' ? 'werewolf' : name === 'Raymystyro' ? 'ray' : 'Adam'}`;
+        document.getElementById('master-body').className = `theme-${name === 'Werewolf3788' ? 'werewolf' : name === 'Ray' || name === 'Raymystyro' ? 'ray' : 'Adam'}`;
         
-        // Clear screen immediately
         this.render();
         this.updateRankUI();
 
-        // Disconnect from the previous user's database stream
         if (this.masterUnsub) this.masterUnsub();
         if (this.legacyUnsub) this.legacyUnsub();
 
@@ -389,7 +421,6 @@ const appState = {
                 const data = snap.data();
                 let incoming = data.trophies || [];
                 
-                // Failsafe: if data was saved as a direct array or object mapping in the past
                 if (Array.isArray(data)) incoming = data;
                 else if (Object.keys(data).length > 0 && !data.trophies) {
                     incoming = Object.values(data).filter(x => x && x.id);
@@ -401,15 +432,13 @@ const appState = {
                         if (dt.type === 'checklist' && found.subItems) {
                             dt.subItems = dt.subItems.map((si, i) => {
                                 const dbMatch = found.subItems.find(x => x.name === si.name) || found.subItems[i];
-                                // UNIVERSAL TRANSLATOR: Accepts true, "true", or completed flags
                                 const isDone = dbMatch?.done === true || dbMatch?.done === "true" || dbMatch?.completed === true;
                                 return {...si, done: isDone};
                             });
                             dt.current = dt.subItems.filter(s => s.done).length;
                         } else {
-                            // UNIVERSAL TRANSLATOR: Accepts booleans, strings, or strict numbers
                             if (found.done === true || found.completed === true) {
-                                dt.current = dt.goal; // Force it to max if it was saved as a boolean 'true'
+                                dt.current = dt.goal;
                             } else {
                                 dt.current = Number(found.current) || 0; 
                             }
@@ -417,13 +446,17 @@ const appState = {
                     }
                     return dt;
                 });
-                this.dataLoaded = true; // Unlock saving
+                
+                this.dataLoaded = true;
                 this.render();
+                
+                if(!this.psnSynced) setTimeout(() => this.syncWithPSNData(), 1000);
+                
             } else {
-                this.dataLoaded = true; // New profile, unlock saving
+                this.dataLoaded = true;
             }
         }, (error) => {
-            console.error("Master Sync Error: ", error);
+            console.error("Master Document Sync Error: ", error);
         });
 
         const legacyRef = doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', name);
@@ -433,7 +466,7 @@ const appState = {
                 this.updateRankUI(); 
             }
         }, (error) => {
-            console.error("Legacy Sync Error: ", error);
+            console.error("Legacy Document Sync Error: ", error);
         });
     },
 
@@ -526,12 +559,16 @@ const appState = {
     updateRankUI: function() { Object.keys(this.animalRankData).forEach(k => { const el = document.getElementById(`rank-val-${k}`); if (el) el.innerText = this.animalRankData[k]; }); },
     toggleSection: function(id) { const cur = this.collapsedSections[id] !== false; this.collapsedSections[id] = !cur; this.render(); },
     toggleDrop: (id) => document.getElementById(`drop-${id}`).classList.toggle('show'),
-    switchHunter: function(name) { this.loadHunter(name); },
+    
+    switchHunter: function(name) { 
+        this.psnSynced = false; 
+        this.loadHunter(name); 
+    },
+    
     scrollToCategory: function(id) { if(!id) return; this.collapsedSections[id] = false; this.render(); setTimeout(() => document.getElementById(id).scrollIntoView({ behavior: 'smooth' }), 100); },
     
     sync: async function() { 
         this.render(); 
-        // SAFETY LOCK: Block saves if data hasn't finished loading from Firebase yet
         if (!this.db || !this.auth.currentUser || !this.dataLoaded) {
             console.warn("Tracker Save Blocked: Waiting for data load or authentication.");
             return;
