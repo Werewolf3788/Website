@@ -367,7 +367,8 @@
     <script>
         /* =========================================================================
          * PRECISION INTEGRATION: RESTORING UTILITIES & DYNAMIC NAVBAR EXTENSION
-         * NYT Timestamp: Tuesday, June 9, 2026, 11:58 PM EST
+         * NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE
+         * NYT Timestamp: Wednesday, June 10, 2026, 12:30 AM EST
          * Kevin's personal portfolio / reserve tracking system.
          * ========================================================================= */
 
@@ -829,13 +830,14 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
                 return;
             }
 
+            // PRECISION INTEGRATION: "All Species" now correctly calculates uniqueAnimals.length (e.g., 11) instead of parsedRecords.length (e.g., 40)
             let html = `
                 <button onclick="filterByAnimal(null)" class="px-3 py-1.5 rounded-xl border text-xs font-semibold tracking-wide transition-all ${
                     !activeAnimalFilter 
                         ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 font-bold' 
                         : 'bg-forest-950 border-forest-800 text-forest-300 hover:bg-forest-800/50'
                 }">
-                    All Species (${parsedRecords.length})
+                    All Species (${uniqueAnimals.length})
                 </button>
             `;
 
