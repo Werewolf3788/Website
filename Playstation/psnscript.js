@@ -1,15 +1,12 @@
 /*
  * ==========================================
- * NYT TIMESTAMP: Wed, June 10, 2026, 3:39 AM EDT
- * PRECISION INTEGRATION: Backend Node Sync Engine
- * NOTES: Rebuilt Firebase modules into local Node requests to stop the GitHub Actions crash.
- * Maintained all protocol configurations, tracking notes, and full registries. Unstripped.
+ * NYT TIMESTAMP: Wed, June 10, 2026, 3:45 AM EDT
+ * PRECISION INTEGRATION: Backend Node Sync Engine (psnscript.js)
+ * NOTES: Completely removed incorrect frontend Firebase modules from this server script.
+ * Maintained all squad maps, tracking configurations, and helper functions intact. Unstripped.
  * ==========================================
  */
 
-const { initializeApp } = require('firebase/app');
-const { getAuth, signInAnonymously } = require('firebase/auth');
-const { getFirestore, doc, setDoc } = require('firebase/firestore');
 const psnApi = require("psn-api");
 const {
     exchangeNpssoForCode,
