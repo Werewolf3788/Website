@@ -4,7 +4,8 @@
  * PRECISION INTEGRATION: JS Nervous System
  * NOTES: Rebuilt `syncWithPSNData` with a PSN Identity Map to sync both Werewolf3788 and OneLIVIDMAN. 
  * Safely merges PSN completions without overwriting manual Firebase progress. Fully unstripped.
- * ==========================================const psnApi = require("psn-api");
+ * ==========================================
+ */
 const {
     exchangeNpssoForCode,
     exchangeCodeForAccessToken,
