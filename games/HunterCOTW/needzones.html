@@ -66,6 +66,7 @@
 </head>
 <body class="font-sans antialiased min-h-screen flex flex-col selection:bg-forest-500 selection:text-white">
 
+    <!-- Sticky Header Block -->
     <header class="border-b border-forest-800 bg-forest-950 sticky top-0 z-50 shadow-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -91,6 +92,11 @@
                         <i class="fa-solid fa-rotate"></i>
                     </button>
                 </div>
+            </div>
+
+            <!-- Dynamic Navigation Bar Container -->
+            <div id="dynamic-navbar-container" class="border-t border-forest-900 mt-3 pt-3">
+                <div class="text-xs text-forest-500 animate-pulse font-mono">Syncing system navigation...</div>
             </div>
         </div>
     </header>
@@ -186,7 +192,7 @@
                             </div>
                         </div>
 
-                        <!-- CSV Source URL (Expandable / Informative) -->
+                        <!-- CSV Source URL -->
                         <div>
                             <label class="block text-xs font-semibold uppercase tracking-wider text-forest-400 mb-1.5">Database Link</label>
                             <div class="flex rounded-xl overflow-hidden border border-forest-700">
@@ -359,89 +365,16 @@
     </footer>
 
     <script>
-        /* NYC/NYT Timestamp: June 9, 2026, 11:22 PM EST */
+        /* =========================================================================
+         * PRECISION INTEGRATION: RESTORING UTILITIES & DYNAMIC NAVBAR EXTENSION
+         * NYT Timestamp: Tuesday, June 9, 2026, 11:58 PM EST
+         * Kevin's personal portfolio / reserve tracking system.
+         * ========================================================================= */
 
-        // Default Mock Data for zero-fail redundancy (CORS protection)
-        const mockDatabaseFallback = `Animal,Need Zone,Type,Long,Latitude,Start Time,End Time,Map,Region,,,Land Mark
-Whitetail Deer,Drink Zone,Drink,-1052.2,4203.1,08:30,12:30,Layton Lake,Calburn,,,Calburn River Crossing
-Whitetail Deer,Rest Zone,Rest,-1120.5,4100.2,12:30,16:30,Layton Lake,Calburn,,,Calburn River Crossing
-Elk,Feed Zone,Food,-850.0,3200.0,05:00,09:00,Layton Lake,Willipeg,,,Willipeg Caves Area
-Moose,Drink Zone,Drink,-500.2,2100.5,09:00,13:00,Layton Lake,Cheelah,,,Cheelah Lake Basin
-Black Bear,Rest Zone,Rest,-300.5,1200.9,19:00,23:00,Layton Lake,Cheelah,,,Cheelah Western Cabin
-Red Deer,Drink Zone,Drink,1200.5,4500.2,06:00,10:00,Hirschfelden,Rotwald,,,Rotwald Lake Shore
-Red Deer,Feed Zone,Food,1150.0,4600.0,10:00,14:00,Hirschfelden,Rotwald,,,Rotwald Crop Fields
-Wild Boar,Rest Zone,Rest,800.1,3100.2,14:00,18:00,Hirschfelden,Bohndorf,,,Bohndorf Woods
-Merriam Elk,Drink Zone,Drink,350.4,120.5,06:00,10:00,Silver Ridge Peaks,Sunlight Canyon,,,Sunlight Canyon Lake
-Merriam Elk,Feed Zone,Food,420.1,190.2,10:00,14:00,Silver Ridge Peaks,Sunlight Canyon,,,Sunlight Canyon Ridge
-Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prosperous Valley,,,Prosperous Mine`;
-
-        // Map Specific Color Palettes
-        const mapColors = {
-            "layton": { border: "border-emerald-700/60", bg: "bg-emerald-950/30", text: "text-emerald-400", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", headerBg: "bg-emerald-950/60 hover:bg-emerald-900/80" },
-            "hirsch": { border: "border-amber-700/60", bg: "bg-amber-950/30", text: "text-amber-400", badge: "bg-amber-500/10 text-amber-400 border-amber-500/20", headerBg: "bg-amber-950/60 hover:bg-amber-900/80" },
-            "yukon": { border: "border-sky-700/60", bg: "bg-sky-950/30", text: "text-sky-400", badge: "bg-sky-500/10 text-sky-400 border-sky-500/20", headerBg: "bg-sky-950/60 hover:bg-sky-900/80" },
-            "silver": { border: "border-indigo-700/60", bg: "bg-indigo-950/30", text: "text-indigo-400", badge: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20", headerBg: "bg-indigo-950/60 hover:bg-indigo-900/80" },
-            "cuatro": { border: "border-rose-700/60", bg: "bg-rose-950/30", text: "text-rose-400", badge: "bg-rose-500/10 text-rose-400 border-rose-500/20", headerBg: "bg-rose-950/60 hover:bg-rose-900/80" },
-            "medved": { border: "border-slate-600/60", bg: "bg-slate-900/30", text: "text-slate-300", badge: "bg-slate-500/10 text-slate-300 border-slate-500/20", headerBg: "bg-slate-900/60 hover:bg-slate-800/80" },
-            "vurhonga": { border: "border-orange-700/60", bg: "bg-orange-950/30", text: "text-orange-400", badge: "bg-orange-500/10 text-orange-400 border-orange-500/20", headerBg: "bg-orange-950/60 hover:bg-orange-900/80" },
-            "rancho": { border: "border-yellow-700/60", bg: "bg-yellow-950/30", text: "text-yellow-400", badge: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", headerBg: "bg-yellow-950/60 hover:bg-yellow-900/80" },
-            "mississippi": { border: "border-teal-700/60", bg: "bg-teal-950/30", text: "text-teal-400", badge: "bg-teal-500/10 text-teal-400 border-teal-500/20", headerBg: "bg-teal-950/60 hover:bg-teal-900/80" },
-            "revontuli": { border: "border-violet-700/60", bg: "bg-violet-950/30", text: "text-violet-400", badge: "bg-violet-500/10 text-violet-400 border-violet-500/20", headerBg: "bg-violet-950/60 hover:bg-violet-900/80" },
-            "new england": { border: "border-pink-700/60", bg: "bg-pink-950/30", text: "text-pink-400", badge: "bg-pink-500/10 text-pink-400 border-pink-500/20", headerBg: "bg-pink-950/60 hover:bg-pink-900/80" },
-            "emerald": { border: "border-lime-700/60", bg: "bg-lime-950/30", text: "text-lime-400", badge: "bg-lime-500/10 text-lime-400 border-lime-500/20", headerBg: "bg-lime-950/60 hover:bg-lime-900/80" },
-            "sundar": { border: "border-fuchsia-700/60", bg: "bg-fuchsia-950/30", text: "text-fuchsia-400", badge: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20", headerBg: "bg-fuchsia-950/60 hover:bg-fuchsia-900/80" }
-        };
-
-        function getMapColorTheme(mapName) {
-            const lower = mapName.toLowerCase();
-            for (const key in mapColors) {
-                if (lower.includes(key)) return mapColors[key];
-            }
-            // Dynamic theme hashing fallback to support any custom maps
-            const fallbacks = [
-                { border: "border-amber-700/60", bg: "bg-amber-950/30", text: "text-amber-400", badge: "bg-amber-500/10 text-amber-400 border-amber-500/20", headerBg: "bg-amber-950/60 hover:bg-amber-900/80" },
-                { border: "border-emerald-700/60", bg: "bg-emerald-950/30", text: "text-emerald-400", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", headerBg: "bg-emerald-950/60 hover:bg-emerald-900/80" },
-                { border: "border-sky-700/60", bg: "bg-sky-950/30", text: "text-sky-400", badge: "bg-sky-500/10 text-sky-400 border-sky-500/20", headerBg: "bg-sky-950/60 hover:bg-sky-900/80" },
-                { border: "border-orange-700/60", bg: "bg-orange-950/30", text: "text-orange-400", badge: "bg-orange-500/10 text-orange-400 border-orange-500/20", headerBg: "bg-orange-950/60 hover:bg-orange-900/80" },
-                { border: "border-violet-700/60", bg: "bg-violet-950/30", text: "text-violet-400", badge: "bg-violet-500/10 text-violet-400 border-violet-500/20", headerBg: "bg-violet-950/60 hover:bg-violet-900/80" },
-                { border: "border-rose-700/60", bg: "bg-rose-950/30", text: "text-rose-400", badge: "bg-rose-500/10 text-rose-400 border-rose-500/20", headerBg: "bg-rose-950/60 hover:bg-rose-900/80" }
-            ];
-            let hash = 0;
-            for (let i = 0; i < mapName.length; i++) {
-                hash = mapName.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            const index = Math.abs(hash) % fallbacks.length;
-            return fallbacks[index];
-        }
-
-        // Interactive States
-        let databaseRawData = [];
-        let parsedRecords = [];
-        let activeTab = 'all'; // 'all', 'rest', 'drink', 'food'
-        let currentSimulatedHour = 8.00;
-        let mapStates = {}; // Stores collapsible open/closed state: { 'MapName': true/false }
-        let regionStates = {}; // Stores collapsible open/closed state: { 'MapName|RegionName': true/false }
-        let landmarkStates = {}; // { 'Map|Region|Landmark': true/false }
-        let activeAnimalFilter = null; // Filter state for the animal index directory
-        
-        let currentMapping = {
-            animal: 0,
-            needZone: 1,
-            type: 1,
-            long: 2,
-            lat: 3,
-            start: 4,
-            end: 5,
-            map: 6,
-            region: 7,
-            landmark: 8
-        };
-        let hasManualOverride = false;
-        let lastLoadedRawCSV = "";
-        let isDiagnosticOpen = false;
-
+        // Essential Core Utility: toast-style notifications
         function showToast(message, type = 'success') {
             const container = document.getElementById('toast-container');
+            if (!container) return;
             const toast = document.createElement('div');
             toast.className = `flex items-center space-x-3 bg-forest-900 border ${type === 'success' ? 'border-amber-500/50 text-white' : 'border-red-500/50 text-red-200'} px-4 py-3 rounded-xl shadow-2xl pointer-events-auto animate-bounce transition-all duration-300`;
             
@@ -458,6 +391,7 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
             }, 3000);
         }
 
+        // Essential Core Utility: standard CSV parser
         function parseCSVLine(text) {
             let lines = [];
             let row = [""];
@@ -494,6 +428,7 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
             return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
         }
 
+        // Diagnostic Mapping Controls
         window.toggleDiagnosticPanel = function() {
             isDiagnosticOpen = !isDiagnosticOpen;
             const content = document.getElementById('diagnostic-content');
@@ -585,6 +520,342 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
             showToast("Column mappings reset to automatic detection.");
         }
 
+        const navCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
+
+        function loadNavigationBar() {
+            fetch(navCsvUrl)
+                .then(res => {
+                    if (!res.ok) throw new Error("Nav CSV fetch error");
+                    return res.text();
+                })
+                .then(text => {
+                    const rows = parseCSVLine(text);
+                    if (rows.length < 2) return;
+
+                    const navItems = [];
+                    for (let i = 1; i < rows.length; i++) {
+                        const row = rows[i];
+                        if (row.length < 1 || !row[0]) continue;
+
+                        navItems.push({
+                            name: row[0].trim(),
+                            folder: row[1] ? row[1].trim() : "",
+                            url: row[2] ? row[2].trim() : "#",
+                            image: row[3] ? row[3].trim() : ""
+                        });
+                    }
+                    buildNavbarUI(navItems);
+                })
+                .catch(err => {
+                    console.warn("Failed to dynamically resolve custom navigation links from sheets. Falling back.", err);
+                    document.getElementById('dynamic-navbar-container').innerHTML = `
+                        <div class="text-xs text-forest-500 italic">Navigation sheets offline. Sync reserve data below.</div>
+                    `;
+                });
+        }
+
+        function buildNavbarUI(items) {
+            const container = document.getElementById('dynamic-navbar-container');
+            if (!container) return;
+
+            const structure = [];
+            const folderMap = {};
+
+            items.forEach(item => {
+                if (!item.folder) {
+                    structure.push({
+                        type: 'single',
+                        name: item.name,
+                        url: item.url,
+                        image: item.image
+                    });
+                } else {
+                    if (!folderMap[item.folder]) {
+                        folderMap[item.folder] = {
+                            type: 'folder',
+                            name: item.folder,
+                            items: []
+                        };
+                        structure.push(folderMap[item.folder]);
+                    }
+                    folderMap[item.folder].items.push({
+                        name: item.name,
+                        url: item.url,
+                        image: item.image
+                    });
+                }
+            });
+
+            let html = `<nav class="flex flex-wrap items-center gap-2 text-sm justify-start">`;
+
+            structure.forEach((node, idx) => {
+                if (node.type === 'single') {
+                    const imgHtml = node.image 
+                        ? `<img src="${node.image}" class="w-4 h-4 rounded object-cover inline-block mr-1.5" onerror="this.src='https://img.icons8.com/ios-glyphs/30/e1ede6/link.png'">` 
+                        : `<i class="fa-solid fa-link text-forest-400 mr-1.5 text-xs"></i>`;
+
+                    html += `
+                        <a href="${node.url}" target="main-content-window" class="flex items-center px-2.5 py-1.5 rounded-lg bg-forest-900/60 hover:bg-forest-800 text-forest-200 hover:text-white border border-forest-800 transition-all font-medium text-xs">
+                            ${imgHtml}
+                            <span>${node.name}</span>
+                        </a>
+                    `;
+                } else {
+                    const folderId = `nav-folder-${idx}`;
+                    let dropdownItemsHtml = '';
+                    
+                    node.items.forEach(subItem => {
+                        const subImgHtml = subItem.image 
+                            ? `<img src="${subItem.image}" class="w-4 h-4 rounded object-cover inline-block mr-2" onerror="this.src='https://img.icons8.com/ios-glyphs/30/e1ede6/link.png'">` 
+                            : `<i class="fa-solid fa-arrow-right-to-bracket text-forest-500 mr-2 text-[10px]"></i>`;
+
+                        dropdownItemsHtml += `
+                            <a href="${subItem.url}" target="main-content-window" class="flex items-center px-4 py-2 text-xs text-forest-200 hover:text-white hover:bg-forest-800/80 transition-all border-b border-forest-900/50 last:border-0">
+                                ${subImgHtml}
+                                <span class="truncate">${subItem.name}</span>
+                            </a>
+                        `;
+                    });
+
+                    html += `
+                        <div class="relative group">
+                            <button class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-forest-900/60 hover:bg-forest-800 text-forest-200 hover:text-white border border-forest-800 transition-all font-semibold text-xs">
+                                <i class="fa-solid fa-folder text-amber-500 mr-1.5 text-xs"></i>
+                                <span>${node.name}</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-forest-400 ml-1"></i>
+                            </button>
+                            <!-- Dropdown menu on hover -->
+                            <div class="absolute left-0 mt-1 w-48 bg-forest-950 border border-forest-800 rounded-xl shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
+                                ${dropdownItemsHtml}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            html += `</nav>`;
+            container.innerHTML = html;
+        }
+
+        // Default Mock Data for zero-fail redundancy (CORS protection)
+        const mockDatabaseFallback = `Animal,Need Zone,Type,Long,Latitude,Start Time,End Time,Map,Region,,,Land Mark
+Whitetail Deer,Drink Zone,Drink,-1052.2,4203.1,08:30,12:30,Layton Lake,Calburn,,,Calburn River Crossing
+Whitetail Deer,Rest Zone,Rest,-1120.5,4100.2,12:30,16:30,Layton Lake,Calburn,,,Calburn River Crossing
+Elk,Feed Zone,Food,-850.0,3200.0,05:00,09:00,Layton Lake,Willipeg,,,Willipeg Caves Area
+Moose,Drink Zone,Drink,-500.2,2100.5,09:00,13:00,Layton Lake,Cheelah,,,Cheelah Lake Basin
+Black Bear,Rest Zone,Rest,-300.5,1200.9,19:00,23:00,Layton Lake,Cheelah,,,Cheelah Western Cabin
+Red Deer,Drink Zone,Drink,1200.5,4500.2,06:00,10:00,Hirschfelden,Rotwald,,,Rotwald Lake Shore
+Red Deer,Feed Zone,Food,1150.0,4600.0,10:00,14:00,Hirschfelden,Rotwald,,,Rotwald Crop Fields
+Wild Boar,Rest Zone,Rest,800.1,3100.2,14:00,18:00,Hirschfelden,Bohndorf,,,Bohndorf Woods
+Merriam Elk,Drink Zone,Drink,350.4,120.5,06:00,10:00,Silver Ridge Peaks,Sunlight Canyon,,,Sunlight Canyon Lake
+Merriam Elk,Feed Zone,Food,420.1,190.2,10:00,14:00,Silver Ridge Peaks,Sunlight Canyon,,,Sunlight Canyon Ridge
+Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prosperous Valley,,,Prosperous Mine`;
+
+        // Map Specific Color Palettes
+        const mapColors = {
+            "layton": { border: "border-emerald-700/60", bg: "bg-emerald-950/30", text: "text-emerald-400", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", headerBg: "bg-emerald-950/60 hover:bg-emerald-900/80" },
+            "hirsch": { border: "border-amber-700/60", bg: "bg-amber-950/30", text: "text-amber-400", badge: "bg-amber-500/10 text-amber-400 border-amber-500/20", headerBg: "bg-amber-950/60 hover:bg-amber-900/80" },
+            "yukon": { border: "border-sky-700/60", bg: "bg-sky-950/30", text: "text-sky-400", badge: "bg-sky-500/10 text-sky-400 border-sky-500/20", headerBg: "bg-sky-950/60 hover:bg-sky-900/80" },
+            "silver": { border: "border-indigo-700/60", bg: "bg-indigo-950/30", text: "text-indigo-400", badge: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20", headerBg: "bg-indigo-950/60 hover:bg-indigo-900/80" },
+            "cuatro": { border: "border-rose-700/60", bg: "bg-rose-950/30", text: "text-rose-400", badge: "bg-rose-500/10 text-rose-400 border-rose-500/20", headerBg: "bg-rose-950/60 hover:bg-rose-900/80" },
+            "medved": { border: "border-slate-600/60", bg: "bg-slate-900/30", text: "text-slate-300", badge: "bg-slate-500/10 text-slate-300 border-slate-500/20", headerBg: "bg-slate-900/60 hover:bg-slate-800/80" },
+            "vurhonga": { border: "border-orange-700/60", bg: "bg-orange-950/30", text: "text-orange-400", badge: "bg-orange-500/10 text-orange-400 border-orange-500/20", headerBg: "bg-orange-950/60 hover:bg-orange-900/80" },
+            "rancho": { border: "border-yellow-700/60", bg: "bg-yellow-950/30", text: "text-yellow-400", badge: "bg-yellow-500/10 text-yellow-400 border-yellow-500/20", headerBg: "bg-yellow-950/60 hover:bg-yellow-900/80" },
+            "mississippi": { border: "border-teal-700/60", bg: "bg-teal-950/30", text: "text-teal-400", badge: "bg-teal-500/10 text-teal-400 border-teal-500/20", headerBg: "bg-teal-950/60 hover:bg-teal-900/80" },
+            "revontuli": { border: "border-violet-700/60", bg: "bg-violet-950/30", text: "text-violet-400", badge: "bg-violet-500/10 text-violet-400 border-violet-500/20", headerBg: "bg-violet-950/60 hover:bg-violet-900/80" },
+            "new england": { border: "border-pink-700/60", bg: "bg-pink-950/30", text: "text-pink-400", badge: "bg-pink-500/10 text-pink-400 border-pink-500/20", headerBg: "bg-pink-950/60 hover:bg-pink-900/80" },
+            "emerald": { border: "border-lime-700/60", bg: "bg-lime-950/30", text: "text-lime-400", badge: "bg-lime-500/10 text-lime-400 border-lime-500/20", headerBg: "bg-lime-950/60 hover:bg-lime-900/80" },
+            "sundar": { border: "border-fuchsia-700/60", bg: "bg-fuchsia-950/30", text: "text-fuchsia-400", badge: "bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20", headerBg: "bg-fuchsia-950/60 hover:bg-fuchsia-900/80" }
+        };
+
+        function getMapColorTheme(mapName) {
+            const lower = mapName.toLowerCase();
+            for (const key in mapColors) {
+                if (lower.includes(key)) return mapColors[key];
+            }
+            // Dynamic theme hashing fallback to support any custom maps
+            const fallbacks = [
+                { border: "border-amber-700/60", bg: "bg-amber-950/30", text: "text-amber-400", badge: "bg-amber-500/10 text-amber-400 border-amber-500/20", headerBg: "bg-amber-950/60 hover:bg-amber-900/80" },
+                { border: "border-emerald-700/60", bg: "bg-emerald-950/30", text: "text-emerald-400", badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20", headerBg: "bg-emerald-950/60 hover:bg-emerald-900/80" },
+                { border: "border-sky-700/60", bg: "bg-sky-950/30", text: "text-sky-400", badge: "bg-sky-500/10 text-sky-400 border-sky-500/20", headerBg: "bg-sky-950/60 hover:bg-sky-900/80" },
+                { border: "border-orange-700/60", bg: "bg-orange-950/30", text: "text-orange-400", badge: "bg-orange-500/10 text-orange-400 border-orange-500/20", headerBg: "bg-orange-950/60 hover:bg-orange-900/80" },
+                { border: "border-violet-700/60", bg: "bg-violet-950/30", text: "text-violet-400", badge: "bg-violet-500/10 text-violet-400 border-violet-500/20", headerBg: "bg-violet-950/60 hover:bg-violet-900/80" },
+                { border: "border-rose-700/60", bg: "bg-rose-950/30", text: "text-rose-400", badge: "bg-rose-500/10 text-rose-400 border-rose-500/20", headerBg: "bg-rose-950/60 hover:bg-rose-900/80" }
+            ];
+            let hash = 0;
+            for (let i = 0; i < mapName.length; i++) {
+                hash = mapName.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            const index = Math.abs(hash) % fallbacks.length;
+            return fallbacks[index];
+        }
+
+        // Interactive States
+        let databaseRawData = [];
+        let parsedRecords = [];
+        let activeTab = 'all'; // 'all', 'rest', 'drink', 'food'
+        let currentSimulatedHour = 8.00;
+        let mapStates = {}; // Stores collapsible open/closed state: { 'MapName': true/false }
+        let regionStates = {}; // Stores collapsible open/closed state: { 'MapName|RegionName': true/false }
+        let landmarkStates = {}; // { 'Map|Region|Landmark': true/false }
+        let activeAnimalFilter = null; // Filter state for the animal index directory
+        
+        let currentMapping = {
+            animal: 0,
+            needZone: 1,
+            type: 1,
+            long: 2,
+            lat: 3,
+            start: 4,
+            end: 5,
+            map: 6,
+            region: 7,
+            landmark: 8
+        };
+        let hasManualOverride = false;
+        let lastLoadedRawCSV = "";
+        let isDiagnosticOpen = false;
+
+        function updateStats() {
+            document.getElementById('stat-total').innerText = parsedRecords.length;
+            document.getElementById('stat-rest').innerText = parsedRecords.filter(r => r.category === 'Rest').length;
+            document.getElementById('stat-drink').innerText = parsedRecords.filter(r => r.category === 'Drink').length;
+            document.getElementById('stat-food').innerText = parsedRecords.filter(r => r.category === 'Food').length;
+        }
+
+        // Validate if a record is active within current time window
+        function isZoneActiveNow(record, currentTime) {
+            const start = record.startHours;
+            const end = record.endHours;
+            if (start <= end) {
+                return currentTime >= start && currentTime <= end;
+            } else {
+                // Wrap-around midnight (e.g. 22:00 to 04:00)
+                return currentTime >= start || currentTime <= end;
+            }
+        }
+
+        window.copyCoords = function(lat, long, elId) {
+            const coordStr = `${lat}, ${long}`;
+            // Native secure Clipboard fallback for iframe structures
+            const el = document.createElement('textarea');
+            el.value = coordStr;
+            el.setAttribute('readonly', '');
+            el.style.position = 'absolute';
+            el.style.left = '-9999px';
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            const copyBtn = document.getElementById(elId);
+            if (copyBtn) {
+                const originalHtml = copyBtn.innerHTML;
+                copyBtn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span class="text-xs">Copied!</span>`;
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHtml;
+                }, 1500);
+            }
+            showToast(`Copied coords: ${coordStr}`);
+        }
+
+        // Console-friendly Preset Setter
+        window.setGameTime = function(val) {
+            currentSimulatedHour = val;
+            const timeSlider = document.getElementById('time-slider');
+            if (timeSlider) {
+                timeSlider.value = val;
+            }
+            const clockDisplay = document.getElementById('clock-display');
+            if (clockDisplay) {
+                const hours = Math.floor(val);
+                const minutes = Math.floor((val % 1) * 60);
+                const strHours = hours.toString().padStart(2, '0');
+                const strMinutes = minutes.toString().padStart(2, '0');
+                clockDisplay.innerText = `${strHours}:${strMinutes}`;
+            }
+            renderTree();
+            showToast(`In-game clock synced to ${clockDisplay.innerText}`);
+        }
+
+        // Expand / Collapse state toggles
+        window.toggleMapCollapse = function(mapName) {
+            mapStates[mapName] = !mapStates[mapName];
+            renderTree();
+        }
+
+        window.toggleRegionCollapse = function(mapKey, regionName) {
+            const key = `${mapKey}|${regionName}`;
+            regionStates[key] = !regionStates[key];
+            renderTree();
+        }
+
+        window.toggleLandmarkCollapse = function(mapKey, regionName, landmarkName) {
+            const key = `${mapKey}|${regionName}|${landmarkName}`;
+            landmarkStates[key] = !landmarkStates[key];
+            renderTree();
+        }
+
+        function filterByAnimal(animalName) {
+            activeAnimalFilter = animalName;
+            
+            const indicator = document.getElementById('active-animal-indicator');
+            if (activeAnimalFilter) {
+                indicator.innerText = `Filtering by: ${animalName}`;
+                indicator.classList.remove('hidden');
+            } else {
+                indicator.classList.add('hidden');
+            }
+
+            renderAnimalIndex();
+            renderTree();
+        }
+
+        function renderAnimalIndex() {
+            const container = document.getElementById('animal-index-list');
+            if (!container) return;
+
+            // Generate precise counts of animals in the parsed record array
+            const counts = {};
+            parsedRecords.forEach(rec => {
+                if (rec.animal) {
+                    counts[rec.animal] = (counts[rec.animal] || 0) + 1;
+                }
+            });
+
+            const uniqueAnimals = Object.keys(counts).sort();
+            if (uniqueAnimals.length === 0) {
+                container.innerHTML = `<span class="text-xs text-forest-500 italic">No wild animals found in current database. Sync to populate.</span>`;
+                return;
+            }
+
+            let html = `
+                <button onclick="filterByAnimal(null)" class="px-3 py-1.5 rounded-xl border text-xs font-semibold tracking-wide transition-all ${
+                    !activeAnimalFilter 
+                        ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 font-bold' 
+                        : 'bg-forest-950 border-forest-800 text-forest-300 hover:bg-forest-800/50'
+                }">
+                    All Species (${parsedRecords.length})
+                </button>
+            `;
+
+            uniqueAnimals.forEach(animal => {
+                const isSelected = activeAnimalFilter === animal;
+                html += `
+                    <button onclick="filterByAnimal('${escapeJSString(animal)}')" class="px-3 py-1.5 rounded-xl border text-xs font-medium transition-all flex items-center gap-1.5 ${
+                        isSelected 
+                            ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 font-extrabold' 
+                            : 'bg-forest-950 border-forest-800 text-forest-300 hover:bg-forest-800/50'
+                    }">
+                        <span>${animal}</span>
+                        <span class="px-1.5 py-0.5 rounded-md bg-forest-900 text-[10px] text-forest-400 font-mono font-bold">${counts[animal]}</span>
+                    </button>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
         function buildHeaderIndices(headers) {
             let mapping = {
                 animal: -1,
@@ -657,90 +928,6 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
             if (mapping.landmark === -1) mapping.landmark = headers.findIndex(h => h.toLowerCase().includes('land') || h.toLowerCase().includes('mark')) !== -1 ? headers.findIndex(h => h.toLowerCase().includes('land') || h.toLowerCase().includes('mark')) : 8;
 
             return mapping;
-        }
-
-        function parseTimeToHours(timeStr) {
-            if (!timeStr) return 0;
-            const clean = timeStr.trim().replace(/[^0-9:]/g, '');
-            if (clean.includes(':')) {
-                const parts = clean.split(':');
-                const h = parseInt(parts[0], 10) || 0;
-                const m = parseInt(parts[1], 10) || 0;
-                return h + (m / 60);
-            } else {
-                const val = parseFloat(clean);
-                return isNaN(val) ? 0 : val;
-            }
-        }
-
-        function getNormalizedCategory(typeStr) {
-            if (!typeStr) return 'Other';
-            const clean = typeStr.toLowerCase();
-            if (clean.includes('rest') || clean.includes('sleep') || clean.includes('bed')) return 'Rest';
-            if (clean.includes('drink') || clean.includes('water')) return 'Drink';
-            if (clean.includes('food') || clean.includes('feed') || clean.includes('eat') || clean.includes('herb')) return 'Food';
-            return 'Other';
-        }
-
-        // Filters by animal based on user tapping item inside Wildlife Index
-        window.filterByAnimal = function(animalName) {
-            activeAnimalFilter = animalName;
-            
-            const indicator = document.getElementById('active-animal-indicator');
-            if (activeAnimalFilter) {
-                indicator.innerText = `Filtering by: ${animalName}`;
-                indicator.classList.remove('hidden');
-            } else {
-                indicator.classList.add('hidden');
-            }
-
-            renderAnimalIndex();
-            renderTree();
-        }
-
-        function renderAnimalIndex() {
-            const container = document.getElementById('animal-index-list');
-            if (!container) return;
-
-            // Generate precise counts of animals in the parsed record array
-            const counts = {};
-            parsedRecords.forEach(rec => {
-                if (rec.animal) {
-                    counts[rec.animal] = (counts[rec.animal] || 0) + 1;
-                }
-            });
-
-            const uniqueAnimals = Object.keys(counts).sort();
-            if (uniqueAnimals.length === 0) {
-                container.innerHTML = `<span class="text-xs text-forest-500 italic">No wild animals found in current database. Sync to populate.</span>`;
-                return;
-            }
-
-            let html = `
-                <button onclick="filterByAnimal(null)" class="px-3 py-1.5 rounded-xl border text-xs font-semibold tracking-wide transition-all ${
-                    !activeAnimalFilter 
-                        ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 font-bold' 
-                        : 'bg-forest-950 border-forest-800 text-forest-300 hover:bg-forest-800/50'
-                }">
-                    All Species (${parsedRecords.length})
-                </button>
-            `;
-
-            uniqueAnimals.forEach(animal => {
-                const isSelected = activeAnimalFilter === animal;
-                html += `
-                    <button onclick="filterByAnimal('${escapeJSString(animal)}')" class="px-3 py-1.5 rounded-xl border text-xs font-medium transition-all flex items-center gap-1.5 ${
-                        isSelected 
-                            ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 font-extrabold' 
-                            : 'bg-forest-950 border-forest-800 text-forest-300 hover:bg-forest-800/50'
-                    }">
-                        <span>${animal}</span>
-                        <span class="px-1.5 py-0.5 rounded-md bg-forest-900 text-[10px] text-forest-400 font-mono font-bold">${counts[animal]}</span>
-                    </button>
-                `;
-            });
-
-            container.innerHTML = html;
         }
 
         function processCSVPayload(text) {
@@ -843,84 +1030,27 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
                 });
         }
 
-        function updateStats() {
-            document.getElementById('stat-total').innerText = parsedRecords.length;
-            document.getElementById('stat-rest').innerText = parsedRecords.filter(r => r.category === 'Rest').length;
-            document.getElementById('stat-drink').innerText = parsedRecords.filter(r => r.category === 'Drink').length;
-            document.getElementById('stat-food').innerText = parsedRecords.filter(r => r.category === 'Food').length;
-        }
-
-        // Validate if a record is active within current time window
-        function isZoneActiveNow(record, currentTime) {
-            const start = record.startHours;
-            const end = record.endHours;
-            if (start <= end) {
-                return currentTime >= start && currentTime <= end;
+        function parseTimeToHours(timeStr) {
+            if (!timeStr) return 0;
+            const clean = timeStr.trim().replace(/[^0-9:]/g, '');
+            if (clean.includes(':')) {
+                const parts = clean.split(':');
+                const h = parseInt(parts[0], 10) || 0;
+                const m = parseInt(parts[1], 10) || 0;
+                return h + (m / 60);
             } else {
-                // Wrap-around midnight (e.g. 22:00 to 04:00)
-                return currentTime >= start || currentTime <= end;
+                const val = parseFloat(clean);
+                return isNaN(val) ? 0 : val;
             }
         }
 
-        window.copyCoords = function(lat, long, elId) {
-            const coordStr = `${lat}, ${long}`;
-            // Native secure Clipboard fallback for iframe structures
-            const el = document.createElement('textarea');
-            el.value = coordStr;
-            el.setAttribute('readonly', '');
-            el.style.position = 'absolute';
-            el.style.left = '-9999px';
-            document.body.appendChild(el);
-            el.select();
-            document.execCommand('copy');
-            document.body.removeChild(el);
-
-            const copyBtn = document.getElementById(elId);
-            if (copyBtn) {
-                const originalHtml = copyBtn.innerHTML;
-                copyBtn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span class="text-xs">Copied!</span>`;
-                setTimeout(() => {
-                    copyBtn.innerHTML = originalHtml;
-                }, 1500);
-            }
-            showToast(`Copied coords: ${coordStr}`);
-        }
-
-        // Console-friendly Preset Setter
-        window.setGameTime = function(val) {
-            currentSimulatedHour = val;
-            const timeSlider = document.getElementById('time-slider');
-            if (timeSlider) {
-                timeSlider.value = val;
-            }
-            const clockDisplay = document.getElementById('clock-display');
-            if (clockDisplay) {
-                const hours = Math.floor(val);
-                const minutes = Math.floor((val % 1) * 60);
-                const strHours = hours.toString().padStart(2, '0');
-                const strMinutes = minutes.toString().padStart(2, '0');
-                clockDisplay.innerText = `${strHours}:${strMinutes}`;
-            }
-            renderTree();
-            showToast(`In-game clock synced to ${clockDisplay.innerText}`);
-        }
-
-        // Expand / Collapse state toggles
-        window.toggleMapCollapse = function(mapName) {
-            mapStates[mapName] = !mapStates[mapName];
-            renderTree();
-        }
-
-        window.toggleRegionCollapse = function(mapKey, regionName) {
-            const key = `${mapKey}|${regionName}`;
-            regionStates[key] = !regionStates[key];
-            renderTree();
-        }
-
-        window.toggleLandmarkCollapse = function(mapKey, regionName, landmarkName) {
-            const key = `${mapKey}|${regionName}|${landmarkName}`;
-            landmarkStates[key] = !landmarkStates[key];
-            renderTree();
+        function getNormalizedCategory(typeStr) {
+            if (!typeStr) return 'Other';
+            const clean = typeStr.toLowerCase();
+            if (clean.includes('rest') || clean.includes('sleep') || clean.includes('bed')) return 'Rest';
+            if (clean.includes('drink') || clean.includes('water')) return 'Drink';
+            if (clean.includes('food') || clean.includes('feed') || clean.includes('eat') || clean.includes('herb')) return 'Food';
+            return 'Other';
         }
 
         function renderTree() {
@@ -1020,7 +1150,6 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
 
                 const escapedMapName = escapeJSString(mapName);
 
-                // Added dynamic badge counts & customizable color maps inside header templates
                 const mapHeaderHtml = `
                     <div onclick="toggleMapCollapse('${escapedMapName}')" class="flex items-center justify-between p-4 ${theme.headerBg} cursor-pointer transition-all border-b ${theme.border}">
                         <div class="flex items-center space-x-3">
@@ -1187,7 +1316,10 @@ Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prospero
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Load CSV on launch
+            // Load custom navigation bar from sheets first
+            loadNavigationBar();
+
+            // Load CSV need zones dataset
             loadDatabase();
 
             // Set up Sync button event listeners
