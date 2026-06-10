@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>theHunter: Call of the Wild - Need Zone Companion</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Inter Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Hunter Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        forest: {
+                            50: '#f2f7f4',
+                            100: '#e1ede6',
+                            200: '#c5dbcf',
+                            300: '#9bbfb0',
+                            400: '#6c9c8a',
+                            50: '#4e7e6d',
+                            600: '#3c6355',
+                            700: '#325046',
+                            800: '#2a423a',
+                            900: '#15241f',
+                            950: '#0b1310',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0b1310;
+            color: #e1ede6;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #15241f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #3c6355;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4e7e6d;
+        }
+        /* Highlight transition effects */
+        .zone-row {
+            transition: all 0.2s ease-in-out;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased min-h-screen flex flex-col selection:bg-forest-500 selection:text-white">
+
+    <header class="border-b border-forest-800 bg-forest-950 sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="flex items-center space-x-3">
+                    <div class="bg-gradient-to-tr from-forest-600 to-amber-500 p-2.5 rounded-xl shadow-lg shadow-forest-950/50">
+                        <i class="fa-solid fa-compass text-2xl text-white animate-pulse"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-xl sm:text-2xl font-black tracking-tight text-white flex items-center gap-2">
+                            COTW <span class="text-amber-400 font-light">Need Zone Database</span>
+                        </h1>
+                        <p class="text-xs text-forest-400 font-mono">Precision tracking for active reserves</p>
+                    </div>
+                </div>
+                
+                <!-- Quick Controls & Status -->
+                <div class="flex items-center gap-3 self-end md:self-auto">
+                    <span id="data-status" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-amber-400 animate-ping"></span>
+                        Loading database...
+                    </span>
+                    <button id="refresh-btn" class="p-2 rounded-lg bg-forest-900 hover:bg-forest-800 border border-forest-800 text-forest-200 transition-colors" title="Reload Database">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-6">
+        
+        <!-- Welcome banner & Quick Guide -->
+        <div class="bg-gradient-to-r from-forest-900 via-forest-800 to-forest-900 border border-forest-700/50 rounded-2xl p-4 sm:p-6 shadow-xl relative overflow-hidden">
+            <div class="absolute -right-12 -bottom-12 opacity-10 pointer-events-none">
+                <i class="fa-solid fa-paw text-9xl text-amber-400"></i>
+            </div>
+            <div class="relative z-10 space-y-2">
+                <h2 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-amber-400"></i> Hunter's Interactive Assistant
+                </h2>
+                <p class="text-sm text-forest-200 max-w-3xl leading-relaxed">
+                    This companion parses your specialized hunting database directly from Google Sheets. Change categories, filter by map, search for targeted wildlife, and adjust the hunting clock to see which need zones are active right now!
+                </p>
+                <div class="text-xs text-forest-300 font-mono pt-2 flex flex-wrap gap-4">
+                    <span><strong class="text-amber-400">Rest</strong>: Sleeping times</span>
+                    <span><strong class="text-sky-400">Drink</strong>: Watering hole windows</span>
+                    <span><strong class="text-emerald-400 font-bold">Food</strong>: Foraging/eating schedules</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Diagnostic & Mapping Console -->
+        <div class="bg-forest-900/40 border border-forest-800 rounded-2xl p-4 shadow-lg backdrop-blur-sm">
+            <button onclick="toggleDiagnosticPanel()" class="w-full flex items-center justify-between text-left focus:outline-none">
+                <div class="flex flex-wrap items-center gap-2">
+                    <i class="fa-solid fa-screwdriver-wrench text-amber-500"></i>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-forest-300">Data Stream & Column Mapping Console</span>
+                    <span id="diagnostic-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Auto-Mapped</span>
+                </div>
+                <i id="diagnostic-chevron" class="fa-solid fa-chevron-down text-forest-400"></i>
+            </button>
+            
+            <div id="diagnostic-content" class="hidden mt-4 pt-4 border-t border-forest-800/60 space-y-4">
+                <p class="text-xs text-forest-300">
+                    If your columns are shifted or not displaying accurately, verify the mapped indices below. You can manually adjust the dropdowns to correct any alignment offsets.
+                </p>
+                
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                    <!-- Column Override Controls rendered dynamically -->
+                </div>
+
+                <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+                    <div class="text-xs text-forest-400 font-mono flex items-center gap-1">
+                        <span class="inline-block w-2 h-2 rounded-full bg-emerald-500"></span>
+                        CSV Columns Detected: <span id="detected-columns-count" class="text-white">0</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button onclick="applyManualOverrides()" class="text-xs bg-amber-500 hover:bg-amber-600 font-bold px-3 py-1.5 rounded-lg text-forest-950 transition-colors">
+                            Apply Custom Mappings
+                        </button>
+                        <button onclick="resetToAutoMapping()" class="text-xs bg-forest-900 hover:bg-forest-800 border border-forest-800 px-3 py-1.5 rounded-lg text-forest-300 transition-colors">
+                            Reset to Auto
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- Left Grid: Controls, Search, and Filters -->
+            <div class="lg:col-span-8 space-y-4">
+                <div class="bg-forest-900/50 border border-forest-800 rounded-2xl p-4 sm:p-5 space-y-4 shadow-lg backdrop-blur-sm">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Search Box -->
+                        <div class="relative">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-forest-400 mb-1.5">Search Animal</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-forest-400">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </span>
+                                <input type="text" id="search-input" placeholder="e.g. Whitetail, Moose, Red Deer..." 
+                                    class="w-full bg-forest-950 border border-forest-700 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 rounded-xl py-2 pl-9 pr-4 text-white placeholder-forest-500 text-sm transition-all outline-none">
+                            </div>
+                        </div>
+
+                        <!-- CSV Source URL (Expandable / Informative) -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-forest-400 mb-1.5">Database Link</label>
+                            <div class="flex rounded-xl overflow-hidden border border-forest-700">
+                                <input type="text" id="csv-url" value="https://docs.google.com/spreadsheets/d/e/2PACX-1vRoJv2R8-Yc8XvRWJWH4CfOPqsuZn2Z2wHmRaXeU6H5x7zWr9Y86SCB0lhz0WayaQYo5fjRfG3L6Plo/pub?output=csv" 
+                                    class="flex-grow bg-forest-950 px-3 py-2 text-xs text-forest-300 outline-none truncate" title="Your live Google Sheet URL">
+                                <button id="load-csv-btn" class="bg-forest-800 hover:bg-forest-700 px-4 text-xs font-bold text-white transition-colors border-l border-forest-700">
+                                    Sync
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Category Separation Controls (Rest, Drink, Food) -->
+                    <div class="pt-2">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-forest-400 mb-2">Separate by Need Type</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <button id="tab-all" class="category-tab py-2.5 px-3 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all">
+                                <i class="fa-solid fa-list"></i> All Needs
+                            </button>
+                            <button id="tab-rest" class="category-tab py-2.5 px-3 rounded-xl border border-forest-800 bg-forest-950 text-forest-300 hover:bg-forest-800/50 font-medium text-xs sm:text-sm flex items-center justify-center gap-2 transition-all">
+                                <i class="fa-solid fa-bed text-orange-400"></i> Rest
+                            </button>
+                            <button id="tab-drink" class="category-tab py-2.5 px-3 rounded-xl border border-forest-800 bg-forest-950 text-forest-300 hover:bg-forest-800/50 font-medium text-xs sm:text-sm flex items-center justify-center gap-2 transition-all">
+                                <i class="fa-solid fa-droplet text-sky-400"></i> Drink
+                            </button>
+                            <button id="tab-food" class="category-tab py-2.5 px-3 rounded-xl border border-forest-800 bg-forest-950 text-forest-300 hover:bg-forest-800/50 font-medium text-xs sm:text-sm flex items-center justify-center gap-2 transition-all">
+                                <i class="fa-solid fa-apple-whole text-emerald-400"></i> Food
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-4">
+                <div class="bg-forest-900/50 border border-forest-800 rounded-2xl p-4 sm:p-5 h-full flex flex-col justify-between shadow-lg backdrop-blur-sm space-y-4">
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="text-xs font-semibold uppercase tracking-wider text-forest-400">Active Hunt Window</span>
+                            <span id="clock-display" class="font-mono text-lg font-bold text-amber-400 bg-forest-950 px-2.5 py-0.5 rounded-lg border border-forest-800 shadow-inner">08:00</span>
+                        </div>
+                        <p class="text-xs text-forest-300 mb-3">Adjust the slider below to highlight which need zones are currently active.</p>
+                        
+                        <!-- Range slider -->
+                        <div class="relative pt-1">
+                            <input type="range" id="time-slider" min="0" max="23.75" step="0.25" value="8" 
+                                class="w-full h-2 bg-forest-950 rounded-lg appearance-none cursor-pointer accent-amber-500">
+                            <div class="flex justify-between text-[10px] font-mono text-forest-500 mt-1">
+                                <span>00:00</span>
+                                <span>06:00</span>
+                                <span>12:00</span>
+                                <span>18:00</span>
+                                <span>24:00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter States Info -->
+                    <div class="bg-forest-950/60 border border-forest-800 p-3 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-circle text-amber-500 text-[10px] animate-pulse"></i>
+                            <span class="text-xs text-forest-300">Highlight Active Zones Only</span>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="filter-active-toggle" class="sr-only peer">
+                            <div class="w-9 h-5 bg-forest-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-forest-300 after:border-gray-300 after:border after:rounded-full after:height-4 after:w-4 after:transition-all peer-checked:bg-amber-500"></div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-forest-900/30 border border-forest-800/60 p-4 rounded-2xl flex items-center space-x-3.5 shadow-sm">
+                <div class="p-3 bg-forest-950 rounded-xl text-forest-300 border border-forest-800">
+                    <i class="fa-solid fa-paw text-xl"></i>
+                </div>
+                <div>
+                    <span class="block text-xs text-forest-400 uppercase tracking-wider font-semibold">Total Records</span>
+                    <span id="stat-total" class="text-lg font-bold text-white font-mono">-</span>
+                </div>
+            </div>
+            <div class="bg-forest-900/30 border border-forest-800/60 p-4 rounded-2xl flex items-center space-x-3.5 shadow-sm">
+                <div class="p-3 bg-forest-950 rounded-xl text-orange-400 border border-forest-800">
+                    <i class="fa-solid fa-bed text-xl"></i>
+                </div>
+                <div>
+                    <span class="block text-xs text-forest-400 uppercase tracking-wider font-semibold">Rest Zones</span>
+                    <span id="stat-rest" class="text-lg font-bold text-white font-mono">-</span>
+                </div>
+            </div>
+            <div class="bg-forest-900/30 border border-forest-800/60 p-4 rounded-2xl flex items-center space-x-3.5 shadow-sm">
+                <div class="p-3 bg-forest-950 rounded-xl text-sky-400 border border-forest-800">
+                    <i class="fa-solid fa-droplet text-xl"></i>
+                </div>
+                <div>
+                    <span class="block text-xs text-forest-400 uppercase tracking-wider font-semibold">Drink Zones</span>
+                    <span id="stat-drink" class="text-lg font-bold text-white font-mono">-</span>
+                </div>
+            </div>
+            <div class="bg-forest-900/30 border border-forest-800/60 p-4 rounded-2xl flex items-center space-x-3.5 shadow-sm">
+                <div class="p-3 bg-forest-950 rounded-xl text-emerald-400 border border-forest-800">
+                    <i class="fa-solid fa-apple-whole text-xl"></i>
+                </div>
+                <div>
+                    <span class="block text-xs text-forest-400 uppercase tracking-wider font-semibold">Food Zones</span>
+                    <span id="stat-food" class="text-lg font-bold text-white font-mono">-</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            <!-- Header for collapsible tree -->
+            <div class="flex items-center justify-between border-b border-forest-850 pb-2.5">
+                <h3 class="text-md font-bold text-white tracking-wide uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-network-wired text-forest-400"></i> 
+                    Database Hierarchical Explorer (Map &rarr; Region &rarr; Landmark)
+                </h3>
+                <div class="flex items-center space-x-2">
+                    <button id="expand-all-btn" class="text-xs bg-forest-900 hover:bg-forest-800 border border-forest-800 px-3 py-1.5 rounded-lg text-forest-200 transition-colors">
+                        Expand All
+                    </button>
+                    <button id="collapse-all-btn" class="text-xs bg-forest-900 hover:bg-forest-800 border border-forest-800 px-3 py-1.5 rounded-lg text-forest-200 transition-colors">
+                        Collapse All
+                    </button>
+                </div>
+            </div>
+
+            <!-- Loader / Notice -->
+            <div id="loading-placeholder" class="py-12 flex flex-col items-center justify-center space-y-3">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl text-amber-500"></i>
+                <p class="text-sm text-forest-400">Aggregating need zones and sorting schedules...</p>
+            </div>
+
+            <div id="no-results-placeholder" class="hidden py-12 flex flex-col items-center justify-center space-y-3 text-center">
+                <div class="bg-forest-900/40 p-4 rounded-full border border-forest-800">
+                    <i class="fa-solid fa-binoculars text-3xl text-forest-500"></i>
+                </div>
+                <h4 class="text-md font-bold text-white">No active zones found matching your selection</h4>
+                <p class="text-sm text-forest-400 max-w-md">Try modifying your search query, switching tabs, or checking the current hour filter settings.</p>
+            </div>
+
+            <div id="collapsible-tree-container" class="space-y-4">
+                <!-- Javascript will inject hierarchical nodes here -->
+            </div>
+        </div>
+
+    </main>
+
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Footer -->
+    <footer class="bg-forest-950 border-t border-forest-850 mt-12 py-6 text-center text-xs text-forest-500">
+        <p>© 2026 theHunter COTW Companion. Built with interactive telemetry analytics.</p>
+        <p class="mt-1">Data updated live via published user spreadsheet pipelines.</p>
+    </footer>
+
+    <script>
+        /* NYC/NYT Timestamp: June 9, 2026, 9:20 PM EST */
+
+        // Default Mock Data for zero-fail redundancy (CORS protection)
+        const mockDatabaseFallback = `Animal,Need Zone,Type,Long,Latitude,Start Time,End Time,Map,Region,,,Land Mark
+Whitetail Deer,Drink Zone,Drink,-1052.2,4203.1,08:30,12:30,Layton Lake,Calburn,,,Calburn River Crossing
+Whitetail Deer,Rest Zone,Rest,-1120.5,4100.2,12:30,16:30,Layton Lake,Calburn,,,Calburn River Crossing
+Elk,Feed Zone,Food,-850.0,3200.0,05:00,09:00,Layton Lake,Willipeg,,,Willipeg Caves Area
+Moose,Drink Zone,Drink,-500.2,2100.5,09:00,13:00,Layton Lake,Cheelah,,,Cheelah Lake Basin
+Black Bear,Rest Zone,Rest,-300.5,1200.9,19:00,23:00,Layton Lake,Cheelah,,,Cheelah Western Cabin
+Red Deer,Drink Zone,Drink,1200.5,4500.2,06:00,10:00,Hirschfelden,Rotwald,,,Rotwald Lake Shore
+Red Deer,Feed Zone,Food,1150.0,4600.0,10:00,14:00,Hirschfelden,Rotwald,,,Rotwald Crop Fields
+Wild Boar,Rest Zone,Rest,800.1,3100.2,14:00,18:00,Hirschfelden,Bohndorf,,,Bohndorf Woods
+Merriam Elk,Drink Zone,Drink,350.4,120.5,06:00,10:00,Silver Ridge Peaks,Sunlight Canyon,,,Sunlight Canyon Lake
+Merriam Elk,Feed Zone,Food,420.1,190.2,10:00,14:00,Silver Ridge Peaks,Sunlight Canyon,,,Sunlight Canyon Ridge
+Mountain Lion,Rest Zone,Rest,80.0,-420.0,12:00,16:00,Silver Ridge Peaks,Prosperous Valley,,,Prosperous Mine`;
+
+        // Interactive States
+        let databaseRawData = [];
+        let parsedRecords = [];
+        let activeTab = 'all'; // 'all', 'rest', 'drink', 'food'
+        let currentSimulatedHour = 8.00;
+        let mapStates = {}; // Stores collapsible open/closed state: { 'MapName': true/false }
+        let regionStates = {}; // Stores collapsible open/closed state: { 'MapName|RegionName': true/false }
+        let landmarkStates = {}; // { 'Map|Region|Landmark': true/false }
+        
+        let currentMapping = {
+            animal: 0,
+            needZone: 1,
+            type: 1,
+            long: 2,
+            lat: 3,
+            start: 4,
+            end: 5,
+            map: 6,
+            region: 7,
+            landmark: 8
+        };
+        let hasManualOverride = false;
+        let lastLoadedRawCSV = "";
+        let isDiagnosticOpen = false;
+
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `flex items-center space-x-3 bg-forest-900 border ${type === 'success' ? 'border-amber-500/50 text-white' : 'border-red-500/50 text-red-200'} px-4 py-3 rounded-xl shadow-2xl pointer-events-auto animate-bounce transition-all duration-300`;
+            
+            const icon = type === 'success' ? '<i class="fa-solid fa-circle-check text-amber-400"></i>' : '<i class="fa-solid fa-triangle-exclamation text-red-400"></i>';
+            toast.innerHTML = `
+                ${icon}
+                <span class="text-xs font-semibold">${message}</span>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('animate-bounce');
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        function parseCSVLine(text) {
+            let lines = [];
+            let row = [""];
+            let inQuotes = false;
+            for (let i = 0; i < text.length; i++) {
+                let c = text[i];
+                let next = text[i+1];
+                if (c === '"') {
+                    if (inQuotes && next === '"') {
+                        row[row.length - 1] += '"';
+                        i++;
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (c === ',' && !inQuotes) {
+                    row.push('');
+                } else if ((c === '\r' || c === '\n') && !inQuotes) {
+                    if (c === '\r' && next === '\n') { i++; }
+                    lines.push(row);
+                    row = [''];
+                } else {
+                    row[row.length - 1] += c;
+                }
+            }
+            if (row.length > 1 || row[0] !== '') {
+                lines.push(row);
+            }
+            return lines;
+        }
+
+        // JS String literal escaper to prevent quotes from breaking click attributes
+        function escapeJSString(str) {
+            if (!str) return "";
+            return str.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+        }
+
+        window.toggleDiagnosticPanel = function() {
+            isDiagnosticOpen = !isDiagnosticOpen;
+            const content = document.getElementById('diagnostic-content');
+            const chevron = document.getElementById('diagnostic-chevron');
+            if (isDiagnosticOpen) {
+                content.classList.remove('hidden');
+                chevron.classList.replace('fa-chevron-down', 'fa-chevron-up');
+            } else {
+                content.classList.add('hidden');
+                chevron.classList.replace('fa-chevron-up', 'fa-chevron-down');
+            }
+        }
+
+        function renderDiagnosticControls(headers) {
+            const container = document.querySelector('#diagnostic-content .grid');
+            if (!container) return;
+
+            document.getElementById('detected-columns-count').innerText = headers.length;
+
+            const fields = [
+                { key: 'animal', label: 'Animal' },
+                { key: 'type', label: 'Need Zone Type' },
+                { key: 'long', label: 'Longitude' },
+                { key: 'lat', label: 'Latitude' },
+                { key: 'start', label: 'Start Time' },
+                { key: 'end', label: 'End Time' },
+                { key: 'map', label: 'Map / Reserve' },
+                { key: 'region', label: 'Region' },
+                { key: 'landmark', label: 'Land Mark' }
+            ];
+
+            container.innerHTML = fields.map(field => {
+                const currentIndex = currentMapping[field.key];
+                
+                // Create selection options for all detected columns
+                const options = headers.map((headerText, idx) => {
+                    const cleanText = headerText && headerText.trim() ? `${String.fromCharCode(65 + idx)}: ${headerText.trim()}` : `Col ${String.fromCharCode(65 + idx)}`;
+                    const selectedAttr = idx === currentIndex ? 'selected' : '';
+                    return `<option value="${idx}" ${selectedAttr}>${cleanText}</option>`;
+                }).join('');
+
+                return `
+                    <div class="space-y-1">
+                        <label class="block text-[10px] font-semibold uppercase tracking-wider text-forest-400">${field.label}</label>
+                        <select id="override-${field.key}" class="w-full bg-forest-950 border border-forest-700 rounded-lg p-1.5 text-xs text-white focus:outline-none focus:border-amber-500">
+                            ${options}
+                        </select>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        window.applyManualOverrides = function() {
+            hasManualOverride = true;
+            
+            const fields = ['animal', 'type', 'long', 'lat', 'start', 'end', 'map', 'region', 'landmark'];
+            fields.forEach(field => {
+                const el = document.getElementById(`override-${field}`);
+                if (el) {
+                    currentMapping[field] = parseInt(el.value, 10);
+                }
+            });
+
+            // Sync type and needZone for safety
+            currentMapping.needZone = currentMapping.type;
+
+            document.getElementById('diagnostic-badge').innerText = "Manual Mappings Applied";
+            document.getElementById('diagnostic-badge').className = "px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20";
+
+            if (lastLoadedRawCSV) {
+                processCSVPayload(lastLoadedRawCSV);
+            }
+            showToast("Custom column mappings applied successfully!");
+        }
+
+        window.resetToAutoMapping = function() {
+            hasManualOverride = false;
+            document.getElementById('diagnostic-badge').innerText = "Auto-Mapped";
+            document.getElementById('diagnostic-badge').className = "px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+            
+            if (lastLoadedRawCSV) {
+                // Re-trigger auto build headers
+                const rows = parseCSVLine(lastLoadedRawCSV);
+                if (rows.length >= 1) {
+                    currentMapping = buildHeaderIndices(rows[0]);
+                }
+                processCSVPayload(lastLoadedRawCSV);
+            }
+            showToast("Column mappings reset to automatic detection.");
+        }
+
+        /* * MASTER DEV PROTOCOL & PRECISION INTEGRATION
+         * Added support for invisible character / Non-breaking space cleanup
+         * Expanded match patterns for Region and Landmark to handle custom spacing structures
+         */
+        function buildHeaderIndices(headers) {
+            let mapping = {
+                animal: -1,
+                needZone: -1,
+                type: -1,
+                long: -1,
+                lat: -1,
+                start: -1,
+                end: -1,
+                map: -1,
+                region: -1,
+                landmark: -1
+            };
+
+            headers.forEach((header, index) => {
+                // Replace non-breaking spaces (\u00A0) and tabs with standard spaces
+                const clean = header.toLowerCase().replace(/[\s\u00A0]+/g, ' ').trim();
+                
+                if (clean.includes('animal')) {
+                    mapping.animal = index;
+                } else if (clean.includes('need zone type') || clean.includes('needzonetype') || clean.includes('zone type') || clean.includes('zonetype')) {
+                    mapping.needZone = index;
+                    mapping.type = index;
+                } else if (clean === 'need zone' || clean === 'needzone') {
+                    mapping.needZone = index;
+                } else if (clean === 'type') {
+                    mapping.type = index;
+                } else if (clean.includes('long')) {
+                    mapping.long = index;
+                } else if (clean.includes('lat')) {
+                    mapping.lat = index;
+                } else if (clean.includes('start')) {
+                    mapping.start = index;
+                } else if (clean.includes('end')) {
+                    mapping.end = index;
+                } else if (clean.includes('map')) {
+                    mapping.map = index;
+                } else if (clean.includes('region') || clean.includes('reg')) {
+                    mapping.region = index;
+                } else if (clean.includes('land') || clean.includes('mark')) {
+                    mapping.landmark = index;
+                }
+            });
+
+            // Fallback heuristics if search did not register matches
+            if (mapping.animal === -1) mapping.animal = 0;
+            
+            if (mapping.type === -1 && mapping.needZone !== -1) mapping.type = mapping.needZone;
+            if (mapping.needZone === -1 && mapping.type !== -1) mapping.needZone = mapping.type;
+
+            if (mapping.type === -1) {
+                headers.forEach((header, index) => {
+                    const clean = header.toLowerCase().trim();
+                    if (clean.includes('type') || clean.includes('zone')) {
+                        mapping.type = index;
+                        mapping.needZone = index;
+                    }
+                });
+            }
+
+            if (mapping.type === -1) mapping.type = 1;
+            if (mapping.needZone === -1) mapping.needZone = 1;
+
+            if (mapping.long === -1) mapping.long = headers.findIndex(h => h.toLowerCase().includes('long')) !== -1 ? headers.findIndex(h => h.toLowerCase().includes('long')) : 2;
+            if (mapping.lat === -1) mapping.lat = headers.findIndex(h => h.toLowerCase().includes('lat')) !== -1 ? headers.findIndex(h => h.toLowerCase().includes('lat')) : 3;
+            if (mapping.start === -1) mapping.start = headers.findIndex(h => h.toLowerCase().includes('start')) !== -1 ? headers.findIndex(h => h.toLowerCase().includes('start')) : 4;
+            if (mapping.end === -1) mapping.end = headers.findIndex(h => h.toLowerCase().includes('end')) !== -1 ? headers.findIndex(h => h.toLowerCase().includes('end')) : 5;
+            if (mapping.map === -1) mapping.map = headers.findIndex(h => h.toLowerCase().includes('map')) !== -1 ? headers.findIndex(h => h.toLowerCase().includes('map')) : 6;
+            if (mapping.region === -1) mapping.region = headers.findIndex(h => h.toLowerCase().includes('region') || h.toLowerCase().includes('reg')) !== -1 ? headers.findIndex(h => h.toLowerCase().includes('region') || h.toLowerCase().includes('reg')) : 7;
+            if (mapping.landmark === -1) mapping.landmark = headers.findIndex(h => h.toLowerCase().includes('land') || h.toLowerCase().includes('mark')) !== -1 ? headers.findIndex(h => h.toLowerCase().includes('land') || h.toLowerCase().includes('mark')) : 8;
+
+            return mapping;
+        }
+
+        function parseTimeToHours(timeStr) {
+            if (!timeStr) return 0;
+            const clean = timeStr.trim().replace(/[^0-9:]/g, '');
+            if (clean.includes(':')) {
+                const parts = clean.split(':');
+                const h = parseInt(parts[0], 10) || 0;
+                const m = parseInt(parts[1], 10) || 0;
+                return h + (m / 60);
+            } else {
+                const val = parseFloat(clean);
+                return isNaN(val) ? 0 : val;
+            }
+        }
+
+        function getNormalizedCategory(typeStr) {
+            if (!typeStr) return 'Other';
+            const clean = typeStr.toLowerCase();
+            if (clean.includes('rest') || clean.includes('sleep') || clean.includes('bed')) return 'Rest';
+            if (clean.includes('drink') || clean.includes('water')) return 'Drink';
+            if (clean.includes('food') || clean.includes('feed') || clean.includes('eat') || clean.includes('herb')) return 'Food';
+            return 'Other';
+        }
+
+        function processCSVPayload(text) {
+            try {
+                lastLoadedRawCSV = text;
+                const rows = parseCSVLine(text);
+                if (rows.length < 2) {
+                    throw new Error("CSV structure contains no records.");
+                }
+
+                const headers = rows[0];
+                
+                // If no custom overrides are active, auto detect mappings
+                if (!hasManualOverride) {
+                    currentMapping = buildHeaderIndices(headers);
+                }
+                
+                // Update diagnostic selectors inside console
+                renderDiagnosticControls(headers);
+                
+                const output = [];
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if (row.length <= 1 || !row[currentMapping.animal]) continue;
+
+                    const rawType = row[currentMapping.type] || '';
+                    const animalVal = row[currentMapping.animal] || 'Unknown';
+                    const startVal = row[currentMapping.start] || '00:00';
+                    const endVal = row[currentMapping.end] || '23:59';
+                    
+                    // Direct trim logic to guarantee fallback overrides empty spaces
+                    const mapVal = (row[currentMapping.map] && row[currentMapping.map].trim()) ? row[currentMapping.map].trim() : 'Unknown Reserve';
+                    const regionVal = (row[currentMapping.region] && row[currentMapping.region].trim()) ? row[currentMapping.region].trim() : 'General Region';
+                    const landmarkVal = (row[currentMapping.landmark] && row[currentMapping.landmark].trim()) ? row[currentMapping.landmark].trim() : 'General Wildlife Area';
+
+                    output.push({
+                        id: `zone-${i}`,
+                        animal: animalVal.trim(),
+                        needZone: (row[currentMapping.needZone] || 'Need Zone').trim(),
+                        type: rawType.trim(),
+                        category: getNormalizedCategory(rawType),
+                        long: (row[currentMapping.long] || '0.00').trim(),
+                        lat: (row[currentMapping.lat] || '0.00').trim(),
+                        startTimeStr: startVal.trim(),
+                        endTimeStr: endVal.trim(),
+                        startHours: parseTimeToHours(startVal),
+                        endHours: parseTimeToHours(endVal),
+                        map: mapVal,
+                        region: regionVal,
+                        landmark: landmarkVal
+                    });
+                }
+
+                parsedRecords = output;
+                updateStats();
+                renderTree();
+                document.getElementById('data-status').innerHTML = `
+                    <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-emerald-400"></span>
+                    Sync Success (${parsedRecords.length} loaded)
+                `;
+                document.getElementById('data-status').className = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20";
+                showToast("Database synchronized successfully!");
+            } catch (err) {
+                console.error("CSV parsing failed:", err);
+                showToast("Error parsing database formatting. Using robust sandbox data.", "error");
+                processCSVPayload(mockDatabaseFallback);
+            }
+        }
+
+        function loadDatabase() {
+            const urlInput = document.getElementById('csv-url').value;
+            document.getElementById('data-status').innerHTML = `
+                <span class="w-1.5 h-1.5 mr-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                Synchronizing live sheet...
+            `;
+            document.getElementById('data-status').className = "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20";
+
+            // Add cache busting to force pull live spreadsheet updates
+            const cacheBustedUrl = urlInput.trim() + (urlInput.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
+
+            fetch(cacheBustedUrl)
+                .then(res => {
+                    if (!res.ok) throw new Error("Network status invalid");
+                    return res.text();
+                })
+                .then(text => {
+                    processCSVPayload(text);
+                })
+                .catch(err => {
+                    console.warn("CORS/Fetch failed. Initiating standard sandboxed local offline cache.", err);
+                    showToast("Server blocked external CORS fetch. Using safe offline-cached dataset.", "error");
+                    processCSVPayload(mockDatabaseFallback);
+                });
+        }
+
+        function updateStats() {
+            document.getElementById('stat-total').innerText = parsedRecords.length;
+            document.getElementById('stat-rest').innerText = parsedRecords.filter(r => r.category === 'Rest').length;
+            document.getElementById('stat-drink').innerText = parsedRecords.filter(r => r.category === 'Drink').length;
+            document.getElementById('stat-food').innerText = parsedRecords.filter(r => r.category === 'Food').length;
+        }
+
+        // Validate if a record is active within current time window
+        function isZoneActiveNow(record, currentTime) {
+            const start = record.startHours;
+            const end = record.endHours;
+            if (start <= end) {
+                return currentTime >= start && currentTime <= end;
+            } else {
+                // Wrap-around midnight (e.g. 22:00 to 04:00)
+                return currentTime >= start || currentTime <= end;
+            }
+        }
+
+        window.copyCoords = function(lat, long, elId) {
+            const coordStr = `${lat}, ${long}`;
+            // Native secure Clipboard fallback for iframe structures
+            const el = document.createElement('textarea');
+            el.value = coordStr;
+            el.setAttribute('readonly', '');
+            el.style.position = 'absolute';
+            el.style.left = '-9999px';
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+
+            const copyBtn = document.getElementById(elId);
+            if (copyBtn) {
+                const originalHtml = copyBtn.innerHTML;
+                copyBtn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span class="text-xs">Copied!</span>`;
+                setTimeout(() => {
+                    copyBtn.innerHTML = originalHtml;
+                }, 1500);
+            }
+            showToast(`Copied coords: ${coordStr}`);
+        }
+
+        // Expand / Collapse state toggles
+        window.toggleMapCollapse = function(mapName) {
+            mapStates[mapName] = !mapStates[mapName];
+            renderTree();
+        }
+
+        window.toggleRegionCollapse = function(mapKey, regionName) {
+            const key = `${mapKey}|${regionName}`;
+            regionStates[key] = !regionStates[key];
+            renderTree();
+        }
+
+        window.toggleLandmarkCollapse = function(mapKey, regionName, landmarkName) {
+            const key = `${mapKey}|${regionName}|${landmarkName}`;
+            landmarkStates[key] = !landmarkStates[key];
+            renderTree();
+        }
+
+        function renderTree() {
+            const container = document.getElementById('collapsible-tree-container');
+            const placeholder = document.getElementById('loading-placeholder');
+            const noResults = document.getElementById('no-results-placeholder');
+            
+            placeholder.classList.add('hidden');
+            container.innerHTML = '';
+
+            const searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
+            const filterActive = document.getElementById('filter-active-toggle').checked;
+
+            // Apply global filtering first
+            let filtered = parsedRecords.filter(record => {
+                // Category tabs: rest, drink, food
+                if (activeTab !== 'all' && record.category.toLowerCase() !== activeTab) {
+                    return false;
+                }
+                
+                // Active status check
+                if (filterActive && !isZoneActiveNow(record, currentSimulatedHour)) {
+                    return false;
+                }
+
+                // Search query
+                if (searchQuery) {
+                    const searchableText = `${record.animal} ${record.map} ${record.region} ${record.landmark} ${record.needZone}`.toLowerCase();
+                    if (!searchableText.includes(searchQuery)) return false;
+                }
+
+                return true;
+            });
+
+            if (filtered.length === 0) {
+                noResults.classList.remove('hidden');
+                return;
+            } else {
+                noResults.classList.add('hidden');
+            }
+
+            // Grouping: Map -> Region -> Landmark
+            const mapGroups = {};
+            filtered.forEach(record => {
+                if (!mapGroups[record.map]) {
+                    mapGroups[record.map] = {};
+                }
+                if (!mapGroups[record.map][record.region]) {
+                    mapGroups[record.map][record.region] = {};
+                }
+                if (!mapGroups[record.map][record.region][record.landmark]) {
+                    mapGroups[record.map][record.region][record.landmark] = [];
+                }
+                mapGroups[record.map][record.region][record.landmark].push(record);
+            });
+
+            // Sort logic setup: Each sub-list gets sorted by time
+            for (let mKey in mapGroups) {
+                for (let rKey in mapGroups[mKey]) {
+                    for (let lKey in mapGroups[mKey][rKey]) {
+                        mapGroups[mKey][rKey][lKey].sort((a, b) => a.startHours - b.startHours);
+                    }
+                }
+            }
+
+            Object.keys(mapGroups).sort().forEach(mapName => {
+                // Initialize default collapsed/expanded state if not defined
+                if (mapStates[mapName] === undefined) {
+                    mapStates[mapName] = true; // Open by default
+                }
+                
+                const mapCollapsed = !mapStates[mapName];
+                const regions = mapGroups[mapName];
+                
+                // Count active indicators in this map group
+                let mapTotal = 0;
+                let mapActiveCount = 0;
+                Object.values(regions).forEach(reg => {
+                    Object.values(reg).forEach(land => {
+                        mapTotal += land.length;
+                        land.forEach(rec => {
+                            if (isZoneActiveNow(rec, currentSimulatedHour)) mapActiveCount++;
+                        });
+                    });
+                });
+
+                const mapCard = document.createElement('div');
+                mapCard.className = `bg-forest-900/20 border ${mapCollapsed ? 'border-forest-800/60' : 'border-forest-700/60'} rounded-2xl overflow-hidden transition-all shadow-md`;
+
+                const escapedMapName = escapeJSString(mapName);
+
+                const mapHeaderHtml = `
+                    <div onclick="toggleMapCollapse('${escapedMapName}')" class="flex items-center justify-between p-4 bg-forest-900/60 hover:bg-forest-900/90 cursor-pointer transition-all border-b border-forest-800">
+                        <div class="flex items-center space-x-3">
+                            <i class="fa-solid ${mapCollapsed ? 'fa-chevron-right' : 'fa-chevron-down'} text-amber-500 w-4 transition-transform duration-200"></i>
+                            <div>
+                                <h4 class="text-sm sm:text-base font-extrabold text-white tracking-wider uppercase">${mapName}</h4>
+                                <span class="text-xs text-forest-400 font-mono">${mapTotal} Active Listings</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="text-[10px] sm:text-xs bg-forest-950 px-2.5 py-1 rounded-full text-forest-300 font-mono border border-forest-800">
+                                Active Now: <strong class="text-amber-400 font-bold">${mapActiveCount}</strong>
+                            </span>
+                        </div>
+                    </div>
+                `;
+
+                mapCard.innerHTML = mapHeaderHtml;
+
+                if (!mapCollapsed) {
+                    const regionsContainer = document.createElement('div');
+                    regionsContainer.className = "p-4 space-y-4 border-t border-forest-850 bg-forest-950/40";
+
+                    Object.keys(regions).sort().forEach(regionName => {
+                        const regionKey = `${mapName}|${regionName}`;
+                        if (regionStates[regionKey] === undefined) {
+                            regionStates[regionKey] = true; // Expanded by default
+                        }
+
+                        const regionCollapsed = !regionStates[regionKey];
+                        const landmarks = regions[regionName];
+                        
+                        // Count within region
+                        let regionTotal = 0;
+                        Object.values(landmarks).forEach(arr => regionTotal += arr.length);
+
+                        const regionDiv = document.createElement('div');
+                        regionDiv.className = "border-l-2 border-forest-800 pl-4 space-y-3";
+
+                        const escapedRegionName = escapeJSString(regionName);
+
+                        const regionHeader = `
+                            <div onclick="toggleRegionCollapse('${escapedMapName}', '${escapedRegionName}')" class="flex items-center justify-between cursor-pointer group py-1">
+                                <span class="text-sm font-bold text-forest-200 hover:text-white flex items-center gap-2">
+                                    <i class="fa-solid ${regionCollapsed ? 'fa-plus' : 'fa-minus'} text-xs text-amber-500/80"></i>
+                                    Region: ${regionName}
+                                </span>
+                                <span class="text-xs text-forest-500 font-mono">(${regionTotal} zones)</span>
+                            </div>
+                        `;
+
+                        regionDiv.innerHTML = regionHeader;
+
+                        if (!regionCollapsed) {
+                            const landmarksContainer = document.createElement('div');
+                            landmarksContainer.className = "space-y-3 pl-3 pt-1";
+
+                            Object.keys(landmarks).sort().forEach(landmarkName => {
+                                const landmarkKey = `${mapName}|${regionName}|${landmarkName}`;
+                                if (landmarkStates[landmarkKey] === undefined) {
+                                    landmarkStates[landmarkKey] = true; // Expanded by default
+                                }
+
+                                const landmarkCollapsed = !landmarkStates[landmarkKey];
+                                const zones = landmarks[landmarkName];
+
+                                const landmarkDiv = document.createElement('div');
+                                landmarkDiv.className = "bg-forest-900/10 rounded-xl border border-forest-900/60 p-3";
+
+                                const escapedLandmarkName = escapeJSString(landmarkName);
+
+                                const landmarkHeader = `
+                                    <div onclick="toggleLandmarkCollapse('${escapedMapName}', '${escapedRegionName}', '${escapedLandmarkName}')" class="flex items-center justify-between cursor-pointer py-1 border-b border-forest-900/40 pb-2 mb-2">
+                                        <span class="text-xs font-semibold text-forest-300 flex items-center gap-2">
+                                            <i class="fa-solid fa-location-crosshairs text-amber-500"></i>
+                                            Landmark: <strong class="text-white">${landmarkName}</strong>
+                                        </span>
+                                        <i class="fa-solid ${landmarkCollapsed ? 'fa-angles-down' : 'fa-angles-up'} text-[10px] text-forest-400"></i>
+                                    </div>
+                                `;
+
+                                landmarkDiv.innerHTML = landmarkHeader;
+
+                                if (!landmarkCollapsed) {
+                                    const zonesGrid = document.createElement('div');
+                                    zonesGrid.className = "grid grid-cols-1 md:grid-cols-2 gap-3 pt-1";
+
+                                    zones.forEach(record => {
+                                        const isActive = isZoneActiveNow(record, currentSimulatedHour);
+                                        
+                                        // Highlight active type decorations
+                                        let typeColorClass = "border-orange-500/20 bg-orange-500/5 text-orange-400";
+                                        let typeIcon = "fa-solid fa-bed";
+                                        if (record.category === "Drink") {
+                                            typeColorClass = "border-sky-500/20 bg-sky-500/5 text-sky-400";
+                                            typeIcon = "fa-solid fa-droplet";
+                                        } else if (record.category === "Food") {
+                                            typeColorClass = "border-emerald-500/20 bg-emerald-500/5 text-emerald-400";
+                                            typeIcon = "fa-solid fa-apple-whole";
+                                        }
+
+                                        const zoneId = record.id;
+                                        const card = document.createElement('div');
+                                        card.className = `zone-row p-3 rounded-xl border ${isActive ? 'border-amber-500/70 bg-forest-900/30 ring-1 ring-amber-500/20' : 'border-forest-850 bg-forest-950/40'} flex flex-col justify-between space-y-3`;
+
+                                        card.innerHTML = `
+                                            <div class="flex items-start justify-between">
+                                                <div>
+                                                    <span class="block text-sm font-extrabold text-white tracking-wide">${record.animal}</span>
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold ${typeColorClass} mt-1.5 uppercase tracking-wider">
+                                                        <i class="${typeIcon} mr-1"></i> ${record.category} Zone
+                                                    </span>
+                                                </div>
+                                                <div class="text-right">
+                                                    <span class="block text-[10px] text-forest-400 uppercase tracking-widest font-mono">Hunt Window</span>
+                                                    <span class="block text-xs font-bold text-amber-300 font-mono mt-0.5 bg-forest-950 px-2 py-0.5 rounded border border-forest-850">
+                                                        ${record.startTimeStr} - ${record.endTimeStr}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center justify-between text-[11px] text-forest-300 border-t border-forest-900/50 pt-2 bg-forest-950/20">
+                                                <div class="flex items-center space-x-1.5">
+                                                    <i class="fa-solid fa-map-pin text-forest-500"></i>
+                                                    <span class="font-mono text-xs text-forest-300">${record.lat}, ${record.long}</span>
+                                                </div>
+                                                <button id="copy-btn-${zoneId}" onclick="copyCoords('${record.lat}', '${record.long}', 'copy-btn-${zoneId}')" 
+                                                    class="px-2 py-1 rounded bg-forest-900 hover:bg-forest-800 border border-forest-800 text-[10px] font-mono hover:text-white transition-all flex items-center gap-1">
+                                                    <i class="fa-regular fa-copy"></i> Copy Coords
+                                                </button>
+                                            </div>
+
+                                            ${isActive ? `
+                                            <div class="bg-amber-500/10 border border-amber-500/20 px-2 py-1 rounded-lg text-center">
+                                                <span class="text-[10px] font-bold text-amber-400 tracking-wider uppercase">
+                                                    <i class="fa-solid fa-bullseye animate-pulse mr-1"></i> Target Active Now
+                                                </span>
+                                            </div>
+                                            ` : ''}
+                                        `;
+                                        zonesGrid.appendChild(card);
+                                    });
+
+                                    landmarkDiv.appendChild(zonesGrid);
+                                }
+
+                                landmarksContainer.appendChild(landmarkDiv);
+                            });
+
+                            regionDiv.appendChild(landmarksContainer);
+                        }
+
+                        regionsContainer.appendChild(regionDiv);
+                    });
+
+                    mapCard.appendChild(regionsContainer);
+                }
+
+                container.appendChild(mapCard);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load CSV on launch
+            loadDatabase();
+
+            // Set up Sync button event listeners
+            document.getElementById('load-csv-btn').addEventListener('click', () => {
+                loadDatabase();
+            });
+
+            document.getElementById('refresh-btn').addEventListener('click', () => {
+                loadDatabase();
+            });
+
+            // Set up category tab switches
+            const tabs = {
+                'tab-all': 'all',
+                'tab-rest': 'rest',
+                'tab-drink': 'drink',
+                'tab-food': 'food'
+            };
+
+            Object.entries(tabs).forEach(([tabId, category]) => {
+                document.getElementById(tabId).addEventListener('click', () => {
+                    activeTab = category;
+                    
+                    // Reset tab aesthetics
+                    Object.keys(tabs).forEach(id => {
+                        const tabEl = document.getElementById(id);
+                        tabEl.className = "category-tab py-2.5 px-3 rounded-xl border border-forest-850 bg-forest-950 text-forest-400 hover:bg-forest-800/50 font-medium text-xs sm:text-sm flex items-center justify-center gap-2 transition-all";
+                    });
+
+                    // Set active visual highlights
+                    let accentThemeClass = "border-amber-500/30 bg-amber-500/10 text-amber-400 font-bold";
+                    if (category === 'rest') accentThemeClass = "border-orange-500/30 bg-orange-500/10 text-orange-400 font-bold";
+                    else if (category === 'drink') accentThemeClass = "border-sky-500/30 bg-sky-500/10 text-sky-400 font-bold";
+                    else if (category === 'food') accentThemeClass = "border-emerald-500/30 bg-emerald-500/10 text-emerald-400 font-bold";
+
+                    document.getElementById(tabId).className = `category-tab py-2.5 px-3 rounded-xl border ${accentThemeClass} text-xs sm:text-sm flex items-center justify-center gap-2 transition-all`;
+                    
+                    renderTree();
+                });
+            });
+
+            // Clock slider mechanics
+            const timeSlider = document.getElementById('time-slider');
+            const clockDisplay = document.getElementById('clock-display');
+
+            timeSlider.addEventListener('input', (e) => {
+                const hoursVal = parseFloat(e.target.value);
+                currentSimulatedHour = hoursVal;
+
+                // Format nice readable string clock display
+                const hours = Math.floor(hoursVal);
+                const minutes = Math.floor((hoursVal % 1) * 60);
+                const strHours = hours.toString().padStart(2, '0');
+                const strMinutes = minutes.toString().padStart(2, '0');
+                clockDisplay.innerText = `${strHours}:${strMinutes}`;
+
+                renderTree();
+            });
+
+            // Search inputs & toggle switches
+            document.getElementById('search-input').addEventListener('input', () => {
+                renderTree();
+            });
+
+            document.getElementById('filter-active-toggle').addEventListener('change', () => {
+                renderTree();
+            });
+
+            // Expand and Collapse all hierarchy buttons
+            document.getElementById('expand-all-btn').addEventListener('click', () => {
+                // Determine unique sets of maps, regions, and landmarks from data
+                parsedRecords.forEach(record => {
+                    mapStates[record.map] = true;
+                    regionStates[`${record.map}|${record.region}`] = true;
+                    landmarkStates[`${record.map}|${record.region}|${record.landmark}`] = true;
+                });
+                renderTree();
+                showToast("All sections expanded!");
+            });
+
+            document.getElementById('collapse-all-btn').addEventListener('click', () => {
+                parsedRecords.forEach(record => {
+                    mapStates[record.map] = false;
+                    regionStates[`${record.map}|${record.region}`] = false;
+                    landmarkStates[`${record.map}|${record.region}|${record.landmark}`] = false;
+                });
+                renderTree();
+                showToast("All sections collapsed!");
+            });
+        });
+    </script>
+</body>
+</html>
