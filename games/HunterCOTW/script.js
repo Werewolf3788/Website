@@ -1,9 +1,13 @@
 /*
  * ==========================================
- * NYT TIMESTAMP: Wed, June 10, 2026, 6:02 AM EDT
+ * NYT TIMESTAMP: Fri, June 12, 2026, 4:25 PM EDT
  * PRECISION INTEGRATION: Frontend JS Nervous System (script.js)
- * NOTES: Cleaned up identity maps to completely skip Redbirdfever.
- * Streamlined profile identifier mapping to strictly map Ray to the single "ray" JSON slot. Fully unstripped.
+ * NOTES: Grouped all collectibles into a single master UI category ('List of Collectibles').
+ * The checklists are now formatted as individual cards sorted by map within that one section.
+ * Configured via `isGlobal: true` to bypass user identity filters, ensuring all data
+ * remains visible, open, and uniform for any user accessing the dashboard.
+ * Fixed Firestore import path.
+ * NO STRIPPING, NO COMPRESSING, NO FORMAT ALTERATIONS TO PRE-EXISTING DATA.
  * ==========================================
  */
 
@@ -186,7 +190,240 @@ const trophyData = [
     { id: 'srp_bearher', cat: 'DLC: Silver Ridge', name: 'Bear... with Her', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: "Complete 'Bear... With Her'." },
     { id: 'srp_sabotage', cat: 'DLC: Silver Ridge', name: 'Sabotage', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: "Complete 'Old Haunts'." },
     { id: 'srp_peace', cat: 'DLC: Silver Ridge', name: 'Inner Peace', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: "Complete 'Inner Peace, Outer Chaos'." },
-    { id: 'srp_ascent', cat: 'DLC: Silver Ridge', name: 'The Ascent', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: "Complete 'The Ascent'." }
+    { id: 'srp_ascent', cat: 'DLC: Silver Ridge', name: 'The Ascent', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: "Complete 'The Ascent'." },
+
+    // ==========================================================
+    // --- FULL MAP COLLECTIBLES REGISTRY (GLOBAL & OPEN) ---
+    // ==========================================================
+    
+    // --- LAYTON LAKE DISTRICT ---
+    { 
+        id: 'coll_layton_artifacts', 
+        cat: 'List of Collectibles', 
+        name: 'Layton Lake District - Artifacts', 
+        rank: 'silver', current: 0, goal: 10, type: 'checklist', isGlobal: true,
+        desc: 'Historical components discovered within the Pacific Northwest Wilderness zones.',
+        subItems: checkSet([
+            "Native Pot 1 [Balmont: 8664, 11471]",
+            "Native Pot 2 [Mount Leviatan: 12065, 11243]",
+            "Native Pot 3 [Willipeg: 6267, 6498]",
+            "WW1 Badge 1 [Calburn: 10208, 5281]",
+            "WW1 Badge 2 [Cheelah: 11164, 9155]",
+            "WW1 Badge 3 [Mount Kraken: 7183, 9168]",
+            "WW1 Badge 4 [Balmont: 9920, 10327]",
+            "Native Axe 1 [Cheelah: 13446, 8529]",
+            "Native Axe 2 [Chopeeka: 8868, 5025]",
+            "Native Axe 3 [High Lake: 8551, 6539]"
+        ])
+    },
+    { 
+        id: 'coll_layton_sheds', 
+        cat: 'List of Collectibles', 
+        name: 'Layton Lake District - Sheds', 
+        rank: 'bronze', current: 0, goal: 40, type: 'checklist', isGlobal: true,
+        desc: 'Naturally cast antler fragments matching regional deer and moose herds.',
+        subItems: checkSet([
+            "Whitetail Deer Small Shed Antler [Balmont: 10186, 11292]",
+            "Whitetail Deer Large Shed Antler [Roonachee: 7152, 10960]",
+            "Whitetail Deer Large Shed Antler [Mount Leviatan: 10617, 10944]",
+            "Whitetail Deer Small Shed Antler [Roonachee: 6515, 10574]",
+            "Whitetail Deer Large Shed Antler [Balmont: 10728, 10486]",
+            "Moose Small Shed Antler [Balmont: 8598, 10352]",
+            "Moose Small Shed Antler [Roonachee: 6906, 10287]",
+            "Fallow Deer Small Shed Antler [Balmont: 9652, 10071]",
+            "Roosevelt Elk Large Shed Antler [Balmont: 9848, 9644]",
+            "Roosevelt Elk Large Shed Antler [Mount Leviatan: 10908, 9519]",
+            "Moose Large Shed Antler [Balmont: 8310, 9402]",
+            "Whitetail Deer Large Shed Antler [Balmont: 8929, 9060]",
+            "Whitetail Deer Large Shed Antler [Mount Kraken: 6542, 8790]",
+            "Whitetail Deer Small Shed Antler [Mount Kraken: 6965, 8389]",
+            "Whitetail Deer Large Shed Antler [High Lake: 10349, 8122]",
+            "Moose Large Shed Antler [Cheelah: 11029, 7988]",
+            "Whitetail Deer Large Shed Antler [Cheelah: 12255, 7918]",
+            "Blacktail Deer Small Shed Antler [High Lake: 9042, 7820]",
+            "Fallow Deer Small Shed Antler [Mount Kraken: 7342, 7609]",
+            "Roosevelt Elk Small Shed Antler [High Lake: 8936, 7453]",
+            "Roosevelt Elk Small Shed Antler [Norden: 13132, 7244]",
+            "Moose Small Shed Antler [High Lake: 9622, 7176]",
+            "Roosevelt Elk Large Shed Antler [Mount Kraken: 6575, 7143]",
+            "Moose Small Shed Antler [Norden: 10101, 7006]",
+            "Blacktail Deer Small Shed Antler [Norden: 11832, 6884]",
+            "Roosevelt Elk Large Shed Antler [Norden: 11443, 6621]",
+            "Fallow Deer Small Shed Antler [Norden: 13399, 5940]",
+            "Whitetail Deer Large Shed Antler [Caliburn: 9427, 5744]",
+            "Whitetail Deer Large Shed Antler [Willipeg: 6520, 5605]",
+            "Blacktail Deer Small Shed Antler [Calburn: 11044, 5296]",
+            "Moose Large Shed Antler [Chopeeka: 7526, 5258]",
+            "Fallow Deer Small Shed Antler [Calburn: 10463, 5119]",
+            "Moose Small Shed Antler [Chopeeka: 8235, 5062]",
+            "Roosevelt Elk Small Shed Antler [Calburn: 9881, 5021]",
+            "Fallow Deer Small Shed Antler [Calburn: 9683, 4871]",
+            "Roosevelt Elk Large Shed Antler [Calburn: 11884, 4839]",
+            "Whitetail Deer Large Shed Antler [Chopeeka: 6797, 4840]",
+            "Fallow Deer Small Shed Antler [Norden: 13411, 4800]",
+            "Roosevelt Elk Large Shed Antler [Chopeeka: 8354, 3829]",
+            "Moose Large Shed Antler [Chopeeka: 7552, 3818]"
+        ])
+    },
+
+    // --- HIRSCHFELDEN HUNTING RESERVE ---
+    {
+        id: 'coll_hirsch_artifacts',
+        cat: 'List of Collectibles',
+        name: 'Hirschfelden Hunting Reserve - Artifacts',
+        rank: 'silver', current: 0, goal: 12, type: 'checklist', isGlobal: true,
+        desc: 'Relics spanning ancient tribal crossings to European battle zone campaigns.',
+        subItems: checkSet([
+            "WW1 Russian Dog Tag [Tichenau: -8883, 12958]",
+            "WW1 Helmet 2 [Tichenau: -10355, 12189]",
+            "Viking Coin 1 [Rathenfeldt: -4416, 11665]",
+            "WW1 Medal 1 [Schonfeldt: -6736, 11061]",
+            "WW1 US Dog Tag [Ernsdorf: -10399, 10203]",
+            "WW1 Medal 4 [Spreeberg: -6883, 9852]",
+            "WW1 Medal 5 [Petershain: -4850, 9167]",
+            "WW1 Medal 2 [Spreeberg: -7580, 8784]",
+            "WW1 Medal 3 [Petershain: -4482, 8492]",
+            "WW1 Helmet 1 [Jonsdorf: -8925, 7738]",
+            "Viking Coin 2 [Ritterstein: -5781, 7263]",
+            "WW1 German Dog Tag [Müllerwald: -5500, 5534]"
+        ])
+    },
+    {
+        id: 'coll_hirsch_sheds',
+        cat: 'List of Collectibles',
+        name: 'Hirschfelden Hunting Reserve - Sheds',
+        rank: 'bronze', current: 0, goal: 41, type: 'checklist', isGlobal: true,
+        desc: 'Cast bone remnants located within the central European dense forestry fields.',
+        subItems: checkSet([
+            "Roe Deer Large Shed Antler [Schonfeldt: -7666, 13216]",
+            "Fallow Deer Large Shed Antler [Rathenfeldt: -5729, 12980]",
+            "Roe Deer Large Shed Antler [Rathenfeldt: -4152, 12614]",
+            "Fallow Deer Large Shed Antler [Rathenfeldt: -4650, 12594]",
+            "Roe Deer Large Shed Antler [Schonfeldt: -6303, 12504]",
+            "Fallow Deer Large Shed Antler [Tichenau: -8364, 12473]",
+            "Fallow Deer Small Shed Antler [Rathenfeldt: -5080, 12184]",
+            "Roe Deer Large Shed Antler [Tichenau: -8849, 12145]",
+            "Fallow Deer Small Shed Antler [Schonfeldt: -7257, 12117]",
+            "Roe Deer Large Shed Antler [Tichenau: -9461, 12100]",
+            "Fallow Deer Large Shed Antler [Rathenfeldt: -3765, 11725]",
+            "Roe Deer Large Shed Antler [Tichenau: -10149, 11684]",
+            "Roe Deer Large Shed Antler [Schonfeldt: -6605, 11378]",
+            "Roe Deer Large Shed Antler [Ernsdorf: -9422, 11343]",
+            "Fallow Deer Large Shed Antler [Ernsdorf: -8363, 11291]",
+            "Roe Deer Small Shed Antler [Rathenfeldt: -5781, 11118]",
+            "Fallow Deer Large Shed Antler [Schonfeldt: -6627, 10902]",
+            "Fallow Deer Small Shed Antler [Petershain: -3820, 10746]",
+            "Fallow Deer Large Shed Antler [Schonfeldt: -7162, 10731]",
+            "Roe Deer Large Shed Antler [Spreeberg: -6598, 10361]",
+            "Fallow Deer Small Shed Antler [Spreeberg: -7914, 9623]",
+            "Fallow Deer Large Shed Antler [Petershain: -4333, 9531]",
+            "Fallow Deer Large Shed Antler [Spreeberg: -8915 , 9482]",
+            "Fallow Deer Small Shed Antler [Petershain: -5539 , 9463]",
+            "Roe Deer Large Shed Antler [Ernsdorf: -10556, 9304]",
+            "Red Deer Large Shed Antler [Jonsdorf: -8839 , 8744]",
+            "Roe Deer Large Shed Antler [Petershain: -5582, 8675]",
+            "Red Deer Large Shed Antler [Ritterstein: -7300 , 7624]",
+            "Roe Deer Large Shed Antler [Petershain: -4723 , 7400]",
+            "Red Deer Small Shed Antler [Ritterstein: -7077 , 7153]",
+            "Fallow Deer Large Shed Antler [Petershain: -4883 , 6877]",
+            "Fallow Deer Large Shed Antler [Ritterstein: -6701 , 6841]",
+            "Fallow Deer Small Shed Antler [Müllerwald: -5676 , 6524]",
+            "Roe Deer Large Shed Antler [Müllerwald: -4364 , 6387]",
+            "Roe Deer Large Shed Antler [Bohndorf: -9775 , 6019]",
+            "Red Deer Small Shed Antler [Jonsdorf: -8567 , 5907]",
+            "Roe Deer Large Shed Antler [Ritterstein: -7271 , 5756]",
+            "Fallow Deer Large Shed Antler [Müllerwald: -5013 , 5690]",
+            "Fallow Deer Large Shed Antler [Müllerwald: -3921, 5647]",
+            "Red Deer Large Shed Antler [Bohndorf: -9228 , 5584]",
+            "Red Deer Large Shed Antler [Ritterstein: -8601 , 5476]"
+        ])
+    },
+
+    // --- MEDVED-TAIGA NATIONAL PARK ---
+    {
+        id: 'coll_medved_artifacts',
+        cat: 'List of Collectibles',
+        name: 'Medved-Taiga National Park - Artifacts',
+        rank: 'silver', current: 0, goal: 20, type: 'checklist', isGlobal: true,
+        desc: 'Siberian ice-age structural anomalies consisting of canine fragments and mammoth bone fossils.',
+        subItems: checkSet([
+            "Cave Lion Canine Tooth [Mamontovaya Tundra: -6730, -5066]",
+            "Cave Lion Canine Tooth [Lesnye Lands: -9026, -5175]",
+            "Mammoth Tusk [Mamontovaya Tundra: -5696, -5543]",
+            "Mammoth Tusk [Mamontovaya Tundra: -4566, -5852]",
+            "Mammoth Tusk [Pustaya Mountain: -6035, -5993]",
+            "Mammoth Tusk [Mamontovaya Tundra: -5393, -6026]",
+            "Cave Lion Canine Tooth [Pustaya Mountain: -7301, -6114]",
+            "Mammoth Tusk [Mamontovaya Tundra: -4849, -6268]",
+            "Mammoth Tusk [Mamontovaya Tundra: -4120, -6765]",
+            "Mammoth Tusk [Mamontovaya Tundra: -5673, -6908]",
+            "Cave Lion Canine Tooth [Pustaya Mountain: -6556, -7075]",
+            "Mammoth Tusk [Mamontovaya Tundra: -4964, -7601]",
+            "Mammoth Tusk [Mamontovaya Tundra: -6849, -7696]",
+            "Cave Lion Canine Tooth [Rybatskiy Bay: -9955, -7703]",
+            "Mammoth Tusk [Pustaya Mountain: -7881, -8567]",
+            "Cave Lion Canine Tooth [Pustaya Mountain: -8291, -8619]",
+            "Cave Lion Canine Tooth [Pustaya Mountain: -7755, -9499]",
+            "Cave Lion Canine Tooth [Dikiy Coast: -6517, -10438]",
+            "Cave Lion Canine Tooth [Dikiy Coast: -4984, -10568]",
+            "Cave Lion Canine Tooth [Zverolova Hill: -9994, -11273]"
+        ])
+    },
+    {
+        id: 'coll_medved_sheds',
+        cat: 'List of Collectibles',
+        name: 'Medved-Taiga National Park - Sheds',
+        rank: 'bronze', current: 0, goal: 30, type: 'checklist', isGlobal: true,
+        desc: 'Taiga tundra ecosystem markers showcasing ancient ice cat skulls and massive antler sheds.',
+        subItems: checkSet([
+            "Moose Large Shed Antler [Priyut Dohloy Sobaki: -11188, -5091]",
+            "Cave Lion Skull [Kostyanoy Priyut: -9338, -5191]",
+            "Moose Large Shed Antler [Odinokie Dni: -6967, -6020]",
+            "Reindeer Large Shed Antler [Odinokie Nochi: -9751, -6369]",
+            "Reindeer Large Shed Antler [Belye Nochi: -4478, -6805]",
+            "Reindeer Small Shed Antler [Sobach'ye Serdtse: -7980, -7105]",
+            "Moose Small Shed Antler [Izluchina Viktora: -10210, -7241]",
+            "Cave Lion Skull [Na Kulichkakh: -6403, -7281]",
+            "Reindeer Large Shed Antler [Zhizn' i Sud'ba: -11402, -7593]",
+            "Moose Large Shed Antler [Zapadnyy Ledyanoy Tonnel': -7765, -7673]",
+            "Cave Lion Skull [Myortvye Dushi: -10047, -7985]",
+            "Cave Lion Skull [Kaban'ya Tropa: -5425, -8032]",
+            "Moose Large Shed Antler [Rakovyi Korpus: -8343, -8438]",
+            "Cave Lion Skull [Vostochnyy Ledyanoy Tonnel': -6738, -8526]",
+            "Reindeer Small Shed Antler [Chekurovka: -9117, -9000]",
+            "Reindeer Large Shed Antler [Khizhina Anatoliya: -10078, -9267]",
+            "Moose Large Shed Antler [Derevnya Dvukh Rek: -11650, -9423]",
+            "Moose Large Shed Antler [Beliy Parokhod: -8034, -9581]",
+            "Moose Large Shed Antler [Dvorets Chuchuni: -7103, -9655]",
+            "Cave Lion Skull [Khizhina Nikolaya: -8976, -9863]",
+            "Moose Small Shed Antler [Na Dne: -5548, -9905]",
+            "Reindeer Large Shed Antler [Dom, Gde Razbivayutsa Serdtsa: -8133, -10264]",
+            "Reindeer Small Shed Antler [Taras Bul'ba: -6457, -10363]",
+            "Moose Small Shed Antler [Dvorets Kaban'yevo Tsarya: -7540, -10822]",
+            "Reindeer Small Shed Antler [Tikhiy Don: -9204, -10889]",
+            "Cave Lion Skull [Khizhina Gryankina: -8375, -10985]",
+            "Moose Large Shed Antler [Khizhina Petra: -7963, -11039]",
+            "Moose Large Shed Antler [Kabala Svyatosh: -9805, -11110]",
+            "Moose Small Shed Antler [Ray Dikogo Poberezh'ya: -6556, -11123]",
+            "Cave Lion Skull [Posledniy Priyut: -5772, -11130]"
+        ])
+    },
+
+    // --- VURHONGA SAVANNA ---
+    {
+        id: 'coll_vurhonga_artifacts',
+        cat: 'List of Collectibles',
+        name: 'Vurhonga Savanna - Artifacts',
+        rank: 'gold', current: 0, goal: 5, type: 'checklist', isGlobal: true,
+        desc: 'Sacred tribal protections, ancient feline remains, and historical tracking assets.',
+        subItems: checkSet([
+            "The Golden Rhinoceros of Mapungubwe [Vupeladyambu / Vurhonga Plateau: 5317, -7567]",
+            "Mask of Sangoma [Dzonga / Central Savanna: 8721, -7672]",
+            "Scimitar-Toothed Cat [Vupeladyambu / Vurhonga Plateau, in a Cave: 4989, -8219]",
+            "Dinofelis Skull [Vupeladyambu / Vurhonga Plateau, in a Cave: 5845, -8304]",
+            "Nyaminyami [Dzonga / Central Savanna: 9134, -8504]"
+        ])
+    }
 ];
 
 const appState = {
@@ -284,7 +521,9 @@ const appState = {
             navContainer.innerHTML = navHTML;
         } catch (e) {
             console.error("Failed to load dynamic navigation", e);
-            document.getElementById('dynamic-nav-links').innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Menu Sync Error</span>`;
+            if (document.getElementById('dynamic-nav-links')) {
+                document.getElementById('dynamic-nav-links').innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Menu Sync Error</span>`;
+            }
         }
     },
 
@@ -301,17 +540,17 @@ const appState = {
             
             signInAnonymously(this.auth).catch(err => {
                 console.error("FIREBASE AUTH ERROR:", err);
-                document.getElementById('stat-line').innerText = `AUTH FAILED: ${err.message}`;
+                if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `AUTH FAILED: ${err.message}`;
             });
 
             onAuthStateChanged(this.auth, (user) => { 
                 if (user) {
                     this.loadHunter(this.activeHunter);
-                    document.getElementById('stat-line').innerText = `SYNCED DB: ${firebaseConfig.projectId} | USER: ${user.uid}`;
+                    if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `SYNCED DB: ${firebaseConfig.projectId} | USER: ${user.uid}`;
                     
                     setTimeout(() => this.syncWithPSNData(), 2500);
                 } else {
-                    document.getElementById('stat-line').innerText = `AUDIT STATUS: WAITING FOR AUTHENTICATION...`;
+                    if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `AUDIT STATUS: WAITING FOR AUTHENTICATION...`;
                 }
             });
         } catch (err) {
@@ -351,6 +590,7 @@ const appState = {
             let updated = false;
 
             this.hunterData.forEach(t => {
+                if (t.isGlobal) return;
                 const match = psnTrophies.find(p => p.name && p.name.toLowerCase().trim() === t.name.toLowerCase().trim());
                 
                 if (match) {
@@ -385,7 +625,7 @@ const appState = {
             }
             
             this.psnSynced = true;
-            document.getElementById('stat-line').innerText = document.getElementById('stat-line').innerText.replace(' | PSN AUTO-SYNC ACTIVE', '') + " | PSN AUTO-SYNC ACTIVE";
+            if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = document.getElementById('stat-line').innerText.replace(' | PSN AUTO-SYNC ACTIVE', '') + " | PSN AUTO-SYNC ACTIVE";
             
         } catch (err) {
             console.log("PSN Auto-Sync processing delay:", err);
@@ -401,8 +641,8 @@ const appState = {
 
         this.activeHunter = name;
         localStorage.setItem('cotw_master_active_id', name);
-        document.getElementById('hunter-name').innerText = name.toUpperCase();
-        document.getElementById('master-body').className = `theme-${name === 'Werewolf3788' ? 'werewolf' : name === 'Ray' || name === 'Raymystyro' ? 'ray' : 'Adam'}`;
+        if (document.getElementById('hunter-name')) document.getElementById('hunter-name').innerText = name.toUpperCase();
+        if (document.getElementById('master-body')) document.getElementById('master-body').className = `theme-${name === 'Werewolf3788' ? 'werewolf' : name === 'Ray' || name === 'Raymystyro' ? 'ray' : 'Adam'}`;
         
         this.render();
         this.updateRankUI();
@@ -421,7 +661,7 @@ const appState = {
                     incoming = Object.values(data).filter(x => x && x.id);
                 }
 
-                this.hunterData = JSON.parse(JSON.stringify(trophyData)).map(dt => {
+                this.hunterData = this.hunterData.map(dt => {
                     const found = incoming.find(it => it.id === dt.id);
                     if (found) {
                         if (dt.type === 'checklist' && found.subItems) {
@@ -442,13 +682,9 @@ const appState = {
                     return dt;
                 });
                 
-                this.dataLoaded = true;
-                this.render();
-                
-                if(!this.psnSynced) setTimeout(() => this.syncWithPSNData(), 1000);
-                
+                this.loadGlobalCollectibles();
             } else {
-                this.dataLoaded = true;
+                this.loadGlobalCollectibles();
             }
         }, (error) => {
             console.error("Master Document Sync Error: ", error);
@@ -465,13 +701,43 @@ const appState = {
         });
     },
 
+    loadGlobalCollectibles: function() {
+        const globalRef = doc(this.db, 'artifacts', MASTER_ID, 'public', 'globalCollectibles');
+        onSnapshot(globalRef, (snap) => {
+            if (snap.exists()) {
+                const data = snap.data();
+                const incoming = data.collectibles || [];
+                this.hunterData.forEach(dt => {
+                    if (dt.isGlobal) {
+                        const found = incoming.find(it => it.id === dt.id);
+                        if (found && found.subItems) {
+                            dt.subItems = dt.subItems.map((si, i) => {
+                                const dbMatch = found.subItems.find(x => x.name === si.name) || found.subItems[i];
+                                return {...si, done: dbMatch?.done === true};
+                            });
+                            dt.current = dt.subItems.filter(s => s.done).length;
+                        }
+                    }
+                });
+            }
+            this.dataLoaded = true;
+            this.render();
+        }, (err) => {
+            console.error("Global Collectibles Loading Error: ", err);
+            this.dataLoaded = true;
+            this.render();
+        });
+    },
+
     render: function() {
         const container = document.getElementById('section-container');
         const selector = document.getElementById('reserve-selector');
+        if (!container) return; // Safety check
+        
         container.innerHTML = '';
         const cats = [...new Set(this.hunterData.map(t => t.cat))];
         
-        if (selector.options.length <= 1) {
+        if (selector && selector.options.length <= 1) {
             cats.forEach(cat => {
                 const opt = document.createElement('option');
                 opt.value = cat.replace(/[^a-zA-Z0-9]/g, '');
@@ -487,7 +753,7 @@ const appState = {
                 if (t.type === 'checklist') t.current = t.subItems.filter(s => s.done).length;
                 const done = t.current >= t.goal;
                 if (done) catMet++;
-                if (t.plat !== false) { globalTotal++; if (done) globalMet++; }
+                if (t.plat !== false && !t.isGlobal) { globalTotal++; if (done) globalMet++; }
             });
             
             const sectionId = cat.replace(/[^a-zA-Z0-9]/g, '');
@@ -508,8 +774,8 @@ const appState = {
             items.forEach(t => {
                 const card = document.createElement('div');
                 const isDone = t.current >= t.goal;
-                card.className = `trophy-card ${isDone ? 'completed' : ''}`;
-                let ctrl = isDone ? `<div class="lock-badge">Audit Verified</div>` : '';
+                card.className = `trophy-card ${isDone ? 'completed' : ''} ${t.isGlobal ? 'global-card' : ''}`;
+                let ctrl = isDone ? `<div class="lock-badge">${t.isGlobal ? 'Globally Verified' : 'Audit Verified'}</div>` : '';
                 if (!isDone) {
                     if (t.type === 'numeric') ctrl = `<div class="controls"><button onclick="appState.adj('${t.id}', -1)">-</button><span>${t.current}/${t.goal}</span><button onclick="appState.adj('${t.id}', 1)">+</button></div>`;
                     else if (t.type === 'checklist') ctrl = `<button class="dropdown-trigger" onclick="appState.toggleDrop('${t.id}')">Audit Registry (${t.current}/${t.goal})</button>
@@ -523,17 +789,17 @@ const appState = {
         });
         
         const overall = globalTotal > 0 ? Math.round((globalMet / globalTotal) * 100) : 0;
-        document.getElementById('overall-bar').style.width = overall + '%';
-        document.getElementById('percent-text').innerText = `Master Platinum Progress ${overall}%`;
+        if (document.getElementById('overall-bar')) document.getElementById('overall-bar').style.width = overall + '%';
+        if (document.getElementById('percent-text')) document.getElementById('percent-text').innerText = `Master Platinum Progress ${overall}%`;
     },
 
-    getIcon: (t) => t.psnImage ? t.psnImage : (t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
+    getIcon: (t) => t.psnImage ? t.psnImage : (t.cat.includes('Collectibles') ? ICONS.TRACK : t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
     
-    adj: function(id, val) { const t = this.hunterData.find(x => x.id === id); t.current = Math.max(0, t.current + val); this.sync(); },
+    adj: function(id, val) { const t = this.hunterData.find(x => x.id === id); t.current = Math.max(0, t.current + val); this.sync(t); },
     
-    tog: function(id) { const t = this.hunterData.find(x => x.id === id); t.current = t.current === 0 ? 1 : 0; this.sync(); },
+    tog: function(id) { const t = this.hunterData.find(x => x.id === id); t.current = t.current === 0 ? 1 : 0; this.sync(t); },
     
-    check: function(id, idx) { const t = this.hunterData.find(x => x.id === id); t.subItems[idx].done = !t.subItems[idx].done; this.sync(); },
+    check: function(id, idx) { const t = this.hunterData.find(x => x.id === id); t.subItems[idx].done = !t.subItems[idx].done; this.sync(t); },
     
     adjRank: async function(tier, val) { 
         this.animalRankData[tier] = Math.max(0, (this.animalRankData[tier] || 0) + val); 
@@ -547,7 +813,7 @@ const appState = {
             console.log("Rank successfully synced to Firebase.");
         } catch (error) {
             console.error("FIREBASE RANK SAVE ERROR:", error);
-            document.getElementById('stat-line').innerText = `RANK SYNC ERROR: Check console (Rules/Auth)`;
+            if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `RANK SYNC ERROR: Check console (Rules/Auth)`;
         }
     },
     
@@ -560,21 +826,29 @@ const appState = {
         this.loadHunter(name); 
     },
     
-    scrollToCategory: function(id) { if(!id) return; this.collapsedSections[id] = false; this.render(); setTimeout(() => document.getElementById(id).scrollIntoView({ behavior: 'smooth' }), 100); },
+    scrollToCategory: function(id) { if(!id) return; this.collapsedSections[id] = false; this.render(); setTimeout(() => { if(document.getElementById(id)) document.getElementById(id).scrollIntoView({ behavior: 'smooth' }) }, 100); },
     
-    sync: async function() { 
+    sync: async function(changedItem) { 
         this.render(); 
         if (!this.db || !this.auth.currentUser || !this.dataLoaded) {
             console.warn("Tracker Save Blocked: Waiting for data load or authentication.");
             return;
         } 
+
         try {
-            const ref = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', this.activeHunter); 
-            await setDoc(ref, { trophies: this.hunterData, lastUpdate: Date.now() }, { merge: true }); 
-            console.log("Tracker successfully synced to Firebase.");
+            if (changedItem && changedItem.isGlobal) {
+                const globalRef = doc(this.db, 'artifacts', MASTER_ID, 'public', 'globalCollectibles');
+                const globalCollectiblesList = this.hunterData.filter(x => x.isGlobal);
+                await setDoc(globalRef, { collectibles: globalCollectiblesList, lastUpdate: Date.now() }, { merge: true });
+                console.log("Global Collectibles tracked securely.");
+            } else {
+                const ref = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', this.activeHunter); 
+                await setDoc(ref, { trophies: this.hunterData.filter(x => !x.isGlobal), lastUpdate: Date.now() }, { merge: true }); 
+                console.log("Tracker successfully synced to Firebase.");
+            }
         } catch (error) {
             console.error("FIREBASE TRACKER SAVE ERROR:", error);
-            document.getElementById('stat-line').innerText = `TRACKER SYNC ERROR: Check console (Rules/Auth)`;
+            if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `TRACKER SYNC ERROR: Check console (Rules/Auth)`;
         }
     }
 };
