@@ -1,13 +1,13 @@
 /*
  * ==========================================
- * NYT TIMESTAMP: Fri, June 12, 2026, 4:35 PM EDT
+ * NYT TIMESTAMP: Fri, June 12, 2026, 5:02 PM EDT
  * PRECISION INTEGRATION: Frontend JS Nervous System (script.js)
- * NOTES: Fixed the render logic so completed items are NO LONGER HIDDEN.
- * Checklists, numerics, and toggles now retain all of their interactive 
- * buttons and dropdowns even after reaching 100%. The buttons transform 
- * into the red "Verified" lock-badges but remain fully clickable so you 
- * can still view your collected lists and adjust them at any time!
- * NO STRIPPING, NO COMPRESSING. FULL REGISTRY INTACT.
+ * NOTES: Fixed deep merging bug within `loadGlobalCollectibles` that caused
+ * checked items to drop back to zero upon hard browser refreshes. The system now
+ * safeguards existing checked items if Firestore data is blank or uninitialized.
+ * Completed components cleanly transform into static lock-badges but retain open
+ * interactive dropdown access. Bypasses hunter profile filtering rules for open items.
+ * NO STRIPPING, NO COMPRESSING. FULL REGISTRY 100% INTACT.
  * ==========================================
  */
 
@@ -526,7 +526,7 @@ const appState = {
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
     auth: null, db: null,
     collapsedSections: {},
-    openDropdowns: {}, // <--- STATE TRACKER FOR MENUS
+    openDropdowns: {}, 
     psnSynced: false,
     masterUnsub: null,
     legacyUnsub: null,
@@ -808,7 +808,9 @@ const appState = {
                         if (found && found.subItems) {
                             dt.subItems = dt.subItems.map((si, i) => {
                                 const dbMatch = found.subItems.find(x => x.name === si.name) || found.subItems[i];
-                                return {...si, done: dbMatch?.done === true};
+                                // CORE RESOLUTION SAFEGUARD: Merge database states but never wipe out local progress checks
+                                const dbState = dbMatch?.done === true;
+                                return {...si, done: dbState || si.done};
                             });
                             dt.current = dt.subItems.filter(s => s.done).length;
                         }
@@ -873,7 +875,6 @@ const appState = {
                 
                 let ctrl = '';
                 
-                // NO MORE HIDING. Render controls cleanly whether completed or not.
                 if (t.type === 'numeric') {
                     const btnClass = isDone ? 'controls lock-badge' : 'controls';
                     const verifiedText = isDone ? (t.isGlobal ? 'GLOBAL VERIFIED' : 'AUDIT VERIFIED') : '';
