@@ -1,13 +1,11 @@
 /*
  * ==========================================
- * NYT TIMESTAMP: Fri, June 12, 2026, 4:15 PM EDT
+ * NYT TIMESTAMP: Fri, June 12, 2026, 4:26 PM EDT
  * PRECISION INTEGRATION: Frontend JS Nervous System (script.js)
- * NOTES: FULLY UNSTRIPPED. I sincerely apologize for the truncation in the previous snippet.
- * I have integrated the absolute entirety of your Layton Lake list into the global 
- * 'List of Collectibles' category. This includes all 18 Outposts, 16 Lookout Points, 
- * 34 Points of Interest, 12 Landmarks, 10 Artifacts, and 40 Antler Sheds along with 
- * their coordinates. The 39 Hirschfelden POIs and all previous map data remains fully intact.
- * NO STRIPPING, NO COMPRESSING, NO FORMAT ALTERATIONS.
+ * NOTES: Fixed Dropdown interaction logic. Added `openDropdowns` state tracking 
+ * so menus do not collapse during a Firebase re-render. Added global window 
+ * click listener to close dropdowns when clicking outside the target area.
+ * NO STRIPPING, NO COMPRESSING. FULL REGISTRY INTACT.
  * ==========================================
  */
 
@@ -191,11 +189,10 @@ const trophyData = [
     { id: 'srp_peace', cat: 'DLC: Silver Ridge', name: 'Inner Peace', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: "Complete 'Inner Peace, Outer Chaos'." },
     { id: 'srp_ascent', cat: 'DLC: Silver Ridge', name: 'The Ascent', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: "Complete 'The Ascent'." },
 
-
     // ==========================================================
     // --- FULL MAP COLLECTIBLES REGISTRY (GLOBAL & OPEN) ---
     // ==========================================================
-
+    
     // --- LAYTON LAKE DISTRICT ---
     { 
         id: 'coll_layton_outposts', 
@@ -527,6 +524,7 @@ const appState = {
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
     auth: null, db: null,
     collapsedSections: {},
+    openDropdowns: {}, // <--- NEW STATE TRACKER FOR MENUS
     psnSynced: false,
     masterUnsub: null,
     legacyUnsub: null,
@@ -613,7 +611,7 @@ const appState = {
                 navHTML += `<a href="${item.url}">${imgTag}${item.name}</a>`;
             });
 
-            navContainer.innerHTML = navHTML;
+            if (navContainer) navContainer.innerHTML = navHTML;
         } catch (e) {
             console.error("Failed to load dynamic navigation", e);
             if (document.getElementById('dynamic-nav-links')) {
@@ -871,12 +869,20 @@ const appState = {
                 const isDone = t.current >= t.goal;
                 card.className = `trophy-card ${isDone ? 'completed' : ''} ${t.isGlobal ? 'global-card' : ''}`;
                 let ctrl = isDone ? `<div class="lock-badge">${t.isGlobal ? 'Globally Verified' : 'Audit Verified'}</div>` : '';
+                
                 if (!isDone) {
-                    if (t.type === 'numeric') ctrl = `<div class="controls"><button onclick="appState.adj('${t.id}', -1)">-</button><span>${t.current}/${t.goal}</span><button onclick="appState.adj('${t.id}', 1)">+</button></div>`;
-                    else if (t.type === 'checklist') ctrl = `<button class="dropdown-trigger" onclick="appState.toggleDrop('${t.id}')">Audit Registry (${t.current}/${t.goal})</button>
-                        <div id="drop-${t.id}" class="dropdown-content">${t.subItems.map((s, idx) => `<div class="sub-item"><span>${s.name}</span><button class="check-btn ${s.done?'is-done':''}" onclick="appState.check('${t.id}', ${idx})">${s.done?'✓':''}</button></div>`).join('')}</div>`;
-                    else ctrl = `<button class="toggle-btn" onclick="appState.tog('${t.id}')">Mark Harvested</button>`;
+                    if (t.type === 'numeric') {
+                        ctrl = `<div class="controls"><button onclick="appState.adj('${t.id}', -1)">-</button><span>${t.current}/${t.goal}</span><button onclick="appState.adj('${t.id}', 1)">+</button></div>`;
+                    } else if (t.type === 'checklist') {
+                        // RE-APPLY THE "SHOW" CLASS IF IT WAS OPEN BEFORE RE-RENDER
+                        const dropClass = appState.openDropdowns[t.id] ? 'show' : '';
+                        ctrl = `<button class="dropdown-trigger" onclick="appState.toggleDrop('${t.id}')">Audit Registry (${t.current}/${t.goal})</button>
+                        <div id="drop-${t.id}" class="dropdown-content ${dropClass}">${t.subItems.map((s, idx) => `<div class="sub-item"><span>${s.name}</span><button class="check-btn ${s.done?'is-done':''}" onclick="appState.check('${t.id}', ${idx})">${s.done?'✓':''}</button></div>`).join('')}</div>`;
+                    } else {
+                        ctrl = `<button class="toggle-btn" onclick="appState.tog('${t.id}')">Mark Harvested</button>`;
+                    }
                 }
+                
                 card.innerHTML = `<div style="display:flex; gap:10px; align-items:center;"><img src="${this.getIcon(t)}" class="trophy-icon-img"><div><span class="trophy-rank rank-${t.rank}">${t.rank}</span><div style="font-weight:900; font-size:0.9rem; margin-top:4px;">${t.name}</div></div></div><p style="font-size:0.75rem; font-style:italic; margin:15px 0; color:#cbd5e1; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${t.desc}</p>${ctrl}`;
                 grid.appendChild(card);
             });
@@ -913,8 +919,17 @@ const appState = {
     },
     
     updateRankUI: function() { Object.keys(this.animalRankData).forEach(k => { const el = document.getElementById(`rank-val-${k}`); if (el) el.innerText = this.animalRankData[k]; }); },
+    
     toggleSection: function(id) { const cur = this.collapsedSections[id] !== false; this.collapsedSections[id] = !cur; this.render(); },
-    toggleDrop: (id) => document.getElementById(`drop-${id}`).classList.toggle('show'),
+    
+    toggleDrop: function(id) { 
+        const el = document.getElementById(`drop-${id}`);
+        if (el) {
+            el.classList.toggle('show');
+            // TRACK OPEN STATE SO IT SURVIVES A FIREBASE RE-RENDER
+            this.openDropdowns[id] = el.classList.contains('show');
+        }
+    },
     
     switchHunter: function(name) { 
         this.psnSynced = false; 
@@ -950,3 +965,15 @@ const appState = {
 
 window.appState = appState; 
 appState.init();
+
+// --- GLOBAL CLICK LISTENER FOR DROPDOWNS ---
+// Closes the menu only when clicking entirely outside of the box or trigger
+window.onclick = function(event) {
+    if (!event.target.matches('.dropdown-trigger') && !event.target.closest('.dropdown-content')) {
+        document.querySelectorAll('.dropdown-content.show').forEach(el => {
+            el.classList.remove('show');
+            const id = el.id.replace('drop-', '');
+            appState.openDropdowns[id] = false;
+        });
+    }
+};
