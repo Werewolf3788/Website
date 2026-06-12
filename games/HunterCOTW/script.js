@@ -1,10 +1,12 @@
 /*
  * ==========================================
- * NYT TIMESTAMP: Fri, June 12, 2026, 4:26 PM EDT
+ * NYT TIMESTAMP: Fri, June 12, 2026, 4:35 PM EDT
  * PRECISION INTEGRATION: Frontend JS Nervous System (script.js)
- * NOTES: Fixed Dropdown interaction logic. Added `openDropdowns` state tracking 
- * so menus do not collapse during a Firebase re-render. Added global window 
- * click listener to close dropdowns when clicking outside the target area.
+ * NOTES: Fixed the render logic so completed items are NO LONGER HIDDEN.
+ * Checklists, numerics, and toggles now retain all of their interactive 
+ * buttons and dropdowns even after reaching 100%. The buttons transform 
+ * into the red "Verified" lock-badges but remain fully clickable so you 
+ * can still view your collected lists and adjust them at any time!
  * NO STRIPPING, NO COMPRESSING. FULL REGISTRY INTACT.
  * ==========================================
  */
@@ -524,7 +526,7 @@ const appState = {
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
     auth: null, db: null,
     collapsedSections: {},
-    openDropdowns: {}, // <--- NEW STATE TRACKER FOR MENUS
+    openDropdowns: {}, // <--- STATE TRACKER FOR MENUS
     psnSynced: false,
     masterUnsub: null,
     legacyUnsub: null,
@@ -868,19 +870,29 @@ const appState = {
                 const card = document.createElement('div');
                 const isDone = t.current >= t.goal;
                 card.className = `trophy-card ${isDone ? 'completed' : ''} ${t.isGlobal ? 'global-card' : ''}`;
-                let ctrl = isDone ? `<div class="lock-badge">${t.isGlobal ? 'Globally Verified' : 'Audit Verified'}</div>` : '';
                 
-                if (!isDone) {
-                    if (t.type === 'numeric') {
-                        ctrl = `<div class="controls"><button onclick="appState.adj('${t.id}', -1)">-</button><span>${t.current}/${t.goal}</span><button onclick="appState.adj('${t.id}', 1)">+</button></div>`;
-                    } else if (t.type === 'checklist') {
-                        // RE-APPLY THE "SHOW" CLASS IF IT WAS OPEN BEFORE RE-RENDER
-                        const dropClass = appState.openDropdowns[t.id] ? 'show' : '';
-                        ctrl = `<button class="dropdown-trigger" onclick="appState.toggleDrop('${t.id}')">Audit Registry (${t.current}/${t.goal})</button>
+                let ctrl = '';
+                
+                // NO MORE HIDING. Render controls cleanly whether completed or not.
+                if (t.type === 'numeric') {
+                    const btnClass = isDone ? 'controls lock-badge' : 'controls';
+                    const verifiedText = isDone ? (t.isGlobal ? 'GLOBAL VERIFIED' : 'AUDIT VERIFIED') : '';
+                    const displayVal = isDone ? `${verifiedText} (${t.current}/${t.goal})` : `${t.current}/${t.goal}`;
+                    ctrl = `<div class="${btnClass}">
+                        <button style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', -1)">-</button>
+                        <span style="flex-grow:1; text-align:center;">${displayVal}</span>
+                        <button style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', 1)">+</button>
+                    </div>`;
+                } else if (t.type === 'checklist') {
+                    const dropClass = appState.openDropdowns[t.id] ? 'show' : '';
+                    const btnClass = isDone ? 'dropdown-trigger lock-badge' : 'dropdown-trigger';
+                    const btnText = isDone ? (t.isGlobal ? `Globally Verified (${t.current}/${t.goal})` : `Audit Verified (${t.current}/${t.goal})`) : `Audit Registry (${t.current}/${t.goal})`;
+                    ctrl = `<button class="${btnClass}" style="cursor: pointer;" onclick="appState.toggleDrop('${t.id}')">${btnText}</button>
                         <div id="drop-${t.id}" class="dropdown-content ${dropClass}">${t.subItems.map((s, idx) => `<div class="sub-item"><span>${s.name}</span><button class="check-btn ${s.done?'is-done':''}" onclick="appState.check('${t.id}', ${idx})">${s.done?'✓':''}</button></div>`).join('')}</div>`;
-                    } else {
-                        ctrl = `<button class="toggle-btn" onclick="appState.tog('${t.id}')">Mark Harvested</button>`;
-                    }
+                } else {
+                    const btnClass = isDone ? 'toggle-btn lock-badge' : 'toggle-btn';
+                    const btnText = isDone ? (t.isGlobal ? 'Globally Verified (Undo)' : 'Audit Verified (Undo)') : 'Mark Harvested';
+                    ctrl = `<button class="${btnClass}" style="cursor: pointer;" onclick="appState.tog('${t.id}')">${btnText}</button>`;
                 }
                 
                 card.innerHTML = `<div style="display:flex; gap:10px; align-items:center;"><img src="${this.getIcon(t)}" class="trophy-icon-img"><div><span class="trophy-rank rank-${t.rank}">${t.rank}</span><div style="font-weight:900; font-size:0.9rem; margin-top:4px;">${t.name}</div></div></div><p style="font-size:0.75rem; font-style:italic; margin:15px 0; color:#cbd5e1; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${t.desc}</p>${ctrl}`;
@@ -926,7 +938,6 @@ const appState = {
         const el = document.getElementById(`drop-${id}`);
         if (el) {
             el.classList.toggle('show');
-            // TRACK OPEN STATE SO IT SURVIVES A FIREBASE RE-RENDER
             this.openDropdowns[id] = el.classList.contains('show');
         }
     },
@@ -967,7 +978,6 @@ window.appState = appState;
 appState.init();
 
 // --- GLOBAL CLICK LISTENER FOR DROPDOWNS ---
-// Closes the menu only when clicking entirely outside of the box or trigger
 window.onclick = function(event) {
     if (!event.target.matches('.dropdown-trigger') && !event.target.closest('.dropdown-content')) {
         document.querySelectorAll('.dropdown-content.show').forEach(el => {
