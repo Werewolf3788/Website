@@ -254,7 +254,7 @@ const trophyData = [
         id: 'coll_layton_sheds', cat: 'List of Collectibles', name: 'Layton Lake - Antler Sheds', rank: 'bronze', current: 0, goal: 40, type: 'checklist',
         subItems: formatAlphaCheckset([
             "Blacktail Deer Small Shed Antler [Calburn: 11044, 5296]", "Blacktail Deer Small Shed Antler [High Lake: 9042, 7820]", "Blacktail Deer Small Shed Antler [Norden: 11832, 6884]", "Fallow Deer Small Shed Antler [Balmont: 9652, 10071]",
-            "Fallow Deer Small Shed in Wheel Barrol next to house Antler [Calburn: 11043.800, 5295]", "Fallow Deer Small Shed Antler [Calburn: 9683, 4871]", "Fallow Deer Small Shed Antler [Mount Kraken: 7342, 7609]", "Fallow Deer Small Shed Antler [Norden: 13399, 5940]",
+            "Fallow Deer Small Shed in Wheel Barrol next to house Antler [Calburn Canyon: 11043.800, 5295]", "Fallow Deer Small Shed Antler [Calburn: 9683, 4871]", "Fallow Deer Small Shed Antler [Mount Kraken: 7342, 7609]", "Fallow Deer Small Shed Antler [Norden: 13399, 5940]",
             "Fallow Deer Small Shed Antler [Norden: 13411, 4800]", "Moose Large Shed Antler [Balmont: 8310, 9402]", "Moose Large Shed Antler [Cheelah: 11029, 7988]", "Moose Large Shed Antler [Chopeeka: 7526, 5258]",
             "Moose Large Shed Antler [Chopeeka: 7552, 3818]", "Moose Small Shed Antler [Balmont: 8598, 10352]", "Moose Small Shed Antler [Chopeeka: 8235, 5062]", "Moose Small Shed Antler [High Lake: 9622, 7176]",
             "Moose Small Shed Antler [Norden: 10101, 7006]", "Moose Small Shed Antler [Roonachee: 6906, 10287]", "Roosevelt Elk Large Shed Antler [Balmont: 9848, 9644]", "Roosevelt Elk Large Shed Antler [Chopeeka: 8354, 3829]",
