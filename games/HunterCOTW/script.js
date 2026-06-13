@@ -272,7 +272,7 @@ const trophyData = [
             "Roosevelt Elk Small Shed Antler [Norden: 13132, 7244]", "Roosevelt Elk Large Shed Antler [Mount Kraken: 6575, 7143]", "Whitetail Deer Large Shed Antler [Balmont: 8929, 9060]", "Whitetail Deer Large Shed Antler [Balmont: 10728, 10486]",
             "Whitetail Deer Large Shed Antler [Caliburn: 9427, 5744]", "Whitetail Deer Large Shed Antler [Cheelah: 12255, 7918]", "Whitetail Deer Large Shed Antler [Chopeeka: 6797, 4840]", "Whitetail Deer Large Shed Antler [High Lake: 10349, 8122]",
             "Whitetail Deer Large Shed Antler South West side of cabin behind wheel spoke  [Mount Kraken: 6542, 8790]", "Whitetail Deer Large Shed Antler [Mount Leviatan: 10617, 10944]", "Whitetail Deer Large Shed Antler In Camp Ground [Roonachee: 7156, 10960]", "Whitetail Deer Large Shed Antler [Willipeg: 6520, 5605]",
-            "Whitetail Deer Small Shed Antler Camp ground on Seat [Balmont: 10185, 11291]", "Whitetail Deer Small Shed Antler [Mount Kraken: 6965, 8389]", "Whitetail Deer Small Shed Antler In Big mud bit West of the small rocks [Roonachee: 6515, 10574]"
+            "Whitetail Deer Small Shed Antler Camp ground on Seat [Balmont: 10185, 11291]", "Whitetail Deer Small Shed Antler On Picnic Table Yogi [Mount Kraken: 6965, 8389]", "Whitetail Deer Small Shed Antler In Big mud bit West of the small rocks [Roonachee: 6515, 10574]"
         ])
     },
 
