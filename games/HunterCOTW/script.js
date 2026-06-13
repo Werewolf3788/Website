@@ -1,11 +1,10 @@
 /*
  * ==========================================
- * NYT TIMESTAMP: Fri, June 12, 2026, 11:15 PM EDT
- * PRECISION INTEGRATION: Frontend JS Nervous System (script.js)
- * NOTES: INTEGRATED BACKGROUND AUTO-REFRESH DECOUPLED LIFECYCLE TIMERS.
- * Added background automated loop to cycle checking via fetch streams against GitHub repo.
- * Real-time snapshots continue tracking uninterrupted via separate hunter document nodes.
- * Kept all alpha-sorted collectible list indexes structurally identical.
+ * NYT TIMESTAMP: Sat, June 13, 2026, 12:22 AM EDT
+ * PRECISION INTEGRATION: Frontend JS Nervous System (main.js)
+ * NOTES: AGGRESSIVE AUTO-REFRESH LOOP ACTIVATED.
+ * Background loop lowered from 5 minutes to 60 seconds for near real-time background scraping.
+ * The system will continuously fetch and sync without requiring the user to switch profiles or interact.
  * NO STRIPPING, NO COMPRESSING. FULL SOURCE INTEGRITY 100% INTACT.
  * ==========================================
  */
@@ -29,9 +28,11 @@ const LEGACY_ID = 'cotw-trophy-display';
 
 // --- FRONTEND PROFILE TO BACKEND SCRAPER JSON MAP ---
 const USER_DATA_MAP = {
-    'Werewolf3788': 'werewolf',
-    'Ray': 'ray',
-    'Raymystyro': 'ray'
+    'Werewolf3788': 'Werewolf3788',
+    'Ray': 'OneLIVIDMAN',
+    'Raymystyro': 'OneLIVIDMAN',
+    'Adam': 'RedBirdFever',
+    'RedBirdFever': 'RedBirdFever'
 };
 
 const ICONS = {
@@ -45,10 +46,21 @@ const ICONS = {
 
 const checkSet = (items) => items.map(name => ({name, done: false}));
 
+// Supports pure strings or objects containing {name, images: []}
 const formatAlphaCheckset = (items) => {
     return items
-        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }))
-        .map((name, idx) => ({ name: `${idx + 1}. ${name}`, done: false }));
+        .sort((a, b) => {
+            const nameA = typeof a === 'string' ? a : a.name;
+            const nameB = typeof b === 'string' ? b : b.name;
+            return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
+        })
+        .map((item, idx) => {
+            if (typeof item === 'string') {
+                return { name: `${idx + 1}. ${item}`, done: false, images: [] };
+            } else {
+                return { name: `${idx + 1}. ${item.name}`, done: false, images: item.images || [] };
+            }
+        });
 };
 
 // --- FULL REGISTRY (UNCOMPRESSED & UNSTRIPPED) ---
@@ -259,7 +271,7 @@ const trophyData = [
             "Roosevelt Elk Large Shed Antler [Mount Leviatan: 10908, 9519]", "Roosevelt Elk Large Shed Antler [Norden: 11443, 6621]", "Roosevelt Elk Small Shed Antler [Calburn: 9881, 5021]",  "Roosevelt Elk Small Shed Antler [Calburn Canyon: 11882, 4840]","Roosevelt Elk Small Shed Antler [High Lake: 8936, 7453]",
             "Roosevelt Elk Small Shed Antler [Norden: 13132, 7244]", "Roosevelt Elk Large Shed Antler [Mount Kraken: 6575, 7143]", "Whitetail Deer Large Shed Antler [Balmont: 8929, 9060]", "Whitetail Deer Large Shed Antler [Balmont: 10728, 10486]",
             "Whitetail Deer Large Shed Antler [Caliburn: 9427, 5744]", "Whitetail Deer Large Shed Antler [Cheelah: 12255, 7918]", "Whitetail Deer Large Shed Antler [Chopeeka: 6797, 4840]", "Whitetail Deer Large Shed Antler [High Lake: 10349, 8122]",
-            "Whitetail Deer Large Shed Antler [Mount Kraken: 6542, 8790]", "Whitetail Deer Large Shed Antler [Mount Leviatan: 10617, 10944]", "Whitetail Deer Large Shed Antler [Roonachee: 7152, 10960]", "Whitetail Deer Large Shed Antler [Willipeg: 6520, 5605]",
+            "Whitetail Deer Large Shed Antler [Mount Kraken: 6542, 8790]", "Whitetail Deer Large Shed Antler [Mount Leviatan: 10617, 10944]", "Whitetail Deer Large Shed Antler In Camp Ground [Roonachee: 7156, 10960]", "Whitetail Deer Large Shed Antler [Willipeg: 6520, 5605]",
             "Whitetail Deer Small Shed Antler Camp ground on Seat [Balmont: 10185, 11291]", "Whitetail Deer Small Shed Antler [Mount Kraken: 6965, 8389]", "Whitetail Deer Small Shed Antler [Roonachee: 6515, 10574]"
         ])
     },
@@ -647,6 +659,7 @@ const appState = {
     legacyUnsub: null,
     dataLoaded: false,
     refreshIntervalId: null, // Auto-refresh loop anchor
+    currentLightboxData: { categoryId: null, subIdx: null, imgIdx: 0 }, // Lightbox anchor
 
     parseCSV: function(str) {
         const arr = [];
@@ -774,13 +787,13 @@ const appState = {
 
     startAutoRefreshLoop: function() {
         this.stopAutoRefreshLoop();
-        // Sets background parsing interval every 5 minutes (300000ms) without clearing working state
+        // Aggressive background parsing interval every 60 seconds (60000ms)
         this.refreshIntervalId = setInterval(() => {
             console.log("Auto-Refresh Loop triggered: Syncing external files...");
-            this.psnSynced = false; 
+            this.psnSynced = false; // Reset the flag so it forces a check unconditionally
             this.syncWithPSNData();
             this.loadNavigation();
-        }, 300000);
+        }, 60000);
     },
 
     stopAutoRefreshLoop: function() {
@@ -793,8 +806,8 @@ const appState = {
     syncWithPSNData: async function() {
         if (this.psnSynced) return;
         
-        const jsonUserKey = USER_DATA_MAP[this.activeHunter];
-        if (!jsonUserKey) {
+        const targetKey = USER_DATA_MAP[this.activeHunter] || this.activeHunter;
+        if (!targetKey) {
             console.log(`No matching JSON object configuration found for tracker name: ${this.activeHunter}. Skipping PSN Sync.`);
             return;
         }
@@ -805,10 +818,14 @@ const appState = {
             if (!response.ok) throw new Error("JSON profile payload missing on GitHub repository.");
             
             const fullJsonDump = await response.json();
+            const usersObj = fullJsonDump?.users || {};
             
-            let userWrapper = fullJsonDump?.users?.[jsonUserKey];
+            // Case-insensitive lookup just to be bulletproof
+            const exactKey = Object.keys(usersObj).find(k => k.toLowerCase() === targetKey.toLowerCase());
+            let userWrapper = usersObj[exactKey];
+
             if (!userWrapper) {
-                console.log(`No nested user key matched inside JSON structure for profile lookups: ${jsonUserKey}`);
+                console.log(`No nested user key matched inside JSON structure for profile lookups: ${targetKey}`);
                 return; 
             }
 
@@ -994,8 +1011,26 @@ const appState = {
                     const dropClass = appState.openDropdowns[t.id] ? 'show' : '';
                     const btnClass = isDone ? 'dropdown-trigger lock-badge' : 'dropdown-trigger';
                     const btnText = isDone ? `Audit Verified (${t.current}/${t.goal})` : `Audit Registry (${t.current}/${t.goal})`;
+                    
+                    let subItemsHTML = t.subItems.map((s, idx) => {
+                        let galleryHTML = '';
+                        if (s.images && s.images.length > 0) {
+                            let thumbs = s.images.map((imgUrl, imgIdx) => 
+                                `<img src="${imgUrl}" class="collectible-thumb" onclick="appState.openLightbox('${t.id}', ${idx}, ${imgIdx})" alt="View" loading="lazy">`
+                            ).join('');
+                            galleryHTML = `<div class="collectible-gallery">${thumbs}</div>`;
+                        }
+                        return `<div class="sub-item" style="flex-direction: column; align-items: flex-start;">
+                                    <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+                                        <span>${s.name}</span>
+                                        <button class="check-btn ${s.done ? 'is-done' : ''}" onclick="appState.check('${t.id}', ${idx})">${s.done ? '✓' : ''}</button>
+                                    </div>
+                                    ${galleryHTML}
+                                </div>`;
+                    }).join('');
+
                     ctrl = `<button class="${btnClass}" style="cursor: pointer;" onclick="appState.toggleDrop('${t.id}')">${btnText}</button>
-                        <div id="drop-${t.id}" class="dropdown-content ${dropClass}">${t.subItems.map((s, idx) => `<div class="sub-item"><span>${s.name}</span><button class="check-btn ${s.done?'is-done':''}" onclick="appState.check('${t.id}', ${idx})">${s.done?'✓':''}</button></div>`).join('')}</div>`;
+                            <div id="drop-${t.id}" class="dropdown-content ${dropClass}">${subItemsHTML}</div>`;
                 } else {
                     const btnClass = isDone ? 'toggle-btn lock-badge' : 'toggle-btn';
                     const btnText = isDone ? 'Audit Verified (Undo)' : 'Mark Harvested';
@@ -1052,9 +1087,54 @@ const appState = {
     switchHunter: function(name) { 
         this.psnSynced = false; 
         this.loadHunter(name); 
+        
+        // Timeout ensures profiles have swapped completely before querying JSON
+        setTimeout(() => this.syncWithPSNData(), 1000); 
     },
     
     scrollToCategory: function(id) { if(!id) return; this.collapsedSections[id] = false; this.render(); setTimeout(() => { if(document.getElementById(id)) document.getElementById(id).scrollIntoView({ behavior: 'smooth' }) }, 100); },
+
+    // --- Lightbox Methods ---
+    openLightbox: function(categoryId, subIdx, imgIdx) {
+        this.currentLightboxData = { categoryId, subIdx, imgIdx };
+        this.updateLightboxView();
+        document.getElementById('lightbox').style.display = 'block';
+    },
+
+    closeLightbox: function(e) {
+        if (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-close')) {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+    },
+
+    changeLightboxImage: function(direction) {
+        const { categoryId, subIdx } = this.currentLightboxData;
+        const t = this.hunterData.find(x => x.id === categoryId);
+        const images = t.subItems[subIdx].images;
+        
+        this.currentLightboxData.imgIdx += direction;
+        if (this.currentLightboxData.imgIdx < 0) this.currentLightboxData.imgIdx = images.length - 1;
+        if (this.currentLightboxData.imgIdx >= images.length) this.currentLightboxData.imgIdx = 0;
+        
+        this.updateLightboxView();
+    },
+
+    updateLightboxView: function() {
+        const { categoryId, subIdx, imgIdx } = this.currentLightboxData;
+        const t = this.hunterData.find(x => x.id === categoryId);
+        const subItem = t.subItems[subIdx];
+        
+        const imgEl = document.getElementById('lightbox-img');
+        const capEl = document.getElementById('lightbox-caption');
+        
+        imgEl.src = subItem.images[imgIdx];
+        
+        let viewType = "Angle View";
+        if (imgIdx === 0) viewType = "Map View (Zoomed Out)";
+        if (imgIdx === 1) viewType = "Map View (Zoomed In)";
+        
+        capEl.innerText = `${subItem.name} - ${viewType} (${imgIdx + 1} of ${subItem.images.length})`;
+    },
     
     sync: async function() { 
         this.render(); 
