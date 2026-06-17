@@ -31,8 +31,9 @@ const USER_DATA_MAP = {
     'Werewolf3788': 'Werewolf3788',
     'Ray': 'OneLIVIDMAN',
     'Raymystyro': 'OneLIVIDMAN',
-    'Adam': 'RedBirdFever',
-    'RedBirdFever': 'RedBirdFever'
+    'TJ': 'terrdog420',
+    'Darkwing69420': 'terrdog420',
+    
 };
 
 const ICONS = {
