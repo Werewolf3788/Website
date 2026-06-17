@@ -1,10 +1,11 @@
 /*
  * ==========================================
- * NYT TIMESTAMP: Sat, June 13, 2026, 12:22 AM EDT
+ * NYT TIMESTAMP: Wed, June 17, 2026, 7:43 AM EDT
  * PRECISION INTEGRATION: Frontend JS Nervous System (main.js)
  * NOTES: AGGRESSIVE AUTO-REFRESH LOOP ACTIVATED.
  * Background loop lowered from 5 minutes to 60 seconds for near real-time background scraping.
  * The system will continuously fetch and sync without requiring the user to switch profiles or interact.
+ * PROFILE UPDATED: Replaced generic paths to bind 'TJ' and 'RedBirdFever' to 'terrdog420' document.
  * NO STRIPPING, NO COMPRESSING. FULL SOURCE INTEGRITY 100% INTACT.
  * ==========================================
  */
@@ -32,8 +33,8 @@ const USER_DATA_MAP = {
     'Ray': 'OneLIVIDMAN',
     'Raymystyro': 'OneLIVIDMAN',
     'TJ': 'terrdog420',
-    'Darkwing69420': 'terrdog420',
-    
+    'RedBirdFever': 'terrdog420',
+    'Darkwing69420': 'terrdog420'
 };
 
 const ICONS = {
@@ -774,7 +775,7 @@ const appState = {
                     if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `SYNCED DB: ${firebaseConfig.projectId} | USER: ${user.uid}`;
                     
                     setTimeout(() => this.syncWithPSNData(), 2500);
-                    this.startAutoRefreshLoop(); // Initialize dynamic refresh schedules
+                    this.startAutoRefreshLoop();
                 } else {
                     if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `AUDIT STATUS: WAITING FOR AUTHENTICATION...`;
                     this.stopAutoRefreshLoop();
@@ -788,10 +789,9 @@ const appState = {
 
     startAutoRefreshLoop: function() {
         this.stopAutoRefreshLoop();
-        // Aggressive background parsing interval every 60 seconds (60000ms)
         this.refreshIntervalId = setInterval(() => {
             console.log("Auto-Refresh Loop triggered: Syncing external files...");
-            this.psnSynced = false; // Reset the flag so it forces a check unconditionally
+            this.psnSynced = false;
             this.syncWithPSNData();
             this.loadNavigation();
         }, 60000);
@@ -821,7 +821,6 @@ const appState = {
             const fullJsonDump = await response.json();
             const usersObj = fullJsonDump?.users || {};
             
-            // Case-insensitive lookup just to be bulletproof
             const exactKey = Object.keys(usersObj).find(k => k.toLowerCase() === targetKey.toLowerCase());
             let userWrapper = usersObj[exactKey];
 
@@ -892,8 +891,10 @@ const appState = {
 
         this.activeHunter = name;
         localStorage.setItem('cotw_master_active_id', name);
+        
+        // CORRECTION: Ensure UI updates to clean string header target "TJ" instead of mapping old fallback keys
         if (document.getElementById('hunter-name')) document.getElementById('hunter-name').innerText = name.toUpperCase();
-        if (document.getElementById('master-body')) document.getElementById('master-body').className = `theme-${name === 'Werewolf3788' ? 'werewolf' : name === 'Ray' || name === 'Raymystyro' ? 'ray' : 'Adam'}`;
+        if (document.getElementById('master-body')) document.getElementById('master-body').className = `theme-${name === 'Werewolf3788' ? 'werewolf' : name === 'Ray' || name === 'Raymystyro' ? 'ray' : 'TJ'}`;
         
         this.render();
         this.updateRankUI();
@@ -901,7 +902,9 @@ const appState = {
         if (this.masterUnsub) this.masterUnsub();
         if (this.legacyUnsub) this.legacyUnsub();
 
-        const masterRef = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', name);
+        const dbDocName = USER_DATA_MAP[name] || name;
+
+        const masterRef = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', dbDocName);
         this.masterUnsub = onSnapshot(masterRef, (snap) => {
             if (snap.exists()) {
                 const data = snap.data();
@@ -939,7 +942,7 @@ const appState = {
             console.error("Master Document Sync Error: ", error);
         });
 
-        const legacyRef = doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', name);
+        const legacyRef = doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', dbDocName);
         this.legacyUnsub = onSnapshot(legacyRef, (snap) => {
             if (snap.exists()) { 
                 this.animalRankData = snap.data(); 
@@ -1065,7 +1068,8 @@ const appState = {
             return;
         }
         try {
-            await setDoc(doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', this.activeHunter), this.animalRankData, { merge: true }); 
+            const dbDocName = USER_DATA_MAP[this.activeHunter] || this.activeHunter;
+            await setDoc(doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', dbDocName), this.animalRankData, { merge: true }); 
             console.log("Rank successfully synced to Firebase.");
         } catch (error) {
             console.error("FIREBASE RANK SAVE ERROR:", error);
@@ -1089,7 +1093,6 @@ const appState = {
         this.psnSynced = false; 
         this.loadHunter(name); 
         
-        // Timeout ensures profiles have swapped completely before querying JSON
         setTimeout(() => this.syncWithPSNData(), 1000); 
     },
     
@@ -1145,7 +1148,8 @@ const appState = {
         } 
 
         try {
-            const ref = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', this.activeHunter); 
+            const dbDocName = USER_DATA_MAP[this.activeHunter] || this.activeHunter;
+            const ref = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', dbDocName); 
             await setDoc(ref, { trophies: this.hunterData, lastUpdate: Date.now() }, { merge: true }); 
             console.log("Tracker data successfully pushed via database pipeline.");
         } catch (error) {
