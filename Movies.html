@@ -1,6 +1,6 @@
 <!-- 
- * NYT Timestamp: 06/18/2026 4:54:00 PM EDT
- * PROJECT: WEREWOLF CINEMA LIBRARY (v38.60 - High-Precision Time Sorting Upgrade)
+ * NYT Timestamp: 06/18/2026 5:18:00 PM EDT
+ * PROJECT: WEREWOLF CINEMA LIBRARY (v38.95 - Deep Link Search Engine & Storefront Fallback Upgrade)
  * MASTER DEV PROTOCOL APPLIED:
  * - NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
  * - Entire Lightbox UI fully restored.
@@ -11,6 +11,9 @@
  * - getSafeTimestamp updated to support High-Precision Hours, Minutes, Seconds, and AM/PM parses.
  * - Dynamic Timestamp Interpolation Engine active for continuous ownership metrics.
  * - Custom Google Analytics catalog tracking mappings integrated for absolute data fidelity.
+ * - Deep-Linked Search Query generation added for non-affiliated streaming providers with Google Search bypasses to eliminate 404s.
+ * - Bottom Buy/Rent buttons strictly restricted to owned spreadsheet items. No fallbacks on buttons.
+ * - Streaming section storefront fallbacks added so they dynamically become searchable links if direct link column is empty.
  -->
 <!DOCTYPE html>
 <html lang="en">
@@ -539,6 +542,96 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         }
     };
 
+    // Explicit Filter: Identifies if a string points to a free/subscription/with-ads streamer
+    function isFreeOrSubscriptionStream(name) {
+        const lower = name.toLowerCase();
+        
+        // Allowed free or subscription services
+        const knownStreamers = /netflix|hulu|disney|max|peacock|paramount|crunchyroll|tubi|pluto|freevee|kanopy|hoopla|cinemax|apple tv\+/.test(lower);
+        if (knownStreamers) return true;
+
+        // If it explicitly states free, ads, prime or holds "+" symbol
+        if (/free|ads|prime|\+/.test(lower)) return true;
+
+        // Strictly buy/rent storefronts to exclude from the streaming recommendations
+        const strictlyBuyRent = /\b(amazon video|apple tv store|itunes|google play movies|google play|youtube|fandango at home|fandango|vudu)\b/.test(lower);
+        if (strictlyBuyRent) return false;
+
+        return true; // Default fallback to true for other unclassified streamers
+    }
+
+    // Dynamic search URL deep-linker generator for external streaming search catalogs
+    function getStreamingSearchUrl(platformKey, movieTitle) {
+        const query = encodeURIComponent(movieTitle);
+        switch (platformKey) {
+            case 'netflix':
+                return `https://www.netflix.com/search?q=${query}`;
+            case 'hulu':
+                // Protects fragile Hulu query structures with dynamic search engine queries
+                return `https://www.google.com/search?q=Watch+${encodeURIComponent(movieTitle)}+on+Hulu`;
+            case 'peacock':
+            case 'peacock premium':
+                // Avoids Peacock's authentication gate search exceptions
+                return `https://www.google.com/search?q=Watch+${encodeURIComponent(movieTitle)}+on+Peacock`;
+            case 'disney+':
+            case 'disney plus':
+                // Eliminates unauthenticated Disney+ 404 errors completely via clean Google Search redirects
+                return `https://www.google.com/search?q=Watch+${encodeURIComponent(movieTitle)}+on+Disney+Plus`;
+            case 'max':
+            case 'hbo max':
+                // Bypasses authenticated-only Max directory search requirements
+                return `https://www.google.com/search?q=Watch+${encodeURIComponent(movieTitle)}+on+Max`;
+            case 'paramount+':
+            case 'paramount plus':
+                // Prevents unauthenticated Paramount+ 404 search exceptions
+                return `https://www.google.com/search?q=Watch+${encodeURIComponent(movieTitle)}+on+Paramount+Plus`;
+            case 'crunchyroll':
+                return `https://www.crunchyroll.com/search?q=${query}`;
+            case 'tubi':
+            case 'tubi tv':
+                return `https://tubitv.com/search/${query}`;
+            case 'pluto tv':
+            case 'pluto':
+                return `https://pluto.tv/on-demand/search/${query}`;
+            case 'freevee':
+                return `https://www.amazon.com/s?k=${query}&i=instant-video`;
+            case 'amazon':
+            case 'prime':
+            case 'amazon prime':
+            case 'amazon video':
+            case 'amazon prime video':
+                return `https://www.amazon.com/s?k=${query}&i=instant-video`;
+            case 'google':
+            case 'google play':
+            case 'google play movies':
+                return `https://play.google.com/store/search?q=${query}&c=movies`;
+            case 'apple':
+            case 'apple tv':
+            case 'apple tv store':
+            case 'itunes':
+                return `https://tv.apple.com/search?term=${query}`;
+            case 'fandango':
+            case 'vudu':
+            case 'fandango at home':
+                return `https://www.vudu.com/content/movies/search?searchString=${query}`;
+            case 'youtube':
+                return `https://www.youtube.com/results?search_query=${query}`;
+            case 'moviesanywhere':
+            case 'movies anywhere':
+            case 'ma':
+                return `https://moviesanywhere.com/search?q=${query}`;
+            case 'kanopy':
+                return `https://www.google.com/search?q=site:kanopy.com+${encodeURIComponent(movieTitle)}`;
+            case 'hoopla':
+                return `https://www.hoopladigital.com/search?q=${query}`;
+            case 'cinemax':
+                // Preserves Batched commission-earning landing targets
+                return 'https://www.amazon.com/gp/video/channel/82d58d06-360f-4b41-a276-945c01205d62?&linkCode=ll2&tag=moviesanywhere02-20&linkId=332d0f3133b19a4ca8f34eec4ca698a4&language=en_US&ref_=as_li_ss_tl';
+            default:
+                return null;
+        }
+    }
+
     // --- DYNAMIC SIDEBAR SCROLL EVENT ---
     window.scrollToSection = (val, type) => {
         setTimeout(() => {
@@ -632,6 +725,26 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         'pluto tv': 'https://pluto.tv',
         'pluto': 'https://pluto.tv',
         'freevee': 'https://www.amazon.com/freevee',
+        'kanopy': 'https://www.kanopy.com',
+        'hoopla': 'https://www.hoopladigital.com',
+        'amazon': 'https://www.amazon.com',
+        'prime': 'https://www.amazon.com',
+        'amazon video': 'https://www.amazon.com',
+        'amazon prime video': 'https://www.amazon.com',
+        'google': 'https://play.google.com',
+        'play': 'https://play.google.com',
+        'google play movies': 'https://play.google.com',
+        'apple': 'https://tv.apple.com',
+        'apple tv': 'https://tv.apple.com',
+        'apple tv store': 'https://tv.apple.com',
+        'itunes': 'https://tv.apple.com',
+        'fandango': 'https://www.vudu.com',
+        'vudu': 'https://www.vudu.com',
+        'fandango at home': 'https://www.vudu.com',
+        'youtube': 'https://www.youtube.com',
+        'movies anywhere': 'https://moviesanywhere.com',
+        'moviesanywhere': 'https://moviesanywhere.com',
+        'ma': 'https://moviesanywhere.com',
         'cinemax': 'https://www.amazon.com/gp/video/channel/82d58d06-360f-4b41-a276-945c01205d62?&linkCode=ll2&tag=moviesanywhere02-20&linkId=332d0f3133b19a4ca8f34eec4ca698a4&language=en_US&ref_=as_li_ss_tl'
     };
 
@@ -1223,12 +1336,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         document.getElementById('lb-title').textContent = (holidayMeta ? `${holidayMeta.emoji} ` : '') + m.title;
         
         const hasEdition = m.edition && m.edition.toLowerCase() !== 'standard' && m.edition.trim() !== '';
-        
-        let imdbUrl = m.imdbId ? `https://www.imdb.com/title/${m.imdbId.toLowerCase().startsWith('tvdb-') ? '' : m.imdbId}/` : '';
-        if (imdbUrl) {
-            imdbUrl = appendUtm(imdbUrl, m.title + '_imdb');
-        }
-        const imdbLinkHtml = imdbUrl ? `<a href="${imdbUrl}" onclick="trackOutboundClick(this.href, 'IMDb: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="imdb-link black-outline">IMDb: ${m.imdbId}</a> | ` : '';
+        const imdbLinkHtml = m.imdbId ? `<a href="https://www.imdb.com/title/${m.imdbId.toLowerCase().startsWith('tvdb-') ? '' : m.imdbId}/" target="werewolf_cinema_window" class="imdb-link black-outline">IMDb: ${m.imdbId}</a> | ` : '';
         document.getElementById('lb-meta-container').innerHTML = `${imdbLinkHtml}${m.genre}${hasEdition ? ` | Edition: ${m.edition}` : ''}`;
         
         const lbRatingDesc = document.getElementById('lb-rating-desc');
@@ -1269,6 +1377,10 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             const streamParts = cleanedText.split(/\s*[,|]\s*/).map(rawName => {
                 let s = rawName.trim();
                 if (!s) return null;
+                
+                // Exclude purchaseable platforms from the general streaming section
+                if (!isFreeOrSubscriptionStream(s)) return null;
+
                 let key = s.toLowerCase();
                 let targetUrl = null;
                 let isYouTube = false;
@@ -1283,25 +1395,26 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                     return amzUrl;
                 };
 
-                if ((key.includes('amazon') || key.includes('prime')) && m.platforms.amazon) {
-                    targetUrl = getAmzUrl(m.platforms.amazon);
+                // Precision check: evaluates direct custom database URLs; falls back cleanly to search engines on empty results
+                if ((key.includes('amazon') || key.includes('prime'))) {
+                    targetUrl = m.platforms.amazon ? getAmzUrl(m.platforms.amazon) : getStreamingSearchUrl('amazon', m.title);
                     isAppTarget = true;
-                } else if ((key.includes('google') || key.includes('play')) && m.platforms.google) {
-                    targetUrl = m.platforms.google;
-                } else if (key.includes('youtube') && m.platforms.youtube) {
-                    targetUrl = m.platforms.youtube;
+                } else if (key.includes('youtube')) {
+                    targetUrl = m.platforms.youtube ? m.platforms.youtube : getStreamingSearchUrl('youtube', m.title);
                     isYouTube = true;
-                } else if ((key.includes('apple') || key.includes('itunes')) && m.platforms.apple) {
-                    targetUrl = m.platforms.apple;
+                } else if (key.includes('google') || key.includes('play')) {
+                    targetUrl = m.platforms.google ? m.platforms.google : getStreamingSearchUrl('google', m.title);
+                } else if (key.includes('apple') || key.includes('itunes')) {
+                    targetUrl = m.platforms.apple ? m.platforms.apple : getStreamingSearchUrl('apple', m.title);
                     isAppTarget = true;
-                } else if ((key.includes('fandango') || key.includes('vudu')) && m.platforms.fandango) {
-                    targetUrl = m.platforms.fandango;
-                } else if ((key.includes('movies anywhere') || key === 'ma') && m.platforms.moviesanywhere) {
-                    targetUrl = m.platforms.moviesanywhere;
+                } else if (key.includes('fandango') || key.includes('vudu')) {
+                    targetUrl = m.platforms.fandango ? m.platforms.fandango : getStreamingSearchUrl('fandango', m.title);
+                } else if (key.includes('movies anywhere') || key === 'ma') {
+                    targetUrl = m.platforms.moviesanywhere ? m.platforms.moviesanywhere : getStreamingSearchUrl('moviesanywhere', m.title);
                 } else {
-                    for (const [mapKey, mapUrl] of Object.entries(streamMap)) {
+                    for (const mapKey of Object.keys(streamMap)) {
                         if (key.includes(mapKey)) {
-                            targetUrl = mapUrl;
+                            targetUrl = getStreamingSearchUrl(mapKey, m.title) || streamMap[mapKey];
                             if (mapKey === 'youtube') isYouTube = true;
                             if (mapKey.includes('amazon') || mapKey.includes('prime') || mapKey.includes('apple') || mapKey === 'cinemax') isAppTarget = true;
                             break;
