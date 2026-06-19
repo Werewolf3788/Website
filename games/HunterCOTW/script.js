@@ -1,17 +1,17 @@
 /*
  * ==========================================
- * NYT TIMESTAMP: Fri, June 19, 2026, 5:15 AM EDT
- * PRECISION INTEGRATION: Frontend JS Nervous System (script.js)
- * FIXED: Bypassed named instance connection failure for standard static deployments.
- * FIXED: Maintained accurate sub-collection path routing loops.
- * FIXED: Assigned TJ (terrdog420) color schemes explicitly to pure purple layout keys.
+ * NYT TIMESTAMP: Sat, June 13, 2026, 12:22 AM EDT
+ * PRECISION INTEGRATION: Frontend JS Nervous System (main.js)
+ * NOTES: AGGRESSIVE AUTO-REFRESH LOOP ACTIVATED.
+ * Background loop lowered from 5 minutes to 60 seconds for near real-time background scraping.
+ * The system will continuously fetch and sync without requiring the user to switch profiles or interact.
  * NO STRIPPING, NO COMPRESSING. FULL SOURCE INTEGRITY 100% INTACT.
  * ==========================================
  */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-import { getFirestore, doc, setDoc, onSnapshot, increment } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
@@ -29,8 +29,10 @@ const LEGACY_ID = 'cotw-trophy-display';
 // --- FRONTEND PROFILE TO BACKEND SCRAPER JSON MAP ---
 const USER_DATA_MAP = {
     'Werewolf3788': 'Werewolf3788',
-    'Raymystyro': 'Raymystyro',
-    'TJ': 'terrdog420'
+    'Ray': 'OneLIVIDMAN',
+    'Raymystyro': 'OneLIVIDMAN',
+    'Adam': 'RedBirdFever',
+    'RedBirdFever': 'RedBirdFever'
 };
 
 const ICONS = {
@@ -92,7 +94,7 @@ const trophyData = [
     { id: 'stay_target', cat: 'Base Game', name: 'Stay On Target', rank: 'bronze', current: 0, goal: 50, type: 'numeric', plat: true, desc: '50 tracks same animal.' },
     { id: 'persistence', cat: 'Base Game', name: 'Persistence Is Futile', rank: 'silver', current: 0, goal: 100, type: 'numeric', plat: true, desc: '100 tracks same animal.' },
     { id: 'stalker', cat: 'Base Game', name: 'Stalker', rank: 'silver', current: 0, goal: 100, type: 'numeric', plat: true, desc: 'Spot 100 animals.' },
-    { id: 'leave_no', cat: 'Base Game', name: 'Leave No Animal Behind', rank: 'bronze', current: current === 0 ? 0 : current, goal: 1, type: 'toggle', plat: true, desc: 'Hidden Trophy.' },
+    { id: 'leave_no', cat: 'Base Game', name: 'Leave No Animal Behind', rank: 'bronze', current: 0, goal: 1, type: 'toggle', plat: true, desc: 'Hidden Trophy.' },
     { id: 'scarecrow', cat: 'Base Game', name: 'Scarecrow', rank: 'bronze', current: 0, goal: 1000, type: 'numeric', plat: true, desc: 'Scare 1000 animals.' },
     { id: 'not_zombie', cat: 'Base Game', name: 'Not A Zombie Game', rank: 'silver', current: 0, goal: 10, type: 'numeric', plat: true, desc: '10 brain hit kills.' },
     { id: 'diamonds_ever', cat: 'Base Game', name: 'Diamonds Forever', rank: 'gold', current: 0, goal: 1, type: 'toggle', plat: true, desc: 'Earn a diamond rating.' },
@@ -206,6 +208,10 @@ const trophyData = [
     { id: 'srp_peace', cat: 'DLC: Silver Ridge', name: 'Inner Peace', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: "Complete 'Inner Peace, Outer Chaos'." },
     { id: 'srp_ascent', cat: 'DLC: Silver Ridge', name: 'The Ascent', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: "Complete 'The Ascent'." },
 
+    // ==========================================================
+    // --- LIST OF COLLECTIBLES WRAPPER (ALPHA SORTED & NUMBERED) ---
+    // ==========================================================
+    
     // --- LAYTON LAKE DISTRICT ---
     { 
         id: 'coll_layton_outposts', cat: 'List of Collectibles', name: 'Layton Lake - Outposts', rank: 'bronze', current: 0, goal: 18, type: 'checklist',
@@ -580,6 +586,64 @@ const trophyData = [
             "The Ute People [-5759, -9517]", "The Wilde West [-2302, -6268]", "Traces of History [-1440, -7727]", "The Water's Perfect [-4123, -8112]",
             "Wandering Fathers [-6234, -12123]"
         ])
+    },
+
+    // --- TE AWAROA NATIONAL PARK ---
+    {
+        id: 'coll_te_outposts', cat: 'List of Collectibles', name: 'Te Awaroa - Outposts', rank: 'bronze', current: 0, goal: 20, type: 'checklist',
+        subItems: formatAlphaCheckset([
+            "Akiaki Hut [8645, 11497]", "Kakaruwai Hut [4718, 10939]", "Kākāriki Hut [10362, 10712]", "Kārearea Hut [9527, 10672]", "Korimako Hut [10750, 11235]",
+            "Kākā Hut [5300, 8115]", "Kiwi Hut [9329, 6772]", "Koekoeā Hut [5750, 9160]", "Kōkako Hut [9232, 9696]", "Mōhua Hut [9616, 11916]",
+            "Ngirungiru Hut [4852, 7553]", "Pīwakawaka Hut [6482, 10339]", "Riroriro Hut [4598, 9910]", "Ruru Hut [9293, 8833]", "Kea Hut [7859, 8387]",
+            "Tauhou Hut [6434, 7199]", "Tīeke Hut [4471, 9062]", "Tītitipounamu Hut [11196, 10551]", "Tūī Hut [10520, 8441]", "Weka Hut [12503, 9705]"
+        ])
+    },
+    {
+        id: 'coll_te_lookouts', cat: 'List of Collectibles', name: 'Te Awaroa - Lookout Points', rank: 'bronze', current: 0, goal: 13, type: 'checklist',
+        subItems: formatAlphaCheckset([
+            "Harakeke Point [10368, 9607]", "Kahikatea Point [6627, 7760]", "Kātote Point [12024, 8497]", "Kawakawa Point [7435, 9386]", "Māhoe Point [5688, 10179]",
+            "Mingimingi Point [8263, 8174]", "Ponga Point [11616, 11289]", "Pātītī Point [5414, 6767]", "Rārahu Point [10552, 7254]", "Rimu Point [5445, 8792]",
+            "Tāwhai Point [10309, 12720]", "Tī Kōuka Point [8487, 11511]", "Wī Kura Point [4050, 10433]"
+        ])
+    },
+    {
+        id: 'coll_te_landmarks', cat: 'List of Collectibles', name: 'Te Awaroa - Landmarks', rank: 'bronze', current: 0, goal: 21, type: 'checklist',
+        subItems: formatAlphaCheckset([
+            "Adapt or Perish [4721, 7641]", "Alpine Ops [6282, 7794]", "An Unlikely Celebrity [4836, 10804]", "As Good as Gold? [10684, 7159]", "A Proud History [8333, 7796]",
+            "A Poisonous Debate [5162, 8891]", "Castle Crashers [5517, 7180]", "If These Walls Could Talk [6693, 9065]", "Karst into Darkness [8625, 9204]", "Movie Magic [9565, 11363]",
+            "Pomp and Ceremony [10730, 11837]", "Preserving the Past [4997, 9281]", "Sand Stones [11131, 11143]", "Tat'll Do It [12218, 10040]", "Tree-rific [9139, 10765]",
+            "Try, Try Again [9543, 8842]", "The Fairy Folk [9200, 10083]", "The Legend of the Lost Tribe [5906, 10169]", "The Legend of Poutini [5359, 9967]", "The Treaty of Waitangi [10673, 9518]",
+            "Weaving Stories [4579, 9933]"
+        ])
+    },
+
+    // --- RANCHO DEL ARROYO ---
+    {
+        id: 'coll_rancho_outposts', cat: 'List of Collectibles', name: 'Rancho del Arroyo - Outposts', rank: 'bronze', current: 0, goal: 21, type: 'checklist',
+        subItems: formatAlphaCheckset([
+            "Casa de los Domínguez [-8781, 6783]", "Casa de los Flores [-10938, 9117]", "Casa de los García [-11422, 6705]", "Casa de los Gil [-7610, 6352]", "Casa de los González [-4269, 11018]",
+            "Casa de los Gutiérrez [-9858, 7232]", "Casa de los Juárez [-9913, 10821]", "Casa de los López [-10341, 7986]", "Casa de los Martínez [-11396, 5035]", "Casa de los Moreno [-7046, 7847]",
+            "Casa de los Ortega [-10900, 10462]", "Casa de los Pérez [-9712, 4847]", "Casa de los Reyes [-5543, 12296]", "Casa de los Ruiz [-8885, 5961]", "Casa de los Torres [-7588, 11883]",
+            "Casa de los Valenzuela [-7171, 9839]", "Casa de los Vasquez [-10204, 9254]", "Casa de los Velásquez [-9806, 11884]", "Casa de los Zárate [-9207, 10057]", "Casa de los Castro [-8025, 9142]",
+            "La Casa Grande [-8777, 8336]"
+        ])
+    },
+    {
+        id: 'coll_rancho_lookouts', cat: 'List of Collectibles', name: 'Rancho del Arroyo - Lookout Points', rank: 'bronze', current: 0, goal: 11, type: 'checklist',
+        subItems: formatAlphaCheckset([
+            "Mirador Alto [-6487, 6950]", "Mirador Bajavista [-9201, 7077]", "Mirador de la Laguna [-7761, 5189]", "Mirador de los Charcos [-6113, 9550]", "Mirador de los Mártires [-10202, 5319]",
+            "Mirador del Aguaje [-7864, 8707]", "Mirador del Paso [-5410, 12019]", "Mirador del Río [-8281, 11205]", "Mirador del Sahuaro [-10080, 9091]", "Mirador del Seco [-11524, 7500]",
+            "Mirador Eusebio Kino [-10738, 11619]"
+        ])
+    },
+    {
+        id: 'coll_rancho_landmarks', cat: 'List of Collectibles', name: 'Rancho del Arroyo - Landmarks', rank: 'bronze', current: 0, goal: 16, type: 'checklist',
+        subItems: formatAlphaCheckset([
+            "A Hard Living [-8831, 7556]", "A Violent Start [-10610, 6881]", "Animal Magic [-9599, 8552]", "Beggar Thy Neighbor [-4411, 6507]", "Conservation in the Borderlands [-7174, 11770]",
+            "Día de Muertos [-7474, 9178]", "El Centauro del Norte [-6941, 10396]", "Extracting Justice [-10377, 10564]", "Hotspot [-10203, 8700]", "Immigrant Songs [-4938, 9796]",
+            "Indigenous Peoples of Sonora [-9556, 9335]", "Macabra [-11007, 9351]", "Miracle Workers [-11217, 12082]", "The Secret of Sonora [-5085, 11813]", "Unfinished Business [-8795, 10194]",
+            "Working Women [-1023, 110718]"
+        ])
     }
 ];
 
@@ -587,16 +651,15 @@ const appState = {
     activeHunter: 'Werewolf3788',
     hunterData: JSON.parse(JSON.stringify(trophyData)),
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
-    auth: null,
-    db: null,
+    auth: null, db: null,
     collapsedSections: {},
     openDropdowns: {}, 
     psnSynced: false,
     masterUnsub: null,
     legacyUnsub: null,
     dataLoaded: false,
-    refreshIntervalId: null, 
-    currentLightboxData: { categoryId: null, subIdx: null, imgIdx: 0 },
+    refreshIntervalId: null, // Auto-refresh loop anchor
+    currentLightboxData: { categoryId: null, subIdx: null, imgIdx: 0 }, // Lightbox anchor
 
     parseCSV: function(str) {
         const arr = [];
@@ -682,30 +745,38 @@ const appState = {
             if (navContainer) navContainer.innerHTML = navHTML;
         } catch (e) {
             console.error("Failed to load dynamic navigation", e);
+            if (document.getElementById('dynamic-nav-links')) {
+                document.getElementById('dynamic-nav-links').innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Menu Sync Error</span>`;
+            }
         }
     },
 
     init: async function() {
         const saved = localStorage.getItem('cotw_master_active_id');
         if (saved) this.activeHunter = saved;
+        
         this.loadNavigation();
         
         try {
-            // FIX: Initialize standard single instance connection to resolve GitHub static handshake dropouts
-            const app = initializeApp(firebaseConfig);
+            const app = initializeApp(firebaseConfig, 'COTW-Master-named');
             this.auth = getAuth(app);
             this.db = getFirestore(app);
             
+            signInAnonymously(this.auth).catch(err => {
+                console.error("FIREBASE AUTH ERROR:", err);
+                if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `AUTH FAILED: ${err.message}`;
+            });
+
             onAuthStateChanged(this.auth, (user) => { 
                 if (user) {
                     this.loadHunter(this.activeHunter);
                     if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `SYNCED DB: ${firebaseConfig.projectId} | USER: ${user.uid}`;
+                    
                     setTimeout(() => this.syncWithPSNData(), 2500);
-                    this.startAutoRefreshLoop();
+                    this.startAutoRefreshLoop(); // Initialize dynamic refresh schedules
                 } else {
-                    signInAnonymously(this.auth).catch(err => {
-                        console.error("FIREBASE AUTH ERROR:", err);
-                    });
+                    if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `AUDIT STATUS: WAITING FOR AUTHENTICATION...`;
+                    this.stopAutoRefreshLoop();
                 }
             });
         } catch (err) {
@@ -716,8 +787,10 @@ const appState = {
 
     startAutoRefreshLoop: function() {
         this.stopAutoRefreshLoop();
+        // Aggressive background parsing interval every 60 seconds (60000ms)
         this.refreshIntervalId = setInterval(() => {
-            this.psnSynced = false;
+            console.log("Auto-Refresh Loop triggered: Syncing external files...");
+            this.psnSynced = false; // Reset the flag so it forces a check unconditionally
             this.syncWithPSNData();
             this.loadNavigation();
         }, 60000);
@@ -732,8 +805,12 @@ const appState = {
 
     syncWithPSNData: async function() {
         if (this.psnSynced) return;
+        
         const targetKey = USER_DATA_MAP[this.activeHunter] || this.activeHunter;
-        if (!targetKey) return;
+        if (!targetKey) {
+            console.log(`No matching JSON object configuration found for tracker name: ${this.activeHunter}. Skipping PSN Sync.`);
+            return;
+        }
 
         try {
             const url = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/Playstation/psn_data.json';
@@ -743,25 +820,35 @@ const appState = {
             const fullJsonDump = await response.json();
             const usersObj = fullJsonDump?.users || {};
             
+            // Case-insensitive lookup just to be bulletproof
             const exactKey = Object.keys(usersObj).find(k => k.toLowerCase() === targetKey.toLowerCase());
             let userWrapper = usersObj[exactKey];
-            if (!userWrapper) return;
+
+            if (!userWrapper) {
+                console.log(`No nested user key matched inside JSON structure for profile lookups: ${targetKey}`);
+                return; 
+            }
 
             let psnTrophies = userWrapper?.trophies || [];
+            
             if (psnTrophies.length === 0 && userWrapper?.activeHunt?.trophies) {
                 psnTrophies = userWrapper.activeHunt.trophies;
             }
 
             let updated = false;
+
             this.hunterData.forEach(t => {
                 const match = psnTrophies.find(p => p.name && p.name.toLowerCase().trim() === t.name.toLowerCase().trim());
+                
                 if (match) {
                     const imgUrl = match.iconUrl || match.icon || match.image;
                     if (imgUrl && t.psnImage !== imgUrl) {
                         t.psnImage = imgUrl;
                         updated = true;
                     }
+                    
                     const isEarned = match.earned === true || match.unlocked === true || match.achieved === true || match.progress >= 100;
+                    
                     if (isEarned) {
                         if (t.type === 'checklist') {
                             const allDone = t.subItems.every(s => s.done);
@@ -780,32 +867,18 @@ const appState = {
                 }
             });
 
-            if (updated) this.sync();
+            if (updated) {
+                this.sync(); 
+            }
+            
             this.psnSynced = true;
+            if (document.getElementById('stat-line')) {
+                const baseText = document.getElementById('stat-line').innerText.replace(' | PSN AUTO-SYNC ACTIVE', '');
+                document.getElementById('stat-line').innerText = baseText + " | PSN AUTO-SYNC ACTIVE";
+            }
+            
         } catch (err) {
             console.log("PSN Auto-Sync processing delay:", err);
-        }
-    },
-
-    updateLevelCash: async function() {
-        if (!this.db || !this.dataLoaded) return;
-        const lvlEl = document.getElementById('level-input');
-        const cshEl = document.getElementById('cash-input');
-        if (!lvlEl || !cshEl) return;
-
-        const dbDocName = USER_DATA_MAP[this.activeHunter] || this.activeHunter;
-        
-        // FIX: Atomic write execution using exact sub-collection paths matching layout templates
-        const ref = doc(this.db, "artifacts", MASTER_ID, "public", "data", "userTrophies", dbDocName);
-        
-        try {
-            await setDoc(ref, {
-                level: Number(lvlEl.value),
-                cash: Number(cshEl.value)
-            }, { merge: true });
-            console.log("Level/Cash synchronized successfully to Firestore.");
-        } catch (err) {
-            console.error("Manual Input Save Error: ", err);
         }
     },
 
@@ -815,11 +888,11 @@ const appState = {
         this.hunterData = JSON.parse(JSON.stringify(trophyData));
         this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
         this.dataLoaded = false;
+
         this.activeHunter = name;
         localStorage.setItem('cotw_master_active_id', name);
-        
         if (document.getElementById('hunter-name')) document.getElementById('hunter-name').innerText = name.toUpperCase();
-        if (document.getElementById('master-body')) document.getElementById('master-body').className = `theme-${name === 'Werewolf3788' ? 'werewolf' : name === 'Raymystyro' ? 'ray' : 'TJ'}`;
+        if (document.getElementById('master-body')) document.getElementById('master-body').className = `theme-${name === 'Werewolf3788' ? 'werewolf' : name === 'Ray' || name === 'Raymystyro' ? 'ray' : 'Adam'}`;
         
         this.render();
         this.updateRankUI();
@@ -827,20 +900,12 @@ const appState = {
         if (this.masterUnsub) this.masterUnsub();
         if (this.legacyUnsub) this.legacyUnsub();
 
-        const dbDocName = USER_DATA_MAP[name] || name;
-
-        // FIX: Hardcoded path matching your nested schema subcollections perfectly
-        const masterRef = doc(this.db, "artifacts", MASTER_ID, "public", "data", "userTrophies", dbDocName);
-        this.masterUnsub = onSnapshot(masterRef, async (snap) => {
+        const masterRef = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', name);
+        this.masterUnsub = onSnapshot(masterRef, (snap) => {
             if (snap.exists()) {
                 const data = snap.data();
-                
-                const lvlEl = document.getElementById('level-input');
-                const cshEl = document.getElementById('cash-input');
-                if (lvlEl && data.level !== undefined) lvlEl.value = data.level;
-                if (cshEl && data.cash !== undefined) cshEl.value = data.cash;
-
                 let incoming = data.trophies || [];
+                
                 if (Array.isArray(data)) incoming = data;
                 else if (Object.keys(data).length > 0 && !data.trophies) {
                     incoming = Object.values(data).filter(x => x && x.id);
@@ -857,18 +922,15 @@ const appState = {
                             });
                             dt.current = dt.subItems.filter(s => s.done).length;
                         } else {
-                            if (found.done === true || found.completed === true || String(found.done).toLowerCase() === "true") {
+                            if (found.done === true || found.completed === true) {
                                 dt.current = dt.goal;
                             } else {
-                                dt.current = !isNaN(parseInt(found.current, 10)) ? parseInt(found.current, 10) : 0; 
+                                dt.current = Number(found.current) || 0; 
                             }
                         }
                     }
                     return dt;
                 });
-            } else if (name === 'TJ') {
-                // If TJ document doesn't exist yet, save tracking schema silently to prevent site crash
-                await setDoc(masterRef, { trophies: this.hunterData, level: 1, cash: 0 }, { merge: true });
             }
             this.dataLoaded = true;
             this.render();
@@ -876,13 +938,11 @@ const appState = {
             console.error("Master Document Sync Error: ", error);
         });
 
-        const legacyRef = doc(this.db, "artifacts", LEGACY_ID, "public", "data", "userTrophies", dbDocName);
-        this.legacyUnsub = onSnapshot(legacyRef, async (snap) => {
+        const legacyRef = doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', name);
+        this.legacyUnsub = onSnapshot(legacyRef, (snap) => {
             if (snap.exists()) { 
                 this.animalRankData = snap.data(); 
                 this.updateRankUI(); 
-            } else if (name === 'TJ') {
-                await setDoc(legacyRef, this.animalRankData, { merge: true });
             }
         }, (error) => {
             console.error("Legacy Document Sync Error: ", error);
@@ -991,28 +1051,31 @@ const appState = {
     getIcon: (t) => t.psnImage ? t.psnImage : (t.cat.includes('Collectibles') ? ICONS.TRACK : t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
     
     adj: function(id, val) { const t = this.hunterData.find(x => x.id === id); t.current = Math.max(0, t.current + val); this.sync(); },
+    
     tog: function(id) { const t = this.hunterData.find(x => x.id === id); t.current = t.current === 0 ? 1 : 0; this.sync(); },
+    
     check: function(id, idx) { const t = this.hunterData.find(x => x.id === id); t.subItems[idx].done = !t.subItems[idx].done; this.sync(); },
     
     adjRank: async function(tier, val) { 
         this.animalRankData[tier] = Math.max(0, (this.animalRankData[tier] || 0) + val); 
         this.updateRankUI(); 
-        if (!this.db || !this.auth.currentUser) return;
-
+        if (!this.db || !this.auth.currentUser) {
+            console.warn("Rank Save Blocked: No active Firebase Auth session.");
+            return;
+        }
         try {
-            const dbDocName = USER_DATA_MAP[this.activeHunter] || this.activeHunter;
-            const ref = doc(this.db, "artifacts", LEGACY_ID, "public", "data", "userTrophies", dbDocName); 
-            const payload = {};
-            payload[tier] = increment(val);
-            await setDoc(ref, payload, { merge: true }); 
-            console.log("Rank successfully synced atomically.");
+            await setDoc(doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', this.activeHunter), this.animalRankData, { merge: true }); 
+            console.log("Rank successfully synced to Firebase.");
         } catch (error) {
             console.error("FIREBASE RANK SAVE ERROR:", error);
+            if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `RANK SYNC ERROR: Check console (Rules/Auth)`;
         }
     },
     
     updateRankUI: function() { Object.keys(this.animalRankData).forEach(k => { const el = document.getElementById(`rank-val-${k}`); if (el) el.innerText = this.animalRankData[k]; }); },
+    
     toggleSection: function(id) { const cur = this.collapsedSections[id] !== false; this.collapsedSections[id] = !cur; this.render(); },
+    
     toggleDrop: function(id) { 
         const el = document.getElementById(`drop-${id}`);
         if (el) {
@@ -1024,59 +1087,77 @@ const appState = {
     switchHunter: function(name) { 
         this.psnSynced = false; 
         this.loadHunter(name); 
+        
+        // Timeout ensures profiles have swapped completely before querying JSON
         setTimeout(() => this.syncWithPSNData(), 1000); 
     },
     
     scrollToCategory: function(id) { if(!id) return; this.collapsedSections[id] = false; this.render(); setTimeout(() => { if(document.getElementById(id)) document.getElementById(id).scrollIntoView({ behavior: 'smooth' }) }, 100); },
 
+    // --- Lightbox Methods ---
     openLightbox: function(categoryId, subIdx, imgIdx) {
         this.currentLightboxData = { categoryId, subIdx, imgIdx };
         this.updateLightboxView();
         document.getElementById('lightbox').style.display = 'block';
     },
+
     closeLightbox: function(e) {
         if (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-close')) {
             document.getElementById('lightbox').style.display = 'none';
         }
     },
+
     changeLightboxImage: function(direction) {
         const { categoryId, subIdx } = this.currentLightboxData;
         const t = this.hunterData.find(x => x.id === categoryId);
         const images = t.subItems[subIdx].images;
+        
         this.currentLightboxData.imgIdx += direction;
         if (this.currentLightboxData.imgIdx < 0) this.currentLightboxData.imgIdx = images.length - 1;
         if (this.currentLightboxData.imgIdx >= images.length) this.currentLightboxData.imgIdx = 0;
+        
         this.updateLightboxView();
     },
+
     updateLightboxView: function() {
         const { categoryId, subIdx, imgIdx } = this.currentLightboxData;
         const t = this.hunterData.find(x => x.id === categoryId);
         const subItem = t.subItems[subIdx];
+        
         const imgEl = document.getElementById('lightbox-img');
         const capEl = document.getElementById('lightbox-caption');
+        
         imgEl.src = subItem.images[imgIdx];
+        
         let viewType = "Angle View";
         if (imgIdx === 0) viewType = "Map View (Zoomed Out)";
         if (imgIdx === 1) viewType = "Map View (Zoomed In)";
+        
         capEl.innerText = `${subItem.name} - ${viewType} (${imgIdx + 1} of ${subItem.images.length})`;
     },
     
     sync: async function() { 
-        if (!this.db || !this.auth.currentUser || !this.dataLoaded) return;
         this.render(); 
+        if (!this.db || !this.auth.currentUser || !this.dataLoaded) {
+            console.warn("Tracker Save Blocked: Waiting for data load or authentication.");
+            return;
+        } 
+
         try {
-            const dbDocName = USER_DATA_MAP[this.activeHunter] || this.activeHunter;
-            const ref = doc(this.db, "artifacts", MASTER_ID, "public", "data", "userTrophies", dbDocName); 
+            const ref = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', this.activeHunter); 
             await setDoc(ref, { trophies: this.hunterData, lastUpdate: Date.now() }, { merge: true }); 
-            console.log("Tracker records securely updated via merge stream.");
+            console.log("Tracker data successfully pushed via database pipeline.");
         } catch (error) {
             console.error("FIREBASE TRACKER SAVE ERROR:", error);
+            if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `TRACKER SYNC ERROR: Check console (Rules/Auth)`;
         }
     }
 };
 
+window.appState = appState; 
 appState.init();
 
+// --- GLOBAL CLICK LISTENER FOR DROPDOWNS ---
 window.onclick = function(event) {
     if (!event.target.matches('.dropdown-trigger') && !event.target.closest('.dropdown-content')) {
         document.querySelectorAll('.dropdown-content.show').forEach(el => {
