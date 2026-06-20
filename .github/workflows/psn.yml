@@ -1,9 +1,9 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
 # Project: PSN Sync Workflow
-# Timestamp: May 10, 2026, 11:00 PM (NYT)
+# Timestamp: Fri, June 19, 2026, 10:45 PM (NYT)
 # Compatibility: GitHub Actions, GitHub Pages
 # Note: DO NOT STRIP INDENTATION. YAML REQUIRES 2-SPACE SPACING.
-# Updates: Changed cron schedule to run every 23 minutes for the whole squad.
+# Updates: Patched commit step with a robust reset-and-overwrite merge strategy to bypass JSON data conflicts.
 # ------------------------------------
 
 name: PSN Sync and Deploy
@@ -52,11 +52,24 @@ jobs:
           git config --global user.name "Werewolf3788-Bot"
           git config --global user.email "bot@werewolf.ourflora.com"
           
+          # 1. Stage current background-generated data changes
           git add Playstation/psn_data.json Playstation/tokens.json .nojekyll
           
+          # 2. Check if there are differences to save
           if ! git diff --cached --quiet; then
+            # Stash the new changes away safely
+            git stash || true
+            
+            # Fetch origin state and force hard match to clean version drift
+            git fetch origin main
+            git reset --hard origin/main
+            
+            # Reapply your freshly generated data files directly over main
+            git stash pop || true
+            
+            # Re-stage files for safe automated logging
+            git add Playstation/psn_data.json Playstation/tokens.json .nojekyll
             git commit -m "Automated PSN Sync: $(date)"
-            git pull --rebase origin main
             git push origin main
           else
             echo "No data changes detected. Skipping commit."
