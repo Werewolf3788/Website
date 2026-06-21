@@ -719,7 +719,7 @@
             "groupName": "Ready or Not",
             "earned": true,
             "earnedDate": "2/25/2026, 11:50:17 PM",
-            "earnedAge": "3 months, 3 weeks, 4 days, 15 hours, 39 mins",
+            "earnedAge": "3 months, 3 weeks, 4 days, 17 hours, 20 mins",
             "timestamp": 1772063417000,
             "currentValue": 0,
             "targetValue": 0
@@ -972,7 +972,7 @@
             "groupName": "Ready or Not",
             "earned": true,
             "earnedDate": "2/13/2026, 8:58:58 PM",
-            "earnedAge": "4 months, 1 week, 18 hours, 31 mins",
+            "earnedAge": "4 months, 1 week, 20 hours, 11 mins",
             "timestamp": 1771016338000,
             "currentValue": 0,
             "targetValue": 0
@@ -1019,7 +1019,7 @@
             "groupName": "Ready or Not",
             "earned": true,
             "earnedDate": "2/18/2026, 7:26:57 PM",
-            "earnedAge": "4 months, 2 days, 20 hours, 3 mins",
+            "earnedAge": "4 months, 2 days, 21 hours, 43 mins",
             "timestamp": 1771442817000,
             "currentValue": 0,
             "targetValue": "20"
@@ -1043,7 +1043,7 @@
             "groupName": "Ready or Not",
             "earned": true,
             "earnedDate": "2/18/2026, 8:06:11 PM",
-            "earnedAge": "4 months, 2 days, 19 hours, 24 mins",
+            "earnedAge": "4 months, 2 days, 21 hours, 4 mins",
             "timestamp": 1771445171000,
             "currentValue": 0,
             "targetValue": "50"
@@ -1067,7 +1067,7 @@
             "groupName": "Ready or Not",
             "earned": true,
             "earnedDate": "2/18/2026, 6:26:36 PM",
-            "earnedAge": "4 months, 2 days, 21 hours, 3 mins",
+            "earnedAge": "4 months, 2 days, 22 hours, 44 mins",
             "timestamp": 1771439196000,
             "currentValue": 0,
             "targetValue": "50"
@@ -1091,7 +1091,7 @@
             "groupName": "Ready or Not",
             "earned": true,
             "earnedDate": "2/19/2026, 9:35:49 PM",
-            "earnedAge": "4 months, 1 day, 17 hours, 54 mins",
+            "earnedAge": "4 months, 1 day, 19 hours, 35 mins",
             "timestamp": 1771536949000,
             "currentValue": 0,
             "targetValue": "100"
@@ -1162,7 +1162,7 @@
             "groupName": "Ready or Not",
             "earned": true,
             "earnedDate": "2/19/2026, 8:39:06 PM",
-            "earnedAge": "4 months, 1 day, 18 hours, 51 mins",
+            "earnedAge": "4 months, 1 day, 20 hours, 31 mins",
             "timestamp": 1771533546000,
             "currentValue": 0,
             "targetValue": "30"
@@ -1966,7 +1966,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21575_00/d9876035-734a-4e33-bf37-9b9661d63fd1.png",
           "timestamp": 1781410363000,
           "date": "6/14/2026, 4:12:43 AM",
-          "age": "1 week, 11 hours, 17 mins"
+          "age": "1 week, 12 hours, 58 mins"
         },
         {
           "game": "Destiny 2",
@@ -1974,7 +1974,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21575_00/95fae280-3b71-4661-8fe2-e2a6edce0d01.png",
           "timestamp": 1781409421000,
           "date": "6/14/2026, 3:57:01 AM",
-          "age": "1 week, 11 hours, 33 mins"
+          "age": "1 week, 13 hours, 13 mins"
         },
         {
           "game": "Sackboy: A Big Adventure",
@@ -1982,7 +1982,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR19950_00/cd6b7eca-080a-47d8-a4b9-0e1549e4a127.png",
           "timestamp": 1781225694000,
           "date": "6/12/2026, 12:54:54 AM",
-          "age": "1 week, 2 days, 14 hours, 35 mins"
+          "age": "1 week, 2 days, 16 hours, 16 mins"
         },
         {
           "game": "Sackboy: A Big Adventure",
@@ -1990,7 +1990,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR19950_00/13ba807f-2430-419f-b80d-5e17ebee8ce1.png",
           "timestamp": 1781224003000,
           "date": "6/12/2026, 12:26:43 AM",
-          "age": "1 week, 2 days, 15 hours, 3 mins"
+          "age": "1 week, 2 days, 16 hours, 44 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -1998,7 +1998,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/2f3257dd-0164-408a-808b-be44ec949835.png",
           "timestamp": 1780959349000,
           "date": "6/8/2026, 10:55:49 PM",
-          "age": "1 week, 5 days, 16 hours, 34 mins"
+          "age": "1 week, 5 days, 18 hours, 15 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -2006,7 +2006,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/ff8629d5-5cca-44c2-b09f-2074bf121176.png",
           "timestamp": 1780959254000,
           "date": "6/8/2026, 10:54:14 PM",
-          "age": "1 week, 5 days, 16 hours, 35 mins"
+          "age": "1 week, 5 days, 18 hours, 16 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -2014,7 +2014,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/b38c5fde-cb03-49cb-922e-91c1b5c3da89.png",
           "timestamp": 1780959165000,
           "date": "6/8/2026, 10:52:45 PM",
-          "age": "1 week, 5 days, 16 hours, 37 mins"
+          "age": "1 week, 5 days, 18 hours, 18 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -2022,7 +2022,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/60e68df1-4252-4572-9423-fe265f83b6c9.png",
           "timestamp": 1780878161000,
           "date": "6/8/2026, 12:22:41 AM",
-          "age": "1 week, 6 days, 15 hours, 7 mins"
+          "age": "1 week, 6 days, 16 hours, 48 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -2030,7 +2030,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/f58b35f1-b7ed-4955-aef0-1694205e33c2.png",
           "timestamp": 1780876326000,
           "date": "6/7/2026, 11:52:06 PM",
-          "age": "1 week, 6 days, 15 hours, 38 mins"
+          "age": "1 week, 6 days, 17 hours, 18 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -2038,7 +2038,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb348a13-2723-45cc-abba-50a1b68d1838.png",
           "timestamp": 1780826222000,
           "date": "6/7/2026, 9:57:02 AM",
-          "age": "2 weeks, 5 hours, 33 mins"
+          "age": "2 weeks, 7 hours, 13 mins"
         }
       ],
       "fullLibrary": [
@@ -12311,7 +12311,7 @@
           "totalItemCount": 18
         }
       },
-      "lastUpdated": "6/21/2026, 3:30:20 PM"
+      "lastUpdated": "6/21/2026, 5:11:17 PM"
     },
     "kfruti": {
       "onlineId": "KFruti88",
@@ -12336,7 +12336,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/21/2026, 3:30:21 PM",
+      "lastUpdated": "6/21/2026, 5:11:18 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -12372,12 +12372,12 @@
       "isOfficiallyVerified": false,
       "isMe": true,
       "accountId": "2732733730346312494",
-      "online": true,
-      "currentGame": "Farming Simulator 25",
-      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+      "online": false,
+      "currentGame": "LEGO® Star Wars™ II: The Original Trilogy",
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
       "currentGameActivity": null,
-      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
-      "currentCommunicationId": "NPWR44827_00",
+      "amazonAffiliateUrl": "https://www.amazon.com/s?k=LEGO%20Star%20Wars%20II%3A%20The%20Original%20Trilogy&tag=psngaming-20",
+      "currentCommunicationId": "NPWR36496_00",
       "platform": "PS5",
       "twitch": {
         "isLive": false,
@@ -12424,39 +12424,6 @@
         "total": 770
       },
       "recentGames": [
-        {
-          "npCommunicationId": "NPWR44827_00",
-          "name": "Farming Simulator 25",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
-          "lastPlayed": "2026-04-14T10:48:47Z",
-          "npServiceName": "trophy2",
-          "trophySetVersion": "01.00",
-          "trophyTitleName": "Farming Simulator 25",
-          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
-          "trophyTitlePlatform": "PS5",
-          "hasTrophyGroups": false,
-          "trophyGroupCount": 1,
-          "definedTrophies": {
-            "bronze": 28,
-            "silver": 15,
-            "gold": 2,
-            "platinum": 1
-          },
-          "progress": 100,
-          "earnedTrophies": {
-            "bronze": 28,
-            "silver": 15,
-            "gold": 2,
-            "platinum": 1
-          },
-          "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-04-14T10:48:47Z",
-          "earnedTotal": 46,
-          "definedTotal": 46,
-          "ratio": "46/46",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
-          "bootCount": "Unknown"
-        },
         {
           "npCommunicationId": "NPWR36496_00",
           "name": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -12622,39 +12589,72 @@
           "ratio": "21/21",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=The%20Rex%20T&tag=psngaming-20",
           "bootCount": "Unknown"
+        },
+        {
+          "npCommunicationId": "NPWR22859_00",
+          "name": "Ghost of Tsushima",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22859_00/d7213b2e-8048-40ae-859e-3ce1863b9390.png",
+          "lastPlayed": "2026-05-31T03:23:49Z",
+          "npServiceName": "trophy2",
+          "trophySetVersion": "01.25",
+          "trophyTitleName": "Ghost of Tsushima",
+          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22859_00/d7213b2e-8048-40ae-859e-3ce1863b9390.png",
+          "trophyTitlePlatform": "PS5,PSPC",
+          "hasTrophyGroups": true,
+          "trophyGroupCount": 6,
+          "definedTrophies": {
+            "bronze": 59,
+            "silver": 13,
+            "gold": 4,
+            "platinum": 1
+          },
+          "progress": 0,
+          "earnedTrophies": {
+            "bronze": 0,
+            "silver": 0,
+            "gold": 0,
+            "platinum": 0
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-05-31T03:23:49Z",
+          "earnedTotal": 0,
+          "definedTotal": 77,
+          "ratio": "0/77",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Ghost%20of%20Tsushima&tag=psngaming-20",
+          "bootCount": "Unknown"
         }
       ],
       "activeHunt": {
-        "title": "Farming Simulator 25",
-        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Farming%20Simulator%2025&tag=psngaming-20",
-        "progress": 100,
+        "title": "LEGO® Star Wars™ II: The Original Trilogy",
+        "amazonAffiliateUrl": "https://www.amazon.com/s?k=LEGO%20Star%20Wars%20II%3A%20The%20Original%20Trilogy&tag=psngaming-20",
+        "progress": 22,
         "velocity": {
-          "firstEarned": "4/5/2026, 3:18:12 AM",
-          "huntingDuration": "10 days",
-          "hunterPersona": "Dead Set Hunter",
-          "completionStatus": "46/46"
+          "firstEarned": "6/2/2026, 11:50:07 PM",
+          "huntingDuration": "17 days",
+          "hunterPersona": "Steady Hunter",
+          "completionStatus": "13/30"
         },
         "groups": [
           {
             "trophyGroupId": "default",
-            "progress": 100,
+            "progress": 22,
             "earnedTrophies": {
-              "bronze": 28,
-              "silver": 15,
-              "gold": 2,
-              "platinum": 1
+              "bronze": 10,
+              "silver": 3,
+              "gold": 0,
+              "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-04-14T10:48:47Z",
-            "trophyGroupName": "Farming Simulator 25",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+            "lastUpdatedDateTime": "2026-06-19T02:22:26Z",
+            "trophyGroupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
             "definedTrophies": {
-              "bronze": 28,
-              "silver": 15,
-              "gold": 2,
+              "bronze": 12,
+              "silver": 11,
+              "gold": 6,
               "platinum": 1
             },
-            "name": "Farming Simulator 25",
-            "ratio": "46/46"
+            "name": "LEGO® Star Wars™ II: The Original Trilogy",
+            "ratio": "13/30"
           }
         ],
         "trophies": [
@@ -12662,1107 +12662,694 @@
             "trophyId": 0,
             "trophyHidden": false,
             "trophyType": "platinum",
-            "trophyName": "Farming is in our nature",
-            "trophyDetail": "Plant today - harvest tomorrow.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/d07f4a23-2e38-4b5a-8fd7-b2521bd3ee5d.png",
+            "trophyName": "May the Force Brick With You",
+            "trophyDetail": "Unlock all trophies in LEGO® Star Wars™ II: The Original Trilogy.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f122abd4-1461-49b5-be24-80188df91a80.png",
             "trophyGroupId": "default",
-            "name": "Farming is in our nature",
+            "name": "May the Force Brick With You",
             "type": "platinum",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/d07f4a23-2e38-4b5a-8fd7-b2521bd3ee5d.png",
-            "description": "Plant today - harvest tomorrow.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f122abd4-1461-49b5-be24-80188df91a80.png",
+            "description": "Unlock all trophies in LEGO® Star Wars™ II: The Original Trilogy.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/14/2026, 10:48:47 AM",
-            "earnedAge": "2 months, 1 week, 1 day, 4 hours, 41 mins",
-            "timestamp": 1776163727000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
           },
           {
             "trophyId": 1,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Road Trip",
-            "trophyDetail": "That thing wouldn't have fit onto the street anyway.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/d5364257-4989-4b52-a946-38b6f30e6016.png",
+            "trophyType": "silver",
+            "trophyName": "Putting the Death in Death Star",
+            "trophyDetail": "Complete STAR WARS Episode IV: A New Hope in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/9ac1527a-d70b-4bca-88e6-f5ad17e2931e.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Road Trip",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/d5364257-4989-4b52-a946-38b6f30e6016.png",
-            "description": "That thing wouldn't have fit onto the street anyway.",
+            "name": "Putting the Death in Death Star",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/9ac1527a-d70b-4bca-88e6-f5ad17e2931e.png",
+            "description": "Complete STAR WARS Episode IV: A New Hope in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "4/7/2026, 11:03:05 AM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 4 hours, 27 mins",
-            "timestamp": 1775559785000,
+            "earnedDate": "6/3/2026, 3:35:39 AM",
+            "earnedAge": "2 weeks, 4 days, 13 hours, 35 mins",
+            "timestamp": 1780457739000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 2,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Plant get enough",
-            "trophyDetail": "A little help can go a long way.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/66890b54-bf5d-4d85-bf72-641077f25596.png",
+            "trophyType": "silver",
+            "trophyName": "Into Hiding",
+            "trophyDetail": "Complete STAR WARS Episode V: The Empire Strikes Back in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/cb79cd2a-a989-483d-94db-69d50d5bc393.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Plant get enough",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/66890b54-bf5d-4d85-bf72-641077f25596.png",
-            "description": "A little help can go a long way.",
+            "name": "Into Hiding",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/cb79cd2a-a989-483d-94db-69d50d5bc393.png",
+            "description": "Complete STAR WARS Episode V: The Empire Strikes Back in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "4/8/2026, 3:28:45 PM",
-            "earnedAge": "2 months, 2 weeks, 1 min",
-            "timestamp": 1775662125000,
+            "earnedDate": "6/7/2026, 1:14:43 PM",
+            "earnedAge": "2 weeks, 3 hours, 56 mins",
+            "timestamp": 1780838083000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 3,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "The plot thickens",
-            "trophyDetail": "You won't rest until you've reached maximum efficiency.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/7d7d8e15-f4a6-4cfe-a172-0d771be2c65a.png",
+            "trophyName": "Two Stars Down",
+            "trophyDetail": "Complete STAR WARS Episode VI: Return of the Jedi in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/c1d46ffd-6a43-47c8-8d4d-c00cb3d2ee6b.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "The plot thickens",
+            "name": "Two Stars Down",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/7d7d8e15-f4a6-4cfe-a172-0d771be2c65a.png",
-            "description": "You won't rest until you've reached maximum efficiency.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/c1d46ffd-6a43-47c8-8d4d-c00cb3d2ee6b.png",
+            "description": "Complete STAR WARS Episode VI: Return of the Jedi in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "4/8/2026, 6:49:58 PM",
-            "earnedAge": "2 months, 1 week, 6 days, 20 hours, 40 mins",
-            "timestamp": 1775674198000,
+            "earnedDate": "6/11/2026, 1:05:57 PM",
+            "earnedAge": "1 week, 3 days, 4 hours, 5 mins",
+            "timestamp": 1781183157000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 4,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Allez hopp",
-            "trophyDetail": "Oh, they can do THAT as well?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/74cb1bad-62b3-40c7-88e7-33f5630919b5.png",
+            "trophyName": "Storied Jedi",
+            "trophyDetail": "Complete a chapter with a full True Jedi meter in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/221e844f-d5ab-48bd-92e6-77f4d8fb6cf5.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Allez hopp",
+            "name": "Storied Jedi",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/74cb1bad-62b3-40c7-88e7-33f5630919b5.png",
-            "description": "Oh, they can do THAT as well?",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/221e844f-d5ab-48bd-92e6-77f4d8fb6cf5.png",
+            "description": "Complete a chapter with a full True Jedi meter in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "4/6/2026, 7:34:35 AM",
-            "earnedAge": "2 months, 2 weeks, 2 days, 7 hours, 55 mins",
-            "timestamp": 1775460875000,
+            "earnedDate": "6/2/2026, 11:50:07 PM",
+            "earnedAge": "2 weeks, 4 days, 17 hours, 21 mins",
+            "timestamp": 1780444207000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 5,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "You are not a kangaroo",
-            "trophyDetail": "Seriously, think of the poor animal!",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/72c4651f-319b-45ef-9428-262b105ae639.png",
+            "trophyType": "bronze",
+            "trophyName": "Finding the Last Piece",
+            "trophyDetail": "Complete a chapter with all Minikits collected in Story or Free Play modes.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/60207a2c-adf7-4aea-a20d-5cf5246bcc48.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "You are not a kangaroo",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/72c4651f-319b-45ef-9428-262b105ae639.png",
-            "description": "Seriously, think of the poor animal!",
+            "name": "Finding the Last Piece",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/60207a2c-adf7-4aea-a20d-5cf5246bcc48.png",
+            "description": "Complete a chapter with all Minikits collected in Story or Free Play modes.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "4/6/2026, 7:34:35 AM",
-            "earnedAge": "2 months, 2 weeks, 2 days, 7 hours, 55 mins",
-            "timestamp": 1775460875000,
+            "earnedDate": "6/19/2026, 12:43:21 AM",
+            "earnedAge": "2 days, 16 hours, 28 mins",
+            "timestamp": 1781829801000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 6,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Giddy-up!",
-            "trophyDetail": "I could get used to getting around like this…",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/0b5b0eea-a076-4c0a-8c40-0beb81f9cb53.png",
+            "trophyName": "Quick Game of Find the Canisters",
+            "trophyDetail": "Earn a Gold Brick in Challenge mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/caf00700-ffb5-417d-a4db-377ba7a5d6a0.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Giddy-up!",
+            "name": "Quick Game of Find the Canisters",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/0b5b0eea-a076-4c0a-8c40-0beb81f9cb53.png",
-            "description": "I could get used to getting around like this…",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/caf00700-ffb5-417d-a4db-377ba7a5d6a0.png",
+            "description": "Earn a Gold Brick in Challenge mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/6/2026, 7:34:53 AM",
-            "earnedAge": "2 months, 2 weeks, 2 days, 7 hours, 55 mins",
-            "timestamp": 1775460893000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 7,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Thoroughbred!",
-            "trophyDetail": "I'm a real cowboy, mom!",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/37990351-3d01-4750-a4ab-a57b44a69aea.png",
+            "trophyType": "bronze",
+            "trophyName": "Free Range Jedi",
+            "trophyDetail": "Complete a chapter with a full True Jedi meter in Free Play mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/4fefc9f5-3760-4951-81c3-687680ab244f.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Thoroughbred!",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/37990351-3d01-4750-a4ab-a57b44a69aea.png",
-            "description": "I'm a real cowboy, mom!",
+            "name": "Free Range Jedi",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/4fefc9f5-3760-4951-81c3-687680ab244f.png",
+            "description": "Complete a chapter with a full True Jedi meter in Free Play mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "4/6/2026, 8:28:26 AM",
-            "earnedAge": "2 months, 2 weeks, 2 days, 7 hours, 1 min",
-            "timestamp": 1775464106000,
+            "earnedDate": "6/19/2026, 12:43:21 AM",
+            "earnedAge": "2 days, 16 hours, 28 mins",
+            "timestamp": 1781829801000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 8,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Help me to help you",
-            "trophyDetail": "Sure, I can take care of that, neighbor.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/abdafcab-a032-4c14-aebb-35a725196a88.png",
+            "trophyName": "Limited Power at a Price",
+            "trophyDetail": "Collect a Power Brick.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f82d4209-1081-4759-84e7-7daf8ae333a7.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Help me to help you",
+            "name": "Limited Power at a Price",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/abdafcab-a032-4c14-aebb-35a725196a88.png",
-            "description": "Sure, I can take care of that, neighbor.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f82d4209-1081-4759-84e7-7daf8ae333a7.png",
+            "description": "Collect a Power Brick.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "4/5/2026, 3:18:12 AM",
-            "earnedAge": "2 months, 2 weeks, 3 days, 12 hours, 12 mins",
-            "timestamp": 1775359092000,
+            "earnedDate": "6/3/2026, 12:51:30 AM",
+            "earnedAge": "2 weeks, 4 days, 16 hours, 19 mins",
+            "timestamp": 1780447890000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 9,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "Helper A does not stop … ever",
-            "trophyDetail": "What do you mean \"take care of my own farm as well\"?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/ae333111-adf1-4f32-96e6-29028ddabe8f.png",
+            "trophyName": "Marathon Runner",
+            "trophyDetail": "Complete any Super Story.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/5d440aab-1d77-4047-8a5c-c89493b4b4ef.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Helper A does not stop … ever",
+            "name": "Marathon Runner",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/ae333111-adf1-4f32-96e6-29028ddabe8f.png",
-            "description": "What do you mean \"take care of my own farm as well\"?",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/5d440aab-1d77-4047-8a5c-c89493b4b4ef.png",
+            "description": "Complete any Super Story.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/7/2026, 8:06:04 AM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 7 hours, 24 mins",
-            "timestamp": 1775549164000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 10,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "It's just the beginning",
-            "trophyDetail": "I've never felt happier than here.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/3ac07e97-4380-4a9c-a11a-5086d2e63319.png",
+            "trophyType": "silver",
+            "trophyName": "Marathon Speed Runner",
+            "trophyDetail": "Beat the best time for any Super Story.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/b0ca698e-82c6-4134-8c74-151eb07c6911.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "It's just the beginning",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/3ac07e97-4380-4a9c-a11a-5086d2e63319.png",
-            "description": "I've never felt happier than here.",
+            "name": "Marathon Speed Runner",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/b0ca698e-82c6-4134-8c74-151eb07c6911.png",
+            "description": "Beat the best time for any Super Story.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/6/2026, 7:26:52 AM",
-            "earnedAge": "2 months, 2 weeks, 2 days, 8 hours, 3 mins",
-            "timestamp": 1775460412000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 11,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Just a sprinkle",
-            "trophyDetail": "You have to think about the future.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/2eb8774d-737d-4a82-ad1e-796e90a9b8a1.png",
+            "trophyType": "silver",
+            "trophyName": "High Speed Shootout",
+            "trophyDetail": "Beat the best time for any Character Bonus.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/7bc6d8f9-6a40-4a9a-bb1f-b95be45a7698.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Just a sprinkle",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/2eb8774d-737d-4a82-ad1e-796e90a9b8a1.png",
-            "description": "You have to think about the future.",
+            "name": "High Speed Shootout",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/7bc6d8f9-6a40-4a9a-bb1f-b95be45a7698.png",
+            "description": "Beat the best time for any Character Bonus.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/9/2026, 10:11:19 PM",
-            "earnedAge": "2 months, 1 week, 5 days, 17 hours, 19 mins",
-            "timestamp": 1775772679000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 12,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "It's sow easy",
-            "trophyDetail": "Planting one bean will yield much green.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/39636e9e-ef3c-4616-a3c3-358d52995c61.png",
+            "trophyName": "Minikit Mayhem",
+            "trophyDetail": "Beat the best time for any Minikit Bonus.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/83859c7e-7000-4751-8e40-b1fecc2f4ea8.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "It's sow easy",
+            "name": "Minikit Mayhem",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/39636e9e-ef3c-4616-a3c3-358d52995c61.png",
-            "description": "Planting one bean will yield much green.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/83859c7e-7000-4751-8e40-b1fecc2f4ea8.png",
+            "description": "Beat the best time for any Minikit Bonus.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/14/2026, 2:30:20 AM",
-            "earnedAge": "2 months, 1 week, 1 day, 13 hours",
-            "timestamp": 1776133820000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 13,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Own use",
-            "trophyDetail": "Reap what you sow.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/51729b88-7ee0-4327-8eac-8795d7d89434.png",
+            "trophyType": "gold",
+            "trophyName": "Golden Hope",
+            "trophyDetail": "Collect all Gold Bricks for STAR WARS Episode IV: A New Hope.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f942e3da-a4de-480f-9ff2-d5d685df645f.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Own use",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/51729b88-7ee0-4327-8eac-8795d7d89434.png",
-            "description": "Reap what you sow.",
+            "name": "Golden Hope",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f942e3da-a4de-480f-9ff2-d5d685df645f.png",
+            "description": "Collect all Gold Bricks for STAR WARS Episode IV: A New Hope.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/7/2026, 7:12:26 PM",
-            "earnedAge": "2 months, 2 weeks, 20 hours, 17 mins",
-            "timestamp": 1775589146000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 14,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Large-scale supplier",
-            "trophyDetail": "These are the fruits of your labor.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/34786d5c-9237-48f0-a2ad-24d65ec8f053.png",
+            "trophyType": "gold",
+            "trophyName": "Golden Empire",
+            "trophyDetail": "Collect all Gold Bricks for STAR WARS Episode V: The Empire Strikes Back.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/1a6f632e-07ef-4079-a797-b077cc2e22a4.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Large-scale supplier",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/34786d5c-9237-48f0-a2ad-24d65ec8f053.png",
-            "description": "These are the fruits of your labor.",
+            "name": "Golden Empire",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/1a6f632e-07ef-4079-a797-b077cc2e22a4.png",
+            "description": "Collect all Gold Bricks for STAR WARS Episode V: The Empire Strikes Back.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/8/2026, 3:45:52 AM",
-            "earnedAge": "2 months, 2 weeks, 11 hours, 44 mins",
-            "timestamp": 1775619952000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 15,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Field Trip",
-            "trophyDetail": "One vehicle for all of your needs.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/66ab2ba1-587a-4336-9fcb-2d7f98675a3b.png",
+            "trophyType": "gold",
+            "trophyName": "Golden Return",
+            "trophyDetail": "Collect all Gold Bricks in STAR WARS Episode VI: Return of the Jedi.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f8b5477e-26f9-4ae1-9532-5f88aa2f4d15.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Field Trip",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/66ab2ba1-587a-4336-9fcb-2d7f98675a3b.png",
-            "description": "One vehicle for all of your needs.",
+            "name": "Golden Return",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f8b5477e-26f9-4ae1-9532-5f88aa2f4d15.png",
+            "description": "Collect all Gold Bricks in STAR WARS Episode VI: Return of the Jedi.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/7/2026, 6:14:26 AM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 9 hours, 15 mins",
-            "timestamp": 1775542466000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 16,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Long haul",
-            "trophyDetail": "In it for the long game, I see.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/f159965d-54f1-48a6-9d49-8da31b80b55b.png",
+            "trophyType": "gold",
+            "trophyName": "In a Galaxy Nearby",
+            "trophyDetail": "Complete the Lego City level.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f78f173d-9492-4c2b-8a63-184aaabf368d.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Long haul",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/f159965d-54f1-48a6-9d49-8da31b80b55b.png",
-            "description": "In it for the long game, I see.",
+            "name": "In a Galaxy Nearby",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/f78f173d-9492-4c2b-8a63-184aaabf368d.png",
+            "description": "Complete the Lego City level.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/7/2026, 7:02:03 AM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 8 hours, 28 mins",
-            "timestamp": 1775545323000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 17,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "van Gogh",
-            "trophyDetail": "Look at Mr. Fancypants over there.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/84664055-5132-40c9-8fa9-13582d5dd378.png",
+            "trophyName": "Hints of Power",
+            "trophyDetail": "Purchase all hints.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/3a63be2d-8ebe-4eab-9b38-4696f0d5e8f2.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "van Gogh",
+            "name": "Hints of Power",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/84664055-5132-40c9-8fa9-13582d5dd378.png",
-            "description": "Look at Mr. Fancypants over there.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/3a63be2d-8ebe-4eab-9b38-4696f0d5e8f2.png",
+            "description": "Purchase all hints.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/6/2026, 8:32:23 AM",
-            "earnedAge": "2 months, 2 weeks, 2 days, 6 hours, 57 mins",
-            "timestamp": 1775464343000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 18,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "It just fell off",
-            "trophyDetail": "It was only a matter of time…",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/bd232186-4d31-43e6-aaa7-6b61c3bbad7e.png",
+            "trophyName": "Minifigure Booster Pack",
+            "trophyDetail": "Purchase any character.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/2f7d21a1-ed16-49c5-8cba-75cdcce12154.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "It just fell off",
+            "name": "Minifigure Booster Pack",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/bd232186-4d31-43e6-aaa7-6b61c3bbad7e.png",
-            "description": "It was only a matter of time…",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/2f7d21a1-ed16-49c5-8cba-75cdcce12154.png",
+            "description": "Purchase any character.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "4/7/2026, 6:14:31 PM",
-            "earnedAge": "2 months, 2 weeks, 21 hours, 15 mins",
-            "timestamp": 1775585671000,
+            "earnedDate": "6/3/2026, 2:16:23 AM",
+            "earnedAge": "2 weeks, 4 days, 14 hours, 55 mins",
+            "timestamp": 1780452983000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 19,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "Fix me up",
-            "trophyDetail": "Seriously, you should consider a membership card.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/6036822d-efc3-435c-98ea-08d0ed604b70.png",
+            "trophyName": "Ghosts of Jedi Past",
+            "trophyDetail": "Purchase a ghost character.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/608f4d8d-0af3-45c0-9688-63dd5a20dc82.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Fix me up",
+            "name": "Ghosts of Jedi Past",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/6036822d-efc3-435c-98ea-08d0ed604b70.png",
-            "description": "Seriously, you should consider a membership card.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/608f4d8d-0af3-45c0-9688-63dd5a20dc82.png",
+            "description": "Purchase a ghost character.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/14/2026, 6:48:19 AM",
-            "earnedAge": "2 months, 1 week, 1 day, 8 hours, 42 mins",
-            "timestamp": 1776149299000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 20,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Fluffiness",
-            "trophyDetail": "Building up my wool empire.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1ae23dce-af16-449d-b314-1d045b230954.png",
+            "trophyName": "Just for Fun",
+            "trophyDetail": "Purchase any extra toggle.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/a78a706f-11ad-4dec-88e9-2e56d6140160.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Fluffiness",
+            "name": "Just for Fun",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1ae23dce-af16-449d-b314-1d045b230954.png",
-            "description": "Building up my wool empire.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/a78a706f-11ad-4dec-88e9-2e56d6140160.png",
+            "description": "Purchase any extra toggle.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "4/7/2026, 3:32:57 PM",
-            "earnedAge": "2 months, 2 weeks, 23 hours, 57 mins",
-            "timestamp": 1775575977000,
+            "earnedDate": "6/3/2026, 2:15:45 AM",
+            "earnedAge": "2 weeks, 4 days, 14 hours, 55 mins",
+            "timestamp": 1780452945000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 21,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Three little piggies…",
-            "trophyDetail": "You'll be amazed how much food they need.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/31211522-8f49-4b5a-abde-7c49ee31f04a.png",
+            "trophyType": "silver",
+            "trophyName": "Bowl of Studs",
+            "trophyDetail": "Hold two million studs at one time.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/a8f3dc16-0b5e-4828-acde-6faa2274d6b6.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Three little piggies…",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/31211522-8f49-4b5a-abde-7c49ee31f04a.png",
-            "description": "You'll be amazed how much food they need.",
+            "name": "Bowl of Studs",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/a8f3dc16-0b5e-4828-acde-6faa2274d6b6.png",
+            "description": "Hold two million studs at one time.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/7/2026, 3:32:57 PM",
-            "earnedAge": "2 months, 2 weeks, 23 hours, 57 mins",
-            "timestamp": 1775575977000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 22,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Clucky Streak",
-            "trophyDetail": "Now that's a lot of Easter eggs.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/fba558c2-4df3-4660-a326-d6d8aea66af1.png",
+            "trophyType": "gold",
+            "trophyName": "Bucket of Studs",
+            "trophyDetail": "Hold six million studs at one time.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/901f5ec0-143b-47bd-92dc-835d7c750421.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Clucky Streak",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/fba558c2-4df3-4660-a326-d6d8aea66af1.png",
-            "description": "Now that's a lot of Easter eggs.",
+            "name": "Bucket of Studs",
+            "type": "gold",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/901f5ec0-143b-47bd-92dc-835d7c750421.png",
+            "description": "Hold six million studs at one time.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/7/2026, 2:52:13 PM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 38 mins",
-            "timestamp": 1775573533000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 23,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Bringing in the Honey",
-            "trophyDetail": "Well you've been one busy bee, haven't you?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/63db2207-5de2-436b-ab9d-0a1561203da1.png",
+            "trophyName": "Teamwork Makes the Dream Work",
+            "trophyDetail": "Complete Episode I: Darth Maul in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/64aeea65-eb3f-4687-beb4-5c7a3c04d518.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Bringing in the Honey",
+            "name": "Teamwork Makes the Dream Work",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/63db2207-5de2-436b-ab9d-0a1561203da1.png",
-            "description": "Well you've been one busy bee, haven't you?",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/64aeea65-eb3f-4687-beb4-5c7a3c04d518.png",
+            "description": "Complete Episode I: Darth Maul in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "4/5/2026, 9:05:43 AM",
-            "earnedAge": "2 months, 2 weeks, 3 days, 6 hours, 24 mins",
-            "timestamp": 1775379943000,
+            "earnedDate": "6/19/2026, 1:34:57 AM",
+            "earnedAge": "2 days, 15 hours, 36 mins",
+            "timestamp": 1781832897000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 24,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Cowherd",
-            "trophyDetail": "Bet you didn't think they'd be that much work, right?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/181a79cb-3721-443f-89a7-97c836a54c3c.png",
+            "trophyType": "bronze",
+            "trophyName": "Not the Arm!",
+            "trophyDetail": "Complete Episode II: Count Dooku in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/dfea8051-1069-4b36-aa19-ad69bf37e018.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Cowherd",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/181a79cb-3721-443f-89a7-97c836a54c3c.png",
-            "description": "Bet you didn't think they'd be that much work, right?",
+            "name": "Not the Arm!",
+            "type": "bronze",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/dfea8051-1069-4b36-aa19-ad69bf37e018.png",
+            "description": "Complete Episode II: Count Dooku in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "4/7/2026, 6:06:22 PM",
-            "earnedAge": "2 months, 2 weeks, 21 hours, 24 mins",
-            "timestamp": 1775585182000,
+            "earnedDate": "6/19/2026, 2:05:13 AM",
+            "earnedAge": "2 days, 15 hours, 6 mins",
+            "timestamp": 1781834713000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 25,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "I like to switch it up",
-            "trophyDetail": "We're slowly getting there.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/99255d15-c101-4bea-9599-b2b47a4891a6.png",
+            "trophyName": "End of the Beginning",
+            "trophyDetail": "Complete Episode III: Darth Vader in Story mode.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "I like to switch it up",
+            "name": "End of the Beginning",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/99255d15-c101-4bea-9599-b2b47a4891a6.png",
-            "description": "We're slowly getting there.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
+            "description": "Complete Episode III: Darth Vader in Story mode.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "4/6/2026, 8:48:32 AM",
-            "earnedAge": "2 months, 2 weeks, 2 days, 6 hours, 41 mins",
-            "timestamp": 1775465312000,
+            "earnedDate": "6/19/2026, 2:22:26 AM",
+            "earnedAge": "2 days, 14 hours, 48 mins",
+            "timestamp": 1781835746000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 26,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "This is just my weekend vehicle",
-            "trophyDetail": "Yes, I need each and every one of these.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/37e0cdc9-578a-45a7-929f-6374a22d9bd7.png",
+            "trophyName": "My Own Jedi",
+            "trophyDetail": "Create a custom character.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/3a2db3b0-6ae1-4979-91a3-c7b5e082c04d.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "This is just my weekend vehicle",
+            "name": "My Own Jedi",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/37e0cdc9-578a-45a7-929f-6374a22d9bd7.png",
-            "description": "Yes, I need each and every one of these.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/3a2db3b0-6ae1-4979-91a3-c7b5e082c04d.png",
+            "description": "Create a custom character.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
             "earned": true,
-            "earnedDate": "4/6/2026, 8:48:32 AM",
-            "earnedAge": "2 months, 2 weeks, 2 days, 6 hours, 41 mins",
-            "timestamp": 1775465312000,
+            "earnedDate": "6/3/2026, 3:38:23 AM",
+            "earnedAge": "2 weeks, 4 days, 13 hours, 33 mins",
+            "timestamp": 1780457903000,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 27,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Vehicle fleet",
-            "trophyDetail": "Ok, I might have a problem…",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/064b0e5c-a6f2-4de4-876d-ab8e47faffd4.png",
+            "trophyType": "silver",
+            "trophyName": "Full Cast",
+            "trophyDetail": "Purchase all characters.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/46573a38-a5be-4089-b9c3-6a19d8c1d211.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Vehicle fleet",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/064b0e5c-a6f2-4de4-876d-ab8e47faffd4.png",
-            "description": "Ok, I might have a problem…",
+            "name": "Full Cast",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/46573a38-a5be-4089-b9c3-6a19d8c1d211.png",
+            "description": "Purchase all characters.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/7/2026, 8:31:40 AM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 6 hours, 58 mins",
-            "timestamp": 1775550700000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 28,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "I read Shakespeare and stuff",
-            "trophyDetail": "The first step of any farmer.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/15624fa3-4f20-4b56-bf96-5471506e1ffd.png",
+            "trophyType": "silver",
+            "trophyName": "Forceful Charm",
+            "trophyDetail": "Purchase all vehicles.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/b4880030-febc-46af-a2a5-42e5e28cbd57.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "I read Shakespeare and stuff",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/15624fa3-4f20-4b56-bf96-5471506e1ffd.png",
-            "description": "The first step of any farmer.",
+            "name": "Forceful Charm",
+            "type": "silver",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/b4880030-febc-46af-a2a5-42e5e28cbd57.png",
+            "description": "Purchase all vehicles.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/8/2026, 11:27:12 AM",
-            "earnedAge": "2 months, 2 weeks, 4 hours, 3 mins",
-            "timestamp": 1775647632000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           },
           {
             "trophyId": 29,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Highly cultivated",
-            "trophyDetail": "I'm a little proud of this one myself.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a2da6ef1-3be2-4c37-940f-413ce501dbe7.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Highly cultivated",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a2da6ef1-3be2-4c37-940f-413ce501dbe7.png",
-            "description": "I'm a little proud of this one myself.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/9/2026, 11:15:58 PM",
-            "earnedAge": "2 months, 1 week, 5 days, 16 hours, 14 mins",
-            "timestamp": 1775776558000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 30,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Ultimutt Pawesomeness",
-            "trophyDetail": "Who's a good boy?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/b6f76eeb-0479-4806-8bae-753da6b87d77.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Ultimutt Pawesomeness",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/b6f76eeb-0479-4806-8bae-753da6b87d77.png",
-            "description": "Who's a good boy?",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/5/2026, 9:01:46 AM",
-            "earnedAge": "2 months, 2 weeks, 3 days, 6 hours, 28 mins",
-            "timestamp": 1775379706000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 31,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "That's a wrap",
-            "trophyDetail": "What's in the bale?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/2f367fad-fd57-4d24-8650-93fdf1357ac9.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "That's a wrap",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/2f367fad-fd57-4d24-8650-93fdf1357ac9.png",
-            "description": "What's in the bale?",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/14/2026, 7:13:53 AM",
-            "earnedAge": "2 months, 1 week, 1 day, 8 hours, 16 mins",
-            "timestamp": 1776150833000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 32,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Gone but not for cotton",
-            "trophyDetail": "Where would you even store them?!",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a7b100a3-62d7-4549-a8ca-34bb714c904f.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Gone but not for cotton",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a7b100a3-62d7-4549-a8ca-34bb714c904f.png",
-            "description": "Where would you even store them?!",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/7/2026, 11:38:12 AM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 3 hours, 52 mins",
-            "timestamp": 1775561892000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 33,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Raisin the stakes",
-            "trophyDetail": "It's Californian gold!",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/4933c0b4-27e4-4001-af94-e2d0c229f78b.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Raisin the stakes",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/4933c0b4-27e4-4001-af94-e2d0c229f78b.png",
-            "description": "It's Californian gold!",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/7/2026, 11:45:56 AM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 3 hours, 44 mins",
-            "timestamp": 1775562356000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 34,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Olea europaea",
-            "trophyDetail": "It's a fruit, not a vegetable!",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/29d6d47f-5bdb-4950-ab52-615f2e0791b2.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Olea europaea",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/29d6d47f-5bdb-4950-ab52-615f2e0791b2.png",
-            "description": "It's a fruit, not a vegetable!",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/7/2026, 11:48:56 AM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 3 hours, 41 mins",
-            "timestamp": 1775562536000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 35,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Original grain",
-            "trophyDetail": "My horses are crazy for it.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/43ab0b63-2c82-4a21-90e0-f155eb9836fc.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Original grain",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/43ab0b63-2c82-4a21-90e0-f155eb9836fc.png",
-            "description": "My horses are crazy for it.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/7/2026, 11:55:56 AM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 3 hours, 34 mins",
-            "timestamp": 1775562956000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 36,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Rock on",
-            "trophyDetail": "The path to success is paved with rocks.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/bc011536-8ebd-42b9-944a-7736fe8deb45.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Rock on",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/bc011536-8ebd-42b9-944a-7736fe8deb45.png",
-            "description": "The path to success is paved with rocks.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/7/2026, 12:06:58 PM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 3 hours, 23 mins",
-            "timestamp": 1775563618000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 37,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "I'm stumped",
-            "trophyDetail": "If a tree falls in a forest and no one is around to hear it, does one hand clap?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/b16c113b-e933-4adc-8b5b-f7f017f6471e.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "I'm stumped",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/b16c113b-e933-4adc-8b5b-f7f017f6471e.png",
-            "description": "If a tree falls in a forest and no one is around to hear it, does one hand clap?",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/6/2026, 8:34:31 AM",
-            "earnedAge": "2 months, 2 weeks, 2 days, 6 hours, 55 mins",
-            "timestamp": 1775464471000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 38,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "You wood not believe it",
-            "trophyDetail": "Taking a leaf of absence.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/359fa7a3-cfd1-4364-a5a0-965f5320be4c.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "You wood not believe it",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/359fa7a3-cfd1-4364-a5a0-965f5320be4c.png",
-            "description": "Taking a leaf of absence.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/7/2026, 7:27:58 AM",
-            "earnedAge": "2 months, 2 weeks, 1 day, 8 hours, 2 mins",
-            "timestamp": 1775546878000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 39,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Hard work pays off",
-            "trophyDetail": "You know you can also spend it, right?",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1f50f943-df32-4507-badf-0794f2a9a949.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Hard work pays off",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1f50f943-df32-4507-badf-0794f2a9a949.png",
-            "description": "You know you can also spend it, right?",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/5/2026, 3:46:32 AM",
-            "earnedAge": "2 months, 2 weeks, 3 days, 11 hours, 43 mins",
-            "timestamp": 1775360792000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 40,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "All out of Land",
-            "trophyDetail": "Everything the light touches...is mine.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/f0be7786-622f-4b8b-b2e0-5e42a256abe8.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "All out of Land",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/f0be7786-622f-4b8b-b2e0-5e42a256abe8.png",
-            "description": "Everything the light touches...is mine.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/5/2026, 3:42:36 AM",
-            "earnedAge": "2 months, 2 weeks, 3 days, 11 hours, 47 mins",
-            "timestamp": 1775360556000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 41,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Well-Oiled Machine",
-            "trophyDetail": "Hmm, we could franchise this…",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/741e3b46-1a8d-41eb-a30e-0090026c7549.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Well-Oiled Machine",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/741e3b46-1a8d-41eb-a30e-0090026c7549.png",
-            "description": "Hmm, we could franchise this…",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/5/2026, 11:21:40 AM",
-            "earnedAge": "2 months, 2 weeks, 3 days, 4 hours, 8 mins",
-            "timestamp": 1775388100000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 42,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Rusty",
-            "trophyDetail": "The Museum needs help.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a4cf9164-6216-4cf0-a6a7-22cebb6033fd.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Rusty",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a4cf9164-6216-4cf0-a6a7-22cebb6033fd.png",
-            "description": "The Museum needs help.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/14/2026, 8:18:31 AM",
-            "earnedAge": "2 months, 1 week, 1 day, 7 hours, 11 mins",
-            "timestamp": 1776154711000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 43,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Over 9000!",
-            "trophyDetail": "With the power of farm balls for even more yield.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1e424bc8-c93e-4aba-972e-0e754f214b94.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Over 9000!",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1e424bc8-c93e-4aba-972e-0e754f214b94.png",
-            "description": "With the power of farm balls for even more yield.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/14/2026, 10:48:47 AM",
-            "earnedAge": "2 months, 1 week, 1 day, 4 hours, 41 mins",
-            "timestamp": 1776163727000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 44,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Tutti-Frutti",
-            "trophyDetail": "The legend of the golden apple.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/87eb7c66-a107-408a-a399-c697feaec0ec.png",
-            "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "Tutti-Frutti",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/87eb7c66-a107-408a-a399-c697feaec0ec.png",
-            "description": "The legend of the golden apple.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/14/2026, 9:43:54 AM",
-            "earnedAge": "2 months, 1 week, 1 day, 5 hours, 46 mins",
-            "timestamp": 1776159834000,
-            "currentValue": 0,
-            "targetValue": "100"
-          },
-          {
-            "trophyId": 45,
-            "trophyHidden": false,
             "trophyType": "gold",
-            "trophyName": "It's never too late to farm",
-            "trophyDetail": "It feels good to be home.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/3a98f0e8-23da-4b03-8732-beb2142c9884.png",
+            "trophyName": "All Studded Out",
+            "trophyDetail": "Hold four billion studs at one time.",
+            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/5a8e53d6-d8f5-4490-8048-c2961b11f796.png",
             "trophyGroupId": "default",
-            "trophyProgressTargetValue": "100",
-            "name": "It's never too late to farm",
+            "name": "All Studded Out",
             "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/3a98f0e8-23da-4b03-8732-beb2142c9884.png",
-            "description": "It feels good to be home.",
+            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/5a8e53d6-d8f5-4490-8048-c2961b11f796.png",
+            "description": "Hold four billion studs at one time.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Farming Simulator 25",
-            "earned": true,
-            "earnedDate": "4/10/2026, 2:19:01 AM",
-            "earnedAge": "2 months, 1 week, 5 days, 13 hours, 11 mins",
-            "timestamp": 1775787541000,
+            "groupName": "LEGO® Star Wars™ II: The Original Trilogy",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
-            "targetValue": "100"
+            "targetValue": 0
           }
         ],
-        "npCommunicationId": "NPWR44827_00"
+        "npCommunicationId": "NPWR36496_00"
       },
       "mostRecentTrophies": [
         {
@@ -13771,7 +13358,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/19/2026, 2:22:26 AM",
-          "age": "2 days, 13 hours, 7 mins"
+          "age": "2 days, 14 hours, 48 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -13779,7 +13366,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/dfea8051-1069-4b36-aa19-ad69bf37e018.png",
           "timestamp": 1781834713000,
           "date": "6/19/2026, 2:05:13 AM",
-          "age": "2 days, 13 hours, 25 mins"
+          "age": "2 days, 15 hours, 6 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -13787,7 +13374,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/64aeea65-eb3f-4687-beb4-5c7a3c04d518.png",
           "timestamp": 1781832897000,
           "date": "6/19/2026, 1:34:57 AM",
-          "age": "2 days, 13 hours, 55 mins"
+          "age": "2 days, 15 hours, 36 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -13795,7 +13382,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/60207a2c-adf7-4aea-a20d-5cf5246bcc48.png",
           "timestamp": 1781829801000,
           "date": "6/19/2026, 12:43:21 AM",
-          "age": "2 days, 14 hours, 47 mins"
+          "age": "2 days, 16 hours, 28 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -13803,7 +13390,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/4fefc9f5-3760-4951-81c3-687680ab244f.png",
           "timestamp": 1781829801000,
           "date": "6/19/2026, 12:43:21 AM",
-          "age": "2 days, 14 hours, 47 mins"
+          "age": "2 days, 16 hours, 28 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -13811,7 +13398,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/c1d46ffd-6a43-47c8-8d4d-c00cb3d2ee6b.png",
           "timestamp": 1781183157000,
           "date": "6/11/2026, 1:05:57 PM",
-          "age": "1 week, 3 days, 2 hours, 24 mins"
+          "age": "1 week, 3 days, 4 hours, 5 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -13819,7 +13406,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/cb79cd2a-a989-483d-94db-69d50d5bc393.png",
           "timestamp": 1780838083000,
           "date": "6/7/2026, 1:14:43 PM",
-          "age": "2 weeks, 2 hours, 15 mins"
+          "age": "2 weeks, 3 hours, 56 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -13827,7 +13414,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb348a13-2723-45cc-abba-50a1b68d1838.png",
           "timestamp": 1780826222000,
           "date": "6/7/2026, 9:57:02 AM",
-          "age": "2 weeks, 5 hours, 33 mins"
+          "age": "2 weeks, 7 hours, 14 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -13835,7 +13422,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d439e89b-1afb-408d-8257-e1922809047b.png",
           "timestamp": 1780821421000,
           "date": "6/7/2026, 8:37:01 AM",
-          "age": "2 weeks, 6 hours, 53 mins"
+          "age": "2 weeks, 8 hours, 34 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -13843,40 +13430,10 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c603cb71-3a6d-4f20-8b7c-284cd8b1a8e4.png",
           "timestamp": 1780813893000,
           "date": "6/7/2026, 6:31:33 AM",
-          "age": "2 weeks, 8 hours, 58 mins"
+          "age": "2 weeks, 10 hours, 39 mins"
         }
       ],
       "fullLibrary": [
-        {
-          "npCommunicationId": "NPWR44827_00",
-          "name": "Farming Simulator 25",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
-          "lastPlayed": "2026-04-14T10:48:47Z",
-          "npServiceName": "trophy2",
-          "trophySetVersion": "01.00",
-          "trophyTitleName": "Farming Simulator 25",
-          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
-          "trophyTitlePlatform": "PS5",
-          "hasTrophyGroups": false,
-          "trophyGroupCount": 1,
-          "definedTrophies": {
-            "bronze": 28,
-            "silver": 15,
-            "gold": 2,
-            "platinum": 1
-          },
-          "progress": 100,
-          "earnedTrophies": {
-            "bronze": 28,
-            "silver": 15,
-            "gold": 2,
-            "platinum": 1
-          },
-          "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-04-14T10:48:47Z",
-          "earnedTotal": 46,
-          "definedTotal": 46
-        },
         {
           "npCommunicationId": "NPWR36496_00",
           "name": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -14179,6 +13736,36 @@
           "lastUpdatedDateTime": "2026-04-22T23:42:00Z",
           "earnedTotal": 39,
           "definedTotal": 115
+        },
+        {
+          "npCommunicationId": "NPWR44827_00",
+          "name": "Farming Simulator 25",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+          "lastPlayed": "2026-04-14T10:48:47Z",
+          "npServiceName": "trophy2",
+          "trophySetVersion": "01.00",
+          "trophyTitleName": "Farming Simulator 25",
+          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+          "trophyTitlePlatform": "PS5",
+          "hasTrophyGroups": false,
+          "trophyGroupCount": 1,
+          "definedTrophies": {
+            "bronze": 28,
+            "silver": 15,
+            "gold": 2,
+            "platinum": 1
+          },
+          "progress": 100,
+          "earnedTrophies": {
+            "bronze": 28,
+            "silver": 15,
+            "gold": 2,
+            "platinum": 1
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-04-14T10:48:47Z",
+          "earnedTotal": 46,
+          "definedTotal": 46
         },
         {
           "npCommunicationId": "NPWR23165_00",
@@ -15855,21 +15442,13 @@
           "isMe": true
         },
         "presence": {
-          "availability": "availableToPlay",
+          "availability": "unavailable",
+          "lastAvailableDate": "2026-06-21T16:34:33.317Z",
           "primaryPlatformInfo": {
-            "onlineStatus": "online",
+            "onlineStatus": "offline",
             "platform": "PS5",
-            "lastOnlineDate": "2026-06-20T14:59:37.041Z"
-          },
-          "gameTitleInfoList": [
-            {
-              "npTitleId": "PPSA19644_00",
-              "titleName": "Farming Simulator 25",
-              "format": "PS5",
-              "launchPlatform": "PS5",
-              "conceptIconUrl": "https://image.api.playstation.com/vulcan/ap/rnd/202406/1221/5e7b5321408d56da66ffbb45abae3d2f812b0a1dd03cee5d.png"
-            }
-          ]
+            "lastOnlineDate": "2026-06-21T16:34:33.317Z"
+          }
         },
         "telemetry": [],
         "titles": [
@@ -17569,7 +17148,7 @@
           "totalItemCount": 36
         }
       },
-      "lastUpdated": "6/21/2026, 3:30:30 PM"
+      "lastUpdated": "6/21/2026, 5:11:49 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -18056,7 +17635,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 6:18:44 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 9 hours, 11 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 10 hours, 53 mins",
             "timestamp": 1768285124000,
             "currentValue": 0,
             "targetValue": 0
@@ -18079,7 +17658,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 7:58:40 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 7 hours, 31 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 9 hours, 13 mins",
             "timestamp": 1768291120000,
             "currentValue": 0,
             "targetValue": 0
@@ -18102,7 +17681,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "2/7/2026, 7:15:04 AM",
-            "earnedAge": "4 months, 2 weeks, 8 hours, 15 mins",
+            "earnedAge": "4 months, 2 weeks, 9 hours, 56 mins",
             "timestamp": 1770448504000,
             "currentValue": 0,
             "targetValue": 0
@@ -18125,7 +17704,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "6/12/2026, 7:20:41 AM",
-            "earnedAge": "1 week, 2 days, 8 hours, 9 mins",
+            "earnedAge": "1 week, 2 days, 9 hours, 51 mins",
             "timestamp": 1781248841000,
             "currentValue": 0,
             "targetValue": 0
@@ -18424,7 +18003,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 6:14:15 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 9 hours, 16 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 10 hours, 57 mins",
             "timestamp": 1768284855000,
             "currentValue": 0,
             "targetValue": 0
@@ -18447,7 +18026,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 6:14:15 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 9 hours, 16 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 10 hours, 57 mins",
             "timestamp": 1768284855000,
             "currentValue": 0,
             "targetValue": 0
@@ -18470,7 +18049,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 8:53:07 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 6 hours, 37 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 8 hours, 18 mins",
             "timestamp": 1768294387000,
             "currentValue": 0,
             "targetValue": 0
@@ -18493,7 +18072,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "6/15/2026, 6:09:59 AM",
-            "earnedAge": "6 days, 9 hours, 20 mins",
+            "earnedAge": "6 days, 11 hours, 1 min",
             "timestamp": 1781503799000,
             "currentValue": 0,
             "targetValue": 0
@@ -18631,7 +18210,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 7:09:00 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 8 hours, 21 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 10 hours, 2 mins",
             "timestamp": 1768288140000,
             "currentValue": 0,
             "targetValue": 0
@@ -18654,7 +18233,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "2/7/2026, 7:24:35 AM",
-            "earnedAge": "4 months, 2 weeks, 8 hours, 5 mins",
+            "earnedAge": "4 months, 2 weeks, 9 hours, 47 mins",
             "timestamp": 1770449075000,
             "currentValue": 0,
             "targetValue": 0
@@ -18677,7 +18256,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "6/18/2026, 8:54:18 AM",
-            "earnedAge": "3 days, 6 hours, 36 mins",
+            "earnedAge": "3 days, 8 hours, 17 mins",
             "timestamp": 1781772858000,
             "currentValue": 0,
             "targetValue": 0
@@ -18700,7 +18279,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "6/17/2026, 7:42:30 AM",
-            "earnedAge": "4 days, 7 hours, 48 mins",
+            "earnedAge": "4 days, 9 hours, 29 mins",
             "timestamp": 1781682150000,
             "currentValue": 0,
             "targetValue": 0
@@ -18723,7 +18302,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 7:10:38 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 8 hours, 19 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 10 hours, 1 min",
             "timestamp": 1768288238000,
             "currentValue": 0,
             "targetValue": 0
@@ -18769,7 +18348,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "6/17/2026, 7:39:06 AM",
-            "earnedAge": "4 days, 7 hours, 51 mins",
+            "earnedAge": "4 days, 9 hours, 32 mins",
             "timestamp": 1781681946000,
             "currentValue": 0,
             "targetValue": 0
@@ -18792,7 +18371,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 10:10:55 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 5 hours, 19 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 7 hours, 1 min",
             "timestamp": 1768299055000,
             "currentValue": 0,
             "targetValue": 0
@@ -18838,7 +18417,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "6/16/2026, 6:11:44 AM",
-            "earnedAge": "5 days, 9 hours, 18 mins",
+            "earnedAge": "5 days, 11 hours",
             "timestamp": 1781590304000,
             "currentValue": 0,
             "targetValue": 0
@@ -18884,7 +18463,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "6/19/2026, 4:32:21 AM",
-            "earnedAge": "2 days, 10 hours, 58 mins",
+            "earnedAge": "2 days, 12 hours, 39 mins",
             "timestamp": 1781843541000,
             "currentValue": 0,
             "targetValue": 0
@@ -18907,7 +18486,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "2/7/2026, 6:07:50 AM",
-            "earnedAge": "4 months, 2 weeks, 9 hours, 22 mins",
+            "earnedAge": "4 months, 2 weeks, 11 hours, 4 mins",
             "timestamp": 1770444470000,
             "currentValue": 0,
             "targetValue": 0
@@ -18930,7 +18509,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/14/2026, 7:38:38 AM",
-            "earnedAge": "5 months, 1 week, 1 day, 7 hours, 51 mins",
+            "earnedAge": "5 months, 1 week, 1 day, 9 hours, 33 mins",
             "timestamp": 1768376318000,
             "currentValue": 0,
             "targetValue": 0
@@ -18953,7 +18532,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 7:20:10 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 8 hours, 10 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 9 hours, 51 mins",
             "timestamp": 1768288810000,
             "currentValue": 0,
             "targetValue": 0
@@ -18976,7 +18555,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 7:10:38 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 8 hours, 19 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 10 hours, 1 min",
             "timestamp": 1768288238000,
             "currentValue": 0,
             "targetValue": 0
@@ -18999,7 +18578,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 8:50:14 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 6 hours, 40 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 8 hours, 21 mins",
             "timestamp": 1768294214000,
             "currentValue": 0,
             "targetValue": 0
@@ -19045,7 +18624,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "6/20/2026, 4:58:59 AM",
-            "earnedAge": "1 day, 10 hours, 31 mins",
+            "earnedAge": "1 day, 12 hours, 12 mins",
             "timestamp": 1781931539000,
             "currentValue": 0,
             "targetValue": 0
@@ -19068,7 +18647,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 8:57:24 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 6 hours, 33 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 8 hours, 14 mins",
             "timestamp": 1768294644000,
             "currentValue": 0,
             "targetValue": 0
@@ -19091,7 +18670,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 10:11:26 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 5 hours, 19 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 7 hours",
             "timestamp": 1768299086000,
             "currentValue": 0,
             "targetValue": 0
@@ -19114,7 +18693,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "1/13/2026, 8:52:54 AM",
-            "earnedAge": "5 months, 1 week, 2 days, 6 hours, 37 mins",
+            "earnedAge": "5 months, 1 week, 2 days, 8 hours, 19 mins",
             "timestamp": 1768294374000,
             "currentValue": 0,
             "targetValue": 0
@@ -20149,7 +19728,7 @@
             "groupName": "Yukon Valley Nature Reserve",
             "earned": true,
             "earnedDate": "6/18/2026, 5:14:32 AM",
-            "earnedAge": "3 days, 10 hours, 16 mins",
+            "earnedAge": "3 days, 11 hours, 57 mins",
             "timestamp": 1781759672000,
             "currentValue": 0,
             "targetValue": 0
@@ -20670,7 +20249,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/8BB42BF73C2AE38DB6E30D922C0D3245288DA4E2.PNG",
           "timestamp": 1781931539000,
           "date": "6/20/2026, 4:58:59 AM",
-          "age": "1 day, 10 hours, 31 mins"
+          "age": "1 day, 12 hours, 12 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -20678,7 +20257,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/E3D04C671AA6C5F2669CED3EBF39411AE08A7170.PNG",
           "timestamp": 1781843541000,
           "date": "6/19/2026, 4:32:21 AM",
-          "age": "2 days, 10 hours, 58 mins"
+          "age": "2 days, 12 hours, 39 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -20686,7 +20265,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/3DC8ED25F3DC19EE94FEAC45D557F3D611C67A7D.PNG",
           "timestamp": 1781772858000,
           "date": "6/18/2026, 8:54:18 AM",
-          "age": "3 days, 6 hours, 36 mins"
+          "age": "3 days, 8 hours, 17 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -20694,7 +20273,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/0167840B5FF9A8F75E78D07367E4F6CC6C855A81.PNG",
           "timestamp": 1781759672000,
           "date": "6/18/2026, 5:14:32 AM",
-          "age": "3 days, 10 hours, 16 mins"
+          "age": "3 days, 11 hours, 57 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -20702,7 +20281,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/C584A5BE44818DA53B8BBA0A96ACE202E10275A6.PNG",
           "timestamp": 1781682150000,
           "date": "6/17/2026, 7:42:30 AM",
-          "age": "4 days, 7 hours, 48 mins"
+          "age": "4 days, 9 hours, 29 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -20710,7 +20289,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/E6DFF026D742C7FD4F6933C7C654DEDB1F0ADA00.PNG",
           "timestamp": 1781681946000,
           "date": "6/17/2026, 7:39:06 AM",
-          "age": "4 days, 7 hours, 51 mins"
+          "age": "4 days, 9 hours, 32 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -20718,7 +20297,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/50E1A1D1FFC25AD8EA6277BBECCF2E993319D19F.PNG",
           "timestamp": 1781590304000,
           "date": "6/16/2026, 6:11:44 AM",
-          "age": "5 days, 9 hours, 18 mins"
+          "age": "5 days, 11 hours"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -20726,7 +20305,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/4C32E581B3C74C4D9C4361C9E284EF7145EB5A43.PNG",
           "timestamp": 1781503799000,
           "date": "6/15/2026, 6:09:59 AM",
-          "age": "6 days, 9 hours, 20 mins"
+          "age": "6 days, 11 hours, 1 min"
         },
         {
           "game": "Farming Simulator 25",
@@ -20734,7 +20313,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/99255d15-c101-4bea-9599-b2b47a4891a6.png",
           "timestamp": 1781412888000,
           "date": "6/14/2026, 4:54:48 AM",
-          "age": "1 week, 10 hours, 35 mins"
+          "age": "1 week, 12 hours, 17 mins"
         },
         {
           "game": "Tom Clancy’s Ghost Recon® Wildlands",
@@ -20742,7 +20321,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/DE459E9450AD61F9AADB1615DD4EDC3A074DB290.PNG",
           "timestamp": 1781391903000,
           "date": "6/13/2026, 11:05:03 PM",
-          "age": "1 week, 16 hours, 25 mins"
+          "age": "1 week, 18 hours, 6 mins"
         }
       ],
       "fullLibrary": [
@@ -21796,7 +21375,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/21/2026, 3:30:40 PM"
+      "lastUpdated": "6/21/2026, 5:12:23 PM"
     },
     "darkterro": {
       "onlineId": "darkterro420",
@@ -21821,7 +21400,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/21/2026, 3:30:40 PM",
+      "lastUpdated": "6/21/2026, 5:12:24 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -22189,7 +21768,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:32:59 PM",
-            "earnedAge": "3 weeks, 3 days, 16 hours, 57 mins",
+            "earnedAge": "3 weeks, 3 days, 18 hours, 39 mins",
             "timestamp": 1779921179000,
             "currentValue": 0,
             "targetValue": "100"
@@ -22213,7 +21792,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:11:13 PM",
-            "earnedAge": "3 weeks, 3 days, 17 hours, 19 mins",
+            "earnedAge": "3 weeks, 3 days, 19 hours, 1 min",
             "timestamp": 1779919873000,
             "currentValue": 0,
             "targetValue": "100"
@@ -22261,7 +21840,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:02:32 PM",
-            "earnedAge": "3 weeks, 3 days, 17 hours, 28 mins",
+            "earnedAge": "3 weeks, 3 days, 19 hours, 9 mins",
             "timestamp": 1779919352000,
             "currentValue": 0,
             "targetValue": "100"
@@ -22285,7 +21864,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:25:06 PM",
-            "earnedAge": "3 weeks, 3 days, 17 hours, 5 mins",
+            "earnedAge": "3 weeks, 3 days, 18 hours, 47 mins",
             "timestamp": 1779920706000,
             "currentValue": 0,
             "targetValue": "100"
@@ -22308,7 +21887,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:11:07 PM",
-            "earnedAge": "3 weeks, 3 days, 18 hours, 19 mins",
+            "earnedAge": "3 weeks, 3 days, 20 hours, 1 min",
             "timestamp": 1779916267000,
             "currentValue": 0,
             "targetValue": 0
@@ -22331,7 +21910,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:06:20 PM",
-            "earnedAge": "3 weeks, 3 days, 18 hours, 24 mins",
+            "earnedAge": "3 weeks, 3 days, 20 hours, 6 mins",
             "timestamp": 1779915980000,
             "currentValue": 0,
             "targetValue": 0
@@ -22355,7 +21934,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:39:20 PM",
-            "earnedAge": "3 weeks, 3 days, 17 hours, 51 mins",
+            "earnedAge": "3 weeks, 3 days, 19 hours, 33 mins",
             "timestamp": 1779917960000,
             "currentValue": 0,
             "targetValue": "100"
@@ -22379,7 +21958,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:18:36 PM",
-            "earnedAge": "3 weeks, 3 days, 17 hours, 12 mins",
+            "earnedAge": "3 weeks, 3 days, 18 hours, 53 mins",
             "timestamp": 1779920316000,
             "currentValue": 0,
             "targetValue": "100"
@@ -22403,7 +21982,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:24:10 PM",
-            "earnedAge": "3 weeks, 3 days, 17 hours, 6 mins",
+            "earnedAge": "3 weeks, 3 days, 18 hours, 48 mins",
             "timestamp": 1779920650000,
             "currentValue": 0,
             "targetValue": "100"
@@ -22427,7 +22006,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:39:20 PM",
-            "earnedAge": "3 weeks, 3 days, 17 hours, 51 mins",
+            "earnedAge": "3 weeks, 3 days, 19 hours, 33 mins",
             "timestamp": 1779917960000,
             "currentValue": 0,
             "targetValue": "100"
@@ -22450,7 +22029,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:07:31 PM",
-            "earnedAge": "3 weeks, 3 days, 18 hours, 23 mins",
+            "earnedAge": "3 weeks, 3 days, 20 hours, 4 mins",
             "timestamp": 1779916051000,
             "currentValue": 0,
             "targetValue": 0
@@ -22473,7 +22052,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:10:44 PM",
-            "earnedAge": "3 weeks, 3 days, 18 hours, 19 mins",
+            "earnedAge": "3 weeks, 3 days, 20 hours, 1 min",
             "timestamp": 1779916244000,
             "currentValue": 0,
             "targetValue": 0
@@ -22496,7 +22075,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:06:20 PM",
-            "earnedAge": "3 weeks, 3 days, 18 hours, 24 mins",
+            "earnedAge": "3 weeks, 3 days, 20 hours, 6 mins",
             "timestamp": 1779915980000,
             "currentValue": 0,
             "targetValue": 0
@@ -22544,7 +22123,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:40:32 PM",
-            "earnedAge": "3 weeks, 3 days, 16 hours, 50 mins",
+            "earnedAge": "3 weeks, 3 days, 18 hours, 31 mins",
             "timestamp": 1779921632000,
             "currentValue": 0,
             "targetValue": "100"
@@ -22616,7 +22195,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:11:25 PM",
-            "earnedAge": "3 weeks, 3 days, 17 hours, 19 mins",
+            "earnedAge": "3 weeks, 3 days, 19 hours, 1 min",
             "timestamp": 1779919885000,
             "currentValue": 0,
             "targetValue": "100"
@@ -22639,7 +22218,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:25:15 PM",
-            "earnedAge": "3 weeks, 3 days, 18 hours, 5 mins",
+            "earnedAge": "3 weeks, 3 days, 19 hours, 47 mins",
             "timestamp": 1779917115000,
             "currentValue": 0,
             "targetValue": 0
@@ -22687,7 +22266,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/29/2026, 12:10:36 AM",
-            "earnedAge": "3 weeks, 2 days, 15 hours, 20 mins",
+            "earnedAge": "3 weeks, 2 days, 17 hours, 1 min",
             "timestamp": 1780013436000,
             "currentValue": 0,
             "targetValue": "100"
@@ -22711,7 +22290,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/29/2026, 12:46:15 AM",
-            "earnedAge": "3 weeks, 2 days, 14 hours, 44 mins",
+            "earnedAge": "3 weeks, 2 days, 16 hours, 26 mins",
             "timestamp": 1780015575000,
             "currentValue": 0,
             "targetValue": "100"
@@ -22804,7 +22383,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 9:48:01 PM",
-            "earnedAge": "3 weeks, 3 days, 17 hours, 42 mins",
+            "earnedAge": "3 weeks, 3 days, 19 hours, 24 mins",
             "timestamp": 1779918481000,
             "currentValue": 0,
             "targetValue": 0
@@ -22827,7 +22406,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:12:31 PM",
-            "earnedAge": "3 weeks, 3 days, 17 hours, 18 mins",
+            "earnedAge": "3 weeks, 3 days, 18 hours, 59 mins",
             "timestamp": 1779919951000,
             "currentValue": 0,
             "targetValue": 0
@@ -22851,7 +22430,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "6/8/2026, 1:10:36 AM",
-            "earnedAge": "1 week, 6 days, 14 hours, 20 mins",
+            "earnedAge": "1 week, 6 days, 16 hours, 1 min",
             "timestamp": 1780881036000,
             "currentValue": 0,
             "targetValue": "100"
@@ -22898,7 +22477,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:06:43 PM",
-            "earnedAge": "3 weeks, 3 days, 17 hours, 23 mins",
+            "earnedAge": "3 weeks, 3 days, 19 hours, 5 mins",
             "timestamp": 1779919603000,
             "currentValue": 0,
             "targetValue": 0
@@ -22921,7 +22500,7 @@
             "groupName": "World of Tanks: HEAT",
             "earned": true,
             "earnedDate": "5/27/2026, 10:40:32 PM",
-            "earnedAge": "3 weeks, 3 days, 16 hours, 50 mins",
+            "earnedAge": "3 weeks, 3 days, 18 hours, 31 mins",
             "timestamp": 1779921632000,
             "currentValue": 0,
             "targetValue": 0
@@ -22936,7 +22515,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/1c3f7af3-97bd-4d98-8eee-47bcd691e89f.png",
           "timestamp": 1780881036000,
           "date": "6/8/2026, 1:10:36 AM",
-          "age": "1 week, 6 days, 14 hours, 20 mins"
+          "age": "1 week, 6 days, 16 hours, 1 min"
         },
         {
           "game": "Ghost of Tsushima",
@@ -22944,7 +22523,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR22859_00/493cfcac-aefe-4bab-a356-62557a048d74.png",
           "timestamp": 1780189898000,
           "date": "5/31/2026, 1:11:38 AM",
-          "age": "3 weeks, 14 hours, 19 mins"
+          "age": "3 weeks, 16 hours"
         },
         {
           "game": "Cyberpunk 2077",
@@ -22952,7 +22531,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR24695_00/9e51220d-031d-4e1d-b061-dcee0a2c22eb.png",
           "timestamp": 1780060881000,
           "date": "5/29/2026, 1:21:21 PM",
-          "age": "3 weeks, 2 days, 2 hours, 9 mins"
+          "age": "3 weeks, 2 days, 3 hours, 51 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -22960,7 +22539,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/e3c3f8b6-4021-4e1d-aedf-f4a37f001eda.png",
           "timestamp": 1780015575000,
           "date": "5/29/2026, 12:46:15 AM",
-          "age": "3 weeks, 2 days, 14 hours, 44 mins"
+          "age": "3 weeks, 2 days, 16 hours, 26 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -22968,7 +22547,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/b38c5fde-cb03-49cb-922e-91c1b5c3da89.png",
           "timestamp": 1780013436000,
           "date": "5/29/2026, 12:10:36 AM",
-          "age": "3 weeks, 2 days, 15 hours, 20 mins"
+          "age": "3 weeks, 2 days, 17 hours, 1 min"
         },
         {
           "game": "Tom Clancy’s Ghost Recon® Wildlands",
@@ -22976,7 +22555,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/531102B911D983E0259ED0222843C3BD669510B2.PNG",
           "timestamp": 1779979478000,
           "date": "5/28/2026, 2:44:38 PM",
-          "age": "3 weeks, 3 days, 46 mins"
+          "age": "3 weeks, 3 days, 2 hours, 27 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -22984,7 +22563,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/6b0b573c-aeea-4057-8f0b-9cd4f49392e3.png",
           "timestamp": 1779921632000,
           "date": "5/27/2026, 10:40:32 PM",
-          "age": "3 weeks, 3 days, 16 hours, 50 mins"
+          "age": "3 weeks, 3 days, 18 hours, 31 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -22992,7 +22571,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/0f98092d-1ed3-45b6-b96f-401b020b738f.png",
           "timestamp": 1779921632000,
           "date": "5/27/2026, 10:40:32 PM",
-          "age": "3 weeks, 3 days, 16 hours, 50 mins"
+          "age": "3 weeks, 3 days, 18 hours, 31 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -23000,7 +22579,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/08aa8bfb-df5b-4347-a043-03ac3c18199d.png",
           "timestamp": 1779921179000,
           "date": "5/27/2026, 10:32:59 PM",
-          "age": "3 weeks, 3 days, 16 hours, 57 mins"
+          "age": "3 weeks, 3 days, 18 hours, 39 mins"
         },
         {
           "game": "World of Tanks: HEAT",
@@ -23008,7 +22587,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR51848_00/d158d368-a8aa-4863-8105-885a305729d1.png",
           "timestamp": 1779920706000,
           "date": "5/27/2026, 10:25:06 PM",
-          "age": "3 weeks, 3 days, 17 hours, 5 mins"
+          "age": "3 weeks, 3 days, 18 hours, 47 mins"
         }
       ],
       "fullLibrary": [
@@ -31970,7 +31549,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/21/2026, 3:30:49 PM"
+      "lastUpdated": "6/21/2026, 5:12:59 PM"
     },
     "jcrow": {
       "onlineId": "JCrow207",
@@ -31981,7 +31560,7 @@
       "amazonAffiliateUrl": null,
       "bio": "Official Pack Member Profile",
       "twitch": null,
-      "lastUpdated": "6/21/2026, 3:30:49 PM",
+      "lastUpdated": "6/21/2026, 5:12:59 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -33007,7 +32586,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/21da5d74-5c49-48d4-8d84-85b1fc955825.png",
           "timestamp": 1778470920000,
           "date": "5/11/2026, 3:42:00 AM",
-          "age": "1 month, 1 week, 4 days, 11 hours, 48 mins"
+          "age": "1 month, 1 week, 4 days, 13 hours, 31 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33015,7 +32594,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/79c313b7-af03-4096-b3d1-86090e12f841.png",
           "timestamp": 1778470178000,
           "date": "5/11/2026, 3:29:38 AM",
-          "age": "1 month, 1 week, 4 days, 12 hours, 1 min"
+          "age": "1 month, 1 week, 4 days, 13 hours, 43 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33023,7 +32602,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/5de40386-ae1c-4294-a4d4-f2e922b8d961.png",
           "timestamp": 1778469537000,
           "date": "5/11/2026, 3:18:57 AM",
-          "age": "1 month, 1 week, 4 days, 12 hours, 11 mins"
+          "age": "1 month, 1 week, 4 days, 13 hours, 54 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33031,7 +32610,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/492e702d-d33c-48c3-a2d3-19075180c76f.png",
           "timestamp": 1777934991000,
           "date": "5/4/2026, 10:49:51 PM",
-          "age": "1 month, 2 weeks, 3 days, 16 hours, 40 mins"
+          "age": "1 month, 2 weeks, 3 days, 18 hours, 23 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33039,7 +32618,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/bbb648f0-902a-483d-a9a1-30c6b3f87bf4.png",
           "timestamp": 1777877251000,
           "date": "5/4/2026, 6:47:31 AM",
-          "age": "1 month, 2 weeks, 4 days, 8 hours, 43 mins"
+          "age": "1 month, 2 weeks, 4 days, 10 hours, 25 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33047,7 +32626,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/28baea49-5915-4b1b-89db-bf1d84bf1afd.png",
           "timestamp": 1777876233000,
           "date": "5/4/2026, 6:30:33 AM",
-          "age": "1 month, 2 weeks, 4 days, 9 hours"
+          "age": "1 month, 2 weeks, 4 days, 10 hours, 42 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33055,7 +32634,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/b2e3576d-a71a-459e-8035-ada1e3ef774b.png",
           "timestamp": 1777875280000,
           "date": "5/4/2026, 6:14:40 AM",
-          "age": "1 month, 2 weeks, 4 days, 9 hours, 16 mins"
+          "age": "1 month, 2 weeks, 4 days, 10 hours, 58 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33063,7 +32642,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/791a3e33-6019-4253-9bfa-5de6d1ad58a2.png",
           "timestamp": 1777872126000,
           "date": "5/4/2026, 5:22:06 AM",
-          "age": "1 month, 2 weeks, 4 days, 10 hours, 8 mins"
+          "age": "1 month, 2 weeks, 4 days, 11 hours, 50 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33071,7 +32650,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/468002bc-35f9-43f1-add4-c4f9e45a943c.png",
           "timestamp": 1777869475000,
           "date": "5/4/2026, 4:37:55 AM",
-          "age": "1 month, 2 weeks, 4 days, 10 hours, 52 mins"
+          "age": "1 month, 2 weeks, 4 days, 12 hours, 35 mins"
         },
         {
           "game": "Trash Goblin",
@@ -33079,7 +32658,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR56684_00/0ae703ef-cc71-4353-9f33-00190ca95e9d.png",
           "timestamp": 1777867417000,
           "date": "5/4/2026, 4:03:37 AM",
-          "age": "1 month, 2 weeks, 4 days, 11 hours, 27 mins"
+          "age": "1 month, 2 weeks, 4 days, 13 hours, 9 mins"
         }
       ],
       "fullLibrary": [
@@ -36044,11 +35623,11 @@
         },
         "presence": {
           "availability": "unavailable",
-          "lastAvailableDate": "2026-06-21T06:36:47.099Z",
+          "lastAvailableDate": "2026-06-21T17:11:14.280Z",
           "primaryPlatformInfo": {
             "onlineStatus": "offline",
             "platform": "PS5",
-            "lastOnlineDate": "2026-06-21T06:36:47.099Z"
+            "lastOnlineDate": "2026-06-21T17:11:14.280Z"
           }
         },
         "telemetry": [],
@@ -38505,7 +38084,7 @@
         ],
         "friends": []
       },
-      "lastUpdated": "6/21/2026, 3:30:57 PM"
+      "lastUpdated": "6/21/2026, 5:13:25 PM"
     },
     "mjolnir": {
       "onlineId": "Michael (Mjolnir)",
@@ -38530,7 +38109,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/21/2026, 3:30:58 PM",
+      "lastUpdated": "6/21/2026, 5:13:26 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -38546,7 +38125,7 @@
         "isLive": false,
         "game": "Papa's Pizzeria Deluxe",
         "gameArt": null,
-        "followers": "74",
+        "followers": "75",
         "latestFollower": "404 Page Not Found",
         "followerNames": [
           "[DecAPI - /twitch/followers/phoenix_darkfire] 410 Gone - This API has been deprecated/removed"
@@ -38557,7 +38136,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/21/2026, 3:30:58 PM",
+      "lastUpdated": "6/21/2026, 5:13:26 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -38584,7 +38163,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/21/2026, 3:30:58 PM",
+      "lastUpdated": "6/21/2026, 5:13:26 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -38611,7 +38190,7 @@
         "statusMessage": null,
         "uptime": null
       },
-      "lastUpdated": "6/21/2026, 3:30:59 PM",
+      "lastUpdated": "6/21/2026, 5:13:27 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     },
@@ -38624,7 +38203,7 @@
       "amazonAffiliateUrl": null,
       "bio": "Official Pack Member Profile",
       "twitch": null,
-      "lastUpdated": "6/21/2026, 3:30:59 PM",
+      "lastUpdated": "6/21/2026, 5:13:27 PM",
       "gamesPlayed": 0,
       "note": "Twitch-Master Presence"
     }
@@ -38656,7 +38235,7 @@
         "werewolf",
         "kfruti"
       ],
-      "lastUpdated": "6/21/2026, 3:30:59 PM"
+      "lastUpdated": "6/21/2026, 5:13:27 PM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -38684,11 +38263,11 @@
         "darkwing",
         "darkterro"
       ],
-      "lastUpdated": "6/21/2026, 3:30:59 PM"
+      "lastUpdated": "6/21/2026, 5:13:27 PM"
     },
     "Ray": {
       "displayName": "Ray",
-      "isOnline": true,
+      "isOnline": false,
       "primaryOnlineId": "OneLIVIDMAN",
       "combinedTrophies": {
         "platinum": 6,
@@ -38703,15 +38282,15 @@
         "start": "12/30/2016, 6:40:30 PM",
         "end": "6/19/2026, 2:22:26 AM"
       },
-      "currentGame": "Farming Simulator 25",
-      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a1f2b0fa-b7f1-466f-844e-04f570815ceb.png",
+      "currentGame": "LEGO® Star Wars™ II: The Original Trilogy",
+      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/e9050215-9659-4326-b2b3-be8abe7a5663.png",
       "currentActivity": null,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png",
       "bio": "exo-ONELIVIDMANKDFC3",
       "accounts": [
         "ray"
       ],
-      "lastUpdated": "6/21/2026, 3:30:59 PM"
+      "lastUpdated": "6/21/2026, 5:13:27 PM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -38728,7 +38307,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/21/2026, 3:30:59 PM"
+        "end": "6/21/2026, 5:13:27 PM"
       },
       "currentGame": "Papa's Pizzeria Deluxe",
       "currentGameArt": null,
@@ -38737,7 +38316,7 @@
       "accounts": [
         "phoenix"
       ],
-      "lastUpdated": "6/21/2026, 3:30:59 PM"
+      "lastUpdated": "6/21/2026, 5:13:27 PM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -38764,7 +38343,7 @@
       "accounts": [
         "marc"
       ],
-      "lastUpdated": "6/21/2026, 3:30:59 PM"
+      "lastUpdated": "6/21/2026, 5:13:27 PM"
     },
     "JCrow": {
       "displayName": "JCrow",
@@ -38781,7 +38360,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/21/2026, 3:30:59 PM"
+        "end": "6/21/2026, 5:13:27 PM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -38790,7 +38369,7 @@
       "accounts": [
         "jcrow"
       ],
-      "lastUpdated": "6/21/2026, 3:30:59 PM"
+      "lastUpdated": "6/21/2026, 5:13:27 PM"
     },
     "Shiv": {
       "displayName": "Shiv",
@@ -38817,7 +38396,7 @@
       "accounts": [
         "bunny"
       ],
-      "lastUpdated": "6/21/2026, 3:30:59 PM"
+      "lastUpdated": "6/21/2026, 5:13:27 PM"
     },
     "Michael": {
       "displayName": "Michael",
@@ -38834,7 +38413,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/21/2026, 3:30:59 PM"
+        "end": "6/21/2026, 5:13:27 PM"
       },
       "currentGame": "Police Simulator: Patrol Officers",
       "currentGameArt": null,
@@ -38843,7 +38422,7 @@
       "accounts": [
         "mjolnir"
       ],
-      "lastUpdated": "6/21/2026, 3:30:59 PM"
+      "lastUpdated": "6/21/2026, 5:13:27 PM"
     },
     "Queen": {
       "displayName": "Queen",
@@ -38860,7 +38439,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/21/2026, 3:30:59 PM"
+        "end": "6/21/2026, 5:13:27 PM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -38869,7 +38448,7 @@
       "accounts": [
         "queen"
       ],
-      "lastUpdated": "6/21/2026, 3:30:59 PM"
+      "lastUpdated": "6/21/2026, 5:13:27 PM"
     },
     "Balto": {
       "displayName": "Balto",
@@ -38886,7 +38465,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/21/2026, 3:30:59 PM"
+        "end": "6/21/2026, 5:13:27 PM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -38895,7 +38474,7 @@
       "accounts": [
         "balto"
       ],
-      "lastUpdated": "6/21/2026, 3:30:59 PM"
+      "lastUpdated": "6/21/2026, 5:13:27 PM"
     },
     "Memorial": {
       "displayName": "Memorial",
@@ -38912,7 +38491,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "6/21/2026, 3:30:59 PM"
+        "end": "6/21/2026, 5:13:27 PM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -38921,7 +38500,7 @@
       "accounts": [
         "oldman"
       ],
-      "lastUpdated": "6/21/2026, 3:30:59 PM"
+      "lastUpdated": "6/21/2026, 5:13:27 PM"
     }
   },
   "mutualSquadFollowers": [
@@ -38930,7 +38509,7 @@
       "sharedConnections": 2
     }
   ],
-  "lastGlobalUpdate": "6/21/2026, 3:30:10 PM",
+  "lastGlobalUpdate": "6/21/2026, 5:10:47 PM",
   "engineVersion": "13.9.2",
   "codeTimestamp": "Saturday, May 30, 2026 | 11:39 PM EDT"
 }
