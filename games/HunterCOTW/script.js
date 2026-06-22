@@ -1,11 +1,9 @@
 /*
  * ==========================================
- * NYT TIMESTAMP: Sun, June 21, 2026, 10:36 PM EDT
+ * NYT TIMESTAMP: Sun, June 21, 2026, 11:15 PM EDT
  * PRECISION INTEGRATION: Frontend JS Modular Nervous System (main.js)
- * NOTES: Cleaned structural handlers to read/write atomically against updated rulesets.
- * CHANGED (PER INSTRUCTIONS):
- * 1. Removed all references to 'RedBirdFever'.
- * 2. Replaced with mapping for TJ, terrdog420, and Darkwin69420 to point to backend entry 'terrdog420'.
+ * NOTES: REMOVED ALL ALIAS KEYS FROM USER_DATA_MAP AND ALIGNED DISPLAY LAYOUTS.
+ * Directly binds buttons to exact Firestore documents: Werewolf3788, Raymystyro, terrdog420.
  * NO STRIPPING, NO COMPRESSING. FULL SOURCE INTEGRITY 100% INTACT.
  * ==========================================
  */
@@ -28,13 +26,11 @@ const MASTER_ID = 'cotw-master';
 const LEGACY_ID = 'cotw-trophy-display';
 
 // --- FRONTEND PROFILE TO BACKEND SCRAPER JSON MAP ---
+// Cleaned: Alias keys removed. Maps strictly to your direct database document strings.
 const USER_DATA_MAP = {
     'Werewolf3788': 'Werewolf3788',
-    'Ray': 'OneLIVIDMAN',
-    'Raymystyro': 'OneLIVIDMAN',
-    'TJ': 'terrdog420',
-    'terrdog420': 'terrdog420',
-    'Darkwin69420': 'terrdog420'
+    'Raymystyro': 'Raymystyro',
+    'terrdog420': 'terrdog420'
 };
 
 const ICONS = {
@@ -336,7 +332,7 @@ const trophyData = [
             "Fallow Deer Large Shed Antler [Petershain: -4333, 9531]", "Fallow Deer Large Shed Antler [Rathenfeldt: -5729, 12980]", "Fallow Deer Large Shed Antler [Rathenfeldt: -4650, 12594]", "Fallow Deer Large Shed Antler [Rathenfeldt: -3765, 11725]",
             "Fallow Deer Large Shed Antler [Ritterstein: -6701, 6841]", "Fallow Deer Large Shed Antler [Schonfeldt: -6627, 10902]", "Fallow Deer Large Shed Antler [Schonfeldt: -7162, 10731]", "Fallow Deer Large Shed Antler [Spreeberg: -8915, 9482]",
             "Fallow Deer Large Shed Antler [Tichenau: -8364, 12473]", "Fallow Deer Small Shed Antler [Müllerwald: -5676, 6524]", "Fallow Deer Small Shed Antler [Petershain: -3820, 10746]", "Fallow Deer Small Shed Antler [Petershain: -5539, 9463]",
-            "Fallow Deer Small Shed Antler [Dayton Canyon: -5080, 12184]", "Fallow Deer Small Shed Antler [Schonfeldt: -7257, 12117]", "Fallow Deer Small Shed Antler [Spreeberg: -7914, 9623]", "Red Deer Large Shed Antler [Bohndorf: -9228, 5584]",
+            "Fallow Deer Small Shed Antler [Rathenfeldt: -5781, 11118]", "Fallow Deer Small Shed Antler [Schonfeldt: -7257, 12117]", "Fallow Deer Small Shed Antler [Spreeberg: -7914, 9623]", "Red Deer Large Shed Antler [Bohndorf: -9228, 5584]",
             "Red Deer Large Shed Antler [Jonsdorf: -8839, 8744]", "Red Deer Large Shed Antler [Ritterstein: -7300, 7624]", "Red Deer Large Shed Antler [Ritterstein: -8601, 5476]", "Red Deer Small Shed Antler [Jonsdorf: -8567, 5907]",
             "Red Deer Small Shed Antler [Ritterstein: -7077, 7153]", "Roe Deer Large Shed Antler [Bohndorf: -9775, 6019]", "Roe Deer Large Shed Antler [Ernsdorf: -9422, 11343]", "Roe Deer Large Shed Antler [Ernsdorf: -10556, 9304]",
             "Roe Deer Large Shed Antler [Müllerwald: -4364, 6387]", "Roe Deer Large Shed Antler [Petershain: -5582, 8675]", "Roe Deer Large Shed Antler [Petershain: -4723, 7400]", "Roe Deer Large Shed Antler [Rathenfeldt: -4152, 12614]",
@@ -755,7 +751,11 @@ const appState = {
 
     init: async function() {
         const saved = localStorage.getItem('cotw_master_active_id');
-        if (saved) this.activeHunter = saved;
+        if (saved && USER_DATA_MAP[saved]) {
+            this.activeHunter = saved;
+        } else {
+            this.activeHunter = 'Werewolf3788';
+        }
         
         this.loadNavigation();
         
@@ -885,14 +885,20 @@ const appState = {
     loadHunter: function(name) {
         if (!this.auth.currentUser) return;
 
+        // Failsafe validation mapping check
+        const dbDocName = USER_DATA_MAP[name] || name;
+
         this.hunterData = JSON.parse(JSON.stringify(trophyData));
         this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
         this.dataLoaded = false;
 
-        this.activeHunter = name;
-        localStorage.setItem('cotw_master_active_id', name);
-        if (document.getElementById('hunter-name')) document.getElementById('hunter-name').innerText = name.toUpperCase();
-        if (document.getElementById('master-body')) document.getElementById('master-body').className = `theme-${name === 'Werewolf3788' ? 'werewolf' : name === 'Ray' || name === 'Raymystyro' ? 'ray' : 'Adam'}`;
+        this.activeHunter = dbDocName;
+        localStorage.setItem('cotw_master_active_id', dbDocName);
+        if (document.getElementById('hunter-name')) document.getElementById('hunter-name').innerText = dbDocName.toUpperCase();
+        
+        if (document.getElementById('master-body')) {
+            document.getElementById('master-body').className = `theme-${dbDocName === 'Werewolf3788' ? 'werewolf' : dbDocName === 'Raymystyro' ? 'ray' : 'Adam'}`;
+        }
         
         this.render();
         this.updateRankUI();
@@ -900,7 +906,7 @@ const appState = {
         if (this.masterUnsub) this.masterUnsub();
         if (this.legacyUnsub) this.legacyUnsub();
 
-        const masterRef = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', name);
+        const masterRef = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', dbDocName);
         this.masterUnsub = onSnapshot(masterRef, (snap) => {
             if (snap.exists) {
                 const data = snap.data();
@@ -938,22 +944,19 @@ const appState = {
             console.error("Master Document Sync Error: ", error);
         });
 
-        const legacyRef = doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', name);
+        const legacyRef = doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', dbDocName);
         this.legacyUnsub = onSnapshot(legacyRef, (snap) => {
             if (snap.exists) { 
-                this.animalRankData = snap.data(); 
-                this.updateRankUI(); 
-              if (this.animalRankData) {
-                  this.animalRankData = {
-                      bronze: snap.data().bronze || 0,
-                      silver: snap.data().silver || 0,
-                      gold: snap.data().gold || 0,
-                      diamond: snap.data().diamond || 0,
-                      greatone: snap.data().greatone || snap.data().greatOne || 0,
-                      albino: snap.data().albino || 0
-                  };
-              }
-              this.updateRankUI();
+                const incomingRank = snap.data();
+                this.animalRankData = {
+                    bronze: incomingRank.bronze || 0,
+                    silver: incomingRank.silver || 0,
+                    gold: incomingRank.gold || 0,
+                    diamond: incomingRank.diamond || 0,
+                    greatone: incomingRank.greatone || incomingRank.greatOne || 0,
+                    albino: incomingRank.albino || 0
+                };
+                this.updateRankUI();
             }
         }, (error) => {
             console.error("Legacy Document Sync Error: ", error);
@@ -1165,7 +1168,10 @@ const appState = {
     }
 };
 
+// Expose internal methods directly to the window scope context
 window.appState = appState; 
+window.adjRank = (tier, val) => appState.adjRank(tier, val);
+
 appState.init();
 
 // --- GLOBAL CLICK LISTENER FOR DROPDOWNS ---
