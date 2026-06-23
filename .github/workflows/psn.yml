@@ -1,12 +1,10 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
-# Project: PSN Sync Workflow
-# Timestamp: Tue, June 23, 2026, 2:15 PM (NYT)
-# Compatibility: GitHub Actions, GitHub Pages
-# Note: DO NOT STRIP INDENTATION. YAML REQUIRES 2-SPACE SPACING.
-# Updates: Verified clean Node.js and GitHub Pages pipeline structure. Removed non-existent lftp references.
+# Project: Unified PSN & G-Portal Sync
+# Timestamp: May 23, 2026, 01:25 AM (NYT)
+# Compatibility: GitHub Actions (Free Tier), GitHub Pages
 # ------------------------------------
 
-name: PSN Sync and Deploy
+name: Unified Sync and Deploy
 
 on:
   push:
@@ -22,10 +20,7 @@ permissions:
   id-token: write
 
 jobs:
-  psn-sync-job:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  sync-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -39,40 +34,37 @@ jobs:
           node-version: '20'
 
       - name: Install Dependencies
-        run: npm install psn-api
+        run: npm install psn-api xml2js
 
+      # STEP 1: PSN SYNC
       - name: Run PSN Sync Script
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
         run: node Playstation/psnscript.js
 
-      - name: Commit and Push Data Changes
+      # STEP 2: G-PORTAL SYNC (Forced LIST mode)
+      - name: Download All Save Games via lftp
+        run: |
+          sudo apt-get update && sudo apt-get install -y lftp
+          lftp -c "set ftp:ssl-allow no; set ftp:list-options -a; set net:timeout 10; open -u ${{ secrets.FTP_USER }},${{ secrets.FTP_PASS }} ${{ secrets.FTP_HOST }}; cd /; mget -r savegame*/*.xml -O ./Playstation/fs25/"
+
+      - name: Run G-Portal Parser
+        run: node Playstation/fs25/sync_data.js
+
+      # STEP 3: COMMIT EVERYTHING
+      - name: Commit and Push All Data
         run: |
           git config --global user.name "Werewolf3788-Bot"
           git config --global user.email "bot@werewolf.ourflora.com"
+          git add Playstation/psn_data.json Playstation/tokens.json Playstation/fs25/server_data.json .nojekyll
           
-          # 1. Stage current background-generated data changes
-          git add Playstation/psn_data.json Playstation/tokens.json .nojekyll
-          
-          # 2. Check if there are differences to save
           if ! git diff --cached --quiet; then
-            # Stash the new changes away safely
-            git stash || true
-            
-            # Fetch origin state and force hard match to clean version drift
-            git fetch origin main
-            git reset --hard origin/main
-            
-            # Reapply your freshly generated data files directly over main
-            git stash pop || true
-            
-            # Re-stage files for safe automated logging
-            git add Playstation/psn_data.json Playstation/tokens.json .nojekyll
-            git commit -m "Automated PSN Sync: $(date)"
+            git commit -m "Automated Sync: PSN & G-Portal $(date)"
+            git pull --rebase origin main
             git push origin main
           else
-            echo "No data changes detected. Skipping commit."
+            echo "No changes detected. Skipping commit."
           fi
 
       - name: Setup Pages
