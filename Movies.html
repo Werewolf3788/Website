@@ -1,20 +1,3 @@
-<!-- 
- * NYT Timestamp: 06/18/2026 5:18:00 PM EDT
- * PROJECT: WEREWOLF CINEMA LIBRARY (v38.95 - Deep Link Search Engine & Storefront Fallback Upgrade)
- * MASTER DEV PROTOCOL APPLIED:
- * - NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
- * - Entire Lightbox UI fully restored.
- * - Birthday code completely purged.
- * - Newest sort tiebreaker modified to strictly push index 0 to the absolute bottom of the grid.
- * - Truncated CSV rows auto-fill trailing empty columns to prevent layout bleeding.
- * - Universal UTM Parameter Injector active on non-Amazon outbound links.
- * - getSafeTimestamp updated to support High-Precision Hours, Minutes, Seconds, and AM/PM parses.
- * - Dynamic Timestamp Interpolation Engine active for continuous ownership metrics.
- * - Custom Google Analytics catalog tracking mappings integrated for absolute data fidelity.
- * - Deep-Linked Search Query generation added for non-affiliated streaming providers with Google Search bypasses to eliminate 404s.
- * - Bottom Buy/Rent buttons strictly restricted to owned spreadsheet items. No fallbacks on buttons.
- * - Streaming section storefront fallbacks added so they dynamically become searchable links if direct link column is empty.
- -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -22,11 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Werewolf Cinema Library</title>
     
-    <!-- External Language & Font Authorities -->
     <script src="https://raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/language_alphabets.js"></script>
     <script src="https://raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/fontSwitcher.js"></script>
 
-    <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -38,23 +19,19 @@
 </head>
 <body class="theme-dark">
 
-<!-- ==========================================
-     HTML SECTION START
-     ========================================== -->
 <div id="wp-custom-wrapper" class="master-85-width">
     <div id="library-header">
         <div id="header-clock" class="black-outline">Loading Time...</div>
         <div id="cinema-logo" class="black-outline">WEREWOLF <span>CINEMA</span></div>
         <div id="movie-counter" class="black-outline">Syncing Library...</div>
         
-        <!-- Live Sync Status Indicator Badge -->
         <div id="sync-status-badge" class="black-outline">
             <span id="sync-dot" class="dot-idle"></span>
             <span id="sync-text">Connecting...</span>
         </div>
         
         <div id="affiliate-disclosure">
-            <p class="black-outline">As an Amazon Associate, <strong class="black-outline">Werewolf3788</strong> earns from qualifying purchases. 
+            <p class="black-outline">As an Amazon Associate, <strong class="black-outline">Werewolf3788</strong> earns from qualifying purchases.  
             <br><span class="ma-highlight black-outline">🚀 PRO TIP:</span> Buy on Amazon to sync with <strong>Movies Anywhere (MA)</strong>!</p>
         </div>
 
@@ -121,13 +98,10 @@
     </div>
 </div>
 
-<!-- DYNAMIC QUICK NAVIGATION SIDEBAR -->
 <div id="dynamic-nav-sidebar" class="black-outline"></div>
 
-<!-- BACK TO TOP BUTTON -->
 <button id="back-to-top" class="black-outline" onclick="window.scrollTo({top:0, behavior:'smooth'})">⬆ TOP</button>
 
-<!-- LIGHTBOX MODAL -->
 <div id="movie-lightbox" class="hidden-ui" onclick="closeLightbox(event)">
     <div class="lightbox-content" id="lightbox-inner" onclick="event.stopPropagation()">
         <div id="lb-video-wrapper" style="display: none;">
@@ -139,13 +113,11 @@
             <div class="lightbox-info">
                 <h2 id="lb-title" class="black-outline"></h2>
                 <div id="lb-meta-container" class="lb-meta black-outline"></div>
-                <!-- Dedicated Rating Description Output -->
                 <div id="lb-rating-desc" class="lb-meta black-outline" style="color: #f5c518; font-size: 11px; margin-top: 5px; font-weight: 700; display: none;"></div>
                 
                 <div id="lb-streaming" class="lb-meta black-outline" style="color: #00aeef; font-size: 14px; margin: 10px 0; display: none;"></div>
                 <div id="lb-date-added" class="black-outline" style="font-size:12px; color:#1ce783; margin-bottom:10px;"></div>
                 
-                <!-- Dedicated Interactive Binge Companion for TV Shows -->
                 <div id="lb-tv-binge-container" style="display: none;"></div>
 
                 <div id="lb-artists" class="black-outline"></div>
@@ -157,19 +129,11 @@
     </div>
 </div>
 
-<!-- Live Sync Toast Container -->
 <div id="toast-container"></div>
 
 <div id="kf-watermark">
     <span class="kf-k">K</span><span class="kf-f">F</span>
 </div>
-<!-- ==========================================
-     HTML SECTION END
-     ========================================== -->
-
-<!-- ==========================================
-     CSS SECTION START
-     ========================================== -->
 <style>
 :root { --text-main: #fff; --header-bg: rgba(0, 0, 0, 0.9); --card-bg: rgba(15, 15, 15, 0.98); }
 body { 
@@ -471,13 +435,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     to { transform: rotate(360deg); }
 }
 </style>
-<!-- ==========================================
-     CSS SECTION END
-     ========================================== -->
-
-<!-- ==========================================
-     JAVASCRIPT SECTION START
-     ========================================== -->
 <script>
 // --- CORE ENGINE ---
 (function() {
@@ -950,7 +907,8 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         }).filter(m => {
             const hasValidLink = m.platforms.amazon || m.platforms.google || m.platforms.youtube || 
                                  m.platforms.moviesanywhere || m.platforms.apple || m.platforms.fandango;
-            return m.title && m.title.length < 120 && hasValidLink;
+            // MASTER GATE UPGRADE: Allow non-storefront titles to load if streaming details exist
+            return m.title && m.title.length < 120 && (hasValidLink || (m.streaming && m.streaming.trim() !== ''));
         });
 
         const totalMoviesCount = movies.length;
