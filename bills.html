@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+========================================================================================
+   PROJECT: Glossy Sheet Ledger - Dynamic Budget Dashboard
+   DATE: June 23, 2026, 1:20 PM EDT (New York Time)
+   COMPATIBILITY: CodePen, Firebase, GitHub Pages, StreamElements, raw.githack.com
+   PERSISTENCE: Cookies for Font & Theme, System Preferences Default Integration
+   TRACKING: None (Scrubbed gtag)
+========================================================================================
+-->
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glossy Sheet Ledger</title>
+    
+    <!-- PWA Manifest (Embedded Base64) -->
+    <link rel="manifest" href="data:application/manifest+json;base64,ewogICJuYW1lIjogIkdsb3NzeSBTaGVldCBMZWRnZXIiLAogICJzaG9ydF9uYW1lIjogIkdsb3NzeUxlZGdlciIsCiAgInN0YXJ0X3VybCI6ICIuIiwKICAmZGlzcGxheSI6ICJzdGFuZGFsb25lIiwKICAiYmFja2dyb3VuZF9jb2xvciI6ICIjMGQwZTEyIiwKICAidGhlbWVfY29sb3IiOiAiIzFhMWMyMyIsCiAgImRlc2NyaXB0aW9uIjogIlByZW1pdW0gZ2xvc3N5IHNoZWV0IGRhc2hib2FyZCB0cmFja2VyLiIsCiAgImljb25zIjogWwogICAgewogICAgICAic3JjIjogImRhdGE6aW1hZ2Uvc3ZnK3htbDt1dGY4LDxzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgNTEyIDUxMic+PHJlY3Qgd2lkdGg9JzUxMicgaGVpZ2h0PSc1MTInIHJ4PScxMDAnIGZpbGw9JyUyMzExMTgyNycvPjxwYXRoIGQ9J00xMjggMTI4aDI1NnYyNTZIMTI4eicgZmlsbD0nbm9uZScgc3Ryb2tlPSclMjMzOGJkZjgnIHN0cm9rZS13aWR0aD0nMzInLz48L3N2Zz4iLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zyt4bWwiCiAgICB9CiAgXQp9">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts for Dynamic Font Switching -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;700&family=Fira+Code:wght@400;700&family=Inter:wght@300;400;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons for Beautiful Visuals -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Inline Glossy Styles & Overrides (Separated in Dev Center) -->
+    <style id="embedded-css">
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --glass-reflection: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%);
+            --glow-color: rgba(56, 189, 248, 0.4);
+            --bg-gradient: radial-gradient(circle at 50% 50%, #0d1020 0%, #030408 100%);
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+        }
+
+        /* High-contrast and ultra-readable light theme variables */
+        .theme-light {
+            --glass-bg: rgba(255, 255, 255, 0.90);
+            --glass-border: rgba(15, 23, 42, 0.18);
+            --glass-reflection: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 60%);
+            --glow-color: rgba(14, 165, 233, 0.35);
+            --bg-gradient: radial-gradient(circle at 50% 50%, #f8fafc 0%, #cbd5e1 100%);
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+        }
+
+        body {
+            background: var(--bg-gradient) !important;
+            color: var(--text-primary) !important;
+            transition: background 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s;
+            font-size: 14px;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 {
+            font-size: 30px;
+            letter-spacing: -0.025em;
+        }
+
+        .glossy-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px) saturate(190%);
+            -webkit-backdrop-filter: blur(25px) saturate(190%);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35),
+                        inset 0 1px 0 var(--glass-border);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s;
+        }
+
+        .glossy-panel::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: var(--glass-reflection);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .glossy-panel:hover {
+            transform: translateY(-4px) scale(1.01);
+            box-shadow: 0 16px 48px 0 rgba(0, 0, 0, 0.45),
+                        0 0 30px var(--glow-color),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        }
+
+        .glossy-shimmer {
+            position: relative;
+        }
+        .glossy-shimmer::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 30%;
+            height: 200%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.45) 50%, rgba(255, 255, 255, 0) 100%);
+            transform: rotate(30deg);
+            transition: none;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .glossy-shimmer:hover::after {
+            left: 150%;
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* Saturated neon colors for dark mode & crisp, opaque contrasting versions for light mode */
+        .card-yearly {
+            --glow-color: rgba(239, 68, 68, 0.6);
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.28) 0%, rgba(136, 19, 55, 0.5) 100%) !important;
+            border: 2px solid rgba(239, 68, 68, 0.7) !important;
+            box-shadow: 0 8px 32px 0 rgba(239, 68, 68, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+        }
+        .theme-light .card-yearly {
+            background: linear-gradient(135deg, rgba(254, 202, 202, 0.95) 0%, rgba(252, 165, 165, 0.8) 100%) !important;
+            border: 2px solid rgba(220, 38, 38, 0.8) !important;
+            box-shadow: 0 8px 32px 0 rgba(239, 68, 68, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+        }
+
+        .card-rent {
+            --glow-color: rgba(14, 165, 233, 0.6);
+            background: linear-gradient(135deg, rgba(14, 165, 233, 0.28) 0%, rgba(12, 74, 96, 0.5) 100%) !important;
+            border: 2px solid rgba(14, 165, 233, 0.7) !important;
+            box-shadow: 0 8px 32px 0 rgba(14, 165, 233, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+        }
+        .theme-light .card-rent {
+            background: linear-gradient(135deg, rgba(186, 230, 253, 0.95) 0%, rgba(125, 211, 252, 0.8) 100%) !important;
+            border: 2px solid rgba(2, 132, 199, 0.8) !important;
+            box-shadow: 0 8px 32px 0 rgba(14, 165, 233, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+        }
+
+        .card-phone {
+            --glow-color: rgba(168, 85, 247, 0.6);
+            background: linear-gradient(135deg, rgba(168, 85, 247, 0.28) 0%, rgba(88, 28, 135, 0.5) 100%) !important;
+            border: 2px solid rgba(168, 85, 247, 0.7) !important;
+            box-shadow: 0 8px 32px 0 rgba(168, 85, 247, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+        }
+        .theme-light .card-phone {
+            background: linear-gradient(135deg, rgba(233, 213, 255, 0.95) 0%, rgba(216, 180, 254, 0.8) 100%) !important;
+            border: 2px solid rgba(147, 51, 234, 0.8) !important;
+            box-shadow: 0 8px 32px 0 rgba(168, 85, 247, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+        }
+
+        .card-pay {
+            --glow-color: rgba(34, 197, 94, 0.6);
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.3) 0%, rgba(20, 83, 45, 0.5) 100%) !important;
+            border: 2px solid rgba(34, 197, 94, 0.7) !important;
+            box-shadow: 0 8px 32px 0 rgba(34, 197, 94, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+        }
+        .theme-light .card-pay {
+            background: linear-gradient(135deg, rgba(187, 247, 208, 0.95) 0%, rgba(134, 239, 172, 0.8) 100%) !important;
+            border: 2px solid rgba(22, 163, 74, 0.8) !important;
+            box-shadow: 0 8px 32px 0 rgba(34, 197, 94, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+        }
+
+        .card-general {
+            --glow-color: rgba(245, 158, 11, 0.6);
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.28) 0%, rgba(120, 53, 4, 0.5) 100%) !important;
+            border: 2px solid rgba(245, 158, 11, 0.7) !important;
+            box-shadow: 0 8px 32px 0 rgba(245, 158, 11, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
+        }
+        .theme-light .card-general {
+            background: linear-gradient(135deg, rgba(253, 230, 138, 0.95) 0%, rgba(251, 191, 36, 0.8) 100%) !important;
+            border: 2px solid rgba(217, 119, 6, 0.8) !important;
+            box-shadow: 0 8px 32px 0 rgba(245, 158, 11, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.5) !important;
+        }
+
+        #glass-toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: rgba(17, 24, 39, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            border-radius: 12px;
+            color: #fff;
+            padding: 12px 24px;
+            z-index: 9999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        #glass-toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.25);
+        }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+    <!-- Responsive Header Navigation Bar (Container: 95% on mobile, 80% on desktop) -->
+    <header class="w-[95%] md:w-[80%] mx-auto mt-4 md:mt-6 mb-6 md:mb-8 flex flex-col sm:flex-row justify-between items-center gap-4 py-4 px-4 md:px-6 glossy-panel">
+        <div class="flex items-center gap-3 w-full sm:w-auto">
+            <div class="w-10 h-10 min-w-10 rounded-xl bg-sky-500/20 flex items-center justify-center border border-sky-500/40 text-sky-400">
+                <i class="fa-solid fa-layer-group text-lg animate-pulse"></i>
+            </div>
+            <div>
+                <h2 id="ledger-title" class="text-xl md:text-2xl font-bold tracking-tight m-0 select-none text-white theme-light:text-slate-900">Glossy Sheet Ledger</h2>
+                <p class="text-xs text-sky-400 theme-light:text-sky-700 font-mono">Dynamic Budget Monitor</p>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+            <!-- Font Switcher -->
+            <div class="flex items-center gap-2">
+                <span class="text-xs font-mono text-gray-400"><i class="fa-solid fa-font"></i> Font</span>
+                <select id="font-selector" class="bg-black/20 theme-light:bg-white/70 border border-gray-600/30 text-xs rounded-lg p-2 focus:outline-none text-white theme-light:text-slate-800 focus:ring-1 focus:ring-sky-400 min-h-[44px]">
+                    <option value="'Inter', sans-serif">Inter Standard</option>
+                    <option value="'Space Grotesk', sans-serif">Space Grotesk</option>
+                    <option value="'Comfortaa', cursive">Comfortaa Soft</option>
+                    <option value="'Fira Code', monospace">Fira Tech</option>
+                </select>
+            </div>
+
+            <!-- Theme Switch Switcher (Min 44x44 Touch Target) -->
+            <button id="theme-toggle" class="w-11 h-11 rounded-xl bg-black/15 hover:bg-black/30 theme-light:bg-white/70 border border-gray-600/30 flex items-center justify-center transition-all min-h-[44px] min-w-[44px]" title="Toggle Theme mode">
+                <i class="fa-solid fa-moon text-amber-300 transition-all text-sm" id="theme-icon"></i>
+            </button>
+
+            <!-- Manual Refresher (Min 44x44 Touch Target) -->
+            <button id="refresh-button" class="w-11 h-11 rounded-xl bg-sky-500/10 hover:bg-sky-500/25 theme-light:bg-sky-500/20 border border-sky-500/30 text-sky-400 theme-light:text-sky-700 flex items-center justify-center transition-all min-h-[44px] min-w-[44px]" title="Refresh sheet data">
+                <i class="fa-solid fa-arrows-rotate text-sm" id="refresh-icon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Board (95% mobile width, 80% desktop) -->
+    <main class="w-[95%] md:w-[80%] mx-auto flex flex-col gap-6 md:gap-8 pb-32">
+        
+        <!-- Summary Dashboard (KPI Grid) -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6">
+            <!-- Total Amount of Bills KPI Card -->
+            <div class="glossy-panel glossy-shimmer p-5 md:p-6 flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-sky-500/10 flex items-center justify-center border border-sky-500/30 text-sky-400">
+                    <i class="fa-solid fa-wallet text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 theme-light:text-slate-500 font-mono tracking-wider uppercase">Total Amount of Bills</p>
+                    <h3 id="bills-total" class="text-2xl font-bold mt-1 font-mono text-white theme-light:text-slate-900">$0.00</h3>
+                </div>
+            </div>
+
+            <!-- Active Items KPI Card -->
+            <div class="glossy-panel glossy-shimmer p-5 md:p-6 flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center border border-purple-500/30 text-purple-400">
+                    <i class="fa-solid fa-list-check text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 theme-light:text-slate-500 font-mono tracking-wider uppercase">Active Entries</p>
+                    <h3 id="active-rows-count" class="text-2xl font-bold mt-1 font-mono text-white theme-light:text-slate-900">0 / 4</h3>
+                </div>
+            </div>
+
+            <!-- Data Status -->
+            <div class="glossy-panel glossy-shimmer p-5 md:p-6 flex items-center gap-4">
+                <div class="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30 text-emerald-400">
+                    <i class="fa-solid fa-cloud-arrow-down text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400 theme-light:text-slate-500 font-mono tracking-wider uppercase">Data Status</p>
+                    <h3 id="sync-status" class="text-sm font-semibold mt-2 text-emerald-400 font-mono">Synchronized</h3>
+                </div>
+            </div>
+        </section>
+
+        <!-- Warning Banner for Fallback Cache Mode -->
+        <div id="demo-banner" class="hidden glossy-panel p-4 bg-amber-500/10 border-amber-500/30 text-amber-500 theme-light:text-amber-800 text-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-base animate-pulse text-amber-500"></i>
+                <span><strong>Offline Mode:</strong> Could not reach live spreadsheet due to browser CORS locks. Displaying offline simulated dataset.</span>
+            </div>
+            <button onclick="fetchSheetData()" class="px-4 py-2 bg-amber-500/20 hover:bg-amber-500/35 border border-amber-500/30 rounded text-amber-600 theme-light:text-amber-950 transition-all font-mono font-bold text-xs min-h-[44px]">
+                Retry Sync
+            </button>
+        </div>
+
+        <!-- Dynamic Card Presentation of Columns A & B -->
+        <section class="flex flex-col gap-4">
+            <div class="flex flex-col sm:flex-row justify-between sm:items-center px-1 gap-2">
+                <h3 class="text-lg font-semibold tracking-wide flex items-center gap-2 text-white theme-light:text-slate-900">
+                    <i class="fa-solid fa-coins text-sky-400"></i> Active Subscriptions & Bills
+                </h3>
+                <span class="text-xs text-gray-400 font-mono">Real-time spreadsheet parser</span>
+            </div>
+
+            <!-- Loader Panel -->
+            <div id="loader" class="glossy-panel p-16 flex flex-col items-center justify-center gap-4 text-center">
+                <i class="fa-solid fa-spinner text-4xl text-sky-400 animate-spin"></i>
+                <p class="font-mono text-sm tracking-wider text-sky-300">Retrieving secure spreadsheet ledger assets...</p>
+            </div>
+
+            <!-- Error Presentation Panel -->
+            <div id="error-card" class="glossy-panel p-12 hidden flex-col items-center justify-center text-center gap-4 border-rose-500/40">
+                <i class="fa-solid fa-triangle-exclamation text-4xl text-rose-500"></i>
+                <h3 class="text-xl font-semibold text-rose-400">Sheet Sync Outage</h3>
+                <p id="error-message" class="text-sm max-w-md text-gray-400">The connection to the cloud spreadsheet is temporarily offline.</p>
+                <button onclick="fetchSheetData()" class="px-5 py-2 rounded-lg bg-rose-500/20 hover:bg-rose-500/40 text-rose-300 border border-rose-500/40 font-mono text-xs transition-all min-h-[44px]">
+                    Retry Now
+                </button>
+            </div>
+
+            <!-- Main Render Area for Dynamic Rows -->
+            <div id="cards-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <!-- Row cards will inject dynamically here -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Developer Export Center (Modularized Separators) -->
+    <div class="fixed bottom-0 left-0 right-0 z-50">
+        <!-- Interactive Toggle Ribbon -->
+        <div class="w-full bg-slate-900/90 backdrop-blur-md border-t border-slate-700 flex justify-between items-center px-6 py-3 shadow-2xl">
+            <div class="flex items-center gap-2 text-slate-300 font-mono text-xs">
+                <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span>SYSTEM INTEGRATION HUB: Separation Protocol Available</span>
+            </div>
+            <button id="toggle-dev-console" class="px-4 py-1.5 rounded-lg bg-sky-500/20 hover:bg-sky-500/35 border border-sky-500/40 text-sky-400 font-mono text-xs transition-all flex items-center gap-2 min-h-[44px]">
+                <i class="fa-solid fa-code"></i> Toggle Source Copier
+            </button>
+        </div>
+
+        <!-- Hidden Source Code Separator Panel -->
+        <div id="dev-console-drawer" class="max-h-0 overflow-hidden bg-slate-950 border-t border-slate-800 transition-all duration-500 ease-in-out font-mono text-xs">
+            <div class="p-6 grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- HTML BLOCK SECTION -->
+                <div class="flex flex-col gap-2 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                    <div class="flex justify-between items-center">
+                        <span class="text-orange-400 font-bold"><i class="fa-brands fa-html5"></i> Layout Struct (HTML)</span>
+                        <button onclick="copySeparatedCode('html')" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all text-xs min-h-[44px]">
+                            <i class="fa-solid fa-copy"></i> Copy HTML
+                        </button>
+                    </div>
+                    <textarea id="source-html" readonly class="w-full h-44 bg-slate-950 text-slate-400 p-2.5 rounded border border-slate-800 outline-none text-[10px] resize-none"></textarea>
+                </div>
+
+                <!-- CSS BLOCK SECTION -->
+                <div class="flex flex-col gap-2 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                    <div class="flex justify-between items-center">
+                        <span class="text-sky-400 font-bold"><i class="fa-brands fa-css3-alt"></i> Skin Rules (CSS)</span>
+                        <button onclick="copySeparatedCode('css')" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all text-xs min-h-[44px]">
+                            <i class="fa-solid fa-copy"></i> Copy CSS
+                        </button>
+                    </div>
+                    <textarea id="source-css" readonly class="w-full h-44 bg-slate-950 text-slate-400 p-2.5 rounded border border-slate-800 outline-none text-[10px] resize-none"></textarea>
+                </div>
+
+                <!-- JS BLOCK SECTION -->
+                <div class="flex flex-col gap-2 bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                    <div class="flex justify-between items-center">
+                        <span class="text-yellow-400 font-bold"><i class="fa-brands fa-js"></i> Logic Script (JS)</span>
+                        <button onclick="copySeparatedCode('js')" class="px-3 py-1.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all text-xs min-h-[44px]">
+                            <i class="fa-solid fa-copy"></i> Copy JS
+                        </button>
+                    </div>
+                    <textarea id="source-js" readonly class="w-full h-44 bg-slate-950 text-slate-400 p-2.5 rounded border border-slate-800 outline-none text-[10px] resize-none"></textarea>
+                </div>
+            </div>
+            <div class="pb-6 text-center text-slate-500 text-[10px] font-sans">
+                GitHub Pages & GitHack raw URL structures compatible. Standardized to New York Time framework.
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Component -->
+    <div id="glass-toast" class="font-mono text-xs shadow-xl flex items-center gap-2">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-message">Message Copied!</span>
+    </div>
+
+    <!-- Logic Script (JS) -->
+    <script id="embedded-js">
+        // Google Sheet CSV Endpoint Configuration
+        const CSV_ENDPOINT = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSrB-ETsmpGrefh9bQ-g2qy3BC6OyAKGFXHLwerPD_t4iBulrGz5gzaPCzEswBbKoCLuk24YRcDz5T_/pub?output=csv";
+
+        // Inter-Tab / Cross-Tab State Synchronization Channel
+        const STATE_SYNC_CHANNEL = new BroadcastChannel('glossy_ledger_state_sync');
+
+        // Theme and Configuration Memory Management
+        const COOKIE_FONT_KEY = 'ledger_font_setting';
+        const COOKIE_THEME_KEY = 'ledger_theme_setting';
+
+        // Element Selectors
+        const fontSelector = document.getElementById('font-selector');
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        const refreshBtn = document.getElementById('refresh-button');
+        const refreshIcon = document.getElementById('refresh-icon');
+        const cardsContainer = document.getElementById('cards-container');
+        const loader = document.getElementById('loader');
+        const errorCard = document.getElementById('error-card');
+        const errorMessage = document.getElementById('error-message');
+        const activeRowsCount = document.getElementById('active-rows-count');
+        const billsTotal = document.getElementById('bills-total');
+        const syncStatus = document.getElementById('sync-status');
+        const glassToast = document.getElementById('glass-toast');
+        const toastMsg = document.getElementById('toast-message');
+
+        // Developer drawer elements
+        const toggleDevConsole = document.getElementById('toggle-dev-console');
+        const devConsoleDrawer = document.getElementById('dev-console-drawer');
+
+        // Global state container
+        let budgetRecords = [];
+
+        // Cookie Helpers
+        function setCookie(name, value, days = 365) {
+            let expires = "";
+            if (days) {
+                let date = new Date();
+                date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+                expires = "; expires=" + date.toUTCString();
+            }
+            document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
+        }
+
+        function getCookie(name) {
+            let nameEQ = name + "=";
+            let ca = document.cookie.split(';');
+            for (let i = 0; i < ca.length; i++) {
+                let c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+                if (c.indexOf(nameEQ) == 0) return decodeURIComponent(c.substring(nameEQ.length, c.length));
+            }
+            return null;
+        }
+
+        // Font Switcher Control Handler
+        function applyFont(fontFamily, syncAcrossTabs = true) {
+            document.body.style.fontFamily = fontFamily;
+            fontSelector.value = fontFamily;
+            setCookie(COOKIE_FONT_KEY, fontFamily);
+            if (syncAcrossTabs) {
+                STATE_SYNC_CHANNEL.postMessage({ type: 'SYNC_FONT', data: fontFamily });
+            }
+            showToast(`Font family changed to: ${fontFamily.split(',')[0]}`);
+            adjustLayoutSpacing();
+        }
+
+        // Theme Switcher Control Handler
+        function applyTheme(theme, syncAcrossTabs = true) {
+            if (theme === 'dark') {
+                document.body.classList.remove('theme-light');
+                themeIcon.className = "fa-solid fa-moon text-amber-300 text-sm";
+            } else {
+                document.body.classList.add('theme-light');
+                themeIcon.className = "fa-solid fa-sun text-orange-500 text-sm";
+            }
+            setCookie(COOKIE_THEME_KEY, theme);
+            if (syncAcrossTabs) {
+                STATE_SYNC_CHANNEL.postMessage({ type: 'SYNC_THEME', data: theme });
+            }
+            showToast(`Theme updated to ${theme.toUpperCase()}`);
+        }
+
+        // Configuration Theme Load Default Handler (Checks System Settings Default)
+        function checkDefaultTheme() {
+            const savedTheme = getCookie(COOKIE_THEME_KEY);
+            if (!savedTheme) {
+                // Read from prefers-color-scheme media matches
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                applyTheme(prefersDark ? 'dark' : 'light', false);
+            } else {
+                applyTheme(savedTheme, false);
+            }
+        }
+
+        // Custom User Notification Toast
+        function showToast(text) {
+            toastMsg.innerText = text;
+            glassToast.classList.add('show');
+            setTimeout(() => {
+                glassToast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Exponential Backoff Fetch Implementation
+        async function fetchWithBackoff(url, retries = 5, delay = 1000) {
+            try {
+                const cacheBustedUrl = `${url}&v=${Date.now()}`;
+                const response = await fetch(cacheBustedUrl);
+                if (!response.ok) throw new Error(`HTTP System Error Code: ${response.status}`);
+                return await response.text();
+            } catch (err) {
+                if (retries > 1) {
+                    await new Promise(res => setTimeout(res, delay));
+                    return fetchWithBackoff(url, retries - 1, delay * 2);
+                } else {
+                    throw err;
+                }
+            }
+        }
+
+        // CSV Basic Parsing Utility
+        function parseCSV(text) {
+            let rows = [];
+            let lines = text.split(/\r\n|\n/);
+            for (let line of lines) {
+                if (line.trim() === '') continue;
+                let columns = [];
+                let inQuotes = false;
+                let current = '';
+                for (let i = 0; i < line.length; i++) {
+                    let char = line[i];
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        columns.push(current.trim());
+                        current = '';
+                    } else {
+                        current += char;
+                    }
+                }
+                columns.push(current.trim());
+                rows.push(columns);
+            }
+            return rows;
+        }
+
+        // Match Card category type to its respective glossy theme styling
+        function matchCategoryTheme(name) {
+            const normalized = name.toLowerCase();
+            if (normalized.includes('yearly') || normalized.includes('subscription')) {
+                return { class: 'card-yearly', icon: 'fa-calendar-days', label: 'Yearly Subscription', color: '#f87171', colorLight: '#b91c1c' };
+            } else if (normalized.includes('rent') || normalized.includes('storage')) {
+                return { class: 'card-rent', icon: 'fa-house-chimney', label: 'Rent & Storage', color: '#38bdf8', colorLight: '#0369a1' };
+            } else if (normalized.includes('phone') || normalized.includes('bill')) {
+                return { class: 'card-phone', icon: 'fa-mobile-screen-button', label: 'Telecom Bills', color: '#c084fc', colorLight: '#7e22ce' };
+            } else if (normalized.includes('pay') || normalized.includes('salary') || normalized.includes('check')) {
+                return { class: 'card-pay', icon: 'fa-money-check-dollar', label: 'Paycheck Assets', color: '#4ade80', colorLight: '#15803d' };
+            } else {
+                return { class: 'card-general', icon: 'fa-credit-card', label: 'Monthly Overhead', color: '#fbbf24', colorLight: '#b45309' };
+            }
+        }
+
+        // Synchronize and Display cards dynamically from Sheet (With local Fallback parsing if CORS triggers)
+        async function fetchSheetData() {
+            loader.classList.remove('hidden');
+            cardsContainer.innerHTML = '';
+            errorCard.classList.add('hidden');
+            refreshIcon.classList.add('animate-spin');
+            syncStatus.innerText = "Syncing...";
+            syncStatus.className = "text-xs font-semibold text-sky-400 font-mono";
+
+            try {
+                const rawCSV = await fetchWithBackoff(CSV_ENDPOINT);
+                const parsedRows = parseCSV(rawCSV);
+                renderData(parsedRows, false);
+            } catch (error) {
+                console.warn("Spreadsheet fetch blocked by CORS or network timeout. Activating robust localized offline demo fallback...", error);
+                
+                // Fallback local dataset perfectly reflecting image_35b7f8.jpg values
+                const localDemoRows = [
+                    ["Pay", ""],
+                    ["Rent / Storage", "$120.00"],
+                    ["Phone", "$153.00"],
+                    ["Total amount of Bills", "$273.00"],
+                    ["Yearly Subscription", "$420.00"] 
+                ];
+                renderData(localDemoRows, true);
+            } finally {
+                refreshIcon.classList.remove('animate-spin');
+            }
+        }
+
+        // Shared Presentation Renderer
+        function renderData(parsedRows, isDemo = false) {
+            const demoBanner = document.getElementById('demo-banner');
+            if (isDemo) {
+                demoBanner.classList.remove('hidden');
+            } else {
+                demoBanner.classList.add('hidden');
+            }
+
+            budgetRecords = [];
+            let totalAmountText = "$0.00";
+            let activeElements = 0;
+
+            // Detect if first row is a metadata header
+            let startIndex = 0;
+            if (parsedRows[0] && parsedRows[0].length >= 2) {
+                const colA = parsedRows[0][0].toLowerCase();
+                if (colA.includes('name') || colA.includes('column')) {
+                    startIndex = 1;
+                }
+            }
+
+            for (let i = startIndex; i < parsedRows.length; i++) {
+                const row = parsedRows[i];
+                if (!row || row.length < 2) continue;
+
+                const name = row[0] ? row[0].replace(/^"|"$/g, '').trim() : '';
+                const rawPrice = row[1] ? row[1].replace(/^"|"$/g, '').trim() : '';
+
+                // Rule check: "if there is nothing in column b then hide that row."
+                if (!rawPrice || rawPrice === "") {
+                    continue;
+                }
+
+                const cleanPriceText = rawPrice.replace(/[^0-9.]/g, '');
+                const parsedValue = parseFloat(cleanPriceText);
+                const formattedPrice = isNaN(parsedValue) ? rawPrice : `$${parsedValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+                // RULE CORRECTION: Extract the "Total amount of Bills" row value directly for the top KPI block
+                if (name.toLowerCase().includes('total amount of bills') || name.toLowerCase().includes('total bills')) {
+                    totalAmountText = formattedPrice;
+                    continue; // Skip rendering this as an individual item card in the grid to prevent redundancy
+                }
+
+                budgetRecords.push({
+                    name: name,
+                    price: formattedPrice,
+                    rawPrice: rawPrice,
+                    numeric: parsedValue
+                });
+
+                activeElements++;
+            }
+
+            // Fallback calculation helper if "Total amount of Bills" row is somehow absent in sheet
+            if (totalAmountText === "$0.00") {
+                let calculatedSum = 0;
+                budgetRecords.forEach(rec => {
+                    const normName = rec.name.toLowerCase();
+                    if (!normName.includes('yearly') && !normName.includes('pay') && !isNaN(rec.numeric)) {
+                        calculatedSum += rec.numeric;
+                    }
+                });
+                totalAmountText = `$${calculatedSum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            }
+
+            cardsContainer.innerHTML = '';
+            if (budgetRecords.length === 0) {
+                cardsContainer.innerHTML = `
+                    <div class="col-span-1 md:col-span-2 glossy-panel p-12 text-center flex flex-col gap-3">
+                        <i class="fa-solid fa-folder-open text-4xl text-gray-400"></i>
+                        <h3 class="text-xl font-bold">No Active Data Fields</h3>
+                        <p class="text-xs text-gray-400 max-w-sm mx-auto">All spreadsheet ledger values are currently set blank or hidden inside the live sheet.</p>
+                    </div>
+                `;
+            } else {
+                budgetRecords.forEach((record, index) => {
+                    const themeConfig = matchCategoryTheme(record.name);
+                    const card = document.createElement('div');
+                    card.className = `glossy-panel glossy-shimmer p-5 md:p-6 flex flex-col justify-between gap-5 md:gap-6 transition-all ${themeConfig.class}`;
+                    card.style.animationDelay = `${index * 100}ms`;
+                    
+                    card.innerHTML = `
+                        <div class="flex justify-between items-start gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-lg bg-black/40 theme-light:bg-white/90 flex items-center justify-center border border-white/20 theme-light:border-slate-300">
+                                    <i class="fa-solid ${themeConfig.icon} text-lg theme-light:hidden" style="color: ${themeConfig.color}; text-shadow: 0 0 12px ${themeConfig.color};"></i>
+                                    <i class="fa-solid ${themeConfig.icon} text-lg hidden theme-light:block" style="color: ${themeConfig.colorLight};"></i>
+                                </div>
+                                <div>
+                                    <span class="text-[10px] font-mono uppercase tracking-wider font-extrabold theme-light:hidden" style="color: ${themeConfig.color};">${themeConfig.label}</span>
+                                    <span class="text-[10px] font-mono uppercase tracking-wider font-extrabold hidden theme-light:inline" style="color: ${themeConfig.colorLight};">${themeConfig.label}</span>
+                                    <h3 class="text-lg font-bold tracking-tight mt-0.5 card-title break-words text-white theme-light:text-slate-900">${record.name}</h3>
+                                </div>
+                            </div>
+                            <div class="px-2.5 py-1 rounded-full bg-black/40 theme-light:bg-slate-100 border border-white/20 theme-light:border-slate-300 font-mono text-xs font-bold text-white theme-light:text-slate-800">
+                                Item ${index + 1}
+                            </div>
+                        </div>
+                        
+                        <div class="flex justify-between items-baseline pt-4 border-t border-white/20 theme-light:border-slate-200 mt-auto">
+                            <span class="text-xs font-mono text-white/70 theme-light:text-slate-600">Ledger Value</span>
+                            <span class="text-2xl font-black font-mono tracking-tight text-white theme-light:text-slate-950 theme-light:no-shadow" style="text-shadow: 0 0 15px ${themeConfig.color};">${record.price}</span>
+                        </div>
+                    `;
+                    cardsContainer.appendChild(card);
+                });
+            }
+
+            activeRowsCount.innerText = `${activeElements} / 4`;
+            billsTotal.innerText = totalAmountText;
+            
+            syncStatus.innerText = isDemo ? "Offline Cache Data" : "Synchronized";
+            syncStatus.className = isDemo ? "text-xs font-semibold text-amber-500 theme-light:text-amber-800 font-mono animate-pulse" : "text-xs font-semibold text-emerald-400 font-mono";
+            loader.classList.add('hidden');
+            
+            adjustLayoutSpacing();
+            fillDeveloperConsole();
+            if (isDemo) {
+                showToast("Fallback: Live sheet connection bypassed. Cache values active.");
+            } else {
+                showToast("Spreadsheet ledger synchronized!");
+            }
+        }
+
+        // Layout Overflow Text Sizer rule logic implementation
+        function adjustLayoutSpacing() {
+            document.querySelectorAll('.card-title').forEach(header => {
+                const parentWidth = header.parentElement.clientWidth;
+                if (header.scrollWidth > parentWidth) {
+                    header.style.fontSize = '14px';
+                } else {
+                    header.style.fontSize = '18px';
+                }
+            });
+        }
+
+        // Code separator initialization and setup
+        function fillDeveloperConsole() {
+            const rawHtml = document.documentElement.outerHTML;
+            const cssMatch = document.getElementById('embedded-css').innerHTML;
+            const jsMatch = document.getElementById('embedded-js').innerHTML;
+            
+            document.getElementById('source-html').value = `<!-- HTML Layout Block Structure -->\n` + rawHtml.split('<style id="embedded-css">')[0] + `<link rel="stylesheet" href="./css/style.css">\n` + `</head>\n<body>\n... [Content Nodes] ...\n<script src="./js/main.js"><\/script>\n</body>\n</html>`;
+            document.getElementById('source-css').value = `/* Clean Glossy UI Skin Rules (style.css) */\n` + cssMatch.trim();
+            document.getElementById('source-js').value = `/* Clean Functional System Logic (main.js) */\n` + jsMatch.trim();
+        }
+
+        // Copy mechanism inside the developer drawer
+        function copySeparatedCode(type) {
+            let targetArea;
+            if (type === 'html') targetArea = document.getElementById('source-html');
+            if (type === 'css') targetArea = document.getElementById('source-css');
+            if (type === 'js') targetArea = document.getElementById('source-js');
+
+            if (targetArea) {
+                targetArea.select();
+                document.execCommand('copy');
+                showToast(`${type.toUpperCase()} Code Snippet Copied to Clipboard!`);
+            }
+        }
+
+        // Initialize and bind Event Observers
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedFont = getCookie(COOKIE_FONT_KEY);
+            if (savedFont) {
+                applyFont(savedFont, false);
+            } else {
+                applyFont("'Inter', sans-serif", false);
+            }
+
+            checkDefaultTheme();
+            fetchSheetData();
+            fillDeveloperConsole();
+
+            setInterval(fetchSheetData, 60000); 
+        });
+
+        fontSelector.addEventListener('change', (e) => {
+            applyFont(e.target.value);
+        });
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.body.classList.contains('theme-light') ? 'dark' : 'light';
+            applyTheme(currentTheme);
+        });
+
+        refreshBtn.addEventListener('click', () => {
+            fetchSheetData();
+        });
+
+        toggleDevConsole.addEventListener('click', () => {
+            if (devConsoleDrawer.style.maxHeight === '0px' || !devConsoleDrawer.style.maxHeight) {
+                devConsoleDrawer.style.maxHeight = '500px';
+                devConsoleDrawer.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                devConsoleDrawer.style.maxHeight = '0px';
+            }
+        });
+
+        // Listen for system theme default adjustments instantly
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+            if (!getCookie(COOKIE_THEME_KEY)) {
+                applyTheme(e.matches ? 'dark' : 'light', false);
+            }
+        });
+
+        STATE_SYNC_CHANNEL.onmessage = (event) => {
+            if (event.data.type === 'SYNC_FONT') {
+                applyFont(event.data.data, false);
+            } else if (event.data.type === 'SYNC_THEME') {
+                applyTheme(event.data.data, false);
+            }
+        };
+
+        window.addEventListener('resize', adjustLayoutSpacing);
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                const swContent = `
+                    const CACHE_NAME = 'glossy-ledger-cache-v1';
+                    const urlsToCache = ['./', './index.html'];
+                    self.addEventListener('install', event => {
+                        event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache)));
+                    });
+                    self.addEventListener('fetch', event => {
+                        event.respondWith(caches.match(event.request).then(response => response || fetch(event.request)));
+                    });
+                `;
+                const blob = new Blob([swContent], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                navigator.serviceWorker.register(swUrl).catch(err => {
+                    console.log('SW registration skipped or simulated in current sandbox:', err);
+                });
+            });
+        }
+    </script>
+</body>
+</html>
