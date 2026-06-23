@@ -1,9 +1,9 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
 # Project: PSN Sync Workflow
-# Timestamp: Fri, June 19, 2026, 10:45 PM (NYT)
+# Timestamp: Tue, June 23, 2026, 2:15 PM (NYT)
 # Compatibility: GitHub Actions, GitHub Pages
 # Note: DO NOT STRIP INDENTATION. YAML REQUIRES 2-SPACE SPACING.
-# Updates: Patched commit step with a robust reset-and-overwrite merge strategy to bypass JSON data conflicts.
+# Updates: Verified clean Node.js and GitHub Pages pipeline structure. Removed non-existent lftp references.
 # ------------------------------------
 
 name: PSN Sync and Deploy
