@@ -1,0 +1,76 @@
+/* =========================================================
+   FS25 Modular Styles - Full Command Center Blueprint
+=========================================================
+*/
+:root {
+    --jet-orange: #FF4500; 
+    --solid-black: #000000;
+    --flag-blue: #1b4f91;  
+    --flag-red: #cc182b;   
+    --bar-height: 50px;
+}
+
+body {
+    background: linear-gradient(135deg, #050b14, #101726, #1b263b);
+    background-attachment: fixed;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.main-container { width: 80%; margin: 40px auto; padding-bottom: calc(var(--bar-height) + 40px); }
+.title-glow { text-align: center; font-size: 2.4em; letter-spacing: 3px; margin-bottom: 25px; text-shadow: 0 0 15px rgba(255,69,0,0.5); }
+
+.card {
+    background: linear-gradient(to bottom, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0.03) 50%, rgba(0,0,0,0.18) 51%, rgba(0,0,0,0.4) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-top: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 12px;
+    padding: 25px;
+    margin-top: 30px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+    backdrop-filter: blur(12px);
+}
+
+.card h3 { margin-top: 0; padding-bottom: 12px; text-transform: uppercase; border-bottom: 2px dashed rgba(255,255,255,0.15); }
+.stats-row { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px; margin-top: 20px; }
+.stat-box { background: rgba(0, 0, 0, 0.55); padding: 15px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.08); min-width: 170px; font-weight: 600; }
+
+.splitscreen-wrapper { display: flex; gap: 25px; margin-top: 30px; }
+.farm-column { flex: 1; padding: 20px !important; border-radius: 12px; }
+.werewolf-theme { background: #000 !important; border: 1px solid #FF4500 !important; }
+.ray-theme { background: var(--flag-blue) !important; border: 1px solid var(--flag-red) !important; }
+
+.farm-header { padding: 15px; border-radius: 8px; background: rgba(0,0,0,0.5); margin-bottom: 20px; }
+.farm-cash { font-family: monospace; font-size: 26px; color: #4ade80; font-weight: bold; }
+.farm-loan { font-size: 13px; color: #ff6b6b; }
+
+.asset-card { background: rgba(0, 0, 0, 0.45); border-radius: 8px; padding: 14px; margin-bottom: 10px; display: flex; gap: 15px; align-items: center; }
+.asset-img-frame { width: 110px; height: 68px; background: #0a0a0a; border-radius: 6px; overflow: hidden; }
+.asset-img-frame img { width: 100%; height: 100%; object-fit: cover; }
+
+.data-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 15px; }
+.grid-item { background: rgba(0, 0, 0, 0.45); border-radius: 8px; padding: 15px; }
+.market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.market-item { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; display: flex; gap: 10px; align-items: center; }
+
+.stats-dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 15px; }
+.metric-card { background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 15px; text-align: center; }
+.metric-title { font-size: 12px; text-transform: uppercase; color: #94a3b8; margin-bottom: 5px; }
+.metric-value { font-size: 22px; font-weight: bold; color: #38bdf8; }
+
+.mods-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 10px; }
+.mod-hub-link { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); text-decoration: none; color: #fff; transition: background 0.2s; }
+.mod-hub-link:hover { background: rgba(255,69,0,0.15); border-color: var(--jet-orange); }
+.mod-icon-frame { width: 32px; height: 32px; border-radius: 4px; overflow: hidden; background: #000; }
+.mod-icon-frame img { width: 100%; height: 100%; object-fit: cover; }
+
+.market-crop-icon { width: 32px; height: 32px; border-radius: 4px; overflow: hidden; background: rgba(0,0,0,0.3); }
+.market-crop-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+.text-highlight { color: #4ade80; }
+.pulse-text { color: #94a3b8; font-style: italic; }
+.kf-footer { position: fixed; bottom: 0; left: 25px; height: var(--bar-height); display: flex; align-items: center; }
+.k { color: var(--jet-orange); transform: scaleX(-1); font-weight: 900; font-size: 26px; }
+.f { color: #fff; margin-left: -0.22em; font-weight: 900; font-size: 26px; }
