@@ -1,7 +1,7 @@
 /**
  * =========================================================================
  * FS25 Command Center Data Aggregator & Cross-Referencer
- * Date/Time of Development (NYT): Tue, June 23, 2026, 8:45 PM (NYT)
+ * Date/Time of Development (NYT): Tue, June 23, 2026, 11:58 PM (NYT)
  * Precision Integration - Full Database Parsing Node Engine
  * NO STRIPPING. NO COMPRESSION. IMMUTABLE DESIGN INTEGRITY.
  * =========================================================================
@@ -74,14 +74,31 @@ const cropIcons = {
 
 function identifyAsset(rawKey) {
     if (!rawKey) return { img: "https://placehold.co/110x68/162541/ffffff?text=EQUIPMENT", name: "Active Implement", desc: "Machine Attachment" };
-    let cleanKey = rawKey.toUpperCase().replace('FS25_', '').replace('_XML', '').replace('XREXT', 'EXT').replace('SERIES', '');
-    cleanKey = cleanKey.replace(/\d+$/, ''); 
     
+    let cleanKey = rawKey.toUpperCase().replace('FS25_', '').replace('_XML', '').replace('XREXT', 'EXT').replace('SERIES', '');
+    
+    // Tightened match loop: Only match if the data specifically maps to our catalog keys
     for (const key in assetCatalog) {
-        if (cleanKey.includes(key) || key.includes(cleanKey)) return assetCatalog[key];
+        if (cleanKey === key || cleanKey.startsWith(key)) {
+            return assetCatalog[key];
+        }
     }
-    let friendlyName = rawKey.replace('FS25_', '').replace(/([A-Z])/g, ' $1').trim();
-    return { img: "https://placehold.co/110x68/162541/ffffff?text=EQUIPMENT", name: friendlyName, desc: "Active Server Machine Asset" };
+    
+    // Fallback: Clean up raw XML names perfectly to show what you ACTUALLY own
+    let friendlyName = rawKey
+        .replace('FS25_', '')
+        .replace('.xml', '')
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/_/g, ' ')
+        .trim();
+        
+    friendlyName = friendlyName.charAt(0).toUpperCase() + friendlyName.slice(1);
+    
+    return { 
+        img: "https://placehold.co/110x68/162541/ffffff?text=EQUIPMENT", 
+        name: friendlyName, 
+        desc: "Active Server Machine Asset" 
+    };
 }
 
 function parseXmlStringToDoc(xmlString) {
@@ -131,7 +148,6 @@ db.ref('fs25').on('value', snap => {
             const revisionNum = careerDoc.getElementsByTagName("careerSavegame")[0]?.getAttribute("revision") || "2";
             const creationDate = careerDoc.getElementsByTagName("creationDate")[0]?.textContent || "Loading...";
             
-            // Extracting true server setup name from configuration tags
             serverGeneratedSavegameName = careerDoc.getElementsByTagName("savegameName")[0]?.textContent || "Active Operational Farm";
 
             document.getElementById('map-display').innerText = `Active Operation Map: ${mapTitle}`;
@@ -227,10 +243,8 @@ db.ref('fs25').on('value', snap => {
         } catch(e) { console.error("Vehicle Matrix Extraction Breakdown: ", e); }
     }
 
-    // DYNAMIC SINGLE FARM ISOLATION LABEL PROCESSING
     if (rayTotal === 0 || !activeFarmsFound.has("2")) {
         if (rayColumn) rayColumn.style.display = "none";
-        // Override hardcoded label to match standard server save name verbatim
         if (primaryFarmTitleElement) {
             primaryFarmTitleElement.innerText = `${serverGeneratedSavegameName} System Assets`;
         }
