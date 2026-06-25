@@ -1,0 +1,387 @@
+/*
+ * ==========================================
+ * NYT TIMESTAMP: Thu, June 25, 2026, 3:20 AM EDT
+ * PRECISION INTEGRATION: COTW Animal Registry CSS
+ * NOTES: Added Image Zoom Lightbox styling and hover interactions for avatars.
+ * ==========================================
+ */
+
+:root {
+    --bg-dark: #090d16;
+    --panel-bg: #111827;
+    --card-bg: #1e293b;
+    --accent-orange: #f59e0b;
+    --text-light: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
+    
+    --medal-silver: #9ca3af;
+    --medal-gold: #fbbf24;
+    --medal-diamond: #38bdf8;
+    --medal-go: #ef4444;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    font-family: system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    display: flex;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.master-container {
+    width: 80%;
+    max-width: 1400px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* --- HEADER STYLING UPDATES --- */
+.tracker-header {
+    text-align: center;
+    background: var(--panel-bg);
+    padding: 40px 20px; 
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.tracker-header h1 {
+    font-size: 36px; 
+    font-weight: 800;
+    margin-bottom: 25px;
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5); 
+}
+
+.filter-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px; 
+}
+
+.filter-controls label {
+    font-size: 16px;
+    color: var(--text-light);
+}
+
+.filter-controls select {
+    background: var(--bg-dark);
+    color: var(--text-light);
+    border: 1px solid var(--accent-orange);
+    padding: 10px 15px;
+    border-radius: 6px;
+    font-size: 16px;
+    outline: none;
+    cursor: pointer;
+    min-width: 250px; 
+}
+
+#sync-status {
+    font-family: monospace;
+    color: var(--accent-orange); 
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+/* --- END HEADER UPDATES --- */
+
+/* Card Grid Layout */
+.animal-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+.animal-card {
+    flex: 1 1 340px;
+    max-width: 400px;
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.card-title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.animal-avatar {
+    width: 45px;
+    height: 45px;
+    border-radius: 4px;
+    object-fit: cover;
+    background-color: #0f172a;
+    border: 1px solid #475569;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 10px;
+    color: #64748b;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.animal-avatar.clickable {
+    cursor: pointer;
+}
+
+.animal-avatar.clickable:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 12px rgba(245, 158, 11, 0.6);
+    border-color: var(--accent-orange);
+}
+
+.card-header h2 { 
+    font-size: 20px; 
+    color: var(--accent-orange); 
+    font-weight: 700;
+}
+
+.card-header .class-badge { 
+    background: #3b82f6; 
+    color: #ffffff;
+    padding: 4px 10px; 
+    border-radius: 4px; 
+    font-weight: 700; 
+    font-size: 12px; 
+}
+
+.card-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.stat-row { 
+    display: flex; 
+    justify-content: space-between; 
+    font-size: 14px; 
+}
+
+.stat-row strong { 
+    color: var(--text-muted); 
+    font-weight: 600;
+}
+
+.stat-row span {
+    color: var(--text-light);
+    text-align: right;
+}
+
+.medal-row {
+    display: flex;
+    justify-content: space-between;
+    background: #0f172a;
+    padding: 12px 15px;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    font-weight: 800;
+    font-size: 14px;
+}
+
+.medal-row .s { color: var(--medal-silver); }
+.medal-row .g { color: var(--medal-gold); }
+.medal-row .d { color: var(--medal-diamond); }
+
+.btn-zones {
+    background: var(--accent-orange);
+    color: #000000;
+    width: 100%;
+    border: none;
+    padding: 14px;
+    border-radius: 6px;
+    font-weight: 900;
+    font-size: 15px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.2s;
+}
+
+.btn-zones:hover { background: #d97706; }
+
+/* Lightbox Modal Base */
+.lightbox-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px; right: 20px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* Image Zoom Specific Lightbox */
+.img-lightbox-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 90vw;
+    max-height: 90vh;
+}
+
+.img-lightbox-content img {
+    max-width: 100%;
+    max-height: 80vh;
+    border-radius: 12px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.9);
+    border: 2px solid var(--border-color);
+    background: #0f172a;
+    object-fit: contain;
+}
+
+#lb-zoomed-title {
+    margin-top: 15px;
+    color: var(--accent-orange);
+    font-size: 24px;
+    text-shadow: 1px 1px 2px #000;
+}
+
+/* Cinematic Need Zone Lightbox */
+.lightbox-content {
+    background: var(--panel-bg);
+    width: 100%;
+    max-width: 1200px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.lightbox-header {
+    background: #0f172a;
+    padding: 20px;
+    border-bottom: 1px solid var(--border-color);
+    text-align: center;
+}
+
+.lightbox-header h2 {
+    color: var(--accent-orange);
+    cursor: pointer;
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.lightbox-header h2:hover { background: rgba(255, 136, 0, 0.1); }
+
+.lb-hidden-details {
+    display: none;
+    margin-top: 15px;
+    background: var(--card-bg);
+    padding: 15px;
+    border-radius: 6px;
+    text-align: left;
+    font-size: 13px;
+    color: #cbd5e1;
+    border-left: 3px solid var(--accent-orange);
+}
+
+.lb-hidden-details p { margin-bottom: 8px; }
+.lb-hidden-details.show { display: block; }
+
+.lightbox-body { padding: 20px; }
+
+.map-selector {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.map-selector select {
+    background: var(--bg-dark);
+    color: #fff;
+    border: 1px solid var(--border-color);
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 6px;
+    min-width: 300px;
+}
+
+.map-display-area {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #475569;
+}
+
+.map-display-area img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.need-zone-overlay {
+    position: absolute;
+    bottom: 0; left: 0; width: 100%;
+    background: rgba(15, 23, 42, 0.85);
+    padding: 15px;
+    border-top: 1px solid var(--border-color);
+    max-height: 50%;
+    overflow-y: auto;
+}
+
+.need-zone-overlay h3 { color: var(--accent-orange); margin-bottom: 5px; font-size: 16px; }
+
+/* Dynamic Google Sheet Table */
+.zone-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 13px;
+    color: #e2e8f0;
+}
+
+.zone-table th, .zone-table td {
+    padding: 8px;
+    border-bottom: 1px solid #334155;
+    text-align: left;
+}
+
+.zone-table th { color: #93c5fd; font-weight: bold; background: rgba(0,0,0,0.3); }
+
+@media (max-width: 768px) {
+    .master-container { width: 100%; padding: 0 10px; }
+    .animal-card { flex: 1 1 100%; max-width: 100%; }
+    .filter-controls { flex-direction: column; }
+    .map-display-area { aspect-ratio: auto; min-height: 400px; }
+    .need-zone-overlay { position: relative; border-top: none; max-height: unset; overflow-y: visible; }
+}
