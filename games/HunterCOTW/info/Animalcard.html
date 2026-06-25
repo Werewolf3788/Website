@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COTW Master Animal Registry</title>
+    <link rel="stylesheet" href="./css/style.css?v=1.6">
+</head>
+<body>
+    <div class="master-container">
+        <header class="tracker-header">
+            <h1>COTW Field Scout & Need Zone Tracker</h1>
+            
+            <div class="filter-controls">
+                <label for="map-filter">Filter Animals by Reserve:</label>
+                <select id="map-filter" onchange="window.registryApp.filterCards()">
+                    <option value="All">-- Show All Reserves --</option>
+                    </select>
+            </div>
+            <div id="sync-status" style="margin-top: 10px; font-family: monospace; color: #facc15; font-size: 12px;">SYNCING GOOGLE SHEETS PIPELINE...</div>
+        </header>
+
+        <main class="animal-grid" id="animal-grid">
+            </main>
+    </div>
+
+    <div id="img-lightbox" class="lightbox-overlay" onclick="window.registryApp.closeImageLightbox(event)">
+        <div class="img-lightbox-content">
+            <button class="close-btn" onclick="window.registryApp.closeImageLightbox(event, true)">✖</button>
+            <img id="lb-zoomed-image" src="" alt="Zoomed Animal" referrerpolicy="no-referrer">
+            <h3 id="lb-zoomed-title"></h3>
+        </div>
+    </div>
+
+    <div id="nz-lightbox" class="lightbox-overlay" onclick="window.registryApp.closeLightbox(event)">
+        <div class="lightbox-content">
+            <button class="close-btn" onclick="window.registryApp.closeLightbox(event, true)">✖</button>
+            
+            <div class="lightbox-header">
+                <h2 id="lb-animal-name" onclick="window.registryApp.toggleDetails()" title="Click for Fur & Great One Info">Animal Name ▾</h2>
+                
+                <div id="lb-details" class="lb-hidden-details">
+                    <p><strong>Fur / Plumage:</strong> <span id="lb-fur"></span></p>
+                    <p><strong>Great One Maps:</strong> <span id="lb-go-maps"></span></p>
+                </div>
+            </div>
+
+            <div class="lightbox-body">
+                <div class="map-selector">
+                    <label for="lb-map-select">Select Map for Need Zones:</label>
+                    <select id="lb-map-select" onchange="window.registryApp.updateMapImage()">
+                        </select>
+                </div>
+
+                <div class="map-display-area">
+                    <img id="lb-map-image" src="https://placehold.co/1920x1080/1e293b/475569?text=Map+Image+Placeholder+(16:9)" alt="Map Need Zones">
+                    
+                    <div class="need-zone-overlay">
+                        <h3>Recorded Zones from Live Google Sheet</h3>
+                        <div id="lb-sheet-data" class="sheet-data-box">
+                            <em>Fetching Need Zone Data...</em>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/main.js?v=1.6"></script>
+</body>
+</html>
