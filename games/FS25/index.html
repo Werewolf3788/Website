@@ -1,52 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9M5LXQ5XN', { 'description': 'FS25 618 Crew Command Center Analytics Node' });
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>618 ADMIN | TOTAL RECON UPLINK v2.4</title>
+    <title>FS25 | 618 Crew Absolute Server Command Center</title>
     
-    <link rel="stylesheet" href="./index.css?v=1.5">
+    <link rel="stylesheet" href="./style.css?v=4.36">
 </head>
 <body>
     <div class="main-container">
-        <header class="glossy-header">
-            <h1>MANUAL G-PORTAL UPLINK <span>v2.4</span></h1>
-            <div class="status-badge">SYSTEM: ONLINE</div>
+        <header>
+            <h1 class="title-glow">FS25 TOTAL SERVER COMMAND CENTER</h1>
+            <div id="global-fleet-ratio" class="stat-box" style="text-align: center; margin: 0 auto 20px auto; max-width: 300px;">0 / 0 Drivable Engines</div>
         </header>
-        
-        <section class="override-panel">
-            <label for="xml-file-type">TARGET DATASET (Full Directory & Log Coverage):</label>
-            <select id="xml-file-type">
-                <option value="vehicles">vehicles.xml</option>
-                <option value="economy">economy.xml</option>
-                <option value="careerSavegame">careerSavegame.xml</option>
-                <option value="farms">farms.xml</option>
-                <option value="placeables">placeables.xml</option>
-                <option value="missions">missions.xml</option>
-                <option value="animals">animals.xml</option>
-                <option value="farmland">farmland.xml</option>
-                <option value="precisionFarming">precisionFarming.xml</option>
-                <option value="collectibles">collectibles.xml</option>
-                <option value="cultivator">cultivator.xml</option>
-                <option value="items">items.xml</option>
-                <option value="pedestrians">pedestrians.xml</option>
-                <option value="silo">silo.xml</option>
-                <option value="trafficSystem">trafficSystem.xml</option>
-                <option value="vehicleTypes">vehicleTypes.xml</option>
-                <option value="systemLogs">serverLog.txt (System Logs)</option>
-            </select>
-            
-            <textarea id="manual-xml-input" placeholder="Paste raw XML data or serverLog text here..."></textarea>
-            
-            <button class="action-btn" onclick="executeAdvancedSync()">EXECUTE DEEP SYNC</button>
-            
-            <div id="upload-status">STATUS: READY FOR INGESTION</div>
-        </section>
+
+        <div class="card full-width" onclick="syncTab('fs25_dash')">
+            <h2 id="map-display">Map Environment: Initializing Full Database Sync...</h2>
+            <div class="stats-row">
+                <div class="stat-box">Total Server Capital: <span id="money" class="text-highlight">$0</span></div>
+                <div class="stat-box">Server Play Time: <span id="play-time">0.0 hrs</span></div>
+                <div class="stat-box">Current Season/Month: <span id="game-season">Loading...</span></div>
+                <div class="stat-box">Save Directory Revision: <span id="save-revision">0</span></div>
+            </div>
+            <div class="stats-row" style="margin-top: 15px; border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 15px;">
+                <div class="stat-box">Daylight Cycle: <span id="env-time" class="text-highlight">00:00</span></div>
+                <div class="stat-box">Day Duration: <span id="env-day-len">0 hrs</span></div>
+                <div class="stat-box">Weather State: <span id="env-weather">Clear</span></div>
+            </div>
+        </div>
+
+        <div class="splitscreen-wrapper">
+            <div class="farm-column werewolf-theme card non-clickable">
+                <div class="farm-header werewolf-border">
+                    <h3 class="outlined-text">Werewolf Farm Systems (<span id="werewolf-fleet-ratio">0/0</span>)</h3>
+                    <div class="farm-cash" id="werewolf-cash">$0</div>
+                    <div class="farm-loan" id="werewolf-loan">Active Loan: $0</div>
+                </div>
+                
+                <div class="section-block">
+                    <h4>Garage Node Heavy Fleet Assets</h4>
+                    <div id="werewolf-vehicles" class="asset-stack">
+                        <p class="pulse-text">Interrogating vehicle storage clusters...</p>
+                    </div>
+                </div>
+
+                <div class="section-block">
+                    <h4>Infrastructure Facilities & Real Estate</h4>
+                    <div id="werewolf-placeables" class="asset-stack">
+                        <p class="pulse-text">Polling property array registers...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="farm-column ray-theme card non-clickable">
+                <div class="farm-header ray-border">
+                    <h3 class="outlined-text">Ray Farm Systems (<span id="ray-fleet-ratio">0/0</span>)</h3>
+                    <div class="farm-cash" id="ray-cash">$0</div>
+                    <div class="farm-loan" id="ray-loan">Active Loan: $0</div>
+                </div>
+                
+                <div class="section-block">
+                    <h4>Garage Node Heavy Fleet Assets</h4>
+                    <div id="ray-vehicles" class="asset-stack">
+                        <p class="pulse-text">Interrogating vehicle storage clusters...</p>
+                    </div>
+                </div>
+
+                <div class="section-block">
+                    <h4>Infrastructure Facilities & Real Estate</h4>
+                    <div id="ray-placeables" class="asset-stack">
+                        <p class="pulse-text">Polling property array registers...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card full-width non-clickable">
+            <h3>Live Operations Server Contracts Board</h3>
+            <div id="missions-grid-container" class="data-grid">
+                <p class="pulse-text">Processing server active job tables...</p>
+            </div>
+        </div>
+
+        <div class="card full-width non-clickable">
+            <h3>Dealership Used Machinery Sale Board</h3>
+            <div id="sales-grid-container" class="market-grid">
+                <p class="pulse-text">Polling showroom clearance index matrices...</p>
+            </div>
+        </div>
+
+        <div class="card full-width non-clickable">
+            <h3>Hidden Collectibles Discovery Matrix (<span id="collectible-ratio" class="text-highlight">0 / 20 Found</span>)</h3>
+            <div id="collectibles-grid-container" class="market-grid">
+                <p class="pulse-text">Polling map item tracking arrays...</p>
+            </div>
+        </div>
+
+        <div class="card full-width non-clickable">
+            <h3>Field Database & Management Parameters Matrix</h3>
+            <div id="fields-grid-container" class="data-grid">
+                <p class="pulse-text">Extracting field soil properties, lime indices, and weed growth vectors...</p>
+            </div>
+        </div>
+
+        <div class="card full-width non-clickable">
+            <h3>Personal Hand Tools Inventory Registry</h3>
+            <div id="handtools-grid-container" class="market-grid">
+                <p class="pulse-text">Accessing tool lockbox configurations...</p>
+            </div>
+        </div>
+
+        <div class="card full-width non-clickable">
+            <h3>Server Metrics & Operational Statistics</h3>
+            <div id="statistics-grid-container" class="stats-dashboard-grid">
+                <p class="pulse-text">Aggregating historical log data telemetry metrics...</p>
+            </div>
+        </div>
+
+        <div class="card full-width non-clickable">
+            <h3>Live Commodity Market Intelligence Index</h3>
+            <div id="economy-grid-container" class="market-grid">
+                <p class="pulse-text">Calculating supply/demand pricing sheets...</p>
+            </div>
+        </div>
+
+        <div class="card full-width non-clickable">
+            <h3>Active Mod Hub Registry Bundle Manifests</h3>
+            <div id="mods-list-container" class="mods-grid">
+                <p class="pulse-text">Verifying asset bundle signatures...</p>
+            </div>
+        </div>
+
+        <footer class="kf-footer">
+            <div class="kf-signature">
+                <span class="k">K</span><span class="f">F</span>
+            </div>
+        </footer>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database-compat.js"></script>
     
-    <script src="./index.js?v=1.5"></script>
+    <script src="./sync_data.js?v=4.36"></script>
 </body>
 </html>
