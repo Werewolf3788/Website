@@ -2,11 +2,11 @@
  * ==========================================
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Kevin's Official Pack Sync Engine (Firebase RTDB Live Stream)
- * Version: 14.0.0 - Absolute Master Omni-Protocol (Cloud Decoupled Storage)
- * NYT TIMESTAMP: Thu, June 25, 2026, 9:45 PM EDT
+ * Version: 14.1.0 - The August-Ready Roster Protocol
+ * NYT TIMESTAMP: Thu, June 25, 2026, 10:33 PM EDT
  * Compatibility: Node.js v20+, Firebase Realtime Database REST API
- * Note: NO STRIPPING, NO COMPRESSING. EXISTING SQUAD MAPS & LOGIC INTACT.
- * Updates: Routed data persistence engine directly to Firebase RTDB via native REST HTTP PUT. Eliminated Git repository version drift.
+ * Note: NO STRIPPING, NO COMPRESSING. ALL SQUAD LOGIC & HELPER FUNCTIONS INTACT.
+ * Updates: Purged dead legacy accounts. Roster standardized to 1:1 real-name pack ownership. Injected August 2026 Deprecation Trigger & JWT Account ID Auto-Resolver.
  * ==========================================
  */
 
@@ -31,57 +31,64 @@ const {
 const fs = require("fs");
 const path = require("path");
 
-const FIREBASE_RTDB_URL = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/pack_live_sync.json";
+const FIREBASE_RTDB_URL = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/psn.json";
+
+/* 
+ * ==========================================
+ * 🚨 AUGUST 2026 MIGRATION PROTOCOL 🚨
+ * When 'werewolf3788' is deleted in August:
+ * 1. Generate a fresh NPSSO token while logged into KFruti88 on Sony's website.
+ * 2. Paste KFruti88's NPSSO string directly into the existing GitHub Secret: PSN_NPSSO_WEREWOLF
+ * 3. Delete the 'werewolf' line inside SQUAD_MAP below.
+ * 4. Update PERSONA_CONFIG["Kevin"] to: ["kfruti"]
+ * The engine's JWT resolver will auto-catch KFruti88's Account ID automatically.
+ * ==========================================
+ */
 
 const SQUAD_MAP = {
-    werewolf: "Werewolf3788",
-    kfruti: "KFruti88",
-    ray: "OneLIVIDMAN",
-    darkwing: "Darkwing69420",
-    darkterr: "darkterr420",
-    marc: "DesdemonaTiger",
-    bunny: "UnicornBunnyShiv",
-    mjolnir: "IlIMjolnirIlI",
-    phoenix: "joe-punk_",
-    queen: "broken_queen10",
-    balto: "Balto20_01",
+    werewolf: "werewolf3788",   // Scheduled for deletion: Aug 2026
+    kfruti: "KFruti88",         // Kevin's designated future primary
+    ray: "OneLIVIDMAN",         // Ray
+    darkwing: "Darkwing69420",  // TJ
+    mike: "IlIMjolnirIlI",      // Mike (Hidden PSN Profile)
+    katy: "Balto20_01",         // Katy (Hidden PSN Profile)
+    marc: "DesdemonaTiger",     // Marc (Hidden PSN Profile)
+    seth: "joe-punk_"           // Seth (Hidden PSN Profile)
 };
 
 const PERSONA_CONFIG = {
-    "Kevin": ["werewolf", "KFruti88"],
-    "TJ": ["darkwing69420", "darkterr"],
-    "Ray": ["raymystyro", "OneLIVIDMAN"],
-    "Seth": ["phoenix_darkfire", "joe-punk_"],
+    "Kevin": ["werewolf", "kfruti"], 
+    "Ray": ["ray"],
+    "TJ": ["darkwing"],
+    "Mike": ["mike"],
+    "Katy": ["katy"],
     "Marc": ["marc"],
-    "Michael": ["mjolnir"],
-    "Squeekers": ["queen"],
-    "Balto": ["balto"],
-   };
+    "Seth": ["seth"]
+};
 
 const TWITCH_MAP = {
     werewolf: "werewolf3788",
-    kfruti: "kfruti88",
-    ray: "raymystyro",
-    darkwing: "terrdog420",
-    darkterro: "terrdog420",
-    mjolnir: "mjolnirgaming",
-    phoenix: "phoenix_darkfire",
-    queen: "broken_queen10",
-    balto: "balto20_01"
+    kfruti: "werewolf3788",     // Kevin streams on primary werewolf channel
+    ray: "raymysytro",          // Ray
+    darkwing: "darkterr",       // TJ
+    mike: "mjolnirgaming",      // Mike
+    seth: "phoenix_darkfire"    // Seth
+    // katy & marc omitted -> resolves undefined -> safely bypassed in Twitch intel fetch
 };
 
 const ACCOUNT_IDS = {
     werewolf: "3728215008151724560",
+    kfruti: "",                      // Will auto-resolve via encrypted token cracking
     ray: "2732733730346312494",
     darkwing: "4398462806362115916",
-    marc: "6551906246515882523",
-    queen: "",  
-    kfruti: "", 
-    darkterro: "", 
-    balto: "",  
-    };
+    mike: "",                        // Hidden PSN -> Fallback to placeholder presence
+    katy: "",                        // Hidden PSN -> Fallback to placeholder presence
+    marc: "",                        // Hidden PSN -> Fallback to placeholder presence
+    seth: ""                         // Hidden PSN -> Fallback to placeholder presence
+};
 
 const AMAZON_TAG = "psngaming-20";
+const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online"];
 const DATA_PATH = path.join(__dirname, "psn_data.json");
 const TOKENS_PATH = path.join(__dirname, "tokens.json");
 const ROOT_NOJEKYLL = path.join(__dirname, "..", ".nojekyll");
@@ -248,7 +255,18 @@ async function getAuthenticated(userKey, npssoInput) {
 async function getFullUserData(auth, label, userKey, targetId, existingData) {
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
     
-    if (!auth || !targetId) {
+    let resolvedTargetId = targetId;
+
+    // AUGUST MIGRATION RESOLVER: If account ID is missing, crack open auth JWT to pull dynamic ID
+    if (!resolvedTargetId && auth?.accessToken) {
+        try {
+            const payload = JSON.parse(Buffer.from(auth.accessToken.split('.')[1], 'base64').toString());
+            resolvedTargetId = payload.account_id || "";
+            if (resolvedTargetId) console.log(`[AUTH RESOLVER] Auto-discovered Account ID for ${label}: ${resolvedTargetId}`);
+        } catch(e) {}
+    }
+
+    if (!auth || !resolvedTargetId) {
         if (existingData && existingData.trophySummary) {
             existingData.online = !!twitchIntel?.isLive;
             existingData.twitch = twitchIntel;
@@ -261,16 +279,16 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             currentGameActivity: twitchIntel?.statusMessage || (twitchIntel?.isLive ? "Streaming Live" : null),
             amazonAffiliateUrl: generateAffiliateUrl(twitchIntel?.game), bio: twitchIntel?.bio || "Official Pack Member Profile",
             twitch: twitchIntel, lastUpdated: new Date().toLocaleString(), gamesPlayed: 0,
-            note: label.includes("Memorial") ? "Account Legacy Preserved" : "Twitch-Master Presence"
+            note: "Twitch Presence (PSN Profile Hidden/Private)"
         };
     }
 
     try {
-        const profile = await getProfileFromAccountId(auth, targetId).catch(() => ({}));
+        const profile = await getProfileFromAccountId(auth, resolvedTargetId).catch(() => ({}));
         let region = { country: "US", language: "en" };
         let friendsList = [];
         
-        if (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId) {
+        if (ACCOUNT_IDS.werewolf === resolvedTargetId || ACCOUNT_IDS.ray === resolvedTargetId) {
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
             try {
                 const friendsRes = await getUserFriendsAccountIds(auth, "me");
@@ -278,10 +296,10 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             } catch(e) {}
         }
         
-        const presenceId = (ACCOUNT_IDS.werewolf === targetId || ACCOUNT_IDS.ray === targetId || ACCOUNT_IDS.kfruti === targetId) ? "me" : targetId;
+        const presenceId = (ACCOUNT_IDS.werewolf === resolvedTargetId || ACCOUNT_IDS.ray === resolvedTargetId) ? "me" : resolvedTargetId;
         let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         
-        const titlesRes = await getUserTitles(auth, targetId, { limit: 800 }).catch(() => ({}));
+        const titlesRes = await getUserTitles(auth, resolvedTargetId, { limit: 800 }).catch(() => ({}));
         const sortedTitles = (titlesRes?.trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
         const totalGamesPlayedCount = titlesRes?.totalItemCount || sortedTitles.length;
 
@@ -297,7 +315,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 
         let telemetryData = [];
         try {
-            const history = await getRecentlyPlayedGames(auth, targetId, { limit: 200 });
+            const history = await getRecentlyPlayedGames(auth, resolvedTargetId, { limit: 200 });
             telemetryData = history?.data?.recentlyPlayedTitles || history?.recentlyPlayedTitles || [];
         } catch (e) {}
 
@@ -332,14 +350,14 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 
         const allRecentGames = Array.from(mergedGamesMap.values()).sort((a, b) => new Date(b.lastPlayed||0) - new Date(a.lastPlayed||0));
         const matchedGame = allRecentGames.find(g => g.name.toLowerCase().trim() === resolvedTitle.toLowerCase().trim()) || allRecentGames[0] || {};
-        const stats = await getUserTrophyProfileSummary(auth, targetId).catch(() => ({}));
+        const stats = await getUserTrophyProfileSummary(auth, resolvedTargetId).catch(() => ({}));
         
         const recentGames = allRecentGames.slice(0, 6).map(g => ({
             ...g, ratio: `${g.earnedTotal}/${g.definedTotal}`, amazonAffiliateUrl: generateAffiliateUrl(g.name)
         }));
 
         return {
-            ...profile, onlineId: profile?.onlineId || label, accountId: targetId,
+            ...profile, onlineId: profile?.onlineId || label, accountId: resolvedTargetId,
             online: (rawP.primaryPlatformInfo?.onlineStatus || "offline") !== "offline" || !!twitchIntel?.isLive,
             currentGame: resolvedTitle, currentGameArt: matchedGame.art || twitchIntel?.gameArt || null,
             currentGameActivity: activeGameInfo.formatValue || twitchIntel?.statusMessage || null,
@@ -375,13 +393,23 @@ async function pushToFirebase(payload) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v14.0.0 (Cloud Decoupled Storage)...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v14.1.0 (August Roster Edition)...");
+    
+    // AUTOMATED AUGUST SYSTEM ALARM (Fires if date is >= Aug 1, 2026)
+    if (Date.now() >= 1785542400000) {
+        console.warn("\n=======================================================");
+        console.warn("🚨 AUTOMATED SYSTEM ALERT: AUGUST 2026 DEPRECATION WINDOW 🚨");
+        console.warn("Action Required: Account 'werewolf3788' is scheduled for purge.");
+        console.warn("Update SQUAD_MAP and paste KFruti88 NPSSO into secret PSN_NPSSO_WEREWOLF.");
+        console.warn("=======================================================\n");
+    }
+
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
         users: {}, personas: {}, mutualSquadFollowers: [], 
-        lastGlobalUpdate: new Date().toLocaleString(), engineVersion: "14.0.0",
-        codeTimestamp: "Thursday, June 25, 2026 | 9:45 PM EDT"
+        lastGlobalUpdate: new Date().toLocaleString(), engineVersion: "14.1.0",
+        codeTimestamp: "Thursday, June 25, 2026 | 10:33 PM EDT"
     };
 
     try {
@@ -390,6 +418,7 @@ async function main() {
         }
     } catch (e) {}
 
+    // Master Auth uses Kevin's active account secret token
     const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
     const masterAuth = wolfAuth || rayAuth;
@@ -423,12 +452,12 @@ async function main() {
         };
     }
 
-    // Write local backup for GitHub Pages artifact generation
+    // Write disk artifact backup
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
     
-    // Transmit exact state to Firebase Live Target
+    // Push Live JSON state to Firebase Cloud Tree
     await pushToFirebase(finalData);
-    console.log(`[SUCCESS] Persona Aggregator v14.0.0 Complete.`);
+    console.log(`[SUCCESS] Persona Aggregator v14.1.0 Complete.`);
 }
 
 main();
