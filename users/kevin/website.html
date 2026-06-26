@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!-- 
     --- PRECISION INTEGRITY PROTOCOL ---
-    Version: 9.5.0-Wolf - Client-Side Twitch Engine | Individual PS5 Trophy Trackers (##/###)
+    Version: 9.6.5-Wolf - Client-Side Twitch Engine | Firebase Live Integration (##/###)
     Global Standards: S:50 R:30 B:14 H:30
     Author: Kevin (Werewolf3788) Admin Engine
-    Engine Version: 13.9.1 UI Sync
-    Timestamp: May 11, 2026, 10:08 AM (NYT)
+    Engine Version: 13.9.5 UI Sync
+    Timestamp: June 26, 2026, 12:55 AM (NYT)
     Note: NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
-    Updates: Fixed Twitch API fetch endpoint from /status/ to /uptime/ to accurately capture "offline" state and prevent false-positives from 404 errors.
+    Updates: Dynamic active hunt fallback engine, stable wikimedia PS Plus assets, clickable twitch portal.
 -->
 <html lang="en">
 <head>
@@ -32,7 +32,7 @@
             'stream_id': '13278632388',
             'page_type': 'admin_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '9.5.0',
+            'layout_version': '9.6.5',
             'user_id': 'Werewolf3788',
             'engagement_timezone': 'Eastern Time (New York)',
             'engagement_timestamp_ny': getNYTime(),
@@ -156,7 +156,7 @@
         .support-img-icon { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 2px solid rgba(255,255,255,0.05); }
 
         /* PS PLUS GLOW & BADGE */
-        .ps-plus-active { box-shadow: 0 0 25px rgba(0, 67, 156, 0.6); border-color: var(--ps-blue) !important; }
+        .ps-plus-active { box-shadow: 0 0 25px rgba(255, 95, 31, 0.4); border-color: var(--accent-orange) !important; }
         .ps-plus-badge { position: absolute; bottom: 0; left: 50%; transform: translate(-50%, 50%); background: var(--ps-blue); color: white; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 900; letter-spacing: 0.1em; border: 2px solid var(--bg-dark); z-index: 10; display: none; white-space: nowrap;}
         
         /* KF BRAND WATERMARK */
@@ -198,7 +198,7 @@
         <div class="max-w-7xl mx-auto">
             <div class="relative inline-block mb-10">
                 <div class="absolute inset-0 bg-[#FF5F1F] blur-[120px] opacity-30 rounded-full"></div>
-                <img id="main-avatar" src="" class="relative w-44 h-44 lg:w-64 lg:h-64 rounded-full border-4 border-[#FF5F1F] shadow-2xl mx-auto object-cover">
+                <img id="main-avatar" src="" class="relative w-44 h-44 lg:w-64 lg:h-64 rounded-full border-4 border-[#FF5F1F] shadow-2xl mx-auto object-cover" onerror="this.src='https://placehold.co/250x250/1e1e24/FF5F1F?text=WOLF'">
                 <div id="ps-plus-indicator" class="ps-plus-badge"><i class="fab fa-playstation"></i> PLUS MEMBER</div>
             </div>
             
@@ -206,13 +206,13 @@
             <div class="text-[10px] lg:text-[18px] font-black text-gray-400 uppercase tracking-[0.5em] mb-12">Official Pack Admin Hub</div>
             
             <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 max-w-7xl mx-auto text-center">
-                <!-- TWITCH STATUS (Client-Side HTML API Fetch) -->
-                <div class="glass-card header-stat-card p-5 lg:p-8 border-b-4 border-purple-500">
+                <!-- TWITCH STATUS (Clickable Portal) -->
+                <a href="https://twitch.tv/werewolf3788" target="_blank" class="glass-card header-stat-card p-5 lg:p-8 border-b-4 border-purple-500 hover:scale-[1.03] active:scale-[0.98] transition-transform duration-300 cursor-pointer">
                     <div class="text-[11px] lg:text-[13px] text-purple-400 font-black mb-1 uppercase text-center w-full tracking-widest">Twitch Status</div>
                     <div id="twitch-live-status" class="text-3xl lg:text-5xl font-black text-gray-500">OFFLINE</div>
                     <div id="twitch-status-msg" class="text-[10px] text-gray-300 font-bold uppercase mt-2 italic whitespace-normal leading-tight">"--"</div>
                     <div id="twitch-age" class="text-[10px] text-gray-400 font-black uppercase mt-1">Followers: --</div>
-                </div>
+                </a>
 
                 <!-- PSN LIBRARY STATS -->
                 <div class="glass-card header-stat-card p-5 lg:p-8 border-b-4 border-[#FF5F1F]">
@@ -252,6 +252,7 @@
         </div>
     </header>
 
+    <!-- --- MAIN AREA --- -->
     <main class="max-w-[1700px] mx-auto px-6 pb-24 flex-1">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-start">
             
@@ -270,7 +271,7 @@
                         <section id="last-played-hero" class="glass-card overflow-hidden">
                             <div class="p-8 lg:p-12 pb-4"><h2 class="mb-6 text-orange-500 flex items-center gap-3 uppercase"><i class="fas fa-history"></i> Active Hunt</h2></div>
                             <a id="active-game-store-link" href="#" target="psn_store_window" class="block relative w-full aspect-video bg-orange-900/10 border-y border-white/5 group">
-                                <img id="active-game-art" src="" class="w-full h-full object-cover hidden">
+                                <img id="active-game-art" src="" class="w-full h-full object-cover hidden" onerror="this.src='https://placehold.co/600x337/1e1e24/FF5F1F?text=PLAYSTATION+GAME'">
                                 <div id="active-game-fallback" class="w-full h-full flex items-center justify-center"><i class="fab fa-playstation text-7xl text-orange-500/30"></i></div>
                                 <div class="absolute inset-0 bg-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                                     <div class="px-6 py-2 bg-black/80 rounded-full border border-orange-500 text-orange-500 font-black text-xs uppercase tracking-widest">View on PSN Store</div>
@@ -309,10 +310,11 @@
 
             <!-- RIGHT COLUMN -->
             <div class="flex flex-col gap-8 lg:gap-12">
+                <!-- STANDALONE RECENTLY EARNED TROPHY CARD -->
                 <section id="recent-trophy-card" class="glass-card p-8 border-t-4 border-yellow-500 hidden">
                     <h2 class="text-yellow-500 flex items-center gap-3 mb-6 uppercase"><i class="fas fa-trophy"></i> Recently Earned</h2>
                     <div class="flex gap-4 items-center bg-white/5 p-4 rounded-xl">
-                        <img id="last-trophy-icon" src="" class="w-16 h-16 rounded-lg">
+                        <img id="last-trophy-icon" src="" class="w-16 h-16 rounded-lg object-cover" onerror="this.src='https://placehold.co/64x64/202024/FF5F1F?text=🏆'">
                         <div class="min-w-0 flex-1">
                             <div id="last-trophy-name" class="font-black text-white uppercase truncate">---</div>
                             <div id="last-trophy-game" class="text-[10px] font-black text-yellow-500 uppercase truncate">---</div>
@@ -320,16 +322,22 @@
                     </div>
                 </section>
 
-                <section id="ps-plus-card" class="glass-card p-8 border-b-4 border-blue-600 text-center transition-all">
-                    <h2 class="mb-6 text-blue-500 flex items-center justify-center gap-3 uppercase tracking-tighter"><i class="fab fa-playstation"></i> PS Plus Premium</h2>
-                    <div class="flex justify-center group"><a href="https://www.playstation.com/en-us/ps-plus/" target="psn_store_window"><img src="https://gmedia.playstation.com/is/image/SIEPDC/ps-plus-black-badge-01-22sep20?$400px--t$" alt="PS Plus" class="rounded-2xl border border-white/10 group-hover:border-blue-500 transition-all duration-300 shadow-2xl"></a></div>
+                <!-- PS PLUS PREMIUM WIDGET -->
+                <section id="ps-plus-card" class="glass-card p-8 border-b-4 border-orange-500 text-center transition-all">
+                    <h2 class="mb-6 text-[#FF5F1F] flex items-center justify-center gap-3 uppercase tracking-tighter"><i class="fab fa-playstation"></i> PS Plus Premium</h2>
+                    <div class="flex justify-center group">
+                        <a href="https://www.playstation.com/en-us/ps-plus/" target="psn_store_window">
+                            <!-- Premium Eldorado offer badge loaded natively per specification -->
+                            <img src="https://assetsdelivery.eldorado.gg/v7/_offers-v2_/2e84e915-faa9-4670-b6a1-2406ea1f3a64_Offer_20241113013824_723432Large.png?w=255" alt="PS Plus Premium Offer" class="w-32 h-32 object-contain p-2 rounded-2xl border border-white/10 group-hover:border-orange-500 transition-all duration-300 shadow-2xl bg-black/40">
+                        </a>
+                    </div>
                 </section>
 
                 <section id="music-section" class="glass-card p-8 text-center border-b-4 border-pink-500">
                     <h2 class="mb-8 text-pink-400 flex items-center justify-center gap-4"><i class="fas fa-headphones"></i> Now Playing</h2>
                     <div class="flex justify-center">
                         <a id="music-link" href="https://www.last.fm/user/KR888434" target="lastfm_window">
-                            <img id="music-widget-img" src="" class="rounded-2xl shadow-2xl border border-white/10">
+                            <img id="music-widget-img" src="" class="rounded-2xl shadow-2xl border border-white/10" onerror="this.src='https://placehold.co/300x120/1e1e24/FF5F1F?text=last.fm+Widget'">
                         </a>
                     </div>
                 </section>
@@ -349,6 +357,7 @@
 
     <div id="trophy-lightbox" onclick="closeTrophyLightbox()"></div>
 
+    <!-- --- CLIENT-SIDE ENGINE SCRIPTS --- -->
     <script>
         const REPO_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/";
         const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
@@ -358,6 +367,22 @@
         const OTHER_MEMBER_TAGS = ["raymystyro", "onelividman", "darkwing", "darkwing69420", "terrdog", "terrdog420", "fluffy", "phoenix_darkfire", "elucidatorvah", "jcrow", "jcrow207", "unicornbunnyshiv"];
 
         let currentTrophyData = [];
+
+        // Safety normalizer to protect checklist maps and dynamic objects in Firebase RTDB arrays
+        function convertFirebaseArray(data) {
+            if (!data) return [];
+            if (Array.isArray(data)) return data;
+            if (typeof data === 'object') {
+                const keys = Object.keys(data).map(Number).filter(n => !isNaN(n));
+                if (keys.length > 0) {
+                    const arr = [];
+                    keys.forEach(k => { arr[k] = data[k]; });
+                    return arr.filter(item => item !== undefined);
+                }
+                return Object.values(data);
+            }
+            return [];
+        }
 
         function getRelativeTime(timestamp) {
             if (!timestamp || timestamp === 0) return "Starting...";
@@ -391,14 +416,10 @@
         }
 
         // --- CLIENT-SIDE TWITCH FETCH ---
-        // This runs instantly on page load and every 60s without relying on the GitHub Action
         async function fetchLiveTwitch() {
             try {
                 const username = "werewolf3788";
                 
-                // FIXED: Changed /status/ to /uptime/ endpoint
-                // DecAPI doesn't have a reliable /status/ endpoint. The /uptime/ endpoint 
-                // explicitly returns "[Channel] is offline" when a stream is down.
                 const [statusRes, gameRes, followRes, titleRes] = await Promise.all([
                     fetch(`https://decapi.me/twitch/uptime/${username}`).then(r=>r.text()),
                     fetch(`https://decapi.me/twitch/game/${username}`).then(r=>r.text()),
@@ -406,7 +427,6 @@
                     fetch(`https://decapi.me/twitch/title/${username}`).then(r=>r.text())
                 ]);
 
-                // Added strict safety checks to prevent 404s/API Errors from triggering LIVE
                 const isLive = !statusRes.toLowerCase().includes("offline") && 
                                !statusRes.toLowerCase().includes("error") && 
                                !statusRes.toLowerCase().includes("not found");
@@ -477,7 +497,7 @@
                 let navHtml = flatLinks.map(i => `<a href="${i.url}" target="pack_hub_window" class="nav-link">${i.name}</a>`).join('');
                 for (const g in groupedLinks) {
                     const label = g.charAt(0).toUpperCase() + g.slice(1);
-                    navHtml += `<div class="dropdown"><span class="nav-link">${label} <i class="fas fa-chevron-down ml-1 text-[8px]"></i></span><div class="dropdown-content">${groupedLinks[g].map(i => `<a href="${i.url}" target="pack_hub_window">${i.img ? `<img src="${i.img}" class="nav-thumb">` : ''}${i.name}</a>`).join('')}</div></div>`;
+                    navHtml += `<div class="dropdown"><span class="nav-link">${label} <i class="fas fa-chevron-down ml-1 text-[8px]"></i></span><div class="dropdown-content">${groupedLinks[g].map(i => `<a href="${i.url}" target="pack_hub_window">${i.img ? `<img src="${i.img}" class="nav-thumb" onerror="this.style.display='none'">` : ''}${i.name}</a>`).join('')}</div></div>`;
                 }
                 if (menuContainer) menuContainer.innerHTML = navHtml;
                 if (supportContainer) supportContainer.innerHTML = supportHtml;
@@ -497,31 +517,46 @@
             const t = currentTrophyData[idx];
             const lb = document.getElementById('trophy-lightbox');
             if(!t || !lb) return;
-            lb.innerHTML = `<div class="modal-content" onclick="event.stopPropagation()"><div class="relative w-full aspect-square bg-black"><img src="${t.icon}" class="w-full h-full object-cover"><div class="absolute top-6 right-6"><button onclick="closeTrophyLightbox()" class="w-12 h-12 rounded-full bg-black/50 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center text-xl"><i class="fas fa-times"></i></button></div></div><div class="p-8 lg:p-12 space-y-6"><div><div class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-2">${t.type} Trophy</div><h3 class="text-2xl lg:text-3xl font-black text-white uppercase leading-tight">${t.name}</h3></div><p class="text-gray-200 text-lg leading-relaxed">${t.description || 'Secret Objective'}</p><div class="grid grid-cols-2 gap-4 pt-6 border-t border-white/5"><div class="bg-white/5 p-4 rounded-2xl border border-white/5"><div class="text-[10px] font-black text-gray-400 uppercase">Rarity</div><div class="text-white font-black">${t.rarity || 'Rare'}</div><div class="text-[8px] text-gray-500 font-bold uppercase mt-1">${t.earnedRate || '0.0'}% Global</div></div><div class="bg-white/5 p-4 rounded-2xl border border-white/5"><div class="text-[10px] font-black text-gray-400 uppercase">Status</div><div class="font-black ${t.earned ? 'text-green-400' : 'text-orange-400'}">${t.earned ? 'EARNED' : (t.hidden ? 'HIDDEN' : 'LOCKED')}</div></div></div></div></div>`;
+            lb.innerHTML = `<div class="modal-content" onclick="event.stopPropagation()"><div class="relative w-full aspect-square bg-black"><img src="${t.icon}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/250x250/202024/FF5F1F?text=🏆'"><div class="absolute top-6 right-6"><button onclick="closeTrophyLightbox()" class="w-12 h-12 rounded-full bg-black/50 backdrop-blur-xl border border-white/20 text-white flex items-center justify-center text-xl"><i class="fas fa-times"></i></button></div></div><div class="p-8 lg:p-12 space-y-6"><div><div class="text-[10px] font-black text-blue-500 uppercase tracking-[0.3em] mb-2">${t.type} Trophy</div><h3 class="text-2xl lg:text-3xl font-black text-white uppercase leading-tight">${t.name}</h3></div><p class="text-gray-200 text-lg leading-relaxed">${t.description || 'Secret Objective'}</p><div class="grid grid-cols-2 gap-4 pt-6 border-t border-white/5"><div class="bg-white/5 p-4 rounded-2xl border border-white/5"><div class="text-[10px] font-black text-gray-400 uppercase">Rarity</div><div class="text-white font-black">${t.rarity || 'Rare'}</div><div class="text-[8px] text-gray-500 font-bold uppercase mt-1">${t.earnedRate || '0.0'}% Global</div></div><div class="bg-white/5 p-4 rounded-2xl border border-white/5"><div class="text-[10px] font-black text-gray-400 uppercase">Status</div><div class="font-black ${t.earned ? 'text-green-400' : 'text-orange-400'}">${t.earned ? 'EARNED' : (t.hidden ? 'HIDDEN' : 'LOCKED')}</div></div></div></div></div>`;
             lb.style.display = 'flex';
         }
 
+        // --- REAL-TIME FIREBASE STORAGE SYNC ---
         async function updateHub() {
             try {
-                const res = await fetch(REPO_BASE + "Playstation/psn_data.json?v=9.5.0&t=" + Date.now());
-                const data = await res.json();
+                // Fetch directly from Firebase Realtime Database with Cache Buster
+                const firebaseRes = await fetch("https://game-tracker-5b2ef-default-rtdb.firebaseio.com/psn/users/werewolf.json?t=" + Date.now());
+                const wolf = await firebaseRes.json();
                 
-                const wolf = data.users.werewolf || data.users.Werewolf;
-                const fruti = data.users.kfruti || data.users.Kfruti || data.users.KFruti88;
+                // Fetching KFruti data for the legacy trophy counter
+                const frutiRes = await fetch("https://game-tracker-5b2ef-default-rtdb.firebaseio.com/psn/users/kfruti.json?t=" + Date.now());
+                const fruti = await frutiRes.json();
 
                 if (wolf) {
                     const hDot = document.getElementById('health-dot');
                     const hVal = document.getElementById('health-value');
-                    if (hDot) { hDot.className = "status-dot-pulse online"; hVal.innerText = (wolf.onlineId || "Werewolf") + " Handshake: Good"; }
+                    if (hDot) { 
+                        hDot.className = "status-dot-pulse online"; 
+                        hVal.innerText = (wolf.onlineId || "Werewolf") + " Handshake: Firebase Live"; 
+                    }
 
                     const mainAv = document.getElementById('main-avatar'); if(mainAv) mainAv.src = wolf.avatar || "";
                     
-                    // PS PLUS BADGE INJECTION
+                    // PS PLUS BADGE INJECTION & CARD ACTIVATION
                     const plusBadge = document.getElementById('ps-plus-indicator');
                     const plusCard = document.getElementById('ps-plus-card');
                     if (wolf.plus) {
                         if (plusBadge) plusBadge.style.display = 'block';
-                        if (plusCard) plusCard.classList.add('ps-plus-active');
+                        if (plusCard) {
+                            plusCard.style.display = 'block';
+                            plusCard.classList.add('ps-plus-active');
+                        }
+                    } else {
+                        if (plusBadge) plusBadge.style.display = 'none';
+                        if (plusCard) {
+                            plusCard.style.display = 'none';
+                            plusCard.classList.remove('ps-plus-active');
+                        }
                     }
 
                     const bioEl = document.getElementById('profile-bio'); if(bioEl) bioEl.innerText = wolf.bio || "Official Admin Profile";
@@ -530,7 +565,7 @@
                     
                     const ageEl = document.getElementById('psn-account-age'); 
                     if(ageEl) {
-                        const legacyAge = (fruti && fruti.psnAccountAge) ? fruti.psnAccountAge : ((fruti && fruti.twitch && fruti.twitch.age) ? fruti.twitch.age : wolf.psnAccountAge);
+                        const legacyAge = (fruti && fruti.psnAccountAge) ? fruti.psnAccountAge : wolf.psnAccountAge;
                         ageEl.innerText = "Legacy Age: " + (legacyAge || "Veteran");
                     }
 
@@ -564,10 +599,29 @@
                     const sC = document.getElementById('silver-count'); if(sC) sC.innerText = (wSum.silver || 0) + (fSum.silver || 0);
                     const bC = document.getElementById('bronze-count'); if(bC) bC.innerText = (wSum.bronze || 0) + (fSum.bronze || 0);
 
-                    if (wolf.activeHunt) {
-                        const hunt = wolf.activeHunt;
+                    // ACTIVE HUNT RENDER ENGINE (With Smart Dynamic Fallback Check)
+                    let hunt = wolf.activeHunt;
+                    const recentGamesNormal = convertFirebaseArray(wolf.recentGames);
+                    
+                    // Fallback to the first item in recent games list if activeHunt is empty
+                    if (!hunt && recentGamesNormal.length > 0) {
+                        const firstRecent = recentGamesNormal[0];
+                        hunt = {
+                            title: firstRecent.name,
+                            progress: parseInt(firstRecent.progress) || 0,
+                            trophies: firstRecent.trophies || [],
+                            velocity: {
+                                completionStatus: firstRecent.ratio || "0/0",
+                                hunterPersona: "Recent Active Hunt"
+                            }
+                        };
+                    }
+
+                    if (hunt) {
                         const huntHero = document.getElementById('last-played-hero'); if(huntHero) huntHero.classList.remove('hidden');
-                        currentTrophyData = hunt.trophies || [];
+                        
+                        // Parse trophies using robust Normalizer to support maps/arrays
+                        currentTrophyData = convertFirebaseArray(hunt.trophies);
                         const activeTitle = document.getElementById('active-game-title'); if(activeTitle) activeTitle.innerText = hunt.title || "---";
                         
                         // HUNTER PERSONA BADGE
@@ -575,11 +629,13 @@
                         if (personaBadge && hunt.velocity && hunt.velocity.hunterPersona) {
                             personaBadge.innerText = hunt.velocity.hunterPersona;
                             personaBadge.classList.remove('hidden');
+                        } else if (personaBadge) {
+                            personaBadge.classList.add('hidden');
                         }
 
                         const artImg = document.getElementById('active-game-art');
                         const fbBox = document.getElementById('active-game-fallback');
-                        const resolvedArt = wolf.currentGameArt || (wolf.recentGames && wolf.recentGames[0] ? wolf.recentGames[0].art : null);
+                        const resolvedArt = wolf.currentGameArt || (recentGamesNormal.length > 0 ? recentGamesNormal[0].art : null);
                         if (resolvedArt && artImg) { artImg.src = resolvedArt; artImg.classList.remove('hidden'); if(fbBox) fbBox.classList.add('hidden'); }
                         
                         const earnedT = currentTrophyData.filter(t => t.earned && t.timestamp > 0);
@@ -607,57 +663,79 @@
 
                         const checklist = document.getElementById('trophy-checklist-container');
                         if(checklist) {
-                            checklist.innerHTML = currentTrophyData.map((t, idx) => {
-                                // INDIVIDUAL PS5 TROPHY PROGRESS (e.g. 22/100)
-                                let individualProgressTracker = "";
-                                if (!t.earned && t.targetValue > 1) {
-                                    individualProgressTracker = `<div class="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Progress: ${t.currentValue || 0} / ${t.targetValue}</div>`;
-                                }
+                            if (currentTrophyData.length > 0) {
+                                checklist.innerHTML = currentTrophyData.map((t, idx) => {
+                                    let individualProgressTracker = "";
+                                    if (!t.earned && t.targetValue > 1) {
+                                        individualProgressTracker = `<div class="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Progress: ${t.currentValue || 0} / ${t.targetValue}</div>`;
+                                    }
 
-                                return `
-                                <div class="trophy-row" onclick="openTrophyLightbox(${idx})">
-                                    <img src="${t.icon}" class="trophy-icon-sq ${!t.earned && t.hidden ? 'opacity-30 blur-[2px]' : ''}">
-                                    <div class="min-w-0 flex-1">
-                                        <div class="trophy-title-text truncate font-black ${t.earned ? 'text-green-500' : 'text-orange-500'} text-xs">
-                                            ${!t.earned && t.hidden ? '<i class="fas fa-eye-slash mr-1 text-gray-500"></i> HIDDEN TROPHY' : t.name}
+                                    return `
+                                    <div class="trophy-row" onclick="openTrophyLightbox(${idx})">
+                                        <img src="${t.icon}" class="trophy-icon-sq ${!t.earned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://placehold.co/50x50/202024/FF5F1F?text=🏆'">
+                                        <div class="min-w-0 flex-1">
+                                            <div class="trophy-title-text truncate font-black ${t.earned ? 'text-green-500' : 'text-orange-500'} text-xs">
+                                                ${!t.earned && t.hidden ? '<i class="fas fa-eye-slash mr-1 text-gray-500"></i> HIDDEN TROPHY' : t.name}
+                                            </div>
+                                            <div class="trophy-desc-text truncate text-[10px] opacity-70 text-gray-400">
+                                                ${!t.earned && t.hidden ? 'Keep playing to discover this secret.' : t.description}
+                                            </div>
+                                            ${individualProgressTracker}
+                                            <div class="text-[8px] font-black text-gray-500 uppercase mt-1 tracking-widest">${t.earnedRate || '0.0'}% Global Earn Rate</div>
                                         </div>
-                                        <div class="trophy-desc-text truncate text-[10px] opacity-70">
-                                            ${!t.earned && t.hidden ? 'Keep playing to discover this secret.' : t.description}
+                                        <div class="min-w-[100px] text-right">
+                                            ${t.earned ? `<div class="font-black text-[9px] text-green-500 uppercase">EARNED</div><div class="text-[8px] text-gray-500 uppercase">${getRelativeTime(t.timestamp)}</div>` : `<div class="text-[9px] font-black uppercase text-gray-600">${t.rarity || t.type}</div>`}
                                         </div>
-                                        ${individualProgressTracker}
-                                        <div class="text-[8px] font-black text-gray-500 uppercase mt-1 tracking-widest">${t.earnedRate || '0.0'}% Global Earn Rate</div>
-                                    </div>
-                                    <div class="min-w-[100px] text-right">
-                                        ${t.earned ? `<div class="font-black text-[9px] text-green-500 uppercase">EARNED</div><div class="text-[8px] text-gray-500 uppercase">${getRelativeTime(t.timestamp)}</div>` : `<div class="text-[9px] font-black uppercase text-gray-600">${t.rarity || t.type}</div>`}
-                                    </div>
-                                </div>`;
-                            }).join('');
+                                    </div>`;
+                                }).join('');
+                            } else {
+                                checklist.innerHTML = `<div class="p-8 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">Trophies synced with playstation networks</div>`;
+                            }
                         }
                     }
 
-                    // RECENT EARNED TROPHY LOGIC (Standalone Card)
-                    if (wolf.mostRecentTrophies && wolf.mostRecentTrophies.length > 0) {
-                        const recTrophy = wolf.mostRecentTrophies[0];
-                        const recCard = document.getElementById('recent-trophy-card');
+                    // RECENT EARNED TROPHY LOGIC (Standalone Card with Auto-Discovery fallbacks)
+                    let recTrophy = null;
+                    const mostRecentNormal = convertFirebaseArray(wolf.mostRecentTrophies);
+                    if (mostRecentNormal.length > 0 && mostRecentNormal[0].name) {
+                        recTrophy = mostRecentNormal[0];
+                    } else if (currentTrophyData.length > 0) {
+                        // Fallback: Dynamically discover the latest earned trophy from current game checklist
+                        const earnedTrophies = currentTrophyData.filter(t => t.earned && t.timestamp > 0);
+                        if (earnedTrophies.length > 0) {
+                            earnedTrophies.sort((a,b) => b.timestamp - a.timestamp);
+                            recTrophy = {
+                                name: earnedTrophies[0].name,
+                                icon: earnedTrophies[0].icon,
+                                game: hunt ? hunt.title : "Active Hunt"
+                            };
+                        }
+                    }
+
+                    const recCard = document.getElementById('recent-trophy-card');
+                    if (recTrophy) {
                         const recIcon = document.getElementById('last-trophy-icon');
                         const recName = document.getElementById('last-trophy-name');
                         const recGame = document.getElementById('last-trophy-game');
                         
-                        if (recCard && recIcon && recName && recGame) {
-                            recIcon.src = recTrophy.icon;
-                            recName.innerText = recTrophy.name;
-                            recGame.innerText = recTrophy.game;
-                            recCard.classList.remove('hidden');
+                        if (recIcon && recName && recGame) {
+                            recIcon.src = recTrophy.icon || "";
+                            recName.innerText = recTrophy.name || "Secret Trophy";
+                            recGame.innerText = recTrophy.game || "Playstation System";
+                            if (recCard) recCard.classList.remove('hidden');
                         }
+                    } else {
+                        if (recCard) recCard.classList.add('hidden');
                     }
 
-                    document.getElementById('recent-games-container').innerHTML = (wolf.recentGames || []).slice(0, 6).map(g => `
+                    // RECENT HUNTS CONTAINER
+                    document.getElementById('recent-games-container').innerHTML = recentGamesNormal.slice(0, 6).map(g => `
                         <div class="game-thumb ${parseInt(g.progress) >= 100 ? 'platinum-glow' : ''}" onclick="openStore('${g.name}', '${g.amazonAffiliateUrl || ''}', 'recent_hunts')">
-                            <img src="${g.art}" class="w-full h-full object-cover">
+                            <img src="${g.art}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/150x225/1e1e24/FF5F1F?text=GAME'">
                             <div class="game-info-overlay"><div class="text-[11px] font-black text-orange-400 uppercase tracking-tighter">${g.ratio}</div><div class="text-[10px] font-black text-white/70 uppercase tracking-widest">${g.progress}%</div></div>
                         </div>`).join('');
                 }
-            } catch (e) { console.error("Sync Failure Wolf Admin Hub"); }
+            } catch (e) { console.error("Firebase Sync Failure:", e); }
         }
 
         buildSmartMenu();
@@ -666,7 +744,7 @@
         updateHub();
         setInterval(refreshMusic, 60000);
         setInterval(fetchLiveTwitch, 60000); // Poll Twitch every 60s directly from browser
-        setInterval(updateHub, 30000);
+        setInterval(updateHub, 30000); // Poll Firebase live database updates every 30s
     </script>
 </body>
 </html>
