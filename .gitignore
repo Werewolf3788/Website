@@ -1,3 +1,7 @@
+# Node dependencies
 node_modules/
+
+# Local Environment Credentials (Do not upload to public repo!)
 .env
-*.json
+games/FS25/*.json
+games/FS25/.env
