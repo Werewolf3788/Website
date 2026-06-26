@@ -1,7 +1,6 @@
 let currentActiveFarmFilter = 'all';
 let fullRawDataPayload = {};
 
-// Constant fallback image mapping engine for visual completeness
 const PRODUCT_ICONS = {
   "Wheat": "https://cdn-icons-png.flaticon.com/512/575/575454.png",
   "Soybeans": "https://cdn-icons-png.flaticon.com/512/811/811413.png",
@@ -11,31 +10,26 @@ const PRODUCT_ICONS = {
   "Default": "https://cdn-icons-png.flaticon.com/512/2371/2371825.png"
 };
 
-// DIRECT FIREBASE RAW REALTIME DATA ENGINE ACCESS LINE
-// We append .json directly to the end of the public node structure to handle standard REST streams.
+// TARGETED NATIVE ENDPOINT LINK
 const FIREBASE_REST_ENDPOINT = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/fs25.json";
 
 window.addEventListener('load', () => {
-  console.log("Firebase Realtime Telemetry Interconnect Active.");
-  
-  // Establish instant initial fetch, then begin the professional 5-second tactical poll loop
+  console.log("Firebase Telemetry Dynamic Node Connection Online.");
   fetchServerTelemetry();
-  setInterval(fetchServerTelemetry, 5000);
+  setInterval(fetchServerTelemetry, 5000); // Dynamic server polling sequence fixed at 5 seconds
 });
 
 async function fetchServerTelemetry() {
   try {
     const response = await fetch(FIREBASE_REST_ENDPOINT);
-    if (!response.ok) throw new Error(`HTTP Matrix Error: ${response.status}`);
+    if (!response.ok) throw new Error(`HTTP Matrix Disconnected: ${response.status}`);
     
     const dataPayload = await response.json();
-    
-    // Safety check: ensure our layout doesn't crash if the node tree is returning an empty buffer
     if (dataPayload) {
       processDashboardPayload(dataPayload);
     }
   } catch (error) {
-    console.error("Database structural access warning:", error);
+    console.error("Database connection fault:", error);
     document.getElementById('server-title').innerText = "LIVE DATABASE DISCONNECTED";
     document.getElementById('server-title').className = "glow-text-red";
     document.getElementById('status-indicator').className = "status-dot offline";
@@ -50,7 +44,6 @@ function switchFarm(farmId) {
   if (farmId === 'all') {
     document.getElementById('global-tab-btn').classList.add('active');
   } else {
-    // If targeted, locate the specific button element via dynamic text values
     buttons.forEach(btn => {
       if (btn.innerText.includes(fullRawDataPayload.farms[farmId].name)) {
         btn.classList.add('active');
@@ -62,8 +55,6 @@ function switchFarm(farmId) {
 
 function openMarketLightbox(cropName) {
   const modal = document.getElementById('market-lightbox');
-  
-  // Extract market brokerage nodes completely clean without adjustments
   const broker = fullRawDataPayload.marketBroker || {};
   const marketData = broker[cropName] || {
     bestBuyer: { name: "Local Elevators", price: 0.00 },
@@ -84,7 +75,6 @@ function openMarketLightbox(cropName) {
     <div class="market-price text-glow-red">$${marketData.bestSeller.price.toLocaleString()} / L</div>
   `;
   
-  // Enumerate the entire market ledger without omitting any items
   const manifestBox = document.getElementById('farmers-market-list');
   manifestBox.className = "farmers-grid-manifest";
   manifestBox.innerHTML = Object.keys(broker).map(crop => `
@@ -102,11 +92,9 @@ function closeLightbox() {
   document.getElementById('market-lightbox').style.display = "none";
 }
 
-// THE PROCESSING ENGINE - POPULATES DATA WITHOUT TRUNCATING, COMPRESSING, OR OMITTING DATA NODES
 function processDashboardPayload(data) {
   fullRawDataPayload = data;
   
-  // Core default parameters if Firebase properties haven't fully initialized under specific root paths
   const serverOnline = data.serverOnline !== undefined ? data.serverOnline : true;
   const serverName = data.serverName || "Dedicated Farming Pipeline";
   const environment = data.environment || { season: "Unknown", time: "00:00" };
@@ -117,7 +105,6 @@ function processDashboardPayload(data) {
   const fields = data.fields || {};
   const contracts = data.contracts || {};
 
-  // 1. UPDATE SYSTEM STATE LABELS
   const statusIndicator = document.getElementById('status-indicator');
   const serverTitle = document.getElementById('server-title');
   statusIndicator.className = `status-dot ${serverOnline ? 'online' : 'offline'}`;
@@ -128,7 +115,6 @@ function processDashboardPayload(data) {
   document.getElementById('player-count').innerText = `${players.length}/6`;
   document.getElementById('sync-heartbeat').innerText = new Date().toLocaleTimeString();
 
-  // 2. UNPACK ALL PLAYERS
   const rosterBox = document.getElementById('player-roster');
   rosterBox.innerHTML = '';
   players.forEach(p => {
@@ -138,7 +124,6 @@ function processDashboardPayload(data) {
     rosterBox.appendChild(tag);
   });
 
-  // 3. GENERATE COMPLETE TABS (RUNS AUTOMATICALLY ON TREE RECOGNITION)
   const tabContainer = document.getElementById('farm-tabs-container');
   if (tabContainer.children.length <= 1) {
     Object.keys(farms).forEach(id => {
@@ -150,7 +135,6 @@ function processDashboardPayload(data) {
     });
   }
 
-  // 4. ACCUMULATE BALANCES SAFELY BASED ON FILTER SETTINGS
   let targetingMoney = 0;
   let targetingProfit = 0;
   let ledgerItems = [];
@@ -180,10 +164,9 @@ function processDashboardPayload(data) {
   profitEl.innerText = `${targetingProfit >= 0 ? '+' : ''}$${targetingProfit.toLocaleString()}`;
   profitEl.className = `profit-value-display ${targetingProfit >= 0 ? 'text-glow-green' : 'text-glow-red'}`;
 
-  // FINANCIAL SUB-ITEMS
   const ledgerBox = document.getElementById('finance-ledger');
   if (ledgerItems.length === 0) {
-    ledgerBox.innerHTML = `<div class="ledger-row" style="color:var(--text-muted)">No recent transactions log line recorded.</div>`;
+    ledgerBox.innerHTML = `<div class="ledger-row" style="color:var(--text-muted)">No recent transactions log line.</div>`;
   } else {
     ledgerBox.innerHTML = ledgerItems.map(item => `
       <div class="ledger-row">
@@ -195,7 +178,6 @@ function processDashboardPayload(data) {
     `).join('');
   }
 
-  // SILOS STOCK CAPACITY DISPLAY
   const siloBox = document.getElementById('silo-stocks');
   if (Object.keys(trackingSilos).length === 0) {
     siloBox.innerHTML = `<div style="text-align:center; padding:15px; color:var(--text-muted)">Silos empty or unassigned.</div>`;
@@ -214,7 +196,6 @@ function processDashboardPayload(data) {
     `).join('');
   }
 
-  // 5. VEHICLE DEPLOYMENTS
   const fleetBox = document.getElementById('fleet-matrix');
   fleetBox.innerHTML = '';
   const vehicleKeys = Object.keys(vehicles);
@@ -237,9 +218,8 @@ function processDashboardPayload(data) {
     });
   }
 
-  // 6. INDUSTRIAL PRODUCTION LINES
-  const productionKeys = Object.keys(productionPoints);
   const productionBox = document.getElementById('production-ledger');
+  const productionKeys = Object.keys(productionPoints);
   if (productionKeys.length === 0) {
     productionBox.innerHTML = `<div style="color:var(--text-muted); padding:10px;">No production assets online.</div>`;
   } else {
@@ -249,16 +229,15 @@ function processDashboardPayload(data) {
       return `
         <div class="factory-card ${f.active ? 'running' : 'idle'}">
           <div class="vehicle-header"><strong>🏢 ${f.name}</strong> <span style="color:${f.active ? 'var(--neon-green)':'var(--neon-red)'}; font-size:11px; font-weight:800;">${f.active ? 'ONLINE' : 'STANDBY'}</span></div>
-          <div style="font-size:13px; color:var(--text-muted); margin:4px 0;">Strategy: ${modeText} | Location Data: ${f.proximity}</div>
+          <div style="font-size:13px; color:var(--text-muted); margin:4px 0;">Strategy: ${modeText} | Location: ${f.proximity}</div>
           <div class="bar-track"><div class="bar-fill" style="width:${(f.outputVolume/f.outputMax)*100}%; background:linear-gradient(90deg, #c026d3, #e879f9);"></div></div>
         </div>
       `;
     }).join('');
   }
 
-  // 7. COMPREHENSIVE REGISTRY FOR PARCELS (WITH INDEPENDENT LIME/FERT/SLURRY READOUTS)
-  const fieldKeys = Object.keys(fields);
   const registryBox = document.getElementById('parcel-registry');
+  const fieldKeys = Object.keys(fields);
   if (fieldKeys.length === 0) {
     registryBox.innerHTML = `<div style="color:var(--text-muted); padding:10px; grid-column: 1/-1;">No parcel database maps initialized.</div>`;
   } else {
@@ -289,11 +268,10 @@ function processDashboardPayload(data) {
     }).join('');
   }
 
-  // 8. SERVER MISSIONS TICKER CONTRACTS
-  const contractKeys = Object.keys(contracts);
   const contractBox = document.getElementById('contract-board');
+  const contractKeys = Object.keys(contracts);
   if (contractKeys.length === 0) {
-    contractBox.innerHTML = `<div class="ledger-row" style="color:var(--text-muted)">No procurement contracts active on server logs.</div>`;
+    contractBox.innerHTML = `<div class="ledger-row" style="color:var(--text-muted)">No procurement contracts active on server.</div>`;
   } else {
     contractBox.innerHTML = contractKeys.map(id => {
       const c = contracts[id];
