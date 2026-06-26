@@ -6,14 +6,262 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-Z9M5LXQ5XN');
   </script>
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Werewolf FS25 Dedicated Server Tracker</title>
-  <link rel="stylesheet" href="style.css">
+  
+  <style>
+    :root {
+      --bg-main: #04050f;
+      --bg-card: rgba(13, 17, 38, 0.75);
+      --bg-header: rgba(22, 28, 59, 0.9);
+      --text-primary: #f0f5ff;
+      --text-muted: #64748b;
+      
+      /* Cyber Neon Glow Accents */
+      --neon-green: #059669;
+      --neon-blue: #2563eb;
+      --neon-cyan: #0891b2;
+      --neon-purple: #c026d3;
+      --neon-gold: #d97706;
+      --neon-red: #dc2626;
+
+      /* Crop Cycle States Hex Keys */
+      --color-growing: #10b981;
+      --color-harvest: #eab308;
+      --color-plowed: #2563eb;
+      --color-cultivated: #a855f7;
+      --color-withered: #7c2d12;
+      --color-withered-dual: #451a03;
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg-main);
+      background-image: radial-gradient(circle at 50% 0%, #14113c 0%, #04050f 75%);
+      color: var(--text-primary);
+      padding: 25px;
+      min-height: 100vh;
+    }
+
+    .grid-background {
+      position: fixed; 
+      top: 0; 
+      left: 0; 
+      width: 100%; 
+      height: 100%;
+      background-image: linear-gradient(rgba(255,255,255,0.005) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.005) 1px, transparent 1px);
+      background-size: 40px 40px; 
+      pointer-events: none; 
+      z-index: 0;
+    }
+
+    /* CARDS WITH FROSTED GLASS EFFECTS */
+    .glass-panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px); 
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.05); 
+      border-radius: 16px;
+      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.7);
+      position: relative;
+    }
+
+    .card-glow-green:hover { box-shadow: 0 0 30px rgba(5, 150, 105, 0.15); border-color: rgba(5, 150, 105, 0.3); }
+    .card-glow-blue:hover { box-shadow: 0 0 30px rgba(37, 99, 235, 0.15); border-color: rgba(37, 99, 235, 0.3); }
+    .card-glow-purple:hover { box-shadow: 0 0 30px rgba(192, 38, 211, 0.15); border-color: rgba(192, 38, 211, 0.3); }
+    .card-glow-gold:hover { box-shadow: 0 0 30px rgba(217, 119, 6, 0.15); border-color: rgba(217, 119, 6, 0.3); }
+
+    /* SYSTEM HEADER TELEMETRY CONTROLS */
+    .top-bar {
+      background: var(--bg-header); 
+      border: 1px solid rgba(255, 255, 255, 0.08); 
+      backdrop-filter: blur(20px);
+      padding: 18px 28px; 
+      border-radius: 20px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      flex-wrap: wrap; 
+      gap: 20px; 
+      margin-bottom: 25px; 
+      box-shadow: 0 10px 50px rgba(0,0,0,0.8); 
+      z-index: 10; 
+      position: relative;
+    }
+
+    .server-status h1 { 
+      font-size: 20px; 
+      font-weight: 800; 
+      letter-spacing: 0.5px; 
+    }
+
+    .server-type-badge {
+      display: block;
+      font-size: 11px;
+      color: var(--neon-cyan);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-top: 4px;
+    }
+
+    .status-dot { 
+      width: 11px; 
+      height: 11px; 
+      border-radius: 50%; 
+      display: inline-block; 
+      margin-right: 12px; 
+    }
+    .status-dot.online { background-color: #10b981; box-shadow: 0 0 15px #10b981; }
+    .status-dot.offline { background-color: #ef4444; box-shadow: 0 0 15px #ef4444; }
+
+    .glow-text-green { color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
+    .glow-text-red { color: #f43f5e; text-shadow: 0 0 10px rgba(244, 63, 94, 0.4); }
+
+    .server-telemetry { display: flex; gap: 15px; }
+    .telemetry-item { 
+      background: rgba(0, 0, 0, 0.4); 
+      padding: 8px 18px; 
+      border-radius: 30px; 
+      font-size: 13px; 
+      font-weight: 700; 
+      border: 1px solid transparent; 
+    }
+    .neon-border-blue { border-color: rgba(37, 99, 235, 0.3); }
+    .neon-border-purple { border-color: rgba(192, 38, 211, 0.3); }
+    .neon-border-gold { border-color: rgba(217, 119, 6, 0.3); }
+
+    /* FARM CONTROLLERS FILTER NAVIGATION */
+    .farm-tabs { display: flex; gap: 10px; margin-bottom: 25px; z-index: 5; position: relative; }
+    .tab-btn { 
+      background: rgba(255, 255, 255, 0.02); 
+      color: var(--text-muted); 
+      border: 1px solid rgba(255,255,255,0.06); 
+      padding: 12px 22px; 
+      border-radius: 12px; 
+      cursor: pointer; 
+      font-weight: 700; 
+      font-size: 13px; 
+      transition: all 0.2s ease; 
+    }
+    .tab-btn.active, .tab-btn:hover { 
+      background: #1e1b4b; 
+      color: #fff; 
+      border-color: var(--neon-cyan); 
+      box-shadow: 0 0 15px rgba(8, 145, 178, 0.3); 
+    }
+
+    /* CORE INTERACTIVE DASHBOARD GRID */
+    .dashboard-grid { 
+      display: grid; 
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); 
+      gap: 25px; 
+      z-index: 5; 
+      position: relative; 
+      width: 100%;
+    }
+    .grid-column { display: flex; flex-direction: column; gap: 25px; }
+    .dashboard-card { padding: 22px; }
+    .dashboard-card h2 { 
+      font-size: 13px; 
+      text-transform: uppercase; 
+      letter-spacing: 1px; 
+      margin-bottom: 20px; 
+      padding-bottom: 10px; 
+      border-bottom: 1px solid rgba(255,255,255,0.06); 
+      font-weight: 800; 
+    }
+
+    .header-green { color: #10b981; } 
+    .header-blue { color: #06b6d4; } 
+    .header-purple { color: #d946ef; } 
+    .header-gold { color: #f59e0b; }
+
+    /* FINANCIAL CALCULATORS AND MONETARY TELEMETRY */
+    .profit-summary-block { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      background: rgba(0,0,0,0.25); 
+      padding: 14px 18px; 
+      border-radius: 12px; 
+      margin-bottom: 18px; 
+      border: 1px solid rgba(255,255,255,0.03); 
+    }
+    .stats-label { 
+      font-size: 11px; 
+      text-transform: uppercase; 
+      color: var(--text-muted); 
+      font-weight: 700; 
+      margin-bottom: 2px; 
+    }
+    .money-display { 
+      font-size: 34px; 
+      font-weight: 900; 
+      color: #10b981; 
+      text-shadow: 0 0 15px rgba(16, 185, 129, 0.3); 
+    }
+    .profit-value-display { font-size: 22px; font-weight: 800; }
+
+    .map-container { width: 100%; display: flex; justify-content: center; }
+    .live-radar-map { width: 100%; border-radius: 12px; border: 1px solid rgba(6, 182, 212, 0.2); }
+
+    /* ACTIVE DEPLOYED VEHICLES CARD CONFIG */
+    .vehicle-card { 
+      background: rgba(0,0,0,0.15); 
+      border: 1px solid rgba(255,255,255,0.03); 
+      border-radius: 12px; 
+      padding: 15px; 
+      margin-bottom: 10px; 
+    }
+    .vehicle-header { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      font-weight: 700; 
+      font-size: 14.5px; 
+    }
+    .attachment-node { 
+      margin-top: 6px; 
+      padding-left: 12px; 
+      border-left: 2px solid var(--neon-blue); 
+      color: #94a3b8; 
+      font-size: 12.5px; 
+    }
+    .gps-badge { 
+      background: #1d4ed8; 
+      color: #fff; 
+      font-size: 9px; 
+      font-weight: 800; 
+      padding: 2px 6px; 
+      border-radius: 4px; 
+    }
+    
+    .bar-track { 
+      background: rgba(0, 0, 0, 0.4); 
+      height: 8px; 
+      border-radius: 10px; 
+      overflow: hidden; 
+      margin: 6px 0 10px 0; 
+      border: 1px solid rgba(255,255,255,0.03); 
+    }
+    .bar-fill { 
+      height: 100%; 
+      width: 0%; 
+      border-radius: 10px; 
+      transition: width 0.5s ease; 
+    }
+  </style>
 </head>
 <body>
 
@@ -24,7 +272,7 @@
       <span id="status-indicator" class="status-dot offline"></span>
       <div>
         <h1 id="server-title" class="glow-text-red">GRID LINK DATA DISCONNECTED</h1>
-        <small class="server-type-badge">🔒 FS25 Dedicated Server | Max Capacity: 6 Players</small>
+        <small class="server-type-badge" id="savegame-badge">🔒 FS25 Dedicated Server | Syncing Save Info...</small>
       </div>
     </div>
     
@@ -100,30 +348,179 @@
 
   </main>
 
-  <div id="market-lightbox" class="lightbox-overlay" onclick="closeLightbox()">
-    <div class="lightbox-content glass-panel card-glow-gold" onclick="event.stopPropagation()">
-      <button class="close-btn" onclick="closeLightbox()">&times;</button>
-      <div class="lightbox-header">
-        <img id="modal-crop-icon" src="" alt="" class="crop-large-icon">
-        <h3 id="modal-crop-title" class="header-gold">Crop Market Brokerage Analysis</h3>
-      </div>
-      <div class="market-split-grid">
-        <div class="market-data-block">
-          <h4 class="text-glow-green">📈 Optimal Selling Terminal Destination</h4>
-          <div id="best-buyer-card" class="trading-card"></div>
-        </div>
-        <div class="market-data-block">
-          <h4 class="text-glow-red">📉 Wholesale Input Supply Vendor</h4>
-          <div id="best-seller-card" class="trading-card"></div>
-        </div>
-      </div>
-      <div class="farmers-market-section">
-        <h4>🏪 Farmers Market Price Listing Manifest</h4>
-        <div id="farmers-market-list"></div>
-      </div>
-    </div>
-  </div>
+  <script>
+    let fullRawDataPayload = {};
 
-  <script src="./index.js"></script>
+    const PRODUCT_ICONS = {
+      "Wheat": "https://cdn-icons-png.flaticon.com/512/575/575454.png",
+      "Soybeans": "https://cdn-icons-png.flaticon.com/512/811/811413.png",
+      "Corn": "https://cdn-icons-png.flaticon.com/512/1149/1149794.png",
+      "Oats": "https://cdn-icons-png.flaticon.com/512/1490/1490774.png",
+      "Canola": "https://cdn-icons-png.flaticon.com/512/9165/9165842.png",
+      "Default": "https://cdn-icons-png.flaticon.com/512/2371/2371825.png"
+    };
+
+    const FIREBASE_REST_ENDPOINT = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/fs25.json";
+
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchServerTelemetry();
+      setInterval(fetchServerTelemetry, 5000); // Poll database every 5 seconds
+    });
+
+    async function fetchServerTelemetry() {
+      try {
+        const response = await fetch(FIREBASE_REST_ENDPOINT);
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+        const dataPayload = await response.json();
+        if (dataPayload) {
+          processDashboardPayload(dataPayload);
+        }
+      } catch (error) {
+        console.error("Database connection fault:", error);
+        if (document.getElementById('server-title')) {
+          document.getElementById('server-title').innerText = "LIVE DATABASE OFFLINE";
+          document.getElementById('server-title').className = "glow-text-red";
+          document.getElementById('status-indicator').className = "status-dot offline";
+        }
+      }
+    }
+
+    function cleanEquipmentName(filepath) {
+      if (!filepath) return "Equipment Asset";
+      let filename = filepath.split('/').pop().replace('.xml', '');
+      let result = filename.replace(/([A-Z])/g, ' $1').trim();
+      return result.charAt(0).toUpperCase() + result.slice(1);
+    }
+
+    function processDashboardPayload(data) {
+      fullRawDataPayload = data;
+      
+      // 1. Maintain Core Headers & Set Online Status
+      if (document.getElementById('server-title')) {
+        document.getElementById('server-title').innerText = "Werewolf Dedicated Server";
+        document.getElementById('server-title').className = "glow-text-green";
+      }
+      if (document.getElementById('status-indicator')) {
+        document.getElementById('status-indicator').className = "status-dot online";
+      }
+      if (document.getElementById('game-time')) document.getElementById('game-time').innerText = "Summer - 12:00";
+      if (document.getElementById('player-count')) document.getElementById('player-count').innerText = "1/6";
+      if (document.getElementById('sync-heartbeat')) document.getElementById('sync-heartbeat').innerText = new Date().toLocaleTimeString();
+
+      // 2. Extract Savegame Name and Map Title dynamically
+      const settingsNode = data.careerSavegame_xml?.careerSavegame?.settings;
+      if (settingsNode && document.getElementById('savegame-badge')) {
+          let saveName = settingsNode.savegameName?._text || settingsNode.savegameName || "Unknown Save";
+          let mapName = settingsNode.mapTitle?._text || settingsNode.mapTitle || "Unknown Map";
+          document.getElementById('savegame-badge').innerText = `💾 ACTIVE SAVE: ${saveName} | 🗺️ MAP: ${mapName}`;
+      }
+
+      // 3. Financial Metrics Parsing
+      let totalMoney = 0;
+      if (data.careerSavegame_xml?.careerSavegame?.statistics?._attributes?.money) {
+        totalMoney = parseInt(data.careerSavegame_xml.careerSavegame.statistics._attributes.money);
+      } else if (data.careerSavegame_xml?.careerSavegame?.statistics?.money) {
+        totalMoney = parseInt(data.careerSavegame_xml.careerSavegame.statistics.money);
+      }
+      if (document.getElementById('farm-money')) {
+        document.getElementById('farm-money').innerText = `$${totalMoney.toLocaleString()}`;
+      }
+
+      // 4. Robust Live Radar Map Handling
+      const mapImg = document.querySelector('.live-radar-map');
+      if (mapImg) {
+        mapImg.onerror = function() {
+          this.src = "https://i.imgur.com/v8S7M7g.png"; // Clean fallback placeholder map vector
+        };
+      }
+
+      // 5. Advanced Fleet Categorization
+      const fleetBox = document.getElementById('fleet-matrix');
+      if (fleetBox) {
+        fleetBox.innerHTML = '';
+        
+        let vehicleSource = data.vehicles_xml?.vehicles?.vehicle;
+        if (!vehicleSource) {
+          fleetBox.innerHTML = `<div style="color:var(--text-muted); padding:10px;">No vehicles telemetry detected.</div>`;
+          return;
+        }
+
+        const vehicleArray = Array.isArray(vehicleSource) ? vehicleSource : [vehicleSource];
+        
+        let primeMovers = []; 
+        let attachments = [];  
+
+        vehicleArray.forEach(v => {
+          const attr = v._attributes || {};
+          const nameLower = (attr.filename || "").toLowerCase();
+          
+          let item = {
+            id: attr.uniqueId || Math.random().toString(),
+            farmId: attr.farmId || "1",
+            model: cleanEquipmentName(attr.filename),
+            condition: 100,
+            loadedAttachments: []
+          };
+
+          if (v.wearable?._attributes?.damage) {
+            let damage = parseFloat(v.wearable._attributes.damage) || 0;
+            item.condition = Math.round((1 - damage) * 100);
+          }
+
+          const isTool = nameLower.includes('attachable') || 
+                         nameLower.includes('tool') || 
+                         nameLower.includes('cutter') || 
+                         nameLower.includes('weight') || 
+                         nameLower.includes('trailer') ||
+                         nameLower.includes('header');
+
+          if (isTool) {
+            attachments.push(item);
+          } else {
+            primeMovers.push(item);
+          }
+        });
+
+        attachments.forEach(attachment => {
+          let parentTractor = primeMovers.find(mover => mover.farmId === attachment.farmId);
+          if (parentTractor) {
+            parentTractor.loadedAttachments.push(attachment);
+          } else {
+            primeMovers.push(attachment);
+          }
+        });
+
+        primeMovers.sort((a, b) => a.farmId.localeCompare(b.farmId));
+
+        primeMovers.forEach(mover => {
+          const card = document.createElement('div');
+          card.className = 'vehicle-card';
+          
+          let attachmentsMarkup = '';
+          if (mover.loadedAttachments.length > 0) {
+            attachmentsMarkup = mover.loadedAttachments.map(att => `
+              <div class="attachment-node">
+                <span>🔗 Integrated Tool: <strong>${att.model}</strong></span>
+                <span style="font-size:11px; color:var(--text-muted);"> (Health: ${att.condition}%)</span>
+              </div>
+            `).join('');
+          }
+
+          card.innerHTML = `
+            <div class="vehicle-header">
+              <span>🚜 ${mover.model}</span>
+              <span class="gps-badge">FARM ID: ${mover.farmId}</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-muted); margin:5px 0;">Operational Health: ${mover.condition}%</div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${mover.condition}%; background:linear-gradient(90deg, ${mover.condition < 30 ? '#dc2626, #f87171' : '#059669, #34d399'});"></div>
+            </div>
+            ${attachmentsMarkup}
+          `;
+          fleetBox.appendChild(card);
+        });
+      }
+    }
+  </script>
 </body>
 </html>
