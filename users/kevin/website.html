@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!-- 
     --- PRECISION INTEGRITY PROTOCOL ---
-    Version: 9.6.5-Wolf - Client-Side Twitch Engine | Firebase Live Integration (##/###)
+    Version: 9.8.0-Wolf - Client-Side Twitch Engine | Firebase Live Integration | COTW Trophy Lodge (##/###)
     Global Standards: S:50 R:30 B:14 H:30
     Author: Kevin (Werewolf3788) Admin Engine
-    Engine Version: 13.9.5 UI Sync
-    Timestamp: June 26, 2026, 12:55 AM (NYT)
+    Engine Version: 13.9.9 UI Sync
+    Timestamp: June 26, 2026, 3:24 AM (NYT)
     Note: NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
-    Updates: Dynamic active hunt fallback engine, stable wikimedia PS Plus assets, clickable twitch portal.
+    Updates: Real-time Firebase integration, complete map-to-array normalizers, dynamic fallbacks, high-res Eldorado PS Plus asset, interactive clickable twitch portal, theHunter COTW Firestore integration with "Rare Fur" mapping.
 -->
 <html lang="en">
 <head>
@@ -32,7 +32,7 @@
             'stream_id': '13278632388',
             'page_type': 'admin_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '9.6.5',
+            'layout_version': '9.8.0',
             'user_id': 'Werewolf3788',
             'engagement_timezone': 'Eastern Time (New York)',
             'engagement_timestamp_ny': getNYTime(),
@@ -127,10 +127,22 @@
         .mini-stat-label { font-size: 10px; font-weight: 900; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; }
         .mini-stat-value { font-size: 14px; font-weight: 900; color: white; }
 
-        .trophy-row { display: grid; grid-template-columns: 50px 1fr auto; align-items: center; gap: 15px; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); cursor: pointer; }
+        .trophy-row { display: grid; grid-template-columns: 50px 1fr auto; align-items: center; gap: 15px; padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); cursor: pointer; transition: all 0.3s ease; }
         .trophy-row:hover { background: rgba(255,255,255,0.03); }
         .trophy-icon-sq { width: 50px; height: 50px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
         .trophy-title-text { font-weight: 800; color: var(--accent-orange); font-size: 15px; text-transform: uppercase; }
+
+        /* --- TROPHY GLOW EFFECT (EARNED IN LAST 12 HOURS) --- */
+        .recent-earn-glow {
+            border-color: rgba(255, 95, 31, 0.8) !important;
+            background: rgba(255, 95, 31, 0.06) !important;
+            box-shadow: 0 0 15px rgba(255, 95, 31, 0.25) inset, 0 0 15px rgba(255, 95, 31, 0.15) !important;
+            animation: recentEarnPulse 2.5s infinite ease-in-out;
+        }
+        @keyframes recentEarnPulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 95, 31, 0.25) inset, 0 0 10px rgba(255, 95, 31, 0.1) !important; }
+            50% { box-shadow: 0 0 25px rgba(255, 95, 31, 0.45) inset, 0 0 20px rgba(255, 95, 31, 0.35) !important; }
+        }
 
         .progress-bar-container { height: 10px; background: #2d2d35; border-radius: 5px; overflow: hidden; }
         .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #FF5F1F, #9e3a12); transition: width 1.5s ease-out; }
@@ -223,7 +235,7 @@
 
                 <!-- PSN LEVEL -->
                 <div class="glass-card header-stat-card p-5 lg:p-8 border-b-4 border-[#9e3a12]">
-                    <div class="text-[11px] lg:text-[13px] text-orange-700 font-black mb-1 uppercase tracking-widest text-center w-full">PSN Level</div>
+                    <div class="text-[11px] lg:text-[13px] text-orange-400 font-black mb-1 uppercase tracking-widest text-center w-full">PSN Level</div>
                     <div id="psn-level-label" class="text-3xl lg:text-5xl font-black text-white">--</div>
                     <div id="psn-region" class="text-[10px] text-gray-300 font-bold uppercase mt-2">Region: US</div>
                     <div id="psn-account-age" class="text-[10px] text-gray-400 font-black uppercase mt-1 tracking-tighter italic">Legacy Tracker Enabled</div>
@@ -322,6 +334,64 @@
                     </div>
                 </section>
 
+                <!-- THEHUNTER: COTW TROPHY LODGE (Firestore live sync) -->
+                <section id="cotw-card" class="glass-card p-8 border-b-4 border-emerald-500 text-center transition-all">
+                    <h2 class="mb-6 text-emerald-400 flex items-center justify-center gap-3 uppercase tracking-tighter">
+                        <i class="fas fa-paw"></i> COTW Trophy Lodge
+                    </h2>
+                    <div class="grid grid-cols-3 gap-3">
+                        <!-- Great One -->
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                            <i class="fas fa-crown text-yellow-400 text-lg mb-1 animate-pulse"></i>
+                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Great One</span>
+                            <span id="cotw-great-one" class="text-base font-black text-white">--</span>
+                        </div>
+                        <!-- Rare Fur -->
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                            <i class="fas fa-sparkles text-pink-300 text-lg mb-1"></i>
+                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Rare Fur</span>
+                            <span id="cotw-rare-fur" class="text-base font-black text-white">--</span>
+                        </div>
+                        <!-- Diamond -->
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                            <i class="fas fa-gem text-cyan-400 text-lg mb-1"></i>
+                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Diamond</span>
+                            <span id="cotw-diamond" class="text-base font-black text-white">--</span>
+                        </div>
+                        <!-- Gold -->
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                            <i class="fas fa-award text-amber-400 text-lg mb-1"></i>
+                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Gold</span>
+                            <span id="cotw-gold" class="text-base font-black text-white">--</span>
+                        </div>
+                        <!-- Silver -->
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                            <i class="fas fa-award text-slate-300 text-lg mb-1"></i>
+                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Silver</span>
+                            <span id="cotw-silver" class="text-base font-black text-white">--</span>
+                        </div>
+                        <!-- Bronze -->
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                            <i class="fas fa-award text-amber-700 text-lg mb-1"></i>
+                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Bronze</span>
+                            <span id="cotw-bronze" class="text-base font-black text-white">--</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- GHOST SQUAD OPERATOR STATUS (Realtime Database Sync) -->
+                <section id="ghost-squad-card" class="glass-card p-8 border-b-4 border-orange-600 text-center transition-all hidden">
+                    <h2 class="mb-4 text-orange-500 flex items-center justify-center gap-3 uppercase tracking-tighter">
+                        <i class="fas fa-shield-halved"></i> Ghost Squad Operator
+                    </h2>
+                    <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-6">Tactical Combat Profile</div>
+                    <div class="bg-black/30 p-4 rounded-2xl border border-white/5 space-y-3 text-left">
+                        <div id="ghost-squad-details" class="divide-y divide-white/5">
+                            <!-- Dynamic fields populated from RTDB -->
+                        </div>
+                    </div>
+                </section>
+
                 <!-- PS PLUS PREMIUM WIDGET -->
                 <section id="ps-plus-card" class="glass-card p-8 border-b-4 border-orange-500 text-center transition-all">
                     <h2 class="mb-6 text-[#FF5F1F] flex items-center justify-center gap-3 uppercase tracking-tighter"><i class="fab fa-playstation"></i> PS Plus Premium</h2>
@@ -361,6 +431,8 @@
     <script>
         const REPO_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/";
         const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
+        const PLUS_IMG = "https://assetsdelivery.eldorado.gg/v7/_offers-v2_/2e84e915-faa9-4670-b6a1-2406ea1f3a64_Offer_20241113013824_723432Large.png?w=255";
+        const COTW_FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/game-tracker-5b2ef/databases/(default)/documents/artifacts/cotw-trophy-display/public/data/userTrophies/Werewolf3788";
         
         // --- TAG DEFINITIONS ---
         const MY_TAGS = ["werewolf", "werewolf3788"];
@@ -521,6 +593,105 @@
             lb.style.display = 'flex';
         }
 
+        // --- FIRESTORE COTW LOADER ---
+        function getFirestoreValue(field) {
+            if (!field) return 0;
+            if (field.integerValue !== undefined) return parseInt(field.integerValue);
+            if (field.doubleValue !== undefined) return parseFloat(field.doubleValue);
+            if (field.stringValue !== undefined) return parseInt(field.stringValue) || field.stringValue;
+            return 0;
+        }
+
+        async function updateCOTWLodge() {
+            try {
+                const res = await fetch(COTW_FIRESTORE_URL);
+                if (!res.ok) return;
+                const doc = await res.json();
+                const fields = doc.fields || {};
+
+                // Case-insensitive & spacing resilient key finder
+                const extractVal = (keys) => {
+                    for (const key of keys) {
+                        const normKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+                        for (const fKey in fields) {
+                            const normFKey = fKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+                            if (normKey === normFKey) {
+                                return getFirestoreValue(fields[fKey]);
+                            }
+                        }
+                    }
+                    return 0;
+                };
+
+                const greatOne = extractVal(['greatone', 'great_one', 'great one']);
+                const rareFur = extractVal(['albino', 'furtype', 'fur_type', 'fur type', 'rare_fur', 'rarefur']);
+                const diamond = extractVal(['diamond']);
+                const gold = extractVal(['gold']);
+                const silver = extractVal(['silver']);
+                const bronze = extractVal(['bronze']);
+
+                document.getElementById('cotw-great-one').innerText = greatOne;
+                document.getElementById('cotw-rare-fur').innerText = rareFur;
+                document.getElementById('cotw-diamond').innerText = diamond;
+                document.getElementById('cotw-gold').innerText = gold;
+                document.getElementById('cotw-silver').innerText = silver;
+                document.getElementById('cotw-bronze').innerText = bronze;
+
+            } catch (e) {
+                console.error("Firestore COTW sync failed cleanly:", e);
+            }
+        }
+
+        // --- TIME LOCALIZER FOR USER DEVICES ---
+        function getDeviceHandshakeTime(lastUpdatedStr) {
+            if (!lastUpdatedStr || lastUpdatedStr === "--") return "--";
+            
+            // Append " UTC" so the browser parses the static server string in UTC
+            // and translates it to the viewer's exact device locale timezone!
+            let dateObj = new Date(lastUpdatedStr + " UTC");
+            if (isNaN(dateObj.getTime())) {
+                dateObj = new Date(lastUpdatedStr);
+            }
+            if (isNaN(dateObj.getTime())) return lastUpdatedStr;
+            
+            return dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + 
+                   " (" + dateObj.toLocaleDateString([], { month: 'numeric', day: 'numeric' }) + ")";
+        }
+
+        // --- GHOST SQUAD RTDB OPERATOR SYNC ---
+        async function updateGhostSquad() {
+            try {
+                const res = await fetch("https://game-tracker-5b2ef-default-rtdb.firebaseio.com/ghost_squad/operators/Werewolf3788.json?t=" + Date.now());
+                if (!res.ok) return;
+                const operator = await res.json();
+                
+                if (operator) {
+                    const card = document.getElementById('ghost-squad-card');
+                    if (card) card.classList.remove('hidden');
+                    
+                    const detailsContainer = document.getElementById('ghost-squad-details');
+                    if (detailsContainer) {
+                        let html = "";
+                        // Dynamically render keys excluding objects/arrays
+                        for (const [key, val] of Object.entries(operator)) {
+                            if (typeof val !== 'object' && val !== null) {
+                                // Format camelCase or snake_case key to clean uppercase words
+                                const cleanKey = key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').toUpperCase();
+                                html += `
+                                    <div class="flex justify-between items-center py-2 text-xs">
+                                        <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider">${cleanKey}</span>
+                                        <span class="font-black text-white uppercase">${val}</span>
+                                    </div>`;
+                            }
+                        }
+                        detailsContainer.innerHTML = html;
+                    }
+                }
+            } catch (e) {
+                console.error("Ghost Squad sync failed cleanly:", e);
+            }
+        }
+
         // --- REAL-TIME FIREBASE STORAGE SYNC ---
         async function updateHub() {
             try {
@@ -569,7 +740,11 @@
                         ageEl.innerText = "Legacy Age: " + (legacyAge || "Veteran");
                     }
 
-                    const syncEl = document.getElementById('sync-time'); if(syncEl) syncEl.innerText = wolf.lastUpdated || "--";
+                    // Dynamic local timezone device sync time formatting!
+                    const syncEl = document.getElementById('sync-time'); 
+                    if(syncEl) {
+                        syncEl.innerText = getDeviceHandshakeTime(wolf.lastUpdated);
+                    }
 
                     // PSN LIBRARY COUNT
                     const gamesPlayedEl = document.getElementById('games-played-count');
@@ -670,12 +845,16 @@
                                         individualProgressTracker = `<div class="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Progress: ${t.currentValue || 0} / ${t.targetValue}</div>`;
                                     }
 
+                                    // Dynamic 12-Hour Glow Check
+                                    const isEarnedRecently = t.earned && t.timestamp > 0 && (Date.now() - t.timestamp <= 12 * 60 * 60 * 1000);
+                                    const recentEarnBadge = isEarnedRecently ? `<span class="ml-2 text-[8px] bg-orange-600/30 text-orange-400 border border-orange-500/50 rounded px-1 animate-pulse font-bold tracking-widest"><i class="fas fa-fire mr-1"></i>RECENT</span>` : '';
+
                                     return `
-                                    <div class="trophy-row" onclick="openTrophyLightbox(${idx})">
+                                    <div class="trophy-row ${isEarnedRecently ? 'recent-earn-glow' : ''}" onclick="openTrophyLightbox(${idx})">
                                         <img src="${t.icon}" class="trophy-icon-sq ${!t.earned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://placehold.co/50x50/202024/FF5F1F?text=🏆'">
                                         <div class="min-w-0 flex-1">
                                             <div class="trophy-title-text truncate font-black ${t.earned ? 'text-green-500' : 'text-orange-500'} text-xs">
-                                                ${!t.earned && t.hidden ? '<i class="fas fa-eye-slash mr-1 text-gray-500"></i> HIDDEN TROPHY' : t.name}
+                                                ${!t.earned && t.hidden ? '<i class="fas fa-eye-slash mr-1 text-gray-500"></i> HIDDEN TROPHY' : t.name}${recentEarnBadge}
                                             </div>
                                             <div class="trophy-desc-text truncate text-[10px] opacity-70 text-gray-400">
                                                 ${!t.earned && t.hidden ? 'Keep playing to discover this secret.' : t.description}
@@ -707,7 +886,8 @@
                             recTrophy = {
                                 name: earnedTrophies[0].name,
                                 icon: earnedTrophies[0].icon,
-                                game: hunt ? hunt.title : "Active Hunt"
+                                game: hunt ? hunt.title : "Active Hunt",
+                                timestamp: earnedTrophies[0].timestamp
                             };
                         }
                     }
@@ -722,7 +902,17 @@
                             recIcon.src = recTrophy.icon || "";
                             recName.innerText = recTrophy.name || "Secret Trophy";
                             recGame.innerText = recTrophy.game || "Playstation System";
-                            if (recCard) recCard.classList.remove('hidden');
+                            
+                            // Dynamic 12-Hour Glow Check on the Standalone Card
+                            const isTrophyRecent = recTrophy.timestamp > 0 && (Date.now() - recTrophy.timestamp <= 12 * 60 * 60 * 1000);
+                            if (recCard) {
+                                recCard.classList.remove('hidden');
+                                if (isTrophyRecent) {
+                                    recCard.classList.add('recent-earn-glow');
+                                } else {
+                                    recCard.classList.remove('recent-earn-glow');
+                                }
+                            }
                         }
                     } else {
                         if (recCard) recCard.classList.add('hidden');
@@ -741,9 +931,13 @@
         buildSmartMenu();
         refreshMusic();
         fetchLiveTwitch(); // Call Twitch instantly on load
+        updateCOTWLodge();
+        updateGhostSquad();
         updateHub();
         setInterval(refreshMusic, 60000);
         setInterval(fetchLiveTwitch, 60000); // Poll Twitch every 60s directly from browser
+        setInterval(updateCOTWLodge, 30000); // Poll Firestore COTW document state
+        setInterval(updateGhostSquad, 30000); // Poll Realtime Database ghost_squad path
         setInterval(updateHub, 30000); // Poll Firebase live database updates every 30s
     </script>
 </body>
