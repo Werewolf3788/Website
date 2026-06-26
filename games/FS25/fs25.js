@@ -2,7 +2,7 @@ require('dotenv').config({ path: __dirname + '/.env' });
 const Client = require('ftp');
 const admin = require('firebase-admin');
 
-console.log("Initializing Automated G-Portal Backup Engine...");
+console.log("Initializing Automated Smart G-Portal Backup Engine...");
 
 // 1. Pull the Firebase Key out of your GitHub Secrets Vault
 let serviceAccount;
@@ -17,7 +17,7 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   }
 }
 
-// 2. Link directly to your exact Firebase Realtime Database and Storage Bucket
+// 2. Link directly to your Firebase Realtime Database and Storage Bucket
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
@@ -35,12 +35,49 @@ const ftpConfig = {
   password: process.env.FTP_PASS
 };
 
-// 3. Connect to G-Portal FTP and drop the file directly into Firebase Storage
-ftpClient.on('ready', function() {
-  console.log("FTP Uplink Established. Mirroring game data...");
+// Helper function to extract text values between xml tags without requiring full DOM parser libraries
+function getTagValue(xmlString, tagName) {
+  const match = xmlString.match(new RegExp(`<${tagName}>(.*?)</${tagName}>`));
+  return match ? match[1].trim() : null;
+}
 
-  const remoteSavePath = '/farmingSim_2025/profile/savegame1.zip';
-  const firebaseStorageDest = 'server_backups/savegame1.zip';
+ftpClient.on('ready', function() {
+  console.log("FTP Uplink Established. Checking server configuration for active save slot...");
+
+  // Path to G-Portal's dedicated server configurations file
+  const configPath = '/dedicatedServerConfig.xml';
+
+  ftpClient.get(configPath, function(err, configStream) {
+    if (err) {
+      console.error("🚨 CRITICAL: Could not read dedicatedServerConfig.xml to detect active save slot. Defaulting to slot 1.", err);
+      runFileMirrorSync(1); // Default safety fallback
+      return;
+    }
+
+    let configData = '';
+    configStream.on('data', (chunk) => { configData += chunk; });
+    configStream.on('end', () => {
+      // Find the active savegame index tag <savegameIndex>X</savegameIndex>
+      let slotIndex = getTagValue(configData, 'savegameIndex');
+      
+      if (!slotIndex) {
+        console.log("⚠️ Could not locate <savegameIndex> variable. Defaulting to slot 1.");
+        slotIndex = 1;
+      } else {
+        console.log(`🎯 Active server save slot detected: Slot [ ${slotIndex} ]`);
+      }
+
+      runFileMirrorSync(slotIndex);
+    });
+  });
+});
+
+// 3. Dynamic Mirror Sync Operation
+function runFileMirrorSync(slotNumber) {
+  const remoteSavePath = `/farmingSim_2025/profile/savegame${slotNumber}.zip`;
+  const firebaseStorageDest = `server_backups/savegame${slotNumber}.zip`;
+
+  console.log(`Fetching active target: ${remoteSavePath}`);
 
   ftpClient.get(remoteSavePath, function(err, stream) {
     if (err) {
@@ -56,23 +93,24 @@ ftpClient.on('ready', function() {
       ftpClient.end();
     })
     .on('finish', async () => {
-      console.log('Success! Savegame file mirrored to Firebase Storage.');
+      console.log(`Success! Savegame ${slotNumber} file mirrored to Firebase Storage.`);
       
-      // 4. Drop a timestamp update directly into your specific Firebase database node path (/fs25)
+      // 4. Update the live sync log node tree block path (/fs25)
       try {
         await db.ref('fs25/lastAutomatedSync').set({
           timestamp: new Date().toISOString(),
           status: "Success",
-          message: "16-Minute Automated Cloud Pull Complete"
+          activeSaveSlot: parseInt(slotNumber),
+          message: `Slot ${slotNumber} Automated Cloud Mirror Complete`
         });
-        console.log("Firebase Realtime Database node path updated successfully.");
+        console.log("Firebase Realtime Database state node refreshed successfully.");
       } catch (dbErr) {
-        console.error("Failed to write node data update to Realtime Database:", dbErr);
+        console.error("Failed to write state node updates to Realtime Database:", dbErr);
       }
 
       ftpClient.end();
     });
   });
-});
+}
 
 ftpClient.connect(ftpConfig);
