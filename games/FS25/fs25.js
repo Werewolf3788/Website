@@ -2,9 +2,9 @@ require('dotenv').config({ path: __dirname + '/.env' });
 const Client = require('ftp');
 const admin = require('firebase-admin');
 
-console.log("Initializing Automated Smart G-Portal Backup Engine...");
+console.log("Initializing Universal Nuclear Scraper Engine (All-XML Dynamic Slot)...");
 
-// 1. Pull the Firebase Key out of your GitHub Secrets Vault
+// 1. Firebase Administration Setup
 let serviceAccount;
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
@@ -17,15 +17,12 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   }
 }
 
-// 2. Link directly to your Firebase Realtime Database and Storage Bucket
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
-  storageBucket: "game-tracker-5b2ef.firebasestorage.app"
+  databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
 });
 
 const db = admin.database();
-const bucket = admin.storage().bucket();
 const ftpClient = new Client();
 
 const ftpConfig = {
@@ -35,82 +32,173 @@ const ftpConfig = {
   password: process.env.FTP_PASS
 };
 
-// Helper function to extract text values between xml tags without requiring full DOM parser libraries
+const STATS_URL = "http://207.244.243.68:8500/feed/dedicated-server-stats.xml?code=jeRZKn2jNdgJNqqs";
+
+// Helper function to extract a fast value out of an XML string block
 function getTagValue(xmlString, tagName) {
   const match = xmlString.match(new RegExp(`<${tagName}>(.*?)</${tagName}>`));
   return match ? match[1].trim() : null;
 }
 
-ftpClient.on('ready', function() {
-  console.log("FTP Uplink Established. Checking server configuration for active save slot...");
-
-  // Path to G-Portal's dedicated server configurations file
-  const configPath = '/dedicatedServerConfig.xml';
-
-  ftpClient.get(configPath, function(err, configStream) {
-    if (err) {
-      console.error("🚨 CRITICAL: Could not read dedicatedServerConfig.xml to detect active save slot. Defaulting to slot 1.", err);
-      runFileMirrorSync(1); // Default safety fallback
-      return;
+// Light XML parser to turn files into ultra-clean nested JSON nodes for Firebase trees
+function xmlToJsonSimple(xmlString) {
+  const obj = {};
+  
+  // 1. Map tags with direct inline attributes: <element price="500" />
+  const selfClosingRegex = /<(\w+)\s+([^>]*)\/>/g;
+  let match;
+  while ((match = selfClosingRegex.exec(xmlString)) !== null) {
+    const tagName = match[1];
+    const attrsText = match[2];
+    const attrs = {};
+    
+    const attrRegex = /(\w+)="([^"]*)"/g;
+    let attrMatch;
+    while ((attrMatch = attrRegex.exec(attrsText)) !== null) {
+      const safeKey = attrMatch[1].replace(/[\.\#\$\/\[\]]/g, '_');
+      attrs[safeKey] = isNaN(attrMatch[2]) ? attrMatch[2] : parseFloat(attrMatch[2]);
     }
+    
+    if (!obj[tagName]) obj[tagName] = [];
+    obj[tagName].push(attrs);
+  }
 
-    let configData = '';
-    configStream.on('data', (chunk) => { configData += chunk; });
-    configStream.on('end', () => {
-      // Find the active savegame index tag <savegameIndex>X</savegameIndex>
-      let slotIndex = getTagValue(configData, 'savegameIndex');
-      
-      if (!slotIndex) {
-        console.log("⚠️ Could not locate <savegameIndex> variable. Defaulting to slot 1.");
-        slotIndex = 1;
-      } else {
-        console.log(`🎯 Active server save slot detected: Slot [ ${slotIndex} ]`);
-      }
+  // 2. Map standard text open/closes: <money>150000</money>
+  const valueRegex = /<(\w+)>([^<]+)<\/\1>/g;
+  while ((match = valueRegex.exec(xmlString)) !== null) {
+    const safeKey = match[1].replace(/[\.\#\$\/\[\]]/g, '_');
+    const val = match[2].trim();
+    obj[safeKey] = isNaN(val) ? val : parseFloat(val);
+  }
 
-      runFileMirrorSync(slotIndex);
-    });
-  });
-});
+  return obj;
+}
 
-// 3. Dynamic Mirror Sync Operation
-function runFileMirrorSync(slotNumber) {
-  const remoteSavePath = `/farmingSim_2025/profile/savegame${slotNumber}.zip`;
-  const firebaseStorageDest = `server_backups/savegame${slotNumber}.zip`;
-
-  console.log(`Fetching active target: ${remoteSavePath}`);
-
-  ftpClient.get(remoteSavePath, function(err, stream) {
-    if (err) {
-      console.error(`Target save missing on host: ${remoteSavePath}`, err);
-      ftpClient.end();
-      return;
-    }
-
-    const file = bucket.file(firebaseStorageDest);
-    stream.pipe(file.createWriteStream({ metadata: { contentType: 'application/zip' } }))
-    .on('error', (uploadErr) => {
-      console.error('Cloud pipe failed:', uploadErr);
-      ftpClient.end();
-    })
-    .on('finish', async () => {
-      console.log(`Success! Savegame ${slotNumber} file mirrored to Firebase Storage.`);
-      
-      // 4. Update the live sync log node tree block path (/fs25)
-      try {
-        await db.ref('fs25/lastAutomatedSync').set({
-          timestamp: new Date().toISOString(),
-          status: "Success",
-          activeSaveSlot: parseInt(slotNumber),
-          message: `Slot ${slotNumber} Automated Cloud Mirror Complete`
-        });
-        console.log("Firebase Realtime Database state node refreshed successfully.");
-      } catch (dbErr) {
-        console.error("Failed to write state node updates to Realtime Database:", dbErr);
-      }
-
-      ftpClient.end();
+// Promise wrapper to pull clean file text content from live streams
+function downloadFileBuffer(client, remotePath) {
+  return new Promise((resolve, reject) => {
+    client.get(remotePath, (err, stream) => {
+      if (err) return reject(err);
+      let data = '';
+      stream.on('data', chunk => data += chunk);
+      stream.on('end', () => resolve(data));
+      stream.on('error', streamErr => reject(streamErr));
     });
   });
 }
 
-ftpClient.connect(ftpConfig);
+async function runMainPipeline() {
+  let activePlayers = 0;
+  
+  // A. Check live players via Web API
+  try {
+    const response = await fetch(STATS_URL);
+    if (response.ok) {
+      const statsXml = await response.text();
+      const slotsMatch = statsXml.match(/slots\s+numUsed="(\d+)"/);
+      if (slotsMatch) activePlayers = parseInt(slotsMatch[1]);
+    }
+  } catch (err) {
+    console.log("⚠️ API down, continuing directly with structural file analysis.");
+  }
+
+  console.log(`Live Player Count: ${activePlayers}`);
+
+  // B. Enforce the 6-hour cooldown engine rule if the server runtime is idle
+  if (activePlayers === 0) {
+    try {
+      const snapshot = await db.ref('fs25/liveState/lastUpdated').get();
+      if (snapshot.exists()) {
+        const lastUpdateStr = snapshot.val();
+        const hoursSinceLastUpdate = (new Date() - new Date(lastUpdateStr)) / (1000 * 60 * 60);
+        
+        if (hoursSinceLastUpdate < 6) {
+          console.log(`🛑 Server is completely empty. Last update was only ${hoursSinceLastUpdate.toFixed(2)} hours ago. Safe exit.`);
+          process.exit(0);
+        }
+      }
+    } catch (dbE) {
+      console.log("No previous timing footprint found. Forcing structural sweep.");
+    }
+  }
+
+  // C. Fire up the FTP pipeline
+  ftpClient.on('ready', function() {
+    console.log("FTP Uplink Ready. Detecting active savegame index...");
+
+    // First, scan the main config file to see which slot is actively selected right now!
+    ftpClient.get('/dedicatedServerConfig.xml', function(err, configStream) {
+      if (err) {
+        console.error("🚨 CRITICAL: Couldn't read dedicatedServerConfig.xml. Defaulting to safe fallback Slot 8.", err);
+        processActiveFolderSync(8, activePlayers);
+        return;
+      }
+
+      let configData = '';
+      configStream.on('data', chunk => configData += chunk);
+      configStream.on('end', () => {
+        let detectedSlot = getTagValue(configData, 'savegame_index');
+        
+        if (!detectedSlot) {
+          console.log("⚠️ Could not scrape <savegame_index>. Defaulting to fallback Slot 8.");
+          detectedSlot = 8;
+        } else {
+          console.log(`🎯 Server configuration scan successful. Active Map is in Slot [ ${detectedSlot} ]`);
+        }
+
+        processActiveFolderSync(parseInt(detectedSlot), activePlayers);
+      });
+    });
+  });
+
+  ftpClient.connect(ftpConfig);
+}
+
+function processActiveFolderSync(slotNumber, activePlayers) {
+  const targetFolderPath = `/savegame${slotNumber}`;
+  console.log(`Scanning target folder directory: ${targetFolderPath}`);
+
+  ftpClient.list(targetFolderPath, async function(err, list) {
+    if (err) {
+      console.error(`❌ Failed tracking layout contents of directory: ${targetFolderPath}`, err);
+      ftpClient.end();
+      return;
+    }
+
+    // Isolate absolutely every single active configuration file ending in .xml
+    const xmlFiles = list.filter(f => f.type !== 'd' && f.name.toLowerCase().endsWith('.xml'));
+    console.log(`📂 Found ${xmlFiles.length} map configuration files inside Savegame ${slotNumber}. Initiating transmission...`);
+
+    const masterPayload = {
+      activePlayers: activePlayers,
+      activeSaveSlot: slotNumber,
+      lastUpdated: new Date().toISOString()
+    };
+
+    // Dynamically iterate over every file found in the directory tree
+    for (const fileInfo of xmlFiles) {
+      const fileNameClean = fileInfo.name.replace('.xml', '').replace(/[\.\#\$\/\[\]]/g, '_');
+      const remoteFilePath = `${targetFolderPath}/${fileInfo.name}`;
+      
+      try {
+        console.log(`Extracting tree payload leaf: ${fileInfo.name}`);
+        const rawXmlContent = await downloadFileBuffer(ftpClient, remoteFilePath);
+        masterPayload[fileNameClean] = xmlToJsonSimple(rawXmlContent);
+      } catch (fileErr) {
+        console.error(`❌ Data scrape sequence bypassed on object element: ${fileInfo.name}`, fileErr);
+      }
+    }
+
+    // D. Synchronize master payload tree to Firebase
+    try {
+      await db.ref('fs25/liveState').set(masterPayload);
+      console.log(`🏆 Tactical Command Center synchronized! All files from Slot ${slotNumber} pushed safely to Firebase.`);
+    } catch (writeErr) {
+      console.error("Master state transmission update rejected by database:", writeErr);
+    }
+
+    ftpClient.end();
+  });
+}
+
+runMainPipeline();
