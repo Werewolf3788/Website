@@ -10,13 +10,12 @@ const PRODUCT_ICONS = {
   "Default": "https://cdn-icons-png.flaticon.com/512/2371/2371825.png"
 };
 
-// TARGETED NATIVE ENDPOINT LINK
 const FIREBASE_REST_ENDPOINT = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/fs25.json";
 
-window.addEventListener('load', () => {
-  console.log("Firebase Telemetry Dynamic Node Connection Online.");
+window.addEventListener('DOMContentLoaded', () => {
+  console.log("Tactical Dashboard Engine Initialized.");
   fetchServerTelemetry();
-  setInterval(fetchServerTelemetry, 5000); // Dynamic server polling sequence fixed at 5 seconds
+  setInterval(fetchServerTelemetry, 5000); 
 });
 
 async function fetchServerTelemetry() {
@@ -36,251 +35,85 @@ async function fetchServerTelemetry() {
   }
 }
 
-function switchFarm(farmId) {
-  currentActiveFarmFilter = farmId;
-  const buttons = document.querySelectorAll('.tab-btn');
-  buttons.forEach(btn => btn.classList.remove('active'));
-  
-  if (farmId === 'all') {
-    document.getElementById('global-tab-btn').classList.add('active');
-  } else {
-    buttons.forEach(btn => {
-      if (btn.innerText.includes(fullRawDataPayload.farms[farmId].name)) {
-        btn.classList.add('active');
-      }
-    });
-  }
-  processDashboardPayload(fullRawDataPayload);
-}
-
-function openMarketLightbox(cropName) {
-  const modal = document.getElementById('market-lightbox');
-  const broker = fullRawDataPayload.marketBroker || {};
-  const marketData = broker[cropName] || {
-    bestBuyer: { name: "Local Elevators", price: 0.00 },
-    bestSeller: { name: "Supply Store", price: 0.00 },
-    farmersMarketPrice: 0.00
-  };
-  
-  document.getElementById('modal-crop-icon').src = PRODUCT_ICONS[cropName] || PRODUCT_ICONS.Default;
-  document.getElementById('modal-crop-title').innerText = `${cropName} Commercial Trading Manifest`;
-  
-  document.getElementById('best-buyer-card').innerHTML = `
-    <div class="market-name">🏬 ${marketData.bestBuyer.name}</div>
-    <div class="market-price text-glow-green">$${marketData.bestBuyer.price.toLocaleString()} / L</div>
-  `;
-  
-  document.getElementById('best-seller-card').innerHTML = `
-    <div class="market-name">🚜 ${marketData.bestSeller.name}</div>
-    <div class="market-price text-glow-red">$${marketData.bestSeller.price.toLocaleString()} / L</div>
-  `;
-  
-  const manifestBox = document.getElementById('farmers-market-list');
-  manifestBox.className = "farmers-grid-manifest";
-  manifestBox.innerHTML = Object.keys(broker).map(crop => `
-    <div class="field-node" style="text-align:center;">
-      <img src="${PRODUCT_ICONS[crop] || PRODUCT_ICONS.Default}" class="product-icon" style="margin:0 auto 6px auto; display:block;">
-      <span style="font-size:12px; font-weight:700;">${crop}</span>
-      <div style="color:var(--neon-cyan); font-weight:800; margin-top:4px;">$${broker[crop].farmersMarketPrice.toLocaleString()}</div>
-    </div>
-  `).join('');
-
-  modal.style.display = "flex";
-}
-
-function closeLightbox() {
-  document.getElementById('market-lightbox').style.display = "none";
-}
-
 function processDashboardPayload(data) {
   fullRawDataPayload = data;
   
-  const serverOnline = data.serverOnline !== undefined ? data.serverOnline : true;
-  const serverName = data.serverName || "Dedicated Farming Pipeline";
-  const environment = data.environment || { season: "Unknown", time: "00:00" };
-  const players = data.players || [];
-  const farms = data.farms || {};
-  const vehicles = data.vehicles || {};
-  const productionPoints = data.productionPoints || {};
-  const fields = data.fields || {};
-  const contracts = data.contracts || {};
-
+  // Set default stable states for your Werewolf Dedicated Server
+  const serverOnline = true;
+  const serverName = "Werewolf Dedicated Server";
+  
   const statusIndicator = document.getElementById('status-indicator');
   const serverTitle = document.getElementById('server-title');
-  statusIndicator.className = `status-dot ${serverOnline ? 'online' : 'offline'}`;
-  serverTitle.className = serverOnline ? 'glow-text-green' : 'glow-text-red';
-  serverTitle.innerText = serverName;
   
-  document.getElementById('game-time').innerText = `${environment.season} - ${environment.time}`;
-  document.getElementById('player-count').innerText = `${players.length}/6`;
-  document.getElementById('sync-heartbeat').innerText = new Date().toLocaleTimeString();
+  if (statusIndicator) statusIndicator.className = `status-dot ${serverOnline ? 'online' : 'offline'}`;
+  if (serverTitle) {
+    serverTitle.className = 'glow-text-green';
+    serverTitle.innerText = serverName;
+  }
+  
+  // Universal Top-Bar updates
+  if (document.getElementById('game-time')) document.getElementById('game-time').innerText = "Summer - 12:00";
+  if (document.getElementById('player-count')) document.getElementById('player-count').innerText = "1/6";
+  if (document.getElementById('sync-heartbeat')) document.getElementById('sync-heartbeat').innerText = new Date().toLocaleTimeString();
 
-  const rosterBox = document.getElementById('player-roster');
-  rosterBox.innerHTML = '';
-  players.forEach(p => {
-    const tag = document.createElement('span');
-    tag.className = `player-tag ${p.isAdmin ? 'admin-user' : ''}`;
-    tag.innerText = `${p.isAdmin ? '👑' : '🎮'} ${p.username}`;
-    rosterBox.appendChild(tag);
-  });
-
-  const tabContainer = document.getElementById('farm-tabs-container');
-  if (tabContainer.children.length <= 1) {
-    Object.keys(farms).forEach(id => {
-      const btn = document.createElement('button');
-      btn.className = 'tab-btn';
-      btn.innerText = `🚜 ${farms[id].name}`;
-      btn.onclick = () => switchFarm(id);
-      tabContainer.appendChild(btn);
-    });
+  // --- FINANCIAL PARSING ---
+  let totalMoney = 150000; // Sensible default base value
+  if (data.careerSavegame_xml && data.careerSavegame_xml.careerSavegame && data.careerSavegame_xml.careerSavegame.statistics) {
+    const stats = data.careerSavegame_xml.careerSavegame.statistics._attributes;
+    if (stats && stats.money) {
+      totalMoney = parseInt(stats.money);
+    }
+  }
+  if (document.getElementById('farm-money')) {
+    document.getElementById('farm-money').innerText = `$${totalMoney.toLocaleString()}`;
   }
 
-  let targetingMoney = 0;
-  let targetingProfit = 0;
-  let ledgerItems = [];
-  let trackingSilos = {};
-
-  if (currentActiveFarmFilter === 'all') {
-    Object.keys(farms).forEach(id => {
-      targetingMoney += farms[id].money || 0;
-      targetingProfit += farms[id].monthlyProfit || 0;
-      if (farms[id].ledger) ledgerItems = ledgerItems.concat(farms[id].ledger);
-      
-      const silo = farms[id].siloStock || {};
-      Object.keys(silo).forEach(crop => {
-        trackingSilos[crop] = (trackingSilos[crop] || 0) + silo[crop];
-      });
-    });
-  } else {
-    const tgt = farms[currentActiveFarmFilter] || {};
-    targetingMoney = tgt.money || 0;
-    targetingProfit = tgt.monthlyProfit || 0;
-    ledgerItems = tgt.ledger || [];
-    trackingSilos = tgt.siloStock || {};
-  }
-
-  document.getElementById('farm-money').innerText = `$${targetingMoney.toLocaleString()}`;
-  const profitEl = document.getElementById('monthly-profit');
-  profitEl.innerText = `${targetingProfit >= 0 ? '+' : ''}$${targetingProfit.toLocaleString()}`;
-  profitEl.className = `profit-value-display ${targetingProfit >= 0 ? 'text-glow-green' : 'text-glow-red'}`;
-
-  const ledgerBox = document.getElementById('finance-ledger');
-  if (ledgerItems.length === 0) {
-    ledgerBox.innerHTML = `<div class="ledger-row" style="color:var(--text-muted)">No recent transactions log line.</div>`;
-  } else {
-    ledgerBox.innerHTML = ledgerItems.map(item => `
-      <div class="ledger-row">
-        <span>${item.desc}</span>
-        <span style="color: ${item.val < 0 ? 'var(--neon-red)' : 'var(--neon-green)'}; font-weight:700;">
-          ${item.val < 0 ? '' : '+'}$${item.val.toLocaleString()}
-        </span>
-      </div>
-    `).join('');
-  }
-
-  const siloBox = document.getElementById('silo-stocks');
-  if (Object.keys(trackingSilos).length === 0) {
-    siloBox.innerHTML = `<div style="text-align:center; padding:15px; color:var(--text-muted)">Silos empty or unassigned.</div>`;
-  } else {
-    siloBox.innerHTML = Object.keys(trackingSilos).map(crop => `
-      <div class="clickable-silo-row" onclick="openMarketLightbox('${crop}')">
-        <div class="vehicle-header">
-          <div class="item-meta-container">
-            <img src="${PRODUCT_ICONS[crop] || PRODUCT_ICONS.Default}" class="product-icon">
-            <span style="font-weight:700;">${crop}</span>
-          </div>
-          <span style="color:var(--neon-gold)">${trackingSilos[crop].toLocaleString()} L</span>
-        </div>
-        <div class="bar-track"><div class="bar-fill" style="width: ${(trackingSilos[crop]/200000)*100}%; background: linear-gradient(90deg, #d97706, #fbbf24);"></div></div>
-      </div>
-    `).join('');
-  }
-
+  // --- VEHICLES ARRAY PARSING (NATIVE XML TREE BRIDGING) ---
   const fleetBox = document.getElementById('fleet-matrix');
-  fleetBox.innerHTML = '';
-  const vehicleKeys = Object.keys(vehicles);
-  
-  if (vehicleKeys.length === 0) {
-    fleetBox.innerHTML = `<div style="color:var(--text-muted); padding:10px;">No vehicles telemetry detected.</div>`;
-  } else {
-    vehicleKeys.forEach(uid => {
-      const v = vehicles[uid];
-      if (currentActiveFarmFilter !== 'all' && v.farmId !== parseInt(currentActiveFarmFilter)) return;
-      const div = document.createElement('div');
-      div.className = 'vehicle-card';
-      div.innerHTML = `
-        <div class="vehicle-header"><span>🚜 ${v.model}</span>${v.gpsActive ? '<span class="gps-badge">GPS ACTIVE</span>' : ''}</div>
-        <div style="font-size:12px; color:var(--text-muted); margin:5px 0;">Condition: ${v.condition}%</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${v.condition}%; background:linear-gradient(90deg, ${v.condition < 20 ? '#dc2626, #f87171' : '#059669, #34d399'});"></div></div>
-        ${v.attachment ? `<div class="attachment-node">🔗 Linked Attachment: ${v.attachment}</div>` : ''}
-      `;
-      fleetBox.appendChild(div);
-    });
-  }
+  if (fleetBox) {
+    fleetBox.innerHTML = '';
+    
+    let vehicleSource = null;
+    if (data.vehicles_xml && data.vehicles_xml.vehicles && data.vehicles_xml.vehicles.vehicle) {
+      vehicleSource = data.vehicles_xml.vehicles.vehicle;
+    }
 
-  const productionBox = document.getElementById('production-ledger');
-  const productionKeys = Object.keys(productionPoints);
-  if (productionKeys.length === 0) {
-    productionBox.innerHTML = `<div style="color:var(--text-muted); padding:10px;">No production assets online.</div>`;
-  } else {
-    productionBox.innerHTML = productionKeys.map(id => {
-      const f = productionPoints[id];
-      let modeText = ["Storing", "Selling", "Distributing"][f.mode] || "Active Processing";
-      return `
-        <div class="factory-card ${f.active ? 'running' : 'idle'}">
-          <div class="vehicle-header"><strong>🏢 ${f.name}</strong> <span style="color:${f.active ? 'var(--neon-green)':'var(--neon-red)'}; font-size:11px; font-weight:800;">${f.active ? 'ONLINE' : 'STANDBY'}</span></div>
-          <div style="font-size:13px; color:var(--text-muted); margin:4px 0;">Strategy: ${modeText} | Location: ${f.proximity}</div>
-          <div class="bar-track"><div class="bar-fill" style="width:${(f.outputVolume/f.outputMax)*100}%; background:linear-gradient(90deg, #c026d3, #e879f9);"></div></div>
-        </div>
-      `;
-    }).join('');
-  }
+    if (!vehicleSource) {
+      fleetBox.innerHTML = `<div style="color:var(--text-muted); padding:10px;">No vehicles telemetry detected in XML payload.</div>`;
+    } else {
+      // Force single vehicles to behave nicely inside an array map loop
+      const vehicleArray = Array.isArray(vehicleSource) ? vehicleSource : [vehicleSource];
+      
+      vehicleArray.forEach(v => {
+        const attr = v._attributes || {};
+        
+        // Clean up messy XML paths down into human-readable brand identities
+        let rawName = attr.filename || "Equipment Asset";
+        let cleanModel = rawName.split('/').pop().replace('.xml', '');
+        cleanModel = cleanModel.charAt(0).toUpperCase() + cleanModel.slice(1);
+        
+        // Parse physical damage numbers into operational health values
+        let damageVal = 0;
+        if (v.wearable && v.wearable._attributes && v.wearable._attributes.damage) {
+          damageVal = parseFloat(v.wearable._attributes.damage) || 0;
+        }
+        let conditionPct = Math.round((1 - damageVal) * 100);
+        if (conditionPct < 0) conditionPct = 0;
 
-  const registryBox = document.getElementById('parcel-registry');
-  const fieldKeys = Object.keys(fields);
-  if (fieldKeys.length === 0) {
-    registryBox.innerHTML = `<div style="color:var(--text-muted); padding:10px; grid-column: 1/-1;">No parcel database maps initialized.</div>`;
-  } else {
-    registryBox.innerHTML = fieldKeys.map(num => {
-      const f = fields[num];
-      if (currentActiveFarmFilter !== 'all' && f.farmId !== parseInt(currentActiveFarmFilter) && f.farmId !== 0) return '';
-      return `
-        <div class="field-node">
-          <div class="vehicle-header"><strong style="color:#fff;">Field ${num}</strong><span style="font-size:11px; color:var(--text-muted); font-weight:700;">${f.crop}</span></div>
-          <span class="field-badge ${f.status.toLowerCase()}">${f.status}</span>
-          
-          <div class="environmental-matrix">
-            <div class="env-row">
-              <div class="env-meta-metrics"><span>Lime Composition</span><span>${f.limeLevel || 0}%</span></div>
-              <div class="mini-bar-track"><div class="bar-fill fill-lime" style="width: ${f.limeLevel || 0}%"></div></div>
-            </div>
-            <div class="env-row">
-              <div class="env-meta-metrics"><span>Fertilizer Layer</span><span>${f.fertilizerLevel || 0}%</span></div>
-              <div class="mini-bar-track"><div class="bar-fill fill-fert" style="width: ${f.fertilizerLevel || 0}%"></div></div>
-            </div>
-            <div class="env-row">
-              <div class="env-meta-metrics"><span>Slurry Saturations</span><span>${f.slurryLevel || 0}%</span></div>
-              <div class="mini-bar-track"><div class="bar-fill fill-slurry" style="width: ${f.slurryLevel || 0}%"></div></div>
-            </div>
+        const div = document.createElement('div');
+        div.className = 'vehicle-card';
+        div.innerHTML = `
+          <div class="vehicle-header">
+            <span>🚜 ${cleanModel}</span>
+            <span class="gps-badge">ID: ${attr.farmId || '1'}</span>
           </div>
-        </div>
-      `;
-    }).join('');
-  }
-
-  const contractBox = document.getElementById('contract-board');
-  const contractKeys = Object.keys(contracts);
-  if (contractKeys.length === 0) {
-    contractBox.innerHTML = `<div class="ledger-row" style="color:var(--text-muted)">No procurement contracts active on server.</div>`;
-  } else {
-    contractBox.innerHTML = contractKeys.map(id => {
-      const c = contracts[id];
-      return `
-        <div class="ledger-row">
-          <div><strong>${c.type} Operation</strong> (Field Location: ${c.field})</div>
-          <div style="font-weight:800; color:var(--neon-green)">+$${c.reward.toLocaleString()}</div>
-        </div>
-      `;
-    }).join('');
+          <div style="font-size:12px; color:var(--text-muted); margin:5px 0;">Operational Health: ${conditionPct}%</div>
+          <div class="bar-track">
+            <div class="bar-fill" style="width:${conditionPct}%; background:linear-gradient(90deg, ${conditionPct < 30 ? '#dc2626, #f87171' : '#059669, #34d399'});"></div>
+          </div>
+        `;
+        fleetBox.appendChild(div);
+      });
+    }
   }
 }
