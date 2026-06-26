@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!-- 
     --- PRECISION INTEGRITY PROTOCOL ---
-    Version: 11.0.0-Ray - Client-Side Twitch Engine | Firebase Live Integration (##/###)
+    Version: 11.1.0-Ray - Client-Side Twitch Engine | Firebase Live Integration | COTW Trophy Lodge (##/###)
     Global Standards: S:50 R:30 B:14 H:30
     Author: Kevin (Werewolf3788) Admin Engine
-    Engine Version: 13.9.6 UI Sync
-    Timestamp: June 26, 2026, 3:04 AM (NYT)
+    Engine Version: 13.9.7 UI Sync
+    Timestamp: June 26, 2026, 3:15 AM (NYT)
     Note: NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE.
-    Updates: Real-time Firebase integration, complete map-to-array normalizers, dynamic fallbacks, high-res Eldorado PS Plus asset, interactive clickable twitch portal.
+    Updates: Real-time Firebase integration, complete map-to-array normalizers, dynamic fallbacks, high-res Eldorado PS Plus asset, interactive clickable twitch portal, theHunter COTW Firestore integration.
 -->
 <html lang="en">
 <head>
@@ -32,7 +32,7 @@
             'stream_id': '13278632388',
             'page_type': 'dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '11.0.0',
+            'layout_version': '11.1.0',
             'user_id': 'OneLIVIDMAN',
             'engagement_timezone': 'Central Time (Chicago)',
             'engagement_timestamp_local': getChicagoTime(),
@@ -316,6 +316,7 @@
                 </section>
             </div>
 
+            <!-- RIGHT COLUMN -->
             <div class="flex flex-col gap-8 lg:gap-12">
                 <!-- RECENTLY EARNED TROPHY STANDALONE CARD -->
                 <section id="recent-trophy-card" class="glass-card p-8 border-t-4 border-yellow-500 hidden">
@@ -326,7 +327,52 @@
                     </div>
                 </section>
 
-                <!-- PS PLUS PREMIUM WIDGET (Eldorado promotional badge link loaded natively) -->
+                <!-- THEHUNTER: COTW TROPHY LODGE (Firestore live sync) -->
+                <section id="cotw-card" class="glass-card p-8 border-b-4 border-emerald-500 text-center transition-all">
+                    <h2 class="mb-6 text-emerald-400 flex items-center justify-center gap-3 uppercase tracking-tighter">
+                        <i class="fas fa-paw"></i> COTW Trophy Lodge
+                    </h2>
+                    <div class="grid grid-cols-3 gap-3">
+                        <!-- Great One -->
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                            <i class="fas fa-crown text-yellow-400 text-lg mb-1 animate-pulse"></i>
+                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Great One</span>
+                            <span id="cotw-great-one" class="text-base font-black text-white">--</span>
+                        </div>
+                        <!-- Albino / Fur Type -->
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                            <i class="fas fa-sparkles text-pink-300 text-lg mb-1"></i>
+                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Rare Fur</span>
+                            <span id="cotw-albino" class="text-base font-black text-white">--</span>
+                        </div>
+                        <!-- Diamond -->
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                            <i class="fas fa-gem text-cyan-400 text-lg mb-1"></i>
+                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Diamond</span>
+                            <span id="cotw-diamond" class="text-base font-black text-white">--</span>
+                        </div>
+                        <!-- Gold -->
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                            <i class="fas fa-award text-amber-400 text-lg mb-1"></i>
+                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Gold</span>
+                            <span id="cotw-gold" class="text-base font-black text-white">--</span>
+                        </div>
+                        <!-- Silver -->
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                            <i class="fas fa-award text-slate-300 text-lg mb-1"></i>
+                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Silver</span>
+                            <span id="cotw-silver" class="text-base font-black text-white">--</span>
+                        </div>
+                        <!-- Bronze -->
+                        <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
+                            <i class="fas fa-award text-amber-700 text-lg mb-1"></i>
+                            <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Bronze</span>
+                            <span id="cotw-bronze" class="text-base font-black text-white">--</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PS PLUS PREMIUM WIDGET -->
                 <section id="ps-plus-card" class="glass-card p-8 border-b-4 border-orange-500 text-center transition-all">
                     <h2 class="mb-6 text-[#FF5F1F] flex items-center justify-center gap-3 uppercase tracking-tighter"><i class="fab fa-playstation"></i> PS Plus Premium</h2>
                     <div class="flex justify-center group">
@@ -361,6 +407,7 @@
         const REPO_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/";
         const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
         const PLUS_IMG = "https://assetsdelivery.eldorado.gg/v7/_offers-v2_/2e84e915-faa9-4670-b6a1-2406ea1f3a64_Offer_20241113013824_723432Large.png?w=255";
+        const COTW_FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/game-tracker-5b2ef/databases/(default)/documents/artifacts/cotw-trophy-display/public/data/userTrophies/Raymystyro";
         
         // --- SMART TAG LOGIC ---
         const MY_TAGS = ["raymystyro", "onelividman"];
@@ -416,7 +463,7 @@
             const img = document.getElementById('music-widget-img');
             if(!img) return;
             const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=11.0.0`;
+            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=11.1.0`;
         }
 
         async function updateTwitch() {
@@ -561,6 +608,55 @@
             lb.style.display = 'flex';
         }
 
+        // --- FIRESTORE COTW LOADER ---
+        function getFirestoreValue(field) {
+            if (!field) return 0;
+            if (field.integerValue !== undefined) return parseInt(field.integerValue);
+            if (field.doubleValue !== undefined) return parseFloat(field.doubleValue);
+            if (field.stringValue !== undefined) return parseInt(field.stringValue) || field.stringValue;
+            return 0;
+        }
+
+        async function updateCOTWLodge() {
+            try {
+                const res = await fetch(COTW_FIRESTORE_URL);
+                if (!res.ok) return;
+                const doc = await res.json();
+                const fields = doc.fields || {};
+
+                // Case-insensitive & spacing resilient key finder
+                const extractVal = (keys) => {
+                    for (const key of keys) {
+                        const normKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+                        for (const fKey in fields) {
+                            const normFKey = fKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+                            if (normKey === normFKey) {
+                                return getFirestoreValue(fields[fKey]);
+                            }
+                        }
+                    }
+                    return 0;
+                };
+
+                const greatOne = extractVal(['greatone', 'great_one', 'great one']);
+                const albino = extractVal(['albino', 'furtype', 'fur_type', 'fur type', 'rare_fur']);
+                const diamond = extractVal(['diamond']);
+                const gold = extractVal(['gold']);
+                const silver = extractVal(['silver']);
+                const bronze = extractVal(['bronze']);
+
+                document.getElementById('cotw-great-one').innerText = greatOne;
+                document.getElementById('cotw-albino').innerText = albino;
+                document.getElementById('cotw-diamond').innerText = diamond;
+                document.getElementById('cotw-gold').innerText = gold;
+                document.getElementById('cotw-silver').innerText = silver;
+                document.getElementById('cotw-bronze').innerText = bronze;
+
+            } catch (e) {
+                console.error("Firestore COTW sync failed cleanly:", e);
+            }
+        }
+
         // --- REAL-TIME FIREBASE STORAGE SYNC ---
         async function updateHub() {
             try {
@@ -697,7 +793,7 @@
                     const pText = document.getElementById('active-game-progress-text'); if(pText) pText.innerHTML = `${pct}% <span class="text-[12px] text-gray-400 ml-1 tracking-widest">(${completionFraction})</span>`;
                     const pFill = document.getElementById('active-game-progress-fill'); if(pFill) pFill.style.width = pct + "%";
 
-                    const checklistHeader = document.querySelector('#mission-log-container h2');
+                    const checklistHeader = document.querySelector('#checklist-header-text');
                     if(checklistHeader) checklistHeader.innerHTML = `<i class="fas fa-list-check text-red-500"></i> Trophy Checklist <span class="text-gray-500 ml-2 tracking-widest text-sm">(${completionFraction})</span>`;
 
                     const expContainer = document.getElementById('expansion-groups-container');
@@ -785,9 +881,11 @@
         buildSmartMenu();
         refreshMusic();
         updateTwitch();
+        updateCOTWLodge();
         updateHub();
         setInterval(refreshMusic, 60000);
         setInterval(updateTwitch, 60000);
+        setInterval(updateCOTWLodge, 30000);
         setInterval(updateHub, 30000);
     </script>
 </body>
