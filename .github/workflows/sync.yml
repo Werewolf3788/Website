@@ -18,10 +18,12 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'npm'
 
     - name: Install Node Dependencies
-      run: npm ci
+      # 📁 Added 'cd' step to move into the subfolder to install packages
+      run: |
+        cd games/FS25
+        npm install firebase-admin ftp dotenv --save
 
     - name: Run G-Portal to Firebase Bridge
       env:
@@ -31,4 +33,7 @@ jobs:
         FTP_USER: ${{ secrets.FTP_USER }}
         FTP_PASS: ${{ secrets.FTP_PASS }}
         FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-      run: node index.js
+      # 📁 Changed 'node index.js' to step into your subfolder and target 'fs25.js'
+      run: |
+        cd games/FS25
+        node fs25.js
