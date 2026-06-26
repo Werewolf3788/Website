@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-Z9M5LXQ5XN');
+  </script>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FS25 Tactical Command Center</title>
-  
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/Werewolf3788/Website@main/games/FS25/index.css">
+  <title>Werewolf FS25 Dedicated Server Tracker</title>
+  <link rel="stylesheet" href="./index.css">
 </head>
 <body>
 
@@ -14,13 +22,16 @@
   <header class="top-bar">
     <div class="server-status">
       <span id="status-indicator" class="status-dot offline"></span>
-      <h1 id="server-title" class="glow-text-red">GRID LINK DATA DISCONNECTED</h1>
+      <div>
+        <h1 id="server-title" class="glow-text-red">GRID LINK DATA DISCONNECTED</h1>
+        <small class="server-type-badge">🔒 FS25 Dedicated Server | Max Capacity: 6 Players</small>
+      </div>
     </div>
     
     <div class="server-telemetry">
-      <div class="telemetry-item neon-border-blue">⏰ <span id="game-time">--:--</span></div>
-      <div class="telemetry-item neon-border-purple">👥 <span id="player-count">0/0</span></div>
-      <div class="telemetry-item neon-border-gold">💓 Live Sync: <span id="sync-heartbeat">PENDING</span></div>
+      <div class="telemetry-item neon-border-blue">⏰ Time: <span id="game-time">--:--</span></div>
+      <div class="telemetry-item neon-border-purple">👥 Slots: <span id="player-count">0/6</span></div>
+      <div class="telemetry-item neon-border-gold">💓 Sync: <span id="sync-heartbeat">PENDING</span></div>
     </div>
 
     <div id="player-roster" class="player-roster"></div>
@@ -35,7 +46,7 @@
     <section class="grid-column">
       
       <div class="dashboard-card glass-panel card-glow-blue">
-        <h2 class="header-blue">🗺️ Live Server Map Satellite Radar</h2>
+        <h2 class="header-blue">🗺️ Server Map Satellite Radar</h2>
         <div class="map-container">
           <img src="http://207.244.243.68:8500/feed/dedicated-server-stats-map.jpg?code=jeRZKn2jNdgJNqqs&quality=60&size=512" alt="Live Server Map" class="live-radar-map">
         </div>
@@ -113,6 +124,6 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/gh/Werewolf3788/Website@main/games/FS25/index.js"></script>
+  <script src="./index.js"></script>
 </body>
 </html>
