@@ -2,6 +2,13 @@ require('dotenv').config({ path: __dirname + '/.env' });
 const Client = require('ftp');
 const admin = require('firebase-admin');
 
+// 🚨 GLOBAL RUNTIME SECURITY TIMEOUT
+// Prevents any hidden asynchronous or unclosed socket connections from hanging the GitHub runner.
+setTimeout(() => {
+  console.log("🚨 Safety Failsafe triggered: Script execution exceeded 5 minutes. Forcing secure exit.");
+  process.exit(0);
+}, 5 * 60 * 1000);
+
 console.log("Initializing Universal Nuclear Scraper Engine (All-XML Dynamic Slot)...");
 
 // 1. Firebase Administration Setup
@@ -126,10 +133,10 @@ async function runMainPipeline() {
   ftpClient.on('ready', function() {
     console.log("FTP Uplink Ready. Detecting active savegame index...");
 
-    // First, scan the main config file to see which slot is actively selected right now!
-    ftpClient.get('/dedicatedServerConfig.xml', function(err, configStream) {
+    // FIXED: Removed leading slash to prevent 550 errors on chrooted game servers
+    ftpClient.get('dedicatedServerConfig.xml', function(err, configStream) {
       if (err) {
-        console.error("🚨 CRITICAL: Couldn't read dedicatedServerConfig.xml. Defaulting to safe fallback Slot 8.", err);
+        console.error("⚠️ Couldn't read dedicatedServerConfig.xml relative to base directory. Trying fallback safe Slot 8.", err.message);
         processActiveFolderSync(8, activePlayers);
         return;
       }
@@ -151,17 +158,26 @@ async function runMainPipeline() {
     });
   });
 
+  // Handle connection errors gracefully without leaving the runner stuck
+  ftpClient.on('error', function(err) {
+    console.error("🚨 FTP Client Error Interface Failure:", err.message);
+    try { ftpClient.end(); } catch(e) {}
+    process.exit(1);
+  });
+
   ftpClient.connect(ftpConfig);
 }
 
 function processActiveFolderSync(slotNumber, activePlayers) {
-  const targetFolderPath = `/savegame${slotNumber}`;
+  // FIXED: Converted paths to relative target trees without front slash bounds
+  const targetFolderPath = `savegame${slotNumber}`;
   console.log(`Scanning target folder directory: ${targetFolderPath}`);
 
   ftpClient.list(targetFolderPath, async function(err, list) {
     if (err) {
-      console.error(`❌ Failed tracking layout contents of directory: ${targetFolderPath}`, err);
+      console.error(`❌ Failed tracking layout contents of directory: ${targetFolderPath}`, err.message);
       ftpClient.end();
+      process.exit(0); // Safely exit without hanging the environment pipeline
       return;
     }
 
@@ -185,19 +201,21 @@ function processActiveFolderSync(slotNumber, activePlayers) {
         const rawXmlContent = await downloadFileBuffer(ftpClient, remoteFilePath);
         masterPayload[fileNameClean] = xmlToJsonSimple(rawXmlContent);
       } catch (fileErr) {
-        console.error(`❌ Data scrape sequence bypassed on object element: ${fileInfo.name}`, fileErr);
+        console.error(`❌ Data scrape sequence bypassed on object element: ${fileInfo.name}`, fileErr.message);
       }
     }
 
-    // D. Synchronize master payload tree to Firebase
+    // D. Synchronize master payload tree to Firebase Realtime Database
     try {
       await db.ref('fs25/liveState').set(masterPayload);
       console.log(`🏆 Tactical Command Center synchronized! All files from Slot ${slotNumber} pushed safely to Firebase.`);
     } catch (writeErr) {
-      console.error("Master state transmission update rejected by database:", writeErr);
+      console.error("Master state transmission update rejected by database:", writeErr.message);
     }
 
+    console.log("🔌 Closing FTP Socket Stream.");
     ftpClient.end();
+    process.exit(0);
   });
 }
 
