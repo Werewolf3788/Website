@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-530038574"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-530038574');
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S & K Ventures Fuel Monitor & Management</title>
+    <style>
+        :root {
+            --brand-red: #3e0100;
+            --brand-gold: #ffc929;
+            --led-red: #ff3b3b;
+            --led-green: #39ff14;
+            --bg-dark: #111;
+            --border-gray: #2a2a2a;
+            /* Divi Mobile Preference Alignment */
+            --divi-header-max: 30px;
+            --divi-body: 14px;
+        }
+
+        /* Base Resets */
+        #fuel-monitor-container {
+            width: 100%;
+            margin: 0 auto;
+            display: block;
+            background: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        #fuel-monitor-container * {
+            box-sizing: border-box;
+        }
+
+        /* Integrated Layout Flex Containers */
+        #wp-custom-wrapper { 
+            width: 90%; 
+            max-width: 1200px; /* Expanded max width to support balanced side-by-side split */
+            margin: 40px auto !important; 
+            font-family: sans-serif; 
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+        }
+
+        .split-workspace {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: space-between;
+            width: 100%;
+            gap: 30px;
+            margin-top: 10px;
+        }
+
+        .left-admin-panel {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .right-preview-panel {
+            width: 100%;
+            max-width: 480px; /* Maintains beautiful proportions relative to the forms input cards */
+            position: sticky;
+            top: 20px;
+        }
+
+        #wp-custom-wrapper h2 { 
+            color: #3e0100; 
+            text-align: center; 
+            margin-bottom: 25px; 
+            text-transform: uppercase; 
+            letter-spacing: 1px;
+            width: 100%;
+        }
+        
+        #wp-custom-wrapper .selector-container { 
+            background: #3e0100; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            color: #ffc929; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        #wp-custom-wrapper .selector-container label { 
+            display: block; 
+            margin-bottom: 10px; 
+            font-weight: bold; 
+            font-size: 14px; 
+            text-transform: uppercase; 
+        }
+
+        #wp-custom-wrapper select { 
+            width: 100%; 
+            max-width: 350px; 
+            padding: 12px; 
+            border-radius: 4px; 
+            border: 2px solid #ffc929; 
+            font-size: 16px; 
+            background: #fff; 
+            cursor: pointer;
+        }
+
+        #wp-custom-wrapper .admin-card { 
+            background: #fff; 
+            border-radius: 8px; 
+            padding: 20px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+            margin-bottom: 15px; 
+            border-left: 6px solid #3e0100; 
+            width: 100%;
+            box-sizing: border-box;
+            display: none; 
+        }
+
+        #wp-custom-wrapper label.input-label { 
+            display: block; 
+            font-size: 11px; 
+            color: #777; 
+            font-weight: bold; 
+            margin-top: 12px; 
+            text-transform: uppercase; 
+            text-align: left; 
+        }
+
+        #wp-custom-wrapper input { 
+            width: 100%; 
+            padding: 12px; 
+            margin-top: 5px; 
+            border: 1px solid #ddd; 
+            border-radius: 4px; 
+            font-size: 16px; 
+            box-sizing: border-box; 
+        }
+
+        #wp-custom-wrapper .update-btn { 
+            background: #ffc929; 
+            border: none; 
+            padding: 14px; 
+            width: 100%; 
+            margin-top: 20px; 
+            border-radius: 4px; 
+            font-weight: bold; 
+            color: #3e0100; 
+            cursor: pointer; 
+            transition: 0.3s; 
+            font-size: 14px; 
+        }
+
+        #wp-custom-wrapper .update-btn:hover { background: #e0b124; }
+        
+        #wp-custom-wrapper .status-area { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-top: 15px; 
+            font-size: 12px; 
+        }
+
+        #wp-custom-wrapper .dot { 
+            height: 8px; 
+            width: 8px; 
+            background: #bbb; 
+            border-radius: 50%; 
+            margin-right: 8px; 
+            display: inline-block; 
+        }
+
+        #wp-custom-wrapper .synced .dot { 
+            background: #39ff14; 
+            box-shadow: 0 0 8px #39ff14; 
+        }
+
+        /* Billboard Presentation Specific Styling */
+        .billboard-link {
+            text-decoration: none;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+        }
+
+        .billboard-frame {
+            background: var(--bg-dark);
+            border: 8px solid var(--border-gray);
+            border-radius: 12px;
+            padding: 45px 15px;
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 11;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            overflow: hidden;
+            margin: 0 auto;
+        }
+
+        .brand-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--brand-red);
+            color: var(--brand-gold);
+            font-weight: bold;
+            text-align: center;
+            font-size: var(--divi-body);
+            padding: 10px 5px;
+            border-bottom: 2px solid var(--brand-gold);
+            z-index: 10;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .brand-footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--brand-red);
+            color: var(--brand-gold);
+            font-weight: bold;
+            text-align: center;
+            font-size: 11px;
+            padding: 8px 0;
+            border-top: 2px solid var(--brand-gold);
+            z-index: 10;
+            letter-spacing: 0.5px;
+        }
+
+        .digital-screen {
+            width: 100%;
+            height: 100%;
+            background: #000;
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gas-slide {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.8s ease-in-out;
+            padding: 10px;
+        }
+
+        .gas-slide.active {
+            opacity: 1;
+        }
+
+        .town-header {
+            color: var(--brand-gold);
+            font-size: clamp(14px, 4vw, 22px);
+            font-weight: bold;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-shadow: 0 0 8px rgba(255, 201, 41, 0.6);
+            text-align: center;
+        }
+
+        .logo-container {
+            height: clamp(40px, 12vw, 65px);
+            width: 100%;
+            max-width: 200px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .station-logo {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            border-radius: 4px;
+        }
+
+        .logo-bg-white {
+            background-color: white;
+            padding: 5px 12px;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .logo-fallback {
+            color: #fff;
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 1px solid #444;
+            padding: 5px 15px;
+        }
+
+        .price-row {
+            width: 90%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 2px 0;
+        }
+
+        .price-label {
+            color: var(--brand-gold);
+            font-size: var(--divi-body);
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-shadow: 0 0 5px rgba(255, 201, 41, 0.4);
+        }
+
+        .led-red, .led-grn {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: clamp(1.8rem, 8vw, 2.8rem);
+            font-weight: bold;
+        }
+
+        .led-red {
+            color: var(--led-red);
+            text-shadow: 0 0 15px #ff0000;
+        }
+
+        .led-grn {
+            color: var(--led-green);
+            text-shadow: 0 0 15px #228b22;
+        }
+
+        .update-tag {
+            color: var(--brand-gold);
+            font-size: 9px;
+            margin-top: 8px;
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(255, 201, 41, 0.4);
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        #notification-toast {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: rgba(57, 255, 20, 0.2);
+            border: 1px solid var(--led-green);
+            color: var(--led-green);
+            padding: 4px 10px;
+            border-radius: 15px;
+            font-size: 10px;
+            font-weight: bold;
+            text-transform: uppercase;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.4s ease;
+            backdrop-filter: blur(4px);
+            white-space: nowrap;
+        }
+
+        #notification-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(5px);
+        }
+
+        .live-indicator {
+            display: inline-block;
+            width: 5px;
+            height: 5px;
+            background-color: var(--led-green);
+            border-radius: 50%;
+            margin-right: 4px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Layout Breakpoints */
+        @media (max-width: 850px) {
+            .split-workspace {
+                flex-direction: column;
+                align-items: center;
+            }
+            .right-preview-panel {
+                max-width: 500px;
+                position: relative;
+                top: 0;
+                margin-top: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .billboard-frame {
+                aspect-ratio: 1 / 1.1;
+                border-width: 5px;
+                padding: 40px 10px;
+            }
+            .brand-overlay { font-size: 12px; }
+        }
+    </style>
+</head>
+<body style="margin:0; background:transparent;">
+
+<div id="fuel-monitor-container">
+    <div id="wp-custom-wrapper">
+        
+        <h2>Community Fuel Price Updates</h2>
+
+        <div class="split-workspace">
+            
+            <div class="left-admin-panel">
+                <div class="selector-container">
+                    <label for="station-selector">Select a Station to Update:</label>
+                    <select id="station-selector">
+                        <option value="">-- Choose a Station --</option>
+                        <optgroup label="Flora, IL">
+                            <option value="48100">Flora - Casey's</option>
+                            <option value="48101">Flora - Huck's</option>
+                            <option value="128128">Flora - Mach 1</option>
+                            <option value="120226">Flora - Fast Stop</option>
+                        </optgroup>
+                        <optgroup label="Louisville, IL">
+                            <option value="48026">Louisville - Casey's</option>
+                        </optgroup>
+                        <optgroup label="Xenia, IL">
+                            <option value="87817">Xenia - Knapp's</option>
+                        </optgroup>
+                        <optgroup label="Clay City, IL">
+                            <option value="171711">Clay City - Casey's</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div id="community-container" style="width: 100%;"></div>
+            </div>
+
+            <div class="right-preview-panel">
+                <div style="position: relative; width: 100%;">
+                    
+                    <div id="notification-toast">
+                        <span class="live-indicator"></span> Live Update
+                    </div>
+
+                    <a id="dynamic-billboard-link" href="./price-update.html" target="_parent" class="billboard-link">
+                        <div class="billboard-frame">
+                            <div class="brand-overlay">S & K Ventures, Inc. • Digital Advertising</div>
+                            <div id="fuel-screen" class="digital-screen">
+                                <div style="color: #ffc929; font-weight: bold; font-size: 13px; text-align: center;">
+                                    <div style="margin-bottom: 5px; animation: pulse 1s infinite;">⚡</div>
+                                    SYNCING...
+                                </div>
+                            </div>
+                            <div id="dynamic-brand-footer" class="brand-footer">Click to update prices</div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+        </div> </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+
+<script>
+(function() {
+    const firebaseConfig = {
+        apiKey: "AIzaSyBYPbGWDNPUmCSnFWDPPWtiXe2F6MPinXg",
+        authDomain: "smlc-fuel-monitor.firebaseapp.com",
+        databaseURL: "https://smlc-fuel-monitor-default-rtdb.firebaseio.com",
+        projectId: "smlc-fuel-monitor",
+        storageBucket: "smlc-fuel-monitor.firebasestorage.app",
+        messagingSenderId: "22397440085",
+        appId: "1:22397440085:web:c88e71688ed58896bc4dc"
+    };
+
+    // Initialize standalone unified access context
+    const masterApp = firebase.initializeApp(firebaseConfig, 'SMLCSharedFuelSystem_' + Math.random().toString(36).substr(2, 9));
+    const db = masterApp.database();
+
+    const stationConfigs = {
+        "48100": { town: "flora", display: "Flora", name: "CASEY'S", logo: "Casey's.png" },     
+        "48101": { town: "flora", display: "Flora", name: "HUCK'S", logo: "Hucks.png" },      
+        "128128": { town: "flora", display: "Flora", name: "MACH 1", logo: "Mach 1.png" },    
+        "120226": { town: "flora", display: "Flora", name: "FAST STOP", logo: "Fast stop.png" },  
+        "48026": { town: "louisville", display: "Louisville", name: "CASEY'S", logo: "Casey's.png" }, 
+        "87817": { town: "xenia", display: "Xenia", name: "KNAPP'S", logo: "Knapps.png" },      
+        "171711": { town: "clay-city", display: "Clay City", name: "CASEY'S", logo: "Casey's.png" }  
+    };
+
+    const stations = [
+        { id: "48100", name: "Flora - Casey's" },
+        { id: "48101", name: "Flora - Huck's" },
+        { id: "128128", name: "Flora - Mach 1" },
+        { id: "120226", name: "Flora - Fast Stop" },
+        { id: "48026", name: "Louisville - Casey's" },
+        { id: "87817", name: "Xenia - Knapp's" },
+        { id: "171711", name: "Clay City - Casey's" }
+    ];
+
+    const container = document.getElementById('community-container');
+    const selector = document.getElementById('station-selector');
+    const screen = document.getElementById('fuel-screen');
+    const toast = document.getElementById('notification-toast');
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetTown = urlParams.get('town')?.toLowerCase();
+    
+    // Configurable Redirect System Integration
+    const customRedirect = urlParams.get('redirect');
+    const linkElement = document.getElementById('dynamic-billboard-link');
+    const footerElement = document.getElementById('dynamic-brand-footer');
+    
+    if (customRedirect) {
+        linkElement.href = customRedirect;
+        footerElement.textContent = "Click for more information";
+        if (customRedirect.startsWith('http://') || customRedirect.startsWith('https://')) {
+            linkElement.target = "main-content-window";
+        }
+    }
+
+    let currentSlideIndex = 0;
+    let lastDataHash = null;
+    let isInitialLoad = true;
+
+    // Build Form Interface Objects
+    stations.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'admin-card';
+        card.id = `card-${s.id}`;
+        card.innerHTML = `
+            <strong style="font-size: 18px;">${s.name}</strong>
+            <label class="input-label">Regular Price</label><input type="text" id="reg-${s.id}">
+            <label class="input-label">Diesel Price</label><input type="text" id="dsl-${s.id}">
+            <label class="input-label">Last Timestamp (CST)</label><input type="text" id="date-${s.id}" readonly style="background:#eee">
+            <div class="status-area" id="area-${s.id}"><span class="dot"></span> <span id="msg-${s.id}">Ready to sync</span></div>
+            <button class="update-btn" id="btn-${s.id}">Submit Price Update</button>
+        `;
+        container.appendChild(card);
+
+        db.ref('fuel_prices/' + s.id).on('value', snap => {
+            const data = snap.val();
+            if(data) {
+                document.getElementById(`reg-${s.id}`).value = data.reg;
+                document.getElementById(`dsl-${s.id}`).value = data.dsl;
+                document.getElementById(`date-${s.id}`).value = data.date;
+                document.getElementById(`area-${s.id}`).classList.add('synced');
+            }
+        });
+
+        document.getElementById(`btn-${s.id}`).onclick = function() {
+            const reg = document.getElementById(`reg-${s.id}`).value;
+            const dsl = document.getElementById(`dsl-${s.id}`).value;
+            const msg = document.getElementById(`msg-${s.id}`);
+
+            const now = new Date();
+            const timestamp = now.toLocaleString('en-US', { 
+                timeZone: 'America/Chicago',
+                month: 'numeric',
+                day: 'numeric',
+                year: 'numeric'
+            }) + " @ " + now.toLocaleString('en-US', { 
+                timeZone: 'America/Chicago',
+                hour: 'numeric', 
+                minute: '2-digit',
+                hour12: true 
+            }) + " CST";
+
+            msg.innerText = "Sending Update...";
+
+            db.ref('fuel_prices/' + s.id).update({ reg, dsl, date: timestamp })
+                .then(() => { msg.innerText = "Contribution Accepted!"; })
+                .catch(err => { msg.innerText = "Error!"; console.error(err); });
+        };
+    });
+
+    selector.addEventListener('change', function() {
+        const selectedId = this.value;
+        document.querySelectorAll('.admin-card').forEach(card => card.style.display = 'none');
+        if (selectedId) {
+            document.getElementById(`card-${selectedId}`).style.display = 'block';
+        }
+    });
+
+    // Monitor Presentation Components Logic
+    function hasDataChanged(newData) {
+        const currentHash = JSON.stringify(newData);
+        if (lastDataHash && lastDataHash !== currentHash) {
+            lastDataHash = currentHash;
+            return true;
+        }
+        lastDataHash = currentHash;
+        return false;
+    }
+
+    function showNotification() {
+        if (isInitialLoad) {
+            isInitialLoad = false;
+            return;
+        }
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 3500);
+        
+        if (typeof gtag === 'function') {
+          gtag('event', 'price_update', { 'event_category': 'fuel_monitor' });
+        }
+    }
+
+    function renderBillboardSlides(data) {
+        screen.innerHTML = '';
+        const ids = Object.keys(stationConfigs).filter(id => !targetTown || stationConfigs[id].town === targetTown);
+        
+        if (ids.length === 0) {
+            screen.innerHTML = '<div style="color: #ffc929; font-weight: bold; font-size:12px;">No local data.</div>';
+            return;
+        }
+
+        ids.forEach(id => {
+            const config = stationConfigs[id];
+            const info = data[id] || { reg: "---", dsl: "---", date: "PENDING" };
+            const safeLogo = encodeURIComponent(config.logo);
+            const logoClass = (id === "128128") ? "station-logo logo-bg-white" : "station-logo";
+            
+            const slide = document.createElement('div');
+            slide.className = 'gas-slide';
+            slide.innerHTML = `
+                <div class="town-header">${config.display.toUpperCase()}, IL</div>
+                <div class="logo-container">
+                    <img src="https://raw.githubusercontent.com/skventuresigns-design/smlc/main/gas-prices/image/${safeLogo}" 
+                         class="${logoClass}" 
+                         loading="lazy"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div class="logo-fallback" style="display:none;">${config.name}</div>
+                </div>
+                <div class="price-row">
+                    <span class="price-label">REGULAR</span>
+                    <span class="led-red">${info.reg}</span>
+                </div>
+                <div class="price-row">
+                    <span class="price-label">DIESEL</span>
+                    <span class="led-grn">${(info.dsl === "0" || !info.dsl) ? "---" : info.dsl}</span>
+                </div>
+                <div class="update-tag">Updated: ${info.date}</div>
+            `;
+            screen.appendChild(slide);
+        });
+
+        const slides = screen.querySelectorAll('.gas-slide');
+        
+        function cycle() {
+            if(slides.length === 0) return;
+            slides.forEach(s => s.classList.remove('active'));
+            slides[currentSlideIndex].classList.add('active');
+            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+        }
+
+        if (slides.length > 0) {
+            currentSlideIndex = 0;
+            cycle();
+            if (window.fuelRotator) clearInterval(window.fuelRotator);
+            window.fuelRotator = setInterval(cycle, 6000);
+        }
+    }
+
+    db.ref('fuel_prices').on('value', (snap) => {
+        const val = snap.val();
+        if (val) {
+            if (hasDataChanged(val)) showNotification();
+            renderBillboardSlides(val);
+        } else {
+            screen.innerHTML = '<div style="color: #ffc929; font-weight: bold; font-size:12px;">Offline</div>';
+        }
+    });
+})();
+</script>
+</body>
+</html>
