@@ -1,9 +1,8 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
 # Project: PSN Sync Workflow (Firebase Cloud Stream Target)
-# Timestamp: Thu, June 25, 2026, 9:45 PM (NYT)
-# Compatibility: GitHub Actions, GitHub Pages, Firebase RTDB
+# Timestamp: Tue, July 7, 2026, 1:20 PM (CT)
+# Compatibility: GitHub Actions, Firebase RTDB, Google Apps Script Trigger
 # Note: DO NOT STRIP INDENTATION. YAML REQUIRES 2-SPACE SPACING.
-# Updates: Removed git stash/reset/commit loops. Script streams state to cloud database directly.
 # ------------------------------------
 
 name: PSN Cloud Sync and Pages Deploy
@@ -13,8 +12,8 @@ on:
     branches:
       - main
   workflow_dispatch:
-  schedule:
-    - cron: '*/23 * * * *'
+  repository_dispatch:
+    types: [psn_trigger] # Google Apps Script will fire this explicit event type
 
 permissions:
   contents: read
