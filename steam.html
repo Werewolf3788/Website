@@ -1,23 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Version Timestamp: 2026-07-07 20:15:00 CT -->
+    <!-- Version Timestamp: 2026-07-07 10:15:00 CT -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RigMatch Ultimate - Global Co-Op Network</title>
-    
-    <!-- Global site tag (gtag.js) - Google Analytics Matrix Orchestration -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
-    <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'G-Z9M5LXQ5XN', {
-            'page_title': 'RigMatch Ultimate Hardware Profiler',
-            'cookie_flags': 'SameSite=None;Secure'
-        });
-    </script>
-
     <style>
         /* CSS variables for global instantaneous design orchestration */
         :root {
@@ -159,11 +146,6 @@
             cursor: pointer;
             transition: background 0.2s;
             width: 100%;
-            text-align: center;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .btn:hover {
@@ -178,20 +160,15 @@
             background-color: #357ae8;
         }
 
-        .btn-store {
-            background-color: #2a475e;
-            color: #c7d5e0;
-            font-size: 0.85rem;
-            min-height: 44px;
-            padding: 4px 12px;
-            margin-top: 8px;
-            border-radius: 4px;
-            width: 100%;
-            font-weight: 600;
-        }
-        .btn-store:hover {
-            background-color: #66c0f4;
-            color: #ffffff;
+        .req-output {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 16px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            white-space: pre-line;
+            max-height: 250px;
+            overflow-y: auto;
+            border: 1px dashed rgba(255, 255, 255, 0.1);
         }
 
         /* Horizontal row constraints displaying 5+ items smoothly */
@@ -204,7 +181,7 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Game Cards UI Layer Layout Grid */
+        /* Upgraded Game Cards with Official Capsule Images */
         .game-card {
             flex: 0 0 240px;
             scroll-snap-align: start;
@@ -214,9 +191,6 @@
             cursor: pointer;
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: border-color 0.2s;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
         }
 
         .game-card:hover {
@@ -233,7 +207,6 @@
         .game-card-info {
             padding: 12px;
             text-align: center;
-            flex-grow: 1;
         }
 
         .game-card-title {
@@ -267,7 +240,7 @@
             font-size: 1.1rem;
         }
 
-        /* Comparison Matrix Panels */
+        /* Unsigned Comparison Display Table */
         .comparison-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -302,6 +275,19 @@
             border-radius: 20px;
             text-transform: uppercase;
         }
+
+        /* Pulse animation keyframes for runtime load indicators */
+        @keyframes pulseAlert {
+            0% { opacity: 0.4; }
+            50% { opacity: 1.0; }
+            100% { opacity: 0.4; }
+        }
+
+        .loading-pulse {
+            animation: pulseAlert 1.2s infinite ease-in-out;
+            background-color: #f39c12 !important;
+            color: #000000 !important;
+        }
     </style>
 </head>
 <body>
@@ -313,7 +299,7 @@
 
     <main class="container">
         
-        <!-- Identity Gateway -->
+        <!-- Authentication Block -->
         <section class="card">
             <h2>Identity Gateway</h2>
             <div id="auth-logged-out">
@@ -334,7 +320,7 @@
             </div>
         </section>
 
-        <!-- Hardware Spectrometer -->
+        <!-- Live Environment Scanning Array -->
         <section class="card">
             <h2>Active Hardware Spectrometer</h2>
             <div class="spec-group">
@@ -351,7 +337,7 @@
             </div>
         </section>
 
-        <!-- Fleet Builder -->
+        <!-- Upgraded Device Hardware Profiles Editor Matrix -->
         <section class="card full-width">
             <h2>Hardware Profiler & Fleet Builder</h2>
             <div class="form-group">
@@ -397,7 +383,7 @@
             <button class="btn" id="save-profile-btn" disabled>Sign In to Save Matrix Profile</button>
         </section>
 
-        <!-- Fleet Roster Matrix -->
+        <!-- Dynamic Device Slots Roster Display -->
         <section class="card full-width">
             <h2>Profile Hardware Fleet Roster (Ordered by Priority Rank)</h2>
             <div id="fleet-display-matrix" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 8px;">
@@ -405,7 +391,7 @@
             </div>
         </section>
 
-        <!-- Catalog Layout Horizontal Scroll -->
+        <!-- Dynamic Loaded Steam Catalog Component -->
         <section class="card full-width">
             <h2>Active Steam Library Catalog Layout (<span id="items-count" style="color: var(--accent-gold);">0 Games Loaded</span>)</h2>
             <p style="font-size: 0.85rem; opacity: 0.7; margin-bottom: 12px;">Scroll horizontally to inspect synced titles. Click any capsule to parse game specs.</p>
@@ -414,11 +400,12 @@
             </div>
         </section>
 
-        <!-- Diagnostics Matrix Panel -->
+        <!-- Live Visual Hardware Comparison Engine Block -->
         <section class="card full-width">
             <h2>Live Diagnostics Matrix: <span id="runtime-game-title" style="color: var(--accent-gold);">Select a Game Above</span></h2>
             
             <div class="comparison-grid">
+                <!-- Current Client Device Specs -->
                 <div class="comparison-panel">
                     <h4>Your Active Device Hardware:</h4>
                     <p style="font-size: 0.9rem; opacity: 0.9;" id="comparison-current-device">
@@ -426,16 +413,14 @@
                         • App Memory: Detecting...<br>
                         • GPU Core: Detecting...
                     </p>
-                    <p style="font-size: 0.9rem; opacity: 0.9; margin-top: 8px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;" id="comparison-controller-support">
-                        • Controller Support: Select a game to check input maps.
-                    </p>
                     <div id="diagnostic-badge" style="display:none;">Checking...</div>
                 </div>
 
+                <!-- Targeted Game System Specs parsed from Steam -->
                 <div class="comparison-panel">
                     <h4>Official Minimum Game Parameters:</h4>
                     <div id="runtime-spec-box" style="font-size: 0.9rem; opacity: 0.9; white-space: pre-line; max-height: 180px; overflow-y: auto;">
-                        Click any game artwork capsule above to evaluate system specs instantly from cloud records.
+                        Click any game artwork capsule above to fetch official system requirements directly from Steam.
                     </div>
                 </div>
             </div>
@@ -469,64 +454,19 @@
             { appid: 1252780, name: "Bloons Monkey City" },
             { appid: 386180, name: "Crossout" },
             { appid: 2051120, name: "HOT WHEELS UNLEASHED™ 2 - Turbocharged" },
+            { appid: 2970420, name: "Hubert Demo" },
             { appid: 500, name: "Left 4 Dead" },
             { appid: 550, name: "Left 4 Dead 2" },
             { appid: 2767030, name: "Marvel Rivals" },
             { appid: 1222680, name: "Need for Speed™ Heat" },
+            { appid: 2373630, name: "Skull and Bones" },
+            { appid: 460930, name: "Sniper Elite 5" },
             { appid: 518790, name: "theHunter: Call of the Wild™" },
             { appid: 235600, name: "Tom Clancy's Splinter Cell Blacklist" },
             { appid: 431960, name: "Wallpaper Engine" },
-            { appid: 1404210, name: "Red Dead Online" },
-            { appid: 1174180, name: "Red Dead Redemption 2" },
-            { appid: 1426210, name: "It Takes Two" },
-            { appid: 764930, name: "Hubert" },
-            { appid: 1029690, name: "Sniper Elite 5" },
             { appid: 3564740, name: "Where Winds Meet" },
-            { appid: 460930, name: "Tom Clancy's Ghost Recon® Wildlands" },
-            { appid: 2170050, name: "Wolfteam: Reboot" },
-            { appid: 236390, name: "War Thunder" },
-            { appid: 1289670, name: "EA Play" },
-            { appid: 2853730, name: "Skull and Bones" },
-            { appid: 2995920, name: "It Takes Two Friends Pass" },
-            { appid: 214510, name: "LEGO The Lord of the Rings" },
-            { appid: 438640, name: "LEGO STAR WARS: The Force Awakens" },
-            { appid: 829110, name: "LEGO DC Super-Villains" },
-            { appid: 881320, name: "The LEGO Movie 2 Videogame" },
-            { appid: 313690, name: "LEGO Batman 3: Beyond Gotham" },
-            { appid: 267530, name: "The LEGO Movie - Videogame" },
-            { appid: 2300320, name: "Farming Simulator 25" },
-            { appid: 2477340, name: "Expeditions: A MudRunner Game" },
-            { appid: 1465360, name: "SnowRunner" },
-            { appid: 1262560, name: "Need for Speed: Most Wanted" },
-            { appid: 1144200, name: "Ready or Not" },
-            { appid: 2215430, name: "Ghost of Tsushima DIRECTOR'S CUT" },
-            { appid: 2169200, name: "Sniper Elite: Resistance" },
-            { appid: 539270, name: "Mahjong" },
-            { appid: 1174460, name: "Poker Club" },
-            { appid: 552520, name: "Far Cry 5" },
-            { appid: 2369390, name: "Far Cry 6" },
-            { appid: 2929170, name: "MONOPOLY" },
-            { appid: 1222700, name: "A Way Out" },
-            { appid: 1408610, name: "Call of the Wild: The Angler™" },
-            { appid: 1135910, name: "Hunting Simulator 2" },
-            { appid: 2221490, name: "Tom Clancy's The Division 2" },
-            { appid: 2231380, name: "Tom Clancy's Ghost Recon Breakpoint" },
-            { appid: 365590, name: "Tom Clancy's The Division" },
-            { appid: 13540, name: "Tom Clancy's Rainbow Six Vegas" },
-            { appid: 212630, name: "Tom Clancy's Ghost Recon Future Soldier" },
-            { appid: 1938090, name: "Call of Duty" },
-            { appid: 311210, name: "Call of Duty: Black Ops III" },
-            { appid: 202970, name: "Call of Duty: Black Ops II" },
-            { appid: 42700, name: "Call of Duty: Black Ops" },
-            { appid: 3595230, name: "Call of Duty: Modern Warfare II" },
-            { appid: 2620, name: "Call of Duty (2003)" },
-            { appid: 476600, name: "Call of Duty: WWII" },
-            { appid: 209160, name: "Call of Duty: Ghosts" },
-            { appid: 42680, name: "Call of Duty: Modern Warfare 3 (2011)" },
-            { appid: 2000950, name: "Call of Duty: Modern Warfare" },
-            { appid: 209650, name: "Call of Duty: Advanced Warfare - Gold Edition" },
-            { appid: 381210, name: "Dead by Daylight" },
-            { appid: 1085660, name: "Destiny 2" }
+            { appid: 1530930, name: "Wolfteam: Reboot" },
+            { appid: 1407200, name: "World of Tanks" }
         ];
 
         let activeUser = null;
@@ -534,9 +474,8 @@
         let activeViewUid = null;
         let currentLocalSlotsData = {};
         
-        let clientDetectedRAM = 16; 
-        let clientDetectedCores = 16;
-        let clientDetectedGPU = "Detecting...";
+        let clientDetectedRAM = 8; 
+        let clientDetectedCores = 4;
 
         document.getElementById("login-trigger").addEventListener("click", () => {
             signInWithPopup(auth, provider).catch(err => alert("Login Error: " + err.message));
@@ -556,11 +495,20 @@
         });
 
         function executeHardwareDiscovery() {
+            let cpuTxt = "Masked";
+            let ramTxt = "Encrypted";
+            let gpuTxt = "Access Denied";
+
             if (navigator.hardwareConcurrency) {
                 clientDetectedCores = navigator.hardwareConcurrency;
+                cpuTxt = `${navigator.hardwareConcurrency} Thread Pipeline Channels`;
+                document.getElementById("live-cpu").textContent = cpuTxt;
             }
+
             if (navigator.deviceMemory) {
                 clientDetectedRAM = navigator.deviceMemory;
+                ramTxt = `>= ${navigator.deviceMemory} Gigabytes allocation`;
+                document.getElementById("live-ram").textContent = ramTxt;
             }
 
             try {
@@ -568,24 +516,22 @@
                 const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
                 if (gl) {
                     const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
-                    clientDetectedGPU = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER);
+                    if (debugInfo) {
+                        gpuTxt = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                        document.getElementById("live-gpu").textContent = gpuTxt;
+                    } else {
+                        gpuTxt = gl.getParameter(gl.RENDERER);
+                        document.getElementById("live-gpu").textContent = gpuTxt;
+                    }
                 }
             } catch (e) {
-                clientDetectedGPU = "Sandbox Driver Query Access Denied";
+                document.getElementById("live-gpu").textContent = "Sandbox Driver Query Access Denied";
             }
 
-            updateHardwareDisplayUI();
-        }
-
-        function updateHardwareDisplayUI() {
-            document.getElementById("live-cpu").textContent = `${clientDetectedCores} Thread Pipeline Channels`;
-            document.getElementById("live-ram").textContent = `>= ${clientDetectedRAM} Gigabytes allocation`;
-            document.getElementById("live-gpu").textContent = clientDetectedGPU;
-
             document.getElementById("comparison-current-device").innerHTML = `
-                • CPU Threads: ${clientDetectedCores} Channels<br>
-                • App Memory: >= ${clientDetectedRAM} GB Loaded<br>
-                • GPU Core: ${clientDetectedGPU}
+                • CPU Threads: ${cpuTxt}<br>
+                • App Memory: ${ramTxt}<br>
+                • GPU Core: ${gpuTxt}
             `;
         }
 
@@ -612,8 +558,6 @@
                 saveBtn.disabled = true;
                 saveBtn.textContent = "Sign In to Enable Storing Specs";
                 document.getElementById("steam-id-input").value = "76561198960434622";
-                
-                executeHardwareDiscovery();
                 renderLibraryMatrixGrid(defaultPreloadedLibrary);
                 document.getElementById("fleet-display-matrix").innerHTML = `<p style="opacity: 0.6;">Sign in to inspect system fleet arrays.</p>`;
             }
@@ -655,29 +599,14 @@
 
         function loadTargetProfileFleetData(uid) {
             const userData = globalUsersCache[uid];
-            currentLocalSlotsData = (userData && userData.devices) ? userData.devices : {};
-
             if (activeUser && uid === activeUser.uid) {
+                currentLocalSlotsData = (userData && userData.devices) ? userData.devices : {};
                 if (userData && userData.steamId) {
                     document.getElementById("steam-id-input").value = userData.steamId;
                 }
                 populateEditorFromSelectedSlot();
-
-                const primaryRig = currentLocalSlotsData["device1"];
-                if (primaryRig) {
-                    if (primaryRig.ram) {
-                        const numericRAM = parseInt(primaryRig.ram.match(/\d+/));
-                        if (!isNaN(numericRAM)) clientDetectedRAM = numericRAM;
-                    }
-                    if (primaryRig.cpu) {
-                        const numericCores = parseInt(primaryRig.cpu.match(/\d+/));
-                        if (!isNaN(numericCores)) clientDetectedCores = numericCores;
-                    }
-                    if (primaryRig.gpu) {
-                        clientDetectedGPU = primaryRig.gpu;
-                    }
-                    updateHardwareDisplayUI();
-                }
+            } else {
+                currentLocalSlotsData = (userData && userData.devices) ? userData.devices : {};
             }
 
             renderFleetMatrixRoster(currentLocalSlotsData);
@@ -769,6 +698,8 @@
         }
 
         async function fetchSteamLibraryData(steamId) {
+            const shelf = document.getElementById("library-shelf");
+            
             try {
                 const fallbackUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://steamcommunity.com/profiles/' + steamId + '/games?tab=all&xml=1')}`;
                 const response = await fetch(fallbackUrl);
@@ -796,7 +727,7 @@
                     renderLibraryMatrixGrid(defaultPreloadedLibrary);
                 }
             } catch (err) {
-                console.warn("Falling back to core track profile array:", err.message);
+                console.warn("Direct layout fallback operational standard active.", err.message);
                 renderLibraryMatrixGrid(defaultPreloadedLibrary);
             }
         }
@@ -805,110 +736,47 @@
             const shelf = document.getElementById("library-shelf");
             const countLabel = document.getElementById("items-count");
             shelf.innerHTML = "";
-            
-            let cleanUniqueArray = [];
-            let seenIds = new Set();
-            
-            gamesArray.forEach(item => {
-                let stringId = String(item.appid).trim();
-                if(!seenIds.has(stringId)) {
-                    seenIds.add(stringId);
-                    cleanUniqueArray.push(item);
-                }
-            });
+            countLabel.textContent = `${gamesArray.length} Titles Synced`;
 
-            countLabel.textContent = `${cleanUniqueArray.length} Titles Synced`;
-
-            cleanUniqueArray.forEach(game => {
+            gamesArray.forEach(game => {
                 const card = document.createElement("div");
                 card.className = "game-card";
-                
-                card.setAttribute("onclick", `parseStorefrontSpecs('${game.appid}', '${game.name.replace(/'/g, "\\'")}')`);
+                card.addEventListener("click", () => parseStorefrontSpecs(game.appid, game.name));
                 
                 const capsuleArtUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`;
-                const deepStoreLink = `https://store.steampowered.com/app/${game.appid}/?utm_source=werewolf_game_library&utm_medium=steam`;
                 
                 card.innerHTML = `
-                    <img src="${capsuleArtUrl}" data-appid="${game.appid}" alt="${game.name}">
+                    <img src="${capsuleArtUrl}" onerror="this.onerror=null; this.src='https://community.akamai.steamstatic.com/public/images/sharedfiles/steam_workshop_default_image.png';" alt="${game.name}">
                     <div class="game-card-info">
                         <span class="game-card-title">${game.name}</span>
                         <span class="game-id-tag">AppID: ${game.appid}</span>
-                        <a href="${deepStoreLink}" target="_blank" rel="noopener noreferrer" class="btn btn-store" onclick="event.stopPropagation();">
-                            View on Steam Store
-                        </a>
                     </div>
                 `;
                 shelf.appendChild(card);
             });
-
-            document.querySelectorAll(".game-card img").forEach(img => {
-                img.onerror = function() {
-                    const appId = this.getAttribute("data-appid");
-                    if (this.src.includes("header.jpg")) {
-                        this.src = `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/capsule_616x353.jpg`;
-                    } else if (this.src.includes("capsule_616x353.jpg")) {
-                        this.src = `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/capsule_231x87.jpg`;
-                    } else {
-                        this.onerror = null;
-                        this.src = "https://community.akamai.steamstatic.com/public/images/sharedfiles/steam_workshop_default_image.png";
-                    }
-                };
-            });
         }
 
-        // AUTOMATED FIREBASE CACHE HANDSHAKE ENGINE
-        window.parseStorefrontSpecs = async function(appId, title) {
+        async function parseStorefrontSpecs(appId, title) {
             document.getElementById("runtime-game-title").textContent = title;
             const outputBox = document.getElementById("runtime-spec-box");
-            const controllerBox = document.getElementById("comparison-controller-support");
             const badge = document.getElementById("diagnostic-badge");
             
-            outputBox.textContent = `Querying localized cloud cache...`;
-            controllerBox.innerHTML = `• Controller Support: Checking maps...`;
+            // Trigger loading state visuals across components instantly
+            outputBox.textContent = `Establishing API link with Valve storefront servers...`;
             document.body.style.background = "var(--bg-loading-gradient)";
             badge.style.display = "inline-block";
             badge.className = "loading-pulse";
-            badge.textContent = "SCANNING CACHE...";
-
-            gtag('event', 'game_spec_lookup', {
-                'event_category': 'Engagement',
-                'event_label': title,
-                'value': parseInt(appId)
-            });
+            badge.textContent = "SCANNING RIG...";
 
             try {
-                // Step 1: Query your Firebase database node first to look for pre-saved spec payloads
-                const cloudCacheSnap = await get(ref(database, `games/${appId}`));
-                
-                if (cloudCacheSnap.exists()) {
-                    // Cache Hit! Instantly parse values with zero network wait lines
-                    const standardSpecs = cloudCacheSnap.val();
-                    badge.className = "";
-                    controllerBox.innerHTML = `• Controller Support: ${standardSpecs.controllerText}`;
-                    outputBox.textContent = standardSpecs.rawText;
-                    evaluateHardwareCompatibility(standardSpecs.rawText, title);
-                    return;
-                }
-
-                // Cache Miss: Fall back to Steam API sync once, then save it permanently to your database
-                outputBox.textContent = `Cache signature missed. Mirroring Valve asset path records...`;
                 const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://store.steampowered.com/api/appdetails?appids=' + appId)}`);
                 const wrapper = await res.json();
                 const json = JSON.parse(wrapper.contents);
 
-                badge.className = "";
+                badge.className = ""; // Kill loading pulse classes on payload return
 
                 if (json[appId] && json[appId].success) {
-                    const gameData = json[appId].data;
-                    
-                    let supportText = "Keyboard & Mouse Only";
-                    if(gameData.controller_support) {
-                        let tier = gameData.controller_support.toLowerCase() === "full" ? "Full Support" : "Partial Support";
-                        supportText = `<strong>${tier}</strong> (PS5, Xbox Series X/S, Steam Controller Mapped)`;
-                    }
-                    controllerBox.innerHTML = `• Controller Support: ${supportText}`;
-
-                    const requirements = gameData.pc_requirements;
+                    const requirements = json[appId].data.pc_requirements;
                     if (requirements && requirements.minimum) {
                         let cleanText = requirements.minimum
                             .replace(/<br\s*\/?>/gi, '\n')
@@ -917,15 +785,7 @@
                             .replace(/Minimum:\s*/i, '').trim();
                         
                         outputBox.textContent = cleanText;
-                        
-                        // Push verified clean payload parameters up to your Firebase cluster permanently
-                        set(ref(database, `games/${appId}`), {
-                            title: title,
-                            rawText: cleanText,
-                            controllerText: supportText
-                        });
-
-                        evaluateHardwareCompatibility(cleanText, title);
+                        evaluateHardwareCompatibility(cleanText);
                     } else {
                         outputBox.textContent = "No standard hardware requirements array found for this AppID bundle asset path.";
                         resetWallpaperToNormal();
@@ -941,7 +801,7 @@
             }
         }
 
-        function evaluateHardwareCompatibility(requirementsText, title) {
+        function evaluateHardwareCompatibility(requirementsText) {
             const badge = document.getElementById("diagnostic-badge");
             badge.style.display = "inline-block";
             
@@ -963,28 +823,17 @@
                 }
             }
 
-            let diagnosticOutcome = "compatible";
-
             if (isCompatible) {
                 document.body.style.background = "var(--bg-pass-gradient)";
                 badge.style.backgroundColor = "var(--success-green)";
                 badge.textContent = "COMPATIBLE RIG";
                 badge.innerHTML = "COMPATIBLE RIG";
-                diagnosticOutcome = "compatible";
             } else {
                 document.body.style.background = "var(--bg-fail-gradient)";
                 badge.style.backgroundColor = "#e74c3c";
                 badge.textContent = "SPEC UPGRADE NEEDED";
                 badge.innerHTML = "SPEC UPGRADE NEEDED";
-                diagnosticOutcome = "upgrade_needed";
             }
-
-            gtag('event', 'hardware_compatibility_check', {
-                'game_title': title,
-                'compatibility_outcome': diagnosticOutcome,
-                'user_ram_gb': clientDetectedRAM,
-                'user_cores': clientDetectedCores
-            });
         }
 
         function resetWallpaperToNormal() {
