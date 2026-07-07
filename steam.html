@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Version Timestamp: 2026-07-07 06:15:00 CT -->
+    <!-- Version Timestamp: 2026-07-07 08:10:00 CT -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RigMatch Ultimate - Global Co-Op Network</title>
@@ -9,6 +9,9 @@
         /* CSS variables for global instantaneous design orchestration */
         :root {
             --bg-gradient: linear-gradient(180deg, #990000 0%, #000000 100%);
+            --bg-pass-gradient: linear-gradient(180deg, #115e2e 0%, #000000 100%);
+            --bg-fail-gradient: linear-gradient(180deg, #7c1212 0%, #000000 100%);
+            
             --surface-card: #1e1c1c; /* Soft dark slate charcoal content cards */
             --text-primary: #ffffff;
             --accent-gold: #ffd700; /* Protected branding hex standard */
@@ -37,6 +40,7 @@
             width: 100vw;
             max-width: 100%;
             padding: 24px;
+            transition: background 0.5s ease-in-out;
         }
 
         header {
@@ -234,6 +238,42 @@
             margin-bottom: 12px;
             font-size: 1.1rem;
         }
+
+        /* Unsigned Comparison Display Table */
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 12px;
+        }
+        @media(min-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        .comparison-panel {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 14px;
+        }
+        .comparison-panel h4 {
+            color: var(--accent-gold);
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        #diagnostic-badge {
+            display: inline-block;
+            margin-top: 8px;
+            padding: 4px 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -266,7 +306,7 @@
             </div>
         </section>
 
-        <!-- Live Environment Scanning Array (Pulls hardware parameters of whatever device views it) -->
+        <!-- Live Environment Scanning Array -->
         <section class="card">
             <h2>Active Hardware Spectrometer</h2>
             <div class="spec-group">
@@ -346,10 +386,30 @@
             </div>
         </section>
 
-        <!-- Output Analytics Diagnostic Terminal -->
+        <!-- Live Visual Hardware Comparison Engine Block -->
         <section class="card full-width">
-            <h2>Steam Storefront Spec Parsing Matrix: <span id="runtime-game-title" style="color: var(--accent-gold);">Select a Game Block</span></h2>
-            <div id="runtime-spec-box" class="req-output">Click a profile card above to analyze target system metrics.</div>
+            <h2>Live Diagnostics Matrix: <span id="runtime-game-title" style="color: var(--accent-gold);">Select a Game Above</span></h2>
+            
+            <div class="comparison-grid">
+                <!-- Current Client Device Specs -->
+                <div class="comparison-panel">
+                    <h4>Your Active Device Hardware:</h4>
+                    <p style="font-size: 0.9rem; opacity: 0.9;" id="comparison-current-device">
+                        • CPU Threads: Detecting...<br>
+                        • App Memory: Detecting...<br>
+                        • GPU Core: Detecting...
+                    </p>
+                    <div id="diagnostic-badge" style="display:none;">Checking...</div>
+                </div>
+
+                <!-- Targeted Game System Specs parsed from Steam -->
+                <div class="comparison-panel">
+                    <h4>Official Minimum Game Parameters:</h4>
+                    <div id="runtime-spec-box" style="font-size: 0.9rem; opacity: 0.9; white-space: pre-line; max-height: 180px; overflow-y: auto;">
+                        Click any game artwork capsule above to fetch official system requirements directly from Steam.
+                    </div>
+                </div>
+            </div>
         </section>
 
     </main>
@@ -375,7 +435,6 @@
         const database = getDatabase(app);
         const provider = new GoogleAuthProvider();
 
-        // Exactly mirrors your physical active inventory snapshot list with official Store AppIDs
         const defaultPreloadedLibrary = [
             { appid: 365670, name: "Blender" },
             { appid: 1252780, name: "Bloons Monkey City" },
@@ -385,7 +444,7 @@
             { appid: 500, name: "Left 4 Dead" },
             { appid: 550, name: "Left 4 Dead 2" },
             { appid: 2767030, name: "Marvel Rivals" },
-            { appid: 1174180, name: "Need for Speed™ Heat" },
+            { appid: 1222680, name: "Need for Speed™ Heat" },
             { appid: 2373630, name: "Skull and Bones" },
             { appid: 460930, name: "Sniper Elite 5" },
             { appid: 518790, name: "theHunter: Call of the Wild™" },
@@ -400,8 +459,10 @@
         let globalUsersCache = {};
         let activeViewUid = null;
         let currentLocalSlotsData = {};
+        
+        let clientDetectedRAM = 8; 
+        let clientDetectedCores = 4;
 
-        // Event Hook Bindings
         document.getElementById("login-trigger").addEventListener("click", () => {
             signInWithPopup(auth, provider).catch(err => alert("Login Error: " + err.message));
         });
@@ -414,23 +475,25 @@
         document.getElementById("profile-view-select").addEventListener("change", handleProfileViewToggle);
         document.getElementById("device-slot-selector").addEventListener("change", populateEditorFromSelectedSlot);
 
-        // Run client parameter scans on initial lifecycle entry
         document.addEventListener("DOMContentLoaded", () => {
             executeHardwareDiscovery();
         });
 
-        // 1. Interactive Core Client Parameters Parsing Mechanics
         function executeHardwareDiscovery() {
+            let cpuTxt = "Masked";
+            let ramTxt = "Encrypted";
+            let gpuTxt = "Access Denied";
+
             if (navigator.hardwareConcurrency) {
-                document.getElementById("live-cpu").textContent = `${navigator.hardwareConcurrency} Thread Pipeline Channels`;
-            } else {
-                document.getElementById("live-cpu").textContent = "Core Thread Metric Masked";
+                clientDetectedCores = navigator.hardwareConcurrency;
+                cpuTxt = `${navigator.hardwareConcurrency} Thread Pipeline Channels`;
+                document.getElementById("live-cpu").textContent = cpuTxt;
             }
 
             if (navigator.deviceMemory) {
-                document.getElementById("live-ram").textContent = `>= ${navigator.deviceMemory} Gigabytes allocation`;
-            } else {
-                document.getElementById("live-ram").textContent = "Available Application RAM Encrypted";
+                clientDetectedRAM = navigator.deviceMemory;
+                ramTxt = `>= ${navigator.deviceMemory} Gigabytes allocation`;
+                document.getElementById("live-ram").textContent = ramTxt;
             }
 
             try {
@@ -439,17 +502,24 @@
                 if (gl) {
                     const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
                     if (debugInfo) {
-                        document.getElementById("live-gpu").textContent = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                        gpuTxt = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                        document.getElementById("live-gpu").textContent = gpuTxt;
                     } else {
-                        document.getElementById("live-gpu").textContent = gl.getParameter(gl.RENDERER);
+                        gpuTxt = gl.getParameter(gl.RENDERER);
+                        document.getElementById("live-gpu").textContent = gpuTxt;
                     }
                 }
             } catch (e) {
                 document.getElementById("live-gpu").textContent = "Sandbox Driver Query Access Denied";
             }
+
+            document.getElementById("comparison-current-device").innerHTML = `
+                • CPU Threads: ${cpuTxt}<br>
+                • App Memory: ${ramTxt}<br>
+                • GPU Core: ${gpuTxt}
+            `;
         }
 
-        // Core Authentication Listener Setup Loop
         onAuthStateChanged(auth, (user) => {
             const loggedOutView = document.getElementById("auth-logged-out");
             const loggedInView = document.getElementById("auth-logged-connected");
@@ -464,8 +534,6 @@
                 userBadge.textContent = `Connected: ${user.displayName || user.email}`;
                 saveBtn.disabled = false;
                 saveBtn.textContent = "Save Selected Slot Metrics";
-                
-                // Track all database user entries to support switching profile lists
                 syncGlobalUserRegistry();
             } else {
                 activeUser = null;
@@ -480,7 +548,6 @@
             }
         });
 
-        // Pull and listen to cross-user profiles from Firebase database layers
         function syncGlobalUserRegistry() {
             const usersNodeRef = ref(database, 'users');
             onValue(usersNodeRef, (snapshot) => {
@@ -515,11 +582,8 @@
             loadTargetProfileFleetData(activeViewUid);
         }
 
-        // Render profile data matching the target selected user view
         function loadTargetProfileFleetData(uid) {
             const userData = globalUsersCache[uid];
-            
-            // If pulling up your own dashboard, populate matching hardware text lines
             if (activeUser && uid === activeUser.uid) {
                 currentLocalSlotsData = (userData && userData.devices) ? userData.devices : {};
                 if (userData && userData.steamId) {
@@ -539,7 +603,6 @@
             const currentSlot = document.getElementById("device-slot-selector").value;
             const targetData = currentLocalSlotsData[currentSlot] || {};
 
-            // Initialize your custom baseline info if this slot hasn't been saved yet
             if (activeUser && activeViewUid === activeUser.uid && currentSlot === "device1" && !targetData.cpu) {
                 document.getElementById("edit-device-name").value = "Primary PC Build";
                 document.getElementById("edit-device-cpu").value = "AMD Ryzen 7 3700X (8 Cores)";
@@ -555,7 +618,6 @@
             }
         }
 
-        // Pushing device profiles into structured array paths
         async function pushDeviceFleetToCloud() {
             if (!activeUser) return;
             const slotKey = document.getElementById("device-slot-selector").value;
@@ -569,7 +631,6 @@
                 usageRank: parseInt(document.getElementById("edit-device-usage").value) || 1
             };
 
-            // Maintain base payload attributes next to device blocks
             const updatePayload = {
                 displayName: activeUser.displayName || activeUser.email,
                 email: activeUser.email,
@@ -598,7 +659,6 @@
                 }
             }
 
-            // Sort by Rank parameter directly (1 = top priority, 5 = lowest priority)
             devicesListArray.sort((a, b) => a.usageRank - b.usageRank);
 
             if(devicesListArray.length === 0) {
@@ -622,27 +682,39 @@
             });
         }
 
-        // Query target inventories across Valve Web Server networks via high-stability proxy pipelines
         async function fetchSteamLibraryData(steamId) {
             const shelf = document.getElementById("library-shelf");
             shelf.innerHTML = `<div style="padding:20px; text-align:center; width:100%;">Streaming dynamic accounts inventory vectors...</div>`;
 
             try {
-                // Prepending corsproxy.io directly to solve 'Unexpected Token O' response formatting bugs
-                const response = await fetch(`https://corsproxy.io/?url=${encodeURIComponent('https://api.steampowered.com/IPlayerService/GetOwnedGames/v1/?key=YOUR_API_KEY&steamid=' + steamId + '&include_appinfo=1&format=json')}`);
-                const dataText = await response.text();
+                // Utilizing the AllOrigins proxy mirror domain to safely read the public profile document layout
+                const fallbackUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://steamcommunity.com/profiles/' + steamId + '/games?tab=all&xml=1')}`;
+                const response = await fetch(fallbackUrl);
+                const wrapper = await response.json();
+                const xmlText = wrapper.contents;
                 
-                let cleanData;
-                try {
-                    cleanData = JSON.parse(dataText);
-                } catch(e) {
-                    throw new Error("Invalid json format returned by cors proxy network.");
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                const games = xmlDoc.getElementsByTagName("game");
+                
+                if (games.length > 0) {
+                    let extractedGamesList = [];
+                    for (let i = 0; i < games.length; i++) {
+                        let appIdNode = games[i].getElementsByTagName("appID")[0];
+                        let nameNode = games[i].getElementsByTagName("name")[0];
+                        if (appIdNode && nameNode) {
+                            extractedGamesList.push({
+                                appid: appIdNode.textContent,
+                                name: nameNode.textContent
+                            });
+                        }
+                    }
+                    renderLibraryMatrixGrid(extractedGamesList);
+                } else {
+                    renderLibraryMatrixGrid(defaultPreloadedLibrary);
                 }
-
-                let listArray = (cleanData.response && cleanData.response.games) ? cleanData.response.games : defaultPreloadedLibrary;
-                renderLibraryMatrixGrid(listArray);
             } catch (err) {
-                console.warn("Falling back to core track profile array:", err.message);
+                console.warn("Direct layout fallback operational standard active.", err.message);
                 renderLibraryMatrixGrid(defaultPreloadedLibrary);
             }
         }
@@ -658,7 +730,6 @@
                 card.className = "game-card";
                 card.addEventListener("click", () => parseStorefrontSpecs(game.appid, game.name));
                 
-                // Embedding live matching game capsule artwork directly from Steam's official assets CDN
                 const capsuleArtUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`;
                 
                 card.innerHTML = `
@@ -678,28 +749,74 @@
             outputBox.textContent = `Extracting configuration payloads from Valve app details store...`;
 
             try {
-                // Prepending clean development proxy endpoint to guarantee valid JSON string evaluation loops
-                const res = await fetch(`https://corsproxy.io/?url=${encodeURIComponent('https://store.steampowered.com/api/appdetails?appids=' + appId)}`);
-                const dataJsonText = await res.text();
-                const json = JSON.parse(dataJsonText);
+                // Swapped proxy routing parameters over to the alternative allorigins server mirror channel
+                const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://store.steampowered.com/api/appdetails?appids=' + appId)}`);
+                const wrapper = await res.json();
+                const json = JSON.parse(wrapper.contents);
 
                 if (json[appId] && json[appId].success) {
                     const requirements = json[appId].data.pc_requirements;
                     if (requirements && requirements.minimum) {
-                        outputBox.textContent = requirements.minimum
+                        let cleanText = requirements.minimum
                             .replace(/<br\s*\/?>/gi, '\n')
                             .replace(/<\/li>/gi, '\n')
                             .replace(/<[^>]+>/g, '')
                             .replace(/Minimum:\s*/i, '').trim();
+                        
+                        outputBox.textContent = cleanText;
+                        evaluateHardwareCompatibility(cleanText);
                     } else {
                         outputBox.textContent = "No standard hardware requirements parsing array mapped to this AppID asset bundle.";
+                        resetWallpaperToNormal();
                     }
                 } else {
                     outputBox.textContent = "Valve Storefront API refused asset handshake parameters.";
+                    resetWallpaperToNormal();
                 }
             } catch (err) {
                 outputBox.textContent = `Error processing downstream parameters: ${err.message}`;
+                resetWallpaperToNormal();
             }
+        }
+
+        function evaluateHardwareCompatibility(requirementsText) {
+            const badge = document.getElementById("diagnostic-badge");
+            badge.style.display = "inline-block";
+            
+            let isCompatible = true;
+
+            const ramMatch = requirementsText.match(/(\d+)\s*GB\s*(?:RAM|memory)/i);
+            if (ramMatch && ramMatch[1]) {
+                const requiredRAM = parseInt(ramMatch[1]);
+                if (clientDetectedRAM < requiredRAM) {
+                    isCompatible = false;
+                }
+            }
+
+            const coreMatch = requirementsText.match(/(\d+)\s*(?:core|processor)/i);
+            if (coreMatch && coreMatch[1]) {
+                const requiredCores = parseInt(coreMatch[1]);
+                if (clientDetectedCores < requiredCores) {
+                    isCompatible = false;
+                }
+            }
+
+            if (isCompatible) {
+                document.body.style.background = "var(--bg-pass-gradient)";
+                badge.style.backgroundColor = "var(--success-green)";
+                badge.textContent = "COMPATIBLE RIG";
+                badge.innerHTML = "COMPATIBLE RIG";
+            } else {
+                document.body.style.background = "var(--bg-fail-gradient)";
+                badge.style.backgroundColor = "#e74c3c";
+                badge.textContent = "SPEC UPGRADE NEEDED";
+                badge.innerHTML = "SPEC UPGRADE NEEDED";
+            }
+        }
+
+        function resetWallpaperToNormal() {
+            document.body.style.background = "var(--bg-gradient)";
+            document.getElementById("diagnostic-badge").style.display = "none";
         }
     </script>
 </body>
