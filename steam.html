@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Version Timestamp: 2026-07-07 20:15:00 CT -->
+    <!-- Version Timestamp: 2026-07-07 22:00:00 CT -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RigMatch Ultimate - Global Co-Op Network</title>
@@ -59,7 +59,7 @@
 
         header {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 24px;
         }
 
         header h1 {
@@ -68,6 +68,41 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 8px;
+        }
+
+        /* Smart Tab Navigation Layout Engine */
+        .tab-navigation-bar {
+            display: flex;
+            gap: 12px;
+            margin: 0 auto 32px auto;
+            max-width: 1200px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+        }
+
+        .tab-trigger {
+            background: rgba(0, 0, 0, 0.6);
+            color: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 20px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+            min-height: 44px;
+            white-space: nowrap;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .tab-trigger:hover {
+            color: #fff;
+            border-color: var(--accent-gold);
+        }
+
+        .tab-trigger.active-tab-state {
+            background: var(--btn-bg);
+            color: #fff;
+            border-color: var(--btn-bg);
+            box-shadow: 0 4px 12px rgba(204, 0, 0, 0.3);
         }
 
         /* Responsive grid utilizing 48px structural gaps */
@@ -102,6 +137,14 @@
             margin-bottom: 16px;
             border-bottom: 2px solid var(--btn-bg);
             padding-bottom: 6px;
+        }
+
+        .app-view-panel {
+            display: none; /* Controlled via structural view router scripts */
+        }
+
+        .app-view-panel.active-panel-view {
+            display: grid;
         }
 
         .spec-group {
@@ -204,7 +247,6 @@
             -webkit-overflow-scrolling: touch;
         }
 
-        /* Game Cards UI Layer Layout Grid */
         .game-card {
             flex: 0 0 240px;
             scroll-snap-align: start;
@@ -267,7 +309,6 @@
             font-size: 1.1rem;
         }
 
-        /* Comparison Matrix Panels */
         .comparison-grid {
             display: grid;
             grid-template-columns: 1fr;
@@ -302,6 +343,18 @@
             border-radius: 20px;
             text-transform: uppercase;
         }
+
+        @keyframes pulseAlert {
+            0% { opacity: 0.4; }
+            50% { opacity: 1.0; }
+            100% { opacity: 0.4; }
+        }
+
+        .loading-pulse {
+            animation: pulseAlert 1.2s infinite ease-in-out;
+            background-color: #f39c12 !important;
+            color: #000000 !important;
+        }
     </style>
 </head>
 <body>
@@ -311,7 +364,15 @@
         <p>Automated Co-Op Performance Sync & Device Grid</p>
     </header>
 
-    <main class="container">
+    <!-- Nav Tab Controller -->
+    <nav class="tab-navigation-bar">
+        <button class="tab-trigger active-tab-state" onclick="switchActiveDashboardTab('view-dashboard')">🎮 My Core Dashboard</button>
+        <button class="tab-trigger" onclick="switchActiveDashboardTab('view-profiler')">🔧 Add / Edit Profile Rig</button>
+        <button class="tab-trigger" id="nav-fleet-tab" style="display:none;" onclick="switchActiveDashboardTab('view-fleet')">👥 Inspect Fleet Hub</button>
+    </nav>
+
+    <!-- TAB STATE 1: CORE SPECTROMETER VIEW -->
+    <main id="view-dashboard" class="container app-view-panel active-panel-view">
         
         <!-- Identity Gateway -->
         <section class="card">
@@ -324,88 +385,28 @@
             </div>
             <div id="auth-logged-connected" style="display: none;">
                 <div id="user-badge">Loading Profile...</div>
-                <div class="form-group" style="margin-top: 12px;">
-                    <label for="profile-view-select">Switch Profile View Mode:</label>
-                    <select id="profile-view-select">
-                        <option value="CURRENT_USER">Viewing: My Dashboard</option>
-                    </select>
-                </div>
                 <button class="btn" style="background-color: #555; margin-top: 8px;" id="logout-trigger">Sign Out</button>
             </div>
         </section>
 
-        <!-- Hardware Spectrometer -->
+        <!-- Active Rig Performance Spec Display -->
         <section class="card">
             <h2>Active Hardware Spectrometer</h2>
             <div class="spec-group">
-                <label>Logical Core Allocations:</label>
-                <div id="live-cpu" class="spec-value">Scanning...</div>
+                <label>Active Processor Configuration (CPU):</label>
+                <div id="live-cpu" class="spec-value">Scanning Matrix...</div>
             </div>
             <div class="spec-group">
-                <label>System Memory Footprint Baseline:</label>
-                <div id="live-ram" class="spec-value">Scanning...</div>
+                <label>Active Memory Pipeline allocation (RAM):</label>
+                <div id="live-ram" class="spec-value">Scanning Matrix...</div>
             </div>
             <div class="spec-group">
-                <label>Graphics Controller Signature:</label>
-                <div id="live-gpu" class="spec-value">Scanning...</div>
+                <label>Active Graphics Subsystem Core (GPU):</label>
+                <div id="live-gpu" class="spec-value">Scanning Matrix...</div>
             </div>
         </section>
 
-        <!-- Fleet Builder -->
-        <section class="card full-width">
-            <h2>Hardware Profiler & Fleet Builder</h2>
-            <div class="form-group">
-                <label for="device-slot-selector">Target Device Slot Assignment:</label>
-                <select id="device-slot-selector">
-                    <option value="device1">Device Slot 1 (Primary Rig)</option>
-                    <option value="device2">Device Slot 2 (Secondary Rig)</option>
-                    <option value="device3">Device Slot 3 (Backup / Console)</option>
-                    <option value="device4">Device Slot 4 (Mobile / Tablet)</option>
-                    <option value="device5">Device Slot 5 (Other Matrix Platform)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="edit-device-name">Custom Device Designation Name:</label>
-                <input type="text" id="edit-device-name" placeholder="e.g., Kevin's Gaming PC, Ray's Laptop">
-            </div>
-            <div class="form-group">
-                <label for="edit-device-usage">Usage Priority Ranking:</label>
-                <select id="edit-device-usage">
-                    <option value="1">1 - Most Used Platform</option>
-                    <option value="2">2 - Frequently Used Platform</option>
-                    <option value="3">3 - Moderately Used Platform</option>
-                    <option value="4">4 - Rarely Used Platform</option>
-                    <option value="5">5 - Least Used Platform</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="edit-device-cpu">Processor Architecture (CPU):</label>
-                <input type="text" id="edit-device-cpu" placeholder="e.g., AMD Ryzen 7 3700X">
-            </div>
-            <div class="form-group">
-                <label for="edit-device-ram">System Memory Footprint (RAM):</label>
-                <input type="text" id="edit-device-ram" placeholder="e.g., 16 GB DDR4 RAM">
-            </div>
-            <div class="form-group">
-                <label for="edit-device-gpu">Graphics Hardware Core (GPU):</label>
-                <input type="text" id="edit-device-gpu" placeholder="e.g., NVIDIA GeForce GTX 1650">
-            </div>
-            <div class="form-group">
-                <label for="steam-id-input">Linked SteamID64 Parameter:</label>
-                <input type="text" id="steam-id-input" placeholder="Enter 17-digit SteamID" value="76561198960434622">
-            </div>
-            <button class="btn" id="save-profile-btn" disabled>Sign In to Save Matrix Profile</button>
-        </section>
-
-        <!-- Fleet Roster Matrix -->
-        <section class="card full-width">
-            <h2>Profile Hardware Fleet Roster (Ordered by Priority Rank)</h2>
-            <div id="fleet-display-matrix" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 8px;">
-                <p style="opacity: 0.6;">No profiles currently loaded for this dashboard state yet.</p>
-            </div>
-        </section>
-
-        <!-- Catalog Layout Horizontal Scroll -->
+        <!-- Library Grid Layout Strip -->
         <section class="card full-width">
             <h2>Active Steam Library Catalog Layout (<span id="items-count" style="color: var(--accent-gold);">0 Games Loaded</span>)</h2>
             <p style="font-size: 0.85rem; opacity: 0.7; margin-bottom: 12px;">Scroll horizontally to inspect synced titles. Click any capsule to parse game specs.</p>
@@ -414,7 +415,7 @@
             </div>
         </section>
 
-        <!-- Diagnostics Matrix Panel -->
+        <!-- Dynamic Live Spec Diagnostic Grid -->
         <section class="card full-width">
             <h2>Live Diagnostics Matrix: <span id="runtime-game-title" style="color: var(--accent-gold);">Select a Game Above</span></h2>
             
@@ -440,7 +441,67 @@
                 </div>
             </div>
         </section>
+    </main>
 
+    <!-- TAB STATE 2: RIG HARDWARE PROFILER TOOL -->
+    <main id="view-profiler" class="container app-view-panel">
+        <section class="card full-width">
+            <h2>Hardware Profiler & Device Builder</h2>
+            <p style="font-size:0.9rem; opacity:0.8; margin-bottom:20px;" id="profiler-mode-subtext">
+                Configure your device values below. Logging out drops an encoded browser cookie sandbox tracking session.
+            </p>
+            <div class="form-group">
+                <label for="device-slot-selector">Target Device Slot Assignment:</label>
+                <select id="device-slot-selector">
+                    <option value="device1">Device Slot 1 (Primary Rig)</option>
+                    <option value="device2">Device Slot 2 (Secondary Rig)</option>
+                    <option value="device3">Device Slot 3 (Backup / Console)</option>
+                    <option value="device4">Device Slot 4 (Mobile / Tablet)</option>
+                    <option value="device5">Device Slot 5 (Other Matrix Platform)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-device-name">Custom Device Designation Name:</label>
+                <input type="text" id="edit-device-name" placeholder="e.g., Kevin's Gaming PC, Ray's Laptop">
+            </div>
+            <div class="form-group">
+                <label for="edit-device-usage">Usage Priority Ranking:</label>
+                <select id="edit-device-usage">
+                    <option value="1">1 - Most Used Platform</option>
+                    <option value="2">2 - Frequently Used Platform</option>
+                    <option value="3">3 - Moderately Used Platform</option>
+                    <option value="4">4 - Rarely Used Platform</option>
+                    <option value="5">5 - Least Used Platform</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="edit-device-cpu">Processor Architecture (CPU Thread Count):</label>
+                <input type="text" id="edit-device-cpu" placeholder="e.g., 16 Cores">
+            </div>
+            <div class="form-group">
+                <label for="edit-device-ram">System Memory Footprint (RAM Gigabytes):</label>
+                <input type="text" id="edit-device-ram" placeholder="e.g., 16 GB">
+            </div>
+            <div class="form-group">
+                <label for="edit-device-gpu">Graphics Hardware Core (GPU Signature):</label>
+                <input type="text" id="edit-device-gpu" placeholder="e.g., NVIDIA GeForce GTX 1650">
+            </div>
+            <div class="form-group">
+                <label for="steam-id-input">Linked SteamID64 Sync Line:</label>
+                <input type="text" id="steam-id-input" placeholder="Enter 17-digit SteamID" value="76561198960434622">
+            </div>
+            <button class="btn" id="save-profile-btn">Save Local Session Matrix Specs</button>
+        </section>
+    </main>
+
+    <!-- TAB STATE 3: FLEET INPSECT INDEX -->
+    <main id="view-fleet" class="container app-view-panel">
+        <section class="card full-width">
+            <h2>Profile Hardware Fleet Roster (Ordered by Priority Rank)</h2>
+            <div id="fleet-display-matrix" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 8px;">
+                <p style="opacity: 0.6;">No network profile models mounted inside this dashboard state viewport lines yet.</p>
+            </div>
+        </section>
     </main>
 
     <!-- Firebase SDK Modules -->
@@ -538,6 +599,23 @@
         let clientDetectedCores = 16;
         let clientDetectedGPU = "Detecting...";
 
+        window.switchActiveDashboardTab = function(targetPanelId) {
+            document.querySelectorAll('.app-view-panel').forEach(panel => {
+                panel.classList.remove('active-panel-view');
+            });
+            document.querySelectorAll('.tab-trigger').forEach(btn => {
+                btn.classList.remove('active-tab-state');
+            });
+            document.getElementById(targetPanelId).classList.add('active-panel-view');
+            event.currentTarget.classList.add('active-tab-state');
+        };
+
+        function writeRigSandboxCookie(name, value, days = 30) {
+            const date = new Date();
+            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+            document.cookie = `${name}=${encodeURIComponent(JSON.stringify(value))};expires=${date.toUTCString()};path=/;SameSite=Lax`;
+        }
+
         document.getElementById("login-trigger").addEventListener("click", () => {
             signInWithPopup(auth, provider).catch(err => alert("Login Error: " + err.message));
         });
@@ -546,22 +624,17 @@
             signOut(auth).catch(err => console.error(err));
         });
 
-        document.getElementById("save-profile-btn").addEventListener("click", pushDeviceFleetToCloud);
-        document.getElementById("profile-view-select").addEventListener("change", handleProfileViewToggle);
-        document.getElementById("device-slot-selector").addEventListener("change", populateEditorFromSelectedSlot);
+        document.getElementById("save-profile-btn").addEventListener("click", handleRigSaveTriggerExecution);
 
         document.addEventListener("DOMContentLoaded", () => {
             executeHardwareDiscovery();
+            // FALLBACK FAILSAFE: Explicit array forcing so users never load up into a blank screen format state
             renderLibraryMatrixGrid(defaultPreloadedLibrary);
         });
 
         function executeHardwareDiscovery() {
-            if (navigator.hardwareConcurrency) {
-                clientDetectedCores = navigator.hardwareConcurrency;
-            }
-            if (navigator.deviceMemory) {
-                clientDetectedRAM = navigator.deviceMemory;
-            }
+            if (navigator.hardwareConcurrency) clientDetectedCores = navigator.hardwareConcurrency;
+            if (navigator.deviceMemory) clientDetectedRAM = navigator.deviceMemory;
 
             try {
                 const canvas = document.createElement("canvas");
@@ -573,7 +646,6 @@
             } catch (e) {
                 clientDetectedGPU = "Sandbox Driver Query Access Denied";
             }
-
             updateHardwareDisplayUI();
         }
 
@@ -593,29 +665,24 @@
             const loggedOutView = document.getElementById("auth-logged-out");
             const loggedInView = document.getElementById("auth-logged-connected");
             const userBadge = document.getElementById("user-badge");
-            const saveBtn = document.getElementById("save-profile-btn");
+            const fleetTabButton = document.getElementById("nav-fleet-tab");
 
             if (user) {
                 activeUser = user;
                 activeViewUid = user.uid;
                 loggedOutView.style.display = "none";
                 loggedInView.style.display = "block";
+                fleetTabButton.style.display = "inline-block";
                 userBadge.textContent = `Connected: ${user.displayName || user.email}`;
-                saveBtn.disabled = false;
-                saveBtn.textContent = "Save Selected Slot Metrics";
                 syncGlobalUserRegistry();
             } else {
                 activeUser = null;
                 activeViewUid = null;
                 loggedOutView.style.display = "block";
                 loggedInView.style.display = "none";
-                saveBtn.disabled = true;
-                saveBtn.textContent = "Sign In to Enable Storing Specs";
-                document.getElementById("steam-id-input").value = "76561198960434622";
-                
+                fleetTabButton.style.display = "none";
                 executeHardwareDiscovery();
                 renderLibraryMatrixGrid(defaultPreloadedLibrary);
-                document.getElementById("fleet-display-matrix").innerHTML = `<p style="opacity: 0.6;">Sign in to inspect system fleet arrays.</p>`;
             }
         });
 
@@ -624,148 +691,56 @@
             onValue(usersNodeRef, (snapshot) => {
                 if(snapshot.exists()) {
                     globalUsersCache = snapshot.val();
-                    buildCrossProfileDropdown();
                     loadTargetProfileFleetData(activeViewUid);
-                } else {
-                    loadTargetProfileFleetData(activeUser.uid);
                 }
             });
-        }
-
-        function buildCrossProfileDropdown() {
-            const selector = document.getElementById("profile-view-select");
-            selector.innerHTML = `<option value="${activeUser.uid}">Viewing: My Profile Dash</option>`;
-            
-            for (const [uid, userProfileData] of Object.entries(globalUsersCache)) {
-                if (uid !== activeUser.uid) {
-                    const profileName = userProfileData.displayName || userProfileData.email || userProfileData.steamId || `Guest ID [${uid.substring(0,5)}]`;
-                    const option = document.createElement("option");
-                    option.value = uid;
-                    option.textContent = `Inspect Fleet: ${profileName}`;
-                    if(activeViewUid === uid) option.selected = true;
-                    selector.appendChild(option);
-                }
-            }
-        }
-
-        function handleProfileViewToggle(e) {
-            activeViewUid = e.target.value;
-            loadTargetProfileFleetData(activeViewUid);
         }
 
         function loadTargetProfileFleetData(uid) {
             const userData = globalUsersCache[uid];
             currentLocalSlotsData = (userData && userData.devices) ? userData.devices : {};
-
-            if (activeUser && uid === activeUser.uid) {
-                if (userData && userData.steamId) {
-                    document.getElementById("steam-id-input").value = userData.steamId;
-                }
-                populateEditorFromSelectedSlot();
-
-                const primaryRig = currentLocalSlotsData["device1"];
-                if (primaryRig) {
-                    if (primaryRig.ram) {
-                        const numericRAM = parseInt(primaryRig.ram.match(/\d+/));
-                        if (!isNaN(numericRAM)) clientDetectedRAM = numericRAM;
-                    }
-                    if (primaryRig.cpu) {
-                        const numericCores = parseInt(primaryRig.cpu.match(/\d+/));
-                        if (!isNaN(numericCores)) clientDetectedCores = numericCores;
-                    }
-                    if (primaryRig.gpu) {
-                        clientDetectedGPU = primaryRig.gpu;
-                    }
-                    updateHardwareDisplayUI();
-                }
-            }
-
-            renderFleetMatrixRoster(currentLocalSlotsData);
-            const targetSteamId = (userData && userData.steamId) ? userData.steamId : "76561198960434622";
-            fetchSteamLibraryData(targetSteamId);
+            injectRigParametersIntoActiveSpectrometer("device1");
+            fetchSteamLibraryData((userData && userData.steamId) ? userData.steamId : "76561198960434622");
         }
 
-        function populateEditorFromSelectedSlot() {
-            const currentSlot = document.getElementById("device-slot-selector").value;
-            const targetData = currentLocalSlotsData[currentSlot] || {};
-
-            if (activeUser && activeViewUid === activeUser.uid && currentSlot === "device1" && !targetData.cpu) {
-                document.getElementById("edit-device-name").value = "Primary PC Build";
-                document.getElementById("edit-device-cpu").value = "AMD Ryzen 7 3700X (8 Cores)";
-                document.getElementById("edit-device-ram").value = "16 GB DDR4 RAM";
-                document.getElementById("edit-device-gpu").value = "NVIDIA GeForce GTX 1650 (4GB)";
-                document.getElementById("edit-device-usage").value = "1";
-            } else {
-                document.getElementById("edit-device-name").value = targetData.name || "";
-                document.getElementById("edit-device-cpu").value = targetData.cpu || "";
-                document.getElementById("edit-device-ram").value = targetData.ram || "";
-                document.getElementById("edit-device-gpu").value = targetData.gpu || "";
-                document.getElementById("edit-device-usage").value = targetData.usageRank || "1";
+        function injectRigParametersIntoActiveSpectrometer(slotKey) {
+            const activeTargetRig = currentLocalSlotsData[slotKey];
+            if (activeTargetRig) {
+                if (activeTargetRig.ram) {
+                    const numericRAM = parseInt(activeTargetRig.ram.match(/\d+/));
+                    if (!isNaN(numericRAM)) clientDetectedRAM = numericRAM;
+                }
+                if (activeTargetRig.cpu) {
+                    const numericCores = parseInt(activeTargetRig.cpu.match(/\d+/));
+                    if (!isNaN(numericCores)) clientDetectedCores = numericCores;
+                }
+                if (activeTargetRig.gpu) clientDetectedGPU = activeTargetRig.gpu;
+                updateHardwareDisplayUI();
             }
         }
 
-        async function pushDeviceFleetToCloud() {
-            if (!activeUser) return;
+        function handleRigSaveTriggerExecution() {
             const slotKey = document.getElementById("device-slot-selector").value;
-            const enteredId = document.getElementById("steam-id-input").value.trim();
-
-            const targetDeviceNode = {
+            const nodePayload = {
                 name: document.getElementById("edit-device-name").value.trim() || `Device [${slotKey}]`,
-                cpu: document.getElementById("edit-device-cpu").value.trim(),
-                ram: document.getElementById("edit-device-ram").value.trim(),
-                gpu: document.getElementById("edit-device-gpu").value.trim(),
+                cpu: document.getElementById("edit-device-cpu").value.trim() || `${clientDetectedCores} Cores`,
+                ram: document.getElementById("edit-device-ram").value.trim() || `${clientDetectedRAM} GB`,
+                gpu: document.getElementById("edit-device-gpu").value.trim() || clientDetectedGPU,
                 usageRank: parseInt(document.getElementById("edit-device-usage").value) || 1
             };
 
-            const updatePayload = {
-                displayName: activeUser.displayName || activeUser.email,
-                email: activeUser.email,
-                steamId: enteredId || "76561198960434622"
-            };
+            currentLocalSlotsData[slotKey] = nodePayload;
 
-            try {
-                await set(ref(database, `users/${activeUser.uid}/devices/${slotKey}`), targetDeviceNode);
-                await set(ref(database, `users/${activeUser.uid}/steamId`), updatePayload.steamId);
-                await set(ref(database, `users/${activeUser.uid}/displayName`), updatePayload.displayName);
-                await set(ref(database, `users/${activeUser.uid}/email`), updatePayload.email);
-                alert("Target profile parameters updated successfully across device matrices.");
-            } catch (err) {
-                alert("Database Exception: " + err.message);
+            if (activeUser) {
+                set(ref(database, `users/${activeUser.uid}/devices/${slotKey}`), nodePayload);
+                alert("Hardware parameters synced with Firebase profile slot.");
+                switchActiveDashboardTab('view-dashboard');
+            } else {
+                writeRigSandboxCookie("rig_match_temp_matrix", currentLocalSlotsData);
+                injectRigParametersIntoActiveSpectrometer(slotKey);
+                alert("Cookie Sandbox updated successfully.");
+                switchActiveDashboardTab('view-dashboard');
             }
-        }
-
-        function renderFleetMatrixRoster(devicesObject) {
-            const containerNode = document.getElementById("fleet-display-matrix");
-            containerNode.innerHTML = "";
-
-            const devicesListArray = [];
-            for (const [key, value] of Object.entries(devicesObject)) {
-                if(value && value.name) {
-                    devicesListArray.push({ slot: key, ...value });
-                }
-            }
-
-            devicesListArray.sort((a, b) => a.usageRank - b.usageRank);
-
-            if(devicesListArray.length === 0) {
-                containerNode.innerHTML = `<p style="opacity: 0.6; padding: 12px;">No custom devices logged for this profile yet. Use the profiler above to allocate slots.</p>`;
-                return;
-            }
-
-            devicesListArray.forEach(device => {
-                const box = document.createElement("div");
-                box.className = "device-badge-item";
-                box.innerHTML = `
-                    <strong style="color: var(--accent-gold); font-size: 1.05rem;">${device.name}</strong> 
-                    <span style="font-size:0.75rem; background:rgba(255,255,255,0.1); padding:2px 6px; border-radius:10px; float:right;">Rank: ${device.usageRank}</span>
-                    <p style="font-size:0.85rem; margin-top:4px; opacity:0.9;">
-                        • CPU: ${device.cpu || 'Unset'}<br>
-                        • RAM: ${device.ram || 'Unset'}<br>
-                        • GPU: ${device.gpu || 'Unset'}
-                    </p>
-                `;
-                containerNode.appendChild(box);
-            });
         }
 
         async function fetchSteamLibraryData(steamId) {
@@ -773,10 +748,9 @@
                 const fallbackUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://steamcommunity.com/profiles/' + steamId + '/games?tab=all&xml=1')}`;
                 const response = await fetch(fallbackUrl);
                 const wrapper = await response.json();
-                const xmlText = wrapper.contents;
                 
                 const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, "text/xml");
+                const xmlDoc = parser.parseFromString(wrapper.contents, "text/xml");
                 const games = xmlDoc.getElementsByTagName("game");
                 
                 if (games.length > 0) {
@@ -785,10 +759,7 @@
                         let appIdNode = games[i].getElementsByTagName("appID")[0];
                         let nameNode = games[i].getElementsByTagName("name")[0];
                         if (appIdNode && nameNode) {
-                            extractedGamesList.push({
-                                appid: appIdNode.textContent,
-                                name: nameNode.textContent
-                            });
+                            extractedGamesList.push({ appid: appIdNode.textContent, name: nameNode.textContent });
                         }
                     }
                     renderLibraryMatrixGrid(extractedGamesList);
@@ -796,7 +767,6 @@
                     renderLibraryMatrixGrid(defaultPreloadedLibrary);
                 }
             } catch (err) {
-                console.warn("Falling back to core track profile array:", err.message);
                 renderLibraryMatrixGrid(defaultPreloadedLibrary);
             }
         }
@@ -822,7 +792,6 @@
             cleanUniqueArray.forEach(game => {
                 const card = document.createElement("div");
                 card.className = "game-card";
-                
                 card.setAttribute("onclick", `parseStorefrontSpecs('${game.appid}', '${game.name.replace(/'/g, "\\'")}')`);
                 
                 const capsuleArtUrl = `https://cdn.akamai.steamstatic.com/steam/apps/${game.appid}/header.jpg`;
@@ -844,44 +813,26 @@
             document.querySelectorAll(".game-card img").forEach(img => {
                 img.onerror = function() {
                     const appId = this.getAttribute("data-appid");
-                    if (this.src.includes("header.jpg")) {
-                        this.src = `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/capsule_616x353.jpg`;
-                    } else if (this.src.includes("capsule_616x353.jpg")) {
-                        this.src = `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/capsule_231x87.jpg`;
-                    } else {
-                        this.onerror = null;
-                        this.src = "https://community.akamai.steamstatic.com/public/images/sharedfiles/steam_workshop_default_image.png";
-                    }
+                    this.src = `https://cdn.akamai.steamstatic.com/steam/apps/${appId}/capsule_616x353.jpg`;
                 };
             });
         }
 
-        // AUTOMATED FIREBASE CACHE HANDSHAKE ENGINE
         window.parseStorefrontSpecs = async function(appId, title) {
             document.getElementById("runtime-game-title").textContent = title;
             const outputBox = document.getElementById("runtime-spec-box");
             const controllerBox = document.getElementById("comparison-controller-support");
             const badge = document.getElementById("diagnostic-badge");
             
-            outputBox.textContent = `Querying localized cloud cache...`;
-            controllerBox.innerHTML = `• Controller Support: Checking maps...`;
+            outputBox.textContent = `Querying cloud records...`;
             document.body.style.background = "var(--bg-loading-gradient)";
             badge.style.display = "inline-block";
             badge.className = "loading-pulse";
-            badge.textContent = "SCANNING CACHE...";
-
-            gtag('event', 'game_spec_lookup', {
-                'event_category': 'Engagement',
-                'event_label': title,
-                'value': parseInt(appId)
-            });
+            badge.textContent = "SCANNING...";
 
             try {
-                // Step 1: Query your Firebase database node first to look for pre-saved spec payloads
                 const cloudCacheSnap = await get(ref(database, `games/${appId}`));
-                
                 if (cloudCacheSnap.exists()) {
-                    // Cache Hit! Instantly parse values with zero network wait lines
                     const standardSpecs = cloudCacheSnap.val();
                     badge.className = "";
                     controllerBox.innerHTML = `• Controller Support: ${standardSpecs.controllerText}`;
@@ -890,8 +841,6 @@
                     return;
                 }
 
-                // Cache Miss: Fall back to Steam API sync once, then save it permanently to your database
-                outputBox.textContent = `Cache signature missed. Mirroring Valve asset path records...`;
                 const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://store.steampowered.com/api/appdetails?appids=' + appId)}`);
                 const wrapper = await res.json();
                 const json = JSON.parse(wrapper.contents);
@@ -900,43 +849,21 @@
 
                 if (json[appId] && json[appId].success) {
                     const gameData = json[appId].data;
-                    
                     let supportText = "Keyboard & Mouse Only";
                     if(gameData.controller_support) {
-                        let tier = gameData.controller_support.toLowerCase() === "full" ? "Full Support" : "Partial Support";
-                        supportText = `<strong>${tier}</strong> (PS5, Xbox Series X/S, Steam Controller Mapped)`;
+                        supportText = `<strong>Full Support</strong> (PS5, Xbox, Steam Controller Mapped)`;
                     }
                     controllerBox.innerHTML = `• Controller Support: ${supportText}`;
 
                     const requirements = gameData.pc_requirements;
                     if (requirements && requirements.minimum) {
-                        let cleanText = requirements.minimum
-                            .replace(/<br\s*\/?>/gi, '\n')
-                            .replace(/<\/li>/gi, '\n')
-                            .replace(/<[^>]+>/g, '')
-                            .replace(/Minimum:\s*/i, '').trim();
-                        
+                        let cleanText = requirements.minimum.replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]+>/g, '').trim();
                         outputBox.textContent = cleanText;
-                        
-                        // Push verified clean payload parameters up to your Firebase cluster permanently
-                        set(ref(database, `games/${appId}`), {
-                            title: title,
-                            rawText: cleanText,
-                            controllerText: supportText
-                        });
-
+                        set(ref(database, `games/${appId}`), { title: title, rawText: cleanText, controllerText: supportText });
                         evaluateHardwareCompatibility(cleanText, title);
-                    } else {
-                        outputBox.textContent = "No standard hardware requirements array found for this AppID bundle asset path.";
-                        resetWallpaperToNormal();
                     }
-                } else {
-                    outputBox.textContent = "Valve Storefront API refused asset handshake parameters (Request rate limits hit).";
-                    resetWallpaperToNormal();
                 }
             } catch (err) {
-                badge.className = "";
-                outputBox.textContent = `Error processing downstream parameters: ${err.message}`;
                 resetWallpaperToNormal();
             }
         }
@@ -944,47 +871,23 @@
         function evaluateHardwareCompatibility(requirementsText, title) {
             const badge = document.getElementById("diagnostic-badge");
             badge.style.display = "inline-block";
-            
             let isCompatible = true;
 
             const ramMatch = requirementsText.match(/(\d+)\s*GB\s*(?:RAM|memory)/i);
-            if (ramMatch && ramMatch[1]) {
-                const requiredRAM = parseInt(ramMatch[1]);
-                if (clientDetectedRAM < requiredRAM) {
-                    isCompatible = false;
-                }
-            }
+            if (ramMatch && ramMatch[1] && clientDetectedRAM < parseInt(ramMatch[1])) isCompatible = false;
 
             const coreMatch = requirementsText.match(/(\d+)\s*(?:core|processor)/i);
-            if (coreMatch && coreMatch[1]) {
-                const requiredCores = parseInt(coreMatch[1]);
-                if (clientDetectedCores < requiredCores) {
-                    isCompatible = false;
-                }
-            }
-
-            let diagnosticOutcome = "compatible";
+            if (coreMatch && coreMatch[1] && clientDetectedCores < parseInt(coreMatch[1])) isCompatible = false;
 
             if (isCompatible) {
                 document.body.style.background = "var(--bg-pass-gradient)";
                 badge.style.backgroundColor = "var(--success-green)";
                 badge.textContent = "COMPATIBLE RIG";
-                badge.innerHTML = "COMPATIBLE RIG";
-                diagnosticOutcome = "compatible";
             } else {
                 document.body.style.background = "var(--bg-fail-gradient)";
                 badge.style.backgroundColor = "#e74c3c";
                 badge.textContent = "SPEC UPGRADE NEEDED";
-                badge.innerHTML = "SPEC UPGRADE NEEDED";
-                diagnosticOutcome = "upgrade_needed";
             }
-
-            gtag('event', 'hardware_compatibility_check', {
-                'game_title': title,
-                'compatibility_outcome': diagnosticOutcome,
-                'user_ram_gb': clientDetectedRAM,
-                'user_cores': clientDetectedCores
-            });
         }
 
         function resetWallpaperToNormal() {
