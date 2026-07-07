@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Version Timestamp: 2026-07-07 08:10:00 CT -->
+    <!-- Version Timestamp: 2026-07-07 09:45:00 CT -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RigMatch Ultimate - Global Co-Op Network</title>
@@ -382,7 +382,7 @@
             <h2>Active Steam Library Catalog Layout (<span id="items-count" style="color: var(--accent-gold);">0 Games Loaded</span>)</h2>
             <p style="font-size: 0.85rem; opacity: 0.7; margin-bottom: 12px;">Scroll horizontally to inspect synced titles. Click any capsule to parse game specs.</p>
             <div class="horizontal-carousel" id="library-shelf">
-                <div style="padding: 20px; opacity: 0.5; text-align: center; width: 100%;">Connect database parameters to display library components...</div>
+                <div style="padding: 20px; opacity: 0.5; text-align: center; width: 100%;">Processing layout standard hydration lines...</div>
             </div>
         </section>
 
@@ -477,6 +477,8 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             executeHardwareDiscovery();
+            // Ensure the main shelf builds with local items right on boot
+            renderLibraryMatrixGrid(defaultPreloadedLibrary);
         });
 
         function executeHardwareDiscovery() {
@@ -543,6 +545,8 @@
                 saveBtn.disabled = true;
                 saveBtn.textContent = "Sign In to Enable Storing Specs";
                 document.getElementById("steam-id-input").value = "76561198960434622";
+                
+                // FIXED: points to the correct function standard to build your grid out
                 renderLibraryMatrixGrid(defaultPreloadedLibrary);
                 document.getElementById("fleet-display-matrix").innerHTML = `<p style="opacity: 0.6;">Sign in to inspect system fleet arrays.</p>`;
             }
@@ -684,10 +688,8 @@
 
         async function fetchSteamLibraryData(steamId) {
             const shelf = document.getElementById("library-shelf");
-            shelf.innerHTML = `<div style="padding:20px; text-align:center; width:100%;">Streaming dynamic accounts inventory vectors...</div>`;
-
+            
             try {
-                // Utilizing the AllOrigins proxy mirror domain to safely read the public profile document layout
                 const fallbackUrl = `https://api.allorigins.win/get?url=${encodeURIComponent('https://steamcommunity.com/profiles/' + steamId + '/games?tab=all&xml=1')}`;
                 const response = await fetch(fallbackUrl);
                 const wrapper = await response.json();
@@ -749,7 +751,6 @@
             outputBox.textContent = `Extracting configuration payloads from Valve app details store...`;
 
             try {
-                // Swapped proxy routing parameters over to the alternative allorigins server mirror channel
                 const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://store.steampowered.com/api/appdetails?appids=' + appId)}`);
                 const wrapper = await res.json();
                 const json = JSON.parse(wrapper.contents);
