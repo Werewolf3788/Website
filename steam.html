@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Version Timestamp: 2026-07-07 12:30:00 CT -->
+    <!-- Version Timestamp: 2026-07-07 06:15:00 CT -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RigMatch Ultimate - Global Co-Op Network</title>
@@ -84,6 +84,26 @@
             margin-bottom: 16px;
             border-bottom: 2px solid var(--btn-bg);
             padding-bottom: 6px;
+        }
+
+        .spec-group {
+            margin-bottom: 12px;
+        }
+
+        .spec-group label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+            opacity: 0.8;
+        }
+
+        .spec-value {
+            font-weight: bold;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 4px;
+            word-break: break-all;
         }
 
         .form-group {
@@ -193,6 +213,13 @@
             text-overflow: ellipsis;
         }
 
+        .game-id-tag {
+            font-size: 0.75rem;
+            opacity: 0.5;
+            display: block;
+            margin-top: 4px;
+        }
+
         .device-badge-item {
             background: rgba(255, 255, 255, 0.05);
             padding: 10px;
@@ -239,8 +266,25 @@
             </div>
         </section>
 
-        <!-- Upgraded Device Hardware Profiles Editor Matrix -->
+        <!-- Live Environment Scanning Array (Pulls hardware parameters of whatever device views it) -->
         <section class="card">
+            <h2>Active Hardware Spectrometer</h2>
+            <div class="spec-group">
+                <label>Logical Core Allocations:</label>
+                <div id="live-cpu" class="spec-value">Scanning...</div>
+            </div>
+            <div class="spec-group">
+                <label>System Memory Footprint Baseline:</label>
+                <div id="live-ram" class="spec-value">Scanning...</div>
+            </div>
+            <div class="spec-group">
+                <label>Graphics Controller Signature:</label>
+                <div id="live-gpu" class="spec-value">Scanning...</div>
+            </div>
+        </section>
+
+        <!-- Upgraded Device Hardware Profiles Editor Matrix -->
+        <section class="card full-width">
             <h2>Hardware Profiler & Fleet Builder</h2>
             <div class="form-group">
                 <label for="device-slot-selector">Target Device Slot Assignment:</label>
@@ -280,7 +324,7 @@
             </div>
             <div class="form-group">
                 <label for="steam-id-input">Linked SteamID64 Parameter:</label>
-                <input type="text" id="steam-id-input" placeholder="Enter 17-digit SteamID" value="76561199538340970">
+                <input type="text" id="steam-id-input" placeholder="Enter 17-digit SteamID" value="76561198960434622">
             </div>
             <button class="btn" id="save-profile-btn" disabled>Sign In to Save Matrix Profile</button>
         </section>
@@ -331,13 +375,25 @@
         const database = getDatabase(app);
         const provider = new GoogleAuthProvider();
 
-        // Fixed baseline fallback collection matching correct Steam storefront AppID vectors
-        const defaultSharedLibraryFallback = [
+        // Exactly mirrors your physical active inventory snapshot list with official Store AppIDs
+        const defaultPreloadedLibrary = [
+            { appid: 365670, name: "Blender" },
+            { appid: 1252780, name: "Bloons Monkey City" },
+            { appid: 386180, name: "Crossout" },
+            { appid: 2051120, name: "HOT WHEELS UNLEASHED™ 2 - Turbocharged" },
+            { appid: 2970420, name: "Hubert Demo" },
+            { appid: 500, name: "Left 4 Dead" },
+            { appid: 550, name: "Left 4 Dead 2" },
+            { appid: 2767030, name: "Marvel Rivals" },
+            { appid: 1174180, name: "Need for Speed™ Heat" },
+            { appid: 2373630, name: "Skull and Bones" },
             { appid: 460930, name: "Sniper Elite 5" },
-            { appid: 2300320, name: "Farming Simulator 25" }, // Typo fixed from 2430190 to 2300320
-            { appid: 1144200, name: "Ready or Not" },
-            { appid: 518790, name: "theHunter: Call of the Wild" },
-            { appid: 730, name: "Counter-Strike 2" }
+            { appid: 518790, name: "theHunter: Call of the Wild™" },
+            { appid: 235600, name: "Tom Clancy's Splinter Cell Blacklist" },
+            { appid: 431960, name: "Wallpaper Engine" },
+            { appid: 3564740, name: "Where Winds Meet" },
+            { appid: 1530930, name: "Wolfteam: Reboot" },
+            { appid: 1407200, name: "World of Tanks" }
         ];
 
         let activeUser = null;
@@ -357,6 +413,41 @@
         document.getElementById("save-profile-btn").addEventListener("click", pushDeviceFleetToCloud);
         document.getElementById("profile-view-select").addEventListener("change", handleProfileViewToggle);
         document.getElementById("device-slot-selector").addEventListener("change", populateEditorFromSelectedSlot);
+
+        // Run client parameter scans on initial lifecycle entry
+        document.addEventListener("DOMContentLoaded", () => {
+            executeHardwareDiscovery();
+        });
+
+        // 1. Interactive Core Client Parameters Parsing Mechanics
+        function executeHardwareDiscovery() {
+            if (navigator.hardwareConcurrency) {
+                document.getElementById("live-cpu").textContent = `${navigator.hardwareConcurrency} Thread Pipeline Channels`;
+            } else {
+                document.getElementById("live-cpu").textContent = "Core Thread Metric Masked";
+            }
+
+            if (navigator.deviceMemory) {
+                document.getElementById("live-ram").textContent = `>= ${navigator.deviceMemory} Gigabytes allocation`;
+            } else {
+                document.getElementById("live-ram").textContent = "Available Application RAM Encrypted";
+            }
+
+            try {
+                const canvas = document.createElement("canvas");
+                const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+                if (gl) {
+                    const debugInfo = gl.getExtension("WEBGL_debug_renderer_info");
+                    if (debugInfo) {
+                        document.getElementById("live-gpu").textContent = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                    } else {
+                        document.getElementById("live-gpu").textContent = gl.getParameter(gl.RENDERER);
+                    }
+                }
+            } catch (e) {
+                document.getElementById("live-gpu").textContent = "Sandbox Driver Query Access Denied";
+            }
+        }
 
         // Core Authentication Listener Setup Loop
         onAuthStateChanged(auth, (user) => {
@@ -383,8 +474,8 @@
                 loggedInView.style.display = "none";
                 saveBtn.disabled = true;
                 saveBtn.textContent = "Sign In to Enable Storing Specs";
-                document.getElementById("steam-id-input").value = "76561199538340970";
-                renderLibraryMatrixGrid(defaultSharedLibraryFallback);
+                document.getElementById("steam-id-input").value = "76561198960434622";
+                renderLibraryMatrixGrid(defaultPreloadedLibrary);
                 document.getElementById("fleet-display-matrix").innerHTML = `<p style="opacity: 0.6;">Sign in to inspect system fleet arrays.</p>`;
             }
         });
@@ -429,7 +520,7 @@
             const userData = globalUsersCache[uid];
             
             // If pulling up your own dashboard, populate matching hardware text lines
-            if (uid === activeUser.uid) {
+            if (activeUser && uid === activeUser.uid) {
                 currentLocalSlotsData = (userData && userData.devices) ? userData.devices : {};
                 if (userData && userData.steamId) {
                     document.getElementById("steam-id-input").value = userData.steamId;
@@ -440,7 +531,7 @@
             }
 
             renderFleetMatrixRoster(currentLocalSlotsData);
-            const targetSteamId = (userData && userData.steamId) ? userData.steamId : "76561199538340970";
+            const targetSteamId = (userData && userData.steamId) ? userData.steamId : "76561198960434622";
             fetchSteamLibraryData(targetSteamId);
         }
 
@@ -449,7 +540,7 @@
             const targetData = currentLocalSlotsData[currentSlot] || {};
 
             // Initialize your custom baseline info if this slot hasn't been saved yet
-            if (activeViewUid === activeUser.uid && currentSlot === "device1" && !targetData.cpu) {
+            if (activeUser && activeViewUid === activeUser.uid && currentSlot === "device1" && !targetData.cpu) {
                 document.getElementById("edit-device-name").value = "Primary PC Build";
                 document.getElementById("edit-device-cpu").value = "AMD Ryzen 7 3700X (8 Cores)";
                 document.getElementById("edit-device-ram").value = "16 GB DDR4 RAM";
@@ -482,7 +573,7 @@
             const updatePayload = {
                 displayName: activeUser.displayName || activeUser.email,
                 email: activeUser.email,
-                steamId: enteredId || "76561199538340970"
+                steamId: enteredId || "76561198960434622"
             };
 
             try {
@@ -534,7 +625,6 @@
         // Query target inventories across Valve Web Server networks via high-stability proxy pipelines
         async function fetchSteamLibraryData(steamId) {
             const shelf = document.getElementById("library-shelf");
-            const countLabel = document.getElementById("items-count");
             shelf.innerHTML = `<div style="padding:20px; text-align:center; width:100%;">Streaming dynamic accounts inventory vectors...</div>`;
 
             try {
@@ -549,11 +639,11 @@
                     throw new Error("Invalid json format returned by cors proxy network.");
                 }
 
-                let listArray = (cleanData.response && cleanData.response.games) ? cleanData.response.games : defaultSharedLibraryFallback;
+                let listArray = (cleanData.response && cleanData.response.games) ? cleanData.response.games : defaultPreloadedLibrary;
                 renderLibraryMatrixGrid(listArray);
             } catch (err) {
                 console.warn("Falling back to core track profile array:", err.message);
-                renderLibraryLibrary(defaultSharedLibraryFallback);
+                renderLibraryMatrixGrid(defaultPreloadedLibrary);
             }
         }
 
