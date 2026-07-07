@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Version Timestamp: 2026-07-07 09:45:00 CT -->
+    <!-- Version Timestamp: 2026-07-07 10:15:00 CT -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RigMatch Ultimate - Global Co-Op Network</title>
@@ -11,6 +11,7 @@
             --bg-gradient: linear-gradient(180deg, #990000 0%, #000000 100%);
             --bg-pass-gradient: linear-gradient(180deg, #115e2e 0%, #000000 100%);
             --bg-fail-gradient: linear-gradient(180deg, #7c1212 0%, #000000 100%);
+            --bg-loading-gradient: linear-gradient(180deg, #4d3d00 0%, #000000 100%);
             
             --surface-card: #1e1c1c; /* Soft dark slate charcoal content cards */
             --text-primary: #ffffff;
@@ -274,6 +275,19 @@
             border-radius: 20px;
             text-transform: uppercase;
         }
+
+        /* Pulse animation keyframes for runtime load indicators */
+        @keyframes pulseAlert {
+            0% { opacity: 0.4; }
+            50% { opacity: 1.0; }
+            100% { opacity: 0.4; }
+        }
+
+        .loading-pulse {
+            animation: pulseAlert 1.2s infinite ease-in-out;
+            background-color: #f39c12 !important;
+            color: #000000 !important;
+        }
     </style>
 </head>
 <body>
@@ -373,7 +387,7 @@
         <section class="card full-width">
             <h2>Profile Hardware Fleet Roster (Ordered by Priority Rank)</h2>
             <div id="fleet-display-matrix" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 8px;">
-                <p style="opacity: 0.6;">No profiles currently loaded from database streams.</p>
+                <p style="opacity: 0.6;">No profiles currently loaded for this dashboard state yet.</p>
             </div>
         </section>
 
@@ -477,7 +491,6 @@
 
         document.addEventListener("DOMContentLoaded", () => {
             executeHardwareDiscovery();
-            // Ensure the main shelf builds with local items right on boot
             renderLibraryMatrixGrid(defaultPreloadedLibrary);
         });
 
@@ -545,8 +558,6 @@
                 saveBtn.disabled = true;
                 saveBtn.textContent = "Sign In to Enable Storing Specs";
                 document.getElementById("steam-id-input").value = "76561198960434622";
-                
-                // FIXED: points to the correct function standard to build your grid out
                 renderLibraryMatrixGrid(defaultPreloadedLibrary);
                 document.getElementById("fleet-display-matrix").innerHTML = `<p style="opacity: 0.6;">Sign in to inspect system fleet arrays.</p>`;
             }
@@ -748,12 +759,21 @@
         async function parseStorefrontSpecs(appId, title) {
             document.getElementById("runtime-game-title").textContent = title;
             const outputBox = document.getElementById("runtime-spec-box");
-            outputBox.textContent = `Extracting configuration payloads from Valve app details store...`;
+            const badge = document.getElementById("diagnostic-badge");
+            
+            // Trigger loading state visuals across components instantly
+            outputBox.textContent = `Establishing API link with Valve storefront servers...`;
+            document.body.style.background = "var(--bg-loading-gradient)";
+            badge.style.display = "inline-block";
+            badge.className = "loading-pulse";
+            badge.textContent = "SCANNING RIG...";
 
             try {
                 const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent('https://store.steampowered.com/api/appdetails?appids=' + appId)}`);
                 const wrapper = await res.json();
                 const json = JSON.parse(wrapper.contents);
+
+                badge.className = ""; // Kill loading pulse classes on payload return
 
                 if (json[appId] && json[appId].success) {
                     const requirements = json[appId].data.pc_requirements;
@@ -767,14 +787,15 @@
                         outputBox.textContent = cleanText;
                         evaluateHardwareCompatibility(cleanText);
                     } else {
-                        outputBox.textContent = "No standard hardware requirements parsing array mapped to this AppID asset bundle.";
+                        outputBox.textContent = "No standard hardware requirements array found for this AppID bundle asset path.";
                         resetWallpaperToNormal();
                     }
                 } else {
-                    outputBox.textContent = "Valve Storefront API refused asset handshake parameters.";
+                    outputBox.textContent = "Valve Storefront API refused asset handshake parameters (Request rate limits hit).";
                     resetWallpaperToNormal();
                 }
             } catch (err) {
+                badge.className = "";
                 outputBox.textContent = `Error processing downstream parameters: ${err.message}`;
                 resetWallpaperToNormal();
             }
