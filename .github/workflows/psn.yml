@@ -1,28 +1,28 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
-# Project: PSN Sync Workflow (Firebase Cloud Stream Target)
-# Timestamp: Tue, July 7, 2026, 1:45 PM (CT)
-# Compatibility: GitHub Actions, GitHub Pages, Firebase RTDB
+# Project: PSN Sync Workflow
+# Timestamp: May 10, 2026, 11:00 PM (NYT)
+# Compatibility: GitHub Actions, GitHub Pages
 # Note: DO NOT STRIP INDENTATION. YAML REQUIRES 2-SPACE SPACING.
-# Updates: Self-triggering workflow loop to bypass slow cron schedules.
+# Updates: Changed cron schedule to run every 23 minutes for the whole squad.
 # ------------------------------------
 
-name: PSN Cloud Sync and Pages Deploy
+name: PSN Sync and Deploy
 
 on:
   push:
     branches:
       - main
   workflow_dispatch:
-  repository_dispatch:
-    types: [psn_loop_trigger] # Allows the workflow to wake itself up
+  schedule:
+    - cron: '*/23 * * * *'
 
 permissions:
-  contents: write    # Changed to write so the action can trigger the next loop
+  contents: write
   pages: write
   id-token: write
 
 jobs:
-  psn-cloud-sync-job:
+  psn-sync-job:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -30,39 +30,46 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Setup Node.js Engine
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install Scraping Dependencies
+      - name: Install Dependencies
         run: npm install psn-api
 
-      - name: Execute PSN Sync & Stream to Firebase Target
+      - name: Run PSN Sync Script
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
         run: node Playstation/psnscript.js
 
-      - name: Setup Pages Architecture
+      - name: Commit and Push Data Changes
+        run: |
+          git config --global user.name "Werewolf3788-Bot"
+          git config --global user.email "bot@werewolf.ourflora.com"
+          
+          git add Playstation/psn_data.json Playstation/tokens.json .nojekyll
+          
+          if ! git diff --cached --quiet; then
+            git commit -m "Automated PSN Sync: $(date)"
+            git pull --rebase origin main
+            git push origin main
+          else
+            echo "No data changes detected. Skipping commit."
+          fi
+
+      - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      - name: Upload Static Web Artifact
+      - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
 
-      - name: Deploy Frontend Site
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Queue Next Sync Cycle (5 Minute Delay)
-        # This uses GitHub's built-in token to trigger the next run automatically
-        run: |
-          sleep 300
-          curl -X POST \
-            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            -H "Accept: application/vnd.github+json" \
-            https://api.github.com/repos/${{ github.repository }}/dispatches \
-            -d '{"event_type": "psn_loop_trigger"}'
