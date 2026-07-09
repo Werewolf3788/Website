@@ -44,7 +44,7 @@
         }
       ],
       "languages": [
-        "en"
+        "en-US"
       ],
       "isPlus": true,
       "isOfficiallyVerified": false,
@@ -73,44 +73,7 @@
         "uptime": null
       },
       "gamesPlayed": 171,
-      "devices": {
-        "accountId": "2732733730346312494",
-        "accountDevices": [
-          {
-            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
-            "deviceType": "PS4",
-            "activationType": "PSN_GAME_V3",
-            "activationDate": "2026-05-15T17:57:31.997Z",
-            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
-          },
-          {
-            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
-            "deviceType": "PS5",
-            "activationType": "PRIMARY",
-            "activationDate": "2026-05-15T22:48:18.313Z",
-            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
-          }
-        ]
-      },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_J/J2094_s.png",
-      "allAvatars": [
-        {
-          "size": "s",
-          "url": "http://static-resource.np.community.playstation.net/avatar_s/WWS_J/J2094_s.png"
-        },
-        {
-          "size": "xl",
-          "url": "http://static-resource.np.community.playstation.net/avatar_xl/WWS_J/J2094_xl.png"
-        },
-        {
-          "size": "l",
-          "url": "http://static-resource.np.community.playstation.net/avatar/WWS_J/J2094_l.png"
-        },
-        {
-          "size": "m",
-          "url": "http://static-resource.np.community.playstation.net/avatar_m/WWS_J/J2094_m.png"
-        }
-      ],
       "bio": "6C3RG",
       "psnAccountAge": "3 years, 2 months",
       "earliestTrophyDate": "2023-04-19T00:13:47.000Z",
@@ -413,7 +376,7 @@
             "groupName": "Expeditions: A Mudrunner Game",
             "earned": true,
             "earnedDate": "7/8/2026, 11:37:48 PM",
-            "earnedAge": "11 hours, 7 mins",
+            "earnedAge": "11 hours, 11 mins",
             "timestamp": 1783553868000,
             "currentValue": 0,
             "targetValue": 0
@@ -482,7 +445,7 @@
             "groupName": "Expeditions: A Mudrunner Game",
             "earned": true,
             "earnedDate": "7/4/2026, 1:22:05 PM",
-            "earnedAge": "4 days, 21 hours, 23 mins",
+            "earnedAge": "4 days, 21 hours, 27 mins",
             "timestamp": 1783171325000,
             "currentValue": 0,
             "targetValue": 0
@@ -551,7 +514,7 @@
             "groupName": "Expeditions: A Mudrunner Game",
             "earned": true,
             "earnedDate": "7/9/2026, 12:27:37 AM",
-            "earnedAge": "10 hours, 17 mins",
+            "earnedAge": "10 hours, 21 mins",
             "timestamp": 1783556857000,
             "currentValue": 0,
             "targetValue": 0
@@ -712,7 +675,7 @@
             "groupName": "Expeditions: A Mudrunner Game",
             "earned": true,
             "earnedDate": "7/4/2026, 12:14:18 PM",
-            "earnedAge": "4 days, 22 hours, 31 mins",
+            "earnedAge": "4 days, 22 hours, 35 mins",
             "timestamp": 1783167258000,
             "currentValue": 0,
             "targetValue": 0
@@ -735,7 +698,7 @@
             "groupName": "Expeditions: A Mudrunner Game",
             "earned": true,
             "earnedDate": "7/4/2026, 5:07:59 AM",
-            "earnedAge": "5 days, 5 hours, 37 mins",
+            "earnedAge": "5 days, 5 hours, 41 mins",
             "timestamp": 1783141679000,
             "currentValue": 0,
             "targetValue": 0
@@ -758,7 +721,7 @@
             "groupName": "Expeditions: A Mudrunner Game",
             "earned": true,
             "earnedDate": "7/4/2026, 12:14:18 PM",
-            "earnedAge": "4 days, 22 hours, 31 mins",
+            "earnedAge": "4 days, 22 hours, 35 mins",
             "timestamp": 1783167258000,
             "currentValue": 0,
             "targetValue": 0
@@ -781,7 +744,7 @@
             "groupName": "Expeditions: A Mudrunner Game",
             "earned": true,
             "earnedDate": "7/4/2026, 1:25:51 PM",
-            "earnedAge": "4 days, 21 hours, 19 mins",
+            "earnedAge": "4 days, 21 hours, 23 mins",
             "timestamp": 1783171551000,
             "currentValue": 0,
             "targetValue": 0
@@ -827,7 +790,7 @@
             "groupName": "Expeditions: A Mudrunner Game",
             "earned": true,
             "earnedDate": "7/9/2026, 1:06:24 AM",
-            "earnedAge": "9 hours, 39 mins",
+            "earnedAge": "9 hours, 43 mins",
             "timestamp": 1783559184000,
             "currentValue": 0,
             "targetValue": 0
@@ -865,7 +828,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/328a6ace-c9a1-4741-8b0a-25e0a5b8ed09.png",
           "timestamp": 1783559184000,
           "date": "7/9/2026, 1:06:24 AM",
-          "age": "9 hours, 39 mins"
+          "age": "9 hours, 43 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -873,7 +836,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/8173c53d-c646-4194-aca0-bec68f8ae7f6.png",
           "timestamp": 1783556857000,
           "date": "7/9/2026, 12:27:37 AM",
-          "age": "10 hours, 17 mins"
+          "age": "10 hours, 21 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -881,7 +844,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783553868000,
           "date": "7/8/2026, 11:37:48 PM",
-          "age": "11 hours, 7 mins"
+          "age": "11 hours, 11 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -889,7 +852,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783171551000,
           "date": "7/4/2026, 1:25:51 PM",
-          "age": "4 days, 21 hours, 19 mins"
+          "age": "4 days, 21 hours, 23 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -897,7 +860,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/a7005f29-76f3-4d0e-ac3d-2f1d3cdb87b4.png",
           "timestamp": 1783171325000,
           "date": "7/4/2026, 1:22:05 PM",
-          "age": "4 days, 21 hours, 23 mins"
+          "age": "4 days, 21 hours, 27 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -905,7 +868,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783167258000,
           "date": "7/4/2026, 12:14:18 PM",
-          "age": "4 days, 22 hours, 31 mins"
+          "age": "4 days, 22 hours, 35 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -913,7 +876,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783167258000,
           "date": "7/4/2026, 12:14:18 PM",
-          "age": "4 days, 22 hours, 31 mins"
+          "age": "4 days, 22 hours, 35 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -921,7 +884,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783141679000,
           "date": "7/4/2026, 5:07:59 AM",
-          "age": "5 days, 5 hours, 37 mins"
+          "age": "5 days, 5 hours, 41 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -929,7 +892,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/39636e9e-ef3c-4616-a3c3-358d52995c61.png",
           "timestamp": 1782464989000,
           "date": "6/26/2026, 9:09:49 AM",
-          "age": "1 week, 6 days, 1 hour, 35 mins"
+          "age": "1 week, 6 days, 1 hour, 39 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -937,7 +900,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/3a98f0e8-23da-4b03-8732-beb2142c9884.png",
           "timestamp": 1782448936000,
           "date": "6/26/2026, 4:42:16 AM",
-          "age": "1 week, 6 days, 6 hours, 3 mins"
+          "age": "1 week, 6 days, 6 hours, 7 mins"
         }
       ],
       "fullLibrary": [
@@ -6183,6 +6146,25 @@
           "definedTotal": 46
         }
       ],
+      "devices": {
+        "accountId": "2732733730346312494",
+        "accountDevices": [
+          {
+            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+            "deviceType": "PS4",
+            "activationType": "PSN_GAME_V3",
+            "activationDate": "2026-05-15T17:57:31.997Z",
+            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+          },
+          {
+            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+            "deviceType": "PS5",
+            "activationType": "PRIMARY",
+            "activationDate": "2026-05-15T22:48:18.313Z",
+            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+          }
+        ]
+      },
       "rawPsnDump": {
         "profile": {
           "onlineId": "Werewolf3788",
@@ -10671,9 +10653,35 @@
             "1707075464581789032"
           ],
           "totalItemCount": 35
+        },
+        "hardwareInfo": {
+          "accountId": "2732733730346312494",
+          "accountDevices": [
+            {
+              "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+              "deviceType": "PS4",
+              "activationType": "PSN_GAME_V3",
+              "activationDate": "2026-05-15T17:57:31.997Z",
+              "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+            },
+            {
+              "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+              "deviceType": "PS5",
+              "activationType": "PRIMARY",
+              "activationDate": "2026-05-15T22:48:18.313Z",
+              "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+            }
+          ]
+        },
+        "blocksQueue": {
+          "blockList": []
+        },
+        "friendRequests": {
+          "receivedRequests": [],
+          "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/9/2026, 10:45:45 AM"
+      "lastUpdated": "7/9/2026, 10:49:39 AM"
     },
     "kfruti": {
       "onlineId": "OneLIVIDMAN",
@@ -10701,7 +10709,7 @@
         }
       ],
       "languages": [
-        "en"
+        "en-US"
       ],
       "isPlus": true,
       "isOfficiallyVerified": false,
@@ -10730,44 +10738,7 @@
         "uptime": null
       },
       "gamesPlayed": 65,
-      "devices": {
-        "accountId": "2732733730346312494",
-        "accountDevices": [
-          {
-            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
-            "deviceType": "PS4",
-            "activationType": "PSN_GAME_V3",
-            "activationDate": "2026-05-15T17:57:31.997Z",
-            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
-          },
-          {
-            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
-            "deviceType": "PS5",
-            "activationType": "PRIMARY",
-            "activationDate": "2026-05-15T22:48:18.313Z",
-            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
-          }
-        ]
-      },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png",
-      "allAvatars": [
-        {
-          "size": "s",
-          "url": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png"
-        },
-        {
-          "size": "xl",
-          "url": "http://static-resource.np.community.playstation.net/avatar_xl/3RD/UP20461012H06_E12BA976867E8CB7278D_XL.png"
-        },
-        {
-          "size": "l",
-          "url": "http://static-resource.np.community.playstation.net/avatar/3RD/UP20461012H06_E12BA976867E8CB7278D_L.png"
-        },
-        {
-          "size": "m",
-          "url": "http://static-resource.np.community.playstation.net/avatar_m/3RD/UP20461012H06_C21A1EB30C84C90AABE6_M.png"
-        }
-      ],
       "bio": "exo-ONELIVIDMANKDFC3",
       "psnAccountAge": "9 years, 6 months",
       "earliestTrophyDate": "2016-12-30T18:40:30.000Z",
@@ -11171,7 +11142,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 6 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 10 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -11194,7 +11165,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "1 month, 1 week, 1 day, 23 hours, 35 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 23 hours, 39 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -11217,7 +11188,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 22 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 26 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -11240,7 +11211,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:30:03 AM",
-            "earnedAge": "1 month, 2 days, 6 hours, 15 mins",
+            "earnedAge": "1 month, 2 days, 6 hours, 19 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -11263,7 +11234,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "1 month, 2 days, 4 hours, 14 mins",
+            "earnedAge": "1 month, 2 days, 4 hours, 18 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -11286,7 +11257,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 month, 2 days, 2 hours, 8 mins",
+            "earnedAge": "1 month, 2 days, 2 hours, 12 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -11309,7 +11280,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 10:01:02 AM",
-            "earnedAge": "44 mins",
+            "earnedAge": "48 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -11542,7 +11513,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 6 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 10 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -11565,7 +11536,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 37 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 41 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -11804,7 +11775,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:47:40 AM",
-            "earnedAge": "3 hours, 58 mins",
+            "earnedAge": "4 hours, 2 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -11876,7 +11847,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 3:47:08 AM",
-            "earnedAge": "6 hours, 58 mins",
+            "earnedAge": "7 hours, 2 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -11923,7 +11894,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 4:57:10 AM",
-            "earnedAge": "5 hours, 48 mins",
+            "earnedAge": "5 hours, 52 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -12256,7 +12227,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "1 month, 2 days, 6 hours, 48 mins",
+            "earnedAge": "1 month, 2 days, 6 hours, 52 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -12280,7 +12251,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 9:57:02 AM",
-            "earnedAge": "1 month, 2 days, 48 mins",
+            "earnedAge": "1 month, 2 days, 52 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -12828,7 +12799,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 10:01:02 AM",
-          "age": "44 mins"
+          "age": "48 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -12836,7 +12807,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 6:47:40 AM",
-          "age": "3 hours, 58 mins"
+          "age": "4 hours, 2 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -12844,7 +12815,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 4:57:10 AM",
-          "age": "5 hours, 48 mins"
+          "age": "5 hours, 52 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -12852,7 +12823,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/9/2026, 3:47:08 AM",
-          "age": "6 hours, 58 mins"
+          "age": "7 hours, 2 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -12860,7 +12831,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/9/2026, 12:02:28 AM",
-          "age": "10 hours, 43 mins"
+          "age": "10 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -12868,7 +12839,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "13 hours, 43 mins"
+          "age": "13 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -12876,7 +12847,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "13 hours, 43 mins"
+          "age": "13 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -12884,7 +12855,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 8:08:04 PM",
-          "age": "14 hours, 37 mins"
+          "age": "14 hours, 41 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -12892,7 +12863,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 7:51:31 PM",
-          "age": "14 hours, 54 mins"
+          "age": "14 hours, 58 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -12900,7 +12871,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/19/2026, 2:22:26 AM",
-          "age": "2 weeks, 6 days, 8 hours, 23 mins"
+          "age": "2 weeks, 6 days, 8 hours, 27 mins"
         }
       ],
       "fullLibrary": [
@@ -14908,6 +14879,25 @@
           "definedTotal": 11
         }
       ],
+      "devices": {
+        "accountId": "2732733730346312494",
+        "accountDevices": [
+          {
+            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+            "deviceType": "PS4",
+            "activationType": "PSN_GAME_V3",
+            "activationDate": "2026-05-15T17:57:31.997Z",
+            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+          },
+          {
+            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+            "deviceType": "PS5",
+            "activationType": "PRIMARY",
+            "activationDate": "2026-05-15T22:48:18.313Z",
+            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+          }
+        ]
+      },
       "rawPsnDump": {
         "profile": {
           "onlineId": "OneLIVIDMAN",
@@ -16670,9 +16660,35 @@
             "1707075464581789032"
           ],
           "totalItemCount": 35
+        },
+        "hardwareInfo": {
+          "accountId": "2732733730346312494",
+          "accountDevices": [
+            {
+              "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+              "deviceType": "PS4",
+              "activationType": "PSN_GAME_V3",
+              "activationDate": "2026-05-15T17:57:31.997Z",
+              "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+            },
+            {
+              "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+              "deviceType": "PS5",
+              "activationType": "PRIMARY",
+              "activationDate": "2026-05-15T22:48:18.313Z",
+              "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+            }
+          ]
+        },
+        "blocksQueue": {
+          "blockList": []
+        },
+        "friendRequests": {
+          "receivedRequests": [],
+          "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/9/2026, 10:45:59 AM"
+      "lastUpdated": "7/9/2026, 10:49:46 AM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -16700,7 +16716,7 @@
         }
       ],
       "languages": [
-        "en"
+        "en-US"
       ],
       "isPlus": true,
       "isOfficiallyVerified": false,
@@ -16729,44 +16745,7 @@
         "uptime": null
       },
       "gamesPlayed": 65,
-      "devices": {
-        "accountId": "2732733730346312494",
-        "accountDevices": [
-          {
-            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
-            "deviceType": "PS4",
-            "activationType": "PSN_GAME_V3",
-            "activationDate": "2026-05-15T17:57:31.997Z",
-            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
-          },
-          {
-            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
-            "deviceType": "PS5",
-            "activationType": "PRIMARY",
-            "activationDate": "2026-05-15T22:48:18.313Z",
-            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
-          }
-        ]
-      },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png",
-      "allAvatars": [
-        {
-          "size": "s",
-          "url": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png"
-        },
-        {
-          "size": "xl",
-          "url": "http://static-resource.np.community.playstation.net/avatar_xl/3RD/UP20461012H06_E12BA976867E8CB7278D_XL.png"
-        },
-        {
-          "size": "l",
-          "url": "http://static-resource.np.community.playstation.net/avatar/3RD/UP20461012H06_E12BA976867E8CB7278D_L.png"
-        },
-        {
-          "size": "m",
-          "url": "http://static-resource.np.community.playstation.net/avatar_m/3RD/UP20461012H06_C21A1EB30C84C90AABE6_M.png"
-        }
-      ],
       "bio": "exo-ONELIVIDMANKDFC3",
       "psnAccountAge": "9 years, 6 months",
       "earliestTrophyDate": "2016-12-30T18:40:30.000Z",
@@ -17170,7 +17149,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 6 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 10 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -17193,7 +17172,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "1 month, 1 week, 1 day, 23 hours, 35 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 23 hours, 39 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -17216,7 +17195,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 23 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 26 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -17239,7 +17218,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:30:03 AM",
-            "earnedAge": "1 month, 2 days, 6 hours, 16 mins",
+            "earnedAge": "1 month, 2 days, 6 hours, 19 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -17262,7 +17241,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "1 month, 2 days, 4 hours, 14 mins",
+            "earnedAge": "1 month, 2 days, 4 hours, 18 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -17285,7 +17264,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 month, 2 days, 2 hours, 9 mins",
+            "earnedAge": "1 month, 2 days, 2 hours, 12 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -17308,7 +17287,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 10:01:02 AM",
-            "earnedAge": "45 mins",
+            "earnedAge": "48 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -17541,7 +17520,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 6 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 10 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -17564,7 +17543,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 38 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 41 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -17803,7 +17782,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:47:40 AM",
-            "earnedAge": "3 hours, 58 mins",
+            "earnedAge": "4 hours, 2 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -17875,7 +17854,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 3:47:08 AM",
-            "earnedAge": "6 hours, 58 mins",
+            "earnedAge": "7 hours, 2 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -17922,7 +17901,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 4:57:10 AM",
-            "earnedAge": "5 hours, 48 mins",
+            "earnedAge": "5 hours, 52 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -18255,7 +18234,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "1 month, 2 days, 6 hours, 48 mins",
+            "earnedAge": "1 month, 2 days, 6 hours, 52 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -18279,7 +18258,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 9:57:02 AM",
-            "earnedAge": "1 month, 2 days, 49 mins",
+            "earnedAge": "1 month, 2 days, 52 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -18827,7 +18806,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 10:01:02 AM",
-          "age": "45 mins"
+          "age": "48 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -18835,7 +18814,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 6:47:40 AM",
-          "age": "3 hours, 58 mins"
+          "age": "4 hours, 2 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -18843,7 +18822,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 4:57:10 AM",
-          "age": "5 hours, 48 mins"
+          "age": "5 hours, 52 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -18851,7 +18830,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/9/2026, 3:47:08 AM",
-          "age": "6 hours, 58 mins"
+          "age": "7 hours, 2 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -18859,7 +18838,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/9/2026, 12:02:28 AM",
-          "age": "10 hours, 43 mins"
+          "age": "10 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -18867,7 +18846,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "13 hours, 43 mins"
+          "age": "13 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -18875,7 +18854,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "13 hours, 43 mins"
+          "age": "13 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -18883,7 +18862,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 8:08:04 PM",
-          "age": "14 hours, 38 mins"
+          "age": "14 hours, 41 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -18891,7 +18870,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 7:51:31 PM",
-          "age": "14 hours, 54 mins"
+          "age": "14 hours, 58 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -18899,7 +18878,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/19/2026, 2:22:26 AM",
-          "age": "2 weeks, 6 days, 8 hours, 23 mins"
+          "age": "2 weeks, 6 days, 8 hours, 27 mins"
         }
       ],
       "fullLibrary": [
@@ -20907,6 +20886,25 @@
           "definedTotal": 11
         }
       ],
+      "devices": {
+        "accountId": "2732733730346312494",
+        "accountDevices": [
+          {
+            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+            "deviceType": "PS4",
+            "activationType": "PSN_GAME_V3",
+            "activationDate": "2026-05-15T17:57:31.997Z",
+            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+          },
+          {
+            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+            "deviceType": "PS5",
+            "activationType": "PRIMARY",
+            "activationDate": "2026-05-15T22:48:18.313Z",
+            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+          }
+        ]
+      },
       "rawPsnDump": {
         "profile": {
           "onlineId": "OneLIVIDMAN",
@@ -22669,9 +22667,35 @@
             "1707075464581789032"
           ],
           "totalItemCount": 35
+        },
+        "hardwareInfo": {
+          "accountId": "2732733730346312494",
+          "accountDevices": [
+            {
+              "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+              "deviceType": "PS4",
+              "activationType": "PSN_GAME_V3",
+              "activationDate": "2026-05-15T17:57:31.997Z",
+              "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+            },
+            {
+              "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+              "deviceType": "PS5",
+              "activationType": "PRIMARY",
+              "activationDate": "2026-05-15T22:48:18.313Z",
+              "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+            }
+          ]
+        },
+        "blocksQueue": {
+          "blockList": []
+        },
+        "friendRequests": {
+          "receivedRequests": [],
+          "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/9/2026, 10:46:17 AM"
+      "lastUpdated": "7/9/2026, 10:49:54 AM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -22695,7 +22719,7 @@
         }
       ],
       "languages": [
-        "en"
+        "en-US"
       ],
       "isPlus": true,
       "isOfficiallyVerified": false,
@@ -22724,36 +22748,17 @@
         "uptime": null
       },
       "gamesPlayed": 0,
-      "devices": [],
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
-      "allAvatars": [
-        {
-          "size": "s",
-          "url": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png"
-        },
-        {
-          "size": "xl",
-          "url": "http://static-resource.np.community.playstation.net/avatar_xl/3RD/30006_XL.png"
-        },
-        {
-          "size": "l",
-          "url": "http://static-resource.np.community.playstation.net/avatar/3RD/30006.png"
-        },
-        {
-          "size": "m",
-          "url": "http://static-resource.np.community.playstation.net/avatar_m/3RD/30006_m.png"
-        }
-      ],
       "bio": "Official Pack Member Profile",
       "psnAccountAge": "Unknown",
       "earliestTrophyDate": null,
-      "latestTrophyDate": 1783593978984,
+      "latestTrophyDate": 1783594195723,
       "plus": true,
       "level": 0,
       "region": "US",
       "trophySummary": {
         "error": {
-          "referenceId": "6ae17a71-7b83-11f1-8dc4-b11412ed85bf",
+          "referenceId": "ec14bc33-7b83-11f1-865d-254520fd5965",
           "code": 2240526,
           "message": "Not permitted by access control"
         },
@@ -22767,6 +22772,9 @@
       "activeHunt": null,
       "mostRecentTrophies": [],
       "fullLibrary": [],
+      "devices": [],
+      "blockedAccountsCount": 0,
+      "inboundFriendRequestsCount": 0,
       "rawPsnDump": {
         "profile": {
           "onlineId": "Darkwing69420",
@@ -22804,9 +22812,12 @@
         },
         "telemetry": [],
         "titles": [],
-        "friends": []
+        "friends": [],
+        "hardwareInfo": [],
+        "blocksQueue": [],
+        "friendRequests": []
       },
-      "lastUpdated": "7/9/2026, 10:46:18 AM"
+      "lastUpdated": "7/9/2026, 10:49:55 AM"
     },
     "mike": {
       "onlineId": "OneLIVIDMAN",
@@ -22834,7 +22845,7 @@
         }
       ],
       "languages": [
-        "en"
+        "en-US"
       ],
       "isPlus": true,
       "isOfficiallyVerified": false,
@@ -22863,44 +22874,7 @@
         "uptime": null
       },
       "gamesPlayed": 65,
-      "devices": {
-        "accountId": "2732733730346312494",
-        "accountDevices": [
-          {
-            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
-            "deviceType": "PS4",
-            "activationType": "PSN_GAME_V3",
-            "activationDate": "2026-05-15T17:57:31.997Z",
-            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
-          },
-          {
-            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
-            "deviceType": "PS5",
-            "activationType": "PRIMARY",
-            "activationDate": "2026-05-15T22:48:18.313Z",
-            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
-          }
-        ]
-      },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png",
-      "allAvatars": [
-        {
-          "size": "s",
-          "url": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png"
-        },
-        {
-          "size": "xl",
-          "url": "http://static-resource.np.community.playstation.net/avatar_xl/3RD/UP20461012H06_E12BA976867E8CB7278D_XL.png"
-        },
-        {
-          "size": "l",
-          "url": "http://static-resource.np.community.playstation.net/avatar/3RD/UP20461012H06_E12BA976867E8CB7278D_L.png"
-        },
-        {
-          "size": "m",
-          "url": "http://static-resource.np.community.playstation.net/avatar_m/3RD/UP20461012H06_C21A1EB30C84C90AABE6_M.png"
-        }
-      ],
       "bio": "exo-ONELIVIDMANKDFC3",
       "psnAccountAge": "9 years, 6 months",
       "earliestTrophyDate": "2016-12-30T18:40:30.000Z",
@@ -23304,7 +23278,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 6 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 10 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -23327,7 +23301,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "1 month, 1 week, 1 day, 23 hours, 35 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 23 hours, 39 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -23350,7 +23324,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 23 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 27 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -23373,7 +23347,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:30:03 AM",
-            "earnedAge": "1 month, 2 days, 6 hours, 16 mins",
+            "earnedAge": "1 month, 2 days, 6 hours, 19 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -23396,7 +23370,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "1 month, 2 days, 4 hours, 14 mins",
+            "earnedAge": "1 month, 2 days, 4 hours, 18 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -23419,7 +23393,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 month, 2 days, 2 hours, 9 mins",
+            "earnedAge": "1 month, 2 days, 2 hours, 12 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -23442,7 +23416,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 10:01:02 AM",
-            "earnedAge": "45 mins",
+            "earnedAge": "48 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -23675,7 +23649,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 6 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 10 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -23698,7 +23672,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 38 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 41 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -23937,7 +23911,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:47:40 AM",
-            "earnedAge": "3 hours, 58 mins",
+            "earnedAge": "4 hours, 2 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -24009,7 +23983,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 3:47:08 AM",
-            "earnedAge": "6 hours, 59 mins",
+            "earnedAge": "7 hours, 2 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -24056,7 +24030,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 4:57:10 AM",
-            "earnedAge": "5 hours, 49 mins",
+            "earnedAge": "5 hours, 52 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -24389,7 +24363,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "1 month, 2 days, 6 hours, 49 mins",
+            "earnedAge": "1 month, 2 days, 6 hours, 52 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -24413,7 +24387,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 9:57:02 AM",
-            "earnedAge": "1 month, 2 days, 49 mins",
+            "earnedAge": "1 month, 2 days, 52 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -24961,7 +24935,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 10:01:02 AM",
-          "age": "45 mins"
+          "age": "48 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -24969,7 +24943,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 6:47:40 AM",
-          "age": "3 hours, 58 mins"
+          "age": "4 hours, 2 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -24977,7 +24951,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 4:57:10 AM",
-          "age": "5 hours, 49 mins"
+          "age": "5 hours, 52 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -24985,7 +24959,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/9/2026, 3:47:08 AM",
-          "age": "6 hours, 59 mins"
+          "age": "7 hours, 2 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -24993,7 +24967,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/9/2026, 12:02:28 AM",
-          "age": "10 hours, 43 mins"
+          "age": "10 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -25001,7 +24975,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "13 hours, 44 mins"
+          "age": "13 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -25009,7 +24983,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "13 hours, 44 mins"
+          "age": "13 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -25017,7 +24991,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 8:08:04 PM",
-          "age": "14 hours, 38 mins"
+          "age": "14 hours, 41 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -25025,7 +24999,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 7:51:31 PM",
-          "age": "14 hours, 54 mins"
+          "age": "14 hours, 58 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -25033,7 +25007,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/19/2026, 2:22:26 AM",
-          "age": "2 weeks, 6 days, 8 hours, 23 mins"
+          "age": "2 weeks, 6 days, 8 hours, 27 mins"
         }
       ],
       "fullLibrary": [
@@ -27041,6 +27015,25 @@
           "definedTotal": 11
         }
       ],
+      "devices": {
+        "accountId": "2732733730346312494",
+        "accountDevices": [
+          {
+            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+            "deviceType": "PS4",
+            "activationType": "PSN_GAME_V3",
+            "activationDate": "2026-05-15T17:57:31.997Z",
+            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+          },
+          {
+            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+            "deviceType": "PS5",
+            "activationType": "PRIMARY",
+            "activationDate": "2026-05-15T22:48:18.313Z",
+            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+          }
+        ]
+      },
       "rawPsnDump": {
         "profile": {
           "onlineId": "OneLIVIDMAN",
@@ -28803,9 +28796,35 @@
             "1707075464581789032"
           ],
           "totalItemCount": 35
+        },
+        "hardwareInfo": {
+          "accountId": "2732733730346312494",
+          "accountDevices": [
+            {
+              "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+              "deviceType": "PS4",
+              "activationType": "PSN_GAME_V3",
+              "activationDate": "2026-05-15T17:57:31.997Z",
+              "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+            },
+            {
+              "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+              "deviceType": "PS5",
+              "activationType": "PRIMARY",
+              "activationDate": "2026-05-15T22:48:18.313Z",
+              "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+            }
+          ]
+        },
+        "blocksQueue": {
+          "blockList": []
+        },
+        "friendRequests": {
+          "receivedRequests": [],
+          "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/9/2026, 10:46:29 AM"
+      "lastUpdated": "7/9/2026, 10:50:03 AM"
     },
     "katy": {
       "onlineId": "OneLIVIDMAN",
@@ -28833,7 +28852,7 @@
         }
       ],
       "languages": [
-        "en"
+        "en-US"
       ],
       "isPlus": true,
       "isOfficiallyVerified": false,
@@ -28848,44 +28867,7 @@
       "platform": "PS5",
       "twitch": null,
       "gamesPlayed": 65,
-      "devices": {
-        "accountId": "2732733730346312494",
-        "accountDevices": [
-          {
-            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
-            "deviceType": "PS4",
-            "activationType": "PSN_GAME_V3",
-            "activationDate": "2026-05-15T17:57:31.997Z",
-            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
-          },
-          {
-            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
-            "deviceType": "PS5",
-            "activationType": "PRIMARY",
-            "activationDate": "2026-05-15T22:48:18.313Z",
-            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
-          }
-        ]
-      },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png",
-      "allAvatars": [
-        {
-          "size": "s",
-          "url": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png"
-        },
-        {
-          "size": "xl",
-          "url": "http://static-resource.np.community.playstation.net/avatar_xl/3RD/UP20461012H06_E12BA976867E8CB7278D_XL.png"
-        },
-        {
-          "size": "l",
-          "url": "http://static-resource.np.community.playstation.net/avatar/3RD/UP20461012H06_E12BA976867E8CB7278D_L.png"
-        },
-        {
-          "size": "m",
-          "url": "http://static-resource.np.community.playstation.net/avatar_m/3RD/UP20461012H06_C21A1EB30C84C90AABE6_M.png"
-        }
-      ],
       "bio": "exo-ONELIVIDMANKDFC3",
       "psnAccountAge": "9 years, 6 months",
       "earliestTrophyDate": "2016-12-30T18:40:30.000Z",
@@ -29289,7 +29271,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 6 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 10 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -29312,7 +29294,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "1 month, 1 week, 1 day, 23 hours, 35 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 23 hours, 39 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -29335,7 +29317,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 23 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 27 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -29358,7 +29340,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:30:03 AM",
-            "earnedAge": "1 month, 2 days, 6 hours, 16 mins",
+            "earnedAge": "1 month, 2 days, 6 hours, 20 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -29381,7 +29363,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "1 month, 2 days, 4 hours, 14 mins",
+            "earnedAge": "1 month, 2 days, 4 hours, 18 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -29404,7 +29386,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 month, 2 days, 2 hours, 9 mins",
+            "earnedAge": "1 month, 2 days, 2 hours, 13 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -29427,7 +29409,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 10:01:02 AM",
-            "earnedAge": "45 mins",
+            "earnedAge": "49 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -29660,7 +29642,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 6 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 10 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -29683,7 +29665,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 38 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 42 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -29922,7 +29904,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:47:40 AM",
-            "earnedAge": "3 hours, 58 mins",
+            "earnedAge": "4 hours, 2 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -29994,7 +29976,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 3:47:08 AM",
-            "earnedAge": "6 hours, 59 mins",
+            "earnedAge": "7 hours, 2 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -30041,7 +30023,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 4:57:10 AM",
-            "earnedAge": "5 hours, 49 mins",
+            "earnedAge": "5 hours, 52 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -30374,7 +30356,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "1 month, 2 days, 6 hours, 49 mins",
+            "earnedAge": "1 month, 2 days, 6 hours, 52 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -30398,7 +30380,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 9:57:02 AM",
-            "earnedAge": "1 month, 2 days, 49 mins",
+            "earnedAge": "1 month, 2 days, 53 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -30946,7 +30928,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 10:01:02 AM",
-          "age": "45 mins"
+          "age": "49 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -30954,7 +30936,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 6:47:40 AM",
-          "age": "3 hours, 58 mins"
+          "age": "4 hours, 2 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -30962,7 +30944,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 4:57:10 AM",
-          "age": "5 hours, 49 mins"
+          "age": "5 hours, 52 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -30970,7 +30952,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/9/2026, 3:47:08 AM",
-          "age": "6 hours, 59 mins"
+          "age": "7 hours, 2 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -30978,7 +30960,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/9/2026, 12:02:28 AM",
-          "age": "10 hours, 44 mins"
+          "age": "10 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -30986,7 +30968,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "13 hours, 44 mins"
+          "age": "13 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -30994,7 +30976,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "13 hours, 44 mins"
+          "age": "13 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -31002,7 +30984,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 8:08:04 PM",
-          "age": "14 hours, 38 mins"
+          "age": "14 hours, 42 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -31010,7 +30992,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 7:51:31 PM",
-          "age": "14 hours, 55 mins"
+          "age": "14 hours, 58 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -31018,7 +31000,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/19/2026, 2:22:26 AM",
-          "age": "2 weeks, 6 days, 8 hours, 24 mins"
+          "age": "2 weeks, 6 days, 8 hours, 27 mins"
         }
       ],
       "fullLibrary": [
@@ -33026,6 +33008,25 @@
           "definedTotal": 11
         }
       ],
+      "devices": {
+        "accountId": "2732733730346312494",
+        "accountDevices": [
+          {
+            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+            "deviceType": "PS4",
+            "activationType": "PSN_GAME_V3",
+            "activationDate": "2026-05-15T17:57:31.997Z",
+            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+          },
+          {
+            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+            "deviceType": "PS5",
+            "activationType": "PRIMARY",
+            "activationDate": "2026-05-15T22:48:18.313Z",
+            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+          }
+        ]
+      },
       "rawPsnDump": {
         "profile": {
           "onlineId": "OneLIVIDMAN",
@@ -34788,9 +34789,35 @@
             "1707075464581789032"
           ],
           "totalItemCount": 35
+        },
+        "hardwareInfo": {
+          "accountId": "2732733730346312494",
+          "accountDevices": [
+            {
+              "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+              "deviceType": "PS4",
+              "activationType": "PSN_GAME_V3",
+              "activationDate": "2026-05-15T17:57:31.997Z",
+              "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+            },
+            {
+              "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+              "deviceType": "PS5",
+              "activationType": "PRIMARY",
+              "activationDate": "2026-05-15T22:48:18.313Z",
+              "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+            }
+          ]
+        },
+        "blocksQueue": {
+          "blockList": []
+        },
+        "friendRequests": {
+          "receivedRequests": [],
+          "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/9/2026, 10:46:39 AM"
+      "lastUpdated": "7/9/2026, 10:50:11 AM"
     },
     "marc": {
       "onlineId": "OneLIVIDMAN",
@@ -34818,7 +34845,7 @@
         }
       ],
       "languages": [
-        "en"
+        "en-US"
       ],
       "isPlus": true,
       "isOfficiallyVerified": false,
@@ -34833,44 +34860,7 @@
       "platform": "PS5",
       "twitch": null,
       "gamesPlayed": 65,
-      "devices": {
-        "accountId": "2732733730346312494",
-        "accountDevices": [
-          {
-            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
-            "deviceType": "PS4",
-            "activationType": "PSN_GAME_V3",
-            "activationDate": "2026-05-15T17:57:31.997Z",
-            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
-          },
-          {
-            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
-            "deviceType": "PS5",
-            "activationType": "PRIMARY",
-            "activationDate": "2026-05-15T22:48:18.313Z",
-            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
-          }
-        ]
-      },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png",
-      "allAvatars": [
-        {
-          "size": "s",
-          "url": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png"
-        },
-        {
-          "size": "xl",
-          "url": "http://static-resource.np.community.playstation.net/avatar_xl/3RD/UP20461012H06_E12BA976867E8CB7278D_XL.png"
-        },
-        {
-          "size": "l",
-          "url": "http://static-resource.np.community.playstation.net/avatar/3RD/UP20461012H06_E12BA976867E8CB7278D_L.png"
-        },
-        {
-          "size": "m",
-          "url": "http://static-resource.np.community.playstation.net/avatar_m/3RD/UP20461012H06_C21A1EB30C84C90AABE6_M.png"
-        }
-      ],
       "bio": "exo-ONELIVIDMANKDFC3",
       "psnAccountAge": "9 years, 6 months",
       "earliestTrophyDate": "2016-12-30T18:40:30.000Z",
@@ -35274,7 +35264,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 7 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 10 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -35297,7 +35287,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "1 month, 1 week, 1 day, 23 hours, 36 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 23 hours, 39 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -35320,7 +35310,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 23 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 27 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -35343,7 +35333,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:30:03 AM",
-            "earnedAge": "1 month, 2 days, 6 hours, 16 mins",
+            "earnedAge": "1 month, 2 days, 6 hours, 20 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -35366,7 +35356,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "1 month, 2 days, 4 hours, 15 mins",
+            "earnedAge": "1 month, 2 days, 4 hours, 18 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -35389,7 +35379,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 month, 2 days, 2 hours, 9 mins",
+            "earnedAge": "1 month, 2 days, 2 hours, 13 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -35412,7 +35402,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 10:01:02 AM",
-            "earnedAge": "45 mins",
+            "earnedAge": "49 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -35645,7 +35635,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 7 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 10 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -35668,7 +35658,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 38 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 42 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -35907,7 +35897,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:47:40 AM",
-            "earnedAge": "3 hours, 59 mins",
+            "earnedAge": "4 hours, 2 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -35979,7 +35969,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 3:47:08 AM",
-            "earnedAge": "6 hours, 59 mins",
+            "earnedAge": "7 hours, 3 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -36026,7 +36016,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 4:57:10 AM",
-            "earnedAge": "5 hours, 49 mins",
+            "earnedAge": "5 hours, 53 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -36359,7 +36349,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "1 month, 2 days, 6 hours, 49 mins",
+            "earnedAge": "1 month, 2 days, 6 hours, 53 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -36383,7 +36373,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 9:57:02 AM",
-            "earnedAge": "1 month, 2 days, 49 mins",
+            "earnedAge": "1 month, 2 days, 53 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -36931,7 +36921,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 10:01:02 AM",
-          "age": "45 mins"
+          "age": "49 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -36939,7 +36929,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 6:47:40 AM",
-          "age": "3 hours, 59 mins"
+          "age": "4 hours, 2 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -36947,7 +36937,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 4:57:10 AM",
-          "age": "5 hours, 49 mins"
+          "age": "5 hours, 53 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -36955,7 +36945,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/9/2026, 3:47:08 AM",
-          "age": "6 hours, 59 mins"
+          "age": "7 hours, 3 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -36963,7 +36953,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/9/2026, 12:02:28 AM",
-          "age": "10 hours, 44 mins"
+          "age": "10 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -36971,7 +36961,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "13 hours, 44 mins"
+          "age": "13 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -36979,7 +36969,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "13 hours, 44 mins"
+          "age": "13 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -36987,7 +36977,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 8:08:04 PM",
-          "age": "14 hours, 38 mins"
+          "age": "14 hours, 42 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -36995,7 +36985,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 7:51:31 PM",
-          "age": "14 hours, 55 mins"
+          "age": "14 hours, 58 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -37003,7 +36993,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/19/2026, 2:22:26 AM",
-          "age": "2 weeks, 6 days, 8 hours, 24 mins"
+          "age": "2 weeks, 6 days, 8 hours, 27 mins"
         }
       ],
       "fullLibrary": [
@@ -39011,6 +39001,25 @@
           "definedTotal": 11
         }
       ],
+      "devices": {
+        "accountId": "2732733730346312494",
+        "accountDevices": [
+          {
+            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+            "deviceType": "PS4",
+            "activationType": "PSN_GAME_V3",
+            "activationDate": "2026-05-15T17:57:31.997Z",
+            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+          },
+          {
+            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+            "deviceType": "PS5",
+            "activationType": "PRIMARY",
+            "activationDate": "2026-05-15T22:48:18.313Z",
+            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+          }
+        ]
+      },
       "rawPsnDump": {
         "profile": {
           "onlineId": "OneLIVIDMAN",
@@ -40773,9 +40782,35 @@
             "1707075464581789032"
           ],
           "totalItemCount": 35
+        },
+        "hardwareInfo": {
+          "accountId": "2732733730346312494",
+          "accountDevices": [
+            {
+              "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+              "deviceType": "PS4",
+              "activationType": "PSN_GAME_V3",
+              "activationDate": "2026-05-15T17:57:31.997Z",
+              "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+            },
+            {
+              "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+              "deviceType": "PS5",
+              "activationType": "PRIMARY",
+              "activationDate": "2026-05-15T22:48:18.313Z",
+              "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+            }
+          ]
+        },
+        "blocksQueue": {
+          "blockList": []
+        },
+        "friendRequests": {
+          "receivedRequests": [],
+          "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/9/2026, 10:46:49 AM"
+      "lastUpdated": "7/9/2026, 10:50:19 AM"
     },
     "seth": {
       "onlineId": "OneLIVIDMAN",
@@ -40803,7 +40838,7 @@
         }
       ],
       "languages": [
-        "en"
+        "en-US"
       ],
       "isPlus": true,
       "isOfficiallyVerified": false,
@@ -40832,44 +40867,7 @@
         "uptime": null
       },
       "gamesPlayed": 65,
-      "devices": {
-        "accountId": "2732733730346312494",
-        "accountDevices": [
-          {
-            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
-            "deviceType": "PS4",
-            "activationType": "PSN_GAME_V3",
-            "activationDate": "2026-05-15T17:57:31.997Z",
-            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
-          },
-          {
-            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
-            "deviceType": "PS5",
-            "activationType": "PRIMARY",
-            "activationDate": "2026-05-15T22:48:18.313Z",
-            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
-          }
-        ]
-      },
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png",
-      "allAvatars": [
-        {
-          "size": "s",
-          "url": "http://static-resource.np.community.playstation.net/avatar_s/3RD/UP20461012H06_493460208836B9CBA8BE_S.png"
-        },
-        {
-          "size": "xl",
-          "url": "http://static-resource.np.community.playstation.net/avatar_xl/3RD/UP20461012H06_E12BA976867E8CB7278D_XL.png"
-        },
-        {
-          "size": "l",
-          "url": "http://static-resource.np.community.playstation.net/avatar/3RD/UP20461012H06_E12BA976867E8CB7278D_L.png"
-        },
-        {
-          "size": "m",
-          "url": "http://static-resource.np.community.playstation.net/avatar_m/3RD/UP20461012H06_C21A1EB30C84C90AABE6_M.png"
-        }
-      ],
       "bio": "exo-ONELIVIDMANKDFC3",
       "psnAccountAge": "9 years, 6 months",
       "earliestTrophyDate": "2016-12-30T18:40:30.000Z",
@@ -41273,7 +41271,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 7 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 10 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -41296,7 +41294,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "1 month, 1 week, 1 day, 23 hours, 36 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 23 hours, 39 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -41319,7 +41317,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 23 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 27 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -41342,7 +41340,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:30:03 AM",
-            "earnedAge": "1 month, 2 days, 6 hours, 16 mins",
+            "earnedAge": "1 month, 2 days, 6 hours, 20 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -41365,7 +41363,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "1 month, 2 days, 4 hours, 15 mins",
+            "earnedAge": "1 month, 2 days, 4 hours, 18 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -41388,7 +41386,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 month, 2 days, 2 hours, 9 mins",
+            "earnedAge": "1 month, 2 days, 2 hours, 13 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -41411,7 +41409,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 10:01:02 AM",
-            "earnedAge": "45 mins",
+            "earnedAge": "49 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -41644,7 +41642,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 7 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 1 hour, 10 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -41667,7 +41665,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 38 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 21 hours, 42 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -41906,7 +41904,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:47:40 AM",
-            "earnedAge": "3 hours, 59 mins",
+            "earnedAge": "4 hours, 2 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -41978,7 +41976,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 3:47:08 AM",
-            "earnedAge": "6 hours, 59 mins",
+            "earnedAge": "7 hours, 3 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -42025,7 +42023,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 4:57:10 AM",
-            "earnedAge": "5 hours, 49 mins",
+            "earnedAge": "5 hours, 53 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -42358,7 +42356,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "1 month, 2 days, 6 hours, 49 mins",
+            "earnedAge": "1 month, 2 days, 6 hours, 53 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -42382,7 +42380,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 9:57:02 AM",
-            "earnedAge": "1 month, 2 days, 49 mins",
+            "earnedAge": "1 month, 2 days, 53 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -42930,7 +42928,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 10:01:02 AM",
-          "age": "45 mins"
+          "age": "49 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -42938,7 +42936,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 6:47:40 AM",
-          "age": "3 hours, 59 mins"
+          "age": "4 hours, 2 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -42946,7 +42944,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 4:57:10 AM",
-          "age": "5 hours, 49 mins"
+          "age": "5 hours, 53 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -42954,7 +42952,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/9/2026, 3:47:08 AM",
-          "age": "6 hours, 59 mins"
+          "age": "7 hours, 3 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -42962,7 +42960,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/9/2026, 12:02:28 AM",
-          "age": "10 hours, 44 mins"
+          "age": "10 hours, 47 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -42970,7 +42968,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "13 hours, 44 mins"
+          "age": "13 hours, 48 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -42978,7 +42976,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "13 hours, 44 mins"
+          "age": "13 hours, 48 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -42986,7 +42984,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 8:08:04 PM",
-          "age": "14 hours, 38 mins"
+          "age": "14 hours, 42 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -42994,7 +42992,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 7:51:31 PM",
-          "age": "14 hours, 55 mins"
+          "age": "14 hours, 58 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -43002,7 +43000,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/19/2026, 2:22:26 AM",
-          "age": "2 weeks, 6 days, 8 hours, 24 mins"
+          "age": "2 weeks, 6 days, 8 hours, 27 mins"
         }
       ],
       "fullLibrary": [
@@ -45010,6 +45008,25 @@
           "definedTotal": 11
         }
       ],
+      "devices": {
+        "accountId": "2732733730346312494",
+        "accountDevices": [
+          {
+            "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+            "deviceType": "PS4",
+            "activationType": "PSN_GAME_V3",
+            "activationDate": "2026-05-15T17:57:31.997Z",
+            "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+          },
+          {
+            "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+            "deviceType": "PS5",
+            "activationType": "PRIMARY",
+            "activationDate": "2026-05-15T22:48:18.313Z",
+            "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+          }
+        ]
+      },
       "rawPsnDump": {
         "profile": {
           "onlineId": "OneLIVIDMAN",
@@ -46772,9 +46789,35 @@
             "1707075464581789032"
           ],
           "totalItemCount": 35
+        },
+        "hardwareInfo": {
+          "accountId": "2732733730346312494",
+          "accountDevices": [
+            {
+              "deviceId": "5053cf069345c661e0795eb749622cafe3cfc1aa79334ba1dd6863454bd2f0038165",
+              "deviceType": "PS4",
+              "activationType": "PSN_GAME_V3",
+              "activationDate": "2026-05-15T17:57:31.997Z",
+              "accountDeviceVector": "rEdpu3dF8D/M78wDaBVk1g"
+            },
+            {
+              "deviceId": "5053005fd381ae343580ceb7f534f535f6e72c2b819ec12ae09495a5bd91a5ed08e2",
+              "deviceType": "PS5",
+              "activationType": "PRIMARY",
+              "activationDate": "2026-05-15T22:48:18.313Z",
+              "accountDeviceVector": "PpUm1D8iO6qOzGNAtNw3Mg"
+            }
+          ]
+        },
+        "blocksQueue": {
+          "blockList": []
+        },
+        "friendRequests": {
+          "receivedRequests": [],
+          "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/9/2026, 10:47:00 AM"
+      "lastUpdated": "7/9/2026, 10:50:27 AM"
     }
   },
   "personas": {
@@ -46804,7 +46847,7 @@
         "werewolf",
         "kfruti"
       ],
-      "lastUpdated": "7/9/2026, 10:47:00 AM"
+      "lastUpdated": "7/9/2026, 10:50:27 AM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -46831,7 +46874,7 @@
       "accounts": [
         "ray"
       ],
-      "lastUpdated": "7/9/2026, 10:47:00 AM"
+      "lastUpdated": "7/9/2026, 10:50:27 AM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -46848,7 +46891,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "7/9/2026, 10:46:18 AM"
+        "end": "7/9/2026, 10:49:55 AM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -46858,7 +46901,7 @@
       "accounts": [
         "darkwing"
       ],
-      "lastUpdated": "7/9/2026, 10:47:00 AM"
+      "lastUpdated": "7/9/2026, 10:50:27 AM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -46885,7 +46928,7 @@
       "accounts": [
         "mike"
       ],
-      "lastUpdated": "7/9/2026, 10:47:00 AM"
+      "lastUpdated": "7/9/2026, 10:50:27 AM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -46912,7 +46955,7 @@
       "accounts": [
         "katy"
       ],
-      "lastUpdated": "7/9/2026, 10:47:00 AM"
+      "lastUpdated": "7/9/2026, 10:50:27 AM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -46939,7 +46982,7 @@
       "accounts": [
         "marc"
       ],
-      "lastUpdated": "7/9/2026, 10:47:00 AM"
+      "lastUpdated": "7/9/2026, 10:50:27 AM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -46966,7 +47009,7 @@
       "accounts": [
         "seth"
       ],
-      "lastUpdated": "7/9/2026, 10:47:00 AM"
+      "lastUpdated": "7/9/2026, 10:50:27 AM"
     }
   },
   "mutualSquadFollowers": [
@@ -46975,7 +47018,7 @@
       "sharedConnections": 2
     }
   ],
-  "lastGlobalUpdate": "7/9/2026, 10:45:25 AM",
-  "engineVersion": "14.1.4",
-  "codeTimestamp": "Thursday, July 9, 2026 | 6:40 AM EDT"
+  "lastGlobalUpdate": "7/9/2026, 10:49:29 AM",
+  "engineVersion": "14.2.1",
+  "codeTimestamp": "Thursday, July 9, 2026 | 6:50 AM EDT"
 }
