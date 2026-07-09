@@ -2,20 +2,28 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- 
+      VERSION TIMESTAMP: 2026-07-07 12:15:00 CT
+      CRITICAL: Viewport standard configured for strict 100vw layout tracking. 
+    -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phoenix Darkfire - Elite Protocol</title>
+    <!-- Animate.css for the alert events -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <style>
         body, html { 
             margin: 0; 
             padding: 0; 
-            width: 100%; 
+            width: 100vw; 
+            max-width: 100%;
             height: 100%; 
             overflow: hidden; 
-            background: transparent; 
+            background: transparent; /* Fully transparent for OBS/StreamElements capture */
             font-family: 'Arial Black', sans-serif; 
+            font-size: 16px; /* Mobile-first design default baseline fallback */
         }
 
+        /* Prevent scrollbars */
         .overlay-wrapper { 
             display: flex; 
             flex-direction: column; 
@@ -94,6 +102,7 @@
             pointer-events: none;
         }
 
+        /* Middle layout wrapper */
         .middle-section { 
             flex: 1; 
             position: relative; 
@@ -141,7 +150,7 @@
             100% { filter: brightness(0) blur(5vh); transform: scale(0); opacity: 0; }
         }
 
-        /* --- BOTTOM LEFT: QR & CLOCK --- */
+        /* --- BOTTOM LEFT: QR ONLY --- */
         .bottom-left-container {
             position: absolute;
             bottom: 3vh;
@@ -156,44 +165,25 @@
 
         .qr-wrapper {
             background: rgba(0, 0, 0, 0.6);
-            padding: 0.8vh;
-            border-radius: 1vh;
+            padding: 1vh;
+            border-radius: 1.2vh;
             border: 1px solid rgba(0, 212, 255, 0.3);
             backdrop-filter: blur(5px);
             box-shadow: 0 0 20px rgba(0, 85, 255, 0.15);
         }
 
         #support-qr {
-            width: 9vh;
-            height: 9vh;
+            width: 12vh;
+            height: 12vh;
             display: block;
-            border-radius: 0.4vh;
-        }
-
-        .clock-wrapper {
-            background: rgba(0, 0, 0, 0.7);
-            padding: 0.8vh 1.5vw;
-            border-radius: 1vh;
-            border-left: 0.5vh solid #0055ff;
-            backdrop-filter: blur(10px);
-            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.5);
-            border-top: 1px solid rgba(0, 212, 255, 0.1);
-        }
-
-        #central-timestamp {
-            font-size: 1.8vh;
-            color: #fff;
-            font-weight: 900;
-            text-shadow: 0 0 10px rgba(0, 212, 255, 0.7);
-            letter-spacing: 0.1vw;
-            white-space: nowrap;
+            border-radius: 0.5vh;
         }
 
         /* --- BOTTOM TICKER (CENTER) --- */
         .bottom-ticker-container {
             position: absolute;
             bottom: 3.5vh;
-            left: 17vw; 
+            left: 18vw; 
             right: 42vw;
             height: 4vh;
             background: rgba(0, 0, 0, 0.4);
@@ -223,7 +213,7 @@
             100% { transform: translateX(-100%); }
         }
 
-        /* --- BOTTOM RIGHT: UPDATED LAYOUT --- */
+        /* --- BOTTOM RIGHT: CARTRIDGE LAYOUT --- */
         .bottom-right-container {
             position: absolute;
             bottom: 3vh;
@@ -240,6 +230,10 @@
             max-width: 25vw;
             padding-bottom: 0.5vh; 
             text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 1.5vh;
         }
 
         .current-game-title {
@@ -252,6 +246,25 @@
             text-overflow: ellipsis;
             font-weight: 900;
             animation: textPulse 2s infinite alternate;
+        }
+
+        /* --- DYNAMIC POSTER ART BOX --- */
+        .game-thumbnail-container {
+            width: 10.5vh;
+            height: 14vh;
+            border-radius: 0.8vh;
+            overflow: hidden;
+            border: 2px solid rgba(0, 212, 255, 0.45);
+            box-shadow: 0 0 15px rgba(0, 85, 255, 0.3);
+            background-color: rgba(0, 12, 26, 0.95);
+            display: none; 
+        }
+
+        #game-art-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .identity-column {
@@ -286,22 +299,11 @@
 
         .stat-label span { color: #fff; }
 
-        .uptime-label {
-            font-size: 1.3vh;
-            color: #fff;
-            background: #0055ff;
-            padding: 2px 8px;
-            border-radius: 3px;
-            text-transform: uppercase;
-            letter-spacing: 0.15vw;
-            box-shadow: 0 0 15px rgba(0, 85, 255, 0.6);
-            font-weight: bold;
-        }
-
         .profile-pic-wrapper {
             position: relative;
-            width: 7.5vh;
-            height: 7.5vh;
+            /* Scaled up uniformly for better visual presence */
+            width: 10vh;
+            height: 10vh;
             border-radius: 50%;
             padding: 0.4vh;
             background: linear-gradient(45deg, #0055ff, #00d4ff);
@@ -314,6 +316,79 @@
             border-radius: 50%;
             object-fit: cover;
             border: 0.2vh solid #000;
+        }
+
+        /* --- RIGHT CENTER: LIVE FRIENDS SIDEBAR PANEL --- */
+        .live-friends-panel {
+            position: absolute;
+            right: 0.5vw; 
+            top: 45%;
+            transform: translateY(-50%);
+            z-index: 65;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8vh;
+            pointer-events: none;
+        }
+
+        .friend-card {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid rgba(0, 85, 255, 0.3);
+            border-right: 0.3vh solid #00d4ff; 
+            border-radius: 0.4vh;
+            padding: 0.5vh 0.6vw;
+            box-shadow: 0 0 10px rgba(0, 85, 255, 0.15);
+            animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            min-width: 10vw;
+            max-width: 12vw;
+        }
+
+        .friend-info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .friend-name {
+            font-size: 1.05vh;
+            color: #fff;
+            text-transform: uppercase;
+            font-weight: 900;
+            text-shadow: 0 0 5px rgba(0, 212, 255, 0.5);
+            letter-spacing: 0.05vw;
+            display: flex;
+            align-items: center;
+        }
+
+        .live-dot {
+            display: inline-block;
+            width: 0.6vh;
+            height: 0.6vh;
+            background-color: #00d4ff;
+            border-radius: 50%;
+            margin-right: 0.4vw;
+            box-shadow: 0 0 5px #00d4ff;
+            animation: pulse-dot 1.5s infinite alternate;
+        }
+
+        .friend-game {
+            font-size: 0.85vh;
+            color: rgba(0, 212, 255, 0.8);
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-transform: uppercase;
+            margin-top: 0.1vh;
+            padding-left: 0.2vw;
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 2px #00d4ff; }
+            100% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px #00d4ff; }
         }
 
         @keyframes textPulse {
@@ -347,13 +422,15 @@
             <div id="alert-box"><div class="name-banner" id="follower-name"></div></div>
         </div>
 
-        <!-- BOTTOM LEFT: QR & CLOCK -->
+        <!-- RIGHT CENTER: DYNAMIC LIVE FRIENDS PANEL -->
+        <div class="live-friends-panel" id="live-friends-panel">
+            <!-- Populated dynamically via JS -->
+        </div>
+
+        <!-- BOTTOM LEFT: QR TRACKING CARTRIDGE -->
         <div class="bottom-left-container">
             <div class="qr-wrapper">
-                <img id="support-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://amzn.to/4cYvgtP&bgcolor=ffffff&color=000000" alt="Support QR">
-            </div>
-            <div class="clock-wrapper">
-                <div id="central-timestamp">INITIALIZING...</div>
+                <img id="support-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Flinktr.ee%2FPhoenixDarkfire%3Futm_id%3DG-G-Z9M5LXQ5XN%26utm_source%3Dsmlc_qr%26utm_medium%3Dprint%26utm_campaign%3Dphoenix_darkfire_linktree_phoenixdarkfire_qr&bgcolor=ffffff&color=000000" alt="Support QR">
             </div>
         </div>
 
@@ -364,19 +441,20 @@
             </div>
         </div>
 
-        <!-- BOTTOM RIGHT: IDENTITY & STATS CENTERED STACK -->
+        <!-- BOTTOM RIGHT: IDENTITY, STATS & DYNAMIC CARTRIDGE -->
         <div class="bottom-right-container">
-            <!-- Game Title to the LEFT of the profile stack -->
             <div class="game-title-wrapper">
                 <div class="current-game-title" id="game-title">SCANNING...</div>
+                
+                <div class="game-thumbnail-container" id="game-thumbnail-container">
+                    <img id="game-art-img" src="" alt="Game Art">
+                </div>
             </div>
 
-            <!-- Vertical Stack for Stats and Image -->
             <div class="identity-column">
                 <div class="stats-stack">
                     <div class="stat-label">VIEWERS: <span id="viewer-count">0</span></div>
                     <div class="stat-label">RECRUITS: <span id="follower-count">0</span></div>
-                    <div class="uptime-label" id="uptime-timer">00:00:00</div>
                 </div>
 
                 <div class="profile-pic-wrapper">
@@ -392,52 +470,129 @@
         const alertBox = document.getElementById('alert-box');
         const nameField = document.getElementById('follower-name');
         const gameTitleField = document.getElementById('game-title');
-        const uptimeField = document.getElementById('uptime-timer');
+        
+        const gameThumbnailContainer = document.getElementById('game-thumbnail-container');
+        const gameArtImg = document.getElementById('game-art-img');
+        
         const followerField = document.getElementById('follower-count');
         const viewerField = document.getElementById('viewer-count');
         const profileImg = document.getElementById('twitch-profile-img');
-        const timestampField = document.getElementById('central-timestamp');
+        const friendsPanel = document.getElementById('live-friends-panel');
 
+        /* Toggle false to fetch real live API metrics on stream */
         const DEBUG_MODE = true; 
 
         /**
-         * Updates the Central Time clock in MM/DD/YY HH:MM format (24hr)
+         * Dynamic Game ID Mapping Database
          */
-        function updateClock() {
-            try {
-                const now = new Date();
-                const options = {
-                    timeZone: 'America/Chicago',
-                    year: '2-digit',
-                    month: '2-digit',
-                    day: '2-digit',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false
-                };
+        const GAME_ID_MAP = {
+            "ghostwire: tokyo": "512923",
+            "ghostwire tokyo": "512923",
+            "ghost wire": "512923",
+            "just chatting": "509658",
+            "retro": "27284",
+            "fortnite": "21776",
+            "minecraft": "27471",
+            "special events": "509663",
+            "league of legends": "21779",
+            "art": "509660",
+            "talk shows & podcasts": "417752",
+            "music": "26936",
+            "software and game development": "509670",
+            "call of duty: warzone": "512710",
+            "counter-strike": "32399",
+            "grand theft auto v": "32982",
+            "apex legends": "511224",
+            "valorant": "516575",
+            "papa's pizzeria deluxe": "1507742194",
+            "papas pizzeria deluxe": "1507742194"
+        };
 
-                const formatter = new Intl.DateTimeFormat('en-US', options);
-                const parts = formatter.formatToParts(now);
-                
-                const getPart = (type) => {
-                    const part = parts.find(p => p.type === type);
-                    return part ? part.value : '00';
-                };
-                
-                const mm = getPart('month');
-                const dd = getPart('day');
-                const yy = getPart('year');
-                const hh = getPart('hour');
-                const min = getPart('minute');
+        /**
+         * Intelligent Game Box Art Loader
+         */
+        function updateGameArt(gameName) {
+            if (!gameName || gameName.toLowerCase().includes("scanning") || gameName.toLowerCase().includes("offline")) {
+                gameThumbnailContainer.style.display = 'none';
+                return;
+            }
 
-                timestampField.innerText = `${mm}/${dd}/${yy} ${hh}:${min}`;
-            } catch (e) {
-                timestampField.innerText = "ERROR";
+            const cleanQuery = gameName.trim().toLowerCase();
+            const matchedID = GAME_ID_MAP[cleanQuery];
+
+            gameArtImg.onload = function() {
+                gameThumbnailContainer.style.display = 'block';
+            };
+
+            gameArtImg.onerror = function() {
+                gameThumbnailContainer.style.display = 'none';
+            };
+
+            if (matchedID) {
+                gameArtImg.src = `https://static-cdn.jtvnw.net/ttv-boxart/${matchedID}-285x380.jpg`;
+            } else {
+                const urlEncodedName = encodeURIComponent(gameName);
+                gameArtImg.src = `https://static-cdn.jtvnw.net/ttv-boxart/./${urlEncodedName}-285x380.jpg`;
             }
         }
 
         /**
-         * Fetches all live data from DecAPI
+         * Dynamic live checker for target friends
+         */
+        async function fetchFriendsStatus() {
+            const friendsList = [
+                { username: "coralpoppa", displayName: "CoralPoppa" },
+                { username: "graphixworkx", displayName: "GraphixWorkx" },
+                { username: "griffinscoffin", displayName: "Griffinscoffin" },
+                { username: "werewolf3788", displayName: "Werewolf3788" }
+            ];
+
+            if (DEBUG_MODE) {
+                friendsPanel.innerHTML = "";
+                return;
+            }
+
+            friendsPanel.innerHTML = ""; 
+
+            for (const friend of friendsList) {
+                try {
+                    const uptimeRes = await fetch(`https://decapi.me/twitch/uptime/${friend.username}?cache=${Date.now()}`);
+                    if (uptimeRes.ok) {
+                        const uptimeText = (await uptimeRes.text()).trim().toLowerCase();
+                        if (!uptimeText.includes("offline") && uptimeText.length > 0) {
+                            let game = "Just Chatting";
+
+                            const gameRes = await fetch(`https://decapi.me/twitch/game/${friend.username}`);
+                            if (gameRes.ok) {
+                                game = (await gameRes.text()).trim();
+                            }
+
+                            const el = createFriendCard(friend.displayName, game);
+                            friendsPanel.appendChild(el);
+                        }
+                    }
+                } catch (e) {
+                    console.error("Error fetching friend status for", friend.username, e);
+                }
+            }
+        }
+
+        function createFriendCard(name, game) {
+            const card = document.createElement("div");
+            card.className = "friend-card";
+            card.innerHTML = `
+                <div class="friend-info">
+                    <div class="friend-name">
+                        <span class="live-dot"></span>${name}
+                    </div>
+                    <div class="friend-game">${game}</div>
+                </div>
+            `;
+            return card;
+        }
+
+        /**
+         * Fetches real-time profile analytics from DecAPI endpoints
          */
         async function fetchTwitchData() {
             const timestamp = Date.now();
@@ -447,24 +602,19 @@
                 if (gameRes.ok) {
                     let game = (await gameRes.text()).trim();
                     if (game.toLowerCase().includes("offline") || !game) {
-                        gameTitleField.innerText = DEBUG_MODE ? "GHOST WIRE" : "OFFLINE";
+                        gameTitleField.innerText = DEBUG_MODE ? "PAPA'S PIZZERIA DELUXE" : "OFFLINE";
+                        updateGameArt(DEBUG_MODE ? "Papa's Pizzeria Deluxe" : "");
                     } else {
                         gameTitleField.innerText = game.toUpperCase();
+                        updateGameArt(game);
                     }
                 }
-            } catch (e) {}
-
-            try {
-                const uptimeRes = await fetch(`https://decapi.me/twitch/uptime/phoenix_darkfire?cache=${timestamp}`);
-                if (uptimeRes.ok) {
-                    let uptime = (await uptimeRes.text()).trim();
-                    if (uptime.toLowerCase().includes("offline")) {
-                        uptimeField.innerText = DEBUG_MODE ? "02:45:12" : "STANDBY";
-                    } else {
-                        uptimeField.innerText = uptime;
-                    }
+            } catch (e) {
+                if (DEBUG_MODE && gameTitleField.innerText === "SCANNING...") {
+                    gameTitleField.innerText = "PAPA'S PIZZERIA DELUXE";
+                    updateGameArt("Papa's Pizzeria Deluxe");
                 }
-            } catch (e) {}
+            }
 
             try {
                 const followRes = await fetch(`https://decapi.me/twitch/followcount/phoenix_darkfire?cache=${timestamp}`);
@@ -479,7 +629,7 @@
                 if (viewRes.ok) {
                     let count = (await viewRes.text()).trim();
                     if (count.toLowerCase().includes("offline") || isNaN(count)) {
-                        viewerField.innerText = DEBUG_MODE ? "88" : "0";
+                        viewerField.innerText = DEBUG_MODE ? "6" : "0";
                     } else {
                         viewerField.innerText = count;
                     }
@@ -487,37 +637,29 @@
             } catch (e) {}
         }
 
-        // --- Execution ---
-        updateClock();
+        // --- Execution Loops & Startup Protocols ---
+        function startEngine() {
+            fetchTwitchData();
+            fetchFriendsStatus();
+            
+            setInterval(fetchTwitchData, 30000); 
+            setInterval(fetchFriendsStatus, 30000);
+            
+            profileImg.src = `https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png?t=${Date.now()}`;
+        }
+
+        window.addEventListener('load', startEngine);
 
         window.addEventListener('onWidgetLoad', function (obj) {
             fetchTwitchData();
-            updateClock();
-            
-            setInterval(fetchTwitchData, 30000); 
-            
-            setInterval(() => {
-                updateClock();
-                
-                let current = uptimeField.innerText;
-                if (current !== "STANDBY" && current !== "SCANNING..." && !current.includes("DEBUG") && current.includes(':')) {
-                    let parts = current.split(':').map(n => parseInt(n));
-                    if (parts.length === 3) {
-                        parts[2]++; 
-                        if (parts[2] >= 60) { parts[2] = 0; parts[1]++; }
-                        if (parts[1] >= 60) { parts[1] = 0; parts[0]++; }
-                        uptimeField.innerText = parts.map(n => n.toString().padStart(2, '0')).join(':');
-                    }
-                }
-            }, 1000);
-
-            profileImg.src = `https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png?t=${Date.now()}`;
+            fetchFriendsStatus();
         });
 
-        // Backup Timer
         setTimeout(() => { 
-            updateClock();
-            if (gameTitleField.innerText === "SCANNING...") fetchTwitchData(); 
+            if (gameTitleField.innerText === "SCANNING...") {
+                fetchTwitchData(); 
+                fetchFriendsStatus();
+            }
         }, 500);
 
         function triggerFollowerAlert(name) {
@@ -545,8 +687,7 @@
             if (!ev) return;
             if (sk === 'message') {
                 const user = (ev.data.displayName || ev.data.nick || "").toLowerCase();
-                // Special triggers for friends
-                if (user === 'coralpoppa' || user === 'anakigod99' || user === 'corelpoppa') {
+                if (user === 'cat_louves' || user === 'anakigod99' || user === 'corelpoppa') {
                     const particleCount = 40;
                     const centerX = window.innerWidth / 2;
                     const centerY = window.innerHeight / 2;
@@ -562,7 +703,7 @@
                         const destinationY = Math.sin(angle) * velocity * 20;
                         p.animate([
                             { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-                            { transform: `translate(${destinationX}px, ${destinationY}px) scale(0)`, opacity: 0 }
+                            { transform: 'translate(' + destinationX + 'px, ' + destinationY + 'px) scale(0)', opacity: 0 }
                         ], { duration: 1500, easing: 'ease-out' });
                         setTimeout(() => p.remove(), 1500);
                     }
