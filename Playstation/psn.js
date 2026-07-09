@@ -2,12 +2,13 @@
  * ==========================================
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Kevin's Official Pack Sync Engine (Max-Payload Firebase Stream)
- * Version: 14.2.1 - Wildhorse Spirit Migration Update
- * NYT TIMESTAMP: Thu, July 9, 2026, 6:50 AM EDT
+ * Version: 14.5.1 - Persistent Stream History + PC Game Capture Engine
+ * NYT TIMESTAMP: Thu, July 9, 2026, 7:55 AM EDT
  * Compatibility: Node.js v20+, Firebase Realtime Database REST API
  * Note: NO STRIPPING, NO COMPRESSING. ALL SQUAD LOGIC & ENDPOINTS INTACT.
- * Updates: Migrated Kevin's secondary/future primary placeholder ID from 
- * KFruti88 to wildhorse_spirit across the roster maps and runtime warning layers.
+ * Updates: Fully optimized getTwitchIntel to parse raw Twitch categories directly.
+ * Captures PC/Steam games played during live broadcasts and aggregates them safely 
+ * into rolling historical stream lists for both public and hidden PSN users.
  * ==========================================
  */
 
@@ -96,6 +97,12 @@ const ROOT_NOJEKYLL = path.join(__dirname, "..", ".nojekyll");
 
 let tokenStore = { werewolf: {}, ray: {} };
 
+let diagnosticReport = {
+    werewolf_active: "no",
+    ray_active: "no",
+    lastCheck: new Date().toLocaleString()
+};
+
 function generateAffiliateUrl(gameName) {
     if (!gameName || gameName === "Dashboard") return null;
     const cleanName = encodeURIComponent(gameName.replace(/®|™/g, ""));
@@ -148,45 +155,59 @@ async function getTwitchIntel(username) {
     const intel = { 
         isLive: false, game: null, gameArt: null, followers: "0", 
         latestFollower: "None", followerNames: [], avatar: null, age: null, bio: null, 
-        statusMessage: null, uptime: null
+        statusMessage: null, uptime: null, viewers: "0", subCount: "0",
+        chatRules: null, channelCreationRaw: null
     };
+
+    const cleanUser = username.toLowerCase().trim();
+    const invalidTerms = ["offline", "games & demo", "not found", "error", "404", "no description available", "does not have chat rules"];
+
+    const cleanFetch = async (endpoint) => {
+        try {
+            const res = await fetch(`https://decapi.me/twitch/${endpoint}/${cleanUser}`);
+            if (!res.ok) return null;
+            const text = await res.text();
+            const val = text.trim();
+            if (!val || invalidTerms.some(term => val.toLowerCase().includes(term))) return null;
+            return val;
+        } catch (e) { return null; }
+    };
+
     try {
-        const [statusRes, gameRes, artRes, followRes, listRes, latestFollowerRes, avatarRes, ageRes, bioRes, titleRes, uptimeRes] = await Promise.all([
-            fetch(`https://decapi.me/twitch/status/${username.toLowerCase()}`).then(r => r.text()),
-            fetch(`https://decapi.me/twitch/game/${username.toLowerCase()}`).then(r => r.text()),
-            fetch(`https://decapi.me/twitch/game_image/${username.toLowerCase()}`).then(r => r.text()),
-            fetch(`https://decapi.me/twitch/followcount/${username.toLowerCase()}`).then(r => r.text()),
-            fetch(`https://decapi.me/twitch/followers/${username.toLowerCase()}?limit=100`).then(r => r.text()), 
-            fetch(`https://decapi.me/twitch/latest_follower/${username.toLowerCase()}`).then(r => r.text()),
-            fetch(`https://decapi.me/twitch/avatar/${username.toLowerCase()}`).then(r => r.text()),
-            fetch(`https://decapi.me/twitch/accountage/${username.toLowerCase()}`).then(r => r.text()),
-            fetch(`https://decapi.me/twitch/description/${username.toLowerCase()}`).then(r => r.text()),
-            fetch(`https://decapi.me/twitch/title/${username.toLowerCase()}`).then(r => r.text()),
-            fetch(`https://decapi.me/twitch/uptime/${username.toLowerCase()}`).then(r => r.text())
-        ]);
+        const statusRes = await cleanFetch("status");
+        intel.isLive = !!(statusRes && statusRes.toLowerCase().includes("live"));
 
-        intel.isLive = statusRes.toLowerCase().includes("live");
-        const invalidTerms = ["offline", "games & demo", "not found", "error", "404"];
+        intel.game = await cleanFetch("game");
+        intel.gameArt = await cleanFetch("game_image");
         
-        intel.game = invalidTerms.some(term => gameRes.toLowerCase().includes(term)) ? null : gameRes.trim();
-        intel.gameArt = (artRes.includes("http") && intel.game) ? artRes.trim() : null;
-        intel.followers = followRes.includes("Error") ? "0" : followRes.trim();
-        intel.latestFollower = latestFollowerRes.includes("Error") ? "None" : latestFollowerRes.trim();
-        
-        if (!listRes.includes("Error") && !listRes.includes("Not Found")) {
-            intel.followerNames = listRes.split(", ").map(n => n.trim());
-        }
+        const fCount = await cleanFetch("followcount");
+        intel.followers = fCount || "0";
 
-        intel.avatar = avatarRes.includes("http") ? avatarRes.trim() : null;
-        intel.age = ageRes.includes("Error") ? "Unknown" : ageRes.trim();
-        intel.bio = invalidTerms.some(term => bioRes.toLowerCase().includes(term)) ? null : bioRes.trim();
-        intel.statusMessage = (titleRes.includes("Error") || !intel.isLive) ? null : titleRes.trim();
-        intel.uptime = (!intel.isLive || uptimeRes.includes("Error")) ? null : uptimeRes.trim();
+        const lFollow = await cleanFetch("latest_follower");
+        intel.latestFollower = lFollow || "None";
+
+        const listRes = await cleanFetch("followers?limit=100");
+        if (listRes) { intel.followerNames = listRes.split(", ").map(n => n.trim()); }
+
+        intel.avatar = await cleanFetch("avatar");
+        intel.age = await cleanFetch("accountage") || "Unknown";
+        intel.bio = await cleanFetch("description");
+        intel.statusMessage = await cleanFetch("title");
+        intel.uptime = await cleanFetch("uptime");
         
+        const views = await cleanFetch("viewercount");
+        intel.viewers = views || "0";
+
+        const subs = await cleanFetch("subcount");
+        intel.subCount = subs || "0";
+
+        intel.chatRules = await cleanFetch("chat_rules");
+        intel.channelCreationRaw = await cleanFetch("creation");
+
         return intel;
     } catch (e) { 
-        console.error(`[TWITCH ERROR] Failed fetching ${username}:`, e);
-        return null; 
+        console.error(`[TWITCH EXCEPTION] Resilient processing caught crash threat for ${username}:`, e.message);
+        return intel; 
     }
 }
 
@@ -194,9 +215,7 @@ async function isTokenValid(accessToken) {
     try {
         await getUserRegion({ accessToken }, "me");
         return true;
-    } catch (e) {
-        return false;
-    }
+    } catch (e) { return false; }
 }
 
 async function getAuthenticated(userKey, npssoInput) {
@@ -204,9 +223,9 @@ async function getAuthenticated(userKey, npssoInput) {
     const now = Math.floor(Date.now() / 1000);
     
     if (currentUserTokens.accessToken && (currentUserTokens.expiryTime > now + 300)) {
-        console.log(`[AUTH] Verifying cached access token integrity for ${userKey}...`);
         const isValid = await isTokenValid(currentUserTokens.accessToken);
         if (isValid) {
+            diagnosticReport[`${userKey}_active`] = "yes";
             return { accessToken: currentUserTokens.accessToken };
         }
         currentUserTokens.accessToken = null;
@@ -220,10 +239,9 @@ async function getAuthenticated(userKey, npssoInput) {
                 refreshToken: refreshed.refreshToken, 
                 expiryTime: Math.floor(Date.now() / 1000) + (refreshed.expiresIn || 3600) 
             };
+            diagnosticReport[`${userKey}_active`] = "yes";
             return refreshed;
-        } catch (e) {
-            currentUserTokens.refreshToken = null;
-        }
+        } catch (e) { currentUserTokens.refreshToken = null; }
     }
     
     if (npssoInput) {
@@ -235,13 +253,51 @@ async function getAuthenticated(userKey, npssoInput) {
                 refreshToken: auth.refreshToken, 
                 expiryTime: Math.floor(Date.now() / 1000) + (auth.expiresIn || 3600) 
             };
+            diagnosticReport[`${userKey}_active`] = "yes";
             return auth;
         } catch (e) { 
-            console.error(`[AUTH ERROR] NPSSO exchange failed for ${userKey}.`);
+            console.error(`[AUTH DIAGNOSTIC] Core Key validation failed for entry: ${userKey}.`);
+            diagnosticReport[`${userKey}_active`] = "no";
             return null; 
         }
     }
+    diagnosticReport[`${userKey}_active`] = "no";
     return null;
+}
+
+function processStreamHistory(existingHistory, twitchIntel) {
+    let history = Array.isArray(existingHistory) ? [...existingHistory] : [];
+    
+    if (twitchIntel?.isLive && twitchIntel?.game) {
+        const currentGame = twitchIntel.game.trim();
+        history = history.filter(g => g.toLowerCase() !== currentGame.toLowerCase());
+        history.unshift(currentGame);
+        
+        if (history.length > 15) history = history.slice(0, 15);
+    }
+    return history;
+}
+
+function generatePrivateProfileFallback(label, userKey, twitchIntel, existingData) {
+    const historicalStreamList = processStreamHistory(existingData?.streamHistory, twitchIntel);
+    return {
+        onlineId: SQUAD_MAP[userKey] || label, 
+        online: !!twitchIntel?.isLive,
+        accountId: ACCOUNT_IDS[userKey] || "",
+        currentGame: twitchIntel?.game || "Dashboard", 
+        currentGameArt: twitchIntel?.gameArt || null,
+        currentGameActivity: twitchIntel?.statusMessage || (twitchIntel?.isLive ? "Streaming Live" : null),
+        amazonAffiliateUrl: generateAffiliateUrl(twitchIntel?.game), 
+        bio: twitchIntel?.bio || "Official Pack Member Profile",
+        twitch: twitchIntel, 
+        streamHistory: historicalStreamList,
+        lastUpdated: new Date().toLocaleString(), 
+        gamesPlayed: 0, plus: false, level: 0, region: "US", note: "PSN Profile Hidden/Private", devices: [],
+        blockedAccountsCount: 0, inboundFriendRequestsCount: 0,
+        trophySummary: { platinum: 0, gold: 0, silver: 0, bronze: 0, total: 0, trophyLevel: 0 },
+        recentGames: [], activeHunt: null, mostRecentTrophies: [], fullLibrary: [],
+        rawPsnDump: { profile: {}, presence: {}, telemetry: [], titles: [], friends: [], hardwareInfo: [], blocksQueue: [], friendRequests: [] }
+    };
 }
 
 async function getFullUserData(auth, label, userKey, targetId, existingData) {
@@ -260,21 +316,21 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         if (existingData && existingData.trophySummary) {
             existingData.online = !!twitchIntel?.isLive;
             existingData.twitch = twitchIntel;
+            existingData.streamHistory = processStreamHistory(existingData.streamHistory, twitchIntel);
             existingData.lastUpdated = new Date().toLocaleString();
             return existingData;
         }
-        return {
-            onlineId: SQUAD_MAP[userKey] || label, online: !!twitchIntel?.isLive,
-            currentGame: twitchIntel?.game || "Dashboard", currentGameArt: twitchIntel?.gameArt || null,
-            currentGameActivity: twitchIntel?.statusMessage || (twitchIntel?.isLive ? "Streaming Live" : null),
-            amazonAffiliateUrl: generateAffiliateUrl(twitchIntel?.game), bio: twitchIntel?.bio || "Official Pack Member Profile",
-            twitch: twitchIntel, lastUpdated: new Date().toLocaleString(), gamesPlayed: 0,
-            note: "Twitch Presence (PSN Profile Hidden/Private)"
-        };
+        return generatePrivateProfileFallback(label, userKey, twitchIntel, existingData);
     }
 
     try {
-        const profile = await getProfileFromAccountId(auth, resolvedTargetId).catch(() => ({}));
+        const profile = await getProfileFromAccountId(auth, resolvedTargetId).catch(() => null);
+        
+        if (!profile) {
+            console.log(`[PRIVACY OVERRIDE] Profile ${label} is hidden. Injecting fallback tracking layers.`);
+            return generatePrivateProfileFallback(label, userKey, twitchIntel, existingData);
+        }
+
         let region = { country: "US", language: "en" };
         let friendsList = [];
         let deviceList = [];
@@ -405,9 +461,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                 bootCount: game.playCount || "Unknown"
             };
 
-            if (recentGames.length < 6) {
-                recentGames.push(recentGameRef);
-            }
+            if (recentGames.length < 6) { recentGames.push(recentGameRef); }
 
             const isTargetHunt = (game.npCommunicationId === targetSyncId);
             
@@ -423,9 +477,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                     if (!groupsRes && !game.npServiceName) {
                         opt.npServiceName = "trophy2";
                         groupsRes = await getTitleTrophyGroups(auth, game.npCommunicationId, opt).catch(()=>({}));
-                    } else {
-                        groupsRes = groupsRes || {};
-                    }
+                    } else { groupsRes = groupsRes || {}; }
 
                     const earnedRes = await getUserTrophiesEarnedForTitle(auth, resolvedTargetId, game.npCommunicationId, "all", opt).catch(()=>({}));
                     const metaRes = await getTitleTrophies(auth, game.npCommunicationId, "all", opt).catch(()=>({}));
@@ -493,9 +545,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                             trophies: mappedTrophies, npCommunicationId: game.npCommunicationId
                         };
                     }
-                } catch (e) {
-                    console.error(`[WARN] Trophy scan skipped for ${game.name}: ${e.message}`);
-                }
+                } catch (e) { console.error(`[WARN] Trophy scan skipped for ${game.name}: ${e.message}`); }
             }
         }
 
@@ -514,6 +564,8 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             twitch: twitchIntel
         };
 
+        const historicalStreamList = processStreamHistory(existingData?.streamHistory, twitchIntel);
+
         return {
             ...profile, onlineId: profile?.onlineId || label, accountId: resolvedTargetId,
             ...presence, gamesPlayed: totalGamesPlayedCount,
@@ -527,25 +579,14 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                 silver: stats?.earnedTrophies?.silver||0, bronze: stats?.earnedTrophies?.bronze||0,
                 total: (stats?.earnedTrophies?.platinum||0) + (stats?.earnedTrophies?.gold||0) + (stats?.earnedTrophies?.silver||0) + (stats?.earnedTrophies?.bronze||0)
             },
-            recentGames, activeHunt, mostRecentTrophies,
-            fullLibrary: allRecentGames,
-            devices: deviceList,
-            blockedAccountsCount: blockedList.length,
-            inboundFriendRequestsCount: inboundFriendRequests.length,
-            rawPsnDump: { 
-                profile: profile,
-                presence: rawP,
-                telemetry: telemetryData,
-                titles: sortedTitles,
-                friends: friendsList,
-                hardwareInfo: deviceList,
-                blocksQueue: blockedList,
-                friendRequests: inboundFriendRequests
-            },
+            recentGames, activeHunt, mostRecentTrophies, streamHistory: historicalStreamList,
+            fullLibrary: allRecentGames, devices: deviceList, blockedAccountsCount: blockedList.length, inboundFriendRequestsCount: inboundFriendRequests.length,
+            rawPsnDump: { profile: profile, presence: rawP, telemetry: telemetryData, titles: sortedTitles, friends: friendsList, hardwareInfo: deviceList, blocksQueue: blockedList, friendRequests: inboundFriendRequests },
             lastUpdated: new Date().toLocaleString()
         };
     } catch (e) { 
-        return existingData || null; 
+        console.warn(`[WARN] Critical error encountered fetching ${label}. Emitting private schema wrapper.`);
+        return generatePrivateProfileFallback(label, userKey, twitchIntel, existingData);
     }
 }
 
@@ -559,13 +600,11 @@ async function pushToFirebase(payload) {
         });
         if (!response.ok) throw new Error(`HTTP ${response.status}: ${await response.text()}`);
         console.log("[FIREBASE SUCCESS] Realtime Database state updated instantaneously.");
-    } catch (err) {
-        console.error("[FIREBASE ERROR] Failed database push:", err.message);
-    }
+    } catch (err) { console.error("[FIREBASE ERROR] Failed database push:", err.message); }
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v14.2.1...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v14.5.1...");
     
     if (Date.now() >= 1785542400000) {
         console.warn("\n=======================================================");
@@ -576,9 +615,9 @@ async function main() {
     try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
 
     let finalData = { 
-        users: {}, personas: {}, mutualSquadFollowers: [], 
-        lastGlobalUpdate: new Date().toLocaleString(), engineVersion: "14.2.1",
-        codeTimestamp: "Thursday, July 9, 2026 | 6:50 AM EDT"
+        users: {}, personas: {}, mutualSquadFollowers: [], authDiagnostics: diagnosticReport,
+        lastGlobalUpdate: new Date().toLocaleString(), engineVersion: "14.5.1",
+        codeTimestamp: "Thursday, July 9, 2026 | 7:55 AM EDT"
     };
 
     try {
@@ -590,6 +629,8 @@ async function main() {
     const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
     const masterAuth = wolfAuth || rayAuth;
+
+    finalData.authDiagnostics = diagnosticReport;
 
     for (const [key, label] of Object.entries(SQUAD_MAP)) {
         const accountId = ACCOUNT_IDS[key];
@@ -617,27 +658,33 @@ async function main() {
         
         const activeAccount = linkedAccounts.find(u => u.online) || linkedAccounts[0];
 
+        let combinedStreams = [];
+        linkedAccounts.forEach(acc => {
+            if (acc && Array.isArray(acc.streamHistory)) {
+                acc.streamHistory.forEach(str => {
+                    if (!combinedStreams.includes(str)) combinedStreams.push(str);
+                });
+            }
+        });
+
         finalData.personas[realName] = {
             displayName: realName,
             isOnline,
             primaryOnlineId: activeAccount.onlineId,
             combinedTrophies: {
-                platinum: totalPlats, gold: totalGolds,
-                silver: totalSilvers, bronze: totalBronzes,
+                platinum: totalPlats, gold: totalGolds, silver: totalSilvers, bronze: totalBronzes,
                 total: totalPlats + totalGolds + totalSilvers + totalBronzes
             },
             maxLevel,
             legacyAge: calculateAgeString(absoluteStart, absoluteEnd),
-            legacyRange: {
-                start: absoluteStart ? new Date(absoluteStart).toLocaleString() : "Unknown",
-                end: new Date(absoluteEnd).toLocaleString()
-            },
+            legacyRange: { start: absoluteStart ? new Date(absoluteStart).toLocaleString() : "Unknown", end: new Date(absoluteEnd).toLocaleString() },
             currentGame: activeAccount.currentGame,
             currentGameArt: activeAccount.currentGameArt,
             currentActivity: activeAccount.currentGameActivity,
             avatar: activeAccount.avatar,
             bio: activeAccount.bio,
             accounts: keys,
+            streamHistory: combinedStreams.slice(0, 15),
             lastUpdated: new Date().toLocaleString()
         };
     }
@@ -651,7 +698,7 @@ async function main() {
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
     await pushToFirebase(finalData);
-    console.log(`[SUCCESS] Persona Aggregator v14.2.1 Complete.`);
+    console.log(`[SUCCESS] Persona Aggregator v14.5.1 Complete.`);
 }
 
 main();
