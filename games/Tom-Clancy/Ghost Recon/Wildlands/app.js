@@ -2,8 +2,8 @@
  * ==========================================
  * --- PROGRESSION PLATFORM CONTROLLER ---
  * Project: Ghost Recon Wildlands Squad Hub
- * Version: 3.3.2 - Live Production Deployment Edition
- * Version Timestamp: Thu, July 9, 2026, 11:55 AM Chicago Time
+ * Version: 3.4.1 - Main Profile Prioritization Engine
+ * Version Timestamp: Thu, July 9, 2026, 12:08 PM Chicago Time
  * Compatibility: Firebase Web SDK v10.8.0 Compat Layer
  * Note: HARDCODED TO CHICAGO TIME (CT) PER SYSTEM COMPLIANCE DIRECTIVES.
  * ==========================================
@@ -40,11 +40,11 @@ const AUTH_PERMISSION_MAP = {
     "cartnalray9@gmail.com": "ray"
 };
 
-const ALL_OPERATORS_MAP = {
-    "werewolf": "Kevin (werewolf3788)",
-    "kfruti": "Kevin Secondary (wildhorse_spirit)",
+// MASTER POOL REFERENCE: Held in background memory, compiled into dropdown ONLY on live sign-in matching
+const SQUAD_POOL_MAP = {
     "ray": "Ray (OneLIVIDMAN)",
-    "darkwing": "TJ (Darkwing69420)"
+    "darkwing": "TJ (Darkwing69420)",
+    "marc": "Marc (DesdemonaTiger)"
 };
 
 // DOM Node Context Hooks
@@ -56,19 +56,39 @@ const editTriggerZone = document.getElementById("editTriggerZone");
 const userSelect = document.getElementById("userSelect");
 const skillsGrid = document.getElementById("skillsTreeGrid");
 
-// Builds option values dynamically into your original drop-down node select block
-function buildPublicDropdownMenu() {
+// RECOMPILATION ENGINE: Renders only your werewolf information by default until someone else validates an account
+function renderDropdownMenuByAccessState() {
+    const selectedCacheKey = currentActiveOperator;
     userSelect.innerHTML = "";
-    for (const [id, label] of Object.entries(ALL_OPERATORS_MAP)) {
+
+    // Default Whitelist: Only your main active profile renders out on standard page loading
+    const activeViewMap = {
+        "werewolf": "Kevin (werewolf3788)"
+    };
+
+    // Dynamic Injection: If someone else logs in, drop their account option into the active layout list
+    if (loggedInUserEmail && loggedInUserEmail !== ADMIN_EMAIL) {
+        const structuralNodeId = AUTH_PERMISSION_MAP[loggedInUserEmail];
+        if (structuralNodeId && SQUAD_POOL_MAP[structuralNodeId]) {
+            activeViewMap[structuralNodeId] = SQUAD_POOL_MAP[structuralNodeId];
+        }
+    }
+
+    // Master Admin Rule: If you are logged in, allow full monitoring select controls across all entities
+    if (loggedInUserEmail === ADMIN_EMAIL) {
+        Object.assign(activeViewMap, SQUAD_POOL_MAP);
+    }
+
+    // Append authorized option tags into the select element container
+    for (const [id, label] of Object.entries(activeViewMap)) {
         const opt = document.createElement("option");
         opt.value = id;
         opt.innerText = label;
-        if (id === currentActiveOperator) opt.selected = true;
+        if (id === selectedCacheKey) opt.selected = true;
         userSelect.appendChild(opt);
     }
 }
 
-// Global Auth State Tracking Observer Loop
 auth.onAuthStateChanged(user => {
     if (user) {
         loggedInUserEmail = user.email;
@@ -78,27 +98,21 @@ auth.onAuthStateChanged(user => {
         evaluateEditButtonPermission();
     } else {
         loggedInUserEmail = null;
+        currentActiveOperator = "werewolf"; // Safely cycle selection context parameters back to base
         signInBtn.classList.remove("hidden");
         profileStatus.classList.add("hidden");
         editTriggerZone.classList.add("hidden");
         document.getElementById("editStatsPanel").classList.add("hidden");
     }
-    // Automatically trigger visual refresh adjustments on credentials updates
+    // Re-build select node list layout arrays seamlessly based on authorization transitions
+    renderDropdownMenuByAccessState();
     refreshActiveSkillTree();
+    attachHybridDataStreams(currentActiveOperator);
 });
 
-// Structural security fence layer governing page inputs mutation states
 function evaluateEditButtonPermission() {
-    if (!loggedInUserEmail) { 
-        editTriggerZone.classList.add("hidden"); 
-        return; 
-    }
-    
-    // Master admin account override checks
-    if (loggedInUserEmail === ADMIN_EMAIL) { 
-        editTriggerZone.classList.remove("hidden"); 
-        return; 
-    }
+    if (!loggedInUserEmail) { editTriggerZone.classList.add("hidden"); return; }
+    if (loggedInUserEmail === ADMIN_EMAIL) { editTriggerZone.classList.remove("hidden"); return; }
 
     const permittedNode = AUTH_PERMISSION_MAP[loggedInUserEmail];
     if (permittedNode && permittedNode === currentActiveOperator) {
@@ -109,7 +123,6 @@ function evaluateEditButtonPermission() {
     }
 }
 
-// Context switching drop-down event listener block
 userSelect.addEventListener("change", (e) => {
     currentActiveOperator = e.target.value;
     document.getElementById("editStatsPanel").classList.add("hidden");
@@ -117,21 +130,16 @@ userSelect.addEventListener("change", (e) => {
     attachHybridDataStreams(currentActiveOperator);
 });
 
-// Authentication Popup and Termination Click Handlers
 signInBtn.addEventListener("click", () => {
     const provider = new firebase.auth.GoogleAuthProvider();
     auth.signInWithPopup(provider).catch(err => console.error("Identity verification rejected:", err.message));
 });
 
-signOutBtn.addEventListener("click", () => { 
-    auth.signOut(); 
-});
+signOutBtn.addEventListener("click", () => { auth.signOut(); });
 
-// DUAL-DATABASE SYNC CONTROLLER: Hooks structural blocks to RTDB and library files to Firestore
 function attachHybridDataStreams(operatorKey) {
     console.log(`[PIPELINE] Initializing data streams for context target: ${operatorKey}`);
     
-    // 1. PROFILE STATS STREAM: Read text metrics blocks from your RTDB profile nodes
     rtdb.ref(`psn/users/${operatorKey}`).on("value", (snapshot) => {
         if (snapshot.exists()) {
             const data = snapshot.val();
@@ -146,23 +154,18 @@ function attachHybridDataStreams(operatorKey) {
         }
     });
 
-    // 2. CHECKBOX SKILL TREES STREAM: Read manual checkboxes variables straight out of root '/skills'
     rtdb.ref(`skills`).on("value", (snapshot) => {
         const structuralTree = snapshot.exists() ? snapshot.val() : {};
         renderSkillsTreeInterface(structuralTree);
     });
 
-    // 3. AUTOMATED CARD GENERATOR STREAM: Reads your games collection list directly out of Cloud Firestore
     loadAutomatedGameCardsFromFirestore(operatorKey);
 }
 
-// Renders the original custom checkbox layouts, rank markers, and medal star buttons onto your interface
 function renderSkillsTreeInterface(skillsData) {
     skillsGrid.innerHTML = "";
-    
     const activeNodesArray = skillsData[currentSkillCategory] || [];
     
-    // Fallback card engine: Renders clean placeholder frame columns so you can verify rendering operations
     if (!Array.isArray(activeNodesArray) || activeNodesArray.length === 0) {
         skillsGrid.innerHTML = `
             <div class="skill-card unlocked" style="opacity: 0.35; border-style: dashed; grid-column: 1 / -1; min-height: 120px; display: flex; align-items: center; justify-content: center; width: 100%;">
@@ -207,16 +210,15 @@ function renderSkillsTreeInterface(skillsData) {
     });
 }
 
-// Increments rank values inside your Realtime Database node loops when clicking on elements
 window.mutateDatabaseNodeRank = function(category, itemIndex, currentRank, maxRank, isCollected) {
-    if (!loggedInUserEmail) return; // Prevent public modification loops if login states are empty
+    if (!loggedInUserEmail) return; 
     
     let nextRank = currentRank + 1;
     let nextCollectedState = isCollected;
     
     if (nextRank > maxRank) {
         nextRank = 0;
-        nextCollectedState = !isCollected; // Flip star medal marker parameters cleanly
+        nextCollectedState = !isCollected; 
     }
 
     const transactionPayload = {};
@@ -228,7 +230,6 @@ window.mutateDatabaseNodeRank = function(category, itemIndex, currentRank, maxRa
         .catch(err => console.error("[RTDB ABORTED] Update failed boundary evaluation rules: ", err.message));
 };
 
-// Skill tree category tabs switcher event callback
 window.switchSkillCategory = function(categoryName) {
     currentSkillCategory = categoryName;
     document.querySelectorAll(".tab-link").forEach(btn => {
@@ -245,7 +246,6 @@ function refreshActiveSkillTree() {
     });
 }
 
-// Queries your nested Cloud Firestore subcollections and updates library list cards
 function loadAutomatedGameCardsFromFirestore(operatorKey) {
     const targetCatalog = document.getElementById("automatedFirestoreGamesCatalog");
     targetCatalog.innerHTML = `<div style="color:#8a99ad; padding:20px; text-align:center; width:100%;">Streaming Firestore subcollection fields...</div>`;
@@ -295,7 +295,6 @@ document.getElementById("toggleEditStats").addEventListener("click", () => {
 document.getElementById("saveStatsBtn").addEventListener("click", function() {
     if (!currentActiveOperator || !loggedInUserEmail) return;
 
-    // Direct text inputs update mapping straight onto your individual user block endpoints
     const profileUpdates = {
         onlineId: document.getElementById("editPlaystyle").value || currentActiveOperator,
         level: parseInt(document.getElementById("editAvgDist").value) || 0,
@@ -316,6 +315,6 @@ document.getElementById("saveStatsBtn").addEventListener("click", function() {
       .catch((error) => console.error("Database updates rejected context boundaries: ", error.message));
 });
 
-// STARTUP DISPATCH ORDER MATRIX INVOCATION
-buildPublicDropdownMenu();
+// STARTUP INITIALIZATION
+renderDropdownMenuByAccessState();
 attachHybridDataStreams(currentActiveOperator);
