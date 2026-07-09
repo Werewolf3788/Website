@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Support Remote Annotation Layer</title>
+    <style>
+        /* 
+           Version Timestamp: 2026-07-09 16:15:00 UTC
+           Implementation Standard: Mobile-first responsive layout with absolute overlay positioning.
+        */
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1e1c1c; /* Soft readable dark slate charcoal */
+            color: #ffffff;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .video-container {
+            position: relative;
+            width: 90vw;
+            max-width: 800px;
+            aspect-ratio: 16 / 9;
+            background: #000000;
+            border: 2px solid #990000; /* Established brand red boundary */
+            border-radius: 8px;
+        }
+
+        /* The incoming live WebRTC stream from the user */
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            pointer-events: none; /* Prevents native video browser controls from disrupting gestures */
+        }
+
+        /* Transparent canvas layered perfectly over the video stream */
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 10;
+            cursor: crosshair;
+            touch-action: none; /* Prevents mobile browser scrolling or pulling while drawing */
+        }
+
+        .controls {
+            margin-top: 20px;
+            display: flex;
+            gap: 16px;
+        }
+
+        button {
+            background: #990000; /* High-contrast corporate red */
+            color: #ffffff;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            min-height: 44px; /* Touch target compliance */
+        }
+        
+        button.active {
+            background: #ff3333;
+            box-shadow: 0 0 10px #ff3333;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Remote Support Stream</h2>
+    <div class="video-container" id="container">
+        <!-- Mock video element representing the incoming WebRTC stream -->
+        <video id="supportVideo" autoplay playsinline></video>
+        <!-- Dynamic overlay canvas for pointer capture and animation tracking -->
+        <canvas id="annotationCanvas"></canvas>
+    </div>
+
+    <div class="controls">
+        <button id="roleAgentBtn" class="active" onclick="setRole('agent')">I am the Agent (Draw)</button>
+        <button id="roleCustomerBtn" onclick="setRole('customer')">I am the Customer (View)</button>
+    </div>
+
+    <!-- Firebase App and Firestore SDKs via 100% Free CDN Tier -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ==========================================
+        // 1. FIREBASE INITIALIZATION & CONFIG
+        // ==========================================
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_PROJECT_ID.appspot.com",
+            messagingSenderId: "YOUR_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase app instance if not already running
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+        // Target a single session document for real-time annotation synchronization
+        const annotationRef = db.collection("support_sessions").doc("demo_session");
+
+        // ==========================================
+        // 2. CANVAS SETUP & RENDER ENGINE
+        // ==========================================
+        const canvas = document.getElementById("annotationCanvas");
+        const ctx = canvas.getContext("2d");
+        const container = document.getElementById("container");
+
+        let currentRole = 'agent'; // Default role for local sandbox testing
+        let isDrawing = false;
+        let pointsArray = []; // Stores local lines/ripples to animate and fade out
+
+        // Automatically size canvas coordinates to match its visible bounding client rect
+        function resizeCanvas() {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Switch role handling mechanics for sandbox execution
+        function setRole(role) {
+            currentRole = role;
+            document.getElementById('roleAgentBtn').classList.toggle('active', role === 'agent');
+            document.getElementById('roleCustomerBtn').classList.toggle('active', role === 'customer');
+            pointsArray = []; // Purge local drawings when toggle changes
+            
+            if (role === 'customer') {
+                // Initialize active Firestore database listener for customer display orientation
+                startFirestoreListener();
+            }
+        }
+
+        // ==========================================
+        // 3. AGENT INPUT HANDLING (Capture & Send Percentages)
+        // ==========================================
+        function handlePointerStart(e) {
+            if (currentRole !== 'agent') return;
+            isDrawing = true;
+            sendPointerData(e, true);
+        }
+
+        function handlePointerMove(e) {
+            if (currentRole !== 'agent' || !isDrawing) return;
+            sendPointerData(e, false);
+        }
+
+        function handlePointerEnd() {
+            if (currentRole !== 'agent') return;
+            isDrawing = false;
+            // Write clear signal to Firestore so customer engine knows stroke has lifted
+            annotationRef.set({ isDrawing: false, clear: true });
+        }
+
+        function sendPointerData(e, isNewStroke) {
+            const rect = canvas.getBoundingClientRect();
+            // Fallback tracking array handling touch events vs standard mouse inputs
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+            // Calculate precise offsets inside the active viewport element boundary
+            const xPixels = clientX - rect.left;
+            const yPixels = clientY - rect.top;
+
+            // Convert to clean scalable scale percentages (0.0 to 1.0)
+            const percentX = xPixels / rect.width;
+            const percentY = yPixels / rect.height;
+
+            // Push payload to cloud database with high-resolution tracking markers
+            annotationRef.set({
+                pctX: percentX,
+                pctY: percentY,
+                isDrawing: isDrawing,
+                isNewStroke: isNewStroke,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).catch(err => console.error("Firestore sync error: ", err));
+            
+            // Mirror onto agent's local screen instantly for visual validation
+            addLocalPoint(percentX, percentY, isNewStroke);
+        }
+
+        // Assign standardized hardware pointer interaction hooks
+        canvas.addEventListener('mousedown', handlePointerStart);
+        canvas.addEventListener('mousemove', handlePointerMove);
+        window.addEventListener('mouseup', handlePointerEnd);
+
+        canvas.addEventListener('touchstart', handlePointerStart, { passive: true });
+        canvas.addEventListener('touchmove', handlePointerMove, { passive: true });
+        canvas.addEventListener('touchend', handlePointerEnd);
+
+        // ==========================================
+        // 4. CUSTOMER SYNC HANDLING (Listen & Append)
+        // ==========================================
+        let unsubscribe = null;
+        function startFirestoreListener() {
+            if (unsubscribe) unsubscribe();
+            
+            unsubscribe = annotationRef.onSnapshot(doc => {
+                const data = doc.data();
+                if (!data || currentRole !== 'customer') return;
+                
+                if (data.clear) {
+                    // Agent lifted finger, break connection pathing loop
+                    if (pointsArray.length > 0) {
+                        pointsArray[pointsArray.length - 1].disconnect = true;
+                    }
+                    return;
+                }
+
+                addLocalPoint(data.pctX, data.pctY, data.isNewStroke);
+            });
+        }
+
+        function addLocalPoint(pctX, pctY, isNewStroke) {
+            pointsArray.push({
+                x: pctX,
+                y: pctY,
+                alpha: 1.0, // High starting opacity opacity factor
+                radius: 5,  // Base starting radius size for line widths or ripples
+                isNewStroke: isNewStroke,
+                disconnect: false,
+                createdAt: Date.now()
+            });
+        }
+
+        // ==========================================
+        // 5. ANIMATION LOOP ENGINE (Fade and Draw lines/ripples)
+        // ==========================================
+        function animationFrameLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            const now = Date.now();
+
+            // Render and process decay on points array data metrics
+            for (let i = 0; i < pointsArray.length; i++) {
+                let pt = pointsArray[i];
+                
+                // Calculate age of each element marker point to manage fade profile timings
+                const age = now - pt.createdAt;
+                pt.alpha = Math.max(0, 1 - (age / 1000)); // Completely fade to 0 over 1000ms (1 second)
+
+                // Translate structural percentages back to scale coordinates based on active viewport
+                const actualX = pt.x * canvas.width;
+                const actualY = pt.y * canvas.height;
+
+                if (pt.alpha > 0) {
+                    if (pt.isNewStroke) {
+                        // 1. RIPPLE DRAW ACTION: Expand tracking ripple ring outwardly
+                        pt.radius += 1.5; // Grow the outer circle frame size over time
+                        ctx.beginPath();
+                        ctx.arc(actualX, actualY, pt.radius, 0, 2 * Math.PI);
+                        ctx.strokeStyle = `rgba(255, 217, 0, ${pt.alpha})`; // Premium Gold highlight line color style
+                        ctx.lineWidth = 3;
+                        ctx.stroke();
+
+                        // Inner structural solid center target marker
+                        ctx.beginPath();
+                        ctx.arc(actualX, actualY, 6, 0, 2 * Math.PI);
+                        ctx.fillStyle = `rgba(255, 217, 0, ${pt.alpha})`;
+                        ctx.fill();
+                    }
+
+                    // 2. LINE PATH DRAW ACTION: Connect sequentially tracked stream vectors
+                    if (i > 0 && !pt.isNewStroke && !pointsArray[i - 1].disconnect) {
+                        let prevPt = pointsArray[i - 1];
+                        const prevX = prevPt.x * canvas.width;
+                        const prevY = prevPt.y * canvas.height;
+
+                        ctx.beginPath();
+                        ctx.moveTo(prevX, prevY);
+                        ctx.lineTo(actualX, actualY);
+                        // Blend uniform opacity values across drawing segments smoothly
+                        const lineAlpha = Math.min(pt.alpha, prevPt.alpha);
+                        ctx.strokeStyle = `rgba(255, 217, 0, ${lineAlpha})`;
+                        ctx.lineWidth = 5;
+                        ctx.lineCap = "round";
+                        ctx.lineJoin = "round";
+                        ctx.stroke();
+                    }
+                }
+            }
+
+            // Cleanup stale out-of-view arrays to keep performance optimized
+            pointsArray = pointsArray.filter(pt => now - pt.createdAt < 1000);
+
+            requestAnimationFrame(animationFrameLoop);
+        }
+        
+        // Fire up rendering engine pipeline loop
+        requestAnimationFrame(animationFrameLoop);
+    </script>
+</body>
+</html>
