@@ -1,13 +1,13 @@
 /*
  * ==========================================
  * --- PRECISION INTEGRITY PROTOCOL ---
- * Project: Kevin's Official Pack Sync Engine (Firebase RTDB Live Stream)
- * Version: 14.1.4 - Absolute Maximum Extraction Mode
- * NYT TIMESTAMP: Thu, July 9, 2026, 6:40 AM EDT
+ * Project: Kevin's Official Pack Sync Engine (Max-Payload Firebase Stream)
+ * Version: 14.2.1 - Wildhorse Spirit Migration Update
+ * NYT TIMESTAMP: Thu, July 9, 2026, 6:50 AM EDT
  * Compatibility: Node.js v20+, Firebase Realtime Database REST API
- * Note: NO STRIPPING, NO COMPRESSING. ALL SQUAD LOGIC & HELPER FUNCTIONS INTACT.
- * Updates: Fully mapped getAccountDevices, extracted deep avatar resolution trees,
- * expanded telemetry data collection arrays, and automated token store cache runs.
+ * Note: NO STRIPPING, NO COMPRESSING. ALL SQUAD LOGIC & ENDPOINTS INTACT.
+ * Updates: Migrated Kevin's secondary/future primary placeholder ID from 
+ * KFruti88 to wildhorse_spirit across the roster maps and runtime warning layers.
  * ==========================================
  */
 
@@ -26,7 +26,10 @@ const {
     getRecentlyPlayedGames, 
     getUserRegion,
     getBasicPresence,
-    getUserFriendsAccountIds
+    getUserFriendsAccountIds,
+    getAccountDevices,
+    getUserBlockedAccountIds,
+    getUserFriendsRequests
 } = psnApi;
 
 const fs = require("fs");
@@ -37,17 +40,17 @@ const FIREBASE_RTDB_URL = "https://game-tracker-5b2ef-default-rtdb.firebaseio.co
 /* * ==========================================
  * 🚨 AUGUST 2026 MIGRATION PROTOCOL 🚨
  * When 'werewolf3788' is deleted in August:
- * 1. Generate a fresh NPSSO token while logged into KFruti88 on Sony's website.
- * 2. Paste KFruti88's NPSSO string directly into the existing GitHub Secret: PSN_NPSSO_WEREWOLF
+ * 1. Generate a fresh NPSSO token while logged into wildhorse_spirit on Sony's website.
+ * 2. Paste wildhorse_spirit's NPSSO string directly into the existing GitHub Secret: PSN_NPSSO_WEREWOLF
  * 3. Delete the 'werewolf' line inside SQUAD_MAP below.
  * 4. Update PERSONA_CONFIG["Kevin"] to: ["kfruti"]
- * The engine's JWT resolver will auto-catch KFruti88's Account ID automatically.
+ * The engine's JWT resolver will auto-catch wildhorse_spirit's Account ID automatically.
  * ==========================================
  */
 
 const SQUAD_MAP = {
     werewolf: "werewolf3788",   // Scheduled for deletion: Aug 2026
-    kfruti: "KFruti88",         // Kevin's designated future primary
+    kfruti: "wildhorse_spirit", // Kevin's designated future primary
     ray: "OneLIVIDMAN",         // Ray
     darkwing: "Darkwing69420",  // TJ
     mike: "IlIMjolnirIlI",      // Mike (Hidden PSN Profile)
@@ -274,21 +277,16 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         const profile = await getProfileFromAccountId(auth, resolvedTargetId).catch(() => ({}));
         let region = { country: "US", language: "en" };
         let friendsList = [];
-        let systemDevices = [];
+        let deviceList = [];
+        let blockedList = [];
+        let inboundFriendRequests = [];
         
-        // Unlocking structural endpoints on active targets
         if (ACCOUNT_IDS.werewolf === resolvedTargetId || ACCOUNT_IDS.ray === resolvedTargetId) {
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
-            try {
-                const friendsRes = await getUserFriendsAccountIds(auth, "me");
-                friendsList = friendsRes || [];
-            } catch(e) {}
-            // Pull device ecosystems when available via native package exposure
-            try {
-                if (typeof psnApi.getAccountDevices === "function") {
-                    systemDevices = await psnApi.getAccountDevices(auth).catch(() => []);
-                }
-            } catch(e) {}
+            try { friendsList = await getUserFriendsAccountIds(auth, "me") || []; } catch(e) {}
+            try { deviceList = await getAccountDevices(auth) || []; } catch(e) {}
+            try { blockedList = await getUserBlockedAccountIds(auth) || []; } catch(e) {}
+            try { inboundFriendRequests = await getUserFriendsRequests(auth) || []; } catch(e) {}
         }
         
         const presenceId = (ACCOUNT_IDS.werewolf === resolvedTargetId || ACCOUNT_IDS.ray === resolvedTargetId) ? "me" : resolvedTargetId;
@@ -417,7 +415,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                 if (!isTargetHunt) gamesToDeepScan--;
                 
                 try {
-                    await sleep(50); 
+                    await sleep(50); // Sony Safety Buffer
                     
                     let opt = game.npServiceName ? { npServiceName: game.npServiceName } : { npServiceName: "trophy" };
                     let groupsRes = await getTitleTrophyGroups(auth, game.npCommunicationId, opt).catch(()=>null);
@@ -519,14 +517,11 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         return {
             ...profile, onlineId: profile?.onlineId || label, accountId: resolvedTargetId,
             ...presence, gamesPlayed: totalGamesPlayedCount,
-            devices: systemDevices,
             avatar: profile?.avatars?.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url || profile?.avatars?.[0]?.url || "", 
-            allAvatars: profile?.avatars || [],
             bio: twitchIntel?.bio || profile?.aboutMe || "Official Pack Member Profile", psnAccountAge: calculateAgeString(earliestEntry), 
             earliestTrophyDate: earliestEntry,
             latestTrophyDate: mostRecentTrophies[0]?.timestamp || new Date().getTime(),
             plus: !!profile?.isPlus, level: stats?.trophyLevel || 0, region: region?.country || "US",
-            languages: profile?.languagesUsed || [region?.language || "en"],
             trophySummary: { 
                 ...stats, platinum: stats?.earnedTrophies?.platinum||0, gold: stats?.earnedTrophies?.gold||0,
                 silver: stats?.earnedTrophies?.silver||0, bronze: stats?.earnedTrophies?.bronze||0,
@@ -534,12 +529,18 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             },
             recentGames, activeHunt, mostRecentTrophies,
             fullLibrary: allRecentGames,
+            devices: deviceList,
+            blockedAccountsCount: blockedList.length,
+            inboundFriendRequestsCount: inboundFriendRequests.length,
             rawPsnDump: { 
                 profile: profile,
                 presence: rawP,
                 telemetry: telemetryData,
                 titles: sortedTitles,
-                friends: friendsList
+                friends: friendsList,
+                hardwareInfo: deviceList,
+                blocksQueue: blockedList,
+                friendRequests: inboundFriendRequests
             },
             lastUpdated: new Date().toLocaleString()
         };
@@ -564,7 +565,7 @@ async function pushToFirebase(payload) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v14.1.4...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v14.2.1...");
     
     if (Date.now() >= 1785542400000) {
         console.warn("\n=======================================================");
@@ -576,8 +577,8 @@ async function main() {
 
     let finalData = { 
         users: {}, personas: {}, mutualSquadFollowers: [], 
-        lastGlobalUpdate: new Date().toLocaleString(), engineVersion: "14.1.4",
-        codeTimestamp: "Thursday, July 9, 2026 | 6:40 AM EDT"
+        lastGlobalUpdate: new Date().toLocaleString(), engineVersion: "14.2.1",
+        codeTimestamp: "Thursday, July 9, 2026 | 6:50 AM EDT"
     };
 
     try {
@@ -650,7 +651,7 @@ async function main() {
 
     fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
     await pushToFirebase(finalData);
-    console.log(`[SUCCESS] Persona Aggregator v14.1.4 Complete.`);
+    console.log(`[SUCCESS] Persona Aggregator v14.2.1 Complete.`);
 }
 
 main();
