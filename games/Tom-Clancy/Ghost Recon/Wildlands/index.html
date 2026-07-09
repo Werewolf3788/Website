@@ -1,19 +1,33 @@
+<!--
+ * ==========================================
+ * --- PRECISION INTEGRITY PROTOCOL ---
+ * Project: Ghost Recon Wildlands Squad Operations Hub
+ * Version: 2.6.0 - Cloud Firestore User Isolation Protocol
+ * Version Timestamp: Thu, July 9, 2026, 8:15 AM Chicago Time
+ * Compatibility: HTML5, Firebase Firestore Core Framework
+ * Note: Linked to dedicated Tom Clancy resource paths natively.
+ * ==========================================
+ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google Analytics 4 Unified Stream Integration -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-Z9M5LXQ5XN');
+      gtag('config', 'G-L376P3NPY4');
     </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ghost Recon Wildlands Squad Operations Hub</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
     <style>
         :root {
             --bar-height: clamp(60px, 10vh, 90px);
@@ -23,32 +37,40 @@
             --node-blue: #0076a8;
             --node-locked: #1c2430;
             --medal-gold: #ffcc00;
+            
+            --wp-gradient: linear-gradient(180deg, #990000 0%, #000000 100%);
+            --surface-container-dark: #1e1c1c;
+            --primary-text-dark: #ffffff;
+            --high-contrast-btn-bg: #cc0000;
         }
     </style>
-    <link rel="stylesheet" href="style.css?v=2.4">
+    <!-- Dynamic Raw Delivery Linkage Routing for style.css -->
+    <link rel="stylesheet" href="https://rawcdn.githack.com/Werewolf3788/Website/main/games/Tom-Clancy/Ghost%20Recon/Wildlands/style.css?v=20260709_0815">
 </head>
 <body>
 
-    <header class="hub-header">
+    <!-- Semantic Fallback Block for AdSense Crawlers and Search Indexes -->
+    <header class="wp-ghost-hub-header hub-header">
         <div class="header-container">
             <h1 class="logo-text">GHOST HUB</h1>
             
             <div class="directory-dropdown-wrapper">
-                <button id="directoryMenuBtn" class="control-btn outline-text" style="font-weight:bold; border-color:var(--primary-orange); color:var(--primary-orange);">📁 Intel Directory</button>
+                <button id="directoryMenuBtn" class="control-btn outline-text" style="font-weight:bold; border-color:var(--primary-orange); color:var(--primary-orange); min-height: 44px; padding: 10px 16px;">📁 Intel Directory</button>
                 <div id="directoryDropdownContent" class="directory-menu-pane hidden">
                     <div id="directoryLoading" style="padding:12px; font-size:12px; color:#8a99ad; text-align:center;">Fetching tactical assets...</div>
                 </div>
             </div>
 
+            <!-- Operator Identity Selector Scope Block -->
             <div class="user-selector-wrapper">
-                <select id="userSelect" class="styled-select"></select>
+                <select id="userSelect" class="styled-select" style="min-height: 44px; font-size: 16px;"></select>
             </div>
             
             <div class="ui-controls">
-                <button id="toggleUiSettings" class="control-btn">🔧</button>
+                <button id="toggleUiSettings" class="control-btn" style="min-height: 44px; min-width: 44px;">🔧</button>
                 <div id="uiSettingsPanel" class="settings-dropdown hidden">
                     <div class="setting-item">
-                        <label>Theme Mode:</label>
+                        <label for="themeModeSelect">Theme Mode:</label>
                         <select id="themeModeSelect">
                             <option value="system" selected>Match System</option>
                             <option value="bright">Bright</option>
@@ -56,11 +78,11 @@
                         </select>
                     </div>
                     <div class="setting-item">
-                        <label>Text Outline Color:</label>
+                        <label for="outlineColorPicker">Text Outline:</label>
                         <input type="color" id="outlineColorPicker" value="#000000">
                     </div>
                     <div class="setting-item">
-                        <label>Font Style:</label>
+                        <label for="fontStyleSelect">Font Style:</label>
                         <select id="fontStyleSelect">
                             <option value="default">Ghost Default</option>
                             <option value="monospace">Tactical Mono</option>
@@ -72,11 +94,11 @@
         </div>
     </header>
 
-    <main class="hub-container">
+    <main class="hub-container" style="max-width: 100%; width: 100vw;">
         
-        <section class="card-panel profile-panel">
+        <section class="card-panel profile-panel" style="background-color: var(--surface-container-dark); color: var(--primary-text-dark); margin-bottom: 24px; padding: 24px;">
             <div class="profile-header">
-                <h2 id="operatorName" class="outline-text">Operator</h2>
+                <h2 id="operatorName" class="outline-text" style="color: var(--medal-gold);">Operator Profile</h2>
                 <div id="tierContainer" class="tier-badge-container">
                     <span class="tier-label">TIER</span>
                     <span id="tierLevel" class="tier-value">--</span>
@@ -164,62 +186,66 @@
                 </div>
             </div>
 
-            <div class="steam-widget-card">
-                <iframe src="https://store.steampowered.com/widget/460930/" frameborder="0" width="100%" height="190"></iframe>
+            <!-- AdBlock-Bypassing Native Static Monetization Wrapper -->
+            <div class="wp-monetization-block" style="margin: 24px 0; border: 1px solid var(--primary-orange); padding: 12px; background: #111;">
+                <a href="https://store.steampowered.com/app/460930/Tom_Clancys_Ghost_Recon_Wildlands/" target="_blank" style="text-decoration: none; display: block;">
+                    <img src="https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/460930/header.jpg" alt="Ghost Recon Wildlands Campaign" style="width: 100%; max-width: 360px; height: auto; display: block; margin-bottom: 8px;" loading="lazy">
+                    <span style="color: var(--primary-orange); font-weight: bold; font-size: 14px; display: block;">Deploy Now: Tom Clancy's Ghost Recon Wildlands on Steam</span>
+                </a>
             </div>
 
             <div class="edit-stats-trigger-container">
-                <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Comprehensive Ghost Profile</button>
+                <button id="toggleEditStats" class="edit-panel-btn" style="min-height: 44px; font-size: 16px; background-color: var(--high-contrast-btn-bg); color: #ffffff; font-weight: bold; width: 100%;">✏️ Edit Comprehensive Ghost Profile</button>
             </div>
 
-            <div id="editStatsPanel" class="edit-stats-panel hidden">
+            <div id="editStatsPanel" class="edit-stats-panel hidden" style="margin-top: 16px;">
                 <div class="edit-row">
-                    <label>Tier One Mode:</label>
+                    <label for="editTierMode">Tier One Mode:</label>
                     <select id="editTierMode">
                         <option value="off">Off / Not Reached</option>
                         <option value="on">Active</option>
                     </select>
-                    <input type="number" id="editTierLevel" min="1" max="50" placeholder="Lvl">
+                    <input type="number" id="editTierLevel" min="1" max="50" placeholder="Lvl" style="min-height: 44px; font-size: 16px;">
                 </div>
                 <hr class="panel-divider">
                 
                 <h4 class="form-section-title">Playstyle & Combat</h4>
                 <div class="edit-grid-inputs">
-                    <div><label>Playstyle Title</label><input type="text" id="editPlaystyle"></div>
-                    <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist"></div>
-                    <div><label>Tactical %</label><input type="number" id="editTactical"></div>
-                    <div><label>Stealth %</label><input type="number" id="editStealth"></div>
-                    <div><label>Lifetime</label><input type="text" id="editLifetime"></div>
-                    <div><label>Longest Shot</label><input type="text" id="editLongest"></div>
-                    <div><label>Precision %</label><input type="number" id="editPrecision"></div>
-                    <div><label>Fav Weapon</label><input type="text" id="editFav1"></div>
-                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><input type="text" id="editFav2"></div>
+                    <div><label for="editPlaystyle">Playstyle Title</label><input type="text" id="editPlaystyle" style="min-height: 44px;"></div>
+                    <div><label for="editAvgDist">Avg Kill Dist</label><input type="text" id="editAvgDist" style="min-height: 44px;"></div>
+                    <div><label for="editTactical">Tactical %</label><input type="number" id="editTactical" style="min-height: 44px;"></div>
+                    <div><label for="editStealth">Stealth %</label><input type="number" id="editStealth" style="min-height: 44px;"></div>
+                    <div><label for="editLifetime">Lifetime</label><input type="text" id="editLifetime" style="min-height: 44px;"></div>
+                    <div><label for="editLongest">Longest Shot</label><input type="text" id="editLongest" style="min-height: 44px;"></div>
+                    <div><label for="editPrecision">Precision %</label><input type="number" id="editPrecision" style="min-height: 44px;"></div>
+                    <div><label for="editFav1">Fav Weapon</label><input type="text" id="editFav1" style="min-height: 44px;"></div>
+                    <div style="grid-column: span 2;"><label for="editFav2">2nd Fav Weapon</label><input type="text" id="editFav2" style="min-height: 44px;"></div>
                 </div>
 
                 <h4 class="form-section-title">Support & Travel</h4>
                 <div class="edit-grid-inputs">
-                    <div><label>Revived</label><input type="number" id="editRevives"></div>
-                    <div><label>Explosive Kills</label><input type="number" id="editExplosiveKills"></div>
-                    <div><label>Drone Used</label><input type="text" id="editDroneTime"></div>
-                    <div><label>Air Travel</label><input type="text" id="editAir"></div>
-                    <div><label>Ground Travel</label><input type="text" id="editGround"></div>
-                    <div><label>Parachute</label><input type="text" id="editPara"></div>
-                    <div><label>Map Disc. %</label><input type="text" id="editMap"></div>
+                    <div><label for="editRevives">Revived</label><input type="number" id="editRevives" style="min-height: 44px;"></div>
+                    <div><label for="editExplosiveKills">Explosive Kills</label><input type="number" id="editExplosiveKills" style="min-height: 44px;"></div>
+                    <div><label for="editDroneTime">Drone Used</label><input type="text" id="editDroneTime" style="min-height: 44px;"></div>
+                    <div><label for="editAir">Air Travel</label><input type="text" id="editAir" style="min-height: 44px;"></div>
+                    <div><label for="editGround">Ground Travel</label><input type="text" id="editGround" style="min-height: 44px;"></div>
+                    <div><label for="editPara">Parachute</label><input type="text" id="editPara" style="min-height: 44px;"></div>
+                    <div><label for="editMap">Map Disc. %</label><input type="text" id="editMap" style="min-height: 44px;"></div>
                 </div>
 
-                <button id="saveStatsBtn" class="save-stats-btn">Save Tactical Update</button>
+                <button id="saveStatsBtn" class="save-stats-btn" style="min-height: 44px; background-color: var(--high-contrast-btn-bg); color:#ffffff; font-weight:bold; font-size:16px;">Save Tactical Update</button>
             </div>
         </section>
 
         <section class="card-panel skills-panel">
-            <div class="skills-tabs">
-                <button class="tab-link active" onclick="switchSkillCategory('WEAPON')">Weapon</button>
-                <button class="tab-link" onclick="switchSkillCategory('DRONE')">Drone</button>
-                <button class="tab-link" onclick="switchSkillCategory('ITEM')">Item</button>
-                <button class="tab-link" onclick="switchSkillCategory('PHYSICAL')">Physical</button>
-                <button class="tab-link" onclick="switchSkillCategory('SQUAD')">Squad</button>
-                <button class="tab-link" onclick="switchSkillCategory('REBEL')">Rebel</button>
-                <button class="tab-link" onclick="switchSkillCategory('TROPHY')">Trophies & Recon</button>
+            <div class="skills-tabs" style="display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 8px; padding-bottom: 8px;">
+                <button class="tab-link active" onclick="switchSkillCategory('WEAPON')" style="min-height: 44px; padding: 0 16px; white-space: nowrap;">Weapon</button>
+                <button class="tab-link" onclick="switchSkillCategory('DRONE')" style="min-height: 44px; padding: 0 16px; white-space: nowrap;">Drone</button>
+                <button class="tab-link" onclick="switchSkillCategory('ITEM')" style="min-height: 44px; padding: 0 16px; white-space: nowrap;">Item</button>
+                <button class="tab-link" onclick="switchSkillCategory('PHYSICAL')" style="min-height: 44px; padding: 0 16px; white-space: nowrap;">Physical</button>
+                <button class="tab-link" onclick="switchSkillCategory('SQUAD')" style="min-height: 44px; padding: 0 16px; white-space: nowrap;">Squad</button>
+                <button class="tab-link" onclick="switchSkillCategory('REBEL')" style="min-height: 44px; padding: 0 16px; white-space: nowrap;">Rebel</button>
+                <button class="tab-link" onclick="switchSkillCategory('TROPHY')" style="min-height: 44px; padding: 0 16px; white-space: nowrap;">Trophies & Recon</button>
             </div>
             
             <div id="skillsTreeGrid" class="skills-tree-grid"></div>
@@ -227,22 +253,23 @@
 
     </main>
 
-    <footer class="hub-footer">
+    <footer class="wp-ghost-hub-footer hub-footer">
         <div class="footer-container">
             <div class="kf-watermark">
                 <span class="k-letter">K</span><span class="f-letter">F</span>
             </div>
-            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-1402</p>
+            <p class="timestamp-note">Dashboard Verification Ref: CT-20260709-0815</p>
         </div>
     </footer>
 
+    <!-- Native Compatibility SDK Framework Imports for Cloud Firestore -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="app.js?v=2.4"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="app.js?v=2.6.0"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+                navigator.serviceWorker.register('https://rawcdn.githack.com/Werewolf3788/Website/main/games/Tom-Clancy/Ghost%20Recon/Wildlands/sw.js?v=2.6.0').catch(err => console.log('SW registration failed:', err));
             });
         }
     </script>
