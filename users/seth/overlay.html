@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <!-- 
-      VERSION TIMESTAMP: 2026-07-07 12:15:00 CT
+      VERSION TIMESTAMP: 2026-07-09 12:52:00 CT
       CRITICAL: Viewport standard configured for strict 100vw layout tracking. 
+      MODIFICATION: Completely stripped all experimental goal widgets/iframes to maintain clean visual styling integrity.
     -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phoenix Darkfire - Elite Protocol</title>
@@ -301,7 +302,6 @@
 
         .profile-pic-wrapper {
             position: relative;
-            /* Scaled up uniformly for better visual presence */
             width: 10vh;
             height: 10vh;
             border-radius: 50%;
@@ -453,7 +453,6 @@
 
             <div class="identity-column">
                 <div class="stats-stack">
-                    <div class="stat-label">VIEWERS: <span id="viewer-count">0</span></div>
                     <div class="stat-label">RECRUITS: <span id="follower-count">0</span></div>
                 </div>
 
@@ -475,7 +474,6 @@
         const gameArtImg = document.getElementById('game-art-img');
         
         const followerField = document.getElementById('follower-count');
-        const viewerField = document.getElementById('viewer-count');
         const profileImg = document.getElementById('twitch-profile-img');
         const friendsPanel = document.getElementById('live-friends-panel');
 
@@ -623,18 +621,6 @@
                     followerField.innerText = count || "0";
                 }
             } catch (e) {}
-
-            try {
-                const viewRes = await fetch(`https://decapi.me/twitch/viewercount/phoenix_darkfire?cache=${timestamp}`);
-                if (viewRes.ok) {
-                    let count = (await viewRes.text()).trim();
-                    if (count.toLowerCase().includes("offline") || isNaN(count)) {
-                        viewerField.innerText = DEBUG_MODE ? "6" : "0";
-                    } else {
-                        viewerField.innerText = count;
-                    }
-                }
-            } catch (e) {}
         }
 
         // --- Execution Loops & Startup Protocols ---
@@ -685,6 +671,7 @@
             const sk = obj.detail.listener;
             const ev = obj.detail.event;
             if (!ev) return;
+
             if (sk === 'message') {
                 const user = (ev.data.displayName || ev.data.nick || "").toLowerCase();
                 if (user === 'cat_louves' || user === 'anakigod99' || user === 'corelpoppa') {
@@ -726,7 +713,9 @@
                 if (user === 'phoenix_darkfire') rain(['🦅', '🔥', '🐦', '✨']); 
                 if (user === 'werewolf3788') rain(['🐺', '🌕', '🐾', '🐺']);
             }
-            if (sk === 'follower-latest') triggerFollowerAlert(ev.name);
+            if (sk === 'follower-latest') {
+                triggerFollowerAlert(ev.name);
+            }
         });
     </script>
 </body>
