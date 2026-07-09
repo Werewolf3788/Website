@@ -1,6 +1,26 @@
+<!--
+ * ==========================================
+ * --- PRECISION INTEGRITY PROTOCOL ---
+ * Project: Ghost Recon Wildlands Squad Hub
+ * Version: 3.3.1 - Skill Tree Container Restored
+ * Version Timestamp: Thu, July 9, 2026, 11:38 AM Chicago Time
+ * Compatibility: HTML5, Firebase Auth + RTDB + Firestore SDK Core Modules
+ * Note: Restored skillsTreeGrid container element to fix empty tab errors.
+ * ==========================================
+ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google Analytics 4 Stream Integration Verification -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9M5LXQ5XN');
+      gtag('config', 'G-L376P3NPY4');
+    </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ghost Recon Wildlands Squad Hub</title>
@@ -17,17 +37,50 @@
             --node-locked: #1c2430;
             --medal-gold: #ffcc00;
         }
+        .auth-inline-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-badge-img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 1px solid var(--primary-orange);
+        }
+        .section-header-title {
+            font-size: 16px;
+            color: var(--primary-orange);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 20px 0 12px 0;
+            font-weight: bold;
+        }
+        .hidden {
+            display: none !important;
+        }
     </style>
-    <link rel="stylesheet" href="style.css?v=2.3">
+    <link rel="stylesheet" href="style.css?v=3.3.1">
 </head>
 <body>
 
     <header class="hub-header">
         <div class="header-container">
             <h1 class="logo-text">GHOST HUB</h1>
+            
             <div class="user-selector-wrapper">
                 <select id="userSelect" class="styled-select"></select>
             </div>
+
+            <!-- Integrated Identity Verification Pipeline -->
+            <div id="authContainer" class="auth-inline-wrapper">
+                <button id="googleSignInBtn" class="control-btn" style="border-color: var(--ghost-blue); color: var(--ghost-blue); font-weight: bold;">🔑 Login</button>
+                <div id="userProfileStatus" class="hidden" style="display: flex; align-items: center; gap: 8px;">
+                    <img id="userAvatar" class="user-badge-img" src="" alt="Avatar">
+                    <button id="signOutBtn" class="control-btn" style="font-size: 11px; padding: 4px 8px; min-height: 32px;">Logout</button>
+                </div>
+            </div>
+
             <div class="ui-controls">
                 <button id="toggleUiSettings" class="control-btn">🔧</button>
                 <div id="uiSettingsPanel" class="settings-dropdown hidden">
@@ -152,7 +205,7 @@
                 <iframe src="https://store.steampowered.com/widget/460930/" frameborder="0" width="100%" height="190"></iframe>
             </div>
 
-            <div class="edit-stats-trigger-container">
+            <div class="edit-stats-trigger-container hidden" id="editTriggerZone">
                 <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Comprehensive Ghost Profile</button>
             </div>
 
@@ -195,6 +248,7 @@
             </div>
         </section>
 
+        <!-- Skill Progress Tab System Matrix -->
         <section class="card-panel skills-panel">
             <div class="skills-tabs">
                 <button class="tab-link active" onclick="switchSkillCategory('WEAPON')">Weapon</button>
@@ -206,7 +260,13 @@
                 <button class="tab-link" onclick="switchSkillCategory('TROPHY')">Trophies & Recon</button>
             </div>
             
+            <!-- CRITICAL RESTORATION: The target injection node container for your checkboxes -->
             <div id="skillsTreeGrid" class="skills-tree-grid"></div>
+
+            <hr class="panel-divider" style="margin: 24px 0;">
+
+            <div class="section-header-title">Live Omni-Sync Catalog (Auto-Generated Profiles)</div>
+            <div id="automatedFirestoreGamesCatalog" class="skills-tree-grid"></div>
         </section>
 
     </main>
@@ -216,12 +276,14 @@
             <div class="kf-watermark">
                 <span class="k-letter">K</span><span class="f-letter">F</span>
             </div>
-            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-0445</p>
+            <p class="timestamp-note">Dashboard Verification Ref: CT-20260709-1138</p>
         </div>
     </footer>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="app.js?v=2.3"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="app.js?v=3.3.1"></script>
 </body>
 </html>
