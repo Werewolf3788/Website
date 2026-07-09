@@ -1,9 +1,10 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
 # Project: PSN Sync Workflow
-# Timestamp: May 10, 2026, 11:00 PM (NYT)
+# Timestamp: Thu, July 9, 2026, 6:45 AM EDT
 # Compatibility: GitHub Actions, GitHub Pages
 # Note: DO NOT STRIP INDENTATION. YAML REQUIRES 2-SPACE SPACING.
-# Updates: Changed cron schedule to run every 23 minutes for the whole squad.
+# Updates: Standardized tracking array to strictly watch psn_data.json and .nojekyll.
+# Removed dynamic tracking of static config arrays to avoid run collisions.
 # ------------------------------------
 
 name: PSN Sync and Deploy
@@ -45,14 +46,14 @@ jobs:
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
-        run: node Playstation/psnscript.js
+        run: node Playstation/psn.js
 
       - name: Commit and Push Data Changes
         run: |
           git config --global user.name "Werewolf3788-Bot"
           git config --global user.email "bot@werewolf.ourflora.com"
           
-          git add Playstation/psn_data.json Playstation/tokens.json .nojekyll
+          git add Playstation/psn_data.json .nojekyll
           
           if ! git diff --cached --quiet; then
             git commit -m "Automated PSN Sync: $(date)"
