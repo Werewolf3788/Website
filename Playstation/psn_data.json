@@ -50,12 +50,12 @@
       "isOfficiallyVerified": false,
       "isMe": false,
       "accountId": "3728215008151724560",
-      "online": false,
-      "currentGame": "Expeditions: A Mudrunner Game",
-      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/34b0da12-fb03-4ea0-b8bb-c1992cd2c184.png",
+      "online": true,
+      "currentGame": "Tom Clancy’s Ghost Recon® Wildlands",
+      "currentGameArt": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
       "currentGameActivity": "Target practice",
-      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Expeditions%3A%20A%20Mudrunner%20Game&tag=psngaming-20",
-      "currentCommunicationId": "NPWR39117_00",
+      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands&tag=psngaming-20",
+      "currentCommunicationId": "NPWR09395_00",
       "platform": "PS5",
       "twitch": {
         "isLive": false,
@@ -68,7 +68,7 @@
         "age": "3 years, 3 months",
         "bio": null,
         "statusMessage": "Target practice",
-        "uptime": "1 hour, 39 minutes, 22 seconds",
+        "uptime": "3 hours, 38 minutes, 47 seconds",
         "viewers": "1",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
@@ -79,31 +79,65 @@
       "bio": "6C3RG",
       "psnAccountAge": "3 years, 2 months",
       "earliestTrophyDate": "2023-04-19T00:13:47.000Z",
-      "latestTrophyDate": 1783559184000,
+      "latestTrophyDate": 1783706558000,
       "plus": true,
       "level": 236,
       "region": "US",
       "trophySummary": {
         "accountId": "3728215008151724560",
         "trophyLevel": 236,
-        "trophyPoint": 31470,
+        "trophyPoint": 31500,
         "trophyLevelBasePoint": 31140,
         "trophyLevelNextPoint": 31590,
-        "progress": 73,
+        "progress": 80,
         "tier": 3,
         "earnedTrophies": {
           "bronze": 1050,
-          "silver": 231,
+          "silver": 232,
           "gold": 81,
           "platinum": 5
         },
         "platinum": 5,
         "gold": 81,
-        "silver": 231,
+        "silver": 232,
         "bronze": 1050,
-        "total": 1367
+        "total": 1368
       },
       "recentGames": [
+        {
+          "npCommunicationId": "NPWR09395_00",
+          "name": "Tom Clancy’s Ghost Recon® Wildlands",
+          "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+          "lastPlayed": "2026-07-10T18:02:40Z",
+          "npServiceName": "trophy",
+          "trophySetVersion": "01.04",
+          "trophyTitleName": "Tom Clancy’s Ghost Recon® Wildlands",
+          "trophyTitleDetail": "Tom Clancy’s Ghost Recon® Wildlands is the very first military shooter in a massive, dangerous and responsive open world that you can play entirely solo or in four-player co-op.",
+          "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+          "trophyTitlePlatform": "PS4",
+          "hasTrophyGroups": true,
+          "trophyGroupCount": 3,
+          "definedTrophies": {
+            "bronze": 42,
+            "silver": 10,
+            "gold": 5,
+            "platinum": 1
+          },
+          "progress": 33,
+          "earnedTrophies": {
+            "bronze": 19,
+            "silver": 3,
+            "gold": 1,
+            "platinum": 0
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-07-10T18:02:40Z",
+          "earnedTotal": 23,
+          "definedTotal": 58,
+          "ratio": "23/58",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands&tag=psngaming-20",
+          "bootCount": "Unknown"
+        },
         {
           "npCommunicationId": "NPWR39117_00",
           "name": "Expeditions: A Mudrunner Game",
@@ -268,72 +302,83 @@
           "ratio": "19/33",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=World%20of%20Tanks%3A%20HEAT&tag=psngaming-20",
           "bootCount": "Unknown"
-        },
-        {
-          "npCommunicationId": "NPWR19950_00",
-          "name": "Sackboy: A Big Adventure",
-          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR19950_00/28286d6e-d0b0-492f-8e0e-573ad62184ef.png",
-          "lastPlayed": "2026-06-12T00:54:55Z",
-          "npServiceName": "trophy2",
-          "trophySetVersion": "01.02",
-          "trophyTitleName": "Sackboy: A Big Adventure",
-          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR19950_00/28286d6e-d0b0-492f-8e0e-573ad62184ef.png",
-          "trophyTitlePlatform": "PS5",
-          "hasTrophyGroups": false,
-          "trophyGroupCount": 1,
-          "definedTrophies": {
-            "bronze": 32,
-            "silver": 10,
-            "gold": 3,
-            "platinum": 1
-          },
-          "progress": 4,
-          "earnedTrophies": {
-            "bronze": 1,
-            "silver": 1,
-            "gold": 0,
-            "platinum": 0
-          },
-          "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-06-12T00:54:55Z",
-          "earnedTotal": 2,
-          "definedTotal": 46,
-          "ratio": "2/46",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sackboy%3A%20A%20Big%20Adventure&tag=psngaming-20",
-          "bootCount": "Unknown"
         }
       ],
       "activeHunt": {
-        "title": "Expeditions: A Mudrunner Game",
-        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Expeditions%3A%20A%20Mudrunner%20Game&tag=psngaming-20",
-        "progress": 15,
+        "title": "Tom Clancy’s Ghost Recon® Wildlands",
+        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Tom%20Clancy%E2%80%99s%20Ghost%20Recon%20Wildlands&tag=psngaming-20",
+        "progress": 33,
         "velocity": {
-          "firstEarned": "7/4/2026, 5:07:59 AM",
-          "huntingDuration": "5 days",
-          "hunterPersona": "Steady Hunter",
-          "completionStatus": "8/21"
+          "firstEarned": "4/19/2023, 12:09:33 AM",
+          "huntingDuration": "1179 days",
+          "hunterPersona": "Casual Pursuit",
+          "completionStatus": "23/58"
         },
         "groups": [
           {
             "trophyGroupId": "default",
-            "progress": 15,
+            "progress": 45,
             "earnedTrophies": {
-              "bronze": 6,
-              "silver": 2,
+              "bronze": 18,
+              "silver": 3,
+              "gold": 1,
+              "platinum": 0
+            },
+            "lastUpdatedDateTime": "2026-07-10T18:02:38Z",
+            "trophyGroupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "trophyGroupDetail": "Tom Clancy’s Ghost Recon® Wildlands is the very first military shooter in a massive, dangerous and responsive open world that you can play entirely solo or in four-player co-op.",
+            "trophyGroupIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+            "definedTrophies": {
+              "bronze": 32,
+              "silver": 8,
+              "gold": 3,
+              "platinum": 1
+            },
+            "name": "Tom Clancy’s Ghost Recon® Wildlands",
+            "ratio": "22/44"
+          },
+          {
+            "trophyGroupId": "001",
+            "progress": 0,
+            "earnedTrophies": {
+              "bronze": 0,
+              "silver": 0,
               "gold": 0,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-07-09T01:06:24Z",
-            "trophyGroupName": "Expeditions: A Mudrunner Game",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/34b0da12-fb03-4ea0-b8bb-c1992cd2c184.png",
+            "trophyGroupName": "Ghost Recon® Wildlands: Narco Road",
+            "trophyGroupDetail": "Trophy set for Tom Clancy's Ghost Recon® Wildlands : Narco Road",
+            "trophyGroupIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/AD34538E797A970FAD156201601BA6338D8B3C54.PNG",
             "definedTrophies": {
-              "bronze": 6,
-              "silver": 6,
-              "gold": 8,
-              "platinum": 1
+              "bronze": 5,
+              "silver": 1,
+              "gold": 1,
+              "platinum": 0
             },
-            "name": "Expeditions: A Mudrunner Game",
-            "ratio": "8/21"
+            "name": "Ghost Recon® Wildlands: Narco Road",
+            "ratio": "0/7"
+          },
+          {
+            "trophyGroupId": "002",
+            "progress": 7,
+            "earnedTrophies": {
+              "bronze": 1,
+              "silver": 0,
+              "gold": 0,
+              "platinum": 0
+            },
+            "lastUpdatedDateTime": "2026-05-28T14:59:55Z",
+            "trophyGroupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "trophyGroupDetail": "Trophy set for Tom Clancy's Ghost Recon® Wildlands : Fallen Ghosts",
+            "trophyGroupIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/D6EA172CD0CAFBEECBF3D023EBDC3C1AC6FA6FB1.PNG",
+            "definedTrophies": {
+              "bronze": 5,
+              "silver": 1,
+              "gold": 1,
+              "platinum": 0
+            },
+            "name": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "ratio": "1/7"
           }
         ],
         "trophies": [
@@ -341,18 +386,18 @@
             "trophyId": 0,
             "trophyHidden": false,
             "trophyType": "platinum",
-            "trophyName": "Trophy Hunter",
-            "trophyDetail": "Get all other trophies",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/15edba8d-36e3-4d1f-afd7-2f50ffaed2ca.png",
+            "trophyName": "Master of the Wildlands",
+            "trophyDetail": "Collected all the trophies.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/D3CDD188DB0F461213A92FB17A51B1FDE140A927.PNG",
             "trophyGroupId": "default",
-            "name": "Trophy Hunter",
+            "name": "Master of the Wildlands",
             "type": "platinum",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/15edba8d-36e3-4d1f-afd7-2f50ffaed2ca.png",
-            "description": "Get all other trophies",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/D3CDD188DB0F461213A92FB17A51B1FDE140A927.PNG",
+            "description": "Collected all the trophies.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -364,22 +409,22 @@
             "trophyId": 1,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "First Love",
-            "trophyDetail": "Purchase your first vehicle",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
+            "trophyName": "Fearless",
+            "trophyDetail": "Skydived 10 times.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/83F774596CAFC63CAA63F84E45C8DA386A8F727D.PNG",
             "trophyGroupId": "default",
-            "name": "First Love",
+            "name": "Fearless",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
-            "description": "Purchase your first vehicle",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/83F774596CAFC63CAA63F84E45C8DA386A8F727D.PNG",
+            "description": "Skydived 10 times.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "7/8/2026, 11:37:48 PM",
-            "earnedAge": "1 day, 16 hours, 25 mins",
-            "timestamp": 1783553868000,
+            "earnedDate": "4/19/2026, 3:55:54 AM",
+            "earnedAge": "2 months, 3 weeks, 1 day, 14 hours, 7 mins",
+            "timestamp": 1776570954000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -387,45 +432,45 @@
             "trophyId": 2,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "Truck-Curious",
-            "trophyDetail": "Purchase 10 vehicles",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/365057cc-03f3-4ac1-9b55-f8cf8f44e373.png",
+            "trophyName": "Pull!",
+            "trophyDetail": "Shot an enemy chopper out of the air with a mortar.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/C4ECAADEAC2705EF8B2949F5976F40B449B8BD80.PNG",
             "trophyGroupId": "default",
-            "name": "Truck-Curious",
+            "name": "Pull!",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/365057cc-03f3-4ac1-9b55-f8cf8f44e373.png",
-            "description": "Purchase 10 vehicles",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/C4ECAADEAC2705EF8B2949F5976F40B449B8BD80.PNG",
+            "description": "Shot an enemy chopper out of the air with a mortar.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/27/2024, 2:28:25 AM",
+            "earnedAge": "1 yr, 6 months, 2 weeks, 1 day, 15 hours, 34 mins",
+            "timestamp": 1735266505000,
             "currentValue": 0,
             "targetValue": 0
           },
           {
             "trophyId": 3,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Truck Aficionado",
-            "trophyDetail": "Purchase 20 vehicles",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/2044b89a-9624-4355-8b1a-34cb2838fd0c.png",
+            "trophyType": "bronze",
+            "trophyName": "Road Warrior",
+            "trophyDetail": "Drove a vehicle for 100 km.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/EFF6747E511994848336E9DC6027743B656555E0.PNG",
             "trophyGroupId": "default",
-            "name": "Truck Aficionado",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/2044b89a-9624-4355-8b1a-34cb2838fd0c.png",
-            "description": "Purchase 20 vehicles",
+            "name": "Road Warrior",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/EFF6747E511994848336E9DC6027743B656555E0.PNG",
+            "description": "Drove a vehicle for 100 km.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/24/2024, 1:15:37 AM",
+            "earnedAge": "1 yr, 6 months, 2 weeks, 4 days, 16 hours, 47 mins",
+            "timestamp": 1735002937000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -433,64 +478,64 @@
             "trophyId": 4,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Lucky Find",
-            "trophyDetail": "Find your first upgrade stash",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/a7005f29-76f3-4d0e-ac3d-2f1d3cdb87b4.png",
+            "trophyName": "Deadly Curious",
+            "trophyDetail": "Interrogated 20 sources.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B2DEC91347E78F52D8E6414B0DECDE412F82CC9F.PNG",
             "trophyGroupId": "default",
-            "name": "Lucky Find",
+            "name": "Deadly Curious",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/a7005f29-76f3-4d0e-ac3d-2f1d3cdb87b4.png",
-            "description": "Find your first upgrade stash",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B2DEC91347E78F52D8E6414B0DECDE412F82CC9F.PNG",
+            "description": "Interrogated 20 sources.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "7/4/2026, 1:22:05 PM",
-            "earnedAge": "6 days, 2 hours, 41 mins",
-            "timestamp": 1783171325000,
+            "earnedDate": "4/29/2026, 1:12:58 AM",
+            "earnedAge": "2 months, 1 week, 5 days, 16 hours, 49 mins",
+            "timestamp": 1777425178000,
             "currentValue": 0,
             "targetValue": 0
           },
           {
             "trophyId": 5,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Explorer",
-            "trophyDetail": "Drive a total of 100 km",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/b282545b-8d22-445a-ac33-6477f6a25a48.png",
+            "trophyType": "bronze",
+            "trophyName": "Serious Collector",
+            "trophyDetail": "Found 50% of the documents in the game.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/3165981DE91E09CEDB50150919237262A39E0A03.PNG",
             "trophyGroupId": "default",
-            "name": "Explorer",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/b282545b-8d22-445a-ac33-6477f6a25a48.png",
-            "description": "Drive a total of 100 km",
+            "name": "Serious Collector",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/3165981DE91E09CEDB50150919237262A39E0A03.PNG",
+            "description": "Found 50% of the documents in the game.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "4/27/2026, 7:41:10 PM",
+            "earnedAge": "2 months, 1 week, 6 days, 22 hours, 21 mins",
+            "timestamp": 1777318870000,
             "currentValue": 0,
             "targetValue": 0
           },
           {
             "trophyId": 6,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Globetrotter ",
-            "trophyDetail": "Drive a total of 200 km",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/09c7495b-60ed-44fa-a794-0886734e387b.png",
+            "trophyType": "silver",
+            "trophyName": "The Whole Story",
+            "trophyDetail": "Found all documents.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/6D04BE193654C884A40B07A7E9A72E170883FF3D.PNG",
             "trophyGroupId": "default",
-            "name": "Globetrotter ",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/09c7495b-60ed-44fa-a794-0886734e387b.png",
-            "description": "Drive a total of 200 km",
+            "name": "The Whole Story",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/6D04BE193654C884A40B07A7E9A72E170883FF3D.PNG",
+            "description": "Found all documents.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -501,23 +546,23 @@
           {
             "trophyId": 7,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Wild Colorado",
-            "trophyDetail": "Complete all expeditions in Little Colorado",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/8173c53d-c646-4194-aca0-bec68f8ae7f6.png",
+            "trophyType": "bronze",
+            "trophyName": "Beat the Boss",
+            "trophyDetail": "Defeated your first boss.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/8B5FE3FAF561A0E52ADEA150797641BA9281CAD7.PNG",
             "trophyGroupId": "default",
-            "name": "Wild Colorado",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/8173c53d-c646-4194-aca0-bec68f8ae7f6.png",
-            "description": "Complete all expeditions in Little Colorado",
+            "name": "Beat the Boss",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/8B5FE3FAF561A0E52ADEA150797641BA9281CAD7.PNG",
+            "description": "Defeated your first boss.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "7/9/2026, 12:27:37 AM",
-            "earnedAge": "1 day, 15 hours, 35 mins",
-            "timestamp": 1783556857000,
+            "earnedDate": "12/22/2024, 2:08:36 PM",
+            "earnedAge": "1 yr, 6 months, 2 weeks, 6 days, 3 hours, 54 mins",
+            "timestamp": 1734876516000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -525,18 +570,18 @@
             "trophyId": 8,
             "trophyHidden": false,
             "trophyType": "gold",
-            "trophyName": "Arizona Skies",
-            "trophyDetail": "Complete all expeditions in Arizona",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/e0216d4b-4426-4bf3-a1d4-aba0af280acc.png",
+            "trophyName": "The End",
+            "trophyDetail": "Finished the story.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/41196D5781CFE2D21ED16413C6EA6F5E8F35FE5E.PNG",
             "trophyGroupId": "default",
-            "name": "Arizona Skies",
+            "name": "The End",
             "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/e0216d4b-4426-4bf3-a1d4-aba0af280acc.png",
-            "description": "Complete all expeditions in Arizona",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/41196D5781CFE2D21ED16413C6EA6F5E8F35FE5E.PNG",
+            "description": "Finished the story.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -547,19 +592,19 @@
           {
             "trophyId": 9,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Eurotrip",
-            "trophyDetail": "Complete all expeditions in Carpathians",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1f6662b5-87a9-44f9-8616-2af0405f9de4.png",
+            "trophyType": "bronze",
+            "trophyName": "Smuggler's Blues",
+            "trophyDetail": "Completed the Smuggling operation.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/377DC93AF5AF40E0CF2EACFE2BAD32EEB649D711.PNG",
             "trophyGroupId": "default",
-            "name": "Eurotrip",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1f6662b5-87a9-44f9-8616-2af0405f9de4.png",
-            "description": "Complete all expeditions in Carpathians",
+            "name": "Smuggler's Blues",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/377DC93AF5AF40E0CF2EACFE2BAD32EEB649D711.PNG",
+            "description": "Completed the Smuggling operation.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -570,19 +615,19 @@
           {
             "trophyId": 10,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Frankentruck",
-            "trophyDetail": "Fix 2000 points worth of damage in total",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/9e149bb1-7197-471b-b48b-54f011c827e8.png",
+            "trophyType": "bronze",
+            "trophyName": "Shut Down",
+            "trophyDetail": "Completed the Production operation.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/67847CDF477F060BD9DF301151B38C33BBC454F0.PNG",
             "trophyGroupId": "default",
-            "name": "Frankentruck",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/9e149bb1-7197-471b-b48b-54f011c827e8.png",
-            "description": "Fix 2000 points worth of damage in total",
+            "name": "Shut Down",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/67847CDF477F060BD9DF301151B38C33BBC454F0.PNG",
+            "description": "Completed the Production operation.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -593,19 +638,19 @@
           {
             "trophyId": 11,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "The Truck of Theseus ",
-            "trophyDetail": "Fix 10000 points worth of damage in total",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/5ba44255-77fa-41c1-a079-77fe1f84a1a7.png",
+            "trophyType": "bronze",
+            "trophyName": "Broken Locks",
+            "trophyDetail": "Completed the Security operation.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/EFFAA4F9F6F59FD61867D844B1CCC5355FF30423.PNG",
             "trophyGroupId": "default",
-            "name": "The Truck of Theseus ",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/5ba44255-77fa-41c1-a079-77fe1f84a1a7.png",
-            "description": "Fix 10000 points worth of damage in total",
+            "name": "Broken Locks",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/EFFAA4F9F6F59FD61867D844B1CCC5355FF30423.PNG",
+            "description": "Completed the Security operation.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -616,19 +661,19 @@
           {
             "trophyId": 12,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Anchor Management",
-            "trophyDetail": "Pick up 100 removable anchors",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/08419145-31ab-4616-bdf4-282f9ba98406.png",
+            "trophyType": "bronze",
+            "trophyName": "Bad Reputation",
+            "trophyDetail": "Completed the Influence operation.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9855BDCA4B572659656319A6FC6C5D037B96C88C.PNG",
             "trophyGroupId": "default",
-            "name": "Anchor Management",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/08419145-31ab-4616-bdf4-282f9ba98406.png",
-            "description": "Pick up 100 removable anchors",
+            "name": "Bad Reputation",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9855BDCA4B572659656319A6FC6C5D037B96C88C.PNG",
+            "description": "Completed the Influence operation.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -640,18 +685,18 @@
             "trophyId": 13,
             "trophyHidden": false,
             "trophyType": "gold",
-            "trophyName": "Seasoned Explorer",
-            "trophyDetail": "Complete all expeditions in the game",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/a86bf8ec-a021-483d-a3fe-633fa6eba32a.png",
+            "trophyName": "Mission Master",
+            "trophyDetail": "Completed all Story missions.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1448A437D92EFB2CF2D5B414BB86CDB0B1619C87.PNG",
             "trophyGroupId": "default",
-            "name": "Seasoned Explorer",
+            "name": "Mission Master",
             "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/a86bf8ec-a021-483d-a3fe-633fa6eba32a.png",
-            "description": "Complete all expeditions in the game",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1448A437D92EFB2CF2D5B414BB86CDB0B1619C87.PNG",
+            "description": "Completed all Story missions.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -663,22 +708,22 @@
             "trophyId": 14,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Into the Wild",
-            "trophyDetail": "Complete your first expedition",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
+            "trophyName": "With a Pistol!",
+            "trophyDetail": "Campaign: Took out a sniper with a pistol.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/CD0E23BAB15CADEF9E7826E021C0AF612B55CAEE.PNG",
             "trophyGroupId": "default",
-            "name": "Into the Wild",
+            "name": "With a Pistol!",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
-            "description": "Complete your first expedition",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/CD0E23BAB15CADEF9E7826E021C0AF612B55CAEE.PNG",
+            "description": "Campaign: Took out a sniper with a pistol.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "7/4/2026, 12:14:18 PM",
-            "earnedAge": "6 days, 3 hours, 49 mins",
-            "timestamp": 1783167258000,
+            "earnedDate": "12/26/2024, 11:30:43 PM",
+            "earnedAge": "1 yr, 6 months, 2 weeks, 1 day, 18 hours, 32 mins",
+            "timestamp": 1735255843000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -686,22 +731,22 @@
             "trophyId": 15,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "The Mechanic",
-            "trophyDetail": "Install your first car upgrade",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
+            "trophyName": "Teamwork!",
+            "trophyDetail": "Completed 3 missions with another player.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B145525E8E3F52FCA30968F6FD727E1414A65A05.PNG",
             "trophyGroupId": "default",
-            "name": "The Mechanic",
+            "name": "Teamwork!",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
-            "description": "Install your first car upgrade",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B145525E8E3F52FCA30968F6FD727E1414A65A05.PNG",
+            "description": "Completed 3 missions with another player.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "7/4/2026, 5:07:59 AM",
-            "earnedAge": "6 days, 10 hours, 55 mins",
-            "timestamp": 1783141679000,
+            "earnedDate": "12/22/2024, 1:57:24 PM",
+            "earnedAge": "1 yr, 6 months, 2 weeks, 6 days, 4 hours, 5 mins",
+            "timestamp": 1734875844000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -709,22 +754,22 @@
             "trophyId": 16,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Management Approves",
-            "trophyDetail": "Complete any expedition, earning at least 1 bonus reward",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
+            "trophyName": "A Good Start",
+            "trophyDetail": "Completed the first mission \"Amaru's rescue\".",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9D5CC2F2EE3EBB4BCE12C8C66C48A1552CD1C393.PNG",
             "trophyGroupId": "default",
-            "name": "Management Approves",
+            "name": "A Good Start",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
-            "description": "Complete any expedition, earning at least 1 bonus reward",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9D5CC2F2EE3EBB4BCE12C8C66C48A1552CD1C393.PNG",
+            "description": "Completed the first mission \"Amaru's rescue\".",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "7/4/2026, 12:14:18 PM",
-            "earnedAge": "6 days, 3 hours, 49 mins",
-            "timestamp": 1783167258000,
+            "earnedDate": "4/19/2023, 12:09:33 AM",
+            "earnedAge": "3 yrs, 2 months, 3 weeks, 2 days, 17 hours, 53 mins",
+            "timestamp": 1681862973000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -732,41 +777,64 @@
             "trophyId": 17,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "10 Ready. 20 Set. 30 Go Back to 10?",
-            "trophyDetail": "Recover your vehicle to the base over 5 times",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
+            "trophyName": "Eye in the Sky",
+            "trophyDetail": "Campaign: Marked 100 enemies with a drone.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/34EFDF706D89ED25A0498926C055F4D127443A9A.PNG",
             "trophyGroupId": "default",
-            "name": "10 Ready. 20 Set. 30 Go Back to 10?",
+            "name": "Eye in the Sky",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
-            "description": "Recover your vehicle to the base over 5 times",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/34EFDF706D89ED25A0498926C055F4D127443A9A.PNG",
+            "description": "Campaign: Marked 100 enemies with a drone.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": true,
-            "earnedDate": "7/4/2026, 1:25:51 PM",
-            "earnedAge": "6 days, 2 hours, 37 mins",
-            "timestamp": 1783171551000,
+            "earnedDate": "8/12/2023, 7:38:50 PM",
+            "earnedAge": "2 yrs, 11 months, 2 days, 22 hours, 24 mins",
+            "timestamp": 1691869130000,
             "currentValue": 0,
             "targetValue": 0
           },
           {
             "trophyId": 18,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Start. Crash. Recover",
-            "trophyDetail": "Recover your vehicle to the base over 100 times",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/c8ae310a-b01a-4ede-9479-2c0a6796d878.png",
+            "trophyType": "bronze",
+            "trophyName": "Eagle-Eyed",
+            "trophyDetail": "Campaign: Marked 100 enemies with the binoculars.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1D68CD01783B4ADEA8BD1487AA2F202BBE84F047.PNG",
             "trophyGroupId": "default",
-            "name": "Start. Crash. Recover",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/c8ae310a-b01a-4ede-9479-2c0a6796d878.png",
-            "description": "Recover your vehicle to the base over 100 times",
+            "name": "Eagle-Eyed",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1D68CD01783B4ADEA8BD1487AA2F202BBE84F047.PNG",
+            "description": "Campaign: Marked 100 enemies with the binoculars.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/27/2024, 12:46:52 AM",
+            "earnedAge": "1 yr, 6 months, 2 weeks, 1 day, 17 hours, 16 mins",
+            "timestamp": 1735260412000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 19,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Cluster Bomber",
+            "trophyDetail": "Campaign: Killed 7 enemies with a single C4 blast.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/40B38719132CD8018529241C06367A76979C1F8C.PNG",
+            "trophyGroupId": "default",
+            "name": "Cluster Bomber",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/40B38719132CD8018529241C06367A76979C1F8C.PNG",
+            "description": "Campaign: Killed 7 enemies with a single C4 blast.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -775,44 +843,872 @@
             "targetValue": 0
           },
           {
-            "trophyId": 19,
+            "trophyId": 20,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Fat Cat",
-            "trophyDetail": "Earn 500 000 credits in total",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/328a6ace-c9a1-4741-8b0a-25e0a5b8ed09.png",
+            "trophyType": "bronze",
+            "trophyName": "A Better Mousetrap",
+            "trophyDetail": "Campaign: Killed 7 enemies with a single mine.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/7E0759E1E4A8F978D225BC0B57552133FF95960C.PNG",
             "trophyGroupId": "default",
-            "name": "Fat Cat",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/328a6ace-c9a1-4741-8b0a-25e0a5b8ed09.png",
-            "description": "Earn 500 000 credits in total",
+            "name": "A Better Mousetrap",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/7E0759E1E4A8F978D225BC0B57552133FF95960C.PNG",
+            "description": "Campaign: Killed 7 enemies with a single mine.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
-            "earned": true,
-            "earnedDate": "7/9/2026, 1:06:24 AM",
-            "earnedAge": "1 day, 14 hours, 57 mins",
-            "timestamp": 1783559184000,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
           },
           {
-            "trophyId": 20,
+            "trophyId": 21,
             "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "All the Money in the World",
-            "trophyDetail": "Earn 1 500 000 credits in total",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/e3142aae-ea9a-4550-9480-1650c0b7d42e.png",
+            "trophyType": "bronze",
+            "trophyName": "Legend Hunter",
+            "trophyDetail": "Discovered one legend.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/2A67FCD6DD8461F523A349C8E5EE95329E3F07D3.PNG",
             "trophyGroupId": "default",
-            "name": "All the Money in the World",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/e3142aae-ea9a-4550-9480-1650c0b7d42e.png",
-            "description": "Earn 1 500 000 credits in total",
+            "name": "Legend Hunter",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/2A67FCD6DD8461F523A349C8E5EE95329E3F07D3.PNG",
+            "description": "Discovered one legend.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Expeditions: A Mudrunner Game",
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "8/12/2023, 4:39:14 AM",
+            "earnedAge": "2 yrs, 11 months, 3 days, 13 hours, 23 mins",
+            "timestamp": 1691815154000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 22,
+            "trophyHidden": false,
+            "trophyType": "silver",
+            "trophyName": "Legendary Hunter",
+            "trophyDetail": "Discovered all  legends.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/DDB5539EE72CF22D9DB5D6BC28AF2863862C7E1E.PNG",
+            "trophyGroupId": "default",
+            "name": "Legendary Hunter",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/DDB5539EE72CF22D9DB5D6BC28AF2863862C7E1E.PNG",
+            "description": "Discovered all  legends.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 23,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Spice of Life",
+            "trophyDetail": "Played each type of side mission.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1D0B54712D4CB05BB9510178BED171878CBDE711.PNG",
+            "trophyGroupId": "default",
+            "name": "Spice of Life",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1D0B54712D4CB05BB9510178BED171878CBDE711.PNG",
+            "description": "Played each type of side mission.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/23/2024, 7:30:01 AM",
+            "earnedAge": "1 yr, 6 months, 2 weeks, 5 days, 10 hours, 32 mins",
+            "timestamp": 1734939001000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 24,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Highway Bandit",
+            "trophyDetail": "Tagged 10 convoys.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/8F3AD7913A5BD3182D9010B207E509A3EEDE5F34.PNG",
+            "trophyGroupId": "default",
+            "name": "Highway Bandit",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/8F3AD7913A5BD3182D9010B207E509A3EEDE5F34.PNG",
+            "description": "Tagged 10 convoys.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/25/2024, 10:15:29 PM",
+            "earnedAge": "1 yr, 6 months, 2 weeks, 2 days, 19 hours, 47 mins",
+            "timestamp": 1735164929000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 25,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Ultimate Skill",
+            "trophyDetail": "Campaign: Bought all the upgrades of a Skill branch.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/479DC41BB6B69EB026476010E5FC23B0CD1A888C.PNG",
+            "trophyGroupId": "default",
+            "name": "Ultimate Skill",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/479DC41BB6B69EB026476010E5FC23B0CD1A888C.PNG",
+            "description": "Campaign: Bought all the upgrades of a Skill branch.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 26,
+            "trophyHidden": false,
+            "trophyType": "silver",
+            "trophyName": "Only the Best",
+            "trophyDetail": "Campaign: Bought all upgrades.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/D5F445BFA8C87BF084962D42DA93482E0137D0E6.PNG",
+            "trophyGroupId": "default",
+            "name": "Only the Best",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/D5F445BFA8C87BF084962D42DA93482E0137D0E6.PNG",
+            "description": "Campaign: Bought all upgrades.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 27,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Top Drone",
+            "trophyDetail": "Campaign: Bought all drone-related upgrades.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/0621F339D6ECE7942490A5E1F41BEBE33BFE4C85.PNG",
+            "trophyGroupId": "default",
+            "name": "Top Drone",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/0621F339D6ECE7942490A5E1F41BEBE33BFE4C85.PNG",
+            "description": "Campaign: Bought all drone-related upgrades.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 28,
+            "trophyHidden": false,
+            "trophyType": "silver",
+            "trophyName": "Heavy Medals",
+            "trophyDetail": "Collected all the bonus medals.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9FDEEEA7E27C85F5EE39D6587FD8F4CF52F0F702.PNG",
+            "trophyGroupId": "default",
+            "name": "Heavy Medals",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9FDEEEA7E27C85F5EE39D6587FD8F4CF52F0F702.PNG",
+            "description": "Collected all the bonus medals.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "7/10/2026, 6:02:38 PM",
+            "earnedAge": "Just now",
+            "timestamp": 1783706558000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 29,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Rebel Sympathizer",
+            "trophyDetail": "Unlocked a Rebel skill.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/E345138D06B97957C93BD3FACA4E2EE810609925.PNG",
+            "trophyGroupId": "default",
+            "name": "Rebel Sympathizer",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/E345138D06B97957C93BD3FACA4E2EE810609925.PNG",
+            "description": "Unlocked a Rebel skill.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "8/12/2023, 3:26:55 AM",
+            "earnedAge": "2 yrs, 11 months, 3 days, 14 hours, 36 mins",
+            "timestamp": 1691810815000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 30,
+            "trophyHidden": false,
+            "trophyType": "silver",
+            "trophyName": "Real Rebel",
+            "trophyDetail": "Unlocked all the Rebel skills.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/5991A115F397B9CAED015879FAB8CB92FAEE6C31.PNG",
+            "trophyGroupId": "default",
+            "name": "Real Rebel",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/5991A115F397B9CAED015879FAB8CB92FAEE6C31.PNG",
+            "description": "Unlocked all the Rebel skills.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/23/2024, 7:29:56 AM",
+            "earnedAge": "1 yr, 6 months, 2 weeks, 5 days, 10 hours, 33 mins",
+            "timestamp": 1734938996000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 31,
+            "trophyHidden": false,
+            "trophyType": "silver",
+            "trophyName": "No Better Rebel",
+            "trophyDetail": "Maxed out each Rebel skill.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/2308D5BB31DD77A0930ED2DAD989B3840C79B044.PNG",
+            "trophyGroupId": "default",
+            "name": "No Better Rebel",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/2308D5BB31DD77A0930ED2DAD989B3840C79B044.PNG",
+            "description": "Maxed out each Rebel skill.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 32,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Shotguns Fanatic",
+            "trophyDetail": "Campaign: Collected all shotguns models.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1A8731BABA2E559651304D6DF521AB5B73052875.PNG",
+            "trophyGroupId": "default",
+            "name": "Shotguns Fanatic",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/1A8731BABA2E559651304D6DF521AB5B73052875.PNG",
+            "description": "Campaign: Collected all shotguns models.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 33,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Handgun Fanatic",
+            "trophyDetail": "Campaign: Collected all handguns models.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/3243404141B20E12AD65B500B95C37378552D51F.PNG",
+            "trophyGroupId": "default",
+            "name": "Handgun Fanatic",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/3243404141B20E12AD65B500B95C37378552D51F.PNG",
+            "description": "Campaign: Collected all handguns models.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 34,
+            "trophyHidden": false,
+            "trophyType": "gold",
+            "trophyName": "The Champion",
+            "trophyDetail": "Campaign: Maxed out your XP and levels.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/6BB7E34F06D6724DDB6C04E4915280AF802F401E.PNG",
+            "trophyGroupId": "default",
+            "name": "The Champion",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/6BB7E34F06D6724DDB6C04E4915280AF802F401E.PNG",
+            "description": "Campaign: Maxed out your XP and levels.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "4/12/2026, 10:45:04 AM",
+            "earnedAge": "2 months, 4 weeks, 1 day, 7 hours, 17 mins",
+            "timestamp": 1775990704000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 35,
+            "trophyHidden": false,
+            "trophyType": "silver",
+            "trophyName": "Long Shot",
+            "trophyDetail": "Campaign: Hit a target more than 400m away.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/A88761F7E2D78BCCF278B6581233F2D0333EF916.PNG",
+            "trophyGroupId": "default",
+            "name": "Long Shot",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/A88761F7E2D78BCCF278B6581233F2D0333EF916.PNG",
+            "description": "Campaign: Hit a target more than 400m away.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 36,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Death in the Dark",
+            "trophyDetail": "Campaign: Made a close-combat kill at night.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/DE459E9450AD61F9AADB1615DD4EDC3A074DB290.PNG",
+            "trophyGroupId": "default",
+            "name": "Death in the Dark",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/DE459E9450AD61F9AADB1615DD4EDC3A074DB290.PNG",
+            "description": "Campaign: Made a close-combat kill at night.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/25/2024, 7:10:54 PM",
+            "earnedAge": "1 yr, 6 months, 2 weeks, 2 days, 22 hours, 52 mins",
+            "timestamp": 1735153854000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 37,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Finished the Job",
+            "trophyDetail": "Campaign: Killed an enemy in close combat who was hurt by another player .",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/CCE26C6C72940D8F7B69CFF59E51136B28A25714.PNG",
+            "trophyGroupId": "default",
+            "name": "Finished the Job",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/CCE26C6C72940D8F7B69CFF59E51136B28A25714.PNG",
+            "description": "Campaign: Killed an enemy in close combat who was hurt by another player .",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "4/27/2026, 6:09:10 PM",
+            "earnedAge": "2 months, 1 week, 6 days, 23 hours, 53 mins",
+            "timestamp": 1777313350000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 38,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Death from Above",
+            "trophyDetail": "Campaign: Killed an enemy with a drone.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/CBE034CDBF3F09C5EDF1C712C7B68A4377EFE104.PNG",
+            "trophyGroupId": "default",
+            "name": "Death from Above",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/CBE034CDBF3F09C5EDF1C712C7B68A4377EFE104.PNG",
+            "description": "Campaign: Killed an enemy with a drone.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "12/25/2024, 9:08:01 PM",
+            "earnedAge": "1 yr, 6 months, 2 weeks, 2 days, 20 hours, 54 mins",
+            "timestamp": 1735160881000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 39,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Black-out Boomer",
+            "trophyDetail": "Campaign: Destroyed a generator with a C4 blast.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B15E218F1E02E4CEED69372507F0EB70DE5B0381.PNG",
+            "trophyGroupId": "default",
+            "name": "Black-out Boomer",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B15E218F1E02E4CEED69372507F0EB70DE5B0381.PNG",
+            "description": "Campaign: Destroyed a generator with a C4 blast.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": true,
+            "earnedDate": "5/30/2026, 5:52:26 AM",
+            "earnedAge": "1 month, 1 week, 4 days, 12 hours, 10 mins",
+            "timestamp": 1780120346000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 40,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Submachine-Gun Fanatic",
+            "trophyDetail": "Campaign: Collected all submachine-gun models.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/F7590CEF42BBD21F5A16F2F1E47078BC4FBDD85B.PNG",
+            "trophyGroupId": "default",
+            "name": "Submachine-Gun Fanatic",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/F7590CEF42BBD21F5A16F2F1E47078BC4FBDD85B.PNG",
+            "description": "Campaign: Collected all submachine-gun models.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 41,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Light Machine-Gun Fanatic",
+            "trophyDetail": "Campaign: Collected all light machine-gun models.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/45C9494B8E0BCCECC4E0069FE9EA83626F73C725.PNG",
+            "trophyGroupId": "default",
+            "name": "Light Machine-Gun Fanatic",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/45C9494B8E0BCCECC4E0069FE9EA83626F73C725.PNG",
+            "description": "Campaign: Collected all light machine-gun models.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 42,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Sniper Rifle Fanatic",
+            "trophyDetail": "Campaign: Collected all sniper rifle models.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/C15162CA9FC813D08B251EE1D5BFF8F4001FDF80.PNG",
+            "trophyGroupId": "default",
+            "name": "Sniper Rifle Fanatic",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/C15162CA9FC813D08B251EE1D5BFF8F4001FDF80.PNG",
+            "description": "Campaign: Collected all sniper rifle models.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 43,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Assault Rifle Fanatic",
+            "trophyDetail": "Campaign: Collected all assault rifle models.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/541FC73C56F76CBA04B71C90FFEA794F79BDC39A.PNG",
+            "trophyGroupId": "default",
+            "name": "Assault Rifle Fanatic",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/541FC73C56F76CBA04B71C90FFEA794F79BDC39A.PNG",
+            "description": "Campaign: Collected all assault rifle models.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 44,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Gang Leader",
+            "trophyDetail": "Operation Narco Road: Kill One boss of the cartel",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/EC88E8B79F2814AD4363F9D44F60A1C8B6C0F0F3.PNG",
+            "trophyGroupId": "001",
+            "name": "Gang Leader",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/EC88E8B79F2814AD4363F9D44F60A1C8B6C0F0F3.PNG",
+            "description": "Operation Narco Road: Kill One boss of the cartel",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 45,
+            "trophyHidden": true,
+            "trophyType": "silver",
+            "trophyName": "El Visible",
+            "trophyDetail": "Operation Narco Road: Kill the final target",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FF82C856778482E739E17EA294A99449E0942088.PNG",
+            "trophyGroupId": "001",
+            "name": "El Visible",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FF82C856778482E739E17EA294A99449E0942088.PNG",
+            "description": "Operation Narco Road: Kill the final target",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": true,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 46,
+            "trophyHidden": false,
+            "trophyType": "gold",
+            "trophyName": "More Followers than Escobar",
+            "trophyDetail": "Operation Narco Road: Fill the Followers Gauge of all regions to 100%",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B5CA2A50E648677AA603B391A523D206DBB05798.PNG",
+            "trophyGroupId": "001",
+            "name": "More Followers than Escobar",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/B5CA2A50E648677AA603B391A523D206DBB05798.PNG",
+            "description": "Operation Narco Road: Fill the Followers Gauge of all regions to 100%",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 47,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Scenic Route",
+            "trophyDetail": "Narco Road: Go from Eddie's party villa to Arturo's bar in 8 minutes or less in a ground vehicle",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/62A6AF6BACD4B6DE3E000DE5DE41366051049034.PNG",
+            "trophyGroupId": "001",
+            "name": "Scenic Route",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/62A6AF6BACD4B6DE3E000DE5DE41366051049034.PNG",
+            "description": "Narco Road: Go from Eddie's party villa to Arturo's bar in 8 minutes or less in a ground vehicle",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 48,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Cristina",
+            "trophyDetail": "Operation Narco Road: Kill 50 enemies with any gang's vehicle",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/E79CDEC5B4EBE844A5B7293E15F735C0D7BE8606.PNG",
+            "trophyGroupId": "001",
+            "name": "Cristina",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/E79CDEC5B4EBE844A5B7293E15F735C0D7BE8606.PNG",
+            "description": "Operation Narco Road: Kill 50 enemies with any gang's vehicle",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 49,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Mal Rodilla-Ternera",
+            "trophyDetail": "Operation Narco Road: Complete an Electro™ challenge while freefalling",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/5FCEE3478D38C195CBBB20D082FA0298A8264B03.PNG",
+            "trophyGroupId": "001",
+            "name": "Mal Rodilla-Ternera",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/5FCEE3478D38C195CBBB20D082FA0298A8264B03.PNG",
+            "description": "Operation Narco Road: Complete an Electro™ challenge while freefalling",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 50,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Brake a leg",
+            "trophyDetail": "Operation Narco Road: Complete a trial without using the brakes",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/792466DDFF36FEA9A86EBC368598A6C972DA1A12.PNG",
+            "trophyGroupId": "001",
+            "name": "Brake a leg",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/792466DDFF36FEA9A86EBC368598A6C972DA1A12.PNG",
+            "description": "Operation Narco Road: Complete a trial without using the brakes",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Narco Road",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 51,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Kill list",
+            "trophyDetail": "Fallen Ghosts: Kill one of each Extranjeros squad archetypes",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/531102B911D983E0259ED0222843C3BD669510B2.PNG",
+            "trophyGroupId": "002",
+            "name": "Kill list",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/531102B911D983E0259ED0222843C3BD669510B2.PNG",
+            "description": "Fallen Ghosts: Kill one of each Extranjeros squad archetypes",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "earned": true,
+            "earnedDate": "5/28/2026, 2:59:55 PM",
+            "earnedAge": "1 month, 1 week, 6 days, 3 hours, 3 mins",
+            "timestamp": 1779980395000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 52,
+            "trophyHidden": true,
+            "trophyType": "silver",
+            "trophyName": "A hero once, a hero twice",
+            "trophyDetail": "Fallen Ghosts: complete the operation",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/7A696F34F7FAC071C04E9788506457F1D70D697C.PNG",
+            "trophyGroupId": "002",
+            "name": "A hero once, a hero twice",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/7A696F34F7FAC071C04E9788506457F1D70D697C.PNG",
+            "description": "Fallen Ghosts: complete the operation",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": true,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 53,
+            "trophyHidden": false,
+            "trophyType": "gold",
+            "trophyName": "Thorough supporter",
+            "trophyDetail": "Fallen Ghosts: Complete every Rebel Op and Mission",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/7A1D0595D93CBD1078E7FE8E443F64D806705CEA.PNG",
+            "trophyGroupId": "002",
+            "name": "Thorough supporter",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/7A1D0595D93CBD1078E7FE8E443F64D806705CEA.PNG",
+            "description": "Fallen Ghosts: Complete every Rebel Op and Mission",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 54,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Rebel leader",
+            "trophyDetail": "Fallen Ghosts: Complete a Final Rebel Op",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/BBE7C0D8C99BC1A63484B138E6CB353E69E04695.PNG",
+            "trophyGroupId": "002",
+            "name": "Rebel leader",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/BBE7C0D8C99BC1A63484B138E6CB353E69E04695.PNG",
+            "description": "Fallen Ghosts: Complete a Final Rebel Op",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 55,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Tactical genius",
+            "trophyDetail": "Fallen Ghosts: Blind yourself using the Flash Drone",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/00D1844628C987844AFB85583A22669041CD1647.PNG",
+            "trophyGroupId": "002",
+            "name": "Tactical genius",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/00D1844628C987844AFB85583A22669041CD1647.PNG",
+            "description": "Fallen Ghosts: Blind yourself using the Flash Drone",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 56,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Nondescript jungle hero",
+            "trophyDetail": "Fallen Ghosts: Kill 10 Covert Ops Extranjeros using your knife",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/814ACC5D9541D15C0FFC8EBCDE2E5C02D5FD0796.PNG",
+            "trophyGroupId": "002",
+            "name": "Nondescript jungle hero",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/814ACC5D9541D15C0FFC8EBCDE2E5C02D5FD0796.PNG",
+            "description": "Fallen Ghosts: Kill 10 Covert Ops Extranjeros using your knife",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 57,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Artisanal SAM",
+            "trophyDetail": "Fallen Ghosts: Destroy an enemy helicopter using an explosive bolt.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/5723D00B72A86B7E23D058B8BE75B529BDD2FF63.PNG",
+            "trophyGroupId": "002",
+            "name": "Artisanal SAM",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/5723D00B72A86B7E23D058B8BE75B529BDD2FF63.PNG",
+            "description": "Fallen Ghosts: Destroy an enemy helicopter using an explosive bolt.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Ghost Recon® Wildlands: Fallen Ghosts",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -821,16 +1717,24 @@
             "targetValue": 0
           }
         ],
-        "npCommunicationId": "NPWR39117_00"
+        "npCommunicationId": "NPWR09395_00"
       },
       "mostRecentTrophies": [
+        {
+          "game": "Tom Clancy’s Ghost Recon® Wildlands",
+          "name": "Heavy Medals",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9FDEEEA7E27C85F5EE39D6587FD8F4CF52F0F702.PNG",
+          "timestamp": 1783706558000,
+          "date": "7/10/2026, 6:02:38 PM",
+          "age": "Just now"
+        },
         {
           "game": "Expeditions: A Mudrunner Game",
           "name": "Fat Cat",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/328a6ace-c9a1-4741-8b0a-25e0a5b8ed09.png",
           "timestamp": 1783559184000,
           "date": "7/9/2026, 1:06:24 AM",
-          "age": "1 day, 14 hours, 57 mins"
+          "age": "1 day, 16 hours, 56 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -838,7 +1742,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/8173c53d-c646-4194-aca0-bec68f8ae7f6.png",
           "timestamp": 1783556857000,
           "date": "7/9/2026, 12:27:37 AM",
-          "age": "1 day, 15 hours, 35 mins"
+          "age": "1 day, 17 hours, 35 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -846,7 +1750,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783553868000,
           "date": "7/8/2026, 11:37:48 PM",
-          "age": "1 day, 16 hours, 25 mins"
+          "age": "1 day, 18 hours, 25 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -854,7 +1758,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783171551000,
           "date": "7/4/2026, 1:25:51 PM",
-          "age": "6 days, 2 hours, 37 mins"
+          "age": "6 days, 4 hours, 37 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -862,7 +1766,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/a7005f29-76f3-4d0e-ac3d-2f1d3cdb87b4.png",
           "timestamp": 1783171325000,
           "date": "7/4/2026, 1:22:05 PM",
-          "age": "6 days, 2 hours, 41 mins"
+          "age": "6 days, 4 hours, 40 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -870,7 +1774,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783167258000,
           "date": "7/4/2026, 12:14:18 PM",
-          "age": "6 days, 3 hours, 49 mins"
+          "age": "6 days, 5 hours, 48 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -878,7 +1782,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783167258000,
           "date": "7/4/2026, 12:14:18 PM",
-          "age": "6 days, 3 hours, 49 mins"
+          "age": "6 days, 5 hours, 48 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -886,7 +1790,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783141679000,
           "date": "7/4/2026, 5:07:59 AM",
-          "age": "6 days, 10 hours, 55 mins"
+          "age": "6 days, 12 hours, 54 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -894,19 +1798,42 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/39636e9e-ef3c-4616-a3c3-358d52995c61.png",
           "timestamp": 1782464989000,
           "date": "6/26/2026, 9:09:49 AM",
-          "age": "2 weeks, 6 hours, 53 mins"
-        },
-        {
-          "game": "Farming Simulator 25",
-          "name": "It's never too late to farm",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/3a98f0e8-23da-4b03-8732-beb2142c9884.png",
-          "timestamp": 1782448936000,
-          "date": "6/26/2026, 4:42:16 AM",
-          "age": "2 weeks, 11 hours, 21 mins"
+          "age": "2 weeks, 8 hours, 53 mins"
         }
       ],
       "streamHistory": [],
       "fullLibrary": [
+        {
+          "npCommunicationId": "NPWR09395_00",
+          "name": "Tom Clancy’s Ghost Recon® Wildlands",
+          "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+          "lastPlayed": "2026-07-10T18:02:40Z",
+          "npServiceName": "trophy",
+          "trophySetVersion": "01.04",
+          "trophyTitleName": "Tom Clancy’s Ghost Recon® Wildlands",
+          "trophyTitleDetail": "Tom Clancy’s Ghost Recon® Wildlands is the very first military shooter in a massive, dangerous and responsive open world that you can play entirely solo or in four-player co-op.",
+          "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+          "trophyTitlePlatform": "PS4",
+          "hasTrophyGroups": true,
+          "trophyGroupCount": 3,
+          "definedTrophies": {
+            "bronze": 42,
+            "silver": 10,
+            "gold": 5,
+            "platinum": 1
+          },
+          "progress": 33,
+          "earnedTrophies": {
+            "bronze": 19,
+            "silver": 3,
+            "gold": 1,
+            "platinum": 0
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-07-10T18:02:40Z",
+          "earnedTotal": 23,
+          "definedTotal": 58
+        },
         {
           "npCommunicationId": "NPWR39117_00",
           "name": "Expeditions: A Mudrunner Game",
@@ -1146,37 +2073,6 @@
           "lastUpdatedDateTime": "2026-05-31T02:59:26Z",
           "earnedTotal": 11,
           "definedTotal": 43
-        },
-        {
-          "npCommunicationId": "NPWR09395_00",
-          "name": "Tom Clancy’s Ghost Recon® Wildlands",
-          "art": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
-          "lastPlayed": "2026-05-30T05:52:29Z",
-          "npServiceName": "trophy",
-          "trophySetVersion": "01.04",
-          "trophyTitleName": "Tom Clancy’s Ghost Recon® Wildlands",
-          "trophyTitleDetail": "Tom Clancy’s Ghost Recon® Wildlands is the very first military shooter in a massive, dangerous and responsive open world that you can play entirely solo or in four-player co-op.",
-          "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
-          "trophyTitlePlatform": "PS4",
-          "hasTrophyGroups": true,
-          "trophyGroupCount": 3,
-          "definedTrophies": {
-            "bronze": 42,
-            "silver": 10,
-            "gold": 5,
-            "platinum": 1
-          },
-          "progress": 31,
-          "earnedTrophies": {
-            "bronze": 19,
-            "silver": 2,
-            "gold": 1,
-            "platinum": 0
-          },
-          "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-05-30T05:52:29Z",
-          "earnedTotal": 22,
-          "definedTotal": 58
         },
         {
           "npCommunicationId": "NPWR40813_00",
@@ -6231,6 +7127,32 @@
         "telemetry": [],
         "titles": [
           {
+            "npServiceName": "trophy",
+            "npCommunicationId": "NPWR09395_00",
+            "trophySetVersion": "01.04",
+            "trophyTitleName": "Tom Clancy’s Ghost Recon® Wildlands",
+            "trophyTitleDetail": "Tom Clancy’s Ghost Recon® Wildlands is the very first military shooter in a massive, dangerous and responsive open world that you can play entirely solo or in four-player co-op.",
+            "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
+            "trophyTitlePlatform": "PS4",
+            "hasTrophyGroups": true,
+            "trophyGroupCount": 3,
+            "definedTrophies": {
+              "bronze": 42,
+              "silver": 10,
+              "gold": 5,
+              "platinum": 1
+            },
+            "progress": 33,
+            "earnedTrophies": {
+              "bronze": 19,
+              "silver": 3,
+              "gold": 1,
+              "platinum": 0
+            },
+            "hiddenFlag": false,
+            "lastUpdatedDateTime": "2026-07-10T18:02:40Z"
+          },
+          {
             "npServiceName": "trophy2",
             "npCommunicationId": "NPWR39117_00",
             "trophySetVersion": "01.00",
@@ -6429,32 +7351,6 @@
             },
             "hiddenFlag": false,
             "lastUpdatedDateTime": "2026-05-31T02:59:26Z"
-          },
-          {
-            "npServiceName": "trophy",
-            "npCommunicationId": "NPWR09395_00",
-            "trophySetVersion": "01.04",
-            "trophyTitleName": "Tom Clancy’s Ghost Recon® Wildlands",
-            "trophyTitleDetail": "Tom Clancy’s Ghost Recon® Wildlands is the very first military shooter in a massive, dangerous and responsive open world that you can play entirely solo or in four-player co-op.",
-            "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
-            "trophyTitlePlatform": "PS4",
-            "hasTrophyGroups": true,
-            "trophyGroupCount": 3,
-            "definedTrophies": {
-              "bronze": 42,
-              "silver": 10,
-              "gold": 5,
-              "platinum": 1
-            },
-            "progress": 31,
-            "earnedTrophies": {
-              "bronze": 19,
-              "silver": 2,
-              "gold": 1,
-              "platinum": 0
-            },
-            "hiddenFlag": false,
-            "lastUpdatedDateTime": "2026-05-30T05:52:29Z"
           },
           {
             "npServiceName": "trophy2",
@@ -10684,7 +11580,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/10/2026, 4:03:38 PM"
+      "lastUpdated": "7/10/2026, 6:03:07 PM"
     },
     "kfruti": {
       "onlineId": "OneLIVIDMAN",
@@ -10736,7 +11632,7 @@
         "age": "3 years, 3 months",
         "bio": null,
         "statusMessage": "Target practice",
-        "uptime": "1 hour, 39 minutes, 35 seconds",
+        "uptime": "3 hours, 39 minutes, 4 seconds",
         "viewers": "1",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
@@ -11147,7 +12043,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 24 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 8 hours, 23 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -11170,7 +12066,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 53 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 52 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -11193,7 +12089,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "1 month, 1 week, 3 days, 2 hours, 40 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 40 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -11216,7 +12112,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:30:03 AM",
-            "earnedAge": "1 month, 3 days, 11 hours, 33 mins",
+            "earnedAge": "1 month, 3 days, 13 hours, 33 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -11239,7 +12135,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "1 month, 3 days, 9 hours, 32 mins",
+            "earnedAge": "1 month, 3 days, 11 hours, 31 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -11262,7 +12158,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 month, 3 days, 7 hours, 26 mins",
+            "earnedAge": "1 month, 3 days, 9 hours, 26 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -11285,7 +12181,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 10:01:02 AM",
-            "earnedAge": "1 day, 6 hours, 2 mins",
+            "earnedAge": "1 day, 8 hours, 2 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -11518,7 +12414,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 24 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 8 hours, 23 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -11541,7 +12437,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "1 month, 1 week, 3 days, 2 hours, 55 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 55 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -11780,7 +12676,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:47:40 AM",
-            "earnedAge": "1 day, 9 hours, 16 mins",
+            "earnedAge": "1 day, 11 hours, 15 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -11852,7 +12748,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 3:47:08 AM",
-            "earnedAge": "1 day, 12 hours, 16 mins",
+            "earnedAge": "1 day, 14 hours, 16 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -11899,7 +12795,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 4:57:10 AM",
-            "earnedAge": "1 day, 11 hours, 6 mins",
+            "earnedAge": "1 day, 13 hours, 6 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -12232,7 +13128,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "1 month, 3 days, 12 hours, 6 mins",
+            "earnedAge": "1 month, 3 days, 14 hours, 5 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -12256,7 +13152,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 9:57:02 AM",
-            "earnedAge": "1 month, 3 days, 6 hours, 6 mins",
+            "earnedAge": "1 month, 3 days, 8 hours, 6 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -12804,7 +13700,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 10:01:02 AM",
-          "age": "1 day, 6 hours, 2 mins"
+          "age": "1 day, 8 hours, 2 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -12812,7 +13708,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 6:47:40 AM",
-          "age": "1 day, 9 hours, 16 mins"
+          "age": "1 day, 11 hours, 15 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -12820,7 +13716,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 4:57:10 AM",
-          "age": "1 day, 11 hours, 6 mins"
+          "age": "1 day, 13 hours, 6 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -12828,7 +13724,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/9/2026, 3:47:08 AM",
-          "age": "1 day, 12 hours, 16 mins"
+          "age": "1 day, 14 hours, 16 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -12836,7 +13732,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/9/2026, 12:02:28 AM",
-          "age": "1 day, 16 hours, 1 min"
+          "age": "1 day, 18 hours"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -12844,7 +13740,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "1 day, 19 hours, 1 min"
+          "age": "1 day, 21 hours"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -12852,7 +13748,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "1 day, 19 hours, 1 min"
+          "age": "1 day, 21 hours"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -12860,7 +13756,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 8:08:04 PM",
-          "age": "1 day, 19 hours, 55 mins"
+          "age": "1 day, 21 hours, 55 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -12868,7 +13764,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 7:51:31 PM",
-          "age": "1 day, 20 hours, 12 mins"
+          "age": "1 day, 22 hours, 11 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -12876,7 +13772,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/19/2026, 2:22:26 AM",
-          "age": "3 weeks, 13 hours, 41 mins"
+          "age": "3 weeks, 15 hours, 40 mins"
         }
       ],
       "streamHistory": [],
@@ -16694,7 +17590,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/10/2026, 4:03:50 PM"
+      "lastUpdated": "7/10/2026, 6:03:19 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -17157,7 +18053,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 24 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 8 hours, 23 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -17180,7 +18076,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 53 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 52 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -17203,7 +18099,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "1 month, 1 week, 3 days, 2 hours, 40 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 40 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -17226,7 +18122,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:30:03 AM",
-            "earnedAge": "1 month, 3 days, 11 hours, 33 mins",
+            "earnedAge": "1 month, 3 days, 13 hours, 33 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -17249,7 +18145,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "1 month, 3 days, 9 hours, 32 mins",
+            "earnedAge": "1 month, 3 days, 11 hours, 31 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -17272,7 +18168,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 month, 3 days, 7 hours, 26 mins",
+            "earnedAge": "1 month, 3 days, 9 hours, 26 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -17295,7 +18191,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 10:01:02 AM",
-            "earnedAge": "1 day, 6 hours, 2 mins",
+            "earnedAge": "1 day, 8 hours, 2 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -17528,7 +18424,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 24 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 8 hours, 23 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -17551,7 +18447,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "1 month, 1 week, 3 days, 2 hours, 55 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 55 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -17790,7 +18686,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:47:40 AM",
-            "earnedAge": "1 day, 9 hours, 16 mins",
+            "earnedAge": "1 day, 11 hours, 15 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -17862,7 +18758,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 3:47:08 AM",
-            "earnedAge": "1 day, 12 hours, 16 mins",
+            "earnedAge": "1 day, 14 hours, 16 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -17909,7 +18805,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 4:57:10 AM",
-            "earnedAge": "1 day, 11 hours, 6 mins",
+            "earnedAge": "1 day, 13 hours, 6 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -18242,7 +19138,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "1 month, 3 days, 12 hours, 6 mins",
+            "earnedAge": "1 month, 3 days, 14 hours, 6 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -18266,7 +19162,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 9:57:02 AM",
-            "earnedAge": "1 month, 3 days, 6 hours, 6 mins",
+            "earnedAge": "1 month, 3 days, 8 hours, 6 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -18814,7 +19710,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 10:01:02 AM",
-          "age": "1 day, 6 hours, 2 mins"
+          "age": "1 day, 8 hours, 2 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -18822,7 +19718,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 6:47:40 AM",
-          "age": "1 day, 9 hours, 16 mins"
+          "age": "1 day, 11 hours, 15 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -18830,7 +19726,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 4:57:10 AM",
-          "age": "1 day, 11 hours, 6 mins"
+          "age": "1 day, 13 hours, 6 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -18838,7 +19734,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/9/2026, 3:47:08 AM",
-          "age": "1 day, 12 hours, 16 mins"
+          "age": "1 day, 14 hours, 16 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -18846,7 +19742,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/9/2026, 12:02:28 AM",
-          "age": "1 day, 16 hours, 1 min"
+          "age": "1 day, 18 hours"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -18854,7 +19750,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "1 day, 19 hours, 1 min"
+          "age": "1 day, 21 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -18862,7 +19758,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "1 day, 19 hours, 1 min"
+          "age": "1 day, 21 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -18870,7 +19766,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 8:08:04 PM",
-          "age": "1 day, 19 hours, 55 mins"
+          "age": "1 day, 21 hours, 55 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -18878,7 +19774,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 7:51:31 PM",
-          "age": "1 day, 20 hours, 12 mins"
+          "age": "1 day, 22 hours, 11 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -18886,7 +19782,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/19/2026, 2:22:26 AM",
-          "age": "3 weeks, 13 hours, 41 mins"
+          "age": "3 weeks, 15 hours, 40 mins"
         }
       ],
       "streamHistory": [],
@@ -22704,7 +23600,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/10/2026, 4:04:03 PM"
+      "lastUpdated": "7/10/2026, 6:03:32 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -22763,13 +23659,13 @@
       "bio": "Official Pack Member Profile",
       "psnAccountAge": "Unknown",
       "earliestTrophyDate": null,
-      "latestTrophyDate": 1783699445285,
+      "latestTrophyDate": 1783706614445,
       "plus": true,
       "level": 0,
       "region": "US",
       "trophySummary": {
         "error": {
-          "referenceId": "f9af7042-7c78-11f1-85f5-895aa7c059fe",
+          "referenceId": "aadab6b7-7c89-11f1-a2aa-c7b5319eb945",
           "code": 2240526,
           "message": "Not permitted by access control"
         },
@@ -22829,7 +23725,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "7/10/2026, 4:04:05 PM"
+      "lastUpdated": "7/10/2026, 6:03:34 PM"
     },
     "mike": {
       "onlineId": "OneLIVIDMAN",
@@ -23292,7 +24188,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 24 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 8 hours, 24 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -23315,7 +24211,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 53 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 53 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -23338,7 +24234,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "1 month, 1 week, 3 days, 2 hours, 41 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 40 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -23361,7 +24257,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:30:03 AM",
-            "earnedAge": "1 month, 3 days, 11 hours, 34 mins",
+            "earnedAge": "1 month, 3 days, 13 hours, 33 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -23384,7 +24280,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "1 month, 3 days, 9 hours, 32 mins",
+            "earnedAge": "1 month, 3 days, 11 hours, 32 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -23407,7 +24303,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 month, 3 days, 7 hours, 27 mins",
+            "earnedAge": "1 month, 3 days, 9 hours, 26 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -23430,7 +24326,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 10:01:02 AM",
-            "earnedAge": "1 day, 6 hours, 3 mins",
+            "earnedAge": "1 day, 8 hours, 2 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -23663,7 +24559,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 24 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 8 hours, 24 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -23686,7 +24582,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "1 month, 1 week, 3 days, 2 hours, 56 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 55 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -23925,7 +24821,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:47:40 AM",
-            "earnedAge": "1 day, 9 hours, 16 mins",
+            "earnedAge": "1 day, 11 hours, 15 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -23997,7 +24893,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 3:47:08 AM",
-            "earnedAge": "1 day, 12 hours, 17 mins",
+            "earnedAge": "1 day, 14 hours, 16 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -24044,7 +24940,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 4:57:10 AM",
-            "earnedAge": "1 day, 11 hours, 6 mins",
+            "earnedAge": "1 day, 13 hours, 6 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -24377,7 +25273,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "1 month, 3 days, 12 hours, 6 mins",
+            "earnedAge": "1 month, 3 days, 14 hours, 6 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -24401,7 +25297,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 9:57:02 AM",
-            "earnedAge": "1 month, 3 days, 6 hours, 7 mins",
+            "earnedAge": "1 month, 3 days, 8 hours, 6 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -24949,7 +25845,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 10:01:02 AM",
-          "age": "1 day, 6 hours, 3 mins"
+          "age": "1 day, 8 hours, 2 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -24957,7 +25853,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 6:47:40 AM",
-          "age": "1 day, 9 hours, 16 mins"
+          "age": "1 day, 11 hours, 15 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -24965,7 +25861,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 4:57:10 AM",
-          "age": "1 day, 11 hours, 6 mins"
+          "age": "1 day, 13 hours, 6 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -24973,7 +25869,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/9/2026, 3:47:08 AM",
-          "age": "1 day, 12 hours, 17 mins"
+          "age": "1 day, 14 hours, 16 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -24981,7 +25877,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/9/2026, 12:02:28 AM",
-          "age": "1 day, 16 hours, 1 min"
+          "age": "1 day, 18 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -24989,7 +25885,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "1 day, 19 hours, 1 min"
+          "age": "1 day, 21 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -24997,7 +25893,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "1 day, 19 hours, 1 min"
+          "age": "1 day, 21 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -25005,7 +25901,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 8:08:04 PM",
-          "age": "1 day, 19 hours, 56 mins"
+          "age": "1 day, 21 hours, 55 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -25013,7 +25909,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 7:51:31 PM",
-          "age": "1 day, 20 hours, 12 mins"
+          "age": "1 day, 22 hours, 12 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -25021,7 +25917,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/19/2026, 2:22:26 AM",
-          "age": "3 weeks, 13 hours, 41 mins"
+          "age": "3 weeks, 15 hours, 41 mins"
         }
       ],
       "streamHistory": [],
@@ -28839,7 +29735,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/10/2026, 4:04:17 PM"
+      "lastUpdated": "7/10/2026, 6:03:46 PM"
     },
     "katy": {
       "onlineId": "OneLIVIDMAN",
@@ -29286,7 +30182,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 24 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 8 hours, 24 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -29309,7 +30205,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 53 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 53 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -29332,7 +30228,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "1 month, 1 week, 3 days, 2 hours, 41 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 40 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -29355,7 +30251,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:30:03 AM",
-            "earnedAge": "1 month, 3 days, 11 hours, 34 mins",
+            "earnedAge": "1 month, 3 days, 13 hours, 33 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -29378,7 +30274,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "1 month, 3 days, 9 hours, 32 mins",
+            "earnedAge": "1 month, 3 days, 11 hours, 32 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -29401,7 +30297,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 month, 3 days, 7 hours, 27 mins",
+            "earnedAge": "1 month, 3 days, 9 hours, 26 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -29424,7 +30320,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 10:01:02 AM",
-            "earnedAge": "1 day, 6 hours, 3 mins",
+            "earnedAge": "1 day, 8 hours, 2 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -29657,7 +30553,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 24 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 8 hours, 24 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -29680,7 +30576,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "1 month, 1 week, 3 days, 2 hours, 56 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 55 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -29919,7 +30815,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:47:40 AM",
-            "earnedAge": "1 day, 9 hours, 16 mins",
+            "earnedAge": "1 day, 11 hours, 16 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -29991,7 +30887,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 3:47:08 AM",
-            "earnedAge": "1 day, 12 hours, 17 mins",
+            "earnedAge": "1 day, 14 hours, 16 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -30038,7 +30934,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 4:57:10 AM",
-            "earnedAge": "1 day, 11 hours, 7 mins",
+            "earnedAge": "1 day, 13 hours, 6 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -30371,7 +31267,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "1 month, 3 days, 12 hours, 7 mins",
+            "earnedAge": "1 month, 3 days, 14 hours, 6 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -30395,7 +31291,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 9:57:02 AM",
-            "earnedAge": "1 month, 3 days, 6 hours, 7 mins",
+            "earnedAge": "1 month, 3 days, 8 hours, 6 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -30943,7 +31839,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 10:01:02 AM",
-          "age": "1 day, 6 hours, 3 mins"
+          "age": "1 day, 8 hours, 2 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -30951,7 +31847,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 6:47:40 AM",
-          "age": "1 day, 9 hours, 16 mins"
+          "age": "1 day, 11 hours, 16 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -30959,7 +31855,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 4:57:10 AM",
-          "age": "1 day, 11 hours, 7 mins"
+          "age": "1 day, 13 hours, 6 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -30967,7 +31863,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/9/2026, 3:47:08 AM",
-          "age": "1 day, 12 hours, 17 mins"
+          "age": "1 day, 14 hours, 16 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -30975,7 +31871,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/9/2026, 12:02:28 AM",
-          "age": "1 day, 16 hours, 1 min"
+          "age": "1 day, 18 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -30983,7 +31879,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "1 day, 19 hours, 2 mins"
+          "age": "1 day, 21 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -30991,7 +31887,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "1 day, 19 hours, 2 mins"
+          "age": "1 day, 21 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -30999,7 +31895,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 8:08:04 PM",
-          "age": "1 day, 19 hours, 56 mins"
+          "age": "1 day, 21 hours, 55 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -31007,7 +31903,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 7:51:31 PM",
-          "age": "1 day, 20 hours, 12 mins"
+          "age": "1 day, 22 hours, 12 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -31015,7 +31911,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/19/2026, 2:22:26 AM",
-          "age": "3 weeks, 13 hours, 41 mins"
+          "age": "3 weeks, 15 hours, 41 mins"
         }
       ],
       "streamHistory": [],
@@ -34833,7 +35729,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/10/2026, 4:04:28 PM"
+      "lastUpdated": "7/10/2026, 6:03:59 PM"
     },
     "marc": {
       "onlineId": "OneLIVIDMAN",
@@ -35280,7 +36176,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 24 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 8 hours, 24 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -35303,7 +36199,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 53 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 53 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -35326,7 +36222,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "1 month, 1 week, 3 days, 2 hours, 41 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 41 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -35349,7 +36245,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:30:03 AM",
-            "earnedAge": "1 month, 3 days, 11 hours, 34 mins",
+            "earnedAge": "1 month, 3 days, 13 hours, 34 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -35372,7 +36268,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "1 month, 3 days, 9 hours, 32 mins",
+            "earnedAge": "1 month, 3 days, 11 hours, 32 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -35395,7 +36291,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 month, 3 days, 7 hours, 27 mins",
+            "earnedAge": "1 month, 3 days, 9 hours, 27 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -35418,7 +36314,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 10:01:02 AM",
-            "earnedAge": "1 day, 6 hours, 3 mins",
+            "earnedAge": "1 day, 8 hours, 3 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -35651,7 +36547,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 24 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 8 hours, 24 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -35674,7 +36570,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "1 month, 1 week, 3 days, 2 hours, 56 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 56 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -35913,7 +36809,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:47:40 AM",
-            "earnedAge": "1 day, 9 hours, 16 mins",
+            "earnedAge": "1 day, 11 hours, 16 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -35985,7 +36881,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 3:47:08 AM",
-            "earnedAge": "1 day, 12 hours, 17 mins",
+            "earnedAge": "1 day, 14 hours, 16 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -36032,7 +36928,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 4:57:10 AM",
-            "earnedAge": "1 day, 11 hours, 7 mins",
+            "earnedAge": "1 day, 13 hours, 6 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -36365,7 +37261,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "1 month, 3 days, 12 hours, 7 mins",
+            "earnedAge": "1 month, 3 days, 14 hours, 6 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -36389,7 +37285,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 9:57:02 AM",
-            "earnedAge": "1 month, 3 days, 6 hours, 7 mins",
+            "earnedAge": "1 month, 3 days, 8 hours, 7 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -36937,7 +37833,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 10:01:02 AM",
-          "age": "1 day, 6 hours, 3 mins"
+          "age": "1 day, 8 hours, 3 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -36945,7 +37841,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 6:47:40 AM",
-          "age": "1 day, 9 hours, 16 mins"
+          "age": "1 day, 11 hours, 16 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -36953,7 +37849,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 4:57:10 AM",
-          "age": "1 day, 11 hours, 7 mins"
+          "age": "1 day, 13 hours, 6 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -36961,7 +37857,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/9/2026, 3:47:08 AM",
-          "age": "1 day, 12 hours, 17 mins"
+          "age": "1 day, 14 hours, 16 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -36969,7 +37865,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/9/2026, 12:02:28 AM",
-          "age": "1 day, 16 hours, 2 mins"
+          "age": "1 day, 18 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -36977,7 +37873,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "1 day, 19 hours, 2 mins"
+          "age": "1 day, 21 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -36985,7 +37881,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "1 day, 19 hours, 2 mins"
+          "age": "1 day, 21 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -36993,7 +37889,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 8:08:04 PM",
-          "age": "1 day, 19 hours, 56 mins"
+          "age": "1 day, 21 hours, 55 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -37001,7 +37897,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 7:51:31 PM",
-          "age": "1 day, 20 hours, 13 mins"
+          "age": "1 day, 22 hours, 12 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -37009,7 +37905,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/19/2026, 2:22:26 AM",
-          "age": "3 weeks, 13 hours, 42 mins"
+          "age": "3 weeks, 15 hours, 41 mins"
         }
       ],
       "streamHistory": [],
@@ -40827,7 +41723,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/10/2026, 4:04:40 PM"
+      "lastUpdated": "7/10/2026, 6:04:12 PM"
     },
     "seth": {
       "onlineId": "OneLIVIDMAN",
@@ -41290,7 +42186,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:34 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 25 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 8 hours, 24 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -41313,7 +42209,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 11:10:37 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 54 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 53 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -41336,7 +42232,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:22:57 PM",
-            "earnedAge": "1 month, 1 week, 3 days, 2 hours, 41 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 41 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -41359,7 +42255,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:30:03 AM",
-            "earnedAge": "1 month, 3 days, 11 hours, 34 mins",
+            "earnedAge": "1 month, 3 days, 13 hours, 34 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -41382,7 +42278,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 6:31:33 AM",
-            "earnedAge": "1 month, 3 days, 9 hours, 33 mins",
+            "earnedAge": "1 month, 3 days, 11 hours, 32 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -41405,7 +42301,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 8:37:01 AM",
-            "earnedAge": "1 month, 3 days, 7 hours, 27 mins",
+            "earnedAge": "1 month, 3 days, 9 hours, 27 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -41428,7 +42324,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 10:01:02 AM",
-            "earnedAge": "1 day, 6 hours, 3 mins",
+            "earnedAge": "1 day, 8 hours, 3 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -41661,7 +42557,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:39:35 AM",
-            "earnedAge": "1 month, 1 week, 3 days, 6 hours, 25 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 8 hours, 24 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -41684,7 +42580,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 1:08:00 PM",
-            "earnedAge": "1 month, 1 week, 3 days, 2 hours, 56 mins",
+            "earnedAge": "1 month, 1 week, 3 days, 4 hours, 56 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -41923,7 +42819,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:47:40 AM",
-            "earnedAge": "1 day, 9 hours, 17 mins",
+            "earnedAge": "1 day, 11 hours, 16 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -41995,7 +42891,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 3:47:08 AM",
-            "earnedAge": "1 day, 12 hours, 17 mins",
+            "earnedAge": "1 day, 14 hours, 17 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -42042,7 +42938,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 4:57:10 AM",
-            "earnedAge": "1 day, 11 hours, 7 mins",
+            "earnedAge": "1 day, 13 hours, 7 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -42375,7 +43271,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 3:57:12 AM",
-            "earnedAge": "1 month, 3 days, 12 hours, 7 mins",
+            "earnedAge": "1 month, 3 days, 14 hours, 7 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -42399,7 +43295,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 9:57:02 AM",
-            "earnedAge": "1 month, 3 days, 6 hours, 7 mins",
+            "earnedAge": "1 month, 3 days, 8 hours, 7 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -42947,7 +43843,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 10:01:02 AM",
-          "age": "1 day, 6 hours, 3 mins"
+          "age": "1 day, 8 hours, 3 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -42955,7 +43851,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 6:47:40 AM",
-          "age": "1 day, 9 hours, 17 mins"
+          "age": "1 day, 11 hours, 16 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -42963,7 +43859,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 4:57:10 AM",
-          "age": "1 day, 11 hours, 7 mins"
+          "age": "1 day, 13 hours, 7 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -42971,7 +43867,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/9/2026, 3:47:08 AM",
-          "age": "1 day, 12 hours, 17 mins"
+          "age": "1 day, 14 hours, 17 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -42979,7 +43875,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/9/2026, 12:02:28 AM",
-          "age": "1 day, 16 hours, 2 mins"
+          "age": "1 day, 18 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -42987,7 +43883,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "1 day, 19 hours, 2 mins"
+          "age": "1 day, 21 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -42995,7 +43891,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 9:02:18 PM",
-          "age": "1 day, 19 hours, 2 mins"
+          "age": "1 day, 21 hours, 1 min"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -43003,7 +43899,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 8:08:04 PM",
-          "age": "1 day, 19 hours, 56 mins"
+          "age": "1 day, 21 hours, 56 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -43011,7 +43907,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 7:51:31 PM",
-          "age": "1 day, 20 hours, 13 mins"
+          "age": "1 day, 22 hours, 12 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -43019,7 +43915,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/19/2026, 2:22:26 AM",
-          "age": "3 weeks, 13 hours, 42 mins"
+          "age": "3 weeks, 15 hours, 41 mins"
         }
       ],
       "streamHistory": [],
@@ -46837,29 +47733,29 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/10/2026, 4:04:52 PM"
+      "lastUpdated": "7/10/2026, 6:04:24 PM"
     }
   },
   "personas": {
     "Kevin": {
       "displayName": "Kevin",
-      "isOnline": false,
+      "isOnline": true,
       "primaryOnlineId": "Werewolf3788",
       "combinedTrophies": {
         "platinum": 11,
         "gold": 123,
-        "silver": 355,
+        "silver": 356,
         "bronze": 1657,
-        "total": 2146
+        "total": 2147
       },
       "maxLevel": 236,
       "legacyAge": "9 years, 6 months",
       "legacyRange": {
         "start": "12/30/2016, 6:40:30 PM",
-        "end": "7/9/2026, 10:01:02 AM"
+        "end": "7/10/2026, 6:02:38 PM"
       },
-      "currentGame": "Expeditions: A Mudrunner Game",
-      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/34b0da12-fb03-4ea0-b8bb-c1992cd2c184.png",
+      "currentGame": "Tom Clancy’s Ghost Recon® Wildlands",
+      "currentGameArt": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
       "currentActivity": "Target practice",
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/WWS_J/J2094_s.png",
       "bio": "6C3RG",
@@ -46868,7 +47764,7 @@
         "kfruti"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/10/2026, 4:04:52 PM"
+      "lastUpdated": "7/10/2026, 6:04:24 PM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -46896,7 +47792,7 @@
         "ray"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/10/2026, 4:04:52 PM"
+      "lastUpdated": "7/10/2026, 6:04:24 PM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -46913,7 +47809,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "7/10/2026, 4:04:05 PM"
+        "end": "7/10/2026, 6:03:34 PM"
       },
       "currentGame": "Dashboard",
       "currentGameArt": null,
@@ -46924,7 +47820,7 @@
         "darkwing"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/10/2026, 4:04:52 PM"
+      "lastUpdated": "7/10/2026, 6:04:24 PM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -46952,7 +47848,7 @@
         "mike"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/10/2026, 4:04:52 PM"
+      "lastUpdated": "7/10/2026, 6:04:24 PM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -46980,7 +47876,7 @@
         "katy"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/10/2026, 4:04:52 PM"
+      "lastUpdated": "7/10/2026, 6:04:24 PM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -47008,7 +47904,7 @@
         "marc"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/10/2026, 4:04:52 PM"
+      "lastUpdated": "7/10/2026, 6:04:24 PM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -47036,16 +47932,16 @@
         "seth"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/10/2026, 4:04:52 PM"
+      "lastUpdated": "7/10/2026, 6:04:24 PM"
     }
   },
   "mutualSquadFollowers": [],
   "authDiagnostics": {
     "werewolf_active": "no",
     "ray_active": "yes",
-    "lastCheck": "7/10/2026, 4:03:24 PM"
+    "lastCheck": "7/10/2026, 6:02:50 PM"
   },
-  "lastGlobalUpdate": "7/10/2026, 4:03:24 PM",
+  "lastGlobalUpdate": "7/10/2026, 6:02:50 PM",
   "engineVersion": "14.5.1",
   "codeTimestamp": "Thursday, July 9, 2026 | 7:55 AM EDT"
 }
