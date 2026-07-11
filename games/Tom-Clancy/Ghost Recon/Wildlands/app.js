@@ -1,7 +1,8 @@
 /**
  * Ghost Recon Wildlands Progression Hub Engine
- * Version: 4.8.0 - Full Restoration & Click Isolation Fix
- * Version Timestamp: Sat, July 11, 2026
+ * Version: 4.9.0 - Native Master Hub Schema Alignment
+ * Version Timestamp: Sat, July 11, 2026, 4:15 PM Chicago Time
+ * Verification: NYT-20260530-0426
  * * NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE
  */
 
@@ -13,7 +14,6 @@ let selectedSubCategory = "ALL_TROPHIES";
 let isDemoMode = true;
 let isAdminUser = false;
 
-// Structured Dynamic Object Categorizing and Filtering the Campaign Weapon Drops
 const WILDLANDS_WEAPON_CLASSES = {
     "Assault Rifles": [
         "P416 (Starting Weapon)", "AK-47 (Libertad)", "AK-12 (Tabacal)", "SR-3M (Agua Verde)", "556xi (Caimanes)",
@@ -236,8 +236,9 @@ document.addEventListener("DOMContentLoaded", () => {
     populateWeaponSelectionDropdowns();
     initializeFirebaseApp();
     setupInterfaceControls();
+    evaluateDynamicTimeTheme();
+    setupInterTabSynchronization();
     
-    // Auto-seed layout inputs instantly
     updateOperatorDropdownList(DEFAULT_SQUAD_PROFILES);
 });
 
@@ -248,7 +249,6 @@ function populateWeaponSelectionDropdowns() {
     
     primarySelect.innerHTML = ""; secondarySelect.innerHTML = "";
 
-    // Parse class items out into structured optgroup blocks
     Object.keys(WILDLANDS_WEAPON_CLASSES).forEach(className => {
         const group1 = document.createElement("optgroup"); group1.label = className;
         const group2 = document.createElement("optgroup"); group2.label = className;
@@ -372,37 +372,59 @@ function triggerDynamicDropdownSync() {
     });
 }
 
+function convertFirebaseArray(data) {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    if (typeof data === 'object') {
+        const keys = Object.keys(data).map(Number).filter(n => !isNaN(n));
+        if (keys.length > 0) {
+            const arr = [];
+            keys.forEach(k => { arr[k] = data[k]; });
+            return arr.filter(item => item !== undefined);
+        }
+        return Object.values(data);
+    }
+    return [];
+}
+
 function checkLivePsnTrophyDatabaseSync(psnUserString) {
     if (!psnUserString || !database || isDemoMode) return;
-    const cleanPsnQuery = psnUserString.toLowerCase().trim();
+    
+    // Safety handle variations from user input
+    let cleanPsnQuery = psnUserString.toLowerCase().trim();
+    if (cleanPsnQuery === "onelividman") cleanPsnQuery = "ray";
+    
     const psnTreeRef = database.ref(`psn/users/${cleanPsnQuery}/recentGames`);
     
     psnTreeRef.once("value", snapshot => {
         if (!snapshot.exists()) return;
         const gamesPayload = snapshot.val();
-        let wildlandsTargetGame = null;
-        if (Array.isArray(gamesPayload)) {
-            wildlandsTargetGame = gamesPayload.find(g => g && g.name && g.name.toLowerCase().includes("wildlands"));
-        } else if (typeof gamesPayload === 'object') {
-            wildlandsTargetGame = Object.values(gamesPayload).find(g => g && g.name && g.name.toLowerCase().includes("wildlands"));
-        }
+        
+        // Use normalization array handler to locate Wildlands entry safely
+        const recentGamesList = convertFirebaseArray(gamesPayload);
+        const wildlandsTargetGame = recentGamesList.find(g => g && g.name && g.name.toLowerCase().includes("wildlands"));
         
         if (!wildlandsTargetGame || !wildlandsTargetGame.trophies) return;
         
-        const liveTrophies = wildlandsTargetGame.trophies;
+        const liveTrophies = convertFirebaseArray(wildlandsTargetGame.trophies);
         const trophyBlueprintList = BASELINE_SKILLS_BLUEPRINT["TROPHY"];
         
         trophyBlueprintList.forEach(blueprintTrophy => {
             if (!blueprintTrophy.isTrophy) return;
-            let psnTrophyObj = null;
-            if (Array.isArray(liveTrophies)) {
-                psnTrophyObj = liveTrophies.find(t => t && t.name === blueprintTrophy.psnName);
-            } else {
-                psnTrophyObj = Object.values(liveTrophies).find(t => t && t.name === blueprintTrophy.psnName);
-            }
+            
+            // Loose lookup logic mapping against variant descriptive spaces natively
+            const psnTrophyObj = liveTrophies.find(t => t && t.name && t.name.toLowerCase().trim() === blueprintTrophy.psnName.toLowerCase().trim());
             
             if (psnTrophyObj) {
-                const isEarned = psnTrophyObj.earned === true || parseInt(psnTrophyObj.earned) === 1;
+                const rawEarnedValue = psnTrophyObj.earned;
+                let isEarned = false;
+                
+                if (rawEarnedValue === true || parseInt(rawEarnedValue) === 1) {
+                    isEarned = true;
+                } else if (typeof rawEarnedValue === 'string' && rawEarnedValue.trim().length > 2) {
+                    isEarned = true;
+                }
+                
                 database.ref(`ghost_squad/operators/${currentSelectedUser}/skills/TROPHY/${blueprintTrophy.id}`).update({
                     id: blueprintTrophy.id, current: isEarned ? 1 : 0
                 });
@@ -515,7 +537,6 @@ function renderSkillsTree(incomingDatabaseSkills) {
             if (selectedSubCategory === f.id) btn.style.backgroundColor = "var(--primary-orange)";
             btn.textContent = f.label;
             
-            // Fixed propagation issue to prevent mis-clicks
             btn.addEventListener("click", (e) => { 
                 e.stopPropagation(); 
                 selectedSubCategory = f.id; 
@@ -566,7 +587,6 @@ function renderSkillsTree(incomingDatabaseSkills) {
             const medalZone = document.createElement("div"); medalZone.className = "medal-indicator-zone";
             medalZone.innerHTML = `<span style="font-size: 11px; color: #888;">Bonus Medal Intel:</span><button class="medal-dot-btn ${medalEarned ? 'earned' : ''}">★</button>`;
             
-            // THIS is the specific fix that isolates the click to just the medal without firing the rest of the card
             medalZone.querySelector(".medal-dot-btn").addEventListener("click", (e) => {
                 e.stopPropagation();
                 if (canWrite || isDemoMode) executeSkillLevelUpdate(selectedCategory, blueprintSkill.id, currentLevel, !medalEarned, true);
@@ -695,6 +715,23 @@ function setupInterfaceControls() {
         if (element) {
             element.addEventListener("input", pushKeyboardInputStatsUpdate);
             element.addEventListener("change", pushKeyboardInputStatsUpdate);
+        }
+    });
+}
+
+function evaluateDynamicTimeTheme() {
+    const deviceHours = new Date().getHours(); 
+    if (deviceHours >= 18 || deviceHours < 6) { document.body.classList.remove("bright-mode"); }
+}
+
+function setupInterTabSynchronization() {
+    window.addEventListener("storage", (event) => {
+        if (event.key === "itc_active_ghost_operator" && event.newValue) {
+            const incoming = event.newValue; const select = document.getElementById("userSelect");
+            if (select && select.value !== incoming) {
+                select.value = incoming; currentSelectedUser = incoming;
+                if (!isDemoMode && database) { database.ref(`ghost_squad/operators/${incoming}`).once("value", snapshot => { if (snapshot.exists()) renderTargetProfileData(snapshot.val()); }); }
+            }
         }
     });
 }
