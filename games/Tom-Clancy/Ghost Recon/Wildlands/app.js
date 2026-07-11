@@ -1,8 +1,7 @@
 /**
  * Ghost Recon Wildlands Progression Hub Engine
- * Version: 4.4.0 - Structured Weapon Select Groups & Isolated Sandbox Resets
- * Version Timestamp: Sat, July 11, 2026, 3:30 PM Chicago Time
- * Verification: NYT-20260530-0426
+ * Version: 4.8.0 - Full Restoration & Click Isolation Fix
+ * Version Timestamp: Sat, July 11, 2026
  * * NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE
  */
 
@@ -14,7 +13,7 @@ let selectedSubCategory = "ALL_TROPHIES";
 let isDemoMode = true;
 let isAdminUser = false;
 
-// Structured Dynamic Object Categorizing and Filtering the Campaign Weapon Drops Natively
+// Structured Dynamic Object Categorizing and Filtering the Campaign Weapon Drops
 const WILDLANDS_WEAPON_CLASSES = {
     "Assault Rifles": [
         "P416 (Starting Weapon)", "AK-47 (Libertad)", "AK-12 (Tabacal)", "SR-3M (Agua Verde)", "556xi (Caimanes)",
@@ -213,7 +212,6 @@ function generateCleanBlueprintCopy() {
     return freshCopy;
 }
 
-// Fixed baseline local reference array for default sandbox operations
 const DEFAULT_SQUAD_PROFILES = {
     "Werewolf3788": {
         name: "Werewolf3788", psnUsername: "werewolf3788", tierMode: "on", tier: 41, playstyle: "Overwatch",
@@ -238,8 +236,6 @@ document.addEventListener("DOMContentLoaded", () => {
     populateWeaponSelectionDropdowns();
     initializeFirebaseApp();
     setupInterfaceControls();
-    evaluateDynamicTimeTheme();
-    setupInterTabSynchronization();
     
     // Auto-seed layout inputs instantly
     updateOperatorDropdownList(DEFAULT_SQUAD_PROFILES);
@@ -467,9 +463,6 @@ function calculateDifficultyLabel(tierMode, level) {
 function renderTargetProfileData(operator) {
     if (!operator) return;
 
-    const opNameEl = document.getElementById("operatorName");
-    if (opNameEl) opNameEl.textContent = operator.name;
-    
     if (document.getElementById("profileCustomName")) document.getElementById("profileCustomName").value = operator.name || "";
     if (document.getElementById("profilePsnUser")) document.getElementById("profilePsnUser").value = operator.psnUsername || "";
     if (document.getElementById("profileTierMode")) document.getElementById("profileTierMode").value = operator.tierMode || "off";
@@ -521,7 +514,14 @@ function renderSkillsTree(incomingDatabaseSkills) {
             btn.style.cssText = "padding: 8px 12px; font-size: 11px; min-height: 34px; min-width: auto; flex: none;";
             if (selectedSubCategory === f.id) btn.style.backgroundColor = "var(--primary-orange)";
             btn.textContent = f.label;
-            btn.addEventListener("click", () => { selectedSubCategory = f.id; renderSkillsTree(incomingDatabaseSkills); });
+            
+            // Fixed propagation issue to prevent mis-clicks
+            btn.addEventListener("click", (e) => { 
+                e.stopPropagation(); 
+                selectedSubCategory = f.id; 
+                renderSkillsTree(incomingDatabaseSkills); 
+            });
+            
             subNavWrapper.appendChild(btn);
         });
         container.appendChild(subNavWrapper);
@@ -559,17 +559,23 @@ function renderSkillsTree(incomingDatabaseSkills) {
             </div>
         `;
 
+        const currentUser = auth.currentUser;
+        const canWrite = isAdminUser || (!isDemoMode && currentUser && currentSelectedUser === currentUser.uid);
+
         if (blueprintSkill.hasMedal && !isTrophyTabActive) {
             const medalZone = document.createElement("div"); medalZone.className = "medal-indicator-zone";
             medalZone.innerHTML = `<span style="font-size: 11px; color: #888;">Bonus Medal Intel:</span><button class="medal-dot-btn ${medalEarned ? 'earned' : ''}">★</button>`;
+            
+            // THIS is the specific fix that isolates the click to just the medal without firing the rest of the card
             medalZone.querySelector(".medal-dot-btn").addEventListener("click", (e) => {
                 e.stopPropagation();
-                executeSkillLevelUpdate(selectedCategory, blueprintSkill.id, currentLevel, !medalEarned, true);
+                if (canWrite || isDemoMode) executeSkillLevelUpdate(selectedCategory, blueprintSkill.id, currentLevel, !medalEarned, true);
             });
             card.appendChild(medalZone);
         }
 
         card.addEventListener("click", () => {
+            if (!canWrite && !isDemoMode) return;
             let nextLevel = currentLevel + 1;
             if (nextLevel > blueprintSkill.max) nextLevel = 0;
             executeSkillLevelUpdate(selectedCategory, blueprintSkill.id, nextLevel, medalEarned, false);
@@ -671,7 +677,7 @@ function setupInterfaceControls() {
                     renderTargetProfileData(localDemoSandboxOperator);
                 }
             } else if (database) {
-                database.ref(`ghost_squad/operators/${currentSelectedUser}`).on("value", snapshot => {
+                database.ref(`ghost_squad/operators/${currentSelectedUser}`).once("value", snapshot => {
                     if (snapshot.exists()) renderTargetProfileData(snapshot.val());
                 });
             }
@@ -689,23 +695,6 @@ function setupInterfaceControls() {
         if (element) {
             element.addEventListener("input", pushKeyboardInputStatsUpdate);
             element.addEventListener("change", pushKeyboardInputStatsUpdate);
-        }
-    });
-}
-
-function evaluateDynamicTimeTheme() {
-    const deviceHours = new Date().getHours(); 
-    if (deviceHours >= 18 || deviceHours < 6) { document.body.classList.remove("bright-mode"); }
-}
-
-function setupInterTabSynchronization() {
-    window.addEventListener("storage", (event) => {
-        if (event.key === "itc_active_ghost_operator" && event.newValue) {
-            const incoming = event.newValue; const select = document.getElementById("userSelect");
-            if (select && select.value !== incoming) {
-                select.value = incoming; currentSelectedUser = incoming;
-                if (!isDemoMode && database) { database.ref(`ghost_squad/operators/${incoming}`).once("value", snapshot => { if (snapshot.exists()) renderTargetProfileData(snapshot.val()); }); }
-            }
         }
     });
 }
