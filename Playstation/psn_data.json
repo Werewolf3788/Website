@@ -59,7 +59,7 @@
       "platform": "PS5",
       "twitch": {
         "isLive": false,
-        "game": "Tom Clancy's Ghost Recon: Wildlands",
+        "game": "Games + Demos",
         "gameArt": null,
         "followers": "106",
         "latestFollower": "None",
@@ -68,7 +68,7 @@
         "age": "3 years, 3 months",
         "bio": null,
         "statusMessage": "Roll out",
-        "uptime": null,
+        "uptime": "48 minutes, 8 seconds",
         "viewers": "0",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
@@ -11579,7 +11579,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 10:29:26 PM"
+      "lastUpdated": "7/11/2026, 11:34:43 PM"
     },
     "kfruti": {
       "onlineId": "OneLIVIDMAN",
@@ -11622,7 +11622,7 @@
       "platform": "PS5",
       "twitch": {
         "isLive": false,
-        "game": "Tom Clancy's Ghost Recon: Wildlands",
+        "game": "Games + Demos",
         "gameArt": null,
         "followers": "106",
         "latestFollower": "None",
@@ -11631,7 +11631,7 @@
         "age": "3 years, 3 months",
         "bio": null,
         "statusMessage": "Roll out",
-        "uptime": null,
+        "uptime": "48 minutes, 9 seconds",
         "viewers": "0",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
@@ -17575,7 +17575,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 10:29:28 PM"
+      "lastUpdated": "7/11/2026, 11:34:44 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -23571,7 +23571,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 10:29:30 PM"
+      "lastUpdated": "7/11/2026, 11:34:46 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -23696,7 +23696,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "7/11/2026, 10:29:31 PM"
+      "lastUpdated": "7/11/2026, 11:34:48 PM"
     },
     "mike": {
       "onlineId": "OneLIVIDMAN",
@@ -29692,7 +29692,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 10:29:33 PM"
+      "lastUpdated": "7/11/2026, 11:34:49 PM"
     },
     "katy": {
       "onlineId": "OneLIVIDMAN",
@@ -35672,7 +35672,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 10:29:33 PM"
+      "lastUpdated": "7/11/2026, 11:34:49 PM"
     },
     "marc": {
       "onlineId": "OneLIVIDMAN",
@@ -41652,7 +41652,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 10:29:33 PM"
+      "lastUpdated": "7/11/2026, 11:34:49 PM"
     },
     "seth": {
       "onlineId": "OneLIVIDMAN",
@@ -47648,7 +47648,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 10:29:35 PM"
+      "lastUpdated": "7/11/2026, 11:34:51 PM"
     }
   },
   "personas": {
@@ -47679,7 +47679,7 @@
         "kfruti"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 10:29:35 PM"
+      "lastUpdated": "7/11/2026, 11:34:51 PM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -47707,7 +47707,7 @@
         "ray"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 10:29:35 PM"
+      "lastUpdated": "7/11/2026, 11:34:51 PM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -47735,7 +47735,7 @@
         "darkwing"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 10:29:35 PM"
+      "lastUpdated": "7/11/2026, 11:34:51 PM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -47763,7 +47763,7 @@
         "mike"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 10:29:35 PM"
+      "lastUpdated": "7/11/2026, 11:34:51 PM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -47791,7 +47791,7 @@
         "katy"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 10:29:35 PM"
+      "lastUpdated": "7/11/2026, 11:34:51 PM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -47819,7 +47819,7 @@
         "marc"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 10:29:35 PM"
+      "lastUpdated": "7/11/2026, 11:34:51 PM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -47847,16 +47847,16 @@
         "seth"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 10:29:35 PM"
+      "lastUpdated": "7/11/2026, 11:34:51 PM"
     }
   },
   "mutualSquadFollowers": [],
   "authDiagnostics": {
     "werewolf_active": "no",
     "ray_active": "no",
-    "lastCheck": "7/11/2026, 10:29:23 PM"
+    "lastCheck": "7/11/2026, 11:34:40 PM"
   },
-  "lastGlobalUpdate": "7/11/2026, 10:29:23 PM",
+  "lastGlobalUpdate": "7/11/2026, 11:34:40 PM",
   "engineVersion": "14.5.1",
   "codeTimestamp": "Thursday, July 9, 2026 | 7:55 AM EDT"
 }
