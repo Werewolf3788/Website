@@ -50,7 +50,7 @@
       "isOfficiallyVerified": false,
       "isMe": false,
       "accountId": "3728215008151724560",
-      "online": true,
+      "online": false,
       "currentGame": "Tom Clancy’s Ghost Recon® Wildlands",
       "currentGameArt": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/FCBB713945AE2615D022E25B665D52A51B88F520.PNG",
       "currentGameActivity": "Target practice",
@@ -11579,7 +11579,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 4:12:01 PM"
+      "lastUpdated": "7/11/2026, 5:17:58 PM"
     },
     "kfruti": {
       "onlineId": "OneLIVIDMAN",
@@ -17575,7 +17575,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 4:12:15 PM"
+      "lastUpdated": "7/11/2026, 5:18:00 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -23571,7 +23571,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 4:12:29 PM"
+      "lastUpdated": "7/11/2026, 5:18:02 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -23696,7 +23696,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "7/11/2026, 4:12:31 PM"
+      "lastUpdated": "7/11/2026, 5:18:03 PM"
     },
     "mike": {
       "onlineId": "OneLIVIDMAN",
@@ -29692,7 +29692,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 4:12:45 PM"
+      "lastUpdated": "7/11/2026, 5:18:05 PM"
     },
     "katy": {
       "onlineId": "OneLIVIDMAN",
@@ -35672,7 +35672,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 4:12:57 PM"
+      "lastUpdated": "7/11/2026, 5:18:05 PM"
     },
     "marc": {
       "onlineId": "OneLIVIDMAN",
@@ -41652,7 +41652,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 4:13:10 PM"
+      "lastUpdated": "7/11/2026, 5:18:05 PM"
     },
     "seth": {
       "onlineId": "OneLIVIDMAN",
@@ -47648,13 +47648,13 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 4:13:23 PM"
+      "lastUpdated": "7/11/2026, 5:18:07 PM"
     }
   },
   "personas": {
     "Kevin": {
       "displayName": "Kevin",
-      "isOnline": true,
+      "isOnline": false,
       "primaryOnlineId": "Werewolf3788",
       "combinedTrophies": {
         "platinum": 11,
@@ -47679,7 +47679,7 @@
         "kfruti"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 4:13:23 PM"
+      "lastUpdated": "7/11/2026, 5:18:07 PM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -47707,7 +47707,7 @@
         "ray"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 4:13:23 PM"
+      "lastUpdated": "7/11/2026, 5:18:07 PM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -47735,7 +47735,7 @@
         "darkwing"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 4:13:23 PM"
+      "lastUpdated": "7/11/2026, 5:18:07 PM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -47763,7 +47763,7 @@
         "mike"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 4:13:23 PM"
+      "lastUpdated": "7/11/2026, 5:18:07 PM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -47791,7 +47791,7 @@
         "katy"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 4:13:23 PM"
+      "lastUpdated": "7/11/2026, 5:18:07 PM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -47819,7 +47819,7 @@
         "marc"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 4:13:23 PM"
+      "lastUpdated": "7/11/2026, 5:18:07 PM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -47847,16 +47847,16 @@
         "seth"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 4:13:23 PM"
+      "lastUpdated": "7/11/2026, 5:18:07 PM"
     }
   },
   "mutualSquadFollowers": [],
   "authDiagnostics": {
     "werewolf_active": "no",
-    "ray_active": "yes",
-    "lastCheck": "7/11/2026, 4:11:46 PM"
+    "ray_active": "no",
+    "lastCheck": "7/11/2026, 5:17:55 PM"
   },
-  "lastGlobalUpdate": "7/11/2026, 4:11:46 PM",
+  "lastGlobalUpdate": "7/11/2026, 5:17:55 PM",
   "engineVersion": "14.5.1",
   "codeTimestamp": "Thursday, July 9, 2026 | 7:55 AM EDT"
 }
