@@ -2,16 +2,15 @@
  * ==========================================
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Ghost Recon Wildlands Squad Hub
- * Version: 3.3.1 - Skill Tree Container Restored
- * Version Timestamp: Thu, July 9, 2026, 11:38 AM Chicago Time
- * Compatibility: HTML5, Firebase Auth + RTDB + Firestore SDK Core Modules
- * Note: Restored skillsTreeGrid container element to fix empty tab errors.
+ * Version: 4.7.0 - Verified Acquisition Storefront Portals Matrix
+ * Version Timestamp: Sat, July 11, 2026, 3:55 PM Chicago Time
+ * Compatibility: HTML5, Fully Self-Contained inside CodePen Panels
+ * Implementation Note: Hardware storefront direct reference links mapped.
  * ==========================================
  -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google Analytics 4 Stream Integration Verification -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -27,40 +26,331 @@
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
     <style>
         :root {
-            --bar-height: clamp(60px, 10vh, 90px);
             --primary-orange: #FF4500;
             --solid-black: #000000;
             --ghost-blue: #28a745;
             --node-blue: #0076a8;
             --node-locked: #1c2430;
             --medal-gold: #ffcc00;
+            --corporate-red: #d9534f;
+            --dark-charcoal: #1e1c1c;
+            --text-white: #ffffff;
         }
+        
+        /* Game Poster Artwork Background Layer Configuration */
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.85)), url('https://cdnb.artstation.com/p/assets/images/images/003/287/239/4k/petur-arnorsson-thevideogamegallery-27263-3840x2160.jpg?1472040147') no-repeat center center !important;
+            background-size: cover !important;
+            background-attachment: fixed !important;
+            color: var(--text-white);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            font-size: 18px;
+            overflow-x: hidden;
+        }
+
+        .hub-header {
+            background: rgba(0, 0, 0, 0.95);
+            border-bottom: 3px solid var(--primary-orange);
+            padding: 20px 32px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 100;
+        }
+
+        .header-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .logo-text {
+            font-size: 32px;
+            margin: 0;
+            letter-spacing: 3px;
+            font-weight: 900;
+            color: var(--text-white);
+        }
+
         .auth-inline-wrapper {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
+        
         .user-badge-img {
-            width: 32px;
-            height: 32px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            border: 1px solid var(--primary-orange);
+            border: 2px solid var(--primary-orange);
         }
-        .section-header-title {
-            font-size: 16px;
-            color: var(--primary-orange);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 20px 0 12px 0;
-            font-weight: bold;
-        }
+        
         .hidden {
             display: none !important;
         }
+
+        .control-btn {
+            min-height: 48px;
+            padding: 12px 28px;
+            background-color: var(--corporate-red);
+            color: var(--text-white);
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-radius: 4px;
+        }
+
+        .skills-tabs {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 12px;
+            margin-bottom: 32px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #333;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .tab-link {
+            min-height: 48px;
+            padding: 12px 24px;
+            background-color: #2a2a2a;
+            color: #eee;
+            border: 1px solid #555;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            white-space: nowrap;
+            flex: 0 0 auto;
+            border-radius: 4px;
+        }
+
+        .tab-link.active {
+            background-color: var(--corporate-red);
+            color: var(--text-white);
+            border-color: transparent;
+        }
+
+        .hub-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 48px;
+            padding: 32px;
+            width: 100vw;
+            max-width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 10;
+        }
+
+        @media (min-width: 1200px) {
+            .hub-container {
+                grid-template-columns: 520px 1fr;
+            }
+        }
+
+        .card-panel {
+            background-color: rgba(30, 28, 28, 0.95) !important;
+            border: 2px solid #2e2a2a;
+            padding: 32px;
+            border-radius: 8px;
+            box-sizing: border-box;
+            height: fit-content;
+            position: relative;
+        }
+
+        .stat-category-block {
+            margin-bottom: 40px;
+            border-bottom: 2px solid #2c2828;
+            padding-bottom: 24px;
+        }
+
+        .stat-category-block:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .category-header {
+            font-size: 20px;
+            letter-spacing: 1px;
+            margin-top: 0;
+            margin-bottom: 24px;
+            font-weight: bold;
+        }
+
+        .stat-row {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            gap: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .stat-row label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #eee;
+            white-space: nowrap;
+        }
+
+        .stat-input {
+            background: #000000;
+            border: 2px solid #555;
+            color: #ffffff;
+            padding: 12px 16px;
+            font-size: 18px;
+            width: 220px;
+            text-align: right;
+            border-radius: 6px;
+            min-height: 52px;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .stat-input:focus {
+            border-color: var(--primary-orange);
+            outline: none;
+        }
+
+        .storefront-matrix {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .store-link-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #111111;
+            border: 1px solid #444444;
+            padding: 14px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            color: #ffffff;
+            font-weight: bold;
+            font-size: 15px;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .store-link-card:hover {
+            border-color: var(--primary-orange);
+            background: #161616;
+        }
+
+        .store-tag {
+            padding: 4px 10px;
+            font-size: 11px;
+            text-transform: uppercase;
+            border-radius: 4px;
+            font-weight: 900;
+        }
+
+        .skills-tree-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 24px;
+            min-height: 300px;
+        }
+
+        .skill-card {
+            background: rgba(20, 20, 24, 0.95);
+            border: 2px solid #333;
+            padding: 24px;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-radius: 6px;
+            min-height: 180px;
+            box-sizing: border-box;
+        }
+
+        .skill-card h4 { font-size: 18px; margin: 0 0 10px 0; }
+        .skill-card p { font-size: 14px; color: #a0aec0; margin: 0 0 12px 0; line-height: 1.4; }
+        .skill-card.unlocked { border-color: var(--node-blue); background: rgba(12, 26, 36, 0.95); }
+        .skill-card.maxed { border-color: var(--ghost-blue); background: rgba(12, 36, 17, 0.95); }
+        .skill-card.epic-node { border: 3px dashed #9b59b6; background: rgba(26, 15, 46, 0.95); }
+        
+        .medal-indicator-zone {
+            margin-top: 16px;
+            border-top: 2px solid #262626;
+            padding-top: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .medal-dot-btn {
+            background: #222;
+            border: 2px solid #555;
+            color: #555;
+            font-size: 24px;
+            cursor: pointer;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+
+        .medal-dot-btn.earned {
+            color: var(--medal-gold);
+            background: #443600;
+            border-color: var(--medal-gold);
+        }
+
+        .demo-banner {
+            background: #e67e22;
+            color: #ffffff;
+            padding: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            grid-column: 1 / -1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-radius: 6px;
+        }
+
+        .admin-banner {
+            background: #8e44ad;
+            color: #ffffff;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 15px;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            border-radius: 6px;
+        }
+        
+        .styled-select {
+            min-height: 48px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #000;
+            color: #fff;
+            border: 2px solid #555;
+            border-radius: 6px;
+        }
     </style>
-    <link rel="stylesheet" href="style.css?v=3.3.1">
 </head>
 <body>
 
@@ -72,183 +362,166 @@
                 <select id="userSelect" class="styled-select"></select>
             </div>
 
-            <!-- Integrated Identity Verification Pipeline -->
             <div id="authContainer" class="auth-inline-wrapper">
-                <button id="googleSignInBtn" class="control-btn" style="border-color: var(--ghost-blue); color: var(--ghost-blue); font-weight: bold;">🔑 Login</button>
-                <div id="userProfileStatus" class="hidden" style="display: flex; align-items: center; gap: 8px;">
+                <button id="googleSignInBtn" class="control-btn" style="background-color: var(--ghost-blue);">🔑 Login</button>
+                <div id="userProfileStatus" class="hidden" style="display: flex; align-items: center; gap: 12px;">
                     <img id="userAvatar" class="user-badge-img" src="" alt="Avatar">
-                    <button id="signOutBtn" class="control-btn" style="font-size: 11px; padding: 4px 8px; min-height: 32px;">Logout</button>
-                </div>
-            </div>
-
-            <div class="ui-controls">
-                <button id="toggleUiSettings" class="control-btn">🔧</button>
-                <div id="uiSettingsPanel" class="settings-dropdown hidden">
-                    <div class="setting-item">
-                        <label>Theme Mode:</label>
-                        <select id="themeModeSelect">
-                            <option value="bright">Bright</option>
-                            <option value="dark">Dark</option>
-                            <option value="system">Match System</option>
-                        </select>
-                    </div>
-                    <div class="setting-item">
-                        <label>Text Outline Color:</label>
-                        <input type="color" id="outlineColorPicker" value="#000000">
-                    </div>
-                    <div class="setting-item">
-                        <label>Font Style:</label>
-                        <select id="fontStyleSelect">
-                            <option value="default">Ghost Default</option>
-                            <option value="monospace">Tactical Mono</option>
-                            <option value="sans-serif">Clean Sans</option>
-                        </select>
-                    </div>
+                    <button id="signOutBtn" class="control-btn" style="font-size: 13px; padding: 6px 12px; min-height: 38px;">Logout</button>
                 </div>
             </div>
         </div>
     </header>
 
     <main class="hub-container">
+        <div id="demoNotification" class="demo-banner">Operational Live Sandbox Mode Active. Log In to Commit Multi-User Synchronization.</div>
         
         <section class="card-panel profile-panel">
-            <div class="profile-header">
-                <h2 id="operatorName" class="outline-text">Operator</h2>
-                <div id="tierContainer" class="tier-badge-container">
-                    <span class="tier-label">TIER</span>
-                    <span id="tierLevel" class="tier-value">--</span>
+            <div id="adminBadge" class="admin-banner hidden">⚡ OVERWATCH ADMIN ACTIVE (raykevin71888@gmail.com)</div>
+            
+            <div class="stat-category-block">
+                <h3 class="category-header" style="color: var(--primary-orange);">IDENTITY CONTROLS</h3>
+                <div class="stat-row">
+                    <label for="profileCustomName">Operator Profile Name</label>
+                    <input type="text" id="profileCustomName" class="stat-input" style="text-align: left;">
+                </div>
+                <div class="stat-row">
+                    <label for="profilePsnUser" style="color: var(--node-blue);">Linked PSN Handle</label>
+                    <input type="text" id="profilePsnUser" class="stat-input" placeholder="e.g. werewolf3788" style="text-align: left; border-color: var(--node-blue);">
+                </div>
+            </div>
+
+            <div class="stat-category-block">
+                <h3 class="category-header" style="color: var(--primary-orange);">PROGRESSION METRICS</h3>
+                <div class="stat-row">
+                    <label for="profileTierMode">Tier One Prestige Mode</label>
+                    <select id="profileTierMode" class="stat-input">
+                        <option value="off">Off / Base</option>
+                        <option value="on">Active</option>
+                    </select>
+                </div>
+                <div class="stat-row">
+                    <label id="tierLevelContextLabel" for="profileTierLevel">Character Level</label>
+                    <input type="number" id="profileTierLevel" class="stat-input" min="1" max="50" value="1">
+                </div>
+                <div class="stat-row">
+                    <label>Scaling Status:</label>
+                    <span id="difficultyScalingOutput" style="font-weight: bold; font-size: 16px; color: var(--primary-orange);">Easy</span>
                 </div>
             </div>
             
             <div class="stat-category-block">
-                <h3 class="category-header">PLAYSTYLE <span id="playstyleType" class="header-highlight">--</span></h3>
+                <h3 class="category-header" style="color: var(--primary-orange);">PLAYER STYLE</h3>
                 <div class="stat-row">
-                    <span>Average Kill Distance</span>
-                    <span id="avgKillDist" class="stat-val">--</span>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-labels">
-                        <span>Tactical Precision</span>
-                        <span id="tacticalValue">0%</span>
-                    </div>
-                    <div class="bar-bg"><div id="tacticalBar" class="bar-fill"></div></div>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-labels">
-                        <span>Stealth Kills</span>
-                        <span id="stealthValue">0%</span>
-                    </div>
-                    <div class="bar-bg"><div id="stealthBar" class="bar-fill"></div></div>
-                </div>
-            </div>
-
-            <div class="stat-category-block cinematic-wrapper">
-                <h3 class="category-header">COMBAT</h3>
-                <div class="stat-row">
-                    <span>Lifetime</span>
-                    <span id="statLifetime" class="stat-val">--</span>
+                    <label for="profilePlaystyle">Playstyle Title</label>
+                    <input type="text" id="profilePlaystyle" class="stat-input">
                 </div>
                 <div class="stat-row">
-                    <span>Longest Shot</span>
-                    <span id="longestShot" class="stat-val">--</span>
+                    <label for="profileAvgKillDist">Avg Kill Distance (m)</label>
+                    <input type="number" id="profileAvgKillDist" class="stat-input" min="0">
                 </div>
-                <div class="progress-bar-container">
-                    <div class="progress-labels">
-                        <span>Precision</span>
-                        <span id="precisionValue">0%</span>
-                    </div>
-                    <div class="bar-bg"><div id="precisionBar" class="bar-fill"></div></div>
+                <div class="stat-row">
+                    <label for="profileTactical">Tactical Precision (%)</label>
+                    <input type="number" id="profileTactical" class="stat-input" min="0" max="100">
                 </div>
-                <div class="weapons-fav-row">
-                    <div class="weapon-tag"><strong>Favorite Weapon:</strong> <span id="favWeapon">--</span></div>
-                    <div class="weapon-tag"><strong>2nd Favorite Weapon:</strong> <span id="favWeapon2">--</span></div>
+                <div class="stat-row">
+                    <label for="profileStealth">Stealth Kills (%)</label>
+                    <input type="number" id="profileStealth" class="stat-input" min="0" max="100">
                 </div>
             </div>
 
             <div class="stat-category-block">
-                <h3 class="category-header">SUPPORT</h3>
+                <h3 class="category-header" style="color: var(--primary-orange);">COMBAT</h3>
                 <div class="stat-row">
-                    <span>Teammates Revived</span>
-                    <span id="teammatesRevived" class="stat-val">--</span>
+                    <label for="profileLifetime">Lifetime Duration</label>
+                    <input type="text" id="profileLifetime" class="stat-input" placeholder="e.g. 14h 20min">
                 </div>
                 <div class="stat-row">
-                    <span>C4/Mine Kills</span>
-                    <span id="c4MineKills" class="stat-val">--</span>
+                    <label for="profileLongestShot">Longest Shot (m)</label>
+                    <input type="number" id="profileLongestShot" class="stat-input" min="0">
                 </div>
                 <div class="stat-row">
-                    <span>Drone Used</span>
-                    <span id="statDroneUsed" class="stat-val">--</span>
+                    <label for="profilePrecision">Overall Accuracy (%)</label>
+                    <input type="number" id="profilePrecision" class="stat-input" min="0" max="100">
                 </div>
             </div>
 
             <div class="stat-category-block">
-                <h3 class="category-header">TRAVEL</h3>
-                <div class="stat-row">
-                    <span>Air</span>
-                    <span id="travelAir" class="stat-val">--</span>
+                <h3 class="category-header" style="color: var(--primary-orange);">WEAPON LOADOUT SELECTION</h3>
+                <div class="stat-row" style="display: block; margin-bottom: 20px;">
+                    <label for="profileFavWeapon" style="display: block; margin-bottom: 8px;">Primary Favorite Weapon</label>
+                    <select id="profileFavWeapon" class="stat-input" style="width: 100%; text-align: left;"></select>
                 </div>
-                <div class="stat-row">
-                    <span>Ground</span>
-                    <span id="travelGround" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>Parachute</span>
-                    <span id="travelPara" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>Map Discovered</span>
-                    <span id="travelMap" class="stat-val">--</span>
+                <div class="stat-row" style="display: block;">
+                    <label for="profileFavWeapon2" style="display: block; margin-bottom: 8px;">Secondary Favorite Weapon</label>
+                    <select id="profileFavWeapon2" class="stat-input" style="width: 100%; text-align: left;"></select>
                 </div>
             </div>
 
-            <div class="steam-widget-card">
-                <iframe src="https://store.steampowered.com/widget/460930/" frameborder="0" width="100%" height="190"></iframe>
-            </div>
-
-            <div class="edit-stats-trigger-container hidden" id="editTriggerZone">
-                <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Comprehensive Ghost Profile</button>
-            </div>
-
-            <div id="editStatsPanel" class="edit-stats-panel hidden">
-                <div class="edit-row">
-                    <label>Tier One Mode:</label>
-                    <select id="editTierMode">
-                        <option value="off">Off / Not Reached</option>
-                        <option value="on">Active</option>
-                    </select>
-                    <input type="number" id="editTierLevel" min="1" max="50" placeholder="Lvl">
+            <div class="stat-category-block">
+                <h3 class="category-header" style="color: var(--primary-orange);">SUPPORT</h3>
+                <div class="stat-row">
+                    <label for="profileRevives">Teammates Revived</label>
+                    <input type="number" id="profileRevives" class="stat-input" min="0">
                 </div>
-                <hr class="panel-divider">
+                <div class="stat-row">
+                    <label for="profileC4Kills">C4 / Mine Kills</label>
+                    <input type="number" id="profileC4Kills" class="stat-input" min="0">
+                </div>
+                <div class="stat-row">
+                    <label for="profileDroneUsed">Drone Time Deployment</label>
+                    <input type="text" id="profileDroneUsed" class="stat-input" placeholder="e.g. 2h 40min">
+                </div>
+            </div>
+
+            <div class="stat-category-block">
+                <h3 class="category-header" style="color: var(--primary-orange);">TRAVEL LOG</h3>
+                <div class="stat-row">
+                    <label for="profileTravelAir">Air Travel Time</label>
+                    <input type="text" id="profileTravelAir" class="stat-input">
+                </div>
+                <div class="stat-row">
+                    <label for="profileTravelGround">Ground Travel Time</label>
+                    <input type="text" id="profileTravelGround" class="stat-input">
+                </div>
+                <div class="stat-row">
+                    <label for="profileTravelPara">Parachute Jumps</label>
+                    <input type="text" id="profileTravelPara" class="stat-input">
+                </div>
+                <div class="stat-row">
+                    <label for="profileTravelMap">Map Discovered (%)</label>
+                    <input type="text" id="profileTravelMap" class="stat-input">
+                </div>
+            </div>
+
+            <!-- Deployment Acquisition Widgets & Storefront Portal Links Matrix -->
+            <div class="stat-category-block">
+                <h3 class="category-header" style="color: var(--primary-orange);">ACQUISITION PROVISIONING</h3>
+                <div class="steam-widget-card" style="margin-bottom: 16px;">
+                    <iframe src="https://store.steampowered.com/widget/460930/" frameborder="0" width="100%" height="190"></iframe>
+                </div>
                 
-                <h4 class="form-section-title">Playstyle & Combat</h4>
-                <div class="edit-grid-inputs">
-                    <div><label>Playstyle Title</label><input type="text" id="editPlaystyle"></div>
-                    <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist"></div>
-                    <div><label>Tactical %</label><input type="number" id="editTactical"></div>
-                    <div><label>Stealth %</label><input type="number" id="editStealth"></div>
-                    <div><label>Lifetime</label><input type="text" id="editLifetime"></div>
-                    <div><label>Longest Shot</label><input type="text" id="editLongest"></div>
-                    <div><label>Precision %</label><input type="number" id="editPrecision"></div>
-                    <div><label>Fav Weapon</label><input type="text" id="editFav1"></div>
-                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><input type="text" id="editFav2"></div>
+                <div class="storefront-matrix">
+                    <a href="https://store.ubisoft.com/us/tom-clancys-ghost-recon-wildlands/574474b488a7e3b8638b456a.html" target="_blank" class="store-link-card">
+                        <span>Ubisoft Store Connect</span>
+                        <span class="store-tag" style="background: #000; color: #fff; border: 1px solid #fff;">Ubisoft</span>
+                    </a>
+                    <a href="https://store.playstation.com/en-us/search/Tom%20Clancy%E2%80%99s%20Ghost%20Recon%C2%AE%20Wildlands" target="_blank" class="store-link-card">
+                        <span>PlayStation Network Marketplace</span>
+                        <span class="store-tag" style="background: #003087; color: #fff;">PSN Store</span>
+                    </a>
+                    <a href="https://www.xbox.com/en-US/games/store/tom-clancys-ghost-recon-wildlands-standard-edition/c2n9cs4fs1qr" target="_blank" class="store-link-card">
+                        <span>Microsoft Xbox Live Store</span>
+                        <span class="store-tag" style="background: #107c10; color: #fff;">Xbox Hub</span>
+                    </a>
+                    <a href="https://amzn.to/4h8Avux" target="_blank" class="store-link-card">
+                        <span>Amazon Special Edition Physical Logistics</span>
+                        <span class="store-tag" style="background: #ff9900; color: #000;">Amazon</span>
+                    </a>
                 </div>
-
-                <h4 class="form-section-title">Support & Travel</h4>
-                <div class="edit-grid-inputs">
-                    <div><label>Revived</label><input type="number" id="editRevives"></div>
-                    <div><label>Explosive Kills</label><input type="number" id="editExplosiveKills"></div>
-                    <div><label>Drone Used</label><input type="text" id="editDroneTime"></div>
-                    <div><label>Air Travel</label><input type="text" id="editAir"></div>
-                    <div><label>Ground Travel</label><input type="text" id="editGround"></div>
-                    <div><label>Parachute</label><input type="text" id="editPara"></div>
-                    <div><label>Map Disc. %</label><input type="text" id="editMap"></div>
-                </div>
-
-                <button id="saveStatsBtn" class="save-stats-btn">Save Tactical Update</button>
             </div>
         </section>
 
-        <!-- Skill Progress Tab System Matrix -->
+        <!-- Right Column -->
         <section class="card-panel skills-panel">
             <div class="skills-tabs">
                 <button class="tab-link active" onclick="switchSkillCategory('WEAPON')">Weapon</button>
@@ -256,34 +529,18 @@
                 <button class="tab-link" onclick="switchSkillCategory('ITEM')">Item</button>
                 <button class="tab-link" onclick="switchSkillCategory('PHYSICAL')">Physical</button>
                 <button class="tab-link" onclick="switchSkillCategory('SQUAD')">Squad</button>
-                <button class="tab-link" onclick="switchSkillCategory('REBEL')">Rebel</button>
-                <button class="tab-link" onclick="switchSkillCategory('TROPHY')">Trophies & Recon</button>
+                <button class="tab-link" onclick="switchSkillCategory('REBEL')">Rebel Support</button>
+                <button class="tab-link" onclick="switchSkillCategory('TROPHY')">Trophies & Recon Items</button>
             </div>
             
-            <!-- CRITICAL RESTORATION: The target injection node container for your checkboxes -->
             <div id="skillsTreeGrid" class="skills-tree-grid"></div>
-
-            <hr class="panel-divider" style="margin: 24px 0;">
-
-            <div class="section-header-title">Live Omni-Sync Catalog (Auto-Generated Profiles)</div>
-            <div id="automatedFirestoreGamesCatalog" class="skills-tree-grid"></div>
         </section>
-
     </main>
-
-    <footer class="hub-footer">
-        <div class="footer-container">
-            <div class="kf-watermark">
-                <span class="k-letter">K</span><span class="f-letter">F</span>
-            </div>
-            <p class="timestamp-note">Dashboard Verification Ref: CT-20260709-1138</p>
-        </div>
-    </footer>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="app.js?v=3.3.1"></script>
+    <script src="app.js?v=4.7.0"></script>
 </body>
 </html>
