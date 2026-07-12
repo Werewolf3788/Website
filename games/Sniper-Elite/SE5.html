@@ -12,8 +12,8 @@
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-Z9M5LXQ5XN');</script>
 
     <style>
-        /* Version Timestamp: 2026-07-11 23:55:00 CT
-           SECURITY PROTOCOL: Bulletproof Page Redirect Auth, Sandbox Demo, Cloud Profile Sync
+        /* Version Timestamp: 2026-07-11 23:59:59 CT
+           SECURITY PROTOCOL: Direct Bypassed Activation, Local Sandbox Demo, Cloud Profile Sync
            IDENTITY REVISION: Gamer Tag & Nickname Exclusive Protocol
         */
         :root {
@@ -324,7 +324,7 @@
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js?v=20260711';
-        import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js?v=20260711';
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js?v=20260711';
         import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js?v=20260711';
 
         const appId = 'game-tracker-5b2ef';
@@ -360,7 +360,7 @@
             { id: 'm1_hi2', cat: '1: The Atlantic Wall', name: 'Radio Tin', type: 'Hidden Item', desc: 'Table in the stable area of the central farm.' },
             { id: 'm1_hi3', cat: '1: The Atlantic Wall', name: 'FFI Flag', type: 'Hidden Item', desc: 'Draining board in the downstairs of the western farmhouse.' },
             { id: 'm1_se1', cat: '1: The Atlantic Wall', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Chimney top of an inaccessible house opposite the eastern shack.' },
-            { id: 'm1_se2', center: true, cat: '1: The Atlantic Wall', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'On the roof of the western hotel.' },
+            { id: 'm1_se2', cat: '1: The Atlantic Wall', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'On the roof of the western hotel.' },
             { id: 'm1_se3', cat: '1: The Atlantic Wall', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'On top of the Vantage Point building in the south-east.' },
             { id: 'm1_wb1', cat: '1: The Atlantic Wall', name: 'Rifle Workbench', type: 'Workbench', desc: 'Armoury room upstairs after rendezvousing with Blue Viper.' },
             { id: 'm1_wb2', cat: '1: The Atlantic Wall', name: 'SMG Workbench', type: 'Workbench', desc: 'Attic of the resistance safehouse on the western map edge.' },
@@ -396,7 +396,18 @@
             isSecureMode: false,
             boundProfileName: null, 
 
-            init: async function() {
+            init: function() {
+                // Pre-bind authorization execution to window to decouple tracking module delays from button response
+                window.authProxyAction = async () => {
+                    if (this.isSecureMode || this.user) {
+                        signOut(this.auth);
+                    } else {
+                        const provider = new GoogleAuthProvider();
+                        provider.setCustomParameters({ prompt: 'select_account' });
+                        await signInWithPopup(this.auth, provider);
+                    }
+                };
+
                 this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
                 
                 const cats = [...new Set(this.hunterData.map(i => i.cat))];
@@ -411,12 +422,6 @@
                     const app = initializeApp(firebaseConfig);
                     this.auth = getAuth(app);
                     this.db = getFirestore(app);
-                    
-                    // NATIVE REDIRECT HANDLER: Picks up the Google data immediately upon return landing
-                    const redirectResult = await getRedirectResult(this.auth);
-                    if (redirectResult && redirectResult.user) {
-                        console.log("Redirect sign-in successful extraction.");
-                    }
                     
                     onAuthStateChanged(this.auth, async (u) => {
                         const banner = document.getElementById('mode-alert-banner');
@@ -462,22 +467,10 @@
                     this.dropToDemo();
                 }
 
-                // REDIRECT TARGET BINDING: Completely removes popup checks
-                document.getElementById('auth-action-btn').addEventListener('click', async (e) => {
+                // Explicit Native Binding
+                document.getElementById('auth-action-btn').addEventListener('click', (e) => {
                     e.preventDefault();
-                    if (this.isSecureMode || this.user) {
-                        signOut(this.auth);
-                    } else {
-                        try {
-                            const provider = new GoogleAuthProvider();
-                            provider.setCustomParameters({ prompt: 'select_account' });
-                            // Full tab navigation swap leaves browser protection fully satisfied
-                            await signInWithRedirect(this.auth, provider);
-                        } catch (error) {
-                            console.error("Redirect engine failure:", error);
-                            alert("Redirect call failed. Reload the interface page template.");
-                        }
-                    }
+                    window.authProxyAction();
                 });
 
                 document.getElementById('claim-profile-btn').addEventListener('click', (e) => {
@@ -734,6 +727,10 @@
                     console.error("Cloud store rejected submission:", e);
                 }
             }
+        };
+
+        window.executeHunterSwitch = function(name) {
+            appState.loadHunter(name);
         };
 
         appState.init();
