@@ -12,8 +12,8 @@
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-Z9M5LXQ5XN');</script>
 
     <style>
-        /* Version Timestamp: 2026-07-11 23:15:00 CT
-           SECURITY PROTOCOL: Dynamic Profile Mapping, Google Sign-In Verification, Sandbox Demo Mode
+        /* Version Timestamp: 2026-07-11 23:35:00 CT
+           SECURITY PROTOCOL: Admin Signed-In Syncing Only, Local Failsafe Demo Environment, Full Redirect Auth
            IDENTITY REVISION: Gamer Tag & Nickname Exclusive Protocol
         */
         :root {
@@ -324,7 +324,7 @@
 
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js?v=20260711';
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js?v=20260711';
+        import { getAuth, signInWithRedirect, GoogleAuthProvider, onAuthStateChanged, signOut, getRedirectResult } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js?v=20260711';
         import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js?v=20260711';
 
         const appId = 'game-tracker-5b2ef';
@@ -338,13 +338,11 @@
             appId: "1:555667047127:web:af6f468ca3cf06759aa692"
         };
 
-        // Standard master whitelists map directly to profiles
         const adminMap = {
             'raykevin71888@gmail.com': 'Werewolf3788',
             'cartnalray9@gmail.com': 'OneLIVIDMAN'
         };
 
-        // Recognized Gamer Profiles
         const allowedProfiles = ['Werewolf3788', 'OneLIVIDMAN', 'TJ', 'Elu Cloud'];
 
         const sniperData = [
@@ -414,6 +412,10 @@
                     this.auth = getAuth(app);
                     this.db = getFirestore(app);
                     
+                    getRedirectResult(this.auth).catch(err => {
+                        console.error("Redirect parsing error:", err);
+                    });
+                    
                     onAuthStateChanged(this.auth, async (u) => {
                         const banner = document.getElementById('mode-alert-banner');
                         const authBtn = document.getElementById('auth-action-btn');
@@ -422,12 +424,10 @@
                         if (u) {
                             const userEmail = u.email.toLowerCase();
                             
-                            // Check static whitelist map first
                             if (adminMap[userEmail]) {
                                 this.boundProfileName = adminMap[userEmail];
                                 this.triggerSecureMode(u, userEmail);
                             } else {
-                                // Dynamic Database Lookup check for third-party mapping assignments
                                 try {
                                     const registryRef = doc(this.db, `artifacts/${appId}/public/identity_registry/mappings`);
                                     const registrySnap = await getDoc(registryRef);
@@ -436,7 +436,6 @@
                                         this.boundProfileName = registrySnap.data()[userEmail];
                                         this.triggerSecureMode(u, userEmail);
                                     } else {
-                                        // User is authenticated but not linked yet -> Show registration claim field
                                         this.user = u;
                                         this.isSecureMode = false;
                                         bindingZone.style.display = 'flex';
@@ -478,8 +477,6 @@
                 authBtn.style.borderColor = "#666";
 
                 document.getElementById('stat-line').innerText = `CLOUD DATABASE ONLINE`;
-                
-                // Force jump directly to their assigned profile tracking workspace page automatically
                 this.loadHunter(this.boundProfileName);
             },
 
@@ -506,8 +503,6 @@
             claimProfileLink: async function(requestedTag) {
                 if (!this.user) return;
                 const cleanTag = requestedTag.trim();
-                
-                // Format check matching tracking array slots
                 const matchingMatch = allowedProfiles.find(p => p.toLowerCase() === cleanTag.toLowerCase());
                 
                 if (!matchingMatch) {
@@ -519,7 +514,6 @@
                     const userEmail = this.user.email.toLowerCase();
                     const registryRef = doc(this.db, `artifacts/${appId}/public/identity_registry/mappings`);
                     
-                    // Save mapping relation straight into Firebase index collection
                     await setDoc(registryRef, {
                         [userEmail]: matchingMatch
                     }, { merge: true });
@@ -642,8 +636,6 @@
                         `;
 
                         const actionZone = card.querySelector('.action-zone');
-                        
-                        // Security Layer: Lock toggle interaction buttons down to the specific logged-in user matching that specific tracker column profile 
                         const canModify = !this.isSecureMode || (this.boundProfileName && this.boundProfileName.toLowerCase() === this.activeHunter.toLowerCase());
 
                         if (item.collected) {
@@ -717,10 +709,11 @@
             } else {
                 try {
                     const provider = new GoogleAuthProvider();
-                    await signInWithPopup(appState.auth, provider);
+                    provider.setCustomParameters({ prompt: 'select_account' });
+                    await signInWithRedirect(appState.auth, provider);
                 } catch (error) {
-                    console.error("Popup authenticater broke:", error);
-                    alert("Authentication interface window failed to fire.");
+                    console.error("Redirect connection routine failed:", error);
+                    alert("Sign-In engine dropped. Verify your internet link connection state.");
                 }
             }
         };
