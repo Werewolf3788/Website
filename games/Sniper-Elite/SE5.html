@@ -13,7 +13,7 @@
 
     <style>
         /* Version Timestamp: 2026-07-11 23:59:59 CT
-           LOCAL MODULE PROTOCOL: 100% Client-Side LocalStorage, Zero Auth Dependencies
+           LOCAL MODULE PROTOCOL: 100% Client-Side LocalStorage, Zero Auth Dependencies, Collapsed Sections
            IDENTITY REVISION: Gamer Tag & Nickname Exclusive Protocol
         */
         :root {
@@ -291,10 +291,11 @@
             init: function() {
                 this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
                 
+                // Force every section window state container to closed/collapsed by default
                 const cats = [...new Set(this.hunterData.map(i => i.cat))];
                 cats.forEach(cat => {
                     const sid = cat.replace(/[^a-z0-9]/gi, '');
-                    this.collapsedSections[sid] = false;
+                    this.collapsedSections[sid] = true;
                 });
 
                 this.loadHunter(this.activeHunter);
