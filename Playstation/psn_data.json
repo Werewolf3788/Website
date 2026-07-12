@@ -61,14 +61,14 @@
         "isLive": false,
         "game": "Tom Clancy's Ghost Recon: Wildlands",
         "gameArt": null,
-        "followers": "106",
+        "followers": "107",
         "latestFollower": "None",
         "followerNames": [],
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-300x300.png",
         "age": "3 years, 3 months",
         "bio": null,
         "statusMessage": "Roll on family",
-        "uptime": "1 hour, 2 minutes, 18 seconds",
+        "uptime": "1 hour, 58 minutes, 30 seconds",
         "viewers": "1",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
@@ -11579,7 +11579,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/12/2026, 3:18:10 PM"
+      "lastUpdated": "7/12/2026, 4:14:22 PM"
     },
     "kfruti": {
       "onlineId": "OneLIVIDMAN",
@@ -11624,14 +11624,14 @@
         "isLive": false,
         "game": "Tom Clancy's Ghost Recon: Wildlands",
         "gameArt": null,
-        "followers": "106",
+        "followers": "107",
         "latestFollower": "None",
         "followerNames": [],
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-300x300.png",
         "age": "3 years, 3 months",
         "bio": null,
         "statusMessage": "Roll on family",
-        "uptime": "1 hour, 2 minutes, 19 seconds",
+        "uptime": "1 hour, 58 minutes, 30 seconds",
         "viewers": "1",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
@@ -17575,7 +17575,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/12/2026, 3:18:11 PM"
+      "lastUpdated": "7/12/2026, 4:14:23 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -23571,7 +23571,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/12/2026, 3:18:12 PM"
+      "lastUpdated": "7/12/2026, 4:14:24 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -23696,7 +23696,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "7/12/2026, 3:18:12 PM"
+      "lastUpdated": "7/12/2026, 4:14:25 PM"
     },
     "mike": {
       "onlineId": "OneLIVIDMAN",
@@ -29692,7 +29692,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/12/2026, 3:18:13 PM"
+      "lastUpdated": "7/12/2026, 4:14:26 PM"
     },
     "katy": {
       "onlineId": "OneLIVIDMAN",
@@ -35672,7 +35672,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/12/2026, 3:18:13 PM"
+      "lastUpdated": "7/12/2026, 4:14:26 PM"
     },
     "marc": {
       "onlineId": "OneLIVIDMAN",
@@ -41652,7 +41652,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/12/2026, 3:18:13 PM"
+      "lastUpdated": "7/12/2026, 4:14:26 PM"
     },
     "seth": {
       "onlineId": "OneLIVIDMAN",
@@ -41686,7 +41686,7 @@
       "isOfficiallyVerified": false,
       "isMe": true,
       "accountId": "2732733730346312494",
-      "online": false,
+      "online": true,
       "currentGame": "Sniper Elite 5",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
       "currentGameActivity": "Wackadoo Wednesday on a THURSDAY??? Ep 5",
@@ -41694,8 +41694,8 @@
       "currentCommunicationId": "NPWR21465_00",
       "platform": "PS5",
       "twitch": {
-        "isLive": false,
-        "game": "Left 4 Dead 2",
+        "isLive": true,
+        "game": "Rebuild 3: Gangs of Deadsville",
         "gameArt": null,
         "followers": "77",
         "latestFollower": "None",
@@ -41703,9 +41703,9 @@
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-300x300.png",
         "age": "8 years, 5 months",
         "bio": null,
-        "statusMessage": "Wackadoo Wednesday on a THURSDAY??? Ep 5",
-        "uptime": null,
-        "viewers": "0",
+        "statusMessage": "Sentimental Sunday! Ep 5 Rebuild the Lives You Always Wanted",
+        "uptime": "44 minutes, 38 seconds",
+        "viewers": "1",
         "subCount": "phoenix_darkfire needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
         "channelCreationRaw": "Jan 23. 2018 - 01:15:39 AM (UTC)"
@@ -43847,7 +43847,9 @@
           "age": "3 weeks, 1 day, 13 hours, 50 mins"
         }
       ],
-      "streamHistory": [],
+      "streamHistory": [
+        "Rebuild 3: Gangs of Deadsville"
+      ],
       "fullLibrary": [
         {
           "npCommunicationId": "NPWR21465_00",
@@ -47648,7 +47650,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/12/2026, 3:18:14 PM"
+      "lastUpdated": "7/12/2026, 4:14:28 PM"
     }
   },
   "personas": {
@@ -47679,7 +47681,7 @@
         "kfruti"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/12/2026, 3:18:14 PM"
+      "lastUpdated": "7/12/2026, 4:14:28 PM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -47707,7 +47709,7 @@
         "ray"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/12/2026, 3:18:14 PM"
+      "lastUpdated": "7/12/2026, 4:14:28 PM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -47735,7 +47737,7 @@
         "darkwing"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/12/2026, 3:18:14 PM"
+      "lastUpdated": "7/12/2026, 4:14:28 PM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -47763,7 +47765,7 @@
         "mike"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/12/2026, 3:18:14 PM"
+      "lastUpdated": "7/12/2026, 4:14:28 PM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -47791,7 +47793,7 @@
         "katy"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/12/2026, 3:18:14 PM"
+      "lastUpdated": "7/12/2026, 4:14:28 PM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -47819,11 +47821,11 @@
         "marc"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/12/2026, 3:18:14 PM"
+      "lastUpdated": "7/12/2026, 4:14:28 PM"
     },
     "Seth": {
       "displayName": "Seth",
-      "isOnline": false,
+      "isOnline": true,
       "primaryOnlineId": "OneLIVIDMAN",
       "combinedTrophies": {
         "platinum": 6,
@@ -47846,17 +47848,19 @@
       "accounts": [
         "seth"
       ],
-      "streamHistory": [],
-      "lastUpdated": "7/12/2026, 3:18:14 PM"
+      "streamHistory": [
+        "Rebuild 3: Gangs of Deadsville"
+      ],
+      "lastUpdated": "7/12/2026, 4:14:28 PM"
     }
   },
   "mutualSquadFollowers": [],
   "authDiagnostics": {
     "werewolf_active": "no",
     "ray_active": "no",
-    "lastCheck": "7/12/2026, 3:18:09 PM"
+    "lastCheck": "7/12/2026, 4:14:20 PM"
   },
-  "lastGlobalUpdate": "7/12/2026, 3:18:09 PM",
+  "lastGlobalUpdate": "7/12/2026, 4:14:20 PM",
   "engineVersion": "14.5.1",
   "codeTimestamp": "Thursday, July 9, 2026 | 7:55 AM EDT"
 }
