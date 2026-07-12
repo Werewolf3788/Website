@@ -1,5 +1,5 @@
-/* Version Timestamp: 2026-07-11 23:59:59 CT
-   LOGIC PROTOCOL: Full 7 Mission PowerPyx Map Registry Data Mapping Layout
+/* Version Timestamp: 2026-07-12 00:05:00 CT
+   LOGIC PROTOCOL: Full 12 Mission Map Data Registry with Live Multi-Device Sync Channel
 */
 const sniperData = [
     // MISSION 1: THE ATLANTIC WALL
@@ -133,7 +133,7 @@ const sniperData = [
     { id: 'm7_pl2', cat: '7: Secret Weapons', name: 'I\'m Done', type: 'Personal Letter', desc: 'Eastern abandoned house; scale external wall drainage pipe to access the upper room floor.' },
     { id: 'm7_pl3', cat: '7: Secret Weapons', name: 'I Can\'t Work Like This', type: 'Personal Letter', desc: 'Lake compound hangar; pinned to the side paneling of the hanging blue V2 rocket fuselage.' },
     { id: 'm7_pl4', cat: '7: Secret Weapons', name: 'The V2\'s Are Obsolete!', type: 'Personal Letter', desc: 'Guidance sector block bunker peak room; access via key looted from central platform officer.' },
-    { id: 'm7_pl5', cat: '7: Secret Weapons', name: 'Thinking Outside The Box', type: 'Secret Weapons', desc: 'Northern dome structure; follow the internal winding metal stairs to the top control tier.' },
+    { id: 'm7_pl5', cat: '7: Secret Weapons', name: 'Thinking Outside The Box', type: 'Personal Letter', desc: 'Northern dome structure; follow the internal winding metal stairs to the top control tier.' },
     { id: 'm7_cd1', cat: '7: Secret Weapons', name: 'Inbound Deliveries', type: 'Classified Doc', desc: 'Looted from the brown-uniform target patrolling the locomotive engine rail tracking yard.' },
     { id: 'm7_cd2', cat: '7: Secret Weapons', name: 'Dr Jungers\' Schedule', type: 'Classified Doc', desc: 'Looted straight from the lab coat of Christian Jungers inside the VIP Weapons Lab.' },
     { id: 'm7_cd3', cat: '7: Secret Weapons', name: 'A-4B Logistical Issues', type: 'Classified Doc', desc: 'VIP Weapons Lab upper blueprint room; sitting out on the main blueprint table layout.' },
@@ -147,23 +147,86 @@ const sniperData = [
     { id: 'm7_se3', cat: '7: Secret Weapons', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Southwest military complex yard; scale wall vines and look tracking across the tower face.' },
     { id: 'm7_wb1', cat: '7: Secret Weapons', name: 'Rifle Workbench', type: 'Workbench', desc: 'Northwest compound armory; smash the floorboards from above or blow entry doors open.' },
     { id: 'm7_wb2', cat: '7: Secret Weapons', name: 'SMG Workbench', type: 'Workbench', desc: 'Northern dome structure corridor; unlock the side vault doors using keys from cellar details.' },
-    { id: 'm7_wb3', cat: '7: Secret Weapons', name: 'Pistol Workbench', type: 'Workbench', desc: 'Southwest river waterfall compound; dismantle the hidden cache boards to enter the cave.' }
+    { id: 'm7_wb3', cat: '7: Secret Weapons', name: 'Pistol Workbench', type: 'Workbench', desc: 'Southwest river waterfall compound; dismantle the hidden cache boards to enter the cave.' },
+
+    // MISSION 8: RUBBLE AND RUIN
+    { id: 'm8_pl1', cat: '8: Rubble and Ruin', name: 'It\'s Not Over Yet!', type: 'Personal Letter', desc: 'South-east hotel, ground floor; found inside a side office sitting on a table.' },
+    { id: 'm8_pl2', cat: '8: Rubble and Ruin', name: 'Clean Out the Sewer', type: 'Personal Letter', desc: 'Sewer track entry tunnel floor; sitting on the floor directly left behind a box crate.' },
+    { id: 'm8_pl3', cat: '8: Rubble and Ruin', name: 'He\'s Not The Sharpest', type: 'Personal Letter', desc: 'Burned theater segment upper tier; open the locked chest box utilizing a local crowbar.' },
+    { id: 'm8_pl4', cat: '8: Rubble and Ruin', name: 'Your Man Talked!', type: 'Personal Letter', desc: 'South-west building upper locked room floor; scale the external side ladder path.' },
+    { id: 'm8_pl5', cat: '8: Rubble and Ruin', name: 'Möller Is Moving!', type: 'Personal Letter', desc: 'South-east sector, ground floor room counter inside the Sea View Offices asset building.' },
+    { id: 'm8_cd1', cat: '8: Rubble and Ruin', name: 'Secure Radio Lines', type: 'Classified Doc', desc: 'Default street spawn point; resting on top of a supply box left of the 3 troopers.' },
+    { id: 'm8_cd2', cat: '8: Rubble and Ruin', name: 'Broken Resistance', type: 'Classified Doc', desc: 'South-west slide building; resting inside the office room immediately after sliding down.' },
+    { id: 'm8_cd3', cat: '8: Rubble and Ruin', name: 'Resistance Report', type: 'Classified Doc', desc: 'Basement Interrogation Room layout; slip through the tunnel hole breakout section.' },
+    { id: 'm8_cd4', cat: '8: Rubble and Ruin', name: 'Flagship Fuel Risks', type: 'Classified Doc', desc: 'Hotel upper floor room office safe; use the code from Letter #1 or a satchel charge.' },
+    { id: 'm8_cd5', cat: '8: Rubble and Ruin', name: 'Priority Pick Up', type: 'Classified Doc', desc: 'West map sector building; climb the side layout walls to enter the hidden attic loft area.' },
+    { id: 'm8_hi1', cat: '8: Rubble and Ruin', name: 'Stolen Tanto', type: 'Hidden Item', desc: 'Sewer secure vault area; pop open the locked storage chest utilizing a crowbar.' },
+    { id: 'm8_hi2', cat: '8: Rubble and Ruin', name: 'I-400 V2 Hangar', type: 'Hidden Item', desc: 'Submarine dock structure, upstairs floor table immediately above the switch layout vault.' },
+    { id: 'm8_hi3', cat: '8: Rubble and Ruin', name: 'An \"Original\" Adolf', type: 'Hidden Item', desc: 'Church layout tower mezzanine; scale the structural ladders and jump to the mid-tier beam.' },
+    { id: 'm8_se1', cat: '8: Rubble and Ruin', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'South-west border exterior building; track alignment behind the red promenade cart.' },
+    { id: 'm8_se2', cat: '8: Rubble and Ruin', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'North-east border layout rooftops; look past boundaries tracking east of the sewer entry.' },
+    { id: 'm8_se3', cat: '8: Rubble and Ruin', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Town Hall building structural front facade peak; directly centered above the entry vault.' },
+    { id: 'm8_wb1', cat: '8: Rubble and Ruin', name: 'Rifle Workbench', type: 'Workbench', desc: 'Sewer corridor armory vault room; loot keys from the two guards tracking the portal.' },
+    { id: 'm8_wb2', cat: '8: Rubble and Ruin', name: 'SMG Workbench', type: 'Workbench', desc: 'West sector building attic loft; run and jump across the broken gap framework.' },
+    { id: 'm8_wb3', cat: '8: Rubble and Ruin', name: 'Pistol Workbench', type: 'Workbench', desc: 'Church crypt floor section; drop through the broken northwestern tile floor gap.' },
+
+    // MISSION 11: LANDING FORCE DLC
+    { id: 'm11_pl1', cat: '11: Landing Force (DLC)', name: 'Munition Ignitions', type: 'Personal Letter', desc: 'Central map sector, resting on a heavy table inside the main objective fortification bunker.' },
+    { id: 'm11_pl2', cat: '11: Landing Force (DLC)', name: 'Bread and Boredom', type: 'Personal Letter', desc: 'Northern coastal sector; resting on an old wooden table built inside the broken tower.' },
+    { id: 'm11_pl3', cat: '11: Landing Force (DLC)', name: 'Heavy is the Crown', type: 'Personal Letter', desc: 'Southwest island sector, inside the primary stone Fort command briefing hall table.' },
+    { id: 'm11_cd1', cat: '11: Landing Force (DLC)', name: 'Wine-Stained Warning', type: 'Classified Doc', desc: 'Western map sector building layout; resting on an office table inside the top floor room.' },
+    { id: 'm11_cd2', cat: '11: Landing Force (DLC)', name: 'Security Measures', type: 'Classified Doc', desc: 'Eastern fishing sector house near the waves; hidden under the desk framing opposite Workbench 2.' },
+    { id: 'm11_hi1', cat: '11: Landing Force (DLC)', name: 'Military Flask', type: 'Hidden Item', desc: 'Central sector fortification bunker entry left room corner storage table.' },
+    { id: 'm11_hi2', cat: '11: Landing Force (DLC)', name: 'Binoculars', type: 'Hidden Item', desc: 'Far southern cliff edge corridor; sitting on the stone hand railing behind the Lighthouse asset.' },
+    { id: 'm11_se1', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Southwest watchtower architecture peak; immediately viewable directly from the default spawn area.' },
+    { id: 'm11_se2', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Northern broken masonry layout; perched on the high stone wall of the ruined tower asset.' },
+    { id: 'm11_se3', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Southeast coastal zone; perched on top of a low, shattered seaside stone building structure.' },
+    { id: 'm11_wb1', cat: '11: Landing Force (DLC)', name: 'Resort Docks Workbench', type: 'Workbench', desc: 'Western sector residential house; tucked inside the upper-floor side room loft frame.' },
+    { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'Abandoned Fishing Workbench', type: 'Workbench', desc: 'Eastern fishing sector coastal shanty; sits next to the Classified Document cache room.' },
+    { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Military Fort Workbench', type: 'Workbench', desc: 'Southwest Fort complex vault room; unlock using lockpicks or localized bolt cutters.' },
+
+    // MISSION 12: CONQUEROR DLC
+    { id: 'm12_pl1', cat: '12: Conqueror (DLC)', name: 'Roughly-written Note', type: 'Personal Letter', desc: 'Northwest village sector house layout; sitting directly next to a civilian bedroom frame.' },
+    { id: 'm12_pl2', cat: '12: Conqueror (DLC)', name: 'Debris-covered Love Letter', type: 'Personal Letter', desc: 'Central ruins sector; resting on top of a wooden supply crate within the secondary goal radius.' },
+    { id: 'm12_pl3', cat: '12: Conqueror (DLC)', name: 'An Unfinished Plea for Aid', type: 'Personal Letter', desc: 'Northern sector house floor; on a crate next to the sleeping bag and dual couches layout.' },
+    { id: 'm12_cd1', cat: '12: Conqueror (DLC)', name: 'King of the Tigers', type: 'Classified Doc', desc: 'Town entry roadblock checkpoint sector; resting on top of a plain raw wood shipping crate.' },
+    { id: 'm12_cd2', cat: '12: Conqueror (DLC)', name: 'Operations Dossier', type: 'Classified Doc', desc: 'Northwest perimeter gardens; sitting out on the central table structure inside the gazebo structure.' },
+    { id: 'm12_hi1', cat: '12: Conqueror (DLC)', name: 'Wallet', type: 'Hidden Item', desc: 'Western sector hotel structure room; tracking the location of the yellow elimination target.' },
+    { id: 'm12_hi2', cat: '12: Conqueror (DLC)', name: 'Bronze Statue', type: 'Hidden Item', desc: 'Castle keep interior sector; sitting directly on top of General König\'s command desk.' },
+    { id: 'm12_se1', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Western town sector belfry peak; perched on the high tower ledge near the primary sniper track.' },
+    { id: 'm12_se2', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Northern residential cluster; perched squarely on top of a red brick house chimney stack.' },
+    { id: 'm12_se3', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Castle fortifications; perched inside an upper window slit of the massive stone defense tower.' },
+    { id: 'm12_wb1', cat: '12: Conqueror (DLC)', name: 'Town Entrance Bunker Workbench', type: 'Workbench', desc: 'Southwest sector defensive line; built inside the entry concrete bunker fortification room.' },
+    { id: 'm12_wb2', cat: '12: Conqueror (DLC)', name: 'Village Attic Workbench', type: 'Workbench', desc: 'Southeast sector cluster house; scale structural lofts to reach the closed attic floor area.' },
+    { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Castle Grounds Bunker Workbench', type: 'Workbench', desc: 'Castle inner perimeter line; inside the concrete layout bunker trailing the blue asset goals.' }
 ];
 
 const appState = {
     activeHunter: 'Werewolf3788',
     hunterData: [],
     collapsedSections: {}, 
+    syncChannel: null,
 
     init: function() {
         this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
         
-        // Force sections closed by default
         const cats = [...new Set(this.hunterData.map(i => i.cat))];
         cats.forEach(cat => {
             const sid = cat.replace(/[^a-z0-9]/gi, '');
             this.collapsedSections[sid] = true;
         });
+
+        // Initialize Direct Network Cross-Tab Sync Channel Broadcast Engine
+        this.syncChannel = new BroadcastChannel('se5_coop_sync');
+        
+        // Listener catching incoming updates from other active team member windows
+        this.syncChannel.onmessage = (event) => {
+            if (event.data && event.data.action === 'item_toggle') {
+                if (event.data.profile.toLowerCase() === this.activeHunter.toLowerCase()) {
+                    this.executeRemoteToggle(event.data.itemId);
+                }
+            }
+        };
 
         this.loadHunter(this.activeHunter);
 
@@ -276,6 +339,25 @@ const appState = {
             item.collected = true;
             this.render(); 
             this.sync();
+
+            // Broadcast the modification out to all other active profile logs immediately
+            this.syncChannel.postMessage({
+                action: 'item_toggle',
+                profile: this.activeHunter,
+                itemId: id
+            });
+        }
+    },
+
+    executeRemoteToggle: function(id) {
+        const item = this.hunterData.find(i => i.id === id);
+        if (item && !item.collected) {
+            item.collected = true;
+            this.render();
+            
+            // Commit to matching local slot
+            const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
+            localStorage.setItem(`se5_local_sync_${this.activeHunter}`, JSON.stringify(progress));
         }
     },
 
@@ -321,7 +403,7 @@ async function buildTopMenu() {
             let url = cols[2] ? cols[2].replace(/^"|"$/g, '').trim() : '';
             let img = cols[3] ? cols[3].replace(/^"|"$/g, '').trim() : '';
 
-            if(!name || !url) continue;
+                    if(!name || !url) continue;
             
             if(!group || group.toLowerCase() === 'none') {
                 menuStructure.push({ type: 'single', name, url, img });
