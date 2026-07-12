@@ -68,7 +68,7 @@
         "age": "3 years, 3 months",
         "bio": null,
         "statusMessage": "Roll out",
-        "uptime": "48 minutes, 8 seconds",
+        "uptime": null,
         "viewers": "0",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
@@ -11579,7 +11579,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 11:34:43 PM"
+      "lastUpdated": "7/12/2026, 1:12:27 AM"
     },
     "kfruti": {
       "onlineId": "OneLIVIDMAN",
@@ -11631,7 +11631,7 @@
         "age": "3 years, 3 months",
         "bio": null,
         "statusMessage": "Roll out",
-        "uptime": "48 minutes, 9 seconds",
+        "uptime": null,
         "viewers": "0",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
@@ -17575,7 +17575,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 11:34:44 PM"
+      "lastUpdated": "7/12/2026, 1:12:29 AM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -23571,7 +23571,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 11:34:46 PM"
+      "lastUpdated": "7/12/2026, 1:12:30 AM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -23696,7 +23696,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "7/11/2026, 11:34:48 PM"
+      "lastUpdated": "7/12/2026, 1:12:32 AM"
     },
     "mike": {
       "onlineId": "OneLIVIDMAN",
@@ -29692,7 +29692,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 11:34:49 PM"
+      "lastUpdated": "7/12/2026, 1:12:34 AM"
     },
     "katy": {
       "onlineId": "OneLIVIDMAN",
@@ -35672,7 +35672,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 11:34:49 PM"
+      "lastUpdated": "7/12/2026, 1:12:34 AM"
     },
     "marc": {
       "onlineId": "OneLIVIDMAN",
@@ -41652,7 +41652,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 11:34:49 PM"
+      "lastUpdated": "7/12/2026, 1:12:34 AM"
     },
     "seth": {
       "onlineId": "OneLIVIDMAN",
@@ -47648,7 +47648,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/11/2026, 11:34:51 PM"
+      "lastUpdated": "7/12/2026, 1:12:35 AM"
     }
   },
   "personas": {
@@ -47679,7 +47679,7 @@
         "kfruti"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 11:34:51 PM"
+      "lastUpdated": "7/12/2026, 1:12:35 AM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -47707,7 +47707,7 @@
         "ray"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 11:34:51 PM"
+      "lastUpdated": "7/12/2026, 1:12:35 AM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -47735,7 +47735,7 @@
         "darkwing"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 11:34:51 PM"
+      "lastUpdated": "7/12/2026, 1:12:35 AM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -47763,7 +47763,7 @@
         "mike"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 11:34:51 PM"
+      "lastUpdated": "7/12/2026, 1:12:35 AM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -47791,7 +47791,7 @@
         "katy"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 11:34:51 PM"
+      "lastUpdated": "7/12/2026, 1:12:35 AM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -47819,7 +47819,7 @@
         "marc"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 11:34:51 PM"
+      "lastUpdated": "7/12/2026, 1:12:35 AM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -47847,16 +47847,16 @@
         "seth"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/11/2026, 11:34:51 PM"
+      "lastUpdated": "7/12/2026, 1:12:35 AM"
     }
   },
   "mutualSquadFollowers": [],
   "authDiagnostics": {
     "werewolf_active": "no",
     "ray_active": "no",
-    "lastCheck": "7/11/2026, 11:34:40 PM"
+    "lastCheck": "7/12/2026, 1:12:25 AM"
   },
-  "lastGlobalUpdate": "7/11/2026, 11:34:40 PM",
+  "lastGlobalUpdate": "7/12/2026, 1:12:25 AM",
   "engineVersion": "14.5.1",
   "codeTimestamp": "Thursday, July 9, 2026 | 7:55 AM EDT"
 }
