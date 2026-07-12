@@ -12,8 +12,8 @@
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-Z9M5LXQ5XN');</script>
 
     <style>
-        /* Version Timestamp: 2026-07-11 22:55:00 CT
-           SECURITY PROTOCOL: Admin Signed-In Syncing Only, Local Failsafe Demo Environment
+        /* Version Timestamp: 2026-07-11 23:15:00 CT
+           SECURITY PROTOCOL: Dynamic Profile Mapping, Google Sign-In Verification, Sandbox Demo Mode
            IDENTITY REVISION: Gamer Tag & Nickname Exclusive Protocol
         */
         :root {
@@ -143,6 +143,42 @@
             color: #fff;
         }
 
+        /* --- DYNAMIC CLAIMS CONTAINER --- */
+        .profile-binding-card {
+            background: rgba(30, 10, 10, 0.95);
+            border: 2px dashed #ff3333;
+            padding: 15px;
+            border-radius: 0.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+        .binding-input {
+            background: #111;
+            border: 1px solid #555;
+            color: #fff;
+            padding: 10px;
+            font-size: 14px;
+            border-radius: 6px;
+            min-width: 240px;
+            font-weight: 900;
+        }
+        .binding-btn {
+            background: #cc0000;
+            border: 1px solid #ff3333;
+            color: #fff;
+            font-weight: 900;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            min-height: 44px;
+            text-transform: uppercase;
+        }
+        .binding-btn:hover { background: #e60000; }
+
         /* --- SYSTEM PANELS --- */
         .profile-header {
             display: flex;
@@ -245,6 +281,18 @@
             Running Mode: Live Sandbox Demo (Modifications save locally only)
         </div>
 
+        <!-- PROFILE ASSIGNMENT PANEL (HIDDEN IF KNOWN ADMIN OR ALREADY ASSIGNED) -->
+        <div id="profile-binding-zone" class="profile-binding-card" style="display: none;">
+            <div>
+                <strong class="outlined-text" style="color:#ff3333; text-transform:uppercase;">Unlinked Account Authenticated</strong>
+                <div class="outlined-text" style="font-size:12px; color:#ccc; margin-top:2px;">Type in your exact Gamertag/Nickname below to securely bind this Google login session to your profile.</div>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <input type="text" id="claim-tag-input" class="binding-input" placeholder="e.g., TJ or Elu Cloud" />
+                <button class="binding-btn outlined-text" onclick="window.executeProfileClaim()">Link Account</button>
+            </div>
+        </div>
+
         <div id="app-workspace">
             <div class="profile-header">
                 <div class="active-info">
@@ -277,7 +325,7 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js?v=20260711';
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js?v=20260711';
-        import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js?v=20260711';
+        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js?v=20260711';
 
         const appId = 'game-tracker-5b2ef';
         const firebaseConfig = {
@@ -290,10 +338,14 @@
             appId: "1:555667047127:web:af6f468ca3cf06759aa692"
         };
 
-        const whiteList = [
-            'raykevin71888@gmail.com',
-            'cartnalray9@gmail.com'
-        ];
+        // Standard master whitelists map directly to profiles
+        const adminMap = {
+            'raykevin71888@gmail.com': 'Werewolf3788',
+            'cartnalray9@gmail.com': 'OneLIVIDMAN'
+        };
+
+        // Recognized Gamer Profiles
+        const allowedProfiles = ['Werewolf3788', 'OneLIVIDMAN', 'TJ', 'Elu Cloud'];
 
         const sniperData = [
             { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.' },
@@ -344,6 +396,7 @@
             db: null, auth: null, user: null, unsub: null,
             isLoaded: false,
             isSecureMode: false,
+            boundProfileName: null, 
 
             init: function() {
                 this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
@@ -361,45 +414,123 @@
                     this.auth = getAuth(app);
                     this.db = getFirestore(app);
                     
-                    onAuthStateChanged(this.auth, (u) => {
+                    onAuthStateChanged(this.auth, async (u) => {
                         const banner = document.getElementById('mode-alert-banner');
                         const authBtn = document.getElementById('auth-action-btn');
+                        const bindingZone = document.getElementById('profile-binding-zone');
 
-                        if (u && whiteList.includes(u.email.toLowerCase())) {
-                            this.user = u;
-                            this.isSecureMode = true;
+                        if (u) {
+                            const userEmail = u.email.toLowerCase();
                             
-                            banner.className = "system-status-banner banner-secure outlined-text";
-                            banner.innerText = `SECURE MONITOR MODE ACTIVE | DATA SYNCED TO PRODUCTION CLOUD (${u.email})`;
-                            authBtn.innerText = "Sign Out";
-                            authBtn.style.background = "#444";
-                            authBtn.style.borderColor = "#666";
-
-                            document.getElementById('stat-line').innerText = `CLOUD DATABASE ONLINE`;
-                            this.loadHunter(this.activeHunter);
-                        } else {
-                            if(u) {
-                                alert("Clearance Error: Signed-in account is not on the admin verification whitelist. Dropping connection to Demo Mode.");
-                                signOut(this.auth);
+                            // Check static whitelist map first
+                            if (adminMap[userEmail]) {
+                                this.boundProfileName = adminMap[userEmail];
+                                this.triggerSecureMode(u, userEmail);
+                            } else {
+                                // Dynamic Database Lookup check for third-party mapping assignments
+                                try {
+                                    const registryRef = doc(this.db, `artifacts/${appId}/public/identity_registry/mappings`);
+                                    const registrySnap = await getDoc(registryRef);
+                                    
+                                    if (registrySnap.exists() && registrySnap.data()[userEmail]) {
+                                        this.boundProfileName = registrySnap.data()[userEmail];
+                                        this.triggerSecureMode(u, userEmail);
+                                    } else {
+                                        // User is authenticated but not linked yet -> Show registration claim field
+                                        this.user = u;
+                                        this.isSecureMode = false;
+                                        bindingZone.style.display = 'flex';
+                                        
+                                        banner.className = "system-status-banner banner-demo outlined-text";
+                                        banner.innerText = "AUTHENTICATED | AWAITING ACCOUNT GAMERTAG LINK ASSIGNMENT";
+                                        authBtn.innerText = "Sign Out";
+                                        
+                                        this.loadLocalSandbox();
+                                    }
+                                } catch(e) {
+                                    console.error("Identity lookup failed:", e);
+                                    this.dropToDemo();
+                                }
                             }
-                            this.user = null;
-                            this.isSecureMode = false;
-
-                            banner.className = "system-status-banner banner-demo outlined-text";
-                            banner.innerText = "Running Mode: Live Sandbox Demo (Modifications save locally only)";
-                            authBtn.innerText = "Sign In";
-                            authBtn.style.background = "#cc0000";
-                            authBtn.style.borderColor = "#ff3333";
-
-                            document.getElementById('stat-line').innerText = `LOCAL PREVIEW SANDBOX`;
-                            this.loadLocalSandbox();
+                        } else {
+                            this.dropToDemo();
                         }
                     });
                 } catch (e) { 
                     console.error("Firebase System Link Refused:", e);
-                    this.isSecureMode = false;
-                    this.isLoaded = true;
-                    this.render();
+                    this.dropToDemo();
+                }
+            },
+
+            triggerSecureMode: function(u, emailStr) {
+                const banner = document.getElementById('mode-alert-banner');
+                const authBtn = document.getElementById('auth-action-btn');
+                document.getElementById('profile-binding-zone').style.display = 'none';
+
+                this.user = u;
+                this.isSecureMode = true;
+                
+                banner.className = "system-status-banner banner-secure outlined-text";
+                banner.innerText = `SECURE MONITOR ACTIVE | LINKED PROFILE: ${this.boundProfileName.toUpperCase()} (${emailStr})`;
+                
+                authBtn.innerText = "Sign Out";
+                authBtn.style.background = "#444";
+                authBtn.style.borderColor = "#666";
+
+                document.getElementById('stat-line').innerText = `CLOUD DATABASE ONLINE`;
+                
+                // Force jump directly to their assigned profile tracking workspace page automatically
+                this.loadHunter(this.boundProfileName);
+            },
+
+            dropToDemo: function() {
+                const banner = document.getElementById('mode-alert-banner');
+                const authBtn = document.getElementById('auth-action-btn');
+                document.getElementById('profile-binding-zone').style.display = 'none';
+
+                this.user = null;
+                this.isSecureMode = false;
+                this.boundProfileName = null;
+
+                banner.className = "system-status-banner banner-demo outlined-text";
+                banner.innerText = "Running Mode: Live Sandbox Demo (Modifications save locally only)";
+                
+                authBtn.innerText = "Sign In";
+                authBtn.style.background = "#cc0000";
+                authBtn.style.borderColor = "#ff3333";
+
+                document.getElementById('stat-line').innerText = `LOCAL PREVIEW SANDBOX`;
+                this.loadLocalSandbox();
+            },
+
+            claimProfileLink: async function(requestedTag) {
+                if (!this.user) return;
+                const cleanTag = requestedTag.trim();
+                
+                // Format check matching tracking array slots
+                const matchingMatch = allowedProfiles.find(p => p.toLowerCase() === cleanTag.toLowerCase());
+                
+                if (!matchingMatch) {
+                    alert(`Invalid Profile: Please type one of the matching tracker names: ${allowedProfiles.join(', ')}`);
+                    return;
+                }
+
+                try {
+                    const userEmail = this.user.email.toLowerCase();
+                    const registryRef = doc(this.db, `artifacts/${appId}/public/identity_registry/mappings`);
+                    
+                    // Save mapping relation straight into Firebase index collection
+                    await setDoc(registryRef, {
+                        [userEmail]: matchingMatch
+                    }, { merge: true });
+
+                    alert(`Success! Your Google Account is now permanently linked to profile: ${matchingMatch}`);
+                    this.boundProfileName = matchingMatch;
+                    this.triggerSecureMode(this.user, userEmail);
+
+                } catch(e) {
+                    console.error("Profile linking failed:", e);
+                    alert("Write permission error: Could not push relation map details to database.");
                 }
             },
 
@@ -455,7 +586,7 @@
                     }
                     this.render();
                 }, (error) => {
-                    console.warn("Snapshot subscription dropped. Defaulting data downstream.", error);
+                    console.warn("Snapshot subscription dropped.", error);
                     this.isLoaded = true;
                     this.render();
                 });
@@ -511,14 +642,22 @@
                         `;
 
                         const actionZone = card.querySelector('.action-zone');
+                        
+                        // Security Layer: Lock toggle interaction buttons down to the specific logged-in user matching that specific tracker column profile 
+                        const canModify = !this.isSecureMode || (this.boundProfileName && this.boundProfileName.toLowerCase() === this.activeHunter.toLowerCase());
+
                         if (item.collected) {
                             actionZone.innerHTML = `<div class="lock-badge outlined-text">LOGGED REGISTRY</div>`;
                         } else {
-                            const btn = document.createElement('button');
-                            btn.className = 'toggle-btn outlined-text';
-                            btn.innerText = 'Confirm Found';
-                            btn.addEventListener('click', () => this.toggleItem(item.id));
-                            actionZone.appendChild(btn);
+                            if (canModify) {
+                                const btn = document.createElement('button');
+                                btn.className = 'toggle-btn outlined-text';
+                                btn.innerText = 'Confirm Found';
+                                btn.addEventListener('click', () => this.toggleItem(item.id));
+                                actionZone.appendChild(btn);
+                            } else {
+                                actionZone.innerHTML = `<div class="lock-badge outlined-text" style="border-color:#555; color:#888; background:none;">READ ONLY</div>`;
+                            }
                         }
 
                         grid.appendChild(card);
@@ -573,7 +712,7 @@
         };
 
         window.executeAuthAction = async function() {
-            if (appState.isSecureMode) {
+            if (appState.user) {
                 signOut(appState.auth);
             } else {
                 try {
@@ -581,9 +720,14 @@
                     await signInWithPopup(appState.auth, provider);
                 } catch (error) {
                     console.error("Popup authenticater broke:", error);
-                    alert("Authentication routine interface window failed to fire.");
+                    alert("Authentication interface window failed to fire.");
                 }
             }
+        };
+
+        window.executeProfileClaim = function() {
+            const inputVal = document.getElementById('claim-tag-input').value;
+            appState.claimProfileLink(inputVal);
         };
 
         appState.init();
