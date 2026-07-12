@@ -13,7 +13,7 @@
 
     <style>
         /* Version Timestamp: 2026-07-11 23:59:59 CT
-           SECURITY PROTOCOL: Direct Bypassed Activation, Local Sandbox Demo, Cloud Profile Sync
+           LOCAL MODULE PROTOCOL: 100% Client-Side LocalStorage, Zero Auth Dependencies
            IDENTITY REVISION: Gamer Tag & Nickname Exclusive Protocol
         */
         :root {
@@ -120,65 +120,6 @@
             .tracker-container { width: 95%; }
         }
 
-        /* --- MODE BANNER SYSTEM --- */
-        .system-status-banner {
-            width: 100%;
-            padding: 8px 0;
-            text-align: center;
-            font-weight: 900;
-            font-size: 13px;
-            text-transform: uppercase;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-        }
-        .banner-demo {
-            background: #b17a00;
-            border: 1px solid #ffcc00;
-            color: #fff;
-        }
-        .banner-secure {
-            background: #006622;
-            border: 1px solid #33cc66;
-            color: #fff;
-        }
-
-        /* --- DYNAMIC CLAIMS CONTAINER --- */
-        .profile-binding-card {
-            background: rgba(30, 10, 10, 0.95);
-            border: 2px dashed #ff3333;
-            padding: 15px;
-            border-radius: 0.8rem;
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-        }
-        .binding-input {
-            background: #111;
-            border: 1px solid #555;
-            color: #fff;
-            padding: 10px;
-            font-size: 14px;
-            border-radius: 6px;
-            min-width: 240px;
-            font-weight: 900;
-        }
-        .binding-btn {
-            background: #cc0000;
-            border: 1px solid #ff3333;
-            color: #fff;
-            font-weight: 900;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            min-height: 44px;
-            text-transform: uppercase;
-        }
-        .binding-btn:hover { background: #e60000; }
-
         /* --- SYSTEM PANELS --- */
         .profile-header {
             display: flex;
@@ -196,7 +137,7 @@
         .hunter-glow { font-size: 1.6rem; font-weight: 900; color: var(--ser-color); }
         .profile-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
         
-        .profile-btn, .auth-trigger-btn {
+        .profile-btn {
             background: #222; border: 1px solid #444;
             color: white; padding: 10px 14px; border-radius: 0.5rem; font-weight: 900; cursor: pointer; min-height: 44px;
         }
@@ -205,11 +146,6 @@
             border-color: #ff4444;
             color: #ffffff;
         }
-        .auth-trigger-btn {
-            background: #cc0000;
-            border-color: #ff3333;
-        }
-        .auth-trigger-btn:hover { background: #e60000; }
 
         .main-header {
             background: rgba(0, 0, 0, 0.75); padding: 25px 15px; border-radius: 1.5rem;
@@ -269,30 +205,13 @@
     <nav class="master-nav">
         <a href="#" class="nav-logo outlined-text">SNIPER ELITE 5: MASTER LOG</a>
         <div id="stat-line" style="font-family: monospace; font-size: 11px; color: #aaa;" class="outlined-text">
-            SYSTEM STATE: PREVIEW TERMINAL
+            SYSTEM STATE: LOCAL SAVE STORAGE ACTIVE
         </div>
     </nav>
 
     <nav id="csv-menu-bar" class="csv-nav"></nav>
 
     <div class="tracker-container">
-        <!-- MODE ALERT BANNER -->
-        <div id="mode-alert-banner" class="system-status-banner banner-demo outlined-text">
-            Running Mode: Live Sandbox Demo (Modifications save locally only)
-        </div>
-
-        <!-- PROFILE ASSIGNMENT PANEL -->
-        <div id="profile-binding-zone" class="profile-binding-card" style="display: none;">
-            <div>
-                <strong class="outlined-text" style="color:#ff3333; text-transform:uppercase;">Unlinked Account Authenticated</strong>
-                <div class="outlined-text" style="font-size:12px; color:#ccc; margin-top:2px;">Type in your exact Gamertag/Nickname below to securely bind this Google login session to your profile.</div>
-            </div>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <input type="text" id="claim-tag-input" class="binding-input" placeholder="e.g., TJ or Elu Cloud" />
-                <button id="claim-profile-btn" class="binding-btn outlined-text">Link Account</button>
-            </div>
-        </div>
-
         <div id="app-workspace">
             <div class="profile-header">
                 <div class="active-info">
@@ -304,7 +223,6 @@
                     <button class="profile-btn outlined-text" data-profile="OneLIVIDMAN">OneLIVIDMAN</button>
                     <button class="profile-btn outlined-text" data-profile="TJ">TJ</button>
                     <button class="profile-btn outlined-text" data-profile="Elu Cloud">Elu Cloud</button>
-                    <button id="auth-action-btn" class="auth-trigger-btn outlined-text" style="margin-left:15px;">Sign In</button>
                 </div>
             </div>
 
@@ -323,28 +241,6 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js?v=20260711';
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js?v=20260711';
-        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js?v=20260711';
-
-        const appId = 'game-tracker-5b2ef';
-        const firebaseConfig = {
-            apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
-            authDomain: "game-tracker-5b2ef.firebaseapp.com",
-            databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
-            projectId: "game-tracker-5b2ef",
-            storageBucket: "game-tracker-5b2ef.firebasestorage.app",
-            messagingSenderId: "555667047127",
-            appId: "1:555667047127:web:af6f468ca3cf06759aa692"
-        };
-
-        const adminMap = {
-            'raykevin71888@gmail.com': 'Werewolf3788',
-            'cartnalray9@gmail.com': 'OneLIVIDMAN'
-        };
-
-        const allowedProfiles = ['Werewolf3788', 'OneLIVIDMAN', 'TJ', 'Elu Cloud'];
-
         const sniperData = [
             { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.' },
             { id: 'm1_pl2', cat: '1: The Atlantic Wall', name: 'Upcoming Delivery', type: 'Personal Letter', desc: 'Farm east of Steffen Beckendorf. Climb ladder on western side of outhouse.' },
@@ -391,23 +287,8 @@
             activeHunter: 'Werewolf3788',
             hunterData: [],
             collapsedSections: {}, 
-            db: null, auth: null, user: null, unsub: null,
-            isLoaded: false,
-            isSecureMode: false,
-            boundProfileName: null, 
 
             init: function() {
-                // Pre-bind authorization execution to window to decouple tracking module delays from button response
-                window.authProxyAction = async () => {
-                    if (this.isSecureMode || this.user) {
-                        signOut(this.auth);
-                    } else {
-                        const provider = new GoogleAuthProvider();
-                        provider.setCustomParameters({ prompt: 'select_account' });
-                        await signInWithPopup(this.auth, provider);
-                    }
-                };
-
                 this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
                 
                 const cats = [...new Set(this.hunterData.map(i => i.cat))];
@@ -416,68 +297,7 @@
                     this.collapsedSections[sid] = false;
                 });
 
-                this.loadLocalSandbox();
-
-                try {
-                    const app = initializeApp(firebaseConfig);
-                    this.auth = getAuth(app);
-                    this.db = getFirestore(app);
-                    
-                    onAuthStateChanged(this.auth, async (u) => {
-                        const banner = document.getElementById('mode-alert-banner');
-                        const authBtn = document.getElementById('auth-action-btn');
-                        const bindingZone = document.getElementById('profile-binding-zone');
-
-                        if (u) {
-                            const userEmail = u.email.toLowerCase();
-                            
-                            if (adminMap[userEmail]) {
-                                this.boundProfileName = adminMap[userEmail];
-                                this.triggerSecureMode(u, userEmail);
-                            } else {
-                                try {
-                                    const registryRef = doc(this.db, `artifacts/${appId}/public/identity_registry/mappings`);
-                                    const registrySnap = await getDoc(registryRef);
-                                    
-                                    if (registrySnap.exists() && registrySnap.data()[userEmail]) {
-                                        this.boundProfileName = registrySnap.data()[userEmail];
-                                        this.triggerSecureMode(u, userEmail);
-                                    } else {
-                                        this.user = u;
-                                        this.isSecureMode = false;
-                                        bindingZone.style.display = 'flex';
-                                        
-                                        banner.className = "system-status-banner banner-demo outlined-text";
-                                        banner.innerText = "AUTHENTICATED | AWAITING ACCOUNT GAMERTAG LINK ASSIGNMENT";
-                                        authBtn.innerText = "Sign Out";
-                                        
-                                        this.loadLocalSandbox();
-                                    }
-                                } catch(e) {
-                                    console.error("Identity lookup failed:", e);
-                                    this.dropToDemo();
-                                }
-                            }
-                        } else {
-                            this.dropToDemo();
-                        }
-                    });
-                } catch (e) { 
-                    console.error("Firebase System Link Refused:", e);
-                    this.dropToDemo();
-                }
-
-                // Explicit Native Binding
-                document.getElementById('auth-action-btn').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    window.authProxyAction();
-                });
-
-                document.getElementById('claim-profile-btn').addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const inputVal = document.getElementById('claim-tag-input').value;
-                    this.claimProfileLink(inputVal);
-                });
+                this.loadHunter(this.activeHunter);
 
                 document.querySelectorAll('.profile-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
@@ -490,75 +310,16 @@
                 });
             },
 
-            triggerSecureMode: function(u, emailStr) {
-                const banner = document.getElementById('mode-alert-banner');
-                const authBtn = document.getElementById('auth-action-btn');
-                document.getElementById('profile-binding-zone').style.display = 'none';
-
-                this.user = u;
-                this.isSecureMode = true;
+            loadHunter: function(name) {
+                this.activeHunter = name;
+                document.getElementById('hunter-display').innerText = name.toUpperCase();
                 
-                banner.className = "system-status-banner banner-secure outlined-text";
-                banner.innerText = `SECURE MONITOR ACTIVE | LINKED PROFILE: ${this.boundProfileName.toUpperCase()} (${emailStr})`;
-                
-                authBtn.innerText = "Sign Out";
-                authBtn.style.background = "#444";
-                authBtn.style.borderColor = "#666";
+                document.querySelectorAll('.profile-btn').forEach(b => {
+                    const profAttr = b.getAttribute('data-profile');
+                    b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === name.toLowerCase());
+                });
 
-                document.getElementById('stat-line').innerText = `CLOUD DATABASE ONLINE`;
-                this.loadHunter(this.boundProfileName);
-            },
-
-            dropToDemo: function() {
-                const banner = document.getElementById('mode-alert-banner');
-                const authBtn = document.getElementById('auth-action-btn');
-                document.getElementById('profile-binding-zone').style.display = 'none';
-
-                this.user = null;
-                this.isSecureMode = false;
-                this.boundProfileName = null;
-
-                banner.className = "system-status-banner banner-demo outlined-text";
-                banner.innerText = "Running Mode: Live Sandbox Demo (Modifications save locally only)";
-                
-                authBtn.innerText = "Sign In";
-                authBtn.style.background = "#cc0000";
-                authBtn.style.borderColor = "#ff3333";
-
-                document.getElementById('stat-line').innerText = `LOCAL PREVIEW SANDBOX`;
-                this.loadLocalSandbox();
-            },
-
-            claimProfileLink: async function(requestedTag) {
-                if (!this.user) return;
-                const cleanTag = requestedTag.trim();
-                const matchingMatch = allowedProfiles.find(p => p.toLowerCase() === cleanTag.toLowerCase());
-                
-                if (!matchingMatch) {
-                    alert(`Invalid Profile: Please type one of the matching tracker names: ${allowedProfiles.join(', ')}`);
-                    return;
-                }
-
-                try {
-                    const userEmail = this.user.email.toLowerCase();
-                    const registryRef = doc(this.db, `artifacts/${appId}/public/identity_registry/mappings`);
-                    
-                    await setDoc(registryRef, {
-                        [userEmail]: matchingMatch
-                    }, { merge: true });
-
-                    alert(`Success! Your Google Account is now permanently linked to profile: ${matchingMatch}`);
-                    this.boundProfileName = matchingMatch;
-                    this.triggerSecureMode(this.user, userEmail);
-
-                } catch(e) {
-                    console.error("Profile linking failed:", e);
-                    alert("Write permission error: Could not push relation map details to database.");
-                }
-            },
-
-            loadLocalSandbox: function() {
-                const storageKey = `se5_sandbox_${this.activeHunter}`;
+                const storageKey = `se5_local_sync_${name}`;
                 const localCache = localStorage.getItem(storageKey);
                 if (localCache) {
                     try {
@@ -573,58 +334,12 @@
                 } else {
                     this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
                 }
-                this.isLoaded = true;
+
                 this.render();
-            },
-
-            loadHunter: function(name) {
-                this.activeHunter = name;
-                document.getElementById('hunter-display').innerText = name.toUpperCase();
-                
-                document.querySelectorAll('.profile-btn').forEach(b => {
-                    const profAttr = b.getAttribute('data-profile');
-                    b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === name.toLowerCase());
-                });
-
-                if (this.unsub) this.unsub();
-                
-                if (!this.isSecureMode) {
-                    this.loadLocalSandbox();
-                    return;
-                }
-
-                this.isLoaded = false;
-                this.render();
-
-                const path = `artifacts/${appId}/public/data/sniper_elite_5/${name}`;
-                this.unsub = onSnapshot(doc(this.db, path), (snap) => {
-                    this.isLoaded = true;
-                    if (snap.exists() && snap.data().progress) {
-                        const saved = snap.data().progress || [];
-                        this.hunterData = sniperData.map(item => {
-                            const status = saved.find(s => s.id === item.id);
-                            return { ...item, collected: status ? status.collected : false };
-                        });
-                    } else {
-                        this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
-                    }
-                    this.render();
-                }, (error) => {
-                    console.warn("Snapshot subscription dropped.", error);
-                    this.isLoaded = true;
-                    this.render();
-                });
             },
 
             render: function() {
                 const container = document.getElementById('section-container');
-                if (!this.isLoaded) {
-                    document.getElementById('overall-bar').style.width = '0%';
-                    document.getElementById('percent-text').innerText = `DECRYPTING REGISTRY...`;
-                    container.innerHTML = '<div style="text-align:center; padding: 50px 20px; color: var(--ser-color); font-weight: 900; font-size: 18px;" class="outlined-text">READING CLOUD INTELLIGENCE DATA...</div>';
-                    return;
-                }
-
                 container.innerHTML = '';
                 const cats = [...new Set(this.hunterData.map(i => i.cat))];
                 let totalFound = 0;
@@ -666,20 +381,15 @@
                         `;
 
                         const actionZone = card.querySelector('.action-zone');
-                        const canModify = !this.isSecureMode || (this.boundProfileName && this.boundProfileName.toLowerCase() === this.activeHunter.toLowerCase());
 
                         if (item.collected) {
                             actionZone.innerHTML = `<div class="lock-badge outlined-text">LOGGED REGISTRY</div>`;
                         } else {
-                            if (canModify) {
-                                const btn = document.createElement('button');
-                                btn.className = 'toggle-btn outlined-text';
-                                btn.innerText = 'Confirm Found';
-                                btn.addEventListener('click', () => this.toggleItem(item.id));
-                                actionZone.appendChild(btn);
-                            } else {
-                                actionZone.innerHTML = `<div class="lock-badge outlined-text" style="border-color:#555; color:#888; background:none;">READ ONLY</div>`;
-                            }
+                            const btn = document.createElement('button');
+                            btn.className = 'toggle-btn outlined-text';
+                            btn.innerText = 'Confirm Found';
+                            btn.addEventListener('click', () => this.toggleItem(item.id));
+                            actionZone.appendChild(btn);
                         }
 
                         grid.appendChild(card);
@@ -692,7 +402,7 @@
                 document.getElementById('percent-text').innerText = `TOTAL CAMPAIGN COLLECTION: ${percent}%`;
             },
 
-            toggleItem: async function(id) {
+            toggleItem: function(id) {
                 const item = this.hunterData.find(i => i.id === id);
                 if (item) {
                     item.collected = true;
@@ -712,25 +422,10 @@
                 }
             },
 
-            sync: async function() {
+            sync: function() {
                 const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
-                
-                if (!this.isSecureMode) {
-                    localStorage.setItem(`se5_sandbox_${this.activeHunter}`, JSON.stringify(progress));
-                    return;
-                }
-
-                try {
-                    const path = `artifacts/${appId}/public/data/sniper_elite_5/${this.activeHunter}`;
-                    await setDoc(doc(this.db, path), { progress, lastUpdate: Date.now() }, { merge: true });
-                } catch(e) {
-                    console.error("Cloud store rejected submission:", e);
-                }
+                localStorage.setItem(`se5_local_sync_${this.activeHunter}`, JSON.stringify(progress));
             }
-        };
-
-        window.executeHunterSwitch = function(name) {
-            appState.loadHunter(name);
         };
 
         appState.init();
