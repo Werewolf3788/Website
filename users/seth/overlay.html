@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <!-- 
-      VERSION TIMESTAMP: 2026-07-13 12:40:00 CT
+      VERSION TIMESTAMP: 2026-07-13 13:15:00 CT
       CRITICAL: Viewport standard configured for strict 100vw layout tracking. 
-      MODIFICATION: Completely integrated full StreamElements dynamic field mappings to prevent property truncation errors.
+      MODIFICATION: Upgraded theme engine to use broad phrase matching (.includes) so "Rebuild 3: Gangs of Deadsville" correctly trips the corporate red layout state.
     -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phoenix Darkfire - Elite Protocol</title>
@@ -46,6 +46,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: border-color 0.5s ease, background 0.5s ease;
         }
         
         .top-banner::before {
@@ -68,6 +69,7 @@
             text-shadow: 0 0 15px #0055ff, 0 0 30px #0055ff; 
             letter-spacing: 0.5vw; 
             z-index: 11;
+            transition: color 0.5s ease, text-shadow 0.5s ease;
         }
         .left-wing { left: 10vw; } 
         .right-wing { right: 10vw; }
@@ -171,6 +173,7 @@
             border: 1px solid rgba(0, 212, 255, 0.3);
             backdrop-filter: blur(5px);
             box-shadow: 0 0 20px rgba(0, 85, 255, 0.15);
+            transition: border-color 0.5s ease, box-shadow 0.5s ease;
         }
 
         #support-qr {
@@ -196,6 +199,7 @@
             align-items: center;
             z-index: 55;
             border-radius: 0.5vh;
+            transition: border-color 0.5s ease;
         }
 
         .ticker-text {
@@ -207,6 +211,7 @@
             text-transform: uppercase;
             letter-spacing: 0.1vw;
             text-shadow: 0 0 10px rgba(0, 85, 255, 0.8);
+            transition: color 0.5s ease, text-shadow 0.5s ease;
         }
 
         @keyframes ticker-scroll {
@@ -259,6 +264,7 @@
             box-shadow: 0 0 15px rgba(0, 85, 255, 0.3);
             background-color: rgba(0, 12, 26, 0.95);
             display: none; 
+            transition: border-color 0.5s ease, box-shadow 0.5s ease;
         }
 
         #game-art-img {
@@ -296,6 +302,7 @@
             align-items: center;
             gap: 4px;
             white-space: nowrap;
+            transition: color 0.5s ease, border-color 0.5s ease;
         }
 
         .stat-label span { color: #fff; }
@@ -308,6 +315,7 @@
             padding: 0.4vh;
             background: linear-gradient(45deg, #0055ff, #00d4ff);
             box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+            transition: background 0.5s ease, box-shadow 0.5s ease;
         }
 
         #twitch-profile-img {
@@ -343,6 +351,7 @@
             animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
             min-width: 10vw;
             max-width: 12vw;
+            transition: border-color 0.5s ease, box-shadow 0.5s ease;
         }
 
         .friend-info {
@@ -361,6 +370,7 @@
             letter-spacing: 0.05vw;
             display: flex;
             align-items: center;
+            transition: text-shadow 0.5s ease;
         }
 
         .live-dot {
@@ -372,6 +382,7 @@
             margin-right: 0.4vw;
             box-shadow: 0 0 5px #00d4ff;
             animation: pulse-dot 1.5s infinite alternate;
+            transition: background-color 0.5s ease, box-shadow 0.5s ease;
         }
 
         .friend-game {
@@ -384,16 +395,76 @@
             text-transform: uppercase;
             margin-top: 0.1vh;
             padding-left: 0.2vw;
+            transition: color 0.5s ease;
+        }
+
+        /* ===================================================================
+           REBUILD 3 CORE THEME OVERRIDES (RED SCHEME ACTIVE)
+           =================================================================== */
+        .rebuild3-theme .top-banner {
+            background: linear-gradient(90deg, #000000 0%, #260000 50%, #000000 100%); 
+            border-bottom: 0.4vh solid #ff0000;
+        }
+        .rebuild3-theme .wing-text {
+            color: #ff3333;
+            text-shadow: 0 0 15px #ff0000, 0 0 30px #ff0000;
+        }
+        .rebuild3-theme .qr-wrapper {
+            border: 1px solid rgba(255, 0, 0, 0.4);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+        }
+        .rebuild3-theme .bottom-ticker-container {
+            border-top: 1px solid rgba(255, 0, 0, 0.4);
+            border-bottom: 1px solid rgba(255, 0, 0, 0.4);
+        }
+        .rebuild3-theme .ticker-text {
+            color: #ff3333;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+        }
+        .rebuild3-theme .game-thumbnail-container {
+            border: 2px solid rgba(255, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+            background-color: rgba(26, 0, 0, 0.95);
+        }
+        .rebuild3-theme .stat-label {
+            color: #ff3333;
+            border: 1px solid #ff0000;
+        }
+        .rebuild3-theme .profile-pic-wrapper {
+            background: linear-gradient(45deg, #ff0000, #ff5555);
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+        }
+        .rebuild3-theme .friend-card {
+            border: 1px solid rgba(255, 0, 0, 0.3);
+            border-right: 0.3vh solid #ff3333;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.15);
+        }
+        .rebuild3-theme .friend-name {
+            text-shadow: 0 0 5px rgba(255, 51, 51, 0.5);
+        }
+        .rebuild3-theme .live-dot {
+            background-color: #ff3333;
+            box-shadow: 0 0 5px #ff3333;
+        }
+        .rebuild3-theme .friend-game {
+            color: rgba(255, 51, 51, 0.8);
         }
 
         @keyframes pulse-dot {
-            0% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 2px #00d4ff; }
-            100% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px #00d4ff; }
+            0% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 2px currentColor; }
+            100% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px currentColor; }
         }
 
         @keyframes textPulse {
             0% { text-shadow: 0 0 5px rgba(0, 132, 255, 0.6); }
             100% { text-shadow: 0 0 20px rgba(0, 212, 255, 1), 0 0 30px rgba(0, 85, 255, 0.8); }
+        }
+        .rebuild3-theme .current-game-title {
+            animation: textPulseRed 2s infinite alternate;
+        }
+        @keyframes textPulseRed {
+            0% { text-shadow: 0 0 5px rgba(255, 0, 0, 0.6); }
+            100% { text-shadow: 0 0 20px rgba(255, 51, 51, 1), 0 0 30px rgba(255, 0, 0, 0.8); }
         }
 
         @keyframes slideInRight {
@@ -411,7 +482,7 @@
 
     <div id="fx-container"></div>
 
-    <div class="overlay-wrapper">
+    <div class="overlay-wrapper" id="master-theme-container">
         <header class="top-banner">
             <div class="wing-text left-wing">Phoenix</div>
             <div class="wing-text right-wing">Darkfire</div>
@@ -469,6 +540,7 @@
         const alertBox = document.getElementById('alert-box');
         const nameField = document.getElementById('follower-name');
         const gameTitleField = document.getElementById('game-title');
+        const masterThemeContainer = document.getElementById('master-theme-container');
         
         const gameThumbnailContainer = document.getElementById('game-thumbnail-container');
         const gameArtImg = document.getElementById('game-art-img');
@@ -479,6 +551,7 @@
 
         /* Toggle false to fetch real live API metrics on stream */
         let DEBUG_MODE = true; 
+        let ACTIVE_THEME = "default";
 
         /**
          * Dynamic Game ID Mapping Database
@@ -503,8 +576,26 @@
             "apex legends": "511224",
             "valorant": "516575",
             "papa's pizzeria deluxe": "1507742194",
-            "papas pizzeria deluxe": "1507742194"
+            "papas pizzeria deluxe": "1507742194",
+            "rebuild 3: gangs of deadsville": "1657273395"
         };
+
+        /**
+         * Evaluates layout themes dynamically based on dashboard value or string queries
+         */
+        function applyLayoutTheme(themeName) {
+            if (!themeName) return;
+            const target = themeName.trim().toLowerCase();
+            
+            // Smart phrase pattern matching wrapper (.includes) to catch text blocks safely
+            if (target.includes("rebuild 3") || target.includes("rebuild3")) {
+                masterThemeContainer.classList.add('rebuild3-theme');
+                ACTIVE_THEME = "rebuild3";
+            } else {
+                masterThemeContainer.classList.remove('rebuild3-theme');
+                ACTIVE_THEME = "default";
+            }
+        }
 
         /**
          * Intelligent Game Box Art Loader
@@ -516,7 +607,27 @@
             }
 
             const cleanQuery = gameName.trim().toLowerCase();
-            const matchedID = GAME_ID_MAP[cleanQuery];
+            
+            // Smart layout matching protocol check
+            if (cleanQuery.includes("rebuild 3") || cleanQuery.includes("rebuild3")) {
+                applyLayoutTheme("rebuild 3");
+            } else if (!window.SE_Saved_Theme || !window.SE_Saved_Theme.toLowerCase().includes("rebuild 3")) {
+                // Return to default theme state if the saved dashboard configuration isn't overriding it
+                applyLayoutTheme("default");
+            }
+
+            // Fallback object lookup checking loop
+            let matchedID = GAME_ID_MAP[cleanQuery];
+            
+            // Secondary dynamic match helper if map contains slight variations
+            if (!matchedID) {
+                for (const key in GAME_ID_MAP) {
+                    if (cleanQuery.includes(key) || key.includes(cleanQuery)) {
+                        matchedID = GAME_ID_MAP[key];
+                        break;
+                    }
+                }
+            }
 
             gameArtImg.onload = function() {
                 gameThumbnailContainer.style.display = 'block';
@@ -600,8 +711,8 @@
                 if (gameRes.ok) {
                     let game = (await gameRes.text()).trim();
                     if (game.toLowerCase().includes("offline") || !game) {
-                        gameTitleField.innerText = DEBUG_MODE ? "PAPA'S PIZZERIA DELUXE" : "OFFLINE";
-                        updateGameArt(DEBUG_MODE ? "Papa's Pizzeria Deluxe" : "");
+                        gameTitleField.innerText = DEBUG_MODE ? "REBUILD 3: GANGS OF DEADSVILLE" : "OFFLINE";
+                        updateGameArt(DEBUG_MODE ? "Rebuild 3: Gangs of Deadsville" : "");
                     } else {
                         gameTitleField.innerText = game.toUpperCase();
                         updateGameArt(game);
@@ -609,8 +720,8 @@
                 }
             } catch (e) {
                 if (DEBUG_MODE && gameTitleField.innerText === "SCANNING...") {
-                    gameTitleField.innerText = "PAPA'S PIZZERIA DELUXE";
-                    updateGameArt("Papa's Pizzeria Deluxe");
+                    gameTitleField.innerText = "REBUILD 3: GANGS OF DEADSVILLE";
+                    updateGameArt("Rebuild 3: Gangs of Deadsville");
                 }
             }
 
@@ -656,6 +767,12 @@
             // Map editor panel debug override state toggles
             if (fieldData && typeof fieldData.enableDebugMode !== 'undefined') {
                 DEBUG_MODE = fieldData.enableDebugMode;
+            }
+
+            // Capture structural saved theme names from StreamElements dropdown panels if present
+            if (fieldData && fieldData.selectLayoutTheme) {
+                window.SE_Saved_Theme = fieldData.selectLayoutTheme;
+                applyLayoutTheme(fieldData.selectLayoutTheme);
             }
             
             fetchTwitchData();
