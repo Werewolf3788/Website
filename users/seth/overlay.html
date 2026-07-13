@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <!-- 
-      VERSION TIMESTAMP: 2026-07-09 12:52:00 CT
+      VERSION TIMESTAMP: 2026-07-13 12:40:00 CT
       CRITICAL: Viewport standard configured for strict 100vw layout tracking. 
-      MODIFICATION: Completely stripped all experimental goal widgets/iframes to maintain clean visual styling integrity.
+      MODIFICATION: Completely integrated full StreamElements dynamic field mappings to prevent property truncation errors.
     -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phoenix Darkfire - Elite Protocol</title>
@@ -478,7 +478,7 @@
         const friendsPanel = document.getElementById('live-friends-panel');
 
         /* Toggle false to fetch real live API metrics on stream */
-        const DEBUG_MODE = true; 
+        let DEBUG_MODE = true; 
 
         /**
          * Dynamic Game ID Mapping Database
@@ -560,7 +560,7 @@
                         if (!uptimeText.includes("offline") && uptimeText.length > 0) {
                             let game = "Just Chatting";
 
-                            const gameRes = await fetch(`https://decapi.me/twitch/game/${friend.username}`);
+                            const gameRes = await fetch(`https://decapi.me/twitch/game/${friend.username}?cache=${Date.now()}`);
                             if (gameRes.ok) {
                                 game = (await gameRes.text()).trim();
                             }
@@ -636,7 +636,28 @@
 
         window.addEventListener('load', startEngine);
 
+        /* 
+        ===================================================================
+        STREAMELEMENTS INTEGRATION CAPTURE PROTOCOL
+        ===================================================================
+        Captures dynamic settings right from the left-hand field settings 
+        panel to ensure visual options match what is saved in the dashboard.
+        */
         window.addEventListener('onWidgetLoad', function (obj) {
+            const fieldData = obj.detail.fieldData;
+            
+            // Map custom canvas background assets if defined in the configuration JSON
+            if (fieldData && fieldData.customBackgroundWebUrl) {
+                document.body.style.backgroundImage = `url('${fieldData.customBackgroundWebUrl}')`;
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundPosition = 'center';
+            }
+
+            // Map editor panel debug override state toggles
+            if (fieldData && typeof fieldData.enableDebugMode !== 'undefined') {
+                DEBUG_MODE = fieldData.enableDebugMode;
+            }
+            
             fetchTwitchData();
             fetchFriendsStatus();
         });
