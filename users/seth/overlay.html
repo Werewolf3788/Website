@@ -5,12 +5,12 @@
     <!-- 
       VERSION TIMESTAMP: 2026-07-13 13:55:00 CT
       CRITICAL: Viewport standard configured for strict 100vw layout tracking. 
-      MODIFICATION: Fixed ticker text truncation bugs by enforcing infinite scroll width boundaries.
+      MODIFICATION: Added postMessage listener for StreamElements cross-origin iframe support. Smart cache-busters updated.
     -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phoenix Darkfire - Elite Protocol</title>
-    <!-- Animate.css for the alert events -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    <!-- Animate.css with smart cache-buster to prevent stale imports -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css?v=20260713"/>
     <style>
         body, html { 
             margin: 0; 
@@ -19,12 +19,11 @@
             max-width: 100%;
             height: 100%; 
             overflow: hidden; 
-            background: transparent; /* Fully transparent for OBS/StreamElements capture */
+            background: transparent; 
             font-family: 'Arial Black', sans-serif; 
-            font-size: 16px; /* Mobile-first design default baseline fallback */
+            font-size: 16px; 
         }
 
-        /* Prevent scrollbars */
         .overlay-wrapper { 
             display: flex; 
             flex-direction: column; 
@@ -34,7 +33,6 @@
             position: relative;
         }
 
-        /* --- TOP BANNER --- */
         .top-banner {
             height: 12vh; 
             width: 100%; 
@@ -74,7 +72,6 @@
         .left-wing { left: 10vw; } 
         .right-wing { right: 10vw; }
 
-        /* --- FX LAYER --- */
         #fx-container { 
             position: fixed; 
             top: 0; 
@@ -84,35 +81,13 @@
             pointer-events: none; 
             z-index: 50; 
         }
-        .falling-icon {
-            position: absolute; 
-            font-size: 5vh; 
-            animation: fall linear forwards;
-            filter: drop-shadow(0 0 10px #00d4ff);
-        }
-        @keyframes fall {
-            0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
-        }
 
-        .firework-particle {
-            position: absolute; 
-            width: 8px; 
-            height: 8px; 
-            background: #00d4ff;
-            border-radius: 50%; 
-            box-shadow: 0 0 15px #0055ff; 
-            pointer-events: none;
-        }
-
-        /* Middle layout wrapper */
         .middle-section { 
             flex: 1; 
             position: relative; 
             background: transparent; 
         }
 
-        /* --- PHOENIX ALERT --- */
         #phoenix-beast {
             position: absolute; 
             width: 30vw; 
@@ -146,14 +121,6 @@
             filter: drop-shadow(0 0 2vw rgba(0, 85, 255, 0.8));
         }
 
-        .ignite { animation: blueFire 2.8s ease-out forwards; }
-        @keyframes blueFire {
-            0% { filter: grayscale(100%) sepia(1) hue-rotate(185deg) saturate(15) brightness(1); transform: scale(1); opacity: 1; }
-            40% { filter: grayscale(100%) sepia(1) hue-rotate(185deg) saturate(20) brightness(40) blur(2vh); transform: scale(3.5); opacity: 1; }
-            100% { filter: brightness(0) blur(5vh); transform: scale(0); opacity: 0; }
-        }
-
-        /* --- BOTTOM LEFT: QR ONLY --- */
         .bottom-left-container {
             position: absolute;
             bottom: 3vh;
@@ -183,7 +150,6 @@
             border-radius: 0.5vh;
         }
 
-        /* --- BOTTOM TICKER (CENTER) --- */
         .bottom-ticker-container {
             position: absolute;
             bottom: 3.5vh;
@@ -212,7 +178,7 @@
             letter-spacing: 0.1vw;
             text-shadow: 0 0 10px rgba(0, 85, 255, 0.8);
             transition: color 0.5s ease, text-shadow 0.5s ease;
-            padding-left: 100%; /* Forces the ticker to fully start from the right edge */
+            padding-left: 100%; 
         }
 
         @keyframes ticker-scroll {
@@ -220,7 +186,6 @@
             100% { transform: translateX(-100%); }
         }
 
-        /* --- BOTTOM RIGHT: CARTRIDGE LAYOUT --- */
         .bottom-right-container {
             position: absolute;
             bottom: 3vh;
@@ -255,7 +220,6 @@
             animation: textPulse 2s infinite alternate;
         }
 
-        /* --- DYNAMIC POSTER ART BOX --- */
         .game-thumbnail-container {
             width: 10.5vh;
             height: 14vh;
@@ -327,7 +291,6 @@
             border: 0.2vh solid #000;
         }
 
-        /* --- RIGHT CENTER: LIVE FRIENDS SIDEBAR PANEL --- */
         .live-friends-panel {
             position: absolute;
             right: 0.5vw; 
@@ -399,9 +362,7 @@
             transition: color 0.5s ease;
         }
 
-        /* ===================================================================
-           REBUILD 3 CORE THEME OVERRIDES (RED SCHEME ACTIVE)
-           =================================================================== */
+        /* REBUILD 3 CORE THEME OVERRIDES */
         .rebuild3-theme .top-banner {
             background: linear-gradient(90deg, #000000 0%, #260000 50%, #000000 100%); 
             border-bottom: 0.4vh solid #ff0000;
@@ -452,8 +413,8 @@
         }
 
         @keyframes pulse-dot {
-            0% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 2px /deep/ currentColor; }
-            100% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px /deep/ currentColor; }
+            0% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 2px currentColor; }
+            100% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px currentColor; }
         }
 
         @keyframes textPulse {
@@ -490,30 +451,24 @@
         </header>
 
         <div class="middle-section">
-            <div id="phoenix-beast"><img id="phoenix-img" src="https://raw.githubusercontent.com/KFruti88/Phoenix-Darkfire/main/Banner.png"></div>
+            <div id="phoenix-beast"><img id="phoenix-img" src="https://raw.githack.com/KFruti88/Phoenix-Darkfire/main/Banner.png"></div>
             <div id="alert-box"><div class="name-banner" id="follower-name"></div></div>
         </div>
 
-        <!-- RIGHT CENTER: DYNAMIC LIVE FRIENDS PANEL -->
-        <div class="live-friends-panel" id="live-friends-panel">
-            <!-- Populated dynamically via JS -->
-        </div>
+        <div class="live-friends-panel" id="live-friends-panel"></div>
 
-        <!-- BOTTOM LEFT: QR TRACKING CARTRIDGE -->
         <div class="bottom-left-container">
             <div class="qr-wrapper">
                 <img id="support-qr" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https%3A%2F%2Flinktr.ee%2FPhoenixDarkfire%3Futm_id%3DG-G-Z9M5LXQ5XN%26utm_source%3Dsmlc_qr%26utm_medium%3Dprint%26utm_campaign%3Dphoenix_darkfire_linktree_phoenixdarkfire_qr&bgcolor=ffffff&color=000000" alt="Support QR">
             </div>
         </div>
 
-        <!-- BOTTOM MIDDLE: TICKER PROTOCOL -->
         <div class="bottom-ticker-container">
             <div class="ticker-text">
                 Like What You See? Subscribe! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Also Follow my friends CoralPoppa, GraphicsWorx, GriffinsCoffin, and Werewolf3788 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </div>
         </div>
 
-        <!-- BOTTOM RIGHT: IDENTITY, STATS & DYNAMIC CARTRIDGE -->
         <div class="bottom-right-container">
             <div class="game-title-wrapper">
                 <div class="current-game-title" id="game-title">SCANNING...</div>
@@ -536,6 +491,9 @@
     </div>
 
     <script>
+        // VERSION TIMESTAMP: 2026-07-13 13:55:00 CT
+        // CRITICAL: Logic updated to include ?v= smart cache-busters and standard postMessage integration.
+        
         const fxContainer = document.getElementById('fx-container');
         const beast = document.getElementById('phoenix-beast');
         const alertBox = document.getElementById('alert-box');
@@ -550,13 +508,9 @@
         const profileImg = document.getElementById('twitch-profile-img');
         const friendsPanel = document.getElementById('live-friends-panel');
 
-        /* Toggle false to fetch real live API metrics on stream */
         let DEBUG_MODE = true; 
         let ACTIVE_THEME = "default";
 
-        /**
-         * Dynamic Game ID Mapping Database
-         */
         const GAME_ID_MAP = {
             "ghostwire: tokyo": "512923",
             "ghostwire tokyo": "512923",
@@ -581,14 +535,10 @@
             "rebuild 3: gangs of deadsville": "1657273395"
         };
 
-        /**
-         * Evaluates layout themes dynamically based on dashboard value or string queries
-         */
         function applyLayoutTheme(themeName) {
             if (!themeName) return;
             const target = themeName.trim().toLowerCase();
             
-            // Smart phrase pattern matching wrapper (.includes) to catch text blocks safely
             if (target.includes("rebuild 3") || target.includes("rebuild3")) {
                 masterThemeContainer.classList.add('rebuild3-theme');
                 ACTIVE_THEME = "rebuild3";
@@ -598,9 +548,6 @@
             }
         }
 
-        /**
-         * Intelligent Game Box Art Loader
-         */
         function updateGameArt(gameName) {
             if (!gameName || gameName.toLowerCase().includes("scanning") || gameName.toLowerCase().includes("offline")) {
                 gameThumbnailContainer.style.display = 'none';
@@ -609,18 +556,14 @@
 
             const cleanQuery = gameName.trim().toLowerCase();
             
-            // Smart layout matching protocol check
             if (cleanQuery.includes("rebuild 3") || cleanQuery.includes("rebuild3")) {
                 applyLayoutTheme("rebuild 3");
             } else if (!window.SE_Saved_Theme || !window.SE_Saved_Theme.toLowerCase().includes("rebuild 3")) {
-                // Return to default theme state if the saved dashboard configuration isn't overriding it
                 applyLayoutTheme("default");
             }
 
-            // Fallback object lookup checking loop
             let matchedID = GAME_ID_MAP[cleanQuery];
             
-            // Secondary dynamic match helper if map contains slight variations
             if (!matchedID) {
                 for (const key in GAME_ID_MAP) {
                     if (cleanQuery.includes(key) || key.includes(cleanQuery)) {
@@ -646,9 +589,6 @@
             }
         }
 
-        /**
-         * Dynamic live checker for target friends
-         */
         async function fetchFriendsStatus() {
             const friendsList = [
                 { username: "coralpoppa", displayName: "CoralPoppa" },
@@ -664,15 +604,16 @@
 
             friendsPanel.innerHTML = ""; 
 
+            // Explicitly using ?v=timestamp cache-buster on JSON API calls
             for (const friend of friendsList) {
                 try {
-                    const uptimeRes = await fetch(`https://decapi.me/twitch/uptime/${friend.username}?cache=${Date.now()}`);
+                    const uptimeRes = await fetch(`https://decapi.me/twitch/uptime/${friend.username}?v=${Date.now()}`);
                     if (uptimeRes.ok) {
                         const uptimeText = (await uptimeRes.text()).trim().toLowerCase();
                         if (!uptimeText.includes("offline") && uptimeText.length > 0) {
                             let game = "Just Chatting";
 
-                            const gameRes = await fetch(`https://decapi.me/twitch/game/${friend.username}?cache=${Date.now()}`);
+                            const gameRes = await fetch(`https://decapi.me/twitch/game/${friend.username}?v=${Date.now()}`);
                             if (gameRes.ok) {
                                 game = (await gameRes.text()).trim();
                             }
@@ -701,14 +642,12 @@
             return card;
         }
 
-        /**
-         * Fetches real-time profile analytics from DecAPI endpoints
-         */
         async function fetchTwitchData() {
             const timestamp = Date.now();
             
             try {
-                const gameRes = await fetch(`https://decapi.me/twitch/game/phoenix_darkfire?cache=${timestamp}`);
+                // Explicitly using ?v=timestamp cache-buster
+                const gameRes = await fetch(`https://decapi.me/twitch/game/phoenix_darkfire?v=${timestamp}`);
                 if (gameRes.ok) {
                     let game = (await gameRes.text()).trim();
                     if (game.toLowerCase().includes("offline") || !game) {
@@ -727,7 +666,7 @@
             }
 
             try {
-                const followRes = await fetch(`https://decapi.me/twitch/followcount/phoenix_darkfire?cache=${timestamp}`);
+                const followRes = await fetch(`https://decapi.me/twitch/followcount/phoenix_darkfire?v=${timestamp}`);
                 if (followRes.ok) {
                     let count = (await followRes.text()).trim();
                     followerField.innerText = count || "0";
@@ -735,7 +674,6 @@
             } catch (e) {}
         }
 
-        // --- Execution Loops & Startup Protocols ---
         function startEngine() {
             fetchTwitchData();
             fetchFriendsStatus();
@@ -743,7 +681,8 @@
             setInterval(fetchTwitchData, 30000); 
             setInterval(fetchFriendsStatus, 30000);
             
-            profileImg.src = `https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png?t=${Date.now()}`;
+            // Image cache buster injection
+            profileImg.src = `https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png?v=${Date.now()}`;
         }
 
         window.addEventListener('load', startEngine);
@@ -752,8 +691,6 @@
         ===================================================================
         STREAMELEMENTS REMOTE DATA PASS-THROUGH HANDLER
         ===================================================================
-        This ensures that when loaded remotely from GitHub, the code catches
-        the settings passed through the window from the StreamElements user.
         */
         function initOverlayWithSEData(fieldData) {
             if (!fieldData) return;
@@ -777,12 +714,18 @@
             fetchFriendsStatus();
         }
 
-        // Check if the data is already waiting in the mirror channel
+        // --- THE FIX: Standard cross-origin listener for iframe setup ---
+        window.addEventListener('message', function(event) {
+            // Only process events explicitly tagged by our SE bridge
+            if (event.data && event.data.target === 'SE_REMOTE_BRIDGE') {
+                initOverlayWithSEData(event.data.fieldData);
+            }
+        });
+
+        // Backup legacy logic for same-origin DOM testing
         if (window.SE_Data_Bridge && window.SE_Data_Bridge.fieldData) {
             initOverlayWithSEData(window.SE_Data_Bridge.fieldData);
         }
-
-        // Listen for the bridge to fill up if it takes a split second
         window.addEventListener('seDataBridgeReady', function() {
             initOverlayWithSEData(window.SE_Data_Bridge.fieldData);
         });
