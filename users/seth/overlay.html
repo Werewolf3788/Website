@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <!-- 
-      VERSION TIMESTAMP: 2026-07-13 13:15:00 CT
+      VERSION TIMESTAMP: 2026-07-13 13:55:00 CT
       CRITICAL: Viewport standard configured for strict 100vw layout tracking. 
-      MODIFICATION: Upgraded theme engine to use broad phrase matching (.includes) so "Rebuild 3: Gangs of Deadsville" correctly trips the corporate red layout state.
+      MODIFICATION: Fixed ticker text truncation bugs by enforcing infinite scroll width boundaries.
     -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phoenix Darkfire - Elite Protocol</title>
@@ -205,17 +205,18 @@
         .ticker-text {
             white-space: nowrap;
             display: inline-block;
-            animation: ticker-scroll 45s linear infinite;
+            animation: ticker-scroll 35s linear infinite;
             color: #00d4ff;
             font-size: 1.5vh;
             text-transform: uppercase;
             letter-spacing: 0.1vw;
             text-shadow: 0 0 10px rgba(0, 85, 255, 0.8);
             transition: color 0.5s ease, text-shadow 0.5s ease;
+            padding-left: 100%; /* Forces the ticker to fully start from the right edge */
         }
 
         @keyframes ticker-scroll {
-            0% { transform: translateX(100vw); }
+            0% { transform: translateX(0); }
             100% { transform: translateX(-100%); }
         }
 
@@ -451,8 +452,8 @@
         }
 
         @keyframes pulse-dot {
-            0% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 2px currentColor; }
-            100% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px currentColor; }
+            0% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 2px /deep/ currentColor; }
+            100% { transform: scale(1.2); opacity: 1; box-shadow: 0 0 8px /deep/ currentColor; }
         }
 
         @keyframes textPulse {
@@ -508,7 +509,7 @@
         <!-- BOTTOM MIDDLE: TICKER PROTOCOL -->
         <div class="bottom-ticker-container">
             <div class="ticker-text">
-                Like What You See? Subscribe! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CoralPoppa, GraphicsWorx, GriffinsCoffin, and Werewolf3788 ——— Like What You See? Subscribe! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Also Follow my friends CoralPoppa, GraphicsWorx, GriffinsCoffin, and Werewolf3788
+                Like What You See? Subscribe! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Also Follow my friends CoralPoppa, GraphicsWorx, GriffinsCoffin, and Werewolf3788 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </div>
         </div>
 
@@ -749,111 +750,41 @@
 
         /* 
         ===================================================================
-        STREAMELEMENTS INTEGRATION CAPTURE PROTOCOL
+        STREAMELEMENTS REMOTE DATA PASS-THROUGH HANDLER
         ===================================================================
-        Captures dynamic settings right from the left-hand field settings 
-        panel to ensure visual options match what is saved in the dashboard.
+        This ensures that when loaded remotely from GitHub, the code catches
+        the settings passed through the window from the StreamElements user.
         */
-        window.addEventListener('onWidgetLoad', function (obj) {
-            const fieldData = obj.detail.fieldData;
+        function initOverlayWithSEData(fieldData) {
+            if (!fieldData) return;
             
-            // Map custom canvas background assets if defined in the configuration JSON
-            if (fieldData && fieldData.customBackgroundWebUrl) {
+            if (fieldData.customBackgroundWebUrl) {
                 document.body.style.backgroundImage = `url('${fieldData.customBackgroundWebUrl}')`;
                 document.body.style.backgroundSize = 'cover';
                 document.body.style.backgroundPosition = 'center';
             }
 
-            // Map editor panel debug override state toggles
-            if (fieldData && typeof fieldData.enableDebugMode !== 'undefined') {
+            if (typeof fieldData.enableDebugMode !== 'undefined') {
                 DEBUG_MODE = fieldData.enableDebugMode;
             }
 
-            // Capture structural saved theme names from StreamElements dropdown panels if present
-            if (fieldData && fieldData.selectLayoutTheme) {
+            if (fieldData.selectLayoutTheme) {
                 window.SE_Saved_Theme = fieldData.selectLayoutTheme;
                 applyLayoutTheme(fieldData.selectLayoutTheme);
             }
             
             fetchTwitchData();
             fetchFriendsStatus();
-        });
-
-        setTimeout(() => { 
-            if (gameTitleField.innerText === "SCANNING...") {
-                fetchTwitchData(); 
-                fetchFriendsStatus();
-            }
-        }, 500);
-
-        function triggerFollowerAlert(name) {
-            beast.classList.remove('ignite');
-            beast.style.opacity = "1"; 
-            beast.style.left = "50%"; 
-            beast.style.transform = "translate(-50%, -50%) scale(1.5)";
-            setTimeout(() => {
-                beast.classList.add('ignite');
-                setTimeout(() => {
-                    alertBox.style.display = "block";
-                    nameField.innerHTML = `NEW FOLLOWER<br>${name}`;
-                }, 600);
-                setTimeout(() => {
-                    beast.style.opacity = "0"; 
-                    beast.style.left = "-100vw"; 
-                    alertBox.style.display = "none";
-                }, 8500);
-            }, 1600);
         }
 
-        window.addEventListener('onEventReceived', function (obj) {
-            const sk = obj.detail.listener;
-            const ev = obj.detail.event;
-            if (!ev) return;
+        // Check if the data is already waiting in the mirror channel
+        if (window.SE_Data_Bridge && window.SE_Data_Bridge.fieldData) {
+            initOverlayWithSEData(window.SE_Data_Bridge.fieldData);
+        }
 
-            if (sk === 'message') {
-                const user = (ev.data.displayName || ev.data.nick || "").toLowerCase();
-                if (user === 'cat_louves' || user === 'anakigod99' || user === 'corelpoppa') {
-                    const particleCount = 40;
-                    const centerX = window.innerWidth / 2;
-                    const centerY = window.innerHeight / 2;
-                    for (let i = 0; i < particleCount; i++) {
-                        const p = document.createElement('div');
-                        p.className = 'firework-particle';
-                        p.style.left = centerX + 'px';
-                        p.style.top = centerY + 'px';
-                        fxContainer.appendChild(p);
-                        const angle = Math.random() * Math.PI * 2;
-                        const velocity = Math.random() * 20 + 10;
-                        const destinationX = Math.cos(angle) * velocity * 20;
-                        const destinationY = Math.sin(angle) * velocity * 20;
-                        p.animate([
-                            { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-                            { transform: 'translate(' + destinationX + 'px, ' + destinationY + 'px) scale(0)', opacity: 0 }
-                        ], { duration: 1500, easing: 'ease-out' });
-                        setTimeout(() => p.remove(), 1500);
-                    }
-                }
-                const rain = (icons) => {
-                    for(let i=0; i<50; i++) {
-                        setTimeout(() => {
-                            const icon = document.createElement('div');
-                            icon.className = 'falling-icon';
-                            let selected = icons[Math.floor(Math.random() * icons.length)];
-                            icon.innerHTML = selected;
-                            icon.style.left = Math.random() * 100 + 'vw';
-                            icon.style.animationDuration = (Math.random() * 1.5 + 1) + 's';
-                            fxContainer.appendChild(icon);
-                            setTimeout(() => icon.remove(), 3000);
-                        }, i * 60);
-                    }
-                }
-                if (user === 'nyxskillissue') rain(['🐈', '⚡', '🍪', '🐱', '⚡', '🍪', '😻', '⚡', '🍪', '😼']);
-                if (user === 'phoenix_darkfire') rain(['🦅', '🔥', '🐦', '✨']); 
-                if (user === 'werewolf3788') rain(['🐺', '🌕', '🐾', '🐺']);
-            }
-            if (sk === 'follower-latest') {
-                triggerFollowerAlert(ev.name);
-            }
+        // Listen for the bridge to fill up if it takes a split second
+        window.addEventListener('seDataBridgeReady', function() {
+            initOverlayWithSEData(window.SE_Data_Bridge.fieldData);
         });
     </script>
 </body>
