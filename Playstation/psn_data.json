@@ -11579,7 +11579,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/15/2026, 8:37:52 AM"
+      "lastUpdated": "7/15/2026, 10:27:21 AM"
     },
     "kfruti": {
       "onlineId": "OneLIVIDMAN",
@@ -17575,7 +17575,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/15/2026, 8:37:53 AM"
+      "lastUpdated": "7/15/2026, 10:27:22 AM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -23571,7 +23571,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/15/2026, 8:37:55 AM"
+      "lastUpdated": "7/15/2026, 10:27:23 AM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -23696,7 +23696,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "7/15/2026, 8:37:57 AM"
+      "lastUpdated": "7/15/2026, 10:27:24 AM"
     },
     "mike": {
       "onlineId": "OneLIVIDMAN",
@@ -29692,7 +29692,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/15/2026, 8:37:59 AM"
+      "lastUpdated": "7/15/2026, 10:27:25 AM"
     },
     "katy": {
       "onlineId": "OneLIVIDMAN",
@@ -35672,7 +35672,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/15/2026, 8:37:59 AM"
+      "lastUpdated": "7/15/2026, 10:27:25 AM"
     },
     "marc": {
       "onlineId": "OneLIVIDMAN",
@@ -41652,7 +41652,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/15/2026, 8:37:59 AM"
+      "lastUpdated": "7/15/2026, 10:27:25 AM"
     },
     "seth": {
       "onlineId": "OneLIVIDMAN",
@@ -41703,8 +41703,8 @@
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-300x300.png",
         "age": "8 years, 5 months",
         "bio": null,
-        "statusMessage": "Wackadoo Wednesday Ep 5 Take 2",
-        "uptime": "2 hours, 26 minutes, 6 seconds",
+        "statusMessage": "Wackadoo Wednesday Ep 6  Time Itself Has Shattered!",
+        "uptime": "41 minutes, 21 seconds",
         "viewers": "1",
         "subCount": "phoenix_darkfire needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
@@ -47650,7 +47650,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/15/2026, 8:38:01 AM"
+      "lastUpdated": "7/15/2026, 10:27:26 AM"
     }
   },
   "personas": {
@@ -47681,7 +47681,7 @@
         "kfruti"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/15/2026, 8:38:01 AM"
+      "lastUpdated": "7/15/2026, 10:27:26 AM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -47709,7 +47709,7 @@
         "ray"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/15/2026, 8:38:01 AM"
+      "lastUpdated": "7/15/2026, 10:27:26 AM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -47737,7 +47737,7 @@
         "darkwing"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/15/2026, 8:38:01 AM"
+      "lastUpdated": "7/15/2026, 10:27:26 AM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -47765,7 +47765,7 @@
         "mike"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/15/2026, 8:38:01 AM"
+      "lastUpdated": "7/15/2026, 10:27:26 AM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -47793,7 +47793,7 @@
         "katy"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/15/2026, 8:38:01 AM"
+      "lastUpdated": "7/15/2026, 10:27:26 AM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -47821,7 +47821,7 @@
         "marc"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/15/2026, 8:38:01 AM"
+      "lastUpdated": "7/15/2026, 10:27:26 AM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -47851,16 +47851,16 @@
       "streamHistory": [
         "Rebuild 3: Gangs of Deadsville"
       ],
-      "lastUpdated": "7/15/2026, 8:38:01 AM"
+      "lastUpdated": "7/15/2026, 10:27:26 AM"
     }
   },
   "mutualSquadFollowers": [],
   "authDiagnostics": {
     "werewolf_active": "no",
     "ray_active": "no",
-    "lastCheck": "7/15/2026, 8:37:49 AM"
+    "lastCheck": "7/15/2026, 10:27:20 AM"
   },
-  "lastGlobalUpdate": "7/15/2026, 8:37:49 AM",
+  "lastGlobalUpdate": "7/15/2026, 10:27:20 AM",
   "engineVersion": "14.5.1",
   "codeTimestamp": "Thursday, July 9, 2026 | 7:55 AM EDT"
 }
