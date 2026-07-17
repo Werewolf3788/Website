@@ -59,7 +59,7 @@
       "platform": "PS5",
       "twitch": {
         "isLive": false,
-        "game": "Left 4 Dead 2",
+        "game": "Games + Demos",
         "gameArt": null,
         "followers": "104",
         "latestFollower": "None",
@@ -67,9 +67,9 @@
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-300x300.png",
         "age": "3 years, 3 months",
         "bio": null,
-        "statusMessage": "Back 4 Blood See how many times I get taken out by the zombies",
-        "uptime": null,
-        "viewers": "0",
+        "statusMessage": "1 more death",
+        "uptime": "29 minutes, 32 seconds",
+        "viewers": "1",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
         "channelCreationRaw": "Apr 6. 2023 - 06:58:17 AM (UTC)"
@@ -11579,7 +11579,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/17/2026, 9:29:37 PM"
+      "lastUpdated": "7/17/2026, 10:29:12 PM"
     },
     "kfruti": {
       "onlineId": "OneLIVIDMAN",
@@ -11622,7 +11622,7 @@
       "platform": "PS5",
       "twitch": {
         "isLive": false,
-        "game": "Left 4 Dead 2",
+        "game": "Games + Demos",
         "gameArt": null,
         "followers": "104",
         "latestFollower": "None",
@@ -11630,9 +11630,9 @@
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-300x300.png",
         "age": "3 years, 3 months",
         "bio": null,
-        "statusMessage": "Back 4 Blood See how many times I get taken out by the zombies",
-        "uptime": null,
-        "viewers": "0",
+        "statusMessage": "1 more death",
+        "uptime": "29 minutes, 33 seconds",
+        "viewers": "1",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
         "channelCreationRaw": "Apr 6. 2023 - 06:58:17 AM (UTC)"
@@ -17575,7 +17575,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/17/2026, 9:29:38 PM"
+      "lastUpdated": "7/17/2026, 10:29:13 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -23571,7 +23571,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/17/2026, 9:29:40 PM"
+      "lastUpdated": "7/17/2026, 10:29:14 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -23696,7 +23696,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "7/17/2026, 9:29:42 PM"
+      "lastUpdated": "7/17/2026, 10:29:15 PM"
     },
     "mike": {
       "onlineId": "OneLIVIDMAN",
@@ -29692,7 +29692,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/17/2026, 9:29:44 PM"
+      "lastUpdated": "7/17/2026, 10:29:16 PM"
     },
     "katy": {
       "onlineId": "OneLIVIDMAN",
@@ -35672,7 +35672,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/17/2026, 9:29:44 PM"
+      "lastUpdated": "7/17/2026, 10:29:16 PM"
     },
     "marc": {
       "onlineId": "OneLIVIDMAN",
@@ -41652,7 +41652,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/17/2026, 9:29:44 PM"
+      "lastUpdated": "7/17/2026, 10:29:16 PM"
     },
     "seth": {
       "onlineId": "OneLIVIDMAN",
@@ -47650,7 +47650,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/17/2026, 9:29:45 PM"
+      "lastUpdated": "7/17/2026, 10:29:17 PM"
     }
   },
   "personas": {
@@ -47681,7 +47681,7 @@
         "kfruti"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/17/2026, 9:29:45 PM"
+      "lastUpdated": "7/17/2026, 10:29:17 PM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -47709,7 +47709,7 @@
         "ray"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/17/2026, 9:29:45 PM"
+      "lastUpdated": "7/17/2026, 10:29:17 PM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -47737,7 +47737,7 @@
         "darkwing"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/17/2026, 9:29:45 PM"
+      "lastUpdated": "7/17/2026, 10:29:17 PM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -47765,7 +47765,7 @@
         "mike"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/17/2026, 9:29:45 PM"
+      "lastUpdated": "7/17/2026, 10:29:17 PM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -47793,7 +47793,7 @@
         "katy"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/17/2026, 9:29:45 PM"
+      "lastUpdated": "7/17/2026, 10:29:17 PM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -47821,7 +47821,7 @@
         "marc"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/17/2026, 9:29:45 PM"
+      "lastUpdated": "7/17/2026, 10:29:17 PM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -47851,16 +47851,16 @@
       "streamHistory": [
         "Rebuild 3: Gangs of Deadsville"
       ],
-      "lastUpdated": "7/17/2026, 9:29:45 PM"
+      "lastUpdated": "7/17/2026, 10:29:17 PM"
     }
   },
   "mutualSquadFollowers": [],
   "authDiagnostics": {
     "werewolf_active": "no",
     "ray_active": "no",
-    "lastCheck": "7/17/2026, 9:29:35 PM"
+    "lastCheck": "7/17/2026, 10:29:11 PM"
   },
-  "lastGlobalUpdate": "7/17/2026, 9:29:35 PM",
+  "lastGlobalUpdate": "7/17/2026, 10:29:11 PM",
   "engineVersion": "14.5.1",
   "codeTimestamp": "Thursday, July 9, 2026 | 7:55 AM EDT"
 }
