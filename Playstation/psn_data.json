@@ -68,8 +68,8 @@
         "age": "3 years, 3 months",
         "bio": null,
         "statusMessage": "I can sleep when Im dead",
-        "uptime": "28 minutes, 50 seconds",
-        "viewers": "2",
+        "uptime": null,
+        "viewers": "0",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
         "channelCreationRaw": "Apr 6. 2023 - 06:58:17 AM (UTC)"
@@ -11579,7 +11579,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 4:12:28 PM"
+      "lastUpdated": "7/18/2026, 5:16:51 PM"
     },
     "kfruti": {
       "onlineId": "OneLIVIDMAN",
@@ -11631,8 +11631,8 @@
         "age": "3 years, 3 months",
         "bio": null,
         "statusMessage": "I can sleep when Im dead",
-        "uptime": "28 minutes, 50 seconds",
-        "viewers": "2",
+        "uptime": null,
+        "viewers": "0",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
         "channelCreationRaw": "Apr 6. 2023 - 06:58:17 AM (UTC)"
@@ -17575,7 +17575,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 4:12:28 PM"
+      "lastUpdated": "7/18/2026, 5:16:52 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -23571,7 +23571,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 4:12:29 PM"
+      "lastUpdated": "7/18/2026, 5:16:54 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -23696,7 +23696,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "7/18/2026, 4:12:30 PM"
+      "lastUpdated": "7/18/2026, 5:16:56 PM"
     },
     "mike": {
       "onlineId": "OneLIVIDMAN",
@@ -29692,7 +29692,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 4:12:31 PM"
+      "lastUpdated": "7/18/2026, 5:16:57 PM"
     },
     "katy": {
       "onlineId": "OneLIVIDMAN",
@@ -35672,7 +35672,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 4:12:31 PM"
+      "lastUpdated": "7/18/2026, 5:16:57 PM"
     },
     "marc": {
       "onlineId": "OneLIVIDMAN",
@@ -41652,7 +41652,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 4:12:31 PM"
+      "lastUpdated": "7/18/2026, 5:16:57 PM"
     },
     "seth": {
       "onlineId": "OneLIVIDMAN",
@@ -41704,8 +41704,8 @@
         "age": "8 years, 5 months",
         "bio": null,
         "statusMessage": "Skyrim Saturday! Episode 1 Mutants Monsters and More!",
-        "uptime": "1 hour, 17 minutes, 17 seconds",
-        "viewers": "1",
+        "uptime": null,
+        "viewers": "0",
         "subCount": "phoenix_darkfire needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
         "channelCreationRaw": "Jan 23. 2018 - 01:15:39 AM (UTC)"
@@ -47650,7 +47650,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 4:12:32 PM"
+      "lastUpdated": "7/18/2026, 5:16:59 PM"
     }
   },
   "personas": {
@@ -47681,7 +47681,7 @@
         "kfruti"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/18/2026, 4:12:32 PM"
+      "lastUpdated": "7/18/2026, 5:16:59 PM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -47709,7 +47709,7 @@
         "ray"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/18/2026, 4:12:32 PM"
+      "lastUpdated": "7/18/2026, 5:16:59 PM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -47737,7 +47737,7 @@
         "darkwing"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/18/2026, 4:12:32 PM"
+      "lastUpdated": "7/18/2026, 5:16:59 PM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -47765,7 +47765,7 @@
         "mike"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/18/2026, 4:12:32 PM"
+      "lastUpdated": "7/18/2026, 5:16:59 PM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -47793,7 +47793,7 @@
         "katy"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/18/2026, 4:12:32 PM"
+      "lastUpdated": "7/18/2026, 5:16:59 PM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -47821,7 +47821,7 @@
         "marc"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/18/2026, 4:12:32 PM"
+      "lastUpdated": "7/18/2026, 5:16:59 PM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -47851,16 +47851,16 @@
       "streamHistory": [
         "Rebuild 3: Gangs of Deadsville"
       ],
-      "lastUpdated": "7/18/2026, 4:12:32 PM"
+      "lastUpdated": "7/18/2026, 5:16:59 PM"
     }
   },
   "mutualSquadFollowers": [],
   "authDiagnostics": {
     "werewolf_active": "no",
     "ray_active": "no",
-    "lastCheck": "7/18/2026, 4:12:27 PM"
+    "lastCheck": "7/18/2026, 5:16:49 PM"
   },
-  "lastGlobalUpdate": "7/18/2026, 4:12:27 PM",
+  "lastGlobalUpdate": "7/18/2026, 5:16:49 PM",
   "engineVersion": "14.5.1",
   "codeTimestamp": "Thursday, July 9, 2026 | 7:55 AM EDT"
 }
