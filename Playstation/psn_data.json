@@ -11579,7 +11579,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 10:53:25 AM"
+      "lastUpdated": "7/18/2026, 11:41:05 AM"
     },
     "kfruti": {
       "onlineId": "OneLIVIDMAN",
@@ -17575,7 +17575,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 10:53:26 AM"
+      "lastUpdated": "7/18/2026, 11:41:06 AM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -23571,7 +23571,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 10:53:28 AM"
+      "lastUpdated": "7/18/2026, 11:41:07 AM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -23696,7 +23696,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "7/18/2026, 10:53:30 AM"
+      "lastUpdated": "7/18/2026, 11:41:08 AM"
     },
     "mike": {
       "onlineId": "OneLIVIDMAN",
@@ -29692,7 +29692,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 10:53:31 AM"
+      "lastUpdated": "7/18/2026, 11:41:09 AM"
     },
     "katy": {
       "onlineId": "OneLIVIDMAN",
@@ -35672,7 +35672,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 10:53:31 AM"
+      "lastUpdated": "7/18/2026, 11:41:09 AM"
     },
     "marc": {
       "onlineId": "OneLIVIDMAN",
@@ -41652,7 +41652,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 10:53:31 AM"
+      "lastUpdated": "7/18/2026, 11:41:09 AM"
     },
     "seth": {
       "onlineId": "OneLIVIDMAN",
@@ -47650,7 +47650,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/18/2026, 10:53:33 AM"
+      "lastUpdated": "7/18/2026, 11:41:10 AM"
     }
   },
   "personas": {
@@ -47681,7 +47681,7 @@
         "kfruti"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/18/2026, 10:53:33 AM"
+      "lastUpdated": "7/18/2026, 11:41:10 AM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -47709,7 +47709,7 @@
         "ray"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/18/2026, 10:53:33 AM"
+      "lastUpdated": "7/18/2026, 11:41:10 AM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -47737,7 +47737,7 @@
         "darkwing"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/18/2026, 10:53:33 AM"
+      "lastUpdated": "7/18/2026, 11:41:10 AM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -47765,7 +47765,7 @@
         "mike"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/18/2026, 10:53:33 AM"
+      "lastUpdated": "7/18/2026, 11:41:10 AM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -47793,7 +47793,7 @@
         "katy"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/18/2026, 10:53:33 AM"
+      "lastUpdated": "7/18/2026, 11:41:10 AM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -47821,7 +47821,7 @@
         "marc"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/18/2026, 10:53:33 AM"
+      "lastUpdated": "7/18/2026, 11:41:10 AM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -47851,16 +47851,16 @@
       "streamHistory": [
         "Rebuild 3: Gangs of Deadsville"
       ],
-      "lastUpdated": "7/18/2026, 10:53:33 AM"
+      "lastUpdated": "7/18/2026, 11:41:10 AM"
     }
   },
   "mutualSquadFollowers": [],
   "authDiagnostics": {
     "werewolf_active": "no",
     "ray_active": "no",
-    "lastCheck": "7/18/2026, 10:53:23 AM"
+    "lastCheck": "7/18/2026, 11:41:04 AM"
   },
-  "lastGlobalUpdate": "7/18/2026, 10:53:23 AM",
+  "lastGlobalUpdate": "7/18/2026, 11:41:04 AM",
   "engineVersion": "14.5.1",
   "codeTimestamp": "Thursday, July 9, 2026 | 7:55 AM EDT"
 }
