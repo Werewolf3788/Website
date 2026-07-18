@@ -1,0 +1,55 @@
+{
+  "_comment": "Version Timestamp: 2026-07-17T23:33:24CT",
+  "navigation": [
+    {
+      "type": "single_link",
+      "label": "Home",
+      "url": "https://example.com/?v=20260717",
+      "target": "_self"
+    },
+    {
+      "type": "dropdown_group",
+      "group_label": "Services",
+      "links": [
+        {
+          "label": "Web Development",
+          "url": "https://example.com/services/web?v=20260717"
+        },
+        {
+          "label": "App Design",
+          "url": "https://example.com/services/design?v=20260717"
+        },
+        {
+          "label": "SEO Optimization",
+          "url": "https://example.com/services/seo?v=20260717"
+        }
+      ]
+    },
+    {
+      "type": "single_link",
+      "label": "About Us",
+      "url": "https://example.com/about?v=20260717",
+      "target": "_self"
+    },
+    {
+      "type": "dropdown_group",
+      "group_label": "Resources",
+      "links": [
+        {
+          "label": "Blog",
+          "url": "https://example.com/blog?v=20260717"
+        },
+        {
+          "label": "FAQ",
+          "url": "https://example.com/faq?v=20260717"
+        }
+      ]
+    },
+    {
+      "type": "single_link",
+      "label": "Contact",
+      "url": "https://example.com/contact?v=20260717",
+      "target": "_self"
+    }
+  ]
+}
