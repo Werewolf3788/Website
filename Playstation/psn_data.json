@@ -11579,7 +11579,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/19/2026, 5:18:33 PM"
+      "lastUpdated": "7/19/2026, 6:10:24 PM"
     },
     "kfruti": {
       "onlineId": "OneLIVIDMAN",
@@ -17575,7 +17575,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/19/2026, 5:18:34 PM"
+      "lastUpdated": "7/19/2026, 6:10:24 PM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -23571,7 +23571,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/19/2026, 5:18:36 PM"
+      "lastUpdated": "7/19/2026, 6:10:25 PM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -23696,7 +23696,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "7/19/2026, 5:18:38 PM"
+      "lastUpdated": "7/19/2026, 6:10:26 PM"
     },
     "mike": {
       "onlineId": "OneLIVIDMAN",
@@ -29692,7 +29692,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/19/2026, 5:18:40 PM"
+      "lastUpdated": "7/19/2026, 6:10:27 PM"
     },
     "katy": {
       "onlineId": "OneLIVIDMAN",
@@ -35672,7 +35672,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/19/2026, 5:18:40 PM"
+      "lastUpdated": "7/19/2026, 6:10:27 PM"
     },
     "marc": {
       "onlineId": "OneLIVIDMAN",
@@ -41652,7 +41652,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/19/2026, 5:18:40 PM"
+      "lastUpdated": "7/19/2026, 6:10:27 PM"
     },
     "seth": {
       "onlineId": "OneLIVIDMAN",
@@ -41704,8 +41704,8 @@
         "age": "8 years, 5 months",
         "bio": null,
         "statusMessage": "Sentimental Sunday Ep 6 Zed Heads Need To Stay Dead",
-        "uptime": "1 hour, 44 minutes, 48 seconds",
-        "viewers": "1",
+        "uptime": null,
+        "viewers": "0",
         "subCount": "phoenix_darkfire needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
         "channelCreationRaw": "Jan 23. 2018 - 01:15:39 AM (UTC)"
@@ -47650,7 +47650,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/19/2026, 5:18:42 PM"
+      "lastUpdated": "7/19/2026, 6:10:28 PM"
     }
   },
   "personas": {
@@ -47681,7 +47681,7 @@
         "kfruti"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/19/2026, 5:18:42 PM"
+      "lastUpdated": "7/19/2026, 6:10:28 PM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -47709,7 +47709,7 @@
         "ray"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/19/2026, 5:18:42 PM"
+      "lastUpdated": "7/19/2026, 6:10:28 PM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -47737,7 +47737,7 @@
         "darkwing"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/19/2026, 5:18:42 PM"
+      "lastUpdated": "7/19/2026, 6:10:28 PM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -47765,7 +47765,7 @@
         "mike"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/19/2026, 5:18:42 PM"
+      "lastUpdated": "7/19/2026, 6:10:28 PM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -47793,7 +47793,7 @@
         "katy"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/19/2026, 5:18:42 PM"
+      "lastUpdated": "7/19/2026, 6:10:28 PM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -47821,7 +47821,7 @@
         "marc"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/19/2026, 5:18:42 PM"
+      "lastUpdated": "7/19/2026, 6:10:28 PM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -47851,16 +47851,16 @@
       "streamHistory": [
         "Rebuild 3: Gangs of Deadsville"
       ],
-      "lastUpdated": "7/19/2026, 5:18:42 PM"
+      "lastUpdated": "7/19/2026, 6:10:28 PM"
     }
   },
   "mutualSquadFollowers": [],
   "authDiagnostics": {
     "werewolf_active": "no",
     "ray_active": "no",
-    "lastCheck": "7/19/2026, 5:18:30 PM"
+    "lastCheck": "7/19/2026, 6:10:23 PM"
   },
-  "lastGlobalUpdate": "7/19/2026, 5:18:30 PM",
+  "lastGlobalUpdate": "7/19/2026, 6:10:23 PM",
   "engineVersion": "14.5.1",
   "codeTimestamp": "Thursday, July 9, 2026 | 7:55 AM EDT"
 }
