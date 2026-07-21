@@ -11579,7 +11579,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 9:41:56 AM"
+      "lastUpdated": "7/21/2026, 11:27:46 AM"
     },
     "kfruti": {
       "onlineId": "OneLIVIDMAN",
@@ -17575,7 +17575,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 9:41:57 AM"
+      "lastUpdated": "7/21/2026, 11:27:47 AM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -17624,7 +17624,7 @@
         "latestFollower": "None",
         "followerNames": [],
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-300x300.png",
-        "age": "3 years, 1 month",
+        "age": "3 years, 2 months",
         "bio": null,
         "statusMessage": "Trophy / Collectible Hutning",
         "uptime": null,
@@ -23571,7 +23571,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 9:41:59 AM"
+      "lastUpdated": "7/21/2026, 11:27:48 AM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -23696,7 +23696,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "7/21/2026, 9:42:00 AM"
+      "lastUpdated": "7/21/2026, 11:27:50 AM"
     },
     "mike": {
       "onlineId": "OneLIVIDMAN",
@@ -29692,7 +29692,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 9:42:01 AM"
+      "lastUpdated": "7/21/2026, 11:27:51 AM"
     },
     "katy": {
       "onlineId": "OneLIVIDMAN",
@@ -35672,7 +35672,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 9:42:01 AM"
+      "lastUpdated": "7/21/2026, 11:27:51 AM"
     },
     "marc": {
       "onlineId": "OneLIVIDMAN",
@@ -41652,7 +41652,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 9:42:01 AM"
+      "lastUpdated": "7/21/2026, 11:27:51 AM"
     },
     "seth": {
       "onlineId": "OneLIVIDMAN",
@@ -41704,7 +41704,7 @@
         "age": "8 years, 5 months",
         "bio": null,
         "statusMessage": "Trying Something New Tuesday! Marvel Cosmic Invasion",
-        "uptime": "49 minutes, 20 seconds",
+        "uptime": "2 hours, 35 minutes, 10 seconds",
         "viewers": "1",
         "subCount": "phoenix_darkfire needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
@@ -47650,7 +47650,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 9:42:02 AM"
+      "lastUpdated": "7/21/2026, 11:27:52 AM"
     }
   },
   "personas": {
@@ -47681,7 +47681,7 @@
         "kfruti"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/21/2026, 9:42:02 AM"
+      "lastUpdated": "7/21/2026, 11:27:52 AM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -47709,7 +47709,7 @@
         "ray"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/21/2026, 9:42:02 AM"
+      "lastUpdated": "7/21/2026, 11:27:52 AM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -47737,7 +47737,7 @@
         "darkwing"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/21/2026, 9:42:02 AM"
+      "lastUpdated": "7/21/2026, 11:27:52 AM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -47765,7 +47765,7 @@
         "mike"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/21/2026, 9:42:02 AM"
+      "lastUpdated": "7/21/2026, 11:27:52 AM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -47793,7 +47793,7 @@
         "katy"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/21/2026, 9:42:02 AM"
+      "lastUpdated": "7/21/2026, 11:27:52 AM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -47821,7 +47821,7 @@
         "marc"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/21/2026, 9:42:02 AM"
+      "lastUpdated": "7/21/2026, 11:27:52 AM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -47851,16 +47851,16 @@
       "streamHistory": [
         "Rebuild 3: Gangs of Deadsville"
       ],
-      "lastUpdated": "7/21/2026, 9:42:02 AM"
+      "lastUpdated": "7/21/2026, 11:27:52 AM"
     }
   },
   "mutualSquadFollowers": [],
   "authDiagnostics": {
     "werewolf_active": "no",
     "ray_active": "no",
-    "lastCheck": "7/21/2026, 9:41:55 AM"
+    "lastCheck": "7/21/2026, 11:27:44 AM"
   },
-  "lastGlobalUpdate": "7/21/2026, 9:41:55 AM",
+  "lastGlobalUpdate": "7/21/2026, 11:27:44 AM",
   "engineVersion": "14.5.1",
   "codeTimestamp": "Thursday, July 9, 2026 | 7:55 AM EDT"
 }
