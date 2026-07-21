@@ -11579,7 +11579,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 7:17:36 AM"
+      "lastUpdated": "7/21/2026, 9:41:56 AM"
     },
     "kfruti": {
       "onlineId": "OneLIVIDMAN",
@@ -17575,7 +17575,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 7:17:36 AM"
+      "lastUpdated": "7/21/2026, 9:41:57 AM"
     },
     "ray": {
       "onlineId": "OneLIVIDMAN",
@@ -23571,7 +23571,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 7:17:37 AM"
+      "lastUpdated": "7/21/2026, 9:41:59 AM"
     },
     "darkwing": {
       "onlineId": "Darkwing69420",
@@ -23696,7 +23696,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "7/21/2026, 7:17:38 AM"
+      "lastUpdated": "7/21/2026, 9:42:00 AM"
     },
     "mike": {
       "onlineId": "OneLIVIDMAN",
@@ -29692,7 +29692,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 7:17:39 AM"
+      "lastUpdated": "7/21/2026, 9:42:01 AM"
     },
     "katy": {
       "onlineId": "OneLIVIDMAN",
@@ -35672,7 +35672,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 7:17:39 AM"
+      "lastUpdated": "7/21/2026, 9:42:01 AM"
     },
     "marc": {
       "onlineId": "OneLIVIDMAN",
@@ -41652,7 +41652,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 7:17:39 AM"
+      "lastUpdated": "7/21/2026, 9:42:01 AM"
     },
     "seth": {
       "onlineId": "OneLIVIDMAN",
@@ -41695,7 +41695,7 @@
       "platform": "PS5",
       "twitch": {
         "isLive": false,
-        "game": "Rebuild 3: Gangs of Deadsville",
+        "game": "MARVEL Cosmic Invasion",
         "gameArt": null,
         "followers": "77",
         "latestFollower": "None",
@@ -41703,9 +41703,9 @@
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-300x300.png",
         "age": "8 years, 5 months",
         "bio": null,
-        "statusMessage": "Sentimental Sunday Ep 6 Zed Heads Need To Stay Dead",
-        "uptime": null,
-        "viewers": "0",
+        "statusMessage": "Trying Something New Tuesday! Marvel Cosmic Invasion",
+        "uptime": "49 minutes, 20 seconds",
+        "viewers": "1",
         "subCount": "phoenix_darkfire needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
         "channelCreationRaw": "Jan 23. 2018 - 01:15:39 AM (UTC)"
@@ -47650,7 +47650,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "7/21/2026, 7:17:39 AM"
+      "lastUpdated": "7/21/2026, 9:42:02 AM"
     }
   },
   "personas": {
@@ -47681,7 +47681,7 @@
         "kfruti"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/21/2026, 7:17:39 AM"
+      "lastUpdated": "7/21/2026, 9:42:02 AM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -47709,7 +47709,7 @@
         "ray"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/21/2026, 7:17:39 AM"
+      "lastUpdated": "7/21/2026, 9:42:02 AM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -47737,7 +47737,7 @@
         "darkwing"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/21/2026, 7:17:39 AM"
+      "lastUpdated": "7/21/2026, 9:42:02 AM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -47765,7 +47765,7 @@
         "mike"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/21/2026, 7:17:39 AM"
+      "lastUpdated": "7/21/2026, 9:42:02 AM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -47793,7 +47793,7 @@
         "katy"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/21/2026, 7:17:39 AM"
+      "lastUpdated": "7/21/2026, 9:42:02 AM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -47821,7 +47821,7 @@
         "marc"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/21/2026, 7:17:39 AM"
+      "lastUpdated": "7/21/2026, 9:42:02 AM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -47851,16 +47851,16 @@
       "streamHistory": [
         "Rebuild 3: Gangs of Deadsville"
       ],
-      "lastUpdated": "7/21/2026, 7:17:39 AM"
+      "lastUpdated": "7/21/2026, 9:42:02 AM"
     }
   },
   "mutualSquadFollowers": [],
   "authDiagnostics": {
     "werewolf_active": "no",
     "ray_active": "no",
-    "lastCheck": "7/21/2026, 7:17:34 AM"
+    "lastCheck": "7/21/2026, 9:41:55 AM"
   },
-  "lastGlobalUpdate": "7/21/2026, 7:17:34 AM",
+  "lastGlobalUpdate": "7/21/2026, 9:41:55 AM",
   "engineVersion": "14.5.1",
   "codeTimestamp": "Thursday, July 9, 2026 | 7:55 AM EDT"
 }
