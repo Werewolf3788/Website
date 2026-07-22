@@ -1,62 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Version Timestamp: 2026-07-22T21:20:00.000Z -->
     <meta charset="UTF-8">
-    <!-- Clean, valid mobile-first viewport configuration -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sniper Elite 5 Master Tracker | Werewolf3788</title>
-    
-    <!-- Watermark GA4 Analytics Stream Setup -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-L376P3NPY4"></script>
-    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-L376P3NPY4');</script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
-    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-Z9M5LXQ5XN');</script>
-
-    <!-- Version Timestamp: 2026-07-22 16:15:00 CT -->
-    <link rel="stylesheet" href="https://raw.githack.com/Werewolf3788/Website/main/games/Sniper-Elite/5/style.css?v=20260722_09">
+    <title>Sniper Elite 5: Master Tracker</title>
+    <link rel="stylesheet" href="styles.css?v=20260722_1">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@700&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <nav class="master-nav">
-        <a href="#" class="nav-logo outlined-text">SNIPER ELITE 5: MASTER LOG</a>
-        <div id="stat-line" class="outlined-text">
-            SYSTEM STATE: REALTIME FIRESTORE v9 MODULAR SYNC ACTIVE
-        </div>
-    </nav>
 
-    <!-- Dynamic spreadsheet menu container -->
-    <nav id="csv-menu-bar" class="csv-nav"></nav>
+    <!-- TOP GLOBAL DYNAMIC NAVIGATION -->
+    <header class="site-header">
+        <nav class="nav-container">
+            <div id="dynamic-nav-links" class="nav-links">
+                <!-- Dynamically populated via tracker.js from Menu.json -->
+            </div>
+        </nav>
+    </header>
 
-    <div class="tracker-container">
-        <div id="app-workspace">
-            <div class="profile-header">
-                <div class="active-info">
-                    <div class="operative-label outlined-text">Active Profile</div>
-                    <span id="hunter-display" class="hunter-glow outlined-text">WEREWOLF3788</span>
-                </div>
-                <div class="profile-actions">
-                    <button class="profile-btn active-btn outlined-text" data-profile="Werewolf3788">Werewolf3788</button>
-                    <button class="profile-btn outlined-text" data-profile="OneLIVIDMAN">OneLIVIDMAN</button>
-                    <button class="profile-btn outlined-text" data-profile="TJ">TJ</button>
-                    <button class="profile-btn outlined-text" data-profile="Elu Cloud">Elu Cloud</button>
-                </div>
+    <!-- TRACKER HEADER & OPERATIVE SELECTOR -->
+    <main class="main-wrapper">
+        <header class="tracker-header">
+            <div class="header-titles">
+                <h1 class="game-title">SNIPER ELITE 5: MASTER LOG</h1>
+                <div class="system-status">ACTIVE OPERATIVE: <span id="hunter-display">WEREWOLF3788</span></div>
             </div>
 
-            <header class="main-header">
-                <h2 class="outlined-text">Intel Registry</h2>
-                <div id="percent-text" class="outlined-text">TOTAL CAMPAIGN COLLECTION: 0%</div>
-                <div class="bar-bg"><div id="overall-bar" class="bar-fill"></div></div>
-            </header>
+            <!-- Profile Selector Buttons -->
+            <div class="profile-selector">
+                <button class="profile-btn active-btn" data-profile="Werewolf3788">Werewolf3788</button>
+                <button class="profile-btn" data-profile="Ray">Ray</button>
+                <button class="profile-btn" data-profile="TJ">TJ</button>
+            </div>
+        </header>
 
-            <!-- Mission containers mount here -->
-            <div id="section-container"></div>
+        <!-- PROGRESS HUD METRICS -->
+        <section class="progress-hud">
+            <div class="progress-info">
+                <span id="percent-text" class="percent-label">TOTAL CAMPAIGN COLLECTION: 0%</span>
+            </div>
+            <div class="progress-track">
+                <div id="overall-bar" class="progress-fill" style="width: 0%;"></div>
+            </div>
+        </section>
+
+        <!-- MAIN CHECKLIST CONTAINER -->
+        <section id="section-container" class="checklist-container">
+            <!-- Dynamically populated via tracker.js -->
+        </section>
+    </main>
+
+    <!-- LIGHTBOX OVERLAY FOR COLLECTIBLE MEDIA -->
+    <div id="lightbox" class="lightbox-modal" onclick="if(event.target === this) this.style.display='none'">
+        <span class="lightbox-close" onclick="document.getElementById('lightbox').style.display='none'">&times;</span>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="Collectible Detail">
+            <div id="lightbox-caption" class="lightbox-caption"></div>
         </div>
-
-        <footer class="tracker-footer">
-            <p class="outlined-text">DESIGNED BY WEREWOLF3788 | OPERATIVES: WEREWOLF3788, ONELIVIDMAN, TJ, ELU CLOUD</p>
-        </footer>
     </div>
 
-    <!-- ES Module Script Load for Firebase v9+ Syntax -->
-    <script type="module" src="https://raw.githack.com/Werewolf3788/Website/main/games/Sniper-Elite/5/tracker.js?v=20260722_09"></script>
+    <!-- MAIN TRACKER CONTROLLER SCRIPT -->
+    <script type="module" src="tracker.js?v=20260722_1"></script>
 </body>
 </html>
