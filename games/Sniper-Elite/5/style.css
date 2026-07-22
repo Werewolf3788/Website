@@ -1,4 +1,4 @@
-/* Version Timestamp: 2026-07-22 15:55:00 CT
+/* Version Timestamp: 2026-07-22 16:15:00 CT
    STYLE PROTOCOL: High Contrast Touch Targets, Persistent Red Button Visibility Layout, Mobile Grid Fixes
 */
 :root {
@@ -113,7 +113,6 @@ h1, h2 {
 
 .csv-dropdown { position: relative; display: inline-block; }
 
-/* FIX: Removed extra typos from .csv-dropdown-content.show selector */
 .csv-dropdown-content {
     display: none;
     position: absolute;
