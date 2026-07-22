@@ -1,8 +1,11 @@
-/* Version Timestamp: 2026-07-22 15:45:00 CT
-   LOGIC PROTOCOL: Full 14 Mission Registry with Realtime Firestore Synchronization & Global Profile Inspection
+/* Version Timestamp: 2026-07-22 15:55:00 CT
+   LOGIC PROTOCOL: Full 14 Mission Registry using Firebase Web SDK v9+ Modular Syntax (onSnapshot, doc, setDoc)
 */
 
-// --- FIREBASE FIRESTORE INITIALIZATION ---
+// --- FIREBASE v9+ MODULAR IMPORTS ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
 const firebaseConfig = {
   apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
   authDomain: "game-tracker-5b2ef.firebaseapp.com",
@@ -13,19 +16,11 @@ const firebaseConfig = {
   appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
 };
 
-let db = null;
-try {
-    if (typeof firebase !== 'undefined') {
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        db = firebase.firestore();
-    }
-} catch (err) {
-    console.warn("Firestore offline mode active:", err);
-}
+// Initialize Firebase App & Firestore Database
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-// Map profiles directly to your explicit Firestore document user keys
+// Map profile names directly to your Firestore document user keys
 const profileUserMap = {
     'werewolf3788': 'Kevin',
     'kevin': 'Kevin',
@@ -302,7 +297,7 @@ const appState = {
     activeHunter: 'Werewolf3788',
     hunterData: [],
     collapsedSections: {}, 
-    unsubscribeFirestore: null,
+    unsubscribeFirestore: null, // Active real-time cleanup handle
 
     init: function() {
         this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
@@ -330,10 +325,8 @@ const appState = {
         if (!db) return null;
         const normalized = profileName.toLowerCase().trim();
         const userKey = profileUserMap[normalized] || profileName;
-        // Direct map to your Cloud Firestore Database Document path
-        return db.collection("artifacts").doc("game-tracker-5b2ef")
-                 .collection("data").doc("public")
-                 .collection("user").doc(userKey);
+        // Direct v9+ doc reference path
+        return doc(db, "artifacts", "game-tracker-5b2ef", "data", "public", "user", userKey);
     },
 
     loadHunter: function(name) {
@@ -346,13 +339,39 @@ const appState = {
             b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === name.toLowerCase());
         });
 
-        // Clear active Firestore real-time unsubscribe hook
+        // Clean up previous real-time listener to prevent memory leaks and state cross-talk
         if (this.unsubscribeFirestore) {
             this.unsubscribeFirestore();
             this.unsubscribeFirestore = null;
         }
 
-        // 1. Initial Local Cache Load
+        // Live Modular onSnapshot Sync
+        const docRef = this.getFirestoreDocRef(name);
+        if (docRef) {
+            this.unsubscribeFirestore = onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    const savedProgress = data.progress || data.items || [];
+                    if (Array.isArray(savedProgress)) {
+                        this.hunterData = sniperData.map(item => {
+                            const status = savedProgress.find(s => s.id === item.id);
+                            return { ...item, collected: status ? status.collected : false };
+                        });
+                        this.render();
+                    }
+                } else {
+                    this.loadLocalCache(name);
+                }
+            }, (err) => {
+                console.warn("Realtime Firestore stream error, using local fallback:", err);
+                this.loadLocalCache(name);
+            });
+        } else {
+            this.loadLocalCache(name);
+        }
+    },
+
+    loadLocalCache: function(name) {
         const storageKey = `se5_local_sync_${name}`;
         const localCache = localStorage.getItem(storageKey);
         if (localCache) {
@@ -368,29 +387,7 @@ const appState = {
         } else {
             this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
         }
-
         this.render();
-
-        // 2. Real-time Firestore Cloud Listener
-        const docRef = this.getFirestoreDocRef(name);
-        if (docRef) {
-            this.unsubscribeFirestore = docRef.onSnapshot((doc) => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    const savedProgress = data.progress || data.items || [];
-                    if (Array.isArray(savedProgress)) {
-                        this.hunterData = sniperData.map(item => {
-                            const status = savedProgress.find(s => s.id === item.id);
-                            return { ...item, collected: status ? status.collected : false };
-                        });
-                        localStorage.setItem(storageKey, JSON.stringify(this.hunterData.map(i => ({ id: i.id, collected: i.collected }))));
-                        this.render();
-                    }
-                }
-            }, (err) => {
-                console.warn("Firestore snapshot stream error:", err);
-            });
-        }
     },
 
     toggleItem: function(id) {
@@ -405,17 +402,17 @@ const appState = {
     sync: function() {
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
 
-        // Write local cache
+        // Local cache backup
         localStorage.setItem(`se5_local_sync_${this.activeHunter}`, JSON.stringify(progress));
 
-        // Push update directly to the corresponding user Firestore document
+        // Realtime setDoc sync to Firestore
         const docRef = this.getFirestoreDocRef(this.activeHunter);
         if (docRef) {
-            docRef.set({
+            setDoc(docRef, {
                 user: this.activeHunter,
                 lastUpdated: new Date().toISOString(),
                 progress: progress
-            }, { merge: true }).catch(err => console.warn("Firestore cloud save error:", err));
+            }, { merge: true }).catch(err => console.warn("Cloud save error:", err));
         }
     },
 
@@ -478,11 +475,12 @@ const appState = {
                 const actionZone = card.querySelector('.action-zone');
 
                 if (item.collected) {
-                    actionZone.innerHTML = `<button class="lock-badge outlined-text toggle-btn" style="background:#00aa44; cursor:pointer;">LOGGED REGISTRY (Click to Undo)</button>`;
+                    actionZone.innerHTML = `<button class="lock-badge outlined-text toggle-btn" style="background:#00aa44; min-height:44px; cursor:pointer;">LOGGED REGISTRY (Click to Undo)</button>`;
                     actionZone.querySelector('button').addEventListener('click', () => this.toggleItem(item.id));
                 } else {
                     const btn = document.createElement('button');
                     btn.className = 'toggle-btn outlined-text';
+                    btn.style.minHeight = '44px';
                     btn.innerText = 'Confirm Found';
                     btn.addEventListener('click', () => this.toggleItem(item.id));
                     actionZone.appendChild(btn);
@@ -503,13 +501,16 @@ const appState = {
 
 appState.init();
 
-/* --- SPREADSHEET PARSER AND DEDUPLICATION TAB LAYER --- */
+/* --- CORS PROXY SPREADSHEET MENU PARSER --- */
 async function buildTopMenu() {
     try {
-        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv&t=" + Date.now();
-        const response = await fetch(csvUrl);
-        const textData = await response.text();
+        const targetSheet = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
+        const csvUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetSheet)}&t=${Date.now()}`;
         
+        const response = await fetch(csvUrl);
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+        
+        const textData = await response.text();
         const rows = textData.split('\n');
         const menuStructure = [];
         const groupMap = {};
