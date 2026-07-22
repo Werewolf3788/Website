@@ -2,13 +2,12 @@
  * ==========================================
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Kevin's Official Pack Sync Engine (Max-Payload Firebase Stream)
- * Version: 14.5.1 - Persistent Stream History + PC Game Capture Engine
- * NYT TIMESTAMP: Thu, July 9, 2026, 7:55 AM EDT
+ * Version: 14.5.2 - Pure Firebase Stateless Sync Engine
+ * NYT TIMESTAMP: Wed, July 22, 2026, 3:47 AM EDT
  * Compatibility: Node.js v20+, Firebase Realtime Database REST API
- * Note: NO STRIPPING, NO COMPRESSING. ALL SQUAD LOGIC & ENDPOINTS INTACT.
- * Updates: Fully optimized getTwitchIntel to parse raw Twitch categories directly.
- * Captures PC/Steam games played during live broadcasts and aggregates them safely 
- * into rolling historical stream lists for both public and hidden PSN users.
+ * Logic: Pulls existing state directly from Firebase REST API, aggregates
+ *        new PSN & Twitch data, and streams the updated payload back to Firebase.
+ *        Bypasses local file writes to eliminate Git merge conflicts.
  * ==========================================
  */
 
@@ -33,12 +32,10 @@ const {
     getUserFriendsRequests
 } = psnApi;
 
-const fs = require("fs");
-const path = require("path");
-
 const FIREBASE_RTDB_URL = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/psn.json";
 
-/* * ==========================================
+/* 
+ * ==========================================
  * 🚨 AUGUST 2026 MIGRATION PROTOCOL 🚨
  * When 'werewolf3788' is deleted in August:
  * 1. Generate a fresh NPSSO token while logged into wildhorse_spirit on Sony's website.
@@ -52,7 +49,7 @@ const FIREBASE_RTDB_URL = "https://game-tracker-5b2ef-default-rtdb.firebaseio.co
 const SQUAD_MAP = {
     werewolf: "werewolf3788",   // Scheduled for deletion: Aug 2026
     kfruti: "wildhorse_spirit", // Kevin's designated future primary
-    ray: "OneLIVIDMAN",         // Ray
+    ray: "OneLIVIDMAN",          // Ray
     darkwing: "Darkwing69420",  // TJ
     mike: "IlIMjolnirIlI",      // Mike (Hidden PSN Profile)
     katy: "Balto20_01",         // Katy (Hidden PSN Profile)
@@ -81,19 +78,17 @@ const TWITCH_MAP = {
 
 const ACCOUNT_IDS = {
     werewolf: "3728215008151724560",
-    kfruti: "",                      // Will auto-resolve via encrypted token cracking
+    kfruti: "",                     // Will auto-resolve via encrypted token cracking
     ray: "2732733730346312494",
     darkwing: "4398462806362115916",
-    mike: "",                        // Hidden PSN -> Fallback to placeholder presence
-    katy: "",                        // Hidden PSN -> Fallback to placeholder presence
-    marc: "",                        // Hidden PSN -> Fallback to placeholder presence
-    seth: ""                         // Hidden PSN -> Fallback to placeholder presence
+    mike: "",                       // Hidden PSN -> Fallback to placeholder presence
+    katy: "",                       // Hidden PSN -> Fallback to placeholder presence
+    marc: "",                       // Hidden PSN -> Fallback to placeholder presence
+    seth: ""                        // Hidden PSN -> Fallback to placeholder presence
 };
 
 const AMAZON_TAG = "psngaming-20";
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online"];
-const DATA_PATH = path.join(__dirname, "psn_data.json");
-const ROOT_NOJEKYLL = path.join(__dirname, "..", ".nojekyll");
 
 let tokenStore = { werewolf: {}, ray: {} };
 
@@ -590,6 +585,19 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
     }
 }
 
+async function fetchFromFirebase() {
+    console.log("[FIREBASE] Fetching current state from Realtime Database...");
+    try {
+        const response = await fetch(FIREBASE_RTDB_URL);
+        if (!response.ok) return {};
+        const data = await response.json();
+        return data || {};
+    } catch (err) {
+        console.warn("[FIREBASE WARN] Could not fetch previous state from Firebase:", err.message);
+        return {};
+    }
+}
+
 async function pushToFirebase(payload) {
     console.log("[FIREBASE] Transmitting live Omni-Payload to Realtime Database target...");
     try {
@@ -604,7 +612,7 @@ async function pushToFirebase(payload) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v14.5.1...");
+    console.log("[INIT] Starting Absolute Master Omni-Collector v14.5.2 (Stateless Firebase Engine)...");
     
     if (Date.now() >= 1785542400000) {
         console.warn("\n=======================================================");
@@ -612,19 +620,18 @@ async function main() {
         console.warn("=======================================================\n");
     }
 
-    try { if (!fs.existsSync(ROOT_NOJEKYLL)) fs.writeFileSync(ROOT_NOJEKYLL, ""); } catch(e){}
+    // Pull current state directly from Firebase REST API
+    const previousFirebaseData = await fetchFromFirebase();
 
     let finalData = { 
-        users: {}, personas: {}, mutualSquadFollowers: [], authDiagnostics: diagnosticReport,
-        lastGlobalUpdate: new Date().toLocaleString(), engineVersion: "14.5.1",
-        codeTimestamp: "Thursday, July 9, 2026 | 7:55 AM EDT"
+        users: previousFirebaseData.users || {}, 
+        personas: {}, 
+        mutualSquadFollowers: [], 
+        authDiagnostics: diagnosticReport,
+        lastGlobalUpdate: new Date().toLocaleString(), 
+        engineVersion: "14.5.2",
+        codeTimestamp: "Wednesday, July 22, 2026 | 3:47 AM EDT"
     };
-
-    try {
-        if (fs.existsSync(DATA_PATH)) {
-            finalData.users = JSON.parse(fs.readFileSync(DATA_PATH)).users || {};
-        }
-    } catch (e) {}
 
     const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
     const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
@@ -696,9 +703,9 @@ async function main() {
         finalData.mutualSquadFollowers = Object.entries(frequencyMap).filter(([name, count]) => count >= 2).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ username: name, sharedConnections: count }));
     }
 
-    fs.writeFileSync(DATA_PATH, JSON.stringify(finalData, null, 2));
+    // Stream updated payload directly to Firebase RTDB
     await pushToFirebase(finalData);
-    console.log(`[SUCCESS] Persona Aggregator v14.5.1 Complete.`);
+    console.log(`[SUCCESS] Persona Aggregator v14.5.2 Stateless Execution Complete.`);
 }
 
 main();
