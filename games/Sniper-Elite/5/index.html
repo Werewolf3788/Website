@@ -2,8 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- FIXED: Repaired broken mobile-first viewport meta tag -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sniper Elite 5 Master Tracker | Werewolf3788</title>
     
     <!-- G-TAGS (Watermark GA4 Analytics Stream Setup) -->
@@ -12,15 +11,12 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-Z9M5LXQ5XN');</script>
 
-    <!-- FIREBASE COMPAT SDKs (Loaded globally to prevent CORS module crashes across remote PCs & Mobile) -->
+    <!-- FIREBASE COMPAT SDKs (Global load prevents CORS/module crashes) -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 
-    <!-- 
-        Version Timestamp: 2026-07-22 07:10:00 CT
-        IMPLEMENTATION FIX: Smart cache-buster forced to fresh timestamp version
-    -->
-    <link rel="stylesheet" href="https://raw.githack.com/Werewolf3788/Website/main/games/Sniper-Elite/5/style.css?v=20260722">
+    <!-- Version Timestamp: 2026-07-22 07:15:00 CT -->
+    <link rel="stylesheet" href="https://raw.githack.com/Werewolf3788/Website/main/games/Sniper-Elite/5/style.css?v=20260722_01">
 </head>
 <body>
     <nav class="master-nav">
@@ -54,7 +50,7 @@
                 <div class="bar-bg"><div id="overall-bar" class="bar-fill"></div></div>
             </header>
 
-            <!-- Mission containers mount here downstream -->
+            <!-- Mission containers mount here -->
             <div id="section-container"></div>
         </div>
 
@@ -63,7 +59,7 @@
         </footer>
     </div>
 
-    <!-- UPDATED: Smart cache-buster timestamp tag -->
-    <script src="https://raw.githack.com/Werewolf3788/Website/main/games/Sniper-Elite/5/tracker.js?v=20260722"></script>
+    <!-- Standard Script Load (Bypasses Module Import Blocks) -->
+    <script src="https://raw.githack.com/Werewolf3788/Website/main/games/Sniper-Elite/5/tracker.js?v=20260722_01"></script>
 </body>
 </html>
