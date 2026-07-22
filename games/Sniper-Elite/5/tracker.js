@@ -1,8 +1,8 @@
-/* Version Timestamp: 2026-07-22 07:15:00 CT
-   LOGIC PROTOCOL: Full 14 Mission & DLC Map Registry (No Imports, Universal Compat)
+/* Version Timestamp: 2026-07-22 07:30:00 CT
+   LOGIC PROTOCOL: Full 14 Mission & DLC Map Registry with Realtime Firebase Sync & Mobile Compat
 */
 
-// --- FIREBASE INITIALIZATION ---
+// --- FIREBASE INITIALIZATION VIA GLOBAL WINDOW OBJECT ---
 const firebaseConfig = {
   apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
   authDomain: "game-tracker-5b2ef.firebaseapp.com",
@@ -327,7 +327,7 @@ const appState = {
 
         const sanitizedProfile = name.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-        // 1. Immediate local render (ensures instant screen display)
+        // 1. Immediate local render (ensures instant display)
         const storageKey = `se5_local_sync_${name}`;
         const localCache = localStorage.getItem(storageKey);
         if (localCache) {
