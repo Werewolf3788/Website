@@ -276,20 +276,27 @@ const sniperData = [
     { id: 'm13_wb2', cat: '13: Rough Landing (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Western forest bunker depot; crawl through the side air vent.' },
     { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Northern radar bunker facility lower armory vault.' },
 
-    // MISSION 14: KRAKEN AWAKES DLC (Extracted from Guides4Gamers)
-    { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Boiler Room Inspection', type: 'Personal Letter', desc: 'On the table in the control room on the top floor.' },
-    { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Letter to Vogel', type: 'Personal Letter', desc: 'Locked safe (Requires Vogel\'s Safe Code or Satchel Charge).' },
-    { id: 'm14_pl3', cat: '14: Kraken Awakes (DLC)', name: 'Missing Tools', type: 'Personal Letter', desc: 'Hint location: Room D - Sabotage Radio Equipment.' },
-    { id: 'm14_cd1', cat: '14: Kraken Awakes (DLC)', name: 'Salvage Operation', type: 'Classified Doc', desc: 'The documents are sitting on the desk.' },
-    { id: 'm14_cd2', cat: '14: Kraken Awakes (DLC)', name: 'Successful Raid', type: 'Classified Doc', desc: 'Located near the dock control area.' },
-    { id: 'm14_hi1', cat: '14: Kraken Awakes (DLC)', name: 'Backpack', type: 'Hidden Item', desc: 'Hidden inside the coastal storage shanty.' },
-    { id: 'm14_hi2', cat: '14: Kraken Awakes (DLC)', name: 'Eagle Plaque', type: 'Hidden Item', desc: 'In a room located on the second-from-the-bottom deck level of the aircraft carrier.' },
-    { id: 'm14_se1', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #35', type: 'Stone Eagle', desc: 'Perched high on the exterior carrier/dock structure frame.' },
-    { id: 'm14_se2', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #36', type: 'Stone Eagle', desc: 'Positioned on the roof ridge facing the outer perimeter.' },
-    { id: 'm14_se3', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #37', type: 'Stone Eagle', desc: 'Mounted on the high masonry stack along the south docks.' },
-    { id: 'm14_wb1', cat: '14: Kraken Awakes (DLC)', name: 'Administration Workbench', type: 'Workbench', desc: 'Unlocks: Assault Case attachment.' },
-    { id: 'm14_wb2', cat: '14: Kraken Awakes (DLC)', name: 'Maintenance Workbench', type: 'Workbench', desc: 'Unlocks: Close Quarters Pack attachment.' },
-    { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Resistance Storage Workbench', type: 'Workbench', desc: 'Unlocks: Sustained Fire Mods attachment.' }
+// MISSION 14: KRAKEN AWAKES DLC (Hardened Location Cheat Sheet Descriptions)
+    // 1. INSIDE / ON THE AIRCRAFT CARRIER
+    { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Letter to Vogel', type: 'Personal Letter', desc: '[ON SHIP] Upper Island Superstructure inside Vogel\'s office safe. Code is on the desk nearby, or use a Satchel Charge.' },
+    { id: 'm14_hi2', cat: '14: Kraken Awakes (DLC)', name: 'Eagle Plaque', type: 'Hidden Item', desc: '[INSIDE SHIP] 2nd Level from the bottom of the ship, in a compartment near the room with the large red spotlight.' },
+    { id: 'm14_se1', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: '[ON SHIP] Perched right on the middle mast at the very top of the aircraft carrier.' },
+
+    // 2. NORTH & WEST DOCK FACILITIES
+    { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Boiler Room Inspection', type: 'Personal Letter', desc: '[NORTH-WEST DOCKS] Top floor control room inside the dark facility building.' },
+    { id: 'm14_cd2', cat: '14: Kraken Awakes (DLC)', name: 'Successful Raid', type: 'Classified Doc', desc: '[NORTH DOCKS] Inside the 3rd dock building counting from the ship\'s main access bridge.' },
+    { id: 'm14_se2', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: '[NORTH-WEST DOCKS] Perched on the outer roof ridge of the dark North-West building.' },
+    { id: 'm14_wb2', cat: '14: Kraken Awakes (DLC)', name: 'Maintenance Workbench', type: 'Workbench', desc: '[NORTH-WEST DOCKS] Bottom floor of North-West facility. (Door locked—grab key from table near Letter #1). Unlocks: Close Quarters Pack.' },
+
+    // 3. SOUTH DOCKS & COMPOUND
+    { id: 'm14_pl3', cat: '14: Kraken Awakes (DLC)', name: 'Missing Tools', type: 'Personal Letter', desc: '[SOUTH-WEST] Top floor comms room of the rectangular building.' },
+    { id: 'm14_hi1', cat: '14: Kraken Awakes (DLC)', name: 'Backpack', type: 'Hidden Item', desc: '[SOUTH-WEST] Sitting on a supply crate inside the small corner storage shanty.' },
+    { id: 'm14_se3', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: '[SOUTH PERIMETER] Look high up on the masonry chimney stack.' },
+    { id: 'm14_wb1', cat: '14: Kraken Awakes (DLC)', name: 'Administration Workbench', type: 'Workbench', desc: '[SOUTH DOCKS] South dock building. Climb to upper floor and slide through the air vent. Unlocks: Assault Case.' },
+    { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Resistance Storage Workbench', type: 'Workbench', desc: '[SOUTHERN COMPOUND] Slide under the wall gap and clear the barricade to enter. Unlocks: Sustained Fire Mods.' },
+
+    // 4. EASTERN OUTPOST
+    { id: 'm14_cd1', cat: '14: Kraken Awakes (DLC)', name: 'Salvage Operation', type: 'Classified Doc', desc: '[EASTERN BORDER] On a desk inside the easternmost border house near the tree line.' }
 ];
 
 const appState = {
