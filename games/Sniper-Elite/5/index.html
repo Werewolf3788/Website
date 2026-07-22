@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\""> <!-- Mobile-First Base Layout Target Configuration -->
+    <!-- FIXED: Repaired broken mobile-first viewport meta tag -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
     <title>Sniper Elite 5 Master Tracker | Werewolf3788</title>
     
     <!-- G-TAGS (Watermark GA4 Analytics Stream Setup) -->
@@ -11,17 +12,21 @@
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-Z9M5LXQ5XN');</script>
 
+    <!-- FIREBASE COMPAT SDKs (Loaded globally to prevent CORS module crashes across remote PCs & Mobile) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
     <!-- 
-       Version Timestamp: 2026-07-11 23:59:59 CT
-       IMPLEMENTATION FIX: Utilizing raw githack CDN links so code blocks execute properly inside HTML 
+        Version Timestamp: 2026-07-22 07:10:00 CT
+        IMPLEMENTATION FIX: Smart cache-buster forced to fresh timestamp version
     -->
-    <link rel="stylesheet" href="https://raw.githack.com/Werewolf3788/Website/main/games/Sniper-Elite/5/style.css?v=20260711">
+    <link rel="stylesheet" href="https://raw.githack.com/Werewolf3788/Website/main/games/Sniper-Elite/5/style.css?v=20260722">
 </head>
 <body>
     <nav class="master-nav">
         <a href="#" class="nav-logo outlined-text">SNIPER ELITE 5: MASTER LOG</a>
         <div id="stat-line" class="outlined-text">
-            SYSTEM STATE: LOCAL SAVE STORAGE ACTIVE
+            SYSTEM STATE: REALTIME CLOUD SYNC ACTIVE
         </div>
     </nav>
 
@@ -45,7 +50,7 @@
 
             <header class="main-header">
                 <h2 class="outlined-text">Intel Registry</h2>
-                <div id="percent-text" class="outlined-text">TOTAL COLLECTION: 0%</div>
+                <div id="percent-text" class="outlined-text">TOTAL CAMPAIGN COLLECTION: 0%</div>
                 <div class="bar-bg"><div id="overall-bar" class="bar-fill"></div></div>
             </header>
 
@@ -58,7 +63,7 @@
         </footer>
     </div>
 
-    <!-- FIXED: Pulling tracking module through live content delivery endpoint mapping directly to your repository slot -->
-    <script type="module" src="https://raw.githack.com/Werewolf3788/Website/main/games/Sniper-Elite/5/tracker.js?v=20260711"></script>
+    <!-- UPDATED: Smart cache-buster timestamp tag -->
+    <script src="https://raw.githack.com/Werewolf3788/Website/main/games/Sniper-Elite/5/tracker.js?v=20260722"></script>
 </body>
 </html>
