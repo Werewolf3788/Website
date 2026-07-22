@@ -1,5 +1,5 @@
-/* Version Timestamp: 2026-07-22 01:25:00 CT
-   LOGIC PROTOCOL: Full 12 Mission Map Data Registry with Realtime Firebase Sync & Local Migration
+/* Version Timestamp: 2026-07-22 01:30:00 CT
+   LOGIC PROTOCOL: Full Campaign & DLC Map Registry with Realtime Firebase Sync & Local Migration
 */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
@@ -189,6 +189,33 @@ const sniperData = [
     { id: 'm8_wb2', cat: '8: Rubble and Ruin', name: 'SMG Workbench', type: 'Workbench', desc: 'West sector building attic loft; run and jump across the broken gap framework.' },
     { id: 'm8_wb3', cat: '8: Rubble and Ruin', name: 'Pistol Workbench', type: 'Workbench', desc: 'Church crypt floor section; drop through the broken northwestern tile floor gap.' },
 
+    // MISSION 9: LOOSE ENDS (Trophies & Challenge Kills)
+    { id: 'm9_tr1', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Brains of the Operation', type: 'Trophy / Challenge', desc: 'Kill Möller with a headshot. Customize rifle with high zoom (e.g., M1903 with A2 Optical) on Civilian difficulty.' },
+    { id: 'm9_tr2', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Can\'t Outrun A Bullet', type: 'Trophy / Challenge', desc: 'Kill Möller with a rifle at 600m+ (let him reach the end of the road until binoculars show 1000m+ before shooting).' },
+    { id: 'm9_tr3', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Sight Beyond Sights', type: 'Trophy / Challenge', desc: 'Kill Möller with a rifle while in Iron Sights. Equipping Match ammo helps secure a 1-shot kill.' },
+    { id: 'm9_tr4', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Möllertov Cocktail', type: 'Trophy / Challenge', desc: 'Kill Möller with an explosion.' },
+
+    // MISSION 10: WOLF MOUNTAIN (DLC)
+    { id: 'm10_pl1', cat: '10: Wolf Mountain (DLC)', name: 'Construction Halted', type: 'Personal Letter', desc: 'East Side of the map, in a small house, guarded by one guard.' },
+    { id: 'm10_pl2', cat: '10: Wolf Mountain (DLC)', name: 'Vermin Infestation', type: 'Personal Letter', desc: 'Inside an office in the garage of the main house on a table.' },
+    { id: 'm10_pl3', cat: '10: Wolf Mountain (DLC)', name: 'Führers Plans', type: 'Personal Letter', desc: 'In the main house, in the kitchen on a table.' },
+    { id: 'm10_pl4', cat: '10: Wolf Mountain (DLC)', name: 'Perimeter Problems', type: 'Personal Letter', desc: 'In a house, guarded by many guards, on a table.' },
+    { id: 'm10_pl5', cat: '10: Wolf Mountain (DLC)', name: 'Führer’s Personal Space', type: 'Personal Letter', desc: 'Main house in a room leading to the terrace; on a dresser next to a vase.' },
+    { id: 'm10_cd1', cat: '10: Wolf Mountain (DLC)', name: 'Missing Inventory', type: 'Classified Doc', desc: 'On a box near the tent on the east side of the map.' },
+    { id: 'm10_cd2', cat: '10: Wolf Mountain (DLC)', name: 'Guest of the Führer', type: 'Classified Doc', desc: 'Inside the main house, first floor small office on a table.' },
+    { id: 'm10_cd3', cat: '10: Wolf Mountain (DLC)', name: 'Routine Reminder', type: 'Classified Doc', desc: 'Right of the tunnel in a bunker safe; use Satchel Charge or code from local guard.' },
+    { id: 'm10_cd4', cat: '10: Wolf Mountain (DLC)', name: 'Communication Operation', type: 'Classified Doc', desc: 'On a crate in a sniper tower, Southwest area of the map.' },
+    { id: 'm10_cd5', cat: '10: Wolf Mountain (DLC)', name: 'Additional Flak Positions', type: 'Classified Doc', desc: 'On a table next to the optional objective.' },
+    { id: 'm10_hi1', cat: '10: Wolf Mountain (DLC)', name: 'Führermuseum Concept Model', type: 'Hidden Item', desc: 'Main house ground floor in a gangway with covered furniture.' },
+    { id: 'm10_hi2', cat: '10: Wolf Mountain (DLC)', name: 'Practise Pose Photography', type: 'Hidden Item', desc: 'Safe in top floor main bedroom; open via Satchel Charge or key from house guard.' },
+    { id: 'm10_hi3', cat: '10: Wolf Mountain (DLC)', name: 'Possible Hitler Disguises', type: 'Hidden Item', desc: 'East side of the map in the Tea House, ground floor on a table.' },
+    { id: 'm10_se1', cat: '10: Wolf Mountain (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'On top of the main house; shoot after exiting the tunnel.' },
+    { id: 'm10_se2', cat: '10: Wolf Mountain (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Above the tunnel leading to the main house.' },
+    { id: 'm10_se3', cat: '10: Wolf Mountain (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Outside map boundary; follow Lakeside Path behind the main house.' },
+    { id: 'm10_wb1', cat: '10: Wolf Mountain (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Southwest house basement; enter via Satchel Charge or key from nearby big house enemy.' },
+    { id: 'm10_wb2', cat: '10: Wolf Mountain (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'House basement; crawl in from backside or loot key from AA Gun Officer.' },
+    { id: 'm10_wb3', cat: '10: Wolf Mountain (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Main house basement armory; open with Satchel Charge or house enemy key.' },
+
     // MISSION 11: LANDING FORCE DLC
     { id: 'm11_pl1', cat: '11: Landing Force (DLC)', name: 'Munition Ignitions', type: 'Personal Letter', desc: 'Central map sector, resting on a heavy table inside the main objective fortification bunker.' },
     { id: 'm11_pl2', cat: '11: Landing Force (DLC)', name: 'Bread and Boredom', type: 'Personal Letter', desc: 'Northern coastal sector; resting on an old wooden table built inside the broken tower.' },
@@ -217,7 +244,22 @@ const sniperData = [
     { id: 'm12_se3', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Castle fortifications; perched inside an upper window slit of the massive stone defense tower.' },
     { id: 'm12_wb1', cat: '12: Conqueror (DLC)', name: 'Town Entrance Bunker Workbench', type: 'Workbench', desc: 'Southwest sector defensive line; built inside the entry concrete bunker fortification room.' },
     { id: 'm12_wb2', cat: '12: Conqueror (DLC)', name: 'Village Attic Workbench', type: 'Workbench', desc: 'Southeast sector cluster house; scale structural lofts to reach the closed attic floor area.' },
-    { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Castle Grounds Bunker Workbench', type: 'Workbench', desc: 'Castle inner perimeter line; inside the concrete layout bunker trailing the blue asset goals.' }
+    { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Castle Grounds Bunker Workbench', type: 'Workbench', desc: 'Castle inner perimeter line; inside the concrete layout bunker trailing the blue asset goals.' },
+
+    // MISSION 14: KRAKEN AWAKES DLC
+    { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Boiler Room Inspection', type: 'Personal Letter', desc: 'North-west side of the map, inside a comms room on the top floor of the dark building.' },
+    { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Letter to Vogel', type: 'Personal Letter', desc: 'Inside Vogel\'s safe inside the ship. Use code on writing desk or open with Satchel Charge.' },
+    { id: 'm14_pl3', cat: '14: Kraken Awakes (DLC)', name: 'Missing Tools', type: 'Personal Letter', desc: 'South-west side of the map, top floor comms room of the rectangular building.' },
+    { id: 'm14_cd1', cat: '14: Kraken Awakes (DLC)', name: 'Salvage Operation', type: 'Classified Doc', desc: 'East side of the map, inside the easternmost building on a table.' },
+    { id: 'm14_cd2', cat: '14: Kraken Awakes (DLC)', name: 'Successful Raid', type: 'Classified Doc', desc: 'North side of the map, third building of middle dock counting from ship access point.' },
+    { id: 'm14_hi1', cat: '14: Kraken Awakes (DLC)', name: 'Backpack', type: 'Hidden Item', desc: 'South-west side of the map, inside a small building in a corner on a crate.' },
+    { id: 'm14_hi2', cat: '14: Kraken Awakes (DLC)', name: 'Eagle Plaque', type: 'Hidden Item', desc: 'Found inside the ship on the lower deck, near a room with a big red spotlight.' },
+    { id: 'm14_se1', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Atop the middle mast of the ship.' },
+    { id: 'm14_se2', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'North-west side of the map, on one of the edges of the dark building.' },
+    { id: 'm14_se3', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Perching from the base of one of the chimneys on the southern side of the map.' },
+    { id: 'm14_wb1', cat: '14: Kraken Awakes (DLC)', name: 'South Docks Workbench', type: 'Workbench', desc: 'Slide through air vent from upper level of building south of the docks.' },
+    { id: 'm14_wb2', cat: '14: Kraken Awakes (DLC)', name: 'North-West Facility Workbench', type: 'Workbench', desc: 'North-west building bottom floor. Use key from Letter #1 to unlock side door.' },
+    { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Southern Compound Workbench', type: 'Workbench', desc: 'South part of map; slide under wall opening and break barricade to enter.' }
 ];
 
 const appState = {
