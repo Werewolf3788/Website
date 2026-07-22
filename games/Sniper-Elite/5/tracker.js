@@ -1,11 +1,8 @@
-/* Version Timestamp: 2026-07-22 06:45:00 CT
-   LOGIC PROTOCOL: Full 14 Mission & DLC Map Registry with Robust Firebase Sync & Automatic Fallback
+/* Version Timestamp: 2026-07-22 07:15:00 CT
+   LOGIC PROTOCOL: Full 14 Mission & DLC Map Registry (No Imports, Universal Compat)
 */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
-// Web App Firebase Configuration
+// --- FIREBASE INITIALIZATION ---
 const firebaseConfig = {
   apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
   authDomain: "game-tracker-5b2ef.firebaseapp.com",
@@ -16,15 +13,16 @@ const firebaseConfig = {
   appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
 };
 
-// Initialize Firebase Realtime Database
-let app = null;
 let db = null;
-
 try {
-    app = initializeApp(firebaseConfig);
-    db = getDatabase(app);
-} catch (e) {
-    console.warn("Firebase initialization deferred or offline fallback active:", e);
+    if (typeof firebase !== 'undefined') {
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        db = firebase.database();
+    }
+} catch (err) {
+    console.warn("Firebase offline fallback mode active:", err);
 }
 
 const sniperData = [
@@ -329,7 +327,7 @@ const appState = {
 
         const sanitizedProfile = name.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-        // Standard local fallback load
+        // 1. Immediate local render (ensures instant screen display)
         const storageKey = `se5_local_sync_${name}`;
         const localCache = localStorage.getItem(storageKey);
         if (localCache) {
@@ -346,14 +344,12 @@ const appState = {
             this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
         }
 
-        // Render UI immediately
         this.render();
 
-        // Connect to Firebase if initialized
+        // 2. Real-time Firebase cloud listener
         if (db) {
             try {
-                const hunterRef = ref(db, `se5_operatives/${sanitizedProfile}`);
-                onValue(hunterRef, (snapshot) => {
+                db.ref(`se5_operatives/${sanitizedProfile}`).on('value', (snapshot) => {
                     const savedProgress = snapshot.val();
                     if (savedProgress && Array.isArray(savedProgress)) {
                         this.hunterData = sniperData.map(item => {
@@ -362,11 +358,9 @@ const appState = {
                         });
                         this.render();
                     }
-                }, (err) => {
-                    console.warn("Firebase listener notice:", err);
                 });
             } catch (err) {
-                console.warn("Firebase realtime sync unavailable:", err);
+                console.warn("Realtime cloud sync error:", err);
             }
         }
     },
@@ -384,17 +378,15 @@ const appState = {
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
         const sanitizedProfile = this.activeHunter.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-        // Save locally first so UI state never loses progress
+        // Local storage write first
         localStorage.setItem(`se5_local_sync_${this.activeHunter}`, JSON.stringify(progress));
 
         // Push to Firebase Realtime Database
         if (db) {
             try {
-                set(ref(db, `se5_operatives/${sanitizedProfile}`), progress).catch(err => {
-                    console.warn("Cloud save delayed:", err);
-                });
+                db.ref(`se5_operatives/${sanitizedProfile}`).set(progress);
             } catch (err) {
-                console.warn("Cloud sync error:", err);
+                console.warn("Cloud save delayed:", err);
             }
         }
     },
