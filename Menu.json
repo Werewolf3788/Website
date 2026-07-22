@@ -1,55 +1,117 @@
-{
-  "_comment": "Version Timestamp: 2026-07-17T23:33:24CT",
-  "navigation": [
-    {
-      "type": "single_link",
-      "label": "Home",
-      "url": "https://example.com/?v=20260717",
-      "target": "_self"
-    },
-    {
-      "type": "dropdown_group",
-      "group_label": "Services",
-      "links": [
-        {
-          "label": "Web Development",
-          "url": "https://example.com/services/web?v=20260717"
-        },
-        {
-          "label": "App Design",
-          "url": "https://example.com/services/design?v=20260717"
-        },
-        {
-          "label": "SEO Optimization",
-          "url": "https://example.com/services/seo?v=20260717"
-        }
-      ]
-    },
-    {
-      "type": "single_link",
-      "label": "About Us",
-      "url": "https://example.com/about?v=20260717",
-      "target": "_self"
-    },
-    {
-      "type": "dropdown_group",
-      "group_label": "Resources",
-      "links": [
-        {
-          "label": "Blog",
-          "url": "https://example.com/blog?v=20260717"
-        },
-        {
-          "label": "FAQ",
-          "url": "https://example.com/faq?v=20260717"
-        }
-      ]
-    },
-    {
-      "type": "single_link",
-      "label": "Contact",
-      "url": "https://example.com/contact?v=20260717",
-      "target": "_self"
-    }
-  ]
-}
+/* Version Timestamp: 2026-07-22T21:06:17.000Z */
+[
+  {
+    "name": "Werewolf3788",
+    "group": "User",
+    "url": "https://werewolf3788.github.io/Website/users/kevin/website.html",
+    "image": "https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-70x70.png"
+  },
+  {
+    "name": "RayMystyro",
+    "group": "User",
+    "url": "https://werewolf3788.github.io/Website/users/ray/website.html",
+    "image": "https://static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-70x70.png"
+  },
+  {
+    "name": "Phoenix_Darkfire",
+    "group": "User",
+    "url": "https://werewolf3788.github.io/Website/users/seth/phoenix_darkfire.html",
+    "image": "https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png"
+  },
+  {
+    "name": "Darkwing69420",
+    "group": "User",
+    "url": "https://werewolf3788.github.io/Website/users/terrodog/index.html",
+    "image": "https://static-cdn.jtvnw.net/jtv_user_pictures/53503674-298d-4302-89ad-4c58c18dcbd9-profile_image-70x70.jpeg"
+  },
+  {
+    "name": "Sniper Elite Resistance",
+    "group": "Games",
+    "url": "https://werewolf3788.github.io/Website/games/Sniper-Elite/SE-Resistance.html",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRX-aHwg910ieO0Ks2NoWuB0-8W6RjExQsrsy-Foy6iJRiTRdk6QUw6tCFzWJLssvhkyd_L&s=10"
+  },
+  {
+    "name": "Home",
+    "group": null,
+    "url": "https://werewolf3788.github.io/Website/",
+    "image": "https://e7.pngegg.com/pngimages/22/547/png-clipart-white-and-orange-icon-oregon-service-home-icon-miscellaneous-angle-thumbnail.png"
+  },
+  {
+    "name": "SoundCloud",
+    "group": "Entertainment",
+    "url": "https://soundcloud.com/djwerewolf3788",
+    "image": null
+  },
+  {
+    "name": "Movies",
+    "group": "Entertainment",
+    "url": "https://werewolf3788.github.io/Website/Movies.html",
+    "image": null
+  },
+  {
+    "name": "TheHunter:COTW",
+    "group": "Games",
+    "url": "https://werewolf3788.github.io/Website/games/HunterCOTW/cotw.html",
+    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSh0WTUz4EF1rxtOF2a1dx3BJBjDjoJXYzVA&s"
+  },
+  {
+    "name": "Tom Clancy Ghost Recon Wildlands",
+    "group": "Games",
+    "url": "https://werewolf3788.github.io/Website/games/Tom-Clancy/Ghost%20Recon/Wildlands/index.html",
+    "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/460930/capsule_184x69.jpg?t=1764776201"
+  },
+  {
+    "name": "Sniper Elite 5",
+    "group": "Games",
+    "url": "https://werewolf3788.github.io/Website/games/Sniper-Elite/5/index.html",
+    "image": "https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg"
+  },
+  {
+    "name": "FS25",
+    "group": "Games",
+    "url": "https://werewolf3788.github.io/Website/games/FS25/index.html",
+    "image": "https://image.api.playstation.com/vulcan/ap/rnd/202406/1221/cd33050ff279dcceeaa269b6c2a33002a66ac70f11b0cc9f.jpg"
+  },
+  {
+    "name": "Plex Discord",
+    "group": "Discord",
+    "url": "https://discord.gg/BjBR84aRNz",
+    "image": null
+  },
+  {
+    "name": "Join Discord Server",
+    "group": "Discord",
+    "url": "https://discord.gg/HtrPbqAvpv",
+    "image": null
+  },
+  {
+    "name": "Voice Chat Server for games",
+    "group": "Discord",
+    "url": "https://discord.gg/vuHvHBZm8f",
+    "image": null
+  },
+  {
+    "name": "SK Venture's Advertisment",
+    "group": "Co Sites",
+    "url": "https://skventuresigns.com/index.html?utm_source=smlc_qr&utm_medium=print&utm_campaign=sk_social_indexhtml_qr",
+    "image": null
+  },
+  {
+    "name": "SMLC (Support My Local Community)",
+    "group": "Co Sites",
+    "url": "https://www.supportmylocalcommunity.com?utm_source=smlc_qr&utm_medium=print&utm_campaign=smlc_social_wwwsupportmylocalcommunitycom_qr",
+    "image": null
+  },
+  {
+    "name": "Need Zones COTW",
+    "group": "Games",
+    "url": "https://werewolf3788.github.io/Website/games/HunterCOTW/needzones.html",
+    "image": null
+  },
+  {
+    "name": "Animal Cards",
+    "group": "Games",
+    "url": "https://werewolf3788.github.io/Website/games/HunterCOTW/info/Animalcard.html",
+    "image": null
+  }
+]
