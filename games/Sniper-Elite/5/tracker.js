@@ -1,8 +1,8 @@
-/* Version Timestamp: 2026-07-22 07:30:00 CT
-   LOGIC PROTOCOL: Full 14 Mission & DLC Map Registry with Realtime Firebase Sync & Mobile Compat
+/* Version Timestamp: 2026-07-22 15:45:00 CT
+   LOGIC PROTOCOL: Full 14 Mission Registry with Realtime Firestore Synchronization & Global Profile Inspection
 */
 
-// --- FIREBASE INITIALIZATION VIA GLOBAL WINDOW OBJECT ---
+// --- FIREBASE FIRESTORE INITIALIZATION ---
 const firebaseConfig = {
   apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
   authDomain: "game-tracker-5b2ef.firebaseapp.com",
@@ -19,11 +19,21 @@ try {
         if (!firebase.apps.length) {
             firebase.initializeApp(firebaseConfig);
         }
-        db = firebase.database();
+        db = firebase.firestore();
     }
 } catch (err) {
-    console.warn("Firebase offline fallback mode active:", err);
+    console.warn("Firestore offline mode active:", err);
 }
+
+// Map profiles directly to your explicit Firestore document user keys
+const profileUserMap = {
+    'werewolf3788': 'Kevin',
+    'kevin': 'Kevin',
+    'onelividman': 'Ray',
+    'ray': 'Ray',
+    'elu cloud': 'Elu Cloud',
+    'tj': 'TJ'
+};
 
 const sniperData = [
     // MISSION 1: THE ATLANTIC WALL
@@ -186,7 +196,7 @@ const sniperData = [
     { id: 'm8_cd5', cat: '8: Rubble and Ruin', name: 'Priority Pick Up', type: 'Classified Doc', desc: 'West map sector building; climb the side layout walls to enter the hidden attic loft area.' },
     { id: 'm8_hi1', cat: '8: Rubble and Ruin', name: 'Stolen Tanto', type: 'Hidden Item', desc: 'Sewer secure vault area; pop open the locked storage chest utilizing a crowbar.' },
     { id: 'm8_hi2', cat: '8: Rubble and Ruin', name: 'I-400 V2 Hangar', type: 'Hidden Item', desc: 'Submarine dock structure, upstairs floor table immediately above the switch layout vault.' },
-    { id: 'm8_hi3', cat: '8: Rubble and Ruin', name: 'An \"Original\" Adolf', type: 'Hidden Item', desc: 'Church layout tower mezzanine; scale the structural ladders and jump to the mid-tier beam.' },
+    { id: 'm8_hi3', cat: '8: Rubble and Ruin', name: 'An "Original" Adolf', type: 'Hidden Item', desc: 'Church layout tower mezzanine; scale the structural ladders and jump to the mid-tier beam.' },
     { id: 'm8_se1', cat: '8: Rubble and Ruin', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'South-west border exterior building; track alignment behind the red promenade cart.' },
     { id: 'm8_se2', cat: '8: Rubble and Ruin', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'North-east border layout rooftops; look past boundaries tracking east of the sewer entry.' },
     { id: 'm8_se3', cat: '8: Rubble and Ruin', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Town Hall building structural front facade peak; directly centered above the entry vault.' },
@@ -292,6 +302,7 @@ const appState = {
     activeHunter: 'Werewolf3788',
     hunterData: [],
     collapsedSections: {}, 
+    unsubscribeFirestore: null,
 
     init: function() {
         this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
@@ -315,6 +326,16 @@ const appState = {
         this.loadHunter(this.activeHunter);
     },
 
+    getFirestoreDocRef: function(profileName) {
+        if (!db) return null;
+        const normalized = profileName.toLowerCase().trim();
+        const userKey = profileUserMap[normalized] || profileName;
+        // Direct map to your Cloud Firestore Database Document path
+        return db.collection("artifacts").doc("game-tracker-5b2ef")
+                 .collection("data").doc("public")
+                 .collection("user").doc(userKey);
+    },
+
     loadHunter: function(name) {
         this.activeHunter = name;
         const displayNode = document.getElementById('hunter-display');
@@ -325,9 +346,13 @@ const appState = {
             b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === name.toLowerCase());
         });
 
-        const sanitizedProfile = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        // Clear active Firestore real-time unsubscribe hook
+        if (this.unsubscribeFirestore) {
+            this.unsubscribeFirestore();
+            this.unsubscribeFirestore = null;
+        }
 
-        // 1. Immediate local render (ensures instant display)
+        // 1. Initial Local Cache Load
         const storageKey = `se5_local_sync_${name}`;
         const localCache = localStorage.getItem(storageKey);
         if (localCache) {
@@ -346,29 +371,32 @@ const appState = {
 
         this.render();
 
-        // 2. Real-time Firebase cloud listener
-        if (db) {
-            try {
-                db.ref(`se5_operatives/${sanitizedProfile}`).on('value', (snapshot) => {
-                    const savedProgress = snapshot.val();
-                    if (savedProgress && Array.isArray(savedProgress)) {
+        // 2. Real-time Firestore Cloud Listener
+        const docRef = this.getFirestoreDocRef(name);
+        if (docRef) {
+            this.unsubscribeFirestore = docRef.onSnapshot((doc) => {
+                if (doc.exists) {
+                    const data = doc.data();
+                    const savedProgress = data.progress || data.items || [];
+                    if (Array.isArray(savedProgress)) {
                         this.hunterData = sniperData.map(item => {
                             const status = savedProgress.find(s => s.id === item.id);
                             return { ...item, collected: status ? status.collected : false };
                         });
+                        localStorage.setItem(storageKey, JSON.stringify(this.hunterData.map(i => ({ id: i.id, collected: i.collected }))));
                         this.render();
                     }
-                });
-            } catch (err) {
-                console.warn("Realtime cloud sync error:", err);
-            }
+                }
+            }, (err) => {
+                console.warn("Firestore snapshot stream error:", err);
+            });
         }
     },
 
     toggleItem: function(id) {
         const item = this.hunterData.find(i => i.id === id);
         if (item) {
-            item.collected = true;
+            item.collected = !item.collected;
             this.render(); 
             this.sync();
         }
@@ -376,18 +404,18 @@ const appState = {
 
     sync: function() {
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
-        const sanitizedProfile = this.activeHunter.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-        // Local storage write first
+        // Write local cache
         localStorage.setItem(`se5_local_sync_${this.activeHunter}`, JSON.stringify(progress));
 
-        // Push to Firebase Realtime Database
-        if (db) {
-            try {
-                db.ref(`se5_operatives/${sanitizedProfile}`).set(progress);
-            } catch (err) {
-                console.warn("Cloud save delayed:", err);
-            }
+        // Push update directly to the corresponding user Firestore document
+        const docRef = this.getFirestoreDocRef(this.activeHunter);
+        if (docRef) {
+            docRef.set({
+                user: this.activeHunter,
+                lastUpdated: new Date().toISOString(),
+                progress: progress
+            }, { merge: true }).catch(err => console.warn("Firestore cloud save error:", err));
         }
     },
 
@@ -450,7 +478,8 @@ const appState = {
                 const actionZone = card.querySelector('.action-zone');
 
                 if (item.collected) {
-                    actionZone.innerHTML = `<div class="lock-badge outlined-text">LOGGED REGISTRY</div>`;
+                    actionZone.innerHTML = `<button class="lock-badge outlined-text toggle-btn" style="background:#00aa44; cursor:pointer;">LOGGED REGISTRY (Click to Undo)</button>`;
+                    actionZone.querySelector('button').addEventListener('click', () => this.toggleItem(item.id));
                 } else {
                     const btn = document.createElement('button');
                     btn.className = 'toggle-btn outlined-text';
