@@ -1,9 +1,7 @@
-/* Version Timestamp: 2026-07-22 16:20:00 CT
-   LOGIC PROTOCOL: Hardened SE5 Master Tracker Engine
-   RESILIENCE PATTERNS: Exponential Backoff Fetch, Inactivity/Sleep Auto-Recovery, Auth State Observer, Firestore Stream Re-bind Loop
+/* Version Timestamp: 2026-07-22 16:30:00 CT
+   LOGIC PROTOCOL: Hardened SE5 Tracker Engine with Corrected Mission 14 Guides4Gamers Data
 */
 
-// --- FIREBASE v9+ MODULAR IMPORTS ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import { getAuth, onIdTokenChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -18,12 +16,10 @@ const firebaseConfig = {
   appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
 };
 
-// Initialize Firebase Core Systems
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-// Profile Mapping to Cloud Database Keys
 const profileUserMap = {
     'werewolf3788': 'Kevin',
     'kevin': 'Kevin',
@@ -280,23 +276,22 @@ const sniperData = [
     { id: 'm13_wb2', cat: '13: Rough Landing (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Western forest bunker depot; crawl through the side air vent.' },
     { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Northern radar bunker facility lower armory vault.' },
 
-    // MISSION 14: KRAKEN AWAKES DLC
-    { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Boiler Room Inspection', type: 'Personal Letter', desc: 'North-west side of the map, inside a comms room on the top floor of the dark building.' },
-    { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Letter to Vogel', type: 'Personal Letter', desc: 'Inside Vogel\'s safe inside the ship. Use code on writing desk or open with Satchel Charge.' },
-    { id: 'm14_pl3', cat: '14: Kraken Awakes (DLC)', name: 'Missing Tools', type: 'Personal Letter', desc: 'South-west side of the map, top floor comms room of the rectangular building.' },
-    { id: 'm14_cd1', cat: '14: Kraken Awakes (DLC)', name: 'Salvage Operation', type: 'Classified Doc', desc: 'East side of the map, inside the easternmost building on a table.' },
-    { id: 'm14_cd2', cat: '14: Kraken Awakes (DLC)', name: 'Successful Raid', type: 'Classified Doc', desc: 'North side of the map, third building of middle dock counting from ship access point.' },
-    { id: 'm14_hi1', cat: '14: Kraken Awakes (DLC)', name: 'Backpack', type: 'Hidden Item', desc: 'South-west side of the map, inside a small building in a corner on a crate.' },
-    { id: 'm14_hi2', cat: '14: Kraken Awakes (DLC)', name: 'Eagle Plaque', type: 'Hidden Item', desc: 'Found inside the ship on the lower deck, near a room with a big red spotlight.' },
-    { id: 'm14_se1', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Atop the middle mast of the ship.' },
-    { id: 'm14_se2', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'North-west side of the map, on one of the edges of the dark building.' },
-    { id: 'm14_se3', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Perching from the base of one of the chimneys on the southern side of the map.' },
-    { id: 'm14_wb1', cat: '14: Kraken Awakes (DLC)', name: 'South Docks Workbench', type: 'Workbench', desc: 'Slide through air vent from upper level of building south of the docks.' },
-    { id: 'm14_wb2', cat: '14: Kraken Awakes (DLC)', name: 'North-West Facility Workbench', type: 'Workbench', desc: 'North-west building bottom floor. Use key from Letter #1 to unlock side door.' },
-    { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Southern Compound Workbench', type: 'Workbench', desc: 'South part of map; slide under wall opening and break barricade to enter.' }
+    // MISSION 14: KRAKEN AWAKES DLC (Extracted from Guides4Gamers)
+    { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Boiler Room Inspection', type: 'Personal Letter', desc: 'On the table in the control room on the top floor.' },
+    { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Letter to Vogel', type: 'Personal Letter', desc: 'Locked safe (Requires Vogel\'s Safe Code or Satchel Charge).' },
+    { id: 'm14_pl3', cat: '14: Kraken Awakes (DLC)', name: 'Missing Tools', type: 'Personal Letter', desc: 'Hint location: Room D - Sabotage Radio Equipment.' },
+    { id: 'm14_cd1', cat: '14: Kraken Awakes (DLC)', name: 'Salvage Operation', type: 'Classified Doc', desc: 'The documents are sitting on the desk.' },
+    { id: 'm14_cd2', cat: '14: Kraken Awakes (DLC)', name: 'Successful Raid', type: 'Classified Doc', desc: 'Located near the dock control area.' },
+    { id: 'm14_hi1', cat: '14: Kraken Awakes (DLC)', name: 'Backpack', type: 'Hidden Item', desc: 'Hidden inside the coastal storage shanty.' },
+    { id: 'm14_hi2', cat: '14: Kraken Awakes (DLC)', name: 'Eagle Plaque', type: 'Hidden Item', desc: 'In a room located on the second-from-the-bottom deck level of the aircraft carrier.' },
+    { id: 'm14_se1', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #35', type: 'Stone Eagle', desc: 'Perched high on the exterior carrier/dock structure frame.' },
+    { id: 'm14_se2', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #36', type: 'Stone Eagle', desc: 'Positioned on the roof ridge facing the outer perimeter.' },
+    { id: 'm14_se3', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #37', type: 'Stone Eagle', desc: 'Mounted on the high masonry stack along the south docks.' },
+    { id: 'm14_wb1', cat: '14: Kraken Awakes (DLC)', name: 'Administration Workbench', type: 'Workbench', desc: 'Unlocks: Assault Case attachment.' },
+    { id: 'm14_wb2', cat: '14: Kraken Awakes (DLC)', name: 'Maintenance Workbench', type: 'Workbench', desc: 'Unlocks: Close Quarters Pack attachment.' },
+    { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Resistance Storage Workbench', type: 'Workbench', desc: 'Unlocks: Sustained Fire Mods attachment.' }
 ];
 
-// --- APP STATE ENGINE WITH RESILIENCE WRAPPERS ---
 const appState = {
     activeHunter: 'Werewolf3788',
     hunterData: [],
@@ -314,7 +309,6 @@ const appState = {
             this.collapsedSections[sid] = true;
         });
 
-        // Register profile action buttons
         document.querySelectorAll('.profile-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -325,21 +319,17 @@ const appState = {
             });
         });
 
-        // Initialize Anonymous Auth to guarantee token credentials for Firestore
         signInAnonymously(auth).catch(err => console.warn("Anon Auth fallback notice:", err.message));
 
-        // Wrap stream in Auth State Observer to auto-heal when tokens auto-refresh
         onIdTokenChanged(auth, (user) => {
             if (user) {
                 this.loadHunter(this.activeHunter);
             }
         });
 
-        // INACTIVITY & TAB SLEEP RESILIENCE OBSERVERS
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 const idleDuration = Date.now() - this.lastSyncTime;
-                // If tab was inactive/sleeping for more than 2 minutes, force re-bind
                 if (idleDuration > 120000) {
                     this.loadHunter(this.activeHunter);
                 }
@@ -370,7 +360,6 @@ const appState = {
             b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === name.toLowerCase());
         });
 
-        // Clean up previous real-time listener to prevent memory leaks and zombie handles
         if (this.unsubscribeFirestore) {
             this.unsubscribeFirestore();
             this.unsubscribeFirestore = null;
@@ -381,7 +370,6 @@ const appState = {
             this.reconnectTimer = null;
         }
 
-        // Setup live Firestore listener with active error-reconnection loop
         const docRef = this.getFirestoreDocRef(name);
         if (docRef) {
             this.unsubscribeFirestore = onSnapshot(docRef, (docSnap) => {
@@ -402,7 +390,6 @@ const appState = {
             }, (err) => {
                 console.warn("Firestore snapshot error (scheduling recovery):", err.message);
                 this.loadLocalCache(name);
-                // Exponential reconnect retry timer if stream disconnects during sleep
                 this.reconnectTimer = setTimeout(() => {
                     this.loadHunter(name);
                 }, 5000);
@@ -444,10 +431,8 @@ const appState = {
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
         this.lastSyncTime = Date.now();
 
-        // Local storage emergency backup
         localStorage.setItem(`se5_local_sync_${this.activeHunter}`, JSON.stringify(progress));
 
-        // Direct Cloud Firestore write
         const docRef = this.getFirestoreDocRef(this.activeHunter);
         if (docRef) {
             setDoc(docRef, {
@@ -541,14 +526,12 @@ const appState = {
     }
 };
 
-// Start application runtime
 appState.init();
 
-// --- HARDENED EXPONENTIAL BACKOFF FETCH FOR MENU ---
 async function fetchWithRetry(url, retries = 3, delay = 1000) {
     for (let i = 0; i < retries; i++) {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s explicit timeout per attempt
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
         
         try {
             const response = await fetch(url, { signal: controller.signal });
@@ -559,7 +542,7 @@ async function fetchWithRetry(url, retries = 3, delay = 1000) {
             clearTimeout(timeoutId);
             const isLastAttempt = i === retries - 1;
             if (isLastAttempt) throw err;
-            const backoff = delay * Math.pow(2, i) + (Math.random() * 200); // Exponential backoff + jitter
+            const backoff = delay * Math.pow(2, i) + (Math.random() * 200);
             await new Promise(res => setTimeout(res, backoff));
         }
     }
@@ -614,7 +597,6 @@ async function buildTopMenu() {
     }
 }
 
-// Global click event listener for navigation dropdowns
 window.addEventListener('click', function(event) {
     const btn = event.target.closest('.csv-dropdown-btn');
     const dropdowns = document.getElementsByClassName("csv-dropdown-content");
@@ -638,5 +620,4 @@ window.addEventListener('click', function(event) {
     }
 });
 
-// Build top menu on boot
 buildTopMenu();
