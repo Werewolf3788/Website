@@ -1,6 +1,25 @@
-/* Version Timestamp: 2026-07-12 00:05:00 CT
-   LOGIC PROTOCOL: Full 12 Mission Map Data Registry with Live Multi-Device Sync Channel
+/* Version Timestamp: 2026-07-22 01:25:00 CT
+   LOGIC PROTOCOL: Full 12 Mission Map Data Registry with Realtime Firebase Sync & Local Migration
 */
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
+  authDomain: "game-tracker-5b2ef.firebaseapp.com",
+  databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
+  projectId: "game-tracker-5b2ef",
+  storageBucket: "game-tracker-5b2ef.firebasestorage.app",
+  messagingSenderId: "555667047127",
+  appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
+};
+
+// Initialize Firebase Realtime Database
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
 const sniperData = [
     // MISSION 1: THE ATLANTIC WALL
     { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'North-east map sector, on a chest inside a single building guarded by 2 soldiers.' },
@@ -205,7 +224,6 @@ const appState = {
     activeHunter: 'Werewolf3788',
     hunterData: [],
     collapsedSections: {}, 
-    syncChannel: null,
 
     init: function() {
         this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
@@ -216,20 +234,6 @@ const appState = {
             this.collapsedSections[sid] = true;
         });
 
-        // Initialize Direct Network Cross-Tab Sync Channel Broadcast Engine
-        this.syncChannel = new BroadcastChannel('se5_coop_sync');
-        
-        // Listener catching incoming updates from other active team member windows
-        this.syncChannel.onmessage = (event) => {
-            if (event.data && event.data.action === 'item_toggle') {
-                if (event.data.profile.toLowerCase() === this.activeHunter.toLowerCase()) {
-                    this.executeRemoteToggle(event.data.itemId);
-                }
-            }
-        };
-
-        this.loadHunter(this.activeHunter);
-
         document.querySelectorAll('.profile-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -238,6 +242,41 @@ const appState = {
                     this.loadHunter(selectedProfile);
                 }
             });
+        });
+
+        // Run one-time migration for any existing local data
+        this.migrateLocalStorageToFirebase();
+
+        this.loadHunter(this.activeHunter);
+    },
+
+    migrateLocalStorageToFirebase: function() {
+        const profiles = ['Werewolf3788', 'OneLIVIDMAN', 'TJ', 'Elu Cloud'];
+        
+        profiles.forEach(profileName => {
+            const localKey = `se5_local_sync_${profileName}`;
+            const localCache = localStorage.getItem(localKey);
+            
+            if (localCache) {
+                try {
+                    const parsedLocal = JSON.parse(localCache);
+                    const hasProgress = parsedLocal.some(item => item.collected === true);
+                    
+                    if (hasProgress) {
+                        const sanitizedProfile = profileName.toLowerCase().replace(/[^a-z0-9]/g, '');
+                        const profileRef = ref(db, `se5_operatives/${sanitizedProfile}`);
+                        
+                        set(profileRef, parsedLocal).then(() => {
+                            console.log(`Migrated local data for ${profileName} to Firebase.`);
+                            localStorage.removeItem(localKey);
+                        }).catch(err => {
+                            console.error(`Error migrating ${profileName}:`, err);
+                        });
+                    }
+                } catch(e) {
+                    console.error("Migration error:", e);
+                }
+            }
         });
     },
 
@@ -250,23 +289,44 @@ const appState = {
             b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === name.toLowerCase());
         });
 
-        const storageKey = `se5_local_sync_${name}`;
-        const localCache = localStorage.getItem(storageKey);
-        if (localCache) {
-            try {
-                const savedProgress = JSON.parse(localCache);
-                this.hunterData = sniperData.map(item => {
-                    const status = savedProgress.find(s => s.id === item.id);
-                    return { ...item, collected: status ? status.collected : false };
-                });
-            } catch(e) {
-                this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
-            }
-        } else {
-            this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
-        }
+        const sanitizedProfile = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const hunterRef = ref(db, `se5_operatives/${sanitizedProfile}`);
 
-        this.render();
+        // Realtime sync listener from Firebase
+        onValue(hunterRef, (snapshot) => {
+            const savedProgress = snapshot.val() || [];
+            this.hunterData = sniperData.map(item => {
+                const status = savedProgress.find(s => s.id === item.id);
+                return { ...item, collected: status ? status.collected : false };
+            });
+            this.render();
+        });
+    },
+
+    toggleItem: function(id) {
+        const item = this.hunterData.find(i => i.id === id);
+        if (item) {
+            item.collected = true;
+            this.render(); 
+            this.syncToCloud();
+        }
+    },
+
+    syncToCloud: function() {
+        const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
+        const sanitizedProfile = this.activeHunter.toLowerCase().replace(/[^a-z0-9]/g, '');
+        set(ref(db, `se5_operatives/${sanitizedProfile}`), progress);
+    },
+
+    toggleSection: function(sid) {
+        this.collapsedSections[sid] = !this.collapsedSections[sid];
+        const contentNode = document.getElementById(`content-${sid}`);
+        const sectionNode = contentNode.parentElement;
+        if (this.collapsedSections[sid]) {
+            sectionNode.classList.add('section-collapsed');
+        } else {
+            sectionNode.classList.remove('section-collapsed');
+        }
     },
 
     render: function() {
@@ -331,50 +391,6 @@ const appState = {
         const percent = Math.round((totalFound / this.hunterData.length) * 100) || 0;
         document.getElementById('overall-bar').style.width = percent + '%';
         document.getElementById('percent-text').innerText = `TOTAL CAMPAIGN COLLECTION: ${percent}%`;
-    },
-
-    toggleItem: function(id) {
-        const item = this.hunterData.find(i => i.id === id);
-        if (item) {
-            item.collected = true;
-            this.render(); 
-            this.sync();
-
-            // Broadcast the modification out to all other active profile logs immediately
-            this.syncChannel.postMessage({
-                action: 'item_toggle',
-                profile: this.activeHunter,
-                itemId: id
-            });
-        }
-    },
-
-    executeRemoteToggle: function(id) {
-        const item = this.hunterData.find(i => i.id === id);
-        if (item && !item.collected) {
-            item.collected = true;
-            this.render();
-            
-            // Commit to matching local slot
-            const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
-            localStorage.setItem(`se5_local_sync_${this.activeHunter}`, JSON.stringify(progress));
-        }
-    },
-
-    toggleSection: function(sid) {
-        this.collapsedSections[sid] = !this.collapsedSections[sid];
-        const contentNode = document.getElementById(`content-${sid}`);
-        const sectionNode = contentNode.parentElement;
-        if (this.collapsedSections[sid]) {
-            sectionNode.classList.add('section-collapsed');
-        } else {
-            sectionNode.classList.remove('section-collapsed');
-        }
-    },
-
-    sync: function() {
-        const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
-        localStorage.setItem(`se5_local_sync_${this.activeHunter}`, JSON.stringify(progress));
     }
 };
 
@@ -403,7 +419,7 @@ async function buildTopMenu() {
             let url = cols[2] ? cols[2].replace(/^"|"$/g, '').trim() : '';
             let img = cols[3] ? cols[3].replace(/^"|"$/g, '').trim() : '';
 
-                    if(!name || !url) continue;
+            if(!name || !url) continue;
             
             if(!group || group.toLowerCase() === 'none') {
                 menuStructure.push({ type: 'single', name, url, img });
