@@ -1,10 +1,12 @@
-/* Version Timestamp: 2026-07-22 15:55:00 CT
-   LOGIC PROTOCOL: Full 14 Mission Registry using Firebase Web SDK v9+ Modular Syntax (onSnapshot, doc, setDoc)
+/* Version Timestamp: 2026-07-22 16:20:00 CT
+   LOGIC PROTOCOL: Hardened SE5 Master Tracker Engine
+   RESILIENCE PATTERNS: Exponential Backoff Fetch, Inactivity/Sleep Auto-Recovery, Auth State Observer, Firestore Stream Re-bind Loop
 */
 
 // --- FIREBASE v9+ MODULAR IMPORTS ---
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onIdTokenChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
@@ -16,11 +18,12 @@ const firebaseConfig = {
   appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
 };
 
-// Initialize Firebase App & Firestore Database
+// Initialize Firebase Core Systems
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
-// Map profile names directly to your Firestore document user keys
+// Profile Mapping to Cloud Database Keys
 const profileUserMap = {
     'werewolf3788': 'Kevin',
     'kevin': 'Kevin',
@@ -293,11 +296,14 @@ const sniperData = [
     { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Southern Compound Workbench', type: 'Workbench', desc: 'South part of map; slide under wall opening and break barricade to enter.' }
 ];
 
+// --- APP STATE ENGINE WITH RESILIENCE WRAPPERS ---
 const appState = {
     activeHunter: 'Werewolf3788',
     hunterData: [],
     collapsedSections: {}, 
-    unsubscribeFirestore: null, // Active real-time cleanup handle
+    unsubscribeFirestore: null,
+    lastSyncTime: 0,
+    reconnectTimer: null,
 
     init: function() {
         this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
@@ -308,6 +314,7 @@ const appState = {
             this.collapsedSections[sid] = true;
         });
 
+        // Register profile action buttons
         document.querySelectorAll('.profile-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -318,6 +325,31 @@ const appState = {
             });
         });
 
+        // Initialize Anonymous Auth to guarantee token credentials for Firestore
+        signInAnonymously(auth).catch(err => console.warn("Anon Auth fallback notice:", err.message));
+
+        // Wrap stream in Auth State Observer to auto-heal when tokens auto-refresh
+        onIdTokenChanged(auth, (user) => {
+            if (user) {
+                this.loadHunter(this.activeHunter);
+            }
+        });
+
+        // INACTIVITY & TAB SLEEP RESILIENCE OBSERVERS
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                const idleDuration = Date.now() - this.lastSyncTime;
+                // If tab was inactive/sleeping for more than 2 minutes, force re-bind
+                if (idleDuration > 120000) {
+                    this.loadHunter(this.activeHunter);
+                }
+            }
+        });
+
+        window.addEventListener('online', () => {
+            this.loadHunter(this.activeHunter);
+        });
+
         this.loadHunter(this.activeHunter);
     },
 
@@ -325,7 +357,6 @@ const appState = {
         if (!db) return null;
         const normalized = profileName.toLowerCase().trim();
         const userKey = profileUserMap[normalized] || profileName;
-        // Direct v9+ doc reference path
         return doc(db, "artifacts", "game-tracker-5b2ef", "data", "public", "user", userKey);
     },
 
@@ -339,16 +370,22 @@ const appState = {
             b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === name.toLowerCase());
         });
 
-        // Clean up previous real-time listener to prevent memory leaks and state cross-talk
+        // Clean up previous real-time listener to prevent memory leaks and zombie handles
         if (this.unsubscribeFirestore) {
             this.unsubscribeFirestore();
             this.unsubscribeFirestore = null;
         }
 
-        // Live Modular onSnapshot Sync
+        if (this.reconnectTimer) {
+            clearTimeout(this.reconnectTimer);
+            this.reconnectTimer = null;
+        }
+
+        // Setup live Firestore listener with active error-reconnection loop
         const docRef = this.getFirestoreDocRef(name);
         if (docRef) {
             this.unsubscribeFirestore = onSnapshot(docRef, (docSnap) => {
+                this.lastSyncTime = Date.now();
                 if (docSnap.exists()) {
                     const data = docSnap.data();
                     const savedProgress = data.progress || data.items || [];
@@ -363,8 +400,12 @@ const appState = {
                     this.loadLocalCache(name);
                 }
             }, (err) => {
-                console.warn("Realtime Firestore stream error, using local fallback:", err);
+                console.warn("Firestore snapshot error (scheduling recovery):", err.message);
                 this.loadLocalCache(name);
+                // Exponential reconnect retry timer if stream disconnects during sleep
+                this.reconnectTimer = setTimeout(() => {
+                    this.loadHunter(name);
+                }, 5000);
             });
         } else {
             this.loadLocalCache(name);
@@ -401,18 +442,19 @@ const appState = {
 
     sync: function() {
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
+        this.lastSyncTime = Date.now();
 
-        // Local cache backup
+        // Local storage emergency backup
         localStorage.setItem(`se5_local_sync_${this.activeHunter}`, JSON.stringify(progress));
 
-        // Realtime setDoc sync to Firestore
+        // Direct Cloud Firestore write
         const docRef = this.getFirestoreDocRef(this.activeHunter);
         if (docRef) {
             setDoc(docRef, {
                 user: this.activeHunter,
                 lastUpdated: new Date().toISOString(),
                 progress: progress
-            }, { merge: true }).catch(err => console.warn("Cloud save error:", err));
+            }, { merge: true }).catch(err => console.warn("Firestore save error:", err.message));
         }
     },
 
@@ -499,92 +541,80 @@ const appState = {
     }
 };
 
+// Start application runtime
 appState.init();
 
-/* --- CORS PROXY SPREADSHEET MENU PARSER --- */
-async function buildTopMenu() {
-    try {
-        const targetSheet = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
-        const csvUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(targetSheet)}&t=${Date.now()}`;
+// --- HARDENED EXPONENTIAL BACKOFF FETCH FOR MENU ---
+async function fetchWithRetry(url, retries = 3, delay = 1000) {
+    for (let i = 0; i < retries; i++) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s explicit timeout per attempt
         
-        const response = await fetch(csvUrl);
-        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-        
-        const textData = await response.text();
-        const rows = textData.split('\n');
-        const menuStructure = [];
-        const groupMap = {};
-        
-        let startIdx = (rows[0] && rows[0].toLowerCase().includes("name")) ? 1 : 0;
-
-        for(let i = startIdx; i < rows.length; i++) {
-            const rowStr = rows[i].replace(/\r/g, '').trim();
-            if(!rowStr) continue;
-            
-            const cols = rowStr.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
-            let name = cols[0] ? cols[0].replace(/^"|"$/g, '').trim() : '';
-            let group = cols[1] ? cols[1].replace(/^"|"$/g, '').trim() : '';
-            let url = cols[2] ? cols[2].replace(/^"|"$/g, '').trim() : '';
-            let img = cols[3] ? cols[3].replace(/^"|"$/g, '').trim() : '';
-
-            if(!name || !url) continue;
-            
-            if(!group || group.toLowerCase() === 'none') {
-                menuStructure.push({ type: 'single', name, url, img });
-            } else {
-                if(!groupMap[group]) {
-                    const newGroup = { type: 'group', name: group, items: [] };
-                    menuStructure.push(newGroup);
-                    groupMap[group] = newGroup;
-                }
-                groupMap[group].items.push({name, url, img});
-            }
+        try {
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            if (!response.ok) throw new Error(`HTTP Error status: ${response.status}`);
+            return await response.json();
+        } catch (err) {
+            clearTimeout(timeoutId);
+            const isLastAttempt = i === retries - 1;
+            if (isLastAttempt) throw err;
+            const backoff = delay * Math.pow(2, i) + (Math.random() * 200); // Exponential backoff + jitter
+            await new Promise(res => setTimeout(res, backoff));
         }
-
-        const menuBar = document.getElementById('csv-menu-bar');
-        if (menuBar) {
-            let html = '';
-            const chevron = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="margin-left:6px; display:inline-block; vertical-align:middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
-
-            menuStructure.forEach(item => {
-                if (item.type === 'single') {
-                    html += `<a href="${item.url}" class="csv-single-btn intercepted-link outlined-text">${item.name}</a>`;
-                } else {
-                    const safeId = item.name.replace(/[^a-zA-Z0-9]/g, '');
-                    html += `
-                        <div class="csv-dropdown">
-                            <button class="csv-dropdown-btn outlined-text" data-dropdown="${safeId}">
-                                ${item.name} ${chevron}
-                            </button>
-                            <div id="dropdown-${safeId}" class="csv-dropdown-content">
-                    `;
-                    item.items.forEach(sub => {
-                        const imgTag = sub.img ? `<img src="${sub.img}" style="width:26px; height:26px; margin-right:12px; vertical-align:middle; border-radius:6px; object-fit:cover;">` : '';
-                        html += `<a href="${sub.url}" class="csv-dropdown-item intercepted-link outlined-text">${imgTag}${sub.name}</a>`;
-                    });
-                    html += `</div></div>`;
-                }
-            });
-            
-            menuBar.innerHTML = html;
-
-            if (typeof BroadcastChannel !== 'undefined') {
-                const tabChannel = new BroadcastChannel('se5_tracker_channel');
-                document.querySelectorAll('.intercepted-link').forEach(link => {
-                    link.addEventListener('click', function(e) {
-                        e.preventDefault();
-                        const targetUrl = this.getAttribute('href');
-                        tabChannel.postMessage({ action: 'check_focus', url: targetUrl });
-                        window.open(targetUrl, 'SE5_ITC_Window');
-                    });
-                });
-            }
-        }
-    } catch(e) {
-        console.error("Error generating menu:", e);
     }
 }
 
+async function buildTopMenu() {
+    try {
+        const jsonUrl = "https://raw.githack.com/Werewolf3788/Website/main/Menu.json?v=" + Date.now();
+        const menuData = await fetchWithRetry(jsonUrl, 3, 1000);
+        const menuBar = document.getElementById('csv-menu-bar');
+        
+        if (!menuBar || !Array.isArray(menuData)) return;
+
+        let html = '';
+        const chevron = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="margin-left:6px; display:inline-block; vertical-align:middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+
+        menuData.forEach(item => {
+            if (item.items && Array.isArray(item.items) && item.items.length > 0) {
+                const safeId = (item.name || item.group || 'menu').replace(/[^a-zA-Z0-9]/g, '');
+                html += `
+                    <div class="csv-dropdown">
+                        <button class="csv-dropdown-btn outlined-text" data-dropdown="${safeId}">
+                            ${item.name || item.group} ${chevron}
+                        </button>
+                        <div id="dropdown-${safeId}" class="csv-dropdown-content">
+                `;
+                item.items.forEach(sub => {
+                    const imgTag = sub.img ? `<img src="${sub.img}" style="width:26px; height:26px; margin-right:12px; vertical-align:middle; border-radius:6px; object-fit:cover;">` : '';
+                    html += `<a href="${sub.url}" class="csv-dropdown-item intercepted-link outlined-text">${imgTag}${sub.name}</a>`;
+                });
+                html += `</div></div>`;
+            } else if (item.url) {
+                html += `<a href="${item.url}" class="csv-single-btn intercepted-link outlined-text">${item.name}</a>`;
+            }
+        });
+        
+        menuBar.innerHTML = html;
+
+        if (typeof BroadcastChannel !== 'undefined') {
+            const tabChannel = new BroadcastChannel('se5_tracker_channel');
+            document.querySelectorAll('.intercepted-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetUrl = this.getAttribute('href');
+                    tabChannel.postMessage({ action: 'check_focus', url: targetUrl });
+                    window.open(targetUrl, 'SE5_ITC_Window');
+                });
+            });
+        }
+    } catch(e) {
+        console.error("Resilient menu fetch failed:", e.message);
+    }
+}
+
+// Global click event listener for navigation dropdowns
 window.addEventListener('click', function(event) {
     const btn = event.target.closest('.csv-dropdown-btn');
     const dropdowns = document.getElementsByClassName("csv-dropdown-content");
@@ -608,4 +638,5 @@ window.addEventListener('click', function(event) {
     }
 });
 
+// Build top menu on boot
 buildTopMenu();
