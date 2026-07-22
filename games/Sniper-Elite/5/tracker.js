@@ -1,10 +1,14 @@
-/* Version Timestamp: 2026-07-22 16:30:00 CT
-   LOGIC PROTOCOL: Hardened SE5 Tracker Engine with Corrected Mission 14 Guides4Gamers Data
-*/
+/*
+ * ==========================================
+ * VERSION TIMESTAMP: Wed, July 22, 2026, 4:42 PM EDT
+ * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker
+ * ARCHITECTURE: Public Live Read + Google Auth Self-Write + Admin Master Override
+ * ==========================================
+ */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, onIdTokenChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, onSnapshot, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
@@ -14,19 +18,6 @@ const firebaseConfig = {
   storageBucket: "game-tracker-5b2ef.firebasestorage.app",
   messagingSenderId: "555667047127",
   appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-const profileUserMap = {
-    'werewolf3788': 'Kevin',
-    'kevin': 'Kevin',
-    'onelividman': 'Ray',
-    'ray': 'Ray',
-    'elu cloud': 'Elu Cloud',
-    'tj': 'TJ'
 };
 
 const sniperData = [
@@ -276,190 +267,146 @@ const sniperData = [
     { id: 'm13_wb2', cat: '13: Rough Landing (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Western forest bunker depot; crawl through the side air vent.' },
     { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Northern radar bunker facility lower armory vault.' },
 
-// MISSION 14: KRAKEN AWAKES DLC (Hardened Location Cheat Sheet Descriptions)
-    // 1. INSIDE / ON THE AIRCRAFT CARRIER
+    // MISSION 14: KRAKEN AWAKES DLC
     { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Letter to Vogel', type: 'Personal Letter', desc: '[ON SHIP] Upper Island Superstructure inside Vogel\'s office safe. Code is on the desk nearby, or use a Satchel Charge.' },
     { id: 'm14_hi2', cat: '14: Kraken Awakes (DLC)', name: 'Eagle Plaque', type: 'Hidden Item', desc: '[INSIDE SHIP] 2nd Level from the bottom of the ship, in a compartment near the room with the large red spotlight.' },
     { id: 'm14_se1', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: '[ON SHIP] Perched right on the middle mast at the very top of the aircraft carrier.' },
-
-    // 2. NORTH & WEST DOCK FACILITIES
     { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Boiler Room Inspection', type: 'Personal Letter', desc: '[NORTH-WEST DOCKS] Top floor control room inside the dark facility building.' },
     { id: 'm14_cd2', cat: '14: Kraken Awakes (DLC)', name: 'Successful Raid', type: 'Classified Doc', desc: '[NORTH DOCKS] Inside the 3rd dock building counting from the ship\'s main access bridge.' },
     { id: 'm14_se2', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: '[NORTH-WEST DOCKS] Perched on the outer roof ridge of the dark North-West building.' },
     { id: 'm14_wb2', cat: '14: Kraken Awakes (DLC)', name: 'Maintenance Workbench', type: 'Workbench', desc: '[NORTH-WEST DOCKS] Bottom floor of North-West facility. (Door locked—grab key from table near Letter #1). Unlocks: Close Quarters Pack.' },
-
-    // 3. SOUTH DOCKS & COMPOUND
     { id: 'm14_pl3', cat: '14: Kraken Awakes (DLC)', name: 'Missing Tools', type: 'Personal Letter', desc: '[SOUTH-WEST] Top floor comms room of the rectangular building.' },
     { id: 'm14_hi1', cat: '14: Kraken Awakes (DLC)', name: 'Backpack', type: 'Hidden Item', desc: '[SOUTH-WEST] Sitting on a supply crate inside the small corner storage shanty.' },
     { id: 'm14_se3', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: '[SOUTH PERIMETER] Look high up on the masonry chimney stack.' },
     { id: 'm14_wb1', cat: '14: Kraken Awakes (DLC)', name: 'Administration Workbench', type: 'Workbench', desc: '[SOUTH DOCKS] South dock building. Climb to upper floor and slide through the air vent. Unlocks: Assault Case.' },
     { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Resistance Storage Workbench', type: 'Workbench', desc: '[SOUTHERN COMPOUND] Slide under the wall gap and clear the barricade to enter. Unlocks: Sustained Fire Mods.' },
-
-    // 4. EASTERN OUTPOST
     { id: 'm14_cd1', cat: '14: Kraken Awakes (DLC)', name: 'Salvage Operation', type: 'Classified Doc', desc: '[EASTERN BORDER] On a desk inside the easternmost border house near the tree line.' }
 ];
 
 const appState = {
-    activeHunter: 'Werewolf3788',
-    hunterData: [],
-    collapsedSections: {}, 
-    unsubscribeFirestore: null,
-    lastSyncTime: 0,
-    reconnectTimer: null,
+    targetUserId: 'Werewolf3788', // Active document target UID/key
+    targetDisplayName: 'Werewolf3788',
+    hunterData: JSON.parse(JSON.stringify(sniperData)),
+    auth: null,
+    db: null,
+    collapsedSections: {},
+    masterUnsub: null,
 
-    init: function() {
-        this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
-        
-        const cats = [...new Set(this.hunterData.map(i => i.cat))];
-        cats.forEach(cat => {
-            const sid = cat.replace(/[^a-z0-9]/gi, '');
-            this.collapsedSections[sid] = true;
-        });
+    init: async function() {
+        const app = initializeApp(firebaseConfig);
+        this.auth = getAuth(app);
+        this.db = getFirestore(app);
 
-        document.querySelectorAll('.profile-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const selectedProfile = btn.getAttribute('data-profile');
-                if (selectedProfile) {
-                    this.loadHunter(selectedProfile);
-                }
-            });
-        });
+        // Dynamic Profile Storage Check
+        const savedUser = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
+        this.targetUserId = savedUser;
 
-        signInAnonymously(auth).catch(err => console.warn("Anon Auth fallback notice:", err.message));
+        // Anonymous Auth ensures immediate live read access without forcing sign-in prompt
+        signInAnonymously(this.auth).catch(err => console.warn("Anon Auth fallback:", err));
 
-        onIdTokenChanged(auth, (user) => {
-            if (user) {
-                this.loadHunter(this.activeHunter);
-            }
-        });
+        // Auth Observer for Google Logins
+        onAuthStateChanged(this.auth, async (user) => {
+            if (user && !user.isAnonymous) {
+                // RULE 1: Non-destructive profile sync on login
+                await setDoc(doc(this.db, "users", user.uid), {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: user.displayName || user.email.split('@')[0],
+                    photoURL: user.photoURL || '',
+                    lastLogin: new Date().toISOString()
+                }, { merge: true });
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                const idleDuration = Date.now() - this.lastSyncTime;
-                if (idleDuration > 120000) {
-                    this.loadHunter(this.activeHunter);
+                // If signed in, set current target to own UID unless viewing someone else
+                if (!localStorage.getItem('se5_selected_user_id')) {
+                    this.targetUserId = user.uid;
                 }
             }
+            this.loadLiveProgress(this.targetUserId);
         });
 
-        window.addEventListener('online', () => {
-            this.loadHunter(this.activeHunter);
-        });
-
-        this.loadHunter(this.activeHunter);
-    },
-
-    getFirestoreDocRef: function(profileName) {
-        if (!db) return null;
-        const normalized = profileName.toLowerCase().trim();
-        const userKey = profileUserMap[normalized] || profileName;
-        return doc(db, "artifacts", "game-tracker-5b2ef", "data", "public", "user", userKey);
-    },
-
-    loadHunter: function(name) {
-        this.activeHunter = name;
-        const displayNode = document.getElementById('hunter-display');
-        if (displayNode) displayNode.innerText = name.toUpperCase();
-        
-        document.querySelectorAll('.profile-btn').forEach(b => {
-            const profAttr = b.getAttribute('data-profile');
-            b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === name.toLowerCase());
-        });
-
-        if (this.unsubscribeFirestore) {
-            this.unsubscribeFirestore();
-            this.unsubscribeFirestore = null;
-        }
-
-        if (this.reconnectTimer) {
-            clearTimeout(this.reconnectTimer);
-            this.reconnectTimer = null;
-        }
-
-        const docRef = this.getFirestoreDocRef(name);
-        if (docRef) {
-            this.unsubscribeFirestore = onSnapshot(docRef, (docSnap) => {
-                this.lastSyncTime = Date.now();
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    const savedProgress = data.progress || data.items || [];
-                    if (Array.isArray(savedProgress)) {
-                        this.hunterData = sniperData.map(item => {
-                            const status = savedProgress.find(s => s.id === item.id);
-                            return { ...item, collected: status ? status.collected : false };
-                        });
-                        this.render();
-                    }
-                } else {
-                    this.loadLocalCache(name);
-                }
-            }, (err) => {
-                console.warn("Firestore snapshot error (scheduling recovery):", err.message);
-                this.loadLocalCache(name);
-                this.reconnectTimer = setTimeout(() => {
-                    this.loadHunter(name);
-                }, 5000);
-            });
-        } else {
-            this.loadLocalCache(name);
-        }
-    },
-
-    loadLocalCache: function(name) {
-        const storageKey = `se5_local_sync_${name}`;
-        const localCache = localStorage.getItem(storageKey);
-        if (localCache) {
-            try {
-                const savedProgress = JSON.parse(localCache);
-                this.hunterData = sniperData.map(item => {
-                    const status = savedProgress.find(s => s.id === item.id);
-                    return { ...item, collected: status ? status.collected : false };
-                });
-            } catch(e) {
-                this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
-            }
-        } else {
-            this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
-        }
         this.render();
     },
 
-    toggleItem: function(id) {
+    // 1. PUBLIC REALTIME STREAM LISTENER
+    loadLiveProgress: function(userId) {
+        this.targetUserId = userId;
+        localStorage.setItem('se5_selected_user_id', userId);
+
+        if (this.masterUnsub) this.masterUnsub();
+
+        // Target document path: /user_progress/{userId}
+        const docRef = doc(this.db, "user_progress", userId);
+
+        this.masterUnsub = onSnapshot(docRef, (snap) => {
+            if (snap.exists()) {
+                const data = snap.data();
+                const incoming = data.progress || [];
+                if (Array.isArray(incoming)) {
+                    this.hunterData = sniperData.map(item => {
+                        const status = incoming.find(s => s.id === item.id);
+                        return { ...item, collected: status ? status.collected : false };
+                    });
+                }
+                if (data.displayName) {
+                    this.targetDisplayName = data.displayName;
+                    const node = document.getElementById('hunter-display');
+                    if (node) node.innerText = data.displayName.toUpperCase();
+                }
+            }
+            this.render();
+        }, (err) => console.error("Live Sync Stream Error:", err));
+    },
+
+    // 2. UNIVERSAL GOOGLE AUTH TRIGGERED WRITE
+    toggleItem: async function(id) {
+        const currentUser = this.auth.currentUser;
+
+        // Force Google Sign-In if unauthenticated/anonymous
+        if (!currentUser || currentUser.isAnonymous) {
+            try {
+                const provider = new GoogleAuthProvider();
+                const result = await signInWithPopup(this.auth, provider);
+                const user = result.user;
+                this.targetUserId = user.uid;
+                this.targetDisplayName = user.displayName || user.email.split('@')[0];
+            } catch (err) {
+                alert("You must sign in with Google to record changes.");
+                return;
+            }
+        }
+
+        const isAdmin = currentUser.email === 'raykevin71888@gmail.com';
+        const isOwner = currentUser.uid === this.targetUserId;
+
+        // RULE 3: Access Control Check
+        if (!isOwner && !isAdmin) {
+            alert("Access Denied: You can only edit your own profile progress. Contact Admin to request edits.");
+            return;
+        }
+
         const item = this.hunterData.find(i => i.id === id);
         if (item) {
             item.collected = !item.collected;
-            this.render(); 
+            this.render();
             this.sync();
         }
     },
 
-    sync: function() {
+    sync: async function() {
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
-        this.lastSyncTime = Date.now();
+        const docRef = doc(this.db, "user_progress", this.targetUserId);
 
-        localStorage.setItem(`se5_local_sync_${this.activeHunter}`, JSON.stringify(progress));
-
-        const docRef = this.getFirestoreDocRef(this.activeHunter);
-        if (docRef) {
-            setDoc(docRef, {
-                user: this.activeHunter,
+        try {
+            await setDoc(docRef, {
+                userId: this.targetUserId,
+                displayName: this.targetDisplayName,
                 lastUpdated: new Date().toISOString(),
                 progress: progress
-            }, { merge: true }).catch(err => console.warn("Firestore save error:", err.message));
-        }
-    },
-
-    toggleSection: function(sid) {
-        this.collapsedSections[sid] = !this.collapsedSections[sid];
-        const contentNode = document.getElementById(`content-${sid}`);
-        if (contentNode) {
-            const sectionNode = contentNode.parentElement;
-            if (this.collapsedSections[sid]) {
-                sectionNode.classList.add('section-collapsed');
-            } else {
-                sectionNode.classList.remove('section-collapsed');
-            }
+            }, { merge: true });
+            console.log("Successfully synced to Firestore.");
+        } catch (err) {
+            console.error("Firestore Write Error (Check Rules/Auth):", err);
+            alert("Save failed: Permission denied.");
         }
     },
 
@@ -490,7 +437,8 @@ const appState = {
             `;
 
             section.querySelector(`#header-${sid}`).addEventListener('click', () => {
-                this.toggleSection(sid);
+                this.collapsedSections[sid] = !this.collapsedSections[sid];
+                this.render();
             });
 
             const grid = section.querySelector('.item-grid');
@@ -533,98 +481,5 @@ const appState = {
     }
 };
 
+window.appState = appState;
 appState.init();
-
-async function fetchWithRetry(url, retries = 3, delay = 1000) {
-    for (let i = 0; i < retries; i++) {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
-        
-        try {
-            const response = await fetch(url, { signal: controller.signal });
-            clearTimeout(timeoutId);
-            if (!response.ok) throw new Error(`HTTP Error status: ${response.status}`);
-            return await response.json();
-        } catch (err) {
-            clearTimeout(timeoutId);
-            const isLastAttempt = i === retries - 1;
-            if (isLastAttempt) throw err;
-            const backoff = delay * Math.pow(2, i) + (Math.random() * 200);
-            await new Promise(res => setTimeout(res, backoff));
-        }
-    }
-}
-
-async function buildTopMenu() {
-    try {
-        const jsonUrl = "https://raw.githack.com/Werewolf3788/Website/main/Menu.json?v=" + Date.now();
-        const menuData = await fetchWithRetry(jsonUrl, 3, 1000);
-        const menuBar = document.getElementById('csv-menu-bar');
-        
-        if (!menuBar || !Array.isArray(menuData)) return;
-
-        let html = '';
-        const chevron = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="margin-left:6px; display:inline-block; vertical-align:middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
-
-        menuData.forEach(item => {
-            if (item.items && Array.isArray(item.items) && item.items.length > 0) {
-                const safeId = (item.name || item.group || 'menu').replace(/[^a-zA-Z0-9]/g, '');
-                html += `
-                    <div class="csv-dropdown">
-                        <button class="csv-dropdown-btn outlined-text" data-dropdown="${safeId}">
-                            ${item.name || item.group} ${chevron}
-                        </button>
-                        <div id="dropdown-${safeId}" class="csv-dropdown-content">
-                `;
-                item.items.forEach(sub => {
-                    const imgTag = sub.img ? `<img src="${sub.img}" style="width:26px; height:26px; margin-right:12px; vertical-align:middle; border-radius:6px; object-fit:cover;">` : '';
-                    html += `<a href="${sub.url}" class="csv-dropdown-item intercepted-link outlined-text">${imgTag}${sub.name}</a>`;
-                });
-                html += `</div></div>`;
-            } else if (item.url) {
-                html += `<a href="${item.url}" class="csv-single-btn intercepted-link outlined-text">${item.name}</a>`;
-            }
-        });
-        
-        menuBar.innerHTML = html;
-
-        if (typeof BroadcastChannel !== 'undefined') {
-            const tabChannel = new BroadcastChannel('se5_tracker_channel');
-            document.querySelectorAll('.intercepted-link').forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetUrl = this.getAttribute('href');
-                    tabChannel.postMessage({ action: 'check_focus', url: targetUrl });
-                    window.open(targetUrl, 'SE5_ITC_Window');
-                });
-            });
-        }
-    } catch(e) {
-        console.error("Resilient menu fetch failed:", e.message);
-    }
-}
-
-window.addEventListener('click', function(event) {
-    const btn = event.target.closest('.csv-dropdown-btn');
-    const dropdowns = document.getElementsByClassName("csv-dropdown-content");
-
-    if (btn) {
-        event.preventDefault();
-        event.stopPropagation();
-        const id = btn.getAttribute('data-dropdown');
-        const targetDropdown = document.getElementById('dropdown-' + id);
-        if (targetDropdown) {
-            const isOpen = targetDropdown.classList.contains('show');
-            for (let i = 0; i < dropdowns.length; i++) {
-                dropdowns[i].classList.remove('show');
-            }
-            if (!isOpen) targetDropdown.classList.add('show');
-        }
-    } else {
-        for (let i = 0; i < dropdowns.length; i++) {
-            dropdowns[i].classList.remove('show');
-        }
-    }
-});
-
-buildTopMenu();
