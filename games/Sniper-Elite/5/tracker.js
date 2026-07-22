@@ -1,11 +1,11 @@
-/* Version Timestamp: 2026-07-22 01:30:00 CT
-   LOGIC PROTOCOL: Full Campaign & DLC Map Registry with Realtime Firebase Sync & Local Migration
+/* Version Timestamp: 2026-07-22 06:45:00 CT
+   LOGIC PROTOCOL: Full 14 Mission & DLC Map Registry with Robust Firebase Sync & Automatic Fallback
 */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// Your web app's Firebase configuration
+// Web App Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
   authDomain: "game-tracker-5b2ef.firebaseapp.com",
@@ -17,8 +17,15 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase Realtime Database
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+let app = null;
+let db = null;
+
+try {
+    app = initializeApp(firebaseConfig);
+    db = getDatabase(app);
+} catch (e) {
+    console.warn("Firebase initialization deferred or offline fallback active:", e);
+}
 
 const sniperData = [
     // MISSION 1: THE ATLANTIC WALL
@@ -246,6 +253,27 @@ const sniperData = [
     { id: 'm12_wb2', cat: '12: Conqueror (DLC)', name: 'Village Attic Workbench', type: 'Workbench', desc: 'Southeast sector cluster house; scale structural lofts to reach the closed attic floor area.' },
     { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Castle Grounds Bunker Workbench', type: 'Workbench', desc: 'Castle inner perimeter line; inside the concrete layout bunker trailing the blue asset goals.' },
 
+    // MISSION 13: ROUGH LANDING DLC
+    { id: 'm13_pl1', cat: '13: Rough Landing (DLC)', name: 'Emergency Landing', type: 'Personal Letter', desc: 'Western forest cabin area, sitting on a small wooden table.' },
+    { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'Silly Disagreement', type: 'Personal Letter', desc: 'Central village, upstairs bedroom inside the stone residential house.' },
+    { id: 'm13_pl3', cat: '13: Rough Landing (DLC)', name: 'Imperial Orders', type: 'Personal Letter', desc: 'Eastern crash site command tent, resting on the main briefing desk.' },
+    { id: 'm13_pl4', cat: '13: Rough Landing (DLC)', name: 'Secret Stash', type: 'Personal Letter', desc: 'Southern bridge guard post, inside the checkpoint booth on a crate.' },
+    { id: 'm13_pl5', cat: '13: Rough Landing (DLC)', name: 'Plan of Action', type: 'Personal Letter', desc: 'Northern radar facility office, sitting on an administrative desk.' },
+    { id: 'm13_cd1', cat: '13: Rough Landing (DLC)', name: 'Airforce Radar', type: 'Classified Doc', desc: 'Northern radar bunker vault room; unlock with key or satchel charge.' },
+    { id: 'm13_cd2', cat: '13: Rough Landing (DLC)', name: 'Target Acquired', type: 'Classified Doc', desc: 'Eastern crash site area, on a supply crate beside downed aircraft wreckage.' },
+    { id: 'm13_cd3', cat: '13: Rough Landing (DLC)', name: 'Broken Equipment', type: 'Classified Doc', desc: 'Central village repair workshop, ground floor bench table.' },
+    { id: 'm13_cd4', cat: '13: Rough Landing (DLC)', name: 'Weather Report', type: 'Classified Doc', desc: 'Southern watchtower platform, next to the radio equipment frame.' },
+    { id: 'm13_cd5', cat: '13: Rough Landing (DLC)', name: 'Patrol Routes', type: 'Classified Doc', desc: 'Western forest outpost, locked inside the officer command tent safe.' },
+    { id: 'm13_hi1', cat: '13: Rough Landing (DLC)', name: 'RAF Pilot Badges', type: 'Hidden Item', desc: 'Looted from the patrolling officer guarding the pilot search zone.' },
+    { id: 'm13_hi2', cat: '13: Rough Landing (DLC)', name: 'Ornate Compass', type: 'Hidden Item', desc: 'Inside the locked cellar chest in the central village stone house.' },
+    { id: 'm13_hi3', cat: '13: Rough Landing (DLC)', name: 'Leather Flight Jacket', type: 'Hidden Item', desc: 'Hanging in the bedroom closet of the western forest cabin.' },
+    { id: 'm13_se1', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Perched atop the church belfry roof peak in the central village.' },
+    { id: 'm13_se2', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Sits on a high stone ridge overlooking the northern radar facility.' },
+    { id: 'm13_se3', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Perched on the concrete arch support of the southern railway bridge.' },
+    { id: 'm13_wb1', cat: '13: Rough Landing (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Central village church crypt basement; unlock with key or satchel.' },
+    { id: 'm13_wb2', cat: '13: Rough Landing (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Western forest bunker depot; crawl through the side air vent.' },
+    { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Northern radar bunker facility lower armory vault.' },
+
     // MISSION 14: KRAKEN AWAKES DLC
     { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Boiler Room Inspection', type: 'Personal Letter', desc: 'North-west side of the map, inside a comms room on the top floor of the dark building.' },
     { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Letter to Vogel', type: 'Personal Letter', desc: 'Inside Vogel\'s safe inside the ship. Use code on writing desk or open with Satchel Charge.' },
@@ -286,45 +314,13 @@ const appState = {
             });
         });
 
-        // Run one-time migration for any existing local data
-        this.migrateLocalStorageToFirebase();
-
         this.loadHunter(this.activeHunter);
-    },
-
-    migrateLocalStorageToFirebase: function() {
-        const profiles = ['Werewolf3788', 'OneLIVIDMAN', 'TJ', 'Elu Cloud'];
-        
-        profiles.forEach(profileName => {
-            const localKey = `se5_local_sync_${profileName}`;
-            const localCache = localStorage.getItem(localKey);
-            
-            if (localCache) {
-                try {
-                    const parsedLocal = JSON.parse(localCache);
-                    const hasProgress = parsedLocal.some(item => item.collected === true);
-                    
-                    if (hasProgress) {
-                        const sanitizedProfile = profileName.toLowerCase().replace(/[^a-z0-9]/g, '');
-                        const profileRef = ref(db, `se5_operatives/${sanitizedProfile}`);
-                        
-                        set(profileRef, parsedLocal).then(() => {
-                            console.log(`Migrated local data for ${profileName} to Firebase.`);
-                            localStorage.removeItem(localKey);
-                        }).catch(err => {
-                            console.error(`Error migrating ${profileName}:`, err);
-                        });
-                    }
-                } catch(e) {
-                    console.error("Migration error:", e);
-                }
-            }
-        });
     },
 
     loadHunter: function(name) {
         this.activeHunter = name;
-        document.getElementById('hunter-display').innerText = name.toUpperCase();
+        const displayNode = document.getElementById('hunter-display');
+        if (displayNode) displayNode.innerText = name.toUpperCase();
         
         document.querySelectorAll('.profile-btn').forEach(b => {
             const profAttr = b.getAttribute('data-profile');
@@ -332,17 +328,47 @@ const appState = {
         });
 
         const sanitizedProfile = name.toLowerCase().replace(/[^a-z0-9]/g, '');
-        const hunterRef = ref(db, `se5_operatives/${sanitizedProfile}`);
 
-        // Realtime sync listener from Firebase
-        onValue(hunterRef, (snapshot) => {
-            const savedProgress = snapshot.val() || [];
-            this.hunterData = sniperData.map(item => {
-                const status = savedProgress.find(s => s.id === item.id);
-                return { ...item, collected: status ? status.collected : false };
-            });
-            this.render();
-        });
+        // Standard local fallback load
+        const storageKey = `se5_local_sync_${name}`;
+        const localCache = localStorage.getItem(storageKey);
+        if (localCache) {
+            try {
+                const savedProgress = JSON.parse(localCache);
+                this.hunterData = sniperData.map(item => {
+                    const status = savedProgress.find(s => s.id === item.id);
+                    return { ...item, collected: status ? status.collected : false };
+                });
+            } catch(e) {
+                this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
+            }
+        } else {
+            this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
+        }
+
+        // Render UI immediately
+        this.render();
+
+        // Connect to Firebase if initialized
+        if (db) {
+            try {
+                const hunterRef = ref(db, `se5_operatives/${sanitizedProfile}`);
+                onValue(hunterRef, (snapshot) => {
+                    const savedProgress = snapshot.val();
+                    if (savedProgress && Array.isArray(savedProgress)) {
+                        this.hunterData = sniperData.map(item => {
+                            const status = savedProgress.find(s => s.id === item.id);
+                            return { ...item, collected: status ? status.collected : false };
+                        });
+                        this.render();
+                    }
+                }, (err) => {
+                    console.warn("Firebase listener notice:", err);
+                });
+            } catch (err) {
+                console.warn("Firebase realtime sync unavailable:", err);
+            }
+        }
     },
 
     toggleItem: function(id) {
@@ -350,29 +376,45 @@ const appState = {
         if (item) {
             item.collected = true;
             this.render(); 
-            this.syncToCloud();
+            this.sync();
         }
     },
 
-    syncToCloud: function() {
+    sync: function() {
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
         const sanitizedProfile = this.activeHunter.toLowerCase().replace(/[^a-z0-9]/g, '');
-        set(ref(db, `se5_operatives/${sanitizedProfile}`), progress);
+
+        // Save locally first so UI state never loses progress
+        localStorage.setItem(`se5_local_sync_${this.activeHunter}`, JSON.stringify(progress));
+
+        // Push to Firebase Realtime Database
+        if (db) {
+            try {
+                set(ref(db, `se5_operatives/${sanitizedProfile}`), progress).catch(err => {
+                    console.warn("Cloud save delayed:", err);
+                });
+            } catch (err) {
+                console.warn("Cloud sync error:", err);
+            }
+        }
     },
 
     toggleSection: function(sid) {
         this.collapsedSections[sid] = !this.collapsedSections[sid];
         const contentNode = document.getElementById(`content-${sid}`);
-        const sectionNode = contentNode.parentElement;
-        if (this.collapsedSections[sid]) {
-            sectionNode.classList.add('section-collapsed');
-        } else {
-            sectionNode.classList.remove('section-collapsed');
+        if (contentNode) {
+            const sectionNode = contentNode.parentElement;
+            if (this.collapsedSections[sid]) {
+                sectionNode.classList.add('section-collapsed');
+            } else {
+                sectionNode.classList.remove('section-collapsed');
+            }
         }
     },
 
     render: function() {
         const container = document.getElementById('section-container');
+        if (!container) return;
         container.innerHTML = '';
         const cats = [...new Set(this.hunterData.map(i => i.cat))];
         let totalFound = 0;
@@ -431,8 +473,10 @@ const appState = {
         });
 
         const percent = Math.round((totalFound / this.hunterData.length) * 100) || 0;
-        document.getElementById('overall-bar').style.width = percent + '%';
-        document.getElementById('percent-text').innerText = `TOTAL CAMPAIGN COLLECTION: ${percent}%`;
+        const barNode = document.getElementById('overall-bar');
+        const textNode = document.getElementById('percent-text');
+        if (barNode) barNode.style.width = percent + '%';
+        if (textNode) textNode.innerText = `TOTAL CAMPAIGN COLLECTION: ${percent}%`;
     }
 };
 
@@ -476,41 +520,44 @@ async function buildTopMenu() {
         }
 
         const menuBar = document.getElementById('csv-menu-bar');
-        let html = '';
-        const chevron = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="margin-left:6px; display:inline-block; vertical-align:middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+        if (menuBar) {
+            let html = '';
+            const chevron = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="margin-left:6px; display:inline-block; vertical-align:middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
 
-        menuStructure.forEach(item => {
-            if (item.type === 'single') {
-                html += `<a href="${item.url}" class="csv-single-btn intercepted-link outlined-text">${item.name}</a>`;
-            } else {
-                const safeId = item.name.replace(/[^a-zA-Z0-9]/g, '');
-                html += `
-                    <div class="csv-dropdown">
-                        <button class="csv-dropdown-btn outlined-text" data-dropdown="${safeId}">
-                            ${item.name} ${chevron}
-                        </button>
-                        <div id="dropdown-${safeId}" class="csv-dropdown-content">
-                `;
-                item.items.forEach(sub => {
-                    const imgTag = sub.img ? `<img src="${sub.img}" style="width:26px; height:26px; margin-right:12px; vertical-align:middle; border-radius:6px; object-fit:cover;">` : '';
-                    html += `<a href="${sub.url}" class="csv-dropdown-item intercepted-link outlined-text">${imgTag}${sub.name}</a>`;
-                });
-                html += `</div></div>`;
-            }
-        });
-        
-        menuBar.innerHTML = html;
-
-        const tabChannel = new BroadcastChannel('se5_tracker_channel');
-        document.querySelectorAll('.intercepted-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const targetUrl = this.getAttribute('href');
-                tabChannel.postMessage({ action: 'check_focus', url: targetUrl });
-                window.open(targetUrl, 'SE5_ITC_Window');
+            menuStructure.forEach(item => {
+                if (item.type === 'single') {
+                    html += `<a href="${item.url}" class="csv-single-btn intercepted-link outlined-text">${item.name}</a>`;
+                } else {
+                    const safeId = item.name.replace(/[^a-zA-Z0-9]/g, '');
+                    html += `
+                        <div class="csv-dropdown">
+                            <button class="csv-dropdown-btn outlined-text" data-dropdown="${safeId}">
+                                ${item.name} ${chevron}
+                            </button>
+                            <div id="dropdown-${safeId}" class="csv-dropdown-content">
+                    `;
+                    item.items.forEach(sub => {
+                        const imgTag = sub.img ? `<img src="${sub.img}" style="width:26px; height:26px; margin-right:12px; vertical-align:middle; border-radius:6px; object-fit:cover;">` : '';
+                        html += `<a href="${sub.url}" class="csv-dropdown-item intercepted-link outlined-text">${imgTag}${sub.name}</a>`;
+                    });
+                    html += `</div></div>`;
+                }
             });
-        });
-        
+            
+            menuBar.innerHTML = html;
+
+            if (typeof BroadcastChannel !== 'undefined') {
+                const tabChannel = new BroadcastChannel('se5_tracker_channel');
+                document.querySelectorAll('.intercepted-link').forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        const targetUrl = this.getAttribute('href');
+                        tabChannel.postMessage({ action: 'check_focus', url: targetUrl });
+                        window.open(targetUrl, 'SE5_ITC_Window');
+                    });
+                });
+            }
+        }
     } catch(e) {
         console.error("Error generating menu:", e);
     }
@@ -525,12 +572,13 @@ window.addEventListener('click', function(event) {
         event.stopPropagation();
         const id = btn.getAttribute('data-dropdown');
         const targetDropdown = document.getElementById('dropdown-' + id);
-        const isOpen = targetDropdown.classList.contains('show');
-
-        for (let i = 0; i < dropdowns.length; i++) {
-            dropdowns[i].classList.remove('show');
+        if (targetDropdown) {
+            const isOpen = targetDropdown.classList.contains('show');
+            for (let i = 0; i < dropdowns.length; i++) {
+                dropdowns[i].classList.remove('show');
+            }
+            if (!isOpen) targetDropdown.classList.add('show');
         }
-        if (!isOpen) targetDropdown.classList.add('show');
     } else {
         for (let i = 0; i < dropdowns.length; i++) {
             dropdowns[i].classList.remove('show');
