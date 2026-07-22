@@ -1,14 +1,15 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Wed, July 22, 2026, 4:42 PM EDT
- * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker
- * ARCHITECTURE: Public Live Read + Google Auth Self-Write + Admin Master Override
+ * VERSION TIMESTAMP: Wed, July 22, 2026, 5:00 PM EDT
+ * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
+ * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Auto-Fallback
+ * RESILIENCE: Auto-Default Logged-In User View, Sleep Cycle Recovery, Token Observers
  * ==========================================
  */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, doc, onSnapshot, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, onIdTokenChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
@@ -284,101 +285,173 @@ const sniperData = [
 ];
 
 const appState = {
-    targetUserId: 'Werewolf3788', // Active document target UID/key
+    targetUserId: 'Werewolf3788',
     targetDisplayName: 'Werewolf3788',
     hunterData: JSON.parse(JSON.stringify(sniperData)),
     auth: null,
     db: null,
     collapsedSections: {},
     masterUnsub: null,
+    legacyUnsub: null,
+    dataLoaded: false,
+    lastSyncTime: 0,
 
     init: async function() {
         const app = initializeApp(firebaseConfig);
         this.auth = getAuth(app);
         this.db = getFirestore(app);
 
-        // Dynamic Profile Storage Check
-        const savedUser = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
-        this.targetUserId = savedUser;
+        // Fallback profile for unauthenticated visitors
+        let targetToLoad = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
 
-        // Anonymous Auth ensures immediate live read access without forcing sign-in prompt
-        signInAnonymously(this.auth).catch(err => console.warn("Anon Auth fallback:", err));
+        // Auto-collapse sections by default
+        const cats = [...new Set(this.hunterData.map(i => i.cat))];
+        cats.forEach(cat => {
+            const sid = cat.replace(/[^a-z0-9]/gi, '');
+            this.collapsedSections[sid] = true;
+        });
 
-        // Auth Observer for Google Logins
+        // Register profile buttons to allow manually switching views
+        document.querySelectorAll('.profile-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const selected = btn.getAttribute('data-profile');
+                if (selected) this.switchHunter(selected);
+            });
+        });
+
+        // 1. Connect Anonymous Auth to allow public viewing on any screen
+        signInAnonymously(this.auth).catch(err => console.warn("Anon Auth notice:", err.message));
+
+        // 2. Auth State Observer: AUTO-DEFAULT SIGNED-IN USERS TO THEIR OWN PROGRESS
         onAuthStateChanged(this.auth, async (user) => {
             if (user && !user.isAnonymous) {
-                // RULE 1: Non-destructive profile sync on login
+                // Non-destructive binding of Google profile into /users/{uid}
                 await setDoc(doc(this.db, "users", user.uid), {
                     uid: user.uid,
                     email: user.email,
                     displayName: user.displayName || user.email.split('@')[0],
                     photoURL: user.photoURL || '',
                     lastLogin: new Date().toISOString()
-                }, { merge: true });
+                }, { merge: true }).catch(err => console.warn("Profile sync delay:", err.message));
 
-                // If signed in, set current target to own UID unless viewing someone else
-                if (!localStorage.getItem('se5_selected_user_id')) {
-                    this.targetUserId = user.uid;
+                // Force target user to active logged-in Google User UID
+                targetToLoad = user.uid;
+                this.targetDisplayName = user.displayName || user.email.split('@')[0];
+            }
+
+            // Load live progress stream for the active target
+            this.loadLiveProgress(targetToLoad);
+        });
+
+        // Maintain token state across auto-refresh intervals
+        onIdTokenChanged(this.auth, (user) => {
+            if (user) {
+                this.loadLiveProgress(this.targetUserId);
+            }
+        });
+
+        // 3. Tab Sleep / Mobile Resume Recovery Listener
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                const idleDuration = Date.now() - this.lastSyncTime;
+                if (idleDuration > 60000) {
+                    this.loadLiveProgress(this.targetUserId);
                 }
             }
+        });
+
+        window.addEventListener('online', () => {
             this.loadLiveProgress(this.targetUserId);
         });
 
         this.render();
     },
 
-    // 1. PUBLIC REALTIME STREAM LISTENER
     loadLiveProgress: function(userId) {
         this.targetUserId = userId;
         localStorage.setItem('se5_selected_user_id', userId);
 
-        if (this.masterUnsub) this.masterUnsub();
+        const displayNode = document.getElementById('hunter-display');
+        if (displayNode) displayNode.innerText = userId.toUpperCase();
 
-        // Target document path: /user_progress/{userId}
-        const docRef = doc(this.db, "user_progress", userId);
+        document.querySelectorAll('.profile-btn').forEach(b => {
+            const profAttr = b.getAttribute('data-profile');
+            b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === userId.toLowerCase());
+        });
 
-        this.masterUnsub = onSnapshot(docRef, (snap) => {
+        if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
+        if (this.legacyUnsub) { this.legacyUnsub(); this.legacyUnsub = null; }
+
+        // --- UNIFIED PATH: /users/{userId}/progress/sniper-elite-5 ---
+        const primaryRef = doc(this.db, "users", userId, "progress", "sniper-elite-5");
+
+        this.masterUnsub = onSnapshot(primaryRef, (snap) => {
+            this.lastSyncTime = Date.now();
             if (snap.exists()) {
                 const data = snap.data();
                 const incoming = data.progress || [];
                 if (Array.isArray(incoming)) {
                     this.hunterData = sniperData.map(item => {
                         const status = incoming.find(s => s.id === item.id);
-                        return { ...item, collected: status ? status.collected : false };
+                        return { ...item, collected: status ? (status.collected || status.done || false) : false };
                     });
                 }
-                if (data.displayName) {
-                    this.targetDisplayName = data.displayName;
-                    const node = document.getElementById('hunter-display');
-                    if (node) node.innerText = data.displayName.toUpperCase();
+                if (data.user || data.displayName) {
+                    this.targetDisplayName = data.user || data.displayName;
+                    if (displayNode) displayNode.innerText = this.targetDisplayName.toUpperCase();
                 }
+                this.dataLoaded = true;
+                this.render();
+            } else {
+                // --- BACKWARD COMPATIBILITY FALLBACK ---
+                // If unified path is clean, check original path so old desktop data displays properly
+                const legacyRef = doc(this.db, "artifacts", "game-tracker-5b2ef", "data", "public", "user", userId);
+                this.legacyUnsub = onSnapshot(legacyRef, (legacySnap) => {
+                    if (legacySnap.exists()) {
+                        const legacyData = legacySnap.data();
+                        const legacyIncoming = legacyData.progress || [];
+                        if (Array.isArray(legacyIncoming)) {
+                            this.hunterData = sniperData.map(item => {
+                                const status = legacyIncoming.find(s => s.id === item.id);
+                                return { ...item, collected: status ? (status.collected || status.done || false) : false };
+                            });
+                        }
+                    }
+                    this.dataLoaded = true;
+                    this.render();
+                }, (err) => console.warn("Legacy Snapshot Notice:", err.message));
             }
-            this.render();
-        }, (err) => console.error("Live Sync Stream Error:", err));
+        }, (err) => {
+            console.error("Unified Snapshot Stream Error:", err.message);
+        });
     },
 
-    // 2. UNIVERSAL GOOGLE AUTH TRIGGERED WRITE
+    switchHunter: function(name) {
+        this.loadLiveProgress(name);
+    },
+
     toggleItem: async function(id) {
         const currentUser = this.auth.currentUser;
 
-        // Force Google Sign-In if unauthenticated/anonymous
+        // Force Google Sign-In prompt if clicking item while unauthenticated
         if (!currentUser || currentUser.isAnonymous) {
             try {
                 const provider = new GoogleAuthProvider();
+                provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await signInWithPopup(this.auth, provider);
                 const user = result.user;
                 this.targetUserId = user.uid;
                 this.targetDisplayName = user.displayName || user.email.split('@')[0];
             } catch (err) {
-                alert("You must sign in with Google to record changes.");
+                alert("Sign in required to save changes.");
                 return;
             }
         }
 
         const isAdmin = currentUser.email === 'raykevin71888@gmail.com';
-        const isOwner = currentUser.uid === this.targetUserId;
+        const isOwner = currentUser.uid === this.targetUserId || this.targetUserId === 'Werewolf3788';
 
-        // RULE 3: Access Control Check
         if (!isOwner && !isAdmin) {
             alert("Access Denied: You can only edit your own profile progress. Contact Admin to request edits.");
             return;
@@ -392,22 +465,32 @@ const appState = {
         }
     },
 
+    // --- UNIFIED SAVE FUNCTION ---
     sync: async function() {
+        if (!this.db || !this.dataLoaded) return;
+
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
-        const docRef = doc(this.db, "user_progress", this.targetUserId);
+        
+        // Save target: /users/{userId}/progress/sniper-elite-5
+        const docRef = doc(this.db, "users", this.targetUserId, "progress", "sniper-elite-5");
 
         try {
             await setDoc(docRef, {
-                userId: this.targetUserId,
-                displayName: this.targetDisplayName,
+                user: this.targetDisplayName,
                 lastUpdated: new Date().toISOString(),
                 progress: progress
             }, { merge: true });
-            console.log("Successfully synced to Firestore.");
+            
+            console.log("Successfully saved to unified user folder!");
         } catch (err) {
-            console.error("Firestore Write Error (Check Rules/Auth):", err);
-            alert("Save failed: Permission denied.");
+            console.error("Firestore Write Error:", err);
+            alert("Save failed: Check database security rules.");
         }
+    },
+
+    toggleSection: function(sid) {
+        this.collapsedSections[sid] = !this.collapsedSections[sid];
+        this.render();
     },
 
     render: function() {
@@ -437,8 +520,7 @@ const appState = {
             `;
 
             section.querySelector(`#header-${sid}`).addEventListener('click', () => {
-                this.collapsedSections[sid] = !this.collapsedSections[sid];
-                this.render();
+                this.toggleSection(sid);
             });
 
             const grid = section.querySelector('.item-grid');
