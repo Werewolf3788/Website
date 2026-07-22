@@ -1,9 +1,10 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Wed, July 22, 2026, 5:00 PM EDT
+ * VERSION TIMESTAMP: Wed, July 22, 2026, 5:08 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
  * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Auto-Fallback
- * RESILIENCE: Auto-Default Logged-In User View, Sleep Cycle Recovery, Token Observers
+ * NAV ENGINE: Direct JSON Fetch via GitHub raw Menu.json endpoint
+ * RESILIENCE: Auto-Default Logged-In View, Sleep Cycle Recovery, Token Observers
  * ==========================================
  */
 
@@ -296,22 +297,94 @@ const appState = {
     dataLoaded: false,
     lastSyncTime: 0,
 
+    // --- RAW GITHUB JSON NAVIGATION ENGINE ---
+    loadNavigation: async function() {
+        const navContainer = document.getElementById('dynamic-nav-links');
+        if (!navContainer) return;
+
+        try {
+            // Smart cache-busting timestamp tag
+            const url = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/Menu.json?v=' + Date.now();
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            
+            const menuItems = await response.json();
+            const groups = {};
+            const standalone = [];
+
+            menuItems.forEach(item => {
+                if (!item.name || !item.url) return;
+                
+                // Fallback image handling
+                let imgUrl = item.image || '';
+                if (imgUrl && imgUrl.includes('drive.google.com')) {
+                    const driveMatch = imgUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || imgUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (driveMatch) {
+                        imgUrl = `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+                    }
+                }
+
+                const nodeObj = { name: item.name, url: item.url, image: imgUrl };
+
+                if (item.group) {
+                    if (!groups[item.group]) groups[item.group] = [];
+                    groups[item.group].push(nodeObj);
+                } else {
+                    standalone.push(nodeObj);
+                }
+            });
+
+            let navHTML = '';
+
+            // Group Dropdowns
+            Object.keys(groups).forEach(groupName => {
+                const dropItems = groups[groupName].map(it => {
+                    const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                    return `<a href="${it.url}">${imgTag}${it.name}</a>`;
+                }).join('');
+
+                navHTML += `
+                    <div class="nav-dropdown">
+                        <button class="nav-dropbtn">${groupName} ▾</button>
+                        <div class="nav-dropdown-content">
+                            ${dropItems}
+                        </div>
+                    </div>
+                `;
+            });
+
+            // Standalone Root Links
+            standalone.forEach(it => {
+                const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                navHTML += `<a href="${it.url}">${imgTag}${it.name}</a>`;
+            });
+
+            navContainer.innerHTML = navHTML;
+        } catch (err) {
+            console.error("Failed to load Menu.json navigation:", err);
+            navContainer.innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Menu Load Warning</span>`;
+        }
+    },
+
     init: async function() {
         const app = initializeApp(firebaseConfig);
         this.auth = getAuth(app);
         this.db = getFirestore(app);
 
-        // Fallback profile for unauthenticated visitors
+        // Fetch Raw JSON Menu from GitHub
+        this.loadNavigation();
+
+        // Fallback target user for unauthenticated visitors
         let targetToLoad = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
 
-        // Auto-collapse sections by default
+        // Collapse section categories by default
         const cats = [...new Set(this.hunterData.map(i => i.cat))];
         cats.forEach(cat => {
             const sid = cat.replace(/[^a-z0-9]/gi, '');
             this.collapsedSections[sid] = true;
         });
 
-        // Register profile buttons to allow manually switching views
+        // Profile switcher button events
         document.querySelectorAll('.profile-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -320,13 +393,13 @@ const appState = {
             });
         });
 
-        // 1. Connect Anonymous Auth to allow public viewing on any screen
+        // Anonymous login for instant live reading across all screens
         signInAnonymously(this.auth).catch(err => console.warn("Anon Auth notice:", err.message));
 
-        // 2. Auth State Observer: AUTO-DEFAULT SIGNED-IN USERS TO THEIR OWN PROGRESS
+        // AUTH OBSERVER: DEFAULT LOGGED-IN USERS TO THEIR OWN PERSONAL PROGRESS VIEW
         onAuthStateChanged(this.auth, async (user) => {
             if (user && !user.isAnonymous) {
-                // Non-destructive binding of Google profile into /users/{uid}
+                // Store Google user details under /users/{uid}
                 await setDoc(doc(this.db, "users", user.uid), {
                     uid: user.uid,
                     email: user.email,
@@ -335,23 +408,21 @@ const appState = {
                     lastLogin: new Date().toISOString()
                 }, { merge: true }).catch(err => console.warn("Profile sync delay:", err.message));
 
-                // Force target user to active logged-in Google User UID
+                // Force target user view to active Google Auth UID
                 targetToLoad = user.uid;
                 this.targetDisplayName = user.displayName || user.email.split('@')[0];
             }
 
-            // Load live progress stream for the active target
             this.loadLiveProgress(targetToLoad);
         });
 
-        // Maintain token state across auto-refresh intervals
         onIdTokenChanged(this.auth, (user) => {
             if (user) {
                 this.loadLiveProgress(this.targetUserId);
             }
         });
 
-        // 3. Tab Sleep / Mobile Resume Recovery Listener
+        // Mobile sleep / tab focus recovery listener
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
                 const idleDuration = Date.now() - this.lastSyncTime;
@@ -405,7 +476,6 @@ const appState = {
                 this.render();
             } else {
                 // --- BACKWARD COMPATIBILITY FALLBACK ---
-                // If unified path is clean, check original path so old desktop data displays properly
                 const legacyRef = doc(this.db, "artifacts", "game-tracker-5b2ef", "data", "public", "user", userId);
                 this.legacyUnsub = onSnapshot(legacyRef, (legacySnap) => {
                     if (legacySnap.exists()) {
@@ -434,7 +504,6 @@ const appState = {
     toggleItem: async function(id) {
         const currentUser = this.auth.currentUser;
 
-        // Force Google Sign-In prompt if clicking item while unauthenticated
         if (!currentUser || currentUser.isAnonymous) {
             try {
                 const provider = new GoogleAuthProvider();
@@ -471,7 +540,7 @@ const appState = {
 
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
         
-        // Save target: /users/{userId}/progress/sniper-elite-5
+        // Target: /users/{userId}/progress/sniper-elite-5
         const docRef = doc(this.db, "users", this.targetUserId, "progress", "sniper-elite-5");
 
         try {
