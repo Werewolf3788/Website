@@ -2,8 +2,9 @@
   ==========================================
   VERSION TIMESTAMP: Thu, July 23, 2026, 12:45 AM EDT
   SYSTEM: Werewolf Project Home Engine (index.html)
-  ENGINE: Resilient JSON Comment Stripper + Dynamic Active Game Matcher
-  SQUAD: Werewolf3788 | Raymystyro | Darkwing69420 | DesdemonaTiger
+  DEPLOYMENT: GitHub Pages Direct Target
+  ENGINE: Clean Menu.json Stripper + Multi-Alias Google Auth Mapper
+  SQUAD: Werewolf3788 (Admin) | Raymystyro | Darkwing69420 | DesdemonaTiger
   ==========================================
 -->
 <!DOCTYPE html>
@@ -215,7 +216,7 @@
                             </div>
                         </div>
                         <h3 class="text-xl mb-1 text-white">Werewolf3788</h3>
-                        <p class="text-werewolf text-xs font-bold uppercase tracking-tighter mb-1">Admin / Streamer</p>
+                        <p class="text-werewolf text-xs font-bold uppercase tracking-tighter mb-1" id="role-tag-werewolf">Admin / Streamer</p>
                         <p id="weather-desc-werewolf" class="weather-desc text-[10px] opacity-70 mb-2 italic">Updating weather...</p>
                         <div class="mb-4 min-h-[20px]">
                             <p id="twitch-game-werewolf" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking Twitch...</p>
@@ -235,7 +236,7 @@
                             </div>
                         </div>
                         <h3 class="text-xl mb-1 text-white">Raymystyro</h3>
-                        <p class="text-ray text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
+                        <p class="text-ray text-xs font-bold uppercase tracking-tighter mb-1" id="role-tag-ray">Contributor / Streamer</p>
                         <p id="weather-desc-ray" class="weather-desc text-[10px] opacity-70 mb-2 italic">Updating weather...</p>
                         <div class="mb-4 min-h-[20px]">
                             <p id="twitch-game-ray" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking Twitch...</p>
@@ -301,12 +302,20 @@
         </div>
     </section>
 
-    <!-- DYNAMIC MATCHED ACTIVE GAME PROGRESS CARDS SECTION -->
+    <!-- LIVE USER PROGRESS TRACKER SECTION -->
     <section class="section-padding">
-        <div class="max-w-7xl mx-auto px-4 space-y-8" id="active-game-section-container">
-            <!-- Dynamic game cards will automatically render here for players on the SAME game -->
-            <div class="custom-card p-8 border border-slate-700/80 text-center text-slate-400 animate-pulse">
-                Checking active PS5 game sessions and syncing Firestore progress...
+        <div class="max-w-7xl mx-auto px-4 space-y-8" id="squad-progress-container">
+            <!-- Dynamic Firestore User Progress Bars populate here -->
+            <div class="custom-card p-8 border border-slate-700/80">
+                <div class="flex items-center justify-between mb-6">
+                    <span class="bg-slate-800 text-sky-400 border border-sky-500/30 font-black text-[10px] uppercase px-3 py-1 rounded-full flex items-center gap-2">
+                        <i class="fa-solid fa-satellite-dish"></i> LIVE FIRESTORE SQUAD TRACKER
+                    </span>
+                    <span class="text-xs text-emerald-400 font-bold uppercase tracking-widest">REALTIME CLOUD SYNC</span>
+                </div>
+                <div class="space-y-4 bg-slate-900/60 p-5 rounded-xl border border-slate-800" id="squad-progress-bars">
+                    <div class="text-xs text-slate-400 italic animate-pulse">Syncing user profiles...</div>
+                </div>
             </div>
         </div>
     </section>
@@ -328,7 +337,6 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
@@ -343,18 +351,40 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const rtdb = getDatabase(app);
 
-        // PERSISTENT AUTH SESSION LOGIC (Auto Stay Logged In)
+        // PERSISTENT MULTI-ACCOUNT GOOGLE AUTH BINDING
         setPersistence(auth, browserLocalPersistence).catch(err => console.warn("Auth persistence notice:", err.message));
 
         const authBtn = document.getElementById('auth-btn');
         const authName = document.getElementById('auth-user-name');
 
+        // ACCOUNT ALIAS MAPPINGS
+        const accountAliases = {
+            "raykevin71888@gmail.com": {
+                role: "Admin",
+                primaryUser: "Werewolf3788",
+                aliases: ["werewolf3788", "Werewolf3788", "KFruti88", "Kevin", "WildHorse_Spirit", "werewolf"]
+            },
+            "cartnalray9@gmail.com": {
+                role: "Contributor",
+                primaryUser: "Raymystyro",
+                aliases: ["OneLIVIDMAN", "Raymystyro", "RayMystyro", "ray"]
+            }
+        };
+
         onAuthStateChanged(auth, async (user) => {
             if (user && !user.isAnonymous) {
-                const name = user.displayName || user.email.split('@')[0];
-                if (authName) authName.innerText = name;
+                const userEmail = user.email.toLowerCase();
+                let matchedAccount = accountAliases[userEmail];
+                let displayName = user.displayName || userEmail.split('@')[0];
+                let userRole = "Member";
+
+                if (matchedAccount) {
+                    displayName = matchedAccount.primaryUser;
+                    userRole = matchedAccount.role;
+                }
+
+                if (authName) authName.innerText = `${displayName} (${userRole})`;
                 if (authBtn) {
                     authBtn.onclick = () => {
                         if (confirm(`Logged in as ${user.email}. Sign out?`)) {
@@ -363,10 +393,13 @@
                     };
                 }
 
+                // Auto-sync profile to /users/{uid}
                 await setDoc(doc(db, "users", user.uid), {
                     uid: user.uid,
                     email: user.email,
-                    displayName: name,
+                    displayName: displayName,
+                    role: userRole,
+                    aliases: matchedAccount ? matchedAccount.aliases : [],
                     photoURL: user.photoURL || '',
                     lastSeen: new Date().toISOString()
                 }, { merge: true }).catch(err => console.warn("Firestore auth sync notice:", err.message));
@@ -410,7 +443,7 @@
             }
         }
 
-        // --- MENU.JSON COMMENT STRIPPER & PARSER ---
+        // --- MENU.JSON COMMENT STRIPPER & PARSER ENGINE ---
         async function fetchNavData() {
             const origin = window.location.origin;
             const endpoints = [
@@ -425,7 +458,7 @@
                     const res = await fetchWithRetry(path);
                     let text = await res.text();
                     
-                    // CRITICAL FIX: STRIP JAVASCRIPT COMMENTS (/* ... */) FROM JSON FILE
+                    // STRIP JAVASCRIPT COMMENTS (/* ... */) FROM MENU.JSON FILE
                     text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
                     
                     const data = JSON.parse(text);
@@ -569,105 +602,40 @@
             }
         }
 
-        // --- SQUAD DEFINITION & DYNAMIC ACTIVE-GAME MATCHING ENGINE ---
+        // --- SQUAD DEFINITION & FIRESTORE PROGRESS OBSERVER ---
         const squadRoster = [
-            { id: 'werewolf', docIds: ['werewolf', 'Werewolf3788', 'kevin'], display: 'Werewolf3788', color: '#FF5F1F', count: 0, total: 54, activeGame: 'Sniper Elite 5', gameArt: 'https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg' },
-            { id: 'Ray', docIds: ['Ray', 'ray', 'raymystyro'], display: 'Raymystyro', color: '#C41E3A', count: 95, total: 233, activeGame: 'Sniper Elite 5', gameArt: 'https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg' },
-            { id: 'Terrdog420', docIds: ['Terrdog420', 'terrdog', 'tj', 'Darkwing69420'], display: 'Darkwing69420', color: '#9333ea', count: 0, total: 54, activeGame: 'Sniper Elite 5', gameArt: 'https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg' },
-            { id: 'DesdemonaTiger', docIds: ['DesdemonaTiger', 'desdemonatiger', 'desdemona'], display: 'DesdemonaTiger', color: '#00f2ff', count: 0, total: 54, activeGame: 'Sniper Elite 5', gameArt: 'https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg' }
+            { id: 'werewolf', docIds: ['werewolf3788', 'Werewolf3788', 'KFruti88', 'Kevin', 'WildHorse_Spirit', 'werewolf'], display: 'Werewolf3788', color: '#FF5F1F', count: 0, total: 54 },
+            { id: 'Ray', docIds: ['OneLIVIDMAN', 'Raymystyro', 'RayMystyro', 'ray'], display: 'Raymystyro', color: '#C41E3A', count: 95, total: 233 },
+            { id: 'Darkwing69420', docIds: ['Darkwing69420', 'Terrdog420', 'terrdog', 'tj'], display: 'Darkwing69420', color: '#9333ea', count: 0, total: 54 },
+            { id: 'DesdemonaTiger', docIds: ['DesdemonaTiger', 'desdemonatiger', 'desdemona'], display: 'DesdemonaTiger', color: '#00f2ff', count: 0, total: 54 }
         ];
 
-        // Group players into dedicated cards ONLY if playing the SAME game
-        function renderMatchedGameCards() {
-            const sectionContainer = document.getElementById('active-game-section-container');
-            if (!sectionContainer) return;
+        function renderUserProgressBars() {
+            const container = document.getElementById('squad-progress-bars');
+            if (!container) return;
 
-            const gameGroups = {};
+            let barsHtml = '';
             squadRoster.forEach(p => {
-                const gameKey = p.activeGame.toLowerCase().replace(/[^a-z0-9]/g, '');
-                if (!gameGroups[gameKey]) {
-                    gameGroups[gameKey] = {
-                        title: p.activeGame,
-                        art: p.gameArt,
-                        players: []
-                    };
-                }
-                gameGroups[gameKey].players.push(p);
-            });
-
-            let fullHTML = '';
-
-            Object.keys(gameGroups).forEach(gk => {
-                const group = gameGroups[gk];
-                let playerBars = '';
-
-                group.players.forEach(p => {
-                    const percent = Math.round((p.count / Math.max(p.total, 1)) * 100) || 0;
-                    playerBars += `
-                        <div class="space-y-1">
-                            <div class="flex justify-between items-center text-xs font-black uppercase">
-                                <span style="color: ${p.color}">${p.display}</span>
-                                <span class="text-slate-300">${percent}% (${p.count}/${p.total} Objectives)</span>
-                            </div>
-                            <div class="h-3 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700">
-                                <div class="h-full transition-all duration-1000" style="width: ${percent}%; background-color: ${p.color}"></div>
-                            </div>
+                const percent = Math.round((p.count / Math.max(p.total, 1)) * 100) || 0;
+                barsHtml += `
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center text-xs font-black uppercase">
+                            <span style="color: ${p.color}">${p.display}</span>
+                            <span class="text-slate-300">${percent}% (${p.count}/${p.total} Objectives)</span>
                         </div>
-                    `;
-                });
-
-                fullHTML += `
-                    <div class="custom-card p-8 border border-slate-700/80 shadow-2xl">
-                        <div class="flex items-center justify-between mb-6">
-                            <span class="bg-slate-800 text-sky-400 border border-sky-500/30 font-black text-[10px] uppercase px-3 py-1 rounded-full flex items-center gap-2">
-                                <i class="fa-solid fa-gamepad"></i> ACTIVE MATCH TRACKER
-                            </span>
-                            <span class="text-xs text-emerald-400 font-bold uppercase tracking-widest">FIRESTORE CLOUD LIVE</span>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                            <div class="md:col-span-1 aspect-video rounded-xl overflow-hidden border border-slate-700 bg-slate-900 relative">
-                                <img src="${group.art}" class="w-full h-full object-cover" onerror="this.src='https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg'">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
-                                    <div class="text-lg font-black text-white uppercase">${group.title}</div>
-                                </div>
-                            </div>
-                            <div class="md:col-span-2 space-y-5">
-                                <div>
-                                    <h2 class="text-2xl font-black text-sky-400 uppercase tracking-tight">${group.title}</h2>
-                                    <p class="text-xs text-slate-400 font-bold uppercase mt-1 tracking-widest">Active Operatives: ${group.players.map(p => p.display).join(' • ')}</p>
-                                </div>
-                                <div class="space-y-4 bg-slate-900/60 p-5 rounded-xl border border-slate-800">
-                                    ${playerBars}
-                                </div>
-                            </div>
+                        <div class="h-3 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                            <div class="h-full transition-all duration-1000" style="width: ${percent}%; background-color: ${p.color}"></div>
                         </div>
                     </div>
                 `;
             });
-
-            sectionContainer.innerHTML = fullHTML;
+            container.innerHTML = barsHtml;
         }
 
-        // Live PS5 RTDB Active Game Sync + Firestore Ground Truth Observer
         function initLiveFirestoreObservers() {
             squadRoster.forEach(member => {
-                // Read RTDB for dynamic active game session
-                const rtdbRef = ref(rtdb, `psn/users/${member.id.toLowerCase()}`);
-                onValue(rtdbRef, (snap) => {
-                    if (snap.exists()) {
-                        const val = snap.val();
-                        if (val && val.titleName) {
-                            member.activeGame = val.titleName;
-                            if (val.titleConceptIcon) member.gameArt = val.titleConceptIcon;
-                        }
-                    }
-                    renderMatchedGameCards();
-                });
-
-                // Read Firestore for exact objective completion count
                 member.docIds.forEach(targetId => {
-                    const gameSlug = member.activeGame.toLowerCase().replace(/[^a-z0-9]/g, '-');
-                    const docRef = doc(db, "users", targetId, "progress", gameSlug);
+                    const docRef = doc(db, "users", targetId, "progress", "sniper-elite-5");
 
                     onSnapshot(docRef, (snap) => {
                         if (snap.exists()) {
@@ -676,14 +644,16 @@
                             if (Array.isArray(items) && items.length > 0) {
                                 member.total = items.length;
                                 member.count = items.filter(i => i.collected || i.done).length;
-                                renderMatchedGameCards();
+                                renderUserProgressBars();
                             }
                         }
+                    }, (err) => {
+                        // Suppress background non-matches
                     });
                 });
             });
 
-            renderMatchedGameCards();
+            renderUserProgressBars();
         }
 
         // --- CINEMA SLIDESHOW LOGIC ---
