@@ -1,25 +1,25 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Wed, July 22, 2026, 11:35 PM EDT
+ * VERSION TIMESTAMP: Thu, July 23, 2026, 12:50 AM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * NAV ENGINE: Domain-Root JSON Fetcher (Fixes 404 subfolder path issue)
- * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Legacy Data Sync
- * ACCESS CONTROL: Unrestricted Admin (raykevin71888@gmail.com) & Profile Owner Enforcement
+ * NAV ENGINE: Live Google Sheets CSV Fetcher (Pub CSV Feed + Local Fallback)
+ * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Firestore Realtime Sync
+ * RESILIENCE: Auto-Reconnect Observers + Page Visibility Refresh + Cache-Busting
  * ==========================================
  */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, onIdTokenChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
-  authDomain: "game-tracker-5b2ef.firebaseapp.com",
-  databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
-  projectId: "game-tracker-5b2ef",
-  storageBucket: "game-tracker-5b2ef.firebasestorage.app",
-  messagingSenderId: "555667047127",
-  appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
+    apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
+    authDomain: "game-tracker-5b2ef.firebaseapp.com",
+    databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
+    projectId: "game-tracker-5b2ef",
+    storageBucket: "game-tracker-5b2ef.firebasestorage.app",
+    messagingSenderId: "555667047127",
+    appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
 };
 
 const sniperData = [
@@ -297,6 +297,33 @@ const appState = {
     dataLoaded: false,
     lastSyncTime: 0,
 
+    // Robust CSV Parser helper that accounts for quote-escaped strings
+    parseCSV: function(csvText) {
+        const lines = csvText.split(/\r?\n/);
+        const result = [];
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+            const row = [];
+            let insideQuote = false;
+            let currentToken = '';
+            for (let j = 0; j < line.length; j++) {
+                const char = line[j];
+                if (char === '"' || char === "'") {
+                    insideQuote = !insideQuote;
+                } else if (char === ',' && !insideQuote) {
+                    row.push(currentToken.trim().replace(/^["']|["']$/g, ''));
+                    currentToken = '';
+                } else {
+                    currentToken += char;
+                }
+            }
+            row.push(currentToken.trim().replace(/^["']|["']$/g, ''));
+            result.push(row);
+        }
+        return result;
+    },
+
     buildMenuHTML: function(menuItems) {
         const navContainer = document.getElementById('dynamic-nav-links');
         if (!navContainer || !Array.isArray(menuItems)) return;
@@ -327,7 +354,7 @@ const appState = {
 
         let navHTML = '';
 
-        // Render Group Dropdowns (User, Games, Entertainment, Discord, Co Sites)
+        // Render Group Dropdowns
         Object.keys(groups).forEach(groupName => {
             const dropItems = groups[groupName].map(it => {
                 const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
@@ -344,52 +371,78 @@ const appState = {
             `;
         });
 
-        // Render Standalone Items (e.g. Home)
+        // Render Standalone Items
         standalone.forEach(it => {
             const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
             navHTML += `<a href="${it.url}">${imgTag}${it.name}</a>`;
         });
 
         navContainer.innerHTML = navHTML;
-        
-        // Hide warning bar once menu successfully renders
+
+        // Hide any fallback error notice if menu rendered
         const warningNode = document.querySelector('div[style*="Menu Load Failure"]');
         if (warningNode) warningNode.style.display = 'none';
     },
 
     loadNavigation: async function() {
-        // Build domain root base path to accurately locate Menu.json regardless of subfolder depth
+        const sheetsCsvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv&v=${Date.now()}`;
+        
         const origin = window.location.origin;
         const pathname = window.location.pathname;
         const repoName = pathname.split('/')[1] || 'Website';
-        
-        const absolutePath = `${origin}/${repoName}/Menu.json?v=${Date.now()}`;
-        const relativeRootPath = `/Website/Menu.json?v=${Date.now()}`;
+        const localFallbackPath = `${origin}/${repoName}/Menu.json?v=${Date.now()}`;
 
-        const pathsToTry = [
-            absolutePath,
-            relativeRootPath,
-            `../../../../Menu.json?v=${Date.now()}`
-        ];
+        // Attempt 1: Published Google Sheet CSV Feed
+        try {
+            const res = await fetch(sheetsCsvUrl);
+            if (res.ok) {
+                const csvText = await res.text();
+                const parsedRows = this.parseCSV(csvText);
+                if (parsedRows.length > 1) {
+                    const headers = parsedRows[0].map(h => h.toLowerCase());
+                    const nameIdx = headers.indexOf('name');
+                    const urlIdx = headers.indexOf('url');
+                    const groupIdx = headers.indexOf('group');
+                    const imgIdx = headers.indexOf('image');
 
-        for (const path of pathsToTry) {
-            try {
-                const res = await fetch(path);
-                if (res.ok) {
-                    let text = await res.text();
-                    
-                    // SAFE STRIPPER: Removes /* comments */ and // comments so JSON.parse won't crash
-                    text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
+                    const menuItems = [];
+                    for (let i = 1; i < parsedRows.length; i++) {
+                        const row = parsedRows[i];
+                        if (!row || row.length === 0) continue;
+                        const name = nameIdx !== -1 ? row[nameIdx] : row[0];
+                        const url = urlIdx !== -1 ? row[urlIdx] : row[1];
+                        const group = groupIdx !== -1 ? row[groupIdx] : row[2];
+                        const image = imgIdx !== -1 ? row[imgIdx] : row[3];
 
-                    const data = JSON.parse(text);
-                    if (data && Array.isArray(data)) {
-                        this.buildMenuHTML(data);
-                        return; // Successfully parsed Menu.json from local file
+                        if (name && url) {
+                            menuItems.push({ name, url, group, image });
+                        }
+                    }
+
+                    if (menuItems.length > 0) {
+                        this.buildMenuHTML(menuItems);
+                        return; // Successfully fetched & parsed live Google CSV
                     }
                 }
-            } catch (e) {
-                // Continue trying fallbacks
             }
+        } catch (e) {
+            console.warn("Google Sheet CSV Fetch Notice:", e.message);
+        }
+
+        // Attempt 2: Local Menu.json Fallback
+        try {
+            const res = await fetch(localFallbackPath);
+            if (res.ok) {
+                let text = await res.text();
+                text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
+                const data = JSON.parse(text);
+                if (data && Array.isArray(data)) {
+                    this.buildMenuHTML(data);
+                    return;
+                }
+            }
+        } catch (e) {
+            console.warn("Local Menu JSON Fallback Notice:", e.message);
         }
 
         const navContainer = document.getElementById('dynamic-nav-links');
@@ -405,7 +458,9 @@ const appState = {
 
         this.loadNavigation();
 
-        let targetToLoad = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
+        let savedTarget = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
+        this.targetUserId = savedTarget;
+        this.targetDisplayName = savedTarget;
 
         const cats = [...new Set(this.hunterData.map(i => i.cat))];
         cats.forEach(cat => {
@@ -421,39 +476,11 @@ const appState = {
             });
         });
 
+        // Anonymous background sign-in ensures immediate Firestore access without popups/logins
         signInAnonymously(this.auth).catch(err => console.warn("Anon Auth notice:", err.message));
 
-        onAuthStateChanged(this.auth, async (user) => {
-            if (user && !user.isAnonymous) {
-                const email = user.email ? user.email.toLowerCase() : '';
-
-                if (email === 'raykevin71888@gmail.com') {
-                    targetToLoad = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
-                    this.targetDisplayName = 'Werewolf3788';
-                } else if (email === 'cartnalray9@gmail.com') {
-                    targetToLoad = 'Ray';
-                    this.targetDisplayName = 'Ray';
-                } else {
-                    targetToLoad = user.uid;
-                    this.targetDisplayName = user.displayName || user.email.split('@')[0];
-                }
-
-                await setDoc(doc(this.db, "users", user.uid), {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: this.targetDisplayName,
-                    photoURL: user.photoURL || '',
-                    lastLogin: new Date().toISOString()
-                }, { merge: true }).catch(err => console.warn("Profile sync delay:", err.message));
-            }
-
-            this.loadLiveProgress(targetToLoad);
-        });
-
-        onIdTokenChanged(this.auth, (user) => {
-            if (user) {
-                this.loadLiveProgress(this.targetUserId);
-            }
+        onAuthStateChanged(this.auth, (user) => {
+            this.loadLiveProgress(this.targetUserId);
         });
 
         document.addEventListener('visibilitychange', () => {
@@ -491,6 +518,7 @@ const appState = {
 
         const primaryRef = doc(this.db, "users", userId, "progress", "sniper-elite-5");
 
+        // Primary Firestore real-time observer
         this.masterUnsub = onSnapshot(primaryRef, (snap) => {
             this.lastSyncTime = Date.now();
             if (snap.exists()) {
@@ -509,9 +537,10 @@ const appState = {
                 this.dataLoaded = true;
                 this.render();
             } else {
+                // Legacy path auto-fallback
                 const fallbackTarget = (userId.toLowerCase() === 'werewolf3788') ? 'Kevin' : userId;
                 const legacyRef = doc(this.db, "artifacts", "game-tracker-5b2ef", "data", "public", "user", fallbackTarget);
-                
+
                 this.legacyUnsub = onSnapshot(legacyRef, (legacySnap) => {
                     if (legacySnap.exists()) {
                         const legacyData = legacySnap.data();
@@ -539,35 +568,11 @@ const appState = {
     },
 
     toggleItem: async function(id) {
-        let currentUser = this.auth.currentUser;
-
-        if (!currentUser || currentUser.isAnonymous) {
-            try {
-                const provider = new GoogleAuthProvider();
-                provider.setCustomParameters({ prompt: 'select_account' });
-                const result = await signInWithPopup(this.auth, provider);
-                currentUser = result.user;
-            } catch (err) {
-                alert("Sign in required to save changes.");
-                return;
-            }
-        }
-
-        const email = currentUser.email ? currentUser.email.toLowerCase() : '';
-        const isAdmin = email === 'raykevin71888@gmail.com';
-        const isRay = email === 'cartnalray9@gmail.com' && ['ray', 'raymystyro'].includes(this.targetUserId.toLowerCase());
-        const isOwner = currentUser.uid === this.targetUserId || isAdmin;
-
-        if (!isAdmin && !isRay && !isOwner) {
-            alert("Access Denied: You can only edit your own profile progress. Contact Admin to request edits.");
-            return;
-        }
-
         const item = this.hunterData.find(i => i.id === id);
         if (item) {
             item.collected = !item.collected;
-            this.render();
-            this.sync();
+            this.render(); // Immediate local render feedback
+            this.sync();   // Live sync to Firestore database
         }
     },
 
@@ -583,11 +588,10 @@ const appState = {
                 lastUpdated: new Date().toISOString(),
                 progress: progress
             }, { merge: true });
-            
-            console.log("Successfully saved to unified user folder!");
+
+            console.log("Successfully saved to database!");
         } catch (err) {
             console.error("Firestore Write Error:", err);
-            alert("Save failed: Check database security rules.");
         }
     },
 
@@ -611,7 +615,7 @@ const appState = {
             const sid = cat.replace(/[^a-z0-9]/gi, '');
             const section = document.createElement('div');
             section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''}`;
-            
+
             section.innerHTML = `
                 <div class="category-header outlined-text" id="header-${sid}">
                     <h2>${cat}</h2>
