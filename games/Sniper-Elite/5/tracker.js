@@ -1,10 +1,11 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Wed, July 22, 2026, 5:42 PM EDT
+ * VERSION TIMESTAMP: Wed, July 22, 2026, 10:55 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Auto-Fallback
- * NAV ENGINE: Multi-Fallback Fetch (Relative Site Root -> GitHub Pages -> Raw Githack)
- * ACCESS CONTROL: Allowed cross-profile updates for primary team leads & admin
+ * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Multi-Legacy Fallback
+ * ADMIN PROFILE MAP: raykevin71888@gmail.com -> ['Werewolf3788', 'Kevin', 'kfruti'] (FULL ACCESS)
+ * TEAM PROFILE MAP: cartnalray9@gmail.com -> ['Ray', 'Raymystyro']
+ * RESILIENCE: Clean State Reset, Multi-Path Navigation, Token Observer
  * ==========================================
  */
 
@@ -297,7 +298,6 @@ const appState = {
     dataLoaded: false,
     lastSyncTime: 0,
 
-    // --- MULTI-FALLBACK JSON NAVIGATION ENGINE ---
     loadNavigation: async function() {
         const navContainer = document.getElementById('dynamic-nav-links');
         if (!navContainer) return;
@@ -404,19 +404,27 @@ const appState = {
 
         onAuthStateChanged(this.auth, async (user) => {
             if (user && !user.isAnonymous) {
+                const email = user.email ? user.email.toLowerCase() : '';
+
+                // BIND ADMIN EMAIL TO WEREWOLF3788 (ADMIN OVERRIDE)
+                if (email === 'raykevin71888@gmail.com') {
+                    targetToLoad = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
+                    this.targetDisplayName = 'Werewolf3788';
+                } else if (email === 'cartnalray9@gmail.com') {
+                    targetToLoad = 'Ray';
+                    this.targetDisplayName = 'Ray';
+                } else {
+                    targetToLoad = user.uid;
+                    this.targetDisplayName = user.displayName || user.email.split('@')[0];
+                }
+
                 await setDoc(doc(this.db, "users", user.uid), {
                     uid: user.uid,
                     email: user.email,
-                    displayName: user.displayName || user.email.split('@')[0],
+                    displayName: this.targetDisplayName,
                     photoURL: user.photoURL || '',
                     lastLogin: new Date().toISOString()
                 }, { merge: true }).catch(err => console.warn("Profile sync delay:", err.message));
-
-                // If user hasn't explicitly selected another profile button, default to their UID
-                if (!localStorage.getItem('se5_selected_user_id')) {
-                    targetToLoad = user.uid;
-                }
-                this.targetDisplayName = user.displayName || user.email.split('@')[0];
             }
 
             this.loadLiveProgress(targetToLoad);
@@ -447,6 +455,9 @@ const appState = {
     loadLiveProgress: function(userId) {
         this.targetUserId = userId;
         localStorage.setItem('se5_selected_user_id', userId);
+
+        // CLEAN SLATE RESET: Prevent state bleeding across profiles
+        this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
 
         const displayNode = document.getElementById('hunter-display');
         if (displayNode) displayNode.innerText = userId.toUpperCase();
@@ -479,7 +490,10 @@ const appState = {
                 this.dataLoaded = true;
                 this.render();
             } else {
-                const legacyRef = doc(this.db, "artifacts", "game-tracker-5b2ef", "data", "public", "user", userId);
+                // LEGACY FALLBACK CHAIN FOR KEVIN / WEREWOLF3788 / RAY / TJ
+                const fallbackTarget = (userId.toLowerCase() === 'werewolf3788') ? 'Kevin' : userId;
+                const legacyRef = doc(this.db, "artifacts", "game-tracker-5b2ef", "data", "public", "user", fallbackTarget);
+                
                 this.legacyUnsub = onSnapshot(legacyRef, (legacySnap) => {
                     if (legacySnap.exists()) {
                         const legacyData = legacySnap.data();
@@ -490,6 +504,8 @@ const appState = {
                                 return { ...item, collected: status ? (status.collected || status.done || false) : false };
                             });
                         }
+                    } else {
+                        this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
                     }
                     this.dataLoaded = true;
                     this.render();
@@ -507,28 +523,24 @@ const appState = {
     toggleItem: async function(id) {
         let currentUser = this.auth.currentUser;
 
-        // Force Google Sign-In prompt if clicking item while unauthenticated
         if (!currentUser || currentUser.isAnonymous) {
             try {
                 const provider = new GoogleAuthProvider();
                 provider.setCustomParameters({ prompt: 'select_account' });
                 const result = await signInWithPopup(this.auth, provider);
                 currentUser = result.user;
-                this.targetDisplayName = currentUser.displayName || currentUser.email.split('@')[0];
             } catch (err) {
                 alert("Sign in required to save changes.");
                 return;
             }
         }
 
-        const userEmail = (currentUser && currentUser.email) ? currentUser.email.toLowerCase() : '';
-        const isAdmin = userEmail === 'raykevin71888@gmail.com';
-        
-        // Allowed targets for team group editing
-        const isAllowedProfile = ['werewolf3788', 'ray', 'tj'].includes(this.targetUserId.toLowerCase());
-        const isOwner = (currentUser && currentUser.uid === this.targetUserId) || isAllowedProfile;
+        const email = currentUser.email ? currentUser.email.toLowerCase() : '';
+        const isAdmin = email === 'raykevin71888@gmail.com';
+        const isRay = email === 'cartnalray9@gmail.com' && ['ray', 'raymystyro'].includes(this.targetUserId.toLowerCase());
+        const isOwner = currentUser.uid === this.targetUserId || isAdmin;
 
-        if (!isOwner && !isAdmin) {
+        if (!isAdmin && !isRay && !isOwner) {
             alert("Access Denied: You can only edit your own profile progress. Contact Admin to request edits.");
             return;
         }
@@ -545,8 +557,6 @@ const appState = {
         if (!this.db || !this.dataLoaded) return;
 
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
-        
-        // Target: /users/{userId}/progress/sniper-elite-5
         const docRef = doc(this.db, "users", this.targetUserId, "progress", "sniper-elite-5");
 
         try {
