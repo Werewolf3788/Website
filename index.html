@@ -1,10 +1,9 @@
 <!-- 
   ==========================================
-  VERSION TIMESTAMP: Thu, July 23, 2026, 12:05 AM EDT
+  VERSION TIMESTAMP: Thu, July 23, 2026, 12:12 AM EDT
   SYSTEM: Werewolf Project Home Engine (index.html)
-  ENGINE: Smart Dynamic Game Matching & Live Firestore/RTDB Progress Tracker
-  SQUAD: Werewolf3788 | Raymystyro | Terrdog420 | DesdemonaTiger
-  NOTICE: Migrated to Firestore primary reads before RTDB termination on July 27th
+  ENGINE: Resilient Multi-User Game Matcher + Firestore/RTDB Observer + Cinema Engine
+  ADMIN: raykevin71888@gmail.com | Werewolf3788
   ==========================================
 -->
 <!DOCTYPE html>
@@ -32,7 +31,7 @@
             --row-height: 30px;
             --section-height: 50px;
 
-            /* Custom Theme Colors */
+            /* Site Theme Colors */
             --color-werewolf: #FF5F1F;
             --color-ray: #C41E3A;      
             --color-terrdog: #9333ea;   
@@ -48,6 +47,7 @@
             width: 100vw;
             max-width: 100%;
             margin: 0;
+            overflow-x: hidden;
         }
 
         .max-w-7xl {
@@ -326,33 +326,31 @@
         </div>
     </section>
 
-    <!-- REAL-TIME ACTIVE MATCHING GAME TRACKER SECTION -->
+    <!-- DYNAMIC GAME MATCHING SQUAD PROGRESS SECTION -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4 space-y-8" id="active-game-section-container">
-            <!-- Dynamic Active Game Cards populate here based on live PS5 activity -->
-            <div id="smart-coop-container" class="transition-all duration-500">
-                <div class="custom-card p-8 border-2 border-emerald-500/80 shadow-[0_0_30px_rgba(16,185,129,0.25)]">
-                    <div class="flex items-center justify-between mb-6">
-                        <span class="bg-red-600 text-white font-black text-[10px] uppercase px-3 py-1 rounded-full animate-pulse flex items-center gap-2">
-                            <i class="fa-solid fa-gamepad"></i> DYNAMIC ACTIVE GAME PROGRESS TRACKER
-                        </span>
-                        <span class="text-xs text-emerald-400 font-bold uppercase tracking-widest" id="coop-status-tag">FIRESTORE LIVE SYNC</span>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                        <div class="md:col-span-1 aspect-video rounded-xl overflow-hidden border border-slate-700 bg-slate-900 relative">
-                            <img id="coop-game-art" src="https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
-                                <div id="coop-game-title-overlay" class="text-lg font-black text-white uppercase">Sniper Elite 5</div>
-                            </div>
+            <!-- Dynamic Active Game Cards populated live per active game session -->
+            <div class="custom-card p-8 border border-slate-700/80">
+                <div class="flex items-center justify-between mb-6">
+                    <span class="bg-slate-800 text-sky-400 border border-sky-500/30 font-black text-[10px] uppercase px-3 py-1 rounded-full flex items-center gap-2">
+                        <i class="fa-solid fa-satellite-dish"></i> LIVE SQUAD PROGRESS TRACKER
+                    </span>
+                    <span class="text-xs text-slate-400 font-bold uppercase tracking-widest">FIRESTORE CLOUD ACTIVE</span>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                    <div class="md:col-span-1 aspect-video rounded-xl overflow-hidden border border-slate-700 bg-slate-900 relative">
+                        <img id="coop-game-art" src="https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
+                            <div class="text-lg font-black text-white uppercase" id="active-game-title-overlay">Sniper Elite 5</div>
                         </div>
-                        <div class="md:col-span-2 space-y-5">
-                            <div>
-                                <h2 id="coop-game-heading" class="text-2xl font-black text-emerald-400 uppercase tracking-tight">Sniper Elite 5</h2>
-                                <p class="text-xs text-slate-400 font-bold uppercase mt-1 tracking-widest" id="active-operatives-label">Active Operatives: Synchronizing Firestore progress...</p>
-                            </div>
-                            <div class="space-y-4 bg-slate-900/60 p-5 rounded-xl border border-slate-800" id="coop-bars-list">
-                                <div class="text-xs text-slate-400 italic animate-pulse">Reading true progress directly from cloud database...</div>
-                            </div>
+                    </div>
+                    <div class="md:col-span-2 space-y-5">
+                        <div>
+                            <h2 class="text-2xl font-black text-sky-400 uppercase tracking-tight" id="active-game-heading">Sniper Elite 5</h2>
+                            <p class="text-xs text-slate-400 font-bold uppercase mt-1 tracking-widest">Active Players: Werewolf3788 • Raymystyro • Terrdog420 • DesdemonaTiger</p>
+                        </div>
+                        <div class="space-y-4 bg-slate-900/60 p-5 rounded-xl border border-slate-800" id="squad-progress-bars">
+                            <div class="text-xs text-slate-400 italic animate-pulse">Syncing live Firestore progress...</div>
                         </div>
                     </div>
                 </div>
@@ -372,7 +370,7 @@
         </div>
     </footer>
 
-    <!-- Firebase v9+ Modular Web SDK & Dynamic Match Engine -->
+    <!-- Firebase v9+ Modular Web SDK & Real-Time Sync -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -461,9 +459,9 @@
         // --- MENU PARSER ENGINE ---
         async function fetchNavData() {
             const endpoints = [
+                `https://raw.githack.com/Werewolf3788/Website/main/Menu.json?v=${Date.now()}`,
                 `./Menu.json?v=${Date.now()}`,
-                `./Website/Menu.json?v=${Date.now()}`,
-                `https://raw.githubusercontent.com/Werewolf3788/Website/main/Menu.json?v=${Date.now()}`
+                `./Website/Menu.json?v=${Date.now()}`
             ];
 
             for (const path of endpoints) {
@@ -556,92 +554,43 @@
             mobileContainer.innerHTML = mobileHTML;
         }
 
-        // --- SQUAD DEFINITION & LIVE FIRESTORE OBSERVER ---
+        // --- SQUAD DEFINITION & DYNAMIC MATCH OBSERVER ---
         const squadRoster = [
-            { id: 'Werewolf3788', display: 'Werewolf3788', color: '#FF5F1F', count: 0, total: 54, activeGame: 'Sniper Elite 5' },
+            { id: 'werewolf', display: 'Werewolf3788', color: '#FF5F1F', count: 0, total: 54, activeGame: 'Sniper Elite 5' },
             { id: 'Ray', display: 'Raymystyro', color: '#C41E3A', count: 0, total: 54, activeGame: 'Sniper Elite 5' },
             { id: 'Terrdog420', display: 'Terrdog420', color: '#9333ea', count: 0, total: 54, activeGame: 'Sniper Elite 5' },
             { id: 'DesdemonaTiger', display: 'DesdemonaTiger', color: '#00f2ff', count: 0, total: 54, activeGame: 'Sniper Elite 5' }
         ];
 
-        // Renders dedicated progress cards ONLY for players actively matched to the same game
-        function renderMatchedGameCards() {
-            const sectionContainer = document.getElementById('active-game-section-container');
-            if (!sectionContainer) return;
+        function renderDynamicMatchedGameCards() {
+            const container = document.getElementById('squad-progress-bars');
+            if (!container) return;
 
-            // Group players by their current active PS5 game
-            const gameGroups = {};
+            let barsHtml = '';
             squadRoster.forEach(p => {
-                const gameKey = p.activeGame.toLowerCase().replace(/[^a-z0-9]/g, '');
-                if (!gameGroups[gameKey]) {
-                    gameGroups[gameKey] = {
-                        title: p.activeGame,
-                        players: []
-                    };
-                }
-                gameGroups[gameKey].players.push(p);
-            });
-
-            let fullHTML = '';
-
-            Object.keys(gameGroups).forEach(gk => {
-                const group = gameGroups[gk];
-                let playerBars = '';
-
-                group.players.forEach(p => {
-                    const percent = Math.round((p.count / p.total) * 100) || 0;
-                    playerBars += `
-                        <div class="space-y-1">
-                            <div class="flex justify-between items-center text-xs font-black uppercase">
-                                <span style="color: ${p.color}">${p.display}</span>
-                                <span class="text-slate-300">${percent}% (${p.count}/${p.total} Objectives)</span>
-                            </div>
-                            <div class="h-3 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700">
-                                <div class="h-full transition-all duration-1000" style="width: ${percent}%; background-color: ${p.color}"></div>
-                            </div>
+                const percent = Math.round((p.count / Math.max(p.total, 1)) * 100) || 0;
+                barsHtml += `
+                    <div class="space-y-1">
+                        <div class="flex justify-between items-center text-xs font-black uppercase">
+                            <span style="color: ${p.color}">${p.display}</span>
+                            <span class="text-slate-300">${percent}% (${p.count}/${p.total} Objectives)</span>
                         </div>
-                    `;
-                });
-
-                fullHTML += `
-                    <div class="custom-card p-8 border-2 border-emerald-500/80 shadow-[0_0_30px_rgba(16,185,129,0.25)]">
-                        <div class="flex items-center justify-between mb-6">
-                            <span class="bg-red-600 text-white font-black text-[10px] uppercase px-3 py-1 rounded-full animate-pulse flex items-center gap-2">
-                                <i class="fa-solid fa-gamepad"></i> ACTIVE MATCH TRACKER
-                            </span>
-                            <span class="text-xs text-emerald-400 font-bold uppercase tracking-widest">FIRESTORE CLOUD LIVE</span>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                            <div class="md:col-span-1 aspect-video rounded-xl overflow-hidden border border-slate-700 bg-slate-900 relative">
-                                <img src="https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg" class="w-full h-full object-cover">
-                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
-                                    <div class="text-lg font-black text-white uppercase">${group.title}</div>
-                                </div>
-                            </div>
-                            <div class="md:col-span-2 space-y-5">
-                                <div>
-                                    <h2 class="text-2xl font-black text-emerald-400 uppercase tracking-tight">${group.title}</h2>
-                                    <p class="text-xs text-slate-400 font-bold uppercase mt-1 tracking-widest">Active Operatives: ${group.players.map(p => p.display).join(' • ')}</p>
-                                </div>
-                                <div class="space-y-4 bg-slate-900/60 p-5 rounded-xl border border-slate-800">
-                                    ${playerBars}
-                                </div>
-                            </div>
+                        <div class="h-3 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                            <div class="h-full transition-all duration-1000" style="width: ${percent}%; background-color: ${p.color}"></div>
                         </div>
                     </div>
                 `;
             });
-
-            sectionContainer.innerHTML = fullHTML;
+            container.innerHTML = barsHtml;
         }
 
-        // Listens to Firestore ground truth progress for all users
-        function initLiveSquadFirestoreObserver() {
+        function initLiveFirestoreObservers() {
             squadRoster.forEach(member => {
-                const docSlug = member.activeGame.toLowerCase().replace(/[^a-z0-9]/g, '-');
-                const userDocRef = doc(db, "users", member.id, "progress", docSlug);
+                // Try primary lowercase ID, fallback to display ID
+                const targetDocId = member.id === 'werewolf' ? 'werewolf' : member.id;
+                const docRef = doc(db, "users", targetDocId, "progress", "sniper-elite-5");
 
-                onSnapshot(userDocRef, (snap) => {
+                onSnapshot(docRef, (snap) => {
                     if (snap.exists()) {
                         const data = snap.data();
                         const items = data.progress || [];
@@ -650,15 +599,41 @@
                             member.count = items.filter(i => i.collected || i.done).length;
                         }
                     }
-                    renderMatchedGameCards();
+                    renderDynamicMatchedGameCards();
                 }, (err) => {
-                    console.warn(`Firestore read fallback for ${member.id}:`, err.message);
-                    renderMatchedGameCards();
+                    console.warn(`Firestore read notice for ${member.display}:`, err.message);
+                    renderDynamicMatchedGameCards();
                 });
             });
         }
 
-        // --- FETCH MOVIE CSV COUNT ---
+        // --- CINEMA SLIDESHOW & MOVIE CSV LOGIC ---
+        let cinemaImages = [];
+        let currentSlideIndex = 0;
+        let activeBgId = 1;
+        let cinemaInterval;
+
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                if (char === '"' && line[i+1] === '"') {
+                    current += '"'; i++;
+                } else if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim());
+            return result;
+        }
+
         async function fetchMovieData() {
             const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?output=csv';
             const countDisplay = document.getElementById('movie-count');
@@ -667,18 +642,69 @@
                 const response = await fetchWithRetry(csvUrl);
                 const data = await response.text();
                 const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
-                let validMovieCount = Math.max(rows.length - 1, 0);
+                
+                let validMovieCount = 0;
+                cinemaImages = [];
+
+                for (let i = 1; i < rows.length; i++) {
+                    const columns = parseCSVLine(rows[i]);
+                    if (columns.length > 0 && columns[0].trim() !== '') {
+                        validMovieCount++;
+                        if (columns.length > 1 && columns[1] && columns[1].startsWith('http')) {
+                            cinemaImages.push(columns[1]);
+                        }
+                    }
+                }
 
                 if (countDisplay) countDisplay.textContent = validMovieCount.toLocaleString();
+
+                if (cinemaImages.length > 0) {
+                    cinemaImages.sort(() => 0.5 - Math.random());
+                    startCinemaSlideshow();
+                }
+
             } catch (error) {
                 if (countDisplay) countDisplay.textContent = '1,114';
             }
         }
 
+        function startCinemaSlideshow() {
+            if (cinemaImages.length === 0 || cinemaInterval) return;
+            const layer1 = document.getElementById('cinema-layer-1');
+            const layer2 = document.getElementById('cinema-layer-2');
+            
+            const setSlideImage = (layer, url) => {
+                layer.querySelectorAll('div').forEach(el => {
+                    el.style.backgroundImage = `url('${url}')`;
+                });
+            };
+
+            setSlideImage(layer1, cinemaImages[0]);
+            layer1.style.opacity = 1;
+            layer2.style.opacity = 0;
+
+            cinemaInterval = setInterval(() => {
+                currentSlideIndex = (currentSlideIndex + 1) % cinemaImages.length;
+                const nextImgUrl = cinemaImages[currentSlideIndex];
+
+                if (activeBgId === 1) {
+                    setSlideImage(layer2, nextImgUrl);
+                    layer2.style.opacity = 1;
+                    layer1.style.opacity = 0;
+                    activeBgId = 2;
+                } else {
+                    setSlideImage(layer1, nextImgUrl);
+                    layer1.style.opacity = 1;
+                    layer2.style.opacity = 0;
+                    activeBgId = 1;
+                }
+            }, 6000);
+        }
+
         window.onload = () => {
             fetchNavData();
             fetchMovieData(); 
-            initLiveSquadFirestoreObserver();
+            initLiveFirestoreObservers();
         };
     </script>
 </body>
