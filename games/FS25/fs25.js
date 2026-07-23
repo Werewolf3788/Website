@@ -1,6 +1,6 @@
 /**
- * Version Timestamp: Thu, July 23, 2026, 8:50 PM (EDT)
- * G-Portal Sync Pipeline (Corrected for New IP 144.126.153.115)
+ * Version Timestamp: Thu, July 23, 2026, 10:55 PM (EDT)
+ * Resilient FS25 Sync Pipeline (GitHub Actions - Zero Quota Limits)
  */
 
 require('dotenv').config({ path: __dirname + '/.env' });
@@ -43,7 +43,6 @@ if (!admin.apps.length) {
 const db = admin.database();
 const ftpClient = new Client();
 
-// NEW SERVER CREDENTIALS
 const ftpConfig = {
   host: process.env.FTP_HOST || '144.126.153.115',
   port: parseInt(process.env.FTP_PORT, 10) || 21,
@@ -151,4 +150,70 @@ function processActiveFolderSync(slotNumber, activePlayers, rawStatsXml) {
   console.log(`📂 Indexing directory: ${targetFolderPath}`);
 
   ftpClient.list(targetFolderPath, async function(err, list) {
-    if (err)
+    if (err) {
+      console.error(`❌ Directory listing failed for ${targetFolderPath}:`, err.message);
+      ftpClient.end();
+      process.exit(1);
+      return;
+    }
+
+    const xmlFiles = list.filter(f => f.type !== 'd' && f.name.toLowerCase().endsWith('.xml'));
+    console.log(`📊 Found ${xmlFiles.length} XML files in savegame${slotNumber}. Downloading...`);
+
+    const masterPayload = {
+      activePlayers: activePlayers,
+      activeSaveSlot: slotNumber,
+      lastUpdated: new Date().toISOString()
+    };
+
+    if (rawStatsXml && rawStatsXml.length > 0) {
+      masterPayload.stats = { data: rawStatsXml };
+      masterPayload.players = { data: rawStatsXml };
+      masterPayload.mods = { data: rawStatsXml };
+    }
+
+    const keyMap = {
+      'careersavegame': 'careerSavegame',
+      'farms': 'farms',
+      'vehicles': 'vehicles',
+      'placeables': 'placeables',
+      'fields': 'fields',
+      'missions': 'missions',
+      'players': 'players',
+      'environment': 'environment',
+      'economy': 'economy',
+      'sales': 'sales',
+      'items': 'items'
+    };
+
+    for (const fileInfo of xmlFiles) {
+      const rawBaseName = fileInfo.name.replace('.xml', '');
+      const lowerBaseName = rawBaseName.toLowerCase();
+      const canonicalKey = keyMap[lowerBaseName] || rawBaseName;
+      const remoteFilePath = `${targetFolderPath}/${fileInfo.name}`;
+      
+      try {
+        console.log(`⬇️ Downloading: ${fileInfo.name} -> Writing to Firebase key [ ${canonicalKey} ]`);
+        const rawXmlContent = await downloadFileBuffer(ftpClient, remoteFilePath);
+        
+        masterPayload[canonicalKey] = { data: rawXmlContent };
+        masterPayload[`${canonicalKey}_xml`] = { data: rawXmlContent };
+      } catch (fileErr) {
+        console.error(`❌ Download failed for ${fileInfo.name}:`, fileErr.message);
+      }
+    }
+
+    try {
+      await db.ref('fs25').update(masterPayload);
+      console.log(`🏆 Firebase sync successful! Savegame telemetry written to /fs25.`);
+    } catch (writeErr) {
+      console.error("❌ Firebase Write Error:", writeErr.message);
+    }
+
+    console.log("🔌 Synchronization complete. Closing connection.");
+    ftpClient.end();
+    process.exit(0);
+  });
+}
+
+runMainPipeline();
