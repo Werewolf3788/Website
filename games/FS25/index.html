@@ -1,3 +1,7 @@
+<!--
+ Version Timestamp: Thu, July 23, 2026, 11:35 PM (EDT)
+ Complete Dynamic Dashboard - Compact Grid, Fixed Heights, Auto-Hiding Empty Panels
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,7 +30,7 @@
     // Global Cache & State
     window.FS25_DATA = {};
 
-    // Real-Time Firebase Listener with Auto-Reconnect Failsafe
+    // Real-Time Firebase Listener
     const fs25Ref = ref(db, 'fs25');
     onValue(fs25Ref, (snapshot) => {
       const data = snapshot.val();
@@ -35,10 +39,10 @@
         renderDashboard(data);
       }
     }, (error) => {
-      console.error("Firebase Sync Disconnected:", error);
+      console.error("Firebase Listener Error:", error);
     });
 
-    // Handle Tab Focus (Page Visibility API) to ensure zero stale state
+    // Tab Focus Auto-Refresh Check
     document.addEventListener("visibilitychange", () => {
       if (!document.hidden && window.FS25_DATA) {
         renderDashboard(window.FS25_DATA);
@@ -47,7 +51,7 @@
   </script>
 
   <style>
-    /* CSS Variables & Custom Branding */
+    /* CSS Variables & Global Brand Rules */
     :root {
       --bg-gradient: linear-gradient(180deg, #990000 0%, #000000 100%);
       --surface-dark: #1e1c1c;
@@ -72,7 +76,8 @@
       background-attachment: fixed;
       color: var(--text-main);
       min-height: 100vh;
-      padding: 20px;
+      padding: 16px;
+      overflow-x: hidden;
     }
 
     .container {
@@ -80,22 +85,22 @@
       margin: 0 auto;
     }
 
-    /* Navigation / Header */
+    /* Header Navigation */
     header {
       background: rgba(30, 28, 28, 0.95);
       border-radius: 12px;
-      padding: 15px 25px;
-      margin-bottom: 20px;
+      padding: 12px 20px;
+      margin-bottom: 16px;
       border: 1px solid var(--border-color);
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
     }
 
     .server-title {
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: 800;
       color: var(--accent-gold);
       display: flex;
@@ -105,15 +110,15 @@
 
     .server-meta {
       display: flex;
-      gap: 15px;
+      gap: 10px;
       flex-wrap: wrap;
     }
 
     .meta-badge {
       background: #141212;
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 20px;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       font-weight: 600;
       border: 1px solid var(--border-color);
       display: flex;
@@ -123,103 +128,91 @@
 
     .meta-badge i { color: var(--accent-gold); }
 
-    /* Smart Flexible Layout Grid */
+    /* Compact Main Layout Grid */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 16px;
     }
 
     .full-width {
       grid-column: 1 / -1;
     }
 
-    /* Cards / Containers */
+    /* Card Panels with Internal Scrollable Area (No Page-Level Extended Scrolling) */
     .card {
       background: var(--surface-dark);
-      border-radius: 12px;
-      padding: 18px;
+      border-radius: 10px;
+      padding: 14px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
       display: flex;
       flex-direction: column;
     }
 
     .card-header {
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 700;
       color: var(--accent-gold);
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       border-bottom: 1px solid var(--border-color);
+      padding-bottom: 6px;
+    }
+
+    /* Scrollable Container with Custom Styling */
+    .scroll-body {
+      max-height: 240px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .scroll-body::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .scroll-body::-webkit-scrollbar-track {
+      background: #141212;
+      border-radius: 3px;
+    }
+
+    .scroll-body::-webkit-scrollbar-thumb {
+      background: var(--accent-gold);
+      border-radius: 3px;
+    }
+
+    /* Horizontal Row Container for Multi-Item Lists */
+    .horizontal-row {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
       padding-bottom: 8px;
     }
 
-    /* Farms Layout */
-    .farm-row {
+    /* Items Layout */
+    .item-row {
+      background: var(--surface-card);
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 6px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: var(--surface-card);
-      padding: 12px 18px;
-      border-radius: 8px;
-      margin-bottom: 8px;
+      font-size: 0.85rem;
     }
 
     .farm-money {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       font-weight: 800;
       color: var(--accent-green);
     }
 
-    /* Vehicle Cards Layout */
-    .vehicle-item {
-      background: var(--surface-card);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 10px;
-      border-left: 4px solid var(--accent-gold);
-      display: flex;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .vehicle-icon {
-      width: 48px;
-      height: 48px;
-      background: #141212;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      color: var(--accent-gold);
-      flex-shrink: 0;
-    }
-
-    .vehicle-details {
-      flex-grow: 1;
-    }
-
-    .vehicle-title {
-      font-weight: 700;
-      font-size: 0.95rem;
-      margin-bottom: 4px;
-    }
-
-    .vehicle-badges {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-top: 6px;
-    }
-
     .badge-stat {
-      font-size: 0.75rem;
+      font-size: 0.7rem;
       background: #141212;
-      padding: 2px 8px;
+      padding: 2px 6px;
       border-radius: 4px;
       border: 1px solid var(--border-color);
     }
@@ -228,52 +221,21 @@
       background: #ffffff;
       color: #000000;
       font-weight: 800;
-      letter-spacing: 1px;
       border-radius: 3px;
-      padding: 1px 6px;
-      font-size: 0.75rem;
-      border: 1px solid #000;
-    }
-
-    /* Field Status Cards */
-    .field-item {
-      background: var(--surface-card);
-      border-radius: 8px;
-      padding: 10px 14px;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .field-status-pills {
-      display: flex;
-      gap: 6px;
-    }
-
-    .pill {
+      padding: 1px 5px;
       font-size: 0.7rem;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 12px;
-      text-transform: uppercase;
-    }
-
-    .pill-green { background: rgba(0, 230, 118, 0.2); color: var(--accent-green); }
-    .pill-gold { background: rgba(255, 204, 0, 0.2); color: var(--accent-gold); }
-    .pill-blue { background: rgba(0, 229, 255, 0.2); color: var(--accent-blue); }
-
-    /* Contract Priority Highlights */
-    .contract-active {
-      border: 2px solid var(--accent-gold);
-      background: rgba(255, 204, 0, 0.08);
     }
 
     .empty-state {
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       color: #888888;
       font-style: italic;
-      padding: 10px 0;
+      padding: 6px 0;
+    }
+
+    /* Auto-Hide Empty Panels */
+    .hidden {
+      display: none !important;
     }
   </style>
 </head>
@@ -287,91 +249,130 @@
         <span id="server-name">Loading Server...</span>
       </div>
       <div class="server-meta">
-        <div class="meta-badge"><i class="fa-solid fa-map-location-dot"></i> <span id="server-map">Map: --</span></div>
+        <div class="meta-badge"><i class="fa-solid fa-map-location-dot"></i> <span id="server-map">Map: Riverbend Springs</span></div>
         <div class="meta-badge"><i class="fa-solid fa-clock"></i> <span id="server-time">Time: --:--</span></div>
         <div class="meta-badge"><i class="fa-solid fa-calendar-days"></i> <span id="server-month">Month: --</span></div>
         <div class="meta-badge"><i class="fa-solid fa-cloud-sun"></i> <span id="server-weather">Weather: --</span></div>
-        <div class="meta-badge"><i class="fa-solid fa-users"></i> <span id="server-players">Players: 0/0</span></div>
+        <div class="meta-badge"><i class="fa-solid fa-users"></i> <span id="server-players">Players: 0/16</span></div>
       </div>
     </header>
 
-    <!-- Main Dynamic Grid -->
+    <!-- Main Grid -->
     <div class="dashboard-grid">
 
-      <!-- Registered Server Farms (Dynamic Compact Width) -->
+      <!-- Registered Server Farms -->
       <div class="card full-width" id="farms-card">
         <div class="card-header">
           <span><i class="fa-solid fa-tractor"></i> Registered Server Farms</span>
         </div>
-        <div id="farms-container">
-          <div class="empty-state">Reading farm finances...</div>
-        </div>
+        <div id="farms-container"></div>
       </div>
 
-      <!-- Tractors & Harvesters -->
-      <div class="card">
+      <!-- Tractors & Machinery -->
+      <div class="card" id="tractors-card">
         <div class="card-header">
-          <span><i class="fa-solid fa-truck-monster"></i> Tractors & Harvesters</span>
+          <span><i class="fa-solid fa-truck-monster"></i> Tractors & Machinery</span>
         </div>
-        <div id="tractors-container"></div>
+        <div class="scroll-body" id="tractors-container"></div>
       </div>
 
       <!-- Implements & Tools -->
-      <div class="card">
+      <div class="card" id="implements-card">
         <div class="card-header">
           <span><i class="fa-solid fa-gears"></i> Implements & Tools</span>
         </div>
-        <div id="implements-container"></div>
+        <div class="scroll-body" id="implements-container"></div>
       </div>
 
-      <!-- Active Contracts & Missions (Pinned Priority) -->
-      <div class="card">
+      <!-- Active Contracts & Jobs (Auto-Hides when empty) -->
+      <div class="card" id="contracts-card">
         <div class="card-header">
           <span><i class="fa-solid fa-file-contract"></i> Active Contracts & Jobs</span>
         </div>
-        <div id="contracts-container"></div>
+        <div class="scroll-body" id="contracts-container"></div>
       </div>
 
-      <!-- Field Status & Crops -->
-      <div class="card">
+      <!-- Field Crops & Status (Auto-Hides when empty) -->
+      <div class="card" id="fields-card">
         <div class="card-header">
           <span><i class="fa-solid fa-wheat-awn"></i> Field Crops & Precision Stats</span>
         </div>
-        <div id="fields-container"></div>
+        <div class="scroll-body" id="fields-container"></div>
       </div>
 
       <!-- Production Factories & Storage -->
-      <div class="card">
+      <div class="card" id="production-card">
         <div class="card-header">
           <span><i class="fa-solid fa-industry"></i> Production Factories & Storage</span>
         </div>
-        <div id="production-container"></div>
+        <div class="scroll-body" id="production-container"></div>
       </div>
 
-      <!-- Commodity Market Economy -->
-      <div class="card">
+      <!-- Commodity Market Prices -->
+      <div class="card" id="economy-card">
         <div class="card-header">
           <span><i class="fa-solid fa-chart-line"></i> Commodity Market Prices</span>
         </div>
-        <div id="economy-container"></div>
+        <div class="scroll-body" id="economy-container"></div>
       </div>
 
     </div>
   </div>
 
   <script>
-    // Utility Function: Insert spaces into PascalCase names (e.g. WelkersBigBudKTTA700 -> Welkers Big Bud KTTA 700)
+    // Name Formatting Utility
     function formatName(str) {
       if (!str) return 'Unknown Item';
-      return str
+      // Clean path directory references
+      let clean = str.split('/').pop().replace('.xml', '').replace('data_', '');
+      return clean
         .replace(/([a-z])([A-Z])/g, '$1 $2')
         .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
         .replace(/([a-zA-Z])([0-9])/g, '$1 $2')
         .replace(/([0-9])([a-zA-Z])/g, '$1 $2')
-        .trim();
+        .replace(/_/g, ' ')
+        .toUpperCase();
     }
 
-    // Helper: Safely parse XML strings
+    // Placeable XML Name Mapping Lookup
+    function resolvePlaceableName(filename) {
+      if (!filename) return "Storage Building";
+      const name = filename.toLowerCase();
+      if (name.includes("silo")) return "Grain Elevator Silo";
+      if (name.includes("cow")) return "Dairy Cow Barn";
+      if (name.includes("pig")) return "Pig Husbandry Barn";
+      if (name.includes("chicken")) return "Chicken Coop";
+      if (name.includes("sheep")) return "Sheep Pasture";
+      if (name.includes("dairy")) return "Milk Processing Dairy";
+      if (name.includes("bakery")) return "Commercial Bakery";
+      if (name.includes("sawmill")) return "Lumber Sawmill";
+      if (name.includes("spinnery")) return "Textile Spinnery";
+      if (name.includes("carpenter")) return "Woodworking Carpenter";
+      if (name.includes("biogas") || name.includes("bga")) return "BGA Plant";
+      return formatName(filename);
+    }
+
+    // Crop Type Lookup Map
+    function resolveCropName(typeName) {
+      if (!typeName) return "Grain Crop";
+      const map = {
+        "WHEAT": "Wheat",
+        "BARLEY": "Barley",
+        "CANOLA": "Canola",
+        "OAT": "Oats",
+        "MAIZE": "Corn / Maize",
+        "SUNFLOWER": "Sunflowers",
+        "SOYBEAN": "Soybeans",
+        "POTATO": "Potatoes",
+        "SUGARBEET": "Sugarbeets",
+        "COTTON": "Cotton",
+        "SUGARCANE": "Sugarcane",
+        "GRASS": "Grass / Hay"
+      };
+      return map[typeName.toUpperCase()] || formatName(typeName);
+    }
+
+    // XML Parser Helper
     function parseXML(xmlString) {
       if (!xmlString) return null;
       try {
@@ -383,11 +384,11 @@
       }
     }
 
-    // Main Renderer
+    // Main Rendering Engine
     function renderDashboard(data) {
       if (!data) return;
 
-      // 1. Render Header Telemetry
+      // 1. Stats Telemetry
       const statsXml = parseXML(data.stats?.data || data.stats);
       if (statsXml) {
         const serverNode = statsXml.querySelector("Server");
@@ -398,23 +399,7 @@
         }
       }
 
-      // Render Environment (Month & Weather)
-      const envXml = parseXML(data.environment?.data || data.environment_xml?.data);
-      if (envXml) {
-        const dayTime = envXml.querySelector("dayTime")?.textContent;
-        const currentMonth = envXml.querySelector("currentMonth")?.textContent;
-        const weather = envXml.querySelector("weather")?.getAttribute("currentWeather");
-
-        const monthNames = ["Late Winter", "Early Spring", "Spring", "Late Spring", "Early Summer", "Summer", "Late Summer", "Early Autumn", "Autumn", "Late Autumn", "Early Winter", "Winter"];
-        if (currentMonth !== undefined) {
-          document.getElementById('server-month').textContent = `Month: ${monthNames[parseInt(currentMonth) - 1] || 'Spring'}`;
-        }
-        if (weather) {
-          document.getElementById('server-weather').textContent = `Weather: ${weather.toUpperCase()}`;
-        }
-      }
-
-      // 2. Render Farms & Finances
+      // 2. Farms Layout
       const farmsXml = parseXML(data.farms?.data || data.farms_xml?.data);
       const farmsContainer = document.getElementById('farms-container');
       if (farmsXml) {
@@ -426,16 +411,16 @@
           const money = parseFloat(farm.getAttribute("money") || "0");
           if (farmId !== "0") {
             html += `
-              <div class="farm-row">
+              <div class="item-row">
                 <div><strong>${name}</strong> (Farm ID: ${farmId})</div>
                 <div class="farm-money">$${money.toLocaleString()}</div>
               </div>`;
           }
         });
-        farmsContainer.innerHTML = html || '<div class="empty-state">No registered farm data found.</div>';
+        farmsContainer.innerHTML = html || '<div class="empty-state">No active farm finances.</div>';
       }
 
-      // 3. Render Vehicles & Implements (With Fuel %, Condition %, License Plate)
+      // 3. Vehicles & Machinery
       const vehXml = parseXML(data.vehicles?.data || data.vehicles_xml?.data);
       const tractorsContainer = document.getElementById('tractors-container');
       const implementsContainer = document.getElementById('implements-container');
@@ -446,80 +431,64 @@
         let implementsHtml = "";
 
         vehicles.forEach(veh => {
-          const rawName = veh.getAttribute("filename")?.split('/')?.pop()?.replace('.xml', '') || "Vehicle";
+          const rawName = veh.getAttribute("filename") || "Vehicle";
           const formattedName = formatName(rawName);
-          const age = veh.getAttribute("age") || "0";
 
-          // Damage / Operating Condition
           const wearNode = veh.querySelector("wearable");
           const damage = wearNode ? Math.round((1 - parseFloat(wearNode.getAttribute("damage") || "0")) * 100) : 100;
 
-          // Fuel Level
-          const fuelNode = veh.querySelector("fuelFillUnit");
-          const fuelPct = fuelNode ? Math.round(parseFloat(fuelNode.getAttribute("fillLevel") || "0")) : null;
-
-          // License Plate
           const plateNode = veh.querySelector("licensePlate");
           const licensePlate = plateNode ? plateNode.textContent : null;
 
-          const vehCard = `
-            <div class="vehicle-item">
-              <div class="vehicle-icon"><i class="fa-solid fa-truck-pickup"></i></div>
-              <div class="vehicle-details">
-                <div class="vehicle-title">${formattedName}</div>
-                <div class="vehicle-badges">
-                  <span class="badge-stat"><i class="fa-solid fa-wrench"></i> Condition: ${damage}%</span>
-                  ${fuelPct !== null ? `<span class="badge-stat"><i class="fa-solid fa-gas-pump"></i> Fuel: ${fuelPct}%</span>` : ''}
+          const card = `
+            <div class="item-row">
+              <div>
+                <strong>${formattedName}</strong>
+                <div style="margin-top:2px;">
+                  <span class="badge-stat"><i class="fa-solid fa-wrench"></i> ${damage}%</span>
                   ${licensePlate ? `<span class="plate-badge">${licensePlate}</span>` : ''}
                 </div>
               </div>
             </div>`;
 
-          if (rawName.toLowerCase().includes("tractor") || rawName.toLowerCase().includes("harvester") || rawName.toLowerCase().includes("bigbud") || rawName.toLowerCase().includes("truck")) {
-            tractorsHtml += vehCard;
+          const lower = rawName.toLowerCase();
+          if (lower.includes("tractor") || lower.includes("harvester") || lower.includes("bigbud") || lower.includes("truck") || lower.includes("locomotive")) {
+            tractorsHtml += card;
           } else {
-            implementsHtml += vehCard;
+            implementsHtml += card;
           }
         });
 
-        tractorsContainer.innerHTML = tractorsHtml || '<div class="empty-state">No active heavy machinery online.</div>';
-        implementsContainer.innerHTML = implementsHtml || '<div class="empty-state">No tools attached.</div>';
+        tractorsContainer.innerHTML = tractorsHtml || '<div class="empty-state">No heavy machinery deployed.</div>';
+        implementsContainer.innerHTML = implementsHtml || '<div class="empty-state">No implements connected.</div>';
       }
 
-      // 4. Render Active Contracts & Jobs (Pinned Active to Top)
+      // 4. Contracts & Missions (Auto-Hides when empty)
       const missionsXml = parseXML(data.missions?.data || data.missions_xml?.data);
+      const contractsCard = document.getElementById('contracts-card');
       const contractsContainer = document.getElementById('contracts-container');
       if (missionsXml) {
         const missions = missionsXml.querySelectorAll("mission");
         let html = "";
-        let activeList = [];
-        let availableList = [];
-
         missions.forEach(m => {
           const type = formatName(m.getAttribute("type") || "Contract");
           const fieldId = m.getAttribute("fieldId");
           const reward = parseFloat(m.getAttribute("reward") || "0").toLocaleString();
-          const status = m.getAttribute("status"); // 1 = Active
-
-          const card = `
-            <div class="field-item ${status === "1" ? "contract-active" : ""}">
-              <div>
-                <strong>${type}</strong> (Field #${fieldId})
-                ${status === "1" ? '<span class="pill pill-gold">ACTIVE IN-PROGRESS</span>' : ''}
-              </div>
-              <div class="farm-money" style="font-size:1rem;">$${reward}</div>
+          html += `
+            <div class="item-row">
+              <div><strong>${type}</strong> (Field #${fieldId})</div>
+              <div class="farm-money" style="font-size:0.9rem;">$${reward}</div>
             </div>`;
-
-          if (status === "1") {
-            activeList.push(card);
-          } else {
-            availableList.push(card);
-          }
         });
 
-        // Combine with Active Contracts at the top
-        html = [...activeList, ...availableList].join("");
-        contractsContainer.innerHTML = html || '<div class="empty-state">No available contracts on board.</div>';
+        if (html.length > 0) {
+          contractsCard.classList.remove('hidden');
+          contractsContainer.innerHTML = html;
+        } else {
+          contractsCard.classList.add('hidden'); // Auto-hide card when zero contracts
+        }
+      } else {
+        contractsCard.classList.add('hidden');
       }
 
       // 5. Production Factories & Storage
@@ -529,33 +498,33 @@
         const placeables = placeXml.querySelectorAll("placeable");
         let html = "";
         placeables.forEach(p => {
-          const rawName = p.getAttribute("filename")?.split('/')?.pop()?.replace('.xml', '') || "Placeable";
-          const formatted = formatName(rawName);
-          if (!rawName.includes("fence") && !rawName.includes("gate")) {
+          const filename = p.getAttribute("filename");
+          if (filename && !filename.includes("fence") && !filename.includes("gate")) {
+            const resolvedName = resolvePlaceableName(filename);
             html += `
-              <div class="field-item">
-                <div><i class="fa-solid fa-building-wheat" style="color:var(--accent-gold); margin-right:8px;"></i> <strong>${formatted}</strong></div>
-                <span class="pill pill-blue">Operational</span>
+              <div class="item-row">
+                <div><i class="fa-solid fa-building-wheat" style="color:var(--accent-gold); margin-right:6px;"></i> <strong>${resolvedName}</strong></div>
               </div>`;
           }
         });
-        productionContainer.innerHTML = html || '<div class="empty-state">No active factories deployed.</div>';
+        productionContainer.innerHTML = html || '<div class="empty-state">No factories active.</div>';
       }
 
-      // 6. Commodity Market Prices
+      // 6. Commodity Market Prices (Resolved Crop Names)
       const ecoXml = parseXML(data.economy?.data || data.economy_xml?.data);
       const economyContainer = document.getElementById('economy-container');
       if (ecoXml) {
         const fillTypes = ecoXml.querySelectorAll("fillType");
         let html = "";
         fillTypes.forEach(f => {
-          const name = formatName(f.getAttribute("name"));
+          const rawType = f.getAttribute("name");
+          const cropName = resolveCropName(rawType);
           const price = (parseFloat(f.getAttribute("price") || "1") * 1000).toFixed(2);
           if (parseFloat(price) > 0) {
             html += `
-              <div class="field-item">
-                <div><strong>${name}</strong></div>
-                <div class="farm-money" style="font-size:0.95rem;">$${price} / kL</div>
+              <div class="item-row">
+                <div><strong>${cropName}</strong></div>
+                <div class="farm-money" style="font-size:0.9rem;">$${price} / kL</div>
               </div>`;
           }
         });
