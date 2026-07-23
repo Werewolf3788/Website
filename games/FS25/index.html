@@ -1,18 +1,18 @@
 <!--
- Version Timestamp: Thu, July 23, 2026, 6:50 PM (EDT)
- Complete FS25 Dashboard - Google Sheets CSV Menu Integration & Smart Tabs Interceptor
+ Version Timestamp: Thu, July 23, 2026, 7:30 PM (EDT)
+ Complete Production FS25 Dashboard - Missions, Mods, Environment & Navigation Fixes
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FS25 Dedicated Server Dashboard</title>
+  <title>FS25 Live Dedicated Operations</title>
 
   <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Firebase Modular Web SDK v9+ -->
@@ -50,50 +50,51 @@
 
   <style>
     :root {
-      --surface-dark: rgba(30, 28, 28, 0.94);
-      --surface-card: #282424;
-      --text-main: #ffffff;
+      --surface-dark: rgba(15, 17, 20, 0.94);
+      --surface-card: #1a1d24;
+      --text-main: #cbd5e1;
       --accent-gold: #ffcc00;
-      --accent-red: #cc0000;
-      --accent-green: #00e676;
-      --accent-blue: #00e5ff;
-      --border-color: #383232;
+      --accent-red: #ef4444;
+      --accent-green: #22c55e;
+      --accent-blue: #00D4FF;
+      --border-color: rgba(255, 255, 255, 0.08);
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Montserrat', sans-serif;
+      font-family: 'Inter', sans-serif;
     }
 
-    /* FS25 Background Poster */
     body {
       background: url('https://cdn.cloudflare.steamstatic.com/steam/apps/2300320/header.jpg') no-repeat center center fixed;
       background-size: cover;
-      background-color: #000000;
+      background-color: #020202;
       color: var(--text-main);
       min-height: 100vh;
-      padding: 16px;
+      padding: 20px;
+      font-size: 12px;
     }
 
     .container {
-      max-width: 1600px;
+      max-width: 1850px;
       margin: 0 auto;
     }
 
-    /* Dynamic Menu Navigation Styling */
+    /* Google Sheets Top Menu Bar */
     .top-menu-bar {
       background: var(--surface-dark);
-      border-radius: 10px;
+      border-radius: 8px;
       padding: 10px 16px;
-      margin-bottom: 16px;
+      margin-bottom: 20px;
       border: 1px solid var(--border-color);
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       align-items: center;
-      backdrop-filter: blur(8px);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
     .nav-item {
@@ -102,24 +103,25 @@
     }
 
     .nav-btn {
-      background: var(--surface-card);
-      color: var(--text-main);
-      padding: 8px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      color: #ffffff;
+      padding: 8px 14px;
       border-radius: 6px;
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       text-decoration: none;
       border: 1px solid var(--border-color);
       display: inline-flex;
       align-items: center;
       gap: 8px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: all 0.2s;
     }
 
     .nav-btn:hover {
       background: var(--accent-red);
       color: #ffffff;
+      border-color: var(--accent-red);
     }
 
     .dropdown-content {
@@ -128,8 +130,8 @@
       top: 100%;
       left: 0;
       background: var(--surface-dark);
-      min-width: 200px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.6);
+      min-width: 220px;
+      box-shadow: 0 12px 24px rgba(0,0,0,0.8);
       border-radius: 6px;
       border: 1px solid var(--border-color);
       z-index: 100;
@@ -139,15 +141,25 @@
 
     .dropdown-content a {
       color: var(--text-main);
-      padding: 10px 16px;
+      padding: 10px 14px;
       text-decoration: none;
-      display: block;
-      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.8rem;
       font-weight: 600;
+    }
+
+    .dropdown-content a img {
+      width: 18px;
+      height: 18px;
+      border-radius: 3px;
+      object-fit: cover;
     }
 
     .dropdown-content a:hover {
       background: var(--accent-red);
+      color: #ffffff;
     }
 
     .nav-item:hover .dropdown-content {
@@ -157,145 +169,132 @@
     /* Header Bar */
     header {
       background: var(--surface-dark);
-      border-radius: 12px;
-      padding: 14px 20px;
-      margin-bottom: 20px;
+      border-radius: 8px;
+      padding: 16px 24px;
+      margin-bottom: 24px;
       border: 1px solid var(--border-color);
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 15px;
-      backdrop-filter: blur(8px);
+      gap: 16px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     }
 
     .server-title {
-      font-size: 1.3rem;
-      font-weight: 800;
-      color: var(--accent-gold);
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: #ffffff;
+      letter-spacing: 1px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
 
     .server-meta {
       display: flex;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
     }
 
     .meta-badge {
-      background: #141212;
+      background: rgba(255, 255, 255, 0.04);
       padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
       border: 1px solid var(--border-color);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .meta-badge i { color: var(--accent-gold); }
 
-    /* Dashboard Layout */
+    /* Dashboard Layout Grid */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+      gap: 24px;
     }
 
     .full-width { grid-column: 1 / -1; }
 
-    /* Card Panels */
+    /* Cards */
     .card {
       background: var(--surface-dark);
-      border-radius: 12px;
-      padding: 16px;
+      border-radius: 8px;
+      padding: 20px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.6);
-      backdrop-filter: blur(8px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      backdrop-filter: blur(10px);
     }
 
     .card-header {
-      font-size: 1.05rem;
-      font-weight: 700;
-      color: var(--accent-gold);
-      margin-bottom: 12px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #ffffff;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 16px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border-color);
-      padding-bottom: 8px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 10px;
     }
 
-    /* Vertical Scroll Box (Caps at ~5 items) */
+    /* Vertical Scroll Containers */
     .vertical-scroll-body {
-      max-height: 280px;
+      max-height: 300px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 10px;
       padding-right: 4px;
     }
 
-    .vertical-scroll-body::-webkit-scrollbar { width: 6px; }
-    .vertical-scroll-body::-webkit-scrollbar-thumb { background: var(--accent-red); border-radius: 4px; }
-    .vertical-scroll-body::-webkit-scrollbar-track { background: #141212; }
+    .vertical-scroll-body::-webkit-scrollbar { width: 5px; }
+    .vertical-scroll-body::-webkit-scrollbar-thumb { background: var(--accent-gold); border-radius: 3px; }
+    .vertical-scroll-body::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
 
     .item-card {
       background: var(--surface-card);
-      border-radius: 8px;
-      padding: 10px 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-left: 4px solid var(--accent-gold);
-    }
-
-    .item-thumb {
-      width: 44px;
-      height: 44px;
-      background: #141212;
       border-radius: 6px;
+      padding: 12px 16px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: 1.2rem;
-      color: var(--accent-gold);
-      flex-shrink: 0;
-      border: 1px solid var(--border-color);
+      justify-content: space-between;
+      border-left: 4px solid var(--accent-gold);
+      border-top: 1px solid var(--border-color);
+      border-right: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
     }
 
-    .item-info { flex-grow: 1; }
-    .item-title { font-weight: 700; font-size: 0.9rem; color: #ffffff; }
-    .farm-money { font-size: 1.1rem; font-weight: 800; color: var(--accent-green); }
+    .item-title { font-weight: 800; font-size: 0.9rem; color: #ffffff; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .farm-money { font-size: 1.1rem; font-weight: 900; color: var(--accent-green); }
 
     .badge-stat {
       font-size: 0.75rem;
-      background: #141212;
-      padding: 2px 6px;
+      background: rgba(0,0,0,0.4);
+      padding: 3px 8px;
       border-radius: 4px;
       border: 1px solid var(--border-color);
       display: inline-block;
       margin-top: 4px;
     }
 
-    .plate-badge {
-      background: #ffffff;
-      color: #000000;
-      font-weight: 800;
-      border-radius: 3px;
-      padding: 1px 5px;
-      font-size: 0.75rem;
-      margin-left: 4px;
-    }
+    .badge-harvest { background: rgba(34, 197, 94, 0.2); color: var(--accent-green); border-color: var(--accent-green); }
+    .badge-sown { background: rgba(0, 212, 255, 0.2); color: var(--accent-blue); border-color: var(--accent-blue); }
 
     .empty-state {
       font-size: 0.85rem;
-      color: #aaaaaa;
+      color: #64748b;
       font-style: italic;
-      padding: 8px 0;
+      padding: 12px 0;
     }
   </style>
 </head>
@@ -303,76 +302,79 @@
 
   <div class="container">
 
-    <!-- Dynamically Populated Google Sheets Navigation Menu -->
+    <!-- Top Dynamic Navigation Bar (Google Sheets Feed) -->
     <nav class="top-menu-bar" id="dynamic-menu">
       <div class="empty-state" style="padding:0;">Loading Navigation Menu...</div>
     </nav>
 
-    <!-- Header Telemetry Bar -->
+    <!-- Top Server Telemetry Bar (Includes Time, Month, Weather) -->
     <header>
       <div class="server-title">
-        <i class="fa-solid fa-server"></i>
+        <i class="fa-solid fa-server" style="color:var(--accent-gold);"></i>
         <span id="server-name">FS25 Dedicated Server</span>
       </div>
       <div class="server-meta">
         <div class="meta-badge"><i class="fa-solid fa-map-location-dot"></i> <span id="server-map">Map: Riverbend Springs</span></div>
+        <div class="meta-badge"><i class="fa-solid fa-clock"></i> <span id="server-time">Time: --:--</span></div>
+        <div class="meta-badge"><i class="fa-solid fa-calendar-days"></i> <span id="server-month">Month: --</span></div>
+        <div class="meta-badge"><i class="fa-solid fa-cloud-sun"></i> <span id="server-weather">Weather: --</span></div>
         <div class="meta-badge"><i class="fa-solid fa-users"></i> <span id="server-players">Players: 0/16</span></div>
       </div>
     </header>
 
-    <!-- Main Grid -->
+    <!-- Main Grid Layout -->
     <div class="dashboard-grid">
 
       <!-- Registered Server Farms -->
-      <div class="card full-width" id="farms-card">
+      <div class="card full-width">
         <div class="card-header">
           <span><i class="fa-solid fa-tractor"></i> Registered Server Farms</span>
         </div>
         <div class="vertical-scroll-body" id="farms-container"></div>
       </div>
 
-      <!-- Tractors & Machinery -->
-      <div class="card">
+      <!-- Field Crop Telemetry (fields.xml) -->
+      <div class="card full-width">
         <div class="card-header">
-          <span><i class="fa-solid fa-truck-monster"></i> Machinery & Vehicles</span>
+          <span><i class="fa-solid fa-wheat-awn"></i> Field Crops & Agronomy Status (fields.xml)</span>
         </div>
-        <div class="vertical-scroll-body" id="tractors-container"></div>
+        <div class="vertical-scroll-body" id="fields-container"></div>
       </div>
 
-      <!-- Implements & Tools -->
+      <!-- Active Contracts & Missions (missions.xml) -->
       <div class="card">
         <div class="card-header">
-          <span><i class="fa-solid fa-gears"></i> Implements & Equipment</span>
-        </div>
-        <div class="vertical-scroll-body" id="implements-container"></div>
-      </div>
-
-      <!-- Active Contracts -->
-      <div class="card">
-        <div class="card-header">
-          <span><i class="fa-solid fa-file-contract"></i> Active Contracts & Missions</span>
+          <span><i class="fa-solid fa-file-contract"></i> Active Contracts & Missions (missions.xml)</span>
         </div>
         <div class="vertical-scroll-body" id="contracts-container"></div>
       </div>
 
-      <!-- Installed Server Mods -->
+      <!-- Installed Server Mods (careerSavegame.xml) -->
       <div class="card">
         <div class="card-header">
-          <span><i class="fa-solid fa-puzzle-piece"></i> Active Installed Mods</span>
+          <span><i class="fa-solid fa-puzzle-piece"></i> Installed Server Mods (careerSavegame.xml)</span>
         </div>
         <div class="vertical-scroll-body" id="mods-container"></div>
       </div>
 
-      <!-- Factories & Storage -->
+      <!-- Machinery & Vehicles -->
       <div class="card">
         <div class="card-header">
-          <span><i class="fa-solid fa-industry"></i> Factories & Storage</span>
+          <span><i class="fa-solid fa-truck-monster"></i> Fleet Vehicles</span>
         </div>
-        <div class="vertical-scroll-body" id="production-container"></div>
+        <div class="vertical-scroll-body" id="tractors-container"></div>
+      </div>
+
+      <!-- Implements & Equipment -->
+      <div class="card">
+        <div class="card-header">
+          <span><i class="fa-solid fa-gears"></i> Implements & Tools</span>
+        </div>
+        <div class="vertical-scroll-body" id="implements-container"></div>
       </div>
 
       <!-- Commodity Market Economy -->
-      <div class="card">
+      <div class="card full-width">
         <div class="card-header">
           <span><i class="fa-solid fa-chart-line"></i> Commodity Market Prices</span>
         </div>
@@ -384,12 +386,9 @@
 
   <script>
     // -------------------------------------------------------------
-    // Google Sheets Menu Feed Engine with Smart Tabs Interceptor
+    // Google Sheets Navigation Loader
     // -------------------------------------------------------------
     const menuCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
-
-    // Smart Tab Channel for focus jumping
-    const tabChannel = new BroadcastChannel('smart_tabs_channel');
 
     async function loadGoogleSheetsMenu() {
       try {
@@ -400,45 +399,43 @@
         const menuContainer = document.getElementById('dynamic-menu');
         menuContainer.innerHTML = '';
 
-        const categories = {};
+        const groups = {};
 
         rows.forEach((row, index) => {
-          if (index === 0) return; // Skip Header
-          const [category, title, url, icon] = row.map(cell => cell ? cell.trim() : '');
+          if (index === 0) return;
+          const [name, group, url, image] = row.map(cell => cell ? cell.trim() : '');
 
-          if (!category || !url) return;
+          if (!name || !url) return;
 
-          if (!categories[category]) {
-            categories[category] = [];
+          const groupKey = group || 'General';
+          if (!groups[groupKey]) {
+            groups[groupKey] = [];
           }
-          categories[category].push({ title, url, icon });
+          groups[groupKey].push({ name, url, image });
         });
 
-        // Render Dropdowns or Standalone Buttons
-        Object.keys(categories).forEach(catName => {
-          const items = categories[catName];
+        Object.keys(groups).forEach(groupName => {
+          const items = groups[groupName];
 
-          if (items.length === 1 && items[0].title.toLowerCase() === catName.toLowerCase()) {
-            // Standalone Button
+          if (items.length === 1 && items[0].name.toLowerCase() === groupName.toLowerCase()) {
             const item = items[0];
             const btn = document.createElement('a');
-            btn.className = 'nav-btn smart-link';
-            btn.href = formatNativeUrl(item.url);
-            btn.innerHTML = `${item.icon ? `<i class="${item.icon}"></i>` : ''} ${catName}`;
+            btn.className = 'nav-btn';
+            btn.href = item.url;
+            btn.innerHTML = `${item.image ? `<img src="${item.image}" alt="" style="width:16px;height:16px;border-radius:2px;">` : ''} ${item.name}`;
             menuContainer.appendChild(btn);
           } else {
-            // Dropdown Group
             const navGroup = document.createElement('div');
             navGroup.className = 'nav-item';
 
             let dropdownHtml = `
               <button class="nav-btn">
-                ${catName} <i class="fa-solid fa-caret-down"></i>
+                ${groupName} <i class="fa-solid fa-caret-down"></i>
               </button>
               <div class="dropdown-content">`;
 
             items.forEach(sub => {
-              dropdownHtml += `<a href="${formatNativeUrl(sub.url)}" class="smart-link">${sub.icon ? `<i class="${sub.icon}"></i>` : ''} ${sub.title}</a>`;
+              dropdownHtml += `<a href="${sub.url}">${sub.image ? `<img src="${sub.image}" alt="">` : ''} ${sub.name}</a>`;
             });
 
             dropdownHtml += `</div>`;
@@ -446,82 +443,37 @@
             menuContainer.appendChild(navGroup);
           }
         });
-
-        attachSmartTabHandlers();
       } catch (err) {
-        console.error("Failed to load Google Sheets Menu:", err);
-        document.getElementById('dynamic-menu').innerHTML = '<div class="empty-state">Unable to load navigation feed.</div>';
+        console.error("Failed to load navigation menu:", err);
       }
     }
 
-    // CSV Parser Utility
     function parseCSV(text) {
-      const lines = text.split('\n');
-      return lines.map(line => line.split(','));
+      return text.split('\n').map(line => line.split(','));
     }
 
-    // Native Link Formatter
-    function formatNativeUrl(url) {
-      if (url.startsWith('tel:') || url.startsWith('mailto:') || url.includes('wa.me/')) {
-        return url;
-      }
-      return url;
-    }
-
-    // Smart Tabs Interceptor Rule
-    function attachSmartTabHandlers() {
-      document.querySelectorAll('.smart-link').forEach(link => {
-        link.addEventListener('click', (e) => {
-          const href = link.getAttribute('href');
-          if (href.startsWith('tel:') || href.startsWith('mailto:')) return; // Allow native protocols
-
-          e.preventDefault();
-          tabChannel.postMessage({ action: 'focus_or_open', targetUrl: href });
-          window.open(href, href); // Fallback standard navigation
-        });
-      });
-    }
-
-    // Listen for tab focus requests across browser windows
-    tabChannel.onmessage = (event) => {
-      if (event.data.action === 'focus_or_open' && window.name === event.data.targetUrl) {
-        window.focus();
-      }
-    };
-
-    // Initialize Menu
     loadGoogleSheetsMenu();
 
     // -------------------------------------------------------------
-    // Dashboard Telemetry Rendering Engine
+    // Helper & Renderer Logic
     // -------------------------------------------------------------
+    function resolveCropName(typeName) {
+      if (!typeName) return "Fallow / Empty";
+      const map = {
+        "WHEAT": "Wheat", "BARLEY": "Barley", "CANOLA": "Canola",
+        "OAT": "Oats", "MAIZE": "Corn", "SUNFLOWER": "Sunflowers",
+        "SOYBEAN": "Soybeans", "POTATO": "Potatoes", "SUGARBEET": "Sugarbeets",
+        "BEETROOT": "Beetroot", "PARSNIP": "Parsnip", "SPINACH": "Spinach",
+        "CARROT": "Carrots", "COTTON": "Cotton", "SORGHUM": "Sorghum",
+        "GREENBEAN": "Green Beans", "PEA": "Peas", "GRASS": "Grass"
+      };
+      return map[typeName.toUpperCase()] || formatName(typeName);
+    }
+
     function formatName(str) {
       if (!str) return 'Unknown Item';
       let clean = str.split('/').pop().replace('.xml', '').replace('data_', '');
       return clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').toUpperCase();
-    }
-
-    function getCategoryIcon(rawName) {
-      const lower = rawName.toLowerCase();
-      if (lower.includes("tractor") || lower.includes("bigbud")) return '<i class="fa-solid fa-tractor"></i>';
-      if (lower.includes("harvester") || lower.includes("combine")) return '<i class="fa-solid fa-wheat-awn"></i>';
-      if (lower.includes("truck") || lower.includes("pickup")) return '<i class="fa-solid fa-truck-pickup"></i>';
-      return '<i class="fa-solid fa-toolbox"></i>';
-    }
-
-    function resolvePlaceableName(filename) {
-      if (!filename) return "Storage Building";
-      const name = filename.toLowerCase();
-      if (name.includes("silo")) return "Grain Elevator Silo";
-      if (name.includes("cow")) return "Dairy Cow Barn";
-      if (name.includes("dairy")) return "Milk Dairy Factory";
-      return formatName(filename);
-    }
-
-    function resolveCropName(typeName) {
-      if (!typeName) return "Grain Crop";
-      const map = { "WHEAT": "Wheat", "BARLEY": "Barley", "CANOLA": "Canola", "OAT": "Oats", "MAIZE": "Corn" };
-      return map[typeName.toUpperCase()] || formatName(typeName);
     }
 
     function parseXML(xmlString) {
@@ -536,29 +488,133 @@
     function renderDashboard(data) {
       if (!data) return;
 
-      const statsXml = parseXML(data.stats?.data || data.stats);
-      if (statsXml) {
-        const serverNode = statsXml.querySelector("Server");
-        if (serverNode) {
-          document.getElementById('server-name').textContent = serverNode.getAttribute("name") || "FS25 Dedicated Server";
-          document.getElementById('server-map').textContent = `Map: ${serverNode.getAttribute("mapName") || "Riverbend Springs"}`;
-          document.getElementById('server-players').textContent = `Players: ${serverNode.getAttribute("numPlayers") || 0}/${serverNode.getAttribute("capacity") || 16}`;
+      // 1. Environment Parsing (Time, Month, Weather)
+      const envXml = parseXML(data.environment?.data || data.environment_xml?.data);
+      if (envXml) {
+        const dayTimeNode = envXml.querySelector("dayTime");
+        const currentMonthNode = envXml.querySelector("currentMonth");
+        const weatherNode = envXml.querySelector("weather");
+
+        if (dayTimeNode) {
+          const rawTime = parseFloat(dayTimeNode.textContent || "0");
+          // Convert milliseconds/minutes to standard 24-hour clock
+          const totalMinutes = Math.floor(rawTime > 86400 ? rawTime / 60000 : rawTime / 60);
+          const hours = Math.floor(totalMinutes / 60) % 24;
+          const mins = totalMinutes % 60;
+          document.getElementById('server-time').textContent = `Time: ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+        }
+
+        const months = ["Late Winter", "Early Spring", "Spring", "Late Spring", "Early Summer", "Summer", "Late Summer", "Early Autumn", "Autumn", "Late Autumn", "Early Winter", "Winter"];
+        if (currentMonthNode) {
+          const monthIdx = parseInt(currentMonthNode.textContent || "1");
+          document.getElementById('server-month').textContent = `Month: ${months[monthIdx - 1] || 'Spring'}`;
+        }
+
+        if (weatherNode) {
+          document.getElementById('server-weather').textContent = `Weather: ${(weatherNode.getAttribute("currentWeather") || "Sunny").toUpperCase()}`;
         }
       }
 
-      // Farms
+      // 2. Contracts Parsing (missions.xml - Reads all mission types)
+      const missionsXml = parseXML(data.missions?.data || data.missions_xml?.data);
+      const contractsContainer = document.getElementById('contracts-container');
+      if (missionsXml) {
+        let html = "";
+        // Select all elements ending in "Mission"
+        const allMissions = missionsXml.querySelectorAll("*");
+        allMissions.forEach(m => {
+          if (m.tagName.endsWith("Mission")) {
+            const fieldNode = m.querySelector("field");
+            const fieldId = fieldNode ? fieldNode.getAttribute("id") : "N/A";
+            const infoNode = m.querySelector("info");
+            const reward = infoNode ? parseFloat(infoNode.getAttribute("reward") || "0").toLocaleString() : "0";
+
+            // Format Mission Type (e.g. treeTransportMission -> TREE TRANSPORT)
+            const missionType = formatName(m.tagName.replace("Mission", ""));
+            const fruitType = m.getAttribute("fruitType") ? resolveCropName(m.getAttribute("fruitType")) : "";
+
+            html += `
+              <div class="item-card">
+                <div>
+                  <div class="item-title">${missionType} ${fruitType ? `(${fruitType})` : ''}</div>
+                  <div class="mono" style="color:#64748b;">Target: Field #${fieldId}</div>
+                </div>
+                <div class="farm-money" style="font-size:0.95rem;">$${reward}</div>
+              </div>`;
+          }
+        });
+        contractsContainer.innerHTML = html || '<div class="empty-state">No active contracts found in missions.xml</div>';
+      }
+
+      // 3. Installed Server Mods (careerSavegame.xml)
+      const careerXml = parseXML(data.careerSavegame?.data || data.careerSavegame_xml?.data);
+      const modsContainer = document.getElementById('mods-container');
+      if (careerXml) {
+        let html = "";
+        careerXml.querySelectorAll("mod").forEach(m => {
+          const title = m.getAttribute("title") || m.getAttribute("modName");
+          const version = m.getAttribute("version") || "1.0.0.0";
+          html += `
+            <div class="item-card">
+              <div>
+                <div class="item-title">${title}</div>
+                <span class="badge-stat">v${version}</span>
+              </div>
+            </div>`;
+        });
+        modsContainer.innerHTML = html || '<div class="empty-state">No mods found in careerSavegame.xml</div>';
+      }
+
+      // 4. Fields Parsing (fields.xml)
+      const fieldsXml = parseXML(data.fields?.data || data.fields_xml?.data);
+      const fieldsContainer = document.getElementById('fields-container');
+      if (fieldsXml) {
+        let html = "";
+        fieldsXml.querySelectorAll("field").forEach(f => {
+          const id = f.getAttribute("id");
+          const crop = resolveCropName(f.getAttribute("fruitType"));
+          const groundType = formatName(f.getAttribute("groundType") || "SOWN");
+          const sprayLevel = f.getAttribute("sprayLevel") || "0";
+          const limeLevel = f.getAttribute("limeLevel") || "0";
+
+          const isHarvest = groundType.includes("HARVEST");
+          const badgeClass = isHarvest ? "badge-harvest" : "badge-sown";
+
+          html += `
+            <div class="item-card">
+              <div>
+                <div class="item-title">Field #${id} - ${crop}</div>
+                <div class="mono" style="margin-top:4px;">
+                  <span class="badge-stat ${badgeClass}">${groundType}</span>
+                  <span class="badge-stat">Fertilizer: ${sprayLevel * 50}%</span>
+                  <span class="badge-stat">Lime: ${limeLevel > 0 ? 'Applied' : 'Needs Lime'}</span>
+                </div>
+              </div>
+            </div>`;
+        });
+        fieldsContainer.innerHTML = html || '<div class="empty-state">No field data registered.</div>';
+      }
+
+      // 5. Farms Parsing
       const farmsXml = parseXML(data.farms?.data || data.farms_xml?.data);
       if (farmsXml) {
         let html = "";
         farmsXml.querySelectorAll("farm").forEach(farm => {
           if (farm.getAttribute("farmId") !== "0") {
-            html += `<div class="item-card"><div class="item-thumb"><i class="fa-solid fa-house-chimney-crack"></i></div><div class="item-info"><div class="item-title">${farm.getAttribute("name")}</div></div><div class="farm-money">$${parseFloat(farm.getAttribute("money")||"0").toLocaleString()}</div></div>`;
+            html += `
+              <div class="item-card">
+                <div>
+                  <div class="item-title">${farm.getAttribute("name")}</div>
+                  <div class="mono" style="color:#64748b;">Farm ID: ${farm.getAttribute("farmId")}</div>
+                </div>
+                <div class="farm-money">$${parseFloat(farm.getAttribute("money")||"0").toLocaleString()}</div>
+              </div>`;
           }
         });
-        document.getElementById('farms-container').innerHTML = html || '<div class="empty-state">No active farm finances.</div>';
+        document.getElementById('farms-container').innerHTML = html || '<div class="empty-state">No farm finances.</div>';
       }
 
-      // Vehicles
+      // 6. Machinery & Tools Parsing
       const vehXml = parseXML(data.vehicles?.data || data.vehicles_xml?.data);
       if (vehXml) {
         let tractorsHtml = "";
@@ -572,7 +628,17 @@
           const plateNode = veh.querySelector("licensePlate");
           const plate = plateNode ? plateNode.textContent : null;
 
-          const card = `<div class="item-card"><div class="item-thumb">${getCategoryIcon(rawName)}</div><div class="item-info"><div class="item-title">${formatted}</div><div><span class="badge-stat"><i class="fa-solid fa-wrench"></i> ${damage}%</span>${plate ? `<span class="plate-badge">${plate}</span>` : ''}</div></div></div>`;
+          const card = `
+            <div class="item-card">
+              <div>
+                <div class="item-title">${formatted}</div>
+                <div class="mono">
+                  <span class="badge-stat"><i class="fa-solid fa-wrench"></i> ${damage}% Condition</span>
+                  ${plate ? `<span class="badge-stat" style="background:#fff; color:#000; font-weight:800;">${plate}</span>` : ''}
+                </div>
+              </div>
+            </div>`;
+
           if (rawName.toLowerCase().match(/(tractor|harvester|bigbud|truck|locomotive)/)) {
             tractorsHtml += card;
           } else {
@@ -580,18 +646,22 @@
           }
         });
 
-        document.getElementById('tractors-container').innerHTML = tractorsHtml || '<div class="empty-state">No heavy machinery active.</div>';
-        document.getElementById('implements-container').innerHTML = implementsHtml || '<div class="empty-state">No equipment attached.</div>';
+        document.getElementById('tractors-container').innerHTML = tractorsHtml || '<div class="empty-state">No heavy machinery.</div>';
+        document.getElementById('implements-container').innerHTML = implementsHtml || '<div class="empty-state">No tools.</div>';
       }
 
-      // Economy
+      // 7. Market Economy Parsing
       const ecoXml = parseXML(data.economy?.data || data.economy_xml?.data);
       if (ecoXml) {
         let html = "";
         ecoXml.querySelectorAll("fillType").forEach(f => {
           const price = (parseFloat(f.getAttribute("price") || "1") * 1000).toFixed(2);
           if (parseFloat(price) > 0) {
-            html += `<div class="item-card"><div class="item-thumb"><i class="fa-solid fa-coins"></i></div><div class="item-info"><div class="item-title">${resolveCropName(f.getAttribute("name"))}</div></div><div class="farm-money">$${price} / kL</div></div>`;
+            html += `
+              <div class="item-card">
+                <div><div class="item-title">${resolveCropName(f.getAttribute("name"))}</div></div>
+                <div class="farm-money" style="font-size:0.95rem;">$${price} / kL</div>
+              </div>`;
           }
         });
         document.getElementById('economy-container').innerHTML = html || '<div class="empty-state">Market economy offline.</div>';
