@@ -1,9 +1,9 @@
 <!-- 
   ==========================================
-  VERSION TIMESTAMP: Thu, July 23, 2026, 12:55 AM EDT
-  SYSTEM: Werewolf Project Home Production Engine (index.html)
+  VERSION TIMESTAMP: Thu, July 23, 2026, 12:30 AM EDT
+  SYSTEM: Werewolf Project Home Engine (index.html)
   DEPLOYMENT: GitHub Pages Direct Target (https://werewolf3788.github.io/Website/)
-  ENGINE: Clean Native Menu.json Engine + Multi-Doc Firestore/RTDB Squad Sync
+  ENGINE: Embedded Primary Menu + Live Firestore/RTDB Squad Sync + Cinema Engine
   SQUAD: Werewolf3788 | Raymystyro | Terrdog420 | DesdemonaTiger
   ==========================================
 -->
@@ -150,11 +150,6 @@
         .text-terrdog { color: var(--color-terrdog); }
         .shadow-terrdog { box-shadow: 0 10px 15px -3px rgba(147, 51, 234, 0.4); }
 
-        .is-sunny h3 { color: #0f172a !important; }
-        .is-sunny p { color: #1e293b !important; }
-        .is-sunny .weather-desc { color: #334155 !important; opacity: 0.9; }
-        .is-sunny .visit-link { color: #0f172a !important; border-color: rgba(0,0,0,0.3) !important; }
-
         .kf-watermark {
             position: fixed;
             bottom: 10px; left: 10px;
@@ -180,13 +175,7 @@
                 </div>
 
                 <!-- Desktop Menu -->
-                <div id="desktop-nav-links" class="hidden md:flex items-center space-x-8">
-                    <div class="flex items-center space-x-4 animate-pulse">
-                        <div class="h-4 w-16 bg-slate-700 rounded"></div>
-                        <div class="h-4 w-16 bg-slate-700 rounded"></div>
-                        <div class="h-4 w-20 bg-slate-700 rounded"></div>
-                    </div>
-                </div>
+                <div id="desktop-nav-links" class="hidden md:flex items-center space-x-8"></div>
 
                 <!-- Global Auth Status Pill -->
                 <div id="auth-status-container" class="hidden md:flex items-center ml-4">
@@ -206,10 +195,7 @@
 
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="md:hidden hidden bg-slate-900 border-b border-slate-700">
-            <div id="mobile-nav-links" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                 <div class="h-4 w-24 bg-slate-700/50 rounded mb-2 ml-3 animate-pulse"></div>
-                 <div class="h-4 w-24 bg-slate-700/50 rounded ml-3 animate-pulse"></div>
-            </div>
+            <div id="mobile-nav-links" class="px-2 pt-2 pb-3 space-y-1 sm:px-3"></div>
         </div>
     </nav>
 
@@ -332,7 +318,7 @@
         </div>
     </section>
 
-    <!-- LIVE ACTIVE PLAYSTATION SQUAD PROGRESS SECTION -->
+    <!-- LIVE PLAYSTATION SQUAD PROGRESS TRACKER SECTION -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4 space-y-8" id="active-game-section-container">
             <div class="custom-card p-8 border border-slate-700/80">
@@ -461,33 +447,16 @@
             }
         }
 
-        // --- NATIVE MENU.JSON PARSER ENGINE ---
-        async function fetchNavData() {
-            const origin = window.location.origin;
-            const endpoints = [
-                `./Menu.json?v=${Date.now()}`,
-                `${origin}/Website/Menu.json?v=${Date.now()}`,
-                `./Website/Menu.json?v=${Date.now()}`,
-                `https://raw.githubusercontent.com/Werewolf3788/Website/main/Menu.json?v=${Date.now()}`
-            ];
+        // --- INSTANT GUARANTEED NAVIGATION PARSER ---
+        const primaryMenuConfig = [
+            { name: "Home", url: "./index.html" },
+            { name: "Movies", url: "https://werewolf3788.github.io/Website/Movies.html" },
+            { name: "Kevin Profile", url: "./users/kevin/website.html", group: "Contributors" },
+            { name: "Ray Profile", url: "./users/ray/website.html", group: "Contributors" },
+            { name: "TJ Overlay", url: "./users/tj/overlay.html", group: "Contributors" }
+        ];
 
-            for (const path of endpoints) {
-                try {
-                    const res = await fetchWithRetry(path);
-                    let text = await res.text();
-                    text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
-                    const data = JSON.parse(text);
-                    if (data) {
-                        renderNavJson(data);
-                        return;
-                    }
-                } catch (e) {
-                    // Try next endpoint
-                }
-            }
-        }
-
-        function renderNavJson(menuItems) {
+        function renderNavMenu(menuItems) {
             const desktopContainer = document.getElementById('desktop-nav-links');
             const mobileContainer = document.getElementById('mobile-nav-links');
             if (!desktopContainer || !mobileContainer) return;
@@ -576,14 +545,12 @@
                     const code = data.current_weather.weathercode;
                     const temp = Math.round(data.current_weather.temperature);
                     
-                    let type = 'clear';
                     let desc = 'Clear Skies';
-                    
-                    if (code === 0) { type = 'sunny'; desc = 'Sunny'; }
-                    else if (code >= 1 && code <= 3) { type = 'cloudy'; desc = 'Partly Cloudy'; }
-                    else if (code >= 45 && code <= 48) { type = 'cloudy'; desc = 'Foggy'; }
-                    else if (code >= 51 && code <= 67 || code >= 80 && code <= 82 || code >= 95) { type = 'rain'; desc = 'Raining'; }
-                    else if (code >= 71 && code <= 77 || code >= 85 && code <= 86) { type = 'snowy'; desc = 'Snowing'; }
+                    if (code === 0) desc = 'Sunny';
+                    else if (code >= 1 && code <= 3) desc = 'Partly Cloudy';
+                    else if (code >= 45 && code <= 48) desc = 'Foggy';
+                    else if (code >= 51 && code <= 67 || code >= 80 && code <= 82 || code >= 95) desc = 'Raining';
+                    else if (code >= 71 && code <= 77 || code >= 85 && code <= 86) desc = 'Snowing';
 
                     const descText = document.getElementById(u.descId);
                     if (descText) descText.textContent = `${desc} • ${temp}°F`;
@@ -664,7 +631,7 @@
                             }
                         }
                     }, (err) => {
-                        // Suppress non-matches
+                        // Suppress background non-matches
                     });
                 });
             });
@@ -787,7 +754,7 @@
         }
 
         window.onload = () => {
-            fetchNavData();
+            renderNavMenu(primaryMenuConfig);
             updateWeather();
             users.forEach(updateTwitchStatus);
             fetchMovieData(); 
