@@ -1,8 +1,9 @@
 /* 
  * ==========================================
- * VERSION TIMESTAMP: Wed, July 22, 2026, 5:20 PM EDT
- * STYLING SYSTEM: Global Dark Theme & Dynamic Navigation Engine
+ * VERSION TIMESTAMP: Wed, July 22, 2026, 11:05 PM EDT
+ * STYLING SYSTEM: Responsive Multi-User Sniper Elite 5 Tracker (style.css)
  * BRAND PALETTE: Crimson Gradient (#990000 -> #000000), Slate Surfaces (#1e1c1c), Gold Accents (#ff8800)
+ * INTEGRATION: Responsive Top-Nav Navigation Engine & Dynamic Mobile Hamburger Engine
  * ==========================================
  */
 
@@ -15,20 +16,20 @@
     --brand-gold: #ff8800;
     --brand-red: #cc0000;
     --brand-green: #00aa44;
+    --btn-hover: #e60000;
     --font-heading: 'Teko', sans-serif;
     --font-body: 'Roboto', sans-serif;
 }
 
-/* --- RESET & MOBILE-FIRST BASE --- */
+/* --- RESET & MOBILE-FIRST BASE STYLES --- */
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-body {
+html, body {
     background: var(--bg-gradient) fixed;
-    background-attachment: fixed;
     color: var(--text-primary);
     font-family: var(--font-body);
     font-size: 16px;
@@ -46,22 +47,38 @@ body {
     top: 0;
     z-index: 1000;
     backdrop-filter: blur(8px);
+    width: 100%;
 }
 
 .nav-container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 0 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 56px;
 }
 
+.brand-title {
+    color: var(--brand-gold);
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    letter-spacing: 1px;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+/* --- DYNAMIC NAV CONTAINER (DESKTOP & MOBILE WRAPPER) --- */
+#dynamic-nav-links,
 .nav-links {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 12px;
-    min-height: 56px;
 }
 
+#dynamic-nav-links a, 
 .nav-links a, 
 .nav-dropbtn {
     color: var(--text-primary);
@@ -80,6 +97,7 @@ body {
     border-radius: 4px;
 }
 
+#dynamic-nav-links a:hover, 
 .nav-links a:hover, 
 .nav-dropbtn:hover {
     background-color: var(--brand-red);
@@ -89,7 +107,7 @@ body {
 .nav-icon {
     width: 22px;
     height: 22px;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 3px;
 }
 
@@ -130,6 +148,68 @@ body {
 
 .nav-dropdown:hover .nav-dropdown-content {
     display: block;
+}
+
+/* --- MOBILE HAMBURGER TOGGLE BUTTON --- */
+.mobile-menu-toggle {
+    display: none;
+    background: var(--brand-red);
+    color: #ffffff;
+    border: none;
+    font-size: 1.5rem;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    min-height: 44px;
+    min-width: 44px;
+}
+
+/* --- RESPONSIVE MOBILE BREAKPOINT --- */
+@media (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+
+    #dynamic-nav-links,
+    .nav-links {
+        display: none;
+        flex-direction: column;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: rgba(15, 15, 15, 0.98);
+        border-bottom: 2px solid var(--brand-red);
+        padding: 12px 0;
+        gap: 0;
+    }
+
+    #dynamic-nav-links.mobile-active,
+    .nav-links.mobile-active {
+        display: flex;
+    }
+
+    #dynamic-nav-links a, 
+    .nav-links a, 
+    .nav-dropbtn {
+        width: 100%;
+        padding: 14px 20px;
+        text-align: left;
+        border-bottom: 1px solid #222222;
+        border-radius: 0;
+    }
+
+    .nav-dropdown {
+        width: 100%;
+    }
+
+    .nav-dropdown-content {
+        position: static;
+        box-shadow: none;
+        border: none;
+        background: #141414;
+        padding-left: 15px;
+    }
 }
 
 /* --- MAIN WRAPPER & HEADERS --- */
@@ -189,7 +269,7 @@ body {
 .profile-btn:hover, 
 .profile-btn.active-btn {
     background-color: var(--brand-red);
-    border-color: var(--brand-red);
+    border-color: var(--brand-gold);
     color: #ffffff;
 }
 
@@ -315,7 +395,11 @@ body {
 }
 
 .toggle-btn:hover {
-    background-color: #e60000;
+    background-color: var(--btn-hover);
+}
+
+.outlined-text {
+    text-shadow: 1px 1px 2px #000;
 }
 
 /* --- LIGHTBOX OVERLAY --- */
