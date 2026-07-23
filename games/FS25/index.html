@@ -16,31 +16,54 @@
 
   <!-- Open Graph / SEO Data -->
   <meta property="og:title" content="Werewolf FS25 Dedicated Server Dashboard">
-  <meta property="og:description" content="Real-time telemetry, fleet tracking, field registry, and mod compatibility for Werewolf FS25 Dedicated Server.">
+  <meta property="og:description" content="Real-time telemetry, fleet tracking, field registry, factories, and mod compatibility for Werewolf FS25 Dedicated Server.">
   <meta property="og:type" content="website">
 
+  <!-- Firebase v9+ Modular SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    const firebaseConfig = {
+      databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    const provider = new GoogleAuthProvider();
+
+    window.firebaseAuth = { auth, provider, signInWithPopup, signOut };
+    window.firebaseDb = { db, ref, onValue };
+  </script>
+
   <style>
-    /* Global Styling Preferences */
     :root {
-      /* Persistent Brand Background */
-      --bg-gradient: linear-gradient(180deg, #990000 0%, #000000 100%);
-      
-      /* Surface & Typography Adjustments */
-      --card-surface: #1e1c1c;
-      --card-border: rgba(255, 255, 255, 0.12);
+      --bg-wallpaper: url('https://image.api.playstation.com/vulcan/ap/rnd/202406/1221/cd33050ff279dcceeaa269b6c2a33002a66ac70f11b0cc9f.jpg');
+      --card-surface: rgba(30, 28, 28, 0.88);
+      --card-border: rgba(255, 255, 255, 0.15);
       --text-main: #ffffff;
       --text-muted: #a1a1aa;
-      
-      /* High-Contrast Interactive Elements */
+      --user-accent: #38bdf8;
       --btn-bg: #dc2626;
       --btn-text: #ffffff;
-      
-      /* Accent preservation */
       --neon-green: #10b981;
-      --neon-blue: #3b82f6;
+      --neon-blue: #38bdf8;
       --neon-cyan: #06b6d4;
       --neon-purple: #c026d3;
       --neon-gold: #f59e0b;
+      --admin-red: #ef4444;
+    }
+
+    body.role-admin {
+      --user-accent: #ef4444;
+      --card-border: rgba(239, 68, 68, 0.4);
+    }
+
+    body.role-user {
+      --user-accent: #38bdf8;
+      --card-border: rgba(56, 189, 248, 0.4);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -51,27 +74,30 @@
       min-height: 100vh;
       font-size: 16px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--bg-gradient) fixed;
+      background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.92)), var(--bg-wallpaper);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
       color: var(--text-main);
       padding: 16px;
     }
 
-    /* GLOBAL MENU NAVIGATION BAR & DROPDOWN SYSTEM */
     .global-nav-bar {
-      background: rgba(30, 28, 28, 0.95);
+      background: var(--card-surface);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 12px 20px;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 16px;
-      overflow-x: visible;
-      backdrop-filter: blur(10px);
+      backdrop-filter: blur(12px);
       flex-wrap: wrap;
     }
 
-    /* Standalone High-Contrast Buttons */
+    .nav-items-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
     .nav-link-btn {
       background-color: var(--btn-bg);
       color: var(--btn-text);
@@ -90,16 +116,9 @@
       transition: transform 0.15s ease, background-color 0.2s ease;
     }
 
-    .nav-link-btn:hover {
-      background-color: #b91c1c;
-      transform: translateY(-2px);
-    }
+    .nav-link-btn:hover { background-color: #b91c1c; transform: translateY(-2px); }
 
-    /* Group Dropdown Wrapper */
-    .nav-dropdown-group {
-      position: relative;
-      display: inline-block;
-    }
+    .nav-dropdown-group { position: relative; display: inline-block; }
 
     .nav-dropdown-trigger {
       background: rgba(255, 255, 255, 0.08);
@@ -117,11 +136,8 @@
       transition: background-color 0.2s ease;
     }
 
-    .nav-dropdown-group:hover .nav-dropdown-trigger {
-      background: rgba(255, 255, 255, 0.18);
-    }
+    .nav-dropdown-group:hover .nav-dropdown-trigger { background: rgba(255, 255, 255, 0.18); }
 
-    /* Dropdown Content Box */
     .nav-dropdown-menu {
       display: none;
       position: absolute;
@@ -132,14 +148,12 @@
       background: #1e1c1c;
       border: 1px solid var(--card-border);
       border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
       padding: 8px 0;
       z-index: 1000;
     }
 
-    .nav-dropdown-group:hover .nav-dropdown-menu {
-      display: block;
-    }
+    .nav-dropdown-group:hover .nav-dropdown-menu { display: block; }
 
     .nav-dropdown-item {
       display: flex;
@@ -154,12 +168,8 @@
       transition: background 0.15s ease, color 0.15s ease;
     }
 
-    .nav-dropdown-item:hover {
-      background: var(--btn-bg);
-      color: #ffffff;
-    }
+    .nav-dropdown-item:hover { background: var(--btn-bg); color: #ffffff; }
 
-    /* MENU THUMBNAIL IMAGES FROM COLUMN D */
     .menu-thumb {
       width: 24px;
       height: 24px;
@@ -169,7 +179,28 @@
       flex-shrink: 0;
     }
 
-    /* TOP TELEMETRY BANNER */
+    .user-auth-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      font-size: 13px;
+    }
+
+    .auth-btn {
+      background: var(--user-accent);
+      color: #000;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
     .top-bar {
       background: var(--card-surface);
       border: 1px solid var(--card-border);
@@ -181,6 +212,7 @@
       flex-wrap: wrap;
       gap: 16px;
       margin-bottom: 24px;
+      backdrop-filter: blur(12px);
     }
 
     .server-status h1 { font-size: 22px; font-weight: 800; color: #ffffff; }
@@ -189,11 +221,12 @@
     .status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
     .status-dot.online { background-color: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
     .status-dot.offline { background-color: var(--btn-bg); box-shadow: 0 0 10px var(--btn-bg); }
+    .status-dot.paused { background-color: var(--neon-gold); box-shadow: 0 0 10px var(--neon-gold); }
 
     .env-badge-group {
       display: flex;
       gap: 16px;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.5);
       padding: 10px 18px;
       border-radius: 10px;
       border: 1px solid var(--card-border);
@@ -203,14 +236,14 @@
     .player-roster { display: flex; gap: 8px; flex-wrap: wrap; }
     .player-tag {
       background: rgba(255,255,255,0.08);
-      border: 1px solid var(--card-border);
+      border: 1px solid var(--user-accent);
+      color: var(--text-main);
       padding: 6px 14px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 700;
     }
 
-    /* MAIN GRID SYSTEM */
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
@@ -222,7 +255,8 @@
       border: 1px solid var(--card-border);
       border-radius: 16px;
       padding: 24px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      backdrop-filter: blur(12px);
     }
 
     .glass-panel h2 {
@@ -236,7 +270,7 @@
     }
 
     .scroll-box {
-      max-height: 350px;
+      max-height: 380px;
       overflow-y: auto;
       padding-right: 6px;
     }
@@ -245,7 +279,7 @@
     .scroll-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
 
     .data-card {
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.5);
       border: 1px solid var(--card-border);
       border-radius: 10px;
       padding: 14px;
@@ -254,16 +288,31 @@
 
     .bar-track { background: rgba(0, 0, 0, 0.6); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 6px; }
     .bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+    
+    .io-pill {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      display: inline-block;
+      margin-top: 4px;
+      margin-right: 4px;
+    }
   </style>
 </head>
-<body>
+<body class="role-public">
 
-  <!-- GLOBAL MENU (POPULATED WITH COLUMN D THUMBNAILS FROM GOOGLE SHEETS) -->
-  <nav class="global-nav-bar" id="global-nav-menu">
-    <span style="font-size:13px; color:var(--text-muted);">Loading navigation...</span>
+  <nav class="global-nav-bar">
+    <div class="nav-items-left" id="global-nav-menu">
+      <span style="font-size:13px; color:var(--text-muted);">Loading navigation...</span>
+    </div>
+
+    <div class="user-auth-badge">
+      <span id="user-status-text">🌐 Public Guest</span>
+      <button id="auth-action-btn" class="auth-btn">Google Login</button>
+    </div>
   </nav>
 
-  <!-- TOP TELEMETRY BANNER -->
   <header class="top-bar">
     <div class="server-status">
       <span id="status-indicator" class="status-dot offline"></span>
@@ -271,12 +320,12 @@
         <h1 id="server-title">Fetching Server Name...</h1>
         <small class="server-type-badge" id="savegame-badge">
           <span id="security-badge" style="color:var(--neon-gold)">🔒 Protected</span> | 
-          Map: <span id="server-map-name">Connecting...</span>
+          Map: <span id="server-map-name">Connecting...</span> | 
+          State: <strong id="game-state-text" style="color:var(--neon-gold)">Checking...</strong>
         </small>
       </div>
     </div>
 
-    <!-- IN-GAME WEATHER & TIME -->
     <div class="env-badge-group">
       <div>🕒 Time: <strong id="env-time" style="color:var(--neon-cyan)">--:--</strong></div>
       <div>📅 Month: <strong id="env-month" style="color:var(--neon-gold)">--</strong></div>
@@ -290,14 +339,16 @@
   </header>
 
   <main class="dashboard-grid">
-    
-    <!-- REGISTERED FARMS REGISTRY -->
     <section class="glass-panel" style="grid-column: 1 / -1;">
       <h2 style="color: var(--neon-gold);">🏡 Registered Server Farms (<span id="farm-count">0</span>)</h2>
       <div class="scroll-box" id="farms-container">Checking farm registry...</div>
     </section>
 
-    <!-- FLEET CATEGORIES -->
+    <section class="glass-panel" style="grid-column: 1 / -1;" id="factories-section">
+      <h2 style="color: var(--neon-gold);">🏭 Production Factories & Processing Facilities</h2>
+      <div class="scroll-box" id="factories-container">Scanning placeable production points...</div>
+    </section>
+
     <section class="glass-panel">
       <h2 style="color: var(--neon-cyan);">🚚 Trucks & Highway Cars</h2>
       <div class="scroll-box" id="trucks-box">Awaiting telemetry...</div>
@@ -313,7 +364,6 @@
       <div class="scroll-box" id="implements-box">Awaiting telemetry...</div>
     </section>
 
-    <!-- FIELD OWNERSHIP REGISTRY -->
     <section class="glass-panel">
       <h2 style="color: var(--neon-purple);">🌱 Ray's Owned Fields</h2>
       <div class="scroll-box" id="fields-ray">No fields registered.</div>
@@ -329,13 +379,11 @@
       <div class="scroll-box" id="fields-unclaimed">Scanning parcels...</div>
     </section>
 
-    <!-- CONTRACTS & MISSIONS PANEL -->
     <section class="glass-panel" id="contracts-section">
       <h2 style="color: var(--neon-green);">📋 Active Contracts & Job Rewards</h2>
       <div class="scroll-box" id="contract-board">No active contracts found.</div>
     </section>
 
-    <!-- LIVESTOCK OPERATIONS (AUTO-HIDES IF NO ANIMALS) -->
     <section class="glass-panel" id="animals-section" style="grid-column: 1 / -1; display: none;">
       <h2 style="color: var(--neon-gold);">🐄 Livestock Operations & Animal Feeds</h2>
       <div class="dashboard-grid" id="animals-grid">
@@ -348,7 +396,6 @@
       </div>
     </section>
 
-    <!-- SERVER MODS & CROSSPLAY (AUTO-HIDES IF NO MODS) -->
     <section class="glass-panel" id="mods-section" style="grid-column: 1 / -1; display: none;">
       <h2 style="color: var(--neon-purple);">📦 Installed Server Mods & Crossplay Status</h2>
       <div class="scroll-box" id="mods-container">Loading mod list...</div>
@@ -358,36 +405,124 @@
 
   <script>
     /**
-     * Version Timestamp: Thu, July 23, 2026, 5:30 PM (EDT)
-     * Dynamic CSV Navigation Parser (Col D Images Enabled) & Firebase Telemetry Sync Engine
+     * Version Timestamp: Thu, July 23, 2026, 7:15 PM (EDT)
+     * Resilient FS25 Dashboard (CORS Direct Feed Proxy + Millisecond Time Math Fix)
      */
-    const DB_ENDPOINT = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/fs25.json";
     const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
+    const ADMIN_EMAIL = "raykevin71888@gmail.com";
     const parser = new DOMParser();
+
+    // CORS Proxy Encoders to bypass HTTPS -> HTTP mixed content blocks on GitHub Pages
+    const PROXY = "https://api.allorigins.win/raw?url=";
+    const RAW_STATS_URL = "http://144.126.153.115:8300/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM";
+    const FEED_CAREERSAVEGAME = "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=careerSavegame";
+    const FEED_VEHICLES = "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=vehicles";
+    const FEED_FARMS = "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=farms";
 
     window.addEventListener('DOMContentLoaded', () => {
       loadGlobalMenu();
-      fetchTelemetry();
-      setInterval(fetchTelemetry, 5000);
+      initAuthObserver();
+      initLiveFirebaseSync();
     });
 
-    /**
-     * CSV MENU PARSER WITH COLUMN D IMAGE THUMBNAIL RENDERING
-     */
+    function initLiveFirebaseSync() {
+      const checkDbInterval = setInterval(() => {
+        if (window.firebaseDb) {
+          clearInterval(checkDbInterval);
+          const { db, ref, onValue } = window.firebaseDb;
+          const fsRef = ref(db, 'fs25');
+
+          onValue(fsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data && (data.vehicles || data.farms)) {
+              renderDashboard(data);
+            } else {
+              fetchDirectGPortalFeeds();
+            }
+          }, (error) => {
+            fetchDirectGPortalFeeds();
+          });
+        }
+      }, 100);
+    }
+
+    async function fetchDirectGPortalFeeds() {
+      const cb = new Date().getTime();
+      const fallbackPayload = {};
+
+      try {
+        const [statsRes, careerRes, vehRes, farmRes] = await Promise.all([
+          fetch(`${PROXY}${encodeURIComponent(RAW_STATS_URL + '&cb=' + cb)}`).catch(() => null),
+          fetch(`${PROXY}${encodeURIComponent(FEED_CAREERSAVEGAME + '&cb=' + cb)}`).catch(() => null),
+          fetch(`${PROXY}${encodeURIComponent(FEED_VEHICLES + '&cb=' + cb)}`).catch(() => null),
+          fetch(`${PROXY}${encodeURIComponent(FEED_FARMS + '&cb=' + cb)}`).catch(() => null)
+        ]);
+
+        if (statsRes && statsRes.ok) fallbackPayload.stats = { data: await statsRes.text() };
+        if (careerRes && careerRes.ok) fallbackPayload.careerSavegame = { data: await careerRes.text() };
+        if (vehRes && vehRes.ok) fallbackPayload.vehicles = { data: await vehRes.text() };
+        if (farmRes && farmRes.ok) fallbackPayload.farms = { data: await farmRes.text() };
+
+        renderDashboard(fallbackPayload);
+      } catch (err) {
+        showOfflineState();
+      }
+    }
+
+    function initAuthObserver() {
+      const checkAuthInterval = setInterval(() => {
+        if (window.firebaseAuth) {
+          clearInterval(checkAuthInterval);
+          const { auth, provider, signInWithPopup, signOut } = window.firebaseAuth;
+          const statusText = document.getElementById('user-status-text');
+          const authBtn = document.getElementById('auth-action-btn');
+
+          onAuthStateChanged(auth, (user) => {
+            if (user) {
+              const isAdmin = user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+              if (isAdmin) {
+                document.body.className = "role-admin";
+                statusText.innerText = `👑 Admin: ${user.displayName || user.email}`;
+              } else {
+                document.body.className = "role-user";
+                statusText.innerText = `🎮 User: ${user.displayName || user.email}`;
+              }
+              authBtn.innerText = "Logout";
+              authBtn.onclick = () => signOut(auth);
+            } else {
+              document.body.className = "role-public";
+              statusText.innerText = "🌐 Public Guest";
+              authBtn.innerText = "Google Login";
+              authBtn.onclick = () => signInWithPopup(auth, provider);
+            }
+          });
+        }
+      }, 100);
+    }
+
+    function cleanNameFromPath(path) {
+      if (!path) return "Unknown Unit";
+      let filename = path.split('/').pop().replace('.xml', '').replace('.i3d', '');
+      if (filename.startsWith('$l10n_')) {
+        filename = filename.replace('$l10n_', '').replace('name_', '').replace('vehicle_', '');
+      }
+      let clean = filename.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/-/g, ' ').trim();
+      return clean.charAt(0).toUpperCase() + clean.slice(1);
+    }
+
     async function loadGlobalMenu() {
       const navContainer = document.getElementById('global-nav-menu');
       if (!navContainer) return;
 
       const cacheBuster = new Date().getTime();
       try {
-        const res = await fetch(`${MENU_CSV_URL}&v=${cacheBuster}`);
+        const res = await fetch(`${MENU_CSV_URL}&cb=${cacheBuster}`);
         if (!res.ok) throw new Error("CSV fetch failure");
         const csvText = await res.text();
 
         const rows = parseCSV(csvText);
         if (rows.length <= 1) return;
 
-        // Column mapping based on your sheet
         const headers = rows[0].map(h => h.toLowerCase().trim());
         const nameIdx = headers.indexOf('name') !== -1 ? headers.indexOf('name') : 0;
         const groupIdx = headers.indexOf('group') !== -1 ? headers.indexOf('group') : 1;
@@ -424,23 +559,19 @@
 
         navContainer.innerHTML = '';
 
-        // 1. Render Standalone Items (e.g. "Home" as red button with image if present)
         standaloneItems.forEach(item => {
           const btn = document.createElement('a');
           btn.className = 'nav-link-btn';
           btn.href = item.url;
-          
           if (item.imageUrl && item.imageUrl !== '') {
-            btn.innerHTML = `<img src="${item.imageUrl}" class="menu-thumb" alt="" onerror="this.style.display='none'"> <span>${item.name}</span>`;
+            btn.innerHTML = `<img src="${item.imageUrl}" class="menu-thumb" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'"> <span>${item.name}</span>`;
           } else {
             btn.innerText = item.name;
           }
-
           attachSmartTabHandler(btn, item.url);
           navContainer.appendChild(btn);
         });
 
-        // 2. Render Group Dropdowns (User, Games, Discord, Co Sites, Entertainment)
         Object.keys(groups).forEach(groupName => {
           const groupWrapper = document.createElement('div');
           groupWrapper.className = 'nav-dropdown-group';
@@ -457,9 +588,8 @@
             link.className = 'nav-dropdown-item';
             link.href = item.url;
 
-            // Thumbnail Image rendering from Column D
             if (item.imageUrl && item.imageUrl !== '') {
-              link.innerHTML = `<img src="${item.imageUrl}" class="menu-thumb" alt="" onerror="this.style.display='none'"> <span>${item.name}</span>`;
+              link.innerHTML = `<img src="${item.imageUrl}" class="menu-thumb" alt="" referrerpolicy="no-referrer" onerror="this.style.display='none'"> <span>${item.name}</span>`;
             } else {
               link.innerText = item.name;
             }
@@ -474,7 +604,6 @@
         });
 
       } catch (err) {
-        console.warn("Unable to parse menu CSV, hiding nav bar.", err);
         navContainer.style.display = 'none';
       }
     }
@@ -523,47 +652,30 @@
     function attachSmartTabHandler(element, url) {
       element.addEventListener('click', (e) => {
         if (url.startsWith('tel:') || url.startsWith('wa.me/') || url.startsWith('mailto:')) return;
-
         e.preventDefault();
         const channel = new BroadcastChannel('smart_tab_interceptor');
         const targetWindowName = 'tab_' + btoa(url).replace(/=/g, '');
-
         channel.postMessage({ type: 'FOCUS_TAB', targetName: targetWindowName, url: url });
-
-        setTimeout(() => {
-          window.open(url, targetWindowName);
-        }, 100);
+        setTimeout(() => { window.open(url, targetWindowName); }, 100);
       });
     }
 
     const tabChannel = new BroadcastChannel('smart_tab_interceptor');
     tabChannel.onmessage = (event) => {
       if (event.data && event.data.type === 'FOCUS_TAB') {
-        if (window.name === event.data.targetName) {
-          window.focus();
-        }
+        if (window.name === event.data.targetName) { window.focus(); }
       }
     };
 
-    /**
-     * TELEMETRY PARSER ENGINE
-     */
-    async function fetchTelemetry() {
-      const cacheBuster = new Date().getTime();
-      try {
-        const res = await fetch(`${DB_ENDPOINT}?v=${cacheBuster}`, { cache: "no-store" });
-        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-        const data = await res.json();
-        
-        if (data && (data.vehicles || data.fields || data.stats || data.players || data.farms || data.environment)) {
-          renderDashboard(data);
-        } else {
-          showAwaitingState("Firebase node /fs25 is empty. Run Google Apps Script!");
-        }
-      } catch (err) {
-        console.error("Firebase Telemetry Connection Failure:", err);
-        showOfflineState();
+    function getNodeData(data, nodeName) {
+      if (!data) return "";
+      if (typeof data[nodeName] === 'string') return data[nodeName];
+      if (data[nodeName] && typeof data[nodeName].data === 'string') return data[nodeName].data;
+      if (data.liveState && data.liveState[nodeName]) {
+        if (typeof data.liveState[nodeName] === 'string') return data.liveState[nodeName];
+        if (typeof data.liveState[nodeName].data === 'string') return data.liveState[nodeName].data;
       }
+      return "";
     }
 
     function parseXmlString(xmlString) {
@@ -572,9 +684,7 @@
         const xmlDoc = parser.parseFromString(xmlString, "text/xml");
         if (xmlDoc.getElementsByTagName("parsererror").length > 0) return null;
         return xmlDoc;
-      } catch (e) {
-        return null;
-      }
+      } catch (e) { return null; }
     }
 
     function showOfflineState() {
@@ -584,24 +694,60 @@
       if (serverTitle) serverTitle.innerText = "GRID LINK DISCONNECTED";
     }
 
-    function showAwaitingState(msg) {
-      const badge = document.getElementById('savegame-badge');
-      if (badge) badge.innerText = `⚠️ ${msg}`;
-    }
-
     function renderDashboard(data) {
       const statusIndicator = document.getElementById('status-indicator');
       if (statusIndicator) statusIndicator.className = "status-dot online";
 
-      renderServerHeader(data.stats?.data || "");
-      renderEnvironment(data.environment?.data || data.careerSavegame?.data || "");
-      renderFarms(data.farms?.data || "");
-      renderPlayerRoster(data.players?.data || "");
-      renderVehicles(data.vehicles?.data || "");
-      renderFields(data.fields?.data || "");
-      renderContracts(data.missions?.data || "");
-      renderAnimals(data.placeables?.data || "");
-      renderServerMods(data.mods?.data || "");
+      renderServerHeader(getNodeData(data, 'stats'));
+      renderEnvironment(getNodeData(data, 'stats') || getNodeData(data, 'environment') || getNodeData(data, 'careerSavegame'));
+      renderGameActivityState(getNodeData(data, 'stats'), getNodeData(data, 'careerSavegame'));
+      renderFarms(getNodeData(data, 'farms'));
+      renderPlayerRoster(getNodeData(data, 'players') || getNodeData(data, 'stats'));
+      renderVehicles(getNodeData(data, 'vehicles'));
+      renderFactories(getNodeData(data, 'placeables'));
+      renderFields(getNodeData(data, 'fields'));
+      renderContracts(getNodeData(data, 'missions'));
+      renderAnimals(getNodeData(data, 'placeables'));
+      renderServerMods(getNodeData(data, 'mods') || getNodeData(data, 'stats'));
+    }
+
+    function renderGameActivityState(statsRaw, careerRaw) {
+      const stateText = document.getElementById('game-state-text');
+      const statusDot = document.getElementById('status-indicator');
+      if (!stateText) return;
+
+      let isPaused = false;
+      let activePlayersCount = 0;
+
+      if (statsRaw) {
+        const xml = parseXmlString(statsRaw);
+        if (xml) {
+          const slots = xml.querySelector("slots");
+          if (slots) activePlayersCount = parseInt(slots.getAttribute("numUsed") || "0", 10);
+        }
+      }
+
+      if (careerRaw) {
+        const xml = parseXmlString(careerRaw);
+        if (xml) {
+          const pausedNode = xml.querySelector("paused");
+          if (pausedNode && pausedNode.textContent === "true") isPaused = true;
+        }
+      }
+
+      if (activePlayersCount === 0) {
+        stateText.innerText = "⏸️ IDLE / EMPTY";
+        stateText.style.color = "var(--text-muted)";
+        if (statusDot) statusDot.className = "status-dot paused";
+      } else if (isPaused) {
+        stateText.innerText = "⏸️ PAUSED IN-GAME";
+        stateText.style.color = "var(--neon-gold)";
+        if (statusDot) statusDot.className = "status-dot paused";
+      } else {
+        stateText.innerText = "🟢 ACTIVE LIVE";
+        stateText.style.color = "var(--neon-green)";
+        if (statusDot) statusDot.className = "status-dot online";
+      }
     }
 
     function renderServerHeader(statsRaw) {
@@ -634,19 +780,38 @@
       }
     }
 
+    /**
+     * DYNAMIC ENVIRONMENT PARSER
+     * Converts G-Portal Millisecond time counter (e.g. dayTime="33327609") to HH:MM format
+     */
     function renderEnvironment(envRaw) {
       if (!envRaw) return;
       const xml = parseXmlString(envRaw);
       if (!xml) return;
 
-      const dayTimeNode = xml.querySelector("dayTime") || xml.querySelector("realHourTimer");
-      if (dayTimeNode) {
-        const dayTime = parseFloat(dayTimeNode.textContent || "0");
-        const hours = Math.floor(dayTime / 60) % 24;
-        const minutes = Math.floor(dayTime % 60);
-        const timeFormatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-        if (document.getElementById('env-time')) document.getElementById('env-time').innerText = timeFormatted;
+      let timeFormatted = "--:--";
+
+      // 1. Check Server node attribute dayTime
+      const serverNode = xml.querySelector("Server");
+      if (serverNode && serverNode.getAttribute("dayTime")) {
+        const dayTimeMs = parseFloat(serverNode.getAttribute("dayTime"));
+        const totalMinutes = Math.floor(dayTimeMs / (1000 * 60));
+        const hours = Math.floor(totalMinutes / 60) % 24;
+        const minutes = totalMinutes % 60;
+        timeFormatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+      } else {
+        // 2. Check inner child node dayTime
+        const dayTimeNode = xml.querySelector("dayTime") || xml.querySelector("realHourTimer");
+        if (dayTimeNode) {
+          const val = parseFloat(dayTimeNode.textContent || "0");
+          const totalMinutes = val > 1440 ? Math.floor(val / (1000 * 60)) : val;
+          const hours = Math.floor(totalMinutes / 60) % 24;
+          const minutes = Math.floor(totalMinutes % 60);
+          timeFormatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+        }
       }
+
+      if (document.getElementById('env-time')) document.getElementById('env-time').innerText = timeFormatted;
 
       const monthNode = xml.querySelector("currentMonth") || xml.querySelector("currentMon");
       if (monthNode) {
@@ -701,6 +866,80 @@
       });
     }
 
+    function renderFactories(placeablesRaw) {
+      const container = document.getElementById('factories-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!placeablesRaw) {
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active factories detected.</div>`;
+        return;
+      }
+
+      const xml = parseXmlString(placeablesRaw);
+      if (!xml) return;
+
+      const placeables = xml.querySelectorAll("placeable");
+      let factoryCount = 0;
+
+      placeables.forEach(p => {
+        const prodPoint = p.querySelector("productionPoint");
+        if (!prodPoint) return;
+
+        factoryCount++;
+        const farmId = p.getAttribute("farmId") || "1";
+        const customTitle = p.getAttribute("customTitle");
+        const filename = p.getAttribute("filename") || "Factory";
+        const cleanName = customTitle || cleanNameFromPath(filename);
+
+        let totalFill = 0;
+        let totalCapacity = 0;
+        let storageHtml = '';
+
+        const storages = prodPoint.querySelectorAll("storage node");
+        storages.forEach(node => {
+          const fillType = node.getAttribute("fillType") || "Product";
+          const level = Math.round(parseFloat(node.getAttribute("fillLevel") || "0"));
+          const capacity = Math.round(parseFloat(node.getAttribute("capacity") || "100000"));
+          
+          totalFill += level;
+          totalCapacity += capacity;
+
+          const neededToFull = (capacity - level).toLocaleString();
+          const percentFull = capacity > 0 ? Math.round((level / capacity) * 100) : 0;
+
+          storageHtml += `
+            <div class="io-pill">
+              <strong>${cleanNameFromPath(fillType)}:</strong> ${level.toLocaleString()} / ${capacity.toLocaleString()} L 
+              (${percentFull}%) | <span style="color:var(--neon-gold)">Needed: ${neededToFull} L</span>
+            </div>
+          `;
+        });
+
+        const overallPercent = totalCapacity > 0 ? Math.round((totalFill / totalCapacity) * 100) : 0;
+
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>🏭 ${cleanName}</strong>
+            <span style="background:#2563eb; color:#fff; font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px;">
+              OWNER FARM ID: ${farmId}
+            </span>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">Total Factory Storage: ${overallPercent}% Full</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${overallPercent}%; background:var(--neon-gold);"></div></div>
+          <div style="margin-top:8px;">${storageHtml}</div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      if (factoryCount === 0) {
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active factories detected on server savegame.</div>`;
+      }
+    }
+
     function renderPlayerRoster(playersRaw) {
       const rosterBox = document.getElementById('player-roster');
       const countElem = document.getElementById('player-count');
@@ -741,8 +980,8 @@
 
       xml.querySelectorAll("vehicle").forEach(v => {
         const filename = v.getAttribute("filename") || "Vehicle";
-        const cleanName = filename.split('/').pop().replace('.xml', '');
-        const lowerName = cleanName.toLowerCase();
+        const cleanName = cleanNameFromPath(filename);
+        const lowerName = filename.toLowerCase();
         const farmId = v.getAttribute("farmId") || "1";
 
         let condition = 100;
