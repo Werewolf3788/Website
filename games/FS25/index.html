@@ -56,7 +56,7 @@
       padding: 16px;
     }
 
-    /* GLOBAL MENU NAVIGATION BAR */
+    /* GLOBAL MENU NAVIGATION BAR & DROPDOWN SYSTEM */
     .global-nav-bar {
       background: rgba(30, 28, 28, 0.95);
       border: 1px solid var(--card-border);
@@ -66,11 +66,12 @@
       display: flex;
       align-items: center;
       gap: 16px;
-      overflow-x: auto; /* Single row horizontal scroll for 5+ items */
-      white-space: nowrap;
+      overflow-x: visible; /* Required for dropdown visibility */
       backdrop-filter: blur(10px);
+      flex-wrap: wrap;
     }
 
+    /* Standalone (Ungrouped) High-Contrast Buttons */
     .nav-link-btn {
       background-color: var(--btn-bg);
       color: var(--btn-text);
@@ -78,7 +79,7 @@
       font-weight: 700;
       font-size: 14px;
       padding: 10px 18px;
-      min-height: 44px; /* Touch target minimum */
+      min-height: 44px; /* 44px touch target minimum */
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -91,6 +92,77 @@
     .nav-link-btn:hover {
       background-color: #b91c1c;
       transform: translateY(-2px);
+    }
+
+    /* Group Dropdown Wrapper */
+    .nav-dropdown-group {
+      position: relative;
+      display: inline-block;
+    }
+
+    .nav-dropdown-trigger {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 10px 18px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .nav-dropdown-group:hover .nav-dropdown-trigger {
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    /* Dropdown Content Box */
+    .nav-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 6px;
+      min-width: 220px;
+      background: #1e1c1c;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+      padding: 8px 0;
+      z-index: 1000;
+    }
+
+    .nav-dropdown-group:hover .nav-dropdown-menu {
+      display: block;
+    }
+
+    .nav-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      min-height: 44px;
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .nav-dropdown-item:hover {
+      background: var(--btn-bg);
+      color: #ffffff;
+    }
+
+    .nav-icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 4px;
+      object-fit: cover;
     }
 
     /* TOP TELEMETRY BANNER */
@@ -138,7 +210,7 @@
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-      gap: 48px; /* Standardized spacing gap */
+      gap: 48px;
     }
 
     .glass-panel {
@@ -182,7 +254,7 @@
 </head>
 <body>
 
-  <!-- GLOBAL MENU (POPULATED dynamically FROM GOOGLE SHEETS CSV) -->
+  <!-- GLOBAL MENU (POPULATED DYNAMICALLY FROM GOOGLE SHEETS CSV) -->
   <nav class="global-nav-bar" id="global-nav-menu">
     <span style="font-size:13px; color:var(--text-muted);">Loading navigation...</span>
   </nav>
@@ -280,11 +352,10 @@
 
   </main>
 
-  <!-- MASTER ENGINE SCRIPT -->
   <script>
     /**
-     * Version Timestamp: Thu, July 23, 2026, 4:55 PM (EDT)
-     * Resilient Auto-Reconnecting Live Telemetry Engine with CSV Menu Interceptor
+     * Version Timestamp: Thu, July 23, 2026, 5:20 PM (EDT)
+     * Dynamic Grouped CSV Navigation Parser & Firebase Telemetry Sync Engine
      */
     const DB_ENDPOINT = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/fs25.json";
     const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
@@ -293,12 +364,11 @@
     window.addEventListener('DOMContentLoaded', () => {
       loadGlobalMenu();
       fetchTelemetry();
-      setInterval(fetchTelemetry, 5000); // Heartbeat pulse every 5 seconds
+      setInterval(fetchTelemetry, 5000);
     });
 
     /**
-     * DYNAMIC GOOGLE SHEETS CSV MENU ENGINE
-     * Implements Smart Tabs link interception and Native Link formatting
+     * CSV MENU PARSER (Matches Column A: Name, Column B: Group, Column C: Url, Column D: Images)
      */
     async function loadGlobalMenu() {
       const navContainer = document.getElementById('global-nav-menu');
@@ -310,56 +380,158 @@
         if (!res.ok) throw new Error("CSV fetch failure");
         const csvText = await res.text();
 
-        const lines = csvText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-        if (lines.length <= 1) return;
+        const rows = parseCSV(csvText);
+        if (rows.length <= 1) return;
 
-        navContainer.innerHTML = ''; // Clear placeholder
+        // Header index mapping based on your sheet
+        const headers = rows[0].map(h => h.toLowerCase().trim());
+        const nameIdx = headers.indexOf('name') !== -1 ? headers.indexOf('name') : 0;
+        const groupIdx = headers.indexOf('group') !== -1 ? headers.indexOf('group') : 1;
+        const urlIdx = headers.indexOf('url') !== -1 ? headers.indexOf('url') : 2;
+        const imageIdx = headers.indexOf('images') !== -1 ? headers.indexOf('images') : 3;
 
-        lines.slice(1).forEach(line => {
-          // Parse CSV row values safely
-          const parts = line.split(',').map(item => item.replace(/^"|"$/g, '').trim());
-          const title = parts[0];
-          let url = parts[1];
+        const standaloneItems = [];
+        const groups = {};
 
-          if (!title || !url) return;
+        rows.slice(1).forEach(row => {
+          if (row.length <= nameIdx) return;
+          const name = row[nameIdx]?.trim();
+          const groupName = row[groupIdx]?.trim();
+          let url = row[urlIdx]?.trim();
+          const imageUrl = row[imageIdx]?.trim();
 
-          // Native link formatting check
-          if (url.includes('tel:') || url.includes('wa.me/') || url.includes('mailto:')) {
-            // Keep native handler intact
-          } else if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
-            url = 'https://' + url;
+          if (!name || !url) return;
+
+          if (!url.includes('tel:') && !url.includes('wa.me/') && !url.includes('mailto:')) {
+            if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
+              url = 'https://' + url;
+            }
           }
 
+          const menuItem = { name, url, imageUrl };
+
+          // If group is non-empty, assign to group; otherwise treat as standalone button!
+          if (groupName && groupName !== '' && groupName.toLowerCase() !== 'none') {
+            if (!groups[groupName]) groups[groupName] = [];
+            groups[groupName].push(menuItem);
+          } else {
+            standaloneItems.push(menuItem);
+          }
+        });
+
+        navContainer.innerHTML = ''; // Clear loading placeholder
+
+        // 1. Render Standalone Items First (e.g. "Home" as bold high-contrast red button)
+        standaloneItems.forEach(item => {
           const btn = document.createElement('a');
           btn.className = 'nav-link-btn';
-          btn.href = url;
-          btn.innerText = title;
-
-          // Global Smart Tabs Interceptor
-          btn.addEventListener('click', (e) => {
-            if (url.startsWith('tel:') || url.startsWith('wa.me/') || url.startsWith('mailto:')) return;
-
-            e.preventDefault();
-            const channel = new BroadcastChannel('smart_tab_interceptor');
-            const targetWindowName = 'tab_' + btoa(url).replace(/=/g, '');
-
-            // Signal other tabs to jump focus if already open
-            channel.postMessage({ type: 'FOCUS_TAB', targetName: targetWindowName, url: url });
-
-            setTimeout(() => {
-              window.open(url, targetWindowName);
-            }, 100);
-          });
-
+          btn.href = item.url;
+          btn.innerText = item.name;
+          attachSmartTabHandler(btn, item.url);
           navContainer.appendChild(btn);
         });
+
+        // 2. Render Group Dropdowns (User, Games, Discord, Co Sites, Entertainment)
+        Object.keys(groups).forEach(groupName => {
+          const groupWrapper = document.createElement('div');
+          groupWrapper.className = 'nav-dropdown-group';
+
+          const triggerBtn = document.createElement('button');
+          triggerBtn.className = 'nav-dropdown-trigger';
+          triggerBtn.innerHTML = `${getGroupIcon(groupName)} ${groupName} <span style="font-size:10px;">▼</span>`;
+
+          const dropdownMenu = document.createElement('div');
+          dropdownMenu.className = 'nav-dropdown-menu';
+
+          groups[groupName].forEach(item => {
+            const link = document.createElement('a');
+            link.className = 'nav-dropdown-item';
+            link.href = item.url;
+
+            if (item.imageUrl && item.imageUrl !== '') {
+              link.innerHTML = `<img src="${item.imageUrl}" class="nav-icon" alt="" onerror="this.style.display='none'"> <span>${item.name}</span>`;
+            } else {
+              link.innerText = item.name;
+            }
+
+            attachSmartTabHandler(link, item.url);
+            dropdownMenu.appendChild(link);
+          });
+
+          groupWrapper.appendChild(triggerBtn);
+          groupWrapper.appendChild(dropdownMenu);
+          navContainer.appendChild(groupWrapper);
+        });
+
       } catch (err) {
-        console.warn("Unable to load Google Sheets menu CSV, skipping nav update.", err);
+        console.warn("Unable to parse menu CSV, hiding nav bar.", err);
         navContainer.style.display = 'none';
       }
     }
 
-    // BroadcastChannel Listener for Smart Tabs
+    function getGroupIcon(groupName) {
+      const g = groupName.toLowerCase();
+      if (g.includes('game')) return '🎮';
+      if (g.includes('user')) return '👤';
+      if (g.includes('discord')) return '💬';
+      if (g.includes('site')) return '🌐';
+      if (g.includes('entertainment') || g.includes('movie')) return '🎬';
+      return '📁';
+    }
+
+    /**
+     * CSV String Parser
+     */
+    function parseCSV(text) {
+      const lines = [];
+      let row = [];
+      let inQuotes = false;
+      let field = '';
+
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (c === '"') {
+          inQuotes = !inQuotes;
+        } else if (c === ',' && !inQuotes) {
+          row.push(field);
+          field = '';
+        } else if ((c === '\r' || c === '\n') && !inQuotes) {
+          if (field || row.length > 0) {
+            row.push(field);
+            lines.push(row);
+            row = [];
+            field = '';
+          }
+        } else {
+          field += c;
+        }
+      }
+      if (field || row.length > 0) {
+        row.push(field);
+        lines.push(row);
+      }
+      return lines;
+    }
+
+    /**
+     * Smart Tab Link Handler
+     */
+    function attachSmartTabHandler(element, url) {
+      element.addEventListener('click', (e) => {
+        if (url.startsWith('tel:') || url.startsWith('wa.me/') || url.startsWith('mailto:')) return;
+
+        e.preventDefault();
+        const channel = new BroadcastChannel('smart_tab_interceptor');
+        const targetWindowName = 'tab_' + btoa(url).replace(/=/g, '');
+
+        channel.postMessage({ type: 'FOCUS_TAB', targetName: targetWindowName, url: url });
+
+        setTimeout(() => {
+          window.open(url, targetWindowName);
+        }, 100);
+      });
+    }
+
     const tabChannel = new BroadcastChannel('smart_tab_interceptor');
     tabChannel.onmessage = (event) => {
       if (event.data && event.data.type === 'FOCUS_TAB') {
@@ -370,14 +542,12 @@
     };
 
     /**
-     * FIREBASE TELEMETRY FETCH ENGINE
+     * TELEMETRY PARSER ENGINE
      */
     async function fetchTelemetry() {
       const cacheBuster = new Date().getTime();
       try {
-        const res = await fetch(`${DB_ENDPOINT}?v=${cacheBuster}`, {
-          cache: "no-store"
-        });
+        const res = await fetch(`${DB_ENDPOINT}?v=${cacheBuster}`, { cache: "no-store" });
         if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
         const data = await res.json();
         
