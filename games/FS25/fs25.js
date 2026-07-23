@@ -1,6 +1,6 @@
 /**
- * Version Timestamp: Thu, July 23, 2026, 8:40 PM (EDT)
- * Resilient FS25 G-Portal Sync Pipeline (Updated for IP 144.126.153.115)
+ * Version Timestamp: Thu, July 23, 2026, 8:50 PM (EDT)
+ * G-Portal Sync Pipeline (Corrected for New IP 144.126.153.115)
  */
 
 require('dotenv').config({ path: __dirname + '/.env' });
@@ -46,7 +46,7 @@ const ftpClient = new Client();
 // NEW SERVER CREDENTIALS
 const ftpConfig = {
   host: process.env.FTP_HOST || '144.126.153.115',
-  port: parseInt(process.env.FTP_PORT, 10) || 21, // Default FTP or custom secret port
+  port: parseInt(process.env.FTP_PORT, 10) || 21,
   user: process.env.FTP_USER,
   password: process.env.FTP_PASS,
   connTimeout: 15000,
@@ -104,7 +104,7 @@ async function runMainPipeline() {
     if (slotsMatch) {
       activePlayers = parseInt(slotsMatch[1], 10);
     }
-    console.log(`✅ New Web API connected (144.126.153.115). Active Players: ${activePlayers}`);
+    console.log(`✅ Web API connected (144.126.153.115). Active Players: ${activePlayers}`);
   } catch (err) {
     console.warn("⚠️ Web API stats fetch failed. Proceeding to FTP scan.");
   }
@@ -151,55 +151,4 @@ function processActiveFolderSync(slotNumber, activePlayers, rawStatsXml) {
   console.log(`📂 Indexing directory: ${targetFolderPath}`);
 
   ftpClient.list(targetFolderPath, async function(err, list) {
-    if (err) {
-      console.error(`❌ Directory listing failed for ${targetFolderPath}:`, err.message);
-      ftpClient.end();
-      process.exit(1);
-      return;
-    }
-
-    const xmlFiles = list.filter(f => f.type !== 'd' && f.name.toLowerCase().endsWith('.xml'));
-    console.log(`📊 Found ${xmlFiles.length} XML files in savegame${slotNumber}. Downloading...`);
-
-    const masterPayload = {
-      activePlayers: activePlayers,
-      activeSaveSlot: slotNumber,
-      lastUpdated: new Date().toISOString()
-    };
-
-    if (rawStatsXml && rawStatsXml.length > 0) {
-      masterPayload.stats = { data: rawStatsXml };
-      masterPayload.players = { data: rawStatsXml };
-      masterPayload.mods = { data: rawStatsXml };
-    }
-
-    for (const fileInfo of xmlFiles) {
-      const fileNameClean = fileInfo.name.replace('.xml', '').replace(/[\.\#\$\/\[\]]/g, '_');
-      const remoteFilePath = `${targetFolderPath}/${fileInfo.name}`;
-      
-      try {
-        console.log(`⬇️ Downloading: ${fileInfo.name}`);
-        const rawXmlContent = await downloadFileBuffer(ftpClient, remoteFilePath);
-        
-        // Write both clean key names AND _xml key names for maximum compatibility
-        masterPayload[fileNameClean] = { data: rawXmlContent };
-        masterPayload[`${fileNameClean}_xml`] = { data: rawXmlContent };
-      } catch (fileErr) {
-        console.error(`❌ Download failed for ${fileInfo.name}:`, fileErr.message);
-      }
-    }
-
-    try {
-      await db.ref('fs25').update(masterPayload);
-      console.log(`🏆 Firebase sync successful! Savegame data written to /fs25.`);
-    } catch (writeErr) {
-      console.error("❌ Firebase Write Error:", writeErr.message);
-    }
-
-    console.log("🔌 Synchronization complete. Closing connection.");
-    ftpClient.end();
-    process.exit(0);
-  });
-}
-
-runMainPipeline();
+    if (err)
