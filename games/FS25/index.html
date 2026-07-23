@@ -22,7 +22,6 @@
   <!-- Firebase v9+ Modular SDKs -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
     const firebaseConfig = {
@@ -30,24 +29,29 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
     const db = getDatabase(app);
-    const provider = new GoogleAuthProvider();
 
-    window.firebaseAuth = { auth, provider, signInWithPopup, signOut };
     window.firebaseDb = { db, ref, onValue };
   </script>
 
   <style>
+    /* Global Styling Preferences */
     :root {
+      /* Custom PlayStation Wallpaper Layer */
       --bg-wallpaper: url('https://image.api.playstation.com/vulcan/ap/rnd/202406/1221/cd33050ff279dcceeaa269b6c2a33002a66ac70f11b0cc9f.jpg');
+      
+      /* Default Theme Variables */
       --card-surface: rgba(30, 28, 28, 0.88);
       --card-border: rgba(255, 255, 255, 0.15);
       --text-main: #ffffff;
       --text-muted: #a1a1aa;
-      --user-accent: #38bdf8;
+      
+      /* Dynamic In-Game Dynamic Accent Colors */
+      --user-accent: #38bdf8; /* Default Active Player: Light Blue / Cyan */
       --btn-bg: #dc2626;
       --btn-text: #ffffff;
+      
+      /* Accents */
       --neon-green: #10b981;
       --neon-blue: #38bdf8;
       --neon-cyan: #06b6d4;
@@ -56,13 +60,14 @@
       --admin-red: #ef4444;
     }
 
-    body.role-admin {
-      --user-accent: #ef4444;
-      --card-border: rgba(239, 68, 68, 0.4);
+    /* Automated In-Game Role Theme Switcher */
+    body.ingame-admin-active {
+      --user-accent: #ef4444; /* In-Game Admin Logged In: Bold Red */
+      --card-border: rgba(239, 68, 68, 0.5);
     }
 
-    body.role-user {
-      --user-accent: #38bdf8;
+    body.ingame-player-active {
+      --user-accent: #38bdf8; /* In-Game Player Active: Light Blue */
       --card-border: rgba(56, 189, 248, 0.4);
     }
 
@@ -82,6 +87,7 @@
       padding: 16px;
     }
 
+    /* GLOBAL MENU NAVIGATION BAR & DROPDOWN SYSTEM */
     .global-nav-bar {
       background: var(--card-surface);
       border: 1px solid var(--card-border);
@@ -179,28 +185,20 @@
       flex-shrink: 0;
     }
 
-    .user-auth-badge {
+    /* IN-GAME STATUS BADGE */
+    .ingame-status-badge {
       display: flex;
       align-items: center;
       gap: 10px;
       background: rgba(0, 0, 0, 0.5);
-      padding: 6px 14px;
+      padding: 8px 16px;
       border-radius: 20px;
       border: 1px solid var(--card-border);
       font-size: 13px;
+      font-weight: 700;
     }
 
-    .auth-btn {
-      background: var(--user-accent);
-      color: #000;
-      border: none;
-      padding: 6px 14px;
-      border-radius: 6px;
-      font-weight: 800;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
+    /* TOP TELEMETRY BANNER */
     .top-bar {
       background: var(--card-surface);
       border: 1px solid var(--card-border);
@@ -244,6 +242,13 @@
       font-weight: 700;
     }
 
+    .player-tag.admin {
+      border-color: var(--admin-red);
+      background: rgba(239, 68, 68, 0.2);
+      color: #ff8888;
+    }
+
+    /* MAIN GRID SYSTEM */
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
@@ -302,17 +307,19 @@
 </head>
 <body class="role-public">
 
+  <!-- GLOBAL MENU (POPULATED FROM GOOGLE SHEETS CSV) -->
   <nav class="global-nav-bar">
     <div class="nav-items-left" id="global-nav-menu">
       <span style="font-size:13px; color:var(--text-muted);">Loading navigation...</span>
     </div>
 
-    <div class="user-auth-badge">
-      <span id="user-status-text">🌐 Public Guest</span>
-      <button id="auth-action-btn" class="auth-btn">Google Login</button>
+    <!-- AUTOMATED IN-GAME ADMIN / PLAYER DETECTOR -->
+    <div class="ingame-status-badge">
+      <span id="ingame-role-text">🎮 In-Game State: Offline</span>
     </div>
   </nav>
 
+  <!-- TOP TELEMETRY BANNER -->
   <header class="top-bar">
     <div class="server-status">
       <span id="status-indicator" class="status-dot offline"></span>
@@ -326,6 +333,7 @@
       </div>
     </div>
 
+    <!-- IN-GAME WEATHER & TIME -->
     <div class="env-badge-group">
       <div>🕒 Time: <strong id="env-time" style="color:var(--neon-cyan)">--:--</strong></div>
       <div>📅 Month: <strong id="env-month" style="color:var(--neon-gold)">--</strong></div>
@@ -339,16 +347,20 @@
   </header>
 
   <main class="dashboard-grid">
+    
+    <!-- REGISTERED FARMS REGISTRY -->
     <section class="glass-panel" style="grid-column: 1 / -1;">
       <h2 style="color: var(--neon-gold);">🏡 Registered Server Farms (<span id="farm-count">0</span>)</h2>
       <div class="scroll-box" id="farms-container">Checking farm registry...</div>
     </section>
 
+    <!-- FACTORIES & PRODUCTION FACILITIES -->
     <section class="glass-panel" style="grid-column: 1 / -1;" id="factories-section">
       <h2 style="color: var(--neon-gold);">🏭 Production Factories & Processing Facilities</h2>
       <div class="scroll-box" id="factories-container">Scanning placeable production points...</div>
     </section>
 
+    <!-- FLEET CATEGORIES -->
     <section class="glass-panel">
       <h2 style="color: var(--neon-cyan);">🚚 Trucks & Highway Cars</h2>
       <div class="scroll-box" id="trucks-box">Awaiting telemetry...</div>
@@ -364,6 +376,7 @@
       <div class="scroll-box" id="implements-box">Awaiting telemetry...</div>
     </section>
 
+    <!-- FIELD OWNERSHIP REGISTRY -->
     <section class="glass-panel">
       <h2 style="color: var(--neon-purple);">🌱 Ray's Owned Fields</h2>
       <div class="scroll-box" id="fields-ray">No fields registered.</div>
@@ -379,11 +392,13 @@
       <div class="scroll-box" id="fields-unclaimed">Scanning parcels...</div>
     </section>
 
+    <!-- CONTRACTS & MISSIONS PANEL -->
     <section class="glass-panel" id="contracts-section">
       <h2 style="color: var(--neon-green);">📋 Active Contracts & Job Rewards</h2>
       <div class="scroll-box" id="contract-board">No active contracts found.</div>
     </section>
 
+    <!-- LIVESTOCK OPERATIONS (AUTO-HIDES IF NO ANIMALS) -->
     <section class="glass-panel" id="animals-section" style="grid-column: 1 / -1; display: none;">
       <h2 style="color: var(--neon-gold);">🐄 Livestock Operations & Animal Feeds</h2>
       <div class="dashboard-grid" id="animals-grid">
@@ -396,6 +411,7 @@
       </div>
     </section>
 
+    <!-- SERVER MODS & CROSSPLAY (AUTO-HIDES IF NO MODS) -->
     <section class="glass-panel" id="mods-section" style="grid-column: 1 / -1; display: none;">
       <h2 style="color: var(--neon-purple);">📦 Installed Server Mods & Crossplay Status</h2>
       <div class="scroll-box" id="mods-container">Loading mod list...</div>
@@ -405,14 +421,13 @@
 
   <script>
     /**
-     * Version Timestamp: Thu, July 23, 2026, 7:15 PM (EDT)
-     * Resilient FS25 Dashboard (CORS Direct Feed Proxy + Millisecond Time Math Fix)
+     * Version Timestamp: Thu, July 23, 2026, 7:30 PM (EDT)
+     * FS25 Dashboard (In-Game Admin Role Theme Switcher + Live Telemetry Engine)
      */
     const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
-    const ADMIN_EMAIL = "raykevin71888@gmail.com";
     const parser = new DOMParser();
 
-    // CORS Proxy Encoders to bypass HTTPS -> HTTP mixed content blocks on GitHub Pages
+    // Direct G-Portal Feed Proxy
     const PROXY = "https://api.allorigins.win/raw?url=";
     const RAW_STATS_URL = "http://144.126.153.115:8300/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM";
     const FEED_CAREERSAVEGAME = "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=careerSavegame";
@@ -421,7 +436,6 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       loadGlobalMenu();
-      initAuthObserver();
       initLiveFirebaseSync();
     });
 
@@ -467,37 +481,6 @@
       } catch (err) {
         showOfflineState();
       }
-    }
-
-    function initAuthObserver() {
-      const checkAuthInterval = setInterval(() => {
-        if (window.firebaseAuth) {
-          clearInterval(checkAuthInterval);
-          const { auth, provider, signInWithPopup, signOut } = window.firebaseAuth;
-          const statusText = document.getElementById('user-status-text');
-          const authBtn = document.getElementById('auth-action-btn');
-
-          onAuthStateChanged(auth, (user) => {
-            if (user) {
-              const isAdmin = user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
-              if (isAdmin) {
-                document.body.className = "role-admin";
-                statusText.innerText = `👑 Admin: ${user.displayName || user.email}`;
-              } else {
-                document.body.className = "role-user";
-                statusText.innerText = `🎮 User: ${user.displayName || user.email}`;
-              }
-              authBtn.innerText = "Logout";
-              authBtn.onclick = () => signOut(auth);
-            } else {
-              document.body.className = "role-public";
-              statusText.innerText = "🌐 Public Guest";
-              authBtn.innerText = "Google Login";
-              authBtn.onclick = () => signInWithPopup(auth, provider);
-            }
-          });
-        }
-      }, 100);
     }
 
     function cleanNameFromPath(path) {
@@ -780,10 +763,6 @@
       }
     }
 
-    /**
-     * DYNAMIC ENVIRONMENT PARSER
-     * Converts G-Portal Millisecond time counter (e.g. dayTime="33327609") to HH:MM format
-     */
     function renderEnvironment(envRaw) {
       if (!envRaw) return;
       const xml = parseXmlString(envRaw);
@@ -791,7 +770,6 @@
 
       let timeFormatted = "--:--";
 
-      // 1. Check Server node attribute dayTime
       const serverNode = xml.querySelector("Server");
       if (serverNode && serverNode.getAttribute("dayTime")) {
         const dayTimeMs = parseFloat(serverNode.getAttribute("dayTime"));
@@ -800,7 +778,6 @@
         const minutes = totalMinutes % 60;
         timeFormatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
       } else {
-        // 2. Check inner child node dayTime
         const dayTimeNode = xml.querySelector("dayTime") || xml.querySelector("realHourTimer");
         if (dayTimeNode) {
           const val = parseFloat(dayTimeNode.textContent || "0");
@@ -940,21 +917,36 @@
       }
     }
 
+    /**
+     * IN-GAME PLAYER ROSTER & AUTOMATED ADMIN DETECTOR
+     */
     function renderPlayerRoster(playersRaw) {
       const rosterBox = document.getElementById('player-roster');
       const countElem = document.getElementById('player-count');
+      const roleText = document.getElementById('ingame-role-text');
       if (!rosterBox) return;
 
       rosterBox.innerHTML = '';
+      let hasAdmin = false;
+      let activeCount = 0;
+
       if (playersRaw) {
         const xml = parseXmlString(playersRaw);
         const players = xml ? xml.querySelectorAll("player") : [];
-        if (countElem) countElem.innerText = `${players.length}/6`;
+        activeCount = players.length;
+        if (countElem) countElem.innerText = `${activeCount}/6`;
 
-        if (players.length > 0) {
+        if (activeCount > 0) {
           players.forEach(p => {
             const name = p.getAttribute("name") || p.textContent || "Active Farmer";
-            rosterBox.innerHTML += `<span class="player-tag">🎮 ${name}</span>`;
+            const isAdmin = p.getAttribute("isAdmin") === "true" || p.getAttribute("isAdmin") === "1";
+
+            if (isAdmin) {
+              hasAdmin = true;
+              rosterBox.innerHTML += `<span class="player-tag admin">👑 ${name} (Admin)</span>`;
+            } else {
+              rosterBox.innerHTML += `<span class="player-tag">🎮 ${name}</span>`;
+            }
           });
         } else {
           rosterBox.innerHTML = `<span class="player-tag" style="color:var(--text-muted)">No active players</span>`;
@@ -962,6 +954,18 @@
       } else {
         if (countElem) countElem.innerText = `0/6`;
         rosterBox.innerHTML = `<span class="player-tag" style="color:var(--text-muted)">No active players</span>`;
+      }
+
+      // Automatically switch site theme depending on active in-game status
+      if (hasAdmin) {
+        document.body.className = "ingame-admin-active"; // Red Theme
+        if (roleText) roleText.innerText = "👑 In-Game Status: Admin Online";
+      } else if (activeCount > 0) {
+        document.body.className = "ingame-player-active"; // Light Blue Theme
+        if (roleText) roleText.innerText = "🎮 In-Game Status: Active Players";
+      } else {
+        document.body.className = "role-public";
+        if (roleText) roleText.innerText = "🌐 In-Game Status: Server Idle";
       }
     }
 
