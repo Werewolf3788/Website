@@ -13,12 +13,6 @@
     "image": "https://static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-70x70.png"
   },
   {
-    "name": "Phoenix_Darkfire",
-    "group": "User",
-    "url": "https://werewolf3788.github.io/Website/users/seth/phoenix_darkfire.html",
-    "image": "https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-70x70.png"
-  },
-  {
     "name": "Darkwing69420",
     "group": "User",
     "url": "https://werewolf3788.github.io/Website/users/terrodog/index.html",
@@ -73,12 +67,6 @@
     "image": "https://image.api.playstation.com/vulcan/ap/rnd/202406/1221/cd33050ff279dcceeaa269b6c2a33002a66ac70f11b0cc9f.jpg"
   },
   {
-    "name": "Plex Discord",
-    "group": "Discord",
-    "url": "https://discord.gg/BjBR84aRNz",
-    "image": null
-  },
-  {
     "name": "Join Discord Server",
     "group": "Discord",
     "url": "https://discord.gg/HtrPbqAvpv",
@@ -100,18 +88,6 @@
     "name": "SMLC (Support My Local Community)",
     "group": "Co Sites",
     "url": "https://www.supportmylocalcommunity.com?utm_source=smlc_qr&utm_medium=print&utm_campaign=smlc_social_wwwsupportmylocalcommunitycom_qr",
-    "image": null
-  },
-  {
-    "name": "Need Zones COTW",
-    "group": "Games",
-    "url": "https://werewolf3788.github.io/Website/games/HunterCOTW/needzones.html",
-    "image": null
-  },
-  {
-    "name": "Animal Cards",
-    "group": "Games",
-    "url": "https://werewolf3788.github.io/Website/games/HunterCOTW/info/Animalcard.html",
     "image": null
   }
 ]
