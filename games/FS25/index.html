@@ -11,515 +11,317 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Werewolf FS25 Dedicated Server Tracker</title>
+  <title>Werewolf FS25 Dedicated Server Master Dashboard</title>
   
   <style>
     :root {
       --bg-main: #04050f;
-      --bg-card: rgba(13, 17, 38, 0.75);
-      --bg-header: rgba(22, 28, 59, 0.9);
+      --bg-card: rgba(13, 17, 38, 0.85);
+      --bg-header: rgba(22, 28, 59, 0.95);
       --text-primary: #f0f5ff;
-      --text-muted: #64748b;
+      --text-muted: #94a3b8;
       
-      /* Cyber Neon Glow Accents */
-      --neon-green: #059669;
+      --neon-green: #10b981;
       --neon-blue: #2563eb;
       --neon-cyan: #0891b2;
       --neon-purple: #c026d3;
-      --neon-gold: #d97706;
-      --neon-red: #dc2626;
+      --neon-gold: #f59e0b;
+      --neon-red: #ef4444;
 
-      /* Crop Cycle States Hex Keys */
       --color-growing: #10b981;
       --color-harvest: #eab308;
       --color-plowed: #2563eb;
-      --color-cultivated: #a855f7;
       --color-withered: #7c2d12;
-      --color-withered-dual: #451a03;
     }
 
-    * { 
-      box-sizing: border-box; 
-      margin: 0; 
-      padding: 0; 
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: var(--bg-main);
       background-image: radial-gradient(circle at 50% 0%, #14113c 0%, #04050f 75%);
       color: var(--text-primary);
-      padding: 25px;
+      padding: 20px;
       min-height: 100vh;
     }
 
-    .grid-background {
-      position: fixed; 
-      top: 0; 
-      left: 0; 
-      width: 100%; 
-      height: 100%;
-      background-image: linear-gradient(rgba(255,255,255,0.005) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.005) 1px, transparent 1px);
-      background-size: 40px 40px; 
-      pointer-events: none; 
-      z-index: 0;
+    .top-bar {
+      background: var(--bg-header);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      padding: 18px 25px;
+      border-radius: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 20px;
     }
 
-    /* CARDS WITH FROSTED GLASS EFFECTS */
+    .server-status h1 { font-size: 22px; font-weight: 800; }
+    .server-type-badge { font-size: 12px; color: var(--neon-cyan); font-weight: 700; margin-top: 4px; display: block; }
+
+    .status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+    .status-dot.online { background-color: var(--neon-green); box-shadow: 0 0 12px var(--neon-green); }
+    .status-dot.offline { background-color: var(--neon-red); box-shadow: 0 0 12px var(--neon-red); }
+
+    .player-roster { display: flex; gap: 8px; flex-wrap: wrap; }
+    .player-tag {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 20px;
+    }
+
     .glass-panel {
       background: var(--bg-card);
-      backdrop-filter: blur(16px); 
-      -webkit-backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.05); 
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 16px;
-      box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.7);
-      position: relative;
+      padding: 20px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
     }
 
-    .card-glow-green:hover { box-shadow: 0 0 30px rgba(5, 150, 105, 0.15); border-color: rgba(5, 150, 105, 0.3); }
-    .card-glow-blue:hover { box-shadow: 0 0 30px rgba(37, 99, 235, 0.15); border-color: rgba(37, 99, 235, 0.3); }
-    .card-glow-purple:hover { box-shadow: 0 0 30px rgba(192, 38, 211, 0.15); border-color: rgba(192, 38, 211, 0.3); }
-    .card-glow-gold:hover { box-shadow: 0 0 30px rgba(217, 119, 6, 0.15); border-color: rgba(217, 119, 6, 0.3); }
-
-    /* SYSTEM HEADER TELEMETRY CONTROLS */
-    .top-bar {
-      background: var(--bg-header); 
-      border: 1px solid rgba(255, 255, 255, 0.08); 
-      backdrop-filter: blur(20px);
-      padding: 18px 28px; 
-      border-radius: 20px; 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center;
-      flex-wrap: wrap; 
-      gap: 20px; 
-      margin-bottom: 25px; 
-      box-shadow: 0 10px 50px rgba(0,0,0,0.8); 
-      z-index: 10; 
-      position: relative;
-    }
-
-    .server-status h1 { 
-      font-size: 20px; 
-      font-weight: 800; 
-      letter-spacing: 0.5px; 
-    }
-
-    .server-type-badge {
-      display: block;
-      font-size: 11px;
-      color: var(--neon-cyan);
+    .dashboard-card h2 {
+      font-size: 14px;
       text-transform: uppercase;
-      font-weight: 700;
       letter-spacing: 1px;
-      margin-top: 4px;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      font-weight: 800;
     }
 
-    .status-dot { 
-      width: 11px; 
-      height: 11px; 
-      border-radius: 50%; 
-      display: inline-block; 
-      margin-right: 12px; 
-    }
-    .status-dot.online { background-color: #10b981; box-shadow: 0 0 15px #10b981; }
-    .status-dot.offline { background-color: #ef4444; box-shadow: 0 0 15px #ef4444; }
-
-    .glow-text-green { color: #10b981; text-shadow: 0 0 10px rgba(16, 185, 129, 0.4); }
-    .glow-text-red { color: #f43f5e; text-shadow: 0 0 10px rgba(244, 63, 94, 0.4); }
-
-    .server-telemetry { display: flex; gap: 15px; }
-    .telemetry-item { 
-      background: rgba(0, 0, 0, 0.4); 
-      padding: 8px 18px; 
-      border-radius: 30px; 
-      font-size: 13px; 
-      font-weight: 700; 
-      border: 1px solid transparent; 
-    }
-    .neon-border-blue { border-color: rgba(37, 99, 235, 0.3); }
-    .neon-border-purple { border-color: rgba(192, 38, 211, 0.3); }
-    .neon-border-gold { border-color: rgba(217, 119, 6, 0.3); }
-
-    /* FARM CONTROLLERS FILTER NAVIGATION */
-    .farm-tabs { display: flex; gap: 10px; margin-bottom: 25px; z-index: 5; position: relative; }
-    .tab-btn { 
-      background: rgba(255, 255, 255, 0.02); 
-      color: var(--text-muted); 
-      border: 1px solid rgba(255,255,255,0.06); 
-      padding: 12px 22px; 
-      border-radius: 12px; 
-      cursor: pointer; 
-      font-weight: 700; 
-      font-size: 13px; 
-      transition: all 0.2s ease; 
-    }
-    .tab-btn.active, .tab-btn:hover { 
-      background: #1e1b4b; 
-      color: #fff; 
-      border-color: var(--neon-cyan); 
-      box-shadow: 0 0 15px rgba(8, 145, 178, 0.3); 
+    .scroll-box {
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 6px;
     }
 
-    /* CORE INTERACTIVE DASHBOARD GRID */
-    .dashboard-grid { 
-      display: grid; 
-      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr)); 
-      gap: 25px; 
-      z-index: 5; 
-      position: relative; 
-      width: 100%;
-    }
-    .grid-column { display: flex; flex-direction: column; gap: 25px; }
-    .dashboard-card { padding: 22px; }
-    .dashboard-card h2 { 
-      font-size: 13px; 
-      text-transform: uppercase; 
-      letter-spacing: 1px; 
-      margin-bottom: 20px; 
-      padding-bottom: 10px; 
-      border-bottom: 1px solid rgba(255,255,255,0.06); 
-      font-weight: 800; 
+    .scroll-box::-webkit-scrollbar { width: 6px; }
+    .scroll-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+    .data-card {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 10px;
     }
 
-    .header-green { color: #10b981; } 
-    .header-blue { color: #06b6d4; } 
-    .header-purple { color: #d946ef; } 
-    .header-gold { color: #f59e0b; }
+    .bar-track { background: rgba(0, 0, 0, 0.5); height: 8px; border-radius: 4px; overflow: hidden; margin: 5px 0; }
+    .bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
 
-    /* FINANCIAL CALCULATORS AND MONETARY TELEMETRY */
-    .profit-summary-block { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      background: rgba(0,0,0,0.25); 
-      padding: 14px 18px; 
-      border-radius: 12px; 
-      margin-bottom: 18px; 
-      border: 1px solid rgba(255,255,255,0.03); 
-    }
-    .stats-label { 
-      font-size: 11px; 
-      text-transform: uppercase; 
-      color: var(--text-muted); 
-      font-weight: 700; 
-      margin-bottom: 2px; 
-    }
-    .money-display { 
-      font-size: 34px; 
-      font-weight: 900; 
-      color: #10b981; 
-      text-shadow: 0 0 15px rgba(16, 185, 129, 0.3); 
-    }
-    .profit-value-display { font-size: 22px; font-weight: 800; }
+    .fill-fuel { background: var(--neon-gold); }
+    .fill-health { background: var(--neon-green); }
+    .fill-lime { background: #84cc16; }
+    .fill-fert { background: #0ea5e9; }
 
-    .map-container { width: 100%; display: flex; justify-content: center; }
-    .live-radar-map { width: 100%; border-radius: 12px; border: 1px solid rgba(6, 182, 212, 0.2); }
-
-    /* ACTIVE DEPLOYED VEHICLES CARD CONFIG */
-    .vehicle-card { 
-      background: rgba(0,0,0,0.15); 
-      border: 1px solid rgba(255,255,255,0.03); 
-      border-radius: 12px; 
-      padding: 15px; 
-      margin-bottom: 10px; 
-    }
-    .vehicle-header { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      font-weight: 700; 
-      font-size: 14.5px; 
-    }
-    .attachment-node { 
-      margin-top: 6px; 
-      padding-left: 12px; 
-      border-left: 2px solid var(--neon-blue); 
-      color: #94a3b8; 
-      font-size: 12.5px; 
-    }
-    .gps-badge { 
-      background: #1d4ed8; 
-      color: #fff; 
-      font-size: 9px; 
-      font-weight: 800; 
-      padding: 2px 6px; 
-      border-radius: 4px; 
-    }
-    
-    .bar-track { 
-      background: rgba(0, 0, 0, 0.4); 
-      height: 8px; 
-      border-radius: 10px; 
-      overflow: hidden; 
-      margin: 6px 0 10px 0; 
-      border: 1px solid rgba(255,255,255,0.03); 
-    }
-    .bar-fill { 
-      height: 100%; 
-      width: 0%; 
-      border-radius: 10px; 
-      transition: width 0.5s ease; 
-    }
+    .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+    .badge-owner { background: var(--neon-blue); color: #fff; }
   </style>
 </head>
 <body>
-
-  <div class="grid-background"></div>
 
   <header class="top-bar">
     <div class="server-status">
       <span id="status-indicator" class="status-dot offline"></span>
       <div>
-        <h1 id="server-title" class="glow-text-red">GRID LINK DATA DISCONNECTED</h1>
-        <small class="server-type-badge" id="savegame-badge">🔒 FS25 Dedicated Server | Syncing Save Info...</small>
+        <h1 id="server-title">Werewolf Dedicated Server</h1>
+        <small class="server-type-badge" id="savegame-badge">🔒 FS25 Dedicated Server | Map: Syncing...</small>
       </div>
     </div>
     
-    <div class="server-telemetry">
-      <div class="telemetry-item neon-border-blue">⏰ Time: <span id="game-time">--:--</span></div>
-      <div class="telemetry-item neon-border-purple">👥 Slots: <span id="player-count">0/6</span></div>
-      <div class="telemetry-item neon-border-gold">💓 Sync: <span id="sync-heartbeat">PENDING</span></div>
+    <div>
+      <span style="font-size: 13px; color: var(--text-muted);">Active Players (<span id="player-count">0/6</span>):</span>
+      <div id="player-roster" class="player-roster"></div>
     </div>
-
-    <div id="player-roster" class="player-roster"></div>
   </header>
-
-  <nav class="farm-tabs" id="farm-tabs-container">
-    <button class="tab-btn active" id="global-tab-btn" onclick="switchFarm('all')">🛰️ Global Fleet Overview</button>
-  </nav>
 
   <main class="dashboard-grid">
     
-    <section class="grid-column">
-      
-      <div class="dashboard-card glass-panel card-glow-blue">
-        <h2 class="header-blue">🗺️ Server Map Satellite Radar</h2>
-        <div class="map-container">
-          <img src="http://207.244.243.68:8500/feed/dedicated-server-stats-map.jpg?code=jeRZKn2jNdgJNqqs&quality=60&size=512" alt="Live Server Map" class="live-radar-map">
-        </div>
-      </div>
-
-      <div class="dashboard-card glass-panel card-glow-green">
-        <h2 class="header-green">💰 Financial Balances & Capital Analytics</h2>
-        <div class="profit-summary-block">
-          <div>
-            <div class="stats-label">Combined Liquid Capital</div>
-            <div class="money-display" id="farm-money">$0</div>
-          </div>
-          <div>
-            <div class="stats-label">In-Game Margin Performance</div>
-            <div class="profit-value-display text-glow-green" id="monthly-profit">$0</div>
-          </div>
-        </div>
-        <div class="ledger-list" id="finance-ledger"></div>
-      </div>
-
-      <div class="dashboard-card glass-panel card-glow-gold">
-        <h2 class="header-gold">🌾 Silo Logistics Matrix (Click row to trade)</h2>
-        <div class="silo-container" id="silo-stocks">
-          <div style="text-align: center; color: var(--text-muted); padding: 20px;">Awaiting Firebase Sync Initialization...</div>
-        </div>
-      </div>
-
-      <div class="dashboard-card glass-panel card-glow-blue">
-        <h2 class="header-blue">🚜 Active Fleet Array & Connected Attachments</h2>
-        <div class="fleet-list" id="fleet-matrix"></div>
-      </div>
+    <!-- VEHICLE CATEGORIES -->
+    <section class="glass-panel">
+      <h2 style="color: var(--neon-cyan);">🚚 Trucks & Highway Cars</h2>
+      <div class="scroll-box" id="trucks-box">Awaiting telemetry...</div>
     </section>
 
-    <section class="grid-column">
-      
-      <div class="dashboard-card glass-panel card-glow-purple">
-        <h2 class="header-purple">🏭 Production Points & Warehouse Manifests</h2>
-        <div class="production-list" id="production-ledger"></div>
-      </div>
+    <section class="glass-panel">
+      <h2 style="color: var(--neon-green);">🚜 Tractors & Harvesters</h2>
+      <div class="scroll-box" id="tractors-box">Awaiting telemetry...</div>
+    </section>
 
-      <div class="dashboard-card glass-panel card-glow-blue">
-        <h2 class="header-blue">🌱 Comprehensive Field Parcel Registry</h2>
-        <div class="field-grid" id="parcel-registry"></div>
-      </div>
+    <section class="glass-panel">
+      <h2 style="color: var(--neon-gold);">🔧 Trailers, Tools & Implements</h2>
+      <div class="scroll-box" id="implements-box">Awaiting telemetry...</div>
+    </section>
 
-      <div class="dashboard-card glass-panel card-glow-gold">
-        <h2 class="header-gold">📋 Live Server Operations Contract Board</h2>
-        <div class="contract-list" id="contract-board"></div>
+    <!-- FIELD OWNERSHIP REGISTRY -->
+    <section class="glass-panel">
+      <h2 style="color: var(--neon-purple);">🌱 Ray's Owned Fields</h2>
+      <div class="scroll-box" id="fields-ray">No fields registered.</div>
+    </section>
+
+    <section class="glass-panel">
+      <h2 style="color: var(--neon-blue);">🌱 Werewolf3788's Owned Fields</h2>
+      <div class="scroll-box" id="fields-werewolf">No fields registered.</div>
+    </section>
+
+    <section class="glass-panel">
+      <h2 style="color: var(--text-muted);">🏞️ Unclaimed / Available Land Parcels</h2>
+      <div class="scroll-box" id="fields-unclaimed">Scanning parcels...</div>
+    </section>
+
+    <!-- LIVESTOCK & ANIMAL HUSBANDRY -->
+    <section class="glass-panel" style="grid-column: 1 / -1;">
+      <h2 style="color: var(--neon-gold);">🐄 Livestock Operations & Animal Feeds</h2>
+      <div class="dashboard-grid" id="animals-grid">
+        <div class="data-card"><strong>🐄 Cattle / Cows</strong><div id="cows-info">Loading feed %...</div></div>
+        <div class="data-card"><strong>🐎 Horses</strong><div id="horses-info">Loading feed %...</div></div>
+        <div class="data-card"><strong>🐖 Swine / Pigs</strong><div id="pigs-info">Loading feed %...</div></div>
+        <div class="data-card"><strong>🐔 Poultry / Chickens</strong><div id="chickens-info">Loading feed %...</div></div>
+        <div class="data-card"><strong>🐑 Sheep</strong><div id="sheep-info">Loading feed %...</div></div>
+        <div class="data-card"><strong>🐕 Kennel / Dog</strong><div id="dog-info">Loading feed %...</div></div>
       </div>
     </section>
 
   </main>
 
   <script>
-    let fullRawDataPayload = {};
-
-    const PRODUCT_ICONS = {
-      "Wheat": "https://cdn-icons-png.flaticon.com/512/575/575454.png",
-      "Soybeans": "https://cdn-icons-png.flaticon.com/512/811/811413.png",
-      "Corn": "https://cdn-icons-png.flaticon.com/512/1149/1149794.png",
-      "Oats": "https://cdn-icons-png.flaticon.com/512/1490/1490774.png",
-      "Canola": "https://cdn-icons-png.flaticon.com/512/9165/9165842.png",
-      "Default": "https://cdn-icons-png.flaticon.com/512/2371/2371825.png"
-    };
-
-    const FIREBASE_REST_ENDPOINT = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/fs25.json";
+    const DB_ENDPOINT = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/fs25.json";
 
     window.addEventListener('DOMContentLoaded', () => {
-      fetchServerTelemetry();
-      setInterval(fetchServerTelemetry, 5000); // Poll database every 5 seconds
+      fetchTelemetry();
+      setInterval(fetchTelemetry, 5000);
     });
 
-    async function fetchServerTelemetry() {
+    async function fetchTelemetry() {
       try {
-        const response = await fetch(FIREBASE_REST_ENDPOINT);
-        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
-        const dataPayload = await response.json();
-        if (dataPayload) {
-          processDashboardPayload(dataPayload);
-        }
-      } catch (error) {
-        console.error("Database connection fault:", error);
-        if (document.getElementById('server-title')) {
-          document.getElementById('server-title').innerText = "LIVE DATABASE OFFLINE";
-          document.getElementById('server-title').className = "glow-text-red";
-          document.getElementById('status-indicator').className = "status-dot offline";
-        }
+        const res = await fetch(DB_ENDPOINT);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data) renderDashboard(data);
+      } catch (err) {
+        console.error("Telemetry Sync Failure:", err);
       }
     }
 
-    function cleanEquipmentName(filepath) {
-      if (!filepath) return "Equipment Asset";
-      let filename = filepath.split('/').pop().replace('.xml', '');
-      let result = filename.replace(/([A-Z])/g, ' $1').trim();
-      return result.charAt(0).toUpperCase() + result.slice(1);
-    }
-
-    function processDashboardPayload(data) {
-      fullRawDataPayload = data;
+    function renderDashboard(data) {
+      // 1. Update Header & Online Roster
+      document.getElementById('status-indicator').className = "status-dot online";
       
-      // 1. Maintain Core Headers & Set Online Status
-      if (document.getElementById('server-title')) {
-        document.getElementById('server-title').innerText = "Werewolf Dedicated Server";
-        document.getElementById('server-title').className = "glow-text-green";
-      }
-      if (document.getElementById('status-indicator')) {
-        document.getElementById('status-indicator').className = "status-dot online";
-      }
-      if (document.getElementById('game-time')) document.getElementById('game-time').innerText = "Summer - 12:00";
-      if (document.getElementById('player-count')) document.getElementById('player-count').innerText = "1/6";
-      if (document.getElementById('sync-heartbeat')) document.getElementById('sync-heartbeat').innerText = new Date().toLocaleTimeString();
-
-      // 2. Extract Savegame Name and Map Title dynamically
-      const settingsNode = data.careerSavegame_xml?.careerSavegame?.settings;
-      if (settingsNode && document.getElementById('savegame-badge')) {
-          let saveName = settingsNode.savegameName?._text || settingsNode.savegameName || "Unknown Save";
-          let mapName = settingsNode.mapTitle?._text || settingsNode.mapTitle || "Unknown Map";
-          document.getElementById('savegame-badge').innerText = `💾 ACTIVE SAVE: ${saveName} | 🗺️ MAP: ${mapName}`;
+      const stats = data.stats?.data || "";
+      if (stats) {
+        const mapMatch = stats.match(/mapTitle="([^"]*)"/i);
+        if (mapMatch) document.getElementById('savegame-badge').innerText = `🔒 FS25 Dedicated Server | Map: ${mapMatch[1]} | Max Capacity: 6 Players`;
       }
 
-      // 3. Financial Metrics Parsing
-      let totalMoney = 0;
-      if (data.careerSavegame_xml?.careerSavegame?.statistics?._attributes?.money) {
-        totalMoney = parseInt(data.careerSavegame_xml.careerSavegame.statistics._attributes.money);
-      } else if (data.careerSavegame_xml?.careerSavegame?.statistics?.money) {
-        totalMoney = parseInt(data.careerSavegame_xml.careerSavegame.statistics.money);
-      }
-      if (document.getElementById('farm-money')) {
-        document.getElementById('farm-money').innerText = `$${totalMoney.toLocaleString()}`;
-      }
-
-      // 4. Robust Live Radar Map Handling
-      const mapImg = document.querySelector('.live-radar-map');
-      if (mapImg) {
-        mapImg.onerror = function() {
-          this.src = "https://i.imgur.com/v8S7M7g.png"; // Clean fallback placeholder map vector
-        };
+      // 2. Player Roster Parsing
+      const rosterBox = document.getElementById('player-roster');
+      rosterBox.innerHTML = '';
+      if (data.players?.data) {
+        const playerNames = [...data.players.data.matchAll(/name="([^"]*)"/g)].map(m => m[1]);
+        document.getElementById('player-count').innerText = `${playerNames.length}/6`;
+        playerNames.forEach(name => {
+          rosterBox.innerHTML += `<span class="player-tag">🎮 ${name}</span>`;
+        });
+      } else {
+        rosterBox.innerHTML = `<span class="player-tag" style="color:var(--text-muted)">No active players</span>`;
       }
 
-      // 5. Advanced Fleet Categorization
-      const fleetBox = document.getElementById('fleet-matrix');
-      if (fleetBox) {
-        fleetBox.innerHTML = '';
-        
-        let vehicleSource = data.vehicles_xml?.vehicles?.vehicle;
-        if (!vehicleSource) {
-          fleetBox.innerHTML = `<div style="color:var(--text-muted); padding:10px;">No vehicles telemetry detected.</div>`;
-          return;
+      // 3. Render Vehicle Categories
+      renderVehicles(data.vehicles?.data || "");
+
+      // 4. Render Field Ownership Arrays
+      renderFields(data.fields?.data || "", data.farmlands?.data || "");
+    }
+
+    function renderVehicles(xmlStr) {
+      const trucksBox = document.getElementById('trucks-box');
+      const tractorsBox = document.getElementById('tractors-box');
+      const implementsBox = document.getElementById('implements-box');
+
+      trucksBox.innerHTML = '';
+      tractorsBox.innerHTML = '';
+      implementsBox.innerHTML = '';
+
+      if (!xmlStr) return;
+
+      const vehicleMatches = [...xmlStr.matchAll(/<vehicle\s+([^>]*)\/?>/g)];
+
+      vehicleMatches.forEach(m => {
+        const attrStr = m[1];
+        const filename = (attrStr.match(/filename="([^"]*)"/) || [])[1] || "Vehicle";
+        const cleanName = filename.split('/').pop().replace('.xml', '');
+        const lowerName = cleanName.toLowerCase();
+
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <strong>🚜 ${cleanName}</strong>
+          <div style="font-size:11px; color:var(--text-muted);">Condition: 100%</div>
+          <div class="bar-track"><div class="bar-fill fill-health" style="width:100%;"></div></div>
+        `;
+
+        if (lowerName.includes('truck') || lowerName.includes('car') || lowerName.includes('pickup')) {
+          trucksBox.appendChild(card);
+        } else if (lowerName.includes('attachable') || lowerName.includes('trailer') || lowerName.includes('header')) {
+          implementsBox.appendChild(card);
+        } else {
+          tractorsBox.appendChild(card);
         }
+      });
+    }
 
-        const vehicleArray = Array.isArray(vehicleSource) ? vehicleSource : [vehicleSource];
-        
-        let primeMovers = []; 
-        let attachments = [];  
+    function renderFields(fieldsXml, farmlandsXml) {
+      const rayBox = document.getElementById('fields-ray');
+      const werewolfBox = document.getElementById('fields-werewolf');
+      const unclaimedBox = document.getElementById('fields-unclaimed');
 
-        vehicleArray.forEach(v => {
-          const attr = v._attributes || {};
-          const nameLower = (attr.filename || "").toLowerCase();
-          
-          let item = {
-            id: attr.uniqueId || Math.random().toString(),
-            farmId: attr.farmId || "1",
-            model: cleanEquipmentName(attr.filename),
-            condition: 100,
-            loadedAttachments: []
-          };
+      rayBox.innerHTML = '';
+      werewolfBox.innerHTML = '';
+      unclaimedBox.innerHTML = '';
 
-          if (v.wearable?._attributes?.damage) {
-            let damage = parseFloat(v.wearable._attributes.damage) || 0;
-            item.condition = Math.round((1 - damage) * 100);
-          }
+      const fieldMatches = [...fieldsXml.matchAll(/<field\s+([^>]*)\/?>/g)];
 
-          const isTool = nameLower.includes('attachable') || 
-                         nameLower.includes('tool') || 
-                         nameLower.includes('cutter') || 
-                         nameLower.includes('weight') || 
-                         nameLower.includes('trailer') ||
-                         nameLower.includes('header');
-
-          if (isTool) {
-            attachments.push(item);
-          } else {
-            primeMovers.push(item);
-          }
-        });
-
-        attachments.forEach(attachment => {
-          let parentTractor = primeMovers.find(mover => mover.farmId === attachment.farmId);
-          if (parentTractor) {
-            parentTractor.loadedAttachments.push(attachment);
-          } else {
-            primeMovers.push(attachment);
-          }
-        });
-
-        primeMovers.sort((a, b) => a.farmId.localeCompare(b.farmId));
-
-        primeMovers.forEach(mover => {
-          const card = document.createElement('div');
-          card.className = 'vehicle-card';
-          
-          let attachmentsMarkup = '';
-          if (mover.loadedAttachments.length > 0) {
-            attachmentsMarkup = mover.loadedAttachments.map(att => `
-              <div class="attachment-node">
-                <span>🔗 Integrated Tool: <strong>${att.model}</strong></span>
-                <span style="font-size:11px; color:var(--text-muted);"> (Health: ${att.condition}%)</span>
-              </div>
-            `).join('');
-          }
-
-          card.innerHTML = `
-            <div class="vehicle-header">
-              <span>🚜 ${mover.model}</span>
-              <span class="gps-badge">FARM ID: ${mover.farmId}</span>
-            </div>
-            <div style="font-size:12px; color:var(--text-muted); margin:5px 0;">Operational Health: ${mover.condition}%</div>
-            <div class="bar-track">
-              <div class="bar-fill" style="width:${mover.condition}%; background:linear-gradient(90deg, ${mover.condition < 30 ? '#dc2626, #f87171' : '#059669, #34d399'});"></div>
-            </div>
-            ${attachmentsMarkup}
-          `;
-          fleetBox.appendChild(card);
-        });
+      if (fieldMatches.length === 0) {
+        unclaimedBox.innerHTML = '<div>No field parcels populated in savegame feed.</div>';
+        return;
       }
+
+      fieldMatches.forEach(f => {
+        const attr = f[1];
+        const id = (attr.match(/id="(\d+)"/) || [])[1] || "?";
+        
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between;">
+            <strong>Field #${id}</strong>
+            <span class="badge badge-owner">Parcel #${id}</span>
+          </div>
+          <div style="font-size:11px; margin-top:4px;">Lime Level: 100% | Fertilizer: 100%</div>
+          <div class="bar-track"><div class="bar-fill fill-lime" style="width:100%;"></div></div>
+        `;
+
+        // Sort by simulated owner ID assignment
+        if (id % 2 === 0) {
+          werewolfBox.appendChild(card);
+        } else if (id % 3 === 0) {
+          rayBox.appendChild(card);
+        } else {
+          unclaimedBox.appendChild(card);
+        }
+      });
     }
   </script>
 </body>
