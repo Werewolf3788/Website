@@ -11,7 +11,7 @@
 
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Werewolf FS25 Dedicated Server Master Dashboard</title>
+  <title>Werewolf FS25 Dedicated Server Dashboard</title>
   
   <style>
     :root {
@@ -27,11 +27,6 @@
       --neon-purple: #c026d3;
       --neon-gold: #f59e0b;
       --neon-red: #ef4444;
-
-      --color-growing: #10b981;
-      --color-harvest: #eab308;
-      --color-plowed: #2563eb;
-      --color-withered: #7c2d12;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -78,7 +73,7 @@
 
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
       gap: 20px;
     }
 
@@ -91,7 +86,7 @@
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
     }
 
-    .dashboard-card h2 {
+    .glass-panel h2 {
       font-size: 14px;
       text-transform: uppercase;
       letter-spacing: 1px;
@@ -102,7 +97,7 @@
     }
 
     .scroll-box {
-      max-height: 380px;
+      max-height: 350px;
       overflow-y: auto;
       padding-right: 6px;
     }
@@ -118,16 +113,10 @@
       margin-bottom: 10px;
     }
 
-    .bar-track { background: rgba(0, 0, 0, 0.5); height: 8px; border-radius: 4px; overflow: hidden; margin: 5px 0; }
+    .bar-track { background: rgba(0, 0, 0, 0.5); height: 6px; border-radius: 4px; overflow: hidden; margin: 5px 0; }
     .bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
 
-    .fill-fuel { background: var(--neon-gold); }
-    .fill-health { background: var(--neon-green); }
-    .fill-lime { background: #84cc16; }
-    .fill-fert { background: #0ea5e9; }
-
     .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-    .badge-owner { background: var(--neon-blue); color: #fff; }
   </style>
 </head>
 <body>
@@ -137,7 +126,7 @@
       <span id="status-indicator" class="status-dot offline"></span>
       <div>
         <h1 id="server-title">Werewolf Dedicated Server</h1>
-        <small class="server-type-badge" id="savegame-badge">🔒 FS25 Dedicated Server | Map: Syncing...</small>
+        <small class="server-type-badge" id="savegame-badge">🔒 FS25 Dedicated Server | Map: <span id="server-map-name">Connecting...</span></small>
       </div>
     </div>
     
@@ -149,7 +138,7 @@
 
   <main class="dashboard-grid">
     
-    <!-- VEHICLE CATEGORIES -->
+    <!-- FLEET CATEGORIES -->
     <section class="glass-panel">
       <h2 style="color: var(--neon-cyan);">🚚 Trucks & Highway Cars</h2>
       <div class="scroll-box" id="trucks-box">Awaiting telemetry...</div>
@@ -181,7 +170,7 @@
       <div class="scroll-box" id="fields-unclaimed">Scanning parcels...</div>
     </section>
 
-    <!-- LIVESTOCK & ANIMAL HUSBANDRY -->
+    <!-- LIVESTOCK OPERATIONS -->
     <section class="glass-panel" style="grid-column: 1 / -1;">
       <h2 style="color: var(--neon-gold);">🐄 Livestock Operations & Animal Feeds</h2>
       <div class="dashboard-grid" id="animals-grid">
@@ -194,135 +183,14 @@
       </div>
     </section>
 
+    <!-- SERVER MODS & CROSSPLAY -->
+    <section class="glass-panel" style="grid-column: 1 / -1;">
+      <h2 style="color: var(--neon-purple);">📦 Installed Server Mods & Crossplay Status</h2>
+      <div class="scroll-box" id="mods-container">Loading mod list...</div>
+    </section>
+
   </main>
 
-  <script>
-    const DB_ENDPOINT = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/fs25.json";
-
-    window.addEventListener('DOMContentLoaded', () => {
-      fetchTelemetry();
-      setInterval(fetchTelemetry, 5000);
-    });
-
-    async function fetchTelemetry() {
-      try {
-        const res = await fetch(DB_ENDPOINT);
-        if (!res.ok) return;
-        const data = await res.json();
-        if (data) renderDashboard(data);
-      } catch (err) {
-        console.error("Telemetry Sync Failure:", err);
-      }
-    }
-
-    function renderDashboard(data) {
-      // 1. Update Header & Online Roster
-      document.getElementById('status-indicator').className = "status-dot online";
-      
-      const stats = data.stats?.data || "";
-      if (stats) {
-        const mapMatch = stats.match(/mapTitle="([^"]*)"/i);
-        if (mapMatch) document.getElementById('savegame-badge').innerText = `🔒 FS25 Dedicated Server | Map: ${mapMatch[1]} | Max Capacity: 6 Players`;
-      }
-
-      // 2. Player Roster Parsing
-      const rosterBox = document.getElementById('player-roster');
-      rosterBox.innerHTML = '';
-      if (data.players?.data) {
-        const playerNames = [...data.players.data.matchAll(/name="([^"]*)"/g)].map(m => m[1]);
-        document.getElementById('player-count').innerText = `${playerNames.length}/6`;
-        playerNames.forEach(name => {
-          rosterBox.innerHTML += `<span class="player-tag">🎮 ${name}</span>`;
-        });
-      } else {
-        rosterBox.innerHTML = `<span class="player-tag" style="color:var(--text-muted)">No active players</span>`;
-      }
-
-      // 3. Render Vehicle Categories
-      renderVehicles(data.vehicles?.data || "");
-
-      // 4. Render Field Ownership Arrays
-      renderFields(data.fields?.data || "", data.farmlands?.data || "");
-    }
-
-    function renderVehicles(xmlStr) {
-      const trucksBox = document.getElementById('trucks-box');
-      const tractorsBox = document.getElementById('tractors-box');
-      const implementsBox = document.getElementById('implements-box');
-
-      trucksBox.innerHTML = '';
-      tractorsBox.innerHTML = '';
-      implementsBox.innerHTML = '';
-
-      if (!xmlStr) return;
-
-      const vehicleMatches = [...xmlStr.matchAll(/<vehicle\s+([^>]*)\/?>/g)];
-
-      vehicleMatches.forEach(m => {
-        const attrStr = m[1];
-        const filename = (attrStr.match(/filename="([^"]*)"/) || [])[1] || "Vehicle";
-        const cleanName = filename.split('/').pop().replace('.xml', '');
-        const lowerName = cleanName.toLowerCase();
-
-        const card = document.createElement('div');
-        card.className = 'data-card';
-        card.innerHTML = `
-          <strong>🚜 ${cleanName}</strong>
-          <div style="font-size:11px; color:var(--text-muted);">Condition: 100%</div>
-          <div class="bar-track"><div class="bar-fill fill-health" style="width:100%;"></div></div>
-        `;
-
-        if (lowerName.includes('truck') || lowerName.includes('car') || lowerName.includes('pickup')) {
-          trucksBox.appendChild(card);
-        } else if (lowerName.includes('attachable') || lowerName.includes('trailer') || lowerName.includes('header')) {
-          implementsBox.appendChild(card);
-        } else {
-          tractorsBox.appendChild(card);
-        }
-      });
-    }
-
-    function renderFields(fieldsXml, farmlandsXml) {
-      const rayBox = document.getElementById('fields-ray');
-      const werewolfBox = document.getElementById('fields-werewolf');
-      const unclaimedBox = document.getElementById('fields-unclaimed');
-
-      rayBox.innerHTML = '';
-      werewolfBox.innerHTML = '';
-      unclaimedBox.innerHTML = '';
-
-      const fieldMatches = [...fieldsXml.matchAll(/<field\s+([^>]*)\/?>/g)];
-
-      if (fieldMatches.length === 0) {
-        unclaimedBox.innerHTML = '<div>No field parcels populated in savegame feed.</div>';
-        return;
-      }
-
-      fieldMatches.forEach(f => {
-        const attr = f[1];
-        const id = (attr.match(/id="(\d+)"/) || [])[1] || "?";
-        
-        const card = document.createElement('div');
-        card.className = 'data-card';
-        card.innerHTML = `
-          <div style="display:flex; justify-content:space-between;">
-            <strong>Field #${id}</strong>
-            <span class="badge badge-owner">Parcel #${id}</span>
-          </div>
-          <div style="font-size:11px; margin-top:4px;">Lime Level: 100% | Fertilizer: 100%</div>
-          <div class="bar-track"><div class="bar-fill fill-lime" style="width:100%;"></div></div>
-        `;
-
-        // Sort by simulated owner ID assignment
-        if (id % 2 === 0) {
-          werewolfBox.appendChild(card);
-        } else if (id % 3 === 0) {
-          rayBox.appendChild(card);
-        } else {
-          unclaimedBox.appendChild(card);
-        }
-      });
-    }
-  </script>
+  <script src="index.js"></script>
 </body>
 </html>
