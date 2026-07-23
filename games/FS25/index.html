@@ -1,18 +1,18 @@
 <!--
- Version Timestamp: Thu, July 23, 2026, 7:30 PM (EDT)
- Complete Production FS25 Dashboard - Missions, Mods, Environment & Navigation Fixes
+ Version Timestamp: Thu, July 23, 2026, 7:10 PM (EDT)
+ Complete Unrestricted FS25 Operations Dashboard - Full Production Code
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FS25 Live Dedicated Operations</title>
+  <title>FS25 Dedicated Operations Dashboard</title>
 
   <!-- Google Fonts & FontAwesome -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Firebase Modular Web SDK v9+ -->
@@ -29,7 +29,7 @@
 
     window.FS25_DATA = {};
 
-    // Real-Time Firebase Listener
+    // Real-Time Sync Observer
     const fs25Ref = ref(db, 'fs25');
     onValue(fs25Ref, (snapshot) => {
       const data = snapshot.val();
@@ -38,7 +38,7 @@
         renderDashboard(data);
       }
     }, (error) => {
-      console.error("Firebase Sync Error:", error);
+      console.error("Firebase Sync Disconnected:", error);
     });
 
     document.addEventListener("visibilitychange", () => {
@@ -50,14 +50,14 @@
 
   <style>
     :root {
-      --surface-dark: rgba(15, 17, 20, 0.94);
+      --surface-dark: rgba(15, 17, 20, 0.95);
       --surface-card: #1a1d24;
       --text-main: #cbd5e1;
       --accent-gold: #ffcc00;
       --accent-red: #ef4444;
       --accent-green: #22c55e;
       --accent-blue: #00D4FF;
-      --border-color: rgba(255, 255, 255, 0.08);
+      --border-color: rgba(255, 255, 255, 0.1);
     }
 
     * {
@@ -82,7 +82,7 @@
       margin: 0 auto;
     }
 
-    /* Google Sheets Top Menu Bar */
+    /* Google Sheets Navigation Bar */
     .top-menu-bar {
       background: var(--surface-dark);
       border-radius: 8px;
@@ -94,7 +94,7 @@
       gap: 12px;
       align-items: center;
       backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
 
     .nav-item {
@@ -179,7 +179,7 @@
       align-items: center;
       gap: 16px;
       backdrop-filter: blur(10px);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
     }
 
     .server-title {
@@ -222,7 +222,7 @@
 
     .full-width { grid-column: 1 / -1; }
 
-    /* Cards */
+    /* Glass Panels */
     .card {
       background: var(--surface-dark);
       border-radius: 8px;
@@ -246,9 +246,9 @@
       padding-bottom: 10px;
     }
 
-    /* Vertical Scroll Containers */
+    /* Vertical Scroll Box */
     .vertical-scroll-body {
-      max-height: 300px;
+      max-height: 280px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -302,12 +302,12 @@
 
   <div class="container">
 
-    <!-- Top Dynamic Navigation Bar (Google Sheets Feed) -->
+    <!-- Google Sheets Dynamic Navigation Menu -->
     <nav class="top-menu-bar" id="dynamic-menu">
       <div class="empty-state" style="padding:0;">Loading Navigation Menu...</div>
     </nav>
 
-    <!-- Top Server Telemetry Bar (Includes Time, Month, Weather) -->
+    <!-- Top Server Telemetry Bar (Time, Month, Weather) -->
     <header>
       <div class="server-title">
         <i class="fa-solid fa-server" style="color:var(--accent-gold);"></i>
@@ -357,10 +357,18 @@
         <div class="vertical-scroll-body" id="mods-container"></div>
       </div>
 
+      <!-- Factories & Placeable Storage (placeables.xml) -->
+      <div class="card">
+        <div class="card-header">
+          <span><i class="fa-solid fa-industry"></i> Production Factories & Storage (placeables.xml)</span>
+        </div>
+        <div class="vertical-scroll-body" id="production-container"></div>
+      </div>
+
       <!-- Machinery & Vehicles -->
       <div class="card">
         <div class="card-header">
-          <span><i class="fa-solid fa-truck-monster"></i> Fleet Vehicles</span>
+          <span><i class="fa-solid fa-truck-monster"></i> Machinery & Fleet Vehicles</span>
         </div>
         <div class="vertical-scroll-body" id="tractors-container"></div>
       </div>
@@ -376,7 +384,7 @@
       <!-- Commodity Market Economy -->
       <div class="card full-width">
         <div class="card-header">
-          <span><i class="fa-solid fa-chart-line"></i> Commodity Market Prices</span>
+          <span><i class="fa-solid fa-chart-line"></i> Commodity Market Prices (economy.xml)</span>
         </div>
         <div class="vertical-scroll-body" id="economy-container"></div>
       </div>
@@ -386,7 +394,8 @@
 
   <script>
     // -------------------------------------------------------------
-    // Google Sheets Navigation Loader
+    // Google Sheets Navigation Feed Loader
+    // CSV Schema: Col A = Name | Col B = Group | Col C = Url | Col D = Images
     // -------------------------------------------------------------
     const menuCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
 
@@ -455,13 +464,13 @@
     loadGoogleSheetsMenu();
 
     // -------------------------------------------------------------
-    // Helper & Renderer Logic
+    // Universal XML Helpers & Translators
     // -------------------------------------------------------------
     function resolveCropName(typeName) {
       if (!typeName) return "Fallow / Empty";
       const map = {
         "WHEAT": "Wheat", "BARLEY": "Barley", "CANOLA": "Canola",
-        "OAT": "Oats", "MAIZE": "Corn", "SUNFLOWER": "Sunflowers",
+        "OAT": "Oats", "MAIZE": "Corn / Maize", "SUNFLOWER": "Sunflowers",
         "SOYBEAN": "Soybeans", "POTATO": "Potatoes", "SUGARBEET": "Sugarbeets",
         "BEETROOT": "Beetroot", "PARSNIP": "Parsnip", "SPINACH": "Spinach",
         "CARROT": "Carrots", "COTTON": "Cotton", "SORGHUM": "Sorghum",
@@ -470,26 +479,48 @@
       return map[typeName.toUpperCase()] || formatName(typeName);
     }
 
+    function resolvePlaceableName(filename) {
+      if (!filename) return "Storage Facility";
+      const name = filename.toLowerCase();
+      if (name.includes("silo")) return "Grain Elevator Silo";
+      if (name.includes("cow")) return "Dairy Cow Barn";
+      if (name.includes("pig")) return "Pig Husbandry";
+      if (name.includes("chicken")) return "Chicken Coop";
+      if (name.includes("dairy")) return "Milk Processing Dairy";
+      if (name.includes("bakery")) return "Commercial Bakery";
+      if (name.includes("sawmill")) return "Lumber Sawmill";
+      if (name.includes("carpenter")) return "Woodworking Carpenter";
+      if (name.includes("bga") || name.includes("biogas")) return "Biogas Plant (BGA)";
+      if (name.includes("solar")) return "Solar Array";
+      if (name.includes("wind")) return "Wind Turbine";
+      return formatName(filename);
+    }
+
     function formatName(str) {
       if (!str) return 'Unknown Item';
       let clean = str.split('/').pop().replace('.xml', '').replace('data_', '');
       return clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').toUpperCase();
     }
 
-    function parseXML(xmlString) {
-      if (!xmlString) return null;
+    function parseXML(xmlData) {
+      if (!xmlData) return null;
+      const rawText = typeof xmlData === 'object' ? xmlData.data || xmlData.content : xmlData;
+      if (!rawText || typeof rawText !== 'string') return null;
       try {
         const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+        const xmlDoc = parser.parseFromString(rawText, "text/xml");
         return xmlDoc.getElementsByTagName("parsererror").length > 0 ? null : xmlDoc;
       } catch (e) { return null; }
     }
 
+    // -------------------------------------------------------------
+    // Main Dashboard Telemetry Renderer
+    // -------------------------------------------------------------
     function renderDashboard(data) {
       if (!data) return;
 
-      // 1. Environment Parsing (Time, Month, Weather)
-      const envXml = parseXML(data.environment?.data || data.environment_xml?.data);
+      // 1. Environment Telemetry (Time, Month, Weather)
+      const envXml = parseXML(data.environment || data.environment_xml);
       if (envXml) {
         const dayTimeNode = envXml.querySelector("dayTime");
         const currentMonthNode = envXml.querySelector("currentMonth");
@@ -497,7 +528,6 @@
 
         if (dayTimeNode) {
           const rawTime = parseFloat(dayTimeNode.textContent || "0");
-          // Convert milliseconds/minutes to standard 24-hour clock
           const totalMinutes = Math.floor(rawTime > 86400 ? rawTime / 60000 : rawTime / 60);
           const hours = Math.floor(totalMinutes / 60) % 24;
           const mins = totalMinutes % 60;
@@ -515,21 +545,19 @@
         }
       }
 
-      // 2. Contracts Parsing (missions.xml - Reads all mission types)
-      const missionsXml = parseXML(data.missions?.data || data.missions_xml?.data);
+      // 2. Active Contracts & Missions (missions.xml)
+      const missionsXml = parseXML(data.missions || data.missions_xml);
       const contractsContainer = document.getElementById('contracts-container');
       if (missionsXml) {
         let html = "";
-        // Select all elements ending in "Mission"
-        const allMissions = missionsXml.querySelectorAll("*");
-        allMissions.forEach(m => {
+        const allNodes = missionsXml.querySelectorAll("*");
+        allNodes.forEach(m => {
           if (m.tagName.endsWith("Mission")) {
             const fieldNode = m.querySelector("field");
             const fieldId = fieldNode ? fieldNode.getAttribute("id") : "N/A";
             const infoNode = m.querySelector("info");
             const reward = infoNode ? parseFloat(infoNode.getAttribute("reward") || "0").toLocaleString() : "0";
 
-            // Format Mission Type (e.g. treeTransportMission -> TREE TRANSPORT)
             const missionType = formatName(m.tagName.replace("Mission", ""));
             const fruitType = m.getAttribute("fruitType") ? resolveCropName(m.getAttribute("fruitType")) : "";
 
@@ -547,7 +575,7 @@
       }
 
       // 3. Installed Server Mods (careerSavegame.xml)
-      const careerXml = parseXML(data.careerSavegame?.data || data.careerSavegame_xml?.data);
+      const careerXml = parseXML(data.careerSavegame || data.careerSavegame_xml);
       const modsContainer = document.getElementById('mods-container');
       if (careerXml) {
         let html = "";
@@ -562,11 +590,34 @@
               </div>
             </div>`;
         });
-        modsContainer.innerHTML = html || '<div class="empty-state">No mods found in careerSavegame.xml</div>';
+        modsContainer.innerHTML = html || '<div class="empty-state">No installed mods detected in careerSavegame.xml</div>';
       }
 
-      // 4. Fields Parsing (fields.xml)
-      const fieldsXml = parseXML(data.fields?.data || data.fields_xml?.data);
+      // 4. Production Factories & Storage (placeables.xml)
+      const placeXml = parseXML(data.placeables || data.placeables_xml);
+      const productionContainer = document.getElementById('production-container');
+      if (placeXml) {
+        let html = "";
+        placeXml.querySelectorAll("placeable").forEach(p => {
+          const filename = p.getAttribute("filename");
+          if (filename && !filename.includes("fence") && !filename.includes("gate")) {
+            const resolvedName = resolvePlaceableName(filename);
+            const farmId = p.getAttribute("farmId") || "1";
+            html += `
+              <div class="item-card">
+                <div>
+                  <div class="item-title">${resolvedName}</div>
+                  <div class="mono" style="color:#64748b; font-size:0.75rem;">Owner: Farm ID ${farmId}</div>
+                </div>
+                <span class="badge-stat badge-sown">Active</span>
+              </div>`;
+          }
+        });
+        productionContainer.innerHTML = html || '<div class="empty-state">No active placeable factories in placeables.xml</div>';
+      }
+
+      // 5. Fields & Agronomy Status (fields.xml)
+      const fieldsXml = parseXML(data.fields || data.fields_xml);
       const fieldsContainer = document.getElementById('fields-container');
       if (fieldsXml) {
         let html = "";
@@ -592,11 +643,11 @@
               </div>
             </div>`;
         });
-        fieldsContainer.innerHTML = html || '<div class="empty-state">No field data registered.</div>';
+        fieldsContainer.innerHTML = html || '<div class="empty-state">No field telemetry in fields.xml</div>';
       }
 
-      // 5. Farms Parsing
-      const farmsXml = parseXML(data.farms?.data || data.farms_xml?.data);
+      // 6. Registered Farms (farms.xml)
+      const farmsXml = parseXML(data.farms || data.farms_xml);
       if (farmsXml) {
         let html = "";
         farmsXml.querySelectorAll("farm").forEach(farm => {
@@ -614,8 +665,8 @@
         document.getElementById('farms-container').innerHTML = html || '<div class="empty-state">No farm finances.</div>';
       }
 
-      // 6. Machinery & Tools Parsing
-      const vehXml = parseXML(data.vehicles?.data || data.vehicles_xml?.data);
+      // 7. Machinery & Tools Parsing (vehicles.xml)
+      const vehXml = parseXML(data.vehicles || data.vehicles_xml);
       if (vehXml) {
         let tractorsHtml = "";
         let implementsHtml = "";
@@ -650,8 +701,8 @@
         document.getElementById('implements-container').innerHTML = implementsHtml || '<div class="empty-state">No tools.</div>';
       }
 
-      // 7. Market Economy Parsing
-      const ecoXml = parseXML(data.economy?.data || data.economy_xml?.data);
+      // 8. Commodity Market Economy Parsing (economy.xml)
+      const ecoXml = parseXML(data.economy || data.economy_xml);
       if (ecoXml) {
         let html = "";
         ecoXml.querySelectorAll("fillType").forEach(f => {
