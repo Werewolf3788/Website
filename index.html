@@ -1,8 +1,9 @@
 <!-- 
   ==========================================
-  VERSION TIMESTAMP: Thu, July 23, 2026, 12:25 AM EDT
-  SYSTEM: Werewolf Project Home Engine (index.html)
-  ENGINE: Complete Nav CSV + Weather/Twitch Engine + Multi-Doc Firestore/RTDB Observer
+  VERSION TIMESTAMP: Thu, July 23, 2026, 12:40 AM EDT
+  SYSTEM: Werewolf Project Home Production Engine (index.html)
+  DEPLOYMENT: GitHub Pages / Live Server Production Target
+  ARCHITECTURE: Module-Isolated Execution + Firestore Live Sync
   SQUAD: Werewolf3788 | Raymystyro | Terrdog420 | DesdemonaTiger
   ==========================================
 -->
@@ -15,7 +16,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google Tag Manager - Personal Analytics -->
+    <!-- Google Tag Manager - Personal Project Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -122,65 +123,6 @@
         .bg-snowy { background: linear-gradient(to bottom, #1e40af, #3b82f6); }
         .bg-clear { background: linear-gradient(to bottom, #0f172a, #020617); }
 
-        /* Rain Particles */
-        .rain-drop {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.2);
-            width: 1px;
-            height: 15px;
-            top: -20px;
-            animation: fall linear infinite;
-        }
-
-        /* Cloud Particles */
-        .cloud-puff {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            filter: blur(20px);
-            animation: float 10s ease-in-out infinite;
-        }
-
-        .sun-glow {
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
-            animation: pulse-sun 4s ease-in-out infinite;
-        }
-
-        .snow-ground {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 30px;
-            background: white;
-            filter: blur(8px);
-            opacity: 0.6;
-        }
-        .snowflake {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.8;
-            top: -10px;
-            animation: drift linear infinite;
-        }
-
-        @keyframes fall { to { transform: translateY(350px); } }
-        @keyframes drift { to { transform: translateY(350px) translateX(20px); } }
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(30px, 15px); }
-        }
-        @keyframes pulse-sun {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.3); opacity: 0.8; }
-        }
-
         .status-pulse {
             display: inline-block;
             width: 8px; height: 8px;
@@ -208,11 +150,6 @@
         .text-terrdog { color: var(--color-terrdog); }
         .shadow-terrdog { box-shadow: 0 10px 15px -3px rgba(147, 51, 234, 0.4); }
 
-        .is-sunny h3 { color: #0f172a !important; }
-        .is-sunny p { color: #1e293b !important; }
-        .is-sunny .weather-desc { color: #334155 !important; opacity: 0.9; }
-        .is-sunny .visit-link { color: #0f172a !important; border-color: rgba(0,0,0,0.3) !important; }
-
         .kf-watermark {
             position: fixed;
             bottom: 10px; left: 10px;
@@ -237,7 +174,7 @@
                     <span class="text-xl font-black tracking-tighter text-sky-400">WEREWOLF<span class="text-white">PROJECT</span></span>
                 </div>
 
-                <!-- Desktop Menu Container -->
+                <!-- Desktop Menu -->
                 <div id="desktop-nav-links" class="hidden md:flex items-center space-x-8">
                     <div class="flex items-center space-x-4 animate-pulse">
                         <div class="h-4 w-16 bg-slate-700 rounded"></div>
@@ -262,7 +199,7 @@
             </div>
         </div>
 
-        <!-- Mobile Menu Container -->
+        <!-- Mobile Menu -->
         <div id="mobile-menu" class="md:hidden hidden bg-slate-900 border-b border-slate-700">
             <div id="mobile-nav-links" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
                  <div class="h-4 w-24 bg-slate-700/50 rounded mb-2 ml-3 animate-pulse"></div>
@@ -398,7 +335,7 @@
                     <span class="bg-slate-800 text-sky-400 border border-sky-500/30 font-black text-[10px] uppercase px-3 py-1 rounded-full flex items-center gap-2">
                         <i class="fa-solid fa-satellite-dish"></i> LIVE SQUAD PROGRESS TRACKER
                     </span>
-                    <span class="text-xs text-emerald-400 font-bold uppercase tracking-widest">FIRESTORE CLOUD SYNC ACTIVE</span>
+                    <span class="text-xs text-emerald-400 font-bold uppercase tracking-widest">FIRESTORE CLOUD ACTIVE</span>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
                     <div class="md:col-span-1 aspect-video rounded-xl overflow-hidden border border-slate-700 bg-slate-900 relative">
@@ -413,7 +350,7 @@
                             <p class="text-xs text-slate-400 font-bold uppercase mt-1 tracking-widest">Squad Roster: Werewolf3788 • Raymystyro • Terrdog420 • DesdemonaTiger</p>
                         </div>
                         <div class="space-y-4 bg-slate-900/60 p-5 rounded-xl border border-slate-800" id="squad-progress-bars">
-                            <div class="text-xs text-slate-400 italic animate-pulse">Loading cloud database progress...</div>
+                            <div class="text-xs text-slate-400 italic animate-pulse">Syncing live Firestore progress...</div>
                         </div>
                     </div>
                 </div>
@@ -455,7 +392,7 @@
         const db = getFirestore(app);
         const rtdb = getDatabase(app);
 
-        setPersistence(auth, browserLocalPersistence).catch(err => console.warn("Auth persistence error:", err));
+        setPersistence(auth, browserLocalPersistence).catch(err => console.warn("Auth persistence notice:", err.message));
 
         const authBtn = document.getElementById('auth-btn');
         const authName = document.getElementById('auth-user-name');
@@ -466,7 +403,7 @@
                 if (authName) authName.innerText = name;
                 if (authBtn) {
                     authBtn.onclick = () => {
-                        if (confirm(`Logged in as ${user.email}. Do you want to sign out?`)) {
+                        if (confirm(`Logged in as ${user.email}. Sign out?`)) {
                             signOut(auth);
                         }
                     };
@@ -478,7 +415,7 @@
                     displayName: name,
                     photoURL: user.photoURL || '',
                     lastSeen: new Date().toISOString()
-                }, { merge: true }).catch(err => console.warn("Firestore sync delay:", err.message));
+                }, { merge: true }).catch(err => console.warn("Firestore auth sync notice:", err.message));
 
             } else {
                 if (authName) authName.innerText = "Sign In";
@@ -489,7 +426,7 @@
                             provider.setCustomParameters({ prompt: 'select_account' });
                             await signInWithPopup(auth, provider);
                         } catch (err) {
-                            console.error("Sign-in failed:", err.message);
+                            console.error("Sign-in error:", err.message);
                         }
                     };
                 }
@@ -509,7 +446,7 @@
             for (let i = 0; i < 5; i++) {
                 try {
                     const response = await fetch(url, options);
-                    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     return response;
                 } catch (error) {
                     if (i === 4) throw error;
@@ -519,117 +456,106 @@
             }
         }
 
-        // --- MENU PARSER ENGINE (CSV + JSON Fallbacks) ---
-        const navCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv';
-
+        // --- PRODUCTION MENU PARSER ENGINE ---
         async function fetchNavData() {
-            try {
-                const response = await fetchWithRetry(navCsvUrl);
-                const data = await response.text();
-                const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
+            const origin = window.location.origin;
+            const endpoints = [
+                `${origin}/Website/Menu.json?v=${Date.now()}`,
+                `./Menu.json?v=${Date.now()}`,
+                `./Website/Menu.json?v=${Date.now()}`
+            ];
 
-                const navOrder = [];
-                const groupIndexMap = {};
-
-                for (let i = 1; i < rows.length; i++) {
-                    const columns = parseCSVLine(rows[i]);
-                    if (columns.length >= 3) {
-                        const name = columns[0] ? columns[0].trim() : '';
-                        if (!name) continue;
-                        
-                        const group = columns[1] ? columns[1].trim() : '';
-                        const url = columns[2] ? columns[2].trim() : '#';
-                        const img = columns[3] ? columns[3].trim() : '';
-
-                        const item = { name, url, img };
-
-                        if (group === '') {
-                            navOrder.push({ type: 'standalone', data: item });
-                        } else {
-                            if (groupIndexMap[group] === undefined) {
-                                groupIndexMap[group] = navOrder.length;
-                                navOrder.push({ type: 'group', name: group, items: [] });
-                            }
-                            navOrder[groupIndexMap[group]].items.push(item);
-                        }
-                    }
-                }
-                renderNav(navOrder);
-            } catch (error) {
-                // Fallback to local Menu.json if CSV fails
+            for (const path of endpoints) {
                 try {
-                    const res = await fetchWithRetry(`https://raw.githack.com/Werewolf3788/Website/main/Menu.json?v=${Date.now()}`);
+                    const res = await fetchWithRetry(path);
                     let text = await res.text();
                     text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
-                    const parsed = JSON.parse(text);
-                    if (Array.isArray(parsed)) renderNavJson(parsed);
-                } catch(e) {
-                    console.warn("Nav offline notice:", e.message);
+                    const data = JSON.parse(text);
+                    if (data) {
+                        renderNav(data);
+                        return;
+                    }
+                } catch (e) {
+                    // Try next relative endpoint
                 }
             }
         }
 
-        function renderNav(navOrder) {
+        function renderNav(menuItems) {
             const desktopContainer = document.getElementById('desktop-nav-links');
             const mobileContainer = document.getElementById('mobile-nav-links');
             if (!desktopContainer || !mobileContainer) return;
 
+            const itemsArray = Array.isArray(menuItems) ? menuItems : (menuItems.items || menuItems.links || []);
+            const groups = {};
+            const standalone = [];
+
+            itemsArray.forEach(item => {
+                if (!item.name || !item.url) return;
+                const node = { name: item.name, url: item.url, image: item.image || item.img || '' };
+                if (item.group) {
+                    if (!groups[item.group]) groups[item.group] = [];
+                    groups[item.group].push(node);
+                } else {
+                    standalone.push(node);
+                }
+            });
+
             let desktopHTML = '';
             let mobileHTML = '';
 
-            navOrder.forEach(node => {
-                if (node.type === 'standalone') {
-                    const item = node.data;
-                    const imgTag = item.img ? `<img src="${item.img}" class="w-5 h-5 rounded-full object-cover">` : '';
-                    const isMovies = item.name.toLowerCase() === 'movies';
-                    const textClass = isMovies ? 'text-orange-400 hover:text-orange-300 font-bold' : 'text-slate-300 hover:text-white';
+            Object.keys(groups).forEach(groupName => {
+                desktopHTML += `
+                    <div class="relative group dropdown">
+                        <button class="flex items-center space-x-1 text-slate-300 hover:text-white focus:outline-none py-4 font-bold text-xs uppercase tracking-wider">
+                            <span>${groupName}</span>
+                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                        </button>
+                        <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
+                `;
 
-                    desktopHTML += `<a href="${item.url}" class="nav-link flex items-center gap-2 text-xs font-bold uppercase tracking-wider ${textClass}">${imgTag}<span>${item.name}</span></a>`;
-                    mobileHTML += `<a href="${item.url}" class="flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold ${textClass} hover:bg-slate-800">${imgTag}<span>${item.name}</span></a>`;
-                } else if (node.type === 'group') {
+                mobileHTML += `<div class="px-3 py-2 mt-2 text-sky-400 font-bold uppercase text-xs tracking-wider border-b border-slate-700/50">${groupName}</div>`;
+
+                groups[groupName].forEach(it => {
+                    const imgTag = it.image ? `<img src="${it.image}" class="w-5 h-5 rounded-md object-cover border border-slate-600" onerror="this.style.display='none'">` : '';
                     desktopHTML += `
-                        <div class="relative group dropdown">
-                            <button class="flex items-center space-x-1 text-slate-300 hover:text-white font-bold text-xs uppercase tracking-wider py-4">
-                                <span>${node.name}</span>
-                                <i class="fa-solid fa-chevron-down text-[10px]"></i>
-                            </button>
-                            <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
+                        <a href="${it.url}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-300 hover:bg-slate-700 hover:text-sky-400 transition-colors">
+                            ${imgTag}<span>${it.name}</span>
+                        </a>
                     `;
-                    mobileHTML += `<div class="px-3 py-2 mt-2 text-sky-400 font-bold uppercase text-xs tracking-wider border-b border-slate-700/50">${node.name}</div>`;
+                    mobileHTML += `
+                        <a href="${it.url}" class="flex items-center gap-3 px-3 py-2 pl-6 rounded-md text-xs font-bold text-slate-300 hover:bg-slate-800">
+                            ${imgTag}<span>${it.name}</span>
+                        </a>
+                    `;
+                });
 
-                    node.items.forEach(item => {
-                        const imgTag = item.img ? `<img src="${item.img}" class="w-5 h-5 rounded-md object-cover border border-slate-600">` : '';
-                        desktopHTML += `<a href="${item.url}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-300 hover:bg-slate-700 hover:text-sky-400">${imgTag}<span>${item.name}</span></a>`;
-                        mobileHTML += `<a href="${item.url}" class="flex items-center gap-3 px-3 py-2 pl-6 rounded-md text-xs font-bold text-slate-300 hover:bg-slate-800">${imgTag}<span>${item.name}</span></a>`;
-                    });
+                desktopHTML += `</div></div>`;
+            });
 
-                    desktopHTML += `</div></div>`;
-                }
+            standalone.forEach(it => {
+                const imgTag = it.image ? `<img src="${it.image}" class="w-5 h-5 rounded-full object-cover" onerror="this.style.display='none'">` : '';
+                const isMovies = it.name.toLowerCase() === 'movies';
+                const textClass = isMovies ? 'text-orange-400 hover:text-orange-300 font-bold' : 'text-slate-300 hover:text-white';
+
+                desktopHTML += `
+                    <a href="${it.url}" class="nav-link flex items-center gap-2 text-xs font-bold uppercase tracking-wider ${textClass} transition-colors">
+                        ${imgTag}<span>${it.name}</span>
+                    </a>
+                `;
+
+                mobileHTML += `
+                    <a href="${it.url}" class="flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold ${textClass} hover:bg-slate-800">
+                        ${imgTag}<span>${it.name}</span>
+                    </a>
+                `;
             });
 
             desktopContainer.innerHTML = desktopHTML;
             mobileContainer.innerHTML = mobileHTML;
         }
 
-        function renderNavJson(menuItems) {
-            const groups = {};
-            const standalone = [];
-            menuItems.forEach(item => {
-                if (!item.name || !item.url) return;
-                if (item.group) {
-                    if (!groups[item.group]) groups[item.group] = [];
-                    groups[item.group].push({ name: item.name, url: item.url, img: item.image || item.img || '' });
-                } else {
-                    standalone.push({ name: item.name, url: item.url, img: item.image || item.img || '' });
-                }
-            });
-            const navOrder = [];
-            Object.keys(groups).forEach(g => navOrder.push({ type: 'group', name: g, items: groups[g] }));
-            standalone.forEach(s => navOrder.push({ type: 'standalone', data: s }));
-            renderNav(navOrder);
-        }
-
-        // --- WEATHER & TWITCH ENGINE ---
+        // --- WEATHER & TWITCH LIVE STATUS ENGINE ---
         const users = [
             { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf', twitch: 'werewolf3788', theme: 'text-werewolf' },
             { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray', twitch: 'raymystyro', theme: 'text-ray' },
@@ -657,7 +583,7 @@
                     if (descText) descText.textContent = `${desc} • ${temp}°F`;
                 } catch (e) {
                     const descText = document.getElementById(u.descId);
-                    if (descText) descText.textContent = "Weather service unavailable";
+                    if (descText) descText.textContent = "Weather service offline";
                 }
             }
         }
@@ -686,7 +612,7 @@
             }
         }
 
-        // --- SQUAD DEFINITION & DYNAMIC FIRESTORE/RTDB OBSERVER ---
+        // --- SQUAD ROSTER & MULTI-DOC FIRESTORE OBSERVER ---
         const squadRoster = [
             { id: 'werewolf', docIds: ['werewolf', 'Werewolf3788', 'kevin'], display: 'Werewolf3788', color: '#FF5F1F', count: 0, total: 54 },
             { id: 'Ray', docIds: ['Ray', 'ray', 'raymystyro'], display: 'Raymystyro', color: '#C41E3A', count: 95, total: 233 },
@@ -732,12 +658,12 @@
                             }
                         }
                     }, (err) => {
-                        // Suppress background notices
+                        // Suppress background non-matches
                     });
                 });
             });
 
-            // Secondary RTDB listener for Werewolf3788
+            // Direct RTDB observer for Werewolf3788 active hunt sync
             const wolfRtdbRef = ref(rtdb, 'psn/users/werewolf');
             onValue(wolfRtdbRef, (snap) => {
                 if (snap.exists()) {
