@@ -49,7 +49,7 @@
       width: 100vw;
       max-width: 100%;
       min-height: 100vh;
-      font-size: 16px; /* Mobile-first base */
+      font-size: 16px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background: var(--bg-gradient) fixed;
       color: var(--text-main);
@@ -66,12 +66,12 @@
       display: flex;
       align-items: center;
       gap: 16px;
-      overflow-x: visible; /* Required for dropdown visibility */
+      overflow-x: visible;
       backdrop-filter: blur(10px);
       flex-wrap: wrap;
     }
 
-    /* Standalone (Ungrouped) High-Contrast Buttons */
+    /* Standalone High-Contrast Buttons */
     .nav-link-btn {
       background-color: var(--btn-bg);
       color: var(--btn-text);
@@ -79,10 +79,11 @@
       font-weight: 700;
       font-size: 14px;
       padding: 10px 18px;
-      min-height: 44px; /* 44px touch target minimum */
+      min-height: 44px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      gap: 8px;
       border-radius: 8px;
       border: none;
       cursor: pointer;
@@ -127,7 +128,7 @@
       top: 100%;
       left: 0;
       margin-top: 6px;
-      min-width: 220px;
+      min-width: 240px;
       background: #1e1c1c;
       border: 1px solid var(--card-border);
       border-radius: 10px;
@@ -143,7 +144,7 @@
     .nav-dropdown-item {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       padding: 10px 18px;
       min-height: 44px;
       color: var(--text-main);
@@ -158,11 +159,14 @@
       color: #ffffff;
     }
 
-    .nav-icon {
-      width: 20px;
-      height: 20px;
-      border-radius: 4px;
+    /* MENU THUMBNAIL IMAGES FROM COLUMN D */
+    .menu-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
       object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
     }
 
     /* TOP TELEMETRY BANNER */
@@ -254,7 +258,7 @@
 </head>
 <body>
 
-  <!-- GLOBAL MENU (POPULATED DYNAMICALLY FROM GOOGLE SHEETS CSV) -->
+  <!-- GLOBAL MENU (POPULATED WITH COLUMN D THUMBNAILS FROM GOOGLE SHEETS) -->
   <nav class="global-nav-bar" id="global-nav-menu">
     <span style="font-size:13px; color:var(--text-muted);">Loading navigation...</span>
   </nav>
@@ -354,8 +358,8 @@
 
   <script>
     /**
-     * Version Timestamp: Thu, July 23, 2026, 5:20 PM (EDT)
-     * Dynamic Grouped CSV Navigation Parser & Firebase Telemetry Sync Engine
+     * Version Timestamp: Thu, July 23, 2026, 5:30 PM (EDT)
+     * Dynamic CSV Navigation Parser (Col D Images Enabled) & Firebase Telemetry Sync Engine
      */
     const DB_ENDPOINT = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/fs25.json";
     const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
@@ -368,7 +372,7 @@
     });
 
     /**
-     * CSV MENU PARSER (Matches Column A: Name, Column B: Group, Column C: Url, Column D: Images)
+     * CSV MENU PARSER WITH COLUMN D IMAGE THUMBNAIL RENDERING
      */
     async function loadGlobalMenu() {
       const navContainer = document.getElementById('global-nav-menu');
@@ -383,7 +387,7 @@
         const rows = parseCSV(csvText);
         if (rows.length <= 1) return;
 
-        // Header index mapping based on your sheet
+        // Column mapping based on your sheet
         const headers = rows[0].map(h => h.toLowerCase().trim());
         const nameIdx = headers.indexOf('name') !== -1 ? headers.indexOf('name') : 0;
         const groupIdx = headers.indexOf('group') !== -1 ? headers.indexOf('group') : 1;
@@ -410,7 +414,6 @@
 
           const menuItem = { name, url, imageUrl };
 
-          // If group is non-empty, assign to group; otherwise treat as standalone button!
           if (groupName && groupName !== '' && groupName.toLowerCase() !== 'none') {
             if (!groups[groupName]) groups[groupName] = [];
             groups[groupName].push(menuItem);
@@ -419,14 +422,20 @@
           }
         });
 
-        navContainer.innerHTML = ''; // Clear loading placeholder
+        navContainer.innerHTML = '';
 
-        // 1. Render Standalone Items First (e.g. "Home" as bold high-contrast red button)
+        // 1. Render Standalone Items (e.g. "Home" as red button with image if present)
         standaloneItems.forEach(item => {
           const btn = document.createElement('a');
           btn.className = 'nav-link-btn';
           btn.href = item.url;
-          btn.innerText = item.name;
+          
+          if (item.imageUrl && item.imageUrl !== '') {
+            btn.innerHTML = `<img src="${item.imageUrl}" class="menu-thumb" alt="" onerror="this.style.display='none'"> <span>${item.name}</span>`;
+          } else {
+            btn.innerText = item.name;
+          }
+
           attachSmartTabHandler(btn, item.url);
           navContainer.appendChild(btn);
         });
@@ -448,8 +457,9 @@
             link.className = 'nav-dropdown-item';
             link.href = item.url;
 
+            // Thumbnail Image rendering from Column D
             if (item.imageUrl && item.imageUrl !== '') {
-              link.innerHTML = `<img src="${item.imageUrl}" class="nav-icon" alt="" onerror="this.style.display='none'"> <span>${item.name}</span>`;
+              link.innerHTML = `<img src="${item.imageUrl}" class="menu-thumb" alt="" onerror="this.style.display='none'"> <span>${item.name}</span>`;
             } else {
               link.innerText = item.name;
             }
@@ -479,9 +489,6 @@
       return '📁';
     }
 
-    /**
-     * CSV String Parser
-     */
     function parseCSV(text) {
       const lines = [];
       let row = [];
@@ -513,9 +520,6 @@
       return lines;
     }
 
-    /**
-     * Smart Tab Link Handler
-     */
     function attachSmartTabHandler(element, url) {
       element.addEventListener('click', (e) => {
         if (url.startsWith('tel:') || url.startsWith('wa.me/') || url.startsWith('mailto:')) return;
