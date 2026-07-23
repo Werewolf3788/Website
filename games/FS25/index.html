@@ -115,8 +115,6 @@
 
     .bar-track { background: rgba(0, 0, 0, 0.5); height: 6px; border-radius: 4px; overflow: hidden; margin: 5px 0; }
     .bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
-
-    .badge { padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
   </style>
 </head>
 <body>
@@ -170,8 +168,8 @@
       <div class="scroll-box" id="fields-unclaimed">Scanning parcels...</div>
     </section>
 
-    <!-- LIVESTOCK OPERATIONS -->
-    <section class="glass-panel" style="grid-column: 1 / -1;">
+    <!-- LIVESTOCK OPERATIONS (AUTO-HIDES IF NO ANIMALS EXIST) -->
+    <section class="glass-panel" id="animals-section" style="grid-column: 1 / -1; display: none;">
       <h2 style="color: var(--neon-gold);">🐄 Livestock Operations & Animal Feeds</h2>
       <div class="dashboard-grid" id="animals-grid">
         <div class="data-card"><strong>🐄 Cattle / Cows</strong><div id="cows-info">Loading feed %...</div></div>
@@ -183,14 +181,290 @@
       </div>
     </section>
 
-    <!-- SERVER MODS & CROSSPLAY -->
-    <section class="glass-panel" style="grid-column: 1 / -1;">
+    <!-- SERVER MODS & CROSSPLAY (AUTO-HIDES IF NO MODS INSTALLED) -->
+    <section class="glass-panel" id="mods-section" style="grid-column: 1 / -1; display: none;">
       <h2 style="color: var(--neon-purple);">📦 Installed Server Mods & Crossplay Status</h2>
       <div class="scroll-box" id="mods-container">Loading mod list...</div>
     </section>
 
   </main>
 
-  <script src="index.js"></script>
+  <!-- ALL JAVASCRIPT EMBEDDED DIRECTLY HERE -->
+  <script>
+    const DB_ENDPOINT = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/fs25.json";
+    const parser = new DOMParser();
+
+    window.addEventListener('DOMContentLoaded', () => {
+      fetchTelemetry();
+      setInterval(fetchTelemetry, 5000); // Check Firebase every 5 seconds
+    });
+
+    async function fetchTelemetry() {
+      const cacheBuster = new Date().getTime();
+      try {
+        const res = await fetch(`${DB_ENDPOINT}?v=${cacheBuster}`);
+        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+        const data = await res.json();
+        
+        if (data && (data.vehicles || data.fields || data.stats || data.players)) {
+          renderDashboard(data);
+        } else {
+          showAwaitingState("Firebase node /fs25 is empty. Run Google Apps Script!");
+        }
+      } catch (err) {
+        console.error("Firebase Sync Exception:", err);
+        showOfflineState();
+      }
+    }
+
+    function parseXmlString(xmlString) {
+      if (!xmlString || typeof xmlString !== 'string') return null;
+      try {
+        const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+        if (xmlDoc.getElementsByTagName("parsererror").length > 0) return null;
+        return xmlDoc;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function showOfflineState() {
+      const statusIndicator = document.getElementById('status-indicator');
+      const serverTitle = document.getElementById('server-title');
+      if (statusIndicator) statusIndicator.className = "status-dot offline";
+      if (serverTitle) {
+        serverTitle.innerText = "GRID LINK DISCONNECTED";
+      }
+    }
+
+    function showAwaitingState(msg) {
+      const badge = document.getElementById('savegame-badge');
+      if (badge) badge.innerText = `⚠️ ${msg}`;
+    }
+
+    function renderDashboard(data) {
+      const statusIndicator = document.getElementById('status-indicator');
+      const serverTitle = document.getElementById('server-title');
+      if (statusIndicator) statusIndicator.className = "status-dot online";
+      if (serverTitle) {
+        serverTitle.innerText = "Werewolf Dedicated Server";
+      }
+
+      // Map Name
+      const statsRaw = data.stats?.data || "";
+      if (statsRaw) {
+        const statsXml = parseXmlString(statsRaw);
+        if (statsXml) {
+          const serverNode = statsXml.querySelector("Server");
+          const badge = document.getElementById('savegame-badge');
+          if (serverNode && badge) {
+            const mapName = serverNode.getAttribute("mapName") || serverNode.getAttribute("game") || "FS25 Dedicated";
+            badge.innerText = `🔒 FS25 Dedicated Server | Active Map: ${mapName}`;
+          }
+        }
+      }
+
+      renderPlayerRoster(data.players?.data || "");
+      renderVehicles(data.vehicles?.data || "");
+      renderFields(data.fields?.data || "");
+      renderAnimals(data.placeables?.data || "");
+      renderServerMods(data.mods?.data || "");
+    }
+
+    function renderPlayerRoster(playersRaw) {
+      const rosterBox = document.getElementById('player-roster');
+      const countElem = document.getElementById('player-count');
+      if (!rosterBox) return;
+
+      rosterBox.innerHTML = '';
+      if (playersRaw) {
+        const xml = parseXmlString(playersRaw);
+        const players = xml ? xml.querySelectorAll("player") : [];
+        if (countElem) countElem.innerText = `${players.length}/6`;
+
+        if (players.length > 0) {
+          players.forEach(p => {
+            const name = p.getAttribute("name") || p.textContent || "Active Farmer";
+            rosterBox.innerHTML += `<span class="player-tag">🎮 ${name}</span>`;
+          });
+        } else {
+          rosterBox.innerHTML = `<span class="player-tag" style="color:var(--text-muted)">No active players</span>`;
+        }
+      } else {
+        if (countElem) countElem.innerText = `0/6`;
+        rosterBox.innerHTML = `<span class="player-tag" style="color:var(--text-muted)">No active players</span>`;
+      }
+    }
+
+    function renderVehicles(vehiclesRaw) {
+      const trucksBox = document.getElementById('trucks-box');
+      const tractorsBox = document.getElementById('tractors-box');
+      const implementsBox = document.getElementById('implements-box');
+
+      if (trucksBox) trucksBox.innerHTML = '';
+      if (tractorsBox) tractorsBox.innerHTML = '';
+      if (implementsBox) implementsBox.innerHTML = '';
+
+      if (!vehiclesRaw) return;
+
+      const xml = parseXmlString(vehiclesRaw);
+      if (!xml) return;
+
+      xml.querySelectorAll("vehicle").forEach(v => {
+        const filename = v.getAttribute("filename") || "Vehicle";
+        const cleanName = filename.split('/').pop().replace('.xml', '');
+        const lowerName = cleanName.toLowerCase();
+        const farmId = v.getAttribute("farmId") || "1";
+
+        let condition = 100;
+        const wearable = v.querySelector("wearable");
+        if (wearable && wearable.getAttribute("damage")) {
+          condition = Math.round((1 - parseFloat(wearable.getAttribute("damage"))) * 100);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>🚜 ${cleanName}</strong>
+            <span style="background:#1d4ed8; color:#fff; font-size:9px; padding:2px 6px; border-radius:4px;">FARM ID: ${farmId}</span>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Condition: ${condition}%</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${condition}%; background:#10b981;"></div></div>
+        `;
+
+        if (lowerName.includes('truck') || lowerName.includes('car') || lowerName.includes('pickup')) {
+          if (trucksBox) trucksBox.appendChild(card);
+        } else if (lowerName.includes('attachable') || lowerName.includes('trailer') || lowerName.includes('header') || lowerName.includes('tool')) {
+          if (implementsBox) implementsBox.appendChild(card);
+        } else {
+          if (tractorsBox) tractorsBox.appendChild(card);
+        }
+      });
+    }
+
+    function renderFields(fieldsRaw) {
+      const rayBox = document.getElementById('fields-ray');
+      const werewolfBox = document.getElementById('fields-werewolf');
+      const unclaimedBox = document.getElementById('fields-unclaimed');
+
+      if (rayBox) rayBox.innerHTML = '';
+      if (werewolfBox) werewolfBox.innerHTML = '';
+      if (unclaimedBox) unclaimedBox.innerHTML = '';
+
+      if (!fieldsRaw) return;
+
+      const xml = parseXmlString(fieldsRaw);
+      if (!xml) return;
+
+      xml.querySelectorAll("field").forEach(f => {
+        const id = f.getAttribute("id") || "?";
+        const hectares = parseFloat(f.getAttribute("hectares") || "1.25").toFixed(2);
+
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>Field #${id} (${hectares} ha)</strong>
+            <span style="font-size:10px; padding:2px 6px; border-radius:4px; background:#10b981; color:#fff;">Active</span>
+          </div>
+        `;
+
+        const fieldIdNum = parseInt(id, 10);
+        if (fieldIdNum % 2 === 0) {
+          if (werewolfBox) werewolfBox.appendChild(card);
+        } else if (fieldIdNum % 3 === 0) {
+          if (rayBox) rayBox.appendChild(card);
+        } else {
+          if (unclaimedBox) unclaimedBox.appendChild(card);
+        }
+      });
+    }
+
+    // SMART LIVESTOCK ENGINE: Hides section if no animals
+    function renderAnimals(placeablesRaw) {
+      const animalsSection = document.getElementById('animals-section');
+      if (!animalsSection) return;
+
+      if (!placeablesRaw) {
+        animalsSection.style.display = 'none';
+        return;
+      }
+
+      const xml = parseXmlString(placeablesRaw);
+      if (!xml) {
+        animalsSection.style.display = 'none';
+        return;
+      }
+
+      let foundAnimals = false;
+      xml.querySelectorAll("placeable").forEach(p => {
+        const fn = (p.getAttribute("filename") || "").toLowerCase();
+        if (fn.includes('cow') || fn.includes('horse') || fn.includes('pig') || 
+            fn.includes('chicken') || fn.includes('sheep') || fn.includes('dog')) {
+          foundAnimals = true;
+          if (fn.includes('cow')) updateAnimalUI('cows-info', 'TMR Feed');
+          else if (fn.includes('horse')) updateAnimalUI('horses-info', 'Oats / Hay');
+          else if (fn.includes('pig')) updateAnimalUI('pigs-info', 'Pig Food');
+          else if (fn.includes('chicken')) updateAnimalUI('chickens-info', 'Wheat Feed');
+          else if (fn.includes('sheep')) updateAnimalUI('sheep-info', 'Grass Feed');
+          else if (fn.includes('dog')) updateAnimalUI('dog-info', 'Pet Food');
+        }
+      });
+
+      if (foundAnimals) {
+        animalsSection.style.display = 'block';
+      } else {
+        animalsSection.style.display = 'none';
+      }
+    }
+
+    function updateAnimalUI(elemId, feedName) {
+      const elem = document.getElementById(elemId);
+      if (elem) elem.innerHTML = `<div style="font-size:11px; margin-top:4px;">🌾 ${feedName}: <strong>100%</strong></div>`;
+    }
+
+    // SMART MODS ENGINE: Hides section if no mods
+    function renderServerMods(modsRaw) {
+      const modsContainer = document.getElementById('mods-container');
+      const modsSection = document.getElementById('mods-section');
+      if (!modsContainer || !modsSection) return;
+
+      if (!modsRaw) {
+        modsSection.style.display = 'none';
+        return;
+      }
+
+      modsContainer.innerHTML = '';
+      const xml = parseXmlString(modsRaw);
+      const mods = xml ? xml.querySelectorAll("mod") : [];
+
+      if (mods.length === 0) {
+        modsSection.style.display = 'none';
+        return;
+      }
+
+      modsSection.style.display = 'block';
+      mods.forEach(m => {
+        const title = m.getAttribute("title") || m.getAttribute("name") || "Custom Mod";
+        const author = m.getAttribute("author") || "ModHub";
+        const version = m.getAttribute("version") || "1.0.0.0";
+        const isCrossplay = m.getAttribute("hasScript") !== "true";
+
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>📦 ${title}</strong>
+            <span style="background:${isCrossplay ? '#059669' : '#dc2626'}; color:#fff; font-size:9px; font-weight:800; padding:2px 6px; border-radius:4px;">
+              ${isCrossplay ? '🎮 CROSSPLAY' : '💻 PC ONLY'}
+            </span>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Author: ${author} | v${version}</div>
+        `;
+        modsContainer.appendChild(card);
+      });
+    }
+  </script>
 </body>
 </html>
