@@ -1,9 +1,10 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Thu, July 23, 2026, 1:06 AM EDT
+ * VERSION TIMESTAMP: Thu, July 23, 2026, 1:15 AM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
  * NAV ENGINE: Live Google Sheets CSV Fetcher (Pub CSV Feed + Local Fallback)
  * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Firestore Realtime Sync
+ * ITEM SORT ORDER: Classified Doc -> Workbench -> Personal Letter -> Stone Eagle -> Hidden Item
  * USER REGISTRY: Active Profiles (Werewolf3788, Ray, DesdemonaTiger)
  * RESILIENCE: Auto-Reconnect Observers + Page Visibility Refresh + Cache-Busting
  * ==========================================
@@ -286,6 +287,15 @@ const sniperData = [
     { id: 'm14_cd1', cat: '14: Kraken Awakes (DLC)', name: 'Salvage Operation', type: 'Classified Doc', desc: '[EASTERN BORDER] On a desk inside the easternmost border house near the tree line.' }
 ];
 
+// Strict requested type sorting map
+const typeOrderMap = {
+    'classified doc': 1,
+    'workbench': 2,
+    'personal letter': 3,
+    'stone eagle': 4,
+    'hidden item': 5
+};
+
 const appState = {
     targetUserId: 'Werewolf3788',
     targetDisplayName: 'Werewolf3788',
@@ -298,7 +308,6 @@ const appState = {
     dataLoaded: false,
     lastSyncTime: 0,
 
-    // Robust CSV Parser helper that accounts for quote-escaped strings
     parseCSV: function(csvText) {
         const lines = csvText.split(/\r?\n/);
         const result = [];
@@ -355,7 +364,6 @@ const appState = {
 
         let navHTML = '';
 
-        // Render Group Dropdowns
         Object.keys(groups).forEach(groupName => {
             const dropItems = groups[groupName].map(it => {
                 const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
@@ -372,7 +380,6 @@ const appState = {
             `;
         });
 
-        // Render Standalone Items
         standalone.forEach(it => {
             const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
             navHTML += `<a href="${it.url}">${imgTag}${it.name}</a>`;
@@ -380,7 +387,6 @@ const appState = {
 
         navContainer.innerHTML = navHTML;
 
-        // Hide any fallback error notice if menu rendered
         const warningNode = document.querySelector('div[style*="Menu Load Failure"]');
         if (warningNode) warningNode.style.display = 'none';
     },
@@ -393,7 +399,6 @@ const appState = {
         const repoName = pathname.split('/')[1] || 'Website';
         const localFallbackPath = `${origin}/${repoName}/Menu.json?v=${Date.now()}`;
 
-        // Attempt 1: Published Google Sheet CSV Feed
         try {
             const res = await fetch(sheetsCsvUrl);
             if (res.ok) {
@@ -422,7 +427,7 @@ const appState = {
 
                     if (menuItems.length > 0) {
                         this.buildMenuHTML(menuItems);
-                        return; // Successfully fetched & parsed live Google CSV
+                        return;
                     }
                 }
             }
@@ -430,7 +435,6 @@ const appState = {
             console.warn("Google Sheet CSV Fetch Notice:", e.message);
         }
 
-        // Attempt 2: Local Menu.json Fallback
         try {
             const res = await fetch(localFallbackPath);
             if (res.ok) {
@@ -453,7 +457,6 @@ const appState = {
     },
 
     setupProfilesUI: function() {
-        // Dynamically build/update profile selection buttons to include Werewolf3788, Ray, and DesdemonaTiger
         const profilesContainer = document.getElementById('hunter-profiles') || document.querySelector('.profile-selection-container');
         if (profilesContainer) {
             profilesContainer.innerHTML = `
@@ -481,7 +484,6 @@ const appState = {
         this.setupProfilesUI();
 
         let savedTarget = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
-        // Auto-sanitize if previous local storage point was TJ or misspelled
         if (['tj', 'desdeemonatiger'].includes(savedTarget.toLowerCase())) {
             savedTarget = 'Werewolf3788';
         }
@@ -495,7 +497,6 @@ const appState = {
             this.collapsedSections[sid] = true;
         });
 
-        // Anonymous background sign-in ensures immediate Firestore access without popups/logins
         signInAnonymously(this.auth).catch(err => console.warn("Anon Auth notice:", err.message));
 
         onAuthStateChanged(this.auth, (user) => {
@@ -537,7 +538,6 @@ const appState = {
 
         const primaryRef = doc(this.db, "users", userId, "progress", "sniper-elite-5");
 
-        // Primary Firestore real-time observer
         this.masterUnsub = onSnapshot(primaryRef, (snap) => {
             this.lastSyncTime = Date.now();
             if (snap.exists()) {
@@ -556,7 +556,6 @@ const appState = {
                 this.dataLoaded = true;
                 this.render();
             } else {
-                // Legacy path auto-fallback
                 const fallbackTarget = (userId.toLowerCase() === 'werewolf3788') ? 'Kevin' : userId;
                 const legacyRef = doc(this.db, "artifacts", "game-tracker-5b2ef", "data", "public", "user", fallbackTarget);
 
@@ -590,8 +589,8 @@ const appState = {
         const item = this.hunterData.find(i => i.id === id);
         if (item) {
             item.collected = !item.collected;
-            this.render(); // Immediate local render feedback
-            this.sync();   // Live sync to Firestore database
+            this.render();
+            this.sync();
         }
     },
 
@@ -627,9 +626,19 @@ const appState = {
         let totalFound = 0;
 
         cats.forEach(cat => {
-            const items = this.hunterData.filter(i => i.cat === cat);
-            const count = items.filter(i => i.collected).length;
+            const rawItems = this.hunterData.filter(i => i.cat === cat);
+            const count = rawItems.filter(i => i.collected).length;
             totalFound += count;
+
+            // Sort items by requested type order: Classified Doc -> Workbench -> Personal Letter -> Stone Eagle -> Hidden Item
+            const items = rawItems.sort((a, b) => {
+                const orderA = typeOrderMap[a.type.toLowerCase()] || 99;
+                const orderB = typeOrderMap[b.type.toLowerCase()] || 99;
+                if (orderA !== orderB) {
+                    return orderA - orderB;
+                }
+                return a.name.localeCompare(b.name);
+            });
 
             const sid = cat.replace(/[^a-z0-9]/gi, '');
             const section = document.createElement('div');
