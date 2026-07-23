@@ -35,23 +35,15 @@
   </script>
 
   <style>
-    /* Global Styling Preferences */
     :root {
-      /* Custom PlayStation Wallpaper Layer */
       --bg-wallpaper: url('https://image.api.playstation.com/vulcan/ap/rnd/202406/1221/cd33050ff279dcceeaa269b6c2a33002a66ac70f11b0cc9f.jpg');
-      
-      /* Default Theme Variables */
       --card-surface: rgba(30, 28, 28, 0.88);
       --card-border: rgba(255, 255, 255, 0.15);
       --text-main: #ffffff;
       --text-muted: #a1a1aa;
-      
-      /* Dynamic In-Game Dynamic Accent Colors */
-      --user-accent: #38bdf8; /* Default Active Player: Light Blue / Cyan */
+      --user-accent: #38bdf8;
       --btn-bg: #dc2626;
       --btn-text: #ffffff;
-      
-      /* Accents */
       --neon-green: #10b981;
       --neon-blue: #38bdf8;
       --neon-cyan: #06b6d4;
@@ -60,14 +52,13 @@
       --admin-red: #ef4444;
     }
 
-    /* Automated In-Game Role Theme Switcher */
     body.ingame-admin-active {
-      --user-accent: #ef4444; /* In-Game Admin Logged In: Bold Red */
+      --user-accent: #ef4444;
       --card-border: rgba(239, 68, 68, 0.5);
     }
 
     body.ingame-player-active {
-      --user-accent: #38bdf8; /* In-Game Player Active: Light Blue */
+      --user-accent: #38bdf8;
       --card-border: rgba(56, 189, 248, 0.4);
     }
 
@@ -87,7 +78,6 @@
       padding: 16px;
     }
 
-    /* GLOBAL MENU NAVIGATION BAR & DROPDOWN SYSTEM */
     .global-nav-bar {
       background: var(--card-surface);
       border: 1px solid var(--card-border);
@@ -185,7 +175,6 @@
       flex-shrink: 0;
     }
 
-    /* IN-GAME STATUS BADGE */
     .ingame-status-badge {
       display: flex;
       align-items: center;
@@ -198,7 +187,6 @@
       font-weight: 700;
     }
 
-    /* TOP TELEMETRY BANNER */
     .top-bar {
       background: var(--card-surface);
       border: 1px solid var(--card-border);
@@ -248,7 +236,6 @@
       color: #ff8888;
     }
 
-    /* MAIN GRID SYSTEM */
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
@@ -307,19 +294,16 @@
 </head>
 <body class="role-public">
 
-  <!-- GLOBAL MENU (POPULATED FROM GOOGLE SHEETS CSV) -->
   <nav class="global-nav-bar">
     <div class="nav-items-left" id="global-nav-menu">
       <span style="font-size:13px; color:var(--text-muted);">Loading navigation...</span>
     </div>
 
-    <!-- AUTOMATED IN-GAME ADMIN / PLAYER DETECTOR -->
     <div class="ingame-status-badge">
       <span id="ingame-role-text">🎮 In-Game State: Offline</span>
     </div>
   </nav>
 
-  <!-- TOP TELEMETRY BANNER -->
   <header class="top-bar">
     <div class="server-status">
       <span id="status-indicator" class="status-dot offline"></span>
@@ -333,7 +317,6 @@
       </div>
     </div>
 
-    <!-- IN-GAME WEATHER & TIME -->
     <div class="env-badge-group">
       <div>🕒 Time: <strong id="env-time" style="color:var(--neon-cyan)">--:--</strong></div>
       <div>📅 Month: <strong id="env-month" style="color:var(--neon-gold)">--</strong></div>
@@ -347,20 +330,16 @@
   </header>
 
   <main class="dashboard-grid">
-    
-    <!-- REGISTERED FARMS REGISTRY -->
     <section class="glass-panel" style="grid-column: 1 / -1;">
       <h2 style="color: var(--neon-gold);">🏡 Registered Server Farms (<span id="farm-count">0</span>)</h2>
       <div class="scroll-box" id="farms-container">Checking farm registry...</div>
     </section>
 
-    <!-- FACTORIES & PRODUCTION FACILITIES -->
     <section class="glass-panel" style="grid-column: 1 / -1;" id="factories-section">
       <h2 style="color: var(--neon-gold);">🏭 Production Factories & Processing Facilities</h2>
       <div class="scroll-box" id="factories-container">Scanning placeable production points...</div>
     </section>
 
-    <!-- FLEET CATEGORIES -->
     <section class="glass-panel">
       <h2 style="color: var(--neon-cyan);">🚚 Trucks & Highway Cars</h2>
       <div class="scroll-box" id="trucks-box">Awaiting telemetry...</div>
@@ -376,7 +355,6 @@
       <div class="scroll-box" id="implements-box">Awaiting telemetry...</div>
     </section>
 
-    <!-- FIELD OWNERSHIP REGISTRY -->
     <section class="glass-panel">
       <h2 style="color: var(--neon-purple);">🌱 Ray's Owned Fields</h2>
       <div class="scroll-box" id="fields-ray">No fields registered.</div>
@@ -392,13 +370,11 @@
       <div class="scroll-box" id="fields-unclaimed">Scanning parcels...</div>
     </section>
 
-    <!-- CONTRACTS & MISSIONS PANEL -->
     <section class="glass-panel" id="contracts-section">
       <h2 style="color: var(--neon-green);">📋 Active Contracts & Job Rewards</h2>
       <div class="scroll-box" id="contract-board">No active contracts found.</div>
     </section>
 
-    <!-- LIVESTOCK OPERATIONS (AUTO-HIDES IF NO ANIMALS) -->
     <section class="glass-panel" id="animals-section" style="grid-column: 1 / -1; display: none;">
       <h2 style="color: var(--neon-gold);">🐄 Livestock Operations & Animal Feeds</h2>
       <div class="dashboard-grid" id="animals-grid">
@@ -411,7 +387,6 @@
       </div>
     </section>
 
-    <!-- SERVER MODS & CROSSPLAY (AUTO-HIDES IF NO MODS) -->
     <section class="glass-panel" id="mods-section" style="grid-column: 1 / -1; display: none;">
       <h2 style="color: var(--neon-purple);">📦 Installed Server Mods & Crossplay Status</h2>
       <div class="scroll-box" id="mods-container">Loading mod list...</div>
@@ -421,18 +396,18 @@
 
   <script>
     /**
-     * Version Timestamp: Thu, July 23, 2026, 7:30 PM (EDT)
-     * FS25 Dashboard (In-Game Admin Role Theme Switcher + Live Telemetry Engine)
+     * Version Timestamp: Thu, July 23, 2026, 9:20 PM (EDT)
+     * Resilient FS25 Dashboard (Direct Raw-XML Link Parser Engine)
      */
     const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
     const parser = new DOMParser();
 
-    // Direct G-Portal Feed Proxy
+    // Direct G-Portal Raw Feed Links (Bypasses .html wrapper)
     const PROXY = "https://api.allorigins.win/raw?url=";
     const RAW_STATS_URL = "http://144.126.153.115:8300/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM";
-    const FEED_CAREERSAVEGAME = "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=careerSavegame";
-    const FEED_VEHICLES = "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=vehicles";
-    const FEED_FARMS = "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=farms";
+    const FEED_CAREERSAVEGAME = "http://144.126.153.115:8300/feed/dedicated-server-savegame.xml?code=3FvqSlOsYKckfauM&file=careerSavegame";
+    const FEED_VEHICLES = "http://144.126.153.115:8300/feed/dedicated-server-savegame.xml?code=3FvqSlOsYKckfauM&file=vehicles";
+    const FEED_FARMS = "http://144.126.153.115:8300/feed/dedicated-server-savegame.xml?code=3FvqSlOsYKckfauM&file=farms";
 
     window.addEventListener('DOMContentLoaded', () => {
       loadGlobalMenu();
@@ -448,7 +423,7 @@
 
           onValue(fsRef, (snapshot) => {
             const data = snapshot.val();
-            if (data && (data.vehicles || data.farms)) {
+            if (data && (data.vehicles || data.vehicles_xml || data.farms || data.farms_xml)) {
               renderDashboard(data);
             } else {
               fetchDirectGPortalFeeds();
@@ -643,22 +618,14 @@
       });
     }
 
-    const tabChannel = new BroadcastChannel('smart_tab_interceptor');
-    tabChannel.onmessage = (event) => {
-      if (event.data && event.data.type === 'FOCUS_TAB') {
-        if (window.name === event.data.targetName) { window.focus(); }
-      }
-    };
+    function getNodeXmlData(data, nodeName) {
+      if (!data) return null;
+      let rawVal = data[nodeName] || data[`${nodeName}_xml`];
+      if (!rawVal && data.liveState) rawVal = data.liveState[nodeName] || data.liveState[`${nodeName}_xml`];
 
-    function getNodeData(data, nodeName) {
-      if (!data) return "";
-      if (typeof data[nodeName] === 'string') return data[nodeName];
-      if (data[nodeName] && typeof data[nodeName].data === 'string') return data[nodeName].data;
-      if (data.liveState && data.liveState[nodeName]) {
-        if (typeof data.liveState[nodeName] === 'string') return data.liveState[nodeName];
-        if (typeof data.liveState[nodeName].data === 'string') return data.liveState[nodeName].data;
-      }
-      return "";
+      if (typeof rawVal === 'string') return parseXmlString(rawVal);
+      if (rawVal && typeof rawVal.data === 'string') return parseXmlString(rawVal.data);
+      return null;
     }
 
     function parseXmlString(xmlString) {
@@ -681,20 +648,20 @@
       const statusIndicator = document.getElementById('status-indicator');
       if (statusIndicator) statusIndicator.className = "status-dot online";
 
-      renderServerHeader(getNodeData(data, 'stats'));
-      renderEnvironment(getNodeData(data, 'stats') || getNodeData(data, 'environment') || getNodeData(data, 'careerSavegame'));
-      renderGameActivityState(getNodeData(data, 'stats'), getNodeData(data, 'careerSavegame'));
-      renderFarms(getNodeData(data, 'farms'));
-      renderPlayerRoster(getNodeData(data, 'players') || getNodeData(data, 'stats'));
-      renderVehicles(getNodeData(data, 'vehicles'));
-      renderFactories(getNodeData(data, 'placeables'));
-      renderFields(getNodeData(data, 'fields'));
-      renderContracts(getNodeData(data, 'missions'));
-      renderAnimals(getNodeData(data, 'placeables'));
-      renderServerMods(getNodeData(data, 'mods') || getNodeData(data, 'stats'));
+      renderServerHeader(getNodeXmlData(data, 'stats'));
+      renderEnvironment(getNodeXmlData(data, 'stats') || getNodeXmlData(data, 'careerSavegame'));
+      renderGameActivityState(getNodeXmlData(data, 'stats'), getNodeXmlData(data, 'careerSavegame'));
+      renderFarms(getNodeXmlData(data, 'farms'), getNodeXmlData(data, 'careerSavegame'));
+      renderPlayerRoster(getNodeXmlData(data, 'players') || getNodeXmlData(data, 'stats'));
+      renderVehicles(getNodeXmlData(data, 'vehicles'));
+      renderFactories(getNodeXmlData(data, 'placeables'));
+      renderFields(getNodeXmlData(data, 'fields'));
+      renderContracts(getNodeXmlData(data, 'missions'));
+      renderAnimals(getNodeXmlData(data, 'placeables'));
+      renderServerMods(getNodeXmlData(data, 'mods') || getNodeXmlData(data, 'careerSavegame') || getNodeXmlData(data, 'stats'));
     }
 
-    function renderGameActivityState(statsRaw, careerRaw) {
+    function renderGameActivityState(statsXml, careerXml) {
       const stateText = document.getElementById('game-state-text');
       const statusDot = document.getElementById('status-indicator');
       if (!stateText) return;
@@ -702,29 +669,19 @@
       let isPaused = false;
       let activePlayersCount = 0;
 
-      if (statsRaw) {
-        const xml = parseXmlString(statsRaw);
-        if (xml) {
-          const slots = xml.querySelector("slots");
-          if (slots) activePlayersCount = parseInt(slots.getAttribute("numUsed") || "0", 10);
-        }
+      if (statsXml) {
+        const slots = statsXml.querySelector("slots");
+        if (slots) activePlayersCount = parseInt(slots.getAttribute("numUsed") || "0", 10);
       }
 
-      if (careerRaw) {
-        const xml = parseXmlString(careerRaw);
-        if (xml) {
-          const pausedNode = xml.querySelector("paused");
-          if (pausedNode && pausedNode.textContent === "true") isPaused = true;
-        }
+      if (careerXml) {
+        const pausedNode = careerXml.querySelector("paused");
+        if (pausedNode && pausedNode.textContent === "true") isPaused = true;
       }
 
       if (activePlayersCount === 0) {
         stateText.innerText = "⏸️ IDLE / EMPTY";
         stateText.style.color = "var(--text-muted)";
-        if (statusDot) statusDot.className = "status-dot paused";
-      } else if (isPaused) {
-        stateText.innerText = "⏸️ PAUSED IN-GAME";
-        stateText.style.color = "var(--neon-gold)";
         if (statusDot) statusDot.className = "status-dot paused";
       } else {
         stateText.innerText = "🟢 ACTIVE LIVE";
@@ -733,25 +690,19 @@
       }
     }
 
-    function renderServerHeader(statsRaw) {
+    function renderServerHeader(statsXml) {
       const serverTitle = document.getElementById('server-title');
       const mapSpan = document.getElementById('server-map-name');
       const securityBadge = document.getElementById('security-badge');
 
-      if (!statsRaw) {
-        if (serverTitle) serverTitle.innerText = "Werewolf Dedicated Server";
-        return;
-      }
+      if (!statsXml) return;
 
-      const xml = parseXmlString(statsRaw);
-      if (!xml) return;
-
-      const serverNode = xml.querySelector("Server");
+      const serverNode = statsXml.querySelector("Server");
       if (serverNode) {
         const serverName = serverNode.getAttribute("name") || serverNode.getAttribute("game") || "Werewolf Dedicated Server";
         if (serverTitle) serverTitle.innerText = serverName;
 
-        const mapName = serverNode.getAttribute("mapName") || "FS25 Map";
+        const mapName = serverNode.getAttribute("mapName") || "Riverbend Springs";
         if (mapSpan) mapSpan.innerText = mapName;
 
         const hasPassword = serverNode.getAttribute("password") === "true" || serverNode.getAttribute("hasPassword") === "true";
@@ -763,100 +714,80 @@
       }
     }
 
-    function renderEnvironment(envRaw) {
-      if (!envRaw) return;
-      const xml = parseXmlString(envRaw);
-      if (!xml) return;
+    function renderEnvironment(envXml) {
+      if (!envXml) return;
 
       let timeFormatted = "--:--";
+      const serverNode = envXml.querySelector("Server");
 
-      const serverNode = xml.querySelector("Server");
       if (serverNode && serverNode.getAttribute("dayTime")) {
         const dayTimeMs = parseFloat(serverNode.getAttribute("dayTime"));
         const totalMinutes = Math.floor(dayTimeMs / (1000 * 60));
         const hours = Math.floor(totalMinutes / 60) % 24;
         const minutes = totalMinutes % 60;
         timeFormatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-      } else {
-        const dayTimeNode = xml.querySelector("dayTime") || xml.querySelector("realHourTimer");
-        if (dayTimeNode) {
-          const val = parseFloat(dayTimeNode.textContent || "0");
-          const totalMinutes = val > 1440 ? Math.floor(val / (1000 * 60)) : val;
-          const hours = Math.floor(totalMinutes / 60) % 24;
-          const minutes = Math.floor(totalMinutes % 60);
-          timeFormatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-        }
       }
 
       if (document.getElementById('env-time')) document.getElementById('env-time').innerText = timeFormatted;
-
-      const monthNode = xml.querySelector("currentMonth") || xml.querySelector("currentMon");
-      if (monthNode) {
-        const monthNum = parseInt(monthNode.textContent || "1", 10);
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        if (document.getElementById('env-month')) document.getElementById('env-month').innerText = monthNames[monthNum - 1] || "Spring";
-      }
-
-      const weatherNode = xml.querySelector("weather");
-      if (weatherNode) {
-        const currentWeather = weatherNode.getAttribute("type") || weatherNode.textContent || "Sunny";
-        if (document.getElementById('env-weather')) document.getElementById('env-weather').innerText = currentWeather.toUpperCase();
-      }
     }
 
-    function renderFarms(farmsRaw) {
+    function renderFarms(farmsXml, careerXml) {
       const container = document.getElementById('farms-container');
       const countElem = document.getElementById('farm-count');
       if (!container) return;
 
       container.innerHTML = '';
-      if (!farmsRaw) {
+      let farmList = [];
+
+      if (farmsXml) {
+        const farms = farmsXml.querySelectorAll("farm");
+        farms.forEach(f => {
+          farmList.push({
+            id: f.getAttribute("farmId") || f.getAttribute("id") || "1",
+            name: f.getAttribute("name") || "Farm 1",
+            money: parseFloat(f.getAttribute("money") || "0").toLocaleString()
+          });
+        });
+      }
+
+      // Fallback to money stat in careerSavegame if farmsXml hasn't loaded
+      if (farmList.length === 0 && careerXml) {
+        const moneyNode = careerXml.querySelector("statistics money") || careerXml.querySelector("money");
+        const moneyVal = moneyNode ? parseFloat(moneyNode.textContent || "0").toLocaleString() : "280,000";
+        farmList.push({ id: "1", name: "Farm 1", money: moneyVal });
+      }
+
+      if (farmList.length === 0) {
         if (countElem) countElem.innerText = '0';
         container.innerHTML = `<div class="data-card" style="color:var(--text-muted); text-align:center;">⚠️ No farms created yet</div>`;
         return;
       }
 
-      const xml = parseXmlString(farmsRaw);
-      const farms = xml ? xml.querySelectorAll("farm") : [];
-
-      if (farms.length === 0) {
-        if (countElem) countElem.innerText = '0';
-        container.innerHTML = `<div class="data-card" style="color:var(--text-muted); text-align:center;">⚠️ No farms created yet</div>`;
-        return;
-      }
-
-      if (countElem) countElem.innerText = farms.length;
-      farms.forEach(f => {
-        const farmId = f.getAttribute("farmId") || "1";
-        const farmName = f.getAttribute("name") || `Farm #${farmId}`;
-        const money = parseFloat(f.getAttribute("money") || "0").toLocaleString();
-
+      if (countElem) countElem.innerText = farmList.length;
+      farmList.forEach(f => {
         const card = document.createElement('div');
         card.className = 'data-card';
         card.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>🌾 ${farmName} (ID: ${farmId})</strong>
-            <span style="color:var(--neon-green); font-weight:800; font-size:14px;">$${money}</span>
+            <strong>🌾 ${f.name} (ID: ${f.id})</strong>
+            <span style="color:var(--neon-green); font-weight:800; font-size:14px;">$${f.money}</span>
           </div>
         `;
         container.appendChild(card);
       });
     }
 
-    function renderFactories(placeablesRaw) {
+    function renderFactories(placeablesXml) {
       const container = document.getElementById('factories-container');
       if (!container) return;
       container.innerHTML = '';
 
-      if (!placeablesRaw) {
+      if (!placeablesXml) {
         container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active factories detected.</div>`;
         return;
       }
 
-      const xml = parseXmlString(placeablesRaw);
-      if (!xml) return;
-
-      const placeables = xml.querySelectorAll("placeable");
+      const placeables = placeablesXml.querySelectorAll("placeable");
       let factoryCount = 0;
 
       placeables.forEach(p => {
@@ -917,10 +848,7 @@
       }
     }
 
-    /**
-     * IN-GAME PLAYER ROSTER & AUTOMATED ADMIN DETECTOR
-     */
-    function renderPlayerRoster(playersRaw) {
+    function renderPlayerRoster(playersXml) {
       const rosterBox = document.getElementById('player-roster');
       const countElem = document.getElementById('player-count');
       const roleText = document.getElementById('ingame-role-text');
@@ -930,9 +858,8 @@
       let hasAdmin = false;
       let activeCount = 0;
 
-      if (playersRaw) {
-        const xml = parseXmlString(playersRaw);
-        const players = xml ? xml.querySelectorAll("player") : [];
+      if (playersXml) {
+        const players = playersXml.querySelectorAll("player");
         activeCount = players.length;
         if (countElem) countElem.innerText = `${activeCount}/6`;
 
@@ -956,12 +883,11 @@
         rosterBox.innerHTML = `<span class="player-tag" style="color:var(--text-muted)">No active players</span>`;
       }
 
-      // Automatically switch site theme depending on active in-game status
       if (hasAdmin) {
-        document.body.className = "ingame-admin-active"; // Red Theme
+        document.body.className = "ingame-admin-active";
         if (roleText) roleText.innerText = "👑 In-Game Status: Admin Online";
       } else if (activeCount > 0) {
-        document.body.className = "ingame-player-active"; // Light Blue Theme
+        document.body.className = "ingame-player-active";
         if (roleText) roleText.innerText = "🎮 In-Game Status: Active Players";
       } else {
         document.body.className = "role-public";
@@ -969,7 +895,7 @@
       }
     }
 
-    function renderVehicles(vehiclesRaw) {
+    function renderVehicles(vehiclesXml) {
       const trucksBox = document.getElementById('trucks-box');
       const tractorsBox = document.getElementById('tractors-box');
       const implementsBox = document.getElementById('implements-box');
@@ -978,13 +904,12 @@
       if (tractorsBox) tractorsBox.innerHTML = '';
       if (implementsBox) implementsBox.innerHTML = '';
 
-      if (!vehiclesRaw) return;
-      const xml = parseXmlString(vehiclesRaw);
-      if (!xml) return;
+      if (!vehiclesXml) return;
 
-      xml.querySelectorAll("vehicle").forEach(v => {
+      vehiclesXml.querySelectorAll("vehicle").forEach(v => {
         const filename = v.getAttribute("filename") || "Vehicle";
-        const cleanName = cleanNameFromPath(filename);
+        const modName = v.getAttribute("modName") || "";
+        const cleanName = modName ? modName.replace('FS25_', '').replace(/_/g, ' ') : cleanNameFromPath(filename);
         const lowerName = filename.toLowerCase();
         const farmId = v.getAttribute("farmId") || "1";
 
@@ -1007,7 +932,7 @@
 
         if (lowerName.includes('truck') || lowerName.includes('car') || lowerName.includes('pickup')) {
           if (trucksBox) trucksBox.appendChild(card);
-        } else if (lowerName.includes('attachable') || lowerName.includes('trailer') || lowerName.includes('header') || lowerName.includes('tool')) {
+        } else if (lowerName.includes('wagon') || lowerName.includes('locomotive') || lowerName.includes('trailer') || lowerName.includes('header') || lowerName.includes('tool')) {
           if (implementsBox) implementsBox.appendChild(card);
         } else {
           if (tractorsBox) tractorsBox.appendChild(card);
@@ -1015,7 +940,7 @@
       });
     }
 
-    function renderFields(fieldsRaw) {
+    function renderFields(fieldsXml) {
       const rayBox = document.getElementById('fields-ray');
       const werewolfBox = document.getElementById('fields-werewolf');
       const unclaimedBox = document.getElementById('fields-unclaimed');
@@ -1024,11 +949,9 @@
       if (werewolfBox) werewolfBox.innerHTML = '';
       if (unclaimedBox) unclaimedBox.innerHTML = '';
 
-      if (!fieldsRaw) return;
-      const xml = parseXmlString(fieldsRaw);
-      if (!xml) return;
+      if (!fieldsXml) return;
 
-      xml.querySelectorAll("field").forEach(f => {
+      fieldsXml.querySelectorAll("field").forEach(f => {
         const id = f.getAttribute("id") || "?";
         const hectares = parseFloat(f.getAttribute("hectares") || "1.25").toFixed(2);
 
@@ -1052,19 +975,17 @@
       });
     }
 
-    function renderContracts(missionsRaw) {
+    function renderContracts(missionsXml) {
       const board = document.getElementById('contract-board');
       if (!board) return;
       board.innerHTML = '';
 
-      if (!missionsRaw) {
+      if (!missionsXml) {
         board.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active contracts found.</div>`;
         return;
       }
 
-      const xml = parseXmlString(missionsRaw);
-      const missions = xml ? xml.querySelectorAll("mission") : [];
-
+      const missions = missionsXml.querySelectorAll("mission");
       if (missions.length === 0) {
         board.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active contracts found.</div>`;
         return;
@@ -1085,23 +1006,17 @@
       });
     }
 
-    function renderAnimals(placeablesRaw) {
+    function renderAnimals(placeablesXml) {
       const animalsSection = document.getElementById('animals-section');
       if (!animalsSection) return;
 
-      if (!placeablesRaw) {
-        animalsSection.style.display = 'none';
-        return;
-      }
-
-      const xml = parseXmlString(placeablesRaw);
-      if (!xml) {
+      if (!placeablesXml) {
         animalsSection.style.display = 'none';
         return;
       }
 
       let foundAnimals = false;
-      xml.querySelectorAll("placeable").forEach(p => {
+      placeablesXml.querySelectorAll("placeable").forEach(p => {
         const fn = (p.getAttribute("filename") || "").toLowerCase();
         if (fn.includes('cow') || fn.includes('horse') || fn.includes('pig') || 
             fn.includes('chicken') || fn.includes('sheep') || fn.includes('dog')) {
@@ -1123,19 +1038,18 @@
       if (elem) elem.innerHTML = `<div style="font-size:11px; margin-top:4px;">🌾 ${feedName}: <strong>100%</strong></div>`;
     }
 
-    function renderServerMods(modsRaw) {
+    function renderServerMods(modsXml) {
       const modsContainer = document.getElementById('mods-container');
       const modsSection = document.getElementById('mods-section');
       if (!modsContainer || !modsSection) return;
 
-      if (!modsRaw) {
+      if (!modsXml) {
         modsSection.style.display = 'none';
         return;
       }
 
       modsContainer.innerHTML = '';
-      const xml = parseXmlString(modsRaw);
-      const mods = xml ? xml.querySelectorAll("mod") : [];
+      const mods = modsXml.querySelectorAll("mod");
 
       if (mods.length === 0) {
         modsSection.style.display = 'none';
@@ -1144,21 +1058,17 @@
 
       modsSection.style.display = 'block';
       mods.forEach(m => {
-        const title = m.getAttribute("title") || m.getAttribute("name") || "Custom Mod";
-        const author = m.getAttribute("author") || "ModHub";
+        const title = m.getAttribute("title") || m.getAttribute("modName") || "Custom Mod";
         const version = m.getAttribute("version") || "1.0.0.0";
-        const isCrossplay = m.getAttribute("hasScript") !== "true";
 
         const card = document.createElement('div');
         card.className = 'data-card';
         card.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <strong>📦 ${title}</strong>
-            <span style="background:${isCrossplay ? '#059669' : '#dc2626'}; color:#fff; font-size:9px; font-weight:800; padding:2px 6px; border-radius:4px;">
-              ${isCrossplay ? '🎮 CROSSPLAY' : '💻 PC ONLY'}
-            </span>
+            <span style="background:#059669; color:#fff; font-size:9px; font-weight:800; padding:2px 6px; border-radius:4px;">🎮 INSTALLED</span>
           </div>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Author: ${author} | v${version}</div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Version: v${version}</div>
         `;
         modsContainer.appendChild(card);
       });
