@@ -1,11 +1,10 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Wed, July 22, 2026, 10:55 PM EDT
+ * VERSION TIMESTAMP: Wed, July 22, 2026, 11:10 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Multi-Legacy Fallback
- * ADMIN PROFILE MAP: raykevin71888@gmail.com -> ['Werewolf3788', 'Kevin', 'kfruti'] (FULL ACCESS)
- * TEAM PROFILE MAP: cartnalray9@gmail.com -> ['Ray', 'Raymystyro']
- * RESILIENCE: Clean State Reset, Multi-Path Navigation, Token Observer
+ * NAV ENGINE: Dual API/CDN Fetch Engine (GitHub API -> jsDelivr CDN -> Local Fallback)
+ * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Legacy Backwards Sync
+ * ACCESS CONTROL: Unrestricted Admin (raykevin71888@gmail.com) & Profile Owner Enforcement
  * ==========================================
  */
 
@@ -302,10 +301,11 @@ const appState = {
         const navContainer = document.getElementById('dynamic-nav-links');
         if (!navContainer) return;
 
+        // HIGH-RELIABILITY CORS-SAFE NAVIGATION ENDPOINTS
         const endpoints = [
-            `https://werewolf3788.github.io/Website/Menu.json?v=${Date.now()}`,
-            `../../../Menu.json?v=${Date.now()}`,
-            `https://raw.githack.com/Werewolf3788/Website/main/Menu.json?v=${Date.now()}`
+            `https://cdn.jsdelivr.net/gh/Werewolf3788/Website@main/Menu.json?v=${Date.now()}`,
+            `https://api.github.com/repos/Werewolf3788/Website/contents/Menu.json?v=${Date.now()}`,
+            `https://werewolf3788.github.io/Website/Menu.json?v=${Date.now()}`
         ];
 
         let menuItems = null;
@@ -314,17 +314,30 @@ const appState = {
             try {
                 const res = await fetch(url);
                 if (res.ok) {
-                    menuItems = await res.json();
-                    break;
+                    const data = await res.json();
+                    
+                    // Decode base64 if coming from GitHub API
+                    if (data.content && data.encoding === 'base64') {
+                        const decodedStr = atob(data.content.replace(/\s/g, ''));
+                        menuItems = JSON.parse(decodedStr);
+                    } else if (Array.isArray(data)) {
+                        menuItems = data;
+                    }
+
+                    if (menuItems && Array.isArray(menuItems)) break;
                 }
             } catch (e) {
-                console.warn(`Nav endpoint failed: ${url}`);
+                console.warn(`Nav endpoint attempt failed: ${url}`);
             }
         }
 
         if (!menuItems || !Array.isArray(menuItems)) {
-            navContainer.innerHTML = `<span style="color: #ef4444; font-size: 0.85rem; padding: 8px; font-weight: 700;">Menu Load Warning</span>`;
-            return;
+            // HARDCODED FALLBACK PREVENTS SCREEN LOCK IF API TIMEOUTS OCCUR
+            menuItems = [
+                { name: "Home", url: "https://werewolf3788.github.io/Website/" },
+                { name: "Sniper Elite 5", url: "https://werewolf3788.github.io/Website/trackers/sniper-elite-5/" },
+                { name: "COTW Master", url: "https://werewolf3788.github.io/Website/trackers/cotw/" }
+            ];
         }
 
         const groups = {};
@@ -406,7 +419,6 @@ const appState = {
             if (user && !user.isAnonymous) {
                 const email = user.email ? user.email.toLowerCase() : '';
 
-                // BIND ADMIN EMAIL TO WEREWOLF3788 (ADMIN OVERRIDE)
                 if (email === 'raykevin71888@gmail.com') {
                     targetToLoad = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
                     this.targetDisplayName = 'Werewolf3788';
@@ -456,7 +468,6 @@ const appState = {
         this.targetUserId = userId;
         localStorage.setItem('se5_selected_user_id', userId);
 
-        // CLEAN SLATE RESET: Prevent state bleeding across profiles
         this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
 
         const displayNode = document.getElementById('hunter-display');
@@ -490,7 +501,6 @@ const appState = {
                 this.dataLoaded = true;
                 this.render();
             } else {
-                // LEGACY FALLBACK CHAIN FOR KEVIN / WEREWOLF3788 / RAY / TJ
                 const fallbackTarget = (userId.toLowerCase() === 'werewolf3788') ? 'Kevin' : userId;
                 const legacyRef = doc(this.db, "artifacts", "game-tracker-5b2ef", "data", "public", "user", fallbackTarget);
                 
