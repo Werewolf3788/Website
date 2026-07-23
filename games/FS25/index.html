@@ -16,7 +16,7 @@
 
   <!-- Open Graph / SEO Data -->
   <meta property="og:title" content="Werewolf FS25 Dedicated Server Dashboard">
-  <meta property="og:description" content="Real-time telemetry, fleet tracking, field registry, factories, and mod compatibility for Werewolf FS25 Dedicated Server.">
+  <meta property="og:description" content="Complete real-time telemetry, market economy, fleet tracking, field registry, factories, and mod compatibility for Werewolf FS25 Dedicated Server.">
   <meta property="og:type" content="website">
 
   <!-- Firebase v9+ Modular SDKs -->
@@ -330,18 +330,21 @@
   </header>
 
   <main class="dashboard-grid">
+    <!-- Registered Farms -->
     <section class="glass-panel" style="grid-column: 1 / -1;">
       <h2 style="color: var(--neon-gold);">🏡 Registered Server Farms (<span id="farm-count">0</span>)</h2>
       <div class="scroll-box" id="farms-container">Checking farm registry...</div>
     </section>
 
+    <!-- Factories & Placeables -->
     <section class="glass-panel" style="grid-column: 1 / -1;" id="factories-section">
-      <h2 style="color: var(--neon-gold);">🏭 Production Factories & Processing Facilities</h2>
-      <div class="scroll-box" id="factories-container">Scanning placeable production points...</div>
+      <h2 style="color: var(--neon-gold);">🏭 Production Factories & Placeable Storage</h2>
+      <div class="scroll-box" id="factories-container">Scanning placeables and production points...</div>
     </section>
 
+    <!-- Fleet Tracking -->
     <section class="glass-panel">
-      <h2 style="color: var(--neon-cyan);">🚚 Trucks & Highway Cars</h2>
+      <h2 style="color: var(--neon-cyan);">🚚 Trucks & Highway Vehicles</h2>
       <div class="scroll-box" id="trucks-box">Awaiting telemetry...</div>
     </section>
 
@@ -355,6 +358,7 @@
       <div class="scroll-box" id="implements-box">Awaiting telemetry...</div>
     </section>
 
+    <!-- Field Registry -->
     <section class="glass-panel">
       <h2 style="color: var(--neon-purple);">🌱 Ray's Owned Fields</h2>
       <div class="scroll-box" id="fields-ray">No fields registered.</div>
@@ -370,44 +374,44 @@
       <div class="scroll-box" id="fields-unclaimed">Scanning parcels...</div>
     </section>
 
+    <!-- Active Contracts & Missions -->
     <section class="glass-panel" id="contracts-section">
-      <h2 style="color: var(--neon-green);">📋 Active Contracts & Job Rewards</h2>
+      <h2 style="color: var(--neon-green);">📋 Active Contracts & Job Rewards (missions.xml)</h2>
       <div class="scroll-box" id="contract-board">No active contracts found.</div>
     </section>
 
-    <section class="glass-panel" id="animals-section" style="grid-column: 1 / -1; display: none;">
-      <h2 style="color: var(--neon-gold);">🐄 Livestock Operations & Animal Feeds</h2>
-      <div class="dashboard-grid" id="animals-grid">
-        <div class="data-card"><strong>🐄 Cattle / Cows</strong><div id="cows-info">Loading feed %...</div></div>
-        <div class="data-card"><strong>🐎 Horses</strong><div id="horses-info">Loading feed %...</div></div>
-        <div class="data-card"><strong>🐖 Swine / Pigs</strong><div id="pigs-info">Loading feed %...</div></div>
-        <div class="data-card"><strong>🐔 Poultry / Chickens</strong><div id="chickens-info">Loading feed %...</div></div>
-        <div class="data-card"><strong>🐑 Sheep</strong><div id="sheep-info">Loading feed %...</div></div>
-        <div class="data-card"><strong>🐕 Kennel / Dog</strong><div id="dog-info">Loading feed %...</div></div>
-      </div>
+    <!-- Used Vehicles & Items Sale Bargains -->
+    <section class="glass-panel" id="sales-section">
+      <h2 style="color: var(--neon-gold);">🏷️ Used Equipment Sales & Discounts (sales.xml)</h2>
+      <div class="scroll-box" id="sales-container">Checking sale items...</div>
     </section>
 
+    <!-- Market Economy Prices -->
+    <section class="glass-panel" id="economy-section">
+      <h2 style="color: var(--neon-cyan);">📈 Commodity Market Economy (economy.xml)</h2>
+      <div class="scroll-box" id="economy-container">Loading market prices...</div>
+    </section>
+
+    <!-- Map Collectibles Tracking -->
+    <section class="glass-panel" id="collectibles-section">
+      <h2 style="color: var(--neon-purple);">🏆 Server Collectibles Progress (collectibles.xml)</h2>
+      <div class="scroll-box" id="collectibles-container">Loading collectibles...</div>
+    </section>
+
+    <!-- Installed Mods -->
     <section class="glass-panel" id="mods-section" style="grid-column: 1 / -1; display: none;">
       <h2 style="color: var(--neon-purple);">📦 Installed Server Mods & Crossplay Status</h2>
       <div class="scroll-box" id="mods-container">Loading mod list...</div>
     </section>
-
   </main>
 
   <script>
     /**
-     * Version Timestamp: Thu, July 23, 2026, 9:20 PM (EDT)
-     * Resilient FS25 Dashboard (Direct Raw-XML Link Parser Engine)
+     * Version Timestamp: Thu, July 23, 2026, 10:15 PM (EDT)
+     * Resilient FS25 Dashboard (Full XML Dataset Parsing Suite)
      */
     const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
     const parser = new DOMParser();
-
-    // Direct G-Portal Raw Feed Links (Bypasses .html wrapper)
-    const PROXY = "https://api.allorigins.win/raw?url=";
-    const RAW_STATS_URL = "http://144.126.153.115:8300/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM";
-    const FEED_CAREERSAVEGAME = "http://144.126.153.115:8300/feed/dedicated-server-savegame.xml?code=3FvqSlOsYKckfauM&file=careerSavegame";
-    const FEED_VEHICLES = "http://144.126.153.115:8300/feed/dedicated-server-savegame.xml?code=3FvqSlOsYKckfauM&file=vehicles";
-    const FEED_FARMS = "http://144.126.153.115:8300/feed/dedicated-server-savegame.xml?code=3FvqSlOsYKckfauM&file=farms";
 
     window.addEventListener('DOMContentLoaded', () => {
       loadGlobalMenu();
@@ -423,39 +427,33 @@
 
           onValue(fsRef, (snapshot) => {
             const data = snapshot.val();
-            if (data && (data.vehicles || data.vehicles_xml || data.farms || data.farms_xml)) {
+            if (data) {
               renderDashboard(data);
             } else {
-              fetchDirectGPortalFeeds();
+              showOfflineState();
             }
-          }, (error) => {
-            fetchDirectGPortalFeeds();
-          });
+          }, () => { showOfflineState(); });
         }
       }, 100);
     }
 
-    async function fetchDirectGPortalFeeds() {
-      const cb = new Date().getTime();
-      const fallbackPayload = {};
-
+    function parseXmlString(xmlString) {
+      if (!xmlString || typeof xmlString !== 'string') return null;
       try {
-        const [statsRes, careerRes, vehRes, farmRes] = await Promise.all([
-          fetch(`${PROXY}${encodeURIComponent(RAW_STATS_URL + '&cb=' + cb)}`).catch(() => null),
-          fetch(`${PROXY}${encodeURIComponent(FEED_CAREERSAVEGAME + '&cb=' + cb)}`).catch(() => null),
-          fetch(`${PROXY}${encodeURIComponent(FEED_VEHICLES + '&cb=' + cb)}`).catch(() => null),
-          fetch(`${PROXY}${encodeURIComponent(FEED_FARMS + '&cb=' + cb)}`).catch(() => null)
-        ]);
+        const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+        if (xmlDoc.getElementsByTagName("parsererror").length > 0) return null;
+        return xmlDoc;
+      } catch (e) { return null; }
+    }
 
-        if (statsRes && statsRes.ok) fallbackPayload.stats = { data: await statsRes.text() };
-        if (careerRes && careerRes.ok) fallbackPayload.careerSavegame = { data: await careerRes.text() };
-        if (vehRes && vehRes.ok) fallbackPayload.vehicles = { data: await vehRes.text() };
-        if (farmRes && farmRes.ok) fallbackPayload.farms = { data: await farmRes.text() };
+    function extractXmlData(data, keyName) {
+      if (!data) return null;
+      let val = data[keyName] || data[`${keyName}_xml`];
+      if (!val && data.liveState) val = data.liveState[keyName] || data.liveState[`${keyName}_xml`];
 
-        renderDashboard(fallbackPayload);
-      } catch (err) {
-        showOfflineState();
-      }
+      if (typeof val === 'string') return parseXmlString(val);
+      if (val && typeof val.data === 'string') return parseXmlString(val.data);
+      return null;
     }
 
     function cleanNameFromPath(path) {
@@ -536,7 +534,7 @@
 
           const triggerBtn = document.createElement('button');
           triggerBtn.className = 'nav-dropdown-trigger';
-          triggerBtn.innerHTML = `${getGroupIcon(groupName)} ${groupName} <span style="font-size:10px;">▼</span>`;
+          triggerBtn.innerHTML = `📁 ${groupName} <span style="font-size:10px;">▼</span>`;
 
           const dropdownMenu = document.createElement('div');
           dropdownMenu.className = 'nav-dropdown-menu';
@@ -564,16 +562,6 @@
       } catch (err) {
         navContainer.style.display = 'none';
       }
-    }
-
-    function getGroupIcon(groupName) {
-      const g = groupName.toLowerCase();
-      if (g.includes('game')) return '🎮';
-      if (g.includes('user')) return '👤';
-      if (g.includes('discord')) return '💬';
-      if (g.includes('site')) return '🌐';
-      if (g.includes('entertainment') || g.includes('movie')) return '🎬';
-      return '📁';
     }
 
     function parseCSV(text) {
@@ -618,25 +606,6 @@
       });
     }
 
-    function getNodeXmlData(data, nodeName) {
-      if (!data) return null;
-      let rawVal = data[nodeName] || data[`${nodeName}_xml`];
-      if (!rawVal && data.liveState) rawVal = data.liveState[nodeName] || data.liveState[`${nodeName}_xml`];
-
-      if (typeof rawVal === 'string') return parseXmlString(rawVal);
-      if (rawVal && typeof rawVal.data === 'string') return parseXmlString(rawVal.data);
-      return null;
-    }
-
-    function parseXmlString(xmlString) {
-      if (!xmlString || typeof xmlString !== 'string') return null;
-      try {
-        const xmlDoc = parser.parseFromString(xmlString, "text/xml");
-        if (xmlDoc.getElementsByTagName("parsererror").length > 0) return null;
-        return xmlDoc;
-      } catch (e) { return null; }
-    }
-
     function showOfflineState() {
       const statusIndicator = document.getElementById('status-indicator');
       const serverTitle = document.getElementById('server-title');
@@ -648,17 +617,31 @@
       const statusIndicator = document.getElementById('status-indicator');
       if (statusIndicator) statusIndicator.className = "status-dot online";
 
-      renderServerHeader(getNodeXmlData(data, 'stats'));
-      renderEnvironment(getNodeXmlData(data, 'stats') || getNodeXmlData(data, 'careerSavegame'));
-      renderGameActivityState(getNodeXmlData(data, 'stats'), getNodeXmlData(data, 'careerSavegame'));
-      renderFarms(getNodeXmlData(data, 'farms'), getNodeXmlData(data, 'careerSavegame'));
-      renderPlayerRoster(getNodeXmlData(data, 'players') || getNodeXmlData(data, 'stats'));
-      renderVehicles(getNodeXmlData(data, 'vehicles'));
-      renderFactories(getNodeXmlData(data, 'placeables'));
-      renderFields(getNodeXmlData(data, 'fields'));
-      renderContracts(getNodeXmlData(data, 'missions'));
-      renderAnimals(getNodeXmlData(data, 'placeables'));
-      renderServerMods(getNodeXmlData(data, 'mods') || getNodeXmlData(data, 'careerSavegame') || getNodeXmlData(data, 'stats'));
+      const statsXml = extractXmlData(data, 'stats');
+      const careerXml = extractXmlData(data, 'careerSavegame');
+      const farmsXml = extractXmlData(data, 'farms');
+      const vehiclesXml = extractXmlData(data, 'vehicles');
+      const placeablesXml = extractXmlData(data, 'placeables');
+      const fieldsXml = extractXmlData(data, 'fields') || extractXmlData(data, 'farmland');
+      const missionsXml = extractXmlData(data, 'missions');
+      const salesXml = extractXmlData(data, 'sales');
+      const economyXml = extractXmlData(data, 'economy');
+      const collectiblesXml = extractXmlData(data, 'collectibles');
+      const modsXml = extractXmlData(data, 'mods');
+
+      renderServerHeader(statsXml);
+      renderEnvironment(statsXml || careerXml || extractXmlData(data, 'environment'));
+      renderGameActivityState(statsXml, careerXml);
+      renderFarms(farmsXml, careerXml, data.farms_xml || data.farms);
+      renderPlayerRoster(statsXml);
+      renderVehicles(vehiclesXml, data.vehicles_xml || data.vehicles);
+      renderFactories(placeablesXml);
+      renderFields(fieldsXml);
+      renderContracts(missionsXml);
+      renderSales(salesXml);
+      renderEconomy(economyXml);
+      renderCollectibles(collectiblesXml);
+      renderServerMods(modsXml || careerXml || statsXml);
     }
 
     function renderGameActivityState(statsXml, careerXml) {
@@ -666,17 +649,10 @@
       const statusDot = document.getElementById('status-indicator');
       if (!stateText) return;
 
-      let isPaused = false;
       let activePlayersCount = 0;
-
       if (statsXml) {
         const slots = statsXml.querySelector("slots");
         if (slots) activePlayersCount = parseInt(slots.getAttribute("numUsed") || "0", 10);
-      }
-
-      if (careerXml) {
-        const pausedNode = careerXml.querySelector("paused");
-        if (pausedNode && pausedNode.textContent === "true") isPaused = true;
       }
 
       if (activePlayersCount === 0) {
@@ -731,7 +707,7 @@
       if (document.getElementById('env-time')) document.getElementById('env-time').innerText = timeFormatted;
     }
 
-    function renderFarms(farmsXml, careerXml) {
+    function renderFarms(farmsXml, careerXml, rawObjectNode) {
       const container = document.getElementById('farms-container');
       const countElem = document.getElementById('farm-count');
       if (!container) return;
@@ -740,8 +716,7 @@
       let farmList = [];
 
       if (farmsXml) {
-        const farms = farmsXml.querySelectorAll("farm");
-        farms.forEach(f => {
+        farmsXml.querySelectorAll("farm").forEach(f => {
           farmList.push({
             id: f.getAttribute("farmId") || f.getAttribute("id") || "1",
             name: f.getAttribute("name") || "Farm 1",
@@ -750,11 +725,29 @@
         });
       }
 
-      // Fallback to money stat in careerSavegame if farmsXml hasn't loaded
+      if (farmList.length === 0 && rawObjectNode && typeof rawObjectNode === 'object') {
+        const farmRoot = rawObjectNode.farms?.farm || rawObjectNode.farm || rawObjectNode;
+        if (farmRoot) {
+          const keys = Object.keys(farmRoot);
+          keys.forEach(k => {
+            const item = farmRoot[k]._attributes || farmRoot[k];
+            if (item && (item.name || item.farmId || item.money)) {
+              farmList.push({
+                id: item.farmId || item.id || k,
+                name: item.name || `Farm #${k}`,
+                money: parseFloat(item.money || "0").toLocaleString()
+              });
+            }
+          });
+        }
+      }
+
       if (farmList.length === 0 && careerXml) {
         const moneyNode = careerXml.querySelector("statistics money") || careerXml.querySelector("money");
-        const moneyVal = moneyNode ? parseFloat(moneyNode.textContent || "0").toLocaleString() : "280,000";
-        farmList.push({ id: "1", name: "Farm 1", money: moneyVal });
+        if (moneyNode) {
+          const val = parseFloat(moneyNode.textContent || "280000").toLocaleString();
+          farmList.push({ id: "1", name: "Farm 1", money: val });
+        }
       }
 
       if (farmList.length === 0) {
@@ -783,48 +776,19 @@
       container.innerHTML = '';
 
       if (!placeablesXml) {
-        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active factories detected.</div>`;
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active placeables/factories detected.</div>`;
         return;
       }
 
       const placeables = placeablesXml.querySelectorAll("placeable");
-      let factoryCount = 0;
+      let count = 0;
 
       placeables.forEach(p => {
-        const prodPoint = p.querySelector("productionPoint");
-        if (!prodPoint) return;
-
-        factoryCount++;
+        count++;
         const farmId = p.getAttribute("farmId") || "1";
         const customTitle = p.getAttribute("customTitle");
-        const filename = p.getAttribute("filename") || "Factory";
+        const filename = p.getAttribute("filename") || "Placeable";
         const cleanName = customTitle || cleanNameFromPath(filename);
-
-        let totalFill = 0;
-        let totalCapacity = 0;
-        let storageHtml = '';
-
-        const storages = prodPoint.querySelectorAll("storage node");
-        storages.forEach(node => {
-          const fillType = node.getAttribute("fillType") || "Product";
-          const level = Math.round(parseFloat(node.getAttribute("fillLevel") || "0"));
-          const capacity = Math.round(parseFloat(node.getAttribute("capacity") || "100000"));
-          
-          totalFill += level;
-          totalCapacity += capacity;
-
-          const neededToFull = (capacity - level).toLocaleString();
-          const percentFull = capacity > 0 ? Math.round((level / capacity) * 100) : 0;
-
-          storageHtml += `
-            <div class="io-pill">
-              <strong>${cleanNameFromPath(fillType)}:</strong> ${level.toLocaleString()} / ${capacity.toLocaleString()} L 
-              (${percentFull}%) | <span style="color:var(--neon-gold)">Needed: ${neededToFull} L</span>
-            </div>
-          `;
-        });
-
-        const overallPercent = totalCapacity > 0 ? Math.round((totalFill / totalCapacity) * 100) : 0;
 
         const card = document.createElement('div');
         card.className = 'data-card';
@@ -832,23 +796,19 @@
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <strong>🏭 ${cleanName}</strong>
             <span style="background:#2563eb; color:#fff; font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px;">
-              OWNER FARM ID: ${farmId}
+              FARM ID: ${farmId}
             </span>
           </div>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">Total Factory Storage: ${overallPercent}% Full</div>
-          <div class="bar-track"><div class="bar-fill" style="width:${overallPercent}%; background:var(--neon-gold);"></div></div>
-          <div style="margin-top:8px;">${storageHtml}</div>
         `;
-
         container.appendChild(card);
       });
 
-      if (factoryCount === 0) {
-        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active factories detected on server savegame.</div>`;
+      if (count === 0) {
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No placeables found in savegame.</div>`;
       }
     }
 
-    function renderPlayerRoster(playersXml) {
+    function renderPlayerRoster(statsXml) {
       const rosterBox = document.getElementById('player-roster');
       const countElem = document.getElementById('player-count');
       const roleText = document.getElementById('ingame-role-text');
@@ -858,8 +818,8 @@
       let hasAdmin = false;
       let activeCount = 0;
 
-      if (playersXml) {
-        const players = playersXml.querySelectorAll("player");
+      if (statsXml) {
+        const players = statsXml.querySelectorAll("player");
         activeCount = players.length;
         if (countElem) countElem.innerText = `${activeCount}/6`;
 
@@ -895,7 +855,7 @@
       }
     }
 
-    function renderVehicles(vehiclesXml) {
+    function renderVehicles(vehiclesXml, rawObjectNode) {
       const trucksBox = document.getElementById('trucks-box');
       const tractorsBox = document.getElementById('tractors-box');
       const implementsBox = document.getElementById('implements-box');
@@ -904,30 +864,53 @@
       if (tractorsBox) tractorsBox.innerHTML = '';
       if (implementsBox) implementsBox.innerHTML = '';
 
-      if (!vehiclesXml) return;
+      let vehicleList = [];
 
-      vehiclesXml.querySelectorAll("vehicle").forEach(v => {
-        const filename = v.getAttribute("filename") || "Vehicle";
-        const modName = v.getAttribute("modName") || "";
-        const cleanName = modName ? modName.replace('FS25_', '').replace(/_/g, ' ') : cleanNameFromPath(filename);
-        const lowerName = filename.toLowerCase();
-        const farmId = v.getAttribute("farmId") || "1";
+      if (vehiclesXml) {
+        vehiclesXml.querySelectorAll("vehicle").forEach(v => {
+          const filename = v.getAttribute("filename") || "Vehicle";
+          const modName = v.getAttribute("modName") || "";
+          const cleanName = modName ? modName.replace('FS25_', '').replace(/_/g, ' ') : cleanNameFromPath(filename);
+          const farmId = v.getAttribute("farmId") || "1";
 
-        let condition = 100;
-        const wearable = v.querySelector("wearable");
-        if (wearable && wearable.getAttribute("damage")) {
-          condition = Math.round((1 - parseFloat(wearable.getAttribute("damage"))) * 100);
+          let condition = 100;
+          const wearable = v.querySelector("wearable");
+          if (wearable && wearable.getAttribute("damage")) {
+            condition = Math.round((1 - parseFloat(wearable.getAttribute("damage"))) * 100);
+          }
+
+          vehicleList.push({ filename, cleanName, farmId, condition });
+        });
+      }
+
+      if (vehicleList.length === 0 && rawObjectNode && typeof rawObjectNode === 'object') {
+        const vRoot = rawObjectNode.vehicles?.vehicle || rawObjectNode.vehicle || rawObjectNode;
+        if (vRoot) {
+          const keys = Object.keys(vRoot);
+          keys.forEach(k => {
+            const item = vRoot[k]._attributes || vRoot[k];
+            if (item && item.filename) {
+              const filename = item.filename;
+              const modName = item.modName || "";
+              const cleanName = modName ? modName.replace('FS25_', '').replace(/_/g, ' ') : cleanNameFromPath(filename);
+              const farmId = item.farmId || "1";
+              vehicleList.push({ filename, cleanName, farmId, condition: 100 });
+            }
+          });
         }
+      }
 
+      vehicleList.forEach(v => {
+        const lowerName = v.filename.toLowerCase();
         const card = document.createElement('div');
         card.className = 'data-card';
         card.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>🚜 ${cleanName}</strong>
-            <span style="background:#1d4ed8; color:#fff; font-size:9px; padding:2px 6px; border-radius:4px;">FARM ID: ${farmId}</span>
+            <strong>🚜 ${v.cleanName}</strong>
+            <span style="background:#1d4ed8; color:#fff; font-size:9px; padding:2px 6px; border-radius:4px;">FARM ID: ${v.farmId}</span>
           </div>
-          <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Condition: ${condition}%</div>
-          <div class="bar-track"><div class="bar-fill" style="width:${condition}%; background:#10b981;"></div></div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Condition: ${v.condition}%</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${v.condition}%; background:#10b981;"></div></div>
         `;
 
         if (lowerName.includes('truck') || lowerName.includes('car') || lowerName.includes('pickup')) {
@@ -951,15 +934,16 @@
 
       if (!fieldsXml) return;
 
-      fieldsXml.querySelectorAll("field").forEach(f => {
-        const id = f.getAttribute("id") || "?";
+      const fields = fieldsXml.querySelectorAll("field") || fieldsXml.querySelectorAll("farmland");
+      fields.forEach(f => {
+        const id = f.getAttribute("id") || f.getAttribute("farmlandId") || "?";
         const hectares = parseFloat(f.getAttribute("hectares") || "1.25").toFixed(2);
 
         const card = document.createElement('div');
         card.className = 'data-card';
         card.innerHTML = `
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <strong>Field #${id} (${hectares} ha)</strong>
+            <strong>Field / Farmland #${id} (${hectares} ha)</strong>
             <span style="font-size:10px; padding:2px 6px; border-radius:4px; background:#10b981; color:#fff;">Active</span>
           </div>
         `;
@@ -981,13 +965,13 @@
       board.innerHTML = '';
 
       if (!missionsXml) {
-        board.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active contracts found.</div>`;
+        board.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active contracts found in missions.xml.</div>`;
         return;
       }
 
       const missions = missionsXml.querySelectorAll("mission");
       if (missions.length === 0) {
-        board.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active contracts found.</div>`;
+        board.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active contracts found in missions.xml.</div>`;
         return;
       }
 
@@ -1006,36 +990,101 @@
       });
     }
 
-    function renderAnimals(placeablesXml) {
-      const animalsSection = document.getElementById('animals-section');
-      if (!animalsSection) return;
+    function renderSales(salesXml) {
+      const container = document.getElementById('sales-container');
+      if (!container) return;
+      container.innerHTML = '';
 
-      if (!placeablesXml) {
-        animalsSection.style.display = 'none';
+      if (!salesXml) {
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No sale items active in sales.xml.</div>`;
         return;
       }
 
-      let foundAnimals = false;
-      placeablesXml.querySelectorAll("placeable").forEach(p => {
-        const fn = (p.getAttribute("filename") || "").toLowerCase();
-        if (fn.includes('cow') || fn.includes('horse') || fn.includes('pig') || 
-            fn.includes('chicken') || fn.includes('sheep') || fn.includes('dog')) {
-          foundAnimals = true;
-          if (fn.includes('cow')) updateAnimalUI('cows-info', 'TMR Feed');
-          else if (fn.includes('horse')) updateAnimalUI('horses-info', 'Oats / Hay');
-          else if (fn.includes('pig')) updateAnimalUI('pigs-info', 'Pig Food');
-          else if (fn.includes('chicken')) updateAnimalUI('chickens-info', 'Wheat Feed');
-          else if (fn.includes('sheep')) updateAnimalUI('sheep-info', 'Grass Feed');
-          else if (fn.includes('dog')) updateAnimalUI('dog-info', 'Pet Food');
-        }
-      });
+      const items = salesXml.querySelectorAll("item");
+      if (items.length === 0) {
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No sale items active in sales.xml.</div>`;
+        return;
+      }
 
-      animalsSection.style.display = foundAnimals ? 'block' : 'none';
+      items.forEach(i => {
+        const filename = i.getAttribute("xmlFilename") || "Used Item";
+        const price = parseFloat(i.getAttribute("price") || "0").toLocaleString();
+        const cleanName = cleanNameFromPath(filename);
+
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>🏷️ ${cleanName}</strong>
+            <span style="color:var(--neon-gold); font-weight:800;">$${price}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
     }
 
-    function updateAnimalUI(elemId, feedName) {
-      const elem = document.getElementById(elemId);
-      if (elem) elem.innerHTML = `<div style="font-size:11px; margin-top:4px;">🌾 ${feedName}: <strong>100%</strong></div>`;
+    function renderEconomy(economyXml) {
+      const container = document.getElementById('economy-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!economyXml) {
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">Economy market pricing syncing...</div>`;
+        return;
+      }
+
+      const fills = economyXml.querySelectorAll("fillType");
+      if (fills.length === 0) {
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">Economy market pricing syncing...</div>`;
+        return;
+      }
+
+      fills.forEach(f => {
+        const name = cleanNameFromPath(f.getAttribute("name") || "Crop");
+        const history = f.querySelector("history");
+        const price = history ? parseFloat(history.getAttribute("price") || "1.0").toFixed(2) : "1.00";
+
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>🌾 ${name}</strong>
+            <span style="color:var(--neon-cyan); font-weight:800;">$${price} / kL</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderCollectibles(collectiblesXml) {
+      const container = document.getElementById('collectibles-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!collectiblesXml) {
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">Scanning collectibles.xml...</div>`;
+        return;
+      }
+
+      const items = collectiblesXml.querySelectorAll("collectible");
+      let collectedCount = 0;
+
+      items.forEach(c => {
+        if (c.getAttribute("collected") === "true") collectedCount++;
+      });
+
+      const total = items.length || 25;
+      const percent = Math.round((collectedCount / total) * 100);
+
+      container.innerHTML = `
+        <div class="data-card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>🏆 Collectibles Progress</strong>
+            <span style="color:var(--neon-purple); font-weight:800;">${collectedCount} / ${total} (${percent}%)</span>
+          </div>
+          <div class="bar-track"><div class="bar-fill" style="width:${percent}%; background:var(--neon-purple);"></div></div>
+        </div>
+      `;
     }
 
     function renderServerMods(modsXml) {
