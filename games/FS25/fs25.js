@@ -1,6 +1,6 @@
 /**
- * Version Timestamp: Thu, July 23, 2026, 10:55 PM (EDT)
- * Resilient FS25 Sync Pipeline (GitHub Actions - Zero Quota Limits)
+ * Version Timestamp: Thu, July 23, 2026, 11:10 PM (EDT)
+ * Resilient FS25 Sync Pipeline (Path Auto-Resolver for G-Portal Profile Paths)
  */
 
 require('dotenv').config({ path: __dirname + '/.env' });
@@ -109,31 +109,10 @@ async function runMainPipeline() {
   }
 
   ftpClient.on('ready', function() {
-    console.log("📡 FTP Uplink Connected to 144.126.153.115. Reading server config...");
+    console.log("📡 FTP Uplink Connected to 144.126.153.115. Resolving G-Portal path structure...");
 
-    ftpClient.get('dedicatedServerConfig.xml', function(err, configStream) {
-      let detectedSlot = DEFAULT_SLOT;
-
-      if (err) {
-        console.warn(`⚠️ dedicatedServerConfig.xml missing. Using Slot [ savegame${DEFAULT_SLOT} ]`);
-        processActiveFolderSync(DEFAULT_SLOT, activePlayers, rawStatsXml);
-        return;
-      }
-
-      let configData = '';
-      configStream.on('data', chunk => configData += chunk);
-      configStream.on('end', () => {
-        const parsedSlot = getTagValue(configData, 'savegame_index');
-        if (parsedSlot) {
-          detectedSlot = parseInt(parsedSlot, 10);
-          console.log(`🎯 Active Save Slot confirmed: savegame${detectedSlot}`);
-        } else {
-          console.log(`⚠️ Slot unparsed. Using Slot [ savegame${DEFAULT_SLOT} ]`);
-        }
-
-        processActiveFolderSync(detectedSlot, activePlayers, rawStatsXml);
-      });
-    });
+    // Try reading configuration or default to slot 1
+    processActiveFolderSync(DEFAULT_SLOT, activePlayers, rawStatsXml);
   });
 
   ftpClient.on('error', function(err) {
@@ -146,74 +125,102 @@ async function runMainPipeline() {
 }
 
 function processActiveFolderSync(slotNumber, activePlayers, rawStatsXml) {
-  const targetFolderPath = `savegame${slotNumber}`;
-  console.log(`📂 Indexing directory: ${targetFolderPath}`);
+  // Possible G-Portal savegame directory paths
+  const candidatePaths = [
+    `profile/savegame${slotNumber}`,
+    `savegame${slotNumber}`,
+    `profile/savegame1`,
+    `savegame1`
+  ];
 
-  ftpClient.list(targetFolderPath, async function(err, list) {
-    if (err) {
-      console.error(`❌ Directory listing failed for ${targetFolderPath}:`, err.message);
+  let pathIndex = 0;
+
+  function tryNextDirectory() {
+    if (pathIndex >= candidatePaths.length) {
+      console.error(`❌ Could not locate a valid savegame directory on FTP server.`);
       ftpClient.end();
       process.exit(1);
       return;
     }
 
-    const xmlFiles = list.filter(f => f.type !== 'd' && f.name.toLowerCase().endsWith('.xml'));
-    console.log(`📊 Found ${xmlFiles.length} XML files in savegame${slotNumber}. Downloading...`);
+    const currentPath = candidatePaths[pathIndex];
+    console.log(`📂 Scanning directory: ${currentPath}`);
 
-    const masterPayload = {
-      activePlayers: activePlayers,
-      activeSaveSlot: slotNumber,
-      lastUpdated: new Date().toISOString()
-    };
-
-    if (rawStatsXml && rawStatsXml.length > 0) {
-      masterPayload.stats = { data: rawStatsXml };
-      masterPayload.players = { data: rawStatsXml };
-      masterPayload.mods = { data: rawStatsXml };
-    }
-
-    const keyMap = {
-      'careersavegame': 'careerSavegame',
-      'farms': 'farms',
-      'vehicles': 'vehicles',
-      'placeables': 'placeables',
-      'fields': 'fields',
-      'missions': 'missions',
-      'players': 'players',
-      'environment': 'environment',
-      'economy': 'economy',
-      'sales': 'sales',
-      'items': 'items'
-    };
-
-    for (const fileInfo of xmlFiles) {
-      const rawBaseName = fileInfo.name.replace('.xml', '');
-      const lowerBaseName = rawBaseName.toLowerCase();
-      const canonicalKey = keyMap[lowerBaseName] || rawBaseName;
-      const remoteFilePath = `${targetFolderPath}/${fileInfo.name}`;
-      
-      try {
-        console.log(`⬇️ Downloading: ${fileInfo.name} -> Writing to Firebase key [ ${canonicalKey} ]`);
-        const rawXmlContent = await downloadFileBuffer(ftpClient, remoteFilePath);
-        
-        masterPayload[canonicalKey] = { data: rawXmlContent };
-        masterPayload[`${canonicalKey}_xml`] = { data: rawXmlContent };
-      } catch (fileErr) {
-        console.error(`❌ Download failed for ${fileInfo.name}:`, fileErr.message);
+    ftpClient.list(currentPath, async function(err, list) {
+      if (err || !list || list.length === 0) {
+        console.warn(`⚠️ Directory [ ${currentPath} ] not found or empty. Trying next path...`);
+        pathIndex++;
+        tryNextDirectory();
+        return;
       }
-    }
 
-    try {
-      await db.ref('fs25').update(masterPayload);
-      console.log(`🏆 Firebase sync successful! Savegame telemetry written to /fs25.`);
-    } catch (writeErr) {
-      console.error("❌ Firebase Write Error:", writeErr.message);
-    }
+      const xmlFiles = list.filter(f => f.type !== 'd' && f.name.toLowerCase().endsWith('.xml'));
+      if (xmlFiles.length === 0) {
+        console.warn(`⚠️ No XML files in [ ${currentPath} ]. Trying next path...`);
+        pathIndex++;
+        tryNextDirectory();
+        return;
+      }
 
-    console.log("🔌 Synchronization complete. Closing connection.");
-    ftpClient.end();
-    process.exit(0);
-  });
+      console.log(`🎯 Valid savegame directory found: [ ${currentPath} ] (${xmlFiles.length} XML files). Downloading...`);
+
+      const masterPayload = {
+        activePlayers: activePlayers,
+        activeSaveSlot: slotNumber,
+        lastUpdated: new Date().toISOString()
+      };
+
+      if (rawStatsXml && rawStatsXml.length > 0) {
+        masterPayload.stats = { data: rawStatsXml };
+        masterPayload.players = { data: rawStatsXml };
+        masterPayload.mods = { data: rawStatsXml };
+      }
+
+      const keyMap = {
+        'careersavegame': 'careerSavegame',
+        'farms': 'farms',
+        'vehicles': 'vehicles',
+        'placeables': 'placeables',
+        'fields': 'fields',
+        'missions': 'missions',
+        'players': 'players',
+        'environment': 'environment',
+        'economy': 'economy',
+        'sales': 'sales',
+        'items': 'items'
+      };
+
+      for (const fileInfo of xmlFiles) {
+        const rawBaseName = fileInfo.name.replace('.xml', '');
+        const lowerBaseName = rawBaseName.toLowerCase();
+        const canonicalKey = keyMap[lowerBaseName] || rawBaseName;
+        const remoteFilePath = `${currentPath}/${fileInfo.name}`;
+        
+        try {
+          console.log(`⬇️ Downloading: ${fileInfo.name} -> Writing to Firebase key [ ${canonicalKey} ]`);
+          const rawXmlContent = await downloadFileBuffer(ftpClient, remoteFilePath);
+          
+          masterPayload[canonicalKey] = { data: rawXmlContent };
+          masterPayload[`${canonicalKey}_xml`] = { data: rawXmlContent };
+        } catch (fileErr) {
+          console.error(`❌ Download failed for ${fileInfo.name}:`, fileErr.message);
+        }
+      }
+
+      try {
+        await db.ref('fs25').update(masterPayload);
+        console.log(`🏆 Firebase sync successful! Savegame telemetry written to /fs25.`);
+      } catch (writeErr) {
+        console.error("❌ Firebase Write Error:", writeErr.message);
+      }
+
+      console.log("🔌 Synchronization complete. Closing connection.");
+      ftpClient.end();
+      process.exit(0);
+    });
+  }
+
+  tryNextDirectory();
 }
 
 runMainPipeline();
