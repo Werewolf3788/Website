@@ -1,10 +1,10 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Wed, July 22, 2026, 11:10 PM EDT
+ * VERSION TIMESTAMP: Wed, July 22, 2026, 11:15 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * NAV ENGINE: Dual API/CDN Fetch Engine (GitHub API -> jsDelivr CDN -> Local Fallback)
- * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Legacy Backwards Sync
- * ACCESS CONTROL: Unrestricted Admin (raykevin71888@gmail.com) & Profile Owner Enforcement
+ * NAV ENGINE: Comment-Stripping Dynamic Menu Parser (Handles commented JSON)
+ * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Legacy Sync
+ * TEAM MAP: Admin (raykevin71888@gmail.com) | Ray (cartnalray9@gmail.com)
  * ==========================================
  */
 
@@ -301,7 +301,6 @@ const appState = {
         const navContainer = document.getElementById('dynamic-nav-links');
         if (!navContainer) return;
 
-        // HIGH-RELIABILITY CORS-SAFE NAVIGATION ENDPOINTS
         const endpoints = [
             `https://cdn.jsdelivr.net/gh/Werewolf3788/Website@main/Menu.json?v=${Date.now()}`,
             `https://api.github.com/repos/Werewolf3788/Website/contents/Menu.json?v=${Date.now()}`,
@@ -314,30 +313,37 @@ const appState = {
             try {
                 const res = await fetch(url);
                 if (res.ok) {
-                    const data = await res.json();
+                    let text = await res.text();
                     
-                    // Decode base64 if coming from GitHub API
-                    if (data.content && data.encoding === 'base64') {
-                        const decodedStr = atob(data.content.replace(/\s/g, ''));
-                        menuItems = JSON.parse(decodedStr);
-                    } else if (Array.isArray(data)) {
-                        menuItems = data;
+                    // STRIP COMMENTS TO PREVENT JSON PARSE FAILURE
+                    text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
+
+                    let data = null;
+                    try {
+                        data = JSON.parse(text);
+                    } catch (e) {
+                        // Attempt base64 decoding if coming from GitHub REST API
+                        const rawJson = JSON.parse(text);
+                        if (rawJson.content && rawJson.encoding === 'base64') {
+                            const decoded = atob(rawJson.content.replace(/\s/g, ''));
+                            const cleanDecoded = decoded.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
+                            data = JSON.parse(cleanDecoded);
+                        }
                     }
 
-                    if (menuItems && Array.isArray(menuItems)) break;
+                    if (data && Array.isArray(data)) {
+                        menuItems = data;
+                        break;
+                    }
                 }
             } catch (e) {
-                console.warn(`Nav endpoint attempt failed: ${url}`);
+                console.warn(`Nav endpoint failed: ${url}`);
             }
         }
 
         if (!menuItems || !Array.isArray(menuItems)) {
-            // HARDCODED FALLBACK PREVENTS SCREEN LOCK IF API TIMEOUTS OCCUR
-            menuItems = [
-                { name: "Home", url: "https://werewolf3788.github.io/Website/" },
-                { name: "Sniper Elite 5", url: "https://werewolf3788.github.io/Website/trackers/sniper-elite-5/" },
-                { name: "COTW Master", url: "https://werewolf3788.github.io/Website/trackers/cotw/" }
-            ];
+            navContainer.innerHTML = `<span style="color: #ef4444; font-size: 0.85rem; padding: 8px; font-weight: 700;">Menu Load Failure</span>`;
+            return;
         }
 
         const groups = {};
@@ -366,6 +372,7 @@ const appState = {
 
         let navHTML = '';
 
+        // RENDER GROUP DROPDOWNS (User, Games, Entertainment, Discord, Co Sites)
         Object.keys(groups).forEach(groupName => {
             const dropItems = groups[groupName].map(it => {
                 const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
@@ -382,6 +389,7 @@ const appState = {
             `;
         });
 
+        // RENDER STANDALONE ITEMS (e.g. Home)
         standalone.forEach(it => {
             const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
             navHTML += `<a href="${it.url}">${imgTag}${it.name}</a>`;
