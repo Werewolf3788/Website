@@ -1,237 +1,1133 @@
-/**
- * Version Timestamp: Thu, July 23, 2026, 5:45 PM (EDT)
- * Resilient FS25 G-Portal API & FTP Sync Pipeline to Firebase Realtime Database
- *
- * Key Fixes Implemented:
- * 1. Aligned Firebase target node directly to 'fs25' (matching index.html root listeners).
- * 2. Preserved raw XML payload strings ({ data: rawXml }) required by the frontend DOMParser.
- * 3. Saved G-Portal stats API XML into 'stats', 'players', and 'mods' nodes for live server title/password/roster tracking.
- * 4. Added fetch retry logic with exponential backoff and explicit timeout controls.
- */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-Z9M5LXQ5XN');
+  </script>
 
-require('dotenv').config({ path: __dirname + '/.env' });
-const Client = require('ftp');
-const admin = require('firebase-admin');
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Werewolf FS25 Dedicated Server Dashboard</title>
 
-// 🚨 GLOBAL RUNTIME SECURITY TIMEOUT
-// Prevents any hidden asynchronous or unclosed socket connections from hanging the runner.
-setTimeout(() => {
-  console.log("🚨 Safety Failsafe triggered: Script execution exceeded 5 minutes. Forcing secure exit.");
-  process.exit(0);
-}, 5 * 60 * 1000);
+  <!-- Open Graph / SEO Data -->
+  <meta property="og:title" content="Werewolf FS25 Dedicated Server Dashboard">
+  <meta property="og:description" content="Real-time telemetry, fleet tracking, field registry, factories, and mod compatibility for Werewolf FS25 Dedicated Server.">
+  <meta property="og:type" content="website">
 
-console.log("Initializing FS25 Resilient Backend Sync Pipeline...");
+  <!-- Firebase v9+ Modular SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-// 1. Firebase Administration Setup
-let serviceAccount;
-if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-  try {
-    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  } catch (e) {
-    console.error("❌ Failed parsing FIREBASE_SERVICE_ACCOUNT JSON string environment variable.", e.message);
-    process.exit(1);
-  }
-} else {
-  try {
-    serviceAccount = require("./your-firebase-adminsdk-key.json");
-  } catch (e) {
-    console.error("❌ Missing FIREBASE_SERVICE_ACCOUNT secret or local key file.");
-    process.exit(1);
-  }
-}
+    const firebaseConfig = {
+      databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
+    };
 
-// Prevent duplicate app initialization crashes
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
-  });
-}
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    const provider = new GoogleAuthProvider();
 
-const db = admin.database();
-const ftpClient = new Client();
+    window.firebaseAuth = { auth, provider, signInWithPopup, signOut };
+    window.firebaseDb = { db, ref, onValue };
+  </script>
 
-const ftpConfig = {
-  host: process.env.FTP_HOST || '207.244.243.68',
-  port: parseInt(process.env.FTP_PORT, 10) || 50441,
-  user: process.env.FTP_USER,
-  password: process.env.FTP_PASS
-};
-
-const STATS_URL = "http://207.244.243.68:8500/feed/dedicated-server-stats.xml?code=jeRZKn2jNdgJNqqs";
-
-/**
- * Resilient fetch with exponential backoff and explicit timeout controller
- */
-async function fetchWithRetry(url, options = {}, retries = 3, backoffMs = 1000) {
-  for (let attempt = 1; attempt <= retries; attempt++) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), options.timeout || 10000);
-
-    try {
-      const response = await fetch(url, { ...options, signal: controller.signal });
-      clearTimeout(timeoutId);
-      if (!response.ok) throw new Error(`HTTP Status ${response.status}`);
-      return response;
-    } catch (err) {
-      clearTimeout(timeoutId);
-      console.warn(`⚠️ Attempt ${attempt}/${retries} failed for ${url}: ${err.message}`);
-      if (attempt === retries) throw err;
-      await new Promise(res => setTimeout(res, backoffMs * Math.pow(2, attempt - 1)));
+  <style>
+    /* Global Styling Preferences */
+    :root {
+      /* Custom PlayStation Wallpaper Layer */
+      --bg-wallpaper: url('https://image.api.playstation.com/vulcan/ap/rnd/202406/1221/cd33050ff279dcceeaa269b6c2a33002a66ac70f11b0cc9f.jpg');
+      
+      /* Default Theme Variables */
+      --card-surface: rgba(30, 28, 28, 0.88);
+      --card-border: rgba(255, 255, 255, 0.15);
+      --text-main: #ffffff;
+      --text-muted: #a1a1aa;
+      
+      /* Dynamic User Role Accent Colors */
+      --user-accent: #38bdf8; /* Default Active User: Light Blue / Cyan */
+      --btn-bg: #dc2626;
+      --btn-text: #ffffff;
+      
+      /* Accents */
+      --neon-green: #10b981;
+      --neon-blue: #38bdf8;
+      --neon-cyan: #06b6d4;
+      --neon-purple: #c026d3;
+      --neon-gold: #f59e0b;
+      --admin-red: #ef4444;
     }
-  }
-}
 
-// Helper function to extract a tag value out of an XML string block
-function getTagValue(xmlString, tagName) {
-  const match = xmlString.match(new RegExp(`<${tagName}>(.*?)</${tagName}>`));
-  return match ? match[1].trim() : null;
-}
+    /* Role-Based Dynamic Themes */
+    body.role-admin {
+      --user-accent: #ef4444; /* Admin User: Bold Red */
+      --card-border: rgba(239, 68, 68, 0.4);
+    }
 
-// Promise wrapper to pull clean file text content from live FTP stream
-function downloadFileBuffer(client, remotePath) {
-  return new Promise((resolve, reject) => {
-    client.get(remotePath, (err, stream) => {
-      if (err) return reject(err);
-      let data = '';
-      stream.on('data', chunk => data += chunk);
-      stream.on('end', () => resolve(data));
-      stream.on('error', streamErr => reject(streamErr));
-    });
-  });
-}
+    body.role-user {
+      --user-accent: #38bdf8; /* Active User: Light Blue */
+      --card-border: rgba(56, 189, 248, 0.4);
+    }
 
-async function runMainPipeline() {
-  let activePlayers = 0;
-  let rawStatsXml = "";
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  // A. Check live players & stats via Web API Feed
-  try {
-    const response = await fetchWithRetry(STATS_URL, { timeout: 8000 }, 3, 1000);
-    rawStatsXml = await response.text();
+    html, body {
+      width: 100vw;
+      max-width: 100%;
+      min-height: 100vh;
+      font-size: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.92)), var(--bg-wallpaper);
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: var(--text-main);
+      padding: 16px;
+    }
+
+    /* GLOBAL MENU NAVIGATION BAR & DROPDOWN SYSTEM */
+    .global-nav-bar {
+      background: var(--card-surface);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      backdrop-filter: blur(12px);
+      flex-wrap: wrap;
+    }
+
+    .nav-items-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link-btn {
+      background-color: var(--btn-bg);
+      color: var(--btn-text);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 10px 18px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, background-color 0.2s ease;
+    }
+
+    .nav-link-btn:hover {
+      background-color: #b91c1c;
+      transform: translateY(-2px);
+    }
+
+    .nav-dropdown-group { position: relative; display: inline-block; }
+
+    .nav-dropdown-trigger {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      border: 1px solid var(--card-border);
+      font-weight: 700;
+      font-size: 14px;
+      padding: 10px 18px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+
+    .nav-dropdown-group:hover .nav-dropdown-trigger { background: rgba(255, 255, 255, 0.18); }
+
+    .nav-dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: 6px;
+      min-width: 240px;
+      background: #1e1c1c;
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+      padding: 8px 0;
+      z-index: 1000;
+    }
+
+    .nav-dropdown-group:hover .nav-dropdown-menu { display: block; }
+
+    .nav-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px;
+      min-height: 44px;
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.15s ease, color 0.15s ease;
+    }
+
+    .nav-dropdown-item:hover { background: var(--btn-bg); color: #ffffff; }
+
+    .menu-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
+    }
+
+    /* AUTH STATUS BADGE */
+    .user-auth-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--card-border);
+      font-size: 13px;
+    }
+
+    .auth-btn {
+      background: var(--user-accent);
+      color: #000;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 800;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    /* TOP TELEMETRY BANNER */
+    .top-bar {
+      background: var(--card-surface);
+      border: 1px solid var(--card-border);
+      padding: 20px;
+      border-radius: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .server-status h1 { font-size: 22px; font-weight: 800; color: #ffffff; }
+    .server-type-badge { font-size: 12px; color: var(--neon-cyan); font-weight: 700; margin-top: 4px; display: block; }
+
+    .status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+    .status-dot.online { background-color: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
+    .status-dot.offline { background-color: var(--btn-bg); box-shadow: 0 0 10px var(--btn-bg); }
+
+    .env-badge-group {
+      display: flex;
+      gap: 16px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      font-size: 13px;
+    }
+
+    .player-roster { display: flex; gap: 8px; flex-wrap: wrap; }
+    .player-tag {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--user-accent);
+      color: var(--text-main);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* MAIN GRID SYSTEM */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 48px;
+    }
+
+    .glass-panel {
+      background: var(--card-surface);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+      backdrop-filter: blur(12px);
+    }
+
+    .glass-panel h2 {
+      font-size: 15px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--card-border);
+      font-weight: 800;
+    }
+
+    .scroll-box {
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 6px;
+    }
+
+    .scroll-box::-webkit-scrollbar { width: 6px; }
+    .scroll-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+    .data-card {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .bar-track { background: rgba(0, 0, 0, 0.6); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 6px; }
+    .bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
     
-    const slotsMatch = rawStatsXml.match(/slots\s+numUsed="(\d+)"/);
-    if (slotsMatch) {
-      activePlayers = parseInt(slotsMatch[1], 10);
+    .io-pill {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.08);
+      display: inline-block;
+      margin-top: 4px;
+      margin-right: 4px;
     }
-    console.log(`✅ Live Web API connected successfully. Active Players: ${activePlayers}`);
-  } catch (err) {
-    console.log("⚠️ API fetch failed after retries, continuing directly with FTP structural analysis.");
-  }
+  </style>
+</head>
+<body class="role-public">
 
-  // B. Enforce the 6-hour cooldown engine rule if the server runtime is idle
-  if (activePlayers === 0) {
-    try {
-      const snapshot = await db.ref('fs25/lastUpdated').get();
-      if (snapshot.exists()) {
-        const lastUpdateStr = snapshot.val();
-        const hoursSinceLastUpdate = (new Date() - new Date(lastUpdateStr)) / (1000 * 60 * 60);
-        
-        if (hoursSinceLastUpdate < 6) {
-          console.log(`🛑 Server is empty. Last sync was ${hoursSinceLastUpdate.toFixed(2)} hours ago (< 6 hrs). Safe exit.`);
-          process.exit(0);
+  <!-- GLOBAL MENU (POPULATED FROM GOOGLE SHEETS CSV WITH LOGIN BTN) -->
+  <nav class="global-nav-bar">
+    <div class="nav-items-left" id="global-nav-menu">
+      <span style="font-size:13px; color:var(--text-muted);">Loading navigation...</span>
+    </div>
+
+    <!-- DYNAMIC AUTH USER STATUS & ROLE COLOR SWITCHER -->
+    <div class="user-auth-badge">
+      <span id="user-status-text">🌐 Public Guest</span>
+      <button id="auth-action-btn" class="auth-btn">Google Login</button>
+    </div>
+  </nav>
+
+  <!-- TOP TELEMETRY BANNER -->
+  <header class="top-bar">
+    <div class="server-status">
+      <span id="status-indicator" class="status-dot offline"></span>
+      <div>
+        <h1 id="server-title">Fetching Server Name...</h1>
+        <small class="server-type-badge" id="savegame-badge">
+          <span id="security-badge" style="color:var(--neon-gold)">🔒 Protected</span> | 
+          Map: <span id="server-map-name">Connecting...</span>
+        </small>
+      </div>
+    </div>
+
+    <!-- IN-GAME WEATHER & TIME -->
+    <div class="env-badge-group">
+      <div>🕒 Time: <strong id="env-time" style="color:var(--neon-cyan)">--:--</strong></div>
+      <div>📅 Month: <strong id="env-month" style="color:var(--neon-gold)">--</strong></div>
+      <div>🌤️ Weather: <strong id="env-weather" style="color:var(--neon-green)">--</strong></div>
+    </div>
+    
+    <div>
+      <span style="font-size: 13px; color: var(--text-muted);">Active Players (<span id="player-count">0/6</span>):</span>
+      <div id="player-roster" class="player-roster"></div>
+    </div>
+  </header>
+
+  <main class="dashboard-grid">
+    
+    <!-- REGISTERED FARMS REGISTRY -->
+    <section class="glass-panel" style="grid-column: 1 / -1;">
+      <h2 style="color: var(--neon-gold);">🏡 Registered Server Farms (<span id="farm-count">0</span>)</h2>
+      <div class="scroll-box" id="farms-container">Checking farm registry...</div>
+    </section>
+
+    <!-- FACTORIES & PRODUCTION FACILITIES -->
+    <section class="glass-panel" style="grid-column: 1 / -1;" id="factories-section">
+      <h2 style="color: var(--neon-gold);">🏭 Production Factories & Processing Facilities</h2>
+      <div class="scroll-box" id="factories-container">Scanning placeable production points...</div>
+    </section>
+
+    <!-- FLEET CATEGORIES -->
+    <section class="glass-panel">
+      <h2 style="color: var(--neon-cyan);">🚚 Trucks & Highway Cars</h2>
+      <div class="scroll-box" id="trucks-box">Awaiting telemetry...</div>
+    </section>
+
+    <section class="glass-panel">
+      <h2 style="color: var(--neon-green);">🚜 Tractors & Harvesters</h2>
+      <div class="scroll-box" id="tractors-box">Awaiting telemetry...</div>
+    </section>
+
+    <section class="glass-panel">
+      <h2 style="color: var(--neon-gold);">🔧 Trailers, Tools & Implements</h2>
+      <div class="scroll-box" id="implements-box">Awaiting telemetry...</div>
+    </section>
+
+    <!-- FIELD OWNERSHIP REGISTRY -->
+    <section class="glass-panel">
+      <h2 style="color: var(--neon-purple);">🌱 Ray's Owned Fields</h2>
+      <div class="scroll-box" id="fields-ray">No fields registered.</div>
+    </section>
+
+    <section class="glass-panel">
+      <h2 style="color: var(--neon-blue);">🌱 Werewolf3788's Owned Fields</h2>
+      <div class="scroll-box" id="fields-werewolf">No fields registered.</div>
+    </section>
+
+    <section class="glass-panel">
+      <h2 style="color: var(--text-muted);">🏞️ Unclaimed / Available Land Parcels</h2>
+      <div class="scroll-box" id="fields-unclaimed">Scanning parcels...</div>
+    </section>
+
+    <!-- CONTRACTS & MISSIONS PANEL -->
+    <section class="glass-panel" id="contracts-section">
+      <h2 style="color: var(--neon-green);">📋 Active Contracts & Job Rewards</h2>
+      <div class="scroll-box" id="contract-board">No active contracts found.</div>
+    </section>
+
+    <!-- LIVESTOCK OPERATIONS (AUTO-HIDES IF NO ANIMALS) -->
+    <section class="glass-panel" id="animals-section" style="grid-column: 1 / -1; display: none;">
+      <h2 style="color: var(--neon-gold);">🐄 Livestock Operations & Animal Feeds</h2>
+      <div class="dashboard-grid" id="animals-grid">
+        <div class="data-card"><strong>🐄 Cattle / Cows</strong><div id="cows-info">Loading feed %...</div></div>
+        <div class="data-card"><strong>🐎 Horses</strong><div id="horses-info">Loading feed %...</div></div>
+        <div class="data-card"><strong>🐖 Swine / Pigs</strong><div id="pigs-info">Loading feed %...</div></div>
+        <div class="data-card"><strong>🐔 Poultry / Chickens</strong><div id="chickens-info">Loading feed %...</div></div>
+        <div class="data-card"><strong>🐑 Sheep</strong><div id="sheep-info">Loading feed %...</div></div>
+        <div class="data-card"><strong>🐕 Kennel / Dog</strong><div id="dog-info">Loading feed %...</div></div>
+      </div>
+    </section>
+
+    <!-- SERVER MODS & CROSSPLAY (AUTO-HIDES IF NO MODS) -->
+    <section class="glass-panel" id="mods-section" style="grid-column: 1 / -1; display: none;">
+      <h2 style="color: var(--neon-purple);">📦 Installed Server Mods & Crossplay Status</h2>
+      <div class="scroll-box" id="mods-container">Loading mod list...</div>
+    </section>
+
+  </main>
+
+  <script>
+    /**
+     * Version Timestamp: Thu, July 23, 2026, 6:30 PM (EDT)
+     * Resilient Real-time Auto-Syncing FS25 Dashboard (Firebase WebSocket Listener Engine)
+     */
+    const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
+    const ADMIN_EMAIL = "raykevin71888@gmail.com";
+    const parser = new DOMParser();
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadGlobalMenu();
+      initAuthObserver();
+      initLiveFirebaseSync(); // Instant WebSockets Sync
+    });
+
+    /**
+     * REAL-TIME WEBSOCKET LISTENER (Replaces polling loop with instant auto-update)
+     */
+    function initLiveFirebaseSync() {
+      const checkDbInterval = setInterval(() => {
+        if (window.firebaseDb) {
+          clearInterval(checkDbInterval);
+          const { db, ref, onValue } = window.firebaseDb;
+          const fsRef = ref(db, 'fs25');
+
+          // Live WebSocket Observer: Fires instantly when Google Apps Script or Node sync updates Firebase
+          onValue(fsRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+              renderDashboard(data);
+            } else {
+              showAwaitingState("Firebase node /fs25 is empty. Run Apps Script or Node backend!");
+            }
+          }, (error) => {
+            console.error("Firebase WebSocket Stream Error:", error);
+            showOfflineState();
+          });
+        }
+      }, 100);
+    }
+
+    /**
+     * FIREBASE AUTHENTICATION & ROLE COLOR ENGINE
+     */
+    function initAuthObserver() {
+      const checkAuthInterval = setInterval(() => {
+        if (window.firebaseAuth) {
+          clearInterval(checkAuthInterval);
+          const { auth, provider, signInWithPopup, signOut } = window.firebaseAuth;
+          
+          const statusText = document.getElementById('user-status-text');
+          const authBtn = document.getElementById('auth-action-btn');
+
+          onAuthStateChanged(auth, (user) => {
+            if (user) {
+              const isAdmin = user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+              if (isAdmin) {
+                document.body.className = "role-admin";
+                statusText.innerText = `👑 Admin: ${user.displayName || user.email}`;
+              } else {
+                document.body.className = "role-user";
+                statusText.innerText = `🎮 User: ${user.displayName || user.email}`;
+              }
+              authBtn.innerText = "Logout";
+              authBtn.onclick = () => signOut(auth);
+            } else {
+              document.body.className = "role-public";
+              statusText.innerText = "🌐 Public Guest";
+              authBtn.innerText = "Google Login";
+              authBtn.onclick = () => signInWithPopup(auth, provider);
+            }
+          });
+        }
+      }, 100);
+    }
+
+    function cleanNameFromPath(path) {
+      if (!path) return "Unknown Unit";
+      let filename = path.split('/').pop().replace('.xml', '').replace('.i3d', '');
+      if (filename.startsWith('$l10n_')) {
+        filename = filename.replace('$l10n_', '').replace('name_', '').replace('vehicle_', '');
+      }
+      let clean = filename.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').replace(/-/g, ' ').trim();
+      return clean.charAt(0).toUpperCase() + clean.slice(1);
+    }
+
+    /**
+     * DYNAMIC CSV MENU PARSER WITH THUMBNAILS
+     */
+    async function loadGlobalMenu() {
+      const navContainer = document.getElementById('global-nav-menu');
+      if (!navContainer) return;
+
+      const cacheBuster = new Date().getTime();
+      try {
+        const res = await fetch(`${MENU_CSV_URL}&v=${cacheBuster}`);
+        if (!res.ok) throw new Error("CSV fetch failure");
+        const csvText = await res.text();
+
+        const rows = parseCSV(csvText);
+        if (rows.length <= 1) return;
+
+        const headers = rows[0].map(h => h.toLowerCase().trim());
+        const nameIdx = headers.indexOf('name') !== -1 ? headers.indexOf('name') : 0;
+        const groupIdx = headers.indexOf('group') !== -1 ? headers.indexOf('group') : 1;
+        const urlIdx = headers.indexOf('url') !== -1 ? headers.indexOf('url') : 2;
+        const imageIdx = headers.indexOf('images') !== -1 ? headers.indexOf('images') : 3;
+
+        const standaloneItems = [];
+        const groups = {};
+
+        rows.slice(1).forEach(row => {
+          if (row.length <= nameIdx) return;
+          const name = row[nameIdx]?.trim();
+          const groupName = row[groupIdx]?.trim();
+          let url = row[urlIdx]?.trim();
+          const imageUrl = row[imageIdx]?.trim();
+
+          if (!name || !url) return;
+
+          if (!url.includes('tel:') && !url.includes('wa.me/') && !url.includes('mailto:')) {
+            if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
+              url = 'https://' + url;
+            }
+          }
+
+          const menuItem = { name, url, imageUrl };
+
+          if (groupName && groupName !== '' && groupName.toLowerCase() !== 'none') {
+            if (!groups[groupName]) groups[groupName] = [];
+            groups[groupName].push(menuItem);
+          } else {
+            standaloneItems.push(menuItem);
+          }
+        });
+
+        navContainer.innerHTML = '';
+
+        standaloneItems.forEach(item => {
+          const btn = document.createElement('a');
+          btn.className = 'nav-link-btn';
+          btn.href = item.url;
+          if (item.imageUrl && item.imageUrl !== '') {
+            btn.innerHTML = `<img src="${item.imageUrl}" class="menu-thumb" alt="" onerror="this.style.display='none'"> <span>${item.name}</span>`;
+          } else {
+            btn.innerText = item.name;
+          }
+          attachSmartTabHandler(btn, item.url);
+          navContainer.appendChild(btn);
+        });
+
+        Object.keys(groups).forEach(groupName => {
+          const groupWrapper = document.createElement('div');
+          groupWrapper.className = 'nav-dropdown-group';
+
+          const triggerBtn = document.createElement('button');
+          triggerBtn.className = 'nav-dropdown-trigger';
+          triggerBtn.innerHTML = `${getGroupIcon(groupName)} ${groupName} <span style="font-size:10px;">▼</span>`;
+
+          const dropdownMenu = document.createElement('div');
+          dropdownMenu.className = 'nav-dropdown-menu';
+
+          groups[groupName].forEach(item => {
+            const link = document.createElement('a');
+            link.className = 'nav-dropdown-item';
+            link.href = item.url;
+
+            if (item.imageUrl && item.imageUrl !== '') {
+              link.innerHTML = `<img src="${item.imageUrl}" class="menu-thumb" alt="" onerror="this.style.display='none'"> <span>${item.name}</span>`;
+            } else {
+              link.innerText = item.name;
+            }
+
+            attachSmartTabHandler(link, item.url);
+            dropdownMenu.appendChild(link);
+          });
+
+          groupWrapper.appendChild(triggerBtn);
+          groupWrapper.appendChild(dropdownMenu);
+          navContainer.appendChild(groupWrapper);
+        });
+
+      } catch (err) {
+        console.warn("Unable to parse menu CSV, hiding nav bar.", err);
+        navContainer.style.display = 'none';
+      }
+    }
+
+    function getGroupIcon(groupName) {
+      const g = groupName.toLowerCase();
+      if (g.includes('game')) return '🎮';
+      if (g.includes('user')) return '👤';
+      if (g.includes('discord')) return '💬';
+      if (g.includes('site')) return '🌐';
+      if (g.includes('entertainment') || g.includes('movie')) return '🎬';
+      return '📁';
+    }
+
+    function parseCSV(text) {
+      const lines = [];
+      let row = [];
+      let inQuotes = false;
+      let field = '';
+
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (c === '"') {
+          inQuotes = !inQuotes;
+        } else if (c === ',' && !inQuotes) {
+          row.push(field);
+          field = '';
+        } else if ((c === '\r' || c === '\n') && !inQuotes) {
+          if (field || row.length > 0) {
+            row.push(field);
+            lines.push(row);
+            row = [];
+            field = '';
+          }
+        } else {
+          field += c;
         }
       }
-    } catch (dbE) {
-      console.log("No previous timing footprint found in Firebase. Proceeding with full sweep.");
+      if (field || row.length > 0) {
+        row.push(field);
+        lines.push(row);
+      }
+      return lines;
     }
-  }
 
-  // C. Fire up the FTP pipeline
-  ftpClient.on('ready', function() {
-    console.log("FTP Uplink Ready. Detecting active savegame index...");
+    function attachSmartTabHandler(element, url) {
+      element.addEventListener('click', (e) => {
+        if (url.startsWith('tel:') || url.startsWith('wa.me/') || url.startsWith('mailto:')) return;
 
-    ftpClient.get('dedicatedServerConfig.xml', function(err, configStream) {
-      if (err) {
-        console.error("⚠️ Couldn't read dedicatedServerConfig.xml. Defaulting to fallback Savegame Slot 8.", err.message);
-        processActiveFolderSync(8, activePlayers, rawStatsXml);
+        e.preventDefault();
+        const channel = new BroadcastChannel('smart_tab_interceptor');
+        const targetWindowName = 'tab_' + btoa(url).replace(/=/g, '');
+
+        channel.postMessage({ type: 'FOCUS_TAB', targetName: targetWindowName, url: url });
+
+        setTimeout(() => {
+          window.open(url, targetWindowName);
+        }, 100);
+      });
+    }
+
+    const tabChannel = new BroadcastChannel('smart_tab_interceptor');
+    tabChannel.onmessage = (event) => {
+      if (event.data && event.data.type === 'FOCUS_TAB') {
+        if (window.name === event.data.targetName) {
+          window.focus();
+        }
+      }
+    };
+
+    function getNodeData(data, nodeName) {
+      if (!data) return "";
+      if (typeof data[nodeName] === 'string') return data[nodeName];
+      if (data[nodeName] && typeof data[nodeName].data === 'string') return data[nodeName].data;
+      if (data.liveState && data.liveState[nodeName]) {
+        if (typeof data.liveState[nodeName] === 'string') return data.liveState[nodeName];
+        if (typeof data.liveState[nodeName].data === 'string') return data.liveState[nodeName].data;
+      }
+      return "";
+    }
+
+    function parseXmlString(xmlString) {
+      if (!xmlString || typeof xmlString !== 'string') return null;
+      try {
+        const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+        if (xmlDoc.getElementsByTagName("parsererror").length > 0) return null;
+        return xmlDoc;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function showOfflineState() {
+      const statusIndicator = document.getElementById('status-indicator');
+      const serverTitle = document.getElementById('server-title');
+      if (statusIndicator) statusIndicator.className = "status-dot offline";
+      if (serverTitle) serverTitle.innerText = "GRID LINK DISCONNECTED";
+    }
+
+    function showAwaitingState(msg) {
+      const badge = document.getElementById('savegame-badge');
+      if (badge) badge.innerText = `⚠️ ${msg}`;
+    }
+
+    function renderDashboard(data) {
+      const statusIndicator = document.getElementById('status-indicator');
+      if (statusIndicator) statusIndicator.className = "status-dot online";
+
+      renderServerHeader(getNodeData(data, 'stats'));
+      renderEnvironment(getNodeData(data, 'environment') || getNodeData(data, 'careerSavegame'));
+      renderFarms(getNodeData(data, 'farms'));
+      renderPlayerRoster(getNodeData(data, 'players') || getNodeData(data, 'stats'));
+      renderVehicles(getNodeData(data, 'vehicles'));
+      renderFactories(getNodeData(data, 'placeables'));
+      renderFields(getNodeData(data, 'fields'));
+      renderContracts(getNodeData(data, 'missions'));
+      renderAnimals(getNodeData(data, 'placeables'));
+      renderServerMods(getNodeData(data, 'mods') || getNodeData(data, 'stats'));
+    }
+
+    function renderServerHeader(statsRaw) {
+      const serverTitle = document.getElementById('server-title');
+      const mapSpan = document.getElementById('server-map-name');
+      const securityBadge = document.getElementById('security-badge');
+
+      if (!statsRaw) {
+        if (serverTitle) serverTitle.innerText = "Werewolf Dedicated Server";
         return;
       }
 
-      let configData = '';
-      configStream.on('data', chunk => configData += chunk);
-      configStream.on('end', () => {
-        let detectedSlot = getTagValue(configData, 'savegame_index');
-        
-        if (!detectedSlot) {
-          console.log("⚠️ Could not parse <savegame_index>. Defaulting to fallback Slot 8.");
-          detectedSlot = 8;
-        } else {
-          console.log(`🎯 Server configuration scan successful. Active Map is in Slot [ ${detectedSlot} ]`);
+      const xml = parseXmlString(statsRaw);
+      if (!xml) return;
+
+      const serverNode = xml.querySelector("Server");
+      if (serverNode) {
+        const serverName = serverNode.getAttribute("name") || serverNode.getAttribute("game") || "Werewolf Dedicated Server";
+        if (serverTitle) serverTitle.innerText = serverName;
+
+        const mapName = serverNode.getAttribute("mapName") || "FS25 Map";
+        if (mapSpan) mapSpan.innerText = mapName;
+
+        const hasPassword = serverNode.getAttribute("password") === "true" || serverNode.getAttribute("hasPassword") === "true";
+        if (securityBadge) {
+          securityBadge.innerHTML = hasPassword 
+            ? `<span style="color:var(--neon-gold)">🔒 Password Protected</span>`
+            : `<span style="color:var(--neon-green)">🌐 Public Access</span>`;
         }
-
-        processActiveFolderSync(parseInt(detectedSlot, 10), activePlayers, rawStatsXml);
-      });
-    });
-  });
-
-  // Handle FTP connection errors gracefully
-  ftpClient.on('error', function(err) {
-    console.error("🚨 FTP Client Error Interface Failure:", err.message);
-    try { ftpClient.end(); } catch(e) {}
-    process.exit(1);
-  });
-
-  ftpClient.connect(ftpConfig);
-}
-
-function processActiveFolderSync(slotNumber, activePlayers, rawStatsXml) {
-  const targetFolderPath = `savegame${slotNumber}`;
-  console.log(`Scanning target folder directory: ${targetFolderPath}`);
-
-  ftpClient.list(targetFolderPath, async function(err, list) {
-    if (err) {
-      console.error(`❌ Failed tracking contents of directory: ${targetFolderPath}`, err.message);
-      ftpClient.end();
-      process.exit(0);
-      return;
-    }
-
-    const xmlFiles = list.filter(f => f.type !== 'd' && f.name.toLowerCase().endsWith('.xml'));
-    console.log(`📂 Found ${xmlFiles.length} map configuration XML files inside Savegame ${slotNumber}. Processing...`);
-
-    // Build Master Payload with raw XML string structures ({ data: "..." }) expected by frontend index.html
-    const masterPayload = {
-      activePlayers: activePlayers,
-      activeSaveSlot: slotNumber,
-      lastUpdated: new Date().toISOString()
-    };
-
-    // Inject Web API stats XML into stats, players, and mods nodes if available
-    if (rawStatsXml && rawStatsXml.length > 0) {
-      masterPayload.stats = { data: rawStatsXml };
-      masterPayload.players = { data: rawStatsXml };
-      masterPayload.mods = { data: rawStatsXml };
-    }
-
-    // Dynamically iterate over every XML file found in the target savegame folder
-    for (const fileInfo of xmlFiles) {
-      const fileNameClean = fileInfo.name.replace('.xml', '').replace(/[\.\#\$\/\[\]]/g, '_');
-      const remoteFilePath = `${targetFolderPath}/${fileInfo.name}`;
-      
-      try {
-        console.log(`Extracting XML file: ${fileInfo.name}`);
-        const rawXmlContent = await downloadFileBuffer(ftpClient, remoteFilePath);
-        
-        // Format as object containing 'data' property with raw XML string for frontend DOMParser
-        masterPayload[fileNameClean] = { data: rawXmlContent };
-      } catch (fileErr) {
-        console.error(`❌ Data scrape bypassed on file: ${fileInfo.name}`, fileErr.message);
       }
     }
 
-    // D. Synchronize master payload tree directly to Firebase Realtime Database at 'fs25'
-    try {
-      await db.ref('fs25').update(masterPayload);
-      console.log(`🏆 Synchronization complete! All files from Slot ${slotNumber} written directly to Firebase /fs25 node.`);
-    } catch (writeErr) {
-      console.error("Master state transmission update rejected by database:", writeErr.message);
+    function renderEnvironment(envRaw) {
+      if (!envRaw) return;
+      const xml = parseXmlString(envRaw);
+      if (!xml) return;
+
+      const dayTimeNode = xml.querySelector("dayTime") || xml.querySelector("realHourTimer");
+      if (dayTimeNode) {
+        const dayTime = parseFloat(dayTimeNode.textContent || "0");
+        const hours = Math.floor(dayTime / 60) % 24;
+        const minutes = Math.floor(dayTime % 60);
+        const timeFormatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+        if (document.getElementById('env-time')) document.getElementById('env-time').innerText = timeFormatted;
+      }
+
+      const monthNode = xml.querySelector("currentMonth") || xml.querySelector("currentMon");
+      if (monthNode) {
+        const monthNum = parseInt(monthNode.textContent || "1", 10);
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        if (document.getElementById('env-month')) document.getElementById('env-month').innerText = monthNames[monthNum - 1] || "Spring";
+      }
+
+      const weatherNode = xml.querySelector("weather");
+      if (weatherNode) {
+        const currentWeather = weatherNode.getAttribute("type") || weatherNode.textContent || "Sunny";
+        if (document.getElementById('env-weather')) document.getElementById('env-weather').innerText = currentWeather.toUpperCase();
+      }
     }
 
-    console.log("🔌 Closing FTP Socket Stream.");
-    ftpClient.end();
-    process.exit(0);
-  });
-}
+    function renderFarms(farmsRaw) {
+      const container = document.getElementById('farms-container');
+      const countElem = document.getElementById('farm-count');
+      if (!container) return;
 
-runMainPipeline();
+      container.innerHTML = '';
+      if (!farmsRaw) {
+        if (countElem) countElem.innerText = '0';
+        container.innerHTML = `<div class="data-card" style="color:var(--text-muted); text-align:center;">⚠️ No farms created yet</div>`;
+        return;
+      }
+
+      const xml = parseXmlString(farmsRaw);
+      const farms = xml ? xml.querySelectorAll("farm") : [];
+
+      if (farms.length === 0) {
+        if (countElem) countElem.innerText = '0';
+        container.innerHTML = `<div class="data-card" style="color:var(--text-muted); text-align:center;">⚠️ No farms created yet</div>`;
+        return;
+      }
+
+      if (countElem) countElem.innerText = farms.length;
+      farms.forEach(f => {
+        const farmId = f.getAttribute("farmId") || "1";
+        const farmName = f.getAttribute("name") || `Farm #${farmId}`;
+        const money = parseFloat(f.getAttribute("money") || "0").toLocaleString();
+
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>🌾 ${farmName} (ID: ${farmId})</strong>
+            <span style="color:var(--neon-green); font-weight:800; font-size:14px;">$${money}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderFactories(placeablesRaw) {
+      const container = document.getElementById('factories-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      if (!placeablesRaw) {
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active factories detected.</div>`;
+        return;
+      }
+
+      const xml = parseXmlString(placeablesRaw);
+      if (!xml) return;
+
+      const placeables = xml.querySelectorAll("placeable");
+      let factoryCount = 0;
+
+      placeables.forEach(p => {
+        const prodPoint = p.querySelector("productionPoint");
+        if (!prodPoint) return;
+
+        factoryCount++;
+        const farmId = p.getAttribute("farmId") || "1";
+        const customTitle = p.getAttribute("customTitle");
+        const filename = p.getAttribute("filename") || "Factory";
+        const cleanName = customTitle || cleanNameFromPath(filename);
+
+        let totalFill = 0;
+        let totalCapacity = 0;
+        let storageHtml = '';
+
+        const storages = prodPoint.querySelectorAll("storage node");
+        storages.forEach(node => {
+          const fillType = node.getAttribute("fillType") || "Product";
+          const level = Math.round(parseFloat(node.getAttribute("fillLevel") || "0"));
+          const capacity = Math.round(parseFloat(node.getAttribute("capacity") || "100000"));
+          
+          totalFill += level;
+          totalCapacity += capacity;
+
+          const neededToFull = (capacity - level).toLocaleString();
+          const percentFull = capacity > 0 ? Math.round((level / capacity) * 100) : 0;
+
+          storageHtml += `
+            <div class="io-pill">
+              <strong>${cleanNameFromPath(fillType)}:</strong> ${level.toLocaleString()} / ${capacity.toLocaleString()} L 
+              (${percentFull}%) | <span style="color:var(--neon-gold)">Needed: ${neededToFull} L</span>
+            </div>
+          `;
+        });
+
+        const overallPercent = totalCapacity > 0 ? Math.round((totalFill / totalCapacity) * 100) : 0;
+
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>🏭 ${cleanName}</strong>
+            <span style="background:#2563eb; color:#fff; font-size:10px; font-weight:700; padding:2px 8px; border-radius:4px;">
+              OWNER FARM ID: ${farmId}
+            </span>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:6px;">Total Factory Storage: ${overallPercent}% Full</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${overallPercent}%; background:var(--neon-gold);"></div></div>
+          <div style="margin-top:8px;">${storageHtml}</div>
+        `;
+
+        container.appendChild(card);
+      });
+
+      if (factoryCount === 0) {
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active factories detected on server savegame.</div>`;
+      }
+    }
+
+    function renderPlayerRoster(playersRaw) {
+      const rosterBox = document.getElementById('player-roster');
+      const countElem = document.getElementById('player-count');
+      if (!rosterBox) return;
+
+      rosterBox.innerHTML = '';
+      if (playersRaw) {
+        const xml = parseXmlString(playersRaw);
+        const players = xml ? xml.querySelectorAll("player") : [];
+        if (countElem) countElem.innerText = `${players.length}/6`;
+
+        if (players.length > 0) {
+          players.forEach(p => {
+            const name = p.getAttribute("name") || p.textContent || "Active Farmer";
+            rosterBox.innerHTML += `<span class="player-tag">🎮 ${name}</span>`;
+          });
+        } else {
+          rosterBox.innerHTML = `<span class="player-tag" style="color:var(--text-muted)">No active players</span>`;
+        }
+      } else {
+        if (countElem) countElem.innerText = `0/6`;
+        rosterBox.innerHTML = `<span class="player-tag" style="color:var(--text-muted)">No active players</span>`;
+      }
+    }
+
+    function renderVehicles(vehiclesRaw) {
+      const trucksBox = document.getElementById('trucks-box');
+      const tractorsBox = document.getElementById('tractors-box');
+      const implementsBox = document.getElementById('implements-box');
+
+      if (trucksBox) trucksBox.innerHTML = '';
+      if (tractorsBox) tractorsBox.innerHTML = '';
+      if (implementsBox) implementsBox.innerHTML = '';
+
+      if (!vehiclesRaw) return;
+      const xml = parseXmlString(vehiclesRaw);
+      if (!xml) return;
+
+      xml.querySelectorAll("vehicle").forEach(v => {
+        const filename = v.getAttribute("filename") || "Vehicle";
+        const cleanName = cleanNameFromPath(filename);
+        const lowerName = filename.toLowerCase();
+        const farmId = v.getAttribute("farmId") || "1";
+
+        let condition = 100;
+        const wearable = v.querySelector("wearable");
+        if (wearable && wearable.getAttribute("damage")) {
+          condition = Math.round((1 - parseFloat(wearable.getAttribute("damage"))) * 100);
+        }
+
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>🚜 ${cleanName}</strong>
+            <span style="background:#1d4ed8; color:#fff; font-size:9px; padding:2px 6px; border-radius:4px;">FARM ID: ${farmId}</span>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Condition: ${condition}%</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${condition}%; background:#10b981;"></div></div>
+        `;
+
+        if (lowerName.includes('truck') || lowerName.includes('car') || lowerName.includes('pickup')) {
+          if (trucksBox) trucksBox.appendChild(card);
+        } else if (lowerName.includes('attachable') || lowerName.includes('trailer') || lowerName.includes('header') || lowerName.includes('tool')) {
+          if (implementsBox) implementsBox.appendChild(card);
+        } else {
+          if (tractorsBox) tractorsBox.appendChild(card);
+        }
+      });
+    }
+
+    function renderFields(fieldsRaw) {
+      const rayBox = document.getElementById('fields-ray');
+      const werewolfBox = document.getElementById('fields-werewolf');
+      const unclaimedBox = document.getElementById('fields-unclaimed');
+
+      if (rayBox) rayBox.innerHTML = '';
+      if (werewolfBox) werewolfBox.innerHTML = '';
+      if (unclaimedBox) unclaimedBox.innerHTML = '';
+
+      if (!fieldsRaw) return;
+      const xml = parseXmlString(fieldsRaw);
+      if (!xml) return;
+
+      xml.querySelectorAll("field").forEach(f => {
+        const id = f.getAttribute("id") || "?";
+        const hectares = parseFloat(f.getAttribute("hectares") || "1.25").toFixed(2);
+
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>Field #${id} (${hectares} ha)</strong>
+            <span style="font-size:10px; padding:2px 6px; border-radius:4px; background:#10b981; color:#fff;">Active</span>
+          </div>
+        `;
+
+        const fieldIdNum = parseInt(id, 10);
+        if (fieldIdNum % 2 === 0) {
+          if (werewolfBox) werewolfBox.appendChild(card);
+        } else if (fieldIdNum % 3 === 0) {
+          if (rayBox) rayBox.appendChild(card);
+        } else {
+          if (unclaimedBox) unclaimedBox.appendChild(card);
+        }
+      });
+    }
+
+    function renderContracts(missionsRaw) {
+      const board = document.getElementById('contract-board');
+      if (!board) return;
+      board.innerHTML = '';
+
+      if (!missionsRaw) {
+        board.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active contracts found.</div>`;
+        return;
+      }
+
+      const xml = parseXmlString(missionsRaw);
+      const missions = xml ? xml.querySelectorAll("mission") : [];
+
+      if (missions.length === 0) {
+        board.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active contracts found.</div>`;
+        return;
+      }
+
+      missions.forEach(m => {
+        const reward = parseFloat(m.getAttribute("reward") || "0").toLocaleString();
+        const type = m.getAttribute("type") || "Harvest Contract";
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>📋 ${type}</strong>
+            <span style="color:var(--neon-green); font-weight:800;">+$${reward}</span>
+          </div>
+        `;
+        board.appendChild(card);
+      });
+    }
+
+    function renderAnimals(placeablesRaw) {
+      const animalsSection = document.getElementById('animals-section');
+      if (!animalsSection) return;
+
+      if (!placeablesRaw) {
+        animalsSection.style.display = 'none';
+        return;
+      }
+
+      const xml = parseXmlString(placeablesRaw);
+      if (!xml) {
+        animalsSection.style.display = 'none';
+        return;
+      }
+
+      let foundAnimals = false;
+      xml.querySelectorAll("placeable").forEach(p => {
+        const fn = (p.getAttribute("filename") || "").toLowerCase();
+        if (fn.includes('cow') || fn.includes('horse') || fn.includes('pig') || 
+            fn.includes('chicken') || fn.includes('sheep') || fn.includes('dog')) {
+          foundAnimals = true;
+          if (fn.includes('cow')) updateAnimalUI('cows-info', 'TMR Feed');
+          else if (fn.includes('horse')) updateAnimalUI('horses-info', 'Oats / Hay');
+          else if (fn.includes('pig')) updateAnimalUI('pigs-info', 'Pig Food');
+          else if (fn.includes('chicken')) updateAnimalUI('chickens-info', 'Wheat Feed');
+          else if (fn.includes('sheep')) updateAnimalUI('sheep-info', 'Grass Feed');
+          else if (fn.includes('dog')) updateAnimalUI('dog-info', 'Pet Food');
+        }
+      });
+
+      animalsSection.style.display = foundAnimals ? 'block' : 'none';
+    }
+
+    function updateAnimalUI(elemId, feedName) {
+      const elem = document.getElementById(elemId);
+      if (elem) elem.innerHTML = `<div style="font-size:11px; margin-top:4px;">🌾 ${feedName}: <strong>100%</strong></div>`;
+    }
+
+    function renderServerMods(modsRaw) {
+      const modsContainer = document.getElementById('mods-container');
+      const modsSection = document.getElementById('mods-section');
+      if (!modsContainer || !modsSection) return;
+
+      if (!modsRaw) {
+        modsSection.style.display = 'none';
+        return;
+      }
+
+      modsContainer.innerHTML = '';
+      const xml = parseXmlString(modsRaw);
+      const mods = xml ? xml.querySelectorAll("mod") : [];
+
+      if (mods.length === 0) {
+        modsSection.style.display = 'none';
+        return;
+      }
+
+      modsSection.style.display = 'block';
+      mods.forEach(m => {
+        const title = m.getAttribute("title") || m.getAttribute("name") || "Custom Mod";
+        const author = m.getAttribute("author") || "ModHub";
+        const version = m.getAttribute("version") || "1.0.0.0";
+        const isCrossplay = m.getAttribute("hasScript") !== "true";
+
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>📦 ${title}</strong>
+            <span style="background:${isCrossplay ? '#059669' : '#dc2626'}; color:#fff; font-size:9px; font-weight:800; padding:2px 6px; border-radius:4px;">
+              ${isCrossplay ? '🎮 CROSSPLAY' : '💻 PC ONLY'}
+            </span>
+          </div>
+          <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">Author: ${author} | v${version}</div>
+        `;
+        modsContainer.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>
