@@ -136,6 +136,12 @@
 
   <main class="dashboard-grid">
     
+    <!-- REGISTERED FARMS PANEL -->
+    <section class="glass-panel" style="grid-column: 1 / -1;">
+      <h2 style="color: var(--neon-gold);">🏡 Registered Server Farms (<span id="farm-count">0</span>)</h2>
+      <div class="scroll-box" id="farms-container">Checking farm registry...</div>
+    </section>
+
     <!-- FLEET CATEGORIES -->
     <section class="glass-panel">
       <h2 style="color: var(--neon-cyan);">🚚 Trucks & Highway Cars</h2>
@@ -168,7 +174,7 @@
       <div class="scroll-box" id="fields-unclaimed">Scanning parcels...</div>
     </section>
 
-    <!-- LIVESTOCK OPERATIONS (AUTO-HIDES IF NO ANIMALS EXIST) -->
+    <!-- LIVESTOCK OPERATIONS -->
     <section class="glass-panel" id="animals-section" style="grid-column: 1 / -1; display: none;">
       <h2 style="color: var(--neon-gold);">🐄 Livestock Operations & Animal Feeds</h2>
       <div class="dashboard-grid" id="animals-grid">
@@ -181,7 +187,7 @@
       </div>
     </section>
 
-    <!-- SERVER MODS & CROSSPLAY (AUTO-HIDES IF NO MODS INSTALLED) -->
+    <!-- SERVER MODS & CROSSPLAY -->
     <section class="glass-panel" id="mods-section" style="grid-column: 1 / -1; display: none;">
       <h2 style="color: var(--neon-purple);">📦 Installed Server Mods & Crossplay Status</h2>
       <div class="scroll-box" id="mods-container">Loading mod list...</div>
@@ -189,14 +195,13 @@
 
   </main>
 
-  <!-- ALL JAVASCRIPT EMBEDDED DIRECTLY HERE -->
   <script>
     const DB_ENDPOINT = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/fs25.json";
     const parser = new DOMParser();
 
     window.addEventListener('DOMContentLoaded', () => {
       fetchTelemetry();
-      setInterval(fetchTelemetry, 5000); // Check Firebase every 5 seconds
+      setInterval(fetchTelemetry, 5000);
     });
 
     async function fetchTelemetry() {
@@ -206,7 +211,7 @@
         if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
         const data = await res.json();
         
-        if (data && (data.vehicles || data.fields || data.stats || data.players)) {
+        if (data && (data.vehicles || data.fields || data.stats || data.players || data.farms)) {
           renderDashboard(data);
         } else {
           showAwaitingState("Firebase node /fs25 is empty. Run Google Apps Script!");
@@ -232,9 +237,7 @@
       const statusIndicator = document.getElementById('status-indicator');
       const serverTitle = document.getElementById('server-title');
       if (statusIndicator) statusIndicator.className = "status-dot offline";
-      if (serverTitle) {
-        serverTitle.innerText = "GRID LINK DISCONNECTED";
-      }
+      if (serverTitle) serverTitle.innerText = "GRID LINK DISCONNECTED";
     }
 
     function showAwaitingState(msg) {
@@ -246,9 +249,7 @@
       const statusIndicator = document.getElementById('status-indicator');
       const serverTitle = document.getElementById('server-title');
       if (statusIndicator) statusIndicator.className = "status-dot online";
-      if (serverTitle) {
-        serverTitle.innerText = "Werewolf Dedicated Server";
-      }
+      if (serverTitle) serverTitle.innerText = "Werewolf Dedicated Server";
 
       // Map Name
       const statsRaw = data.stats?.data || "";
@@ -264,11 +265,56 @@
         }
       }
 
+      renderFarms(data.farms?.data || "");
       renderPlayerRoster(data.players?.data || "");
       renderVehicles(data.vehicles?.data || "");
       renderFields(data.fields?.data || "");
       renderAnimals(data.placeables?.data || "");
       renderServerMods(data.mods?.data || "");
+    }
+
+    /**
+     * FARMS DETECTOR: Displays farm list or "No farms created yet"
+     */
+    function renderFarms(farmsRaw) {
+      const container = document.getElementById('farms-container');
+      const countElem = document.getElementById('farm-count');
+      if (!container) return;
+
+      container.innerHTML = '';
+
+      if (!farmsRaw) {
+        if (countElem) countElem.innerText = '0';
+        container.innerHTML = `<div class="data-card" style="color:var(--text-muted); text-align:center;">⚠️ No farms created yet</div>`;
+        return;
+      }
+
+      const xml = parseXmlString(farmsRaw);
+      const farms = xml ? xml.querySelectorAll("farm") : [];
+
+      if (farms.length === 0) {
+        if (countElem) countElem.innerText = '0';
+        container.innerHTML = `<div class="data-card" style="color:var(--text-muted); text-align:center;">⚠️ No farms created yet</div>`;
+        return;
+      }
+
+      if (countElem) countElem.innerText = farms.length;
+
+      farms.forEach(f => {
+        const farmId = f.getAttribute("farmId") || "1";
+        const farmName = f.getAttribute("name") || `Farm #${farmId}`;
+        const money = parseFloat(f.getAttribute("money") || "0").toLocaleString();
+
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>🌾 ${farmName} (ID: ${farmId})</strong>
+            <span style="color:var(--neon-green); font-weight:800; font-size:14px;">$${money}</span>
+          </div>
+        `;
+        container.appendChild(card);
+      });
     }
 
     function renderPlayerRoster(playersRaw) {
@@ -381,7 +427,6 @@
       });
     }
 
-    // SMART LIVESTOCK ENGINE: Hides section if no animals
     function renderAnimals(placeablesRaw) {
       const animalsSection = document.getElementById('animals-section');
       if (!animalsSection) return;
@@ -424,7 +469,6 @@
       if (elem) elem.innerHTML = `<div style="font-size:11px; margin-top:4px;">🌾 ${feedName}: <strong>100%</strong></div>`;
     }
 
-    // SMART MODS ENGINE: Hides section if no mods
     function renderServerMods(modsRaw) {
       const modsContainer = document.getElementById('mods-container');
       const modsSection = document.getElementById('mods-section');
