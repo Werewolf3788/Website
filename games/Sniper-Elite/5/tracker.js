@@ -1,10 +1,10 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Wed, July 22, 2026, 11:15 PM EDT
+ * VERSION TIMESTAMP: Wed, July 22, 2026, 11:25 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * NAV ENGINE: Comment-Stripping Dynamic Menu Parser (Handles commented JSON)
- * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Legacy Sync
- * TEAM MAP: Admin (raykevin71888@gmail.com) | Ray (cartnalray9@gmail.com)
+ * NAV ENGINE: Local Relative Path Same-Repo Fetcher + Automatic JSON Comment Stripper
+ * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Legacy Data Sync
+ * ACCESS CONTROL: Unrestricted Admin (raykevin71888@gmail.com) & Profile Owner Enforcement
  * ==========================================
  */
 
@@ -21,6 +21,29 @@ const firebaseConfig = {
   messagingSenderId: "555667047127",
   appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
 };
+
+// MASTER BACKUP MENU (Guarantees zero blank screens)
+const defaultMenuData = [
+  { "name": "Werewolf3788", "group": "User", "url": "https://werewolf3788.github.io/Website/users/kevin/website.html" },
+  { "name": "RayMystyro", "group": "User", "url": "https://werewolf3788.github.io/Website/users/ray/website.html" },
+  { "name": "Phoenix_Darkfire", "group": "User", "url": "https://werewolf3788.github.io/Website/users/seth/phoenix_darkfire.html" },
+  { "name": "Darkwing69420", "group": "User", "url": "https://werewolf3788.github.io/Website/users/terrodog/index.html" },
+  { "name": "Sniper Elite Resistance", "group": "Games", "url": "https://werewolf3788.github.io/Website/games/Sniper-Elite/SE-Resistance.html" },
+  { "name": "Home", "group": null, "url": "https://werewolf3788.github.io/Website/" },
+  { "name": "SoundCloud", "group": "Entertainment", "url": "https://soundcloud.com/djwerewolf3788" },
+  { "name": "Movies", "group": "Entertainment", "url": "https://werewolf3788.github.io/Website/Movies.html" },
+  { "name": "TheHunter:COTW", "group": "Games", "url": "https://werewolf3788.github.io/Website/games/HunterCOTW/cotw.html" },
+  { "name": "Tom Clancy Ghost Recon Wildlands", "group": "Games", "url": "https://werewolf3788.github.io/Website/games/Tom-Clancy/Ghost%20Recon/Wildlands/index.html" },
+  { "name": "Sniper Elite 5", "group": "Games", "url": "https://werewolf3788.github.io/Website/games/Sniper-Elite/5/index.html" },
+  { "name": "FS25", "group": "Games", "url": "https://werewolf3788.github.io/Website/games/FS25/index.html" },
+  { "name": "Plex Discord", "group": "Discord", "url": "https://discord.gg/BjBR84aRNz" },
+  { "name": "Join Discord Server", "group": "Discord", "url": "https://discord.gg/HtrPbqAvpv" },
+  { "name": "Voice Chat Server for games", "group": "Discord", "url": "https://discord.gg/vuHvHBZm8f" },
+  { "name": "SK Venture's Advertisment", "group": "Co Sites", "url": "https://skventuresigns.com/index.html?utm_source=smlc_qr&utm_medium=print&utm_campaign=sk_social_indexhtml_qr" },
+  { "name": "SMLC (Support My Local Community)", "group": "Co Sites", "url": "https://www.supportmylocalcommunity.com?utm_source=smlc_qr&utm_medium=print&utm_campaign=smlc_social_wwwsupportmylocalcommunitycom_qr" },
+  { "name": "Need Zones COTW", "group": "Games", "url": "https://werewolf3788.github.io/Website/games/HunterCOTW/needzones.html" },
+  { "name": "Animal Cards", "group": "Games", "url": "https://werewolf3788.github.io/Website/games/HunterCOTW/info/Animalcard.html" }
+];
 
 const sniperData = [
     // MISSION 1: THE ATLANTIC WALL
@@ -297,54 +320,9 @@ const appState = {
     dataLoaded: false,
     lastSyncTime: 0,
 
-    loadNavigation: async function() {
+    buildMenuHTML: function(menuItems) {
         const navContainer = document.getElementById('dynamic-nav-links');
-        if (!navContainer) return;
-
-        const endpoints = [
-            `https://cdn.jsdelivr.net/gh/Werewolf3788/Website@main/Menu.json?v=${Date.now()}`,
-            `https://api.github.com/repos/Werewolf3788/Website/contents/Menu.json?v=${Date.now()}`,
-            `https://werewolf3788.github.io/Website/Menu.json?v=${Date.now()}`
-        ];
-
-        let menuItems = null;
-
-        for (const url of endpoints) {
-            try {
-                const res = await fetch(url);
-                if (res.ok) {
-                    let text = await res.text();
-                    
-                    // STRIP COMMENTS TO PREVENT JSON PARSE FAILURE
-                    text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
-
-                    let data = null;
-                    try {
-                        data = JSON.parse(text);
-                    } catch (e) {
-                        // Attempt base64 decoding if coming from GitHub REST API
-                        const rawJson = JSON.parse(text);
-                        if (rawJson.content && rawJson.encoding === 'base64') {
-                            const decoded = atob(rawJson.content.replace(/\s/g, ''));
-                            const cleanDecoded = decoded.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
-                            data = JSON.parse(cleanDecoded);
-                        }
-                    }
-
-                    if (data && Array.isArray(data)) {
-                        menuItems = data;
-                        break;
-                    }
-                }
-            } catch (e) {
-                console.warn(`Nav endpoint failed: ${url}`);
-            }
-        }
-
-        if (!menuItems || !Array.isArray(menuItems)) {
-            navContainer.innerHTML = `<span style="color: #ef4444; font-size: 0.85rem; padding: 8px; font-weight: 700;">Menu Load Failure</span>`;
-            return;
-        }
+        if (!navContainer || !Array.isArray(menuItems)) return;
 
         const groups = {};
         const standalone = [];
@@ -372,7 +350,7 @@ const appState = {
 
         let navHTML = '';
 
-        // RENDER GROUP DROPDOWNS (User, Games, Entertainment, Discord, Co Sites)
+        // Render Group Dropdowns (User, Games, Entertainment, Discord, Co Sites)
         Object.keys(groups).forEach(groupName => {
             const dropItems = groups[groupName].map(it => {
                 const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
@@ -389,13 +367,44 @@ const appState = {
             `;
         });
 
-        // RENDER STANDALONE ITEMS (e.g. Home)
+        // Render Standalone Items (e.g. Home)
         standalone.forEach(it => {
             const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
             navHTML += `<a href="${it.url}">${imgTag}${it.name}</a>`;
         });
 
         navContainer.innerHTML = navHTML;
+    },
+
+    loadNavigation: async function() {
+        // Step 1: Render default fallback menu instantly
+        this.buildMenuHTML(defaultMenuData);
+
+        // Step 2: Try fetching Menu.json locally from current domain first
+        const relativePaths = [
+            `/Website/Menu.json?v=${Date.now()}`,
+            `../../Menu.json?v=${Date.now()}`,
+            `../../../Menu.json?v=${Date.now()}`
+        ];
+
+        for (const path of relativePaths) {
+            try {
+                const res = await fetch(path);
+                if (res.ok) {
+                    let text = await res.text();
+                    // STRIP COMMENTS BEFORE PARSING
+                    text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
+                    const data = JSON.parse(text);
+
+                    if (data && Array.isArray(data)) {
+                        this.buildMenuHTML(data);
+                        return; // Successfully updated from local repo file
+                    }
+                }
+            } catch (e) {
+                // Keep moving to next relative path
+            }
+        }
     },
 
     init: async function() {
