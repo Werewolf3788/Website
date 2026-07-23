@@ -1,9 +1,10 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Thu, July 23, 2026, 12:50 AM EDT
+ * VERSION TIMESTAMP: Thu, July 23, 2026, 12:55 AM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
  * NAV ENGINE: Live Google Sheets CSV Fetcher (Pub CSV Feed + Local Fallback)
  * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Firestore Realtime Sync
+ * USER REGISTRY: Active Profiles (Werewolf3788, Ray, DesdeemonaTiger)
  * RESILIENCE: Auto-Reconnect Observers + Page Visibility Refresh + Cache-Busting
  * ==========================================
  */
@@ -451,22 +452,16 @@ const appState = {
         }
     },
 
-    init: async function() {
-        const app = initializeApp(firebaseConfig);
-        this.auth = getAuth(app);
-        this.db = getFirestore(app);
-
-        this.loadNavigation();
-
-        let savedTarget = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
-        this.targetUserId = savedTarget;
-        this.targetDisplayName = savedTarget;
-
-        const cats = [...new Set(this.hunterData.map(i => i.cat))];
-        cats.forEach(cat => {
-            const sid = cat.replace(/[^a-z0-9]/gi, '');
-            this.collapsedSections[sid] = true;
-        });
+    setupProfilesUI: function() {
+        // Dynamically build/update profile selection buttons to include Werewolf3788, Ray, and DesdeemonaTiger
+        const profilesContainer = document.getElementById('hunter-profiles') || document.querySelector('.profile-selection-container');
+        if (profilesContainer) {
+            profilesContainer.innerHTML = `
+                <button class="profile-btn" data-profile="Werewolf3788">Werewolf3788</button>
+                <button class="profile-btn" data-profile="Ray">Ray</button>
+                <button class="profile-btn" data-profile="DesdeemonaTiger">DesdeemonaTiger</button>
+            `;
+        }
 
         document.querySelectorAll('.profile-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
@@ -474,6 +469,30 @@ const appState = {
                 const selected = btn.getAttribute('data-profile');
                 if (selected) this.switchHunter(selected);
             });
+        });
+    },
+
+    init: async function() {
+        const app = initializeApp(firebaseConfig);
+        this.auth = getAuth(app);
+        this.db = getFirestore(app);
+
+        this.loadNavigation();
+        this.setupProfilesUI();
+
+        let savedTarget = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
+        // Auto-sanitize if previous local storage point was TJ
+        if (savedTarget.toLowerCase() === 'tj') {
+            savedTarget = 'Werewolf3788';
+        }
+
+        this.targetUserId = savedTarget;
+        this.targetDisplayName = savedTarget;
+
+        const cats = [...new Set(this.hunterData.map(i => i.cat))];
+        cats.forEach(cat => {
+            const sid = cat.replace(/[^a-z0-9]/gi, '');
+            this.collapsedSections[sid] = true;
         });
 
         // Anonymous background sign-in ensures immediate Firestore access without popups/logins
