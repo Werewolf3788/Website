@@ -1,9 +1,9 @@
 <!-- 
   ==========================================
-  VERSION TIMESTAMP: Thu, July 23, 2026, 12:40 AM EDT
+  VERSION TIMESTAMP: Thu, July 23, 2026, 12:55 AM EDT
   SYSTEM: Werewolf Project Home Production Engine (index.html)
-  DEPLOYMENT: GitHub Pages / Live Server Production Target
-  ARCHITECTURE: Module-Isolated Execution + Firestore Live Sync
+  DEPLOYMENT: GitHub Pages Direct Target (https://werewolf3788.github.io/Website/)
+  ENGINE: Clean Native Menu.json Engine + Multi-Doc Firestore/RTDB Squad Sync
   SQUAD: Werewolf3788 | Raymystyro | Terrdog420 | DesdemonaTiger
   ==========================================
 -->
@@ -149,6 +149,11 @@
         .border-terrdog { border-color: var(--color-terrdog); }
         .text-terrdog { color: var(--color-terrdog); }
         .shadow-terrdog { box-shadow: 0 10px 15px -3px rgba(147, 51, 234, 0.4); }
+
+        .is-sunny h3 { color: #0f172a !important; }
+        .is-sunny p { color: #1e293b !important; }
+        .is-sunny .weather-desc { color: #334155 !important; opacity: 0.9; }
+        .is-sunny .visit-link { color: #0f172a !important; border-color: rgba(0,0,0,0.3) !important; }
 
         .kf-watermark {
             position: fixed;
@@ -456,13 +461,14 @@
             }
         }
 
-        // --- PRODUCTION MENU PARSER ENGINE ---
+        // --- NATIVE MENU.JSON PARSER ENGINE ---
         async function fetchNavData() {
             const origin = window.location.origin;
             const endpoints = [
-                `${origin}/Website/Menu.json?v=${Date.now()}`,
                 `./Menu.json?v=${Date.now()}`,
-                `./Website/Menu.json?v=${Date.now()}`
+                `${origin}/Website/Menu.json?v=${Date.now()}`,
+                `./Website/Menu.json?v=${Date.now()}`,
+                `https://raw.githubusercontent.com/Werewolf3788/Website/main/Menu.json?v=${Date.now()}`
             ];
 
             for (const path of endpoints) {
@@ -472,16 +478,16 @@
                     text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
                     const data = JSON.parse(text);
                     if (data) {
-                        renderNav(data);
+                        renderNavJson(data);
                         return;
                     }
                 } catch (e) {
-                    // Try next relative endpoint
+                    // Try next endpoint
                 }
             }
         }
 
-        function renderNav(menuItems) {
+        function renderNavJson(menuItems) {
             const desktopContainer = document.getElementById('desktop-nav-links');
             const mobileContainer = document.getElementById('mobile-nav-links');
             if (!desktopContainer || !mobileContainer) return;
@@ -658,7 +664,7 @@
                             }
                         }
                     }, (err) => {
-                        // Suppress background non-matches
+                        // Suppress non-matches
                     });
                 });
             });
