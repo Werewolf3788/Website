@@ -1,8 +1,8 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Wed, July 22, 2026, 11:30 PM EDT
+ * VERSION TIMESTAMP: Wed, July 22, 2026, 11:35 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * NAV ENGINE: Clean Standalone Menu.json Fetcher (Strips comments, zero hardcoded menus)
+ * NAV ENGINE: Domain-Root JSON Fetcher (Fixes 404 subfolder path issue)
  * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Legacy Data Sync
  * ACCESS CONTROL: Unrestricted Admin (raykevin71888@gmail.com) & Profile Owner Enforcement
  * ==========================================
@@ -351,17 +351,28 @@ const appState = {
         });
 
         navContainer.innerHTML = navHTML;
+        
+        // Hide warning bar once menu successfully renders
+        const warningNode = document.querySelector('div[style*="Menu Load Failure"]');
+        if (warningNode) warningNode.style.display = 'none';
     },
 
     loadNavigation: async function() {
-        // Dynamic relative endpoints to reach root Menu.json from deep paths
-        const relativePaths = [
-            `../../Menu.json?v=${Date.now()}`,
-            `../../../Menu.json?v=${Date.now()}`,
-            `/Website/Menu.json?v=${Date.now()}`
+        // Build domain root base path to accurately locate Menu.json regardless of subfolder depth
+        const origin = window.location.origin;
+        const pathname = window.location.pathname;
+        const repoName = pathname.split('/')[1] || 'Website';
+        
+        const absolutePath = `${origin}/${repoName}/Menu.json?v=${Date.now()}`;
+        const relativeRootPath = `/Website/Menu.json?v=${Date.now()}`;
+
+        const pathsToTry = [
+            absolutePath,
+            relativeRootPath,
+            `../../../../Menu.json?v=${Date.now()}`
         ];
 
-        for (const path of relativePaths) {
+        for (const path of pathsToTry) {
             try {
                 const res = await fetch(path);
                 if (res.ok) {
@@ -377,7 +388,7 @@ const appState = {
                     }
                 }
             } catch (e) {
-                // Continue trying relative path fallbacks
+                // Continue trying fallbacks
             }
         }
 
