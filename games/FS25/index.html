@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -12,87 +13,149 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Werewolf FS25 Dedicated Server Dashboard</title>
-  
+
+  <!-- Open Graph / SEO Data -->
+  <meta property="og:title" content="Werewolf FS25 Dedicated Server Dashboard">
+  <meta property="og:description" content="Real-time telemetry, fleet tracking, field registry, and mod compatibility for Werewolf FS25 Dedicated Server.">
+  <meta property="og:type" content="website">
+
   <style>
+    /* Global Styling Preferences */
     :root {
-      --bg-main: #04050f;
-      --bg-card: rgba(13, 17, 38, 0.85);
-      --bg-header: rgba(22, 28, 59, 0.95);
-      --text-primary: #f0f5ff;
-      --text-muted: #94a3b8;
+      /* Persistent Brand Background */
+      --bg-gradient: linear-gradient(180deg, #990000 0%, #000000 100%);
       
+      /* Surface & Typography Adjustments */
+      --card-surface: #1e1c1c;
+      --card-border: rgba(255, 255, 255, 0.12);
+      --text-main: #ffffff;
+      --text-muted: #a1a1aa;
+      
+      /* High-Contrast Interactive Elements */
+      --btn-bg: #dc2626;
+      --btn-text: #ffffff;
+      
+      /* Accent preservation */
       --neon-green: #10b981;
-      --neon-blue: #2563eb;
-      --neon-cyan: #0891b2;
+      --neon-blue: #3b82f6;
+      --neon-cyan: #06b6d4;
       --neon-purple: #c026d3;
       --neon-gold: #f59e0b;
-      --neon-red: #ef4444;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background-color: var(--bg-main);
-      background-image: radial-gradient(circle at 50% 0%, #14113c 0%, #04050f 75%);
-      color: var(--text-primary);
-      padding: 20px;
+    html, body {
+      width: 100vw;
+      max-width: 100%;
       min-height: 100vh;
+      font-size: 16px; /* Mobile-first base */
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-gradient) fixed;
+      color: var(--text-main);
+      padding: 16px;
     }
 
+    /* GLOBAL MENU NAVIGATION BAR */
+    .global-nav-bar {
+      background: rgba(30, 28, 28, 0.95);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 12px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      overflow-x: auto; /* Single row horizontal scroll for 5+ items */
+      white-space: nowrap;
+      backdrop-filter: blur(10px);
+    }
+
+    .nav-link-btn {
+      background-color: var(--btn-bg);
+      color: var(--btn-text);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 10px 18px;
+      min-height: 44px; /* Touch target minimum */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, background-color 0.2s ease;
+    }
+
+    .nav-link-btn:hover {
+      background-color: #b91c1c;
+      transform: translateY(-2px);
+    }
+
+    /* TOP TELEMETRY BANNER */
     .top-bar {
-      background: var(--bg-header);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(20px);
-      padding: 18px 25px;
+      background: var(--card-surface);
+      border: 1px solid var(--card-border);
+      padding: 20px;
       border-radius: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 20px;
+      gap: 16px;
+      margin-bottom: 24px;
     }
 
-    .server-status h1 { font-size: 22px; font-weight: 800; }
+    .server-status h1 { font-size: 22px; font-weight: 800; color: #ffffff; }
     .server-type-badge { font-size: 12px; color: var(--neon-cyan); font-weight: 700; margin-top: 4px; display: block; }
 
     .status-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; margin-right: 8px; }
-    .status-dot.online { background-color: var(--neon-green); box-shadow: 0 0 12px var(--neon-green); }
-    .status-dot.offline { background-color: var(--neon-red); box-shadow: 0 0 12px var(--neon-red); }
+    .status-dot.online { background-color: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
+    .status-dot.offline { background-color: var(--btn-bg); box-shadow: 0 0 10px var(--btn-bg); }
+
+    .env-badge-group {
+      display: flex;
+      gap: 16px;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 10px 18px;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+      font-size: 13px;
+    }
 
     .player-roster { display: flex; gap: 8px; flex-wrap: wrap; }
     .player-tag {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--card-border);
       padding: 6px 14px;
       border-radius: 20px;
       font-size: 12px;
       font-weight: 700;
     }
 
+    /* MAIN GRID SYSTEM */
     .dashboard-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      gap: 48px; /* Standardized spacing gap */
     }
 
     .glass-panel {
-      background: var(--bg-card);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--card-surface);
+      border: 1px solid var(--card-border);
       border-radius: 16px;
-      padding: 20px;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+      padding: 24px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
     }
 
     .glass-panel h2 {
-      font-size: 14px;
+      font-size: 15px;
       text-transform: uppercase;
       letter-spacing: 1px;
-      margin-bottom: 15px;
+      margin-bottom: 16px;
       padding-bottom: 8px;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
+      border-bottom: 1px solid var(--card-border);
       font-weight: 800;
     }
 
@@ -106,26 +169,42 @@
     .scroll-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
 
     .data-card {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid var(--card-border);
       border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
     }
 
-    .bar-track { background: rgba(0, 0, 0, 0.5); height: 6px; border-radius: 4px; overflow: hidden; margin: 5px 0; }
+    .bar-track { background: rgba(0, 0, 0, 0.6); height: 8px; border-radius: 4px; overflow: hidden; margin-top: 6px; }
     .bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
   </style>
 </head>
 <body>
 
+  <!-- GLOBAL MENU (POPULATED dynamically FROM GOOGLE SHEETS CSV) -->
+  <nav class="global-nav-bar" id="global-nav-menu">
+    <span style="font-size:13px; color:var(--text-muted);">Loading navigation...</span>
+  </nav>
+
+  <!-- TOP TELEMETRY BANNER -->
   <header class="top-bar">
     <div class="server-status">
       <span id="status-indicator" class="status-dot offline"></span>
       <div>
-        <h1 id="server-title">Werewolf Dedicated Server</h1>
-        <small class="server-type-badge" id="savegame-badge">🔒 FS25 Dedicated Server | Map: <span id="server-map-name">Connecting...</span></small>
+        <h1 id="server-title">Fetching Server Name...</h1>
+        <small class="server-type-badge" id="savegame-badge">
+          <span id="security-badge" style="color:var(--neon-gold)">🔒 Protected</span> | 
+          Map: <span id="server-map-name">Connecting...</span>
+        </small>
       </div>
+    </div>
+
+    <!-- IN-GAME WEATHER & TIME -->
+    <div class="env-badge-group">
+      <div>🕒 Time: <strong id="env-time" style="color:var(--neon-cyan)">--:--</strong></div>
+      <div>📅 Month: <strong id="env-month" style="color:var(--neon-gold)">--</strong></div>
+      <div>🌤️ Weather: <strong id="env-weather" style="color:var(--neon-green)">--</strong></div>
     </div>
     
     <div>
@@ -136,7 +215,7 @@
 
   <main class="dashboard-grid">
     
-    <!-- REGISTERED FARMS PANEL -->
+    <!-- REGISTERED FARMS REGISTRY -->
     <section class="glass-panel" style="grid-column: 1 / -1;">
       <h2 style="color: var(--neon-gold);">🏡 Registered Server Farms (<span id="farm-count">0</span>)</h2>
       <div class="scroll-box" id="farms-container">Checking farm registry...</div>
@@ -174,7 +253,13 @@
       <div class="scroll-box" id="fields-unclaimed">Scanning parcels...</div>
     </section>
 
-    <!-- LIVESTOCK OPERATIONS -->
+    <!-- CONTRACTS & MISSIONS PANEL -->
+    <section class="glass-panel" id="contracts-section">
+      <h2 style="color: var(--neon-green);">📋 Active Contracts & Job Rewards</h2>
+      <div class="scroll-box" id="contract-board">No active contracts found.</div>
+    </section>
+
+    <!-- LIVESTOCK OPERATIONS (AUTO-HIDES IF NO ANIMALS) -->
     <section class="glass-panel" id="animals-section" style="grid-column: 1 / -1; display: none;">
       <h2 style="color: var(--neon-gold);">🐄 Livestock Operations & Animal Feeds</h2>
       <div class="dashboard-grid" id="animals-grid">
@@ -187,7 +272,7 @@
       </div>
     </section>
 
-    <!-- SERVER MODS & CROSSPLAY -->
+    <!-- SERVER MODS & CROSSPLAY (AUTO-HIDES IF NO MODS) -->
     <section class="glass-panel" id="mods-section" style="grid-column: 1 / -1; display: none;">
       <h2 style="color: var(--neon-purple);">📦 Installed Server Mods & Crossplay Status</h2>
       <div class="scroll-box" id="mods-container">Loading mod list...</div>
@@ -195,29 +280,114 @@
 
   </main>
 
+  <!-- MASTER ENGINE SCRIPT -->
   <script>
+    /**
+     * Version Timestamp: Thu, July 23, 2026, 4:55 PM (EDT)
+     * Resilient Auto-Reconnecting Live Telemetry Engine with CSV Menu Interceptor
+     */
     const DB_ENDPOINT = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/fs25.json";
+    const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
     const parser = new DOMParser();
 
     window.addEventListener('DOMContentLoaded', () => {
+      loadGlobalMenu();
       fetchTelemetry();
-      setInterval(fetchTelemetry, 5000);
+      setInterval(fetchTelemetry, 5000); // Heartbeat pulse every 5 seconds
     });
 
+    /**
+     * DYNAMIC GOOGLE SHEETS CSV MENU ENGINE
+     * Implements Smart Tabs link interception and Native Link formatting
+     */
+    async function loadGlobalMenu() {
+      const navContainer = document.getElementById('global-nav-menu');
+      if (!navContainer) return;
+
+      const cacheBuster = new Date().getTime();
+      try {
+        const res = await fetch(`${MENU_CSV_URL}&v=${cacheBuster}`);
+        if (!res.ok) throw new Error("CSV fetch failure");
+        const csvText = await res.text();
+
+        const lines = csvText.split('\n').map(line => line.trim()).filter(line => line.length > 0);
+        if (lines.length <= 1) return;
+
+        navContainer.innerHTML = ''; // Clear placeholder
+
+        lines.slice(1).forEach(line => {
+          // Parse CSV row values safely
+          const parts = line.split(',').map(item => item.replace(/^"|"$/g, '').trim());
+          const title = parts[0];
+          let url = parts[1];
+
+          if (!title || !url) return;
+
+          // Native link formatting check
+          if (url.includes('tel:') || url.includes('wa.me/') || url.includes('mailto:')) {
+            // Keep native handler intact
+          } else if (!url.startsWith('http://') && !url.startsWith('https://') && !url.startsWith('/')) {
+            url = 'https://' + url;
+          }
+
+          const btn = document.createElement('a');
+          btn.className = 'nav-link-btn';
+          btn.href = url;
+          btn.innerText = title;
+
+          // Global Smart Tabs Interceptor
+          btn.addEventListener('click', (e) => {
+            if (url.startsWith('tel:') || url.startsWith('wa.me/') || url.startsWith('mailto:')) return;
+
+            e.preventDefault();
+            const channel = new BroadcastChannel('smart_tab_interceptor');
+            const targetWindowName = 'tab_' + btoa(url).replace(/=/g, '');
+
+            // Signal other tabs to jump focus if already open
+            channel.postMessage({ type: 'FOCUS_TAB', targetName: targetWindowName, url: url });
+
+            setTimeout(() => {
+              window.open(url, targetWindowName);
+            }, 100);
+          });
+
+          navContainer.appendChild(btn);
+        });
+      } catch (err) {
+        console.warn("Unable to load Google Sheets menu CSV, skipping nav update.", err);
+        navContainer.style.display = 'none';
+      }
+    }
+
+    // BroadcastChannel Listener for Smart Tabs
+    const tabChannel = new BroadcastChannel('smart_tab_interceptor');
+    tabChannel.onmessage = (event) => {
+      if (event.data && event.data.type === 'FOCUS_TAB') {
+        if (window.name === event.data.targetName) {
+          window.focus();
+        }
+      }
+    };
+
+    /**
+     * FIREBASE TELEMETRY FETCH ENGINE
+     */
     async function fetchTelemetry() {
       const cacheBuster = new Date().getTime();
       try {
-        const res = await fetch(`${DB_ENDPOINT}?v=${cacheBuster}`);
+        const res = await fetch(`${DB_ENDPOINT}?v=${cacheBuster}`, {
+          cache: "no-store"
+        });
         if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
         const data = await res.json();
         
-        if (data && (data.vehicles || data.fields || data.stats || data.players || data.farms)) {
+        if (data && (data.vehicles || data.fields || data.stats || data.players || data.farms || data.environment)) {
           renderDashboard(data);
         } else {
           showAwaitingState("Firebase node /fs25 is empty. Run Google Apps Script!");
         }
       } catch (err) {
-        console.error("Firebase Sync Exception:", err);
+        console.error("Firebase Telemetry Connection Failure:", err);
         showOfflineState();
       }
     }
@@ -247,42 +417,83 @@
 
     function renderDashboard(data) {
       const statusIndicator = document.getElementById('status-indicator');
-      const serverTitle = document.getElementById('server-title');
       if (statusIndicator) statusIndicator.className = "status-dot online";
-      if (serverTitle) serverTitle.innerText = "Werewolf Dedicated Server";
 
-      // Map Name
-      const statsRaw = data.stats?.data || "";
-      if (statsRaw) {
-        const statsXml = parseXmlString(statsRaw);
-        if (statsXml) {
-          const serverNode = statsXml.querySelector("Server");
-          const badge = document.getElementById('savegame-badge');
-          if (serverNode && badge) {
-            const mapName = serverNode.getAttribute("mapName") || serverNode.getAttribute("game") || "FS25 Dedicated";
-            badge.innerText = `🔒 FS25 Dedicated Server | Active Map: ${mapName}`;
-          }
-        }
-      }
-
+      renderServerHeader(data.stats?.data || "");
+      renderEnvironment(data.environment?.data || data.careerSavegame?.data || "");
       renderFarms(data.farms?.data || "");
       renderPlayerRoster(data.players?.data || "");
       renderVehicles(data.vehicles?.data || "");
       renderFields(data.fields?.data || "");
+      renderContracts(data.missions?.data || "");
       renderAnimals(data.placeables?.data || "");
       renderServerMods(data.mods?.data || "");
     }
 
-    /**
-     * FARMS DETECTOR: Displays farm list or "No farms created yet"
-     */
+    function renderServerHeader(statsRaw) {
+      const serverTitle = document.getElementById('server-title');
+      const mapSpan = document.getElementById('server-map-name');
+      const securityBadge = document.getElementById('security-badge');
+
+      if (!statsRaw) {
+        if (serverTitle) serverTitle.innerText = "Werewolf Dedicated Server";
+        return;
+      }
+
+      const xml = parseXmlString(statsRaw);
+      if (!xml) return;
+
+      const serverNode = xml.querySelector("Server");
+      if (serverNode) {
+        const serverName = serverNode.getAttribute("name") || serverNode.getAttribute("game") || "Werewolf Dedicated Server";
+        if (serverTitle) serverTitle.innerText = serverName;
+
+        const mapName = serverNode.getAttribute("mapName") || "FS25 Map";
+        if (mapSpan) mapSpan.innerText = mapName;
+
+        const hasPassword = serverNode.getAttribute("password") === "true" || serverNode.getAttribute("hasPassword") === "true";
+        if (securityBadge) {
+          securityBadge.innerHTML = hasPassword 
+            ? `<span style="color:var(--neon-gold)">🔒 Password Protected</span>`
+            : `<span style="color:var(--neon-green)">🌐 Public Access</span>`;
+        }
+      }
+    }
+
+    function renderEnvironment(envRaw) {
+      if (!envRaw) return;
+      const xml = parseXmlString(envRaw);
+      if (!xml) return;
+
+      const dayTimeNode = xml.querySelector("dayTime") || xml.querySelector("realHourTimer");
+      if (dayTimeNode) {
+        const dayTime = parseFloat(dayTimeNode.textContent || "0");
+        const hours = Math.floor(dayTime / 60) % 24;
+        const minutes = Math.floor(dayTime % 60);
+        const timeFormatted = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+        if (document.getElementById('env-time')) document.getElementById('env-time').innerText = timeFormatted;
+      }
+
+      const monthNode = xml.querySelector("currentMonth") || xml.querySelector("currentMon");
+      if (monthNode) {
+        const monthNum = parseInt(monthNode.textContent || "1", 10);
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        if (document.getElementById('env-month')) document.getElementById('env-month').innerText = monthNames[monthNum - 1] || "Spring";
+      }
+
+      const weatherNode = xml.querySelector("weather");
+      if (weatherNode) {
+        const currentWeather = weatherNode.getAttribute("type") || weatherNode.textContent || "Sunny";
+        if (document.getElementById('env-weather')) document.getElementById('env-weather').innerText = currentWeather.toUpperCase();
+      }
+    }
+
     function renderFarms(farmsRaw) {
       const container = document.getElementById('farms-container');
       const countElem = document.getElementById('farm-count');
       if (!container) return;
 
       container.innerHTML = '';
-
       if (!farmsRaw) {
         if (countElem) countElem.innerText = '0';
         container.innerHTML = `<div class="data-card" style="color:var(--text-muted); text-align:center;">⚠️ No farms created yet</div>`;
@@ -299,7 +510,6 @@
       }
 
       if (countElem) countElem.innerText = farms.length;
-
       farms.forEach(f => {
         const farmId = f.getAttribute("farmId") || "1";
         const farmName = f.getAttribute("name") || `Farm #${farmId}`;
@@ -352,7 +562,6 @@
       if (implementsBox) implementsBox.innerHTML = '';
 
       if (!vehiclesRaw) return;
-
       const xml = parseXmlString(vehiclesRaw);
       if (!xml) return;
 
@@ -399,7 +608,6 @@
       if (unclaimedBox) unclaimedBox.innerHTML = '';
 
       if (!fieldsRaw) return;
-
       const xml = parseXmlString(fieldsRaw);
       if (!xml) return;
 
@@ -424,6 +632,39 @@
         } else {
           if (unclaimedBox) unclaimedBox.appendChild(card);
         }
+      });
+    }
+
+    function renderContracts(missionsRaw) {
+      const board = document.getElementById('contract-board');
+      if (!board) return;
+      board.innerHTML = '';
+
+      if (!missionsRaw) {
+        board.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active contracts found.</div>`;
+        return;
+      }
+
+      const xml = parseXmlString(missionsRaw);
+      const missions = xml ? xml.querySelectorAll("mission") : [];
+
+      if (missions.length === 0) {
+        board.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No active contracts found.</div>`;
+        return;
+      }
+
+      missions.forEach(m => {
+        const reward = parseFloat(m.getAttribute("reward") || "0").toLocaleString();
+        const type = m.getAttribute("type") || "Harvest Contract";
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <strong>📋 ${type}</strong>
+            <span style="color:var(--neon-green); font-weight:800;">+$${reward}</span>
+          </div>
+        `;
+        board.appendChild(card);
       });
     }
 
@@ -457,11 +698,7 @@
         }
       });
 
-      if (foundAnimals) {
-        animalsSection.style.display = 'block';
-      } else {
-        animalsSection.style.display = 'none';
-      }
+      animalsSection.style.display = foundAnimals ? 'block' : 'none';
     }
 
     function updateAnimalUI(elemId, feedName) {
