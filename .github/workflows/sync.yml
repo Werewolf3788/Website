@@ -4,11 +4,12 @@ on:
   schedule:
     # Triggers precisely every 16 minutes to avoid overlapping server saves
     - cron: '*/16 * * * *'
-  workflow_dispatch: # This adds a manual "Run workflow" button in GitHub for testing
+  workflow_dispatch: # Allows manual "Run workflow" trigger in GitHub Actions tab
 
 jobs:
   run-sync:
     runs-on: ubuntu-latest
+    timeout-minutes: 5 # Prevents long runs if G-Portal FTP connection drops
 
     steps:
     - name: Checkout Code Repository
@@ -20,10 +21,9 @@ jobs:
         node-version: '20'
 
     - name: Install Node Dependencies
-      # 📁 Added 'cd' step to move into the subfolder to install packages
       run: |
         cd games/FS25
-        npm install firebase-admin ftp dotenv --save
+        npm install firebase-admin ftp dotenv
 
     - name: Run G-Portal to Firebase Bridge
       env:
@@ -33,7 +33,7 @@ jobs:
         FTP_USER: ${{ secrets.FTP_USER }}
         FTP_PASS: ${{ secrets.FTP_PASS }}
         FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-      # 📁 Changed 'node index.js' to step into your subfolder and target 'fs25.js'
+        DEFAULT_SAVE_SLOT: ${{ secrets.DEFAULT_SAVE_SLOT || '1' }}
       run: |
         cd games/FS25
         node fs25.js
