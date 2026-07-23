@@ -1,10 +1,10 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Thu, July 23, 2026, 12:55 AM EDT
+ * VERSION TIMESTAMP: Thu, July 23, 2026, 1:06 AM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
  * NAV ENGINE: Live Google Sheets CSV Fetcher (Pub CSV Feed + Local Fallback)
  * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Firestore Realtime Sync
- * USER REGISTRY: Active Profiles (Werewolf3788, Ray, DesdeemonaTiger)
+ * USER REGISTRY: Active Profiles (Werewolf3788, Ray, DesdemonaTiger)
  * RESILIENCE: Auto-Reconnect Observers + Page Visibility Refresh + Cache-Busting
  * ==========================================
  */
@@ -453,13 +453,13 @@ const appState = {
     },
 
     setupProfilesUI: function() {
-        // Dynamically build/update profile selection buttons to include Werewolf3788, Ray, and DesdeemonaTiger
+        // Dynamically build/update profile selection buttons to include Werewolf3788, Ray, and DesdemonaTiger
         const profilesContainer = document.getElementById('hunter-profiles') || document.querySelector('.profile-selection-container');
         if (profilesContainer) {
             profilesContainer.innerHTML = `
                 <button class="profile-btn" data-profile="Werewolf3788">Werewolf3788</button>
                 <button class="profile-btn" data-profile="Ray">Ray</button>
-                <button class="profile-btn" data-profile="DesdeemonaTiger">DesdeemonaTiger</button>
+                <button class="profile-btn" data-profile="DesdemonaTiger">DesdemonaTiger</button>
             `;
         }
 
@@ -481,8 +481,8 @@ const appState = {
         this.setupProfilesUI();
 
         let savedTarget = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
-        // Auto-sanitize if previous local storage point was TJ
-        if (savedTarget.toLowerCase() === 'tj') {
+        // Auto-sanitize if previous local storage point was TJ or misspelled
+        if (['tj', 'desdeemonatiger'].includes(savedTarget.toLowerCase())) {
             savedTarget = 'Werewolf3788';
         }
 
