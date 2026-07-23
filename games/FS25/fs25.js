@@ -1,21 +1,21 @@
 /**
- * Version Timestamp: Thu, July 23, 2026, 6:50 PM (EDT)
- * Resilient FS25 G-Portal Sync Pipeline (Savegame Slot 1 Fixed)
+ * Version Timestamp: Thu, July 23, 2026, 8:10 PM (EDT)
+ * Resilient FS25 G-Portal Sync Pipeline (24/7 Unrestricted FTP & Web API Bridge)
  */
 
 require('dotenv').config({ path: __dirname + '/.env' });
 const Client = require('ftp');
 const admin = require('firebase-admin');
 
-// 🚨 GLOBAL RUNTIME SECURITY TIMEOUT (5-Minute Failsafe)
+// Global 5-Minute Safety Timeout Failsafe
 setTimeout(() => {
   console.log("🚨 Safety Failsafe triggered: Script execution exceeded 5 minutes. Forcing secure exit.");
   process.exit(0);
 }, 5 * 60 * 1000);
 
-console.log("Initializing FS25 Backend Sync Pipeline (Target: Savegame 1)...");
+console.log("Initializing FS25 Unrestricted Sync Engine...");
 
-// 1. Firebase Admin Setup
+// 1. Initialize Firebase Admin SDK
 let serviceAccount;
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   try {
@@ -47,15 +47,16 @@ const ftpConfig = {
   host: process.env.FTP_HOST || '207.244.243.68',
   port: parseInt(process.env.FTP_PORT, 10) || 50441,
   user: process.env.FTP_USER,
-  password: process.env.FTP_PASS
+  password: process.env.FTP_PASS,
+  connTimeout: 15000,
+  pasvTimeout: 15000
 };
 
 const STATS_URL = "http://207.244.243.68:8500/feed/dedicated-server-stats.xml?code=jeRZKn2jNdgJNqqs";
-// Default to Savegame 1 as confirmed by server log
 const DEFAULT_SLOT = parseInt(process.env.DEFAULT_SAVE_SLOT, 10) || 1;
 
 /**
- * Resilient fetch with exponential backoff
+ * Fetch helper with exponential backoff
  */
 async function fetchWithRetry(url, options = {}, retries = 3, backoffMs = 1000) {
   for (let attempt = 1; attempt <= retries; attempt++) {
@@ -97,7 +98,7 @@ async function runMainPipeline() {
   let activePlayers = 0;
   let rawStatsXml = "";
 
-  // A. Check Web API Feed
+  // Step A: Fetch Live Web Stats (for Server Name, Map Name, Active Roster)
   try {
     const response = await fetchWithRetry(STATS_URL, { timeout: 8000 }, 3, 1000);
     rawStatsXml = await response.text();
@@ -106,38 +107,20 @@ async function runMainPipeline() {
     if (slotsMatch) {
       activePlayers = parseInt(slotsMatch[1], 10);
     }
-    console.log(`✅ Web API active. Current Online Players: ${activePlayers}`);
+    console.log(`✅ Web API connected. Current Online Players: ${activePlayers}`);
   } catch (err) {
-    console.log("⚠️ Web API failed, proceeding directly to FTP file scan.");
+    console.warn("⚠️ Web API stats fetch failed. Proceeding with direct FTP savegame scrape.");
   }
 
-  // B. Enforce 6-hour idle check
-  if (activePlayers === 0) {
-    try {
-      const snapshot = await db.ref('fs25/lastUpdated').get();
-      if (snapshot.exists()) {
-        const lastUpdateStr = snapshot.val();
-        const hoursSinceLastUpdate = (new Date() - new Date(lastUpdateStr)) / (1000 * 60 * 60);
-        
-        if (hoursSinceLastUpdate < 6) {
-          console.log(`🛑 Server is empty. Last sync was ${hoursSinceLastUpdate.toFixed(2)} hours ago (< 6 hrs). Safe exit.`);
-          process.exit(0);
-        }
-      }
-    } catch (dbE) {
-      console.log("No previous timing footprint found in Firebase. Forcing full sync.");
-    }
-  }
-
-  // C. Connect via FTP
+  // Step B: Connect FTP and sync ALL Savegame Files regardless of online player count
   ftpClient.on('ready', function() {
-    console.log("FTP Uplink Ready. Detecting active savegame index...");
+    console.log("📡 FTP Connection Established. Scanning server slot configurations...");
 
     ftpClient.get('dedicatedServerConfig.xml', function(err, configStream) {
       let detectedSlot = DEFAULT_SLOT;
 
       if (err) {
-        console.warn(`⚠️ dedicatedServerConfig.xml not readable. Using target Slot [ savegame${DEFAULT_SLOT} ]`);
+        console.warn(`⚠️ dedicatedServerConfig.xml unreadable. Defaulting to target Slot [ savegame${DEFAULT_SLOT} ]`);
         processActiveFolderSync(DEFAULT_SLOT, activePlayers, rawStatsXml);
         return;
       }
@@ -148,9 +131,9 @@ async function runMainPipeline() {
         const parsedSlot = getTagValue(configData, 'savegame_index');
         if (parsedSlot) {
           detectedSlot = parseInt(parsedSlot, 10);
-          console.log(`🎯 Server config read. Active Map is in Slot [ savegame${detectedSlot} ]`);
+          console.log(`🎯 Active game slot confirmed in server config: Slot [ savegame${detectedSlot} ]`);
         } else {
-          console.log(`⚠️ Slot tag unparsed. Using target Slot [ savegame${DEFAULT_SLOT} ]`);
+          console.log(`⚠️ Unparsed slot index tag. Fallback to Slot [ savegame${DEFAULT_SLOT} ]`);
         }
 
         processActiveFolderSync(detectedSlot, activePlayers, rawStatsXml);
@@ -159,7 +142,7 @@ async function runMainPipeline() {
   });
 
   ftpClient.on('error', function(err) {
-    console.error("🚨 FTP Error:", err.message);
+    console.error("🚨 Critical FTP Link Error:", err.message);
     try { ftpClient.end(); } catch(e) {}
     process.exit(1);
   });
@@ -169,18 +152,18 @@ async function runMainPipeline() {
 
 function processActiveFolderSync(slotNumber, activePlayers, rawStatsXml) {
   const targetFolderPath = `savegame${slotNumber}`;
-  console.log(`Scanning target folder directory: ${targetFolderPath}`);
+  console.log(`📂 Indexing directory contents: ${targetFolderPath}`);
 
   ftpClient.list(targetFolderPath, async function(err, list) {
     if (err) {
-      console.error(`❌ Directory scan failed for ${targetFolderPath}:`, err.message);
+      console.error(`❌ Folder read failed for ${targetFolderPath}:`, err.message);
       ftpClient.end();
-      process.exit(0);
+      process.exit(1);
       return;
     }
 
     const xmlFiles = list.filter(f => f.type !== 'd' && f.name.toLowerCase().endsWith('.xml'));
-    console.log(`📂 Found ${xmlFiles.length} map XML files inside savegame${slotNumber}. Transmitting to Firebase...`);
+    console.log(`📊 Found ${xmlFiles.length} target XML data files in savegame${slotNumber}. Extracting telemetry...`);
 
     const masterPayload = {
       activePlayers: activePlayers,
@@ -199,23 +182,23 @@ function processActiveFolderSync(slotNumber, activePlayers, rawStatsXml) {
       const remoteFilePath = `${targetFolderPath}/${fileInfo.name}`;
       
       try {
-        console.log(`Syncing: ${fileInfo.name}`);
+        console.log(`⬇️ Downloading: ${fileInfo.name}`);
         const rawXmlContent = await downloadFileBuffer(ftpClient, remoteFilePath);
         masterPayload[fileNameClean] = { data: rawXmlContent };
       } catch (fileErr) {
-        console.error(`❌ Scrape skipped on file ${fileInfo.name}:`, fileErr.message);
+        console.error(`❌ Download failed for ${fileInfo.name}:`, fileErr.message);
       }
     }
 
-    // Push payload directly to /fs25 root node in Firebase
+    // Write all telemetry directly into Firebase root node /fs25
     try {
       await db.ref('fs25').update(masterPayload);
-      console.log(`🏆 Sync complete! All files from savegame${slotNumber} written to Firebase /fs25.`);
+      console.log(`🏆 Database update successful! All savegame data written to Firebase /fs25.`);
     } catch (writeErr) {
-      console.error("Firebase database write error:", writeErr.message);
+      console.error("❌ Firebase Database Write Error:", writeErr.message);
     }
 
-    console.log("🔌 Closing FTP Connection.");
+    console.log("🔌 Synchronization complete. Closing FTP Uplink.");
     ftpClient.end();
     process.exit(0);
   });
