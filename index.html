@@ -1,10 +1,9 @@
 <!-- 
   ==========================================
-  VERSION TIMESTAMP: Thu, July 23, 2026, 12:30 AM EDT
+  VERSION TIMESTAMP: Thu, July 23, 2026, 12:45 AM EDT
   SYSTEM: Werewolf Project Home Engine (index.html)
-  DEPLOYMENT: GitHub Pages Direct Target (https://werewolf3788.github.io/Website/)
-  ENGINE: Embedded Primary Menu + Live Firestore/RTDB Squad Sync + Cinema Engine
-  SQUAD: Werewolf3788 | Raymystyro | Terrdog420 | DesdemonaTiger
+  ENGINE: Resilient JSON Comment Stripper + Dynamic Active Game Matcher
+  SQUAD: Werewolf3788 | Raymystyro | Darkwing69420 | DesdemonaTiger
   ==========================================
 -->
 <!DOCTYPE html>
@@ -104,25 +103,6 @@
             transition: transform 0.3s ease;
         }
 
-        /* Weather Layers */
-        .weather-layer {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-        .weather-layer.active { opacity: 1; }
-
-        .card-content { position: relative; z-index: 10; }
-
-        .bg-rain { background: linear-gradient(to bottom, #1e293b, #0f172a); }
-        .bg-cloudy { background: linear-gradient(to bottom, #475569, #1e293b); }
-        .bg-sunny { background: linear-gradient(to bottom, #fbbf24, #f59e0b); }
-        .bg-snowy { background: linear-gradient(to bottom, #1e40af, #3b82f6); }
-        .bg-clear { background: linear-gradient(to bottom, #0f172a, #020617); }
-
         .status-pulse {
             display: inline-block;
             width: 8px; height: 8px;
@@ -175,7 +155,13 @@
                 </div>
 
                 <!-- Desktop Menu -->
-                <div id="desktop-nav-links" class="hidden md:flex items-center space-x-8"></div>
+                <div id="desktop-nav-links" class="hidden md:flex items-center space-x-8">
+                    <div class="flex items-center space-x-4 animate-pulse">
+                        <div class="h-4 w-16 bg-slate-700 rounded"></div>
+                        <div class="h-4 w-16 bg-slate-700 rounded"></div>
+                        <div class="h-4 w-20 bg-slate-700 rounded"></div>
+                    </div>
+                </div>
 
                 <!-- Global Auth Status Pill -->
                 <div id="auth-status-container" class="hidden md:flex items-center ml-4">
@@ -220,7 +206,6 @@
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Werewolf3788 -->
                 <div id="card-werewolf" class="custom-card p-6 text-center shadow-werewolf">
-                    <div class="weather-layer" id="layer-werewolf"></div>
                     <div class="card-content">
                         <div class="w-24 h-24 mx-auto mb-4 relative">
                             <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-70x70.png" 
@@ -241,7 +226,6 @@
 
                 <!-- Raymystyro -->
                 <div id="card-ray" class="custom-card p-6 text-center shadow-ray">
-                    <div class="weather-layer" id="layer-ray"></div>
                     <div class="card-content">
                         <div class="w-24 h-24 mx-auto mb-4 relative">
                             <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-70x70.png" 
@@ -260,24 +244,23 @@
                     </div>
                 </div>
 
-                <!-- Terrdog420 -->
+                <!-- Darkwing69420 -->
                 <div id="card-tj" class="custom-card p-6 text-center shadow-terrdog">
-                    <div class="weather-layer" id="layer-tj"></div>
                     <div class="card-content">
                         <div class="w-24 h-24 mx-auto mb-4 relative">
-                            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/9dad426e-04cb-4fc0-a917-25982b3800ce-profile_image-70x70.png" 
+                            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/53503674-298d-4302-89ad-4c58c18dcbd9-profile_image-70x70.jpeg" 
                                  class="w-full h-full rounded-full border-2 border-terrdog object-cover shadow-lg">
                             <div id="twitch-status-indicator-tj" class="hidden absolute bottom-1 right-1">
                                 <span class="status-pulse"></span>
                             </div>
                         </div>
-                        <h3 class="text-xl mb-1 text-white">Terrdog420</h3>
+                        <h3 class="text-xl mb-1 text-white">Darkwing69420</h3>
                         <p class="text-terrdog text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
                         <p id="weather-desc-tj" class="weather-desc text-[10px] opacity-70 mb-2 italic">Updating weather...</p>
                         <div class="mb-4 min-h-[20px]">
                             <p id="twitch-game-tj" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking Twitch...</p>
                         </div>
-                        <a href="./users/tj/overlay.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-terrdog text-xs transition-colors">Visit Profile</a>
+                        <a href="./users/terrodog/index.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-terrdog text-xs transition-colors">Visit Profile</a>
                     </div>
                 </div>
             </div>
@@ -318,33 +301,12 @@
         </div>
     </section>
 
-    <!-- LIVE PLAYSTATION SQUAD PROGRESS TRACKER SECTION -->
+    <!-- DYNAMIC MATCHED ACTIVE GAME PROGRESS CARDS SECTION -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4 space-y-8" id="active-game-section-container">
-            <div class="custom-card p-8 border border-slate-700/80">
-                <div class="flex items-center justify-between mb-6">
-                    <span class="bg-slate-800 text-sky-400 border border-sky-500/30 font-black text-[10px] uppercase px-3 py-1 rounded-full flex items-center gap-2">
-                        <i class="fa-solid fa-satellite-dish"></i> LIVE SQUAD PROGRESS TRACKER
-                    </span>
-                    <span class="text-xs text-emerald-400 font-bold uppercase tracking-widest">FIRESTORE CLOUD ACTIVE</span>
-                </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                    <div class="md:col-span-1 aspect-video rounded-xl overflow-hidden border border-slate-700 bg-slate-900 relative">
-                        <img id="coop-game-art" src="https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
-                            <div class="text-lg font-black text-white uppercase" id="active-game-title-overlay">Sniper Elite 5</div>
-                        </div>
-                    </div>
-                    <div class="md:col-span-2 space-y-5">
-                        <div>
-                            <h2 class="text-2xl font-black text-sky-400 uppercase tracking-tight" id="active-game-heading">Sniper Elite 5</h2>
-                            <p class="text-xs text-slate-400 font-bold uppercase mt-1 tracking-widest">Squad Roster: Werewolf3788 • Raymystyro • Terrdog420 • DesdemonaTiger</p>
-                        </div>
-                        <div class="space-y-4 bg-slate-900/60 p-5 rounded-xl border border-slate-800" id="squad-progress-bars">
-                            <div class="text-xs text-slate-400 italic animate-pulse">Syncing live Firestore progress...</div>
-                        </div>
-                    </div>
-                </div>
+            <!-- Dynamic game cards will automatically render here for players on the SAME game -->
+            <div class="custom-card p-8 border border-slate-700/80 text-center text-slate-400 animate-pulse">
+                Checking active PS5 game sessions and syncing Firestore progress...
             </div>
         </div>
     </section>
@@ -383,6 +345,7 @@
         const db = getFirestore(app);
         const rtdb = getDatabase(app);
 
+        // PERSISTENT AUTH SESSION LOGIC (Auto Stay Logged In)
         setPersistence(auth, browserLocalPersistence).catch(err => console.warn("Auth persistence notice:", err.message));
 
         const authBtn = document.getElementById('auth-btn');
@@ -447,28 +410,47 @@
             }
         }
 
-        // --- INSTANT GUARANTEED NAVIGATION PARSER ---
-        const primaryMenuConfig = [
-            { name: "Home", url: "./index.html" },
-            { name: "Movies", url: "https://werewolf3788.github.io/Website/Movies.html" },
-            { name: "Kevin Profile", url: "./users/kevin/website.html", group: "Contributors" },
-            { name: "Ray Profile", url: "./users/ray/website.html", group: "Contributors" },
-            { name: "TJ Overlay", url: "./users/tj/overlay.html", group: "Contributors" }
-        ];
+        // --- MENU.JSON COMMENT STRIPPER & PARSER ---
+        async function fetchNavData() {
+            const origin = window.location.origin;
+            const endpoints = [
+                `./Menu.json?v=${Date.now()}`,
+                `./menu.json?v=${Date.now()}`,
+                `${origin}/Website/Menu.json?v=${Date.now()}`,
+                `https://raw.githubusercontent.com/Werewolf3788/Website/main/Menu.json?v=${Date.now()}`
+            ];
 
-        function renderNavMenu(menuItems) {
+            for (const path of endpoints) {
+                try {
+                    const res = await fetchWithRetry(path);
+                    let text = await res.text();
+                    
+                    // CRITICAL FIX: STRIP JAVASCRIPT COMMENTS (/* ... */) FROM JSON FILE
+                    text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
+                    
+                    const data = JSON.parse(text);
+                    if (data && Array.isArray(data)) {
+                        renderNavJson(data);
+                        return;
+                    }
+                } catch (e) {
+                    // Try next path candidate
+                }
+            }
+        }
+
+        function renderNavJson(menuItems) {
             const desktopContainer = document.getElementById('desktop-nav-links');
             const mobileContainer = document.getElementById('mobile-nav-links');
             if (!desktopContainer || !mobileContainer) return;
 
-            const itemsArray = Array.isArray(menuItems) ? menuItems : (menuItems.items || menuItems.links || []);
             const groups = {};
             const standalone = [];
 
-            itemsArray.forEach(item => {
+            menuItems.forEach(item => {
                 if (!item.name || !item.url) return;
                 const node = { name: item.name, url: item.url, image: item.image || item.img || '' };
-                if (item.group) {
+                if (item.group && item.group !== "null" && item.group !== null) {
                     if (!groups[item.group]) groups[item.group] = [];
                     groups[item.group].push(node);
                 } else {
@@ -479,6 +461,7 @@
             let desktopHTML = '';
             let mobileHTML = '';
 
+            // Group Dropdowns (User, Games, Entertainment, Discord, Co Sites, etc.)
             Object.keys(groups).forEach(groupName => {
                 desktopHTML += `
                     <div class="relative group dropdown">
@@ -508,6 +491,7 @@
                 desktopHTML += `</div></div>`;
             });
 
+            // Standalone Links (Home, Movies, etc.)
             standalone.forEach(it => {
                 const imgTag = it.image ? `<img src="${it.image}" class="w-5 h-5 rounded-full object-cover" onerror="this.style.display='none'">` : '';
                 const isMovies = it.name.toLowerCase() === 'movies';
@@ -532,9 +516,9 @@
 
         // --- WEATHER & TWITCH LIVE STATUS ENGINE ---
         const users = [
-            { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf', twitch: 'werewolf3788', theme: 'text-werewolf' },
-            { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray', twitch: 'raymystyro', theme: 'text-ray' },
-            { id: 'tj', user: 'terrdog420', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', layerId: 'layer-tj', descId: 'weather-desc-tj', twitch: 'terrdog420', theme: 'text-terrdog' }
+            { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', descId: 'weather-desc-werewolf', twitch: 'werewolf3788', theme: 'text-werewolf' },
+            { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', descId: 'weather-desc-ray', twitch: 'raymystyro', theme: 'text-ray' },
+            { id: 'tj', user: 'terrdog420', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', descId: 'weather-desc-tj', twitch: 'terrdog420', theme: 'text-terrdog' }
         ];
 
         async function updateWeather() {
@@ -585,40 +569,105 @@
             }
         }
 
-        // --- SQUAD ROSTER & MULTI-DOC FIRESTORE OBSERVER ---
+        // --- SQUAD DEFINITION & DYNAMIC ACTIVE-GAME MATCHING ENGINE ---
         const squadRoster = [
-            { id: 'werewolf', docIds: ['werewolf', 'Werewolf3788', 'kevin'], display: 'Werewolf3788', color: '#FF5F1F', count: 0, total: 54 },
-            { id: 'Ray', docIds: ['Ray', 'ray', 'raymystyro'], display: 'Raymystyro', color: '#C41E3A', count: 95, total: 233 },
-            { id: 'Terrdog420', docIds: ['Terrdog420', 'terrdog', 'tj'], display: 'Terrdog420', color: '#9333ea', count: 0, total: 54 },
-            { id: 'DesdemonaTiger', docIds: ['DesdemonaTiger', 'desdemonatiger', 'desdemona'], display: 'DesdemonaTiger', color: '#00f2ff', count: 0, total: 54 }
+            { id: 'werewolf', docIds: ['werewolf', 'Werewolf3788', 'kevin'], display: 'Werewolf3788', color: '#FF5F1F', count: 0, total: 54, activeGame: 'Sniper Elite 5', gameArt: 'https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg' },
+            { id: 'Ray', docIds: ['Ray', 'ray', 'raymystyro'], display: 'Raymystyro', color: '#C41E3A', count: 95, total: 233, activeGame: 'Sniper Elite 5', gameArt: 'https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg' },
+            { id: 'Terrdog420', docIds: ['Terrdog420', 'terrdog', 'tj', 'Darkwing69420'], display: 'Darkwing69420', color: '#9333ea', count: 0, total: 54, activeGame: 'Sniper Elite 5', gameArt: 'https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg' },
+            { id: 'DesdemonaTiger', docIds: ['DesdemonaTiger', 'desdemonatiger', 'desdemona'], display: 'DesdemonaTiger', color: '#00f2ff', count: 0, total: 54, activeGame: 'Sniper Elite 5', gameArt: 'https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg' }
         ];
 
-        function renderDynamicMatchedGameCards() {
-            const container = document.getElementById('squad-progress-bars');
-            if (!container) return;
+        // Group players into dedicated cards ONLY if playing the SAME game
+        function renderMatchedGameCards() {
+            const sectionContainer = document.getElementById('active-game-section-container');
+            if (!sectionContainer) return;
 
-            let barsHtml = '';
+            const gameGroups = {};
             squadRoster.forEach(p => {
-                const percent = Math.round((p.count / Math.max(p.total, 1)) * 100) || 0;
-                barsHtml += `
-                    <div class="space-y-1">
-                        <div class="flex justify-between items-center text-xs font-black uppercase">
-                            <span style="color: ${p.color}">${p.display}</span>
-                            <span class="text-slate-300">${percent}% (${p.count}/${p.total} Objectives)</span>
+                const gameKey = p.activeGame.toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (!gameGroups[gameKey]) {
+                    gameGroups[gameKey] = {
+                        title: p.activeGame,
+                        art: p.gameArt,
+                        players: []
+                    };
+                }
+                gameGroups[gameKey].players.push(p);
+            });
+
+            let fullHTML = '';
+
+            Object.keys(gameGroups).forEach(gk => {
+                const group = gameGroups[gk];
+                let playerBars = '';
+
+                group.players.forEach(p => {
+                    const percent = Math.round((p.count / Math.max(p.total, 1)) * 100) || 0;
+                    playerBars += `
+                        <div class="space-y-1">
+                            <div class="flex justify-between items-center text-xs font-black uppercase">
+                                <span style="color: ${p.color}">${p.display}</span>
+                                <span class="text-slate-300">${percent}% (${p.count}/${p.total} Objectives)</span>
+                            </div>
+                            <div class="h-3 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                                <div class="h-full transition-all duration-1000" style="width: ${percent}%; background-color: ${p.color}"></div>
+                            </div>
                         </div>
-                        <div class="h-3 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700">
-                            <div class="h-full transition-all duration-1000" style="width: ${percent}%; background-color: ${p.color}"></div>
+                    `;
+                });
+
+                fullHTML += `
+                    <div class="custom-card p-8 border border-slate-700/80 shadow-2xl">
+                        <div class="flex items-center justify-between mb-6">
+                            <span class="bg-slate-800 text-sky-400 border border-sky-500/30 font-black text-[10px] uppercase px-3 py-1 rounded-full flex items-center gap-2">
+                                <i class="fa-solid fa-gamepad"></i> ACTIVE MATCH TRACKER
+                            </span>
+                            <span class="text-xs text-emerald-400 font-bold uppercase tracking-widest">FIRESTORE CLOUD LIVE</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+                            <div class="md:col-span-1 aspect-video rounded-xl overflow-hidden border border-slate-700 bg-slate-900 relative">
+                                <img src="${group.art}" class="w-full h-full object-cover" onerror="this.src='https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg'">
+                                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
+                                    <div class="text-lg font-black text-white uppercase">${group.title}</div>
+                                </div>
+                            </div>
+                            <div class="md:col-span-2 space-y-5">
+                                <div>
+                                    <h2 class="text-2xl font-black text-sky-400 uppercase tracking-tight">${group.title}</h2>
+                                    <p class="text-xs text-slate-400 font-bold uppercase mt-1 tracking-widest">Active Operatives: ${group.players.map(p => p.display).join(' • ')}</p>
+                                </div>
+                                <div class="space-y-4 bg-slate-900/60 p-5 rounded-xl border border-slate-800">
+                                    ${playerBars}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
             });
-            container.innerHTML = barsHtml;
+
+            sectionContainer.innerHTML = fullHTML;
         }
 
+        // Live PS5 RTDB Active Game Sync + Firestore Ground Truth Observer
         function initLiveFirestoreObservers() {
             squadRoster.forEach(member => {
+                // Read RTDB for dynamic active game session
+                const rtdbRef = ref(rtdb, `psn/users/${member.id.toLowerCase()}`);
+                onValue(rtdbRef, (snap) => {
+                    if (snap.exists()) {
+                        const val = snap.val();
+                        if (val && val.titleName) {
+                            member.activeGame = val.titleName;
+                            if (val.titleConceptIcon) member.gameArt = val.titleConceptIcon;
+                        }
+                    }
+                    renderMatchedGameCards();
+                });
+
+                // Read Firestore for exact objective completion count
                 member.docIds.forEach(targetId => {
-                    const docRef = doc(db, "users", targetId, "progress", "sniper-elite-5");
+                    const gameSlug = member.activeGame.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                    const docRef = doc(db, "users", targetId, "progress", gameSlug);
 
                     onSnapshot(docRef, (snap) => {
                         if (snap.exists()) {
@@ -627,35 +676,14 @@
                             if (Array.isArray(items) && items.length > 0) {
                                 member.total = items.length;
                                 member.count = items.filter(i => i.collected || i.done).length;
-                                renderDynamicMatchedGameCards();
+                                renderMatchedGameCards();
                             }
                         }
-                    }, (err) => {
-                        // Suppress background non-matches
                     });
                 });
             });
 
-            // Direct RTDB observer for Werewolf3788 active hunt sync
-            const wolfRtdbRef = ref(rtdb, 'psn/users/werewolf');
-            onValue(wolfRtdbRef, (snap) => {
-                if (snap.exists()) {
-                    const wolfData = snap.val();
-                    if (wolfData && wolfData.activeHunt) {
-                        const hunt = wolfData.activeHunt;
-                        if (hunt.progress !== undefined) {
-                            const wolfObj = squadRoster.find(m => m.id === 'werewolf');
-                            if (wolfObj && wolfObj.count === 0) {
-                                wolfObj.count = Math.round((hunt.progress / 100) * 54);
-                                wolfObj.total = 54;
-                                renderDynamicMatchedGameCards();
-                            }
-                        }
-                    }
-                }
-            });
-
-            renderDynamicMatchedGameCards();
+            renderMatchedGameCards();
         }
 
         // --- CINEMA SLIDESHOW LOGIC ---
@@ -754,7 +782,7 @@
         }
 
         window.onload = () => {
-            renderNavMenu(primaryMenuConfig);
+            fetchNavData();
             updateWeather();
             users.forEach(updateTwitchStatus);
             fetchMovieData(); 
