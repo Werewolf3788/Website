@@ -1,10 +1,15 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 10:30 PM (EDT)
- Resilient FS25 Realtime Telemetry Engine - Detailed Contracts & Collectibles Tracker
+ Version Timestamp: Thu, July 23, 2026, 10:35 PM (EDT)
+ Resilient FS25 Realtime Telemetry Engine - Dynamic UTM Link Tracking Included
  File: games/FS25/index.js
 */
 
 const menuCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
+
+// PAGE SPECIFIC UTM TRACKING CONFIGURATION
+const PAGE_UTM_SOURCE = "game_tracker";
+const PAGE_UTM_MEDIUM = "dashboard";
+const PAGE_UTM_CAMPAIGN = "FS25";
 
 // GitHub Image Asset Registry
 const IMAGE_ASSETS = {
@@ -50,14 +55,6 @@ const IMAGE_ASSETS = {
   "PRECISION FARMING": "images/Precision Farming.jpg"
 };
 
-const BASE_PRICES = {
-  "WHEAT": 780, "BARLEY": 720, "CANOLA": 1250, "OAT": 1100,
-  "MAIZE": 850, "CORN": 850, "SUNFLOWER": 1380, "SOYBEAN": 1550,
-  "POTATO": 410, "SUGARBEET": 350, "BEETROOT": 420, "PARSNIP": 460,
-  "SPINACH": 620, "CARROT": 450, "COTTON": 2450, "SORGHUM": 920,
-  "GREENBEAN": 890, "PEA": 780, "GRASS": 120, "MILK": 620
-};
-
 const CROP_NAME_MAP = {
   "WHEAT": "Wheat", "BARLEY": "Barley", "CANOLA": "Canola",
   "OAT": "Oats", "MAIZE": "Corn / Maize", "SUNFLOWER": "Sunflowers",
@@ -73,6 +70,20 @@ const MONTH_NAMES = [
   "Early Autumn (September)", "Mid Autumn (October)", "Late Autumn (November)",
   "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
 ];
+
+// Attach Page Name UTM Parameters to standard URLs
+function appendUTMParameters(urlStr) {
+  if (!urlStr || urlStr.startsWith('#') || urlStr.startsWith('javascript:')) return urlStr;
+  try {
+    const url = new URL(urlStr, window.location.origin);
+    url.searchParams.set("utm_source", PAGE_UTM_SOURCE);
+    url.searchParams.set("utm_medium", PAGE_UTM_MEDIUM);
+    url.searchParams.set("utm_campaign", PAGE_UTM_CAMPAIGN);
+    return url.toString();
+  } catch (e) {
+    return urlStr;
+  }
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("mobile-menu-toggle");
@@ -113,11 +124,13 @@ async function loadGoogleSheetsMenu() {
 
       if (!name || !url) return;
 
+      const trackedUrl = appendUTMParameters(url);
+
       if (!group || group === '' || group.toLowerCase() === name.toLowerCase()) {
-        standaloneItems.push({ name, url, image });
+        standaloneItems.push({ name, url: trackedUrl, image });
       } else {
         if (!dropdownGroups[group]) dropdownGroups[group] = [];
-        dropdownGroups[group].push({ name, url, image });
+        dropdownGroups[group].push({ name, url: trackedUrl, image });
       }
     });
 
@@ -216,7 +229,6 @@ window.renderDashboard = function(data) {
   // 1. Time, Month & Weather
   try {
     const envXml = parseXML(data.environment || data.environment_xml);
-    const careerXml = parseXML(data.careerSavegame || data.careerSavegame_xml);
     
     let hours = 8, mins = 50, monthText = "Early Autumn (September)";
 
@@ -278,13 +290,12 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Farms Render Error:", e); }
 
-  // 4. DETAILED CONTRACTS & MISSIONS ENGINE (Active Tracking, Progress & Requirements)
+  // 4. Contracts & Missions Engine
   try {
     const missionsXml = parseXML(data.missions);
     const contractsContainer = document.getElementById('contracts-container');
     if (missionsXml && contractsContainer) {
       let html = "";
-      let activeCount = 0;
 
       missionsXml.querySelectorAll("*").forEach(m => {
         if (m.tagName.endsWith("Mission")) {
@@ -299,9 +310,7 @@ window.renderDashboard = function(data) {
           const rawCrop = m.getAttribute("fruitType");
           const cropTitle = resolveCropName(rawCrop);
           
-          // Check active status and percentage completion
           const statusAttr = m.getAttribute("status") || "1";
-          const isFinished = statusAttr === "2";
           const isAccepted = statusAttr === "1" || m.getAttribute("active") === "true";
           
           let progressPct = parseFloat(m.getAttribute("progress") || m.getAttribute("completion") || "0");
@@ -310,7 +319,6 @@ window.renderDashboard = function(data) {
           let thumbnail = getThumbnailHTML(missionType, "fa-file-contract");
           if (rawCrop) thumbnail = getThumbnailHTML(rawCrop, "fa-file-contract");
 
-          // Build Human-Readable Requirements Note
           let requirementNote = `Requirements: Perform ${missionType.toLowerCase()} on Field #${fieldId}`;
           if (rawCrop) requirementNote = `Requirements: ${missionType} & deliver ${cropTitle} from Field #${fieldId}`;
 
@@ -349,19 +357,17 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Contracts Render Error:", e); }
 
-  // 5. MAP COLLECTIBLES TELEMETRY TRACKER
+  // 5. Map Collectibles Tracker
   try {
     const collectiblesContainer = document.getElementById('collectibles-container');
     const careerXml = parseXML(data.careerSavegame || data.stats);
 
     if (collectiblesContainer) {
       let foundCount = 0;
-      let totalCollectibles = 100; // Standard FS25 map collectible count
-      let itemsList = [];
+      let totalCollectibles = 100;
 
       if (careerXml) {
         const collectibleNodes = careerXml.querySelectorAll("collectible, collectibles item, collectibleItem");
-        
         if (collectibleNodes.length > 0) {
           totalCollectibles = collectibleNodes.length;
           collectibleNodes.forEach(c => {
