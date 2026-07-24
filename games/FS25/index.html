@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Version Timestamp: Fri, July 24, 2026, 01:50 AM (EDT) -->
+  <!-- Version Timestamp: Fri, July 24, 2026, 02:45 AM (EDT) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Realtime Tactical Dashboard</title>
@@ -76,24 +76,39 @@
   <!-- Main Tactical Command Center -->
   <main class="dashboard-container">
     
-    <!-- Row 1: Server Overview Banner -->
+    <!-- Row 1: Server Banner with Live Map Preview Thumbnail -->
     <section class="server-banner">
-      <div class="banner-title">
-        <h1 id="server-name">Connecting to Server Telemetry...</h1>
-        <div class="banner-badges">
-          <span id="server-map" class="badge"><i class="fa-solid fa-map-location-dot"></i> Map: Riverbend Springs</span>
-          <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: 00:00</span>
-          <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Month: Early Autumn</span>
-          <span id="server-players" class="badge"><i class="fa-solid fa-users"></i> Players: 0/6</span>
+      <div class="banner-layout">
+        <div class="map-preview-box">
+          <img id="banner-map-thumb" 
+               src="http://144.126.153.115:8300/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=60&size=512" 
+               alt="Live G-Portal Map Overview" 
+               class="lightbox-trigger"
+               onerror="this.parentNode.style.display='none';" />
+        </div>
+        <div class="banner-title">
+          <div class="server-header-line">
+            <h1 id="server-name">Connecting to Server Telemetry...</h1>
+            <span id="server-status-pill" class="status-pill status-offline">
+              <span class="status-dot"></span> <span id="status-text">OFFLINE</span>
+            </span>
+          </div>
+          <div class="banner-badges">
+            <span id="server-map" class="badge"><i class="fa-solid fa-map-location-dot"></i> Map: Riverbend Springs</span>
+            <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: 00:00</span>
+            <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Month: Early Autumn</span>
+            <span id="server-weather" class="badge"><i class="fa-solid fa-sun"></i> Weather: Clear</span>
+            <span id="server-players" class="badge"><i class="fa-solid fa-users"></i> Players: 0/6</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- Grid Layout (Rows 2, 3, 4) -->
-    <div class="grid-layout">
+    <!-- Masonry Staggered Grid Layout -->
+    <div class="masonry-grid">
       
-      <!-- ROW 2.1.1: Registered Server Farms -->
-      <div class="dashboard-box box-order-1">
+      <!-- Registered Server Farms -->
+      <div class="dashboard-box box-farms">
         <div class="box-header">
           <i class="fa-solid fa-building-columns"></i>
           <h2>REGISTERED SERVER FARMS</h2>
@@ -103,8 +118,8 @@
         </div>
       </div>
 
-      <!-- ROW 2.2.1: Fleet Machinery & Vehicles -->
-      <div class="dashboard-box box-order-2">
+      <!-- Fleet Machinery & Vehicles -->
+      <div class="dashboard-box box-tractors">
         <div class="box-header">
           <i class="fa-solid fa-tractor"></i>
           <h2>FLEET MACHINERY & VEHICLES</h2>
@@ -114,8 +129,8 @@
         </div>
       </div>
 
-      <!-- ROW 2.3.1: Server Contracts & Missions -->
-      <div class="dashboard-box box-order-3">
+      <!-- Server Contracts & Missions -->
+      <div class="dashboard-box box-contracts">
         <div class="box-header">
           <i class="fa-solid fa-file-contract"></i>
           <h2>SERVER CONTRACTS & MISSIONS</h2>
@@ -125,8 +140,8 @@
         </div>
       </div>
 
-      <!-- ROW 3.1.1: Field Crops & Agronomy Status -->
-      <div class="dashboard-box box-order-4">
+      <!-- Field Crops & Agronomy Status -->
+      <div class="dashboard-box box-fields">
         <div class="box-header">
           <i class="fa-solid fa-seedling"></i>
           <h2>FIELD CROPS & AGRONOMY STATUS</h2>
@@ -136,8 +151,8 @@
         </div>
       </div>
 
-      <!-- ROW 3.2.1: Implements & Equipment -->
-      <div class="dashboard-box box-order-5">
+      <!-- Implements & Equipment -->
+      <div class="dashboard-box box-implements">
         <div class="box-header">
           <i class="fa-solid fa-screwdriver-wrench"></i>
           <h2>IMPLEMENTS & EQUIPMENT</h2>
@@ -147,8 +162,8 @@
         </div>
       </div>
 
-      <!-- ROW 3.3.1: Commodity Market Prices -->
-      <div class="dashboard-box box-order-6">
+      <!-- Commodity Market Prices -->
+      <div class="dashboard-box box-economy">
         <div class="box-header">
           <i class="fa-solid fa-chart-line"></i>
           <h2>COMMODITY MARKET PRICES</h2>
@@ -158,8 +173,8 @@
         </div>
       </div>
 
-      <!-- ROW 4.1.1: Public Map Infrastructure -->
-      <div class="dashboard-box box-order-7">
+      <!-- Public Map Infrastructure -->
+      <div class="dashboard-box box-infra">
         <div class="box-header">
           <i class="fa-solid fa-city"></i>
           <h2>PUBLIC MAP INFRASTRUCTURE</h2>
@@ -169,8 +184,8 @@
         </div>
       </div>
 
-      <!-- ROW 4.2.1: Map Collectibles Tracker -->
-      <div class="dashboard-box box-order-8">
+      <!-- Map Collectibles Tracker -->
+      <div class="dashboard-box box-collectibles">
         <div class="box-header">
           <i class="fa-solid fa-trophy"></i>
           <h2>MAP COLLECTIBLES TRACKER</h2>
@@ -180,8 +195,8 @@
         </div>
       </div>
 
-      <!-- ROW 4.3.1: Dealership Used Sales Radar -->
-      <div class="dashboard-box box-order-9">
+      <!-- Dealership Used Sales Radar -->
+      <div class="dashboard-box box-sales">
         <div class="box-header">
           <i class="fa-solid fa-tags"></i>
           <h2>DEALERSHIP USED SALES</h2>
@@ -194,11 +209,19 @@
     </div>
   </main>
 
-  <!-- Live Deployment Timestamp Footer -->
+  <!-- Image Lightbox Modal -->
+  <div id="lightbox-modal" class="lightbox-modal">
+    <span id="lightbox-close" class="lightbox-close">&times;</span>
+    <img id="lightbox-img" class="lightbox-content" alt="Enlarged Preview">
+    <div id="lightbox-caption" class="lightbox-caption"></div>
+  </div>
+
+  <!-- Live Deployment Timestamp Footer with Offline Counter -->
   <footer class="system-footer">
     <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Engine Deployment Timestamp: <strong>Fri, July 24, 2026, 01:50 AM (EDT)</strong></span>
+      <span><i class="fa-solid fa-code-commit"></i> Engine Deployment Timestamp: <strong>Fri, July 24, 2026, 02:45 AM (EDT)</strong></span>
       <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Initializing...</span>
+      <span id="offline-timer" style="display:none; color:#f87171; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: 0m 0s</span>
     </div>
   </footer>
 
@@ -220,9 +243,14 @@
         const val = snapshot.val();
         if (val && typeof window.renderDashboard === 'function') {
           window.renderDashboard(val);
+        } else if (typeof window.setServerStatus === 'function') {
+          window.setServerStatus(false);
         }
       }, (error) => {
         console.warn("⚠️ RTDB Stream Disconnected:", error.message);
+        if (typeof window.setServerStatus === 'function') {
+          window.setServerStatus(false);
+        }
       });
     }
 
