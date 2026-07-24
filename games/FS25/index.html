@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Version Timestamp: Fri, July 24, 2026, 05:40 PM (EDT) -->
+  <!-- Version Timestamp: Fri, July 24, 2026, 05:45 PM (EDT) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Realtime Tactical Dashboard & Mod Directory</title>
   
-  <!-- Google Analytics GA4 (Global Watermark & Personal Stream) -->
+  <!-- Google Analytics GA4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-L376P3NPY4"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -22,9 +22,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- Static Stylesheet & JavaScript Imports with Smart Cache-Buster -->
-  <link rel="stylesheet" href="style.css?v=20260724_1740">
-  <script src="index.js?v=20260724_1740" defer></script>
+  <link rel="stylesheet" href="style.css?v=20260724_1745">
+  <script src="index.js?v=20260724_1745" defer></script>
 </head>
 <body>
 
@@ -66,10 +65,10 @@
             <span id="server-map" class="badge"><i class="fa-solid fa-map-location-dot"></i> Map: Calm Lands</span>
             <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: 00:00</span>
             <span id="time-speed-badge" class="badge" style="border:1px solid #facc15; color:#facc15;"><i class="fa-solid fa-forward-fast"></i> Speed: 5x</span>
-            <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Month: Early Autumn</span>
-            <span id="server-weather" class="badge"><i class="fa-solid fa-sun"></i> Weather: Clear</span>
+            <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Month: --</span>
+            <span id="server-weather" class="badge"><i class="fa-solid fa-sun"></i> Weather: --</span>
             <span id="server-players" class="badge"><i class="fa-solid fa-users"></i> Players: 0/6</span>
-            <span id="traffic-badge" class="badge" style="border:1px solid #38bdf8;"><i class="fa-solid fa-car"></i> Traffic: ON</span>
+            <span id="traffic-badge" class="badge" style="border:1px solid #38bdf8;"><i class="fa-solid fa-car"></i> Traffic: --</span>
           </div>
         </div>
       </div>
@@ -95,177 +94,102 @@
       </div>
     </div>
 
-    <!-- Master Unified Dashboard Grid Cards (15 Dedicated Categorized Boxes) -->
+    <!-- Master Unified Dashboard Grid Cards -->
     <div class="grid-layout">
       
       <!-- 1. Registered Server Farms -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-building-columns"></i>
-          <h2>REGISTERED SERVER FARMS</h2>
-        </div>
-        <div id="farms-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Syncing farm telemetry...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-building-columns"></i><h2>REGISTERED SERVER FARMS</h2></div>
+        <div id="farms-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Syncing farm telemetry...</div></div>
       </div>
 
-      <!-- 2. Fleet Heavy & Medium Tractors -->
+      <!-- 2. Fleet Tractors -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-tractor"></i>
-          <h2>FLEET TRACTORS & RIGS</h2>
-        </div>
-        <div id="tractors-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning tractor fleet...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-tractor"></i><h2>FLEET TRACTORS & RIGS</h2></div>
+        <div id="tractors-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning tractor fleet...</div></div>
       </div>
 
-      <!-- 3. Specialized Harvesters & Combines -->
+      <!-- 3. Harvesters -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-wheat-field"></i>
-          <h2>HARVESTERS & COMBINES</h2>
-        </div>
-        <div id="harvesters-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning harvest fleet...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-wheat-field"></i><h2>HARVESTERS & COMBINES</h2></div>
+        <div id="harvesters-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning harvest fleet...</div></div>
       </div>
 
-      <!-- 4. Hauling Trailers & Grain Wagons -->
+      <!-- 4. Trailers -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-truck-ramp-box"></i>
-          <h2>HAULING TRAILERS & WAGONS</h2>
-        </div>
-        <div id="trailers-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning trailers...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-truck-ramp-box"></i><h2>HAULING TRAILERS & WAGONS</h2></div>
+        <div id="trailers-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning trailers...</div></div>
       </div>
 
-      <!-- 5. Implements & Soil Equipment -->
+      <!-- 5. Implements -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-screwdriver-wrench"></i>
-          <h2>IMPLEMENTS & ATTACHMENTS</h2>
-        </div>
-        <div id="implements-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning equipment...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-screwdriver-wrench"></i><h2>IMPLEMENTS & ATTACHMENTS</h2></div>
+        <div id="implements-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning equipment...</div></div>
       </div>
 
-      <!-- 6. Hand Tools & Portable Equipment -->
+      <!-- 6. Hand Tools -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-toolbox"></i>
-          <h2>PLAYER HAND TOOLS</h2>
-        </div>
-        <div id="handtools-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning hand tools...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-toolbox"></i><h2>PLAYER HAND TOOLS</h2></div>
+        <div id="handtools-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning hand tools...</div></div>
       </div>
 
-      <!-- 7. Field Crops & Agronomy Status -->
+      <!-- 7. Fields -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-seedling"></i>
-          <h2>FIELD CROPS & AGRONOMY STATUS</h2>
-        </div>
-        <div id="fields-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading field telemetry...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-seedling"></i><h2>FIELD CROPS & AGRONOMY STATUS</h2></div>
+        <div id="fields-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading field telemetry...</div></div>
       </div>
 
-      <!-- 8. Factories & Production Chains -->
+      <!-- 8. Factories -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-industry"></i>
-          <h2>MAP FACTORIES & PRODUCTIONS</h2>
-        </div>
-        <div id="main-productions-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading factory telemetry...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-industry"></i><h2>MAP FACTORIES & PRODUCTIONS</h2></div>
+        <div id="main-productions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading factory telemetry...</div></div>
       </div>
 
-      <!-- 9. Livestock & Animal Husbandry -->
+      <!-- 9. Livestock -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-cow"></i>
-          <h2>LIVESTOCK & ANIMAL HUSBANDRY</h2>
-        </div>
-        <div id="animal-husbandry-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading animal pens...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-cow"></i><h2>LIVESTOCK & ANIMAL HUSBANDRY</h2></div>
+        <div id="animal-husbandry-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading animal pens...</div></div>
       </div>
 
-      <!-- 10. Server Contracts & Missions -->
+      <!-- 10. Contracts -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-file-contract"></i>
-          <h2>SERVER CONTRACTS & MISSIONS</h2>
-        </div>
-        <div id="contracts-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Parsing active contracts...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-file-contract"></i><h2>SERVER CONTRACTS & MISSIONS</h2></div>
+        <div id="contracts-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Parsing active contracts...</div></div>
       </div>
 
-      <!-- 11. Public Infrastructure & Trade Depots -->
+      <!-- 11. Infrastructure -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-city"></i>
-          <h2>PUBLIC MAP INFRASTRUCTURE</h2>
-        </div>
-        <div id="infrastructure-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Resolving public assets...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-city"></i><h2>PUBLIC MAP INFRASTRUCTURE</h2></div>
+        <div id="infrastructure-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Resolving public assets...</div></div>
       </div>
 
-      <!-- 12. Buying Stations & Supply Bays -->
+      <!-- 12. Buying Stations -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-store"></i>
-          <h2>BUYING STATIONS & SUPPLY BAYS</h2>
-        </div>
-        <div id="buying-stations-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading stations...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-store"></i><h2>BUYING STATIONS & SUPPLY BAYS</h2></div>
+        <div id="buying-stations-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading stations...</div></div>
       </div>
 
-      <!-- 13. Regional Train Network -->
+      <!-- 13. Train Network -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-train"></i>
-          <h2>REGIONAL TRAIN NETWORK</h2>
-        </div>
-        <div id="main-train-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading train network...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-train"></i><h2>REGIONAL TRAIN NETWORK</h2></div>
+        <div id="main-train-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading train network...</div></div>
       </div>
 
-      <!-- 14. Dealership Used Sales Radar -->
+      <!-- 14. Used Sales -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-tags"></i>
-          <h2>DEALERSHIP USED SALES</h2>
-        </div>
-        <div id="sales-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Checking store bargains...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-tags"></i><h2>DEALERSHIP USED SALES</h2></div>
+        <div id="sales-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Checking store bargains...</div></div>
       </div>
 
-      <!-- 15. Commodity Market Prices -->
+      <!-- 15. Market Prices -->
       <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-chart-line"></i>
-          <h2>COMMODITY MARKET PRICES</h2>
-        </div>
-        <div id="economy-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching crop economy...</div>
-        </div>
+        <div class="box-header"><i class="fa-solid fa-chart-line"></i><h2>COMMODITY MARKET PRICES</h2></div>
+        <div id="economy-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching crop economy...</div></div>
       </div>
 
     </div>
 
-    <!-- Server Modification Directory (Mod Hub Catalog) -->
+    <!-- Server Modification Directory -->
     <section class="mod-hub-section" style="margin-top: 3rem;">
       <div class="mod-hub-header">
         <h2><i class="fa-solid fa-cubes" style="color:var(--accent-gold);"></i> SERVER MODIFICATION DIRECTORY</h2>
@@ -289,7 +213,7 @@
   <!-- Persistent Sticky System Footer -->
   <footer class="system-footer">
     <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Fri, July 24, 2026, 05:40 PM (EDT)</strong></span>
+      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Fri, July 24, 2026, 05:45 PM (EDT)</strong></span>
       <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
       <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
       <span id="offline-timer" style="display:none; color:#f87171; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: 0m 0s</span>
