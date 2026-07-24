@@ -1,12 +1,12 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 9:35 PM (EDT)
- Bulletproof Telemetry Renderer - Zero-Crash Execution
+ Version Timestamp: Thu, July 23, 2026, 9:55 PM (EDT)
+ Fully Resilient FS25 Dashboard Engine - Isolated Execution & Broken Image Handling
  File: games/FS25/index.js
 */
 
 const menuCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
 
-// GitHub Image Asset Registry
+// Local GitHub Asset Mappings
 const IMAGE_ASSETS = {
   "BARLEY": "images/Barley.JPG",
   "BEETROOT": "images/Beetroot.JPG",
@@ -62,7 +62,7 @@ const MONTH_NAMES = [
   "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
 ];
 
-// Mobile Menu Handler
+// Setup Mobile Sandwich Toggle on Load
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("mobile-menu-toggle");
   const menuBar = document.getElementById("dynamic-menu");
@@ -74,11 +74,16 @@ document.addEventListener("DOMContentLoaded", () => {
       toggleBtn.innerHTML = isExpanded ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
     });
   }
+
+  // Load menu independently so failure never blocks main dashboard logic
+  loadGoogleSheetsMenu();
 });
 
+// Resilient Navigation Menu Loader with Defensive Image Error-Handling
 async function loadGoogleSheetsMenu() {
   try {
     const response = await fetch(`${menuCsvUrl}&v=${Date.now()}`);
+    if (!response.ok) return;
     const csvText = await response.text();
     const rows = parseCSV(csvText);
 
@@ -86,54 +91,70 @@ async function loadGoogleSheetsMenu() {
     if (!menuContainer) return;
     menuContainer.innerHTML = '';
 
-    const groups = {};
+    const standaloneItems = [];
+    const dropdownGroups = {};
 
     rows.forEach((row, index) => {
-      if (index === 0) return;
-      const [name, group, url, image] = row.map(cell => cell ? cell.trim() : '');
+      if (index === 0 || !row || row.length < 2) return;
+      
+      const name = row[0] ? row[0].trim() : '';
+      const group = row[1] ? row[1].trim() : '';
+      const url = row[2] ? row[2].trim() : '';
+      const image = row[3] ? row[3].trim() : '';
+
       if (!name || !url) return;
 
-      const groupKey = group || 'General';
-      if (!groups[groupKey]) groups[groupKey] = [];
-      groups[groupKey].push({ name, url, image });
-    });
-
-    Object.keys(groups).forEach(groupName => {
-      const items = groups[groupName];
-
-      if (items.length === 1 && items[0].name.toLowerCase() === groupName.toLowerCase()) {
-        const item = items[0];
-        const btn = document.createElement('a');
-        btn.className = 'nav-btn';
-        btn.href = item.url;
-        btn.innerHTML = `${item.image ? `<img src="${item.image}" alt="">` : ''} ${item.name}`;
-        menuContainer.appendChild(btn);
+      if (!group || group === '' || group.toLowerCase() === name.toLowerCase()) {
+        standaloneItems.push({ name, url, image });
       } else {
-        const navGroup = document.createElement('div');
-        navGroup.className = 'nav-item';
-
-        let dropdownHtml = `
-          <button class="nav-btn">
-            ${groupName} <i class="fa-solid fa-caret-down"></i>
-          </button>
-          <div class="dropdown-content">`;
-
-        items.forEach(sub => {
-          dropdownHtml += `<a href="${sub.url}">${sub.image ? `<img src="${sub.image}" alt="">` : ''} ${sub.name}</a>`;
-        });
-
-        dropdownHtml += `</div>`;
-        navGroup.innerHTML = dropdownHtml;
-        menuContainer.appendChild(navGroup);
+        if (!dropdownGroups[group]) dropdownGroups[group] = [];
+        dropdownGroups[group].push({ name, url, image });
       }
     });
+
+    // Safe image HTML renderer (hides image on 404/broken link instead of showing broken icon box)
+    const makeImgHtml = (src) => src ? `<img src="${src}" alt="" onerror="this.style.display='none'">` : '';
+
+    // Render Standalone Top-Level Buttons
+    standaloneItems.forEach(item => {
+      const btn = document.createElement('a');
+      btn.className = 'nav-btn';
+      btn.href = item.url;
+      btn.innerHTML = `${makeImgHtml(item.image)} ${item.name}`;
+      menuContainer.appendChild(btn);
+    });
+
+    // Render Dropdown Groups
+    Object.keys(dropdownGroups).forEach(groupName => {
+      const items = dropdownGroups[groupName];
+      const navGroup = document.createElement('div');
+      navGroup.className = 'nav-item';
+
+      let dropdownHtml = `
+        <button class="nav-btn">
+          ${groupName} <i class="fa-solid fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">`;
+
+      items.forEach(sub => {
+        dropdownHtml += `<a href="${sub.url}">${makeImgHtml(sub.image)} ${sub.name}</a>`;
+      });
+
+      dropdownHtml += `</div>`;
+      navGroup.innerHTML = dropdownHtml;
+      menuContainer.appendChild(navGroup);
+    });
   } catch (err) {
-    console.error("Failed to load navigation menu:", err);
+    console.error("Non-fatal menu loading error:", err);
   }
 }
 
 function parseCSV(text) {
-  return text.split('\n').map(line => line.split(','));
+  if (!text) return [];
+  return text.split('\n').map(line => {
+    // Robust CSV split ignoring trailing spaces
+    return line.split(',').map(cell => cell ? cell.trim() : '');
+  });
 }
 
 function resolveCropName(typeName) {
@@ -150,12 +171,12 @@ function getThumbnailHTML(key, fallbackIcon) {
     const lookupKey = String(key).toUpperCase().replace('FILLTYPE_', '').trim();
 
     if (IMAGE_ASSETS[lookupKey]) {
-      return `<div class="item-icon-box"><img src="${IMAGE_ASSETS[lookupKey]}" alt="${lookupKey}"></div>`;
+      return `<div class="item-icon-box"><img src="${IMAGE_ASSETS[lookupKey]}" alt="${lookupKey}" onerror="this.onerror=null; this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
     }
 
     for (const [assetName, path] of Object.entries(IMAGE_ASSETS)) {
       if (lookupKey.includes(assetName) || assetName.includes(lookupKey)) {
-        return `<div class="item-icon-box"><img src="${path}" alt="${assetName}"></div>`;
+        return `<div class="item-icon-box"><img src="${path}" alt="${assetName}" onerror="this.onerror=null; this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
       }
     }
   } catch (e) {
@@ -545,6 +566,3 @@ function renderDashboard(data) {
     }
   } catch (e) { console.error("Economy Render Error:", e); }
 }
-
-// Load Navigation Menu
-loadGoogleSheetsMenu();
