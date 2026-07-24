@@ -1,13 +1,14 @@
 /*
  Version Timestamp: Thu, July 23, 2026, 11:59 PM (EDT)
- Resilient FS25 Realtime Telemetry Engine - Full Farm, Vehicle & Economy Unwrapper
+ Resilient FS25 Realtime Telemetry Engine - Expanded Image Asset Registry
  File: games/FS25/index.js
 */
 
 const menuCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
 
-// GitHub Image Asset Registry
+// Full GitHub Image Asset Registry (Originals + New Uploads)
 const IMAGE_ASSETS = {
+  // Crop & Commodity Assets
   "BARLEY": "images/Barley.JPG",
   "BEETROOT": "images/Beetroot.JPG",
   "CORN": "images/Corn.JPG",
@@ -25,23 +26,38 @@ const IMAGE_ASSETS = {
   "WHEAT": "images/Wheat.JPG",
   "WATER": "images/Water.jpg",
   "HONEY": "images/HONEY BOX.JPG",
+  "HONEY BOX": "images/HONEY BOX.JPG",
   "HARVEST": "images/HARVEST.JPG",
   "HERBICIDE": "images/HERBICIDE.JPG",
   "DESTRUCTIBLE ROCK": "images/Destructible Rock.JPG",
+
+  // Equipment, Vehicles & Implements
   "TEDDER": "images/Teddar.JPG",
+  "TEDDAR": "images/Teddar.JPG",
   "BIG BUD KTTA 700": "images/Big Bud KTTA 700.JPG",
   "FORESTRY LOCOMOTIVE": "images/FORESTRY LOCOMOTIVE.JPG",
   "GRAIN BARGE": "images/GRAIN BARGE.JPG",
   "JOHN DEERE 8R SERIES": "images/John Deere 8R Series.JPG",
+  "JOHN DEERE 8R": "images/John Deere 8R Series.JPG",
   "LOG TRAILER": "images/Log Trailer.JPG",
   "WAGON FLAT BED": "images/WAGON FLAT BED.JPG",
   "WAGON GRAIN": "images/WAGON GRAIN.JPG",
   "WAGON SUGARBEETS": "images/WAGON SUGARBEETS.JPG",
   "WAGON WOOD CHIPS": "images/WAGON WOOD CHIPS.JPG",
+
+  // Buildings, Stores & Facilities
   "ELEVATOR SILO": "images/Elevator Silo.JPG",
   "GRAIN ELEVATOR": "images/GRAIN ELEVATOR.jpg",
   "RESTAURANT": "images/Restaurant.JPG",
-  "TRAIN STATION": "images/Train Station.JPG"
+  "TRAIN STATION": "images/Train Station.JPG",
+  "AMERICAN MIDWEST TRUCK SHOP": "images/American Midwest Truck Shop.jpg",
+  "RUDOLF HOERMANN ROUND STORAGE HALL": "images/Rudolf Hoermann Round Storage Hall.jpg",
+  "STORAGE HALL": "images/Rudolf Hoermann Round Storage Hall.jpg",
+
+  // Mods & System Assets
+  "LIFTABLE PALLETS AND BALES": "images/Liftable Pallets And Bales.jpg",
+  "LIFTABLE PALLETS": "images/Liftable Pallets And Bales.jpg",
+  "PRECISION FARMING": "images/Precision Farming.jpg"
 };
 
 const CROP_NAME_MAP = {
@@ -64,7 +80,7 @@ const MONTH_NAMES = [
   "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
 ];
 
-// Initialize Navigation & UI Event Listeners
+// Initialize UI & Event Listeners
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("mobile-menu-toggle");
   const menuBar = document.getElementById("dynamic-menu");
@@ -215,7 +231,7 @@ function parseXML(node) {
   } catch (e) { return null; }
 }
 
-// Global scope attachment for Firebase listener
+// Global Scope Attachment for Firebase Listener
 window.renderDashboard = function(data) {
   if (!data) return;
 
@@ -551,7 +567,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Vehicles Render Error:", e); }
 
-  // 9. Commodity Market Economy (Robust Full Unwrapper)
+  // 9. Commodity Market Economy
   try {
     const ecoXml = parseXML(data.economy);
     const ecoContainer = document.getElementById('economy-container');
@@ -567,7 +583,7 @@ window.renderDashboard = function(data) {
           
           let rawPrice = f.getAttribute("price") || f.getAttribute("value") || "0";
           let priceVal = parseFloat(rawPrice);
-          if (priceVal < 10) priceVal = priceVal * 1000; // Format FS25 base multiplier
+          if (priceVal < 10) priceVal = priceVal * 1000;
 
           if (priceVal > 0) {
             html += `
