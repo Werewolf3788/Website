@@ -1,11 +1,11 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 03:05 PM (EDT)
+ Version Timestamp: Fri, July 24, 2026, 03:15 PM (EDT)
  Tactical Dark UI - Mobile-First Responsive CSS Variable Architecture
  File: games/FS25/style.css
 */
 
 :root {
-  --bg-gradient: linear-gradient(180deg, rgba(153, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.92) 100%);
+  --bg-gradient: linear-gradient(180deg, rgba(153, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.94) 100%);
   --bg-wallpaper: url("images/Farming%20Simulator%2025%20Poster%20Image%20(background%20wallpaper).jpg");
   --surface-card: #1e1c1c;
   --surface-card-hover: #2a2727;
