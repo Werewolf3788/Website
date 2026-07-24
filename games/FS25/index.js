@@ -1,10 +1,84 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 02:45 PM (EDT)
- Tactical Engine - Live Dynamic Navigation Engine & Resilient Online Server Status Fix
+ Version Timestamp: Fri, July 24, 2026, 11:38 AM (EDT)
+ Resilient FS25 Tactical Engine - Updated Asset Mapping & Regional Train Link
  File: games/FS25/index.js
 */
 
 const CSV_MENU_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
+
+// Comprehensive Image Asset Mapping for uploaded FS25 graphics
+const IMAGE_ASSETS = {
+  "BARLEY": "images/Barley.JPG",
+  "BARLEY SWATH": "images/Barley Swath.JPG",
+  "BEETROOT": "images/Beetroot.JPG",
+  "RED BEET": "images/Red Beet.JPG",
+  "BREAD": "images/Bread.JPG",
+  "BUTTER": "images/Butter.JPG",
+  "CABBAGE": "images/Cabbage.JPG",
+  "CANOLA": "images/Canola.JPG",
+  "CANOLA OIL": "images/Canola Oil.JPG",
+  "CARROTS": "images/Carrots.JPG",
+  "CHEESE": "images/Cheese.JPG",
+  "CHICKENS": "images/Chickens.JPG",
+  "CHOCOLATE": "images/Chocolate.JPG",
+  "CORN": "images/Corn.JPG",
+  "COTTON": "images/Cotton.JPG",
+  "COW": "images/Cow.JPG",
+  "DEF": "images/DEF.JPG",
+  "DESTRUCTIBLE ROCK": "images/Destructible Rock.JPG",
+  "DIESEL": "images/Diesel.JPG",
+  "DIGESTATE": "images/Digestate.JPG",
+  "DOGS": "images/Dogs.JPG",
+  "EGGS": "images/Eggs.JPG",
+  "FLOUR": "images/Flour.JPG",
+  "FORAGE": "images/Forage.JPG",
+  "GRAIN BARGE": "images/GRAIN BARGE.JPG",
+  "GRAIN ELEVATOR": "images/GRAIN ELEVATOR.jpg",
+  "GRASS": "images/Grass.JPG",
+  "GREEN BEANS": "images/Green Beans.JPG",
+  "HAY": "images/Hay.JPG",
+  "HONEY BOX": "images/HONEY BOX.JPG",
+  "HORSES": "images/Horses.JPG",
+  "LIME": "images/Lime.JPG",
+  "LIQUID FERTILIZER": "images/Liquid Fertilizer.JPG",
+  "LOG TRAILER": "images/Log Trailer.JPG",
+  "MANURE": "images/Manure.JPG",
+  "MILK": "images/Milk.JPG",
+  "MINERAL FEED": "images/Mineral Feed.JPG",
+  "OATS": "images/Oats.JPG",
+  "PARSNIP": "images/Parsnip.JPG",
+  "PEAS": "images/Peas.JPG",
+  "PIGS": "images/Pigs.JPG",
+  "POTATOES": "images/Potatoes.JPG",
+  "PRECISION FARMING": "images/Precision Farming.jpg",
+  "RESTAURANT": "images/Restaurant.JPG",
+  "RICE": "images/Rice.JPG",
+  "SEEDS": "images/Seeds.JPG",
+  "SHEEP": "images/Sheep.JPG",
+  "SILAGE": "images/Silage.JPG",
+  "SLURRY": "images/Slurry.JPG",
+  "SOLID FERTILIZER": "images/Solid Fertilizer.JPG",
+  "SORGHUM": "images/Sorghum.JPG",
+  "SOYBEANS": "images/Soybeans.JPG",
+  "SPINACH": "images/Spinach.JPG",
+  "STRAW": "images/Straw.JPG",
+  "STRAWBERRIES": "images/Strawberries.JPG",
+  "SUGARBEETS": "images/Sugarbeets.JPG",
+  "SUGARCANE": "images/Sugarcane.JPG",
+  "SUNFLOWERS": "images/Sunflowers.JPG",
+  "TEDDER": "images/Teddar.JPG",
+  "TOMATOES": "images/Tomatoes.JPG",
+  "TRAIN STATION": "images/Train Station.JPG",
+  "TRAIN": "images/Train Station.JPG",
+  "LOCOMOTIVE": "images/Train Station.JPG",
+  "FORESTRY LOCOMOTIVE": "images/FORESTRY LOCOMOTIVE.JPG",
+  "WATER": "images/Water.jpg",
+  "WHEAT": "images/Wheat.JPG",
+  "WOOD CHIPS": "images/Wood Chips.JPG",
+  "BIG BUD KTTA 700": "images/Big Bud KTTA 700.JPG",
+  "JOHN DEERE 8R SERIES": "images/John Deere 8R Series.JPG",
+  "AMERICAN MIDWEST TRUCK SHOP": "images/American Midwest Truck Shop.jpg"
+};
 
 const FARM_COLOR_PALETTE = {
   "0": { name: "AI / Public Map", color: "#facc15", isAI: true },
@@ -27,26 +101,13 @@ function getFarmColorMeta(farmId) {
   return { name: `Farm ${idNum}`, color: `hsl(${(idNum * 137.5) % 360}, 85%, 55%)`, isAI: false };
 }
 
-const HUMAN_EQUIPMENT_LOOKUP = {
-  "MF8570": { name: "Massey Ferguson 8570 Combine", category: "Harvester" },
-  "MF8570HEADER": { name: "Massey Ferguson 8570 Header", category: "Header" },
-  "XB150": { name: "BISO XB150 Header Trailer", category: "Header Trailer" },
-  "FRONTLOADER PALLET FORK": { name: "Albutt Pallet Fork", category: "Frontloader Attachment" },
-  "FRONTLOADER SHOVEL": { name: "Albutt Universal Shovel", category: "Frontloader Attachment" },
-  "POV5XL": { name: "Agromasz POV 5 XL 5-Furrow Plough", category: "Plough" },
-  "TOP450": { name: "Pöttinger TOP 450 Tedder", category: "Tedder" },
-  "AGRO STAR831": { name: "Deutz-Fahr AgroStar 8.31", category: "Medium Tractor" },
-  "Z18051": { name: "Zetor Crystal 12045 / Z180", category: "Medium Tractor" },
-  "SERIES3650": { name: "John Deere 3650 Tractor", category: "Small Tractor" }
-};
-
-function resolveEquipmentDetails(rawName) {
-  if (!rawName) return { name: "Map Equipment", category: "Tool" };
-  const str = String(rawName).toUpperCase().trim();
-  for (const [key, meta] of Object.entries(HUMAN_EQUIPMENT_LOOKUP)) {
-    if (str.includes(key)) return meta;
+function getThumbnailHTML(key, fallbackIcon = "fa-box") {
+  if (!key) return `<div class="item-icon-box"><i class="fa-solid ${fallbackIcon}"></i></div>`;
+  const lookupKey = String(key).toUpperCase().replace('FILLTYPE_', '').replace('VEHICLE_', '').trim();
+  if (IMAGE_ASSETS[lookupKey]) {
+    return `<div class="item-icon-box"><img src="${IMAGE_ASSETS[lookupKey]}" alt="${lookupKey}" class="lightbox-trigger" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
   }
-  return { name: formatName(rawName), category: "Equipment / Tool" };
+  return `<div class="item-icon-box"><i class="fa-solid ${fallbackIcon}"></i></div>`;
 }
 
 function formatName(str) {
@@ -69,7 +130,6 @@ function parseXML(node) {
   } catch (e) { return null; }
 }
 
-// Global Online/Offline Status Indicator Fix
 window.setServerStatus = function(isOnline) {
   const pill = document.getElementById('server-status-pill');
   const text = document.getElementById('status-text');
@@ -124,29 +184,37 @@ window.setServerStatus = function(isOnline) {
 window.addEventListener('online', () => window.setServerStatus(true));
 window.addEventListener('offline', () => window.setServerStatus(false));
 
-// Dynamic Google Sheets Navigation Menu Parser
+// Robust CSV Parsing for Navigation Bar
 async function loadDynamicNavbar() {
   const menuContainer = document.getElementById("dynamic-menu");
   if (!menuContainer) return;
 
   try {
     const response = await fetch(CSV_MENU_URL);
-    if (!response.ok) throw new Error("CSV fetch failed");
+    if (!response.ok) throw new Error(`CSV HTTP ${response.status}`);
     const csvText = await response.text();
 
-    const lines = csvText.split("\n").filter(l => l.trim().length > 0);
+    const lines = csvText.split(/\r?\n/).filter(l => l.trim().length > 0);
     const groups = {};
 
     for (let i = 1; i < lines.length; i++) {
-      const cols = lines[i].split(",").map(c => c.trim().replace(/^"/, '').replace(/"$/, ''));
-      if (cols.length >= 3) {
-        const name = cols[0];
-        const group = cols[1] || "General";
-        const url = cols[2];
-        const img = cols[3] || "";
+      const colRegex = /(?:^|,)(?:"([^"]*)"|([^",]*))/g;
+      const cols = [];
+      let match;
+      while ((match = colRegex.exec(lines[i])) !== null) {
+        cols.push(match[1] !== undefined ? match[1] : match[2]);
+      }
 
-        if (!groups[group]) groups[group] = [];
-        groups[group].push({ name, url, img });
+      if (cols.length >= 3) {
+        const name = cols[0] ? cols[0].trim() : "";
+        const group = cols[1] ? cols[1].trim() : "General";
+        const url = cols[2] ? cols[2].trim() : "#";
+        const img = cols[3] ? cols[3].trim() : "";
+
+        if (name && url) {
+          if (!groups[group]) groups[group] = [];
+          groups[group].push({ name, url, img });
+        }
       }
     }
 
@@ -155,7 +223,7 @@ async function loadDynamicNavbar() {
     for (const [groupName, items] of Object.entries(groups)) {
       navHtml += `
         <div class="nav-item">
-          <button class="nav-btn dropdown-toggle">
+          <button class="nav-btn dropdown-toggle" aria-expanded="false">
             ${groupName} <i class="fa-solid fa-caret-down"></i>
           </button>
           <div class="dropdown-content">`;
@@ -169,18 +237,34 @@ async function loadDynamicNavbar() {
     }
 
     menuContainer.innerHTML = navHtml;
-
-    document.querySelectorAll('.dropdown-toggle').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const parent = btn.closest('.nav-item');
-        if (parent) parent.classList.toggle('open');
-      });
-    });
+    attachDropdownTouchEvents();
 
   } catch (e) {
-    console.warn("Navigation menu fallback applied:", e.message);
+    console.warn("Dynamic menu fallback activated:", e.message);
+    menuContainer.innerHTML = `<a href="https://werewolf3788.github.io/Website/" class="nav-btn"><i class="fa-solid fa-house"></i> Home</a>`;
   }
+}
+
+function attachDropdownTouchEvents() {
+  document.querySelectorAll('.dropdown-toggle').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const parent = btn.closest('.nav-item');
+      if (parent) {
+        const isOpen = parent.classList.contains('open');
+        document.querySelectorAll('.nav-item.open').forEach(item => {
+          if (item !== parent) item.classList.remove('open');
+        });
+        parent.classList.toggle('open', !isOpen);
+      }
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.nav-item')) {
+      document.querySelectorAll('.nav-item.open').forEach(item => item.classList.remove('open'));
+    }
+  });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -193,7 +277,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Render Dashboard Data from RTDB
+// Primary Telemetry Render Engine
 window.renderDashboard = function(data) {
   if (!data) {
     window.setServerStatus(false);
@@ -204,7 +288,6 @@ window.renderDashboard = function(data) {
   const serverNode = statsXml ? statsXml.querySelector("Server") : null;
   const gameName = serverNode ? serverNode.getAttribute("name") : null;
 
-  // Confirm Active Server Telemetry Status
   if (statsXml && serverNode) {
     lastKnownServerName = gameName || "Dedicated Server";
     window.setServerStatus(true);
@@ -221,7 +304,7 @@ window.renderDashboard = function(data) {
     const serverNameEl = document.getElementById('server-name');
     if (serverNameEl) serverNameEl.textContent = gameName;
 
-    const mapName = serverNode.getAttribute("mapName") || "Riverbend Springs";
+    const mapName = serverNode.getAttribute("mapName") || "Calm Lands";
     const mapEl = document.getElementById('server-map');
     if (mapEl) mapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
 
@@ -243,4 +326,34 @@ window.renderDashboard = function(data) {
     const trafficBadge = document.getElementById('traffic-badge');
     if (trafficBadge) trafficBadge.innerHTML = `<i class="fa-solid fa-car"></i> Traffic: ${traffic ? 'ON' : 'OFF'}`;
   }
+
+  // Train Station Link & Passenger Status
+  try {
+    const mainTrainCont = document.getElementById('main-train-container');
+    const placeXml = parseXML(data.placeables || data.placeables_xml);
+    if (mainTrainCont) {
+      let passengerStatus = `<span class="badge-stat badge-good"><i class="fa-solid fa-check"></i> Rail Operational</span>`;
+      if (placeXml) {
+        const trainPlayer = placeXml.querySelector("placeable[uniqueId='trainSystem'] player");
+        if (trainPlayer && trainPlayer.getAttribute("isEntered") === "true") {
+          const name = trainPlayer.getAttribute("lastNickname") || "Active Driver";
+          passengerStatus = `<span class="badge-stat badge-active"><i class="fa-solid fa-user"></i> Driver: ${name}</span>`;
+        }
+      }
+
+      mainTrainCont.innerHTML = `
+        <div class="item-card" style="border-left: 4px solid #facc15;">
+          <div class="item-left">
+            ${getThumbnailHTML("TRAIN STATION", "fa-train")}
+            <div>
+              <div class="item-title">Public Regional Train Network</div>
+              <div class="mono">
+                <span class="badge-stat" style="color:#facc15; border:1px solid #facc15;"><i class="fa-solid fa-robot"></i> Public Asset</span>
+                ${passengerStatus}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    }
+  } catch (e) {}
 };
