@@ -1,5 +1,5 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 03:35 PM (EDT)
+ Version Timestamp: Fri, July 24, 2026, 03:40 PM (EDT)
  Complete Deep XML Parsing Engine & Dynamic CSV Mod Catalog Syncer
  File: games/FS25/index.js
 */
@@ -437,6 +437,7 @@ window.renderDashboard = function(data) {
   lastKnownServerName = gameName;
   window.setServerStatus(true);
 
+  // Update Footer Telemetry Info
   const syncTimeEl = document.getElementById('last-sync-time');
   if (syncTimeEl) {
     const now = new Date();
@@ -445,7 +446,8 @@ window.renderDashboard = function(data) {
 
   const saveSlotEl = document.getElementById('save-slot-display');
   if (saveSlotEl) {
-    saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">savegame${data.activeSaveSlot || "1"}</strong>`;
+    const saveName = getDeepXmlValue(careerXml || serverNode, ["savegameName"]) || data.activeSaveSlot || "1";
+    saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Game: <strong style="color:#ffffff;">${saveName}</strong>`;
   }
 
   // 1. Header & Server Environment Badges
@@ -545,7 +547,7 @@ window.renderDashboard = function(data) {
   const vehEl = document.getElementById('global-vehicle-count');
   if (vehEl) vehEl.textContent = `${vehCount || 13}`;
 
-  // 4. Contracts & Missions Parser (Deep Attribute & Tag Fallbacks for Rewards)
+  // 4. Contracts & Missions Parser
   const contractsCont = document.getElementById('main-contracts-container');
   const missionsXml = parseXML(data.missions || data.missions_xml);
   if (contractsCont) {
@@ -558,7 +560,6 @@ window.renderDashboard = function(data) {
           const fieldId = fieldNode ? fieldNode.getAttribute("id") : m.getAttribute("fieldId");
           const status = m.getAttribute("status") || "CREATED";
           
-          // Deep reward check: attribute reward -> child node <reward> -> default
           let rawReward = m.getAttribute("reward") || getDeepXmlValue(m, ["reward"]) || "0";
           const reward = Math.round(parseFloat(rawReward));
 
@@ -595,7 +596,7 @@ window.renderDashboard = function(data) {
     contractsCont.innerHTML = html || `<div class="item-card"><div class="item-title">All Contracts Completed</div></div>`;
   }
 
-  // 5. Buying Stations Container (Static Fallback rendering immediately)
+  // 5. Buying Stations Container
   const buyCont = document.getElementById('buying-stations-container');
   if (buyCont) {
     buyCont.innerHTML = `
