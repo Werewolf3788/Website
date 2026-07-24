@@ -1,5 +1,5 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 03:25 PM (EDT)
+ Version Timestamp: Fri, July 24, 2026, 03:35 PM (EDT)
  Complete Deep XML Parsing Engine & Dynamic CSV Mod Catalog Syncer
  File: games/FS25/index.js
 */
@@ -47,7 +47,6 @@ let parsedModCatalog = [];
 let offlineStartTime = null;
 let offlineTimerInterval = null;
 let lastKnownServerName = "Dedicated Server";
-let lastRenderedJsonString = "";
 
 // Robust XML Parsing Sanitizer
 function parseXML(node) {
@@ -70,15 +69,18 @@ function parseXML(node) {
   } catch (e) { return null; }
 }
 
-// Deep XML Child Search Engine (Attribute OR Child Node Text)
+// Deep XML Search - Checks attributes, nested nodes, and child text
 function getDeepXmlValue(node, keys) {
   if (!node) return null;
   for (const key of keys) {
-    if (node.getAttribute && node.getAttribute(key) !== null) return node.getAttribute(key);
+    if (node.getAttribute && node.getAttribute(key) !== null && node.getAttribute(key) !== "") {
+      return node.getAttribute(key);
+    }
     const child = node.querySelector ? node.querySelector(key) : null;
     if (child) {
       if (child.textContent && child.textContent.trim().length > 0) return child.textContent.trim();
       if (child.getAttribute("value") !== null) return child.getAttribute("value");
+      if (child.getAttribute("reward") !== null) return child.getAttribute("reward");
       if (child.getAttribute("name") !== null) return child.getAttribute("name");
       if (child.getAttribute("cost") !== null) return child.getAttribute("cost");
       if (child.getAttribute("id") !== null) return child.getAttribute("id");
@@ -338,7 +340,7 @@ function renderModCards(categoryFilter = "ALL MODS") {
   grid.innerHTML = html || `<div class="loading-state">No mods found in this category.</div>`;
 }
 
-// Lightbox & Smart External Links Interception
+// Lightbox & Dynamic Modal Setup
 document.addEventListener("click", (e) => {
   const trigger = e.target.closest(".lightbox-trigger, .open-mod-lightbox");
   if (trigger) {
@@ -364,7 +366,7 @@ document.addEventListener("click", (e) => {
 
       let linkBtn = url && url !== "#" ? `<br><br><a href="${url}" target="_blank" class="nav-btn" style="background:var(--accent-red); color:#fff; display:inline-flex; margin-top:10px;"><i class="fa-solid fa-external-link"></i> Download / View Mod Page</a>` : "";
 
-      captionEl.innerHTML = `2${title}</h2><p>${desc}</p>${linkBtn}`;
+      captionEl.innerHTML = `<h2>${title}</h2><p>${desc}</p>${linkBtn}`;
       modal.classList.add("active");
     }
   }
@@ -382,7 +384,7 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// Dynamic Page Tab Switcher & Cached Data Auto-Render
+// Dynamic Tab Switcher
 document.addEventListener("DOMContentLoaded", () => {
   loadDynamicNavbar();
   loadModHubCatalog();
@@ -416,12 +418,7 @@ document.addEventListener("DOMContentLoaded", () => {
 window.renderDashboard = function(data) {
   if (!data) return;
 
-  // Anti-Flicker / Anti-Refresh Lock: Compare string hash of incoming telemetry
-  const incomingJsonString = JSON.stringify(data);
-  if (incomingJsonString === lastRenderedJsonString) return; // Skip re-rendering if unchanged!
-  lastRenderedJsonString = incomingJsonString;
-
-  // Extract Active Server Mods
+  // Active Server Mods Processing
   activeServerMods.clear();
   const configXml = parseXML(data.dedicatedServerConfig || data.dedicatedServerConfig_xml || data.stats || data.careerSavegame);
   if (configXml) {
@@ -435,7 +432,7 @@ window.renderDashboard = function(data) {
   const careerXml = parseXML(data.careerSavegame || data.careerSavegame_xml);
   const serverNode = statsXml ? (statsXml.querySelector("Server") || statsXml.querySelector("settings")) : (careerXml ? careerXml.querySelector("settings") : null);
 
-  const gameName = serverNode ? (serverNode.getAttribute("name") || getDeepXmlValue(serverNode, ["savegameName"]) || "Riverbend Springs Dedicated") : "Dedicated Server";
+  const gameName = serverNode ? (serverNode.getAttribute("name") || getDeepXmlValue(serverNode, ["savegameName"]) || "OneLIVIDMAN and werewolf 618") : "OneLIVIDMAN and werewolf 618";
 
   lastKnownServerName = gameName;
   window.setServerStatus(true);
@@ -460,14 +457,13 @@ window.renderDashboard = function(data) {
     const mapEl = document.getElementById('server-map');
     if (mapEl) mapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
 
-    // TIME & TIME SCALE MULTIPLIER PARSER
     let rawDayTime = parseFloat(serverNode.getAttribute("dayTime") || "0");
     let timeScale = getDeepXmlValue(serverNode, ["timeScale"]) || "5.0";
     if (timeScale) {
       document.getElementById('time-speed-badge').innerHTML = `<i class="fa-solid fa-forward-fast"></i> Speed: ${parseFloat(timeScale).toFixed(0)}x`;
     }
 
-    let hours = 21, mins = 30; // Fallback to current game save time
+    let hours = 22, mins = 25;
     if (rawDayTime > 0) {
       const totalMinutes = Math.floor(rawDayTime / 60000);
       hours = Math.floor(totalMinutes / 60) % 24;
@@ -476,10 +472,10 @@ window.renderDashboard = function(data) {
     const timeEl = document.getElementById('server-time');
     if (timeEl) timeEl.innerHTML = `<i class="fa-regular fa-clock"></i> Time: ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
 
-    // TRAFFIC STATE
     let traffic = getDeepXmlValue(serverNode, ["trafficEnabled"]);
-    if (traffic !== null) {
-      document.getElementById('traffic-badge').innerHTML = `<i class="fa-solid fa-car"></i> Traffic: ${traffic === 'true' ? 'ON' : 'OFF'}`;
+    const trafficBadge = document.getElementById('traffic-badge');
+    if (trafficBadge) {
+      trafficBadge.innerHTML = `<i class="fa-solid fa-car"></i> Traffic: ${traffic === 'true' ? 'ON' : 'OFF'}`;
     }
 
     const slotsNode = statsXml ? statsXml.querySelector("Slots") : null;
@@ -489,11 +485,11 @@ window.renderDashboard = function(data) {
     if (playerBadge) playerBadge.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${numUsed}/${capacity}`;
   }
 
-  // WEATHER & SEASON MONTH PARSER
+  // Weather & Month
   const envXml = parseXML(data.environment || data.environment_xml || data.careerSavegame);
   if (envXml) {
     let rawMonth = getDeepXmlValue(envXml, ["currentMonth", "month", "plannedDaysPerPeriod"]);
-    let monthIdx = 7; // July default
+    let monthIdx = 7;
     if (rawMonth && !isNaN(parseInt(rawMonth))) {
       const parsedM = parseInt(rawMonth);
       if (parsedM >= 1 && parsedM <= 12) monthIdx = parsedM;
@@ -506,289 +502,295 @@ window.renderDashboard = function(data) {
   }
 
   // 2. Global Net Balance & Metrics
-  try {
-    let globalNetWorthSum = 0;
-    const farmsXml = parseXML(data.farms || data.farms_xml || data.careerSavegame);
-    if (farmsXml) {
-      farmsXml.querySelectorAll("farm, statistics").forEach(farm => {
-        const money = parseFloat(farm.getAttribute("money") || getDeepXmlValue(farm, ["money"]) || "0");
-        if (!isNaN(money)) globalNetWorthSum += money;
-      });
-    }
-    const netEl = document.getElementById('global-net-worth');
-    if (netEl) netEl.textContent = `$${Math.round(globalNetWorthSum || 1000000).toLocaleString()}`;
+  let globalNetWorthSum = 0;
+  const farmsXml = parseXML(data.farms || data.farms_xml || data.careerSavegame);
+  if (farmsXml) {
+    farmsXml.querySelectorAll("farm, statistics").forEach(farm => {
+      const money = parseFloat(farm.getAttribute("money") || getDeepXmlValue(farm, ["money"]) || "0");
+      if (!isNaN(money)) globalNetWorthSum += money;
+    });
+  }
+  const netEl = document.getElementById('global-net-worth');
+  if (netEl) netEl.textContent = `$${Math.round(globalNetWorthSum || 1000000).toLocaleString()}`;
 
-    // Collectibles
-    let collectedCount = 0;
-    const collectiblesXml = parseXML(data.collectibles || data.collectibles_xml);
-    if (collectiblesXml) {
-      collectiblesXml.querySelectorAll("collectible").forEach(c => {
-        if (c.getAttribute("collected") === "true" || c.getAttribute("isFound") === "true") collectedCount++;
-      });
-    }
-    const collectEl = document.getElementById('global-collectibles-count');
-    if (collectEl) collectEl.textContent = `${collectedCount} / 25`;
+  // Collectibles
+  let collectedCount = 0;
+  const collectiblesXml = parseXML(data.collectibles || data.collectibles_xml);
+  if (collectiblesXml) {
+    collectiblesXml.querySelectorAll("collectible").forEach(c => {
+      if (c.getAttribute("collected") === "true" || c.getAttribute("isFound") === "true") collectedCount++;
+    });
+  }
+  const collectEl = document.getElementById('global-collectibles-count');
+  if (collectEl) collectEl.textContent = `${collectedCount} / 25`;
 
-    // Farmland & Field Count
-    let maxFields = 0;
-    const farmlandsXml = parseXML(data.farmlands || data.farmlands_xml || data.stats);
-    if (farmlandsXml) {
-      farmlandsXml.querySelectorAll("Farmland, farmland, Field, field").forEach(f => {
-        const idVal = parseInt(f.getAttribute("id") || "0", 10);
-        if (idVal > maxFields) maxFields = idVal;
-      });
-    }
-    const landEl = document.getElementById('global-land-count');
-    if (landEl) landEl.textContent = `${maxFields || 55} Fields`;
-
-  } catch (e) {}
+  // Farmland & Field Count
+  let maxFields = 0;
+  const farmlandsXml = parseXML(data.farmlands || data.farmlands_xml || data.stats);
+  if (farmlandsXml) {
+    farmlandsXml.querySelectorAll("Farmland, farmland, Field, field").forEach(f => {
+      const idVal = parseInt(f.getAttribute("id") || "0", 10);
+      if (idVal > maxFields) maxFields = idVal;
+    });
+  }
+  const landEl = document.getElementById('global-land-count');
+  if (landEl) landEl.textContent = `${maxFields || 55} Fields`;
 
   // 3. Active Vehicle Fleet Count
-  try {
-    let vehCount = 0;
-    const vehXml = parseXML(data.vehicles || data.vehicles_xml || data.stats);
-    if (vehXml) {
-      vehCount = vehXml.querySelectorAll("vehicle, Vehicle").length;
-    }
-    const vehEl = document.getElementById('global-vehicle-count');
-    if (vehEl) vehEl.textContent = `${vehCount || 13}`;
-  } catch (e) {}
+  let vehCount = 0;
+  const vehXml = parseXML(data.vehicles || data.vehicles_xml || data.stats);
+  if (vehXml) {
+    vehCount = vehXml.querySelectorAll("vehicle, Vehicle").length;
+  }
+  const vehEl = document.getElementById('global-vehicle-count');
+  if (vehEl) vehEl.textContent = `${vehCount || 13}`;
 
-  // 4. Dynamic Farm Tabs Builder
-  try {
-    const farmsXml = parseXML(data.farms || data.farms_xml);
-    const farmTabContainer = document.getElementById('dynamic-farm-tabs');
-    const farmPanelsWrapper = document.getElementById('dynamic-farm-panels');
+  // 4. Contracts & Missions Parser (Deep Attribute & Tag Fallbacks for Rewards)
+  const contractsCont = document.getElementById('main-contracts-container');
+  const missionsXml = parseXML(data.missions || data.missions_xml);
+  if (contractsCont) {
+    let html = "";
+    if (missionsXml) {
+      missionsXml.querySelectorAll("*").forEach(m => {
+        const tagName = m.tagName.toLowerCase();
+        if (tagName.endsWith("mission") && tagName !== "missions") {
+          const fieldNode = m.querySelector("field");
+          const fieldId = fieldNode ? fieldNode.getAttribute("id") : m.getAttribute("fieldId");
+          const status = m.getAttribute("status") || "CREATED";
+          
+          // Deep reward check: attribute reward -> child node <reward> -> default
+          let rawReward = m.getAttribute("reward") || getDeepXmlValue(m, ["reward"]) || "0";
+          const reward = Math.round(parseFloat(rawReward));
 
-    if (farmsXml && farmTabContainer && farmPanelsWrapper) {
-      let tabHtml = "";
-      let panelHtml = "";
+          const trees = m.getAttribute("numTrees");
+          const fruitType = m.getAttribute("fruitType") || m.querySelector("harvest")?.getAttribute("fruitType");
+          const cleanType = formatName(tagName.replace(/mission$/i, ""));
 
-      farmsXml.querySelectorAll("farm").forEach(farm => {
-        const farmId = farm.getAttribute("farmId") || farm.getAttribute("id");
-        const farmName = farm.getAttribute("name") || `Farm #${farmId}`;
-        const money = Math.round(parseFloat(farm.getAttribute("money") || "0"));
-        const loan = Math.round(parseFloat(farm.getAttribute("loan") || "0"));
+          let progressPct = 0;
+          const completionVal = m.querySelector("info")?.getAttribute("completion");
+          if (completionVal) progressPct = Math.round(parseFloat(completionVal) * 100);
 
-        if (farmId && farmId !== "0") {
-          tabHtml += `
-            <button type="button" class="tab-btn" data-tab="farm-tab-${farmId}">
-              <i class="fa-solid fa-wheat-awn"></i> ${farmName.toUpperCase()}
-            </button>`;
+          let statusBadge = status === 'RUNNING' ? `<span class="badge-stat badge-warning"><i class="fa-solid fa-spinner fa-spin"></i> RUNNING (${progressPct}%)</span>` : `<span class="badge-stat badge-good">PENDING</span>`;
+          let fieldBadge = fieldId ? `<span class="badge-stat"><i class="fa-solid fa-map-pin"></i> Field #${fieldId}</span>` : '';
+          if (trees) fieldBadge += ` <span class="badge-stat badge-warning"><i class="fa-solid fa-tree"></i> ${trees} Trees</span>`;
+          if (fruitType) fieldBadge += ` <span class="badge-stat badge-good">${formatName(fruitType)}</span>`;
 
-          panelHtml += `
-            <div id="farm-tab-${farmId}" class="tab-content-panel">
-              <div class="metrics-row">
-                <div class="metric-card">
-                  <i class="fa-solid fa-wallet metric-icon" style="color:#4ade80;"></i>
-                  <div><div class="metric-value">$${money.toLocaleString()}</div><div class="metric-label">Account Balance</div></div>
+          html += `
+            <div class="item-card" style="border-left: 4px solid #8b5cf6; flex-direction:column; align-items:flex-start;">
+              <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                <div class="item-left">
+                  ${getThumbnailHTML(fruitType || cleanType, "fa-file-contract")}
+                  <div>
+                    <div class="item-title" style="color:#facc15;">${cleanType} MISSION</div>
+                    <div class="mono" style="margin-top:4px;">${statusBadge} ${fieldBadge}</div>
+                  </div>
                 </div>
-                <div class="metric-card">
-                  <i class="fa-solid fa-building-columns metric-icon" style="color:#facc15;"></i>
-                  <div><div class="metric-value">$${loan.toLocaleString()}</div><div class="metric-label">Active Bank Loan</div></div>
+                <div class="farm-money">+$${reward.toLocaleString()}</div>
+              </div>
+              ${status === 'RUNNING' ? `<div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${progressPct}%;"></div></div>` : ''}
+            </div>`;
+        }
+      });
+    }
+    contractsCont.innerHTML = html || `<div class="item-card"><div class="item-title">All Contracts Completed</div></div>`;
+  }
+
+  // 5. Buying Stations Container (Static Fallback rendering immediately)
+  const buyCont = document.getElementById('buying-stations-container');
+  if (buyCont) {
+    buyCont.innerHTML = `
+      <div class="item-card" style="border-left: 4px solid #38bdf8;">
+        <div class="item-left">
+          ${getThumbnailHTML("GRAIN ELEVATOR", "fa-store")}
+          <div>
+            <div class="item-title">COMMUNITY MULTIFRUIT BUYING STATION</div>
+            <div class="mono"><span class="badge-stat badge-good">PUBLIC ACCESS</span></div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // 6. Factories & Production Chains
+  const prodCont = document.getElementById('main-productions-container');
+  const placeXml = parseXML(data.placeables || data.placeables_xml);
+  if (prodCont) {
+    let prodHtml = "";
+    if (placeXml) {
+      placeXml.querySelectorAll("placeable").forEach(p => {
+        const prodPoint = p.querySelector("productionPoint");
+        if (prodPoint) {
+          const name = formatName(p.getAttribute("filename") || "Factory");
+          const farmId = p.getAttribute("farmId") || "0";
+          const ownerStr = farmId === "0" ? "PUBLIC FACTORY" : `FARM #${farmId} OWNED`;
+
+          let recipeList = [];
+          prodPoint.querySelectorAll("production").forEach(prod => {
+            if (prod.getAttribute("isEnabled") === "true") recipeList.push(formatName(prod.getAttribute("id")));
+          });
+
+          prodHtml += `
+            <div class="item-card" style="border-left: 4px solid #3b82f6; flex-direction:column; align-items:flex-start;">
+              <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                <div class="item-left">
+                  ${getThumbnailHTML(name, "fa-industry")}
+                  <div>
+                    <div class="item-title">${name}</div>
+                    <div class="mono"><span class="badge-stat badge-good">${ownerStr}</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="mono" style="margin-top:6px; border-top:1px solid var(--border-color); padding-top:6px; width:100%;">
+                <span><i class="fa-solid fa-gears"></i> Active Recipes: ${recipeList.length > 0 ? recipeList.join(", ") : "Standby"}</span>
+              </div>
+            </div>`;
+        }
+      });
+    }
+    prodCont.innerHTML = prodHtml || `<div class="item-card"><div class="item-title">Public Regional Grain Elevator</div></div>`;
+  }
+
+  // 7. Livestock & Husbandry
+  const animalCont = document.getElementById('animal-husbandry-container');
+  if (animalCont) {
+    let animalHtml = "";
+    if (placeXml) {
+      placeXml.querySelectorAll("placeable").forEach(p => {
+        const husbandry = p.querySelector("husbandryAnimals");
+        if (husbandry) {
+          const penTitle = formatName(p.getAttribute("filename") || "Animal Pen");
+          const farmOwner = p.getAttribute("farmId") || "0";
+
+          husbandry.querySelectorAll("animal").forEach(a => {
+            const breed = formatName(a.getAttribute("subType"));
+            const count = a.getAttribute("numAnimals");
+            const age = a.getAttribute("age");
+
+            const grassLevel = Math.round(parseFloat(p.querySelector("husbandryMeadow fillType")?.getAttribute("fillLevel") || "0"));
+
+            animalHtml += `
+              <div class="item-card" style="border-left: 4px solid #10b981; flex-direction:column; align-items:flex-start;">
+                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                  <div class="item-left">
+                    ${getThumbnailHTML(breed, "fa-cow")}
+                    <div>
+                      <div class="item-title" style="color:#4ade80;">${breed} (${count} Head)</div>
+                      <div class="mono"><span class="badge-stat">Farm #${farmOwner}</span> <span class="badge-stat">${age} Months Old</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="mono" style="margin-top:6px; border-top:1px solid var(--border-color); padding-top:6px; width:100%;">
+                  <span><i class="fa-solid fa-wheat-awn"></i> Grass/Meadow Feed: ${grassLevel.toLocaleString()} L</span>
+                </div>
+              </div>`;
+          });
+        }
+      });
+    }
+    animalCont.innerHTML = animalHtml || `<div class="item-card"><div class="item-title">No Active Livestock Husbandry Recorded</div></div>`;
+  }
+
+  // 8. Regional Train Network Container
+  const trainCont = document.getElementById('main-train-container');
+  if (trainCont) {
+    trainCont.innerHTML = `
+      <div class="item-card" style="border-left: 4px solid #facc15;">
+        <div class="item-left">
+          ${getThumbnailHTML("TRAIN STATION", "fa-train")}
+          <div>
+            <div class="item-title">REGIONAL GRAIN & LOGISTICS TRAIN</div>
+            <div class="mono"><span class="badge-stat badge-good">ACTIVE ON MAP</span></div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  // 9. Dealership Used Equipment Sales
+  const salesCont = document.getElementById('used-sales-container');
+  const salesXml = parseXML(data.sales || data.sales_xml);
+  if (salesCont) {
+    let salesHtml = "";
+    if (salesXml) {
+      salesXml.querySelectorAll("item").forEach(item => {
+        const filename = formatName(item.getAttribute("xmlFilename"));
+        const price = Math.round(parseFloat(item.getAttribute("price") || "0"));
+        const damage = Math.round(parseFloat(item.getAttribute("damage") || "0") * 100);
+        const wear = Math.round(parseFloat(item.getAttribute("wear") || "0") * 100);
+        const timeLeft = item.getAttribute("timeLeft") || "24";
+
+        salesHtml += `
+          <div class="item-card" style="border-left: 4px solid #f97316;">
+            <div class="item-left">
+              ${getThumbnailHTML(filename, "fa-tags")}
+              <div>
+                <div class="item-title">${filename}</div>
+                <div class="mono">
+                  <span class="badge-stat badge-danger">Damage: ${damage}%</span>
+                  <span class="badge-stat badge-warning">Wear: ${wear}%</span>
+                  <span class="badge-stat"><i class="fa-regular fa-clock"></i> ${timeLeft}h Left</span>
+                </div>
+              </div>
+            </div>
+            <div class="farm-money" style="color:#facc15;">$${price.toLocaleString()}</div>
+          </div>`;
+      });
+    }
+    salesCont.innerHTML = salesHtml || `<div class="item-card"><div class="item-title">No Machinery Currently On Sale</div></div>`;
+  }
+
+  // 10. Vehicle Fleet Telemetry
+  const fleetCont = document.getElementById('vehicle-fleet-container');
+  if (fleetCont) {
+    let fleetHtml = "";
+    if (vehXml) {
+      vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
+        const name = formatName(v.getAttribute("name") || v.getAttribute("filename") || v.getAttribute("modName"));
+        if (!name.includes("WAGON") && !name.includes("TRAIN")) {
+          const controller = v.getAttribute("controller") || (v.getAttribute("isAIActive") === "true" ? "AI Helper" : "Unmanned");
+          const isAI = controller.includes("AI");
+
+          fleetHtml += `
+            <div class="item-card" style="border-left: 4px solid #ef4444;">
+              <div class="item-left">
+                ${getThumbnailHTML(name, "fa-tractor")}
+                <div>
+                  <div class="item-title">${name}</div>
+                  <div class="mono"><span class="badge-stat ${isAI ? 'badge-warning' : 'badge-good'}"><i class="fa-solid fa-user-gear"></i> ${controller}</span></div>
                 </div>
               </div>
             </div>`;
         }
       });
-
-      farmTabContainer.innerHTML = tabHtml;
-      farmPanelsWrapper.innerHTML = panelHtml;
     }
-  } catch (e) {}
+    fleetCont.innerHTML = fleetHtml || `<div class="item-card"><div class="item-title">No Active Machinery Logged</div></div>`;
+  }
 
-  // 5. Contracts & Missions Parser
-  try {
-    const contractsCont = document.getElementById('main-contracts-container');
-    const missionsXml = parseXML(data.missions || data.missions_xml);
-    if (contractsCont) {
-      let html = "";
-      if (missionsXml) {
-        missionsXml.querySelectorAll("*").forEach(m => {
-          const tagName = m.tagName.toLowerCase();
-          if (tagName.endsWith("mission") && tagName !== "missions") {
-            const fieldNode = m.querySelector("field");
-            const fieldId = fieldNode ? fieldNode.getAttribute("id") : m.getAttribute("fieldId");
-            const status = m.getAttribute("status") || "CREATED";
-            
-            const reward = Math.round(parseFloat(getDeepXmlValue(m, ["reward"]) || "0"));
-            const trees = m.getAttribute("numTrees");
-            const fruitType = m.getAttribute("fruitType") || m.querySelector("harvest")?.getAttribute("fruitType");
-            const cleanType = formatName(tagName.replace(/mission$/i, ""));
-
-            let progressPct = 0;
-            const completionVal = m.querySelector("info")?.getAttribute("completion");
-            if (completionVal) progressPct = Math.round(parseFloat(completionVal) * 100);
-
-            let statusBadge = status === 'RUNNING' ? `<span class="badge-stat badge-warning"><i class="fa-solid fa-spinner fa-spin"></i> RUNNING (${progressPct}%)</span>` : `<span class="badge-stat badge-good">PENDING</span>`;
-            let fieldBadge = fieldId ? `<span class="badge-stat"><i class="fa-solid fa-map-pin"></i> Field #${fieldId}</span>` : '';
-            if (trees) fieldBadge += ` <span class="badge-stat badge-warning"><i class="fa-solid fa-tree"></i> ${trees} Trees</span>`;
-            if (fruitType) fieldBadge += ` <span class="badge-stat badge-good">${formatName(fruitType)}</span>`;
-
-            html += `
-              <div class="item-card" style="border-left: 4px solid #8b5cf6; flex-direction:column; align-items:flex-start;">
-                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                  <div class="item-left">
-                    ${getThumbnailHTML(fruitType || cleanType, "fa-file-contract")}
-                    <div>
-                      <div class="item-title" style="color:#facc15;">${cleanType} MISSION</div>
-                      <div class="mono" style="margin-top:4px;">${statusBadge} ${fieldBadge}</div>
-                    </div>
-                  </div>
-                  <div class="farm-money">+$${reward.toLocaleString()}</div>
-                </div>
-                ${status === 'RUNNING' ? `<div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:${progressPct}%;"></div></div>` : ''}
-              </div>`;
-          }
-        });
-      }
-      contractsCont.innerHTML = html || `<div class="item-card"><div class="item-title">All Contracts Completed</div></div>`;
-    }
-  } catch (e) {}
-
-  // 6. Factories & Production Chains
-  try {
-    const prodCont = document.getElementById('main-productions-container');
-    const placeXml = parseXML(data.placeables || data.placeables_xml);
-    if (prodCont) {
-      let prodHtml = "";
-      if (placeXml) {
-        placeXml.querySelectorAll("placeable").forEach(p => {
-          const prodPoint = p.querySelector("productionPoint");
-          if (prodPoint) {
-            const name = formatName(p.getAttribute("filename") || "Factory");
-            const farmId = p.getAttribute("farmId") || "0";
-            const ownerStr = farmId === "0" ? "PUBLIC FACTORY" : `FARM #${farmId} OWNED`;
-
-            let recipeList = [];
-            prodPoint.querySelectorAll("production").forEach(prod => {
-              if (prod.getAttribute("isEnabled") === "true") recipeList.push(formatName(prod.getAttribute("id")));
-            });
-
-            prodHtml += `
-              <div class="item-card" style="border-left: 4px solid #3b82f6; flex-direction:column; align-items:flex-start;">
-                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                  <div class="item-left">
-                    ${getThumbnailHTML(name, "fa-industry")}
-                    <div>
-                      <div class="item-title">${name}</div>
-                      <div class="mono"><span class="badge-stat badge-good">${ownerStr}</span></div>
-                    </div>
-                  </div>
-                </div>
-                <div class="mono" style="margin-top:6px; border-top:1px solid var(--border-color); padding-top:6px; width:100%;">
-                  <span><i class="fa-solid fa-gears"></i> Active Recipes: ${recipeList.length > 0 ? recipeList.join(", ") : "Standby"}</span>
-                </div>
-              </div>`;
-          }
-        });
-      }
-      prodCont.innerHTML = prodHtml || `<div class="item-card"><div class="item-title">Public Regional Grain Elevator</div></div>`;
-    }
-  } catch (e) {}
-
-  // 7. Livestock & Animal Husbandry
-  try {
-    const animalCont = document.getElementById('animal-husbandry-container');
-    const placeXml = parseXML(data.placeables || data.placeables_xml);
-    if (animalCont) {
-      let animalHtml = "";
-      if (placeXml) {
-        placeXml.querySelectorAll("placeable").forEach(p => {
-          const husbandry = p.querySelector("husbandryAnimals");
-          if (husbandry) {
-            const penTitle = formatName(p.getAttribute("filename") || "Animal Pen");
-            const farmOwner = p.getAttribute("farmId") || "0";
-
-            husbandry.querySelectorAll("animal").forEach(a => {
-              const breed = formatName(a.getAttribute("subType"));
-              const count = a.getAttribute("numAnimals");
-              const age = a.getAttribute("age");
-
-              const grassLevel = Math.round(parseFloat(p.querySelector("husbandryMeadow fillType")?.getAttribute("fillLevel") || "0"));
-
-              animalHtml += `
-                <div class="item-card" style="border-left: 4px solid #10b981; flex-direction:column; align-items:flex-start;">
-                  <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
-                    <div class="item-left">
-                      ${getThumbnailHTML(breed, "fa-cow")}
-                      <div>
-                        <div class="item-title" style="color:#4ade80;">${breed} (${count} Head)</div>
-                        <div class="mono"><span class="badge-stat">Farm #${farmOwner}</span> <span class="badge-stat">${age} Months Old</span></div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="mono" style="margin-top:6px; border-top:1px solid var(--border-color); padding-top:6px; width:100%;">
-                    <span><i class="fa-solid fa-wheat-awn"></i> Grass/Meadow Feed: ${grassLevel.toLocaleString()} L</span>
-                  </div>
-                </div>`;
-            });
-          }
-        });
-      }
-      animalCont.innerHTML = animalHtml || `<div class="item-card"><div class="item-title">No Active Livestock Husbandry Recorded</div></div>`;
-    }
-  } catch (e) {}
-
-  // 8. Vehicle Fleet Telemetry
-  try {
-    const fleetCont = document.getElementById('vehicle-fleet-container');
-    const vehXml = parseXML(data.vehicles || data.vehicles_xml || data.stats);
-    if (fleetCont) {
-      let fleetHtml = "";
-      if (vehXml) {
-        vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
-          const name = formatName(v.getAttribute("name") || v.getAttribute("filename") || v.getAttribute("modName"));
-          if (!name.includes("WAGON") && !name.includes("TRAIN")) {
-            const controller = v.getAttribute("controller") || (v.getAttribute("isAIActive") === "true" ? "AI Helper" : "Unmanned");
-            const isAI = controller.includes("AI");
-
-            fleetHtml += `
-              <div class="item-card" style="border-left: 4px solid #ef4444;">
+  // 11. Commodity Market Prices
+  const ecoCont = document.getElementById('main-economy-container');
+  const ecoXml = parseXML(data.economy || data.economy_xml);
+  if (ecoCont) {
+    let ecoHtml = "";
+    if (ecoXml) {
+      ecoXml.querySelectorAll("fillType").forEach(ft => {
+        const cropKey = ft.getAttribute("fillType");
+        if (cropKey && cropKey !== "UNKNOWN") {
+          const periodVal = ft.querySelector("history period")?.textContent || "500";
+          const priceVal = Math.round(parseFloat(periodVal));
+          if (priceVal > 0) {
+            const pricePer1kLbs = (priceVal / LBS_CONVERSION_FACTOR).toFixed(2);
+            ecoHtml += `
+              <div class="item-card" style="border-left: 4px solid #14b8a6;">
                 <div class="item-left">
-                  ${getThumbnailHTML(name, "fa-tractor")}
-                  <div>
-                    <div class="item-title">${name}</div>
-                    <div class="mono"><span class="badge-stat ${isAI ? 'badge-warning' : 'badge-good'}"><i class="fa-solid fa-user-gear"></i> ${controller}</span></div>
-                  </div>
+                  ${getThumbnailHTML(cropKey, "fa-chart-line")}
+                  <div class="item-title">${formatName(cropKey)}</div>
                 </div>
+                <div class="farm-money">$${pricePer1kLbs} / 1,000 lbs</div>
               </div>`;
           }
-        });
-      }
-      fleetCont.innerHTML = fleetHtml || `<div class="item-card"><div class="item-title">No Active Machinery Logged</div></div>`;
+        }
+      });
     }
-  } catch (e) {}
-
-  // 9. Commodity Market Prices
-  try {
-    const ecoCont = document.getElementById('main-economy-container');
-    const ecoXml = parseXML(data.economy || data.economy_xml);
-    if (ecoCont) {
-      let ecoHtml = "";
-      if (ecoXml) {
-        ecoXml.querySelectorAll("fillType").forEach(ft => {
-          const cropKey = ft.getAttribute("fillType");
-          if (cropKey && cropKey !== "UNKNOWN") {
-            const periodVal = ft.querySelector("history period")?.textContent || "500";
-            const priceVal = Math.round(parseFloat(periodVal));
-            if (priceVal > 0) {
-              const pricePer1kLbs = (priceVal / LBS_CONVERSION_FACTOR).toFixed(2);
-              ecoHtml += `
-                <div class="item-card" style="border-left: 4px solid #14b8a6;">
-                  <div class="item-left">
-                    ${getThumbnailHTML(cropKey, "fa-chart-line")}
-                    <div class="item-title">${formatName(cropKey)}</div>
-                  </div>
-                  <div class="farm-money">$${pricePer1kLbs} / 1,000 lbs</div>
-                </div>`;
-            }
-          }
-        });
-      }
-      ecoCont.innerHTML = ecoHtml || `<div class="item-card"><div class="item-title">Reading Market Economy...</div></div>`;
-    }
-  } catch (e) {}
+    ecoCont.innerHTML = ecoHtml || `<div class="item-card"><div class="item-title">Reading Market Economy...</div></div>`;
+  }
 
   // Update server mod badges without resetting Mod Hub layout
   renderModCards();
