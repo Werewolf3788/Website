@@ -1,212 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Version Timestamp: Fri, July 24, 2026, 12:05 AM (EDT) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FS25 Tactical Telemetry Dashboard | Server Hub</title>
+  <title>FS25 Realtime Tactical Dashboard</title>
   
-  <!-- Open Graph / SEO Metadata -->
-  <meta property="og:title" content="FS25 Tactical Telemetry Dashboard">
-  <meta property="og:description" content="Real-time server telemetry tracking for FS25: contracts, farm finances, field agronomy, and market commodity prices.">
-  <meta property="og:type" content="website">
+  <!-- FontAwesome & CSS Styling -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css?v=20260724">
 
-  <!-- FontAwesome Icons & Google Fonts -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <<link rel="stylesheet" href="style.css?v=202607232359">
+  <!-- Core JavaScript Engine -->
+  <script src="index.js?v=20260724" defer></script>
 </head>
 <body>
 
-  <!-- FIXED SITEWIDE BRANDING BACKGROUND LAYER -->
-  <div class="wallpaper-background"></div>
-
-  <!-- NAVIGATION HEADER BAR -->
-  <header class="site-header">
-    <div class="header-container">
-      <div class="brand-title">
-        <i class="fa-solid fa-tractor text-accent"></i>
-        <span>FS25 TELEMETRY HUB</span>
-      </div>
-
-      <button id="mobile-menu-toggle" class="mobile-toggle" aria-label="Toggle Navigation Menu">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-
-      <nav id="dynamic-menu" class="nav-menu">
-        <!-- Dynamic Google Sheets Menu Links Auto-Injected Here -->
-      </nav>
+  <!-- Top Navigation Header -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <i class="fa-solid fa-wheat-field logo-icon"></i>
+      <span>FS25 TELEMETRY HUB</span>
     </div>
+    <button id="mobile-menu-toggle" class="mobile-toggle" aria-label="Toggle Menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <nav id="dynamic-menu" class="nav-menu">
+      <!-- Dynamic Google Sheets Menu Injected Here -->
+    </nav>
   </header>
 
-  <!-- LIVE TELEMETRY STATUS BAR -->
-  <main class="dashboard-main">
-    <section class="status-bar-card">
-      <div class="status-badge-group">
-        <span class="status-title" id="server-name">OneLIVIDMAN and werewolf 618</span>
-        <span class="status-pill" id="server-map"><i class="fa-solid fa-map-location-dot"></i> Map: Riverbend Springs</span>
-        <span class="status-pill" id="server-time"><i class="fa-regular fa-clock"></i> Time: 00:00</span>
-        <span class="status-pill" id="server-month"><i class="fa-solid fa-calendar-days"></i> Month: Mid Spring (April)</span>
-        <span class="status-pill" id="server-players"><i class="fa-solid fa-users"></i> Players: 0/6</span>
+  <!-- Main Tactical Command Center -->
+  <main class="dashboard-container">
+    
+    <!-- Server Overview Banner -->
+    <section class="server-banner">
+      <div class="banner-title">
+        <h1 id="server-name">Connecting to Server Telemetry...</h1>
+        <div class="banner-badges">
+          <span id="server-map" class="badge"><i class="fa-solid fa-map-location-dot"></i> Map: Riverbend Springs</span>
+          <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: 00:00</span>
+          <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Month: Early Autumn</span>
+          <span id="server-players" class="badge"><i class="fa-solid fa-users"></i> Players: 0/6</span>
+        </div>
       </div>
     </section>
 
-    <!-- DASHBOARD CARD GRID -->
-    <div class="dashboard-grid">
-
+    <!-- Dashboard Grid Cards -->
+    <div class="grid-layout">
+      
       <!-- 1. Registered Server Farms -->
-      <section class="dash-card">
-        <div class="card-header">
-          <i class="fa-solid fa-wheat-field"></i>
+      <div class="dashboard-box">
+        <div class="box-header">
+          <i class="fa-solid fa-building-columns"></i>
           <h2>REGISTERED SERVER FARMS</h2>
         </div>
-        <div id="farms-container" class="card-body">
-          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading farm finances...</div>
+        <div id="farms-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Syncing farm telemetry...</div>
         </div>
-      </section>
+      </div>
 
-      <!-- 2. Field Crops & Agronomy Status -->
-      <section class="dash-card">
-        <div class="card-header">
+      <!-- 2. Public Infrastructure & Trade Depots -->
+      <div class="dashboard-box">
+        <div class="box-header">
+          <i class="fa-solid fa-city"></i>
+          <h2>PUBLIC MAP INFRASTRUCTURE</h2>
+        </div>
+        <div id="infrastructure-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Resolving public assets...</div>
+        </div>
+      </div>
+
+      <!-- 3. Field Crops & Agronomy Status -->
+      <div class="dashboard-box">
+        <div class="box-header">
           <i class="fa-solid fa-seedling"></i>
           <h2>FIELD CROPS & AGRONOMY STATUS</h2>
         </div>
-        <div id="fields-container" class="card-body">
-          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading field telemetry...</div>
+        <div id="fields-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading field telemetry...</div>
         </div>
-      </section>
+      </div>
 
-      <!-- 3. Server Contracts & Missions -->
-      <section class="dash-card">
-        <div class="card-header">
-          <i class="fa-solid fa-file-contract"></i>
-          <h2>SERVER CONTRACTS & MISSIONS</h2>
-        </div>
-        <div id="contracts-container" class="card-body">
-          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading contracts...</div>
-        </div>
-      </section>
-
-      <!-- 4. Map Collectibles Tracker -->
-      <section class="dash-card">
-        <div class="card-header">
-          <i class="fa-solid fa-trophy"></i>
-          <h2>MAP COLLECTIBLES TRACKER</h2>
-        </div>
-        <div id="collectibles-container" class="card-body">
-          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading collectible status...</div>
-        </div>
-      </section>
-
-      <!-- 5. Installed Server Mods -->
-      <section class="dash-card">
-        <div class="card-header">
-          <i class="fa-solid fa-puzzle-piece"></i>
-          <h2>INSTALLED SERVER MODS</h2>
-        </div>
-        <div id="mods-container" class="card-body">
-          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading mod list...</div>
-        </div>
-      </section>
-
-      <!-- 6. Production Facilities & Storage -->
-      <section class="dash-card">
-        <div class="card-header">
-          <i class="fa-solid fa-industry"></i>
-          <h2>PRODUCTION FACILITIES & STORAGE</h2>
-        </div>
-        <div id="production-container" class="card-body">
-          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading facilities...</div>
-        </div>
-      </section>
-
-      <!-- 7. Fleet Machinery & Vehicles -->
-      <section class="dash-card">
-        <div class="card-header">
+      <!-- 4. Fleet Machinery & Tractors -->
+      <div class="dashboard-box">
+        <div class="box-header">
           <i class="fa-solid fa-tractor"></i>
           <h2>FLEET MACHINERY & VEHICLES</h2>
         </div>
-        <div id="tractors-container" class="card-body">
-          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading machinery...</div>
+        <div id="tractors-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning machinery fleet...</div>
         </div>
-      </section>
+      </div>
 
-      <!-- 8. Implements & Equipment -->
-      <section class="dash-card">
-        <div class="card-header">
+      <!-- 5. Implements & Equipment -->
+      <div class="dashboard-box">
+        <div class="box-header">
           <i class="fa-solid fa-screwdriver-wrench"></i>
           <h2>IMPLEMENTS & EQUIPMENT</h2>
         </div>
-        <div id="implements-container" class="card-body">
-          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading equipment...</div>
+        <div id="implements-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning equipment fleet...</div>
         </div>
-      </section>
+      </div>
+
+      <!-- 6. Server Contracts & Missions -->
+      <div class="dashboard-box">
+        <div class="box-header">
+          <i class="fa-solid fa-file-contract"></i>
+          <h2>SERVER CONTRACTS & MISSIONS</h2>
+        </div>
+        <div id="contracts-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Parsing active contracts...</div>
+        </div>
+      </div>
+
+      <!-- 7. Used Vehicle Dealership Radar -->
+      <div class="dashboard-box">
+        <div class="box-header">
+          <i class="fa-solid fa-tags"></i>
+          <h2>DEALERSHIP USED SALES</h2>
+        </div>
+        <div id="sales-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Checking store bargains...</div>
+        </div>
+      </div>
+
+      <!-- 8. Map Collectibles Tracker -->
+      <div class="dashboard-box">
+        <div class="box-header">
+          <i class="fa-solid fa-trophy"></i>
+          <h2>MAP COLLECTIBLES TRACKER</h2>
+        </div>
+        <div id="collectibles-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Tracking map discoveries...</div>
+        </div>
+      </div>
 
       <!-- 9. Commodity Market Prices -->
-      <section class="dash-card">
-        <div class="card-header">
+      <div class="dashboard-box">
+        <div class="box-header">
           <i class="fa-solid fa-chart-line"></i>
           <h2>COMMODITY MARKET PRICES</h2>
         </div>
-        <div id="economy-container" class="card-body">
-          <div class="loading-spinner"><i class="fa-solid fa-spinner fa-spin"></i> Loading market prices...</div>
+        <div id="economy-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching crop economy...</div>
         </div>
-      </section>
+      </div>
 
     </div>
   </main>
 
-  <!-- FIREBASE REALTIME LISTENER ENGINE & INDEX.JS LOADER -->
+  <!-- Live Firebase v9+ RTDB WebSocket Sync Stream -->
   <script type="module">
-    /*
-     Version Timestamp: Thu, July 23, 2026, 11:59 PM (EDT)
-     Firebase Realtime WebSocket Observer with Debounce Collision Protection
-    */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    // Firebase App Configuration
     const firebaseConfig = {
       databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const auth = getAuth(app);
     const fs25Ref = ref(db, 'fs25');
 
-    let renderDebounceTimer = null;
+    let isConnected = false;
 
-    // Cross-Tab Login Listener
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log("🔒 Active Session Authenticated:", user.email);
-      }
-    });
-
-    // Real-time WebSocket Feed - Zero Refreshes Required
-    onValue(fs25Ref, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) return;
-
-      // 500ms Debounce: Waits for fs25.js to finish writing all XML payload nodes
-      clearTimeout(renderDebounceTimer);
-      renderDebounceTimer = setTimeout(() => {
-        if (typeof window.renderDashboard === 'function') {
-          window.renderDashboard(data);
+    function attachLiveSync() {
+      onValue(fs25Ref, (snapshot) => {
+        const val = snapshot.val();
+        if (val) {
+          isConnected = true;
+          if (typeof window.renderDashboard === 'function') {
+            window.renderDashboard(val);
+          } else {
+            // Failsafe delay if index.js DOM loading lags
+            setTimeout(() => {
+              if (typeof window.renderDashboard === 'function') {
+                window.renderDashboard(val);
+              }
+            }, 300);
+          }
         }
-      }, 500);
-    }, (error) => {
-      console.warn("⚠️ Firebase connection interrupted, retrying...", error);
-    });
+      }, (error) => {
+        console.warn("⚠️ RTDB Stream Disconnected:", error.message);
+      });
+    }
 
-    // Page Visibility Auto-Reconnect
+    // Tab Focus & Inactivity Re-Sync
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
-        console.log("👁️ Dashboard active; syncing latest telemetry...");
+        attachLiveSync();
       }
     });
+
+    // Initial Telemetry Uplink
+    attachLiveSync();
   </script>
 
-  <script src="index.js?v=202607232359"></script>
 </body>
 </html>
