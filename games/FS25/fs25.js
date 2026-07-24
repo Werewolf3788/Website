@@ -1,10 +1,10 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 10:45 AM (EDT)
- Smart Savegame Auto-Detection & Resilient Firebase Sync Engine
+ Version Timestamp: Fri, July 24, 2026, 10:55 AM (EDT)
+ Smart Dynamic Savegame Auto-Detection Engine with Normalized FTP Pathing & Total Firebase Overwrite
  File: fs25.js
- Description: Scans G-Portal FTP directories by modification timestamp to dynamically 
-              determine the active save slot, sanitizes XML data, and performs a complete 
-              Firebase RTDB overwrite (.set) to clear previous savegame state.
+ Description: Scans G-Portal FTP save directories using explicit absolute pathing, 
+              detects active save by timestamp, cleans XML payloads, and performs 
+              a full Firebase RTDB overwrite (.set) to clear previous save state.
 */
 
 require('dotenv').config({ path: __dirname + '/.env' });
@@ -78,7 +78,7 @@ async function fetchWithRetry(url, options = {}, retries = 3, backoffMs = 1000) 
   }
 }
 
-// Download stream buffer helper over FTP
+// Resilient FTP File Buffer Downloader
 function downloadFileBuffer(client, remotePath) {
   return new Promise((resolve, reject) => {
     client.get(remotePath, (err, stream) => {
@@ -91,17 +91,21 @@ function downloadFileBuffer(client, remotePath) {
   });
 }
 
-// Promise wrapper for FTP directory listing
-function listFtpDir(client, remotePath) {
-  return new Promise((resolve, reject) => {
+// Resilient FTP Directory Listing Promise (returns empty array if path does not exist)
+function safeListFtpDir(client, remotePath) {
+  return new Promise((resolve) => {
     client.list(remotePath, (err, list) => {
-      if (err) return reject(err);
-      resolve(list || []);
+      if (err) {
+        console.warn(`⚠️ Directory scan failed for path [ ${remotePath} ]: ${err.message}`);
+        resolve([]);
+      } else {
+        resolve(list || []);
+      }
     });
   });
 }
 
-// Sanitizes keys for Firebase Realtime Database compliance (removes invalid symbols . $ # [ ])
+// Sanitizes keys for Firebase Realtime Database compliance (removes . $ # [ ])
 function sanitizeFirebaseKey(key) {
   return key.replace(/[\.\$\#\[\]]/g, '_');
 }
@@ -140,38 +144,74 @@ async function runMainPipeline() {
 
   // 2. Establish FTP Uplink to Inspect Directories
   ftpClient.on('ready', async function() {
-    console.log("📡 FTP Uplink Connected to 144.126.153.115. Resolving active savegame slot by timestamp...");
+    console.log("📡 FTP Uplink Connected to 144.126.153.115. Resolving active savegame slot...");
 
     try {
-      // Step A: Scan Root Directory for Savegame Folders
-      const rootList = await listFtpDir(ftpClient, '');
-      const saveFolders = rootList.filter(item => 
-        item.type === 'd' && 
-        item.name.toLowerCase().includes('savegame') && 
-        !item.name.toLowerCase().includes('backup')
-      );
+      // Check both Root and 'profile/' subfolder for savegame directories
+      const possibleRootDirs = ['', '/'];
+      let discoveredFolders = [];
 
-      let targetFolder = "savegame1";
-      let latestTime = 0;
+      for (const rootPath of possibleRootDirs) {
+        const items = await safeListFtpDir(ftpClient, rootPath);
+        const matches = items.filter(item => 
+          item.type === 'd' && 
+          item.name.toLowerCase().includes('savegame') && 
+          !item.name.toLowerCase().includes('backup')
+        );
 
-      // Step B: Compare Timestamps to Identify Active Savegame Slot
-      for (const folder of saveFolders) {
-        const folderTime = new Date(folder.date).getTime();
-        console.log(`📂 Discovered Folder: [ ${folder.name} ] | Modified Timestamp: ${folder.date}`);
-        if (folderTime > latestTime) {
-          latestTime = folderTime;
-          targetFolder = folder.name;
-        }
+        matches.forEach(m => {
+          const fullPath = rootPath ? `${rootPath}/${m.name}`.replace('//', '/') : m.name;
+          discoveredFolders.push({
+            name: m.name,
+            fullPath: fullPath,
+            date: new Date(m.date).getTime()
+          });
+        });
       }
 
-      // Format clean slot number (e.g. savegame2 -> 2)
+      // Check profile/ directory explicitly if no savegames found in root
+      if (discoveredFolders.length === 0) {
+        const profileItems = await safeListFtpDir(ftpClient, 'profile');
+        profileItems.filter(item => 
+          item.type === 'd' && item.name.toLowerCase().includes('savegame')
+        ).forEach(m => {
+          discoveredFolders.push({
+            name: m.name,
+            fullPath: `profile/${m.name}`,
+            date: new Date(m.date).getTime()
+          });
+        });
+      }
+
+      let targetFolder = "savegame1";
+      let latestTimestamp = 0;
+
+      if (discoveredFolders.length > 0) {
+        // Find directory with newest modification timestamp
+        discoveredFolders.forEach(folder => {
+          console.log(`📂 Discovered Save Folder: [ ${folder.fullPath} ] | Timestamp: ${new Date(folder.date).toISOString()}`);
+          if (folder.date > latestTimestamp) {
+            latestTimestamp = folder.date;
+            targetFolder = folder.fullPath;
+          }
+        });
+      } else {
+        console.warn("⚠️ No dynamic save folders listed. Defaulting target to [ savegame1 ]");
+      }
+
+      // Extract slot number digit (e.g. savegame2 -> 2)
       const slotMatch = targetFolder.match(/\d+/);
       const activeSlotNumber = slotMatch ? slotMatch[0] : "1";
       console.log(`🎯 DYNAMICALLY TARGETED ACTIVE SAVE: [ ${targetFolder} ] (Slot #${activeSlotNumber})`);
 
-      // Step C: Scan Active Directory XML Files
-      const fileList = await listFtpDir(ftpClient, targetFolder);
+      // Scan directory for XML files
+      let fileList = await safeListFtpDir(ftpClient, targetFolder);
+      if (fileList.length === 0 && !targetFolder.startsWith('/')) {
+        fileList = await safeListFtpDir(ftpClient, `/${targetFolder}`);
+      }
+
       const xmlFiles = fileList.filter(f => f.type !== 'd' && f.name.toLowerCase().endsWith('.xml'));
+      console.log(`📄 Found ${xmlFiles.length} XML telemetry files inside [ ${targetFolder} ]`);
 
       const masterPayload = {
         activePlayers: activePlayers,
@@ -186,7 +226,7 @@ async function runMainPipeline() {
         masterPayload.dedicatedServerConfig_xml = { data: rawStatsXml };
       }
 
-      // Mapping G-Portal Filenames to Standardized Firebase Keys
+      // Canonical XML filename mapping to standard Firebase Keys
       const keyMap = {
         'careersavegame': 'careerSavegame',
         'farms': 'farms',
@@ -212,12 +252,12 @@ async function runMainPipeline() {
         'treeplant': 'treePlant'
       };
 
-      // Step D: Download & Sanitize XML files from Active Folder
+      // Download and sanitize XML contents
       for (const fileInfo of xmlFiles) {
         const rawBaseName = fileInfo.name.replace(/\.xml$/i, '');
         const lowerBaseName = rawBaseName.toLowerCase();
         const canonicalKey = sanitizeFirebaseKey(keyMap[lowerBaseName] || rawBaseName);
-        const remoteFilePath = `${targetFolder}/${fileInfo.name}`;
+        const remoteFilePath = `${targetFolder}/${fileInfo.name}`.replace('//', '/');
 
         try {
           console.log(`⬇️ Syncing: ${fileInfo.name} -> Writing to Firebase key [ ${canonicalKey} ]`);
@@ -234,7 +274,7 @@ async function runMainPipeline() {
         }
       }
 
-      // Step E: Perform Total Database Overwrite (.set) to clear previous savegame artifacts
+      // Complete Firebase Overwrite (.set) to clear previous savegame state
       try {
         await db.ref('fs25').set(masterPayload);
         console.log(`🏆 TOTAL OVERWRITE SUCCESSFUL! Firebase /fs25 updated to match [ ${targetFolder} ].`);
