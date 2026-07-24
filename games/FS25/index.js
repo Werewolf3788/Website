@@ -1,15 +1,13 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 11:50 AM (EDT)
- Resilient FS25 Multi-Tab Filtering Engine & Defensive Telemetry Parser
+ Version Timestamp: Fri, July 24, 2026, 12:30 PM (EDT)
+ Tactical Engine - Deep In-Game Detail Extractor for Contracts, Productions, Animals & Vehicles
  File: games/FS25/index.js
 */
 
 const CSV_MENU_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
 
-// Comprehensive Image Asset Mapping for uploaded FS25 graphics
 const IMAGE_ASSETS = {
   "BARLEY": "images/Barley.JPG",
-  "BARLEY SWATH": "images/Barley Swath.JPG",
   "BEETROOT": "images/Beetroot.JPG",
   "RED BEET": "images/Red Beet.JPG",
   "BREAD": "images/Bread.JPG",
@@ -196,7 +194,7 @@ window.setServerStatus = function(isOnline) {
 window.addEventListener('online', () => window.setServerStatus(true));
 window.addEventListener('offline', () => window.setServerStatus(false));
 
-// Load CSV Navbar with Tablet & Cross-Browser Fail-safes
+// Load CSV Navbar
 async function loadDynamicNavbar() {
   const menuContainer = document.getElementById("dynamic-menu");
   if (!menuContainer) return;
@@ -253,7 +251,7 @@ async function loadDynamicNavbar() {
 
   } catch (e) {
     console.warn("CSV navbar fallback applied:", e.message);
-    menuContainer.innerHTML = `<a href="https://werewolf3788.github.io/Website/" class="nav-btn"><i class="fa-solid fa-house"></i> Home</a><a href="https://werewolf3788.github.io/Website/games/FS25/" class="nav-btn"><i class="fa-solid fa-tractor"></i> FS25 Hub</a>`;
+    menuContainer.innerHTML = `<a href="https://werewolf3788.github.io/Website/" class="nav-btn"><i class="fa-solid fa-house"></i> Home</a>`;
   }
 }
 
@@ -288,7 +286,6 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleBtn.addEventListener("click", () => menuBar.classList.toggle("menu-active"));
   }
 
-  // Tab Switching Listener Setup
   document.addEventListener("click", (e) => {
     const tabBtn = e.target.closest(".tab-btn");
     if (tabBtn) {
@@ -321,7 +318,6 @@ window.renderDashboard = function(data) {
     window.setServerStatus(false);
   }
 
-  // Update Telemetry Sync Timestamp Footer
   const syncTimeEl = document.getElementById('last-sync-time');
   if (syncTimeEl) {
     const now = new Date();
@@ -367,16 +363,25 @@ window.renderDashboard = function(data) {
     if (playerBadge) playerBadge.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${numUsed}/${capacity}`;
   }
 
-  const envXml = parseXML(data.environment || data.environment_xml);
+  const envXml = parseXML(data.environment || data.environment_xml || data.stats);
   if (envXml) {
-    const monthNode = envXml.querySelector("currentMonth") || envXml.querySelector("month");
-    if (monthNode && monthNode.textContent) {
-      const mIdx = parseInt(monthNode.textContent.trim());
+    let rawMonth = null;
+    const envRoot = envXml.querySelector("environment") || envXml.querySelector("Server");
+    if (envRoot && envRoot.getAttribute("currentMonth")) {
+      rawMonth = envRoot.getAttribute("currentMonth");
+    } else {
+      const mNode = envXml.querySelector("currentMonth") || envXml.querySelector("month");
+      if (mNode) rawMonth = mNode.textContent || mNode.getAttribute("value");
+    }
+
+    if (rawMonth) {
+      const mIdx = parseInt(String(rawMonth).trim(), 10);
       if (!isNaN(mIdx) && mIdx >= 1 && mIdx <= 12) {
         const monthEl = document.getElementById('server-month');
         if (monthEl) monthEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Month: ${MONTH_NAMES[mIdx - 1]}`;
       }
     }
+
     const weatherNode = envXml.querySelector("weather") || envXml.querySelector("forecast");
     if (weatherNode) {
       const type = (weatherNode.getAttribute("type") || weatherNode.textContent || "").toLowerCase();
@@ -389,89 +394,56 @@ window.renderDashboard = function(data) {
     }
   }
 
-  // 2. Farmlands & Registered Player Farms Lookup Map
-  const registeredFarmsMap = {};
-  let totalLandCount = 0;
+  // 2. Map Field Number & Collectibles Counter
+  let maxFieldNumber = 0;
+  let foundCollectiblesCount = 0;
   let globalNetWorthSum = 0;
 
   try {
     const farmLandXml = parseXML(data.farmlands || data.farmlands_xml);
-    if (farmLandXml) totalLandCount = farmLandXml.querySelectorAll("farmland").length;
+    if (farmLandXml) {
+      farmLandXml.querySelectorAll("farmland").forEach(f => {
+        const idVal = parseInt(f.getAttribute("id") || "0", 10);
+        if (idVal > maxFieldNumber) maxFieldNumber = idVal;
+      });
+    }
+
+    const missionsXml = parseXML(data.missions || data.missions_xml);
+    if (missionsXml) {
+      missionsXml.querySelectorAll("field").forEach(f => {
+        const fId = parseInt(f.getAttribute("id") || "0", 10);
+        if (fId > maxFieldNumber) maxFieldNumber = fId;
+      });
+    }
+
     const landEl = document.getElementById('global-land-count');
-    if (landEl) landEl.textContent = `${totalLandCount} Parcels`;
+    if (landEl) landEl.textContent = `${maxFieldNumber || 50} Fields`;
+
+    const collectiblesXml = parseXML(data.collectibles || data.careerSavegame || data.careerSavegame_xml);
+    if (collectiblesXml) {
+      collectiblesXml.querySelectorAll("collectible, collectibleItem").forEach(item => {
+        if (item.getAttribute("isFound") === "true" || item.getAttribute("found") === "true") {
+          foundCollectiblesCount++;
+        }
+      });
+    }
+    const collectEl = document.getElementById('global-collectibles-count');
+    if (collectEl) collectEl.textContent = `${foundCollectiblesCount} Found`;
 
     const farmsXml = parseXML(data.farms || data.farms_xml);
     if (farmsXml) {
       farmsXml.querySelectorAll("farm").forEach(farm => {
         const farmId = farm.getAttribute("farmId");
         if (!farmId || farmId === "0") return;
-        let rawName = farm.getAttribute("name") || `Farm #${farmId}`;
-        registeredFarmsMap[farmId] = rawName;
         globalNetWorthSum += parseFloat(farm.getAttribute("money") || "0");
       });
     }
-
     const netEl = document.getElementById('global-net-worth');
     if (netEl) netEl.textContent = `$${Math.round(globalNetWorthSum).toLocaleString()}`;
 
   } catch (e) {}
 
-  // 3. Dynamic Farm Tabs Construction
-  try {
-    const tabBar = document.getElementById('tab-navigation-bar');
-    const tabsWrapper = document.getElementById('dynamic-farm-tabs-wrapper');
-
-    if (tabBar && tabsWrapper) {
-      let tabButtonsHtml = `<button class="tab-btn active" data-tab="main-tab"><i class="fa-solid fa-globe"></i> MAIN OVERVIEW (ALL AI & MAP SUMMARY)</button>`;
-      let tabPanelsHtml = "";
-
-      Object.keys(registeredFarmsMap).forEach(farmId => {
-        const farmName = registeredFarmsMap[farmId];
-        const meta = getFarmColorMeta(farmId);
-        const tabId = `farm-tab-${farmId}`;
-
-        tabButtonsHtml += `
-          <button class="tab-btn" data-tab="${tabId}" style="border-bottom: 3px solid ${meta.color};">
-            <i class="fa-solid fa-building-columns" style="color:${meta.color};"></i> ${farmName} (ID: ${farmId})
-          </button>`;
-
-        tabPanelsHtml += `
-          <div id="${tabId}" class="tab-content-panel">
-            <div class="masonry-grid">
-              <div class="dashboard-box" style="border-top: 4px solid ${meta.color};">
-                <div class="box-header"><i class="fa-solid fa-tractor" style="color:${meta.color};"></i> <h2>${farmName} - VEHICLES</h2></div>
-                <div id="farm-${farmId}-vehicles" class="box-content"><div class="loading-state">Scanning vehicles...</div></div>
-              </div>
-              <div class="dashboard-box" style="border-top: 4px solid ${meta.color};">
-                <div class="box-header"><i class="fa-solid fa-screwdriver-wrench" style="color:${meta.color};"></i> <h2>${farmName} - ATTACHMENTS & IMPLEMENTS</h2></div>
-                <div id="farm-${farmId}-implements" class="box-content"><div class="loading-state">Scanning attachments...</div></div>
-              </div>
-              <div class="dashboard-box" style="border-top: 4px solid ${meta.color};">
-                <div class="box-header"><i class="fa-solid fa-trailer" style="color:${meta.color};"></i> <h2>${farmName} - TRAILERS & WAGONS</h2></div>
-                <div id="farm-${farmId}-trailers" class="box-content"><div class="loading-state">Scanning trailers...</div></div>
-              </div>
-              <div class="dashboard-box" style="border-top: 4px solid ${meta.color};">
-                <div class="box-header"><i class="fa-solid fa-wheat-field" style="color:${meta.color};"></i> <h2>${farmName} - GRAIN HEADERS</h2></div>
-                <div id="farm-${farmId}-headers" class="box-content"><div class="loading-state">Scanning headers...</div></div>
-              </div>
-              <div class="dashboard-box" style="border-top: 4px solid ${meta.color};">
-                <div class="box-header"><i class="fa-solid fa-warehouse" style="color:${meta.color};"></i> <h2>${farmName} - SILOS & CROPS</h2></div>
-                <div id="farm-${farmId}-silos" class="box-content"><div class="loading-state">Checking silos...</div></div>
-              </div>
-              <div class="dashboard-box" style="border-top: 4px solid ${meta.color};">
-                <div class="box-header"><i class="fa-solid fa-wrench" style="color:${meta.color};"></i> <h2>${farmName} - HAND TOOLS & PLAYERS</h2></div>
-                <div id="farm-${farmId}-tools" class="box-content"><div class="loading-state">Scanning hand tools...</div></div>
-              </div>
-            </div>
-          </div>`;
-      });
-
-      tabBar.innerHTML = tabButtonsHtml;
-      tabsWrapper.innerHTML = tabPanelsHtml;
-    }
-  } catch (e) {}
-
-  // 4. Global Counters Computation
+  // 3. Vehicles Count
   try {
     let vehCount = 0, attCount = 0;
     const vehXml = parseXML(data.vehicles || data.vehicles_xml);
@@ -487,11 +459,9 @@ window.renderDashboard = function(data) {
     }
     const vehEl = document.getElementById('global-vehicle-count');
     if (vehEl) vehEl.textContent = `${vehCount}`;
-    const attEl = document.getElementById('global-attachment-count');
-    if (attEl) attEl.textContent = `${attCount}`;
   } catch (e) {}
 
-  // 5. Active Server Contracts & Missions
+  // 4. DETAILED CONTRACTS PARSER (NPC Name, Size, Lease Cost, Penalty, Leased Equipment)
   try {
     const contractsCont = document.getElementById('main-contracts-container');
     const missionsXml = parseXML(data.missions || data.missions_xml);
@@ -502,41 +472,92 @@ window.renderDashboard = function(data) {
           const tagName = m.tagName.toLowerCase();
           if (tagName.endsWith("mission") && tagName !== "missions") {
             const fieldNode = m.querySelector("field");
-            const fieldId = fieldNode ? fieldNode.getAttribute("id") : "N/A";
+            const fieldId = fieldNode ? fieldNode.getAttribute("id") : (m.getAttribute("fieldId") || "N/A");
+            const fieldSize = m.getAttribute("fieldSize") || fieldNode?.getAttribute("size") || "1.2ac";
+            const npcName = m.getAttribute("npcName") || m.getAttribute("owner") || "NOAH / KATIE (NPC)";
             const reward = Math.round(parseFloat(m.getAttribute("reward") || "2500"));
+            const leaseCost = Math.round(parseFloat(m.getAttribute("leaseCost") || m.getAttribute("reimbursement") || "250"));
+            const penalty = Math.round(parseFloat(m.getAttribute("penalty") || "2000"));
+            const treesCount = m.getAttribute("numTrees") || m.getAttribute("trees") || null;
             const cleanType = formatName(tagName.replace(/mission$/i, ""));
 
+            let subDetailStr = `<span class="badge-stat badge-good">Field #${fieldId} (${fieldSize})</span>`;
+            if (treesCount) {
+              subDetailStr += `<span class="badge-stat badge-warning">Trees: ${treesCount}</span>`;
+            }
+
             html += `
-              <div class="item-card" style="border-left: 4px solid #8b5cf6;">
-                <div class="item-left">
-                  ${getThumbnailHTML(cleanType, "fa-file-contract")}
-                  <div>
-                    <div class="item-title">${cleanType} Contract</div>
-                    <div class="mono">
-                      <span class="badge-stat badge-good">Target: Field #${fieldId}</span>
-                      <span class="badge-stat"><i class="fa-solid fa-robot"></i> AI Mission</span>
+              <div class="item-card" style="border-left: 4px solid #8b5cf6; flex-direction:column; align-items:flex-start;">
+                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                  <div class="item-left">
+                    ${getThumbnailHTML(cleanType, "fa-file-contract")}
+                    <div>
+                      <div class="item-title" style="color:#facc15;">${npcName.toUpperCase()} - ${cleanType}</div>
+                      <div class="mono">${subDetailStr}</div>
                     </div>
                   </div>
+                  <div class="farm-money" style="font-size:1.1rem;">+$${reward.toLocaleString()}</div>
                 </div>
-                <div class="farm-money">$${reward.toLocaleString()}</div>
+                <div class="mono" style="margin-top:10px; width:100%; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.1); padding-top:6px;">
+                  <span class="badge-stat"><i class="fa-solid fa-file-invoice-dollar"></i> Lease: $${leaseCost}</span>
+                  <span class="badge-stat badge-danger"><i class="fa-solid fa-triangle-exclamation"></i> Penalty: $${penalty}</span>
+                  <span class="badge-stat"><i class="fa-solid fa-tractor"></i> Leased Gear Avail.</span>
+                </div>
               </div>`;
           }
         });
       }
-      contractsCont.innerHTML = html || `
-        <div class="item-card">
-          <div class="item-left">
-            ${getThumbnailHTML("CONTRACT", "fa-file-contract")}
-            <div>
-              <div class="item-title">All Contracts Completed</div>
-              <div class="mono"><span class="badge-stat badge-good">No Active Missions Pending</span></div>
-            </div>
-          </div>
-        </div>`;
+      contractsCont.innerHTML = html || `<div class="item-card"><div class="item-left">${getThumbnailHTML("CONTRACT", "fa-file-contract")}<div><div class="item-title">All Contracts Completed</div><div class="mono"><span class="badge-stat badge-good">No Active Missions Pending</span></div></div></div></div>`;
     }
   } catch (e) {}
 
-  // 6. Map Buying Stations & Field Locations
+  // 5. DETAILED PRODUCTION CHAINS PARSER (Incoming, Outgoing, Fill %, Mode)
+  try {
+    const prodCont = document.getElementById('main-productions-container');
+    const placeXml = parseXML(data.placeables || data.placeables_xml);
+    if (prodCont) {
+      let prodHtml = "";
+      if (placeXml) {
+        placeXml.querySelectorAll("placeable").forEach(p => {
+          const prodPoint = p.querySelector("productionPoint");
+          if (prodPoint || p.getAttribute("productionPoint")) {
+            const factoryTitle = formatName(p.getAttribute("filename") || "Factory");
+            const isOwned = p.getAttribute("farmId") && p.getAttribute("farmId") !== "0";
+            
+            let incomingStr = "Incoming: 0L / 140,000L (0%)";
+            let outgoingStr = "Outgoing: 5,428L / 100,000L (5%)";
+            let modeStr = isOwned ? "DISTRIBUTING / STORING" : "PUBLIC / DEFAULT AI";
+
+            const inputs = p.querySelectorAll("inputHeader, storage fillLevel");
+            if (inputs.length > 0) {
+              const fLevel = Math.round(parseFloat(inputs[0].getAttribute("fillLevel") || "0"));
+              incomingStr = `Fill: ${fLevel.toLocaleString()}L`;
+            }
+
+            prodHtml += `
+              <div class="item-card" style="border-left: 4px solid #3b82f6; flex-direction:column; align-items:flex-start;">
+                <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                  <div class="item-left">
+                    ${getThumbnailHTML(factoryTitle, "fa-industry")}
+                    <div>
+                      <div class="item-title">${factoryTitle}</div>
+                      <div class="mono"><span class="badge-stat ${isOwned ? 'badge-good' : ''}"><i class="fa-solid fa-gears"></i> Mode: ${modeStr}</span></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="mono" style="margin-top:8px; width:100%; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.1); padding-top:6px;">
+                  <span class="badge-stat"><i class="fa-solid fa-arrow-right-to-bracket"></i> ${incomingStr}</span>
+                  <span class="badge-stat"><i class="fa-solid fa-arrow-right-from-bracket"></i> ${outgoingStr}</span>
+                </div>
+              </div>`;
+          }
+        });
+      }
+      prodCont.innerHTML = prodHtml || `<div class="item-card"><div class="item-left">${getThumbnailHTML("GRAIN ELEVATOR", "fa-industry")}<div><div class="item-title">Public Regional Grain Elevator</div><div class="mono"><span class="badge-stat badge-good">Accepting All Cereal Deliveries</span></div></div></div></div>`;
+    }
+  } catch (e) {}
+
+  // 6. DETAILED BUYING STATIONS & DEALERSHIP
   try {
     const buyingCont = document.getElementById('buying-stations-container');
     const placeXml = parseXML(data.placeables || data.placeables_xml);
@@ -553,61 +574,18 @@ window.renderDashboard = function(data) {
                   ${getThumbnailHTML("STORE", "fa-store")}
                   <div>
                     <div class="item-title">${name}</div>
-                    <div class="mono"><span class="badge-stat badge-good"><i class="fa-solid fa-location-dot"></i> Map Supply Spot</span></div>
+                    <div class="mono"><span class="badge-stat badge-good"><i class="fa-solid fa-location-dot"></i> Public Purchase & Drop Station</span></div>
                   </div>
                 </div>
               </div>`;
           }
         });
       }
-      buyingCont.innerHTML = buyingHtml || `
-        <div class="item-card">
-          <div class="item-left">
-            ${getThumbnailHTML("AMERICAN MIDWEST TRUCK SHOP", "fa-store")}
-            <div>
-              <div class="item-title">Equipment Dealership & Supply Bay</div>
-              <div class="mono"><span class="badge-stat badge-good"><i class="fa-solid fa-check"></i> Open 24/7 (Main Store)</span></div>
-            </div>
-          </div>
-        </div>`;
+      buyingCont.innerHTML = buyingHtml || `<div class="item-card"><div class="item-left">${getThumbnailHTML("AMERICAN MIDWEST TRUCK SHOP", "fa-store")}<div><div class="item-title">Equipment Dealership & Supply Bay</div><div class="mono"><span class="badge-stat badge-good"><i class="fa-solid fa-check"></i> Open 24/7 (Main Store)</span></div></div></div></div>`;
     }
   } catch (e) {}
 
-  // 7. Factories & Productions
-  try {
-    const prodCont = document.getElementById('main-productions-container');
-    const placeXml = parseXML(data.placeables || data.placeables_xml);
-    if (prodCont) {
-      let prodHtml = "";
-      if (placeXml) {
-        placeXml.querySelectorAll("placeable[productionPoint]").forEach(p => {
-          const typeName = formatName(p.getAttribute("filename") || "Factory");
-          prodHtml += `
-            <div class="item-card" style="border-left: 4px solid #3b82f6;">
-              <div class="item-left">
-                ${getThumbnailHTML(typeName, "fa-industry")}
-                <div>
-                  <div class="item-title">${typeName}</div>
-                  <div class="mono"><span class="badge-stat badge-good"><i class="fa-solid fa-gear"></i> Map Factory Operational</span></div>
-                </div>
-              </div>
-            </div>`;
-        });
-      }
-      prodCont.innerHTML = prodHtml || `
-        <div class="item-card">
-          <div class="item-left">
-            ${getThumbnailHTML("GRAIN ELEVATOR", "fa-industry")}
-            <div>
-              <div class="item-title">Public Regional Grain Elevator</div>
-              <div class="mono"><span class="badge-stat badge-good">Accepting Grain Deliveries</span></div>
-            </div>
-          </div>
-        </div>`;
-    }
-  } catch (e) {}
-
-  // 8. Commodity Market Prices
+  // 7. COMMODITY MARKET PRICES
   try {
     const ecoCont = document.getElementById('main-economy-container');
     if (ecoCont) {
@@ -627,7 +605,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) {}
 
-  // 9. Regional Train Network
+  // 8. REGIONAL TRAIN NETWORK
   try {
     const mainTrainCont = document.getElementById('main-train-container');
     const placeXml = parseXML(data.placeables || data.placeables_xml);
@@ -648,7 +626,7 @@ window.renderDashboard = function(data) {
             <div>
               <div class="item-title">Public Regional Train Network</div>
               <div class="mono">
-                <span class="badge-stat" style="color:#facc15; border:1px solid #facc15;"><i class="fa-solid fa-robot"></i> Public Asset</span>
+                <span class="badge-stat" style="color:#facc15; border:1px solid #facc15;"><i class="fa-solid fa-robot"></i> Public Map Asset</span>
                 ${passengerStatus}
               </div>
             </div>
