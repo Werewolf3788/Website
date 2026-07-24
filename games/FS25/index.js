@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 02:45 AM (EDT)
- Universal Cross-Browser Tactical Engine - Full Banner Metrics & Clickable Lightbox System
+ Version Timestamp: Fri, July 24, 2026, 03:20 AM (EDT)
+ Universal Cross-Browser Tactical Engine - Preserved Offline Server Title & Banner Pill Timer
  File: games/FS25/index.js
 */
 
@@ -85,6 +85,7 @@ const MONTH_NAMES = [
 
 let offlineStartTime = null;
 let offlineTimerInterval = null;
+let lastKnownServerName = "Dedicated Server";
 
 // Lightbox Modal Trigger Engine
 function openLightbox(imgSrc, captionText) {
@@ -160,6 +161,7 @@ window.setServerStatus = function(isOnline) {
   const text = document.getElementById('status-text');
   const syncTimeEl = document.getElementById('last-sync-time');
   const offlineTimerEl = document.getElementById('offline-timer');
+  const serverNameEl = document.getElementById('server-name');
 
   if (!pill || !text) return;
 
@@ -178,7 +180,11 @@ window.setServerStatus = function(isOnline) {
     if (syncTimeEl) syncTimeEl.style.display = "inline";
   } else {
     pill.className = "status-pill status-offline";
-    text.textContent = "OFFLINE";
+    
+    // Ensure server name remains populated with last known title
+    if (serverNameEl && (serverNameEl.textContent === "Connecting to Server Telemetry..." || serverNameEl.textContent === "Dedicated Server Offline")) {
+      serverNameEl.textContent = lastKnownServerName;
+    }
 
     if (!offlineStartTime) {
       offlineStartTime = Date.now();
@@ -192,9 +198,12 @@ window.setServerStatus = function(isOnline) {
         const totalSecs = Math.floor(diffMs / 1000);
         const mins = Math.floor(totalSecs / 60);
         const secs = totalSecs % 60;
+        const timeStr = `${mins}m ${secs}s`;
         
+        // Update both top banner pill and bottom footer timer
+        if (text) text.textContent = `OFFLINE (${timeStr})`;
         if (offlineTimerEl) {
-          offlineTimerEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: <strong>${mins}m ${secs}s</strong>`;
+          offlineTimerEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: <strong>${timeStr}</strong>`;
         }
       }, 1000);
     }
@@ -322,6 +331,23 @@ window.renderDashboard = function(data) {
     return;
   }
 
+  // Inspect XML Payload Before Marking Online
+  const statsXml = parseXML(data.stats || data.dedicatedServerConfig_xml);
+  const serverNode = statsXml ? statsXml.querySelector("Server") : null;
+  const gameName = serverNode ? serverNode.getAttribute("name") : null;
+
+  // If XML is missing or server name is empty, force OFFLINE status
+  if (!statsXml || !serverNode || !gameName || gameName.trim() === "") {
+    window.setServerStatus(false);
+    const playerBadge = document.getElementById('server-players');
+    if (playerBadge) playerBadge.innerHTML = `<i class="fa-solid fa-users"></i> Players: 0/6`;
+    return;
+  }
+
+  // Preserve server name globally
+  lastKnownServerName = gameName;
+
+  // Valid Telemetry Confirmed -> Set Status ONLINE
   window.setServerStatus(true);
 
   try {
@@ -336,40 +362,35 @@ window.renderDashboard = function(data) {
 
   // 1. In-Game Time, Month, Weather, Map Name & Players Banner Badges
   try {
-    const statsXml = parseXML(data.stats || data.dedicatedServerConfig_xml);
     const envXml = parseXML(data.environment || data.environment_xml);
     
     let hours = 8, mins = 50, monthText = "Early Autumn (September)";
     let weatherText = "Clear", weatherIcon = "fa-sun";
 
-    if (statsXml) {
-      const serverNode = statsXml.querySelector("Server");
-      if (serverNode) {
-        const gameName = serverNode.getAttribute("name");
-        const mapName = serverNode.getAttribute("mapName") || "Riverbend Springs";
-        const rawDayTime = parseFloat(serverNode.getAttribute("dayTime") || "0");
+    if (serverNode) {
+      const mapName = serverNode.getAttribute("mapName") || "Riverbend Springs";
+      const rawDayTime = parseFloat(serverNode.getAttribute("dayTime") || "0");
 
-        if (gameName) document.getElementById('server-name').textContent = gameName;
-        document.getElementById('server-map').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
+      document.getElementById('server-name').textContent = gameName;
+      document.getElementById('server-map').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
 
-        if (rawDayTime > 0) {
-          const totalMinutes = Math.floor(rawDayTime / 60000);
-          hours = Math.floor(totalMinutes / 60) % 24;
-          mins = totalMinutes % 60;
-        }
+      if (rawDayTime > 0) {
+        const totalMinutes = Math.floor(rawDayTime / 60000);
+        hours = Math.floor(totalMinutes / 60) % 24;
+        mins = totalMinutes % 60;
       }
+    }
 
-      const slotsNode = statsXml.querySelector("Slots");
-      const capacity = slotsNode ? slotsNode.getAttribute("capacity") : "6";
-      const numUsed = slotsNode ? slotsNode.getAttribute("numUsed") : "0";
+    const slotsNode = statsXml.querySelector("Slots");
+    const capacity = slotsNode && slotsNode.getAttribute("capacity") ? slotsNode.getAttribute("capacity") : "6";
+    const numUsed = slotsNode && slotsNode.getAttribute("numUsed") ? slotsNode.getAttribute("numUsed") : "0";
 
-      const onlinePlayers = [];
-      statsXml.querySelectorAll("Player[isUsed='true']").forEach(p => onlinePlayers.push(p.textContent));
+    const onlinePlayers = [];
+    statsXml.querySelectorAll("Player[isUsed='true']").forEach(p => onlinePlayers.push(p.textContent));
 
-      const playerBadge = document.getElementById('server-players');
-      if (playerBadge) {
-        playerBadge.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${numUsed}/${capacity} ${onlinePlayers.length ? `(${onlinePlayers.join(', ')})` : ''}`;
-      }
+    const playerBadge = document.getElementById('server-players');
+    if (playerBadge) {
+      playerBadge.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${numUsed}/${capacity} ${onlinePlayers.length ? `(${onlinePlayers.join(', ')})` : ''}`;
     }
 
     if (envXml) {
@@ -474,7 +495,6 @@ window.renderDashboard = function(data) {
   // 4. Fleet Machinery & Vehicles & Implements Container
   try {
     const vehXml = parseXML(data.vehicles || data.vehicles_xml);
-    const statsXml = parseXML(data.stats);
     let tractorsHtml = "";
     let implementsHtml = "";
 
