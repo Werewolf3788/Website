@@ -1,5 +1,5 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 04:45 PM (EDT)
+ Version Timestamp: Fri, July 24, 2026, 04:50 PM (EDT)
  Complete Deep XML & Firebase Direct Path Resolver
  File: games/FS25/index.js
 */
@@ -60,19 +60,19 @@ let offlineTimerInterval = null;
 function getFirebasePayload(rootObj, targetKey) {
   if (!rootObj || typeof rootObj !== 'object') return null;
   
-  if (rootObj[targetKey]) {
-    if (typeof rootObj[targetKey] === 'string') return rootObj[targetKey];
-    if (rootObj[targetKey].data) return rootObj[targetKey].data;
+  if (rootObj[targetKey] !== undefined) {
+    if (typeof rootObj[targetKey] === 'string' || typeof rootObj[targetKey] === 'number') return rootObj[targetKey];
+    if (rootObj[targetKey] && rootObj[targetKey].data) return rootObj[targetKey].data;
   }
   
   const xmlKey = `${targetKey}_xml`;
-  if (rootObj[xmlKey]) {
+  if (rootObj[xmlKey] !== undefined) {
     if (typeof rootObj[xmlKey] === 'string') return rootObj[xmlKey];
-    if (rootObj[xmlKey].data) return rootObj[xmlKey].data;
+    if (rootObj[xmlKey] && rootObj[xmlKey].data) return rootObj[xmlKey].data;
   }
 
   const rawKey = `${targetKey}_raw`;
-  if (rootObj[rawKey]) {
+  if (rootObj[rawKey] !== undefined) {
     if (typeof rootObj[rawKey] === 'string') return rootObj[rawKey];
   }
 
@@ -410,9 +410,63 @@ window.renderDashboard = function(data) {
 
   window.setServerStatus(true);
 
-  // Process Active Server Mods
+  // 1. Process Active Savegame Slot directly from Firebase (e.g. data.activeSaveSlot)
+  const saveSlotEl = document.getElementById('save-slot-display');
+  if (saveSlotEl) {
+    let rawSlot = getFirebasePayload(data, "activeSaveSlot") || data.activeSaveSlot || "1";
+    let formattedSlot = String(rawSlot).trim();
+    if (!formattedSlot.toLowerCase().startsWith("savegame")) {
+      formattedSlot = `savegame${formattedSlot}`;
+    }
+    saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">${formattedSlot}</strong>`;
+  }
+
+  // Footer Sync Time
+  const syncTimeEl = document.getElementById('last-sync-time');
+  if (syncTimeEl) {
+    const now = new Date();
+    syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Last Telemetry Sync: <strong style="color:#22c55e;">${now.toLocaleTimeString()}</strong>`;
+  }
+
+  // 2. Parse Server Details from G-Portal Stats XML
+  const statsRaw = getFirebasePayload(data, "stats") || getFirebasePayload(data, "dedicatedServerConfig");
+  const statsXml = parseXML(statsRaw);
+  if (statsXml) {
+    const serverNode = statsXml.querySelector("Server");
+    if (serverNode) {
+      const serverName = serverNode.getAttribute("name") || "OneLIVIDMAN and werewolf 618";
+      const mapName = serverNode.getAttribute("mapName") || "Calm Lands";
+      const rawDayTime = parseFloat(serverNode.getAttribute("dayTime") || "0");
+
+      document.getElementById('server-name').textContent = serverName;
+      document.getElementById('server-map').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
+
+      if (rawDayTime > 0) {
+        const totalMinutes = Math.floor(rawDayTime / 60000);
+        const hours = Math.floor(totalMinutes / 60) % 24;
+        const mins = totalMinutes % 60;
+        document.getElementById('server-time').innerHTML = `<i class="fa-regular fa-clock"></i> Time: ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+      }
+    }
+
+    const slotsNode = statsXml.querySelector("Slots");
+    const capacity = slotsNode ? slotsNode.getAttribute("capacity") || "6" : "6";
+    const numUsed = slotsNode ? slotsNode.getAttribute("numUsed") || "0" : "0";
+
+    const onlinePlayers = [];
+    statsXml.querySelectorAll("Player[isUsed='true']").forEach(p => {
+      if (p.textContent) onlinePlayers.push(p.textContent.trim());
+    });
+
+    const playerBadge = document.getElementById('server-players');
+    if (playerBadge) {
+      playerBadge.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${numUsed}/${capacity} ${onlinePlayers.length ? `(${onlinePlayers.join(', ')})` : ''}`;
+    }
+  }
+
+  // 3. Process Active Server Mods
   activeServerMods.clear();
-  const configRaw = getFirebasePayload(data, "dedicatedServerConfig") || getFirebasePayload(data, "stats") || getFirebasePayload(data, "careerSavegame");
+  const configRaw = getFirebasePayload(data, "dedicatedServerConfig") || statsRaw || getFirebasePayload(data, "careerSavegame");
   const configXml = parseXML(configRaw);
   if (configXml) {
     configXml.querySelectorAll("mod, Mod").forEach(m => {
@@ -421,14 +475,7 @@ window.renderDashboard = function(data) {
     });
   }
 
-  // Footer Sync Info
-  const syncTimeEl = document.getElementById('last-sync-time');
-  if (syncTimeEl) {
-    const now = new Date();
-    syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Last Telemetry Sync: <strong style="color:#22c55e;">${now.toLocaleTimeString()}</strong>`;
-  }
-
-  // 1. Registered Server Farms (farms-container)
+  // 4. Registered Server Farms (farms-container)
   const farmsRaw = getFirebasePayload(data, "farms") || getFirebasePayload(data, "careerSavegame");
   const farmsXml = parseXML(farmsRaw);
   const farmsCont = document.getElementById('farms-container');
@@ -483,7 +530,7 @@ window.renderDashboard = function(data) {
       </div>`;
   }
 
-  // 2. Public Map Infrastructure (infrastructure-container)
+  // 5. Public Map Infrastructure (infrastructure-container)
   const infraCont = document.getElementById('infrastructure-container');
   if (infraCont) {
     let infraHtml = `
@@ -517,7 +564,7 @@ window.renderDashboard = function(data) {
     infraCont.innerHTML = infraHtml;
   }
 
-  // 3. Field Crops & Agronomy Status (fields-container)
+  // 6. Field Crops & Agronomy Status (fields-container)
   const fieldsCont = document.getElementById('fields-container');
   const fieldsRaw = getFirebasePayload(data, "fields") || getFirebasePayload(data, "farmland");
   const precisionRaw = getFirebasePayload(data, "precisionFarming");
@@ -561,11 +608,10 @@ window.renderDashboard = function(data) {
     fieldsCont.innerHTML = fieldsHtml || `<div class="item-card"><div class="item-title">55 Farmland Parcels Logged</div></div>`;
   }
 
-  // 4. Fleet Machinery & Vehicles (tractors-container)
-  // 5. Implements & Equipment (implements-container)
+  // 7. Fleet Machinery & Equipment (tractors-container & implements-container)
   const tracCont = document.getElementById('tractors-container');
   const implCont = document.getElementById('implements-container');
-  const vehiclesRaw = getFirebasePayload(data, "vehicles") || getFirebasePayload(data, "stats");
+  const vehiclesRaw = getFirebasePayload(data, "vehicles") || statsRaw;
   const vehXml = parseXML(vehiclesRaw);
 
   if (tracCont || implCont) {
@@ -611,7 +657,7 @@ window.renderDashboard = function(data) {
     if (implCont) implCont.innerHTML = implementsHtml || `<div class="item-card"><div class="item-title">No Active Equipment Logged</div></div>`;
   }
 
-  // 6. Factories & Production Chains
+  // 8. Factories & Production Chains
   const prodCont = document.getElementById('main-productions-container');
   const placeablesRaw = getFirebasePayload(data, "placeables");
   const placeXml = parseXML(placeablesRaw);
@@ -651,7 +697,7 @@ window.renderDashboard = function(data) {
     prodCont.innerHTML = prodHtml || `<div class="item-card"><div class="item-title">Public Regional Grain Elevator</div></div>`;
   }
 
-  // 7. Livestock & Animal Husbandry
+  // 9. Livestock & Animal Husbandry
   const animalCont = document.getElementById('animal-husbandry-container');
   if (animalCont) {
     let animalHtml = "";
@@ -689,7 +735,7 @@ window.renderDashboard = function(data) {
     animalCont.innerHTML = animalHtml || `<div class="item-card"><div class="item-title">No Active Livestock Husbandry Recorded</div></div>`;
   }
 
-  // 8. Server Contracts & Missions (contracts-container)
+  // 10. Server Contracts & Missions
   const contractsCont = document.getElementById('contracts-container');
   const missionsRaw = getFirebasePayload(data, "missions");
   const missionsXml = parseXML(missionsRaw);
@@ -728,7 +774,7 @@ window.renderDashboard = function(data) {
     contractsCont.innerHTML = contractsHtml || `<div class="item-card"><div class="item-title">All Contracts Completed</div></div>`;
   }
 
-  // 9. Buying Stations Container
+  // 11. Buying Stations Container
   const buyCont = document.getElementById('buying-stations-container');
   if (buyCont) {
     buyCont.innerHTML = `
@@ -743,7 +789,7 @@ window.renderDashboard = function(data) {
       </div>`;
   }
 
-  // 10. Regional Train Network
+  // 12. Regional Train Network
   const trainCont = document.getElementById('main-train-container');
   if (trainCont) {
     trainCont.innerHTML = `
@@ -758,7 +804,7 @@ window.renderDashboard = function(data) {
       </div>`;
   }
 
-  // 11. Dealership Used Sales (sales-container)
+  // 13. Dealership Used Sales
   const salesCont = document.getElementById('sales-container');
   const salesRaw = getFirebasePayload(data, "sales");
   const salesXml = parseXML(salesRaw);
@@ -790,7 +836,7 @@ window.renderDashboard = function(data) {
     salesCont.innerHTML = salesHtml || `<div class="item-card"><div class="item-title">No Machinery Currently On Sale</div></div>`;
   }
 
-  // 12. Map Collectibles Tracker (collectibles-container)
+  // 14. Map Collectibles Tracker
   const colCont = document.getElementById('collectibles-container');
   const colRaw = getFirebasePayload(data, "collectibles");
   const colXml = parseXML(colRaw);
@@ -816,7 +862,7 @@ window.renderDashboard = function(data) {
       </div>`;
   }
 
-  // 13. Commodity Market Prices (economy-container)
+  // 15. Commodity Market Prices
   const ecoCont = document.getElementById('economy-container');
   if (ecoCont) {
     let ecoHtml = "";
