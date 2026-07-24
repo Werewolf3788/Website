@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 9:02 PM (EDT)
- Complete CSS with Responsive Asset Thumbnail Containers & Lightbox Support
+ Version Timestamp: Thu, July 23, 2026, 9:20 PM (EDT)
+ Stylesheet with Mobile Sandwich Menu & Strict Image Thumbnail Constraints
  File: games/FS25/style.css
 */
 
@@ -16,7 +16,7 @@
   --shadow-main: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
-/* Base Layout & Reset */
+/* Base Reset & Setup */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -34,15 +34,47 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Header & Navigation Bar (Z-Index Layering Fix) */
+/* Header & Dynamic Dropdown Menu */
 .header-nav-container {
   position: relative;
   z-index: 1000;
   width: 100%;
-  padding: 1rem 1.5rem;
-  background: rgba(15, 15, 15, 0.85);
+  padding: 0.75rem 1.5rem;
+  background: rgba(15, 15, 15, 0.95);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border-color);
+}
+
+.mobile-nav-header {
+  display: none;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.mobile-logo-text {
+  font-weight: 800;
+  font-size: 1.1rem;
+  color: var(--accent-gold);
+}
+
+.mobile-hamburger-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 0.5rem 0.85rem;
+  font-size: 1.25rem;
+  border-radius: 6px;
+  cursor: pointer;
+  min-height: 44px;
+  min-width: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mobile-hamburger-btn:hover {
+  background: var(--accent-red);
 }
 
 .dynamic-menu-bar {
@@ -57,7 +89,7 @@ html, body {
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  min-height: 44px; /* Touch target compliant */
+  min-height: 44px;
   background: rgba(255, 255, 255, 0.08);
   color: var(--text-main);
   text-decoration: none;
@@ -66,6 +98,7 @@ html, body {
   border: 1px solid var(--border-color);
   cursor: pointer;
   transition: all 0.2s ease;
+  width: auto;
 }
 
 .nav-btn:hover, .nav-btn:focus {
@@ -109,7 +142,7 @@ html, body {
   background: var(--accent-red);
 }
 
-/* Dynamic Header Status Bar */
+/* Dynamic Status Bar */
 .server-status-bar {
   display: flex;
   flex-wrap: wrap;
@@ -149,7 +182,7 @@ html, body {
   font-family: monospace;
 }
 
-/* Dashboard Content Grid */
+/* Dashboard Panel Grid Layout */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
@@ -195,7 +228,7 @@ html, body {
   gap: 0.75rem;
 }
 
-/* Item Card & STRICT Thumbnail Image Formatting Rules */
+/* Card & Strict Thumbnail Container Styling */
 .item-card {
   display: flex;
   align-items: center;
@@ -205,7 +238,7 @@ html, body {
   border: 1px solid var(--border-color);
   border-radius: 6px;
   gap: 1rem;
-  overflow: hidden; /* Prevents large images from leaking */
+  overflow: hidden;
 }
 
 .item-left {
@@ -213,17 +246,17 @@ html, body {
   align-items: center;
   gap: 1rem;
   flex: 1;
-  min-width: 0; /* Ensures inner text clips properly */
+  min-width: 0;
 }
 
-/* FIXED ICON / IMAGE THUMBNAIL CONTAINER */
+/* STRICT IMAGE THUMBNAIL BOX CONTROL */
 .item-icon-box {
-  width: 52px;
-  height: 52px;
-  min-width: 52px;
-  min-height: 52px;
-  max-width: 52px;
-  max-height: 52px;
+  width: 52px !important;
+  height: 52px !important;
+  min-width: 52px !important;
+  min-height: 52px !important;
+  max-width: 52px !important;
+  max-height: 52px !important;
   background: rgba(255, 255, 255, 0.05);
   border: 1px solid var(--border-color);
   border-radius: 8px;
@@ -235,20 +268,20 @@ html, body {
   flex-shrink: 0;
 }
 
-/* Force Image Thumbnail to constrain cleanly without stretching */
 .item-icon-box img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  max-height: 100% !important;
+  object-fit: cover !important;
+  object-position: center !important;
   display: block;
   border-radius: 6px;
-  cursor: pointer;
   transition: transform 0.2s ease;
 }
 
 .item-icon-box img:hover {
-  transform: scale(1.08);
+  transform: scale(1.1);
 }
 
 .item-icon-box i {
@@ -256,7 +289,7 @@ html, body {
   color: var(--accent-gold);
 }
 
-/* Typography & Info Layout Inside Cards */
+/* Typography & Badges */
 .item-title {
   font-weight: 700;
   font-size: 0.95rem;
@@ -315,7 +348,7 @@ html, body {
   font-size: 0.85rem;
 }
 
-/* Dynamic Weather Themes */
+/* Dynamic Themes */
 body.theme-night {
   background: linear-gradient(180deg, #020617 0%, #000000 100%) fixed;
 }
@@ -324,8 +357,41 @@ body.weather-rain .server-status-bar {
   border-left-color: #3b82f6;
 }
 
-/* Mobile Responsiveness */
+/* Mobile Sandwich Options Rule (<= 768px) */
 @media (max-width: 768px) {
+  .mobile-nav-header {
+    display: flex;
+  }
+
+  .dynamic-menu-bar {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .dynamic-menu-bar.menu-active {
+    display: flex;
+  }
+
+  .nav-btn, .nav-item {
+    width: 100%;
+  }
+
+  .nav-item > .nav-btn {
+    justify-content: space-between;
+  }
+
+  .dropdown-content {
+    position: static;
+    width: 100%;
+    box-shadow: none;
+    border-top: none;
+    background: rgba(0, 0, 0, 0.5);
+    margin-top: 0.25rem;
+  }
+
   .dashboard-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
