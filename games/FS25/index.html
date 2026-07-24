@@ -1,13 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Version Timestamp: Fri, July 24, 2026, 02:45 PM (EDT) -->
+  <!-- Version Timestamp: Fri, July 24, 2026, 11:38 AM (EDT) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Dynamic Multi-Farm Tactical Hub</title>
   
+  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
+  <!-- Dynamic Smart Cache-Busting Stylesheet Loader -->
   <script>
     (function() {
       const cacheBuster = Date.now();
@@ -18,6 +20,7 @@
     })();
   </script>
 
+  <!-- Core JavaScript Engine with Dynamic Smart Cache-Busting -->
   <script>
     (function() {
       const cacheBuster = Date.now();
@@ -30,7 +33,7 @@
 </head>
 <body>
 
-  <!-- Dynamic Header Navigation Bar -->
+  <!-- Top Navigation Header -->
   <header class="navbar">
     <div class="nav-brand">
       <i class="fa-solid fa-wheat-field logo-icon"></i>
@@ -42,7 +45,9 @@
     </button>
 
     <nav id="dynamic-menu" class="nav-menu">
-      <div class="loading-state" style="padding:0; color:#ffffff;"><i class="fa-solid fa-spinner fa-spin"></i> Loading Menu...</div>
+      <div class="loading-state" style="padding:0; color:#ffffff;">
+        <i class="fa-solid fa-spinner fa-spin"></i> Loading Navigation...
+      </div>
     </nav>
   </header>
 
@@ -140,21 +145,24 @@
 
   </main>
 
+  <!-- Image Lightbox Modal -->
   <div id="lightbox-modal" class="lightbox-modal">
     <span id="lightbox-close" class="lightbox-close">&times;</span>
     <img id="lightbox-img" class="lightbox-content" alt="Enlarged Preview">
     <div id="lightbox-caption" class="lightbox-caption"></div>
   </div>
 
+  <!-- Footer -->
   <footer class="system-footer">
     <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Engine Deployment Timestamp: <strong>Fri, July 24, 2026, 02:45 PM (EDT)</strong></span>
+      <span><i class="fa-solid fa-code-commit"></i> Engine Deployment Timestamp: <strong>Fri, July 24, 2026, 11:38 AM (EDT)</strong></span>
       <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
       <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Initializing...</span>
       <span id="offline-timer" style="display:none; color:#f87171; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: 0m 0s</span>
     </div>
   </footer>
 
+  <!-- Firebase RTDB Stream Sync -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
