@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 12:42 AM (EDT)
- Resilient FS25 Tactical Theme - Dense Grid Alignment & High-Contrast Touch UI
+ Version Timestamp: Fri, July 24, 2026, 1:00 AM (EDT)
+ Resilient FS25 Tactical Theme - Fixed Mobile/Tablet Card Overlap & Layout Stacking
  File: games/FS25/style.css
 */
 
@@ -43,7 +43,6 @@ html, body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: var(--font-base);
   color: var(--text-primary);
-  /* Fixed FS25 Poster Background with Dark Gradient Overlay */
   background: var(--bg-gradient-overlay), var(--bg-poster-image) no-repeat center center fixed;
   background-size: cover;
   overflow-x: hidden;
@@ -122,7 +121,6 @@ html, body {
   color: #ffffff;
 }
 
-/* Dropdown Menu Container */
 .dropdown-content {
   display: none;
   position: absolute;
@@ -203,16 +201,16 @@ html, body {
   color: #e2e8f0;
 }
 
-/* Desktop Grid Layout (3 Columns with Dense Packing) */
+/* Grid Layout */
 .grid-layout {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-  grid-auto-flow: dense; /* Fills empty row gaps automatically */
+  gap: 28px;
+  grid-auto-flow: dense;
   align-items: start;
 }
 
-/* Base Dashboard Box Styling */
+/* Base Dashboard Box */
 .dashboard-box {
   background-color: var(--surface-box);
   border: 1px solid var(--border-subtle);
@@ -233,20 +231,20 @@ html, body {
 }
 
 .box-header h2 {
-  font-size: 1.05rem;
+  font-size: 1.02rem;
   font-weight: 700;
   letter-spacing: 0.8px;
   color: var(--text-primary);
   text-transform: uppercase;
 }
 
-/* Capped 5-Item Scrollable Box Content */
+/* Scrollable Box Content (Fixed Overlap Issue) */
 .box-content {
   display: flex;
   flex-direction: column;
   gap: 12px;
   flex-grow: 1;
-  max-height: 410px; /* Capped to display ~5 cards cleanly */
+  max-height: 460px;
   overflow-y: auto;
   padding-right: 6px;
 }
@@ -269,7 +267,7 @@ html, body {
   background: #cc0000;
 }
 
-/* Box Color Accents */
+/* Box Accents */
 .dashboard-box:nth-child(1) { border-top: 4px solid var(--color-farms); }
 .dashboard-box:nth-child(1) .box-header i { color: var(--color-farms); }
 
@@ -297,16 +295,17 @@ html, body {
 .dashboard-box:nth-child(9) { border-top: 4px solid var(--color-economy); }
 .dashboard-box:nth-child(9) .box-header i { color: var(--color-economy); }
 
-/* Item Cards Inside Containers */
+/* Item Cards (Robust Flexbox Wrapping to Prevent Text Overlap) */
 .item-card {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   background-color: var(--surface-card);
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  padding: 12px 14px;
-  min-height: 64px;
+  padding: 14px;
+  min-height: 72px;
   transition: transform 0.15s ease, background 0.2s ease;
 }
 
@@ -319,6 +318,8 @@ html, body {
   display: flex;
   align-items: center;
   gap: 12px;
+  min-width: 0;
+  flex: 1;
 }
 
 .item-icon-box {
@@ -343,29 +344,40 @@ html, body {
 
 .item-title {
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   color: var(--text-primary);
+  margin-bottom: 4px;
+  white-space: normal; /* Allows wrapping cleanly without overlapping */
+  word-break: break-word;
 }
 
 .farm-money {
   font-family: monospace;
   font-weight: 700;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   color: #4ade80;
+  white-space: nowrap;
 }
 
-.mono { font-family: monospace; }
+.mono { 
+  font-family: monospace;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 4px;
+}
 
 /* Status Badges */
 .badge-stat {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   padding: 3px 8px;
   border-radius: 4px;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   background: rgba(255, 255, 255, 0.08);
   color: var(--text-muted);
-  margin-right: 4px;
+  white-space: nowrap;
 }
 
 .badge-good {
@@ -408,6 +420,7 @@ html, body {
   background: rgba(0, 0, 0, 0.6);
   border-radius: 4px;
   overflow: hidden;
+  margin-top: 4px;
 }
 
 .progress-bar {
@@ -416,7 +429,6 @@ html, body {
   transition: width 0.3s ease;
 }
 
-/* Loading Placeholder State */
 .loading-state {
   display: flex;
   align-items: center;
@@ -429,10 +441,10 @@ html, body {
 }
 
 /* ==========================================================================
-   TABLET (768px - 1024px) & MOBILE (<768px) LAYOUT RULES
+   RESPONSIVE TABLET & MOBILE BREAKPOINTS
    ========================================================================== */
 
-@media (max-width: 1024px) {
+@media (max-width: 1200px) {
   .mobile-toggle {
     display: flex;
     align-items: center;
@@ -464,20 +476,19 @@ html, body {
     margin-top: 6px;
   }
 
-  /* Hybrid 2-Column Grid Layout for Tablets with 32px Side Margins */
   .grid-layout {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 20px;
   }
 
   .dashboard-container {
-    padding: 20px 32px;
+    padding: 20px 24px;
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
   .grid-layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr !important;
     gap: 16px;
   }
 
