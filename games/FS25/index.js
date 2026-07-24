@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 11:59 PM (EDT)
- Resilient FS25 Realtime Engine - Strict Inline Menu Image Constraints
+ Version Timestamp: Thu, July 23, 2026, 11:50 PM (EDT)
+ Resilient FS25 Realtime Tactical Dashboard Engine (Complete Cross-Referencing & Infrastructure Separation)
  File: games/FS25/index.js
 */
 
@@ -61,7 +61,6 @@ const IMAGE_ASSETS = {
   "PRECISION FARMING": "images/Precision Farming.jpg"
 };
 
-// Internal base price per 1,000 Liters (kL)
 const BASE_PRICES_PER_KL = {
   "WHEAT": 780, "BARLEY": 720, "CANOLA": 1250, "OAT": 1100,
   "MAIZE": 850, "CORN": 850, "SUNFLOWER": 1380, "SOYBEAN": 1550,
@@ -115,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Restore cached telemetry immediately
+  // Instant restoration of cached telemetry
   const cachedData = localStorage.getItem("fs25_last_known_telemetry");
   if (cachedData) {
     try {
@@ -162,7 +161,6 @@ async function loadGoogleSheetsMenu() {
       }
     });
 
-    // Hardcoded max dimensions (20px by 20px) on menu images to prevent layout explosion
     const makeImgHtml = (src) => src ? `<img src="${src}" alt="" style="width:20px; height:20px; max-width:20px; max-height:20px; object-fit:contain;" onerror="this.style.display='none'">` : '';
 
     standaloneItems.forEach(item => {
@@ -276,7 +274,7 @@ window.renderDashboard = function(data) {
 
   // 1. In-Game Time, Month & Server Details
   try {
-    const statsXml = parseXML(data.stats || data.dedicatedServerConfig_xml || data.gameStats_xml);
+    const statsXml = parseXML(data.stats || data.dedicatedServerConfig_xml);
     const envXml = parseXML(data.environment || data.environment_xml);
     
     let hours = 8, mins = 50, monthText = "Early Autumn (September)";
@@ -330,8 +328,19 @@ window.renderDashboard = function(data) {
     if (monthEl) monthEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Month: ${monthText}`;
   } catch (e) { console.error("Environment Render Error:", e); }
 
-  // 2. Server Farms
-  const farmNamesById = {};
+  // 2. Farmland Ownership Cross-Referencing
+  const landOwnerByFarmlandId = {};
+  try {
+    const farmlandXml = parseXML(data.farmlands || data.farmlands_xml);
+    if (farmlandXml) {
+      farmlandXml.querySelectorAll("farmland").forEach(fl => {
+        landOwnerByFarmlandId[fl.getAttribute("id")] = fl.getAttribute("farmId") || "0";
+      });
+    }
+  } catch (e) { console.error("Farmlands Cross-Ref Error:", e); }
+
+  // 3. Server Farms & Player Managers
+  const farmNamesById = { "0": "Public / Server Land" };
   try {
     const farmsXml = parseXML(data.farms || data.farms_xml);
     if (farmsXml) {
@@ -348,13 +357,21 @@ window.renderDashboard = function(data) {
           farmNamesById[farmId] = rawName;
           const roundedMoney = Math.round(parseFloat(farm.getAttribute("money") || "0"));
 
+          let managerName = "Unassigned";
+          const managerNode = farm.querySelector("player[farmManager='true']");
+          if (managerNode) {
+            managerName = managerNode.getAttribute("lastNickname") || "Active Manager";
+          }
+
           farmsHtml += `
             <div class="item-card">
               <div class="item-left">
                 ${getThumbnailHTML("ELEVATOR SILO", "fa-wheat-field")}
                 <div>
                   <div class="item-title">${rawName}</div>
-                  <div class="mono" style="color:#64748b;">Farm ID: ${farmId}</div>
+                  <div class="mono" style="color:#64748b; font-size:0.8rem;">
+                    Manager: <span style="color:#ffffff;">${managerName}</span> (ID: ${farmId})
+                  </div>
                 </div>
               </div>
               <div class="farm-money">$${roundedMoney.toLocaleString()}</div>
@@ -366,21 +383,33 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Farms Render Error:", e); }
 
-  // 3. Field Crops & Agronomy Status
+  // 4. Field Crops & Precision Agronomy Cross-Referencing
   try {
     const fieldsXml = parseXML(data.fields || data.fields_xml);
+    const precisionXml = parseXML(data.precisionFarming || data.precisionFarming_xml);
     const fieldsContainer = document.getElementById('fields-container');
+
     if (fieldsXml && fieldsContainer) {
       let html = "";
       fieldsXml.querySelectorAll("field").forEach(f => {
         const id = f.getAttribute("id");
-        const farmId = f.getAttribute("farmId") || "1";
+        const farmId = landOwnerByFarmlandId[id] || f.getAttribute("farmId") || "0";
         const ownerFarm = farmNamesById[farmId] || `Farm ID ${farmId}`;
 
         const rawCrop = f.getAttribute("fruitType");
         const crop = resolveCropName(rawCrop);
         const thumbnail = getThumbnailHTML(rawCrop || "field", "fa-seedling");
         const groundType = formatName(f.getAttribute("groundType") || "SOWN");
+        const sprayLevel = f.getAttribute("sprayLevel") || "0";
+
+        // Precision Farming Cross-Ref
+        let pfWidth = "Standard";
+        if (precisionXml) {
+          const pfNode = precisionXml.querySelector(`tramlineMap farmland[farmlandId='${id}']`);
+          if (pfNode) {
+            pfWidth = `${parseFloat(pfNode.getAttribute("width") || "27").toFixed(0)}m Tramline`;
+          }
+        }
 
         html += `
           <div class="item-card">
@@ -391,6 +420,8 @@ window.renderDashboard = function(data) {
                 <div class="mono" style="margin-top:2px;">
                   <span class="badge-stat badge-owner">${ownerFarm}</span>
                   <span class="badge-stat badge-sown">${groundType}</span>
+                  <span class="badge-stat">Fertilizer Level ${sprayLevel}</span>
+                  <span class="badge-stat" style="color:var(--accent-gold);">${pfWidth}</span>
                 </div>
               </div>
             </div>
@@ -400,18 +431,38 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Fields Render Error:", e); }
 
-  // 4. Vehicles & Machinery
+  // 5. Vehicles, Machinery & Active AI Field Workers
   try {
     const vehXml = parseXML(data.vehicles || data.vehicles_xml);
     const statsXml = parseXML(data.stats);
     let tractorsHtml = "";
     let implementsHtml = "";
 
-    const processCard = (name, category, controller) => {
+    const processCard = (vNode, name, category, controller) => {
       const formatted = formatName(name);
       const isTractor = category.toLowerCase().includes("tractor") || name.toLowerCase().includes("bigbud") || category.toLowerCase().includes("harvester");
       const fallbackIcon = isTractor ? "fa-tractor" : "fa-screwdriver-wrench";
       const thumbnail = getThumbnailHTML(formatted, fallbackIcon);
+
+      const farmId = vNode ? (vNode.getAttribute("farmId") || "1") : "1";
+      const ownerFarm = farmNamesById[farmId] || `Farm ID ${farmId}`;
+
+      let fuelText = "";
+      if (vNode) {
+        const dieselUnit = vNode.querySelector("fillUnit unit[fillType='DIESEL']");
+        if (dieselUnit) {
+          const dieselLevel = Math.round(parseFloat(dieselUnit.getAttribute("fillLevel") || "0"));
+          fuelText = `<span class="badge-stat" style="color:#38bdf8;"><i class="fa-solid fa-gas-pump"></i> ${dieselLevel}L Fuel</span>`;
+        }
+      }
+
+      let aiStatus = "";
+      if (vNode) {
+        const aiNode = vNode.querySelector("aiFieldWorker[isActive='true']");
+        if (aiNode) {
+          aiStatus = `<span class="badge-stat badge-active"><i class="fa-solid fa-robot"></i> AI WORKER ACTIVE</span>`;
+        }
+      }
 
       return `
         <div class="item-card">
@@ -419,8 +470,11 @@ window.renderDashboard = function(data) {
             ${thumbnail}
             <div>
               <div class="item-title">${formatted}</div>
-              <div class="mono">
-                <span class="badge-stat badge-owner">${category}</span>
+              <div class="mono" style="margin-top:2px;">
+                <span class="badge-stat badge-owner">${ownerFarm}</span>
+                <span class="badge-stat">${category}</span>
+                ${fuelText}
+                ${aiStatus}
                 ${controller ? `<span class="badge-stat badge-sown"><i class="fa-solid fa-user"></i> ${controller}</span>` : ''}
               </div>
             </div>
@@ -430,12 +484,15 @@ window.renderDashboard = function(data) {
 
     if (vehXml) {
       vehXml.querySelectorAll("vehicle").forEach(v => {
+        const farmId = v.getAttribute("farmId");
+        if (farmId === "0") return; // Filter out train/public vehicles from owned fleet
+
         const name = v.getAttribute("filename") || "Vehicle";
         const category = v.getAttribute("category") || "Machinery";
-        if (name.toLowerCase().match(/(tractor|harvester|bigbud|truck)/)) {
-          tractorsHtml += processCard(name, category, null);
-        } else {
-          implementsHtml += processCard(name, category, null);
+        if (name.toLowerCase().match(/(tractor|harvester|bigbud|truck|series8)/)) {
+          tractorsHtml += processCard(v, name, category, null);
+        } else if (!name.toLowerCase().includes("pallet") && !name.toLowerCase().includes("wagon")) {
+          implementsHtml += processCard(v, name, category, null);
         }
       });
     } else if (statsXml) {
@@ -445,9 +502,9 @@ window.renderDashboard = function(data) {
         const controller = v.getAttribute("controller");
 
         if (category.includes("TRACTOR") || name.includes("BigBud")) {
-          tractorsHtml += processCard(name, category, controller);
+          tractorsHtml += processCard(null, name, category, controller);
         } else {
-          implementsHtml += processCard(name, category, controller);
+          implementsHtml += processCard(null, name, category, controller);
         }
       });
     }
@@ -458,110 +515,156 @@ window.renderDashboard = function(data) {
     if (implCont && implementsHtml) implCont.innerHTML = implementsHtml;
   } catch (e) { console.error("Vehicles Render Error:", e); }
 
-  // 5. Installed Server Mods Engine
+  // 6. Public Infrastructure & Unownable Map Assets (Store, Train, Barges, Water Stations)
   try {
-    const modsContainer = document.getElementById('mods-container');
-    const statsXml = parseXML(data.stats || data.dedicatedServerConfig_xml || data.mods);
+    const publicContainer = document.getElementById('infrastructure-container');
+    const placeXml = parseXML(data.placeables || data.placeables_xml);
+    const vehXml = parseXML(data.vehicles || data.vehicles_xml);
 
-    if (modsContainer && statsXml) {
-      let modsHtml = "";
-      const modNodes = statsXml.querySelectorAll("Mod, Mods mod");
+    if (publicContainer) {
+      let infraHtml = "";
 
-      modNodes.forEach(m => {
-        const title = m.getAttribute("title") || m.getAttribute("name") || m.textContent;
-        const author = m.getAttribute("author") || "Community Developer";
-        const version = m.getAttribute("version") || "1.0.0.0";
+      // A. Train System Status
+      if (placeXml) {
+        const trainNode = placeXml.querySelector("placeable[uniqueId='trainSystem']");
+        if (trainNode) {
+          const isRented = trainNode.querySelector("trainSystem")?.getAttribute("isRented") === "true";
+          const statusText = isRented ? "Rented / Active" : "Operational (Rail Network)";
 
-        if (title && title.trim().length > 0) {
-          modsHtml += `
+          infraHtml += `
             <div class="item-card">
               <div class="item-left">
-                <div class="item-icon-box"><i class="fa-solid fa-puzzle-piece"></i></div>
+                ${getThumbnailHTML("FORESTRY LOCOMOTIVE", "fa-train")}
                 <div>
-                  <div class="item-title">${title}</div>
+                  <div class="item-title">Public Regional Railroad & Train Line</div>
                   <div class="mono" style="margin-top:2px;">
-                    <span class="badge-stat">v${version}</span>
-                    <span class="badge-stat badge-owner">${author}</span>
+                    <span class="badge-stat badge-owner">Public Map Infrastructure</span>
+                    <span class="badge-stat badge-sown">${statusText}</span>
                   </div>
                 </div>
               </div>
             </div>`;
         }
-      });
+      }
 
-      if (modsHtml) modsContainer.innerHTML = modsHtml;
-    }
-  } catch (e) { console.error("Mods Render Error:", e); }
+      // B. Grain Barges & River Delivery Terminals
+      if (placeXml) {
+        placeXml.querySelectorAll("placeable[uniqueId*='grainBargeTerminal']").forEach(b => {
+          const uid = b.getAttribute("uniqueId");
+          const formatted = uid.includes("01") ? "East River Grain Barge Terminal" : "West River Grain Barge Terminal";
 
-  // 6. Production Facilities & Storage
-  try {
-    const placeXml = parseXML(data.placeables || data.placeables_xml);
-    const productionContainer = document.getElementById('production-container');
-    if (placeXml && productionContainer) {
-      let html = "";
-      placeXml.querySelectorAll("placeable").forEach(p => {
-        const filename = p.getAttribute("filename");
-        if (filename && !filename.includes("fence") && !filename.includes("gate")) {
-          const formatted = formatName(filename);
-          const thumbnail = getThumbnailHTML(formatted, "fa-industry");
-
-          html += `
+          infraHtml += `
             <div class="item-card">
               <div class="item-left">
-                ${thumbnail}
+                ${getThumbnailHTML("GRAIN BARGE", "fa-ship")}
                 <div>
                   <div class="item-title">${formatted}</div>
-                  <span class="badge-stat badge-sown">Operational</span>
+                  <div class="mono" style="margin-top:2px;">
+                    <span class="badge-stat badge-owner">River Freight Terminal</span>
+                    <span class="badge-stat badge-sown">Accepting Grain & Bulk</span>
+                  </div>
+                </div>
+              </div>
+            </div>`;
+        });
+      }
+
+      // C. Vehicle Dealership & Animal Trader
+      if (placeXml) {
+        const storeNode = placeXml.querySelector("placeable[uniqueId*='sellingStationVehicles']");
+        if (storeNode) {
+          infraHtml += `
+            <div class="item-card">
+              <div class="item-left">
+                ${getThumbnailHTML("AMERICAN MIDWEST TRUCK SHOP", "fa-store")}
+                <div>
+                  <div class="item-title">Equipment Dealership & Repair Bay</div>
+                  <div class="mono" style="margin-top:2px;">
+                    <span class="badge-stat badge-owner">Vehicle Trader</span>
+                    <span class="badge-stat badge-sown">Open 24/7</span>
+                  </div>
                 </div>
               </div>
             </div>`;
         }
-      });
-      if (html) productionContainer.innerHTML = html;
-    }
-  } catch (e) { console.error("Production Render Error:", e); }
+      }
 
-  // 7. Contracts & Missions Engine
+      if (infraHtml) publicContainer.innerHTML = infraHtml;
+    }
+  } catch (e) { console.error("Infrastructure Render Error:", e); }
+
+  // 7. Dealership Used Vehicle Sale Radar
   try {
-    const missionsXml = parseXML(data.missions || data.missions_xml || data.missionss_xml);
+    const salesContainer = document.getElementById('sales-container');
+    const salesXml = parseXML(data.sales || data.sales_xml);
+
+    if (salesContainer && salesXml) {
+      let salesHtml = "";
+      salesXml.querySelectorAll("item").forEach(item => {
+        const xmlFilename = item.getAttribute("xmlFilename") || "Equipment";
+        const formattedName = formatName(xmlFilename);
+        const price = Math.round(parseFloat(item.getAttribute("price") || "0"));
+        const timeLeft = item.getAttribute("timeLeft") || "0";
+        const damage = (parseFloat(item.getAttribute("damage") || "0") * 100).toFixed(0);
+
+        salesHtml += `
+          <div class="item-card">
+            <div class="item-left">
+              ${getThumbnailHTML(formattedName, "fa-tags")}
+              <div>
+                <div class="item-title">${formattedName} (Used Dealership)</div>
+                <div class="mono" style="margin-top:2px;">
+                  <span class="badge-stat badge-active">${timeLeft}h Left</span>
+                  <span class="badge-stat">Wear: ${damage}%</span>
+                </div>
+              </div>
+            </div>
+            <div class="farm-money" style="color:var(--accent-gold);">$${price.toLocaleString()}</div>
+          </div>`;
+      });
+
+      if (salesHtml) salesContainer.innerHTML = salesHtml;
+    }
+  } catch (e) { console.error("Sales Render Error:", e); }
+
+  // 8. Dynamic Contracts & Field Missions
+  try {
+    const missionsXml = parseXML(data.missions || data.missions_xml);
     const contractsContainer = document.getElementById('contracts-container');
     
     if (missionsXml && contractsContainer) {
       const allMissions = [];
 
       missionsXml.querySelectorAll("*").forEach(m => {
-        if (m.tagName.endsWith("Mission")) {
+        const tagName = m.tagName;
+        if (tagName.toLowerCase().endsWith("mission") && tagName !== "missions") {
+          
           const fieldNode = m.querySelector("field");
-          const fieldId = fieldNode ? fieldNode.getAttribute("id") : "N/A";
+          const fieldId = fieldNode ? fieldNode.getAttribute("id") : (m.getAttribute("spotIndex") ? `Spot #${m.getAttribute("spotIndex")}` : "N/A");
+          
           const infoNode = m.querySelector("info");
-
           let reward = infoNode ? parseFloat(infoNode.getAttribute("reward") || "0") : 0;
           if (reward === 0) reward = Math.round(parseFloat(m.getAttribute("reward") || "2500"));
 
-          const missionType = formatName(m.tagName.replace("Mission", ""));
-          const rawCrop = m.getAttribute("fruitType");
-          const cropTitle = resolveCropName(rawCrop);
-          
-          const statusAttr = m.getAttribute("status") || "0";
-          const isAccepted = statusAttr === "1" || m.getAttribute("active") === "true";
-          const farmId = m.getAttribute("farmId") || "1";
-          const assignedNpc = m.getAttribute("npc") || null;
-          const assignedPlayer = m.getAttribute("activePlayer") || m.getAttribute("worker") || null;
-
-          let progressPct = parseFloat(m.getAttribute("progress") || m.getAttribute("completion") || "0");
-          if (progressPct <= 1.0 && progressPct > 0) progressPct = Math.round(progressPct * 100);
-
-          let workerText = "Unassigned";
-          if (isAccepted) {
-            const farmName = farmNamesById[farmId] || `Farm #${farmId}`;
-            if (assignedPlayer) {
-              workerText = `Assigned: ${assignedPlayer} (${farmName})`;
-            } else if (assignedNpc) {
-              workerText = `Assigned NPC: ${assignedNpc} (${farmName})`;
-            } else {
-              workerText = `Assigned to: ${farmName}`;
-            }
+          let rawCrop = m.getAttribute("fruitType");
+          if (!rawCrop) {
+            const harvestSubNode = m.querySelector("harvest");
+            if (harvestSubNode) rawCrop = harvestSubNode.getAttribute("fruitType");
           }
+          const cropTitle = resolveCropName(rawCrop);
+
+          const cleanType = tagName.replace(/mission$/i, "").replace(/Mission$/i, "");
+          const missionType = cleanType.length > 0 ? formatName(cleanType) : "General Contract";
+
+          const statusAttr = m.getAttribute("status") || "CREATED";
+          const isAccepted = statusAttr === "RUNNING" || statusAttr === "1" || m.getAttribute("farmId") !== null;
+          const farmId = m.getAttribute("farmId") || "1";
+          const ownerFarm = farmNamesById[farmId] || `Farm ID ${farmId}`;
+
+          let completionVal = infoNode ? parseFloat(infoNode.getAttribute("completion") || "0") : 0;
+          let progressPct = Math.round(completionVal * 100);
+
+          let workerText = isAccepted ? `Contractor: ${ownerFarm}` : "Available Contract";
 
           allMissions.push({
             missionType,
@@ -618,22 +721,22 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Contracts Render Error:", e); }
 
-  // 8. Map Collectibles Tracker
+  // 9. Map Collectibles Discovery Radar
   try {
     const collectiblesContainer = document.getElementById('collectibles-container');
-    const careerXml = parseXML(data.careerSavegame || data.careerSavegame_xml || data.collectibles_xml);
+    const careerXml = parseXML(data.careerSavegame || data.careerSavegame_xml);
+    const colXml = parseXML(data.collectibles || data.collectibles_xml);
 
     if (collectiblesContainer) {
       let foundCount = 0;
-      let totalCollectibles = 100;
+      let totalCollectibles = 25;
 
-      if (careerXml) {
-        const collectibleNodes = careerXml.querySelectorAll("collectible, collectibles item, collectibleItem");
-        if (collectibleNodes.length > 0) {
-          totalCollectibles = collectibleNodes.length;
-          collectibleNodes.forEach(c => {
-            const isFound = c.getAttribute("isFound") === "true" || c.getAttribute("found") === "true" || c.textContent === "true";
-            if (isFound) foundCount++;
+      if (colXml) {
+        const items = colXml.querySelectorAll("collectible");
+        if (items.length > 0) {
+          totalCollectibles = items.length;
+          items.forEach(c => {
+            if (c.getAttribute("collected") === "true") foundCount++;
           });
         }
       }
@@ -662,7 +765,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Collectibles Render Error:", e); }
 
-  // 9. Commodity Market Economy
+  // 10. Commodity Market Prices
   try {
     const ecoContainer = document.getElementById('economy-container');
     if (ecoContainer) {
