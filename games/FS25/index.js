@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 01:40 AM (EDT)
- Resilient FS25 Tactical Engine - Pure Static Navigation & Live Telemetry Parsing
+ Version Timestamp: Fri, July 24, 2026, 01:45 AM (EDT)
+ Resilient FS25 Tactical Engine - Pure Static Navigation, Full Telemetry Parsing & Fixed Dealership Radar
  File: games/FS25/index.js
 */
 
@@ -554,7 +554,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Infrastructure Render Error:", e); }
 
-  // 7. Dealership Used Vehicle Sales Container
+  // 7. Dealership Used Vehicle Sales Container (Fixed: Timer Removed)
   try {
     const salesContainer = document.getElementById('sales-container');
     const salesXml = parseXML(data.sales || data.sales_xml);
@@ -565,7 +565,6 @@ window.renderDashboard = function(data) {
         const xmlFilename = item.getAttribute("xmlFilename") || "Equipment";
         const details = resolveEquipmentDetails(xmlFilename);
         const price = Math.round(parseFloat(item.getAttribute("price") || "0"));
-        const timeLeft = item.getAttribute("timeLeft") || "0";
         const damageVal = parseFloat(item.getAttribute("damage") || "0");
         const wearVal = parseFloat(item.getAttribute("wear") || "0");
 
@@ -580,7 +579,7 @@ window.renderDashboard = function(data) {
                   <div class="item-title">${details.name}</div>
                   <div class="mono" style="margin-top:2px;">
                     <span class="badge-stat badge-owner">${details.category}</span>
-                    <span class="badge-stat badge-warning"><i class="fa-regular fa-clock"></i> ${timeLeft}h Left</span>
+                    <span class="badge-stat badge-good"><i class="fa-solid fa-tag"></i> Store Deal</span>
                   </div>
                 </div>
               </div>
