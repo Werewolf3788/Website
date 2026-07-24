@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 01:30 PM (EDT)
- Multi-Tab Navigation & Dynamic Category Grid Styling
+ Version Timestamp: Fri, July 24, 2026, 02:45 PM (EDT)
+ Complete Dynamic Dropdown Menu Styling & Telemetry Cards
  File: games/FS25/style.css
 */
 
@@ -72,6 +72,97 @@ html, body {
 
 .logo-icon { color: var(--accent-gold); font-size: 1.4rem; }
 
+.mobile-toggle {
+  display: none;
+  background: #cc0000;
+  color: #ffffff;
+  border: none;
+  min-width: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-item {
+  position: relative;
+}
+
+.nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: var(--touch-target-min);
+  padding: 0 16px;
+  background: transparent;
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  border: none;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.nav-btn:hover, .nav-btn:focus {
+  background: #cc0000;
+  color: #ffffff;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #1e1c1c;
+  border: 1px solid var(--border-subtle);
+  border-top: 3px solid #cc0000;
+  border-radius: 8px;
+  min-width: 240px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.8);
+  padding: 8px 0;
+  z-index: 1001;
+}
+
+.dropdown-content a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  min-height: var(--touch-target-min);
+  color: #ffffff !important;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s ease;
+}
+
+.dropdown-content a:hover {
+  background-color: #cc0000;
+  color: #ffffff !important;
+}
+
+.nav-item:hover .dropdown-content,
+.nav-item.open .dropdown-content {
+  display: block;
+}
+
+.menu-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
 .dashboard-container {
   padding: 24px 32px;
   max-width: 1600px;
@@ -105,74 +196,21 @@ html, body {
   transition: all 0.2s ease;
 }
 
-.tab-btn:hover {
-  background: var(--surface-card-hover);
-  color: #ffffff;
-}
+.tab-btn:hover { background: var(--surface-card-hover); color: #ffffff; }
+.tab-btn.active { background: #cc0000; color: #ffffff; border-color: #ff3333; box-shadow: 0 4px 15px rgba(204, 0, 0, 0.4); }
 
-.tab-btn.active {
-  background: #cc0000;
-  color: #ffffff;
-  border-color: #ff3333;
-  box-shadow: 0 4px 15px rgba(204, 0, 0, 0.4);
-}
-
-.tab-content-panel {
-  display: none;
-}
-
-.tab-content-panel.active {
-  display: block;
-}
+.tab-content-panel { display: none; }
+.tab-content-panel.active { display: block; }
 
 /* Metrics Top Cards Row */
-.metrics-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-  margin-bottom: 28px;
-}
-
-.metric-card {
-  background: var(--surface-box);
-  border: 1px solid var(--border-subtle);
-  border-radius: 10px;
-  padding: 18px 22px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-}
-
-.metric-icon {
-  font-size: 2rem;
-}
-
-.metric-value {
-  font-size: 1.4rem;
-  font-weight: 800;
-  color: #ffffff;
-  font-family: monospace;
-}
-
-.metric-label {
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  font-weight: 600;
-  text-transform: uppercase;
-}
+.metrics-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 28px; }
+.metric-card { background: var(--surface-box); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 18px 22px; display: flex; align-items: center; gap: 18px; box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); }
+.metric-icon { font-size: 2rem; }
+.metric-value { font-size: 1.4rem; font-weight: 800; color: #ffffff; font-family: monospace; }
+.metric-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
 
 /* Server Banner */
-.server-banner {
-  background: var(--surface-box);
-  border: 1px solid var(--border-subtle);
-  border-left: 6px solid var(--accent-gold);
-  border-radius: 10px;
-  padding: 20px 24px;
-  margin-bottom: 24px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-}
-
+.server-banner { background: var(--surface-box); border: 1px solid var(--border-subtle); border-left: 6px solid var(--accent-gold); border-radius: 10px; padding: 20px 24px; margin-bottom: 24px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5); }
 .banner-layout { display: flex; align-items: center; gap: 20px; }
 .map-preview-box { width: 90px; height: 90px; border-radius: 8px; overflow: hidden; border: 2px solid var(--border-subtle); background: rgba(0, 0, 0, 0.5); }
 .map-preview-box img { width: 100%; height: 100%; object-fit: cover; }
@@ -219,13 +257,17 @@ html, body {
 .badge-danger { background: rgba(239, 68, 68, 0.22); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.4); }
 .badge-active { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
 
-.progress-container { width: 100%; height: 8px; background: rgba(0, 0, 0, 0.6); border-radius: 4px; overflow: hidden; margin-top: 8px; }
-.progress-bar { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
-
 .loading-state { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 24px; color: var(--text-muted); font-family: monospace; font-size: 0.9rem; }
 
 .system-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: rgba(30, 28, 28, 0.98); border-top: 2px solid #cc0000; padding: 10px 24px; font-family: monospace; font-size: 0.8rem; color: #94a3b8; z-index: 1000; backdrop-filter: blur(8px); }
 .footer-content { max-width: 1600px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
 
-@media (max-width: 1200px) { .masonry-grid { column-count: 2 !important; } }
+@media (max-width: 1200px) {
+  .mobile-toggle { display: flex !important; }
+  .nav-menu { display: none; position: absolute; top: 100%; left: 0; width: 100%; background-color: #1e1c1c; flex-direction: column; padding: 16px; border-bottom: 2px solid #cc0000; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.9); }
+  .nav-menu.menu-active { display: flex !important; }
+  .dropdown-content { position: static; box-shadow: none; border: none; background-color: #282525; margin-top: 6px; }
+  .masonry-grid { column-count: 2 !important; }
+}
+
 @media (max-width: 680px) { .masonry-grid { column-count: 1 !important; } }
