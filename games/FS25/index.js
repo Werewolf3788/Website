@@ -1,8 +1,10 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 01:30 PM (EDT)
- Dynamic Multi-Farm Tactical Hub - Hand Tools, Time Speed, Buying Stations & Classified Categories
+ Version Timestamp: Fri, July 24, 2026, 02:45 PM (EDT)
+ Tactical Engine - Live Dynamic Navigation Engine & Resilient Online Server Status Fix
  File: games/FS25/index.js
 */
+
+const CSV_MENU_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
 
 const FARM_COLOR_PALETTE = {
   "0": { name: "AI / Public Map", color: "#facc15", isAI: true },
@@ -14,46 +16,28 @@ const FARM_COLOR_PALETTE = {
   "6": { name: "Farm 6", color: "#22c55e", isAI: false }
 };
 
+let offlineStartTime = null;
+let offlineTimerInterval = null;
+let lastKnownServerName = "Dedicated Server";
+
 function getFarmColorMeta(farmId) {
   const key = String(farmId || "0");
   if (FARM_COLOR_PALETTE[key]) return FARM_COLOR_PALETTE[key];
   const idNum = parseInt(key, 10) || 0;
-  const hue = (idNum * 137.5) % 360;
-  return { name: `Farm ${idNum}`, color: `hsl(${hue}, 85%, 55%)`, isAI: false };
+  return { name: `Farm ${idNum}`, color: `hsl(${(idNum * 137.5) % 360}, 85%, 55%)`, isAI: false };
 }
 
 const HUMAN_EQUIPMENT_LOOKUP = {
   "MF8570": { name: "Massey Ferguson 8570 Combine", category: "Harvester" },
-  "MF8570HEADER": { name: "Massey Ferguson 8570 Grain Header", category: "Header" },
+  "MF8570HEADER": { name: "Massey Ferguson 8570 Header", category: "Header" },
   "XB150": { name: "BISO XB150 Header Trailer", category: "Header Trailer" },
   "FRONTLOADER PALLET FORK": { name: "Albutt Pallet Fork", category: "Frontloader Attachment" },
   "FRONTLOADER SHOVEL": { name: "Albutt Universal Shovel", category: "Frontloader Attachment" },
   "POV5XL": { name: "Agromasz POV 5 XL 5-Furrow Plough", category: "Plough" },
-  "TOP450": { name: "Pöttinger TOP 450 Tedder", category: "Tedder / Hay" },
+  "TOP450": { name: "Pöttinger TOP 450 Tedder", category: "Tedder" },
   "AGRO STAR831": { name: "Deutz-Fahr AgroStar 8.31", category: "Medium Tractor" },
   "Z18051": { name: "Zetor Crystal 12045 / Z180", category: "Medium Tractor" },
-  "SERIES3650": { name: "John Deere 3650 Tractor", category: "Small Tractor" },
-  "KREDO": { name: "Lemken KREDO 300 Power Harrow", category: "Power Harrow" },
-  "TERRIA": { name: "Pöttinger TERRIA 6040 Cultivator", category: "Cultivator" },
-  "REXIUS": { name: "Väderstad REXIUS 1230 Roller", category: "Soil Roller" },
-  "HTW65": { name: "Bergmann HTW 65 Forage Wagon", category: "Forage Wagon" },
-  "TA12050": { name: "Krampe TA 12050 Tipper", category: "Tipper Trailer" },
-  "COLOSSUS 8000": { name: "Lizard Colossus 8000 Root Harvester", category: "Beet Harvester", modFeatures: "45,000L - 2,500,000L Capacity | 800-3000 HP" },
-  "TITAN HEADER": { name: "Lizard Titan Grain Header", category: "Header", modFeatures: "52.5 ft (15.2m) Work Width | Unrealistic Options" },
-  "COLOSSUS 6000": { name: "Lizard Colossus 6000 Forage Harvester", category: "Forage Harvester", modFeatures: "900-3050 HP | 27-125 MPH" }
-};
-
-const IMAGE_ASSETS = {
-  "BARLEY": "images/Barley.JPG", "BEETROOT": "images/Beetroot.JPG", "CORN": "images/Corn.JPG",
-  "MAIZE": "images/Corn.JPG", "GRASS": "images/Grass.JPG", "OAT": "images/Oats.JPG",
-  "POTATO": "images/Potatoes.JPG", "SUGARBEET": "images/Sugarbeets.JPG", "WHEAT": "images/Wheat.JPG",
-  "SILO": "images/Elevator Silo.JPG", "TRAIN STATION": "images/Train Station.JPG"
-};
-
-const CROP_NAME_MAP = {
-  "WHEAT": "Wheat", "BARLEY": "Barley", "CANOLA": "Canola", "OAT": "Oats",
-  "MAIZE": "Corn / Maize", "SUNFLOWER": "Sunflowers", "SOYBEAN": "Soybeans",
-  "POTATO": "Potatoes", "SUGARBEET": "Sugarbeets", "GRASS": "Grass", "SILAGE": "Silage", "LIME": "Lime"
+  "SERIES3650": { name: "John Deere 3650 Tractor", category: "Small Tractor" }
 };
 
 function resolveEquipmentDetails(rawName) {
@@ -63,32 +47,6 @@ function resolveEquipmentDetails(rawName) {
     if (str.includes(key)) return meta;
   }
   return { name: formatName(rawName), category: "Equipment / Tool" };
-}
-
-function renderGaugeBar(percentage, labelText) {
-  const pct = Math.min(100, Math.max(0, Math.round(percentage)));
-  let barColor = pct >= 71 ? "#22c55e" : (pct >= 40 ? "#eab308" : "#ef4444");
-  return `
-    <div class="gauge-wrapper" style="margin-top:6px; width:100%;">
-      <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#94a3b8; font-family:monospace; margin-bottom:3px;">
-        <span>${labelText}</span>
-        <span style="color:${barColor}; font-weight:bold;">${pct}%</span>
-      </div>
-      <div class="progress-container"><div class="progress-bar" style="width: ${pct}%; background-color: ${barColor};"></div></div>
-    </div>`;
-}
-
-function resolveCropName(typeName) {
-  if (!typeName || typeName.toUpperCase() === "UNKNOWN") return "Empty";
-  const key = String(typeName).toUpperCase().replace('FILLTYPE_', '').trim();
-  return CROP_NAME_MAP[key] || formatName(key);
-}
-
-function getThumbnailHTML(key, fallbackIcon = "fa-box") {
-  if (!key) return `<div class="item-icon-box"><i class="fa-solid ${fallbackIcon}"></i></div>`;
-  const lookupKey = String(key).toUpperCase().replace('FILLTYPE_', '').replace('VEHICLE_', '').trim();
-  if (IMAGE_ASSETS[lookupKey]) return `<div class="item-icon-box"><img src="${IMAGE_ASSETS[lookupKey]}" alt="${lookupKey}"></div>`;
-  return `<div class="item-icon-box"><i class="fa-solid ${fallbackIcon}"></i></div>`;
 }
 
 function formatName(str) {
@@ -111,58 +69,172 @@ function parseXML(node) {
   } catch (e) { return null; }
 }
 
-function formatOwnershipInfo(farmId, registeredFarmsMap, customAiName) {
-  const fid = String(farmId || "0");
-  const farmName = registeredFarmsMap[fid];
+// Global Online/Offline Status Indicator Fix
+window.setServerStatus = function(isOnline) {
+  const pill = document.getElementById('server-status-pill');
+  const text = document.getElementById('status-text');
+  const syncTimeEl = document.getElementById('last-sync-time');
+  const offlineTimerEl = document.getElementById('offline-timer');
+  const serverNameEl = document.getElementById('server-name');
 
-  if (fid !== "0" && farmName) {
-    const meta = getFarmColorMeta(fid);
-    return {
-      labelHTML: `<span class="badge-stat" style="background-color: ${meta.color}22; color: ${meta.color}; border: 1px solid ${meta.color}; font-weight: bold;"><i class="fa-solid fa-building-columns"></i> ${farmName}</span>`,
-      cardStyle: `border-left: 4px solid ${meta.color};`,
-      colorHex: meta.color
-    };
+  if (!pill || !text) return;
+
+  const actualOnlineState = isOnline && navigator.onLine;
+
+  if (actualOnlineState) {
+    pill.className = "status-pill status-online";
+    text.textContent = "ONLINE";
+
+    if (offlineTimerInterval) {
+      clearInterval(offlineTimerInterval);
+      offlineTimerInterval = null;
+    }
+    offlineStartTime = null;
+    if (offlineTimerEl) offlineTimerEl.style.display = "none";
+    if (syncTimeEl) syncTimeEl.style.display = "inline";
+  } else {
+    pill.className = "status-pill status-offline";
+    if (serverNameEl && serverNameEl.textContent.includes("Connecting")) {
+      serverNameEl.textContent = lastKnownServerName;
+    }
+
+    if (!offlineStartTime) {
+      offlineStartTime = Date.now();
+      if (syncTimeEl) syncTimeEl.style.display = "none";
+      if (offlineTimerEl) offlineTimerEl.style.display = "inline";
+
+      if (offlineTimerInterval) clearInterval(offlineTimerInterval);
+      offlineTimerInterval = setInterval(() => {
+        if (!offlineStartTime) return;
+        const diffMs = Date.now() - offlineStartTime;
+        const totalSecs = Math.floor(diffMs / 1000);
+        const mins = Math.floor(totalSecs / 60);
+        const secs = totalSecs % 60;
+        const timeStr = `${mins}m ${secs}s`;
+        
+        if (text) text.textContent = `OFFLINE (${timeStr})`;
+        if (offlineTimerEl) {
+          offlineTimerEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: <strong>${timeStr}</strong>`;
+        }
+      }, 1000);
+    }
   }
+};
 
-  const aiLabel = customAiName ? `AI Landowner: ${customAiName}` : `Public / AI Map Asset`;
-  return {
-    labelHTML: `<span class="badge-stat" style="background-color: rgba(250, 204, 21, 0.15); color: #facc15; border: 1px solid #facc15; font-weight: bold;"><i class="fa-solid fa-robot"></i> ${aiLabel}</span>`,
-    cardStyle: `border-left: 4px solid #facc15;`,
-    colorHex: "#facc15"
-  };
+window.addEventListener('online', () => window.setServerStatus(true));
+window.addEventListener('offline', () => window.setServerStatus(false));
+
+// Dynamic Google Sheets Navigation Menu Parser
+async function loadDynamicNavbar() {
+  const menuContainer = document.getElementById("dynamic-menu");
+  if (!menuContainer) return;
+
+  try {
+    const response = await fetch(CSV_MENU_URL);
+    if (!response.ok) throw new Error("CSV fetch failed");
+    const csvText = await response.text();
+
+    const lines = csvText.split("\n").filter(l => l.trim().length > 0);
+    const groups = {};
+
+    for (let i = 1; i < lines.length; i++) {
+      const cols = lines[i].split(",").map(c => c.trim().replace(/^"/, '').replace(/"$/, ''));
+      if (cols.length >= 3) {
+        const name = cols[0];
+        const group = cols[1] || "General";
+        const url = cols[2];
+        const img = cols[3] || "";
+
+        if (!groups[group]) groups[group] = [];
+        groups[group].push({ name, url, img });
+      }
+    }
+
+    let navHtml = `<a href="https://werewolf3788.github.io/Website/" class="nav-btn"><i class="fa-solid fa-house"></i> Home</a>`;
+
+    for (const [groupName, items] of Object.entries(groups)) {
+      navHtml += `
+        <div class="nav-item">
+          <button class="nav-btn dropdown-toggle">
+            ${groupName} <i class="fa-solid fa-caret-down"></i>
+          </button>
+          <div class="dropdown-content">`;
+
+      items.forEach(item => {
+        const imgTag = item.img ? `<img src="${item.img}" class="menu-thumb" onerror="this.style.display='none';">` : `<i class="fa-solid fa-link"></i>`;
+        navHtml += `<a href="${item.url}">${imgTag} ${item.name}</a>`;
+      });
+
+      navHtml += `</div></div>`;
+    }
+
+    menuContainer.innerHTML = navHtml;
+
+    document.querySelectorAll('.dropdown-toggle').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const parent = btn.closest('.nav-item');
+        if (parent) parent.classList.toggle('open');
+      });
+    });
+
+  } catch (e) {
+    console.warn("Navigation menu fallback applied:", e.message);
+  }
 }
 
-// Tab Switching Listener Setup
 document.addEventListener("DOMContentLoaded", () => {
+  loadDynamicNavbar();
+
   const toggleBtn = document.getElementById("mobile-menu-toggle");
   const menuBar = document.getElementById("dynamic-menu");
   if (toggleBtn && menuBar) {
     toggleBtn.addEventListener("click", () => menuBar.classList.toggle("menu-active"));
   }
-
-  document.addEventListener("click", (e) => {
-    const tabBtn = e.target.closest(".tab-btn");
-    if (tabBtn) {
-      const targetTabId = tabBtn.getAttribute("data-tab");
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".tab-content-panel").forEach(p => p.classList.remove("active"));
-
-      tabBtn.classList.add("active");
-      const targetPanel = document.getElementById(targetTabId);
-      if (targetPanel) targetPanel.classList.add("active");
-    }
-  });
 });
 
+// Render Dashboard Data from RTDB
 window.renderDashboard = function(data) {
-  if (!data) return;
+  if (!data) {
+    window.setServerStatus(false);
+    return;
+  }
 
   const statsXml = parseXML(data.stats || data.dedicatedServerConfig_xml);
   const serverNode = statsXml ? statsXml.querySelector("Server") : null;
   const gameName = serverNode ? serverNode.getAttribute("name") : null;
 
-  // 1. In-Game Speed & Server Environment
+  // Confirm Active Server Telemetry Status
+  if (statsXml && serverNode) {
+    lastKnownServerName = gameName || "Dedicated Server";
+    window.setServerStatus(true);
+  } else {
+    window.setServerStatus(false);
+  }
+
+  const saveSlotEl = document.getElementById('save-slot-display');
+  if (saveSlotEl) {
+    saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">savegame${data.activeSaveSlot || "1"}</strong>`;
+  }
+
   if (serverNode) {
+    const serverNameEl = document.getElementById('server-name');
+    if (serverNameEl) serverNameEl.textContent = gameName;
+
+    const mapName = serverNode.getAttribute("mapName") || "Riverbend Springs";
+    const mapEl = document.getElementById('server-map');
+    if (mapEl) mapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
+
+    const rawDayTime = parseFloat(serverNode.getAttribute("dayTime") || "0");
+    let hours = 8, mins = 0;
+    if (rawDayTime > 0) {
+      const totalMinutes = Math.floor(rawDayTime / 60000);
+      hours = Math.floor(totalMinutes / 60) % 24;
+      mins = totalMinutes % 60;
+    }
+    const timeEl = document.getElementById('server-time');
+    if (timeEl) timeEl.innerHTML = `<i class="fa-regular fa-clock"></i> Time: ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+
     const timeScale = serverNode.getAttribute("timeScale") || "5.0";
     const speedBadge = document.getElementById('time-speed-badge');
     if (speedBadge) speedBadge.innerHTML = `<i class="fa-solid fa-forward-fast"></i> Speed: ${parseFloat(timeScale).toFixed(0)}x`;
@@ -171,196 +243,4 @@ window.renderDashboard = function(data) {
     const trafficBadge = document.getElementById('traffic-badge');
     if (trafficBadge) trafficBadge.innerHTML = `<i class="fa-solid fa-car"></i> Traffic: ${traffic ? 'ON' : 'OFF'}`;
   }
-
-  // 2. Farmlands & Registered Player Farms
-  const registeredFarmsMap = {};
-  let totalLandCount = 0;
-  let globalNetWorthSum = 0;
-
-  try {
-    const farmlandXml = parseXML(data.farmlands || data.farmlands_xml);
-    if (farmlandXml) totalLandCount = farmlandXml.querySelectorAll("farmland").length;
-    const landEl = document.getElementById('global-land-count');
-    if (landEl) landEl.textContent = `${totalLandCount} Parcels`;
-
-    const farmsXml = parseXML(data.farms || data.farms_xml);
-    if (farmsXml) {
-      farmsXml.querySelectorAll("farm").forEach(farm => {
-        const farmId = farm.getAttribute("farmId");
-        if (!farmId || farmId === "0") return;
-        let rawName = farm.getAttribute("name") || `Farm #${farmId}`;
-        registeredFarmsMap[farmId] = rawName;
-        globalNetWorthSum += parseFloat(farm.getAttribute("money") || "0");
-      });
-    }
-
-    const netWorthEl = document.getElementById('global-net-worth');
-    if (netWorthEl) netWorthEl.textContent = `$${Math.round(globalNetWorthSum).toLocaleString()}`;
-
-  } catch (e) {}
-
-  // 3. Dynamic Farm Tab Generation
-  const tabBar = document.getElementById('tab-navigation-bar');
-  const tabsWrapper = document.getElementById('dynamic-farm-tabs-wrapper');
-
-  if (tabBar && tabsWrapper) {
-    let tabButtonsHtml = `<button class="tab-btn active" data-tab="main-tab"><i class="fa-solid fa-globe"></i> MAIN OVERVIEW (AI & MAP SUMMARY)</button>`;
-    let tabPanelsHtml = "";
-
-    Object.keys(registeredFarmsMap).forEach(farmId => {
-      const farmName = registeredFarmsMap[farmId];
-      const meta = getFarmColorMeta(farmId);
-      const tabId = `farm-tab-${farmId}`;
-
-      tabButtonsHtml += `
-        <button class="tab-btn" data-tab="${tabId}" style="border-bottom: 3px solid ${meta.color};">
-          <i class="fa-solid fa-building-columns" style="color:${meta.color};"></i> ${farmName} (ID: ${farmId})
-        </button>`;
-
-      tabPanelsHtml += `
-        <div id="${tabId}" class="tab-content-panel">
-          <div class="masonry-grid">
-            <div class="dashboard-box" style="border-top: 4px solid ${meta.color};">
-              <div class="box-header"><i class="fa-solid fa-tractor" style="color:${meta.color};"></i> <h2>${farmName} - VEHICLES</h2></div>
-              <div id="farm-${farmId}-vehicles" class="box-content"><div class="loading-state">Scanning vehicles...</div></div>
-            </div>
-            <div class="dashboard-box" style="border-top: 4px solid ${meta.color};">
-              <div class="box-header"><i class="fa-solid fa-screwdriver-wrench" style="color:${meta.color};"></i> <h2>${farmName} - ATTACHMENTS & IMPLEMENTS</h2></div>
-              <div id="farm-${farmId}-implements" class="box-content"><div class="loading-state">Scanning attachments...</div></div>
-            </div>
-            <div class="dashboard-box" style="border-top: 4px solid ${meta.color};">
-              <div class="box-header"><i class="fa-solid fa-trailer" style="color:${meta.color};"></i> <h2>${farmName} - TRAILERS & WAGONS</h2></div>
-              <div id="farm-${farmId}-trailers" class="box-content"><div class="loading-state">Scanning trailers...</div></div>
-            </div>
-            <div class="dashboard-box" style="border-top: 4px solid ${meta.color};">
-              <div class="box-header"><i class="fa-solid fa-wheat-field" style="color:${meta.color};"></i> <h2>${farmName} - GRAIN HEADERS</h2></div>
-              <div id="farm-${farmId}-headers" class="box-content"><div class="loading-state">Scanning headers...</div></div>
-            </div>
-            <div class="dashboard-box" style="border-top: 4px solid ${meta.color};">
-              <div class="box-header"><i class="fa-solid fa-warehouse" style="color:${meta.color};"></i> <h2>${farmName} - SILOS & CROPS</h2></div>
-              <div id="farm-${farmId}-silos" class="box-content"><div class="loading-state">Checking silos...</div></div>
-            </div>
-            <div class="dashboard-box" style="border-top: 4px solid ${meta.color};">
-              <div class="box-header"><i class="fa-solid fa-wrench" style="color:${meta.color};"></i> <h2>${farmName} - HAND TOOLS & PLAYERS</h2></div>
-              <div id="farm-${farmId}-tools" class="box-content"><div class="loading-state">Scanning hand tools...</div></div>
-            </div>
-          </div>
-        </div>`;
-    });
-
-    tabBar.innerHTML = tabButtonsHtml;
-    tabsWrapper.innerHTML = tabPanelsHtml;
-  }
-
-  // 4. Classified Machinery, Headers & Trailers Categorization
-  try {
-    const vehXml = parseXML(data.vehicles || data.vehicles_xml);
-    let totalVehiclesCount = 0;
-    let totalAttachmentsCount = 0;
-
-    if (vehXml) {
-      const allVehicles = vehXml.querySelectorAll("vehicle");
-      totalVehiclesCount = allVehicles.length;
-
-      allVehicles.forEach(vNode => {
-        const filename = vNode.getAttribute("filename") || "";
-        const details = resolveEquipmentDetails(filename);
-        const farmId = vNode.getAttribute("farmId") || "0";
-        const category = details.category.toLowerCase();
-
-        if (category.includes("attachment") || category.includes("header") || category.includes("trailer") || category.includes("wagon")) {
-          totalAttachmentsCount++;
-        }
-
-        // License Plate & Operator
-        let plateText = vNode.getAttribute("licensePlateData") ? `<span class="badge-stat"><i class="fa-solid fa-id-card"></i> ${vNode.getAttribute("licensePlateData")}</span>` : '';
-        let modFeaturesText = details.modFeatures ? `<div class="mono" style="font-size:0.75rem; color:#facc15;"><i class="fa-solid fa-sliders"></i> ${details.modFeatures}</div>` : '';
-
-        const cardHtml = `
-          <div class="item-card" style="flex-direction:column; align-items:stretch;">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <div class="item-left">
-                ${getThumbnailHTML(details.name, "fa-tractor")}
-                <div>
-                  <div class="item-title">${details.name}</div>
-                  <div class="mono"><span class="badge-stat badge-good">${details.category}</span> ${plateText}</div>
-                </div>
-              </div>
-            </div>
-            ${modFeaturesText}
-          </div>`;
-
-        // Render to dynamic farm containers if present
-        if (farmId !== "0") {
-          const vehCont = document.getElementById(`farm-${farmId}-vehicles`);
-          const implCont = document.getElementById(`farm-${farmId}-implements`);
-          const trailCont = document.getElementById(`farm-${farmId}-trailers`);
-          const headCont = document.getElementById(`farm-${farmId}-headers`);
-
-          if (category.includes("header") && headCont) headCont.innerHTML += cardHtml;
-          else if ((category.includes("trailer") || category.includes("wagon")) && trailCont) trailCont.innerHTML += cardHtml;
-          else if ((category.includes("attachment") || category.includes("tool") || category.includes("plough")) && implCont) implCont.innerHTML += cardHtml;
-          else if (vehCont) vehCont.innerHTML += cardHtml;
-        }
-      });
-    }
-
-    const vehEl = document.getElementById('global-vehicle-count');
-    if (vehEl) vehEl.textContent = `${totalVehiclesCount}`;
-
-    const attEl = document.getElementById('global-attachment-count');
-    if (attEl) attEl.textContent = `${totalAttachmentsCount}`;
-
-  } catch (e) {}
-
-  // 5. Hand Tools Tracker
-  try {
-    const handXml = parseXML(data.handTools || data.handTools_xml);
-    if (handXml) {
-      handXml.querySelectorAll("handTool").forEach(tool => {
-        const farmId = tool.getAttribute("farmId") || "1";
-        const toolName = formatName(tool.getAttribute("filename") || "Chainsaw / Hand Tool");
-        const holder = tool.getAttribute("holder") || "Unassigned";
-
-        const toolsCont = document.getElementById(`farm-${farmId}-tools`);
-        if (toolsCont) {
-          toolsCont.innerHTML += `
-            <div class="item-card">
-              <div class="item-left">
-                ${getThumbnailHTML("TOOL", "fa-wrench")}
-                <div>
-                  <div class="item-title">${toolName}</div>
-                  <div class="mono"><span class="badge-stat badge-good"><i class="fa-solid fa-user"></i> Holder: ${holder}</span></div>
-                </div>
-              </div>
-            </div>`;
-        }
-      });
-    }
-  } catch (e) {}
-
-  // 6. Buying Stations & Field Mapping
-  try {
-    const placeXml = parseXML(data.placeables || data.placeables_xml);
-    const buyingCont = document.getElementById('buying-stations-container');
-    if (buyingCont && placeXml) {
-      let buyingHtml = "";
-      placeXml.querySelectorAll("placeable[buyingStation]").forEach(b => {
-        const stationName = formatName(b.getAttribute("filename") || "Buying Station");
-        const spotIndex = b.getAttribute("spotIndex") || "N/A";
-
-        buyingHtml += `
-          <div class="item-card">
-            <div class="item-left">
-              ${getThumbnailHTML("STORE", "fa-store")}
-              <div>
-                <div class="item-title">${stationName}</div>
-                <div class="mono"><span class="badge-stat badge-good">Location: Field / Spot #${spotIndex}</span></div>
-              </div>
-            </div>
-          </div>`;
-      });
-      buyingCont.innerHTML = buyingHtml || `<div class="loading-state"><i class="fa-solid fa-info-circle"></i> No map buying stations located.</div>`;
-    }
-  } catch (e) {}
 };
