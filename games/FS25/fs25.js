@@ -1,8 +1,8 @@
-/**
- * Version Timestamp: Thu, July 23, 2026, 11:40 PM (EDT)
- * Resilient FS25 Sync Pipeline (Complete G-Portal to Firebase RTDB Sanitized Mapping)
- * File: fs25.js
- */
+/*
+ Version Timestamp: Fri, July 24, 2026, 12:00 AM (EDT)
+ Resilient FS25 Sync Pipeline (Complete G-Portal to Firebase RTDB Sanitized Mapping)
+ File: fs25.js
+*/
 
 require('dotenv').config({ path: __dirname + '/.env' });
 const Client = require('ftp');
@@ -210,6 +210,7 @@ function processActiveFolderSync(slotNumber, activePlayers, rawStatsXml) {
           const rawXmlContent = await downloadFileBuffer(ftpClient, remoteFilePath);
           
           if (rawXmlContent && rawXmlContent.trim().length > 0) {
+            // Write standard dual-convention XML payload
             masterPayload[canonicalKey] = { data: rawXmlContent };
             masterPayload[`${canonicalKey}_xml`] = { data: rawXmlContent };
           } else {
