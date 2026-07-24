@@ -1,152 +1,139 @@
-<!--
- Version Timestamp: Thu, July 23, 2026, 7:35 PM (EDT)
- Production FS25 Modular Dashboard - HTML Entry
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FS25 Dedicated Operations Dashboard</title>
-
-  <!-- Google Fonts & FontAwesome Icons -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=JetBrains+Mono:wght@500;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-  <!-- Main Styling -->
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Firebase Web SDK v9+ -->
+  <title>FS25 Dedicated Server Dashboard</title>
+  
+  <!-- FontAwesome & Custom CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="style.css?v=20260723_02">
+  
+  <!-- Firebase Modular SDK v9 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
+    // Firebase Config
     const firebaseConfig = {
-      databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
+      databaseURL: "https://d-j-werewolf-default-rtdb.firebaseio.com"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const fs25Ref = ref(db, 'games/FS25');
 
-    window.FS25_DATA = {};
-
-    const fs25Ref = ref(db, 'fs25');
+    // Live Realtime Sync
     onValue(fs25Ref, (snapshot) => {
       const data = snapshot.val();
-      if (data) {
-        window.FS25_DATA = data;
-        if (typeof renderDashboard === 'function') {
-          renderDashboard(data);
-        }
+      if (data && typeof renderDashboard === 'function') {
+        renderDashboard(data);
       }
     }, (error) => {
-      console.error("Firebase Sync Disconnected:", error);
-    });
-
-    document.addEventListener("visibilitychange", () => {
-      if (!document.hidden && window.FS25_DATA && typeof renderDashboard === 'function') {
-        renderDashboard(window.FS25_DATA);
-      }
+      console.error("Firebase Telemetry Error:", error);
     });
   </script>
 </head>
 <body>
 
-  <div class="container">
-
-    <!-- Top Navigation Dropdown Menu -->
-    <nav class="top-menu-bar" id="dynamic-menu">
-      <div class="empty-state" style="padding:0;">Loading Navigation Menu...</div>
+  <!-- Navigation Header Layer with Mobile Sandwich Toggle -->
+  <header class="header-nav-container">
+    <div class="mobile-nav-header">
+      <span class="mobile-logo-text"><i class="fa-solid fa-gamepad"></i> FS25 Portal</span>
+      <button class="mobile-hamburger-btn" id="mobile-menu-toggle" aria-label="Toggle Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+    <nav class="dynamic-menu-bar" id="dynamic-menu">
+      <!-- Dynamic Google Sheets Links Render Here -->
     </nav>
+  </header>
 
-    <!-- Top Server Header -->
-    <header>
-      <div class="server-title">
-        <i class="fa-solid fa-server header-gold-icon"></i>
-        <span id="server-name">OneLIVIDMAN and werewolf 618</span>
-      </div>
-      <div class="server-meta">
-        <div class="meta-badge"><i class="fa-solid fa-map-location-dot"></i> <span id="server-map">Map: Riverbend Springs</span></div>
-        <div class="meta-badge"><i class="fa-solid fa-clock"></i> <span id="server-time">Time: --:--</span></div>
-        <div class="meta-badge"><i class="fa-solid fa-calendar-days"></i> <span id="server-month">Month: --</span></div>
-        <div class="meta-badge"><i class="fa-solid fa-cloud-sun"></i> <span id="server-weather">Weather: SUNNY</span></div>
-        <div class="meta-badge"><i class="fa-solid fa-users"></i> <span id="server-players">Players: 0/16</span></div>
-      </div>
-    </header>
-
-    <!-- Main Grid Panels -->
-    <div class="dashboard-grid">
-
-      <!-- Farms -->
-      <div class="card full-width">
-        <div class="card-header">
-          <span><i class="fa-solid fa-wheat-field card-gold-icon"></i> Registered Server Farms</span>
-        </div>
-        <div class="vertical-scroll-body" id="farms-container"></div>
-      </div>
-
-      <!-- Field Agronomy -->
-      <div class="card full-width">
-        <div class="card-header">
-          <span><i class="fa-solid fa-seedling card-gold-icon"></i> Field Crops & Agronomy Status</span>
-        </div>
-        <div class="vertical-scroll-body" id="fields-container"></div>
-      </div>
-
-      <!-- Contracts & Missions -->
-      <div class="card">
-        <div class="card-header">
-          <span><i class="fa-solid fa-file-contract card-gold-icon"></i> Active Contracts & Missions</span>
-        </div>
-        <div class="vertical-scroll-body" id="contracts-container"></div>
-      </div>
-
-      <!-- Installed Mods -->
-      <div class="card">
-        <div class="card-header">
-          <span><i class="fa-solid fa-puzzle-piece card-gold-icon"></i> Installed Server Mods</span>
-        </div>
-        <div class="vertical-scroll-body" id="mods-container"></div>
-      </div>
-
-      <!-- Placeables / Facilities -->
-      <div class="card">
-        <div class="card-header">
-          <span><i class="fa-solid fa-industry card-gold-icon"></i> Production Facilities & Storage</span>
-        </div>
-        <div class="vertical-scroll-body" id="production-container"></div>
-      </div>
-
-      <!-- Vehicles -->
-      <div class="card">
-        <div class="card-header">
-          <span><i class="fa-solid fa-tractor card-gold-icon"></i> Fleet Machinery & Vehicles</span>
-        </div>
-        <div class="vertical-scroll-body" id="tractors-container"></div>
-      </div>
-
-      <!-- Implements -->
-      <div class="card">
-        <div class="card-header">
-          <span><i class="fa-solid fa-screwdriver-wrench card-gold-icon"></i> Implements & Equipment</span>
-        </div>
-        <div class="vertical-scroll-body" id="implements-container"></div>
-      </div>
-
-      <!-- Market Economy -->
-      <div class="card full-width">
-        <div class="card-header">
-          <span><i class="fa-solid fa-chart-line card-gold-icon"></i> Commodity Market Prices</span>
-        </div>
-        <div class="vertical-scroll-body" id="economy-container"></div>
-      </div>
-
+  <!-- Server Status Header Bar -->
+  <div class="server-status-bar">
+    <div class="server-title">
+      <i class="fa-solid fa-server"></i>
+      <span id="server-name">OneLIVIDMAN and werewolf 618</span>
+    </div>
+    <div class="server-badges">
+      <span class="status-badge" id="server-map"><i class="fa-solid fa-map-location-dot"></i> Map: Riverbend Springs</span>
+      <span class="status-badge" id="server-time"><i class="fa-regular fa-clock"></i> Time: 00:00</span>
+      <span class="status-badge" id="server-month"><i class="fa-solid fa-calendar-days"></i> Month: Mid Spring (April)</span>
+      <span class="status-badge" id="server-weather"><i class="fa-solid fa-sun" id="weather-icon"></i> Weather: CLEAR</span>
+      <span class="status-badge" id="server-players"><i class="fa-solid fa-users"></i> Players: 0/6</span>
     </div>
   </div>
 
-  <!-- Dashboard Renderer Logic -->
-  <script src="index.js"></script>
+  <!-- Dashboard Main Grid -->
+  <main class="dashboard-grid">
+    
+    <!-- Registered Server Farms -->
+    <section class="section-panel full-width-card">
+      <h2 class="section-header"><i class="fa-solid fa-wheat-field"></i> Registered Server Farms</h2>
+      <div class="card-list" id="farms-container">
+        <div class="empty-state">Loading farm finances...</div>
+      </div>
+    </section>
+
+    <!-- Field Crops & Agronomy Status -->
+    <section class="section-panel full-width-card">
+      <h2 class="section-header"><i class="fa-solid fa-seedling"></i> Field Crops & Agronomy Status</h2>
+      <div class="card-list" id="fields-container">
+        <div class="empty-state">Loading field telemetry...</div>
+      </div>
+    </section>
+
+    <!-- Active Contracts & Missions -->
+    <section class="section-panel">
+      <h2 class="section-header"><i class="fa-solid fa-file-contract"></i> Active Contracts & Missions</h2>
+      <div class="card-list" id="contracts-container">
+        <div class="empty-state">Loading contracts...</div>
+      </div>
+    </section>
+
+    <!-- Installed Server Mods -->
+    <section class="section-panel">
+      <h2 class="section-header"><i class="fa-solid fa-puzzle-piece"></i> Installed Server Mods</h2>
+      <div class="card-list" id="mods-container">
+        <div class="empty-state">Loading mod list...</div>
+      </div>
+    </section>
+
+    <!-- Production Facilities & Storage -->
+    <section class="section-panel">
+      <h2 class="section-header"><i class="fa-solid fa-industry"></i> Production Facilities & Storage</h2>
+      <div class="card-list" id="production-container">
+        <div class="empty-state">Loading facilities...</div>
+      </div>
+    </section>
+
+    <!-- Fleet Machinery & Vehicles -->
+    <section class="section-panel">
+      <h2 class="section-header"><i class="fa-solid fa-tractor"></i> Fleet Machinery & Vehicles</h2>
+      <div class="card-list" id="tractors-container">
+        <div class="empty-state">Loading machinery...</div>
+      </div>
+    </section>
+
+    <!-- Implements & Equipment -->
+    <section class="section-panel">
+      <h2 class="section-header"><i class="fa-solid fa-screwdriver-wrench"></i> Implements & Equipment</h2>
+      <div class="card-list" id="implements-container">
+        <div class="empty-state">Loading equipment...</div>
+      </div>
+    </section>
+
+    <!-- Commodity Market Economy -->
+    <section class="section-panel full-width-card">
+      <h2 class="section-header"><i class="fa-solid fa-chart-line"></i> Commodity Market Prices</h2>
+      <div class="card-list" id="economy-container">
+        <div class="empty-state">Loading market prices...</div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- External JavaScript Logic -->
+  <script src="index.js?v=20260723_02"></script>
 </body>
 </html>
