@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 9:20 PM (EDT)
- Stylesheet with Mobile Sandwich Menu & Strict Image Thumbnail Constraints
+ Version Timestamp: Thu, July 23, 2026, 9:30 PM (EDT)
+ CSS Fix: Strict Image Size Limits for Menu Bar & Dashboard Asset Cards
  File: games/FS25/style.css
 */
 
@@ -16,7 +16,7 @@
   --shadow-main: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
 }
 
-/* Base Reset & Setup */
+/* Base Reset */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -84,6 +84,20 @@ html, body {
   align-items: center;
 }
 
+/* FIX 1: STRICT LIMITS FOR GOOGLE SHEETS MENU IMAGES */
+.dynamic-menu-bar img,
+.dropdown-content img,
+.nav-btn img {
+  width: 24px !important;
+  height: 24px !important;
+  max-width: 24px !important;
+  max-height: 24px !important;
+  object-fit: contain !important;
+  border-radius: 4px;
+  display: inline-block;
+  vertical-align: middle;
+}
+
 .nav-btn, .nav-item > .nav-btn {
   display: inline-flex;
   align-items: center;
@@ -98,7 +112,6 @@ html, body {
   border: 1px solid var(--border-color);
   cursor: pointer;
   transition: all 0.2s ease;
-  width: auto;
 }
 
 .nav-btn:hover, .nav-btn:focus {
@@ -228,7 +241,7 @@ html, body {
   gap: 0.75rem;
 }
 
-/* Card & Strict Thumbnail Container Styling */
+/* FIX 2: STRICT CARD & TELEMETRY THUMBNAIL CONTAINER CONTROLS */
 .item-card {
   display: flex;
   align-items: center;
@@ -249,7 +262,6 @@ html, body {
   min-width: 0;
 }
 
-/* STRICT IMAGE THUMBNAIL BOX CONTROL */
 .item-icon-box {
   width: 52px !important;
   height: 52px !important;
@@ -277,11 +289,6 @@ html, body {
   object-position: center !important;
   display: block;
   border-radius: 6px;
-  transition: transform 0.2s ease;
-}
-
-.item-icon-box img:hover {
-  transform: scale(1.1);
 }
 
 .item-icon-box i {
