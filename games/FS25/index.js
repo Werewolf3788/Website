@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 02:22 AM (EDT)
- Universal Cross-Browser Tactical Engine - Server Online/Offline Indicator Integrated
+ Version Timestamp: Fri, July 24, 2026, 02:45 AM (EDT)
+ Universal Cross-Browser Tactical Engine - Full Banner Metrics & Clickable Lightbox System
  File: games/FS25/index.js
 */
 
@@ -83,19 +83,126 @@ const MONTH_NAMES = [
   "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
 ];
 
+let offlineStartTime = null;
+let offlineTimerInterval = null;
+
+// Lightbox Modal Trigger Engine
+function openLightbox(imgSrc, captionText) {
+  const modal = document.getElementById('lightbox-modal');
+  const lightboxImg = document.getElementById('lightbox-img');
+  const caption = document.getElementById('lightbox-caption');
+
+  if (modal && lightboxImg) {
+    lightboxImg.src = imgSrc;
+    if (caption) caption.textContent = captionText || "FS25 Asset Preview";
+    modal.classList.add('active');
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("mobile-menu-toggle");
+  const menuBar = document.getElementById("dynamic-menu");
+
+  if (toggleBtn && menuBar) {
+    toggleBtn.addEventListener("click", () => {
+      menuBar.classList.toggle("menu-active");
+      const isExpanded = menuBar.classList.contains("menu-active");
+      toggleBtn.innerHTML = isExpanded ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
+    });
+  }
+
+  document.querySelectorAll('.dropdown-toggle').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const parent = btn.closest('.nav-item');
+      if (parent) parent.classList.toggle('open');
+    });
+  });
+
+  // Lightbox Modal Close Events
+  const modal = document.getElementById('lightbox-modal');
+  const closeBtn = document.getElementById('lightbox-close');
+
+  if (closeBtn) {
+    closeBtn.addEventListener('click', () => modal.classList.remove('active'));
+  }
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) modal.classList.remove('active');
+    });
+  }
+
+  // Delegated Click Event for Dynamic Lightbox Thumbnails
+  document.body.addEventListener('click', (e) => {
+    const target = e.target;
+    if (target.classList.contains('lightbox-trigger') || target.closest('.item-icon-box img')) {
+      const img = target.tagName === 'IMG' ? target : target.querySelector('img');
+      if (img && img.src) {
+        openLightbox(img.src, img.alt || "FS25 Asset Preview");
+      }
+    }
+  });
+
+  window.setServerStatus(navigator.onLine);
+
+  const cachedData = localStorage.getItem("fs25_last_known_telemetry");
+  if (cachedData) {
+    try {
+      window.renderDashboard(JSON.parse(cachedData));
+    } catch (e) {
+      console.warn("Cache restore skipped:", e);
+    }
+  }
+});
+
 window.setServerStatus = function(isOnline) {
   const pill = document.getElementById('server-status-pill');
   const text = document.getElementById('status-text');
+  const syncTimeEl = document.getElementById('last-sync-time');
+  const offlineTimerEl = document.getElementById('offline-timer');
+
   if (!pill || !text) return;
 
-  if (isOnline) {
+  const actualOnlineState = isOnline && navigator.onLine;
+
+  if (actualOnlineState) {
     pill.className = "status-pill status-online";
     text.textContent = "ONLINE";
+
+    if (offlineTimerInterval) {
+      clearInterval(offlineTimerInterval);
+      offlineTimerInterval = null;
+    }
+    offlineStartTime = null;
+    if (offlineTimerEl) offlineTimerEl.style.display = "none";
+    if (syncTimeEl) syncTimeEl.style.display = "inline";
   } else {
     pill.className = "status-pill status-offline";
     text.textContent = "OFFLINE";
+
+    if (!offlineStartTime) {
+      offlineStartTime = Date.now();
+      if (syncTimeEl) syncTimeEl.style.display = "none";
+      if (offlineTimerEl) offlineTimerEl.style.display = "inline";
+
+      if (offlineTimerInterval) clearInterval(offlineTimerInterval);
+      offlineTimerInterval = setInterval(() => {
+        if (!offlineStartTime) return;
+        const diffMs = Date.now() - offlineStartTime;
+        const totalSecs = Math.floor(diffMs / 1000);
+        const mins = Math.floor(totalSecs / 60);
+        const secs = totalSecs % 60;
+        
+        if (offlineTimerEl) {
+          offlineTimerEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: <strong>${mins}m ${secs}s</strong>`;
+        }
+      }, 1000);
+    }
   }
 };
+
+window.addEventListener('online', () => window.setServerStatus(true));
+window.addEventListener('offline', () => window.setServerStatus(false));
 
 function resolveEquipmentDetails(rawModelName) {
   if (!rawModelName) return { name: "Unknown Equipment", category: "General Tool" };
@@ -133,36 +240,6 @@ function renderGaugeBar(percentage, labelText) {
     </div>`;
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  const toggleBtn = document.getElementById("mobile-menu-toggle");
-  const menuBar = document.getElementById("dynamic-menu");
-
-  if (toggleBtn && menuBar) {
-    toggleBtn.addEventListener("click", () => {
-      menuBar.classList.toggle("menu-active");
-      const isExpanded = menuBar.classList.contains("menu-active");
-      toggleBtn.innerHTML = isExpanded ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
-    });
-  }
-
-  document.querySelectorAll('.dropdown-toggle').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const parent = btn.closest('.nav-item');
-      if (parent) parent.classList.toggle('open');
-    });
-  });
-
-  const cachedData = localStorage.getItem("fs25_last_known_telemetry");
-  if (cachedData) {
-    try {
-      window.renderDashboard(JSON.parse(cachedData));
-    } catch (e) {
-      console.warn("Cache restore skipped:", e);
-    }
-  }
-});
-
 function resolveCropName(typeName) {
   if (!typeName || typeName.toUpperCase() === "UNKNOWN") return "Prepared Ground";
   const key = String(typeName).toUpperCase().replace('FILLTYPE_', '').trim();
@@ -177,27 +254,27 @@ function getThumbnailHTML(key, fallbackIcon) {
     const lookupKey = String(key).toUpperCase().replace('FILLTYPE_', '').replace('VEHICLE_', '').trim();
 
     if (lookupKey.includes("TRAIN") || lookupKey.includes("LOCOMOTIVE")) {
-      return `<div class="item-icon-box"><img src="${IMAGE_ASSETS['TRAIN STATION']}" alt="Train Station" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
+      return `<div class="item-icon-box"><img src="${IMAGE_ASSETS['TRAIN STATION']}" alt="Train Station" class="lightbox-trigger" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
     }
 
     if (
       lookupKey.includes("WAGON") && 
       (lookupKey.includes("SUGARBEET") || lookupKey.includes("POTATO") || lookupKey.includes("CARROT") || lookupKey.includes("BEET") || lookupKey.includes("PARSNIP") || lookupKey.includes("ROOT"))
     ) {
-      return `<div class="item-icon-box"><img src="${IMAGE_ASSETS['WAGON ROOTS']}" alt="Root Crop Wagon" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
+      return `<div class="item-icon-box"><img src="${IMAGE_ASSETS['WAGON ROOTS']}" alt="Root Crop Wagon" class="lightbox-trigger" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
     }
 
     if (lookupKey.includes("SILO")) {
-      return `<div class="item-icon-box"><img src="${IMAGE_ASSETS['SILO']}" alt="Silo" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
+      return `<div class="item-icon-box"><img src="${IMAGE_ASSETS['SILO']}" alt="Silo" class="lightbox-trigger" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
     }
 
     if (IMAGE_ASSETS[lookupKey]) {
-      return `<div class="item-icon-box"><img src="${IMAGE_ASSETS[lookupKey]}" alt="${lookupKey}" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
+      return `<div class="item-icon-box"><img src="${IMAGE_ASSETS[lookupKey]}" alt="${lookupKey}" class="lightbox-trigger" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
     }
 
     for (const [assetName, path] of Object.entries(IMAGE_ASSETS)) {
       if (lookupKey.includes(assetName) || assetName.includes(lookupKey)) {
-        return `<div class="item-icon-box"><img src="${path}" alt="${assetName}" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
+        return `<div class="item-icon-box"><img src="${path}" alt="${assetName}" class="lightbox-trigger" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
       }
     }
   } catch (e) {
@@ -245,7 +322,6 @@ window.renderDashboard = function(data) {
     return;
   }
 
-  // Active Telemetry Signal Received -> Set Banner to ONLINE
   window.setServerStatus(true);
 
   try {
@@ -258,22 +334,23 @@ window.renderDashboard = function(data) {
     syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Last Telemetry Sync: <strong style="color:#22c55e;">${now.toLocaleTimeString()}</strong>`;
   }
 
-  // 1. In-Game Time & Month Banner
+  // 1. In-Game Time, Month, Weather, Map Name & Players Banner Badges
   try {
     const statsXml = parseXML(data.stats || data.dedicatedServerConfig_xml);
     const envXml = parseXML(data.environment || data.environment_xml);
     
     let hours = 8, mins = 50, monthText = "Early Autumn (September)";
+    let weatherText = "Clear", weatherIcon = "fa-sun";
 
     if (statsXml) {
       const serverNode = statsXml.querySelector("Server");
       if (serverNode) {
         const gameName = serverNode.getAttribute("name");
-        const mapName = serverNode.getAttribute("mapName");
+        const mapName = serverNode.getAttribute("mapName") || "Riverbend Springs";
         const rawDayTime = parseFloat(serverNode.getAttribute("dayTime") || "0");
 
         if (gameName) document.getElementById('server-name').textContent = gameName;
-        if (mapName) document.getElementById('server-map').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
+        document.getElementById('server-map').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
 
         if (rawDayTime > 0) {
           const totalMinutes = Math.floor(rawDayTime / 60000);
@@ -301,6 +378,14 @@ window.renderDashboard = function(data) {
         const mIdx = parseInt(monthNode.textContent.trim());
         if (!isNaN(mIdx) && mIdx >= 1 && mIdx <= 12) monthText = MONTH_NAMES[mIdx - 1];
       }
+
+      const weatherNode = envXml.querySelector("weather") || envXml.querySelector("forecast");
+      if (weatherNode) {
+        const type = (weatherNode.getAttribute("type") || weatherNode.textContent || "").toLowerCase();
+        if (type.includes("rain")) { weatherText = "Rainy"; weatherIcon = "fa-cloud-rain"; }
+        else if (type.includes("snow")) { weatherText = "Snowing"; weatherIcon = "fa-snowflake"; }
+        else if (type.includes("cloud")) { weatherText = "Overcast"; weatherIcon = "fa-cloud"; }
+      }
     }
 
     const timeEl = document.getElementById('server-time');
@@ -308,6 +393,10 @@ window.renderDashboard = function(data) {
 
     const monthEl = document.getElementById('server-month');
     if (monthEl) monthEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Month: ${monthText}`;
+
+    const weatherEl = document.getElementById('server-weather');
+    if (weatherEl) weatherEl.innerHTML = `<i class="fa-solid ${weatherIcon}"></i> Weather: ${weatherText}`;
+
   } catch (e) { console.error("Banner Render Error:", e); }
 
   // 2. Farmlands Lookup Map
