@@ -1,12 +1,12 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 11:20 PM (EDT)
- Resilient FS25 Realtime Telemetry Renderer (Mapped to /fs25 schema)
+ Version Timestamp: Thu, July 23, 2026, 11:45 PM (EDT)
+ Resilient FS25 Realtime Telemetry Renderer - Multi-Feed Mod Tag Extractor
  File: games/FS25/index.js
 */
 
 const menuCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
 
-// Local Asset Image Registry
+// GitHub Image Asset Registry
 const IMAGE_ASSETS = {
   "BARLEY": "images/Barley.JPG",
   "BEETROOT": "images/Beetroot.JPG",
@@ -62,7 +62,7 @@ const MONTH_NAMES = [
   "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
 ];
 
-// Initialize UI & Navigation
+// Initialize Navigation & UI Event Listeners
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("mobile-menu-toggle");
   const menuBar = document.getElementById("dynamic-menu");
@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
   loadGoogleSheetsMenu();
 });
 
-// Dynamic CSV Navigation Bar Loader
+// Dynamic CSV Navigation Menu Loader
 async function loadGoogleSheetsMenu() {
   try {
     const response = await fetch(`${menuCsvUrl}&v=${Date.now()}`);
@@ -202,10 +202,9 @@ function formatName(str) {
   return clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').toUpperCase();
 }
 
-function parseXML(xmlNode) {
-  if (!xmlNode) return null;
-  // Handle fs25.js payload structure: object with .data field containing raw XML string
-  const rawText = typeof xmlNode === 'object' ? (xmlNode.data || xmlNode.content || xmlNode) : xmlNode;
+function parseXML(node) {
+  if (!node) return null;
+  const rawText = typeof node === 'object' ? (node.data || node.content || node) : node;
   if (!rawText || typeof rawText !== 'string') return null;
   try {
     const parser = new DOMParser();
@@ -214,7 +213,7 @@ function parseXML(xmlNode) {
   } catch (e) { return null; }
 }
 
-// Attach directly to Window Scope so Firebase can invoke it reliably
+// Global scope attachment for Firebase listener
 window.renderDashboard = function(data) {
   if (!data) return;
 
@@ -293,7 +292,7 @@ window.renderDashboard = function(data) {
     else if (weatherState.includes("CLOUD")) bodyEl.classList.add("weather-cloudy");
   } catch (e) { console.error("Environment Render Error:", e); }
 
-  // 2. Server Header Config & Active Player Count (Pulls directly from fs25.js payload)
+  // 2. Server Status & Active Players
   try {
     const statsXml = parseXML(data.stats || data.dedicatedServerConfig || data.gameStats);
     if (statsXml) {
@@ -315,7 +314,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Stats Render Error:", e); }
 
-  // 3. Registered Farms & Ownership Mapping
+  // 3. Registered Server Farms
   const farmlandOwnership = {};
   try {
     const farmsXml = parseXML(data.farms);
@@ -347,7 +346,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Farms Render Error:", e); }
 
-  // 4. Field Crops, Agronomy Status & Image Thumbnails
+  // 4. Field Crops & Agronomy Status
   try {
     const fieldsXml = parseXML(data.fields);
     const fieldsContainer = document.getElementById('fields-container');
@@ -425,17 +424,23 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Contracts Render Error:", e); }
 
-  // 6. Installed Server Mods
+  // 6. INSTALLED SERVER MODS (Pulls explicitly from dedicated-server-stats XML payload)
   try {
     const modsContainer = document.getElementById('mods-container');
     let modsHtml = "";
-    const modSource = parseXML(data.stats || data.careerSavegame);
     
-    if (modSource && modsContainer) {
-      modSource.querySelectorAll("mod").forEach(m => {
-        const rawFilename = m.getAttribute("filename") || m.getAttribute("title") || m.getAttribute("modName");
-        if (rawFilename) {
-          const cleanTitle = formatName(rawFilename);
+    // Check data.mods, data.stats, and data.careerSavegame
+    const modXml = parseXML(data.mods) || parseXML(data.stats) || parseXML(data.careerSavegame);
+    
+    if (modXml && modsContainer) {
+      const modNodes = modXml.querySelectorAll("mod, Mods mod, Mod, modHeader");
+      
+      modNodes.forEach(m => {
+        const title = m.getAttribute("title") || m.getAttribute("name") || m.getAttribute("filename") || m.textContent;
+        const author = m.getAttribute("author") || "Community Mod";
+        
+        if (title && title.trim().length > 0) {
+          const cleanTitle = formatName(title);
           const thumbnail = getThumbnailHTML(cleanTitle, "fa-puzzle-piece");
 
           modsHtml += `
@@ -444,13 +449,14 @@ window.renderDashboard = function(data) {
                 ${thumbnail}
                 <div>
                   <div class="item-title">${cleanTitle}</div>
-                  <span class="badge-stat">Active Mod</span>
+                  <div class="mono" style="color:#64748b; font-size:0.75rem;">Author: ${author}</div>
                 </div>
               </div>
+              <span class="badge-stat">Active Mod</span>
             </div>`;
         }
       });
-      modsContainer.innerHTML = modsHtml || '<div class="empty-state">No installed mods detected.</div>';
+      modsContainer.innerHTML = modsHtml || '<div class="empty-state">No installed mods detected in XML payload.</div>';
     }
   } catch (e) { console.error("Mods Render Error:", e); }
 
