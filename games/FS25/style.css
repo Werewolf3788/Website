@@ -1,11 +1,10 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 05:40 PM (EDT)
+ Version Timestamp: Fri, July 24, 2026, 05:45 PM (EDT)
  Resilient FS25 Tactical Theme - Clean Background & Compact Mod Cards Architecture
  File: games/FS25/style.css
 */
 
 :root {
-  /* CLEAN DARK VIGNETTE OVER BACKGROUND (NO RED OVERLAY) */
   --bg-gradient-overlay: linear-gradient(180deg, rgba(15, 15, 15, 0.75) 0%, rgba(0, 0, 0, 0.94) 100%);
   --bg-wallpaper: url("images/Farming%20Simulator%2025%20Poster%20Image%20(background%20wallpaper).jpg");
   --surface-box: #1e1c1c;
@@ -23,7 +22,6 @@
   --font-main: 'Poppins', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Color Accents for Grid Boxes */
   --color-farms: #10b981;
   --color-infra: #0284c7;
   --color-fields: #84cc16;
@@ -39,7 +37,6 @@
   --color-economy: #14b8a6;
 }
 
-/* Reset Base Rules */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -63,7 +60,6 @@ html, body {
   flex-direction: column;
 }
 
-/* Navigation Header */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -131,45 +127,6 @@ html, body {
   border-color: var(--accent-red);
 }
 
-.nav-item {
-  position: relative;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: var(--surface-box);
-  border: 1px solid var(--border-subtle);
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-  min-width: 220px;
-  z-index: 1001;
-  padding: 8px 0;
-}
-
-.nav-item:hover .dropdown-content,
-.nav-item.open .dropdown-content {
-  display: block;
-}
-
-.dropdown-content a {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  color: var(--text-primary);
-  text-decoration: none;
-  font-size: 0.9rem;
-}
-
-.dropdown-content a:hover {
-  background: var(--accent-red);
-  color: #ffffff;
-}
-
-/* Dashboard Main Layout */
 .dashboard-container {
   width: 100vw;
   max-width: 100%;
@@ -177,7 +134,6 @@ html, body {
   flex-grow: 1;
 }
 
-/* Server Banner Header */
 .server-banner {
   background: rgba(30, 28, 28, 0.88);
   backdrop-filter: blur(8px);
@@ -268,7 +224,6 @@ html, body {
   gap: 6px;
 }
 
-/* Metrics Row */
 .metrics-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -304,7 +259,6 @@ html, body {
   text-transform: uppercase;
 }
 
-/* Multi-Column Grid System */
 .grid-layout {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -336,7 +290,6 @@ html, body {
   letter-spacing: 0.5px;
 }
 
-/* CAPPED AT EXACTLY 5 VISIBLE CARDS BEFORE SCROLLING */
 .box-content {
   display: flex;
   flex-direction: column;
@@ -357,7 +310,45 @@ html, body {
   border-radius: 4px;
 }
 
-/* Item Cards Layout */
+.dashboard-box:nth-child(1) { border-top: 4px solid var(--color-farms); }
+.dashboard-box:nth-child(1) .box-header i { color: var(--color-farms); }
+
+.dashboard-box:nth-child(2) { border-top: 4px solid var(--color-tractors); }
+.dashboard-box:nth-child(2) .box-header i { color: var(--color-tractors); }
+
+.dashboard-box:nth-child(3) { border-top: 4px solid var(--color-fields); }
+.dashboard-box:nth-child(3) .box-header i { color: var(--color-fields); }
+
+.dashboard-box:nth-child(4) { border-top: 4px solid var(--color-implements); }
+.dashboard-box:nth-child(4) .box-header i { color: var(--color-implements); }
+
+.dashboard-box:nth-child(5) { border-top: 4px solid var(--color-implements); }
+.dashboard-box:nth-child(5) .box-header i { color: var(--color-implements); }
+
+.dashboard-box:nth-child(6) { border-top: 4px solid var(--color-factories); }
+.dashboard-box:nth-child(6) .box-header i { color: var(--color-factories); }
+
+.dashboard-box:nth-child(7) { border-top: 4px solid var(--color-animals); }
+.dashboard-box:nth-child(7) .box-header i { color: var(--color-animals); }
+
+.dashboard-box:nth-child(8) { border-top: 4px solid var(--color-contracts); }
+.dashboard-box:nth-child(8) .box-header i { color: var(--color-contracts); }
+
+.dashboard-box:nth-child(9) { border-top: 4px solid var(--color-buying); }
+.dashboard-box:nth-child(9) .box-header i { color: var(--color-buying); }
+
+.dashboard-box:nth-child(10) { border-top: 4px solid var(--color-train); }
+.dashboard-box:nth-child(10) .box-header i { color: var(--color-train); }
+
+.dashboard-box:nth-child(11) { border-top: 4px solid var(--color-sales); }
+.dashboard-box:nth-child(11) .box-header i { color: var(--color-sales); }
+
+.dashboard-box:nth-child(12) { border-top: 4px solid var(--color-collectibles); }
+.dashboard-box:nth-child(12) .box-header i { color: var(--color-collectibles); }
+
+.dashboard-box:nth-child(13) { border-top: 4px solid var(--color-economy); }
+.dashboard-box:nth-child(13) .box-header i { color: var(--color-economy); }
+
 .item-card {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-subtle);
@@ -461,7 +452,6 @@ html, body {
   font-size: 0.85rem;
 }
 
-/* MOD HUB COMPACT CARDS MATCHING IMAGE_E75C19.PNG */
 .mod-hub-header {
   margin-bottom: 1.25rem;
 }
@@ -552,7 +542,6 @@ html, body {
   margin-top: 0.2rem;
 }
 
-/* Lightbox Modal System */
 .lightbox-modal {
   display: none;
   position: fixed;
@@ -613,7 +602,6 @@ html, body {
   font-size: 0.9rem;
 }
 
-/* Sticky Footer */
 .system-footer {
   background: rgba(15, 15, 15, 0.96);
   border-top: 1px solid var(--border-subtle);
@@ -631,59 +619,18 @@ html, body {
   gap: 1rem;
 }
 
-/* Tablet Adaptive Layout */
 @media (max-width: 1024px) {
-  .metrics-row {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-  }
-  .grid-layout {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-  }
-  .dashboard-container {
-    padding: 20px 32px;
-  }
+  .metrics-row { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .grid-layout { grid-template-columns: repeat(2, 1fr); gap: 24px; }
+  .dashboard-container { padding: 20px 32px; }
 }
 
 @media (max-width: 768px) {
-  .mobile-toggle {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .nav-menu {
-    display: none;
-    flex-direction: column;
-    width: 100%;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: rgba(15, 15, 15, 0.98);
-    padding: 1.5rem;
-    border-bottom: 1px solid var(--border-subtle);
-  }
-
-  .nav-menu.menu-active {
-    display: flex;
-  }
-
-  .metrics-row {
-    grid-template-columns: 1fr;
-  }
-
-  .grid-layout {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-
-  .banner-layout {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-
-  .dashboard-container {
-    padding: 16px 12px;
-  }
+  .mobile-toggle { display: flex; align-items: center; justify-content: center; }
+  .nav-menu { display: none; flex-direction: column; width: 100%; position: absolute; top: 100%; left: 0; background: rgba(15, 15, 15, 0.98); padding: 1.5rem; border-bottom: 1px solid var(--border-subtle); }
+  .nav-menu.menu-active { display: flex; }
+  .metrics-row { grid-template-columns: 1fr; }
+  .grid-layout { grid-template-columns: 1fr; gap: 16px; }
+  .banner-layout { flex-direction: column; align-items: flex-start; }
+  .dashboard-container { padding: 16px 12px; }
 }
