@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Version Timestamp: Fri, July 24, 2026, 01:40 AM (EDT) -->
+  <!-- Version Timestamp: Fri, July 24, 2026, 01:50 AM (EDT) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Realtime Tactical Dashboard</title>
@@ -33,25 +33,22 @@
 </head>
 <body>
 
-  <!-- Top Navigation Header with Static Hardcoded Menu -->
+  <!-- Top Navigation Header -->
   <header class="navbar">
     <div class="nav-brand">
       <i class="fa-solid fa-wheat-field logo-icon"></i>
       <span>FS25 TELEMETRY HUB</span>
     </div>
 
-    <!-- Sandwich Menu Toggle Button for Mobile/Tablet -->
     <button id="mobile-menu-toggle" class="mobile-toggle" aria-label="Toggle Navigation Menu">
       <i class="fa-solid fa-bars"></i>
     </button>
 
-    <!-- Permanent Native Static Menu Navigation -->
     <nav id="dynamic-menu" class="nav-menu">
       <a href="https://werewolf3788.github.io/Website/?utm_source=game_tracker&utm_medium=dashboard&utm_campaign=FS25" class="nav-btn">
         <i class="fa-solid fa-house"></i> Home
       </a>
 
-      <!-- Game Tracker Dropdown -->
       <div class="nav-item">
         <button class="nav-btn dropdown-toggle">
           <i class="fa-solid fa-gamepad"></i> Game Tracker <i class="fa-solid fa-caret-down"></i>
@@ -79,7 +76,7 @@
   <!-- Main Tactical Command Center -->
   <main class="dashboard-container">
     
-    <!-- Server Overview Banner -->
+    <!-- Row 1: Server Overview Banner -->
     <section class="server-banner">
       <div class="banner-title">
         <h1 id="server-name">Connecting to Server Telemetry...</h1>
@@ -92,11 +89,11 @@
       </div>
     </section>
 
-    <!-- Dashboard Grid Cards -->
+    <!-- Grid Layout (Rows 2, 3, 4) -->
     <div class="grid-layout">
       
-      <!-- 1. Registered Server Farms -->
-      <div class="dashboard-box">
+      <!-- ROW 2.1.1: Registered Server Farms -->
+      <div class="dashboard-box box-order-1">
         <div class="box-header">
           <i class="fa-solid fa-building-columns"></i>
           <h2>REGISTERED SERVER FARMS</h2>
@@ -106,30 +103,8 @@
         </div>
       </div>
 
-      <!-- 2. Public Infrastructure & Trade Depots -->
-      <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-city"></i>
-          <h2>PUBLIC MAP INFRASTRUCTURE</h2>
-        </div>
-        <div id="infrastructure-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Resolving public assets...</div>
-        </div>
-      </div>
-
-      <!-- 3. Field Crops & Agronomy Status -->
-      <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-seedling"></i>
-          <h2>FIELD CROPS & AGRONOMY STATUS</h2>
-        </div>
-        <div id="fields-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading field telemetry...</div>
-        </div>
-      </div>
-
-      <!-- 4. Fleet Machinery & Vehicles -->
-      <div class="dashboard-box">
+      <!-- ROW 2.2.1: Fleet Machinery & Vehicles -->
+      <div class="dashboard-box box-order-2">
         <div class="box-header">
           <i class="fa-solid fa-tractor"></i>
           <h2>FLEET MACHINERY & VEHICLES</h2>
@@ -139,19 +114,8 @@
         </div>
       </div>
 
-      <!-- 5. Implements & Equipment -->
-      <div class="dashboard-box">
-        <div class="box-header">
-          <i class="fa-solid fa-screwdriver-wrench"></i>
-          <h2>IMPLEMENTS & EQUIPMENT</h2>
-        </div>
-        <div id="implements-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning equipment fleet...</div>
-        </div>
-      </div>
-
-      <!-- 6. Server Contracts & Missions -->
-      <div class="dashboard-box">
+      <!-- ROW 2.3.1: Server Contracts & Missions -->
+      <div class="dashboard-box box-order-3">
         <div class="box-header">
           <i class="fa-solid fa-file-contract"></i>
           <h2>SERVER CONTRACTS & MISSIONS</h2>
@@ -161,30 +125,30 @@
         </div>
       </div>
 
-      <!-- 7. Dealership Used Sales Radar -->
-      <div class="dashboard-box">
+      <!-- ROW 3.1.1: Field Crops & Agronomy Status -->
+      <div class="dashboard-box box-order-4">
         <div class="box-header">
-          <i class="fa-solid fa-tags"></i>
-          <h2>DEALERSHIP USED SALES</h2>
+          <i class="fa-solid fa-seedling"></i>
+          <h2>FIELD CROPS & AGRONOMY STATUS</h2>
         </div>
-        <div id="sales-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Checking store bargains...</div>
+        <div id="fields-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading field telemetry...</div>
         </div>
       </div>
 
-      <!-- 8. Map Collectibles Tracker -->
-      <div class="dashboard-box">
+      <!-- ROW 3.2.1: Implements & Equipment -->
+      <div class="dashboard-box box-order-5">
         <div class="box-header">
-          <i class="fa-solid fa-trophy"></i>
-          <h2>MAP COLLECTIBLES TRACKER</h2>
+          <i class="fa-solid fa-screwdriver-wrench"></i>
+          <h2>IMPLEMENTS & EQUIPMENT</h2>
         </div>
-        <div id="collectibles-container" class="box-content">
-          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Tracking map discoveries...</div>
+        <div id="implements-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning equipment fleet...</div>
         </div>
       </div>
 
-      <!-- 9. Commodity Market Prices -->
-      <div class="dashboard-box">
+      <!-- ROW 3.3.1: Commodity Market Prices -->
+      <div class="dashboard-box box-order-6">
         <div class="box-header">
           <i class="fa-solid fa-chart-line"></i>
           <h2>COMMODITY MARKET PRICES</h2>
@@ -194,8 +158,49 @@
         </div>
       </div>
 
+      <!-- ROW 4.1.1: Public Map Infrastructure -->
+      <div class="dashboard-box box-order-7">
+        <div class="box-header">
+          <i class="fa-solid fa-city"></i>
+          <h2>PUBLIC MAP INFRASTRUCTURE</h2>
+        </div>
+        <div id="infrastructure-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Resolving public assets...</div>
+        </div>
+      </div>
+
+      <!-- ROW 4.2.1: Map Collectibles Tracker -->
+      <div class="dashboard-box box-order-8">
+        <div class="box-header">
+          <i class="fa-solid fa-trophy"></i>
+          <h2>MAP COLLECTIBLES TRACKER</h2>
+        </div>
+        <div id="collectibles-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Tracking map discoveries...</div>
+        </div>
+      </div>
+
+      <!-- ROW 4.3.1: Dealership Used Sales Radar -->
+      <div class="dashboard-box box-order-9">
+        <div class="box-header">
+          <i class="fa-solid fa-tags"></i>
+          <h2>DEALERSHIP USED SALES</h2>
+        </div>
+        <div id="sales-container" class="box-content">
+          <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Checking store bargains...</div>
+        </div>
+      </div>
+
     </div>
   </main>
+
+  <!-- Live Deployment Timestamp Footer -->
+  <footer class="system-footer">
+    <div class="footer-content">
+      <span><i class="fa-solid fa-code-commit"></i> Engine Deployment Timestamp: <strong>Fri, July 24, 2026, 01:50 AM (EDT)</strong></span>
+      <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Initializing...</span>
+    </div>
+  </footer>
 
   <!-- Live Firebase v9+ RTDB WebSocket Sync Stream -->
   <script type="module">
@@ -221,7 +226,6 @@
       });
     }
 
-    // Auto-Reconnect & Stale Cache Observer on Tab Focus
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
         attachLiveSync();
