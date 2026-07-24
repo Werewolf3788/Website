@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 11:45 PM (EDT)
- Resilient FS25 Realtime Telemetry Renderer - Multi-Feed Mod Tag Extractor
+ Version Timestamp: Thu, July 23, 2026, 11:59 PM (EDT)
+ Resilient FS25 Realtime Telemetry Engine - Full Farm, Vehicle & Economy Unwrapper
  File: games/FS25/index.js
 */
 
@@ -52,7 +52,9 @@ const CROP_NAME_MAP = {
   "CARROT": "Carrots", "COTTON": "Cotton", "SORGHUM": "Sorghum",
   "GREENBEAN": "Green Beans", "PEA": "Peas", "GRASS": "Grass",
   "MILK": "Milk", "EGG": "Eggs", "HONEY": "Honey", "WOOL": "Wool",
-  "WOODCHIPS": "Wood Chips"
+  "WOODCHIPS": "Wood Chips", "MANURE": "Manure", "LIQUIDMANURE": "Slurry / Liquid Manure",
+  "SILAGE": "Silage", "FORAGE": "Total Mixed Ration (TMR)", "CHAFF": "Chaff",
+  "DIGESTATE": "Digestate", "FERTILIZER": "Solid Fertilizer", "LIME": "Lime"
 };
 
 const MONTH_NAMES = [
@@ -152,8 +154,8 @@ function parseCSV(text) {
 
 function resolveCropName(typeName) {
   if (!typeName) return null;
-  const key = String(typeName).toUpperCase().replace('FILLTYPE_', '');
-  return CROP_NAME_MAP[key] || null;
+  const key = String(typeName).toUpperCase().replace('FILLTYPE_', '').trim();
+  return CROP_NAME_MAP[key] || formatName(key);
 }
 
 function getThumbnailHTML(key, fallbackIcon) {
@@ -292,7 +294,7 @@ window.renderDashboard = function(data) {
     else if (weatherState.includes("CLOUD")) bodyEl.classList.add("weather-cloudy");
   } catch (e) { console.error("Environment Render Error:", e); }
 
-  // 2. Server Status & Active Players
+  // 2. Server Status & Players
   try {
     const statsXml = parseXML(data.stats || data.dedicatedServerConfig || data.gameStats);
     if (statsXml) {
@@ -314,8 +316,9 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Stats Render Error:", e); }
 
-  // 3. Registered Server Farms
+  // 3. Registered Server Farms (With Land Ownership Summary)
   const farmlandOwnership = {};
+  const farmNamesById = {};
   try {
     const farmsXml = parseXML(data.farms);
     if (farmsXml) {
@@ -323,22 +326,30 @@ window.renderDashboard = function(data) {
       farmsXml.querySelectorAll("farm").forEach(farm => {
         const farmId = farm.getAttribute("farmId");
         const farmName = farm.getAttribute("name");
+        
         if (farmId !== "0") {
+          farmNamesById[farmId] = farmName;
+          const ownedLands = [];
+          
+          farm.querySelectorAll("farmland").forEach(fl => {
+            const landId = fl.getAttribute("id");
+            ownedLands.push(landId);
+            farmlandOwnership[landId] = farmName;
+          });
+
+          const landSummary = ownedLands.length > 0 ? `Owns ${ownedLands.length} Land Tracts (IDs: ${ownedLands.join(', ')})` : 'No land owned';
+
           farmsHtml += `
             <div class="item-card">
               <div class="item-left">
                 ${getThumbnailHTML("ELEVATOR SILO", "fa-wheat-field")}
                 <div>
                   <div class="item-title">${farmName}</div>
-                  <div class="mono" style="color:#64748b;">Farm ID: ${farmId}</div>
+                  <div class="mono" style="color:#64748b;">Farm ID: ${farmId} • ${landSummary}</div>
                 </div>
               </div>
               <div class="farm-money">$${parseFloat(farm.getAttribute("money")||"0").toLocaleString()}</div>
             </div>`;
-
-          farm.querySelectorAll("farmland").forEach(fl => {
-            farmlandOwnership[fl.getAttribute("id")] = farmName;
-          });
         }
       });
       const farmsCont = document.getElementById('farms-container');
@@ -346,7 +357,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Farms Render Error:", e); }
 
-  // 4. Field Crops & Agronomy Status
+  // 4. Field Crops & Agronomy Status (Owned Fields Only)
   try {
     const fieldsXml = parseXML(data.fields);
     const fieldsContainer = document.getElementById('fields-container');
@@ -354,34 +365,37 @@ window.renderDashboard = function(data) {
       let html = "";
       fieldsXml.querySelectorAll("field").forEach(f => {
         const id = f.getAttribute("id");
-        const rawCrop = f.getAttribute("fruitType");
-        const crop = resolveCropName(rawCrop) || "Fallow / Empty";
-        const thumbnail = getThumbnailHTML(rawCrop, "fa-seedling");
-        const groundType = formatName(f.getAttribute("groundType") || "SOWN");
-        const sprayLevel = f.getAttribute("sprayLevel") || "0";
-        const limeLevel = f.getAttribute("limeLevel") || "0";
-
         const ownerFarm = farmlandOwnership[id];
-        const isHarvest = groundType.includes("HARVEST");
-        const badgeClass = isHarvest ? "badge-harvest" : "badge-sown";
 
-        html += `
-          <div class="item-card">
-            <div class="item-left">
-              ${thumbnail}
-              <div>
-                <div class="item-title">Field #${id} - ${crop}</div>
-                <div class="mono" style="margin-top:2px;">
-                  ${ownerFarm ? `<span class="badge-stat badge-owner">Owner: ${ownerFarm}</span>` : ''}
-                  <span class="badge-stat ${badgeClass}">${groundType}</span>
-                  <span class="badge-stat">Fertilizer: ${sprayLevel * 50}%</span>
-                  <span class="badge-stat">Lime: ${limeLevel > 0 ? 'Applied' : 'Needs Lime'}</span>
+        if (ownerFarm) {
+          const rawCrop = f.getAttribute("fruitType");
+          const crop = resolveCropName(rawCrop);
+          const thumbnail = getThumbnailHTML(rawCrop, "fa-seedling");
+          const groundType = formatName(f.getAttribute("groundType") || "SOWN");
+          const sprayLevel = f.getAttribute("sprayLevel") || "0";
+          const limeLevel = f.getAttribute("limeLevel") || "0";
+
+          const isHarvest = groundType.includes("HARVEST");
+          const badgeClass = isHarvest ? "badge-harvest" : "badge-sown";
+
+          html += `
+            <div class="item-card">
+              <div class="item-left">
+                ${thumbnail}
+                <div>
+                  <div class="item-title">Field #${id} - ${crop}</div>
+                  <div class="mono" style="margin-top:2px;">
+                    <span class="badge-stat badge-owner">Owner: ${ownerFarm}</span>
+                    <span class="badge-stat ${badgeClass}">${groundType}</span>
+                    <span class="badge-stat">Fertilizer: ${sprayLevel * 50}%</span>
+                    <span class="badge-stat">Lime: ${limeLevel > 0 ? 'Applied' : 'Needs Lime'}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>`;
+            </div>`;
+        }
       });
-      fieldsContainer.innerHTML = html || '<div class="empty-state">No field telemetry registered.</div>';
+      fieldsContainer.innerHTML = html || '<div class="empty-state">No player-owned fields currently registered.</div>';
     }
   } catch (e) { console.error("Fields Render Error:", e); }
 
@@ -424,12 +438,10 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Contracts Render Error:", e); }
 
-  // 6. INSTALLED SERVER MODS (Pulls explicitly from dedicated-server-stats XML payload)
+  // 6. Installed Server Mods
   try {
     const modsContainer = document.getElementById('mods-container');
     let modsHtml = "";
-    
-    // Check data.mods, data.stats, and data.careerSavegame
     const modXml = parseXML(data.mods) || parseXML(data.stats) || parseXML(data.careerSavegame);
     
     if (modXml && modsContainer) {
@@ -456,7 +468,7 @@ window.renderDashboard = function(data) {
             </div>`;
         }
       });
-      modsContainer.innerHTML = modsHtml || '<div class="empty-state">No installed mods detected in XML payload.</div>';
+      modsContainer.innerHTML = modsHtml || '<div class="empty-state">No installed mods detected.</div>';
     }
   } catch (e) { console.error("Mods Render Error:", e); }
 
@@ -471,6 +483,7 @@ window.renderDashboard = function(data) {
         if (filename && !filename.includes("fence") && !filename.includes("gate")) {
           const resolvedName = resolvePlaceableName(filename);
           const farmId = p.getAttribute("farmId") || "1";
+          const ownerName = farmNamesById[farmId] || `Farm ID ${farmId}`;
           const thumbnail = getThumbnailHTML(resolvedName, "fa-industry");
 
           html += `
@@ -479,7 +492,7 @@ window.renderDashboard = function(data) {
                 ${thumbnail}
                 <div>
                   <div class="item-title">${resolvedName}</div>
-                  <div class="mono" style="color:#64748b; font-size:0.75rem;">Owner: Farm ID ${farmId}</div>
+                  <div class="mono" style="color:#64748b; font-size:0.75rem;">Owner: ${ownerName}</div>
                 </div>
               </div>
               <span class="badge-stat badge-sown">Operational</span>
@@ -490,7 +503,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Production Render Error:", e); }
 
-  // 8. Fleet Vehicles
+  // 8. Fleet Vehicles & Implements (Mapped directly to Owner Farms)
   try {
     const vehXml = parseXML(data.vehicles);
     if (vehXml) {
@@ -499,13 +512,16 @@ window.renderDashboard = function(data) {
 
       vehXml.querySelectorAll("vehicle").forEach(veh => {
         const rawName = veh.getAttribute("filename") || "Vehicle";
+        const farmId = veh.getAttribute("farmId") || "1";
+        const ownerName = farmNamesById[farmId] || `Farm ID ${farmId}`;
         const formatted = formatName(rawName);
+        
         const wearNode = veh.querySelector("wearable");
         const damage = wearNode ? Math.round((1 - parseFloat(wearNode.getAttribute("damage") || "0")) * 100) : 100;
         const plateNode = veh.querySelector("licensePlate");
         const plate = plateNode ? plateNode.textContent : null;
 
-        const isTractor = rawName.toLowerCase().match(/(tractor|harvester|bigbud|truck|locomotive)/);
+        const isTractor = rawName.toLowerCase().match(/(tractor|harvester|bigbud|truck|locomotive|wheelloader|skidsteer)/);
         const fallbackIcon = isTractor ? "fa-tractor" : "fa-screwdriver-wrench";
         const thumbnail = getThumbnailHTML(formatted, fallbackIcon);
 
@@ -516,6 +532,7 @@ window.renderDashboard = function(data) {
               <div>
                 <div class="item-title">${formatted}</div>
                 <div class="mono">
+                  <span class="badge-stat badge-owner">${ownerName}</span>
                   <span class="badge-stat"><i class="fa-solid fa-wrench"></i> ${damage}% Condition</span>
                   ${plate ? `<span class="badge-stat" style="background:#fff; color:#000; font-weight:800;">${plate}</span>` : ''}
                 </div>
@@ -534,27 +551,34 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Vehicles Render Error:", e); }
 
-  // 9. Commodity Market Economy
+  // 9. Commodity Market Economy (Robust Full Unwrapper)
   try {
     const ecoXml = parseXML(data.economy);
     const ecoContainer = document.getElementById('economy-container');
     if (ecoXml && ecoContainer) {
       let html = "";
-      ecoXml.querySelectorAll("fillType").forEach(f => {
-        const rawName = f.getAttribute("name");
-        const realCropName = resolveCropName(rawName);
-        const thumbnail = getThumbnailHTML(rawName, "fa-chart-line");
-        const price = (parseFloat(f.getAttribute("price") || "0") * 1000).toFixed(2);
+      const fillNodes = ecoXml.querySelectorAll("fillType, filltype, item");
 
-        if (realCropName && parseFloat(price) > 0) {
-          html += `
-            <div class="item-card">
-              <div class="item-left">
-                ${thumbnail}
-                <div class="item-title">${realCropName}</div>
-              </div>
-              <div class="farm-money" style="font-size:0.95rem;">$${price} / kL</div>
-            </div>`;
+      fillNodes.forEach(f => {
+        const rawName = f.getAttribute("name") || f.getAttribute("fillType") || f.getAttribute("type");
+        if (rawName) {
+          const realCropName = resolveCropName(rawName);
+          const thumbnail = getThumbnailHTML(rawName, "fa-chart-line");
+          
+          let rawPrice = f.getAttribute("price") || f.getAttribute("value") || "0";
+          let priceVal = parseFloat(rawPrice);
+          if (priceVal < 10) priceVal = priceVal * 1000; // Format FS25 base multiplier
+
+          if (priceVal > 0) {
+            html += `
+              <div class="item-card">
+                <div class="item-left">
+                  ${thumbnail}
+                  <div class="item-title">${realCropName}</div>
+                </div>
+                <div class="farm-money" style="font-size:0.95rem;">$${priceVal.toFixed(2)} / kL</div>
+              </div>`;
+          }
         }
       });
       ecoContainer.innerHTML = html || '<div class="empty-state">Market economy data initializing...</div>';
