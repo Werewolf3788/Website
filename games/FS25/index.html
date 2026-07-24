@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Version Timestamp: Fri, July 24, 2026, 12:05 AM (EDT) -->
+  <!-- Version Timestamp: Fri, July 24, 2026, 12:35 AM (EDT) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Realtime Tactical Dashboard</title>
   
-  <!-- FontAwesome & CSS Styling -->
+  <!-- FontAwesome Icons & CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css?v=20260724">
+  <link rel="stylesheet" href="style.css?v=20260724_01">
 
   <!-- Core JavaScript Engine -->
-  <script src="index.js?v=20260724" defer></script>
+  <script src="index.js?v=20260724_01" defer></script>
 </head>
 <body>
 
@@ -21,11 +21,11 @@
       <i class="fa-solid fa-wheat-field logo-icon"></i>
       <span>FS25 TELEMETRY HUB</span>
     </div>
-    <button id="mobile-menu-toggle" class="mobile-toggle" aria-label="Toggle Menu">
+    <button id="mobile-menu-toggle" class="mobile-toggle" aria-label="Toggle Navigation Menu">
       <i class="fa-solid fa-bars"></i>
     </button>
     <nav id="dynamic-menu" class="nav-menu">
-      <!-- Dynamic Google Sheets Menu Injected Here -->
+      <!-- Dynamic Google Sheets Sandwich Menu Injected Here -->
     </nav>
   </header>
 
@@ -45,7 +45,7 @@
       </div>
     </section>
 
-    <!-- Dashboard Grid Cards -->
+    <!-- Dashboard Grid Cards (Hybrid 2-Column Grid on Tablets, 3-Column on Desktop) -->
     <div class="grid-layout">
       
       <!-- 1. Registered Server Farms -->
@@ -81,7 +81,7 @@
         </div>
       </div>
 
-      <!-- 4. Fleet Machinery & Tractors -->
+      <!-- 4. Fleet Machinery & Vehicles -->
       <div class="dashboard-box">
         <div class="box-header">
           <i class="fa-solid fa-tractor"></i>
@@ -114,7 +114,7 @@
         </div>
       </div>
 
-      <!-- 7. Used Vehicle Dealership Radar -->
+      <!-- 7. Dealership Used Sales Radar -->
       <div class="dashboard-box">
         <div class="box-header">
           <i class="fa-solid fa-tags"></i>
@@ -163,37 +163,24 @@
     const db = getDatabase(app);
     const fs25Ref = ref(db, 'fs25');
 
-    let isConnected = false;
-
     function attachLiveSync() {
       onValue(fs25Ref, (snapshot) => {
         const val = snapshot.val();
-        if (val) {
-          isConnected = true;
-          if (typeof window.renderDashboard === 'function') {
-            window.renderDashboard(val);
-          } else {
-            // Failsafe delay if index.js DOM loading lags
-            setTimeout(() => {
-              if (typeof window.renderDashboard === 'function') {
-                window.renderDashboard(val);
-              }
-            }, 300);
-          }
+        if (val && typeof window.renderDashboard === 'function') {
+          window.renderDashboard(val);
         }
       }, (error) => {
         console.warn("⚠️ RTDB Stream Disconnected:", error.message);
       });
     }
 
-    // Tab Focus & Inactivity Re-Sync
+    // Auto-Reconnect & Stale Cache Observer on Tab Focus
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
         attachLiveSync();
       }
     });
 
-    // Initial Telemetry Uplink
     attachLiveSync();
   </script>
 
