@@ -1,12 +1,12 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 11:59 PM (EDT)
- Resilient FS25 Realtime Telemetry Engine - Expanded Image Asset Registry
+ Version Timestamp: Thu, July 23, 2026, 12:05 AM (EDT)
+ Resilient FS25 Realtime Telemetry Engine - Full Asset Mapping for Base & Mod Images
  File: games/FS25/index.js
 */
 
 const menuCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
 
-// Full GitHub Image Asset Registry (Originals + New Uploads)
+// Full GitHub Image Asset Registry (Crops, Equipment, Buildings, and Mod Banners)
 const IMAGE_ASSETS = {
   // Crop & Commodity Assets
   "BARLEY": "images/Barley.JPG",
@@ -51,13 +51,15 @@ const IMAGE_ASSETS = {
   "RESTAURANT": "images/Restaurant.JPG",
   "TRAIN STATION": "images/Train Station.JPG",
   "AMERICAN MIDWEST TRUCK SHOP": "images/American Midwest Truck Shop.jpg",
+  "TRUCK SHOP": "images/American Midwest Truck Shop.jpg",
   "RUDOLF HOERMANN ROUND STORAGE HALL": "images/Rudolf Hoermann Round Storage Hall.jpg",
   "STORAGE HALL": "images/Rudolf Hoermann Round Storage Hall.jpg",
 
-  // Mods & System Assets
+  // Installed Server Mods
   "LIFTABLE PALLETS AND BALES": "images/Liftable Pallets And Bales.jpg",
   "LIFTABLE PALLETS": "images/Liftable Pallets And Bales.jpg",
-  "PRECISION FARMING": "images/Precision Farming.jpg"
+  "PRECISION FARMING": "images/Precision Farming.jpg",
+  "PRECISIONFARMING": "images/Precision Farming.jpg"
 };
 
 const CROP_NAME_MAP = {
@@ -80,7 +82,7 @@ const MONTH_NAMES = [
   "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
 ];
 
-// Initialize UI & Event Listeners
+// Initialize Navigation & UI Event Listeners
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("mobile-menu-toggle");
   const menuBar = document.getElementById("dynamic-menu");
@@ -211,6 +213,8 @@ function resolvePlaceableName(filename) {
   if (name.includes("bga") || name.includes("biogas")) return "Biogas Plant (BGA)";
   if (name.includes("solar")) return "Solar Array";
   if (name.includes("wind")) return "Wind Turbine";
+  if (name.includes("truck")) return "American Midwest Truck Shop";
+  if (name.includes("round") || name.includes("hall")) return "Rudolf Hoermann Storage Hall";
   return formatName(filename);
 }
 
@@ -454,7 +458,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Contracts Render Error:", e); }
 
-  // 6. Installed Server Mods
+  // 6. Installed Server Mods (Thumbnail Matched to IMAGE_ASSETS)
   try {
     const modsContainer = document.getElementById('mods-container');
     let modsHtml = "";
@@ -519,7 +523,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Production Render Error:", e); }
 
-  // 8. Fleet Vehicles & Implements (Mapped directly to Owner Farms)
+  // 8. Fleet Vehicles & Implements
   try {
     const vehXml = parseXML(data.vehicles);
     if (vehXml) {
