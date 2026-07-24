@@ -1,10 +1,9 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 01:45 AM (EDT)
- Resilient FS25 Tactical Theme - Wallpaper Image File Path Fixed
+ Version Timestamp: Fri, July 24, 2026, 01:50 AM (EDT)
+ Resilient FS25 Tactical Theme - Grid Order Standardized & Live Footer Integration
  File: games/FS25/style.css
 */
 
-/* Global CSS Variables */
 :root {
   --bg-gradient-overlay: linear-gradient(180deg, rgba(10, 10, 10, 0.82) 0%, rgba(0, 0, 0, 0.94) 100%);
   --bg-poster-image: url('images/Farming%20Simulator%2025%20Poster%20Image%20(background%20wallpaper).jpg');
@@ -17,7 +16,6 @@
   --font-base: 16px;
   --touch-target-min: 44px;
 
-  /* Custom Box Color Accents */
   --color-farms: #10b981;        /* Emerald Green */
   --color-infra: #0284c7;        /* Sky Blue */
   --color-fields: #84cc16;       /* Lime / Agronomy Green */
@@ -29,7 +27,6 @@
   --color-economy: #14b8a6;      /* Teal / Finance Market */
 }
 
-/* Reset Base Settings */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -46,9 +43,9 @@ html, body {
   background: var(--bg-gradient-overlay), var(--bg-poster-image) no-repeat center center fixed;
   background-size: cover;
   overflow-x: hidden;
+  padding-bottom: 60px;
 }
 
-/* Top Navigation Header Bar */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -77,7 +74,6 @@ html, body {
   font-size: 1.4rem;
 }
 
-/* Sandwich Menu Button */
 .mobile-toggle {
   display: none;
   background: #cc0000;
@@ -124,7 +120,6 @@ html, body {
   color: #ffffff;
 }
 
-/* Dropdown Content Container */
 .dropdown-content {
   display: none;
   position: absolute;
@@ -163,7 +158,6 @@ html, body {
   display: block;
 }
 
-/* Dashboard Container & Server Banner */
 .dashboard-container {
   padding: 24px 32px;
   max-width: 1600px;
@@ -205,16 +199,13 @@ html, body {
   color: #e2e8f0;
 }
 
-/* Grid Layout */
 .grid-layout {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 28px;
-  grid-auto-flow: dense;
   align-items: start;
 }
 
-/* Dashboard Boxes */
 .dashboard-box {
   background-color: var(--surface-box);
   border: 1px solid var(--border-subtle);
@@ -224,6 +215,34 @@ html, body {
   display: flex;
   flex-direction: column;
 }
+
+/* Explicit CSS Ordering for Standardized Layout */
+.box-order-1 { order: 1; border-top: 4px solid var(--color-farms); }
+.box-order-1 .box-header i { color: var(--color-farms); }
+
+.box-order-2 { order: 2; border-top: 4px solid var(--color-tractors); }
+.box-order-2 .box-header i { color: var(--color-tractors); }
+
+.box-order-3 { order: 3; border-top: 4px solid var(--color-contracts); }
+.box-order-3 .box-header i { color: var(--color-contracts); }
+
+.box-order-4 { order: 4; border-top: 4px solid var(--color-fields); }
+.box-order-4 .box-header i { color: var(--color-fields); }
+
+.box-order-5 { order: 5; border-top: 4px solid var(--color-implements); }
+.box-order-5 .box-header i { color: var(--color-implements); }
+
+.box-order-6 { order: 6; border-top: 4px solid var(--color-economy); }
+.box-order-6 .box-header i { color: var(--color-economy); }
+
+.box-order-7 { order: 7; border-top: 4px solid var(--color-infra); }
+.box-order-7 .box-header i { color: var(--color-infra); }
+
+.box-order-8 { order: 8; border-top: 4px solid var(--color-collectibles); }
+.box-order-8 .box-header i { color: var(--color-collectibles); }
+
+.box-order-9 { order: 9; border-top: 4px solid var(--color-sales); }
+.box-order-9 .box-header i { color: var(--color-sales); }
 
 .box-header {
   display: flex;
@@ -270,35 +289,6 @@ html, body {
   background: #cc0000;
 }
 
-/* Box Color Accents */
-.dashboard-box:nth-child(1) { border-top: 4px solid var(--color-farms); }
-.dashboard-box:nth-child(1) .box-header i { color: var(--color-farms); }
-
-.dashboard-box:nth-child(2) { border-top: 4px solid var(--color-infra); }
-.dashboard-box:nth-child(2) .box-header i { color: var(--color-infra); }
-
-.dashboard-box:nth-child(3) { border-top: 4px solid var(--color-fields); }
-.dashboard-box:nth-child(3) .box-header i { color: var(--color-fields); }
-
-.dashboard-box:nth-child(4) { border-top: 4px solid var(--color-tractors); }
-.dashboard-box:nth-child(4) .box-header i { color: var(--color-tractors); }
-
-.dashboard-box:nth-child(5) { border-top: 4px solid var(--color-implements); }
-.dashboard-box:nth-child(5) .box-header i { color: var(--color-implements); }
-
-.dashboard-box:nth-child(6) { border-top: 4px solid var(--color-contracts); }
-.dashboard-box:nth-child(6) .box-header i { color: var(--color-contracts); }
-
-.dashboard-box:nth-child(7) { border-top: 4px solid var(--color-sales); }
-.dashboard-box:nth-child(7) .box-header i { color: var(--color-sales); }
-
-.dashboard-box:nth-child(8) { border-top: 4px solid var(--color-collectibles); }
-.dashboard-box:nth-child(8) .box-header i { color: var(--color-collectibles); }
-
-.dashboard-box:nth-child(9) { border-top: 4px solid var(--color-economy); }
-.dashboard-box:nth-child(9) .box-header i { color: var(--color-economy); }
-
-/* Item Cards - Dynamic Height */
 .item-card {
   display: flex;
   justify-content: space-between;
@@ -372,7 +362,6 @@ html, body {
   margin-top: 6px;
 }
 
-/* Status Badges */
 .badge-stat {
   display: inline-flex;
   align-items: center;
@@ -445,8 +434,38 @@ html, body {
   font-size: 0.9rem;
 }
 
-/* Responsive Navigation Breakpoints */
-@media (max-width: 1024px) {
+/* System Live Footer */
+.system-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: rgba(30, 28, 28, 0.98);
+  border-top: 2px solid #cc0000;
+  padding: 10px 24px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  color: #94a3b8;
+  z-index: 1000;
+  backdrop-filter: blur(8px);
+}
+
+.footer-content {
+  max-width: 1600px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.footer-content strong {
+  color: #ffffff;
+}
+
+/* Responsive Navigation & Grid Breakpoints */
+@media (max-width: 1200px) {
   .mobile-toggle {
     display: flex !important;
   }
@@ -494,5 +513,10 @@ html, body {
 
   .dashboard-container {
     padding: 16px 12px;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
