@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Version Timestamp: Fri, July 24, 2026, 12:45 AM (EDT) -->
+  <!-- Version Timestamp: Fri, July 24, 2026, 01:40 AM (EDT) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Realtime Tactical Dashboard</title>
@@ -33,17 +33,46 @@
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  <!-- Top Navigation Header with Static Hardcoded Menu -->
   <header class="navbar">
     <div class="nav-brand">
       <i class="fa-solid fa-wheat-field logo-icon"></i>
       <span>FS25 TELEMETRY HUB</span>
     </div>
+
+    <!-- Sandwich Menu Toggle Button for Mobile/Tablet -->
     <button id="mobile-menu-toggle" class="mobile-toggle" aria-label="Toggle Navigation Menu">
       <i class="fa-solid fa-bars"></i>
     </button>
+
+    <!-- Permanent Native Static Menu Navigation -->
     <nav id="dynamic-menu" class="nav-menu">
-      <!-- Dynamic Google Sheets Sandwich Menu Injected Here -->
+      <a href="https://werewolf3788.github.io/Website/?utm_source=game_tracker&utm_medium=dashboard&utm_campaign=FS25" class="nav-btn">
+        <i class="fa-solid fa-house"></i> Home
+      </a>
+
+      <!-- Game Tracker Dropdown -->
+      <div class="nav-item">
+        <button class="nav-btn dropdown-toggle">
+          <i class="fa-solid fa-gamepad"></i> Game Tracker <i class="fa-solid fa-caret-down"></i>
+        </button>
+        <div class="dropdown-content">
+          <a href="https://werewolf3788.github.io/Website/games/FS25/?utm_source=game_tracker&utm_medium=dashboard&utm_campaign=FS25">
+            <i class="fa-solid fa-tractor"></i> FS25 Telemetry Hub
+          </a>
+          <a href="https://werewolf3788.github.io/Website/games/?utm_source=game_tracker&utm_medium=dashboard&utm_campaign=FS25">
+            <i class="fa-solid fa-list-check"></i> All Trackers
+          </a>
+        </div>
+      </div>
+
+      <a href="https://werewolf3788.github.io/Website/music/?utm_source=game_tracker&utm_medium=dashboard&utm_campaign=FS25" class="nav-btn">
+        <i class="fa-solid fa-music"></i> Music Hub
+      </a>
+      
+      <a href="https://werewolf3788.github.io/Website/movies/?utm_source=game_tracker&utm_medium=dashboard&utm_campaign=FS25" class="nav-btn">
+        <i class="fa-solid fa-film"></i> Movies
+      </a>
     </nav>
   </header>
 
@@ -63,7 +92,7 @@
       </div>
     </section>
 
-    <!-- Dashboard Grid Cards (Hybrid 2-Column Grid on Tablets, 3-Column on Desktop) -->
+    <!-- Dashboard Grid Cards -->
     <div class="grid-layout">
       
       <!-- 1. Registered Server Farms -->
