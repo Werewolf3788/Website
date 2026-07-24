@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Version Timestamp: Fri, July 24, 2026, 03:40 PM (EDT) -->
+  <!-- Version Timestamp: Fri, July 24, 2026, 03:42 PM (EDT) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Real-Time Tactical Hub & Mod Directory</title>
@@ -22,9 +22,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- Static Stylesheet and JavaScript Imports with Cache-Buster -->
-  <link rel="stylesheet" href="style.css?v=20260724_1540">
-  <script src="index.js?v=20260724_1540" defer></script>
+  <!-- Static Stylesheet and JavaScript Imports with Smart Cache-Buster -->
+  <link rel="stylesheet" href="style.css?v=20260724_1542">
+  <script src="index.js?v=20260724_1542" defer></script>
 </head>
 <body>
 
@@ -46,7 +46,7 @@
     </nav>
   </header>
 
-  <!-- Main Command Dashboard -->
+  <!-- Main Command Dashboard Container -->
   <main class="dashboard-container">
     
     <!-- Top Global Server Telemetry Banner -->
@@ -61,124 +61,112 @@
         </div>
         <div class="banner-title">
           <div class="server-header-line">
-            <h1 id="server-name">Connecting to Dedicated Server...</h1>
-            <span id="server-status-pill" class="status-pill status-offline">
-              <span class="status-dot"></span> <span id="status-text">OFFLINE</span>
+            <h1 id="server-name">OneLIVIDMAN and werewolf 618</h1>
+            <span id="server-status-pill" class="status-pill status-online">
+              <span class="status-dot"></span> <span id="status-text">ONLINE</span>
             </span>
           </div>
           <div class="banner-badges">
-            <span id="server-map" class="badge"><i class="fa-solid fa-map-location-dot"></i> Map: Scanning...</span>
-            <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: --:--</span>
-            <span id="time-speed-badge" class="badge" style="border:1px solid #facc15; color:#facc15;"><i class="fa-solid fa-forward-fast"></i> Speed: 1x</span>
-            <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Month: --</span>
-            <span id="server-weather" class="badge"><i class="fa-solid fa-sun"></i> Weather: --</span>
+            <span id="server-map" class="badge"><i class="fa-solid fa-map-location-dot"></i> Map: Riverbend Springs</span>
+            <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: 22:25</span>
+            <span id="time-speed-badge" class="badge" style="border:1px solid #facc15; color:#facc15;"><i class="fa-solid fa-forward-fast"></i> Speed: 5x</span>
+            <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Month: Early Autumn (September)</span>
+            <span id="server-weather" class="badge"><i class="fa-solid fa-sun"></i> Weather: Clear</span>
             <span id="server-players" class="badge"><i class="fa-solid fa-users"></i> Players: 0/6</span>
-            <span id="traffic-badge" class="badge" style="border:1px solid #38bdf8;"><i class="fa-solid fa-car"></i> Traffic: --</span>
+            <span id="traffic-badge" class="badge" style="border:1px solid #38bdf8;"><i class="fa-solid fa-car"></i> Traffic: ON</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Navigation Tab Bar -->
-    <div id="tab-navigation-bar" class="tab-bar-container">
-      <button type="button" class="tab-btn active" data-tab="main-tab">
-        <i class="fa-solid fa-globe"></i> MAIN OVERVIEW
-      </button>
-      <button type="button" class="tab-btn" data-tab="mod-hub-tab">
-        <i class="fa-solid fa-cubes"></i> MOD HUB & EXTENSIONS
-      </button>
-      <span id="dynamic-farm-tabs"></span>
+    <!-- Global Key Metrics Summary Row -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <i class="fa-solid fa-scale-balanced metric-icon" style="color:#4ade80;"></i>
+        <div><div class="metric-value" id="global-net-worth">$1,000,000</div><div class="metric-label">Global Net Balance</div></div>
+      </div>
+      <div class="metric-card">
+        <i class="fa-solid fa-tractor metric-icon" style="color:#ef4444;"></i>
+        <div><div class="metric-value" id="global-vehicle-count">13</div><div class="metric-label">Total Fleet Machinery</div></div>
+      </div>
+      <div class="metric-card">
+        <i class="fa-solid fa-trophy metric-icon" style="color:#facc15;"></i>
+        <div><div class="metric-value" id="global-collectibles-count">0 / 25</div><div class="metric-label">Collectibles Found</div></div>
+      </div>
+      <div class="metric-card">
+        <i class="fa-solid fa-map-location-dot metric-icon" style="color:#84cc16;"></i>
+        <div><div class="metric-value" id="global-land-count">55 Fields</div><div class="metric-label">Total Map Farmland</div></div>
+      </div>
     </div>
 
-    <!-- TAB 1: MAIN SERVER & MAP OVERVIEW -->
-    <div id="main-tab" class="tab-content-panel active">
+    <!-- Main All-In-One Unified Telemetry Grid -->
+    <div class="masonry-grid">
       
-      <!-- Top Metrics Counters -->
-      <div class="metrics-row">
-        <div class="metric-card">
-          <i class="fa-solid fa-scale-balanced metric-icon" style="color:#4ade80;"></i>
-          <div><div class="metric-value" id="global-net-worth">$0</div><div class="metric-label">Global Net Balance</div></div>
-        </div>
-        <div class="metric-card">
-          <i class="fa-solid fa-tractor metric-icon" style="color:#ef4444;"></i>
-          <div><div class="metric-value" id="global-vehicle-count">0</div><div class="metric-label">Total Fleet Machinery</div></div>
-        </div>
-        <div class="metric-card">
-          <i class="fa-solid fa-trophy metric-icon" style="color:#facc15;"></i>
-          <div><div class="metric-value" id="global-collectibles-count">0 / 25</div><div class="metric-label">Collectibles Found</div></div>
-        </div>
-        <div class="metric-card">
-          <i class="fa-solid fa-map-location-dot metric-icon" style="color:#84cc16;"></i>
-          <div><div class="metric-value" id="global-land-count">0 Fields</div><div class="metric-label">Total Map Farmland</div></div>
-        </div>
+      <!-- Registered Farm Accounts & Finances (Replaced Farm Tabs) -->
+      <div class="dashboard-box" style="border-top: 4px solid #22c55e;">
+        <div class="box-header"><i class="fa-solid fa-wheat-awn" style="color:#22c55e;"></i> <h2>REGISTERED FARM ACCOUNTS & FINANCES</h2></div>
+        <div id="farms-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading farm accounts...</div></div>
       </div>
 
-      <!-- Dashboard Grid -->
-      <div class="masonry-grid">
-        
-        <!-- Active Contracts & Missions -->
-        <div class="dashboard-box box-contracts" style="border-top: 4px solid #8b5cf6;">
-          <div class="box-header"><i class="fa-solid fa-file-contract" style="color:#8b5cf6;"></i> <h2>ACTIVE MAP CONTRACTS & MISSIONS</h2></div>
-          <div id="main-contracts-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading contract telemetry...</div></div>
-        </div>
-
-        <!-- Buying Stations & Locations -->
-        <div class="dashboard-box" style="border-top: 4px solid #38bdf8;">
-          <div class="box-header"><i class="fa-solid fa-store" style="color:#38bdf8;"></i> <h2>BUYING STATIONS & SUPPLY BAYS</h2></div>
-          <div id="buying-stations-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading stations...</div></div>
-        </div>
-
-        <!-- Map Factories & Production Chains -->
-        <div class="dashboard-box box-productions" style="border-top: 4px solid #3b82f6;">
-          <div class="box-header"><i class="fa-solid fa-industry" style="color:#3b82f6;"></i> <h2>MAP FACTORIES & PRODUCTIONS</h2></div>
-          <div id="main-productions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading factory telemetry...</div></div>
-        </div>
-
-        <!-- Livestock & Husbandry Pens -->
-        <div class="dashboard-box" style="border-top: 4px solid #10b981;">
-          <div class="box-header"><i class="fa-solid fa-cow" style="color:#10b981;"></i> <h2>LIVESTOCK & ANIMAL HUSBANDRY</h2></div>
-          <div id="animal-husbandry-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading animal pens...</div></div>
-        </div>
-
-        <!-- Regional Train Network -->
-        <div class="dashboard-box box-infra" style="border-top: 4px solid #facc15;">
-          <div class="box-header"><i class="fa-solid fa-train" style="color:#facc15;"></i> <h2>REGIONAL TRAIN NETWORK</h2></div>
-          <div id="main-train-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading train network...</div></div>
-        </div>
-
-        <!-- Used Machinery Dealership Sales -->
-        <div class="dashboard-box" style="border-top: 4px solid #f97316;">
-          <div class="box-header"><i class="fa-solid fa-tags" style="color:#f97316;"></i> <h2>DEALERSHIP USED EQUIPMENT SALES</h2></div>
-          <div id="used-sales-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading store sales...</div></div>
-        </div>
-
-        <!-- Vehicle Fleet Telemetry -->
-        <div class="dashboard-box" style="border-top: 4px solid #ef4444;">
-          <div class="box-header"><i class="fa-solid fa-truck-monster" style="color:#ef4444;"></i> <h2>ACTIVE VEHICLE FLEET & WORKERS</h2></div>
-          <div id="vehicle-fleet-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading vehicle fleet...</div></div>
-        </div>
-
-        <!-- Commodity Market Prices -->
-        <div class="dashboard-box box-economy" style="border-top: 4px solid #14b8a6;">
-          <div class="box-header"><i class="fa-solid fa-chart-line" style="color:#14b8a6;"></i> <h2>COMMODITY MARKET PRICES</h2></div>
-          <div id="main-economy-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching market telemetry...</div></div>
-        </div>
-
+      <!-- Active Contracts & Missions -->
+      <div class="dashboard-box box-contracts" style="border-top: 4px solid #8b5cf6;">
+        <div class="box-header"><i class="fa-solid fa-file-contract" style="color:#8b5cf6;"></i> <h2>ACTIVE MAP CONTRACTS & MISSIONS</h2></div>
+        <div id="main-contracts-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading contract telemetry...</div></div>
       </div>
+
+      <!-- Buying Stations & Locations -->
+      <div class="dashboard-box" style="border-top: 4px solid #38bdf8;">
+        <div class="box-header"><i class="fa-solid fa-store" style="color:#38bdf8;"></i> <h2>BUYING STATIONS & SUPPLY BAYS</h2></div>
+        <div id="buying-stations-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading stations...</div></div>
+      </div>
+
+      <!-- Map Factories & Production Chains -->
+      <div class="dashboard-box box-productions" style="border-top: 4px solid #3b82f6;">
+        <div class="box-header"><i class="fa-solid fa-industry" style="color:#3b82f6;"></i> <h2>MAP FACTORIES & PRODUCTIONS</h2></div>
+        <div id="main-productions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading factory telemetry...</div></div>
+      </div>
+
+      <!-- Livestock & Husbandry Pens -->
+      <div class="dashboard-box" style="border-top: 4px solid #10b981;">
+        <div class="box-header"><i class="fa-solid fa-cow" style="color:#10b981;"></i> <h2>LIVESTOCK & ANIMAL HUSBANDRY</h2></div>
+        <div id="animal-husbandry-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading animal pens...</div></div>
+      </div>
+
+      <!-- Regional Train Network -->
+      <div class="dashboard-box box-infra" style="border-top: 4px solid #facc15;">
+        <div class="box-header"><i class="fa-solid fa-train" style="color:#facc15;"></i> <h2>REGIONAL TRAIN NETWORK</h2></div>
+        <div id="main-train-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading train network...</div></div>
+      </div>
+
+      <!-- Used Machinery Dealership Sales -->
+      <div class="dashboard-box" style="border-top: 4px solid #f97316;">
+        <div class="box-header"><i class="fa-solid fa-tags" style="color:#f97316;"></i> <h2>DEALERSHIP USED EQUIPMENT SALES</h2></div>
+        <div id="used-sales-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading store sales...</div></div>
+      </div>
+
+      <!-- Vehicle Fleet Telemetry -->
+      <div class="dashboard-box" style="border-top: 4px solid #ef4444;">
+        <div class="box-header"><i class="fa-solid fa-truck-monster" style="color:#ef4444;"></i> <h2>ACTIVE VEHICLE FLEET & WORKERS</h2></div>
+        <div id="vehicle-fleet-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading vehicle fleet...</div></div>
+      </div>
+
+      <!-- Commodity Market Prices -->
+      <div class="dashboard-box box-economy" style="border-top: 4px solid #14b8a6;">
+        <div class="box-header"><i class="fa-solid fa-chart-line" style="color:#14b8a6;"></i> <h2>COMMODITY MARKET PRICES</h2></div>
+        <div id="main-economy-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching market telemetry...</div></div>
+      </div>
+
     </div>
 
-    <!-- TAB 2: MOD HUB & EXTENSIONS -->
-    <div id="mod-hub-tab" class="tab-content-panel">
+    <!-- Server Modification Directory (Mod Hub Catalog) -->
+    <section class="mod-hub-section" style="margin-top: 3rem;">
       <div class="mod-hub-header">
-        <h2><i class="fa-solid fa-cubes"></i> SERVER MODIFICATION DIRECTORY</h2>
-        <p>Live synchronized list of server mods, equipment expansions, and map utilities.</p>
+        <h2><i class="fa-solid fa-cubes" style="color:var(--accent-gold);"></i> SERVER MODIFICATION DIRECTORY</h2>
+        <p style="color:var(--text-muted); margin-top:4px;">Live synchronized mod catalog cross-referenced against active server files.</p>
         <div id="mod-categories-bar" class="mod-categories-bar"></div>
       </div>
       <div id="mod-hub-grid" class="mod-grid"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Google Sheet CSV Mod catalog...</div></div>
-    </div>
-
-    <!-- DYNAMIC FARM PANELS WRAPPER -->
-    <div id="dynamic-farm-panels"></div>
+    </section>
 
   </main>
 
@@ -191,12 +179,12 @@
     </div>
   </div>
 
-  <!-- Persistent Sticky System Footer -->
+  <!-- Persistent System Footer -->
   <footer class="system-footer">
     <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Fri, July 24, 2026, 03:40 PM (EDT)</strong></span>
-      <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
-      <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Initializing...</span>
+      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Fri, July 24, 2026, 03:42 PM (EDT)</strong></span>
+      <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Save Game: Riverbend Springs</span>
+      <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
       <span id="offline-timer" style="display:none; color:#f87171; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: 0m 0s</span>
     </div>
   </footer>
