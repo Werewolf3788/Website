@@ -1,5 +1,5 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 03:40 PM (EDT)
+ Version Timestamp: Fri, July 24, 2026, 03:42 PM (EDT)
  Complete Deep XML Parsing Engine & Dynamic CSV Mod Catalog Syncer
  File: games/FS25/index.js
 */
@@ -69,7 +69,7 @@ function parseXML(node) {
   } catch (e) { return null; }
 }
 
-// Deep XML Search - Checks attributes, nested nodes, and child text
+// Deep XML Search Engine
 function getDeepXmlValue(node, keys) {
   if (!node) return null;
   for (const key of keys) {
@@ -110,7 +110,6 @@ window.setServerStatus = function(isOnline) {
   const text = document.getElementById('status-text');
   const syncTimeEl = document.getElementById('last-sync-time');
   const offlineTimerEl = document.getElementById('offline-timer');
-  const serverNameEl = document.getElementById('server-name');
 
   if (!pill || !text) return;
 
@@ -129,10 +128,6 @@ window.setServerStatus = function(isOnline) {
     if (syncTimeEl) syncTimeEl.style.display = "inline";
   } else {
     pill.className = "status-pill status-offline";
-    if (serverNameEl && serverNameEl.textContent.includes("Connecting")) {
-      serverNameEl.textContent = lastKnownServerName;
-    }
-
     if (!offlineStartTime) {
       offlineStartTime = Date.now();
       if (syncTimeEl) syncTimeEl.style.display = "none";
@@ -340,7 +335,7 @@ function renderModCards(categoryFilter = "ALL MODS") {
   grid.innerHTML = html || `<div class="loading-state">No mods found in this category.</div>`;
 }
 
-// Lightbox & Dynamic Modal Setup
+// Lightbox Setup
 document.addEventListener("click", (e) => {
   const trigger = e.target.closest(".lightbox-trigger, .open-mod-lightbox");
   if (trigger) {
@@ -384,7 +379,7 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// Dynamic Tab Switcher
+// DOM Loader
 document.addEventListener("DOMContentLoaded", () => {
   loadDynamicNavbar();
   loadModHubCatalog();
@@ -395,20 +390,6 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleBtn.addEventListener("click", () => menuBar.classList.toggle("menu-active"));
   }
 
-  document.addEventListener("click", (e) => {
-    const tabBtn = e.target.closest(".tab-btn");
-    if (tabBtn) {
-      e.preventDefault();
-      const targetTabId = tabBtn.getAttribute("data-tab");
-      document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
-      document.querySelectorAll(".tab-content-panel").forEach(p => p.classList.remove("active"));
-
-      tabBtn.classList.add("active");
-      const targetPanel = document.getElementById(targetTabId);
-      if (targetPanel) targetPanel.classList.add("active");
-    }
-  });
-
   if (window.lastFirebaseData && typeof window.renderDashboard === 'function') {
     window.renderDashboard(window.lastFirebaseData);
   }
@@ -418,7 +399,9 @@ document.addEventListener("DOMContentLoaded", () => {
 window.renderDashboard = function(data) {
   if (!data) return;
 
-  // Active Server Mods Processing
+  window.setServerStatus(true);
+
+  // 1. Process Active Server Mods
   activeServerMods.clear();
   const configXml = parseXML(data.dedicatedServerConfig || data.dedicatedServerConfig_xml || data.stats || data.careerSavegame);
   if (configXml) {
@@ -428,126 +411,56 @@ window.renderDashboard = function(data) {
     });
   }
 
-  const statsXml = parseXML(data.stats || data.dedicatedServerConfig_xml || data.careerSavegame);
-  const careerXml = parseXML(data.careerSavegame || data.careerSavegame_xml);
-  const serverNode = statsXml ? (statsXml.querySelector("Server") || statsXml.querySelector("settings")) : (careerXml ? careerXml.querySelector("settings") : null);
-
-  const gameName = serverNode ? (serverNode.getAttribute("name") || getDeepXmlValue(serverNode, ["savegameName"]) || "OneLIVIDMAN and werewolf 618") : "OneLIVIDMAN and werewolf 618";
-
-  lastKnownServerName = gameName;
-  window.setServerStatus(true);
-
-  // Update Footer Telemetry Info
+  // Footer Sync Info
   const syncTimeEl = document.getElementById('last-sync-time');
   if (syncTimeEl) {
     const now = new Date();
     syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Last Telemetry Sync: <strong style="color:#22c55e;">${now.toLocaleTimeString()}</strong>`;
   }
 
-  const saveSlotEl = document.getElementById('save-slot-display');
-  if (saveSlotEl) {
-    const saveName = getDeepXmlValue(careerXml || serverNode, ["savegameName"]) || data.activeSaveSlot || "1";
-    saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Game: <strong style="color:#ffffff;">${saveName}</strong>`;
-  }
-
-  // 1. Header & Server Environment Badges
-  if (serverNode) {
-    const serverNameEl = document.getElementById('server-name');
-    if (serverNameEl) serverNameEl.textContent = gameName;
-
-    const mapName = serverNode.getAttribute("mapName") || getDeepXmlValue(serverNode, ["mapTitle"]) || "Riverbend Springs";
-    const mapEl = document.getElementById('server-map');
-    if (mapEl) mapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
-
-    let rawDayTime = parseFloat(serverNode.getAttribute("dayTime") || "0");
-    let timeScale = getDeepXmlValue(serverNode, ["timeScale"]) || "5.0";
-    if (timeScale) {
-      document.getElementById('time-speed-badge').innerHTML = `<i class="fa-solid fa-forward-fast"></i> Speed: ${parseFloat(timeScale).toFixed(0)}x`;
-    }
-
-    let hours = 22, mins = 25;
-    if (rawDayTime > 0) {
-      const totalMinutes = Math.floor(rawDayTime / 60000);
-      hours = Math.floor(totalMinutes / 60) % 24;
-      mins = totalMinutes % 60;
-    }
-    const timeEl = document.getElementById('server-time');
-    if (timeEl) timeEl.innerHTML = `<i class="fa-regular fa-clock"></i> Time: ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
-
-    let traffic = getDeepXmlValue(serverNode, ["trafficEnabled"]);
-    const trafficBadge = document.getElementById('traffic-badge');
-    if (trafficBadge) {
-      trafficBadge.innerHTML = `<i class="fa-solid fa-car"></i> Traffic: ${traffic === 'true' ? 'ON' : 'OFF'}`;
-    }
-
-    const slotsNode = statsXml ? statsXml.querySelector("Slots") : null;
-    const capacity = slotsNode ? slotsNode.getAttribute("capacity") || "6" : "6";
-    const numUsed = slotsNode ? slotsNode.getAttribute("numUsed") || "0" : "0";
-    const playerBadge = document.getElementById('server-players');
-    if (playerBadge) playerBadge.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${numUsed}/${capacity}`;
-  }
-
-  // Weather & Month
-  const envXml = parseXML(data.environment || data.environment_xml || data.careerSavegame);
-  if (envXml) {
-    let rawMonth = getDeepXmlValue(envXml, ["currentMonth", "month", "plannedDaysPerPeriod"]);
-    let monthIdx = 7;
-    if (rawMonth && !isNaN(parseInt(rawMonth))) {
-      const parsedM = parseInt(rawMonth);
-      if (parsedM >= 1 && parsedM <= 12) monthIdx = parsedM;
-    }
-    const monthEl = document.getElementById('server-month');
-    if (monthEl) monthEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Month: ${MONTH_NAMES[monthIdx - 1]}`;
-
-    const weatherEl = document.getElementById('server-weather');
-    if (weatherEl) weatherEl.innerHTML = `<i class="fa-solid fa-sun"></i> Weather: Clear`;
-  }
-
-  // 2. Global Net Balance & Metrics
-  let globalNetWorthSum = 0;
+  // 2. Render Farm Accounts directly into card container
   const farmsXml = parseXML(data.farms || data.farms_xml || data.careerSavegame);
-  if (farmsXml) {
-    farmsXml.querySelectorAll("farm, statistics").forEach(farm => {
-      const money = parseFloat(farm.getAttribute("money") || getDeepXmlValue(farm, ["money"]) || "0");
-      if (!isNaN(money)) globalNetWorthSum += money;
-    });
-  }
-  const netEl = document.getElementById('global-net-worth');
-  if (netEl) netEl.textContent = `$${Math.round(globalNetWorthSum || 1000000).toLocaleString()}`;
+  const farmsCont = document.getElementById('farms-container');
+  if (farmsCont) {
+    let farmsHtml = "";
+    if (farmsXml) {
+      farmsXml.querySelectorAll("farm").forEach(farm => {
+        const farmId = farm.getAttribute("farmId") || farm.getAttribute("id");
+        const farmName = farm.getAttribute("name") || `Farm #${farmId}`;
+        const money = Math.round(parseFloat(farm.getAttribute("money") || "0"));
+        const loan = Math.round(parseFloat(farm.getAttribute("loan") || "0"));
 
-  // Collectibles
-  let collectedCount = 0;
-  const collectiblesXml = parseXML(data.collectibles || data.collectibles_xml);
-  if (collectiblesXml) {
-    collectiblesXml.querySelectorAll("collectible").forEach(c => {
-      if (c.getAttribute("collected") === "true" || c.getAttribute("isFound") === "true") collectedCount++;
-    });
+        if (farmId && farmId !== "0") {
+          farmsHtml += `
+            <div class="item-card" style="border-left: 4px solid #22c55e; flex-direction:column; align-items:flex-start;">
+              <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
+                <div class="item-left">
+                  ${getThumbnailHTML("WHEAT", "fa-wheat-awn")}
+                  <div>
+                    <div class="item-title" style="color:#facc15;">${farmName.toUpperCase()} (Farm #${farmId})</div>
+                    <div class="mono" style="margin-top:4px;"><span class="badge-stat badge-warning">Bank Loan: $${loan.toLocaleString()}</span></div>
+                  </div>
+                </div>
+                <div class="farm-money">$${money.toLocaleString()}</div>
+              </div>
+            </div>`;
+        }
+      });
+    }
+    farmsCont.innerHTML = farmsHtml || `
+      <div class="item-card" style="border-left: 4px solid #22c55e;">
+        <div class="item-left">
+          ${getThumbnailHTML("WHEAT", "fa-wheat-awn")}
+          <div>
+            <div class="item-title">PRIMARY FARM ACCOUNT</div>
+            <div class="mono"><span class="badge-stat badge-good">ACTIVE</span></div>
+          </div>
+        </div>
+        <div class="farm-money">$1,000,000</div>
+      </div>`;
   }
-  const collectEl = document.getElementById('global-collectibles-count');
-  if (collectEl) collectEl.textContent = `${collectedCount} / 25`;
 
-  // Farmland & Field Count
-  let maxFields = 0;
-  const farmlandsXml = parseXML(data.farmlands || data.farmlands_xml || data.stats);
-  if (farmlandsXml) {
-    farmlandsXml.querySelectorAll("Farmland, farmland, Field, field").forEach(f => {
-      const idVal = parseInt(f.getAttribute("id") || "0", 10);
-      if (idVal > maxFields) maxFields = idVal;
-    });
-  }
-  const landEl = document.getElementById('global-land-count');
-  if (landEl) landEl.textContent = `${maxFields || 55} Fields`;
-
-  // 3. Active Vehicle Fleet Count
-  let vehCount = 0;
-  const vehXml = parseXML(data.vehicles || data.vehicles_xml || data.stats);
-  if (vehXml) {
-    vehCount = vehXml.querySelectorAll("vehicle, Vehicle").length;
-  }
-  const vehEl = document.getElementById('global-vehicle-count');
-  if (vehEl) vehEl.textContent = `${vehCount || 13}`;
-
-  // 4. Contracts & Missions Parser
+  // 3. Contracts & Missions Parser
   const contractsCont = document.getElementById('main-contracts-container');
   const missionsXml = parseXML(data.missions || data.missions_xml);
   if (contractsCont) {
@@ -596,7 +509,7 @@ window.renderDashboard = function(data) {
     contractsCont.innerHTML = html || `<div class="item-card"><div class="item-title">All Contracts Completed</div></div>`;
   }
 
-  // 5. Buying Stations Container
+  // 4. Buying Stations Container
   const buyCont = document.getElementById('buying-stations-container');
   if (buyCont) {
     buyCont.innerHTML = `
@@ -611,7 +524,7 @@ window.renderDashboard = function(data) {
       </div>`;
   }
 
-  // 6. Factories & Production Chains
+  // 5. Factories & Production Chains
   const prodCont = document.getElementById('main-productions-container');
   const placeXml = parseXML(data.placeables || data.placeables_xml);
   if (prodCont) {
@@ -650,7 +563,7 @@ window.renderDashboard = function(data) {
     prodCont.innerHTML = prodHtml || `<div class="item-card"><div class="item-title">Public Regional Grain Elevator</div></div>`;
   }
 
-  // 7. Livestock & Husbandry
+  // 6. Livestock & Animal Husbandry
   const animalCont = document.getElementById('animal-husbandry-container');
   if (animalCont) {
     let animalHtml = "";
@@ -658,15 +571,12 @@ window.renderDashboard = function(data) {
       placeXml.querySelectorAll("placeable").forEach(p => {
         const husbandry = p.querySelector("husbandryAnimals");
         if (husbandry) {
-          const penTitle = formatName(p.getAttribute("filename") || "Animal Pen");
           const farmOwner = p.getAttribute("farmId") || "0";
 
           husbandry.querySelectorAll("animal").forEach(a => {
             const breed = formatName(a.getAttribute("subType"));
             const count = a.getAttribute("numAnimals");
             const age = a.getAttribute("age");
-
-            const grassLevel = Math.round(parseFloat(p.querySelector("husbandryMeadow fillType")?.getAttribute("fillLevel") || "0"));
 
             animalHtml += `
               <div class="item-card" style="border-left: 4px solid #10b981; flex-direction:column; align-items:flex-start;">
@@ -679,9 +589,6 @@ window.renderDashboard = function(data) {
                     </div>
                   </div>
                 </div>
-                <div class="mono" style="margin-top:6px; border-top:1px solid var(--border-color); padding-top:6px; width:100%;">
-                  <span><i class="fa-solid fa-wheat-awn"></i> Grass/Meadow Feed: ${grassLevel.toLocaleString()} L</span>
-                </div>
               </div>`;
           });
         }
@@ -690,7 +597,7 @@ window.renderDashboard = function(data) {
     animalCont.innerHTML = animalHtml || `<div class="item-card"><div class="item-title">No Active Livestock Husbandry Recorded</div></div>`;
   }
 
-  // 8. Regional Train Network Container
+  // 7. Regional Train Network
   const trainCont = document.getElementById('main-train-container');
   if (trainCont) {
     trainCont.innerHTML = `
@@ -705,7 +612,7 @@ window.renderDashboard = function(data) {
       </div>`;
   }
 
-  // 9. Dealership Used Equipment Sales
+  // 8. Dealership Sales
   const salesCont = document.getElementById('used-sales-container');
   const salesXml = parseXML(data.sales || data.sales_xml);
   if (salesCont) {
@@ -738,8 +645,9 @@ window.renderDashboard = function(data) {
     salesCont.innerHTML = salesHtml || `<div class="item-card"><div class="item-title">No Machinery Currently On Sale</div></div>`;
   }
 
-  // 10. Vehicle Fleet Telemetry
+  // 9. Vehicle Fleet Telemetry
   const fleetCont = document.getElementById('vehicle-fleet-container');
+  const vehXml = parseXML(data.vehicles || data.vehicles_xml || data.stats);
   if (fleetCont) {
     let fleetHtml = "";
     if (vehXml) {
@@ -765,7 +673,7 @@ window.renderDashboard = function(data) {
     fleetCont.innerHTML = fleetHtml || `<div class="item-card"><div class="item-title">No Active Machinery Logged</div></div>`;
   }
 
-  // 11. Commodity Market Prices
+  // 10. Commodity Market Prices
   const ecoCont = document.getElementById('main-economy-container');
   const ecoXml = parseXML(data.economy || data.economy_xml);
   if (ecoCont) {
@@ -793,6 +701,5 @@ window.renderDashboard = function(data) {
     ecoCont.innerHTML = ecoHtml || `<div class="item-card"><div class="item-title">Reading Market Economy...</div></div>`;
   }
 
-  // Update server mod badges without resetting Mod Hub layout
   renderModCards();
 };
