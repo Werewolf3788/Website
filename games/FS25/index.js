@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 11:50 PM (EDT)
- Resilient FS25 Realtime Tactical Dashboard Engine (Complete Cross-Referencing & Infrastructure Separation)
+ Version Timestamp: Fri, July 24, 2026, 12:35 AM (EDT)
+ Resilient FS25 Tactical Engine - Dynamic Gauges, Fertilizer Thresholds & Infrastructure Mapping
  File: games/FS25/index.js
 */
 
@@ -55,6 +55,7 @@ const IMAGE_ASSETS = {
   "GRAIN ELEVATOR": "images/GRAIN ELEVATOR.jpg",
   "RESTAURANT": "images/Restaurant.JPG",
   "TRAIN STATION": "images/Train Station.JPG",
+  "PUBLIC REGIONAL RAILROAD": "images/Train Station.JPG",
   "AMERICAN MIDWEST TRUCK SHOP": "images/American Midwest Truck Shop.jpg",
   "RUDOLF HOERMANN ROUND STORAGE HALL": "images/Rudolf Hoermann Round Storage Hall.jpg",
   "LIFTABLE PALLETS AND BALES": "images/Liftable Pallets And Bales.jpg",
@@ -100,6 +101,28 @@ function appendUTMParameters(urlStr) {
   } catch (e) {
     return urlStr;
   }
+}
+
+// Blended Status Color Bar Generator (Green 71-100%, Yellow 40-70%, Red 0-39%)
+function renderGaugeBar(percentage, labelText) {
+  const pct = Math.min(100, Math.max(0, Math.round(percentage)));
+  let barColor = "#ef4444"; // Red for 0 - 39%
+  if (pct >= 71) {
+    barColor = "#22c55e"; // Bright Green for 71 - 100%
+  } else if (pct >= 40) {
+    barColor = "#eab308"; // Warning Yellow for 40 - 70%
+  }
+
+  return `
+    <div class="gauge-wrapper" style="margin-top:6px; width:100%;">
+      <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#94a3b8; font-family:monospace; margin-bottom:3px;">
+        <span>${labelText}</span>
+        <span style="color:${barColor}; font-weight:bold;">${pct}%</span>
+      </div>
+      <div class="progress-container">
+        <div class="progress-bar" style="width: ${pct}%; background-color: ${barColor};"></div>
+      </div>
+    </div>`;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -177,7 +200,7 @@ async function loadGoogleSheetsMenu() {
       navGroup.className = 'nav-item';
 
       let dropdownHtml = `
-        <button class="nav-btn">
+        <button class="nav-btn dropdown-toggle">
           ${groupName} <i class="fa-solid fa-caret-down"></i>
         </button>
         <div class="dropdown-content">`;
@@ -188,6 +211,14 @@ async function loadGoogleSheetsMenu() {
 
       dropdownHtml += `</div>`;
       navGroup.innerHTML = dropdownHtml;
+
+      // Touch & Click handler for mobile/tablet menus
+      const toggle = navGroup.querySelector('.dropdown-toggle');
+      toggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        navGroup.classList.toggle('open');
+      });
+
       menuContainer.appendChild(navGroup);
     });
   } catch (err) {
@@ -201,7 +232,7 @@ function parseCSV(text) {
 }
 
 function resolveCropName(typeName) {
-  if (!typeName) return "Fallow / Empty";
+  if (!typeName || typeName.toUpperCase() === "UNKNOWN") return "Prepared Ground";
   const key = String(typeName).toUpperCase().replace('FILLTYPE_', '').trim();
   return CROP_NAME_MAP[key] || formatName(key);
 }
@@ -212,6 +243,10 @@ function getThumbnailHTML(key, fallbackIcon) {
   
   try {
     const lookupKey = String(key).toUpperCase().replace('FILLTYPE_', '').replace('VEHICLE_', '').trim();
+
+    if (lookupKey.includes("TRAIN") || lookupKey.includes("LOCOMOTIVE")) {
+      return `<div class="item-icon-box"><img src="${IMAGE_ASSETS['TRAIN STATION']}" alt="Train Station" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
+    }
 
     if (
       lookupKey.includes("WAGON") && 
@@ -369,7 +404,7 @@ window.renderDashboard = function(data) {
                 ${getThumbnailHTML("ELEVATOR SILO", "fa-wheat-field")}
                 <div>
                   <div class="item-title">${rawName}</div>
-                  <div class="mono" style="color:#64748b; font-size:0.8rem;">
+                  <div class="mono" style="color:#94a3b8; font-size:0.8rem;">
                     Manager: <span style="color:#ffffff;">${managerName}</span> (ID: ${farmId})
                   </div>
                 </div>
@@ -398,16 +433,24 @@ window.renderDashboard = function(data) {
 
         const rawCrop = f.getAttribute("fruitType");
         const crop = resolveCropName(rawCrop);
-        const thumbnail = getThumbnailHTML(rawCrop || "field", "fa-seedling");
+        const thumbnail = getThumbnailHTML(rawCrop && rawCrop.toUpperCase() !== 'UNKNOWN' ? rawCrop : "field", "fa-seedling");
         const groundType = formatName(f.getAttribute("groundType") || "SOWN");
-        const sprayLevel = f.getAttribute("sprayLevel") || "0";
+        const sprayLevel = parseInt(f.getAttribute("sprayLevel") || "0", 10);
 
-        // Precision Farming Cross-Ref
-        let pfWidth = "Standard";
+        // Green Fertilizer Badge for Max Level (Level 2), Yellow for Level 1
+        let fertilizerBadge = `<span class="badge-stat badge-danger">Fertilizer: 0%</span>`;
+        if (sprayLevel >= 2) {
+          fertilizerBadge = `<span class="badge-stat badge-good"><i class="fa-solid fa-circle-check"></i> Fertilized: 100% (Level 2)</span>`;
+        } else if (sprayLevel === 1) {
+          fertilizerBadge = `<span class="badge-stat badge-warning"><i class="fa-solid fa-triangle-exclamation"></i> Fertilized: 50% (Level 1)</span>`;
+        }
+
+        // Precision Farming Tramline Cross-Ref
+        let pfWidth = "";
         if (precisionXml) {
           const pfNode = precisionXml.querySelector(`tramlineMap farmland[farmlandId='${id}']`);
           if (pfNode) {
-            pfWidth = `${parseFloat(pfNode.getAttribute("width") || "27").toFixed(0)}m Tramline`;
+            pfWidth = `<span class="badge-stat" style="color:var(--accent-gold);">${parseFloat(pfNode.getAttribute("width") || "27").toFixed(0)}m Tramlines</span>`;
           }
         }
 
@@ -417,11 +460,11 @@ window.renderDashboard = function(data) {
               ${thumbnail}
               <div>
                 <div class="item-title">Field #${id} - ${crop}</div>
-                <div class="mono" style="margin-top:2px;">
+                <div class="mono" style="margin-top:4px;">
                   <span class="badge-stat badge-owner">${ownerFarm}</span>
                   <span class="badge-stat badge-sown">${groundType}</span>
-                  <span class="badge-stat">Fertilizer Level ${sprayLevel}</span>
-                  <span class="badge-stat" style="color:var(--accent-gold);">${pfWidth}</span>
+                  ${fertilizerBadge}
+                  ${pfWidth}
                 </div>
               </div>
             </div>
@@ -431,7 +474,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Fields Render Error:", e); }
 
-  // 5. Vehicles, Machinery & Active AI Field Workers
+  // 5. Fleet Machinery & Equipment
   try {
     const vehXml = parseXML(data.vehicles || data.vehicles_xml);
     const statsXml = parseXML(data.stats);
@@ -447,12 +490,14 @@ window.renderDashboard = function(data) {
       const farmId = vNode ? (vNode.getAttribute("farmId") || "1") : "1";
       const ownerFarm = farmNamesById[farmId] || `Farm ID ${farmId}`;
 
-      let fuelText = "";
+      let fuelGaugeHtml = "";
       if (vNode) {
         const dieselUnit = vNode.querySelector("fillUnit unit[fillType='DIESEL']");
         if (dieselUnit) {
-          const dieselLevel = Math.round(parseFloat(dieselUnit.getAttribute("fillLevel") || "0"));
-          fuelText = `<span class="badge-stat" style="color:#38bdf8;"><i class="fa-solid fa-gas-pump"></i> ${dieselLevel}L Fuel</span>`;
+          const fillLevel = parseFloat(dieselUnit.getAttribute("fillLevel") || "0");
+          // Max capacity estimate or percentage mapping
+          const pct = Math.min(100, Math.round((fillLevel / 2000) * 100));
+          fuelGaugeHtml = renderGaugeBar(pct, `Fuel Level (${Math.round(fillLevel)}L)`);
         }
       }
 
@@ -465,27 +510,29 @@ window.renderDashboard = function(data) {
       }
 
       return `
-        <div class="item-card">
-          <div class="item-left">
-            ${thumbnail}
-            <div>
-              <div class="item-title">${formatted}</div>
-              <div class="mono" style="margin-top:2px;">
-                <span class="badge-stat badge-owner">${ownerFarm}</span>
-                <span class="badge-stat">${category}</span>
-                ${fuelText}
-                ${aiStatus}
-                ${controller ? `<span class="badge-stat badge-sown"><i class="fa-solid fa-user"></i> ${controller}</span>` : ''}
+        <div class="item-card" style="flex-direction:column; align-items:stretch;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="item-left">
+              ${thumbnail}
+              <div>
+                <div class="item-title">${formatted}</div>
+                <div class="mono" style="margin-top:2px;">
+                  <span class="badge-stat badge-owner">${ownerFarm}</span>
+                  <span class="badge-stat">${category}</span>
+                  ${aiStatus}
+                  ${controller ? `<span class="badge-stat badge-sown"><i class="fa-solid fa-user"></i> ${controller}</span>` : ''}
+                </div>
               </div>
             </div>
           </div>
+          ${fuelGaugeHtml}
         </div>`;
     };
 
     if (vehXml) {
       vehXml.querySelectorAll("vehicle").forEach(v => {
         const farmId = v.getAttribute("farmId");
-        if (farmId === "0") return; // Filter out train/public vehicles from owned fleet
+        if (farmId === "0") return; // Public train/barge filter
 
         const name = v.getAttribute("filename") || "Vehicle";
         const category = v.getAttribute("category") || "Machinery";
@@ -515,43 +562,37 @@ window.renderDashboard = function(data) {
     if (implCont && implementsHtml) implCont.innerHTML = implementsHtml;
   } catch (e) { console.error("Vehicles Render Error:", e); }
 
-  // 6. Public Infrastructure & Unownable Map Assets (Store, Train, Barges, Water Stations)
+  // 6. Public Infrastructure & Train System
   try {
     const publicContainer = document.getElementById('infrastructure-container');
     const placeXml = parseXML(data.placeables || data.placeables_xml);
-    const vehXml = parseXML(data.vehicles || data.vehicles_xml);
 
     if (publicContainer) {
       let infraHtml = "";
 
-      // A. Train System Status
+      // Train Station & Regional Rail
       if (placeXml) {
         const trainNode = placeXml.querySelector("placeable[uniqueId='trainSystem']");
-        if (trainNode) {
-          const isRented = trainNode.querySelector("trainSystem")?.getAttribute("isRented") === "true";
-          const statusText = isRented ? "Rented / Active" : "Operational (Rail Network)";
-
-          infraHtml += `
-            <div class="item-card">
-              <div class="item-left">
-                ${getThumbnailHTML("FORESTRY LOCOMOTIVE", "fa-train")}
-                <div>
-                  <div class="item-title">Public Regional Railroad & Train Line</div>
-                  <div class="mono" style="margin-top:2px;">
-                    <span class="badge-stat badge-owner">Public Map Infrastructure</span>
-                    <span class="badge-stat badge-sown">${statusText}</span>
-                  </div>
+        infraHtml += `
+          <div class="item-card">
+            <div class="item-left">
+              ${getThumbnailHTML("TRAIN STATION", "fa-train")}
+              <div>
+                <div class="item-title">Public Regional Train Network</div>
+                <div class="mono" style="margin-top:2px;">
+                  <span class="badge-stat badge-owner">Public Map Asset</span>
+                  <span class="badge-stat badge-good">Operational (Rail Line)</span>
                 </div>
               </div>
-            </div>`;
-        }
+            </div>
+          </div>`;
       }
 
-      // B. Grain Barges & River Delivery Terminals
+      // River Grain Barges
       if (placeXml) {
         placeXml.querySelectorAll("placeable[uniqueId*='grainBargeTerminal']").forEach(b => {
           const uid = b.getAttribute("uniqueId");
-          const formatted = uid.includes("01") ? "East River Grain Barge Terminal" : "West River Grain Barge Terminal";
+          const formatted = uid.includes("01") ? "East River Grain Terminal" : "West River Grain Terminal";
 
           infraHtml += `
             <div class="item-card">
@@ -560,8 +601,8 @@ window.renderDashboard = function(data) {
                 <div>
                   <div class="item-title">${formatted}</div>
                   <div class="mono" style="margin-top:2px;">
-                    <span class="badge-stat badge-owner">River Freight Terminal</span>
-                    <span class="badge-stat badge-sown">Accepting Grain & Bulk</span>
+                    <span class="badge-stat badge-owner">River Terminal</span>
+                    <span class="badge-stat badge-good">Accepting Bulk Shipments</span>
                   </div>
                 </div>
               </div>
@@ -569,31 +610,26 @@ window.renderDashboard = function(data) {
         });
       }
 
-      // C. Vehicle Dealership & Animal Trader
-      if (placeXml) {
-        const storeNode = placeXml.querySelector("placeable[uniqueId*='sellingStationVehicles']");
-        if (storeNode) {
-          infraHtml += `
-            <div class="item-card">
-              <div class="item-left">
-                ${getThumbnailHTML("AMERICAN MIDWEST TRUCK SHOP", "fa-store")}
-                <div>
-                  <div class="item-title">Equipment Dealership & Repair Bay</div>
-                  <div class="mono" style="margin-top:2px;">
-                    <span class="badge-stat badge-owner">Vehicle Trader</span>
-                    <span class="badge-stat badge-sown">Open 24/7</span>
-                  </div>
-                </div>
+      // Vehicle Dealership
+      infraHtml += `
+        <div class="item-card">
+          <div class="item-left">
+            ${getThumbnailHTML("AMERICAN MIDWEST TRUCK SHOP", "fa-store")}
+            <div>
+              <div class="item-title">Equipment Dealership & Repair Bay</div>
+              <div class="mono" style="margin-top:2px;">
+                <span class="badge-stat badge-owner">Vehicle Trader</span>
+                <span class="badge-stat badge-good">Open 24/7</span>
               </div>
-            </div>`;
-        }
-      }
+            </div>
+          </div>
+        </div>`;
 
       if (infraHtml) publicContainer.innerHTML = infraHtml;
     }
   } catch (e) { console.error("Infrastructure Render Error:", e); }
 
-  // 7. Dealership Used Vehicle Sale Radar
+  // 7. Dealership Used Vehicle Sale Radar (With Condition Gauges)
   try {
     const salesContainer = document.getElementById('sales-container');
     const salesXml = parseXML(data.sales || data.sales_xml);
@@ -605,21 +641,27 @@ window.renderDashboard = function(data) {
         const formattedName = formatName(xmlFilename);
         const price = Math.round(parseFloat(item.getAttribute("price") || "0"));
         const timeLeft = item.getAttribute("timeLeft") || "0";
-        const damage = (parseFloat(item.getAttribute("damage") || "0") * 100).toFixed(0);
+        const damageVal = parseFloat(item.getAttribute("damage") || "0");
+        const wearVal = parseFloat(item.getAttribute("wear") || "0");
+
+        // Health percentage gauge (100% minus wear/damage)
+        const conditionPct = Math.round(100 - (Math.max(damageVal, wearVal) * 100));
 
         salesHtml += `
-          <div class="item-card">
-            <div class="item-left">
-              ${getThumbnailHTML(formattedName, "fa-tags")}
-              <div>
-                <div class="item-title">${formattedName} (Used Dealership)</div>
-                <div class="mono" style="margin-top:2px;">
-                  <span class="badge-stat badge-active">${timeLeft}h Left</span>
-                  <span class="badge-stat">Wear: ${damage}%</span>
+          <div class="item-card" style="flex-direction:column; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="item-left">
+                ${getThumbnailHTML(formattedName, "fa-tags")}
+                <div>
+                  <div class="item-title">${formattedName}</div>
+                  <div class="mono" style="margin-top:2px;">
+                    <span class="badge-stat badge-warning"><i class="fa-regular fa-clock"></i> ${timeLeft}h Left</span>
+                  </div>
                 </div>
               </div>
+              <div class="farm-money" style="color:var(--accent-gold);">$${price.toLocaleString()}</div>
             </div>
-            <div class="farm-money" style="color:var(--accent-gold);">$${price.toLocaleString()}</div>
+            ${renderGaugeBar(conditionPct, "Equipment Condition")}
           </div>`;
       });
 
@@ -627,7 +669,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Sales Render Error:", e); }
 
-  // 8. Dynamic Contracts & Field Missions
+  // 8. Dynamic Contracts & Field Missions (With Dynamic Completion Gauges)
   try {
     const missionsXml = parseXML(data.missions || data.missions_xml);
     const contractsContainer = document.getElementById('contracts-container');
@@ -684,16 +726,13 @@ window.renderDashboard = function(data) {
       let html = "";
       allMissions.forEach(m => {
         let thumbnail = getThumbnailHTML(m.missionType, "fa-file-contract");
-        if (m.rawCrop) thumbnail = getThumbnailHTML(m.rawCrop, "fa-file-contract");
+        if (m.rawCrop && m.rawCrop.toUpperCase() !== 'UNKNOWN') thumbnail = getThumbnailHTML(m.rawCrop, "fa-file-contract");
 
         const statusBadge = m.isAccepted 
-          ? `<span class="badge-stat badge-active">ACTIVE (${m.progressPct}%)</span>` 
+          ? `<span class="badge-stat badge-active">ACTIVE</span>` 
           : `<span class="badge-stat">AVAILABLE</span>`;
 
-        const progressBarHtml = m.isAccepted ? `
-          <div class="progress-container" style="margin-top:8px;">
-            <div class="progress-bar" style="width: ${m.progressPct}%;"></div>
-          </div>` : '';
+        const progressBarHtml = m.isAccepted ? renderGaugeBar(m.progressPct, "Contract Progress") : '';
 
         html += `
           <div class="item-card" style="flex-direction:column; align-items:stretch;">
@@ -701,7 +740,7 @@ window.renderDashboard = function(data) {
               <div class="item-left">
                 ${thumbnail}
                 <div>
-                  <div class="item-title">${m.missionType} ${m.cropTitle !== "Fallow / Empty" ? `(${m.cropTitle})` : ''}</div>
+                  <div class="item-title">${m.missionType} ${m.cropTitle !== "Prepared Ground" ? `(${m.cropTitle})` : ''}</div>
                   <div class="mono" style="margin-top:2px;">
                     ${statusBadge}
                     <span class="badge-stat">Target: Field #${m.fieldId}</span>
@@ -710,7 +749,7 @@ window.renderDashboard = function(data) {
               </div>
               <div class="farm-money" style="font-size:0.95rem;">$${m.reward.toLocaleString()}</div>
             </div>
-            <div class="mono" style="font-size:0.75rem; color:#94a3b8; margin-top:6px;">
+            <div class="mono" style="font-size:0.75rem; color:#94a3b8; margin-top:4px;">
               <i class="fa-solid fa-user-gear"></i> ${m.workerText}
             </div>
             ${progressBarHtml}
@@ -721,10 +760,9 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Contracts Render Error:", e); }
 
-  // 9. Map Collectibles Discovery Radar
+  // 9. Map Collectibles Tracker
   try {
     const collectiblesContainer = document.getElementById('collectibles-container');
-    const careerXml = parseXML(data.careerSavegame || data.careerSavegame_xml);
     const colXml = parseXML(data.collectibles || data.collectibles_xml);
 
     if (collectiblesContainer) {
@@ -749,18 +787,15 @@ window.renderDashboard = function(data) {
             <div class="item-left">
               ${getThumbnailHTML("DESTRUCTIBLE ROCK", "fa-trophy")}
               <div>
-                <div class="item-title">Map Collectibles Found</div>
+                <div class="item-title">Map Collectibles Discovered</div>
                 <div class="mono" style="margin-top:2px;">
-                  <span class="badge-stat badge-owner">${foundCount} / ${totalCollectibles} Discovered</span>
-                  <span class="badge-stat">${totalCollectibles - foundCount} Remaining</span>
+                  <span class="badge-stat badge-owner">${foundCount} / ${totalCollectibles} Found</span>
                 </div>
               </div>
             </div>
             <div class="farm-money" style="font-size:1.1rem; color:var(--accent-gold);">${foundPct}%</div>
           </div>
-          <div class="progress-container" style="margin-top:10px;">
-            <div class="progress-bar" style="width: ${foundPct}%; background:var(--accent-gold);"></div>
-          </div>
+          ${renderGaugeBar(foundPct, "Collection Progress")}
         </div>`;
     }
   } catch (e) { console.error("Collectibles Render Error:", e); }
