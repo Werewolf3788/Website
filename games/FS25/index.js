@@ -1,5 +1,5 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 04:35 PM (EDT)
+ Version Timestamp: Fri, July 24, 2026, 04:45 PM (EDT)
  Complete Deep XML & Firebase Direct Path Resolver
  File: games/FS25/index.js
 */
@@ -517,7 +517,7 @@ window.renderDashboard = function(data) {
     infraCont.innerHTML = infraHtml;
   }
 
-  // 3. Field Crops & Precision Agronomy Status (fields-container)
+  // 3. Field Crops & Agronomy Status (fields-container)
   const fieldsCont = document.getElementById('fields-container');
   const fieldsRaw = getFirebasePayload(data, "fields") || getFirebasePayload(data, "farmland");
   const precisionRaw = getFirebasePayload(data, "precisionFarming");
