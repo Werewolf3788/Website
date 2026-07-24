@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 02:45 AM (EDT)
- Resilient FS25 Tactical Theme - Banner Map Thumbnail & Lightbox Modal Integration
+ Version Timestamp: Fri, July 24, 2026, 03:20 AM (EDT)
+ Resilient FS25 Tactical Theme - Dynamic Banner Offline Pill Timer Styling
  File: games/FS25/style.css
 */
 
@@ -164,7 +164,7 @@ html, body {
   margin: 0 auto;
 }
 
-/* Banner Layout & Map Thumbnail */
+/* Server Banner & Status Badge */
 .server-banner {
   background: var(--surface-box);
   border: 1px solid var(--border-subtle);
@@ -238,6 +238,7 @@ html, body {
   font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.5px;
+  transition: all 0.3s ease;
 }
 
 .status-online {
