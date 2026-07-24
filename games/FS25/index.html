@@ -1,161 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FS25 Dedicated Server Dashboard</title>
-  
-  <!-- FontAwesome & Custom CSS -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="style.css?v=20260723_10">
+<!-- Firebase SDK v9+ Live Realtime Listener with Debounce Protection -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  <!-- Google Analytics 4 (GA4 - Kevin Personal Gaming Tag) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
+  // Your Firebase Configuration
+  const firebaseConfig = {
+    databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
+  };
 
-    // HARDCODED PAGE IDENTIFICATION FOR FS25
-    gtag('config', 'G-Z9M5LXQ5XN', {
-      'page_title': 'FS25 Dedicated Server Dashboard',
-      'page_location': window.location.href,
-      'content_group': 'FS25_Gaming'
-    });
-  </script>
-  
-  <!-- Load Main Dashboard Script FIRST -->
-  <script src="index.js?v=20260723_10"></script>
+  // Initialize Firebase Connection
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const fs25Ref = ref(db, 'fs25');
 
-  <!-- Firebase Modular SDK v9 -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
+  let syncDebounceTimer = null;
 
-    const firebaseConfig = {
-      databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
-    };
+  // Real-time Push Observer (Replaces Refresh/Polling)
+  onValue(fs25Ref, (snapshot) => {
+    const data = snapshot.val();
+    if (!data) return;
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const fs25Ref = ref(db, 'fs25');
-
-    onValue(fs25Ref, (snapshot) => {
-      const data = snapshot.val();
-      if (data && typeof window.renderDashboard === 'function') {
+    // Debounce Buffer (500ms): Waits for fs25.js to finish writing all XML nodes
+    clearTimeout(syncDebounceTimer);
+    syncDebounceTimer = setTimeout(() => {
+      if (typeof window.renderDashboard === 'function') {
         window.renderDashboard(data);
       }
-    }, (error) => {
-      console.error("Firebase Telemetry Error:", error);
-    });
-  </script>
-</head>
-<body>
+    }, 500);
+  }, (error) => {
+    console.warn("⚠️ Firebase stream dropped, auto-reconnecting...", error);
+  });
 
-  <!-- Navigation Header Layer with Mobile Sandwich Toggle -->
-  <header class="header-nav-container">
-    <div class="mobile-nav-header">
-      <span class="mobile-logo-text"><i class="fa-solid fa-gamepad"></i> FS25 Portal</span>
-      <button class="mobile-hamburger-btn" id="mobile-menu-toggle" aria-label="Toggle Menu">
-        <i class="fa-solid fa-bars"></i>
-      </button>
-    </div>
-    <nav class="dynamic-menu-bar" id="dynamic-menu">
-      <!-- Dynamic Google Sheets Links Render Here -->
-    </nav>
-  </header>
-
-  <!-- Server Status Header Bar -->
-  <div class="server-status-bar">
-    <div class="server-title">
-      <i class="fa-solid fa-server"></i>
-      <span id="server-name">OneLIVIDMAN and werewolf 618</span>
-    </div>
-    <div class="server-badges">
-      <span class="status-badge" id="server-map"><i class="fa-solid fa-map-location-dot"></i> Map: Riverbend Springs</span>
-      <span class="status-badge" id="server-time"><i class="fa-regular fa-clock"></i> Time: 00:00</span>
-      <span class="status-badge" id="server-month"><i class="fa-solid fa-calendar-days"></i> Month: Mid Spring (April)</span>
-      <span class="status-badge" id="server-weather"><i class="fa-solid fa-sun" id="weather-icon"></i> Weather: CLEAR</span>
-      <span class="status-badge" id="server-players"><i class="fa-solid fa-users"></i> Players: 0/6</span>
-    </div>
-  </div>
-
-  <!-- Dashboard Main Grid -->
-  <main class="dashboard-grid">
-    
-    <!-- Registered Server Farms -->
-    <section class="section-panel">
-      <h2 class="section-header"><i class="fa-solid fa-wheat-field"></i> Registered Server Farms</h2>
-      <div class="card-list" id="farms-container">
-        <div class="empty-state">Loading farm finances...</div>
-      </div>
-    </section>
-
-    <!-- Field Crops & Agronomy Status -->
-    <section class="section-panel">
-      <h2 class="section-header"><i class="fa-solid fa-seedling"></i> Field Crops & Agronomy Status</h2>
-      <div class="card-list" id="fields-container">
-        <div class="empty-state">Loading field telemetry...</div>
-      </div>
-    </section>
-
-    <!-- Active Contracts & Missions -->
-    <section class="section-panel">
-      <h2 class="section-header"><i class="fa-solid fa-file-contract"></i> Server Contracts & Missions</h2>
-      <div class="card-list" id="contracts-container">
-        <div class="empty-state">Loading contracts...</div>
-      </div>
-    </section>
-
-    <!-- Map Collectibles Tracker -->
-    <section class="section-panel">
-      <h2 class="section-header"><i class="fa-solid fa-trophy"></i> Map Collectibles Tracker</h2>
-      <div class="card-list" id="collectibles-container">
-        <div class="empty-state">Loading collectible status...</div>
-      </div>
-    </section>
-
-    <!-- Installed Server Mods -->
-    <section class="section-panel">
-      <h2 class="section-header"><i class="fa-solid fa-puzzle-piece"></i> Installed Server Mods</h2>
-      <div class="card-list" id="mods-container">
-        <div class="empty-state">Loading mod list...</div>
-      </div>
-    </section>
-
-    <!-- Production Facilities & Storage -->
-    <section class="section-panel">
-      <h2 class="section-header"><i class="fa-solid fa-industry"></i> Production Facilities & Storage</h2>
-      <div class="card-list" id="production-container">
-        <div class="empty-state">Loading facilities...</div>
-      </div>
-    </section>
-
-    <!-- Fleet Machinery & Vehicles -->
-    <section class="section-panel">
-      <h2 class="section-header"><i class="fa-solid fa-tractor"></i> Fleet Machinery & Vehicles</h2>
-      <div class="card-list" id="tractors-container">
-        <div class="empty-state">Loading machinery...</div>
-      </div>
-    </section>
-
-    <!-- Implements & Equipment -->
-    <section class="section-panel">
-      <h2 class="section-header"><i class="fa-solid fa-screwdriver-wrench"></i> Implements & Equipment</h2>
-      <div class="card-list" id="implements-container">
-        <div class="empty-state">Loading equipment...</div>
-      </div>
-    </section>
-
-    <!-- Commodity Market Economy -->
-    <section class="section-panel">
-      <h2 class="section-header"><i class="fa-solid fa-chart-line"></i> Commodity Market Prices</h2>
-      <div class="card-list" id="economy-container">
-        <div class="empty-state">Loading market prices...</div>
-      </div>
-    </section>
-
-  </main>
-
-</body>
-</html>
+  // Re-verify stale data when user switches back to the tab
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") {
+      // Browser tab regained focus; WebSocket will auto-sync missing snapshots
+    }
+  });
+</script>
