@@ -7,36 +7,31 @@
   
   <!-- FontAwesome & Custom CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="style.css?v=20260723_05">
+  <link rel="stylesheet" href="style.css?v=20260723_09">
   
-  <!-- Load Main JavaScript Dashboard Logic FIRST -->
-  <script src="index.js?v=20260723_05"></script>
+  <!-- Load Main Dashboard Script FIRST -->
+  <script src="index.js?v=20260723_09"></script>
 
   <!-- Firebase Modular SDK v9 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-    // EXACT FIREBASE PROJECT MATCHING YOUR FS25.JS SCRIPT
     const firebaseConfig = {
       databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    
-    // LISTEN TO THE EXACT NODE SCRIPT PATH ('/fs25')
     const fs25Ref = ref(db, 'fs25');
 
-    // Live Realtime Sync Listener
     onValue(fs25Ref, (snapshot) => {
       const data = snapshot.val();
-      console.log("Firebase Telemetry Data Received:", data);
       if (data && typeof window.renderDashboard === 'function') {
         window.renderDashboard(data);
       }
     }, (error) => {
-      console.error("Firebase Telemetry Connection Error:", error);
+      console.error("Firebase Telemetry Error:", error);
     });
   </script>
 </head>
@@ -74,7 +69,7 @@
   <main class="dashboard-grid">
     
     <!-- Registered Server Farms -->
-    <section class="section-panel full-width-card">
+    <section class="section-panel">
       <h2 class="section-header"><i class="fa-solid fa-wheat-field"></i> Registered Server Farms</h2>
       <div class="card-list" id="farms-container">
         <div class="empty-state">Loading farm finances...</div>
@@ -82,7 +77,7 @@
     </section>
 
     <!-- Field Crops & Agronomy Status -->
-    <section class="section-panel full-width-card">
+    <section class="section-panel">
       <h2 class="section-header"><i class="fa-solid fa-seedling"></i> Field Crops & Agronomy Status</h2>
       <div class="card-list" id="fields-container">
         <div class="empty-state">Loading field telemetry...</div>
@@ -91,9 +86,17 @@
 
     <!-- Active Contracts & Missions -->
     <section class="section-panel">
-      <h2 class="section-header"><i class="fa-solid fa-file-contract"></i> Active Contracts & Missions</h2>
+      <h2 class="section-header"><i class="fa-solid fa-file-contract"></i> Server Contracts & Missions</h2>
       <div class="card-list" id="contracts-container">
         <div class="empty-state">Loading contracts...</div>
+      </div>
+    </section>
+
+    <!-- Map Collectibles Tracker -->
+    <section class="section-panel">
+      <h2 class="section-header"><i class="fa-solid fa-trophy"></i> Map Collectibles Tracker</h2>
+      <div class="card-list" id="collectibles-container">
+        <div class="empty-state">Loading collectible status...</div>
       </div>
     </section>
 
@@ -130,7 +133,7 @@
     </section>
 
     <!-- Commodity Market Economy -->
-    <section class="section-panel full-width-card">
+    <section class="section-panel">
       <h2 class="section-header"><i class="fa-solid fa-chart-line"></i> Commodity Market Prices</h2>
       <div class="card-list" id="economy-container">
         <div class="empty-state">Loading market prices...</div>
