@@ -7,30 +7,36 @@
   
   <!-- FontAwesome & Custom CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-  <link rel="stylesheet" href="style.css?v=20260723_03">
+  <link rel="stylesheet" href="style.css?v=20260723_05">
   
+  <!-- Load Main JavaScript Dashboard Logic FIRST -->
+  <script src="index.js?v=20260723_05"></script>
+
   <!-- Firebase Modular SDK v9 -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-database.js";
 
-    // Firebase Config
+    // EXACT FIREBASE PROJECT MATCHING YOUR FS25.JS SCRIPT
     const firebaseConfig = {
-      databaseURL: "https://d-j-werewolf-default-rtdb.firebaseio.com"
+      databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const fs25Ref = ref(db, 'games/FS25');
+    
+    // LISTEN TO THE EXACT NODE SCRIPT PATH ('/fs25')
+    const fs25Ref = ref(db, 'fs25');
 
-    // Live Realtime Sync
+    // Live Realtime Sync Listener
     onValue(fs25Ref, (snapshot) => {
       const data = snapshot.val();
-      if (data && typeof renderDashboard === 'function') {
-        renderDashboard(data);
+      console.log("Firebase Telemetry Data Received:", data);
+      if (data && typeof window.renderDashboard === 'function') {
+        window.renderDashboard(data);
       }
     }, (error) => {
-      console.error("Firebase Telemetry Error:", error);
+      console.error("Firebase Telemetry Connection Error:", error);
     });
   </script>
 </head>
@@ -133,7 +139,5 @@
 
   </main>
 
-  <!-- External JavaScript Logic -->
-  <script src="index.js?v=20260723_03"></script>
 </body>
 </html>
