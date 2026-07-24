@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 9:30 PM (EDT)
- CSS Fix: Strict Image Size Limits for Menu Bar & Dashboard Asset Cards
+ Version Timestamp: Thu, July 23, 2026, 9:40 PM (EDT)
+ Production CSS - Capped 5-Item Scrollable Containers
  File: games/FS25/style.css
 */
 
@@ -34,7 +34,7 @@ html, body {
   overflow-x: hidden;
 }
 
-/* Header & Dynamic Dropdown Menu */
+/* Header & Dynamic Navigation Menu */
 .header-nav-container {
   position: relative;
   z-index: 1000;
@@ -84,7 +84,6 @@ html, body {
   align-items: center;
 }
 
-/* FIX 1: STRICT LIMITS FOR GOOGLE SHEETS MENU IMAGES */
 .dynamic-menu-bar img,
 .dropdown-content img,
 .nav-btn img {
@@ -235,13 +234,32 @@ html, body {
   color: var(--accent-gold);
 }
 
+/* FIXED 5-ITEM VISIBILITY WITH INTERNAL SCROLLBAR */
 .card-list {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  max-height: 380px; /* Fits roughly 5 items */
+  overflow-y: auto;  /* Internal scrollbar when items exceed height */
+  padding-right: 0.4rem;
 }
 
-/* FIX 2: STRICT CARD & TELEMETRY THUMBNAIL CONTAINER CONTROLS */
+/* Custom Scrollbar Design */
+.card-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.card-list::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.card-list::-webkit-scrollbar-thumb {
+  background: var(--accent-red);
+  border-radius: 4px;
+}
+
+/* Item Card Styling */
 .item-card {
   display: flex;
   align-items: center;
@@ -252,6 +270,7 @@ html, body {
   border-radius: 6px;
   gap: 1rem;
   overflow: hidden;
+  flex-shrink: 0;
 }
 
 .item-left {
