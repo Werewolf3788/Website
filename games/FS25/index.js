@@ -1,5 +1,5 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 02:51 PM (EDT)
+ Version Timestamp: Fri, July 24, 2026, 03:00 PM (EDT)
  Complete Deep XML Parsing Engine & Dynamic CSV Mod Catalog Syncer
  File: games/FS25/index.js
 */
@@ -282,7 +282,6 @@ async function loadModHubCatalog() {
       }
     }
 
-    // Render Filter Buttons
     if (categoriesBar) {
       let filterHtml = "";
       categoriesSet.forEach(cat => {
@@ -309,7 +308,7 @@ function renderModCards(categoryFilter = "ALL MODS") {
 
     const isActiveOnServer = activeServerMods.has(mod.filename) || activeServerMods.has(mod.filename.replace('.zip', ''));
     const statusBadge = isActiveOnServer ? `<span class="badge-stat badge-good"><i class="fa-solid fa-check-circle"></i> ACTIVE ON SERVER</span>` : `<span class="badge-stat"><i class="fa-solid fa-download"></i> AVAILABLE MOD</span>`;
-    const crossplayBadge = mod.crossplay.toLowerCase() === 'yes' ? `<span class="badge-stat badge-sky"><i class="fa-solid fa-gamepad"></i> CROSSPLAY</span>` : '';
+    const crossplayBadge = (mod.crossplay && mod.crossplay.toLowerCase() === 'yes') ? `<span class="badge-stat badge-sky"><i class="fa-solid fa-gamepad"></i> CROSSPLAY</span>` : '';
 
     html += `
       <div class="mod-card">
@@ -373,7 +372,6 @@ document.addEventListener("click", (e) => {
     if (modal) modal.classList.remove("active");
   }
 
-  // Filter Buttons
   const filterBtn = e.target.closest(".category-filter-btn");
   if (filterBtn) {
     document.querySelectorAll(".category-filter-btn").forEach(b => b.classList.remove("active"));
@@ -382,7 +380,7 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// Dynamic Page Tab Switcher
+// Dynamic Page Tab Switcher & Cached Data Auto-Render
 document.addEventListener("DOMContentLoaded", () => {
   loadDynamicNavbar();
   loadModHubCatalog();
@@ -405,6 +403,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (targetPanel) targetPanel.classList.add("active");
     }
   });
+
+  // If Firebase connected before DOM loaded, execute render immediately!
+  if (window.lastFirebaseData && typeof window.renderDashboard === 'function') {
+    window.renderDashboard(window.lastFirebaseData);
+  }
 });
 
 // Master Telemetry Render Engine
@@ -414,7 +417,7 @@ window.renderDashboard = function(data) {
     return;
   }
 
-  // Active Server Mods Extractor
+  // Extract Active Server Mods
   activeServerMods.clear();
   const configXml = parseXML(data.dedicatedServerConfig || data.dedicatedServerConfig_xml || data.stats);
   if (configXml) {
@@ -472,7 +475,7 @@ window.renderDashboard = function(data) {
     if (playerBadge) playerBadge.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${numUsed}/${capacity}`;
   }
 
-  // Environment Weather & Month
+  // Weather & Season Month
   const envXml = parseXML(data.environment || data.environment_xml);
   if (envXml) {
     let rawMonth = getDeepXmlValue(envXml, ["currentMonth", "month"]);
@@ -484,9 +487,10 @@ window.renderDashboard = function(data) {
       }
     }
 
-    const weatherNode = envXml.querySelector("weather forecast instance, weather") || envXml.querySelector("forecast");
+    const weatherNode = envXml.querySelector("weather") || envXml.querySelector("forecast");
     if (weatherNode) {
-      const type = (weatherNode.getAttribute("typeName") || weatherNode.getAttribute("type") || "").toLowerCase();
+      const instance = weatherNode.querySelector("instance");
+      const type = (instance?.getAttribute("typeName") || weatherNode.getAttribute("type") || "").toLowerCase();
       let weatherText = "Clear", weatherIcon = "fa-sun";
       if (type.includes("rain")) { weatherText = "Rainy"; weatherIcon = "fa-cloud-rain"; }
       else if (type.includes("snow")) { weatherText = "Snowing"; weatherIcon = "fa-snowflake"; }
@@ -773,6 +777,6 @@ window.renderDashboard = function(data) {
     }
   } catch (e) {}
 
-  // Reload Mod Cards to update Active badges against current server mods
+  // Reload Mod Cards against live active server mods
   renderModCards();
 };
