@@ -1,5 +1,5 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 03:15 PM (EDT)
+ Version Timestamp: Fri, July 24, 2026, 03:40 PM (EDT)
  Tactical Dark UI - Mobile-First Responsive CSS Variable Architecture
  File: games/FS25/style.css
 */
@@ -43,6 +43,8 @@ html, body {
   background-attachment: fixed;
   color: var(--text-primary);
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Navbar System */
@@ -163,6 +165,7 @@ html, body {
   width: 100vw;
   max-width: 100%;
   padding: 2rem 2rem 4rem 2rem;
+  flex-grow: 1;
 }
 
 /* Server Banner */
@@ -624,19 +627,27 @@ html, body {
   font-size: 0.95rem;
 }
 
-/* Footer System */
+/* Sticky Footer System */
 .system-footer {
-  background: rgba(15, 15, 15, 0.95);
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(15, 15, 15, 0.96);
+  backdrop-filter: blur(10px);
   border-top: 1px solid var(--border-color);
-  padding: 1.25rem 2rem;
+  padding: 0.8rem 2rem;
   font-size: 0.85rem;
   color: var(--text-muted);
+  z-index: 1000;
+  margin-top: auto;
 }
 
 .footer-content {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  align-items: center;
   gap: 1rem;
 }
 
