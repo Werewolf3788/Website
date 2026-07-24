@@ -1,6 +1,7 @@
 /**
- * Version Timestamp: Thu, July 23, 2026, 11:10 PM (EDT)
- * Resilient FS25 Sync Pipeline (Path Auto-Resolver for G-Portal Profile Paths)
+ * Version Timestamp: Thu, July 23, 2026, 11:40 PM (EDT)
+ * Resilient FS25 Sync Pipeline (Complete G-Portal to Firebase RTDB Sanitized Mapping)
+ * File: fs25.js
  */
 
 require('dotenv').config({ path: __dirname + '/.env' });
@@ -74,11 +75,6 @@ async function fetchWithRetry(url, options = {}, retries = 3, backoffMs = 1000) 
   }
 }
 
-function getTagValue(xmlString, tagName) {
-  const match = xmlString.match(new RegExp(`<${tagName}>(.*?)</${tagName}>`));
-  return match ? match[1].trim() : null;
-}
-
 function downloadFileBuffer(client, remotePath) {
   return new Promise((resolve, reject) => {
     client.get(remotePath, (err, stream) => {
@@ -91,6 +87,11 @@ function downloadFileBuffer(client, remotePath) {
   });
 }
 
+// Sanitizes keys for Firebase Realtime Database compliance (removes . $ # [ ])
+function sanitizeFirebaseKey(key) {
+  return key.replace(/[\.\$\#\[\]]/g, '_');
+}
+
 async function runMainPipeline() {
   let activePlayers = 0;
   let rawStatsXml = "";
@@ -99,7 +100,8 @@ async function runMainPipeline() {
     const response = await fetchWithRetry(STATS_URL, { timeout: 8000 }, 3, 1000);
     rawStatsXml = await response.text();
     
-    const slotsMatch = rawStatsXml.match(/slots\s+numUsed="(\d+)"/);
+    // Parse numUsed from <Slots capacity="6" numUsed="1">
+    const slotsMatch = rawStatsXml.match(/numUsed="(\d+)"/i) || rawStatsXml.match(/slots\s+numUsed="(\d+)"/i);
     if (slotsMatch) {
       activePlayers = parseInt(slotsMatch[1], 10);
     }
@@ -110,8 +112,6 @@ async function runMainPipeline() {
 
   ftpClient.on('ready', function() {
     console.log("📡 FTP Uplink Connected to 144.126.153.115. Resolving G-Portal path structure...");
-
-    // Try reading configuration or default to slot 1
     processActiveFolderSync(DEFAULT_SLOT, activePlayers, rawStatsXml);
   });
 
@@ -170,12 +170,16 @@ function processActiveFolderSync(slotNumber, activePlayers, rawStatsXml) {
         lastUpdated: new Date().toISOString()
       };
 
+      // Push raw HTTP stats feed across all primary telemetry nodes
       if (rawStatsXml && rawStatsXml.length > 0) {
         masterPayload.stats = { data: rawStatsXml };
         masterPayload.players = { data: rawStatsXml };
         masterPayload.mods = { data: rawStatsXml };
+        masterPayload.dedicatedServerConfig = { data: rawStatsXml };
+        masterPayload.dedicatedServerConfig_xml = { data: rawStatsXml };
       }
 
+      // Complete Canonical Mapping for All FS25 XML Files
       const keyMap = {
         'careersavegame': 'careerSavegame',
         'farms': 'farms',
@@ -187,21 +191,30 @@ function processActiveFolderSync(slotNumber, activePlayers, rawStatsXml) {
         'environment': 'environment',
         'economy': 'economy',
         'sales': 'sales',
-        'items': 'items'
+        'items': 'items',
+        'collectibles': 'collectibles',
+        'handtools': 'handTools',
+        'precisionfarming': 'precisionFarming'
       };
 
       for (const fileInfo of xmlFiles) {
-        const rawBaseName = fileInfo.name.replace('.xml', '');
+        const rawBaseName = fileInfo.name.replace(/\.xml$/i, '');
         const lowerBaseName = rawBaseName.toLowerCase();
-        const canonicalKey = keyMap[lowerBaseName] || rawBaseName;
+        
+        // Canonical Key Resolution + Safe Firebase Sanitization
+        const canonicalKey = sanitizeFirebaseKey(keyMap[lowerBaseName] || rawBaseName);
         const remoteFilePath = `${currentPath}/${fileInfo.name}`;
         
         try {
           console.log(`⬇️ Downloading: ${fileInfo.name} -> Writing to Firebase key [ ${canonicalKey} ]`);
           const rawXmlContent = await downloadFileBuffer(ftpClient, remoteFilePath);
           
-          masterPayload[canonicalKey] = { data: rawXmlContent };
-          masterPayload[`${canonicalKey}_xml`] = { data: rawXmlContent };
+          if (rawXmlContent && rawXmlContent.trim().length > 0) {
+            masterPayload[canonicalKey] = { data: rawXmlContent };
+            masterPayload[`${canonicalKey}_xml`] = { data: rawXmlContent };
+          } else {
+            console.warn(`⚠️ File ${fileInfo.name} returned empty content. Skipping overwrite.`);
+          }
         } catch (fileErr) {
           console.error(`❌ Download failed for ${fileInfo.name}:`, fileErr.message);
         }
