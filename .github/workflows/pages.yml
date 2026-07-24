@@ -1,24 +1,22 @@
-# Version Timestamp: Fri, July 24, 2026, 01:05 PM (EDT)
-# Auto-cancels queued builds to prevent "Deployment request failed due to in progress deployment" errors.
-
+# Version Timestamp: Fri, July 24, 2026, 03:00 PM (EDT)
 name: Deploy GitHub Pages
 
 on:
   push:
-    branches: ["main"] # Triggers automatically on every push to main
+    branches: ["main"]
 
-# Prevents concurrent deployment clashes by killing stale builds
-concurrency:
-  group: "pages"
-  cancel-in-progress: true
-
-# Grants required permissions for GitHub Pages deployment
+# Grants the token permissions required for Pages deployment
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# Allow only one concurrent deployment
+# CONCURRENCY LOCK FIX:
+# Automatically cancels any older builds currently running on the same branch!
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
 jobs:
   deploy:
     environment:
@@ -30,12 +28,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Pages
-        uses: actions/configure-pages@v5
+        uses: actions/pages-config@v3
 
-      - name: Upload Static Web Assets
+      - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.' # Uploads the entire site root
+          path: '.'
 
       - name: Deploy to GitHub Pages
         id: deployment
