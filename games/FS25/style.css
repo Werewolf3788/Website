@@ -1,5 +1,5 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 04:35 PM (EDT)
+ Version Timestamp: Fri, July 24, 2026, 04:45 PM (EDT)
  Resilient FS25 Tactical Theme - Mobile-First Responsive CSS Architecture
  File: games/FS25/style.css
 */
@@ -22,7 +22,7 @@
   --font-main: 'Poppins', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
-  /* Color Accents for All 13 Container Boxes */
+  /* Accent Borders for Container Grid Boxes */
   --color-farms: #10b981;
   --color-infra: #0284c7;
   --color-fields: #84cc16;
@@ -362,7 +362,7 @@ html, body {
   border-radius: 4px;
 }
 
-/* Specific Border Accents for All 13 Boxes */
+/* Border Accents for All 13 Boxes */
 .dashboard-box:nth-child(1) { border-top: 4px solid var(--color-farms); }
 .dashboard-box:nth-child(1) .box-header i { color: var(--color-farms); }
 
