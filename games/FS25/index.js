@@ -1,6 +1,6 @@
 /*
  Version Timestamp: Thu, July 23, 2026, 11:59 PM (EDT)
- Resilient FS25 Realtime Engine - Local Cache & Silent Background Updates
+ Resilient FS25 Realtime Engine - Strict Inline Menu Image Constraints
  File: games/FS25/index.js
 */
 
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Instantly restore previous session telemetry from cache before Firebase connects
+  // Restore cached telemetry immediately
   const cachedData = localStorage.getItem("fs25_last_known_telemetry");
   if (cachedData) {
     try {
@@ -162,7 +162,8 @@ async function loadGoogleSheetsMenu() {
       }
     });
 
-    const makeImgHtml = (src) => src ? `<img src="${src}" alt="" onerror="this.style.display='none'">` : '';
+    // Hardcoded max dimensions (20px by 20px) on menu images to prevent layout explosion
+    const makeImgHtml = (src) => src ? `<img src="${src}" alt="" style="width:20px; height:20px; max-width:20px; max-height:20px; object-fit:contain;" onerror="this.style.display='none'">` : '';
 
     standaloneItems.forEach(item => {
       const btn = document.createElement('a');
@@ -269,7 +270,6 @@ function parseXML(node) {
 window.renderDashboard = function(data) {
   if (!data) return;
 
-  // Cache latest telemetry payload to LocalStorage for instant non-blank reloads
   try {
     localStorage.setItem("fs25_last_known_telemetry", JSON.stringify(data));
   } catch (e) {}
