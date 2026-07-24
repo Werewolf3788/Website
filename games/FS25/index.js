@@ -1,15 +1,8 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 12:55 AM (EDT)
- Resilient FS25 Tactical Engine - Isolated Try/Catch Container Rendering
+ Version Timestamp: Fri, July 24, 2026, 01:40 AM (EDT)
+ Resilient FS25 Tactical Engine - Pure Static Navigation & Live Telemetry Parsing
  File: games/FS25/index.js
 */
-
-const menuCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
-
-// PAGE SPECIFIC UTM TRACKING CONFIGURATION
-const PAGE_UTM_SOURCE = "game_tracker";
-const PAGE_UTM_MEDIUM = "dashboard";
-const PAGE_UTM_CAMPAIGN = "FS25";
 
 // GitHub Image Asset Registry
 const IMAGE_ASSETS = {
@@ -90,7 +83,6 @@ const MONTH_NAMES = [
   "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
 ];
 
-// Smart Equipment Model & Category Resolver
 function resolveEquipmentDetails(rawModelName) {
   if (!rawModelName) return { name: "Unknown Equipment", category: "General Tool" };
   const str = String(rawModelName).toUpperCase().trim();
@@ -104,19 +96,6 @@ function resolveEquipmentDetails(rawModelName) {
   if (str.includes("8R")) return { name: "John Deere 8R Series", category: "Medium/Heavy Tractor" };
 
   return { name: formatName(rawModelName), category: "Equipment / Tool" };
-}
-
-function appendUTMParameters(urlStr) {
-  if (!urlStr || urlStr.startsWith('#') || urlStr.startsWith('javascript:')) return urlStr;
-  try {
-    const url = new URL(urlStr, window.location.origin);
-    url.searchParams.set("utm_source", PAGE_UTM_SOURCE);
-    url.searchParams.set("utm_medium", PAGE_UTM_MEDIUM);
-    url.searchParams.set("utm_campaign", PAGE_UTM_CAMPAIGN);
-    return url.toString();
-  } catch (e) {
-    return urlStr;
-  }
 }
 
 function renderGaugeBar(percentage, labelText) {
@@ -155,6 +134,7 @@ function rearrangeGridByItemCount() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Mobile Sandwich Menu Toggle Handler
   const toggleBtn = document.getElementById("mobile-menu-toggle");
   const menuBar = document.getElementById("dynamic-menu");
 
@@ -166,6 +146,15 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // Dropdown Menu Toggles for Static Links
+  document.querySelectorAll('.dropdown-toggle').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const parent = btn.closest('.nav-item');
+      if (parent) parent.classList.toggle('open');
+    });
+  });
+
   const cachedData = localStorage.getItem("fs25_last_known_telemetry");
   if (cachedData) {
     try {
@@ -174,89 +163,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.warn("Cache restore skipped:", e);
     }
   }
-
-  loadGoogleSheetsMenu();
 });
-
-async function loadGoogleSheetsMenu() {
-  try {
-    const response = await fetch(`${menuCsvUrl}&v=${Date.now()}`);
-    if (!response.ok) return;
-    const csvText = await response.text();
-    const rows = parseCSV(csvText);
-
-    const menuContainer = document.getElementById('dynamic-menu');
-    if (!menuContainer) return;
-    menuContainer.innerHTML = '';
-
-    const standaloneItems = [];
-    const dropdownGroups = {};
-
-    rows.forEach((row, index) => {
-      if (index === 0 || !row || row.length < 2) return;
-      
-      const name = row[0] ? row[0].trim() : '';
-      const group = row[1] ? row[1].trim() : '';
-      const url = row[2] ? row[2].trim() : '';
-      const image = row[3] ? row[3].trim() : '';
-
-      if (!name || !url) return;
-
-      const trackedUrl = appendUTMParameters(url);
-
-      if (!group || group === '' || group.toLowerCase() === name.toLowerCase()) {
-        standaloneItems.push({ name, url: trackedUrl, image });
-      } else {
-        if (!dropdownGroups[group]) dropdownGroups[group] = [];
-        dropdownGroups[group].push({ name, url: trackedUrl, image });
-      }
-    });
-
-    const makeImgHtml = (src) => src ? `<img src="${src}" alt="" style="width:20px; height:20px; max-width:20px; max-height:20px; object-fit:contain;" onerror="this.style.display='none'">` : '';
-
-    standaloneItems.forEach(item => {
-      const btn = document.createElement('a');
-      btn.className = 'nav-btn';
-      btn.href = item.url;
-      btn.innerHTML = `${makeImgHtml(item.image)} ${item.name}`;
-      menuContainer.appendChild(btn);
-    });
-
-    Object.keys(dropdownGroups).forEach(groupName => {
-      const items = dropdownGroups[groupName];
-      const navGroup = document.createElement('div');
-      navGroup.className = 'nav-item';
-
-      let dropdownHtml = `
-        <button class="nav-btn dropdown-toggle">
-          ${groupName} <i class="fa-solid fa-caret-down"></i>
-        </button>
-        <div class="dropdown-content">`;
-
-      items.forEach(sub => {
-        dropdownHtml += `<a href="${sub.url}">${makeImgHtml(sub.image)} ${sub.name}</a>`;
-      });
-
-      dropdownHtml += `</div>`;
-      navGroup.innerHTML = dropdownHtml;
-
-      const toggle = navGroup.querySelector('.dropdown-toggle');
-      toggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        navGroup.classList.toggle('open');
-      });
-
-      menuContainer.appendChild(navGroup);
-    });
-  } catch (err) {
-    console.error("Non-fatal menu error:", err);
-  }
-}
-
-function parseCSV(text) {
-  if (!text) return [];
-  return text.split('\n').map(line => line.split(',').map(cell => cell ? cell.trim() : ''));
-}
 
 function resolveCropName(typeName) {
   if (!typeName || typeName.toUpperCase() === "UNKNOWN") return "Prepared Ground";
@@ -841,6 +748,5 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Economy Render Error:", e); }
 
-  // Re-sort grid so boxes with 5+ items fill the top rows
   rearrangeGridByItemCount();
 };
