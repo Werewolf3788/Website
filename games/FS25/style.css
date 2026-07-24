@@ -1,5 +1,5 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 03:40 PM (EDT)
+ Version Timestamp: Fri, July 24, 2026, 03:42 PM (EDT)
  Tactical Dark UI - Mobile-First Responsive CSS Variable Architecture
  File: games/FS25/style.css
 */
@@ -160,7 +160,7 @@ html, body {
   object-fit: cover;
 }
 
-/* Dashboard Container & Grid Layout */
+/* Dashboard Container */
 .dashboard-container {
   width: 100vw;
   max-width: 100%;
@@ -257,45 +257,6 @@ html, body {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-}
-
-/* Tab Bar */
-.tab-bar-container {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 2rem;
-  overflow-x: auto;
-  padding-bottom: 6px;
-}
-
-.tab-btn {
-  background: rgba(30, 28, 28, 0.9);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  padding: 0.8rem 1.5rem;
-  min-height: 44px;
-  border-radius: 8px;
-  font-weight: 700;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-}
-
-.tab-btn.active, .tab-btn:hover {
-  background: var(--accent-red);
-  color: #ffffff;
-  border-color: var(--accent-red);
-}
-
-.tab-content-panel {
-  display: none;
-}
-
-.tab-content-panel.active {
-  display: block;
 }
 
 /* Metrics Cards Row */
@@ -627,19 +588,13 @@ html, body {
   font-size: 0.95rem;
 }
 
-/* Sticky Footer System */
+/* System Footer */
 .system-footer {
-  position: sticky;
-  bottom: 0;
-  left: 0;
-  width: 100%;
   background: rgba(15, 15, 15, 0.96);
-  backdrop-filter: blur(10px);
   border-top: 1px solid var(--border-color);
   padding: 0.8rem 2rem;
   font-size: 0.85rem;
   color: var(--text-muted);
-  z-index: 1000;
   margin-top: auto;
 }
 
