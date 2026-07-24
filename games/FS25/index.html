@@ -1,17 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Version Timestamp: Fri, July 24, 2026, 12:35 AM (EDT) -->
+  <!-- Version Timestamp: Fri, July 24, 2026, 12:45 AM (EDT) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Realtime Tactical Dashboard</title>
   
-  <!-- FontAwesome Icons & CSS -->
+  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="style.css?v=20260724_01">
+  
+  <!-- Dynamic Smart Cache-Busting Stylesheet Loader -->
+  <script>
+    (function() {
+      const cacheBuster = Date.now();
+      const cssLink = document.createElement('link');
+      cssLink.rel = 'stylesheet';
+      cssLink.href = 'style.css?v=' + cacheBuster;
+      document.head.appendChild(cssLink);
+    })();
+  </script>
 
-  <!-- Core JavaScript Engine -->
-  <script src="index.js?v=20260724_01" defer></script>
+  <!-- Core JavaScript Engine with Dynamic Smart Cache-Busting -->
+  <script>
+    (function() {
+      const cacheBuster = Date.now();
+      const script = document.createElement('script');
+      script.src = 'index.js?v=' + cacheBuster;
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  </script>
 </head>
 <body>
 
