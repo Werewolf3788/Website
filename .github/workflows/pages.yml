@@ -1,18 +1,19 @@
-# Version Timestamp: Fri, July 24, 2026, 03:00 PM (EDT)
+# Version Timestamp: Fri, July 24, 2026, 03:07 PM (EDT)
+# GitHub Actions Workflow for Automatic GitHub Pages Deployment with Concurrency Locks
 name: Deploy GitHub Pages
 
 on:
   push:
     branches: ["main"]
 
-# Grants the token permissions required for Pages deployment
+# Grant necessary permissions for Pages deployment
 permissions:
   contents: read
   pages: write
   id-token: write
 
-# CONCURRENCY LOCK FIX:
-# Automatically cancels any older builds currently running on the same branch!
+# CONCURRENCY LOCK PREVENTER:
+# Automatically cancels older running builds when a new commit is pushed!
 concurrency:
   group: "pages"
   cancel-in-progress: true
@@ -28,7 +29,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Pages
-        uses: actions/pages-config@v3
+        uses: actions/configure-pages@v5
 
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
