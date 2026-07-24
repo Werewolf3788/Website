@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 8:47 PM (EDT)
- Production FS25 Modular Dashboard - Full Asset Thumbnail Integration & Dynamic Theme
+ Version Timestamp: Thu, July 23, 2026, 8:55 PM (EDT)
+ Production FS25 Modular Dashboard - gameStats.xml Integration & Multi-Source Month Parser
  File: games/FS25/index.js
 */
 
@@ -63,6 +63,13 @@ const CROP_NAME_MAP = {
   "MILK": "Milk", "EGG": "Eggs", "HONEY": "Honey", "WOOL": "Wool",
   "WOODCHIPS": "Wood Chips"
 };
+
+const MONTH_NAMES = [
+  "Early Spring (March)", "Mid Spring (April)", "Late Spring (May)",
+  "Early Summer (June)", "Mid Summer (July)", "Late Summer (August)",
+  "Early Autumn (September)", "Mid Autumn (October)", "Late Autumn (November)",
+  "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
+];
 
 async function loadGoogleSheetsMenu() {
   try {
@@ -130,17 +137,14 @@ function resolveCropName(typeName) {
   return CROP_NAME_MAP[key] || null;
 }
 
-// Helper to return image thumbnail OR font-awesome icon fallback
 function getThumbnailHTML(key, fallbackIcon = "fa-box") {
   if (!key) return `<div class="item-icon-box"><i class="fa-solid ${fallbackIcon}"></i></div>`;
   const lookupKey = key.toUpperCase().replace('FILLTYPE_', '').trim();
 
-  // Search exact image registry
   if (IMAGE_ASSETS[lookupKey]) {
     return `<div class="item-icon-box"><img src="${IMAGE_ASSETS[lookupKey]}" alt="${lookupKey}"></div>`;
   }
 
-  // Partial match helper (e.g., if vehicle is "Big Bud KTTA700" match "BIG BUD KTTA 700")
   for (const [assetName, path] of Object.entries(IMAGE_ASSETS)) {
     if (lookupKey.includes(assetName) || assetName.includes(lookupKey)) {
       return `<div class="item-icon-box"><img src="${path}" alt="${assetName}"></div>`;
@@ -187,16 +191,35 @@ function parseXML(xmlData) {
 function renderDashboard(data) {
   if (!data) return;
 
-  // 1. In-Game Dynamic Time & Weather Theme Sync
+  // 1. In-Game Dynamic Time, Month & Weather Sync
   const envXml = parseXML(data.environment || data.environment_xml);
+  const careerXml = parseXML(data.careerSavegame || data.careerSavegame_xml);
+  
   let isNight = false;
   let weatherState = "SUNNY";
+  let monthText = null;
 
   if (envXml) {
-    const dayTimeNode = envXml.querySelector("dayTime");
-    const currentMonthNode = envXml.querySelector("currentMonth");
-    const weatherNode = envXml.querySelector("weather");
+    const monthNode = envXml.querySelector("currentMonth") || envXml.querySelector("month") || envXml.querySelector("period");
+    if (monthNode && monthNode.textContent) {
+      const monthIdx = parseInt(monthNode.textContent.trim());
+      if (!isNaN(monthIdx) && monthIdx >= 1 && monthIdx <= 12) {
+        monthText = MONTH_NAMES[monthIdx - 1];
+      }
+    }
 
+    if (!monthText) {
+      const dayNode = envXml.querySelector("currentDay") || envXml.querySelector("day");
+      if (dayNode && dayNode.textContent) {
+        const dayVal = parseInt(dayNode.textContent.trim());
+        if (!isNaN(dayVal)) {
+          const calculatedMonthIdx = ((Math.floor((dayVal - 1) / 3)) % 12);
+          monthText = MONTH_NAMES[calculatedMonthIdx];
+        }
+      }
+    }
+
+    const dayTimeNode = envXml.querySelector("dayTime");
     if (dayTimeNode) {
       const rawTime = parseFloat(dayTimeNode.textContent || "0");
       const totalMinutes = Math.floor(rawTime > 86400 ? rawTime / 60000 : rawTime / 60);
@@ -209,18 +232,26 @@ function renderDashboard(data) {
       }
     }
 
-    const months = ["Late Winter", "Early Spring", "Spring", "Late Spring", "Early Summer", "Summer", "Late Summer", "Early Autumn", "Autumn", "Late Autumn", "Early Winter", "Winter"];
-    if (currentMonthNode) {
-      const monthIdx = parseInt(currentMonthNode.textContent || "1");
-      document.getElementById('server-month').textContent = `Month: ${months[monthIdx - 1] || 'Spring'}`;
-    }
-
+    const weatherNode = envXml.querySelector("weather");
     if (weatherNode) {
       weatherState = (weatherNode.getAttribute("currentWeather") || "SUNNY").toUpperCase();
     }
   }
 
-  // Apply Dynamic Theme Classes
+  if (!monthText && careerXml) {
+    const careerMonthNode = careerXml.querySelector("currentMonth") || careerXml.querySelector("month");
+    if (careerMonthNode && careerMonthNode.textContent) {
+      const mIdx = parseInt(careerMonthNode.textContent.trim());
+      if (!isNaN(mIdx) && mIdx >= 1 && mIdx <= 12) {
+        monthText = MONTH_NAMES[mIdx - 1];
+      }
+    }
+  }
+
+  // Update Header Month
+  document.getElementById('server-month').textContent = `Month: ${monthText || 'Spring (March)'}`;
+
+  // Apply Theme Classes
   const bodyEl = document.body;
   if (isNight) {
     bodyEl.classList.add("theme-night");
@@ -235,8 +266,8 @@ function renderDashboard(data) {
   if (weatherState.includes("RAIN")) bodyEl.classList.add("weather-rain");
   else if (weatherState.includes("CLOUD")) bodyEl.classList.add("weather-cloudy");
 
-  // 2. Server Header Config
-  const statsXml = parseXML(data.stats || data.dedicatedServerConfig || data.gameserver);
+  // 2. Server Header Config & Name
+  const statsXml = parseXML(data.gameStats || data.gameStats_xml || data.stats || data.dedicatedServerConfig || data.gameserver);
   if (statsXml) {
     const gameName = statsXml.querySelector("game_name")?.textContent || statsXml.querySelector("Server")?.getAttribute("name");
     const mapName = statsXml.querySelector("Server")?.getAttribute("mapName");
@@ -244,7 +275,7 @@ function renderDashboard(data) {
     if (mapName) document.getElementById('server-map').textContent = `Map: ${mapName}`;
   }
 
-  // 3. Farms & Farmland Ownership Mapping
+  // 3. Registered Farms & Ownership Mapping
   const farmsXml = parseXML(data.farms || data.farms_xml);
   const farmlandOwnership = {};
   if (farmsXml) {
@@ -351,10 +382,11 @@ function renderDashboard(data) {
     contractsContainer.innerHTML = html || '<div class="empty-state">No active contracts found.</div>';
   }
 
-  // 6. Installed Server Mods
+  // 6. Installed Server Mods (Directly targeting gameStats.xml)
   const modsContainer = document.getElementById('mods-container');
   let modsHtml = "";
-  const modSource = parseXML(data.stats || data.careerSavegame || data.gameserver || data.dedicatedServerConfig);
+  const modSource = parseXML(data.gameStats || data.gameStats_xml || data.stats || data.careerSavegame || data.gameserver || data.dedicatedServerConfig);
+  
   if (modSource) {
     modSource.querySelectorAll("mod").forEach(m => {
       const rawFilename = m.getAttribute("filename") || m.getAttribute("title") || m.getAttribute("modName");
@@ -375,7 +407,7 @@ function renderDashboard(data) {
       }
     });
   }
-  if (modsContainer) modsContainer.innerHTML = modsHtml || '<div class="empty-state">No installed mods detected.</div>';
+  if (modsContainer) modsContainer.innerHTML = modsHtml || '<div class="empty-state">No installed mods detected in gameStats.xml.</div>';
 
   // 7. Production Facilities & Storage
   const placeXml = parseXML(data.placeables || data.placeables_xml);
