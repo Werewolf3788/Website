@@ -1,11 +1,12 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 02:51 PM (EDT)
+ Version Timestamp: Fri, July 24, 2026, 03:05 PM (EDT)
  Tactical Dark UI - Mobile-First Responsive CSS Variable Architecture
  File: games/FS25/style.css
 */
 
 :root {
-  --bg-gradient: linear-gradient(180deg, #990000 0%, #000000 100%);
+  --bg-gradient: linear-gradient(180deg, rgba(153, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.92) 100%);
+  --bg-wallpaper: url("images/Farming%20Simulator%2025%20Poster%20Image%20(background%20wallpaper).jpg");
   --surface-card: #1e1c1c;
   --surface-card-hover: #2a2727;
   --text-primary: #ffffff;
@@ -22,7 +23,7 @@
   --font-mono: 'JetBrains Mono', monospace;
 }
 
-/* Reset & Base Wallpapers */
+/* Reset & Wallpaper Implementation */
 * {
   box-sizing: border-box;
   margin: 0;
@@ -35,7 +36,11 @@ html, body {
   min-height: 100vh;
   font-family: var(--font-main);
   font-size: 16px;
-  background: var(--bg-gradient) fixed;
+  background-image: var(--bg-gradient), var(--bg-wallpaper);
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
   color: var(--text-primary);
   overflow-x: hidden;
 }
@@ -108,7 +113,6 @@ html, body {
   border-color: var(--accent-red);
 }
 
-/* Dropdown Menu Touch Target */
 .nav-item {
   position: relative;
 }
@@ -163,12 +167,13 @@ html, body {
 
 /* Server Banner */
 .server-banner {
-  background: var(--surface-card);
+  background: rgba(30, 28, 28, 0.88);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 2rem;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
 }
 
 .banner-layout {
@@ -261,7 +266,7 @@ html, body {
 }
 
 .tab-btn {
-  background: var(--surface-card);
+  background: rgba(30, 28, 28, 0.9);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   padding: 0.8rem 1.5rem;
@@ -299,14 +304,15 @@ html, body {
 }
 
 .metric-card {
-  background: var(--surface-card);
+  background: rgba(30, 28, 28, 0.92);
+  backdrop-filter: blur(6px);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1.5rem;
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
 .metric-icon {
@@ -325,7 +331,7 @@ html, body {
   text-transform: uppercase;
 }
 
-/* Dashboard Masonry Grid (Hybrid Two-Column / Multi-Column Structure) */
+/* Dashboard Masonry Grid */
 .masonry-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
@@ -333,11 +339,12 @@ html, body {
 }
 
 .dashboard-box {
-  background: var(--surface-card);
+  background: rgba(30, 28, 28, 0.92);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.5);
 }
 
 .box-header {
@@ -378,7 +385,7 @@ html, body {
 
 /* Item Cards Layout */
 .item-card {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 1rem;
@@ -435,7 +442,6 @@ html, body {
   align-items: center;
 }
 
-/* Badge Stats */
 .badge-stat {
   padding: 2px 8px;
   border-radius: 4px;
@@ -456,7 +462,6 @@ html, body {
   color: #4ade80;
 }
 
-/* Progress Bars */
 .progress-bar-wrap {
   width: 100%;
   height: 8px;
@@ -485,7 +490,7 @@ html, body {
 }
 
 .category-filter-btn {
-  background: var(--surface-card);
+  background: rgba(30, 28, 28, 0.9);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   padding: 8px 16px;
@@ -508,7 +513,8 @@ html, body {
 }
 
 .mod-card {
-  background: var(--surface-card);
+  background: rgba(30, 28, 28, 0.92);
+  backdrop-filter: blur(8px);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1.25rem;
