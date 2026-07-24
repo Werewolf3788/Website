@@ -1,10 +1,10 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 03:42 PM (EDT)
- Complete Deep XML Parsing Engine & Dynamic CSV Mod Catalog Syncer
+ Version Timestamp: Fri, July 24, 2026, 04:15 PM (EDT)
+ Complete Deep XML & Firebase Direct Path Resolver
  File: games/FS25/index.js
 */
 
-// External Data Endpoints
+// External Endpoints
 const CSV_MENU_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
 
@@ -46,14 +46,39 @@ let activeServerMods = new Set();
 let parsedModCatalog = [];
 let offlineStartTime = null;
 let offlineTimerInterval = null;
-let lastKnownServerName = "Dedicated Server";
+
+// Firebase Direct Key Extractor (Resolves direct data, /data child keys, _xml, or _raw nodes)
+function getFirebasePayload(rootObj, targetKey) {
+  if (!rootObj || typeof rootObj !== 'object') return null;
+  
+  // 1. Check target key directly or targetKey/data
+  if (rootObj[targetKey]) {
+    if (typeof rootObj[targetKey] === 'string') return rootObj[targetKey];
+    if (rootObj[targetKey].data) return rootObj[targetKey].data;
+  }
+  
+  // 2. Check targetKey_xml or targetKey_xml/data
+  const xmlKey = `${targetKey}_xml`;
+  if (rootObj[xmlKey]) {
+    if (typeof rootObj[xmlKey] === 'string') return rootObj[xmlKey];
+    if (rootObj[xmlKey].data) return rootObj[xmlKey].data;
+  }
+
+  // 3. Check targetKey_raw
+  const rawKey = `${targetKey}_raw`;
+  if (rootObj[rawKey]) {
+    if (typeof rootObj[rawKey] === 'string') return rootObj[rawKey];
+  }
+
+  return null;
+}
 
 // Robust XML Parsing Sanitizer
-function parseXML(node) {
-  if (!node) return null;
-  let rawText = typeof node === 'string' ? node : (node.data || node.content || node.xml || "");
+function parseXML(inputPayload) {
+  if (!inputPayload) return null;
+  let rawText = typeof inputPayload === 'string' ? inputPayload : (inputPayload.data || inputPayload.content || inputPayload.xml || "");
   if (!rawText || typeof rawText !== 'string') {
-    if (typeof node === 'object' && node.nodeType) return node;
+    if (typeof inputPayload === 'object' && inputPayload.nodeType) return inputPayload;
     return null;
   }
   try {
@@ -154,13 +179,28 @@ window.setServerStatus = function(isOnline) {
 window.addEventListener('online', () => window.setServerStatus(true));
 window.addEventListener('offline', () => window.setServerStatus(false));
 
+// CSV Fetch Engine with Timeout & Safari Fallbacks
+async function fetchWithTimeout(resource, options = {}) {
+  const { timeout = 5000 } = options;
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+  try {
+    const response = await fetch(resource, { ...options, signal: controller.signal });
+    clearTimeout(id);
+    return response;
+  } catch (e) {
+    clearTimeout(id);
+    throw e;
+  }
+}
+
 // CSV Navigation Bar Loader
 async function loadDynamicNavbar() {
   const menuContainer = document.getElementById("dynamic-menu");
   if (!menuContainer) return;
 
   try {
-    const response = await fetch(CSV_MENU_URL);
+    const response = await fetchWithTimeout(CSV_MENU_URL, { timeout: 4000 });
     if (!response.ok) throw new Error(`CSV HTTP ${response.status}`);
     const csvText = await response.text();
 
@@ -207,33 +247,10 @@ async function loadDynamicNavbar() {
     }
 
     menuContainer.innerHTML = navHtml;
-    attachDropdownTouchEvents();
 
   } catch (e) {
     menuContainer.innerHTML = `<a href="https://werewolf3788.github.io/Website/" class="nav-btn"><i class="fa-solid fa-house"></i> Home</a>`;
   }
-}
-
-function attachDropdownTouchEvents() {
-  document.querySelectorAll('.dropdown-toggle').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const parent = btn.closest('.nav-item');
-      if (parent) {
-        const isOpen = parent.classList.contains('open');
-        document.querySelectorAll('.nav-item.open').forEach(item => {
-          if (item !== parent) item.classList.remove('open');
-        });
-        parent.classList.toggle('open', !isOpen);
-      }
-    });
-  });
-
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.nav-item')) {
-      document.querySelectorAll('.nav-item.open').forEach(item => item.classList.remove('open'));
-    }
-  });
 }
 
 // Google Sheet CSV Mod Hub Catalog Engine
@@ -243,7 +260,7 @@ async function loadModHubCatalog() {
   if (!grid) return;
 
   try {
-    const response = await fetch(CSV_MODS_URL);
+    const response = await fetchWithTimeout(CSV_MODS_URL, { timeout: 4000 });
     if (!response.ok) throw new Error(`CSV HTTP ${response.status}`);
     const csvText = await response.text();
 
@@ -291,7 +308,7 @@ async function loadModHubCatalog() {
     renderModCards("ALL MODS");
 
   } catch (e) {
-    grid.innerHTML = `<div class="loading-state" style="color:#ef4444;"><i class="fa-solid fa-triangle-exclamation"></i> Unable to load Mod Catalog CSV feed.</div>`;
+    grid.innerHTML = `<div class="item-card"><div class="item-title"><i class="fa-solid fa-cube"></i> Server Mods Active (CSV Catalog Loading Offline)</div></div>`;
   }
 }
 
@@ -403,7 +420,8 @@ window.renderDashboard = function(data) {
 
   // 1. Process Active Server Mods
   activeServerMods.clear();
-  const configXml = parseXML(data.dedicatedServerConfig || data.dedicatedServerConfig_xml || data.stats || data.careerSavegame);
+  const configRaw = getFirebasePayload(data, "dedicatedServerConfig") || getFirebasePayload(data, "stats") || getFirebasePayload(data, "careerSavegame");
+  const configXml = parseXML(configRaw);
   if (configXml) {
     configXml.querySelectorAll("mod, Mod").forEach(m => {
       const filename = m.getAttribute("filename") || m.getAttribute("name") || m.getAttribute("modName");
@@ -418,8 +436,9 @@ window.renderDashboard = function(data) {
     syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Last Telemetry Sync: <strong style="color:#22c55e;">${now.toLocaleTimeString()}</strong>`;
   }
 
-  // 2. Render Farm Accounts directly into card container
-  const farmsXml = parseXML(data.farms || data.farms_xml || data.careerSavegame);
+  // 2. Render Farm Accounts
+  const farmsRaw = getFirebasePayload(data, "farms") || getFirebasePayload(data, "careerSavegame");
+  const farmsXml = parseXML(farmsRaw);
   const farmsCont = document.getElementById('farms-container');
   if (farmsCont) {
     let farmsHtml = "";
@@ -462,7 +481,8 @@ window.renderDashboard = function(data) {
 
   // 3. Contracts & Missions Parser
   const contractsCont = document.getElementById('main-contracts-container');
-  const missionsXml = parseXML(data.missions || data.missions_xml);
+  const missionsRaw = getFirebasePayload(data, "missions");
+  const missionsXml = parseXML(missionsRaw);
   if (contractsCont) {
     let html = "";
     if (missionsXml) {
@@ -526,7 +546,8 @@ window.renderDashboard = function(data) {
 
   // 5. Factories & Production Chains
   const prodCont = document.getElementById('main-productions-container');
-  const placeXml = parseXML(data.placeables || data.placeables_xml);
+  const placeablesRaw = getFirebasePayload(data, "placeables");
+  const placeXml = parseXML(placeablesRaw);
   if (prodCont) {
     let prodHtml = "";
     if (placeXml) {
@@ -612,9 +633,10 @@ window.renderDashboard = function(data) {
       </div>`;
   }
 
-  // 8. Dealership Sales
+  // 8. Dealership Used Sales
   const salesCont = document.getElementById('used-sales-container');
-  const salesXml = parseXML(data.sales || data.sales_xml);
+  const salesRaw = getFirebasePayload(data, "sales");
+  const salesXml = parseXML(salesRaw);
   if (salesCont) {
     let salesHtml = "";
     if (salesXml) {
@@ -647,7 +669,8 @@ window.renderDashboard = function(data) {
 
   // 9. Vehicle Fleet Telemetry
   const fleetCont = document.getElementById('vehicle-fleet-container');
-  const vehXml = parseXML(data.vehicles || data.vehicles_xml || data.stats);
+  const vehiclesRaw = getFirebasePayload(data, "vehicles") || getFirebasePayload(data, "stats");
+  const vehXml = parseXML(vehiclesRaw);
   if (fleetCont) {
     let fleetHtml = "";
     if (vehXml) {
@@ -675,7 +698,8 @@ window.renderDashboard = function(data) {
 
   // 10. Commodity Market Prices
   const ecoCont = document.getElementById('main-economy-container');
-  const ecoXml = parseXML(data.economy || data.economy_xml);
+  const ecoRaw = getFirebasePayload(data, "economy");
+  const ecoXml = parseXML(ecoRaw);
   if (ecoCont) {
     let ecoHtml = "";
     if (ecoXml) {
