@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 9:15 PM (EDT)
- Complete Modular Telemetry Renderer & Dynamic Player Slot Fix
+ Version Timestamp: Thu, July 23, 2026, 9:25 PM (EDT)
+ Complete Modular Telemetry Renderer with Mobile Sandwich Menu Toggle
  File: games/FS25/index.js
 */
 
@@ -61,6 +61,20 @@ const MONTH_NAMES = [
   "Early Autumn (September)", "Mid Autumn (October)", "Late Autumn (November)",
   "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
 ];
+
+// Initialize Mobile Sandwich Menu Toggle
+document.addEventListener("DOMContentLoaded", () => {
+  const toggleBtn = document.getElementById("mobile-menu-toggle");
+  const menuBar = document.getElementById("dynamic-menu");
+
+  if (toggleBtn && menuBar) {
+    toggleBtn.addEventListener("click", () => {
+      menuBar.classList.toggle("menu-active");
+      const isExpanded = menuBar.classList.contains("menu-active");
+      toggleBtn.innerHTML = isExpanded ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-bars"></i>';
+    });
+  }
+});
 
 async function loadGoogleSheetsMenu() {
   try {
