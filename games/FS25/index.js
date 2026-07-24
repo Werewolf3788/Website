@@ -1,5 +1,5 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 03:00 PM (EDT)
+ Version Timestamp: Fri, July 24, 2026, 03:15 PM (EDT)
  Complete Deep XML Parsing Engine & Dynamic CSV Mod Catalog Syncer
  File: games/FS25/index.js
 */
@@ -48,11 +48,14 @@ let offlineStartTime = null;
 let offlineTimerInterval = null;
 let lastKnownServerName = "Dedicated Server";
 
-// Robust XML Parsing Sanitizer (Strips injected Google AppScript CSS styles)
+// Robust XML Parsing Sanitizer (Strips injected Google AppScript CSS styles and handles XML objects or raw text)
 function parseXML(node) {
   if (!node) return null;
   let rawText = typeof node === 'string' ? node : (node.data || node.content || node.xml || "");
-  if (!rawText || typeof rawText !== 'string') return null;
+  if (!rawText || typeof rawText !== 'string') {
+    if (typeof node === 'object' && node.nodeType) return node; // Already a DOM document
+    return null;
+  }
   try {
     let sanitizedXml = rawText.trim().replace(/^[\uFEFF\xA0]+/, '');
     
@@ -195,7 +198,7 @@ async function loadDynamicNavbar() {
     for (const [groupName, items] of Object.entries(groups)) {
       navHtml += `
         <div class="nav-item">
-          <button class="nav-btn dropdown-toggle">
+          <button type="button" class="nav-btn dropdown-toggle">
             ${groupName} <i class="fa-solid fa-caret-down"></i>
           </button>
           <div class="dropdown-content">`;
@@ -285,7 +288,7 @@ async function loadModHubCatalog() {
     if (categoriesBar) {
       let filterHtml = "";
       categoriesSet.forEach(cat => {
-        filterHtml += `<button class="category-filter-btn ${cat === 'ALL MODS' ? 'active' : ''}" data-category="${cat}">${cat}</button>`;
+        filterHtml += `<button type="button" class="category-filter-btn ${cat === 'ALL MODS' ? 'active' : ''}" data-category="${cat}">${cat}</button>`;
       });
       categoriesBar.innerHTML = filterHtml;
     }
@@ -327,7 +330,7 @@ function renderModCards(categoryFilter = "ALL MODS") {
             <span><i class="fa-solid fa-user"></i> ${mod.author}</span>
             <span><i class="fa-solid fa-hard-drive"></i> ${mod.size}</span>
           </div>
-          <button class="nav-btn open-mod-lightbox" data-title="${mod.name}" data-img="${mod.image}" data-desc="${encodeURIComponent(mod.description)}" data-url="${mod.url}">
+          <button type="button" class="nav-btn open-mod-lightbox" data-title="${mod.name}" data-img="${mod.image}" data-desc="${encodeURIComponent(mod.description)}" data-url="${mod.url}">
             Read More <i class="fa-solid fa-chevron-right"></i>
           </button>
         </div>
@@ -341,6 +344,7 @@ function renderModCards(categoryFilter = "ALL MODS") {
 document.addEventListener("click", (e) => {
   const trigger = e.target.closest(".lightbox-trigger, .open-mod-lightbox");
   if (trigger) {
+    e.preventDefault();
     const modal = document.getElementById("lightbox-modal");
     const imgEl = document.getElementById("lightbox-img");
     const captionEl = document.getElementById("lightbox-caption");
@@ -394,6 +398,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document.addEventListener("click", (e) => {
     const tabBtn = e.target.closest(".tab-btn");
     if (tabBtn) {
+      e.preventDefault();
       const targetTabId = tabBtn.getAttribute("data-tab");
       document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
       document.querySelectorAll(".tab-content-panel").forEach(p => p.classList.remove("active"));
@@ -419,19 +424,19 @@ window.renderDashboard = function(data) {
 
   // Extract Active Server Mods
   activeServerMods.clear();
-  const configXml = parseXML(data.dedicatedServerConfig || data.dedicatedServerConfig_xml || data.stats);
+  const configXml = parseXML(data.dedicatedServerConfig || data.dedicatedServerConfig_xml || data.stats || data.careerSavegame);
   if (configXml) {
     configXml.querySelectorAll("mod, Mod").forEach(m => {
-      const filename = m.getAttribute("filename") || m.getAttribute("name");
+      const filename = m.getAttribute("filename") || m.getAttribute("name") || m.getAttribute("modName");
       if (filename) activeServerMods.add(filename.replace('.zip', ''));
     });
   }
 
-  const statsXml = parseXML(data.stats || data.dedicatedServerConfig_xml);
-  const serverNode = statsXml ? statsXml.querySelector("Server") : null;
-  const gameName = serverNode ? serverNode.getAttribute("name") : null;
+  const statsXml = parseXML(data.stats || data.dedicatedServerConfig_xml || data.careerSavegame);
+  const serverNode = statsXml ? (statsXml.querySelector("Server") || statsXml.querySelector("settings")) : null;
+  const gameName = serverNode ? (serverNode.getAttribute("name") || getDeepXmlValue(serverNode, ["savegameName"])) : null;
 
-  if (statsXml && serverNode) {
+  if (statsXml) {
     lastKnownServerName = gameName || "Dedicated Server";
     window.setServerStatus(true);
   } else {
@@ -452,9 +457,9 @@ window.renderDashboard = function(data) {
   // 1. Header & Server Environment Badges
   if (serverNode) {
     const serverNameEl = document.getElementById('server-name');
-    if (serverNameEl) serverNameEl.textContent = gameName;
+    if (serverNameEl && gameName) serverNameEl.textContent = gameName;
 
-    const mapName = serverNode.getAttribute("mapName") || "Riverbend Springs";
+    const mapName = serverNode.getAttribute("mapName") || getDeepXmlValue(serverNode, ["mapTitle"]) || "Riverbend Springs";
     const mapEl = document.getElementById('server-map');
     if (mapEl) mapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
 
@@ -503,10 +508,10 @@ window.renderDashboard = function(data) {
   // 2. Global Net Balance & Metrics
   try {
     let globalNetWorthSum = 0;
-    const farmsXml = parseXML(data.farms || data.farms_xml);
+    const farmsXml = parseXML(data.farms || data.farms_xml || data.careerSavegame);
     if (farmsXml) {
-      farmsXml.querySelectorAll("farm").forEach(farm => {
-        const money = parseFloat(farm.getAttribute("money") || "0");
+      farmsXml.querySelectorAll("farm, statistics").forEach(farm => {
+        const money = parseFloat(farm.getAttribute("money") || getDeepXmlValue(farm, ["money"]) || "0");
         if (!isNaN(money)) globalNetWorthSum += money;
       });
     }
@@ -598,7 +603,24 @@ window.renderDashboard = function(data) {
     }
   } catch (e) {}
 
-  // 5. Factories & Production Chains
+  // 5. Buying Stations Container
+  try {
+    const buyCont = document.getElementById('buying-stations-container');
+    if (buyCont) {
+      buyCont.innerHTML = `
+        <div class="item-card" style="border-left: 4px solid #38bdf8;">
+          <div class="item-left">
+            ${getThumbnailHTML("GRAIN ELEVATOR", "fa-store")}
+            <div>
+              <div class="item-title">COMMUNITY MULTIFRUIT BUYING STATION</div>
+              <div class="mono"><span class="badge-stat badge-good">PUBLIC ACCESS</span></div>
+            </div>
+          </div>
+        </div>`;
+    }
+  } catch (e) {}
+
+  // 6. Factories & Production Chains
   try {
     const prodCont = document.getElementById('main-productions-container');
     const placeXml = parseXML(data.placeables || data.placeables_xml);
@@ -639,7 +661,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) {}
 
-  // 6. Livestock & Animal Husbandry
+  // 7. Livestock & Animal Husbandry
   try {
     const animalCont = document.getElementById('animal-husbandry-container');
     const placeXml = parseXML(data.placeables || data.placeables_xml);
@@ -682,7 +704,24 @@ window.renderDashboard = function(data) {
     }
   } catch (e) {}
 
-  // 7. Dealership Used Equipment Sales
+  // 8. Regional Train Network Container
+  try {
+    const trainCont = document.getElementById('main-train-container');
+    if (trainCont) {
+      trainCont.innerHTML = `
+        <div class="item-card" style="border-left: 4px solid #facc15;">
+          <div class="item-left">
+            ${getThumbnailHTML("TRAIN STATION", "fa-train")}
+            <div>
+              <div class="item-title">REGIONAL GRAIN & LOGISTICS TRAIN</div>
+              <div class="mono"><span class="badge-stat badge-good">ACTIVE ON MAP</span></div>
+            </div>
+          </div>
+        </div>`;
+    }
+  } catch (e) {}
+
+  // 9. Dealership Used Equipment Sales
   try {
     const salesCont = document.getElementById('used-sales-container');
     const salesXml = parseXML(data.sales || data.sales_xml);
@@ -717,7 +756,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) {}
 
-  // 8. Vehicle Fleet Telemetry
+  // 10. Vehicle Fleet Telemetry
   try {
     const fleetCont = document.getElementById('vehicle-fleet-container');
     const vehXml = parseXML(data.vehicles || data.vehicles_xml || data.stats);
@@ -725,7 +764,7 @@ window.renderDashboard = function(data) {
       let fleetHtml = "";
       if (vehXml) {
         vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
-          const name = formatName(v.getAttribute("name") || v.getAttribute("filename"));
+          const name = formatName(v.getAttribute("name") || v.getAttribute("filename") || v.getAttribute("modName"));
           if (!name.includes("WAGON") && !name.includes("TRAIN")) {
             const controller = v.getAttribute("controller") || (v.getAttribute("isAIActive") === "true" ? "AI Helper" : "Unmanned");
             const isAI = controller.includes("AI");
@@ -747,7 +786,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) {}
 
-  // 9. Commodity Market Prices
+  // 11. Commodity Market Prices
   try {
     const ecoCont = document.getElementById('main-economy-container');
     const ecoXml = parseXML(data.economy || data.economy_xml);
@@ -776,7 +815,4 @@ window.renderDashboard = function(data) {
       ecoCont.innerHTML = ecoHtml || `<div class="item-card"><div class="item-title">Reading Market Economy...</div></div>`;
     }
   } catch (e) {}
-
-  // Reload Mod Cards against live active server mods
-  renderModCards();
 };
