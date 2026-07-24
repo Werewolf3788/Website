@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 9:25 PM (EDT)
- Complete Modular Telemetry Renderer with Mobile Sandwich Menu Toggle
+ Version Timestamp: Thu, July 23, 2026, 9:35 PM (EDT)
+ Bulletproof Telemetry Renderer - Zero-Crash Execution
  File: games/FS25/index.js
 */
 
@@ -62,7 +62,7 @@ const MONTH_NAMES = [
   "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
 ];
 
-// Initialize Mobile Sandwich Menu Toggle
+// Mobile Menu Handler
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("mobile-menu-toggle");
   const menuBar = document.getElementById("dynamic-menu");
@@ -138,7 +138,7 @@ function parseCSV(text) {
 
 function resolveCropName(typeName) {
   if (!typeName) return null;
-  const key = typeName.toUpperCase().replace('FILLTYPE_', '');
+  const key = String(typeName).toUpperCase().replace('FILLTYPE_', '');
   return CROP_NAME_MAP[key] || null;
 }
 
@@ -167,7 +167,7 @@ function getThumbnailHTML(key, fallbackIcon) {
 
 function resolvePlaceableName(filename) {
   if (!filename) return "Storage Facility";
-  const name = filename.toLowerCase();
+  const name = String(filename).toLowerCase();
   if (name.includes("silo")) return "Grain Elevator Silo";
   if (name.includes("cow")) return "Dairy Cow Barn";
   if (name.includes("pig")) return "Pig Husbandry";
@@ -184,7 +184,7 @@ function resolvePlaceableName(filename) {
 
 function formatName(str) {
   if (!str) return 'Unknown Item';
-  let clean = str.split('/').pop().replace('.xml', '').replace('data_', '').replace('FS25_', '');
+  let clean = String(str).split('/').pop().replace('.xml', '').replace('data_', '').replace('FS25_', '');
   return clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').toUpperCase();
 }
 
@@ -202,7 +202,7 @@ function parseXML(xmlData) {
 function renderDashboard(data) {
   if (!data) return;
 
-  // 1. In-Game Dynamic Time, Month & Weather Sync
+  // 1. In-Game Time, Month & Weather Sync
   try {
     const envXml = parseXML(data.environment || data.environment_xml);
     const careerXml = parseXML(data.careerSavegame || data.careerSavegame_xml);
@@ -277,7 +277,7 @@ function renderDashboard(data) {
     else if (weatherState.includes("CLOUD")) bodyEl.classList.add("weather-cloudy");
   } catch (e) { console.error("Environment Render Error:", e); }
 
-  // 2. Server Header Config & Dynamic Max Player Capacity Fix
+  // 2. Server Header Config & Dynamic Max Player Capacity
   try {
     const statsXml = parseXML(data.dedicatedServerConfig || data.dedicatedServerConfig_xml || data.gameStats || data.gameStats_xml || data.stats || data.gameserver);
     if (statsXml) {
@@ -287,7 +287,6 @@ function renderDashboard(data) {
       if (gameName) document.getElementById('server-name').textContent = gameName;
       if (mapName) document.getElementById('server-map').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${formatName(mapName)}`;
 
-      // Parse Dynamic Max Players directly from dedicatedServerConfig.xml
       const maxPlayersNode = statsXml.querySelector("max_player") || statsXml.querySelector("Slots")?.getAttribute("capacity");
       const maxPlayers = maxPlayersNode ? (maxPlayersNode.textContent || maxPlayersNode) : "6";
 
