@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 10:35 PM (EDT)
- Resilient FS25 Realtime Telemetry Engine - Dynamic UTM Link Tracking Included
+ Version Timestamp: Thu, July 23, 2026, 10:50 PM (EDT)
+ Resilient FS25 Realtime Telemetry Engine - Precise G-Portal MS Time & Live Player Decoder
  File: games/FS25/index.js
 */
 
@@ -35,6 +35,7 @@ const IMAGE_ASSETS = {
   "HERBICIDE": "images/HERBICIDE.JPG",
   "DESTRUCTIBLE ROCK": "images/Destructible Rock.JPG",
   "TEDDER": "images/Teddar.JPG",
+  "WELKER'S BIGBUD KTTA700": "images/Big Bud KTTA 700.JPG",
   "BIG BUD KTTA 700": "images/Big Bud KTTA 700.JPG",
   "FORESTRY LOCOMOTIVE": "images/FORESTRY LOCOMOTIVE.JPG",
   "GRAIN BARGE": "images/GRAIN BARGE.JPG",
@@ -55,13 +56,23 @@ const IMAGE_ASSETS = {
   "PRECISION FARMING": "images/Precision Farming.jpg"
 };
 
+const BASE_PRICES = {
+  "WHEAT": 780, "BARLEY": 720, "CANOLA": 1250, "OAT": 1100,
+  "MAIZE": 850, "CORN": 850, "SUNFLOWER": 1380, "SOYBEAN": 1550,
+  "POTATO": 410, "SUGARBEET": 350, "BEETROOT": 420, "PARSNIP": 460,
+  "SPINACH": 620, "CARROT": 450, "COTTON": 2450, "SORGHUM": 920,
+  "GREENBEAN": 890, "PEA": 780, "GRASS": 120, "MILK": 620,
+  "HONEY": 1950, "WOOL": 1820, "WOODCHIPS": 240
+};
+
 const CROP_NAME_MAP = {
   "WHEAT": "Wheat", "BARLEY": "Barley", "CANOLA": "Canola",
   "OAT": "Oats", "MAIZE": "Corn / Maize", "SUNFLOWER": "Sunflowers",
   "SOYBEAN": "Soybeans", "POTATO": "Potatoes", "SUGARBEET": "Sugarbeets",
   "BEETROOT": "Beetroot", "PARSNIP": "Parsnip", "SPINACH": "Spinach",
   "CARROT": "Carrots", "COTTON": "Cotton", "SORGHUM": "Sorghum",
-  "GREENBEAN": "Green Beans", "PEA": "Peas", "GRASS": "Grass"
+  "GREENBEAN": "Green Beans", "PEA": "Peas", "GRASS": "Grass",
+  "HONEY": "Honey", "WOODCHIPS": "Wood Chips"
 };
 
 const MONTH_NAMES = [
@@ -71,7 +82,6 @@ const MONTH_NAMES = [
   "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
 ];
 
-// Attach Page Name UTM Parameters to standard URLs
 function appendUTMParameters(urlStr) {
   if (!urlStr || urlStr.startsWith('#') || urlStr.startsWith('javascript:')) return urlStr;
   try {
@@ -226,22 +236,44 @@ function parseXML(node) {
 window.renderDashboard = function(data) {
   if (!data) return;
 
-  // 1. Time, Month & Weather
+  // 1. Time, Month & Server Attributes Parser
   try {
+    const statsXml = parseXML(data.stats || data.dedicatedServerConfig);
     const envXml = parseXML(data.environment || data.environment_xml);
     
     let hours = 8, mins = 50, monthText = "Early Autumn (September)";
 
-    if (envXml) {
-      const dayTimeNode = envXml.querySelector("dayTime") || envXml.querySelector("time");
-      if (dayTimeNode && dayTimeNode.textContent) {
-        let val = parseFloat(dayTimeNode.textContent.trim());
-        if (!isNaN(val)) {
-          if (val > 86400) val = val / 60000;
-          else if (val > 1440) val = val / 60;
-          hours = Math.floor(val / 60) % 24;
-          mins = Math.floor(val % 60);
+    if (statsXml) {
+      const serverNode = statsXml.querySelector("Server");
+      if (serverNode) {
+        const gameName = serverNode.getAttribute("name");
+        const mapName = serverNode.getAttribute("mapName");
+        const rawDayTime = parseFloat(serverNode.getAttribute("dayTime") || "0");
+
+        if (gameName) document.getElementById('server-name').textContent = gameName;
+        if (mapName) document.getElementById('server-map').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
+
+        // Precise Millisecond to 24H Clock Math
+        if (rawDayTime > 0) {
+          const totalMinutes = Math.floor(rawDayTime / 60000);
+          hours = Math.floor(totalMinutes / 60) % 24;
+          mins = totalMinutes % 60;
         }
+      }
+
+      // Live Player Count & Online Names
+      const slotsNode = statsXml.querySelector("Slots");
+      const capacity = slotsNode ? slotsNode.getAttribute("capacity") : "6";
+      const numUsed = slotsNode ? slotsNode.getAttribute("numUsed") : "0";
+
+      const onlinePlayers = [];
+      statsXml.querySelectorAll("Player[isUsed='true']").forEach(p => {
+        onlinePlayers.push(p.textContent);
+      });
+
+      const playerBadge = document.getElementById('server-players');
+      if (playerBadge) {
+        playerBadge.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${numUsed}/${capacity} ${onlinePlayers.length ? `(${onlinePlayers.join(', ')})` : ''}`;
       }
     }
 
@@ -252,16 +284,7 @@ window.renderDashboard = function(data) {
     if (monthEl) monthEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Month: ${monthText}`;
   } catch (e) { console.error("Environment Render Error:", e); }
 
-  // 2. Server Status
-  try {
-    const statsXml = parseXML(data.stats || data.dedicatedServerConfig);
-    if (statsXml) {
-      const gameName = statsXml.querySelector("game_name")?.textContent || "OneLIVIDMAN and werewolf 618";
-      document.getElementById('server-name').textContent = gameName;
-    }
-  } catch (e) { console.error("Stats Render Error:", e); }
-
-  // 3. Server Farms
+  // 2. Server Farms & Farmlands
   const farmNamesById = {};
   try {
     const farmsXml = parseXML(data.farms);
@@ -289,6 +312,54 @@ window.renderDashboard = function(data) {
       if (farmsCont) farmsCont.innerHTML = farmsHtml || '<div class="empty-state">No farm finances online.</div>';
     }
   } catch (e) { console.error("Farms Render Error:", e); }
+
+  // 3. Vehicles & Machinery (Support Stats API Vehicle Nodes)
+  try {
+    const statsXml = parseXML(data.stats);
+    const vehXml = parseXML(data.vehicles);
+    let tractorsHtml = "";
+    let implementsHtml = "";
+
+    const processVehicleNode = (rawName, category, controller) => {
+      const formatted = formatName(rawName);
+      const isTractor = category.includes("TRACTOR") || category.includes("HARVESTER") || rawName.toLowerCase().includes("bigbud");
+      const fallbackIcon = isTractor ? "fa-tractor" : "fa-screwdriver-wrench";
+      const thumbnail = getThumbnailHTML(formatted, fallbackIcon);
+
+      return `
+        <div class="item-card">
+          <div class="item-left">
+            ${thumbnail}
+            <div>
+              <div class="item-title">${formatted}</div>
+              <div class="mono">
+                <span class="badge-stat badge-owner">${category}</span>
+                ${controller ? `<span class="badge-stat badge-sown"><i class="fa-solid fa-user"></i> ${controller}</span>` : ''}
+              </div>
+            </div>
+          </div>
+        </div>`;
+    };
+
+    if (statsXml) {
+      statsXml.querySelectorAll("Vehicle").forEach(v => {
+        const name = v.getAttribute("name");
+        const category = v.getAttribute("category") || "EQUIPMENT";
+        const controller = v.getAttribute("controller");
+
+        if (category.includes("TRACTOR") || name.includes("BigBud")) {
+          tractorsHtml += processVehicleNode(name, category, controller);
+        } else {
+          implementsHtml += processVehicleNode(name, category, controller);
+        }
+      });
+    }
+
+    const tracCont = document.getElementById('tractors-container');
+    const implCont = document.getElementById('implements-container');
+    if (tracCont) tracCont.innerHTML = tractorsHtml || '<div class="empty-state">No machinery online.</div>';
+    if (implCont) implCont.innerHTML = implementsHtml || '<div class="empty-state">No implements online.</div>';
+  } catch (e) { console.error("Vehicles Render Error:", e); }
 
   // 4. Contracts & Missions Engine
   try {
@@ -357,74 +428,25 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Contracts Render Error:", e); }
 
-  // 5. Map Collectibles Tracker
+  // 5. Commodity Market Economy
   try {
-    const collectiblesContainer = document.getElementById('collectibles-container');
-    const careerXml = parseXML(data.careerSavegame || data.stats);
+    const ecoContainer = document.getElementById('economy-container');
+    if (ecoContainer) {
+      let html = "";
+      for (const [cropKey, baseVal] of Object.entries(BASE_PRICES)) {
+        const realCropName = resolveCropName(cropKey);
+        const thumbnail = getThumbnailHTML(cropKey, "fa-chart-line");
 
-    if (collectiblesContainer) {
-      let foundCount = 0;
-      let totalCollectibles = 100;
-
-      if (careerXml) {
-        const collectibleNodes = careerXml.querySelectorAll("collectible, collectibles item, collectibleItem");
-        if (collectibleNodes.length > 0) {
-          totalCollectibles = collectibleNodes.length;
-          collectibleNodes.forEach(c => {
-            const isFound = c.getAttribute("isFound") === "true" || c.getAttribute("found") === "true" || c.textContent === "true";
-            if (isFound) foundCount++;
-          });
-        }
-      }
-
-      const foundPct = Math.round((foundCount / totalCollectibles) * 100);
-
-      collectiblesContainer.innerHTML = `
-        <div class="item-card" style="flex-direction:column; align-items:stretch;">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
+        html += `
+          <div class="item-card">
             <div class="item-left">
-              ${getThumbnailHTML("DESTRUCTIBLE ROCK", "fa-trophy")}
-              <div>
-                <div class="item-title">Map Collectibles Found</div>
-                <div class="mono" style="margin-top:2px;">
-                  <span class="badge-stat badge-owner">${foundCount} / ${totalCollectibles} Discovered</span>
-                  <span class="badge-stat">${totalCollectibles - foundCount} Remaining</span>
-                </div>
-              </div>
+              ${thumbnail}
+              <div class="item-title">${realCropName}</div>
             </div>
-            <div class="farm-money" style="font-size:1.1rem; color:var(--accent-gold);">${foundPct}%</div>
-          </div>
-          <div class="progress-container" style="margin-top:10px;">
-            <div class="progress-bar" style="width: ${foundPct}%; background:var(--accent-gold);"></div>
-          </div>
-        </div>`;
+            <div class="farm-money" style="font-size:0.95rem;">$${parseFloat(baseVal).toFixed(2)} / kL</div>
+          </div>`;
+      }
+      ecoContainer.innerHTML = html;
     }
-  } catch (e) { console.error("Collectibles Render Error:", e); }
-
-  // 6. Installed Mods
-  try {
-    const modsContainer = document.getElementById('mods-container');
-    let modsHtml = "";
-    const modXml = parseXML(data.mods) || parseXML(data.stats) || parseXML(data.careerSavegame);
-    
-    if (modXml && modsContainer) {
-      modXml.querySelectorAll("mod, Mods mod, Mod, modHeader").forEach(m => {
-        const title = m.getAttribute("title") || m.getAttribute("name") || m.getAttribute("filename") || m.textContent;
-        if (title && title.trim().length > 0) {
-          const cleanTitle = formatName(title);
-          modsHtml += `
-            <div class="item-card">
-              <div class="item-left">
-                ${getThumbnailHTML(cleanTitle, "fa-puzzle-piece")}
-                <div>
-                  <div class="item-title">${cleanTitle}</div>
-                  <span class="badge-stat">Active Mod</span>
-                </div>
-              </div>
-            </div>`;
-        }
-      });
-      modsContainer.innerHTML = modsHtml || '<div class="empty-state">No installed mods detected.</div>';
-    }
-  } catch (e) { console.error("Mods Render Error:", e); }
+  } catch (e) { console.error("Economy Render Error:", e); }
 };
