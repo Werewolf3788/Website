@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 12:35 AM (EDT)
- Resilient FS25 Tactical Engine - Dynamic Gauges, Fertilizer Thresholds & Infrastructure Mapping
+ Version Timestamp: Fri, July 24, 2026, 12:42 AM (EDT)
+ Resilient FS25 Tactical Engine - Dealership Categorization & Dynamic Grid Auto-Sorting
  File: games/FS25/index.js
 */
 
@@ -90,6 +90,22 @@ const MONTH_NAMES = [
   "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
 ];
 
+// Smart Equipment Model & Category Resolver
+function resolveEquipmentDetails(rawModelName) {
+  if (!rawModelName) return { name: "Unknown Equipment", category: "General Tool" };
+  const str = String(rawModelName).toUpperCase().trim();
+
+  if (str.includes("TERRIA")) return { name: "Pöttinger TERRIA 6040", category: "Cultivator" };
+  if (str.includes("REXIUS")) return { name: "Väderstad REXIUS 1230", category: "Roller / Soil Compactor" };
+  if (str.includes("HTW65")) return { name: "Bergmann HTW 65", category: "Forage Trailer" };
+  if (str.includes("SMARAGD")) return { name: "Lemken SMARAGD 9/500 K", category: "Stubbed Cultivator" };
+  if (str.includes("TA12050")) return { name: "Krampe TA 12050", category: "Tipper Trailer" };
+  if (str.includes("BIGBUD")) return { name: "Big Bud KTTA 700", category: "Heavy Tractor" };
+  if (str.includes("8R")) return { name: "John Deere 8R Series", category: "Medium/Heavy Tractor" };
+
+  return { name: formatName(rawModelName), category: "Equipment / Tool" };
+}
+
 function appendUTMParameters(urlStr) {
   if (!urlStr || urlStr.startsWith('#') || urlStr.startsWith('javascript:')) return urlStr;
   try {
@@ -123,6 +139,21 @@ function renderGaugeBar(percentage, labelText) {
         <div class="progress-bar" style="width: ${pct}%; background-color: ${barColor};"></div>
       </div>
     </div>`;
+}
+
+// Automatically sorts dashboard grid so boxes with 5+ items align on top rows
+function rearrangeGridByItemCount() {
+  const grid = document.querySelector('.grid-layout');
+  if (!grid) return;
+
+  const boxes = Array.from(grid.querySelectorAll('.dashboard-box'));
+  boxes.sort((a, b) => {
+    const countA = a.querySelectorAll('.item-card').length;
+    const countB = b.querySelectorAll('.item-card').length;
+    return countB - countA; // Descending sort by item count
+  });
+
+  boxes.forEach(box => grid.appendChild(box));
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -212,7 +243,6 @@ async function loadGoogleSheetsMenu() {
       dropdownHtml += `</div>`;
       navGroup.innerHTML = dropdownHtml;
 
-      // Touch & Click handler for mobile/tablet menus
       const toggle = navGroup.querySelector('.dropdown-toggle');
       toggle.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -437,7 +467,6 @@ window.renderDashboard = function(data) {
         const groundType = formatName(f.getAttribute("groundType") || "SOWN");
         const sprayLevel = parseInt(f.getAttribute("sprayLevel") || "0", 10);
 
-        // Green Fertilizer Badge for Max Level (Level 2), Yellow for Level 1
         let fertilizerBadge = `<span class="badge-stat badge-danger">Fertilizer: 0%</span>`;
         if (sprayLevel >= 2) {
           fertilizerBadge = `<span class="badge-stat badge-good"><i class="fa-solid fa-circle-check"></i> Fertilized: 100% (Level 2)</span>`;
@@ -445,7 +474,6 @@ window.renderDashboard = function(data) {
           fertilizerBadge = `<span class="badge-stat badge-warning"><i class="fa-solid fa-triangle-exclamation"></i> Fertilized: 50% (Level 1)</span>`;
         }
 
-        // Precision Farming Tramline Cross-Ref
         let pfWidth = "";
         if (precisionXml) {
           const pfNode = precisionXml.querySelector(`tramlineMap farmland[farmlandId='${id}']`);
@@ -495,7 +523,6 @@ window.renderDashboard = function(data) {
         const dieselUnit = vNode.querySelector("fillUnit unit[fillType='DIESEL']");
         if (dieselUnit) {
           const fillLevel = parseFloat(dieselUnit.getAttribute("fillLevel") || "0");
-          // Max capacity estimate or percentage mapping
           const pct = Math.min(100, Math.round((fillLevel / 2000) * 100));
           fuelGaugeHtml = renderGaugeBar(pct, `Fuel Level (${Math.round(fillLevel)}L)`);
         }
@@ -532,7 +559,7 @@ window.renderDashboard = function(data) {
     if (vehXml) {
       vehXml.querySelectorAll("vehicle").forEach(v => {
         const farmId = v.getAttribute("farmId");
-        if (farmId === "0") return; // Public train/barge filter
+        if (farmId === "0") return;
 
         const name = v.getAttribute("filename") || "Vehicle";
         const category = v.getAttribute("category") || "Machinery";
@@ -570,7 +597,6 @@ window.renderDashboard = function(data) {
     if (publicContainer) {
       let infraHtml = "";
 
-      // Train Station & Regional Rail
       if (placeXml) {
         const trainNode = placeXml.querySelector("placeable[uniqueId='trainSystem']");
         infraHtml += `
@@ -588,7 +614,6 @@ window.renderDashboard = function(data) {
           </div>`;
       }
 
-      // River Grain Barges
       if (placeXml) {
         placeXml.querySelectorAll("placeable[uniqueId*='grainBargeTerminal']").forEach(b => {
           const uid = b.getAttribute("uniqueId");
@@ -610,7 +635,6 @@ window.renderDashboard = function(data) {
         });
       }
 
-      // Vehicle Dealership
       infraHtml += `
         <div class="item-card">
           <div class="item-left">
@@ -629,7 +653,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Infrastructure Render Error:", e); }
 
-  // 7. Dealership Used Vehicle Sale Radar (With Condition Gauges)
+  // 7. Dealership Used Vehicle Sale Radar (Categorized + Condition Gauges)
   try {
     const salesContainer = document.getElementById('sales-container');
     const salesXml = parseXML(data.sales || data.sales_xml);
@@ -638,23 +662,23 @@ window.renderDashboard = function(data) {
       let salesHtml = "";
       salesXml.querySelectorAll("item").forEach(item => {
         const xmlFilename = item.getAttribute("xmlFilename") || "Equipment";
-        const formattedName = formatName(xmlFilename);
+        const details = resolveEquipmentDetails(xmlFilename);
         const price = Math.round(parseFloat(item.getAttribute("price") || "0"));
         const timeLeft = item.getAttribute("timeLeft") || "0";
         const damageVal = parseFloat(item.getAttribute("damage") || "0");
         const wearVal = parseFloat(item.getAttribute("wear") || "0");
 
-        // Health percentage gauge (100% minus wear/damage)
         const conditionPct = Math.round(100 - (Math.max(damageVal, wearVal) * 100));
 
         salesHtml += `
           <div class="item-card" style="flex-direction:column; align-items:stretch;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
               <div class="item-left">
-                ${getThumbnailHTML(formattedName, "fa-tags")}
+                ${getThumbnailHTML(details.name, "fa-tags")}
                 <div>
-                  <div class="item-title">${formattedName}</div>
+                  <div class="item-title">${details.name}</div>
                   <div class="mono" style="margin-top:2px;">
+                    <span class="badge-stat badge-owner">${details.category}</span>
                     <span class="badge-stat badge-warning"><i class="fa-regular fa-clock"></i> ${timeLeft}h Left</span>
                   </div>
                 </div>
@@ -669,7 +693,7 @@ window.renderDashboard = function(data) {
     }
   } catch (e) { console.error("Sales Render Error:", e); }
 
-  // 8. Dynamic Contracts & Field Missions (With Dynamic Completion Gauges)
+  // 8. Dynamic Contracts & Field Missions
   try {
     const missionsXml = parseXML(data.missions || data.missions_xml);
     const contractsContainer = document.getElementById('contracts-container');
@@ -822,4 +846,7 @@ window.renderDashboard = function(data) {
       ecoContainer.innerHTML = html;
     }
   } catch (e) { console.error("Economy Render Error:", e); }
+
+  // Dynamic Grid Optimization: Packs heavy 5+ item boxes together on top rows
+  rearrangeGridByItemCount();
 };
