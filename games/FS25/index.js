@@ -1,12 +1,12 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 9:55 PM (EDT)
- Fully Resilient FS25 Dashboard Engine - Isolated Execution & Broken Image Handling
+ Version Timestamp: Thu, July 23, 2026, 11:20 PM (EDT)
+ Resilient FS25 Realtime Telemetry Renderer (Mapped to /fs25 schema)
  File: games/FS25/index.js
 */
 
 const menuCsvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
 
-// Local GitHub Asset Mappings
+// Local Asset Image Registry
 const IMAGE_ASSETS = {
   "BARLEY": "images/Barley.JPG",
   "BEETROOT": "images/Beetroot.JPG",
@@ -62,7 +62,7 @@ const MONTH_NAMES = [
   "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
 ];
 
-// Setup Mobile Sandwich Toggle on Load
+// Initialize UI & Navigation
 document.addEventListener("DOMContentLoaded", () => {
   const toggleBtn = document.getElementById("mobile-menu-toggle");
   const menuBar = document.getElementById("dynamic-menu");
@@ -75,11 +75,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Load menu independently so failure never blocks main dashboard logic
   loadGoogleSheetsMenu();
 });
 
-// Resilient Navigation Menu Loader with Defensive Image Error-Handling
+// Dynamic CSV Navigation Bar Loader
 async function loadGoogleSheetsMenu() {
   try {
     const response = await fetch(`${menuCsvUrl}&v=${Date.now()}`);
@@ -112,10 +111,8 @@ async function loadGoogleSheetsMenu() {
       }
     });
 
-    // Safe image HTML renderer (hides image on 404/broken link instead of showing broken icon box)
     const makeImgHtml = (src) => src ? `<img src="${src}" alt="" onerror="this.style.display='none'">` : '';
 
-    // Render Standalone Top-Level Buttons
     standaloneItems.forEach(item => {
       const btn = document.createElement('a');
       btn.className = 'nav-btn';
@@ -124,7 +121,6 @@ async function loadGoogleSheetsMenu() {
       menuContainer.appendChild(btn);
     });
 
-    // Render Dropdown Groups
     Object.keys(dropdownGroups).forEach(groupName => {
       const items = dropdownGroups[groupName];
       const navGroup = document.createElement('div');
@@ -145,16 +141,13 @@ async function loadGoogleSheetsMenu() {
       menuContainer.appendChild(navGroup);
     });
   } catch (err) {
-    console.error("Non-fatal menu loading error:", err);
+    console.error("Non-fatal menu error:", err);
   }
 }
 
 function parseCSV(text) {
   if (!text) return [];
-  return text.split('\n').map(line => {
-    // Robust CSV split ignoring trailing spaces
-    return line.split(',').map(cell => cell ? cell.trim() : '');
-  });
+  return text.split('\n').map(line => line.split(',').map(cell => cell ? cell.trim() : ''));
 }
 
 function resolveCropName(typeName) {
@@ -171,12 +164,12 @@ function getThumbnailHTML(key, fallbackIcon) {
     const lookupKey = String(key).toUpperCase().replace('FILLTYPE_', '').trim();
 
     if (IMAGE_ASSETS[lookupKey]) {
-      return `<div class="item-icon-box"><img src="${IMAGE_ASSETS[lookupKey]}" alt="${lookupKey}" onerror="this.onerror=null; this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
+      return `<div class="item-icon-box"><img src="${IMAGE_ASSETS[lookupKey]}" alt="${lookupKey}" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
     }
 
     for (const [assetName, path] of Object.entries(IMAGE_ASSETS)) {
       if (lookupKey.includes(assetName) || assetName.includes(lookupKey)) {
-        return `<div class="item-icon-box"><img src="${path}" alt="${assetName}" onerror="this.onerror=null; this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
+        return `<div class="item-icon-box"><img src="${path}" alt="${assetName}" onerror="this.parentNode.innerHTML='<i class=\\'fa-solid ${fallbackIcon}\\'></i>';"></div>`;
       }
     }
   } catch (e) {
@@ -209,9 +202,10 @@ function formatName(str) {
   return clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').toUpperCase();
 }
 
-function parseXML(xmlData) {
-  if (!xmlData) return null;
-  const rawText = typeof xmlData === 'object' ? xmlData.data || xmlData.content : xmlData;
+function parseXML(xmlNode) {
+  if (!xmlNode) return null;
+  // Handle fs25.js payload structure: object with .data field containing raw XML string
+  const rawText = typeof xmlNode === 'object' ? (xmlNode.data || xmlNode.content || xmlNode) : xmlNode;
   if (!rawText || typeof rawText !== 'string') return null;
   try {
     const parser = new DOMParser();
@@ -220,7 +214,8 @@ function parseXML(xmlData) {
   } catch (e) { return null; }
 }
 
-function renderDashboard(data) {
+// Attach directly to Window Scope so Firebase can invoke it reliably
+window.renderDashboard = function(data) {
   if (!data) return;
 
   // 1. In-Game Time, Month & Weather Sync
@@ -298,9 +293,9 @@ function renderDashboard(data) {
     else if (weatherState.includes("CLOUD")) bodyEl.classList.add("weather-cloudy");
   } catch (e) { console.error("Environment Render Error:", e); }
 
-  // 2. Server Header Config & Dynamic Max Player Capacity
+  // 2. Server Header Config & Active Player Count (Pulls directly from fs25.js payload)
   try {
-    const statsXml = parseXML(data.dedicatedServerConfig || data.dedicatedServerConfig_xml || data.gameStats || data.gameStats_xml || data.stats || data.gameserver);
+    const statsXml = parseXML(data.stats || data.dedicatedServerConfig || data.gameStats);
     if (statsXml) {
       const gameName = statsXml.querySelector("game_name")?.textContent || statsXml.querySelector("Server")?.getAttribute("name");
       const mapName = statsXml.querySelector("Server")?.getAttribute("mapName") || statsXml.querySelector("mapFilename")?.textContent;
@@ -311,13 +306,7 @@ function renderDashboard(data) {
       const maxPlayersNode = statsXml.querySelector("max_player") || statsXml.querySelector("Slots")?.getAttribute("capacity");
       const maxPlayers = maxPlayersNode ? (maxPlayersNode.textContent || maxPlayersNode) : "6";
 
-      let activePlayers = 0;
-      const playerNodes = statsXml.querySelectorAll("player, Player");
-      playerNodes.forEach(p => {
-        if (p.getAttribute("isUsed") === "true" || (p.textContent && p.textContent.trim().length > 0)) {
-          activePlayers++;
-        }
-      });
+      const activePlayers = data.activePlayers !== undefined ? data.activePlayers : 0;
 
       const playerBadge = document.getElementById('server-players');
       if (playerBadge) {
@@ -329,7 +318,7 @@ function renderDashboard(data) {
   // 3. Registered Farms & Ownership Mapping
   const farmlandOwnership = {};
   try {
-    const farmsXml = parseXML(data.farms || data.farms_xml);
+    const farmsXml = parseXML(data.farms);
     if (farmsXml) {
       let farmsHtml = "";
       farmsXml.querySelectorAll("farm").forEach(farm => {
@@ -360,7 +349,7 @@ function renderDashboard(data) {
 
   // 4. Field Crops, Agronomy Status & Image Thumbnails
   try {
-    const fieldsXml = parseXML(data.fields || data.fields_xml);
+    const fieldsXml = parseXML(data.fields);
     const fieldsContainer = document.getElementById('fields-container');
     if (fieldsXml && fieldsContainer) {
       let html = "";
@@ -399,7 +388,7 @@ function renderDashboard(data) {
 
   // 5. Active Contracts & Missions
   try {
-    const missionsXml = parseXML(data.missions || data.missions_xml);
+    const missionsXml = parseXML(data.missions);
     const contractsContainer = document.getElementById('contracts-container');
     if (missionsXml && contractsContainer) {
       let html = "";
@@ -436,11 +425,11 @@ function renderDashboard(data) {
     }
   } catch (e) { console.error("Contracts Render Error:", e); }
 
-  // 6. Installed Server Mods (from gameStats.xml)
+  // 6. Installed Server Mods
   try {
     const modsContainer = document.getElementById('mods-container');
     let modsHtml = "";
-    const modSource = parseXML(data.gameStats || data.gameStats_xml || data.stats || data.careerSavegame || data.gameserver || data.dedicatedServerConfig);
+    const modSource = parseXML(data.stats || data.careerSavegame);
     
     if (modSource && modsContainer) {
       modSource.querySelectorAll("mod").forEach(m => {
@@ -467,7 +456,7 @@ function renderDashboard(data) {
 
   // 7. Production Facilities & Storage
   try {
-    const placeXml = parseXML(data.placeables || data.placeables_xml);
+    const placeXml = parseXML(data.placeables);
     const productionContainer = document.getElementById('production-container');
     if (placeXml && productionContainer) {
       let html = "";
@@ -497,7 +486,7 @@ function renderDashboard(data) {
 
   // 8. Fleet Vehicles
   try {
-    const vehXml = parseXML(data.vehicles || data.vehicles_xml);
+    const vehXml = parseXML(data.vehicles);
     if (vehXml) {
       let tractorsHtml = "";
       let implementsHtml = "";
@@ -541,7 +530,7 @@ function renderDashboard(data) {
 
   // 9. Commodity Market Economy
   try {
-    const ecoXml = parseXML(data.economy || data.economy_xml);
+    const ecoXml = parseXML(data.economy);
     const ecoContainer = document.getElementById('economy-container');
     if (ecoXml && ecoContainer) {
       let html = "";
@@ -565,4 +554,4 @@ function renderDashboard(data) {
       ecoContainer.innerHTML = html || '<div class="empty-state">Market economy data initializing...</div>';
     }
   } catch (e) { console.error("Economy Render Error:", e); }
-}
+};
