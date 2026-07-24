@@ -1,15 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Version Timestamp: Fri, July 24, 2026, 11:38 AM (EDT) -->
+  <!-- Version Timestamp: Fri, July 24, 2026, 01:00 PM (EDT) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FS25 Dynamic Multi-Farm Tactical Hub</title>
+  <title>FS25 Real-Time Tactical Hub</title>
   
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <!-- Dynamic Smart Cache-Busting Stylesheet Loader -->
   <script>
     (function() {
       const cacheBuster = Date.now();
@@ -20,7 +18,6 @@
     })();
   </script>
 
-  <!-- Core JavaScript Engine with Dynamic Smart Cache-Busting -->
   <script>
     (function() {
       const cacheBuster = Date.now();
@@ -66,7 +63,7 @@
         </div>
         <div class="banner-title">
           <div class="server-header-line">
-            <h1 id="server-name">Connecting to Server Telemetry...</h1>
+            <h1 id="server-name">Connecting to Dedicated Server...</h1>
             <span id="server-status-pill" class="status-pill status-offline">
               <span class="status-dot"></span> <span id="status-text">OFFLINE</span>
             </span>
@@ -84,10 +81,10 @@
       </div>
     </section>
 
-    <!-- Dynamic Tab Bar Navigation -->
+    <!-- Dynamic Tab Navigation Bar -->
     <div id="tab-navigation-bar" class="tab-bar-container">
       <button class="tab-btn active" data-tab="main-tab">
-        <i class="fa-solid fa-globe"></i> MAIN OVERVIEW (ALL AI & MAP SUMMARY)
+        <i class="fa-solid fa-globe"></i> MAIN OVERVIEW (SERVER & MAP TACTICAL)
       </button>
     </div>
 
@@ -103,66 +100,63 @@
           <div><div class="metric-value" id="global-vehicle-count">0</div><div class="metric-label">Total Map Vehicles</div></div>
         </div>
         <div class="metric-card">
-          <i class="fa-solid fa-screwdriver-wrench metric-icon" style="color:#f97316;"></i>
-          <div><div class="metric-value" id="global-attachment-count">0</div><div class="metric-label">Total Attachments</div></div>
+          <i class="fa-solid fa-trophy metric-icon" style="color:#facc15;"></i>
+          <div><div class="metric-value" id="global-collectibles-count">0 Found</div><div class="metric-label">Total Collectibles</div></div>
         </div>
         <div class="metric-card">
           <i class="fa-solid fa-map-location-dot metric-icon" style="color:#84cc16;"></i>
-          <div><div class="metric-value" id="global-land-count">0 Parcels</div><div class="metric-label">Total Map Farmland</div></div>
+          <div><div class="metric-value" id="global-land-count">0 Fields</div><div class="metric-label">Total Map Fields</div></div>
         </div>
       </div>
 
       <div class="masonry-grid">
         <div class="dashboard-box box-contracts">
           <div class="box-header"><i class="fa-solid fa-file-contract"></i> <h2>ACTIVE MAP CONTRACTS & MISSIONS</h2></div>
-          <div id="main-contracts-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading contracts...</div></div>
+          <div id="main-contracts-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading contract telemetry...</div></div>
         </div>
 
         <div class="dashboard-box" style="border-top: 4px solid #38bdf8;">
           <div class="box-header"><i class="fa-solid fa-store" style="color:#38bdf8;"></i> <h2>BUYING STATIONS & FIELD LOCATIONS</h2></div>
-          <div id="buying-stations-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Locating buying stations...</div></div>
+          <div id="buying-stations-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading stations...</div></div>
         </div>
 
         <div class="dashboard-box box-productions" style="border-top: 4px solid #3b82f6;">
           <div class="box-header"><i class="fa-solid fa-industry" style="color:#3b82f6;"></i> <h2>MAP FACTORIES & PRODUCTIONS</h2></div>
-          <div id="main-productions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading factories...</div></div>
+          <div id="main-productions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading factory telemetry...</div></div>
         </div>
 
         <div class="dashboard-box box-infra">
           <div class="box-header"><i class="fa-solid fa-train"></i> <h2>REGIONAL TRAIN NETWORK</h2></div>
-          <div id="main-train-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Checking train network...</div></div>
+          <div id="main-train-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading train network...</div></div>
         </div>
 
         <div class="dashboard-box box-economy">
           <div class="box-header"><i class="fa-solid fa-chart-line"></i> <h2>COMMODITY MARKET PRICES</h2></div>
-          <div id="main-economy-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching economy...</div></div>
+          <div id="main-economy-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching market telemetry...</div></div>
         </div>
       </div>
     </div>
 
-    <!-- DYNAMIC FARM TABS CONTAINER -->
+    <!-- DYNAMIC FARM TABS WRAPPER -->
     <div id="dynamic-farm-tabs-wrapper"></div>
 
   </main>
 
-  <!-- Image Lightbox Modal -->
   <div id="lightbox-modal" class="lightbox-modal">
     <span id="lightbox-close" class="lightbox-close">&times;</span>
     <img id="lightbox-img" class="lightbox-content" alt="Enlarged Preview">
     <div id="lightbox-caption" class="lightbox-caption"></div>
   </div>
 
-  <!-- Footer -->
   <footer class="system-footer">
     <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Engine Deployment Timestamp: <strong>Fri, July 24, 2026, 11:38 AM (EDT)</strong></span>
+      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Fri, July 24, 2026, 01:00 PM (EDT)</strong></span>
       <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
       <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Initializing...</span>
       <span id="offline-timer" style="display:none; color:#f87171; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: 0m 0s</span>
     </div>
   </footer>
 
-  <!-- Firebase RTDB Stream Sync -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
