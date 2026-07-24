@@ -1,5 +1,5 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 12:00 AM (EDT)
+ Version Timestamp: Thu, July 23, 2026, 11:48 PM (EDT)
  Resilient FS25 Sync Pipeline (Complete G-Portal to Firebase RTDB Sanitized Mapping)
  File: fs25.js
 */
@@ -173,16 +173,17 @@ function processActiveFolderSync(slotNumber, activePlayers, rawStatsXml) {
       // Push raw HTTP stats feed across all primary telemetry nodes
       if (rawStatsXml && rawStatsXml.length > 0) {
         masterPayload.stats = { data: rawStatsXml };
-        masterPayload.players = { data: rawStatsXml };
+        masterPayload.players_stats = { data: rawStatsXml };
         masterPayload.mods = { data: rawStatsXml };
         masterPayload.dedicatedServerConfig = { data: rawStatsXml };
         masterPayload.dedicatedServerConfig_xml = { data: rawStatsXml };
       }
 
-      // Complete Canonical Mapping for All FS25 XML Files
+      // Complete Canonical Mapping for All FS25 XML Files from G-Portal
       const keyMap = {
         'careersavegame': 'careerSavegame',
         'farms': 'farms',
+        'farmlands': 'farmlands',
         'vehicles': 'vehicles',
         'placeables': 'placeables',
         'fields': 'fields',
@@ -194,7 +195,14 @@ function processActiveFolderSync(slotNumber, activePlayers, rawStatsXml) {
         'items': 'items',
         'collectibles': 'collectibles',
         'handtools': 'handTools',
-        'precisionfarming': 'precisionFarming'
+        'precisionfarming': 'precisionFarming',
+        'tiptypemappings': 'tipTypeMappings',
+        'guidedtour': 'guidedTour',
+        'navigation-system': 'navigationSystem',
+        'npc': 'npc',
+        'oncreateobjects': 'onCreateObjects',
+        'treemarker': 'treeMarker',
+        'treeplant': 'treePlant'
       };
 
       for (const fileInfo of xmlFiles) {
@@ -210,7 +218,6 @@ function processActiveFolderSync(slotNumber, activePlayers, rawStatsXml) {
           const rawXmlContent = await downloadFileBuffer(ftpClient, remoteFilePath);
           
           if (rawXmlContent && rawXmlContent.trim().length > 0) {
-            // Write standard dual-convention XML payload
             masterPayload[canonicalKey] = { data: rawXmlContent };
             masterPayload[`${canonicalKey}_xml`] = { data: rawXmlContent };
           } else {
@@ -223,7 +230,7 @@ function processActiveFolderSync(slotNumber, activePlayers, rawStatsXml) {
 
       try {
         await db.ref('fs25').update(masterPayload);
-        console.log(`🏆 Firebase sync successful! Savegame telemetry written to /fs25.`);
+        console.log(`🏆 Firebase sync successful! Complete savegame telemetry written to /fs25.`);
       } catch (writeErr) {
         console.error("❌ Firebase Write Error:", writeErr.message);
       }
