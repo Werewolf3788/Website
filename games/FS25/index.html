@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Version Timestamp: Fri, July 24, 2026, 03:20 AM (EDT) -->
+  <!-- Version Timestamp: Fri, July 24, 2026, 10:25 AM (EDT) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Realtime Tactical Dashboard</title>
@@ -49,6 +49,16 @@
         <i class="fa-solid fa-house"></i> Home
       </a>
 
+      <!-- Dynamic Farm Color Legend Dropdown -->
+      <div id="farm-legend-container" class="nav-item" style="display:none;">
+        <button class="nav-btn dropdown-toggle" style="border: 1px solid var(--accent-gold);">
+          <i class="fa-solid fa-palette"></i> Farm Color Legend <i class="fa-solid fa-caret-down"></i>
+        </button>
+        <div id="farm-legend-list" class="dropdown-content" style="min-width: 240px; padding: 10px;">
+          <!-- Populated dynamically via index.js -->
+        </div>
+      </div>
+
       <div class="nav-item">
         <button class="nav-btn dropdown-toggle">
           <i class="fa-solid fa-gamepad"></i> Game Tracker <i class="fa-solid fa-caret-down"></i>
@@ -94,7 +104,7 @@
             </span>
           </div>
           <div class="banner-badges">
-            <span id="server-map" class="badge"><i class="fa-solid fa-map-location-dot"></i> Map: Riverbend Springs</span>
+            <span id="server-map" class="badge"><i class="fa-solid fa-map-location-dot"></i> Map: Scanning...</span>
             <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: 00:00</span>
             <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Month: Early Autumn</span>
             <span id="server-weather" class="badge"><i class="fa-solid fa-sun"></i> Weather: Clear</span>
@@ -216,10 +226,11 @@
     <div id="lightbox-caption" class="lightbox-caption"></div>
   </div>
 
-  <!-- Live Deployment Timestamp Footer with Offline Counter -->
+  <!-- Live Deployment Timestamp Footer with Active Save Slot & Offline Counter -->
   <footer class="system-footer">
     <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Engine Deployment Timestamp: <strong>Fri, July 24, 2026, 03:20 AM (EDT)</strong></span>
+      <span><i class="fa-solid fa-code-commit"></i> Engine Deployment Timestamp: <strong>Fri, July 24, 2026, 10:25 AM (EDT)</strong></span>
+      <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
       <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Initializing...</span>
       <span id="offline-timer" style="display:none; color:#f87171; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: 0m 0s</span>
     </div>
