@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 03:20 AM (EDT)
- Resilient FS25 Tactical Theme - Dynamic Banner Offline Pill Timer Styling
+ Version Timestamp: Fri, July 24, 2026, 10:30 AM (EDT)
+ Resilient FS25 Tactical Theme - Farm Color Palette & AI Ownership Card Styling
  File: games/FS25/style.css
 */
 
@@ -15,7 +15,9 @@
   --border-subtle: rgba(255, 255, 255, 0.12);
   --font-base: 16px;
   --touch-target-min: 44px;
+  --accent-gold: #f59e0b;
 
+  /* Universal Section Accent Highlights */
   --color-farms: #10b981;        /* Emerald Green */
   --color-infra: #0284c7;        /* Sky Blue */
   --color-fields: #84cc16;       /* Lime / Agronomy Green */
@@ -46,6 +48,7 @@ html, body {
   padding-bottom: 70px;
 }
 
+/* Sticky Top Navbar System */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -70,7 +73,7 @@ html, body {
 }
 
 .logo-icon {
-  color: #f59e0b;
+  color: var(--accent-gold);
   font-size: 1.4rem;
 }
 
@@ -158,6 +161,7 @@ html, body {
   display: block;
 }
 
+/* Main Command Container */
 .dashboard-container {
   padding: 24px 32px;
   max-width: 1600px;
@@ -168,7 +172,7 @@ html, body {
 .server-banner {
   background: var(--surface-box);
   border: 1px solid var(--border-subtle);
-  border-left: 6px solid #f59e0b;
+  border-left: 6px solid var(--accent-gold);
   border-radius: 10px;
   padding: 20px 24px;
   margin-bottom: 28px;
@@ -199,7 +203,7 @@ html, body {
 
 .map-preview-box:hover {
   transform: scale(1.05);
-  border-color: #f59e0b;
+  border-color: var(--accent-gold);
 }
 
 .map-preview-box img {
@@ -224,7 +228,7 @@ html, body {
 .banner-title h1 {
   font-size: 1.6rem;
   font-weight: 800;
-  color: #f59e0b;
+  color: var(--accent-gold);
   margin: 0;
 }
 
@@ -300,7 +304,7 @@ html, body {
   color: #e2e8f0;
 }
 
-/* Staggered Masonry Floor-Plank Layout */
+/* Staggered Masonry Layout */
 .masonry-grid {
   column-count: 3;
   column-gap: 28px;
@@ -392,6 +396,7 @@ html, body {
   background: #cc0000;
 }
 
+/* Item Card & Dynamic Farm Accent Borders */
 .item-card {
   display: flex;
   justify-content: space-between;
@@ -403,7 +408,7 @@ html, body {
   padding: 16px;
   height: auto;
   min-height: 80px;
-  transition: transform 0.15s ease, background 0.2s ease;
+  transition: transform 0.15s ease, background 0.2s ease, border-left 0.2s ease;
 }
 
 .item-card:hover {
@@ -505,7 +510,7 @@ html, body {
 
 .badge-owner {
   background: rgba(245, 158, 11, 0.15);
-  color: #f59e0b;
+  color: var(--accent-gold);
 }
 
 .badge-sown {
@@ -597,6 +602,7 @@ html, body {
   color: #cc0000;
 }
 
+/* Footer Element */
 .system-footer {
   position: fixed;
   bottom: 0;
