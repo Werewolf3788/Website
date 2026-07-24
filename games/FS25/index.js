@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 03:20 AM (EDT)
- Universal Cross-Browser Tactical Engine - Preserved Offline Server Title & Banner Pill Timer
+ Version Timestamp: Fri, July 24, 2026, 09:50 AM (EDT)
+ Universal Cross-Browser Tactical Engine - Fully Dynamic MapTitle & Feed Parser
  File: games/FS25/index.js
 */
 
@@ -86,6 +86,7 @@ const MONTH_NAMES = [
 let offlineStartTime = null;
 let offlineTimerInterval = null;
 let lastKnownServerName = "Dedicated Server";
+let lastKnownMapName = "Active Map";
 
 // Lightbox Modal Trigger Engine
 function openLightbox(imgSrc, captionText) {
@@ -181,7 +182,7 @@ window.setServerStatus = function(isOnline) {
   } else {
     pill.className = "status-pill status-offline";
     
-    // Ensure server name remains populated with last known title
+    // Preserve active server name on screen
     if (serverNameEl && (serverNameEl.textContent === "Connecting to Server Telemetry..." || serverNameEl.textContent === "Dedicated Server Offline")) {
       serverNameEl.textContent = lastKnownServerName;
     }
@@ -200,7 +201,6 @@ window.setServerStatus = function(isOnline) {
         const secs = totalSecs % 60;
         const timeStr = `${mins}m ${secs}s`;
         
-        // Update both top banner pill and bottom footer timer
         if (text) text.textContent = `OFFLINE (${timeStr})`;
         if (offlineTimerEl) {
           offlineTimerEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: <strong>${timeStr}</strong>`;
@@ -299,6 +299,9 @@ function formatName(str) {
   return clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').toUpperCase();
 }
 
+/**
+ * Sanitizes XML text stripping trailing G-Portal CSS or HTML wrappers before parsing with DOMParser.
+ */
 function parseXML(node) {
   if (!node) return null;
   let rawText = "";
@@ -312,9 +315,20 @@ function parseXML(node) {
   if (!rawText || typeof rawText !== 'string') return null;
 
   try {
-    const sanitizedXml = rawText.trim().replace(/^[\uFEFF\xA0]+/, '');
+    let sanitizedXml = rawText.trim().replace(/^[\uFEFF\xA0]+/, '');
+    
+    // Strip trailing G-Portal CSS injection (.vue-modal-resizer)
+    if (sanitizedXml.includes(".vue-modal-resizer")) {
+      sanitizedXml = sanitizedXml.split(".vue-modal-resizer")[0];
+    }
+
+    const xmlStartIndex = sanitizedXml.indexOf("<");
+    if (xmlStartIndex > 0) {
+      sanitizedXml = sanitizedXml.substring(xmlStartIndex);
+    }
+
     const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(sanitizedXml, "text/xml");
+    const xmlDoc = parser.parseFromString(sanitizedXml.trim(), "text/xml");
     
     if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
       return null;
@@ -331,24 +345,21 @@ window.renderDashboard = function(data) {
     return;
   }
 
-  // Inspect XML Payload Before Marking Online
+  // Parse Stats XML
   const statsXml = parseXML(data.stats || data.dedicatedServerConfig_xml);
+  const careerXml = parseXML(data.careerSavegame || data.careerSavegame_xml);
+  
   const serverNode = statsXml ? statsXml.querySelector("Server") : null;
   const gameName = serverNode ? serverNode.getAttribute("name") : null;
 
-  // If XML is missing or server name is empty, force OFFLINE status
-  if (!statsXml || !serverNode || !gameName || gameName.trim() === "") {
+  const isOnline = statsXml && serverNode && gameName && gameName.trim() !== "";
+
+  if (isOnline) {
+    lastKnownServerName = gameName;
+    window.setServerStatus(true);
+  } else {
     window.setServerStatus(false);
-    const playerBadge = document.getElementById('server-players');
-    if (playerBadge) playerBadge.innerHTML = `<i class="fa-solid fa-users"></i> Players: 0/6`;
-    return;
   }
-
-  // Preserve server name globally
-  lastKnownServerName = gameName;
-
-  // Valid Telemetry Confirmed -> Set Status ONLINE
-  window.setServerStatus(true);
 
   try {
     localStorage.setItem("fs25_last_known_telemetry", JSON.stringify(data));
@@ -357,23 +368,35 @@ window.renderDashboard = function(data) {
   const syncTimeEl = document.getElementById('last-sync-time');
   if (syncTimeEl) {
     const now = new Date();
-    syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Last Telemetry Sync: <strong style="color:#22c55e;">${now.toLocaleTimeString()}</strong>`;
+    syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Last Telemetry Sync: <strong style="color:${isOnline ? '#22c55e' : '#f87171'};">${now.toLocaleTimeString()}</strong>`;
   }
 
-  // 1. In-Game Time, Month, Weather, Map Name & Players Banner Badges
+  // 1. Dynamic Map Title, In-Game Time, Weather, & Players Banner Badges
   try {
-    const envXml = parseXML(data.environment || data.environment_xml);
-    
     let hours = 8, mins = 50, monthText = "Early Autumn (September)";
     let weatherText = "Clear", weatherIcon = "fa-sun";
 
+    // DYNAMIC MAP RESOLUTION: Read directly from G-Portal <Server mapName="..."> or <careerSavegame><settings><mapTitle>
+    let activeMapTitle = "Unknown Map";
+    
+    if (serverNode && serverNode.getAttribute("mapName")) {
+      activeMapTitle = serverNode.getAttribute("mapName");
+    } else if (careerXml) {
+      const mapTitleNode = careerXml.querySelector("mapTitle");
+      if (mapTitleNode && mapTitleNode.textContent) {
+        activeMapTitle = mapTitleNode.textContent.trim();
+      }
+    }
+
+    if (activeMapTitle !== "Unknown Map") {
+      lastKnownMapName = activeMapTitle;
+    }
+
+    document.getElementById('server-name').textContent = isOnline ? gameName : lastKnownServerName;
+    document.getElementById('server-map').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${lastKnownMapName}`;
+
     if (serverNode) {
-      const mapName = serverNode.getAttribute("mapName") || "Riverbend Springs";
       const rawDayTime = parseFloat(serverNode.getAttribute("dayTime") || "0");
-
-      document.getElementById('server-name').textContent = gameName;
-      document.getElementById('server-map').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
-
       if (rawDayTime > 0) {
         const totalMinutes = Math.floor(rawDayTime / 60000);
         hours = Math.floor(totalMinutes / 60) % 24;
@@ -381,18 +404,21 @@ window.renderDashboard = function(data) {
       }
     }
 
-    const slotsNode = statsXml.querySelector("Slots");
+    const slotsNode = statsXml ? statsXml.querySelector("Slots") : null;
     const capacity = slotsNode && slotsNode.getAttribute("capacity") ? slotsNode.getAttribute("capacity") : "6";
     const numUsed = slotsNode && slotsNode.getAttribute("numUsed") ? slotsNode.getAttribute("numUsed") : "0";
 
     const onlinePlayers = [];
-    statsXml.querySelectorAll("Player[isUsed='true']").forEach(p => onlinePlayers.push(p.textContent));
+    if (statsXml) {
+      statsXml.querySelectorAll("Player[isUsed='true']").forEach(p => onlinePlayers.push(p.textContent));
+    }
 
     const playerBadge = document.getElementById('server-players');
     if (playerBadge) {
       playerBadge.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${numUsed}/${capacity} ${onlinePlayers.length ? `(${onlinePlayers.join(', ')})` : ''}`;
     }
 
+    const envXml = parseXML(data.environment || data.environment_xml);
     if (envXml) {
       const monthNode = envXml.querySelector("currentMonth") || envXml.querySelector("month");
       if (monthNode && monthNode.textContent) {
