@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 9:00 PM (EDT)
- Resilient FS25 Modular Dashboard - Fail-Safe JavaScript Renderer
+ Version Timestamp: Thu, July 23, 2026, 9:15 PM (EDT)
+ Complete Modular Telemetry Renderer & Dynamic Player Slot Fix
  File: games/FS25/index.js
 */
 
@@ -188,7 +188,7 @@ function parseXML(xmlData) {
 function renderDashboard(data) {
   if (!data) return;
 
-  // 1. Time, Month & Weather Sync
+  // 1. In-Game Dynamic Time, Month & Weather Sync
   try {
     const envXml = parseXML(data.environment || data.environment_xml);
     const careerXml = parseXML(data.careerSavegame || data.careerSavegame_xml);
@@ -224,7 +224,7 @@ function renderDashboard(data) {
         const hours = Math.floor(totalMinutes / 60) % 24;
         const mins = totalMinutes % 60;
         const timeEl = document.getElementById('server-time');
-        if (timeEl) timeEl.textContent = `Time: ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+        if (timeEl) timeEl.innerHTML = `<i class="fa-regular fa-clock"></i> Time: ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
 
         if (hours >= 20 || hours < 6) isNight = true;
       }
@@ -246,38 +246,53 @@ function renderDashboard(data) {
     }
 
     const monthEl = document.getElementById('server-month');
-    if (monthEl) monthEl.textContent = `Month: ${monthText || 'Mid Spring (April)'}`;
+    if (monthEl) monthEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Month: ${monthText || 'Mid Spring (April)'}`;
 
     const bodyEl = document.body;
     const weatherEl = document.getElementById('server-weather');
-    const weatherIcon = document.getElementById('weather-icon');
 
     if (isNight) {
       bodyEl.classList.add("theme-night");
-      if (weatherEl) weatherEl.textContent = `Weather: CLEAR (NIGHT)`;
-      if (weatherIcon) weatherIcon.className = "fa-solid fa-moon";
+      if (weatherEl) weatherEl.innerHTML = `<i class="fa-solid fa-moon"></i> Weather: CLEAR (NIGHT)`;
     } else {
       bodyEl.classList.remove("theme-night");
-      if (weatherEl) weatherEl.textContent = `Weather: ${weatherState}`;
-      if (weatherIcon) weatherIcon.className = "fa-solid fa-sun";
+      if (weatherEl) weatherEl.innerHTML = `<i class="fa-solid fa-sun"></i> Weather: ${weatherState}`;
     }
 
     if (weatherState.includes("RAIN")) bodyEl.classList.add("weather-rain");
     else if (weatherState.includes("CLOUD")) bodyEl.classList.add("weather-cloudy");
   } catch (e) { console.error("Environment Render Error:", e); }
 
-  // 2. Server Name & Map
+  // 2. Server Header Config & Dynamic Max Player Capacity Fix
   try {
-    const statsXml = parseXML(data.gameStats || data.gameStats_xml || data.stats || data.dedicatedServerConfig || data.gameserver);
+    const statsXml = parseXML(data.dedicatedServerConfig || data.dedicatedServerConfig_xml || data.gameStats || data.gameStats_xml || data.stats || data.gameserver);
     if (statsXml) {
       const gameName = statsXml.querySelector("game_name")?.textContent || statsXml.querySelector("Server")?.getAttribute("name");
-      const mapName = statsXml.querySelector("Server")?.getAttribute("mapName");
+      const mapName = statsXml.querySelector("Server")?.getAttribute("mapName") || statsXml.querySelector("mapFilename")?.textContent;
+      
       if (gameName) document.getElementById('server-name').textContent = gameName;
-      if (mapName) document.getElementById('server-map').textContent = `Map: ${mapName}`;
+      if (mapName) document.getElementById('server-map').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${formatName(mapName)}`;
+
+      // Parse Dynamic Max Players directly from dedicatedServerConfig.xml
+      const maxPlayersNode = statsXml.querySelector("max_player") || statsXml.querySelector("Slots")?.getAttribute("capacity");
+      const maxPlayers = maxPlayersNode ? (maxPlayersNode.textContent || maxPlayersNode) : "6";
+
+      let activePlayers = 0;
+      const playerNodes = statsXml.querySelectorAll("player, Player");
+      playerNodes.forEach(p => {
+        if (p.getAttribute("isUsed") === "true" || (p.textContent && p.textContent.trim().length > 0)) {
+          activePlayers++;
+        }
+      });
+
+      const playerBadge = document.getElementById('server-players');
+      if (playerBadge) {
+        playerBadge.innerHTML = `<i class="fa-solid fa-users"></i> Players: ${activePlayers}/${maxPlayers}`;
+      }
     }
   } catch (e) { console.error("Stats Render Error:", e); }
 
-  // 3. Registered Farms & Land Ownership
+  // 3. Registered Farms & Ownership Mapping
   const farmlandOwnership = {};
   try {
     const farmsXml = parseXML(data.farms || data.farms_xml);
@@ -309,7 +324,7 @@ function renderDashboard(data) {
     }
   } catch (e) { console.error("Farms Render Error:", e); }
 
-  // 4. Fields & Agronomy
+  // 4. Field Crops, Agronomy Status & Image Thumbnails
   try {
     const fieldsXml = parseXML(data.fields || data.fields_xml);
     const fieldsContainer = document.getElementById('fields-container');
@@ -348,7 +363,7 @@ function renderDashboard(data) {
     }
   } catch (e) { console.error("Fields Render Error:", e); }
 
-  // 5. Active Contracts
+  // 5. Active Contracts & Missions
   try {
     const missionsXml = parseXML(data.missions || data.missions_xml);
     const contractsContainer = document.getElementById('contracts-container');
@@ -387,7 +402,7 @@ function renderDashboard(data) {
     }
   } catch (e) { console.error("Contracts Render Error:", e); }
 
-  // 6. Installed Mods
+  // 6. Installed Server Mods (from gameStats.xml)
   try {
     const modsContainer = document.getElementById('mods-container');
     let modsHtml = "";
@@ -416,7 +431,7 @@ function renderDashboard(data) {
     }
   } catch (e) { console.error("Mods Render Error:", e); }
 
-  // 7. Production Facilities
+  // 7. Production Facilities & Storage
   try {
     const placeXml = parseXML(data.placeables || data.placeables_xml);
     const productionContainer = document.getElementById('production-container');
@@ -490,7 +505,7 @@ function renderDashboard(data) {
     }
   } catch (e) { console.error("Vehicles Render Error:", e); }
 
-  // 9. Commodity Economy
+  // 9. Commodity Market Economy
   try {
     const ecoXml = parseXML(data.economy || data.economy_xml);
     const ecoContainer = document.getElementById('economy-container');
