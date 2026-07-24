@@ -1,13 +1,13 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 1:32 AM (EDT)
- Resilient FS25 Tactical Theme - Top Navigation Menu Restored & Mobile Toggle Fixed
+ Version Timestamp: Fri, July 24, 2026, 01:45 AM (EDT)
+ Resilient FS25 Tactical Theme - Wallpaper Image File Path Fixed
  File: games/FS25/style.css
 */
 
 /* Global CSS Variables */
 :root {
   --bg-gradient-overlay: linear-gradient(180deg, rgba(10, 10, 10, 0.82) 0%, rgba(0, 0, 0, 0.94) 100%);
-  --bg-poster-image: url('images/FS25_poster.jpg');
+  --bg-poster-image: url('images/Farming%20Simulator%2025%20Poster%20Image%20(background%20wallpaper).jpg');
   --surface-box: #1e1c1c;
   --surface-card: #282525;
   --surface-card-hover: #322e2e;
@@ -445,10 +445,7 @@ html, body {
   font-size: 0.9rem;
 }
 
-/* ==========================================================================
-   RESPONSIVE NAVIGATION BREAKPOINTS
-   ========================================================================== */
-
+/* Responsive Navigation Breakpoints */
 @media (max-width: 1024px) {
   .mobile-toggle {
     display: flex !important;
