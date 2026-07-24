@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Thu, July 23, 2026, 10:15 PM (EDT)
- Permanent FS25 Poster Background Wallpaper Layout
+ Version Timestamp: Thu, July 23, 2026, 10:18 PM (EDT)
+ Permanent FS25 Poster Background Wallpaper & Production Grid Layout
  File: games/FS25/style.css
 */
 
@@ -240,7 +240,7 @@ html, body {
   color: var(--accent-gold);
 }
 
-/* 5-Item Scroll Container */
+/* Capped 5-Item Scroll Container */
 .card-list {
   display: flex;
   flex-direction: column;
@@ -369,6 +369,28 @@ html, body {
 .badge-harvest {
   background: rgba(220, 38, 38, 0.2);
   color: #f87171;
+}
+
+.badge-active {
+  background: rgba(16, 185, 129, 0.25);
+  color: var(--accent-green);
+  border: 1px solid rgba(16, 185, 129, 0.5);
+}
+
+/* Active Mission & Collectibles Progress Bar */
+.progress-container {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  height: 6px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: var(--accent-green);
+  transition: width 0.3s ease;
 }
 
 .empty-state {
