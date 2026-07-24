@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 02:05 AM (EDT)
- Universal Cross-Browser Tactical Engine - Fully Compatible with iOS WebKit, Safari, Chrome & Firefox
+ Version Timestamp: Fri, July 24, 2026, 02:22 AM (EDT)
+ Universal Cross-Browser Tactical Engine - Server Online/Offline Indicator Integrated
  File: games/FS25/index.js
 */
 
@@ -82,6 +82,20 @@ const MONTH_NAMES = [
   "Early Autumn (September)", "Mid Autumn (October)", "Late Autumn (November)",
   "Early Winter (December)", "Mid Winter (January)", "Late Winter (February)"
 ];
+
+window.setServerStatus = function(isOnline) {
+  const pill = document.getElementById('server-status-pill');
+  const text = document.getElementById('status-text');
+  if (!pill || !text) return;
+
+  if (isOnline) {
+    pill.className = "status-pill status-online";
+    text.textContent = "ONLINE";
+  } else {
+    pill.className = "status-pill status-offline";
+    text.textContent = "OFFLINE";
+  }
+};
 
 function resolveEquipmentDetails(rawModelName) {
   if (!rawModelName) return { name: "Unknown Equipment", category: "General Tool" };
@@ -199,7 +213,6 @@ function formatName(str) {
   return clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').toUpperCase();
 }
 
-// Universal WebKit/Safari XML Sanitizer
 function parseXML(node) {
   if (!node) return null;
   let rawText = "";
@@ -213,7 +226,6 @@ function parseXML(node) {
   if (!rawText || typeof rawText !== 'string') return null;
 
   try {
-    // Strip BOM, non-printable characters & trailing whitespace for iOS WebKit
     const sanitizedXml = rawText.trim().replace(/^[\uFEFF\xA0]+/, '');
     const parser = new DOMParser();
     const xmlDoc = parser.parseFromString(sanitizedXml, "text/xml");
@@ -228,7 +240,13 @@ function parseXML(node) {
 }
 
 window.renderDashboard = function(data) {
-  if (!data) return;
+  if (!data) {
+    window.setServerStatus(false);
+    return;
+  }
+
+  // Active Telemetry Signal Received -> Set Banner to ONLINE
+  window.setServerStatus(true);
 
   try {
     localStorage.setItem("fs25_last_known_telemetry", JSON.stringify(data));
