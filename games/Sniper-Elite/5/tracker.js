@@ -1,8 +1,8 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 8:10 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 8:15 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * FEATURES: Client-Side UI Interactive Features, Menu Generator & Local Persistence Backup
+ * FEATURES: Client-Side UI Interactive Features, Button Menu Generator & Local Persistence Backup
  * ARCHITECTURE: Dual Sync (Firebase Firestore + LocalStorage Fallback)
  * ITEM SORT ORDER: Classified Doc -> Workbench -> Personal Letter -> Stone Eagle -> Hidden Item
  * ==========================================
@@ -506,7 +506,6 @@ const appState = {
             b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === userId.toLowerCase());
         });
 
-        // 1. Load local cache first so progress is never zeroed out
         const localKey = `se5_progress_${userId.toLowerCase()}`;
         const savedLocal = localStorage.getItem(localKey);
         let localCollectedIds = [];
@@ -521,7 +520,6 @@ const appState = {
 
         this.render();
 
-        // 2. Connect to Firebase Firestore directly
         if (this.db) {
             if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
 
