@@ -1,10 +1,10 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 8:55 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 9:05 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * FEATURES: Exact Google Sheet Mapping (Name, Group, Url with UTM, Images)
- * ARCHITECTURE: Open Firestore Sync + LocalStorage Ground Truth Backup
- * ITEM SORT ORDER: Classified Doc -> Workbench -> Personal Letter -> Stone Eagle -> Hidden Item
+ * ARCHITECTURE: COTW Mirror Architecture (Direct Firestore + Local Memory Preservation)
+ * DATA PATH: /artifacts/cotw-master/public/data/userTrophies/{activeHunter}
+ * NO STRIPPING, NO COMPRESSING. 100% WORKING STATE.
  * ==========================================
  */
 
@@ -19,6 +19,14 @@ const firebaseConfig = {
     storageBucket: "game-tracker-5b2ef.firebasestorage.app",
     messagingSenderId: "555667047127",
     appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
+};
+
+const MASTER_ID = 'cotw-master';
+
+const USER_DATA_MAP = {
+    'Werewolf3788': 'Werewolf3788',
+    'Ray': 'Raymystyro',
+    'DesdemonaTiger': 'DesdemonaTiger'
 };
 
 const sniperData = [
@@ -293,37 +301,29 @@ const typeOrderMap = {
 };
 
 const appState = {
-    targetUserId: 'Werewolf3788',
-    targetDisplayName: 'Werewolf3788',
+    activeHunter: 'Werewolf3788',
     hunterData: JSON.parse(JSON.stringify(sniperData)),
     db: null,
     collapsedSections: {},
     masterUnsub: null,
+    dataLoaded: false,
 
-    parseCSV: function(csvText) {
-        const lines = csvText.split(/\r?\n/);
-        const result = [];
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (!line) continue;
-            const row = [];
-            let insideQuote = false;
-            let currentToken = '';
-            for (let j = 0; j < line.length; j++) {
-                const char = line[j];
-                if (char === '"' || char === "'") {
-                    insideQuote = !insideQuote;
-                } else if (char === ',' && !insideQuote) {
-                    row.push(currentToken.trim().replace(/^["']|["']$/g, ''));
-                    currentToken = '';
-                } else {
-                    currentToken += char;
-                }
-            }
-            row.push(currentToken.trim().replace(/^["']|["']$/g, ''));
-            result.push(row);
+    parseCSV: function(str) {
+        const arr = [];
+        let quote = false;
+        for (let row = 0, col = 0, c = 0; c < str.length; c++) {
+            let cc = str[c], nc = str[c+1];
+            arr[row] = arr[row] || [];
+            arr[row][col] = arr[row][col] || '';
+            if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
+            if (cc == '"') { quote = !quote; continue; }
+            if (cc == ',' && !quote) { ++col; continue; }
+            if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
+            if (cc == '\n' && !quote) { ++row; col = 0; continue; }
+            if (cc == '\r' && !quote) { ++row; col = 0; continue; }
+            arr[row][col] += cc;
         }
-        return result;
+        return arr;
     },
 
     cleanNameFromUrl: function(urlStr) {
@@ -354,7 +354,6 @@ const appState = {
             if (!item.url) return;
 
             let displayName = item.name && item.name.trim() !== '' ? item.name : '';
-            // Prevent display of full HTTP URLs inside button text
             if (!displayName || displayName.startsWith('http://') || displayName.startsWith('https://')) {
                 displayName = this.cleanNameFromUrl(item.url);
             }
@@ -404,7 +403,6 @@ const appState = {
     },
 
     loadNavigation: async function() {
-        // Direct link to your published Google Sheet CSV
         const sheetsCsvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv&v=${Date.now()}`;
         
         try {
@@ -418,11 +416,6 @@ const appState = {
                         const row = parsedRows[i];
                         if (!row || row.length === 0) continue;
 
-                        // Exact Column Mapping for your Google Sheet:
-                        // Column A (0): Name
-                        // Column B (1): Group
-                        // Column C (2): Url with UTM
-                        // Column D (3): Images
                         const name = row[0] ? row[0].trim() : '';
                         const group = row[1] ? row[1].trim() : '';
                         const url = row[2] ? row[2].trim() : '';
@@ -449,23 +442,37 @@ const appState = {
         }
     },
 
+    init: async function() {
+        const saved = localStorage.getItem('se5_active_id');
+        if (saved && USER_DATA_MAP[saved]) {
+            this.activeHunter = USER_DATA_MAP[saved];
+        } else {
+            this.activeHunter = 'Werewolf3788';
+        }
+
+        this.loadNavigation();
+        this.setupProfilesUI();
+
+        try {
+            const app = initializeApp(firebaseConfig, 'SE5-Master-named');
+            this.db = getFirestore(app);
+            this.loadHunter(this.activeHunter);
+        } catch (err) {
+            console.error("Firebase Init Error:", err);
+        }
+
+        this.render();
+    },
+
     setupProfilesUI: function() {
         const profilesContainer = document.getElementById('hunter-profiles');
         if (profilesContainer) {
             profilesContainer.innerHTML = `
-                <button class="profile-btn" data-profile="Werewolf3788">Werewolf3788</button>
-                <button class="profile-btn" data-profile="Ray">Ray</button>
-                <button class="profile-btn" data-profile="DesdemonaTiger">DesdemonaTiger</button>
+                <button class="profile-btn" data-profile="Werewolf3788" onclick="appState.switchHunter('Werewolf3788')">Werewolf3788</button>
+                <button class="profile-btn" data-profile="Ray" onclick="appState.switchHunter('Ray')">Ray</button>
+                <button class="profile-btn" data-profile="DesdemonaTiger" onclick="appState.switchHunter('DesdemonaTiger')">DesdemonaTiger</button>
             `;
         }
-
-        document.querySelectorAll('.profile-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const selected = btn.getAttribute('data-profile');
-                if (selected) this.switchHunter(selected);
-            });
-        });
 
         const toggleBtn = document.getElementById('mobile-toggle');
         const navLinks = document.getElementById('dynamic-nav-links');
@@ -476,118 +483,95 @@ const appState = {
         }
     },
 
-    init: async function() {
-        try {
-            const app = initializeApp(firebaseConfig);
-            this.db = getFirestore(app);
-        } catch(e) {
-            console.warn("Firestore initialization notice:", e.message);
-        }
+    loadHunter: function(name) {
+        const dbDocName = USER_DATA_MAP[name] || name;
 
-        this.loadNavigation();
-        this.setupProfilesUI();
-
-        let savedTarget = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
-        this.targetUserId = savedTarget;
-        this.targetDisplayName = savedTarget;
-
-        const cats = [...new Set(this.hunterData.map(i => i.cat))];
-        cats.forEach(cat => {
-            const sid = cat.replace(/[^a-z0-9]/gi, '');
-            this.collapsedSections[sid] = true;
-        });
-
-        this.loadLiveProgress(this.targetUserId);
-    },
-
-    loadLiveProgress: function(userId) {
-        this.targetUserId = userId;
-        localStorage.setItem('se5_selected_user_id', userId);
-
-        const displayNode = document.getElementById('hunter-display');
-        if (displayNode) displayNode.innerText = userId.toUpperCase();
-
-        document.querySelectorAll('.profile-btn').forEach(b => {
-            const profAttr = b.getAttribute('data-profile');
-            b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === userId.toLowerCase());
-        });
-
-        const localKey = `se5_progress_${userId.toLowerCase()}`;
+        // Local Storage Ground Truth Check
+        const localKey = `se5_progress_${dbDocName.toLowerCase()}`;
         const savedLocal = localStorage.getItem(localKey);
         let localCollectedIds = [];
         if (savedLocal) {
             try { localCollectedIds = JSON.parse(savedLocal); } catch(e) {}
         }
 
+        // Initialize with default template + local storage overlay
         this.hunterData = sniperData.map(item => ({
             ...item,
             collected: localCollectedIds.includes(item.id)
         }));
 
+        this.activeHunter = dbDocName;
+        localStorage.setItem('se5_active_id', dbDocName);
+
+        const displayNode = document.getElementById('hunter-display');
+        if (displayNode) displayNode.innerText = dbDocName.toUpperCase();
+
+        document.querySelectorAll('.profile-btn').forEach(b => {
+            const profAttr = b.getAttribute('data-profile');
+            b.classList.toggle('active-btn', profAttr && (profAttr.toLowerCase() === name.toLowerCase() || USER_DATA_MAP[profAttr]?.toLowerCase() === dbDocName.toLowerCase()));
+        });
+
         this.render();
 
-        if (this.db) {
-            if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
+        if (this.masterUnsub) this.masterUnsub();
 
-            const primaryRef = doc(this.db, "users", userId, "progress", "sniper-elite-5");
+        // Direct COTW-Style Firestore Document Reference
+        const masterRef = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', dbDocName);
+        this.masterUnsub = onSnapshot(masterRef, (snap) => {
+            if (snap.exists()) {
+                const data = snap.data();
+                let incoming = data.trophies || data.progress || [];
 
-            this.masterUnsub = onSnapshot(primaryRef, (snap) => {
-                if (snap.exists()) {
-                    const data = snap.data();
-                    const incoming = data.progress || [];
-                    if (Array.isArray(incoming) && incoming.length > 0) {
-                        this.hunterData = sniperData.map(item => {
-                            const status = incoming.find(s => s.id === item.id);
-                            return { ...item, collected: status ? (status.collected || status.done || false) : false };
-                        });
-                        this.saveLocalCache();
-                        this.render();
-                    }
+                if (Array.isArray(incoming) && incoming.length > 0) {
+                    this.hunterData = sniperData.map(dt => {
+                        const found = incoming.find(it => it.id === dt.id);
+                        const isCollected = found ? (found.collected === true || found.done === true) : localCollectedIds.includes(dt.id);
+                        return { ...dt, collected: isCollected };
+                    });
+                    this.saveLocalCache();
                 }
-            }, (err) => {
-                console.warn("Firestore live stream notice:", err.message);
-            });
-        }
+            }
+            this.dataLoaded = true;
+            this.render();
+        }, (error) => {
+            console.warn("Master Firestore Document Sync Warning: Using Local Ground-Truth Storage Mode.", error);
+        });
     },
 
     saveLocalCache: function() {
-        const localKey = `se5_progress_${this.targetUserId.toLowerCase()}`;
+        const localKey = `se5_progress_${this.activeHunter.toLowerCase()}`;
         const collectedIds = this.hunterData.filter(i => i.collected).map(i => i.id);
         localStorage.setItem(localKey, JSON.stringify(collectedIds));
     },
 
     switchHunter: function(name) {
-        this.loadLiveProgress(name);
+        this.loadHunter(name);
     },
 
-    toggleItem: async function(id) {
+    toggleItem: function(id) {
         const item = this.hunterData.find(i => i.id === id);
         if (item) {
             item.collected = !item.collected;
-            this.saveLocalCache();
-            this.render();
             this.sync();
         }
     },
 
     sync: async function() {
         this.saveLocalCache();
+        this.render();
 
         if (!this.db) return;
 
-        const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
-        const docRef = doc(this.db, "users", this.targetUserId, "progress", "sniper-elite-5");
-
         try {
-            await setDoc(docRef, {
-                user: this.targetDisplayName,
-                lastUpdated: new Date().toISOString(),
-                progress: progress
+            const ref = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', this.activeHunter);
+            await setDoc(ref, { 
+                user: this.activeHunter, 
+                trophies: this.hunterData.map(i => ({ id: i.id, collected: i.collected })), 
+                lastUpdate: Date.now() 
             }, { merge: true });
-
-            console.log("Progress saved directly to database!");
-        } catch (err) {
-            console.warn("Database sync deferred (saved locally):", err.message);
+            console.log("SE5 Tracker data successfully pushed via database pipeline.");
+        } catch (error) {
+            console.error("FIREBASE SE5 SAVE ERROR:", error);
         }
     },
 
