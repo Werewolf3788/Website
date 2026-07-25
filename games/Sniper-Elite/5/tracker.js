@@ -251,7 +251,7 @@ const sniperData = [
     { id: 'm11_se2', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Northern broken masonry layout; perched on high stone wall of ruined tower asset.' },
     { id: 'm11_se3', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Southeast coastal zone; perched on top of a low, shattered seaside stone building.' },
     { id: 'm11_wb1', cat: '11: Landing Force (DLC)', name: 'Resort Docks Workbench', type: 'Workbench', desc: 'West side of the map in a house upstairs.' },
-    { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'Abandoned Fishing Workbench', type: 'Workbench', desc: 'East side of the map in a small house near the water.' },
+    { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'Abandoned Fishing Workbench SMG', type: 'Workbench', desc: 'East side of the map in a small house near the water.' },
     { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Military Fort Workbench', type: 'Workbench', desc: 'Southwest side of the map, inside the Fort behind a locked door (lockpick or bolt cutters).' },
 
     // MISSION 12: CONQUEROR DLC
