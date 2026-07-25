@@ -1,10 +1,9 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 9:05 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 9:10 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * ARCHITECTURE: COTW Mirror Architecture (Direct Firestore + Local Memory Preservation)
- * DATA PATH: /artifacts/cotw-master/public/data/userTrophies/{activeHunter}
- * NO STRIPPING, NO COMPRESSING. 100% WORKING STATE.
+ * ARCHITECTURE: COTW Pathing Mirror (/artifacts/cotw-master/public/data/userTrophies/{activeHunter})
+ * FIX: Prevents Firebase Rule Rejection Rollbacks & Retains Local Clicks
  * ==========================================
  */
 
@@ -486,7 +485,7 @@ const appState = {
     loadHunter: function(name) {
         const dbDocName = USER_DATA_MAP[name] || name;
 
-        // Local Storage Ground Truth Check
+        // Ground Truth Local Cache (Never zero out local state)
         const localKey = `se5_progress_${dbDocName.toLowerCase()}`;
         const savedLocal = localStorage.getItem(localKey);
         let localCollectedIds = [];
@@ -494,7 +493,7 @@ const appState = {
             try { localCollectedIds = JSON.parse(savedLocal); } catch(e) {}
         }
 
-        // Initialize with default template + local storage overlay
+        // Keep local memory intact across renders
         this.hunterData = sniperData.map(item => ({
             ...item,
             collected: localCollectedIds.includes(item.id)
@@ -515,12 +514,12 @@ const appState = {
 
         if (this.masterUnsub) this.masterUnsub();
 
-        // Direct COTW-Style Firestore Document Reference
+        // Exact Open Document Reference matching COTW & Firebase Rules
         const masterRef = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', dbDocName);
         this.masterUnsub = onSnapshot(masterRef, (snap) => {
             if (snap.exists()) {
                 const data = snap.data();
-                let incoming = data.trophies || data.progress || [];
+                let incoming = data.se5_progress || data.trophies || data.progress || [];
 
                 if (Array.isArray(incoming) && incoming.length > 0) {
                     this.hunterData = sniperData.map(dt => {
@@ -552,21 +551,23 @@ const appState = {
         const item = this.hunterData.find(i => i.id === id);
         if (item) {
             item.collected = !item.collected;
+            this.saveLocalCache();
+            this.render();
             this.sync();
         }
     },
 
     sync: async function() {
         this.saveLocalCache();
-        this.render();
 
         if (!this.db) return;
 
         try {
+            // Write directly to open-access Firestore path (same as COTW)
             const ref = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', this.activeHunter);
             await setDoc(ref, { 
                 user: this.activeHunter, 
-                trophies: this.hunterData.map(i => ({ id: i.id, collected: i.collected })), 
+                se5_progress: this.hunterData.map(i => ({ id: i.id, collected: i.collected })), 
                 lastUpdate: Date.now() 
             }, { merge: true });
             console.log("SE5 Tracker data successfully pushed via database pipeline.");
