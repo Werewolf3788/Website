@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Version Timestamp: Sat, July 25, 2026, 05:30 AM (EDT) -->
+  <!-- Version Timestamp: Sat, July 25, 2026, 05:40 AM (EDT) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Realtime Tactical Dashboard & Mod Directory</title>
@@ -23,8 +23,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
   <!-- Static Stylesheet & JavaScript Imports with Smart Cache-Buster -->
-  <link rel="stylesheet" href="style.css?v=20260725_0530">
-  <script src="index.js?v=20260725_0530" defer></script>
+  <link rel="stylesheet" href="style.css?v=20260725_0540">
+  <script src="index.js?v=20260725_0540" defer></script>
 </head>
 <body>
 
@@ -289,20 +289,19 @@
   <!-- Persistent Sticky System Footer -->
   <footer class="system-footer">
     <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sat, July 25, 2026, 05:30 AM (EDT)</strong></span>
+      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sat, July 25, 2026, 05:40 AM (EDT)</strong></span>
       <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
       <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
       <span id="offline-timer" style="display:none; color:#f87171; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: 0m 0s</span>
     </div>
   </footer>
 
-  <!-- Live Firebase Real-Time Sync Stream (Auth Wrapped & Recursive Root Listener) -->
+  <!-- Live Firebase Real-Time Sync Stream (Locked to /fs25 with Auth Observer & Auto-Reconnect) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-    // Firebase Modular Configuration
     const firebaseConfig = {
       databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
     };
@@ -310,18 +309,17 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const auth = getAuth(app);
-    const rootRef = ref(db, '/');
+    const fs25Ref = ref(db, 'fs25');
     
     let activeUnsubscribe = null;
 
-    // Attach persistent stream with explicit error capture and DOM fallback triggering
     function attachLiveSync() {
       if (activeUnsubscribe) {
         activeUnsubscribe();
       }
 
-      console.log("🔗 Binding Firebase Realtime stream to root tree...");
-      activeUnsubscribe = onValue(rootRef, (snapshot) => {
+      console.log("🔗 Connecting directly to /fs25 node...");
+      activeUnsubscribe = onValue(fs25Ref, (snapshot) => {
         const val = snapshot.val();
         if (val) {
           window.lastFirebaseData = val;
@@ -329,9 +327,9 @@
             window.renderDashboard(val);
           }
         } else {
-          console.warn("⚠️ Firebase returned empty snapshot. Forcing UI clean fallback state...");
+          console.warn("⚠️ /fs25 returned null. Forcing UI clean fallback state...");
           if (typeof window.renderDashboard === 'function') {
-            window.renderDashboard({}); // Pass empty object to force spinners to clear
+            window.renderDashboard({});
           }
           if (typeof window.setServerStatus === 'function') {
             window.setServerStatus(false);
@@ -340,7 +338,7 @@
       }, (error) => {
         console.error("❌ RTDB Stream Disconnected or Denied:", error.message);
         if (typeof window.renderDashboard === 'function') {
-          window.renderDashboard({}); // Clear spinners on network/auth deny
+          window.renderDashboard({});
         }
         if (typeof window.setServerStatus === 'function') {
           window.setServerStatus(false);
@@ -348,20 +346,18 @@
       });
     }
 
-    // Wrap listener inside Auth State Observer to prevent token expiration drops
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         signInAnonymously(auth).catch((err) => {
-          console.warn("ℹ️ Anonymous auth fallback note (Public Read active):", err.message);
+          console.warn("ℹ️ Anonymous auth note (Public Read active):", err.message);
         });
       }
       attachLiveSync();
     });
 
-    // Auto-reconnect when browser tab wakes from sleep cycle
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
-        console.log("🔄 Tab regained focus: Re-verifying real-time telemetry feed...");
+        console.log("🔄 Tab woke up: Re-syncing Firebase Realtime stream...");
         attachLiveSync();
       }
     });
