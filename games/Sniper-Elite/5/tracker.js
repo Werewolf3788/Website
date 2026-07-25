@@ -1,13 +1,14 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 9:30 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 9:35 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
  * ARCHITECTURE: Path Hierarchy by User Name -> Game ID (/users/{userId}/progress/sniper-elite-5)
- * FIX: Ignore Local Pending Write Echoes in Snapshot Listener to Stop Click Resetting
+ * ALIAS MAPPING: Resolves Ray/ray/Raymystyro & TJ/terrdog420 to master database IDs
  * ==========================================
  */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -22,9 +23,24 @@ const firebaseConfig = {
 
 const GAME_ID = 'sniper-elite-5';
 
+// --- DYNAMIC ALIAS & DOCUMENT MAP ---
+// Maps all name variations strictly to exact Firestore document target strings.
 const USER_DATA_MAP = {
+    'werewolf3788': 'Werewolf3788',
     'Werewolf3788': 'Werewolf3788',
+    
+    'ray': 'Raymystyro',
     'Ray': 'Raymystyro',
+    'raymystyro': 'Raymystyro',
+    'Raymystyro': 'Raymystyro',
+    
+    'tj': 'terrdog420',
+    'TJ': 'terrdog420',
+    'terdog420': 'terrdog420',
+    'terrdog420': 'terrdog420',
+    'Terrdog420': 'terrdog420',
+    
+    'desdemonatiger': 'DesdemonaTiger',
     'DesdemonaTiger': 'DesdemonaTiger'
 };
 
@@ -302,6 +318,7 @@ const typeOrderMap = {
 const appState = {
     activeHunter: 'Werewolf3788',
     hunterData: JSON.parse(JSON.stringify(sniperData)),
+    auth: null,
     db: null,
     collapsedSections: {},
     masterUnsub: null,
@@ -453,8 +470,21 @@ const appState = {
 
         try {
             const app = initializeApp(firebaseConfig, 'SE5-User-Hierarchy');
+            this.auth = getAuth(app);
             this.db = getFirestore(app);
-            this.loadHunter(this.activeHunter);
+
+            // AUTO-AUTHENTICATE ANONYMOUSLY TO SATISFY FIRESTORE SECURITY RULES
+            signInAnonymously(this.auth).catch(err => {
+                console.error("Firebase Anonymous Auth Error:", err);
+            });
+
+            onAuthStateChanged(this.auth, (user) => {
+                if (user) {
+                    console.log("Authenticated User Session:", user.uid);
+                    this.loadHunter(this.activeHunter);
+                }
+            });
+
         } catch (err) {
             console.error("Firebase Init Error:", err);
         }
@@ -482,6 +512,7 @@ const appState = {
     },
 
     loadHunter: function(name) {
+        // Resolve provided name to actual database key
         const dbDocName = USER_DATA_MAP[name] || name;
 
         // Ground Truth Local Cache Check
@@ -515,7 +546,7 @@ const appState = {
         // REAL-TIME FIRESTORE STREAM WITH OPTIMISTIC WRITE FILTERING
         const userProgressRef = doc(this.db, 'users', dbDocName, 'progress', GAME_ID);
         this.masterUnsub = onSnapshot(userProgressRef, { includeMetadataChanges: true }, (snap) => {
-            // CRITICAL FIX: Ignore local pending write echoes to prevent resetting the UI on local click
+            // CRITICAL FIX: Ignore local pending write echoes to prevent resetting UI on local click
             if (snap.metadata.hasPendingWrites) {
                 return;
             }
@@ -559,7 +590,7 @@ const appState = {
     },
 
     sync: async function() {
-        if (!this.db) return;
+        if (!this.db || !this.auth.currentUser) return;
 
         try {
             const userProgressRef = doc(this.db, 'users', this.activeHunter, 'progress', GAME_ID);
