@@ -1,6 +1,6 @@
 /* 
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 9:35 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 9:45 PM EDT
  * STYLING SYSTEM: Neutral Dark Tactical Layout (style.css)
  * PALETTE: Matte Slate (#121212), Deep Surface (#1e1e1e), Gold Accents (#ff8800)
  * ==========================================
@@ -466,4 +466,25 @@ html, body {
     font-size: 40px;
     font-weight: bold;
     cursor: pointer;
+}
+
+/* --- SITE FOOTER --- */
+.site-footer {
+    text-align: center;
+    padding: 24px 16px;
+    margin-top: 40px;
+    border-top: 1px solid var(--card-border);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.site-footer p {
+    margin: 0;
+}
+
+.site-footer strong {
+    color: var(--brand-gold);
 }
