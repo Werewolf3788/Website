@@ -1,10 +1,9 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 9:15 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 9:30 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
  * ARCHITECTURE: Path Hierarchy by User Name -> Game ID (/users/{userId}/progress/sniper-elite-5)
- * FEATURES: Direct Open-Access Firestore & Local Storage Ground-Truth Backup
- * ITEM SORT ORDER: Classified Doc -> Workbench -> Personal Letter -> Stone Eagle -> Hidden Item
+ * FIX: Ignore Local Pending Write Echoes in Snapshot Listener to Stop Click Resetting
  * ==========================================
  */
 
@@ -493,7 +492,6 @@ const appState = {
             try { localCollectedIds = JSON.parse(savedLocal); } catch(e) {}
         }
 
-        // Initialize state without wiping memory
         this.hunterData = sniperData.map(item => ({
             ...item,
             collected: localCollectedIds.includes(item.id)
@@ -514,25 +512,29 @@ const appState = {
 
         if (this.masterUnsub) this.masterUnsub();
 
-        // USER -> GAME ID PATH ARCHITECTURE: /users/{userId}/progress/{gameId}
+        // REAL-TIME FIRESTORE STREAM WITH OPTIMISTIC WRITE FILTERING
         const userProgressRef = doc(this.db, 'users', dbDocName, 'progress', GAME_ID);
-        this.masterUnsub = onSnapshot(userProgressRef, (snap) => {
+        this.masterUnsub = onSnapshot(userProgressRef, { includeMetadataChanges: true }, (snap) => {
+            // CRITICAL FIX: Ignore local pending write echoes to prevent resetting the UI on local click
+            if (snap.metadata.hasPendingWrites) {
+                return;
+            }
+
             if (snap.exists()) {
                 const data = snap.data();
-                let incoming = data.progress || data.trophies || [];
+                const incoming = data.progress || data.trophies || [];
 
-                if (Array.isArray(incoming) && incoming.length > 0) {
+                if (Array.isArray(incoming)) {
                     this.hunterData = sniperData.map(dt => {
                         const found = incoming.find(it => it.id === dt.id);
-                        const isCollected = found ? (found.collected === true || found.done === true) : localCollectedIds.includes(dt.id);
-                        return { ...dt, collected: isCollected };
+                        return { ...dt, collected: found ? (found.collected === true || found.done === true) : false };
                     });
                     this.saveLocalCache();
+                    this.render();
                 }
             }
-            this.render();
         }, (error) => {
-            console.warn("Firestore Document Sync Warning (Using Local Storage):", error.message);
+            console.warn("Firestore Listener Notice (Using Local Memory Backup):", error.message);
         });
     },
 
@@ -557,13 +559,9 @@ const appState = {
     },
 
     sync: async function() {
-        this.saveLocalCache();
-        this.render();
-
         if (!this.db) return;
 
         try {
-            // USER -> GAME ID PATH ARCHITECTURE: /users/{userId}/progress/{gameId}
             const userProgressRef = doc(this.db, 'users', this.activeHunter, 'progress', GAME_ID);
             const userRef = doc(this.db, 'users', this.activeHunter);
 
@@ -577,9 +575,9 @@ const appState = {
             await setDoc(userRef, { displayName: this.activeHunter, lastUpdated: new Date().toISOString() }, { merge: true });
             await setDoc(userProgressRef, payload, { merge: true });
 
-            console.log("Progress saved cleanly under /users/" + this.activeHunter + "/progress/" + GAME_ID);
+            console.log("Progress saved cleanly to /users/" + this.activeHunter + "/progress/" + GAME_ID);
         } catch (error) {
-            console.error("FIREBASE USER SAVE ERROR:", error);
+            console.error("FIREBASE LIVE SYNC ERROR:", error);
         }
     },
 
