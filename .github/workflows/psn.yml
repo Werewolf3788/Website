@@ -1,11 +1,9 @@
+# ==========================================
 # --- PRECISION INTEGRITY PROTOCOL ---
-# Project: PSN Sync Workflow
-# Timestamp: Thu, July 9, 2026, 6:45 AM EDT
-# Compatibility: GitHub Actions, GitHub Pages
-# Note: DO NOT STRIP INDENTATION. YAML REQUIRES 2-SPACE SPACING.
-# Updates: Standardized tracking array to strictly watch psn_data.json and .nojekyll.
-# Removed dynamic tracking of static config arrays to avoid run collisions.
-# ------------------------------------
+# Project: PSN Live Sync & Deploy (Pure Stateless)
+# Timestamp: Sat, July 25, 2026
+# Compatibility: GitHub Actions, Firebase RTDB, GitHub Pages
+# ==========================================
 
 name: PSN Sync and Deploy
 
@@ -18,50 +16,36 @@ on:
     - cron: '*/23 * * * *'
 
 permissions:
-  contents: write
+  contents: read
   pages: write
   id-token: write
 
 jobs:
   psn-sync-job:
+    name: PSN Sync and Deploy
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Install Dependencies
+      - name: Install PSN Dependencies
         run: npm install psn-api
 
       - name: Run PSN Sync Script
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
+        continue-on-error: true # Prevents red email alerts when Sony NPSSO expires
         run: node Playstation/psn.js
-
-      - name: Commit and Push Data Changes
-        run: |
-          git config --global user.name "Werewolf3788-Bot"
-          git config --global user.email "bot@werewolf.ourflora.com"
-          
-          git add Playstation/psn_data.json .nojekyll
-          
-          if ! git diff --cached --quiet; then
-            git commit -m "Automated PSN Sync: $(date)"
-            git pull --rebase origin main
-            git push origin main
-          else
-            echo "No data changes detected. Skipping commit."
-          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
