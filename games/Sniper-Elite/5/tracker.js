@@ -1,9 +1,10 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 9:45 PM EDT
- * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * ARCHITECTURE: Path Hierarchy by User Name -> Game ID (/users/{userId}/progress/sniper-elite-5)
- * DEFAULT STATE: Sections closed by default on initial page load
+ * VERSION TIMESTAMP: Sat, July 25, 2026, 12:15 AM EDT
+ * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Co-Op Tracker (tracker.js)
+ * ARCHITECTURE: 100% Pure Firebase Firestore Real-Time Engine (Zero LocalStorage)
+ * PATH STRUCTURE: /users/{userId}/progress/sniper-elite-5
+ * FEATURES: Direct Cloud Read/Write, Simultaneous Operative Stream Observers
  * ==========================================
  */
 
@@ -11,6 +12,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+// --- FIREBASE SDK CONFIGURATION ---
 const firebaseConfig = {
     apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
     authDomain: "game-tracker-5b2ef.firebaseapp.com",
@@ -23,26 +25,31 @@ const firebaseConfig = {
 
 const GAME_ID = 'sniper-elite-5';
 
-// --- DYNAMIC ALIAS & DOCUMENT MAP ---
+// --- TEAM PROFILE DIRECTORY & DOCUMENT PATHING ---
+const TEAM_PROFILES = [
+    { key: 'Werewolf3788', display: 'Werewolf3788', dbDoc: 'Werewolf3788' },
+    { key: 'Ray', display: 'Ray', dbDoc: 'Raymystyro' },
+    { key: 'TJ', display: 'TJ', dbDoc: 'terrdog420' },
+    { key: 'DesdemonaTiger', display: 'DesdemonaTiger', dbDoc: 'DesdemonaTiger' }
+];
+
 const USER_DATA_MAP = {
     'werewolf3788': 'Werewolf3788',
     'Werewolf3788': 'Werewolf3788',
-    
     'ray': 'Raymystyro',
     'Ray': 'Raymystyro',
     'raymystyro': 'Raymystyro',
     'Raymystyro': 'Raymystyro',
-    
     'tj': 'terrdog420',
     'TJ': 'terrdog420',
     'terdog420': 'terrdog420',
     'terrdog420': 'terrdog420',
     'Terrdog420': 'terrdog420',
-    
     'desdemonatiger': 'DesdemonaTiger',
     'DesdemonaTiger': 'DesdemonaTiger'
 };
 
+// --- SNIPER ELITE 5 COLLECTIBLES REGISTRY ---
 const sniperData = [
     // MISSION 1: THE ATLANTIC WALL
     { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'North-east map sector, on a chest inside a single building guarded by 2 soldiers.' },
@@ -251,7 +258,7 @@ const sniperData = [
     { id: 'm11_se2', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Northern broken masonry layout; perched on high stone wall of ruined tower asset.' },
     { id: 'm11_se3', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Southeast coastal zone; perched on top of a low, shattered seaside stone building.' },
     { id: 'm11_wb1', cat: '11: Landing Force (DLC)', name: 'Resort Docks Workbench', type: 'Workbench', desc: 'West side of the map in a house upstairs.' },
-    { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'Abandoned Fishing Workbench SMG', type: 'Workbench', desc: 'East side of the map in a small house near the water.' },
+    { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'Abandoned Fishing Workbench', type: 'Workbench', desc: 'East side of the map in a small house near the water.' },
     { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Military Fort Workbench', type: 'Workbench', desc: 'Southwest side of the map, inside the Fort behind a locked door (lockpick or bolt cutters).' },
 
     // MISSION 12: CONQUEROR DLC
@@ -316,11 +323,17 @@ const typeOrderMap = {
 
 const appState = {
     activeHunter: 'Werewolf3788',
-    hunterData: JSON.parse(JSON.stringify(sniperData)),
+    // Pure in-memory state sourced strictly from live Firestore snapshots
+    teamProgress: {
+        'Werewolf3788': {},
+        'Raymystyro': {},
+        'terrdog420': {},
+        'DesdemonaTiger': {}
+    },
     auth: null,
     db: null,
     collapsedSections: {},
-    masterUnsub: null,
+    unsubscribers: [],
 
     parseCSV: function(str) {
         const arr = [];
@@ -457,12 +470,7 @@ const appState = {
     },
 
     init: async function() {
-        const saved = localStorage.getItem('se5_active_id');
-        if (saved && USER_DATA_MAP[saved]) {
-            this.activeHunter = USER_DATA_MAP[saved];
-        } else {
-            this.activeHunter = 'Werewolf3788';
-        }
+        this.activeHunter = 'Werewolf3788';
 
         this.loadNavigation();
         this.setupProfilesUI();
@@ -473,20 +481,18 @@ const appState = {
             this.auth = getAuth(app);
             this.db = getFirestore(app);
 
-            // AUTO-AUTHENTICATE ANONYMOUSLY TO SATISFY FIRESTORE SECURITY RULES
-            signInAnonymously(this.auth).catch(err => {
-                console.error("Firebase Anonymous Auth Error:", err);
-            });
+            // AUTHENTICATE ANONYMOUSLY & ATTACH LIVE REALTIME LISTENERS
+            await signInAnonymously(this.auth);
 
             onAuthStateChanged(this.auth, (user) => {
                 if (user) {
-                    console.log("Authenticated User Session:", user.uid);
-                    this.loadHunter(this.activeHunter);
+                    console.log("Firebase Auth Active UID:", user.uid);
+                    this.startLiveTeamListeners();
                 }
             });
 
         } catch (err) {
-            console.error("Firebase Init Error:", err);
+            console.error("Firebase Initialization Failure:", err);
         }
 
         this.render();
@@ -496,8 +502,9 @@ const appState = {
         const profilesContainer = document.getElementById('hunter-profiles');
         if (profilesContainer) {
             profilesContainer.innerHTML = `
-                <button class="profile-btn" data-profile="Werewolf3788" onclick="appState.switchHunter('Werewolf3788')">Werewolf3788</button>
+                <button class="profile-btn active-btn" data-profile="Werewolf3788" onclick="appState.switchHunter('Werewolf3788')">Werewolf3788</button>
                 <button class="profile-btn" data-profile="Ray" onclick="appState.switchHunter('Ray')">Ray</button>
+                <button class="profile-btn" data-profile="TJ" onclick="appState.switchHunter('TJ')">TJ</button>
                 <button class="profile-btn" data-profile="DesdemonaTiger" onclick="appState.switchHunter('DesdemonaTiger')">DesdemonaTiger</button>
             `;
         }
@@ -511,36 +518,52 @@ const appState = {
         }
     },
 
-    // SLEEP & WAKE CYCLE OBSERVER (PAGE VISIBILITY API)
     setupLifecycleListeners: function() {
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
-                console.log("Tab regained focus: Re-verifying real-time sync listeners...");
+                console.log("Tab focused: Refreshing multi-user real-time stream...");
                 if (this.auth && this.auth.currentUser) {
-                    this.loadHunter(this.activeHunter);
+                    this.startLiveTeamListeners();
                 }
             }
         });
     },
 
-    loadHunter: function(name) {
+    // 100% PURE FIRESTORE LIVE MULTI-USER OBSERVER
+    startLiveTeamListeners: function() {
+        this.unsubscribers.forEach(unsub => unsub());
+        this.unsubscribers = [];
+
+        TEAM_PROFILES.forEach(profile => {
+            const docName = profile.dbDoc;
+            const ref = doc(this.db, 'users', docName, 'progress', GAME_ID);
+
+            const unsub = onSnapshot(ref, (snap) => {
+                if (snap.exists()) {
+                    const data = snap.data();
+                    const incoming = data.progress || data.trophies || [];
+                    if (Array.isArray(incoming)) {
+                        const map = {};
+                        incoming.forEach(it => {
+                            if (it.collected === true || it.done === true) {
+                                map[it.id] = true;
+                            }
+                        });
+                        this.teamProgress[docName] = map;
+                        this.render();
+                    }
+                }
+            }, (err) => {
+                console.warn(`Live Firestore listener warning for ${docName}:`, err.message);
+            });
+
+            this.unsubscribers.push(unsub);
+        });
+    },
+
+    switchHunter: function(name) {
         const dbDocName = USER_DATA_MAP[name] || name;
-
-        // Local Storage Backup Check
-        const localKey = `se5_progress_${dbDocName.toLowerCase()}`;
-        const savedLocal = localStorage.getItem(localKey);
-        let localCollectedIds = [];
-        if (savedLocal) {
-            try { localCollectedIds = JSON.parse(savedLocal); } catch(e) {}
-        }
-
-        this.hunterData = sniperData.map(item => ({
-            ...item,
-            collected: localCollectedIds.includes(item.id)
-        }));
-
         this.activeHunter = dbDocName;
-        localStorage.setItem('se5_active_id', dbDocName);
 
         const displayNode = document.getElementById('hunter-display');
         if (displayNode) displayNode.innerText = dbDocName.toUpperCase();
@@ -551,79 +574,56 @@ const appState = {
         });
 
         this.render();
-
-        if (this.masterUnsub) this.masterUnsub();
-
-        // REAL-TIME FIRESTORE STREAM WITH OPTIMISTIC WRITE FILTERING
-        const userProgressRef = doc(this.db, 'users', dbDocName, 'progress', GAME_ID);
-        this.masterUnsub = onSnapshot(userProgressRef, { includeMetadataChanges: true }, (snap) => {
-            if (snap.metadata.hasPendingWrites) {
-                return;
-            }
-
-            if (snap.exists()) {
-                const data = snap.data();
-                const incoming = data.progress || data.trophies || [];
-
-                if (Array.isArray(incoming)) {
-                    this.hunterData = sniperData.map(dt => {
-                        const found = incoming.find(it => it.id === dt.id);
-                        return { ...dt, collected: found ? (found.collected === true || found.done === true) : false };
-                    });
-                    this.saveLocalCache();
-                    this.render();
-                }
-            }
-        }, (error) => {
-            console.warn("Firestore Listener Notice (Using Local Memory Backup):", error.message);
-        });
-    },
-
-    saveLocalCache: function() {
-        const localKey = `se5_progress_${this.activeHunter.toLowerCase()}`;
-        const collectedIds = this.hunterData.filter(i => i.collected).map(i => i.id);
-        localStorage.setItem(localKey, JSON.stringify(collectedIds));
-    },
-
-    switchHunter: function(name) {
-        this.loadHunter(name);
     },
 
     toggleItem: function(id) {
-        const item = this.hunterData.find(i => i.id === id);
-        if (item) {
-            item.collected = !item.collected;
-            this.saveLocalCache();
-            this.render();
-            this.sync();
-        }
+        const myMap = this.teamProgress[this.activeHunter] || {};
+        myMap[id] = !myMap[id];
+        this.teamProgress[this.activeHunter] = myMap;
+
+        this.render();
+        this.sync();
     },
 
+    // DIRECT CLOUD SAVE TO FIRESTORE (NO LOCAL STORAGE)
     sync: async function() {
-        if (!this.db || !this.auth.currentUser) return;
+        if (!this.auth.currentUser) {
+            try {
+                await signInAnonymously(this.auth);
+            } catch (err) {
+                console.error("Auth Failure during sync retry:", err);
+                return;
+            }
+        }
 
         try {
+            const myMap = this.teamProgress[this.activeHunter] || {};
             const userProgressRef = doc(this.db, 'users', this.activeHunter, 'progress', GAME_ID);
             const userRef = doc(this.db, 'users', this.activeHunter);
+
+            const progressArr = sniperData.map(i => ({
+                id: i.id,
+                collected: !!myMap[i.id]
+            }));
 
             const payload = {
                 user: this.activeHunter,
                 gameId: GAME_ID,
-                progress: this.hunterData.map(i => ({ id: i.id, collected: i.collected })),
+                progress: progressArr,
                 lastUpdated: new Date().toISOString()
             };
 
             await setDoc(userRef, { displayName: this.activeHunter, lastUpdated: new Date().toISOString() }, { merge: true });
             await setDoc(userProgressRef, payload, { merge: true });
 
-            console.log("Progress saved cleanly to /users/" + this.activeHunter + "/progress/" + GAME_ID);
+            console.log(`Live broadcast pushed cleanly to Firestore for: ${this.activeHunter}`);
         } catch (error) {
-            console.error("FIREBASE LIVE SYNC ERROR:", error);
+            console.error("CRITICAL FIRESTORE SAVE ERROR:", error);
+            alert(`Save Failed for ${this.activeHunter}. Check internet connection or Firestore rules.`);
         }
     },
 
     toggleSection: function(sid) {
-        // Sections default to collapsed unless explicitly opened (false)
         const isCurrentlyCollapsed = this.collapsedSections[sid] !== false;
         this.collapsedSections[sid] = !isCurrentlyCollapsed;
         this.render();
@@ -633,25 +633,26 @@ const appState = {
         const container = document.getElementById('section-container');
         if (!container) return;
         container.innerHTML = '';
-        const cats = [...new Set(this.hunterData.map(i => i.cat))];
-        let totalFound = 0;
+
+        const cats = [...new Set(sniperData.map(i => i.cat))];
+        let totalActiveFound = 0;
+
+        const myMap = this.teamProgress[this.activeHunter] || {};
 
         cats.forEach(cat => {
-            const rawItems = this.hunterData.filter(i => i.cat === cat);
-            const count = rawItems.filter(i => i.collected).length;
-            totalFound += count;
+            const rawItems = sniperData.filter(i => i.cat === cat);
+            const count = rawItems.filter(i => myMap[i.id]).length;
+            totalActiveFound += count;
 
             const items = rawItems.sort((a, b) => {
                 const orderA = typeOrderMap[a.type.toLowerCase()] || 99;
                 const orderB = typeOrderMap[b.type.toLowerCase()] || 99;
-                if (orderA !== orderB) {
-                    return orderA - orderB;
-                }
+                if (orderA !== orderB) return orderA - orderB;
                 return a.name.localeCompare(b.name);
             });
 
             const sid = cat.replace(/[^a-z0-9]/gi, '');
-            const isCollapsed = this.collapsedSections[sid] !== false; // Defaults to TRUE (closed on page load)
+            const isCollapsed = this.collapsedSections[sid] !== false; // Default: Closed on page load
 
             const section = document.createElement('div');
             section.className = `category-section ${isCollapsed ? 'section-collapsed' : ''}`;
@@ -672,20 +673,32 @@ const appState = {
 
             const grid = section.querySelector('.item-grid');
             items.forEach(item => {
+                const isCollectedByMe = !!myMap[item.id];
                 const card = document.createElement('div');
-                card.className = `item-card ${item.collected ? 'completed' : ''}`;
+                card.className = `item-card ${isCollectedByMe ? 'completed' : ''}`;
+
+                let teamBadgesHTML = '<div style="display:flex; gap:6px; flex-wrap:wrap; margin-top:8px;">';
+                TEAM_PROFILES.forEach(prof => {
+                    const hasDone = !!(this.teamProgress[prof.dbDoc] && this.teamProgress[prof.dbDoc][item.id]);
+                    const badgeBg = hasDone ? '#10b981' : '#333333';
+                    const badgeText = hasDone ? `✓ ${prof.display}` : prof.display;
+                    teamBadgesHTML += `<span style="background:${badgeBg}; color:#fff; font-size:10px; font-weight:700; padding:2px 6px; border-radius:3px;">${badgeText}</span>`;
+                });
+                teamBadgesHTML += '</div>';
+
                 card.innerHTML = `
                     <div>
                         <div class="item-type-tag">${item.type}</div>
                         <div class="outlined-text" style="font-weight:900; font-size:15px; margin-bottom:4px;">${item.name}</div>
                         <div class="outlined-text" style="font-size:12px; color:#ddd; font-style:italic; line-height:1.3;">${item.desc}</div>
+                        ${teamBadgesHTML}
                     </div>
                     <div class="action-zone"></div>
                 `;
 
                 const actionZone = card.querySelector('.action-zone');
 
-                if (item.collected) {
+                if (isCollectedByMe) {
                     actionZone.innerHTML = `<button class="lock-badge outlined-text toggle-btn" style="background:#00aa44; min-height:44px; cursor:pointer;">LOGGED REGISTRY (Click to Undo)</button>`;
                     actionZone.querySelector('button').addEventListener('click', () => this.toggleItem(item.id));
                 } else {
@@ -702,7 +715,7 @@ const appState = {
             container.appendChild(section);
         });
 
-        const percent = Math.round((totalFound / this.hunterData.length) * 100) || 0;
+        const percent = Math.round((totalActiveFound / sniperData.length) * 100) || 0;
         const barNode = document.getElementById('overall-bar');
         const textNode = document.getElementById('percent-text');
         if (barNode) barNode.style.width = percent + '%';
