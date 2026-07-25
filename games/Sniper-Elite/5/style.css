@@ -1,9 +1,9 @@
 /* 
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 8:35 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 8:50 PM EDT
  * STYLING SYSTEM: Responsive Multi-User Sniper Elite 5 Tracker (style.css)
  * BRAND PALETTE: Crimson Gradient (#990000 -> #000000), Slate Surfaces (#1e1c1c), Gold Accents (#ff8800)
- * INTEGRATION: High-Contrast Tactical Header Buttons & Dynamic Nav Engine
+ * INTEGRATION: Tactical Header Button Engine & Responsive Nav Layout
  * ==========================================
  */
 
@@ -50,7 +50,7 @@ html, body {
     z-index: 1000;
     backdrop-filter: blur(8px);
     width: 100%;
-    padding: 8px 0;
+    padding: 10px 0;
 }
 
 .nav-container {
@@ -81,7 +81,7 @@ html, body {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
 #dynamic-nav-links a, 
@@ -95,7 +95,7 @@ html, body {
     font-size: 0.85rem;
     letter-spacing: 0.5px;
     padding: 8px 14px;
-    min-height: 44px;
+    min-height: 40px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -106,7 +106,7 @@ html, body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.5);
     transition: all 0.2s ease-in-out;
     white-space: nowrap;
-    max-width: 260px;
+    max-width: 220px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -122,8 +122,8 @@ html, body {
 }
 
 .nav-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     object-fit: contain;
     border-radius: 3px;
     flex-shrink: 0;
@@ -141,7 +141,7 @@ html, body {
     top: calc(100% + 4px);
     left: 0;
     background-color: #141313;
-    min-width: 240px;
+    min-width: 220px;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.9);
     border: 1px solid var(--btn-border);
     border-radius: 4px;
@@ -159,6 +159,7 @@ html, body {
     color: var(--text-muted);
     border: 1px solid transparent;
     background: #1e1c1c;
+    max-width: 100%;
 }
 
 .nav-dropdown-content a:last-child {
