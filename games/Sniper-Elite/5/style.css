@@ -1,29 +1,28 @@
 /* 
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 9:30 PM EDT
- * STYLING SYSTEM: Responsive Multi-User Sniper Elite 5 Tracker (style.css)
- * BRAND PALETTE: Crimson Gradient (#990000 -> #000000), Slate Surfaces (#1e1c1c), Gold Accents (#ff8800)
- * INTEGRATION: High-Contrast Tactical Header Buttons & Dynamic Nav Engine
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 9:35 PM EDT
+ * STYLING SYSTEM: Neutral Dark Tactical Layout (style.css)
+ * PALETTE: Matte Slate (#121212), Deep Surface (#1e1e1e), Gold Accents (#ff8800)
  * ==========================================
  */
 
 :root {
-    --bg-gradient: linear-gradient(180deg, #990000 0%, #000000 100%);
-    --card-surface: #1e1c1c;
-    --card-border: #333030;
+    --bg-main: #121212;
+    --card-surface: #1e1e1e;
+    --card-border: #2a2a2a;
     --text-primary: #ffffff;
-    --text-muted: #cccccc;
+    --text-muted: #aaaaaa;
     --brand-gold: #ff8800;
-    --brand-red: #cc0000;
-    --brand-green: #00aa44;
-    --btn-bg: #2a2727;
-    --btn-border: #444040;
-    --btn-hover: #e60000;
+    --brand-blue: #2563eb;
+    --brand-green: #10b981;
+    --btn-bg: #2a2a2a;
+    --btn-border: #3f3f3f;
+    --btn-hover: #3b82f6;
     --font-heading: 'Teko', sans-serif;
     --font-body: 'Roboto', sans-serif;
 }
 
-/* --- RESET & MOBILE-FIRST BASE STYLES --- */
+/* --- RESET & BASE STYLES --- */
 * {
     box-sizing: border-box;
     margin: 0;
@@ -31,7 +30,7 @@
 }
 
 html, body {
-    background: var(--bg-gradient) fixed;
+    background-color: var(--bg-main);
     color: var(--text-primary);
     font-family: var(--font-body);
     font-size: 16px;
@@ -43,8 +42,8 @@ html, body {
 
 /* --- TOP NAVIGATION BAR --- */
 .site-header {
-    background-color: rgba(15, 15, 15, 0.95);
-    border-bottom: 2px solid #550000;
+    background-color: #1a1a1a;
+    border-bottom: 2px solid #2a2a2a;
     position: sticky;
     top: 0;
     z-index: 1000;
@@ -71,11 +70,10 @@ html, body {
     letter-spacing: 1.5px;
     text-decoration: none;
     text-transform: uppercase;
-    text-shadow: 2px 2px 4px #000000;
     white-space: nowrap;
 }
 
-/* --- DYNAMIC TACTICAL BUTTON NAV --- */
+/* --- DYNAMIC BUTTON NAV --- */
 #dynamic-nav-links,
 .nav-links {
     display: flex;
@@ -103,7 +101,6 @@ html, body {
     border: 1px solid var(--btn-border);
     border-radius: 4px;
     cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
     transition: all 0.2s ease-in-out;
     white-space: nowrap;
     max-width: 220px;
@@ -114,11 +111,10 @@ html, body {
 #dynamic-nav-links a:hover, 
 .nav-links a:hover, 
 .nav-dropbtn:hover {
-    background-color: var(--brand-red);
+    background-color: var(--brand-blue);
     border-color: var(--brand-gold);
     color: #ffffff;
     transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.8);
 }
 
 .nav-icon {
@@ -140,7 +136,7 @@ html, body {
     position: absolute;
     top: calc(100% + 4px);
     left: 0;
-    background-color: #141313;
+    background-color: #181818;
     min-width: 220px;
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.9);
     border: 1px solid var(--btn-border);
@@ -158,7 +154,7 @@ html, body {
     margin-bottom: 4px;
     color: var(--text-muted);
     border: 1px solid transparent;
-    background: #1e1c1c;
+    background: #222222;
     max-width: 100%;
 }
 
@@ -167,7 +163,7 @@ html, body {
 }
 
 .nav-dropdown-content a:hover {
-    background-color: var(--brand-red);
+    background-color: var(--brand-blue);
     border-color: var(--brand-gold);
     color: #ffffff;
 }
@@ -179,7 +175,7 @@ html, body {
 /* --- MOBILE HAMBURGER TOGGLE --- */
 .mobile-menu-toggle {
     display: none;
-    background: var(--brand-red);
+    background: var(--brand-blue);
     color: #ffffff;
     border: 1px solid var(--brand-gold);
     font-size: 1.5rem;
@@ -204,8 +200,8 @@ html, body {
         top: 100%;
         left: 0;
         width: 100%;
-        background: rgba(15, 15, 15, 0.98);
-        border-bottom: 3px solid var(--brand-red);
+        background: #181818;
+        border-bottom: 3px solid var(--brand-blue);
         padding: 16px;
         gap: 8px;
     }
@@ -252,7 +248,7 @@ html, body {
     gap: 16px;
     background-color: var(--card-surface);
     border: 1px solid var(--card-border);
-    border-left: 5px solid var(--brand-red);
+    border-left: 5px solid var(--brand-gold);
     padding: 20px;
     border-radius: 6px;
     margin-bottom: 24px;
@@ -293,7 +289,7 @@ html, body {
 
 .profile-btn:hover, 
 .profile-btn.active-btn {
-    background-color: var(--brand-red);
+    background-color: var(--brand-blue);
     border-color: var(--brand-gold);
     color: #ffffff;
 }
@@ -329,7 +325,7 @@ html, body {
 
 .progress-fill {
     height: 100%;
-    background: linear-gradient(90deg, #cc0000 0%, #ff8800 100%);
+    background: linear-gradient(90deg, #2563eb 0%, #ff8800 100%);
     transition: width 0.4s ease;
 }
 
@@ -348,12 +344,13 @@ html, body {
 }
 
 .category-header {
-    background-color: #252222;
+    background-color: #252525;
     padding: 16px 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer; user-select: none;
+    cursor: pointer; 
+    user-select: none;
     border-bottom: 1px solid var(--card-border);
 }
 
@@ -379,8 +376,8 @@ html, body {
 }
 
 .item-card {
-    background-color: #141313;
-    border: 1px solid #2d2a2a;
+    background-color: #161616;
+    border: 1px solid #2a2a2a;
     border-radius: 6px;
     padding: 16px;
     display: flex;
@@ -391,12 +388,12 @@ html, body {
 
 .item-card.completed {
     border-color: var(--brand-green);
-    background-color: #111a14;
+    background-color: #102419;
 }
 
 .item-type-tag {
     display: inline-block;
-    background-color: #333;
+    background-color: #2a2a2a;
     color: var(--brand-gold);
     font-size: 0.75rem;
     font-weight: 700;
@@ -409,7 +406,7 @@ html, body {
 .toggle-btn {
     width: 100%;
     min-height: 44px;
-    background-color: var(--brand-red);
+    background-color: var(--brand-blue);
     color: #ffffff;
     border: none;
     border-radius: 4px;
@@ -419,7 +416,7 @@ html, body {
 }
 
 .toggle-btn:hover {
-    background-color: var(--btn-hover);
+    background-color: #1d4ed8;
 }
 
 .outlined-text {
