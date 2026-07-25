@@ -1,9 +1,9 @@
 /* 
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 8:10 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 8:15 PM EDT
  * STYLING SYSTEM: Responsive Multi-User Sniper Elite 5 Tracker (style.css)
  * BRAND PALETTE: Crimson Gradient (#990000 -> #000000), Slate Surfaces (#1e1c1c), Gold Accents (#ff8800)
- * INTEGRATION: Clean Top-Nav & Dynamic Mobile Engine
+ * INTEGRATION: High-Contrast Tactical Header Buttons & Dynamic Nav Engine
  * ==========================================
  */
 
@@ -16,6 +16,8 @@
     --brand-gold: #ff8800;
     --brand-red: #cc0000;
     --brand-green: #00aa44;
+    --btn-bg: #2a2727;
+    --btn-border: #444040;
     --btn-hover: #e60000;
     --font-heading: 'Teko', sans-serif;
     --font-body: 'Roboto', sans-serif;
@@ -42,12 +44,13 @@ html, body {
 /* --- TOP NAVIGATION BAR --- */
 .site-header {
     background-color: rgba(15, 15, 15, 0.95);
-    border-bottom: 2px solid #330000;
+    border-bottom: 2px solid #550000;
     position: sticky;
     top: 0;
     z-index: 1000;
     backdrop-filter: blur(8px);
     width: 100%;
+    padding: 8px 0;
 }
 
 .nav-container {
@@ -58,45 +61,53 @@ html, body {
     align-items: center;
     justify-content: space-between;
     min-height: 56px;
+    gap: 16px;
 }
 
 .brand-title {
     color: var(--brand-gold);
     font-family: var(--font-heading);
     font-size: 1.8rem;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
     text-decoration: none;
     text-transform: uppercase;
+    text-shadow: 2px 2px 4px #000000;
+    white-space: nowrap;
 }
 
-/* --- DYNAMIC NAV CONTAINER --- */
+/* --- DYNAMIC TACTICAL BUTTON NAV --- */
 #dynamic-nav-links,
 .nav-links {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
+/* Base button appearance for links and dropdown buttons */
 #dynamic-nav-links a, 
 .nav-links a, 
 .nav-dropbtn {
+    background-color: var(--btn-bg);
     color: var(--text-primary);
     text-decoration: none;
+    font-family: var(--font-body);
     font-weight: 700;
-    font-size: 0.9rem;
-    padding: 8px 12px;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    padding: 8px 14px;
     min-height: 44px;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    border: 1px solid var(--btn-border);
     border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    transition: all 0.2s ease-in-out;
     white-space: nowrap;
-    max-width: 280px;
+    max-width: 260px;
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -105,7 +116,10 @@ html, body {
 .nav-links a:hover, 
 .nav-dropbtn:hover {
     background-color: var(--brand-red);
+    border-color: var(--brand-gold);
     color: #ffffff;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.8);
 }
 
 .nav-icon {
@@ -125,30 +139,36 @@ html, body {
 .nav-dropdown-content {
     display: none;
     position: absolute;
-    top: 100%;
+    top: calc(100% + 4px);
     left: 0;
-    background-color: #141414;
+    background-color: #141313;
     min-width: 240px;
-    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.8);
-    border: 1px solid #333333;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.9);
+    border: 1px solid var(--btn-border);
     border-radius: 4px;
     z-index: 1100;
-    padding: 6px 0;
+    padding: 6px;
 }
 
 .nav-dropdown-content a {
     display: flex;
     align-items: center;
+    justify-content: flex-start;
     width: 100%;
     padding: 10px 14px;
-    min-height: 44px;
+    margin-bottom: 4px;
     color: var(--text-muted);
-    border-radius: 0;
-    max-width: 100%;
+    border: 1px solid transparent;
+    background: #1e1c1c;
+}
+
+.nav-dropdown-content a:last-child {
+    margin-bottom: 0;
 }
 
 .nav-dropdown-content a:hover {
     background-color: var(--brand-red);
+    border-color: var(--brand-gold);
     color: #ffffff;
 }
 
@@ -161,13 +181,14 @@ html, body {
     display: none;
     background: var(--brand-red);
     color: #ffffff;
-    border: none;
+    border: 1px solid var(--brand-gold);
     font-size: 1.5rem;
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
     min-height: 44px;
     min-width: 44px;
+    font-weight: bold;
 }
 
 @media (max-width: 900px) {
@@ -184,9 +205,9 @@ html, body {
         left: 0;
         width: 100%;
         background: rgba(15, 15, 15, 0.98);
-        border-bottom: 2px solid var(--brand-red);
-        padding: 12px 0;
-        gap: 0;
+        border-bottom: 3px solid var(--brand-red);
+        padding: 16px;
+        gap: 8px;
     }
 
     #dynamic-nav-links.mobile-active,
@@ -198,10 +219,8 @@ html, body {
     .nav-links a, 
     .nav-dropbtn {
         width: 100%;
-        padding: 12px 20px;
-        text-align: left;
-        border-bottom: 1px solid #222222;
-        border-radius: 0;
+        justify-content: flex-start;
+        padding: 12px 16px;
         max-width: 100%;
     }
 
@@ -213,8 +232,8 @@ html, body {
         position: static;
         box-shadow: none;
         border: none;
-        background: #141414;
-        padding-left: 15px;
+        background: transparent;
+        padding: 6px 0 0 12px;
     }
 }
 
@@ -261,9 +280,9 @@ html, body {
 }
 
 .profile-btn {
-    background-color: #2a2727;
+    background-color: var(--btn-bg);
     color: #ffffff;
-    border: 1px solid #444;
+    border: 1px solid var(--btn-border);
     padding: 8px 16px;
     min-height: 44px;
     border-radius: 4px;
