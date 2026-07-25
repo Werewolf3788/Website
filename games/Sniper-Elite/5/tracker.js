@@ -1,9 +1,10 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 9:10 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 9:15 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * ARCHITECTURE: COTW Pathing Mirror (/artifacts/cotw-master/public/data/userTrophies/{activeHunter})
- * FIX: Prevents Firebase Rule Rejection Rollbacks & Retains Local Clicks
+ * ARCHITECTURE: Path Hierarchy by User Name -> Game ID (/users/{userId}/progress/sniper-elite-5)
+ * FEATURES: Direct Open-Access Firestore & Local Storage Ground-Truth Backup
+ * ITEM SORT ORDER: Classified Doc -> Workbench -> Personal Letter -> Stone Eagle -> Hidden Item
  * ==========================================
  */
 
@@ -20,7 +21,7 @@ const firebaseConfig = {
     appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
 };
 
-const MASTER_ID = 'cotw-master';
+const GAME_ID = 'sniper-elite-5';
 
 const USER_DATA_MAP = {
     'Werewolf3788': 'Werewolf3788',
@@ -305,7 +306,6 @@ const appState = {
     db: null,
     collapsedSections: {},
     masterUnsub: null,
-    dataLoaded: false,
 
     parseCSV: function(str) {
         const arr = [];
@@ -453,7 +453,7 @@ const appState = {
         this.setupProfilesUI();
 
         try {
-            const app = initializeApp(firebaseConfig, 'SE5-Master-named');
+            const app = initializeApp(firebaseConfig, 'SE5-User-Hierarchy');
             this.db = getFirestore(app);
             this.loadHunter(this.activeHunter);
         } catch (err) {
@@ -485,7 +485,7 @@ const appState = {
     loadHunter: function(name) {
         const dbDocName = USER_DATA_MAP[name] || name;
 
-        // Ground Truth Local Cache (Never zero out local state)
+        // Ground Truth Local Cache Check
         const localKey = `se5_progress_${dbDocName.toLowerCase()}`;
         const savedLocal = localStorage.getItem(localKey);
         let localCollectedIds = [];
@@ -493,7 +493,7 @@ const appState = {
             try { localCollectedIds = JSON.parse(savedLocal); } catch(e) {}
         }
 
-        // Keep local memory intact across renders
+        // Initialize state without wiping memory
         this.hunterData = sniperData.map(item => ({
             ...item,
             collected: localCollectedIds.includes(item.id)
@@ -514,12 +514,12 @@ const appState = {
 
         if (this.masterUnsub) this.masterUnsub();
 
-        // Exact Open Document Reference matching COTW & Firebase Rules
-        const masterRef = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', dbDocName);
-        this.masterUnsub = onSnapshot(masterRef, (snap) => {
+        // USER -> GAME ID PATH ARCHITECTURE: /users/{userId}/progress/{gameId}
+        const userProgressRef = doc(this.db, 'users', dbDocName, 'progress', GAME_ID);
+        this.masterUnsub = onSnapshot(userProgressRef, (snap) => {
             if (snap.exists()) {
                 const data = snap.data();
-                let incoming = data.se5_progress || data.trophies || data.progress || [];
+                let incoming = data.progress || data.trophies || [];
 
                 if (Array.isArray(incoming) && incoming.length > 0) {
                     this.hunterData = sniperData.map(dt => {
@@ -530,10 +530,9 @@ const appState = {
                     this.saveLocalCache();
                 }
             }
-            this.dataLoaded = true;
             this.render();
         }, (error) => {
-            console.warn("Master Firestore Document Sync Warning: Using Local Ground-Truth Storage Mode.", error);
+            console.warn("Firestore Document Sync Warning (Using Local Storage):", error.message);
         });
     },
 
@@ -559,20 +558,28 @@ const appState = {
 
     sync: async function() {
         this.saveLocalCache();
+        this.render();
 
         if (!this.db) return;
 
         try {
-            // Write directly to open-access Firestore path (same as COTW)
-            const ref = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', this.activeHunter);
-            await setDoc(ref, { 
-                user: this.activeHunter, 
-                se5_progress: this.hunterData.map(i => ({ id: i.id, collected: i.collected })), 
-                lastUpdate: Date.now() 
-            }, { merge: true });
-            console.log("SE5 Tracker data successfully pushed via database pipeline.");
+            // USER -> GAME ID PATH ARCHITECTURE: /users/{userId}/progress/{gameId}
+            const userProgressRef = doc(this.db, 'users', this.activeHunter, 'progress', GAME_ID);
+            const userRef = doc(this.db, 'users', this.activeHunter);
+
+            const payload = {
+                user: this.activeHunter,
+                gameId: GAME_ID,
+                progress: this.hunterData.map(i => ({ id: i.id, collected: i.collected })),
+                lastUpdated: new Date().toISOString()
+            };
+
+            await setDoc(userRef, { displayName: this.activeHunter, lastUpdated: new Date().toISOString() }, { merge: true });
+            await setDoc(userProgressRef, payload, { merge: true });
+
+            console.log("Progress saved cleanly under /users/" + this.activeHunter + "/progress/" + GAME_ID);
         } catch (error) {
-            console.error("FIREBASE SE5 SAVE ERROR:", error);
+            console.error("FIREBASE USER SAVE ERROR:", error);
         }
     },
 
