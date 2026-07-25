@@ -1,5 +1,5 @@
 /*
- Version Timestamp: Sat, July 25, 2026, 05:30 AM (EDT)
+ Version Timestamp: Sat, July 25, 2026, 05:40 AM (EDT)
  Complete Dynamic Telemetry Parser & Human-Readable Asset Formatter
  File: games/FS25/index.js
 */
@@ -24,7 +24,7 @@ function getFarmColor(farmId) {
   return FARM_COLOR_PALETTE[fid] ? FARM_COLOR_PALETTE[fid].color : "#facc15";
 }
 
-// Asset Image Reference Map (Mapped with Maize -> Corn translation)
+// Asset Image Reference Map
 const IMAGE_ASSETS = {
   "BARLEY": "images/Barley.JPG", "BEETROOT": "images/Beetroot.JPG", "RED BEET": "images/Beetroot.JPG",
   "BREAD": "images/Bread.JPG", "BUTTER": "images/Butter.JPG", "CABBAGE": "images/Cabbage.JPG",
@@ -72,11 +72,10 @@ let parsedModCatalog = [];
 let offlineStartTime = null;
 let offlineTimerInterval = null;
 
-// Deep Recursive Key Extractor (Searches up to 10 levels deep for webhook XML payloads)
+// Deep Recursive Key Extractor (Searches up to 10 levels deep for webhook XML payloads inside active savegame)
 function getFirebasePayloadDeep(rootObj, targetKey, maxDepth = 10) {
   if (!rootObj || typeof rootObj !== 'object' || maxDepth <= 0) return null;
   
-  // Direct match checks
   if (rootObj[targetKey] !== undefined) {
     if (typeof rootObj[targetKey] === 'string' || typeof rootObj[targetKey] === 'number') return rootObj[targetKey];
     if (rootObj[targetKey] && rootObj[targetKey].data) return rootObj[targetKey].data;
@@ -93,7 +92,6 @@ function getFirebasePayloadDeep(rootObj, targetKey, maxDepth = 10) {
     if (typeof rootObj[rawKey] === 'string') return rootObj[rawKey];
   }
 
-  // Recursive search across all child keys (e.g., /games/FS25/savegame1/stats_xml)
   for (const k of Object.keys(rootObj)) {
     if (typeof rootObj[k] === 'object' && rootObj[k] !== null) {
       const deepResult = getFirebasePayloadDeep(rootObj[k], targetKey, maxDepth - 1);
@@ -462,22 +460,24 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Master Telemetry Render Engine with Deep Fail-Safe Clearing
+// Master Telemetry Render Engine (Targeting /fs25 and Active Savegame Hierarchy)
 window.renderDashboard = function(data) {
   if (!data) return;
 
   window.setServerStatus(true);
 
-  // 1. Savegame Slot Handler
+  // 1. Resolve Active Save Slot from /fs25/activeSaveSlot
+  let rawSlot = getFirebasePayloadDeep(data, "activeSaveSlot") || data.activeSaveSlot || "1";
+  let slotNum = String(rawSlot).replace(/[^0-9]/g, '') || "1";
+  let activeSlotKey = `savegame${slotNum}`;
+  
   const saveSlotEl = document.getElementById('save-slot-display');
   if (saveSlotEl) {
-    let rawSlot = getFirebasePayloadDeep(data, "activeSaveSlot") || data.activeSaveSlot || "1";
-    let formattedSlot = String(rawSlot).trim();
-    if (!formattedSlot.toLowerCase().startsWith("savegame")) {
-      formattedSlot = `savegame${formattedSlot}`;
-    }
-    saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">${formattedSlot}</strong>`;
+    saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">${activeSlotKey}</strong>`;
   }
+
+  // Isolate the telemetry tree specifically to the active savegame folder (or fall back to root)
+  const slotData = data[activeSlotKey] || data;
 
   // Footer Sync Time
   const syncTimeEl = document.getElementById('last-sync-time');
@@ -487,10 +487,10 @@ window.renderDashboard = function(data) {
   }
 
   // 2. Parse Server Details from G-Portal Stats XML
-  const statsRaw = getFirebasePayloadDeep(data, "stats") || getFirebasePayloadDeep(data, "dedicatedServerConfig");
+  const statsRaw = getFirebasePayloadDeep(slotData, "stats") || getFirebasePayloadDeep(data, "dedicatedServerConfig");
   const statsXml = parseXML(statsRaw);
-  const careerXml = parseXML(getFirebasePayloadDeep(data, "careerSavegame"));
-  const envXml = parseXML(getFirebasePayloadDeep(data, "environment"));
+  const careerXml = parseXML(getFirebasePayloadDeep(slotData, "careerSavegame"));
+  const envXml = parseXML(getFirebasePayloadDeep(slotData, "environment"));
 
   if (statsXml || careerXml) {
     const serverNode = statsXml ? statsXml.querySelector("Server") : (careerXml ? careerXml.querySelector("settings") : null);
@@ -525,8 +525,15 @@ window.renderDashboard = function(data) {
     const capacity = slotsNode ? slotsNode.getAttribute("capacity") || "6" : "6";
     const numUsed = slotsNode ? slotsNode.getAttribute("numUsed") || "0" : "0";
 
+    // Pull active players directly from /fs25/activePlayers or stats XML
     const onlinePlayers = [];
-    if (statsXml) {
+    const activePlayersNode = getFirebasePayloadDeep(data, "activePlayers");
+    if (activePlayersNode && typeof activePlayersNode === 'object') {
+      Object.values(activePlayersNode).forEach(p => {
+        if (typeof p === 'string') onlinePlayers.push(p);
+        else if (p && p.name) onlinePlayers.push(p.name);
+      });
+    } else if (statsXml) {
       statsXml.querySelectorAll("Player[isUsed='true']").forEach(p => {
         if (p.textContent) onlinePlayers.push(p.textContent.trim());
       });
@@ -540,7 +547,7 @@ window.renderDashboard = function(data) {
 
   // 3. Process Active Server Mods
   activeServerMods.clear();
-  const configRaw = getFirebasePayloadDeep(data, "dedicatedServerConfig") || statsRaw || getFirebasePayloadDeep(data, "careerSavegame");
+  const configRaw = getFirebasePayloadDeep(data, "dedicatedServerConfig") || statsRaw || getFirebasePayloadDeep(slotData, "careerSavegame");
   const configXml = parseXML(configRaw);
   if (configXml) {
     configXml.querySelectorAll("mod, Mod").forEach(m => {
@@ -549,8 +556,8 @@ window.renderDashboard = function(data) {
     });
   }
 
-  // 4. Registered Server Farms
-  const farmsRaw = getFirebasePayloadDeep(data, "farms") || getFirebasePayloadDeep(data, "careerSavegame");
+  // 4. Registered Server Farms (Inside Savegame)
+  const farmsRaw = getFirebasePayloadDeep(slotData, "farms") || getFirebasePayloadDeep(slotData, "careerSavegame");
   const farmsXml = parseXML(farmsRaw);
   const farmsCont = document.getElementById('farms-container');
   const farmNamesById = { "0": "Public / Server Land" };
@@ -612,8 +619,8 @@ window.renderDashboard = function(data) {
   const implCont = document.getElementById('implements-container');
   const toolsCont = document.getElementById('handtools-container');
 
-  const vehiclesRaw = getFirebasePayloadDeep(data, "vehicles") || statsRaw;
-  const handToolsRaw = getFirebasePayloadDeep(data, "handTools");
+  const vehiclesRaw = getFirebasePayloadDeep(slotData, "vehicles") || statsRaw;
+  const handToolsRaw = getFirebasePayloadDeep(slotData, "handTools");
 
   const vehXml = parseXML(vehiclesRaw);
   const toolsXml = parseXML(handToolsRaw);
@@ -711,7 +718,7 @@ window.renderDashboard = function(data) {
 
   // 6. Field Crops & Agronomy Status
   const fieldsCont = document.getElementById('fields-container');
-  const fieldsRaw = getFirebasePayloadDeep(data, "fields") || getFirebasePayloadDeep(data, "farmland");
+  const fieldsRaw = getFirebasePayloadDeep(slotData, "fields") || getFirebasePayloadDeep(slotData, "farmland");
   const fieldsXml = parseXML(fieldsRaw);
 
   if (fieldsCont) {
@@ -747,7 +754,7 @@ window.renderDashboard = function(data) {
 
   // 7. Factories & Production Chains
   const prodCont = document.getElementById('main-productions-container');
-  const placeablesRaw = getFirebasePayloadDeep(data, "placeables");
+  const placeablesRaw = getFirebasePayloadDeep(slotData, "placeables");
   const placeXml = parseXML(placeablesRaw);
 
   if (prodCont) {
@@ -831,7 +838,7 @@ window.renderDashboard = function(data) {
 
   // 9. Server Contracts & Missions
   const contractsCont = document.getElementById('contracts-container');
-  const missionsRaw = getFirebasePayloadDeep(data, "missions");
+  const missionsRaw = getFirebasePayloadDeep(slotData, "missions");
   const missionsXml = parseXML(missionsRaw);
   if (contractsCont) {
     let contractsHtml = "";
@@ -935,7 +942,7 @@ window.renderDashboard = function(data) {
 
   // 13. Dealership Used Sales
   const salesCont = document.getElementById('sales-container');
-  const salesRaw = getFirebasePayloadDeep(data, "sales");
+  const salesRaw = getFirebasePayloadDeep(slotData, "sales");
   const salesXml = parseXML(salesRaw);
   if (salesCont) {
     let salesHtml = "";
@@ -967,7 +974,7 @@ window.renderDashboard = function(data) {
 
   // 14. Map Collectibles Tracker
   const colCont = document.getElementById('collectibles-container');
-  const colRaw = getFirebasePayloadDeep(data, "collectibles");
+  const colRaw = getFirebasePayloadDeep(slotData, "collectibles");
   const colXml = parseXML(colRaw);
   if (colCont) {
     let foundCount = 0;
