@@ -1,9 +1,9 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 8:50 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 8:55 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * FEATURES: Robust Google Sheet CSV Column Parser + Clean Link Name Formatter
- * ARCHITECTURE: Dual Sync (Direct Firestore + LocalStorage Ground Truth Backup)
+ * FEATURES: Exact Google Sheet Mapping (Name, Group, Url with UTM, Images)
+ * ARCHITECTURE: Open Firestore Sync + LocalStorage Ground Truth Backup
  * ITEM SORT ORDER: Classified Doc -> Workbench -> Personal Letter -> Stone Eagle -> Hidden Item
  * ==========================================
  */
@@ -329,7 +329,6 @@ const appState = {
     cleanNameFromUrl: function(urlStr) {
         if (!urlStr) return "Link";
         try {
-            // Strip out tracking tokens and query parameters first
             const cleanUrl = urlStr.split('?')[0].split('#')[0];
             const parsed = new URL(cleanUrl);
             const pathSegments = parsed.pathname.split('/').filter(Boolean);
@@ -355,7 +354,7 @@ const appState = {
             if (!item.url) return;
 
             let displayName = item.name && item.name.trim() !== '' ? item.name : '';
-            // If the name column contains a full URL, strip it down to a readable title
+            // Prevent display of full HTTP URLs inside button text
             if (!displayName || displayName.startsWith('http://') || displayName.startsWith('https://')) {
                 displayName = this.cleanNameFromUrl(item.url);
             }
@@ -405,8 +404,8 @@ const appState = {
     },
 
     loadNavigation: async function() {
-        // Direct link to your live CSV spreadsheet
-        const sheetsCsvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vQMb5Z2qGYtJLqx5dwnDKUdlLcCEcgGHKe_elqxIy-NvsWbDKtYgJAFeSXKGmSIxdBPfzFtFZt4HzV-/pub?output=csv&v=${Date.now()}`;
+        // Direct link to your published Google Sheet CSV
+        const sheetsCsvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv&v=${Date.now()}`;
         
         try {
             const res = await fetch(sheetsCsvUrl);
@@ -414,23 +413,20 @@ const appState = {
                 const csvText = await res.text();
                 const parsedRows = this.parseCSV(csvText);
                 if (parsedRows.length > 1) {
-                    const headers = parsedRows[0].map(h => h.toLowerCase().trim());
-                    
-                    // Fuzzy match headers (supports "Name (A)", "Url (D)", etc.)
-                    const nameIdx = headers.findIndex(h => h.includes('name'));
-                    const urlIdx = headers.findIndex(h => h.includes('url') && !h.includes('image'));
-                    const groupIdx = headers.findIndex(h => h.includes('group'));
-                    const imgIdx = headers.findIndex(h => h.includes('image'));
-
                     const menuItems = [];
                     for (let i = 1; i < parsedRows.length; i++) {
                         const row = parsedRows[i];
                         if (!row || row.length === 0) continue;
 
-                        const name = nameIdx !== -1 ? row[nameIdx] : row[0];
-                        const group = groupIdx !== -1 ? row[groupIdx] : row[2];
-                        const url = urlIdx !== -1 ? row[urlIdx] : row[3];
-                        const image = imgIdx !== -1 ? row[imgIdx] : row[4];
+                        // Exact Column Mapping for your Google Sheet:
+                        // Column A (0): Name
+                        // Column B (1): Group
+                        // Column C (2): Url with UTM
+                        // Column D (3): Images
+                        const name = row[0] ? row[0].trim() : '';
+                        const group = row[1] ? row[1].trim() : '';
+                        const url = row[2] ? row[2].trim() : '';
+                        const image = row[3] ? row[3].trim() : '';
 
                         if (url && url.startsWith('http')) {
                             menuItems.push({ name, url, group, image });
