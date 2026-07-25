@@ -1,9 +1,9 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 8:15 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 8:35 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * FEATURES: Client-Side UI Interactive Features, Button Menu Generator & Local Persistence Backup
- * ARCHITECTURE: Dual Sync (Firebase Firestore + LocalStorage Fallback)
+ * FEATURES: Direct Open-Access Firestore & Local Storage Backup Engine (NO AUTH/NO LOGIN REQUIRED)
+ * ARCHITECTURE: Dual Sync (Direct Firestore + LocalStorage Ground Truth Backup)
  * ITEM SORT ORDER: Classified Doc -> Workbench -> Personal Letter -> Stone Eagle -> Hidden Item
  * ==========================================
  */
@@ -506,6 +506,7 @@ const appState = {
             b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === userId.toLowerCase());
         });
 
+        // Load ground truth local storage cache first
         const localKey = `se5_progress_${userId.toLowerCase()}`;
         const savedLocal = localStorage.getItem(localKey);
         let localCollectedIds = [];
@@ -520,6 +521,7 @@ const appState = {
 
         this.render();
 
+        // Connect directly to Firestore without requiring Auth
         if (this.db) {
             if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
 
@@ -529,7 +531,7 @@ const appState = {
                 if (snap.exists()) {
                     const data = snap.data();
                     const incoming = data.progress || [];
-                    if (Array.isArray(incoming)) {
+                    if (Array.isArray(incoming) && incoming.length > 0) {
                         this.hunterData = sniperData.map(item => {
                             const status = incoming.find(s => s.id === item.id);
                             return { ...item, collected: status ? (status.collected || status.done || false) : false };
@@ -539,7 +541,7 @@ const appState = {
                     }
                 }
             }, (err) => {
-                console.warn("Firestore live stream skipped, using local persistence mode:", err.message);
+                console.warn("Firestore live stream notice:", err.message);
             });
         }
     },
