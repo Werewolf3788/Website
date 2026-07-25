@@ -1,12 +1,12 @@
-<!-- Version Timestamp: 2026-07-24T20:50:00.000Z -->
+<!-- Version Timestamp: 2026-07-24T21:15:00.000Z -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sniper Elite 5: Master Tracker</title>
-    <!-- Linked with cache buster -->
-    <link rel="stylesheet" href="style.css?v=20260724_5">
+    <!-- Linked with smart cache-buster -->
+    <link rel="stylesheet" href="style.css?v=20260724_6">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Teko:wght@700&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
@@ -34,9 +34,9 @@
 
             <!-- Profile Selector Buttons -->
             <div id="hunter-profiles" class="profile-selector">
-                <button class="profile-btn active-btn" data-profile="Werewolf3788">Werewolf3788</button>
-                <button class="profile-btn" data-profile="Ray">Ray</button>
-                <button class="profile-btn" data-profile="DesdemonaTiger">DesdemonaTiger</button>
+                <button class="profile-btn active-btn" data-profile="Werewolf3788" onclick="appState.switchHunter('Werewolf3788')">Werewolf3788</button>
+                <button class="profile-btn" data-profile="Ray" onclick="appState.switchHunter('Ray')">Ray</button>
+                <button class="profile-btn" data-profile="DesdemonaTiger" onclick="appState.switchHunter('DesdemonaTiger')">DesdemonaTiger</button>
             </div>
         </header>
 
@@ -66,6 +66,6 @@
     </div>
 
     <!-- MAIN TRACKER CONTROLLER SCRIPT -->
-    <script type="module" src="tracker.js?v=20260724_5"></script>
+    <script type="module" src="tracker.js?v=20260724_6"></script>
 </body>
 </html>
