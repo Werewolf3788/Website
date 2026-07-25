@@ -1,9 +1,9 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 9:35 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 9:45 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
  * ARCHITECTURE: Path Hierarchy by User Name -> Game ID (/users/{userId}/progress/sniper-elite-5)
- * ALIAS MAPPING: Resolves Ray/ray/Raymystyro & TJ/terrdog420 to master database IDs
+ * DEFAULT STATE: Sections closed by default on initial page load
  * ==========================================
  */
 
@@ -24,7 +24,6 @@ const firebaseConfig = {
 const GAME_ID = 'sniper-elite-5';
 
 // --- DYNAMIC ALIAS & DOCUMENT MAP ---
-// Maps all name variations strictly to exact Firestore document target strings.
 const USER_DATA_MAP = {
     'werewolf3788': 'Werewolf3788',
     'Werewolf3788': 'Werewolf3788',
@@ -467,6 +466,7 @@ const appState = {
 
         this.loadNavigation();
         this.setupProfilesUI();
+        this.setupLifecycleListeners();
 
         try {
             const app = initializeApp(firebaseConfig, 'SE5-User-Hierarchy');
@@ -511,11 +511,22 @@ const appState = {
         }
     },
 
+    // SLEEP & WAKE CYCLE OBSERVER (PAGE VISIBILITY API)
+    setupLifecycleListeners: function() {
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                console.log("Tab regained focus: Re-verifying real-time sync listeners...");
+                if (this.auth && this.auth.currentUser) {
+                    this.loadHunter(this.activeHunter);
+                }
+            }
+        });
+    },
+
     loadHunter: function(name) {
-        // Resolve provided name to actual database key
         const dbDocName = USER_DATA_MAP[name] || name;
 
-        // Ground Truth Local Cache Check
+        // Local Storage Backup Check
         const localKey = `se5_progress_${dbDocName.toLowerCase()}`;
         const savedLocal = localStorage.getItem(localKey);
         let localCollectedIds = [];
@@ -546,7 +557,6 @@ const appState = {
         // REAL-TIME FIRESTORE STREAM WITH OPTIMISTIC WRITE FILTERING
         const userProgressRef = doc(this.db, 'users', dbDocName, 'progress', GAME_ID);
         this.masterUnsub = onSnapshot(userProgressRef, { includeMetadataChanges: true }, (snap) => {
-            // CRITICAL FIX: Ignore local pending write echoes to prevent resetting UI on local click
             if (snap.metadata.hasPendingWrites) {
                 return;
             }
@@ -613,7 +623,9 @@ const appState = {
     },
 
     toggleSection: function(sid) {
-        this.collapsedSections[sid] = !this.collapsedSections[sid];
+        // Sections default to collapsed unless explicitly opened (false)
+        const isCurrentlyCollapsed = this.collapsedSections[sid] !== false;
+        this.collapsedSections[sid] = !isCurrentlyCollapsed;
         this.render();
     },
 
@@ -639,8 +651,10 @@ const appState = {
             });
 
             const sid = cat.replace(/[^a-z0-9]/gi, '');
+            const isCollapsed = this.collapsedSections[sid] !== false; // Defaults to TRUE (closed on page load)
+
             const section = document.createElement('div');
-            section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''}`;
+            section.className = `category-section ${isCollapsed ? 'section-collapsed' : ''}`;
 
             section.innerHTML = `
                 <div class="category-header outlined-text" id="header-${sid}">
