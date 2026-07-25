@@ -1,8 +1,8 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 8:35 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 8:50 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * FEATURES: Direct Open-Access Firestore & Local Storage Backup Engine (NO AUTH/NO LOGIN REQUIRED)
+ * FEATURES: Robust Google Sheet CSV Column Parser + Clean Link Name Formatter
  * ARCHITECTURE: Dual Sync (Direct Firestore + LocalStorage Ground Truth Backup)
  * ITEM SORT ORDER: Classified Doc -> Workbench -> Personal Letter -> Stone Eagle -> Hidden Item
  * ==========================================
@@ -329,13 +329,18 @@ const appState = {
     cleanNameFromUrl: function(urlStr) {
         if (!urlStr) return "Link";
         try {
-            const parsed = new URL(urlStr);
+            // Strip out tracking tokens and query parameters first
+            const cleanUrl = urlStr.split('?')[0].split('#')[0];
+            const parsed = new URL(cleanUrl);
             const pathSegments = parsed.pathname.split('/').filter(Boolean);
             let name = pathSegments.pop() || parsed.hostname;
             name = name.replace(/\.html?$/i, '').replace(/[-_]/g, ' ');
+            if (name.toLowerCase() === 'index') {
+                name = pathSegments.pop() || 'Home';
+            }
             return name.charAt(0).toUpperCase() + name.slice(1);
         } catch(e) {
-            return urlStr;
+            return "Menu Link";
         }
     },
 
@@ -349,9 +354,10 @@ const appState = {
         menuItems.forEach(item => {
             if (!item.url) return;
 
-            let displayName = item.name && item.name.trim() !== '' ? item.name : this.cleanNameFromUrl(item.url);
-            if (displayName.startsWith('http://') || displayName.startsWith('https://')) {
-                displayName = this.cleanNameFromUrl(displayName);
+            let displayName = item.name && item.name.trim() !== '' ? item.name : '';
+            // If the name column contains a full URL, strip it down to a readable title
+            if (!displayName || displayName.startsWith('http://') || displayName.startsWith('https://')) {
+                displayName = this.cleanNameFromUrl(item.url);
             }
 
             let imgUrl = item.image || '';
@@ -399,7 +405,8 @@ const appState = {
     },
 
     loadNavigation: async function() {
-        const sheetsCsvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv&v=${Date.now()}`;
+        // Direct link to your live CSV spreadsheet
+        const sheetsCsvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vQMb5Z2qGYtJLqx5dwnDKUdlLcCEcgGHKe_elqxIy-NvsWbDKtYgJAFeSXKGmSIxdBPfzFtFZt4HzV-/pub?output=csv&v=${Date.now()}`;
         
         try {
             const res = await fetch(sheetsCsvUrl);
@@ -407,22 +414,25 @@ const appState = {
                 const csvText = await res.text();
                 const parsedRows = this.parseCSV(csvText);
                 if (parsedRows.length > 1) {
-                    const headers = parsedRows[0].map(h => h.toLowerCase());
-                    const nameIdx = headers.indexOf('name');
-                    const urlIdx = headers.indexOf('url');
-                    const groupIdx = headers.indexOf('group');
-                    const imgIdx = headers.indexOf('image');
+                    const headers = parsedRows[0].map(h => h.toLowerCase().trim());
+                    
+                    // Fuzzy match headers (supports "Name (A)", "Url (D)", etc.)
+                    const nameIdx = headers.findIndex(h => h.includes('name'));
+                    const urlIdx = headers.findIndex(h => h.includes('url') && !h.includes('image'));
+                    const groupIdx = headers.findIndex(h => h.includes('group'));
+                    const imgIdx = headers.findIndex(h => h.includes('image'));
 
                     const menuItems = [];
                     for (let i = 1; i < parsedRows.length; i++) {
                         const row = parsedRows[i];
                         if (!row || row.length === 0) continue;
-                        const name = nameIdx !== -1 ? row[nameIdx] : row[0];
-                        const url = urlIdx !== -1 ? row[urlIdx] : row[1];
-                        const group = groupIdx !== -1 ? row[groupIdx] : row[2];
-                        const image = imgIdx !== -1 ? row[imgIdx] : row[3];
 
-                        if (url) {
+                        const name = nameIdx !== -1 ? row[nameIdx] : row[0];
+                        const group = groupIdx !== -1 ? row[groupIdx] : row[2];
+                        const url = urlIdx !== -1 ? row[urlIdx] : row[3];
+                        const image = imgIdx !== -1 ? row[imgIdx] : row[4];
+
+                        if (url && url.startsWith('http')) {
                             menuItems.push({ name, url, group, image });
                         }
                     }
@@ -506,7 +516,6 @@ const appState = {
             b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === userId.toLowerCase());
         });
 
-        // Load ground truth local storage cache first
         const localKey = `se5_progress_${userId.toLowerCase()}`;
         const savedLocal = localStorage.getItem(localKey);
         let localCollectedIds = [];
@@ -521,7 +530,6 @@ const appState = {
 
         this.render();
 
-        // Connect directly to Firestore without requiring Auth
         if (this.db) {
             if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
 
