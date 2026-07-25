@@ -1,6 +1,6 @@
 /* 
  * ==========================================
- * VERSION TIMESTAMP: Fri, July 24, 2026, 9:15 PM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 9:30 PM EDT
  * STYLING SYSTEM: Responsive Multi-User Sniper Elite 5 Tracker (style.css)
  * BRAND PALETTE: Crimson Gradient (#990000 -> #000000), Slate Surfaces (#1e1c1c), Gold Accents (#ff8800)
  * INTEGRATION: High-Contrast Tactical Header Buttons & Dynamic Nav Engine
@@ -353,8 +353,7 @@ html, body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
-    user-select: none;
+    cursor: pointer; user-select: none;
     border-bottom: 1px solid var(--card-border);
 }
 
