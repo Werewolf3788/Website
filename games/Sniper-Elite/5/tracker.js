@@ -1,18 +1,15 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Thu, July 23, 2026, 1:15 AM EDT
+ * VERSION TIMESTAMP: Fri, July 24, 2026, 8:10 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Tracker (tracker.js)
- * NAV ENGINE: Live Google Sheets CSV Fetcher (Pub CSV Feed + Local Fallback)
- * ARCHITECTURE: Unified Path (/users/{userId}/progress/sniper-elite-5) + Firestore Realtime Sync
+ * FEATURES: Client-Side UI Interactive Features, Menu Generator & Local Persistence Backup
+ * ARCHITECTURE: Dual Sync (Firebase Firestore + LocalStorage Fallback)
  * ITEM SORT ORDER: Classified Doc -> Workbench -> Personal Letter -> Stone Eagle -> Hidden Item
- * USER REGISTRY: Active Profiles (Werewolf3788, Ray, DesdemonaTiger)
- * RESILIENCE: Auto-Reconnect Observers + Page Visibility Refresh + Cache-Busting
  * ==========================================
  */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
@@ -194,9 +191,9 @@ const sniperData = [
     { id: 'm8_wb3', cat: '8: Rubble and Ruin', name: 'Pistol Workbench', type: 'Workbench', desc: 'Church crypt floor section; drop through the broken northwestern tile floor gap.' },
 
     // MISSION 9: LOOSE ENDS (Trophies & Challenge Kills)
-    { id: 'm9_tr1', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Brains of the Operation', type: 'Trophy / Challenge', desc: 'Kill Möller with a headshot. Customize rifle with high zoom (e.g., M1903 with A2 Optical) on Civilian difficulty.' },
-    { id: 'm9_tr2', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Can\'t Outrun A Bullet', type: 'Trophy / Challenge', desc: 'Kill Möller with a rifle at 600m+ (let him reach the end of the road until binoculars show 1000m+ before shooting).' },
-    { id: 'm9_tr3', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Sight Beyond Sights', type: 'Trophy / Challenge', desc: 'Kill Möller with a rifle while in Iron Sights. Equipping Match ammo helps secure a 1-shot kill.' },
+    { id: 'm9_tr1', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Brains of the Operation', type: 'Trophy / Challenge', desc: 'Kill Möller with a headshot. Customize rifle with high zoom on Civilian difficulty.' },
+    { id: 'm9_tr2', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Can\'t Outrun A Bullet', type: 'Trophy / Challenge', desc: 'Kill Möller with a rifle at 600m+.' },
+    { id: 'm9_tr3', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Sight Beyond Sights', type: 'Trophy / Challenge', desc: 'Kill Möller with a rifle while in Iron Sights.' },
     { id: 'm9_tr4', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Möllertov Cocktail', type: 'Trophy / Challenge', desc: 'Kill Möller with an explosion.' },
 
     // MISSION 10: WOLF MOUNTAIN (DLC)
@@ -225,30 +222,30 @@ const sniperData = [
     { id: 'm11_pl2', cat: '11: Landing Force (DLC)', name: 'Bread and Boredom', type: 'Personal Letter', desc: 'Northern coastal sector; resting on an old wooden table built inside the broken tower.' },
     { id: 'm11_pl3', cat: '11: Landing Force (DLC)', name: 'Heavy is the Crown', type: 'Personal Letter', desc: 'Southwest island sector, inside the primary stone Fort command briefing hall table.' },
     { id: 'm11_cd1', cat: '11: Landing Force (DLC)', name: 'Wine-Stained Warning', type: 'Classified Doc', desc: 'Western map sector building layout; resting on an office table inside the top floor room.' },
-    { id: 'm11_cd2', cat: '11: Landing Force (DLC)', name: 'Security Measures', type: 'Classified Doc', desc: 'Eastern fishing sector house near the waves; hidden under the desk framing opposite Workbench 2.' },
+    { id: 'm11_cd2', cat: '11: Landing Force (DLC)', name: 'Security Measures', type: 'Classified Doc', desc: 'Eastern fishing sector house near the water; hidden under the desk framing opposite Workbench 2.' },
     { id: 'm11_hi1', cat: '11: Landing Force (DLC)', name: 'Military Flask', type: 'Hidden Item', desc: 'Central sector fortification bunker entry left room corner storage table.' },
     { id: 'm11_hi2', cat: '11: Landing Force (DLC)', name: 'Binoculars', type: 'Hidden Item', desc: 'Far southern cliff edge corridor; sitting on the stone hand railing behind the Lighthouse asset.' },
-    { id: 'm11_se1', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Southwest watchtower architecture peak; immediately viewable directly from the default spawn area.' },
-    { id: 'm11_se2', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Northern broken masonry layout; perched on the high stone wall of the ruined tower asset.' },
-    { id: 'm11_se3', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Southeast coastal zone; perched on top of a low, shattered seaside stone building structure.' },
-    { id: 'm11_wb1', cat: '11: Landing Force (DLC)', name: 'Resort Docks Workbench', type: 'Workbench', desc: 'Western sector residential house; tucked inside the upper-floor side room loft frame.' },
-    { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'Abandoned Fishing Workbench', type: 'Workbench', desc: 'Eastern fishing sector coastal shanty; sits next to the Classified Document cache room.' },
-    { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Military Fort Workbench', type: 'Workbench', desc: 'Southwest Fort complex vault room; unlock using lockpicks or localized bolt cutters.' },
+    { id: 'm11_se1', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Southwest watchtower architecture peak; immediately viewable directly from default spawn.' },
+    { id: 'm11_se2', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Northern broken masonry layout; perched on high stone wall of ruined tower asset.' },
+    { id: 'm11_se3', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Southeast coastal zone; perched on top of a low, shattered seaside stone building.' },
+    { id: 'm11_wb1', cat: '11: Landing Force (DLC)', name: 'Resort Docks Workbench', type: 'Workbench', desc: 'West side of the map in a house upstairs.' },
+    { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'Abandoned Fishing Workbench', type: 'Workbench', desc: 'East side of the map in a small house near the water.' },
+    { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Military Fort Workbench', type: 'Workbench', desc: 'Southwest side of the map, inside the Fort behind a locked door (lockpick or bolt cutters).' },
 
     // MISSION 12: CONQUEROR DLC
     { id: 'm12_pl1', cat: '12: Conqueror (DLC)', name: 'Roughly-written Note', type: 'Personal Letter', desc: 'Northwest village sector house layout; sitting directly next to a civilian bedroom frame.' },
-    { id: 'm12_pl2', cat: '12: Conqueror (DLC)', name: 'Debris-covered Love Letter', type: 'Personal Letter', desc: 'Central ruins sector; resting on top of a wooden supply crate within the secondary goal radius.' },
-    { id: 'm12_pl3', cat: '12: Conqueror (DLC)', name: 'An Unfinished Plea for Aid', type: 'Personal Letter', desc: 'Northern sector house floor; on a crate next to the sleeping bag and dual couches layout.' },
+    { id: 'm12_pl2', cat: '12: Conqueror (DLC)', name: 'Debris-covered Love Letter', type: 'Personal Letter', desc: 'Central ruins sector; resting on top of a wooden supply crate within secondary goal radius.' },
+    { id: 'm12_pl3', cat: '12: Conqueror (DLC)', name: 'An Unfinished Plea for Aid', type: 'Personal Letter', desc: 'Northern sector house floor; on a crate next to the sleeping bag.' },
     { id: 'm12_cd1', cat: '12: Conqueror (DLC)', name: 'King of the Tigers', type: 'Classified Doc', desc: 'Town entry roadblock checkpoint sector; resting on top of a plain raw wood shipping crate.' },
-    { id: 'm12_cd2', cat: '12: Conqueror (DLC)', name: 'Operations Dossier', type: 'Classified Doc', desc: 'Northwest perimeter gardens; sitting out on the central table structure inside the gazebo structure.' },
-    { id: 'm12_hi1', cat: '12: Conqueror (DLC)', name: 'Wallet', type: 'Hidden Item', desc: 'Western sector hotel structure room; tracking the location of the yellow elimination target.' },
+    { id: 'm12_cd2', cat: '12: Conqueror (DLC)', name: 'Operations Dossier', type: 'Classified Doc', desc: 'Northwest perimeter gardens; sitting out on the central table structure inside gazebo.' },
+    { id: 'm12_hi1', cat: '12: Conqueror (DLC)', name: 'Wallet', type: 'Hidden Item', desc: 'Western sector hotel structure room; tracking location of yellow elimination target.' },
     { id: 'm12_hi2', cat: '12: Conqueror (DLC)', name: 'Bronze Statue', type: 'Hidden Item', desc: 'Castle keep interior sector; sitting directly on top of General König\'s command desk.' },
-    { id: 'm12_se1', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Western town sector belfry peak; perched on the high tower ledge near the primary sniper track.' },
+    { id: 'm12_se1', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Western town sector belfry peak; perched on high tower ledge near primary sniper track.' },
     { id: 'm12_se2', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Northern residential cluster; perched squarely on top of a red brick house chimney stack.' },
-    { id: 'm12_se3', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Castle fortifications; perched inside an upper window slit of the massive stone defense tower.' },
-    { id: 'm12_wb1', cat: '12: Conqueror (DLC)', name: 'Town Entrance Bunker Workbench', type: 'Workbench', desc: 'Southwest sector defensive line; built inside the entry concrete bunker fortification room.' },
-    { id: 'm12_wb2', cat: '12: Conqueror (DLC)', name: 'Village Attic Workbench', type: 'Workbench', desc: 'Southeast sector cluster house; scale structural lofts to reach the closed attic floor area.' },
-    { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Castle Grounds Bunker Workbench', type: 'Workbench', desc: 'Castle inner perimeter line; inside the concrete layout bunker trailing the blue asset goals.' },
+    { id: 'm12_se3', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Castle fortifications; perched inside an upper window slit of massive stone defense tower.' },
+    { id: 'm12_wb1', cat: '12: Conqueror (DLC)', name: 'Town Entrance Bunker Workbench', type: 'Workbench', desc: 'Southwest sector defensive line; built inside entry concrete bunker fortification room.' },
+    { id: 'm12_wb2', cat: '12: Conqueror (DLC)', name: 'Village Attic Workbench', type: 'Workbench', desc: 'Southeast sector cluster house; scale structural lofts to reach closed attic floor area.' },
+    { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Castle Grounds Bunker Workbench', type: 'Workbench', desc: 'Castle inner perimeter line; inside concrete layout bunker trailing blue asset goals.' },
 
     // MISSION 13: ROUGH LANDING DLC
     { id: 'm13_pl1', cat: '13: Rough Landing (DLC)', name: 'Emergency Landing', type: 'Personal Letter', desc: 'Western forest cabin area, sitting on a small wooden table.' },
@@ -272,22 +269,21 @@ const sniperData = [
     { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Northern radar bunker facility lower armory vault.' },
 
     // MISSION 14: KRAKEN AWAKES DLC
-    { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Letter to Vogel', type: 'Personal Letter', desc: '[ON SHIP] Upper Island Superstructure inside Vogel\'s office safe. Code is on the desk nearby, or use a Satchel Charge.' },
-    { id: 'm14_hi2', cat: '14: Kraken Awakes (DLC)', name: 'Eagle Plaque', type: 'Hidden Item', desc: '[INSIDE SHIP] 2nd Level from the bottom of the ship, in a compartment near the room with the large red spotlight.' },
-    { id: 'm14_se1', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: '[ON SHIP] Perched right on the middle mast at the very top of the aircraft carrier.' },
-    { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Boiler Room Inspection', type: 'Personal Letter', desc: '[NORTH-WEST DOCKS] Top floor control room inside the dark facility building.' },
-    { id: 'm14_cd2', cat: '14: Kraken Awakes (DLC)', name: 'Successful Raid', type: 'Classified Doc', desc: '[NORTH DOCKS] Inside the 3rd dock building counting from the ship\'s main access bridge.' },
-    { id: 'm14_se2', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: '[NORTH-WEST DOCKS] Perched on the outer roof ridge of the dark North-West building.' },
-    { id: 'm14_wb2', cat: '14: Kraken Awakes (DLC)', name: 'Maintenance Workbench', type: 'Workbench', desc: '[NORTH-WEST DOCKS] Bottom floor of North-West facility. (Door locked—grab key from table near Letter #1). Unlocks: Close Quarters Pack.' },
-    { id: 'm14_pl3', cat: '14: Kraken Awakes (DLC)', name: 'Missing Tools', type: 'Personal Letter', desc: '[SOUTH-WEST] Top floor comms room of the rectangular building.' },
-    { id: 'm14_hi1', cat: '14: Kraken Awakes (DLC)', name: 'Backpack', type: 'Hidden Item', desc: '[SOUTH-WEST] Sitting on a supply crate inside the small corner storage shanty.' },
-    { id: 'm14_se3', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: '[SOUTH PERIMETER] Look high up on the masonry chimney stack.' },
-    { id: 'm14_wb1', cat: '14: Kraken Awakes (DLC)', name: 'Administration Workbench', type: 'Workbench', desc: '[SOUTH DOCKS] South dock building. Climb to upper floor and slide through the air vent. Unlocks: Assault Case.' },
-    { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Resistance Storage Workbench', type: 'Workbench', desc: '[SOUTHERN COMPOUND] Slide under the wall gap and clear the barricade to enter. Unlocks: Sustained Fire Mods.' },
-    { id: 'm14_cd1', cat: '14: Kraken Awakes (DLC)', name: 'Salvage Operation', type: 'Classified Doc', desc: '[EASTERN BORDER] On a desk inside the easternmost border house near the tree line.' }
+    { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Letter to Vogel', type: 'Personal Letter', desc: '[ON SHIP] Upper Island Superstructure inside Vogel\'s office safe. Code on desk nearby.' },
+    { id: 'm14_hi2', cat: '14: Kraken Awakes (DLC)', name: 'Eagle Plaque', type: 'Hidden Item', desc: '[INSIDE SHIP] 2nd Level from bottom, near room with large red spotlight.' },
+    { id: 'm14_se1', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: '[ON SHIP] Perched on middle mast at very top of aircraft carrier.' },
+    { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Boiler Room Inspection', type: 'Personal Letter', desc: '[NORTH-WEST DOCKS] Top floor control room inside dark facility building.' },
+    { id: 'm14_cd2', cat: '14: Kraken Awakes (DLC)', name: 'Successful Raid', type: 'Classified Doc', desc: '[NORTH DOCKS] Inside 3rd dock building from ship\'s main access bridge.' },
+    { id: 'm14_se2', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: '[NORTH-WEST DOCKS] Perched on outer roof ridge of dark North-West building.' },
+    { id: 'm14_wb2', cat: '14: Kraken Awakes (DLC)', name: 'Maintenance Workbench', type: 'Workbench', desc: '[NORTH-WEST DOCKS] Bottom floor of North-West facility. Grab key from table.' },
+    { id: 'm14_pl3', cat: '14: Kraken Awakes (DLC)', name: 'Missing Tools', type: 'Personal Letter', desc: '[SOUTH-WEST] Top floor comms room of rectangular building.' },
+    { id: 'm14_hi1', cat: '14: Kraken Awakes (DLC)', name: 'Backpack', type: 'Hidden Item', desc: '[SOUTH-WEST] Sitting on supply crate inside small corner storage shanty.' },
+    { id: 'm14_se3', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: '[SOUTH PERIMETER] Look high up on masonry chimney stack.' },
+    { id: 'm14_wb1', cat: '14: Kraken Awakes (DLC)', name: 'Administration Workbench', type: 'Workbench', desc: '[SOUTH DOCKS] South dock building. Climb upper floor and slide through air vent.' },
+    { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Resistance Storage Workbench', type: 'Workbench', desc: '[SOUTHERN COMPOUND] Slide under wall gap and clear barricade.' },
+    { id: 'm14_cd1', cat: '14: Kraken Awakes (DLC)', name: 'Salvage Operation', type: 'Classified Doc', desc: '[EASTERN BORDER] On a desk inside easternmost border house.' }
 ];
 
-// Strict requested type sorting map
 const typeOrderMap = {
     'classified doc': 1,
     'workbench': 2,
@@ -300,13 +296,9 @@ const appState = {
     targetUserId: 'Werewolf3788',
     targetDisplayName: 'Werewolf3788',
     hunterData: JSON.parse(JSON.stringify(sniperData)),
-    auth: null,
     db: null,
     collapsedSections: {},
     masterUnsub: null,
-    legacyUnsub: null,
-    dataLoaded: false,
-    lastSyncTime: 0,
 
     parseCSV: function(csvText) {
         const lines = csvText.split(/\r?\n/);
@@ -334,6 +326,19 @@ const appState = {
         return result;
     },
 
+    cleanNameFromUrl: function(urlStr) {
+        if (!urlStr) return "Link";
+        try {
+            const parsed = new URL(urlStr);
+            const pathSegments = parsed.pathname.split('/').filter(Boolean);
+            let name = pathSegments.pop() || parsed.hostname;
+            name = name.replace(/\.html?$/i, '').replace(/[-_]/g, ' ');
+            return name.charAt(0).toUpperCase() + name.slice(1);
+        } catch(e) {
+            return urlStr;
+        }
+    },
+
     buildMenuHTML: function(menuItems) {
         const navContainer = document.getElementById('dynamic-nav-links');
         if (!navContainer || !Array.isArray(menuItems)) return;
@@ -342,7 +347,12 @@ const appState = {
         const standalone = [];
 
         menuItems.forEach(item => {
-            if (!item.name || !item.url) return;
+            if (!item.url) return;
+
+            let displayName = item.name && item.name.trim() !== '' ? item.name : this.cleanNameFromUrl(item.url);
+            if (displayName.startsWith('http://') || displayName.startsWith('https://')) {
+                displayName = this.cleanNameFromUrl(displayName);
+            }
 
             let imgUrl = item.image || '';
             if (imgUrl && imgUrl.includes('drive.google.com')) {
@@ -352,9 +362,9 @@ const appState = {
                 }
             }
 
-            const nodeObj = { name: item.name, url: item.url, image: imgUrl };
+            const nodeObj = { name: displayName, url: item.url, image: imgUrl };
 
-            if (item.group) {
+            if (item.group && item.group.trim() !== '') {
                 if (!groups[item.group]) groups[item.group] = [];
                 groups[item.group].push(nodeObj);
             } else {
@@ -367,7 +377,7 @@ const appState = {
         Object.keys(groups).forEach(groupName => {
             const dropItems = groups[groupName].map(it => {
                 const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
-                return `<a href="${it.url}">${imgTag}${it.name}</a>`;
+                return `<a href="${it.url}">${imgTag}<span>${it.name}</span></a>`;
             }).join('');
 
             navHTML += `
@@ -382,23 +392,15 @@ const appState = {
 
         standalone.forEach(it => {
             const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
-            navHTML += `<a href="${it.url}">${imgTag}${it.name}</a>`;
+            navHTML += `<a href="${it.url}">${imgTag}<span>${it.name}</span></a>`;
         });
 
         navContainer.innerHTML = navHTML;
-
-        const warningNode = document.querySelector('div[style*="Menu Load Failure"]');
-        if (warningNode) warningNode.style.display = 'none';
     },
 
     loadNavigation: async function() {
         const sheetsCsvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv&v=${Date.now()}`;
         
-        const origin = window.location.origin;
-        const pathname = window.location.pathname;
-        const repoName = pathname.split('/')[1] || 'Website';
-        const localFallbackPath = `${origin}/${repoName}/Menu.json?v=${Date.now()}`;
-
         try {
             const res = await fetch(sheetsCsvUrl);
             if (res.ok) {
@@ -420,7 +422,7 @@ const appState = {
                         const group = groupIdx !== -1 ? row[groupIdx] : row[2];
                         const image = imgIdx !== -1 ? row[imgIdx] : row[3];
 
-                        if (name && url) {
+                        if (url) {
                             menuItems.push({ name, url, group, image });
                         }
                     }
@@ -435,29 +437,14 @@ const appState = {
             console.warn("Google Sheet CSV Fetch Notice:", e.message);
         }
 
-        try {
-            const res = await fetch(localFallbackPath);
-            if (res.ok) {
-                let text = await res.text();
-                text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
-                const data = JSON.parse(text);
-                if (data && Array.isArray(data)) {
-                    this.buildMenuHTML(data);
-                    return;
-                }
-            }
-        } catch (e) {
-            console.warn("Local Menu JSON Fallback Notice:", e.message);
-        }
-
         const navContainer = document.getElementById('dynamic-nav-links');
         if (navContainer) {
-            navContainer.innerHTML = `<span style="color: #ef4444; font-size: 0.85rem; padding: 8px; font-weight: 700;">Menu Load Failure</span>`;
+            navContainer.innerHTML = `<a href="index.html">Home</a>`;
         }
     },
 
     setupProfilesUI: function() {
-        const profilesContainer = document.getElementById('hunter-profiles') || document.querySelector('.profile-selection-container');
+        const profilesContainer = document.getElementById('hunter-profiles');
         if (profilesContainer) {
             profilesContainer.innerHTML = `
                 <button class="profile-btn" data-profile="Werewolf3788">Werewolf3788</button>
@@ -473,21 +460,28 @@ const appState = {
                 if (selected) this.switchHunter(selected);
             });
         });
+
+        const toggleBtn = document.getElementById('mobile-toggle');
+        const navLinks = document.getElementById('dynamic-nav-links');
+        if (toggleBtn && navLinks) {
+            toggleBtn.addEventListener('click', () => {
+                navLinks.classList.toggle('mobile-active');
+            });
+        }
     },
 
     init: async function() {
-        const app = initializeApp(firebaseConfig);
-        this.auth = getAuth(app);
-        this.db = getFirestore(app);
+        try {
+            const app = initializeApp(firebaseConfig);
+            this.db = getFirestore(app);
+        } catch(e) {
+            console.warn("Firestore initialization notice:", e.message);
+        }
 
         this.loadNavigation();
         this.setupProfilesUI();
 
         let savedTarget = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
-        if (['tj', 'desdeemonatiger'].includes(savedTarget.toLowerCase())) {
-            savedTarget = 'Werewolf3788';
-        }
-
         this.targetUserId = savedTarget;
         this.targetDisplayName = savedTarget;
 
@@ -497,33 +491,12 @@ const appState = {
             this.collapsedSections[sid] = true;
         });
 
-        signInAnonymously(this.auth).catch(err => console.warn("Anon Auth notice:", err.message));
-
-        onAuthStateChanged(this.auth, (user) => {
-            this.loadLiveProgress(this.targetUserId);
-        });
-
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                const idleDuration = Date.now() - this.lastSyncTime;
-                if (idleDuration > 60000) {
-                    this.loadLiveProgress(this.targetUserId);
-                }
-            }
-        });
-
-        window.addEventListener('online', () => {
-            this.loadLiveProgress(this.targetUserId);
-        });
-
-        this.render();
+        this.loadLiveProgress(this.targetUserId);
     },
 
     loadLiveProgress: function(userId) {
         this.targetUserId = userId;
         localStorage.setItem('se5_selected_user_id', userId);
-
-        this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
 
         const displayNode = document.getElementById('hunter-display');
         if (displayNode) displayNode.innerText = userId.toUpperCase();
@@ -533,52 +506,50 @@ const appState = {
             b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === userId.toLowerCase());
         });
 
-        if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
-        if (this.legacyUnsub) { this.legacyUnsub(); this.legacyUnsub = null; }
+        // 1. Load local cache first so progress is never zeroed out
+        const localKey = `se5_progress_${userId.toLowerCase()}`;
+        const savedLocal = localStorage.getItem(localKey);
+        let localCollectedIds = [];
+        if (savedLocal) {
+            try { localCollectedIds = JSON.parse(savedLocal); } catch(e) {}
+        }
 
-        const primaryRef = doc(this.db, "users", userId, "progress", "sniper-elite-5");
+        this.hunterData = sniperData.map(item => ({
+            ...item,
+            collected: localCollectedIds.includes(item.id)
+        }));
 
-        this.masterUnsub = onSnapshot(primaryRef, (snap) => {
-            this.lastSyncTime = Date.now();
-            if (snap.exists()) {
-                const data = snap.data();
-                const incoming = data.progress || [];
-                if (Array.isArray(incoming)) {
-                    this.hunterData = sniperData.map(item => {
-                        const status = incoming.find(s => s.id === item.id);
-                        return { ...item, collected: status ? (status.collected || status.done || false) : false };
-                    });
-                }
-                if (data.user || data.displayName) {
-                    this.targetDisplayName = data.user || data.displayName;
-                    if (displayNode) displayNode.innerText = this.targetDisplayName.toUpperCase();
-                }
-                this.dataLoaded = true;
-                this.render();
-            } else {
-                const fallbackTarget = (userId.toLowerCase() === 'werewolf3788') ? 'Kevin' : userId;
-                const legacyRef = doc(this.db, "artifacts", "game-tracker-5b2ef", "data", "public", "user", fallbackTarget);
+        this.render();
 
-                this.legacyUnsub = onSnapshot(legacyRef, (legacySnap) => {
-                    if (legacySnap.exists()) {
-                        const legacyData = legacySnap.data();
-                        const legacyIncoming = legacyData.progress || [];
-                        if (Array.isArray(legacyIncoming)) {
-                            this.hunterData = sniperData.map(item => {
-                                const status = legacyIncoming.find(s => s.id === item.id);
-                                return { ...item, collected: status ? (status.collected || status.done || false) : false };
-                            });
-                        }
-                    } else {
-                        this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
+        // 2. Connect to Firebase Firestore directly
+        if (this.db) {
+            if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
+
+            const primaryRef = doc(this.db, "users", userId, "progress", "sniper-elite-5");
+
+            this.masterUnsub = onSnapshot(primaryRef, (snap) => {
+                if (snap.exists()) {
+                    const data = snap.data();
+                    const incoming = data.progress || [];
+                    if (Array.isArray(incoming)) {
+                        this.hunterData = sniperData.map(item => {
+                            const status = incoming.find(s => s.id === item.id);
+                            return { ...item, collected: status ? (status.collected || status.done || false) : false };
+                        });
+                        this.saveLocalCache();
+                        this.render();
                     }
-                    this.dataLoaded = true;
-                    this.render();
-                }, (err) => console.warn("Legacy Snapshot Notice:", err.message));
-            }
-        }, (err) => {
-            console.error("Unified Snapshot Stream Error:", err.message);
-        });
+                }
+            }, (err) => {
+                console.warn("Firestore live stream skipped, using local persistence mode:", err.message);
+            });
+        }
+    },
+
+    saveLocalCache: function() {
+        const localKey = `se5_progress_${this.targetUserId.toLowerCase()}`;
+        const collectedIds = this.hunterData.filter(i => i.collected).map(i => i.id);
+        localStorage.setItem(localKey, JSON.stringify(collectedIds));
     },
 
     switchHunter: function(name) {
@@ -589,13 +560,16 @@ const appState = {
         const item = this.hunterData.find(i => i.id === id);
         if (item) {
             item.collected = !item.collected;
+            this.saveLocalCache();
             this.render();
             this.sync();
         }
     },
 
     sync: async function() {
-        if (!this.db || !this.dataLoaded) return;
+        this.saveLocalCache();
+
+        if (!this.db) return;
 
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
         const docRef = doc(this.db, "users", this.targetUserId, "progress", "sniper-elite-5");
@@ -607,9 +581,9 @@ const appState = {
                 progress: progress
             }, { merge: true });
 
-            console.log("Successfully saved to database!");
+            console.log("Progress saved directly to database!");
         } catch (err) {
-            console.error("Firestore Write Error:", err);
+            console.warn("Database sync deferred (saved locally):", err.message);
         }
     },
 
@@ -630,7 +604,6 @@ const appState = {
             const count = rawItems.filter(i => i.collected).length;
             totalFound += count;
 
-            // Sort items by requested type order: Classified Doc -> Workbench -> Personal Letter -> Stone Eagle -> Hidden Item
             const items = rawItems.sort((a, b) => {
                 const orderA = typeOrderMap[a.type.toLowerCase()] || 99;
                 const orderB = typeOrderMap[b.type.toLowerCase()] || 99;
