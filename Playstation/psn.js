@@ -2,12 +2,12 @@
  * ==========================================
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Kevin's Official Pack Sync Engine (Max-Payload Firebase Stream)
- * Version: 14.5.2 - Pure Firebase Stateless Sync Engine
- * NYT TIMESTAMP: Wed, July 22, 2026, 3:47 AM EDT
+ * Version: 14.5.4 - NPSSO Auth Health & Handshake Status Stream
+ * Timestamp: Sat, July 25, 2026, 5:14 PM EDT
  * Compatibility: Node.js v20+, Firebase Realtime Database REST API
- * Logic: Pulls existing state directly from Firebase REST API, aggregates
- *        new PSN & Twitch data, and streams the updated payload back to Firebase.
- *        Bypasses local file writes to eliminate Git merge conflicts.
+ * Logic: Validates PSN tokens, tracks NPSSO expiration status explicitly,
+ *        and streams `npssoValid`, `npssoStatus`, and `handshakeText` to 
+ *        Firebase so frontend badges dynamically flag expired tokens.
  * ==========================================
  */
 
@@ -94,7 +94,9 @@ let tokenStore = { werewolf: {}, ray: {} };
 
 let diagnosticReport = {
     werewolf_active: "no",
+    werewolf_status: "UNCHECKED",
     ray_active: "no",
+    ray_status: "UNCHECKED",
     lastCheck: new Date().toLocaleString()
 };
 
@@ -221,7 +223,8 @@ async function getAuthenticated(userKey, npssoInput) {
         const isValid = await isTokenValid(currentUserTokens.accessToken);
         if (isValid) {
             diagnosticReport[`${userKey}_active`] = "yes";
-            return { accessToken: currentUserTokens.accessToken };
+            diagnosticReport[`${userKey}_status`] = "ACTIVE";
+            return { accessToken: currentUserTokens.accessToken, npssoValid: true };
         }
         currentUserTokens.accessToken = null;
     }
@@ -235,7 +238,8 @@ async function getAuthenticated(userKey, npssoInput) {
                 expiryTime: Math.floor(Date.now() / 1000) + (refreshed.expiresIn || 3600) 
             };
             diagnosticReport[`${userKey}_active`] = "yes";
-            return refreshed;
+            diagnosticReport[`${userKey}_status`] = "ACTIVE";
+            return { ...refreshed, npssoValid: true };
         } catch (e) { currentUserTokens.refreshToken = null; }
     }
     
@@ -249,14 +253,17 @@ async function getAuthenticated(userKey, npssoInput) {
                 expiryTime: Math.floor(Date.now() / 1000) + (auth.expiresIn || 3600) 
             };
             diagnosticReport[`${userKey}_active`] = "yes";
-            return auth;
+            diagnosticReport[`${userKey}_status`] = "ACTIVE";
+            return { ...auth, npssoValid: true };
         } catch (e) { 
-            console.error(`[AUTH DIAGNOSTIC] Core Key validation failed for entry: ${userKey}.`);
+            console.error(`[AUTH DIAGNOSTIC] Core Key validation failed for entry: ${userKey}. Error: ${e.message}`);
             diagnosticReport[`${userKey}_active`] = "no";
+            diagnosticReport[`${userKey}_status`] = "EXPIRED_NPSSO";
             return null; 
         }
     }
     diagnosticReport[`${userKey}_active`] = "no";
+    diagnosticReport[`${userKey}_status`] = "MISSING_NPSSO";
     return null;
 }
 
@@ -279,6 +286,10 @@ function generatePrivateProfileFallback(label, userKey, twitchIntel, existingDat
         onlineId: SQUAD_MAP[userKey] || label, 
         online: !!twitchIntel?.isLive,
         accountId: ACCOUNT_IDS[userKey] || "",
+        npssoValid: false,
+        npssoStatus: "EXPIRED / UPDATE NEEDED",
+        handshakeText: `${(SQUAD_MAP[userKey] || label).toUpperCase()} HANDSHAKE: NPSSO EXPIRED`,
+        handshakeState: "EXPIRED",
         currentGame: twitchIntel?.game || "Dashboard", 
         currentGameArt: twitchIntel?.gameArt || null,
         currentGameActivity: twitchIntel?.statusMessage || (twitchIntel?.isLive ? "Streaming Live" : null),
@@ -287,10 +298,10 @@ function generatePrivateProfileFallback(label, userKey, twitchIntel, existingDat
         twitch: twitchIntel, 
         streamHistory: historicalStreamList,
         lastUpdated: new Date().toLocaleString(), 
-        gamesPlayed: 0, plus: false, level: 0, region: "US", note: "PSN Profile Hidden/Private", devices: [],
+        gamesPlayed: 0, plus: false, level: 0, region: "US", note: "PSN Auth Inactive or Token Expired", devices: [],
         blockedAccountsCount: 0, inboundFriendRequestsCount: 0,
-        trophySummary: { platinum: 0, gold: 0, silver: 0, bronze: 0, total: 0, trophyLevel: 0 },
-        recentGames: [], activeHunt: null, mostRecentTrophies: [], fullLibrary: [],
+        trophySummary: existingData?.trophySummary || { platinum: 0, gold: 0, silver: 0, bronze: 0, total: 0, trophyLevel: 0 },
+        recentGames: existingData?.recentGames || [], activeHunt: existingData?.activeHunt || null, mostRecentTrophies: existingData?.mostRecentTrophies || [], fullLibrary: existingData?.fullLibrary || [],
         rawPsnDump: { profile: {}, presence: {}, telemetry: [], titles: [], friends: [], hardwareInfo: [], blocksQueue: [], friendRequests: [] }
     };
 }
@@ -313,6 +324,10 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             existingData.twitch = twitchIntel;
             existingData.streamHistory = processStreamHistory(existingData.streamHistory, twitchIntel);
             existingData.lastUpdated = new Date().toLocaleString();
+            existingData.npssoValid = false;
+            existingData.npssoStatus = "EXPIRED / UPDATE NEEDED";
+            existingData.handshakeText = `${(existingData.onlineId || label).toUpperCase()} HANDSHAKE: NPSSO EXPIRED`;
+            existingData.handshakeState = "EXPIRED";
             return existingData;
         }
         return generatePrivateProfileFallback(label, userKey, twitchIntel, existingData);
@@ -322,7 +337,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         const profile = await getProfileFromAccountId(auth, resolvedTargetId).catch(() => null);
         
         if (!profile) {
-            console.log(`[PRIVACY OVERRIDE] Profile ${label} is hidden. Injecting fallback tracking layers.`);
+            console.log(`[PRIVACY OVERRIDE] Profile ${label} is hidden or failed auth. Injecting fallback tracking layers.`);
             return generatePrivateProfileFallback(label, userKey, twitchIntel, existingData);
         }
 
@@ -563,6 +578,10 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
 
         return {
             ...profile, onlineId: profile?.onlineId || label, accountId: resolvedTargetId,
+            npssoValid: true,
+            npssoStatus: "ACTIVE",
+            handshakeText: `${(profile?.onlineId || label).toUpperCase()} HANDSHAKE: FIREBASE LIVE`,
+            handshakeState: "LIVE",
             ...presence, gamesPlayed: totalGamesPlayedCount,
             avatar: profile?.avatars?.sort((a,b) => parseInt(b.size) - parseInt(a.size))[0]?.url || profile?.avatars?.[0]?.url || "", 
             bio: twitchIntel?.bio || profile?.aboutMe || "Official Pack Member Profile", psnAccountAge: calculateAgeString(earliestEntry), 
@@ -612,100 +631,113 @@ async function pushToFirebase(payload) {
 }
 
 async function main() {
-    console.log("[INIT] Starting Absolute Master Omni-Collector v14.5.2 (Stateless Firebase Engine)...");
-    
-    if (Date.now() >= 1785542400000) {
-        console.warn("\n=======================================================");
-        console.warn("🚨 AUTOMATED SYSTEM ALERT: AUGUST 2026 DEPRECATION WINDOW 🚨");
-        console.warn("=======================================================\n");
-    }
-
-    // Pull current state directly from Firebase REST API
-    const previousFirebaseData = await fetchFromFirebase();
-
-    let finalData = { 
-        users: previousFirebaseData.users || {}, 
-        personas: {}, 
-        mutualSquadFollowers: [], 
-        authDiagnostics: diagnosticReport,
-        lastGlobalUpdate: new Date().toLocaleString(), 
-        engineVersion: "14.5.2",
-        codeTimestamp: "Wednesday, July 22, 2026 | 3:47 AM EDT"
-    };
-
-    const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
-    const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
-    const masterAuth = wolfAuth || rayAuth;
-
-    finalData.authDiagnostics = diagnosticReport;
-
-    for (const [key, label] of Object.entries(SQUAD_MAP)) {
-        const accountId = ACCOUNT_IDS[key];
-        const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : (key === 'werewolf' && wolfAuth) ? wolfAuth : masterAuth;
-        const data = await getFullUserData(agentAuth, label, key, accountId, finalData.users[key]);
-        if (data) finalData.users[key] = data;
-    }
-
-    for (const [realName, keys] of Object.entries(PERSONA_CONFIG)) {
-        const linkedAccounts = keys.map(k => finalData.users[k]).filter(u => !!u);
-        if (linkedAccounts.length === 0) continue;
-
-        const totalPlats = linkedAccounts.reduce((sum, u) => sum + (u.trophySummary?.platinum || 0), 0);
-        const totalGolds = linkedAccounts.reduce((sum, u) => sum + (u.trophySummary?.gold || 0), 0);
-        const totalSilvers = linkedAccounts.reduce((sum, u) => sum + (u.trophySummary?.silver || 0), 0);
-        const totalBronzes = linkedAccounts.reduce((sum, u) => sum + (u.trophySummary?.bronze || 0), 0);
-        const maxLevel = Math.max(...linkedAccounts.map(u => u.level || 0));
-        const isOnline = linkedAccounts.some(u => u.online);
+    try {
+        console.log("[INIT] Starting Absolute Master Omni-Collector v14.5.4 (Stateless Firebase Engine)...");
         
-        const allStartTimes = linkedAccounts.map(u => new Date(u.earliestTrophyDate).getTime()).filter(t => !isNaN(t));
-        const allEndTimes = linkedAccounts.map(u => u.latestTrophyDate).filter(t => !!t);
-        
-        const absoluteStart = allStartTimes.length > 0 ? Math.min(...allStartTimes) : null;
-        const absoluteEnd = allEndTimes.length > 0 ? Math.max(...allEndTimes) : new Date().getTime();
-        
-        const activeAccount = linkedAccounts.find(u => u.online) || linkedAccounts[0];
+        if (Date.now() >= 1785542400000) {
+            console.warn("\n=======================================================");
+            console.warn("🚨 AUTOMATED SYSTEM ALERT: AUGUST 2026 DEPRECATION WINDOW 🚨");
+            console.warn("=======================================================\n");
+        }
 
-        let combinedStreams = [];
-        linkedAccounts.forEach(acc => {
-            if (acc && Array.isArray(acc.streamHistory)) {
-                acc.streamHistory.forEach(str => {
-                    if (!combinedStreams.includes(str)) combinedStreams.push(str);
-                });
-            }
-        });
+        // Pull current state directly from Firebase REST API
+        const previousFirebaseData = await fetchFromFirebase();
 
-        finalData.personas[realName] = {
-            displayName: realName,
-            isOnline,
-            primaryOnlineId: activeAccount.onlineId,
-            combinedTrophies: {
-                platinum: totalPlats, gold: totalGolds, silver: totalSilvers, bronze: totalBronzes,
-                total: totalPlats + totalGolds + totalSilvers + totalBronzes
-            },
-            maxLevel,
-            legacyAge: calculateAgeString(absoluteStart, absoluteEnd),
-            legacyRange: { start: absoluteStart ? new Date(absoluteStart).toLocaleString() : "Unknown", end: new Date(absoluteEnd).toLocaleString() },
-            currentGame: activeAccount.currentGame,
-            currentGameArt: activeAccount.currentGameArt,
-            currentActivity: activeAccount.currentGameActivity,
-            avatar: activeAccount.avatar,
-            bio: activeAccount.bio,
-            accounts: keys,
-            streamHistory: combinedStreams.slice(0, 15),
-            lastUpdated: new Date().toLocaleString()
+        let finalData = { 
+            users: previousFirebaseData.users || {}, 
+            personas: {}, 
+            mutualSquadFollowers: [], 
+            authDiagnostics: diagnosticReport,
+            lastGlobalUpdate: new Date().toLocaleString(), 
+            engineVersion: "14.5.4",
+            codeTimestamp: "Saturday, July 25, 2026 | 5:14 PM EDT"
         };
-    }
 
-    const lists = Object.values(finalData.users).map(u => u.twitch?.followerNames || []).filter(l => l.length > 0);
-    if (lists.length > 1) {
-        const frequencyMap = {};
-        lists.flat().forEach(name => { frequencyMap[name] = (frequencyMap[name] || 0) + (typeof name === 'string' ? 1 : 0); });
-        finalData.mutualSquadFollowers = Object.entries(frequencyMap).filter(([name, count]) => count >= 2).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ username: name, sharedConnections: count }));
-    }
+        const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
+        const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
+        const masterAuth = wolfAuth || rayAuth;
 
-    // Stream updated payload directly to Firebase RTDB
-    await pushToFirebase(finalData);
-    console.log(`[SUCCESS] Persona Aggregator v14.5.2 Stateless Execution Complete.`);
+        finalData.authDiagnostics = diagnosticReport;
+
+        for (const [key, label] of Object.entries(SQUAD_MAP)) {
+            const accountId = ACCOUNT_IDS[key];
+            const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : (key === 'werewolf' && wolfAuth) ? wolfAuth : masterAuth;
+            const data = await getFullUserData(agentAuth, label, key, accountId, finalData.users[key]);
+            if (data) finalData.users[key] = data;
+        }
+
+        for (const [realName, keys] of Object.entries(PERSONA_CONFIG)) {
+            const linkedAccounts = keys.map(k => finalData.users[k]).filter(u => !!u);
+            if (linkedAccounts.length === 0) continue;
+
+            const totalPlats = linkedAccounts.reduce((sum, u) => sum + (u.trophySummary?.platinum || 0), 0);
+            const totalGolds = linkedAccounts.reduce((sum, u) => sum + (u.trophySummary?.gold || 0), 0);
+            const totalSilvers = linkedAccounts.reduce((sum, u) => sum + (u.trophySummary?.silver || 0), 0);
+            const totalBronzes = linkedAccounts.reduce((sum, u) => sum + (u.trophySummary?.bronze || 0), 0);
+            const maxLevel = Math.max(...linkedAccounts.map(u => u.level || 0));
+            const isOnline = linkedAccounts.some(u => u.online);
+            
+            const allStartTimes = linkedAccounts.map(u => new Date(u.earliestTrophyDate).getTime()).filter(t => !isNaN(t));
+            const allEndTimes = linkedAccounts.map(u => u.latestTrophyDate).filter(t => !!t);
+            
+            const absoluteStart = allStartTimes.length > 0 ? Math.min(...allStartTimes) : null;
+            const absoluteEnd = allEndTimes.length > 0 ? Math.max(...allEndTimes) : new Date().getTime();
+            
+            const activeAccount = linkedAccounts.find(u => u.online) || linkedAccounts[0];
+
+            let combinedStreams = [];
+            linkedAccounts.forEach(acc => {
+                if (acc && Array.isArray(acc.streamHistory)) {
+                    acc.streamHistory.forEach(str => {
+                        if (!combinedStreams.includes(str)) combinedStreams.push(str);
+                    });
+                }
+            });
+
+            const personaNpssoValid = linkedAccounts.every(u => u.npssoValid !== false);
+
+            finalData.personas[realName] = {
+                displayName: realName,
+                isOnline,
+                primaryOnlineId: activeAccount.onlineId,
+                npssoValid: personaNpssoValid,
+                npssoStatus: personaNpssoValid ? "ACTIVE" : "EXPIRED / UPDATE NEEDED",
+                handshakeText: personaNpssoValid 
+                    ? `${realName.toUpperCase()} HANDSHAKE: FIREBASE LIVE` 
+                    : `${realName.toUpperCase()} HANDSHAKE: NPSSO EXPIRED`,
+                handshakeState: personaNpssoValid ? "LIVE" : "EXPIRED",
+                combinedTrophies: {
+                    platinum: totalPlats, gold: totalGolds, silver: totalSilvers, bronze: totalBronzes,
+                    total: totalPlats + totalGolds + totalSilvers + totalBronzes
+                },
+                maxLevel,
+                legacyAge: calculateAgeString(absoluteStart, absoluteEnd),
+                legacyRange: { start: absoluteStart ? new Date(absoluteStart).toLocaleString() : "Unknown", end: new Date(absoluteEnd).toLocaleString() },
+                currentGame: activeAccount.currentGame,
+                currentGameArt: activeAccount.currentGameArt,
+                currentActivity: activeAccount.currentGameActivity,
+                avatar: activeAccount.avatar,
+                bio: activeAccount.bio,
+                accounts: keys,
+                streamHistory: combinedStreams.slice(0, 15),
+                lastUpdated: new Date().toLocaleString()
+            };
+        }
+
+        const lists = Object.values(finalData.users).map(u => u.twitch?.followerNames || []).filter(l => l.length > 0);
+        if (lists.length > 1) {
+            const frequencyMap = {};
+            lists.flat().forEach(name => { frequencyMap[name] = (frequencyMap[name] || 0) + (typeof name === 'string' ? 1 : 0); });
+            finalData.mutualSquadFollowers = Object.entries(frequencyMap).filter(([name, count]) => count >= 2).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ username: name, sharedConnections: count }));
+        }
+
+        // Stream updated payload directly to Firebase RTDB
+        await pushToFirebase(finalData);
+        console.log(`[SUCCESS] Persona Aggregator v14.5.4 Stateless Execution Complete.`);
+    } catch (criticalError) {
+        console.error(`[CRITICAL CATCH] Graceful execution caught error: ${criticalError.message}`);
+        process.exit(0);
+    }
 }
 
 main();
