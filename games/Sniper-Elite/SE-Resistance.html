@@ -455,7 +455,7 @@
             bootstrapUsers: async function() {
                 const names = ['Kevin', 'Ray', 'TJ', 'Seth'];
                 for (const name of names) {
-                    const path = `artifacts/sniper-elite-resistance/data/public/user/${name}`;
+                    const path = `users/{userId}/progress/sniper-elite-resistance`;
                     const docRef = doc(this.db, path);
                     const snap = await getDoc(docRef);
                     if (!snap.exists()) {
