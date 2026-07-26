@@ -2,13 +2,12 @@
 <!-- 
     ==========================================
     --- PRECISION INTEGRITY PROTOCOL ---
-    Project: Kevin's Official Pack Hub - Omni Dashboard
-    Version: 11.0.0-Wolf - Realtime Firestore Game Progression Hub
-    Timestamp: Sat, July 25, 2026 | 9:35 PM EDT
+    Project: Kevin's Official Pack Hub - Unified User Dashboard
+    Version: 12.0.0-Wolf - Single-User Unification Engine
+    Timestamp: Sat, July 25, 2026 | 9:45 PM EDT
     Compatibility: Chrome, Safari, Firefox, Edge | Mobile, Tablet, Desktop
-    Logic: Live sync with Realtime Database (/psn) and Firestore 
-           (/users/{userId}/progress/{gameId}), rendering multi-game 
-           checklists dynamically via onSnapshot() observers.
+    Logic: Unifies PSN Live RTDB telemetry and Firestore game progression
+           under a single user target (WildHorse_Spirit / Werewolf3788 fallback).
     ==========================================
 -->
 <html lang="en">
@@ -16,7 +15,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="900"> <!-- Hard Refresh every 15 minutes -->
-    <title>Werewolf3788 | Official Admin Hub</title>
+    <title>WildHorse_Spirit | Official Admin Hub</title>
     
     <!-- --- GOOGLE ANALYTICS (GA4 DUAL TRACKING) --- -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
@@ -33,12 +32,12 @@
             'stream_id': '13278632388',
             'page_type': 'admin_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '11.0.0',
-            'user_id': 'Werewolf3788',
+            'layout_version': '12.0.0',
+            'user_id': 'WildHorse_Spirit',
             'engagement_timezone': 'Eastern Time (New York)',
             'engagement_timestamp_ny': getNYTime(),
             'send_page_view': true,
-            'description': 'Official Pack Hub featuring live PSN telemetry, Twitch streaming state, and dynamic Firestore game progression tracking.'
+            'description': 'Unified Pack Hub featuring isolated user profiles for PSN telemetry and Firestore progression.'
         });
         gtag('config', 'G-L376P3NPY4'); // Watermark GA4
     </script>
@@ -47,7 +46,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- --- CUSTOM STYLES (JET ORANGE THEME & RESPONSIVE GRID) --- -->
+    <!-- --- CUSTOM STYLES (JET ORANGE THEME) --- -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap');
 
@@ -82,7 +81,6 @@
             overflow-wrap: break-word;
         }
 
-        /* Responsive Navigation Styling */
         .nav-bar {
             position: sticky; top: 0; z-index: 20000;
             background: rgba(10, 10, 12, 0.95);
@@ -115,7 +113,6 @@
             .section-container { padding-top: 60px; padding-bottom: 60px; }
         }
 
-        /* Glass Cards & Typography */
         h1, h2, h3 { font-size: var(--header-text-size); font-weight: 900; text-transform: uppercase; letter-spacing: -0.05em; margin: 0; line-height: 1.3; color: white; }
         .section-container { padding-top: var(--section-padding); padding-bottom: var(--section-padding); }
         .glass-card { background: rgba(30, 30, 36, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 1.25rem; transition: all 0.3s ease; height: auto; text-decoration: none; display: block; }
@@ -131,7 +128,6 @@
         .trophy-icon-sq { width: 50px; height: 50px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
         .trophy-title-text { font-weight: 800; color: var(--accent-orange); font-size: 15px; text-transform: uppercase; }
 
-        /* Dynamic 12-Hour Trophy Glow */
         .recent-earn-glow {
             border-color: rgba(255, 95, 31, 0.8) !important;
             background: rgba(255, 95, 31, 0.06) !important;
@@ -150,7 +146,6 @@
         .game-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
         .game-info-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, transparent 60%); display: flex; flex-direction: column; justify-content: flex-end; padding: 12px; }
 
-        /* Floating Handshake Monitor */
         #health-monitor { position: fixed; bottom: 20px; left: 20px; z-index: 10001; background: rgba(30, 30, 36, 0.85); backdrop-filter: blur(10px); padding: 8px 16px; border-radius: 9999px; border: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; gap: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
         .status-dot-pulse { width: 10px; height: 10px; border-radius: 50%; position: relative; }
         .status-dot-pulse.online { background: var(--success-green); }
@@ -158,7 +153,6 @@
         .status-dot-pulse.offline { background: #475569; }
         @keyframes dotPulse { 0% { transform: scale(1); opacity: 0.4; } 70% { transform: scale(2.5); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
 
-        /* Generic Lightbox Modal */
         #generic-lightbox { position: fixed; inset: 0; z-index: 25000; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); padding: 20px; }
         .lightbox-modal-content { background: var(--wolf-gray); width: 100%; max-width: 650px; border-radius: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.12); overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); max-height: 90vh; display: flex; flex-direction: column; }
 
@@ -167,13 +161,11 @@
         .ps-plus-active { box-shadow: 0 0 25px rgba(255, 95, 31, 0.4); border-color: var(--accent-orange) !important; }
         .ps-plus-badge { position: absolute; bottom: 0; left: 50%; transform: translate(-50%, 50%); background: var(--ps-blue); color: white; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 900; letter-spacing: 0.1em; border: 2px solid var(--bg-dark); z-index: 10; display: none; white-space: nowrap;}
         
-        /* KF Watermark */
         .kf-watermark { position: fixed; bottom: 16px; left: 24px; z-index: 9999; opacity: 0.5; transition: opacity 0.3s; display: flex; align-items: center; pointer-events: none; }
         .kf-watermark:hover { opacity: 1; }
         .kf-k { color: #FF4500; transform: scaleX(-1); z-index: 2; font-weight: 900; font-size: 24px; display: inline-block; }
         .kf-f { color: #ffffff; margin-left: -0.22em; z-index: 1; font-weight: 900; font-size: 24px; text-shadow: 1px 1px 0px rgba(0,0,0,0.8); display: inline-block; }
 
-        /* Custom Scrollbar */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -214,7 +206,7 @@
                 <div id="ps-plus-indicator" class="ps-plus-badge"><i class="fab fa-playstation"></i> PLUS MEMBER</div>
             </div>
             
-            <h1 class="wolf-gradient-text mb-4" id="display-admin-name">Werewolf3788</h1>
+            <h1 class="wolf-gradient-text mb-4" id="display-admin-name">WildHorse_Spirit</h1>
             <div class="text-[10px] lg:text-[18px] font-black text-gray-400 uppercase tracking-[0.5em] mb-12">Official Pack Admin Hub</div>
             
             <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 max-w-7xl mx-auto text-center">
@@ -317,12 +309,12 @@
                     </div>
                 </div>
 
-                <!-- DYNAMIC FIRESTORE GAME PROGRESSION HUB -->
+                <!-- DYNAMIC FIRESTORE UNIFIED GAME PROGRESSION HUB -->
                 <section id="firestore-progress-section" class="glass-card p-8 lg:p-12 border-t-4 border-cyan-500">
                     <div class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
                         <div>
                             <h2 class="text-cyan-400 flex items-center gap-3 uppercase"><i class="fas fa-gamepad"></i> Game Progression Hub</h2>
-                            <p class="text-xs text-gray-400 uppercase font-black tracking-widest mt-1">Firestore Realtime Observer (/users/Werewolf3788/progress)</p>
+                            <p id="firestore-path-label" class="text-xs text-gray-400 uppercase font-black tracking-widest mt-1">Firestore Observer (/users/WildHorse_Spirit/progress)</p>
                         </div>
                         <div id="firestore-status-badge" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-cyan-950 text-cyan-400 border border-cyan-500/40 animate-pulse">
                             Live Syncing
@@ -447,18 +439,15 @@
                 <h3 id="lightbox-title" class="text-xl font-black text-orange-500 uppercase">Detail View</h3>
                 <button onclick="closeGenericLightbox()" class="w-10 h-10 rounded-full bg-white/10 text-white flex items-center justify-center text-lg hover:bg-orange-500 transition-colors"><i class="fas fa-times"></i></button>
             </div>
-            <div id="lightbox-body" class="p-6 overflow-y-auto space-y-4 text-sm text-gray-200">
-                <!-- Injected Lightbox Body -->
-            </div>
+            <div id="lightbox-body" class="p-6 overflow-y-auto space-y-4 text-sm text-gray-200"></div>
         </div>
     </div>
 
-    <!-- --- FIREBASE v9+ MODULAR REALTIME FIRESTORE ENGINE --- -->
+    <!-- --- FIREBASE v9+ MODULAR REALTIME FIRESTORE UNIFIED ENGINE --- -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-        // Firebase Configuration (Public Game Tracker Project)
         const firebaseConfig = {
             projectId: "game-tracker-5b2ef",
             databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
@@ -467,6 +456,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // UNIFIED USER IDENTITY TARGET
+        const PRIMARY_USER_ID = "WildHorse_Spirit";
+        const FALLBACK_USER_ID = "Werewolf3788";
         const AMAZON_TAG = "moviesanywhere02-20";
 
         function generateAffiliateUrl(gameName) {
@@ -475,14 +467,21 @@
             return `https://www.amazon.com/s?k=${cleanName}&tag=${AMAZON_TAG}`;
         }
 
-        // Live Observer for Firestore path: /users/Werewolf3788/progress
-        function subscribeFirestoreProgress() {
-            const userId = "Werewolf3788";
+        function subscribeUserFirestoreProgress(userId) {
             const progressRef = collection(db, "users", userId, "progress");
 
-            const unsubscribe = onSnapshot(progressRef, (snapshot) => {
+            const pathLabel = document.getElementById("firestore-path-label");
+            if (pathLabel) pathLabel.innerText = `Firestore Observer (/users/${userId}/progress)`;
+
+            return onSnapshot(progressRef, (snapshot) => {
                 const gamesGrid = document.getElementById("firestore-games-grid");
                 if (!gamesGrid) return;
+
+                if (snapshot.empty && userId !== FALLBACK_USER_ID) {
+                    console.log(`[FIRESTORE] Primary ID ${userId} empty. Attempting fallback ID ${FALLBACK_USER_ID}...`);
+                    subscribeUserFirestoreProgress(FALLBACK_USER_ID);
+                    return;
+                }
 
                 if (snapshot.empty) {
                     gamesGrid.innerHTML = `<div class="p-8 text-center text-gray-500 font-bold uppercase tracking-widest text-xs col-span-2">No active game progress documents logged in Firestore.</div>`;
@@ -537,22 +536,17 @@
             }, (error) => {
                 console.warn("[FIRESTORE WARN] Listener error encountered:", error);
             });
-
-            return unsubscribe;
         }
 
-        // Initialize Firestore observer
-        let un-sub = subscribeFirestoreProgress();
+        let unsubscribeFirestore = subscribeUserFirestoreProgress(PRIMARY_USER_ID);
 
-        // Handle browser tab focus re-sync cycle
         document.addEventListener("visibilitychange", () => {
             if (!document.hidden) {
-                if (un-sub) un-sub();
-                un-sub = subscribeFirestoreProgress();
+                if (unsubscribeFirestore) unsubscribeFirestore();
+                unsubscribeFirestore = subscribeUserFirestoreProgress(PRIMARY_USER_ID);
             }
         });
 
-        // Global Helper for Lightbox Detail View
         window.openFirestoreGameDetails = function(title, rawDataEncoded) {
             const data = JSON.parse(decodeURIComponent(rawDataEncoded));
             const lb = document.getElementById("generic-lightbox");
@@ -591,7 +585,7 @@
         };
     </script>
 
-    <!-- --- CLIENT-SIDE REALTIME DATABASE ENGINE SCRIPTS --- -->
+    <!-- --- REALTIME DATABASE ENGINE SCRIPTS --- -->
     <script>
         const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
         const COTW_FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/game-tracker-5b2ef/databases/(default)/documents/artifacts/cotw-trophy-display/public/data/userTrophies/Werewolf3788";
@@ -644,7 +638,7 @@
             const img = document.getElementById('music-widget-img');
             if(!img) return;
             const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=11.0.0`;
+            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=12.0.0`;
         }
 
         async function fetchLiveTwitch() {
@@ -742,7 +736,6 @@
             window.open(affiliateUrl || `https://store.playstation.com/en-us/search/${encodeURIComponent(gameName)}`, 'psn_store_window'); 
         }
 
-        // Generic Lightbox Triggers
         function openLightboxImage(imageUrl, title) {
             const lb = document.getElementById('generic-lightbox');
             const lbTitle = document.getElementById('lightbox-title');
