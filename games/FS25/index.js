@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Sun, July 26, 2026, 03:15 AM (EDT)
- Complete Dynamic Telemetry Parser & Safe Instant Execution Engine
+ Version Timestamp: Sun, July 26, 2026, 11:45 PM (EDT)
+ Complete Dynamic Telemetry Parser & Styled Mod Hub Directory Box Engine
  File: games/FS25/index.js
 */
 
@@ -72,7 +72,7 @@ let parsedModCatalog = [];
 let offlineStartTime = null;
 let offlineTimerInterval = null;
 
-// Safe Deep Object Search
+// Safe Deep Firebase Search
 function getFirebasePayloadDeep(rootObj, targetKey, maxDepth = 10) {
   if (!rootObj || typeof rootObj !== 'object' || maxDepth <= 0) return null;
   
@@ -102,7 +102,7 @@ function getFirebasePayloadDeep(rootObj, targetKey, maxDepth = 10) {
   return null;
 }
 
-// XML Parser with Sanitation
+// XML Sanitizer & Parser
 function parseXML(inputPayload) {
   if (!inputPayload) return null;
   let rawText = typeof inputPayload === 'string' ? inputPayload : (inputPayload.data || inputPayload.content || inputPayload.xml || "");
@@ -123,7 +123,6 @@ function parseXML(inputPayload) {
   } catch (e) { return null; }
 }
 
-// Hybrid Extractor (Tries attributes first, then child elements)
 function getXmlVal(node, keyName, defaultVal = "") {
   if (!node) return defaultVal;
   try {
@@ -288,6 +287,7 @@ async function loadDynamicNavbar() {
   }
 }
 
+// Google Sheet CSV Mod Hub Catalog Parser (Mapped to Columns A through K)
 async function loadModHubCatalog() {
   const grid = document.getElementById("mod-hub-grid");
   const categoriesBar = document.getElementById("mod-categories-bar");
@@ -311,10 +311,17 @@ async function loadModHubCatalog() {
       }
 
       if (cols.length >= 10) {
-        const modName = cols[0] ? cols[0].trim() : "Unknown Mod";
+        let rawName = cols[0] ? cols[0].trim() : "Unknown Mod";
+        let rawFilename = cols[9] ? cols[9].trim() : "";
+        
+        // Clean title if description content bled into column A
+        if (rawName.toLowerCase().startsWith("for transportation") || rawName.length > 80) {
+          rawName = rawFilename ? formatName(rawFilename) : "Custom Expansion Mod";
+        }
+
         const mod = {
-          name: modName.toLowerCase().startsWith("platform") ? (cols[9] ? formatName(cols[9]) : "Custom Expansion Mod") : modName,
-          image: cols[1] ? cols[1].trim() : "",
+          name: rawName,
+          image: (cols[1] && cols[1].startsWith("http")) ? cols[1].trim() : "",
           url: cols[2] ? cols[2].trim() : "#",
           description: cols[3] ? cols[3].trim() : "No detailed description provided.",
           crossplay: cols[4] ? cols[4].trim() : "No",
@@ -322,7 +329,7 @@ async function loadModHubCatalog() {
           category: cols[6] ? cols[6].trim() : "General",
           author: cols[7] ? cols[7].trim() : "Community Modder",
           size: cols[8] ? cols[8].trim() : "N/A",
-          filename: cols[9] ? cols[9].trim() : ""
+          filename: rawFilename
         };
 
         if (mod.name) {
@@ -347,6 +354,7 @@ async function loadModHubCatalog() {
   }
 }
 
+// Mod Cards Box Renderer
 function renderModCards(categoryFilter = "ALL MODS") {
   const grid = document.getElementById("mod-hub-grid");
   if (!grid) return;
@@ -371,22 +379,26 @@ function renderModCards(categoryFilter = "ALL MODS") {
       ? `<span class="badge-stat badge-sky"><i class="fa-solid fa-gamepad"></i> CROSSPLAY</span>` 
       : '';
 
+    const imgElement = mod.image 
+      ? `<img src="${mod.image}" alt="${mod.name}" class="mod-card-thumb lightbox-trigger" data-title="${mod.name}" data-desc="${encodeURIComponent(mod.description)}" data-url="${mod.url}" data-author="${mod.author}" data-size="${mod.size}">` 
+      : `<div class="mod-card-thumb" style="display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);border:1px solid var(--border-subtle);"><i class="fa-solid fa-cube fa-xl" style="color:var(--accent-gold);"></i></div>`;
+
     html += `
-      <div class="mod-card">
+      <div class="mod-card" style="background:rgba(30, 28, 28, 0.92); border:1px solid var(--border-subtle); border-radius:10px; padding:1rem; display:flex; flex-direction:column; justify-content:space-between; gap:0.75rem;">
         <div>
-          <div class="mod-card-top">
-            ${mod.image ? `<img src="${mod.image}" alt="${mod.name}" class="mod-card-thumb lightbox-trigger" data-title="${mod.name}" data-desc="${encodeURIComponent(mod.description)}" data-url="${mod.url}" data-author="${mod.author}" data-size="${mod.size}">` : `<div class="mod-card-thumb" style="display:flex;align-align:center;justify-content:center;background:#000;"><i class="fa-solid fa-cube fa-xl" style="color:#facc15;"></i></div>`}
-            <div class="mod-card-info">
-              <h3>${mod.name}</h3>
-              <div class="mono" style="margin-bottom:2px;">${statusBadge} ${crossplayBadge}</div>
+          <div class="mod-card-top" style="display:flex; gap:0.75rem; align-items:flex-start;">
+            ${imgElement}
+            <div class="mod-card-info" style="flex-grow:1; overflow:hidden;">
+              <h3 style="font-size:0.95rem; font-weight:700; color:var(--accent-gold); margin-bottom:4px; text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">${mod.name}</h3>
+              <div class="mono" style="display:flex; flex-wrap:wrap; gap:4px;">${statusBadge} ${crossplayBadge}</div>
             </div>
           </div>
         </div>
-        <div class="mod-card-footer">
-          <div class="mono">
+        <div class="mod-card-footer" style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--border-subtle); padding-top:0.5rem; margin-top:0.5rem;">
+          <div class="mono" style="font-size:0.75rem; color:var(--text-muted);">
             <span><i class="fa-solid fa-user"></i> ${mod.author}</span>
           </div>
-          <button type="button" class="nav-btn open-mod-lightbox" data-title="${mod.name}" data-img="${mod.image}" data-desc="${encodeURIComponent(mod.description)}" data-url="${mod.url}" data-author="${mod.author}" data-size="${mod.size}" data-crossplay="${mod.crossplay}" data-active="${isActiveOnServer ? 'Yes' : 'No'}">
+          <button type="button" class="nav-btn open-mod-lightbox" style="padding:4px 10px; font-size:0.75rem; min-height:32px;" data-title="${mod.name}" data-img="${mod.image}" data-desc="${encodeURIComponent(mod.description)}" data-url="${mod.url}" data-author="${mod.author}" data-size="${mod.size}" data-crossplay="${mod.crossplay}" data-active="${isActiveOnServer ? 'Yes' : 'No'}">
             Read More <i class="fa-solid fa-chevron-right"></i>
           </button>
         </div>
@@ -396,6 +408,7 @@ function renderModCards(categoryFilter = "ALL MODS") {
   grid.innerHTML = html || `<div class="loading-state">No mods found in this category.</div>`;
 }
 
+// Lightbox Modal Interceptor
 document.addEventListener("click", (e) => {
   const trigger = e.target.closest(".lightbox-trigger, .open-mod-lightbox");
   if (trigger) {
@@ -415,7 +428,7 @@ document.addEventListener("click", (e) => {
 
     if (modal && captionEl) {
       if (imgEl) {
-        if (src) {
+        if (src && src.startsWith("http")) {
           imgEl.src = src;
           imgEl.style.display = "block";
         } else {
@@ -453,7 +466,7 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// Master Telemetry Render Engine
+// Master Telemetry Render Engine (Runs on Live Firebase Snapshots)
 window.renderDashboard = function(data) {
   if (!data) return;
 
@@ -816,7 +829,7 @@ window.renderDashboard = function(data) {
       </div>`;
   }
 
-  // 13. Train Network
+  // 13. Regional Train Network
   const trainCont = document.getElementById('main-train-container');
   if (trainCont) {
     trainCont.innerHTML = `
@@ -866,7 +879,7 @@ window.renderDashboard = function(data) {
   const globalColEl = document.getElementById('global-collectibles-count');
   if (globalColEl) globalColEl.textContent = `${foundCollectiblesCount} / 25`;
 
-  // 16. Crop Market Prices (Dynamic Live Crop Prices from `economy` XML)
+  // 16. Commodity Market Prices
   const ecoCont = document.getElementById('economy-container');
   const ecoRaw = getFirebasePayloadDeep(slotData, "economy") || getFirebasePayloadDeep(data, "economy");
   const ecoXml = parseXML(ecoRaw);
@@ -912,7 +925,7 @@ window.renderDashboard = function(data) {
   renderModCards();
 };
 
-// Auto-run if Firebase data arrived before DOM or script load completed
+// Auto-run when DOM loads or when Firebase data arrives
 document.addEventListener("DOMContentLoaded", () => {
   loadDynamicNavbar();
   loadModHubCatalog();
