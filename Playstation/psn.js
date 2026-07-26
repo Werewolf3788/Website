@@ -2,16 +2,20 @@
  * ==========================================
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Kevin's Official Pack Sync Engine (Max-Payload Firebase Stream)
- * Version: 14.5.4 - NPSSO Auth Health & Handshake Status Stream
- * Timestamp: Sat, July 25, 2026, 5:14 PM EDT
+ * Version: 14.6.0 - WildHorse_Spirit PSN Name Migration & Firebase Sync
+ * Timestamp: Sat, July 25, 2026, 9:22 PM EDT
  * Compatibility: Node.js v20+, Firebase Realtime Database REST API
- * Logic: Validates PSN tokens, tracks NPSSO expiration status explicitly,
- *        and streams `npssoValid`, `npssoStatus`, and `handshakeText` to 
- *        Firebase so frontend badges dynamically flag expired tokens.
+ * Logic: Validates PSN tokens for WildHorse_Spirit and Werewolf3788,
+ *        tracks NPSSO expiration status explicitly, streams live payloads to 
+ *        Firebase RTDB under /psn/users/wildhorse_spirit, and writes to 
+ *        Playstation/psn.json for static fallbacks.
  * ==========================================
  */
 
+const fs = require("fs");
+const path = require("path");
 const psnApi = require("psn-api");
+
 const {
     exchangeNpssoForCode,
     exchangeCodeForAccessToken,
@@ -33,32 +37,29 @@ const {
 } = psnApi;
 
 const FIREBASE_RTDB_URL = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/psn.json";
+const LOCAL_JSON_PATH = path.join(__dirname, "psn.json");
 
 /* 
  * ==========================================
- * 🚨 AUGUST 2026 MIGRATION PROTOCOL 🚨
- * When 'werewolf3788' is deleted in August:
- * 1. Generate a fresh NPSSO token while logged into wildhorse_spirit on Sony's website.
- * 2. Paste wildhorse_spirit's NPSSO string directly into the existing GitHub Secret: PSN_NPSSO_WEREWOLF
- * 3. Delete the 'werewolf' line inside SQUAD_MAP below.
- * 4. Update PERSONA_CONFIG["Kevin"] to: ["kfruti"]
- * The engine's JWT resolver will auto-catch wildhorse_spirit's Account ID automatically.
+ * 🚨 JULY 27, 2026 DEACTIVATION PROTOCOL 🚨
+ * 'werewolf3788' deactivates on July 27, 2026:
+ * Key 'wildhorse_spirit' is now Kevin's primary PSN ID in Firebase.
  * ==========================================
  */
 
 const SQUAD_MAP = {
-    werewolf: "werewolf3788",   // Scheduled for deletion: Aug 2026
-    kfruti: "wildhorse_spirit", // Kevin's designated future primary
-    ray: "OneLIVIDMAN",          // Ray
-    darkwing: "Darkwing69420",  // TJ
-    mike: "IlIMjolnirIlI",      // Mike (Hidden PSN Profile)
-    katy: "Balto20_01",         // Katy (Hidden PSN Profile)
-    marc: "DesdemonaTiger",     // Marc (Hidden PSN Profile)
-    seth: "joe-punk_"           // Seth (Hidden PSN Profile)
+    werewolf: "werewolf3788",         // Scheduled for deactivation: July 27, 2026
+    wildhorse_spirit: "WildHorse_Spirit", // Kevin's active primary PSN ID
+    ray: "OneLIVIDMAN",                // Ray
+    darkwing: "Darkwing69420",        // TJ
+    mike: "IlIMjolnirIlI",            // Mike (Hidden PSN Profile)
+    katy: "Balto20_01",               // Katy (Hidden PSN Profile)
+    marc: "DesdemonaTiger",           // Marc (Hidden PSN Profile)
+    seth: "joe-punk_"                 // Seth (Hidden PSN Profile)
 };
 
 const PERSONA_CONFIG = {
-    "Kevin": ["werewolf", "kfruti"], 
+    "Kevin": ["werewolf", "wildhorse_spirit"], 
     "Ray": ["ray"],
     "TJ": ["darkwing"],
     "Mike": ["mike"],
@@ -69,35 +70,37 @@ const PERSONA_CONFIG = {
 
 const TWITCH_MAP = {
     werewolf: "werewolf3788",
-    kfruti: "werewolf3788",     // Kevin streams on primary werewolf channel
-    ray: "raymystyro",          // Ray
-    darkwing: "terrdog420",     // TJ
-    mike: "mjolnirgaming",      // Mike
-    seth: "phoenix_darkfire"    // Seth
+    wildhorse_spirit: "werewolf3788", // Kevin streams on primary werewolf channel
+    ray: "raymystyro",                // Ray
+    darkwing: "terrdog420",           // TJ
+    mike: "mjolnirgaming",            // Mike
+    seth: "phoenix_darkfire"          // Seth
 };
 
 const ACCOUNT_IDS = {
     werewolf: "3728215008151724560",
-    kfruti: "",                     // Will auto-resolve via encrypted token cracking
+    wildhorse_spirit: "",             // Auto-discovered via JWT token resolver
     ray: "2732733730346312494",
     darkwing: "4398462806362115916",
-    mike: "",                       // Hidden PSN -> Fallback to placeholder presence
-    katy: "",                       // Hidden PSN -> Fallback to placeholder presence
-    marc: "",                       // Hidden PSN -> Fallback to placeholder presence
-    seth: ""                        // Hidden PSN -> Fallback to placeholder presence
+    mike: "",                         // Hidden PSN Profile
+    katy: "",                         // Hidden PSN Profile
+    marc: "",                         // Hidden PSN Profile
+    seth: ""                          // Hidden PSN Profile
 };
 
-const AMAZON_TAG = "psngaming-20";
+const AMAZON_TAG = "moviesanywhere02-20";
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online"];
 
-let tokenStore = { werewolf: {}, ray: {} };
+let tokenStore = { werewolf: {}, ray: {}, wildhorse_spirit: {} };
 
 let diagnosticReport = {
     werewolf_active: "no",
     werewolf_status: "UNCHECKED",
+    wildhorse_spirit_active: "no",
+    wildhorse_spirit_status: "UNCHECKED",
     ray_active: "no",
     ray_status: "UNCHECKED",
-    lastCheck: new Date().toLocaleString()
+    lastCheck: new Date().toLocaleString("en-US", { timeZone: "America/New_York" })
 };
 
 function generateAffiliateUrl(gameName) {
@@ -297,8 +300,8 @@ function generatePrivateProfileFallback(label, userKey, twitchIntel, existingDat
         bio: twitchIntel?.bio || "Official Pack Member Profile",
         twitch: twitchIntel, 
         streamHistory: historicalStreamList,
-        lastUpdated: new Date().toLocaleString(), 
-        gamesPlayed: 0, plus: false, level: 0, region: "US", note: "PSN Auth Inactive or Token Expired", devices: [],
+        lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York" }), 
+        gamesPlayed: existingData?.gamesPlayed || 0, plus: false, level: existingData?.level || 0, region: "US", note: "PSN Auth Inactive or Token Expired", devices: [],
         blockedAccountsCount: 0, inboundFriendRequestsCount: 0,
         trophySummary: existingData?.trophySummary || { platinum: 0, gold: 0, silver: 0, bronze: 0, total: 0, trophyLevel: 0 },
         recentGames: existingData?.recentGames || [], activeHunt: existingData?.activeHunt || null, mostRecentTrophies: existingData?.mostRecentTrophies || [], fullLibrary: existingData?.fullLibrary || [],
@@ -323,7 +326,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             existingData.online = !!twitchIntel?.isLive;
             existingData.twitch = twitchIntel;
             existingData.streamHistory = processStreamHistory(existingData.streamHistory, twitchIntel);
-            existingData.lastUpdated = new Date().toLocaleString();
+            existingData.lastUpdated = new Date().toLocaleString("en-US", { timeZone: "America/New_York" });
             existingData.npssoValid = false;
             existingData.npssoStatus = "EXPIRED / UPDATE NEEDED";
             existingData.handshakeText = `${(existingData.onlineId || label).toUpperCase()} HANDSHAKE: NPSSO EXPIRED`;
@@ -347,7 +350,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
         let blockedList = [];
         let inboundFriendRequests = [];
         
-        if (ACCOUNT_IDS.werewolf === resolvedTargetId || ACCOUNT_IDS.ray === resolvedTargetId) {
+        if (ACCOUNT_IDS.werewolf === resolvedTargetId || ACCOUNT_IDS.ray === resolvedTargetId || userKey === 'wildhorse_spirit') {
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
             try { friendsList = await getUserFriendsAccountIds(auth, "me") || []; } catch(e) {}
             try { deviceList = await getAccountDevices(auth) || []; } catch(e) {}
@@ -355,7 +358,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             try { inboundFriendRequests = await getUserFriendsRequests(auth) || []; } catch(e) {}
         }
         
-        const presenceId = (ACCOUNT_IDS.werewolf === resolvedTargetId || ACCOUNT_IDS.ray === resolvedTargetId) ? "me" : resolvedTargetId;
+        const presenceId = (ACCOUNT_IDS.werewolf === resolvedTargetId || ACCOUNT_IDS.ray === resolvedTargetId || userKey === 'wildhorse_spirit') ? "me" : resolvedTargetId;
         let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         
         const titlesRes = await getUserTitles(auth, resolvedTargetId, { limit: 800 }).catch(() => ({}));
@@ -510,7 +513,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                             rarity: m.trophyRare ? m.trophyRare + "%" : "Rare", earnedRate: m.trophyEarnedRate || "0.0",
                             hidden: m.trophyHidden || false,
                             groupName: group?.trophyGroupName || "Base Game", earned: s?.earned || false, 
-                            earnedDate: s?.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString() : null,
+                            earnedDate: s?.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString("en-US", { timeZone: "America/New_York" }) : null,
                             earnedAge: s?.earnedDateTime ? getTrophyAgeString(s.earnedDateTime) : null,
                             timestamp: s?.earnedDateTime ? new Date(s.earnedDateTime).getTime() : 0,
                             currentValue: s?.progress || 0, targetValue: m.trophyProgressTargetValue || 0
@@ -596,7 +599,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
             recentGames, activeHunt, mostRecentTrophies, streamHistory: historicalStreamList,
             fullLibrary: allRecentGames, devices: deviceList, blockedAccountsCount: blockedList.length, inboundFriendRequestsCount: inboundFriendRequests.length,
             rawPsnDump: { profile: profile, presence: rawP, telemetry: telemetryData, titles: sortedTitles, friends: friendsList, hardwareInfo: deviceList, blocksQueue: blockedList, friendRequests: inboundFriendRequests },
-            lastUpdated: new Date().toLocaleString()
+            lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York" })
         };
     } catch (e) { 
         console.warn(`[WARN] Critical error encountered fetching ${label}. Emitting private schema wrapper.`);
@@ -630,17 +633,24 @@ async function pushToFirebase(payload) {
     } catch (err) { console.error("[FIREBASE ERROR] Failed database push:", err.message); }
 }
 
+function writeLocalFile(payload) {
+    console.log(`[FILE SYSTEM] Writing local fallback payload to ${LOCAL_JSON_PATH}...`);
+    try {
+        const dir = path.dirname(LOCAL_JSON_PATH);
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+        fs.writeFileSync(LOCAL_JSON_PATH, JSON.stringify(payload, null, 2), "utf-8");
+        console.log("[FILE SYSTEM SUCCESS] Playstation/psn.json saved cleanly.");
+    } catch (err) {
+        console.error("[FILE SYSTEM ERROR] Failed writing local JSON file:", err.message);
+    }
+}
+
 async function main() {
     try {
-        console.log("[INIT] Starting Absolute Master Omni-Collector v14.5.4 (Stateless Firebase Engine)...");
-        
-        if (Date.now() >= 1785542400000) {
-            console.warn("\n=======================================================");
-            console.warn("🚨 AUTOMATED SYSTEM ALERT: AUGUST 2026 DEPRECATION WINDOW 🚨");
-            console.warn("=======================================================\n");
-        }
+        console.log("[INIT] Starting Absolute Master Omni-Collector v14.6.0 (WildHorse_Spirit Engine)...");
 
-        // Pull current state directly from Firebase REST API
         const previousFirebaseData = await fetchFromFirebase();
 
         let finalData = { 
@@ -648,20 +658,21 @@ async function main() {
             personas: {}, 
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport,
-            lastGlobalUpdate: new Date().toLocaleString(), 
-            engineVersion: "14.5.4",
-            codeTimestamp: "Saturday, July 25, 2026 | 5:14 PM EDT"
+            lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York" }), 
+            engineVersion: "14.6.0",
+            codeTimestamp: "Saturday, July 25, 2026 | 9:22 PM EDT"
         };
 
         const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
+        const wildHorseAuth = await getAuthenticated("wildhorse_spirit", process.env.PSN_NPSSO_WILDHORSE || process.env.PSN_NPSSO_WEREWOLF);
         const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
-        const masterAuth = wolfAuth || rayAuth;
+        const masterAuth = wildHorseAuth || wolfAuth || rayAuth;
 
         finalData.authDiagnostics = diagnosticReport;
 
         for (const [key, label] of Object.entries(SQUAD_MAP)) {
             const accountId = ACCOUNT_IDS[key];
-            const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : (key === 'werewolf' && wolfAuth) ? wolfAuth : masterAuth;
+            const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : (key === 'werewolf' && wolfAuth) ? wolfAuth : (key === 'wildhorse_spirit' && wildHorseAuth) ? wildHorseAuth : masterAuth;
             const data = await getFullUserData(agentAuth, label, key, accountId, finalData.users[key]);
             if (data) finalData.users[key] = data;
         }
@@ -712,7 +723,7 @@ async function main() {
                 },
                 maxLevel,
                 legacyAge: calculateAgeString(absoluteStart, absoluteEnd),
-                legacyRange: { start: absoluteStart ? new Date(absoluteStart).toLocaleString() : "Unknown", end: new Date(absoluteEnd).toLocaleString() },
+                legacyRange: { start: absoluteStart ? new Date(absoluteStart).toLocaleString("en-US", { timeZone: "America/New_York" }) : "Unknown", end: new Date(absoluteEnd).toLocaleString("en-US", { timeZone: "America/New_York" }) },
                 currentGame: activeAccount.currentGame,
                 currentGameArt: activeAccount.currentGameArt,
                 currentActivity: activeAccount.currentGameActivity,
@@ -720,7 +731,7 @@ async function main() {
                 bio: activeAccount.bio,
                 accounts: keys,
                 streamHistory: combinedStreams.slice(0, 15),
-                lastUpdated: new Date().toLocaleString()
+                lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York" })
             };
         }
 
@@ -731,11 +742,15 @@ async function main() {
             finalData.mutualSquadFollowers = Object.entries(frequencyMap).filter(([name, count]) => count >= 2).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ username: name, sharedConnections: count }));
         }
 
-        // Stream updated payload directly to Firebase RTDB
+        // Stream payload directly to Firebase RTDB
         await pushToFirebase(finalData);
-        console.log(`[SUCCESS] Persona Aggregator v14.5.4 Stateless Execution Complete.`);
+
+        // Save local JSON backup
+        writeLocalFile(finalData);
+
+        console.log(`[SUCCESS] Persona Aggregator v14.6.0 WildHorse_Spirit Execution Complete.`);
     } catch (criticalError) {
-        console.error(`[CRITICAL CATCH] Graceful execution caught error: ${criticalError.message}`);
+        console.error(`[CRITICAL CATCH] Execution error caught: ${criticalError.message}`);
         process.exit(0);
     }
 }
