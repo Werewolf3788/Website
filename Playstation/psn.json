@@ -11,7 +11,7 @@
       "handshakeState": "EXPIRED",
       "handshakeText": "DARKWING69420 HANDSHAKE: NPSSO EXPIRED",
       "inboundFriendRequestsCount": 0,
-      "lastUpdated": "7/25/2026, 9:26:55 PM",
+      "lastUpdated": "7/25/2026, 9:30:23 PM",
       "level": 0,
       "note": "PSN Profile Hidden/Private",
       "npssoStatus": "EXPIRED / UPDATE NEEDED",
@@ -56,7 +56,7 @@
       "handshakeState": "EXPIRED",
       "handshakeText": "BALTO20_01 HANDSHAKE: NPSSO EXPIRED",
       "inboundFriendRequestsCount": 0,
-      "lastUpdated": "7/25/2026, 9:26:56 PM",
+      "lastUpdated": "7/25/2026, 9:30:24 PM",
       "level": 0,
       "note": "PSN Profile Hidden/Private",
       "npssoStatus": "EXPIRED / UPDATE NEEDED",
@@ -126,7 +126,7 @@
       "handshakeState": "EXPIRED",
       "handshakeText": "DESDEMONATIGER HANDSHAKE: NPSSO EXPIRED",
       "inboundFriendRequestsCount": 0,
-      "lastUpdated": "7/25/2026, 9:26:56 PM",
+      "lastUpdated": "7/25/2026, 9:30:24 PM",
       "level": 0,
       "note": "PSN Profile Hidden/Private",
       "npssoStatus": "EXPIRED / UPDATE NEEDED",
@@ -157,7 +157,7 @@
       "handshakeState": "EXPIRED",
       "handshakeText": "ILIMJOLNIRILI HANDSHAKE: NPSSO EXPIRED",
       "inboundFriendRequestsCount": 0,
-      "lastUpdated": "7/25/2026, 9:26:56 PM",
+      "lastUpdated": "7/25/2026, 9:30:24 PM",
       "level": 0,
       "note": "PSN Profile Hidden/Private",
       "npssoStatus": "EXPIRED / UPDATE NEEDED",
@@ -203,7 +203,7 @@
       "handshakeState": "EXPIRED",
       "handshakeText": "ONELIVIDMAN HANDSHAKE: NPSSO EXPIRED",
       "inboundFriendRequestsCount": 0,
-      "lastUpdated": "7/25/2026, 9:26:53 PM",
+      "lastUpdated": "7/25/2026, 9:30:22 PM",
       "level": 0,
       "note": "PSN Profile Hidden/Private",
       "npssoStatus": "EXPIRED / UPDATE NEEDED",
@@ -250,7 +250,7 @@
       "handshakeState": "EXPIRED",
       "handshakeText": "JOE-PUNK_ HANDSHAKE: NPSSO EXPIRED",
       "inboundFriendRequestsCount": 0,
-      "lastUpdated": "7/25/2026, 9:26:58 PM",
+      "lastUpdated": "7/25/2026, 9:30:26 PM",
       "level": 0,
       "note": "PSN Profile Hidden/Private",
       "npssoStatus": "EXPIRED / UPDATE NEEDED",
@@ -297,7 +297,7 @@
       "handshakeState": "EXPIRED",
       "handshakeText": "WEREWOLF3788 HANDSHAKE: NPSSO EXPIRED",
       "inboundFriendRequestsCount": 0,
-      "lastUpdated": "7/25/2026, 9:26:51 PM",
+      "lastUpdated": "7/25/2026, 9:30:21 PM",
       "level": 0,
       "note": "PSN Profile Hidden/Private",
       "npssoStatus": "EXPIRED / UPDATE NEEDED",
@@ -334,18 +334,33 @@
       "streamHistory": []
     },
     "wildhorse_spirit": {
-      "onlineId": "WildHorse_Spirit",
-      "online": false,
       "accountId": "",
-      "npssoValid": false,
-      "npssoStatus": "EXPIRED / UPDATE NEEDED",
-      "handshakeText": "WILDHORSE_SPIRIT HANDSHAKE: NPSSO EXPIRED",
-      "handshakeState": "EXPIRED",
-      "currentGame": "Sniper Elite 5",
-      "currentGameArt": null,
-      "currentGameActivity": "Axis Invasion",
       "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=moviesanywhere02-20",
       "bio": "Official Pack Member Profile",
+      "blockedAccountsCount": 0,
+      "currentGame": "Sniper Elite 5",
+      "currentGameActivity": "Axis Invasion",
+      "gamesPlayed": 0,
+      "handshakeState": "EXPIRED",
+      "handshakeText": "WILDHORSE_SPIRIT HANDSHAKE: NPSSO EXPIRED",
+      "inboundFriendRequestsCount": 0,
+      "lastUpdated": "7/25/2026, 9:30:21 PM",
+      "level": 0,
+      "note": "PSN Auth Inactive or Token Expired",
+      "npssoStatus": "EXPIRED / UPDATE NEEDED",
+      "npssoValid": false,
+      "online": false,
+      "onlineId": "WildHorse_Spirit",
+      "plus": false,
+      "region": "US",
+      "trophySummary": {
+        "bronze": 0,
+        "gold": 0,
+        "platinum": 0,
+        "silver": 0,
+        "total": 0,
+        "trophyLevel": 0
+      },
       "twitch": {
         "isLive": false,
         "game": "Sniper Elite 5",
@@ -363,38 +378,7 @@
         "chatRules": null,
         "channelCreationRaw": "Apr 6. 2023 - 06:58:17 AM (UTC)"
       },
-      "streamHistory": [],
-      "lastUpdated": "7/25/2026, 9:26:52 PM",
-      "gamesPlayed": 0,
-      "plus": false,
-      "level": 0,
-      "region": "US",
-      "note": "PSN Auth Inactive or Token Expired",
-      "devices": [],
-      "blockedAccountsCount": 0,
-      "inboundFriendRequestsCount": 0,
-      "trophySummary": {
-        "platinum": 0,
-        "gold": 0,
-        "silver": 0,
-        "bronze": 0,
-        "total": 0,
-        "trophyLevel": 0
-      },
-      "recentGames": [],
-      "activeHunt": null,
-      "mostRecentTrophies": [],
-      "fullLibrary": [],
-      "rawPsnDump": {
-        "profile": {},
-        "presence": {},
-        "telemetry": [],
-        "titles": [],
-        "friends": [],
-        "hardwareInfo": [],
-        "blocksQueue": [],
-        "friendRequests": []
-      }
+      "streamHistory": []
     }
   },
   "personas": {
@@ -417,7 +401,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "7/25/2026, 9:26:58 PM"
+        "end": "7/25/2026, 9:30:26 PM"
       },
       "currentGame": "Sniper Elite 5",
       "currentActivity": "Who Needs Sleep? I Need Better Aim! with @raymystyro",
@@ -427,7 +411,7 @@
         "wildhorse_spirit"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/25/2026, 9:26:58 PM"
+      "lastUpdated": "7/25/2026, 9:30:26 PM"
     },
     "Ray": {
       "displayName": "Ray",
@@ -448,7 +432,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "7/25/2026, 9:26:58 PM"
+        "end": "7/25/2026, 9:30:26 PM"
       },
       "currentGame": "Dashboard",
       "currentActivity": "Trophy / Collectible Hutning",
@@ -457,7 +441,7 @@
         "ray"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/25/2026, 9:26:58 PM"
+      "lastUpdated": "7/25/2026, 9:30:26 PM"
     },
     "TJ": {
       "displayName": "TJ",
@@ -478,7 +462,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "7/25/2026, 9:26:58 PM"
+        "end": "7/25/2026, 9:30:26 PM"
       },
       "currentGame": "Path of Titans",
       "currentActivity": "P.O.T here to u sam neil R.I.P",
@@ -487,7 +471,7 @@
         "darkwing"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/25/2026, 9:26:58 PM"
+      "lastUpdated": "7/25/2026, 9:30:26 PM"
     },
     "Mike": {
       "displayName": "Mike",
@@ -508,7 +492,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "7/25/2026, 9:26:58 PM"
+        "end": "7/25/2026, 9:30:26 PM"
       },
       "currentGame": "Police Simulator: Patrol Officers",
       "currentActivity": "Protecting and Serving the community 👮🏻‍♂️⭐",
@@ -517,7 +501,7 @@
         "mike"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/25/2026, 9:26:58 PM"
+      "lastUpdated": "7/25/2026, 9:30:26 PM"
     },
     "Katy": {
       "displayName": "Katy",
@@ -538,7 +522,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "7/25/2026, 9:26:58 PM"
+        "end": "7/25/2026, 9:30:26 PM"
       },
       "currentGame": "Dashboard",
       "bio": "Official Pack Member Profile",
@@ -546,7 +530,7 @@
         "katy"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/25/2026, 9:26:58 PM"
+      "lastUpdated": "7/25/2026, 9:30:26 PM"
     },
     "Marc": {
       "displayName": "Marc",
@@ -567,7 +551,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "7/25/2026, 9:26:58 PM"
+        "end": "7/25/2026, 9:30:26 PM"
       },
       "currentGame": "Dashboard",
       "bio": "Official Pack Member Profile",
@@ -575,7 +559,7 @@
         "marc"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/25/2026, 9:26:58 PM"
+      "lastUpdated": "7/25/2026, 9:30:26 PM"
     },
     "Seth": {
       "displayName": "Seth",
@@ -596,7 +580,7 @@
       "legacyAge": "Unknown",
       "legacyRange": {
         "start": "Unknown",
-        "end": "7/25/2026, 9:26:58 PM"
+        "end": "7/25/2026, 9:30:26 PM"
       },
       "currentGame": "Left 4 Dead 2",
       "currentActivity": "Wackadoo Wednesday Ep 7 The Plot Thickens!",
@@ -605,7 +589,7 @@
         "seth"
       ],
       "streamHistory": [],
-      "lastUpdated": "7/25/2026, 9:26:58 PM"
+      "lastUpdated": "7/25/2026, 9:30:26 PM"
     }
   },
   "mutualSquadFollowers": [],
@@ -616,9 +600,9 @@
     "wildhorse_spirit_status": "EXPIRED_NPSSO",
     "ray_active": "no",
     "ray_status": "EXPIRED_NPSSO",
-    "lastCheck": "7/25/2026, 9:26:48 PM"
+    "lastCheck": "7/25/2026, 9:30:19 PM"
   },
-  "lastGlobalUpdate": "7/25/2026, 9:26:48 PM",
+  "lastGlobalUpdate": "7/25/2026, 9:30:19 PM",
   "engineVersion": "14.6.0",
   "codeTimestamp": "Saturday, July 25, 2026 | 9:22 PM EDT"
 }
