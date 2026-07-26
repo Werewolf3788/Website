@@ -1,3 +1,4 @@
+<!-- Version Timestamp: v2.4.5 | Last Updated: July 26, 2026, 12:00 AM EDT -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,12 +25,11 @@
             background-attachment: fixed;
             color: #ffffff;
             font-family: ui-sans-serif, system-ui, sans-serif;
-            font-size: 14px; /* User Preference: 14 */
+            font-size: 14px;
             line-height: 1.5;
             overflow-x: hidden;
         }
 
-        /* User Preference: Header Text 30 */
         h1, h2 {
             font-size: 30px; 
             text-transform: uppercase;
@@ -102,7 +102,6 @@
         }
         .active-btn { border-color: var(--ser-color); background: rgba(255, 255, 255, 0.15); }
 
-        /* Progress Header */
         .main-header {
             background: rgba(10, 0, 0, 0.85); padding: 25px 15px; border-radius: 1.5rem;
             border: 2px solid var(--ser-color); text-align: center; margin-bottom: 30px;
@@ -111,7 +110,6 @@
         .bar-bg { background: #000; height: 18px; border-radius: 9px; border: 1px solid #333; margin: 15px 0; overflow: hidden; }
         .bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--ser-color), #fff); transition: width 0.8s ease-out; }
 
-        /* User Preference: Section Height 50 */
         .category-header {
             display: flex; justify-content: space-between; align-items: center;
             cursor: pointer; border-left: 8px solid var(--ser-color);
@@ -136,7 +134,6 @@
 
         .item-type-tag { font-size: 8px; padding: 1px 5px; border-radius: 3px; font-weight: 900; text-transform: uppercase; background: #333; color: #aaa; margin-bottom: 5px; width: fit-content; }
         
-        /* User Preference: Row Height 30 Controls */
         .toggle-btn, .lock-badge {
             margin-top: 10px; width: 100%; height: 30px; 
             display: flex; align-items: center; justify-content: center;
@@ -184,7 +181,8 @@
         <!-- MISSION REGISTRY RENDERS HERE -->
         <div id="section-container"></div>
 
-        <footer class="tracker-footer">
+        <footer class="site-footer tracker-footer">
+            <p>System Build Version: <strong>v2.4.5</strong> | Last Updated: <strong>July 26, 2026, 12:00 AM EDT</strong></p>
             <p>DESIGNED BY WEREWOLF3788 | OPERATIVES: KEVIN, RAY, TJ, SETH</p>
             <p style="margin-top: 5px; font-family: monospace;">NODE-PROJECT: game-tracker-5b2ef</p>
         </footer>
@@ -206,6 +204,8 @@
             measurementId: "G-QJ7ZFH25ER"
         };
 
+        const GAME_ID = 'sniper-elite-resistance';
+
         const userThemes = {
             'Kevin': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
             'Ray': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
@@ -213,7 +213,6 @@
             'Seth': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
         };
 
-        // --- FULL UNSTRIPPED REGISTRY: ALL 3 CODES COMBINED ---
         const sniperData = [
             // MISSION 1: BEHIND ENEMY LINES
             { id: 'm1_wb1', cat: '1: Behind Enemy Lines', name: 'Pistol Workbench', type: 'WB', desc: 'Pull wooden boards off the wall in the enemy house.' },
@@ -455,15 +454,15 @@
             bootstrapUsers: async function() {
                 const names = ['Kevin', 'Ray', 'TJ', 'Seth'];
                 for (const name of names) {
-                    const path = `users/{userId}/progress/sniper-elite-resistance`;
-                    const docRef = doc(this.db, path);
+                    const docRef = doc(this.db, 'users', name, 'progress', GAME_ID);
                     const snap = await getDoc(docRef);
                     if (!snap.exists()) {
                         await setDoc(docRef, { 
-                            initialized: true, 
-                            hunterName: name, 
-                            progress: sniperData.map(i => ({ id: i.id, collected: false })) 
-                        });
+                            user: name,
+                            gameId: GAME_ID,
+                            progress: sniperData.map(i => ({ id: i.id, collected: false })),
+                            lastUpdated: new Date().toISOString()
+                        }, { merge: true });
                     }
                 }
             },
@@ -481,12 +480,12 @@
                 });
 
                 if (this.unsub) this.unsub();
-                const path = `artifacts/sniper-elite-resistance/data/public/user/${name}`;
-                const docRef = doc(this.db, path);
+                const docRef = doc(this.db, 'users', name, 'progress', GAME_ID);
                 
                 this.unsub = onSnapshot(docRef, (snap) => {
                     if (snap.exists()) {
-                        const saved = snap.data().progress || [];
+                        const data = snap.data();
+                        const saved = data.progress || [];
                         this.hunterData = sniperData.map(item => {
                             const status = saved.find(s => s.id === item.id);
                             return { ...item, collected: status ? status.collected : false };
@@ -559,9 +558,14 @@
 
             sync: async function() {
                 if (!this.user) return;
-                const path = `artifacts/sniper-elite-resistance/data/public/user/${this.activeHunter}`;
+                const docRef = doc(this.db, 'users', this.activeHunter, 'progress', GAME_ID);
                 const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
-                await setDoc(doc(this.db, path), { progress, lastUpdate: Date.now() }, { merge: true });
+                await setDoc(docRef, { 
+                    user: this.activeHunter, 
+                    gameId: GAME_ID, 
+                    progress, 
+                    lastUpdated: new Date().toISOString() 
+                }, { merge: true });
             }
         };
 
