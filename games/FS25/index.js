@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Sun, July 26, 2026, 11:45 PM (EDT)
- Complete Dynamic Telemetry Parser & Styled Mod Hub Directory Box Engine
+ Version Timestamp: Sun, July 26, 2026, 11:55 PM (EDT)
+ Complete Dynamic Telemetry Parser with Auto-Githack GitHub CDN Conversion & Smart URL Extraction
  File: games/FS25/index.js
 */
 
@@ -19,12 +19,13 @@ const FARM_COLOR_PALETTE = {
   "6": { name: "Farm 6", color: "#ec4899" }
 };
 
+// Helper function to pull color code based on farm ownership
 function getFarmColor(farmId) {
   const fid = String(farmId || "0");
   return FARM_COLOR_PALETTE[fid] ? FARM_COLOR_PALETTE[fid].color : "#facc15";
 }
 
-// Asset Image Reference Map
+// Asset Image Reference Map for local static assets
 const IMAGE_ASSETS = {
   "BARLEY": "images/Barley.JPG", "BEETROOT": "images/Beetroot.JPG", "RED BEET": "images/Beetroot.JPG",
   "BREAD": "images/Bread.JPG", "BUTTER": "images/Butter.JPG", "CABBAGE": "images/Cabbage.JPG",
@@ -72,7 +73,19 @@ let parsedModCatalog = [];
 let offlineStartTime = null;
 let offlineTimerInterval = null;
 
-// Safe Deep Firebase Search
+// Smart Raw GitHub CDN to Githack Converter to bypass CORS/MIME issues
+function sanitizeImageUrl(urlStr) {
+  if (!urlStr || typeof urlStr !== 'string') return "";
+  let cleanUrl = urlStr.trim();
+  
+  // Auto-convert raw.githubusercontent.com URLs to raw.githack.com CDN execution URLs
+  if (cleanUrl.includes("raw.githubusercontent.com")) {
+    cleanUrl = cleanUrl.replace("https://raw.githubusercontent.com/", "https://raw.githack.com/");
+  }
+  return cleanUrl;
+}
+
+// Deep Object Property Extractor for nested XML Firebase objects
 function getFirebasePayloadDeep(rootObj, targetKey, maxDepth = 10) {
   if (!rootObj || typeof rootObj !== 'object' || maxDepth <= 0) return null;
   
@@ -102,7 +115,7 @@ function getFirebasePayloadDeep(rootObj, targetKey, maxDepth = 10) {
   return null;
 }
 
-// XML Sanitizer & Parser
+// XML Sanitizer & DOM Parser
 function parseXML(inputPayload) {
   if (!inputPayload) return null;
   let rawText = typeof inputPayload === 'string' ? inputPayload : (inputPayload.data || inputPayload.content || inputPayload.xml || "");
@@ -123,6 +136,7 @@ function parseXML(inputPayload) {
   } catch (e) { return null; }
 }
 
+// Extracts XML values seamlessly whether formatted as attributes or child nodes
 function getXmlVal(node, keyName, defaultVal = "") {
   if (!node) return defaultVal;
   try {
@@ -137,6 +151,7 @@ function getXmlVal(node, keyName, defaultVal = "") {
   return defaultVal;
 }
 
+// Human-readable string formatter
 function formatName(str) {
   if (!str) return 'General Item';
   let clean = String(str).split('/').pop().replace('.xml', '').replace('.zip', '').replace('data_', '').replace('FS25_', '').replace('VEHICLE_', '');
@@ -144,6 +159,7 @@ function formatName(str) {
   return clean.toUpperCase().trim();
 }
 
+// Generates Lightbox-ready thumbnail HTML elements
 function getThumbnailHTML(key, fallbackIcon = "fa-box") {
   if (!key) return `<div class="item-icon-box"><i class="fa-solid ${fallbackIcon}"></i></div>`;
   let lookupKey = String(key).toUpperCase().replace('FILLTYPE_', '').replace('VEHICLE_', '').trim();
@@ -312,16 +328,31 @@ async function loadModHubCatalog() {
 
       if (cols.length >= 10) {
         let rawName = cols[0] ? cols[0].trim() : "Unknown Mod";
+        let rawImg = cols[1] ? cols[1].trim() : "";
         let rawFilename = cols[9] ? cols[9].trim() : "";
         
-        // Clean title if description content bled into column A
-        if (rawName.toLowerCase().startsWith("for transportation") || rawName.length > 80) {
+        // Smart URL Extractor: If an image URL got pasted directly inside Column A alongside the name
+        if (rawName.includes("http://") || rawName.includes("https://")) {
+          const urlMatch = rawName.match(/(https?:\/\/[^\s"]+)/g);
+          if (urlMatch && urlMatch[0]) {
+            if (!rawImg || !rawImg.startsWith("http")) {
+              rawImg = urlMatch[0]; // Recover extracted image URL
+            }
+            rawName = rawName.replace(urlMatch[0], "").trim(); // Strip URL out of the Name field
+          }
+        }
+
+        // Clean name fallback if title field is empty or contains description text
+        if (!rawName || rawName.toLowerCase().startsWith("for transportation") || rawName.length > 80) {
           rawName = rawFilename ? formatName(rawFilename) : "Custom Expansion Mod";
         }
 
+        // Apply Githack conversion wrapper to image URL
+        const finalImgUrl = sanitizeImageUrl(rawImg);
+
         const mod = {
           name: rawName,
-          image: (cols[1] && cols[1].startsWith("http")) ? cols[1].trim() : "",
+          image: finalImgUrl,
           url: cols[2] ? cols[2].trim() : "#",
           description: cols[3] ? cols[3].trim() : "No detailed description provided.",
           crossplay: cols[4] ? cols[4].trim() : "No",
@@ -380,7 +411,7 @@ function renderModCards(categoryFilter = "ALL MODS") {
       : '';
 
     const imgElement = mod.image 
-      ? `<img src="${mod.image}" alt="${mod.name}" class="mod-card-thumb lightbox-trigger" data-title="${mod.name}" data-desc="${encodeURIComponent(mod.description)}" data-url="${mod.url}" data-author="${mod.author}" data-size="${mod.size}">` 
+      ? `<img src="${mod.image}" alt="${mod.name}" class="mod-card-thumb lightbox-trigger" data-title="${mod.name}" data-desc="${encodeURIComponent(mod.description)}" data-url="${mod.url}" data-author="${mod.author}" data-size="${mod.size}" onerror="this.parentNode.innerHTML='<div class=\\'mod-card-thumb\\' style=\\'display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);border:1px solid var(--border-subtle);\\'><i class=\\'fa-solid fa-cube fa-xl\\' style=\\'color:var(--accent-gold);\\'></i></div>';">` 
       : `<div class="mod-card-thumb" style="display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);border:1px solid var(--border-subtle);"><i class="fa-solid fa-cube fa-xl" style="color:var(--accent-gold);"></i></div>`;
 
     html += `
@@ -428,7 +459,7 @@ document.addEventListener("click", (e) => {
 
     if (modal && captionEl) {
       if (imgEl) {
-        if (src && src.startsWith("http")) {
+        if (src && (src.startsWith("http") || src.startsWith("images/"))) {
           imgEl.src = src;
           imgEl.style.display = "block";
         } else {
