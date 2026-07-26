@@ -1,11 +1,10 @@
 /*
- Version Timestamp: Sat, July 25, 2026, 05:45 AM (EDT)
- Resilient FS25 Tactical Theme - Clean Background (Zero Red Overlay) & Tablet-First Architecture
+ Version Timestamp: Sun, July 26, 2026, 03:00 AM (EDT)
+ Resilient FS25 Tactical Theme - Clean Dark Charcoal Vignette & Flexible Tablet Layout
  File: games/FS25/style.css
 */
 
 :root {
-  /* CLEAN DARK CHARCOAL VIGNETTE OVERLAY (ALL RED BACKGROUND OVERLAYS COMPLETELY REMOVED) */
   --bg-gradient-overlay: linear-gradient(180deg, rgba(15, 15, 15, 0.72) 0%, rgba(0, 0, 0, 0.94) 100%);
   --bg-wallpaper: url("images/Farming%20Simulator%2025%20Poster%20Image%20(background%20wallpaper).jpg");
   --surface-box: #1e1c1c;
@@ -46,7 +45,6 @@
   padding: 0;
 }
 
-/* Base Body Setup: Applies clean gradient overlay and fixed poster wallpaper */
 html, body {
   width: 100vw;
   max-width: 100%;
@@ -64,7 +62,6 @@ html, body {
   flex-direction: column;
 }
 
-/* Navigation Header: Sticky top bar with glassmorphic blur */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -92,7 +89,6 @@ html, body {
   color: var(--accent-red);
 }
 
-/* Touch-friendly hamburger button for mobile and tablet views */
 .mobile-toggle {
   display: none;
   background: var(--accent-red);
@@ -111,7 +107,6 @@ html, body {
   gap: 1rem;
 }
 
-/* High-contrast interactive navigation buttons */
 .nav-btn {
   background: transparent;
   color: var(--text-primary);
@@ -138,7 +133,6 @@ html, body {
   position: relative;
 }
 
-/* Dropdown menu styling for generated CSV navigation */
 .dropdown-content {
   display: none;
   position: absolute;
@@ -180,7 +174,6 @@ html, body {
   object-fit: cover;
 }
 
-/* Dashboard Main Layout Container */
 .dashboard-container {
   width: 100vw;
   max-width: 100%;
@@ -188,7 +181,6 @@ html, body {
   flex-grow: 1;
 }
 
-/* Server Banner Header Box */
 .server-banner {
   background: rgba(30, 28, 28, 0.88);
   backdrop-filter: blur(8px);
@@ -231,7 +223,6 @@ html, body {
   color: var(--accent-gold);
 }
 
-/* Online / Offline status indicator pill */
 .status-pill {
   display: inline-flex;
   align-items: center;
@@ -280,7 +271,6 @@ html, body {
   gap: 6px;
 }
 
-/* Global Key Metrics Summary Row: 4-Column flexible grid */
 .metrics-row {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -316,7 +306,6 @@ html, body {
   text-transform: uppercase;
 }
 
-/* Multi-Column Dashboard Grid: Exactly 48px spacing between elements */
 .grid-layout {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -348,7 +337,6 @@ html, body {
   letter-spacing: 0.5px;
 }
 
-/* CAPPED AT EXACTLY 5 VISIBLE CARDS BEFORE SCROLLING (Max Height 380px) */
 .box-content {
   display: flex;
   flex-direction: column;
@@ -358,7 +346,6 @@ html, body {
   padding-right: 4px;
 }
 
-/* Custom Red Scrollbar Styling for Data Boxes and Mod Directory */
 .box-content::-webkit-scrollbar,
 #mod-hub-grid::-webkit-scrollbar {
   width: 6px;
@@ -370,30 +357,30 @@ html, body {
   border-radius: 4px;
 }
 
-/* Dedicated Top-Border Color Accents for All 15 Dashboard Boxes */
+/* Dedicated Top Borders */
 .dashboard-box:nth-child(1) { border-top: 4px solid var(--color-farms); }
 .dashboard-box:nth-child(1) .box-header i { color: var(--color-farms); }
 
-.dashboard-box:nth-child(2) { border-top: 4px solid var(--color-infra); }
-.dashboard-box:nth-child(2) .box-header i { color: var(--color-infra); }
+.dashboard-box:nth-child(2) { border-top: 4px solid var(--color-tractors); }
+.dashboard-box:nth-child(2) .box-header i { color: var(--color-tractors); }
 
 .dashboard-box:nth-child(3) { border-top: 4px solid var(--color-fields); }
 .dashboard-box:nth-child(3) .box-header i { color: var(--color-fields); }
 
-.dashboard-box:nth-child(4) { border-top: 4px solid var(--color-tractors); }
-.dashboard-box:nth-child(4) .box-header i { color: var(--color-tractors); }
+.dashboard-box:nth-child(4) { border-top: 4px solid var(--color-implements); }
+.dashboard-box:nth-child(4) .box-header i { color: var(--color-implements); }
 
-.dashboard-box:nth-child(5) { border-top: 4px solid var(--color-implements); }
-.dashboard-box:nth-child(5) .box-header i { color: var(--color-implements); }
+.dashboard-box:nth-child(5) { border-top: 4px solid var(--color-factories); }
+.dashboard-box:nth-child(5) .box-header i { color: var(--color-factories); }
 
-.dashboard-box:nth-child(6) { border-top: 4px solid var(--color-factories); }
-.dashboard-box:nth-child(6) .box-header i { color: var(--color-factories); }
+.dashboard-box:nth-child(6) { border-top: 4px solid var(--color-animals); }
+.dashboard-box:nth-child(6) .box-header i { color: var(--color-animals); }
 
-.dashboard-box:nth-child(7) { border-top: 4px solid var(--color-animals); }
-.dashboard-box:nth-child(7) .box-header i { color: var(--color-animals); }
+.dashboard-box:nth-child(7) { border-top: 4px solid var(--color-contracts); }
+.dashboard-box:nth-child(7) .box-header i { color: var(--color-contracts); }
 
-.dashboard-box:nth-child(8) { border-top: 4px solid var(--color-contracts); }
-.dashboard-box:nth-child(8) .box-header i { color: var(--color-contracts); }
+.dashboard-box:nth-child(8) { border-top: 4px solid var(--color-infra); }
+.dashboard-box:nth-child(8) .box-header i { color: var(--color-infra); }
 
 .dashboard-box:nth-child(9) { border-top: 4px solid var(--color-buying); }
 .dashboard-box:nth-child(9) .box-header i { color: var(--color-buying); }
@@ -410,7 +397,6 @@ html, body {
 .dashboard-box:nth-child(13) { border-top: 4px solid var(--color-economy); }
 .dashboard-box:nth-child(13) .box-header i { color: var(--color-economy); }
 
-/* Item Cards Layout inside Dashboard Boxes */
 .item-card {
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid var(--border-subtle);
@@ -514,7 +500,6 @@ html, body {
   font-size: 0.85rem;
 }
 
-/* Mod Hub Category Filter Bar Redesign */
 .mod-hub-header {
   margin-bottom: 1.25rem;
 }
@@ -595,7 +580,6 @@ html, body {
   padding-top: 0.5rem;
 }
 
-/* Interactive Lightbox Modal System */
 .lightbox-modal {
   display: none;
   position: fixed;
@@ -656,7 +640,6 @@ html, body {
   font-size: 0.9rem;
 }
 
-/* Sticky Footer: Persistent bottom status bar */
 .system-footer {
   background: rgba(15, 15, 15, 0.96);
   border-top: 1px solid var(--border-subtle);
@@ -674,7 +657,6 @@ html, body {
   gap: 1rem;
 }
 
-/* Tablet Adaptive Layout: Changes 4-col metrics and 3-col grid to responsive 2-column hybrid */
 @media (max-width: 1024px) {
   .metrics-row {
     grid-template-columns: repeat(2, 1fr);
@@ -689,7 +671,6 @@ html, body {
   }
 }
 
-/* Mobile-First Layout: Stacked single column with touch-friendly 44px targets */
 @media (max-width: 768px) {
   .mobile-toggle {
     display: flex;
