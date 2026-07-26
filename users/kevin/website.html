@@ -3,10 +3,11 @@
     ==========================================
     --- PRECISION INTEGRITY PROTOCOL ---
     Project: Kevin's Official Pack Hub - Dynamic Dashboard
-    Version: 12.7.0-Wolf - Amazon Tag website3788-20 Update
-    Timestamp: Sat, July 25, 2026 | 10:23 PM EDT
+    Version: 13.1.0-Wolf - Google Sheets Column D CSV Thumbnail Converter Fix
+    Timestamp: Sat, July 25, 2026 | 10:53 PM EDT
     Compatibility: Chrome, Safari, Firefox, Edge | Mobile, Tablet, Desktop
-    Logic: Updated default Amazon affiliate tag to website3788-20 globally.
+    Logic: Converts Google Drive links in CSV Column D to direct thumbnail embeds
+           and uses a robust CSV parser to ensure menu icons render cleanly.
     ==========================================
 -->
 <html lang="en">
@@ -31,12 +32,12 @@
             'stream_id': '13278632388',
             'page_type': 'admin_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '12.7.0',
+            'layout_version': '13.1.0',
             'user_id': 'WildHorse_Spirit',
             'engagement_timezone': 'Eastern Time (New York)',
             'engagement_timestamp_ny': getNYTime(),
             'send_page_view': true,
-            'description': 'Official Pack Hub with website3788-20 Amazon tracking tag integration.'
+            'description': 'Official Pack Hub with CSV Google Sheets Column D Thumbnail Loader Fix.'
         });
         gtag('config', 'G-L376P3NPY4'); // Watermark GA4
     </script>
@@ -102,7 +103,7 @@
         .dropdown-content a:hover { background-color: rgba(255, 95, 31, 0.1); color: var(--accent-orange); }
         .dropdown:hover .dropdown-content { display: block; }
         
-        .nav-thumb { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; }
+        .nav-thumb { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; flex-shrink: 0; border: 1px solid rgba(255,255,255,0.2); }
 
         @media (min-width: 1024px) {
             .nav-links-wrapper { display: flex; flex-direction: row; }
@@ -153,7 +154,7 @@
         @keyframes dotPulse { 0% { transform: scale(1); opacity: 0.4; } 70% { transform: scale(2.5); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
 
         #generic-lightbox { position: fixed; inset: 0; z-index: 25000; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); padding: 20px; }
-        .lightbox-modal-content { background: var(--wolf-gray); width: 100%; max-width: 650px; border-radius: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.12); overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); max-height: 90vh; display: flex; flex-direction: column; }
+        .lightbox-modal-content { background: var(--wolf-gray); width: 100%; max-width: 750px; border-radius: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.12); overflow: hidden; box-shadow: 0 30px 60px rgba(0,0,0,0.8); max-height: 90vh; display: flex; flex-direction: column; }
 
         .support-img-icon { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; border: 2px solid rgba(255,255,255,0.05); }
 
@@ -317,7 +318,7 @@
                                     <div id="hunter-persona-badge" class="inline-block px-3 py-1 bg-white/10 text-orange-400 border border-orange-500/50 rounded-full text-[10px] font-black uppercase tracking-widest hidden"></div>
                                 </div>
 
-                                <!-- MULTI-STORE LAUNCHPAD BUTTONS (website3788-20) -->
+                                <!-- MULTI-STORE LAUNCHPAD BUTTONS -->
                                 <div class="space-y-2">
                                     <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
                                         <i class="fas fa-store text-orange-400"></i> Store Launchpad
@@ -487,6 +488,29 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+        // MASTER COLLECTIBLES REGISTRY MAP
+        const SNIPER_ELITE_5_REGISTRY = {
+            'm1_pl1': { cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'North-east map sector, on a chest inside a single building guarded by 2 soldiers.' },
+            'm1_pl2': { cat: '1: The Atlantic Wall', name: 'Upcoming Delivery', type: 'Personal Letter', desc: 'Central farm, inside the southern farmhouse upstairs; climb the attic ladder.' },
+            'm1_pl3': { cat: '1: The Atlantic Wall', name: 'Violets Are Wilting', type: 'Personal Letter', desc: 'Northern sector building near the AA gun objective; found upstairs in the attic.' },
+            'm1_pl4': { cat: '1: The Atlantic Wall', name: 'Violets Don\'t Wilt', type: 'Personal Letter', desc: 'Town hotel upstairs bedroom; locked inside the wall safe.' },
+            'm1_pl5': { cat: '1: The Atlantic Wall', name: 'Pests in the Garden', type: 'Personal Letter', desc: 'Far south-west promenade tip, inside the open pagoda structure.' },
+            'm1_pl6': { cat: '1: The Atlantic Wall', name: 'Boches at the Door', type: 'Personal Letter', desc: 'Inside Marcel\'s resistance house on the ground floor sofa.' },
+            'm1_cd1': { cat: '1: The Atlantic Wall', name: 'Resistance Captured', type: 'Classified Doc', desc: 'Bathhouse main objective item; automatically acquired.' },
+            'm1_cd2': { cat: '1: The Atlantic Wall', name: 'Beach Defences', type: 'Classified Doc', desc: 'North-west corner armory building; locked inside office safe.' },
+            'm1_cd3': { cat: '1: The Atlantic Wall', name: 'Lacking Air Support', type: 'Classified Doc', desc: 'Inside the generator bunker safe; requires a satchel charge.' },
+            'm1_cd4': { cat: '1: The Atlantic Wall', name: 'Atlantikwall Report', type: 'Classified Doc', desc: 'Northern AA gun sector building; downstairs office safe.' },
+            'm1_hi1': { cat: '1: The Atlantic Wall', name: 'Resistance Photo', type: 'Hidden Item', desc: 'South-west town sector, upstairs bedroom inside Pharmacie building.' },
+            'm1_hi2': { cat: '1: The Atlantic Wall', name: 'Radio Tin', type: 'Hidden Item', desc: 'Central farm compound, located directly inside animal stables.' },
+            'm1_hi3': { cat: '1: The Atlantic Wall', name: 'FFI Flag', type: 'Hidden Item', desc: 'Far west edge of map, ground floor kitchen counter.' },
+            'm1_se1': { cat: '1: The Atlantic Wall', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'North-east map border; perched on red-tiled chimney.' },
+            'm1_se2': { cat: '1: The Atlantic Wall', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'South-west town sector; on roof ridge of coastal hotel.' },
+            'm1_se3': { cat: '1: The Atlantic Wall', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'South-east bunker beach; perched on roof peak of Vantage Point.' },
+            'm1_wb1': { cat: '1: The Atlantic Wall', name: 'Rifle Workbench', type: 'Workbench', desc: 'Inside locked room of Vantage Point building.' },
+            'm1_wb2': { cat: '1: The Atlantic Wall', name: 'SMG Workbench', type: 'Workbench', desc: 'Marcel\'s resistance house attic floor.' },
+            'm1_wb3': { cat: '1: The Atlantic Wall', name: 'Pistol Workbench', type: 'Workbench', desc: 'North-west corner locked armory compound room.' }
+        };
+
         const firebaseConfig = {
             projectId: "game-tracker-5b2ef",
             databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
@@ -516,7 +540,6 @@
                 if (!gamesGrid) return;
 
                 if (snapshot.empty && userId !== FALLBACK_USER_ID) {
-                    console.log(`[FIRESTORE] Primary ID ${userId} empty. Attempting fallback ID ${FALLBACK_USER_ID}...`);
                     subscribeUserFirestoreProgress(FALLBACK_USER_ID);
                     return;
                 }
@@ -532,9 +555,25 @@
                     const data = doc.data();
 
                     const title = data.title || data.gameName || gameId.replace(/-/g, ' ').toUpperCase();
-                    const percent = data.percent !== undefined ? data.percent : (data.progress || 0);
-                    const completed = data.completedItems || data.earnedTrophies || 0;
-                    const total = data.totalItems || data.totalTrophies || 0;
+                    
+                    let completed = 0;
+                    let total = 0;
+                    let percent = 0;
+
+                    if (Array.isArray(data.progress)) {
+                        total = data.progress.length;
+                        completed = data.progress.filter(item => item && (item.collected === true || item.completed === true || item.earned === true)).length;
+                        percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+                    } else if (typeof data.progress === 'number') {
+                        percent = data.progress;
+                        completed = data.completedItems || data.earnedTrophies || 0;
+                        total = data.totalItems || data.totalTrophies || 0;
+                    } else {
+                        percent = data.percent !== undefined ? data.percent : 0;
+                        completed = data.completedItems || data.earnedTrophies || 0;
+                        total = data.totalItems || data.totalTrophies || 0;
+                    }
+
                     const lastUpdated = data.lastUpdated || data.updatedAt ? new Date(data.lastUpdated || data.updatedAt).toLocaleDateString() : "Recent";
                     const affiliateLink = generateAffiliateUrl(title);
 
@@ -560,7 +599,7 @@
 
                             <div class="flex gap-2 pt-2">
                                 <button onclick="openFirestoreGameDetails('${title}', '${encodeURIComponent(JSON.stringify(data))}')" class="flex-1 py-2 px-3 bg-white/10 hover:bg-cyan-500 hover:text-black rounded-xl font-black text-[10px] uppercase tracking-wider transition-colors min-h-[44px]">
-                                    <i class="fas fa-list-check mr-1"></i> Inspect
+                                    <i class="fas fa-list-check mr-1"></i> Inspect Objectives
                                 </button>
                                 <a href="${affiliateLink}" target="_blank" class="py-2 px-4 bg-[#FF9900]/20 hover:bg-[#FF9900] text-[#FF9900] hover:text-black rounded-xl font-black text-[10px] uppercase tracking-wider transition-colors flex items-center justify-center min-h-[44px]">
                                     <i class="fab fa-amazon text-sm"></i>
@@ -591,31 +630,50 @@
             const lbTitle = document.getElementById("lightbox-title");
             const lbBody = document.getElementById("lightbox-body");
 
-            lbTitle.innerText = title;
+            lbTitle.innerText = title + " Collectibles Registry";
 
-            let detailsHtml = `<div class="space-y-3">`;
-            for (const [k, v] of Object.entries(data)) {
-                if (typeof v !== 'object' && v !== null) {
-                    detailsHtml += `
-                        <div class="flex justify-between border-b border-white/5 py-2">
-                            <span class="font-bold text-gray-400 uppercase text-xs">${k}</span>
-                            <span class="font-black text-white uppercase text-xs">${v}</span>
-                        </div>`;
-                }
-            }
-            detailsHtml += `</div>`;
+            let detailsHtml = `
+                <div class="flex justify-between items-center bg-black/50 p-4 rounded-xl border border-white/10 mb-4">
+                    <span class="font-bold text-gray-400 uppercase text-xs">Game Tracker Doc ID</span>
+                    <span class="font-black text-cyan-400 uppercase text-xs">${data.gameId || 'sniper-elite-5'}</span>
+                </div>`;
 
-            if (data.items || data.checklist) {
-                const list = data.items || data.checklist;
-                detailsHtml += `<h4 class="font-black text-orange-400 uppercase mt-4 mb-2">Checklist Objectives</h4><div class="space-y-2 max-h-60 overflow-y-auto">`;
+            const list = Array.isArray(data.progress) ? data.progress : (data.items || data.checklist);
+
+            if (Array.isArray(list) && list.length > 0) {
+                detailsHtml += `<h4 class="font-black text-orange-400 uppercase mb-3 text-xs tracking-widest">Collectibles Log (${list.length} Total Objectives)</h4>`;
+                detailsHtml += `<div class="space-y-3 max-h-[60vh] overflow-y-auto pr-2 no-scrollbar">`;
+
                 for (const item of list) {
+                    const rawId = typeof item === 'string' ? item : (item.id || item.code || '');
+                    const isCollected = typeof item === 'object' ? (item.collected === true || item.completed === true || item.earned === true) : false;
+
+                    const regMeta = SNIPER_ELITE_5_REGISTRY[rawId] || {};
+                    const displayTitle = regMeta.name || item.name || item.title || rawId || 'Objective Item';
+                    const displayCat = regMeta.cat || item.category || 'Mission Objective';
+                    const displayType = regMeta.type || item.type || 'Collectible';
+                    const displayDesc = regMeta.desc || item.desc || 'No specific location guide recorded for this item.';
+
                     detailsHtml += `
-                        <div class="p-3 bg-black/40 rounded-xl border border-white/5 flex justify-between items-center">
-                            <span class="text-xs font-bold text-white">${item.name || item.title || 'Objective'}</span>
-                            <span class="text-[10px] font-black uppercase px-2 py-1 rounded ${item.completed ? 'bg-green-950 text-green-400' : 'bg-orange-950 text-orange-400'}">${item.completed ? 'DONE' : 'PENDING'}</span>
+                        <div class="p-4 bg-black/40 rounded-xl border ${isCollected ? 'border-green-500/30' : 'border-white/5'} flex flex-col space-y-2">
+                            <div class="flex justify-between items-start gap-2">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-xs font-black text-white uppercase">${displayTitle}</span>
+                                        <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-white/10 text-orange-400">${displayType}</span>
+                                    </div>
+                                    <div class="text-[10px] text-cyan-400 font-bold uppercase mt-0.5">${displayCat}</div>
+                                </div>
+                                <span class="text-[10px] font-black uppercase px-2 py-1 rounded min-w-[75px] text-center ${isCollected ? 'bg-green-950 text-green-400 border border-green-500/40' : 'bg-orange-950 text-orange-400 border border-orange-500/40'}">
+                                    ${isCollected ? '<i class="fas fa-check mr-1"></i>DONE' : 'PENDING'}
+                                </span>
+                            </div>
+                            <p class="text-[11px] text-gray-400 leading-normal italic bg-white/5 p-2 rounded-lg border border-white/5">${displayDesc}</p>
                         </div>`;
                 }
                 detailsHtml += `</div>`;
+            } else {
+                detailsHtml += `<div class="p-8 text-center text-gray-500 font-bold uppercase tracking-widest text-xs">No individual item checklist documents found in this progress payload.</div>`;
             }
 
             lbBody.innerHTML = detailsHtml;
@@ -676,7 +734,7 @@
             const img = document.getElementById('music-widget-img');
             if(!img) return;
             const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=12.7.0`;
+            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=13.1.0`;
         }
 
         async function fetchLiveTwitch() {
@@ -717,29 +775,68 @@
             }
         }
 
+        // --- HELPER: CONVERT GOOGLE DRIVE LINKS TO DIRECT EMBED URLS ---
+        function formatImageLink(url) {
+            if (!url) return "";
+            let cleanUrl = url.trim().replace(/^"|"$/g, '');
+            
+            // Check for Google Drive Sharing Links
+            if (cleanUrl.includes("drive.google.com")) {
+                const match = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                if (match && match[1]) {
+                    return `https://lh3.googleusercontent.com/d/${match[1]}`;
+                }
+            }
+            return cleanUrl;
+        }
+
+        // --- SAFE CSV PARSER TO PREVENT COLUMN SHIFTING ---
+        function parseCsvRow(row) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current.trim().replace(/^"|"$/g, ''));
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            result.push(current.trim().replace(/^"|"$/g, ''));
+            return result;
+        }
+
         async function buildSmartMenu() {
             try {
                 const response = await fetch(MENU_CSV_URL + "&t=" + Date.now());
                 const csvData = await response.text();
-                const rows = csvData.split('\n').slice(1);
+                const lines = csvData.split(/\r?\n/).slice(1);
                 const menuContainer = document.getElementById('nav-links');
                 const supportContainer = document.getElementById('dynamic-support-links');
                 const groupedLinks = {};
                 const flatLinks = [];
                 let supportHtml = "";
 
-                rows.forEach(row => {
-                    const cols = row.split(',');
+                lines.forEach(row => {
+                    if (!row.trim()) return;
+                    const cols = parseCsvRow(row);
+
                     if (cols.length >= 3) {
-                        const name = cols[0].trim();
-                        const tag = cols[1].trim().toLowerCase(); 
-                        const url = cols[2].trim();             
-                        const img = cols[3] ? cols[3].trim() : ""; 
+                        const name = cols[0];
+                        const tag = cols[1].toLowerCase(); 
+                        const url = cols[2];             
+                        const rawImg = cols[3] || ""; 
+                        const img = formatImageLink(rawImg);
 
                         if (MY_TAGS.includes(tag)) {
                             supportHtml += `
                                 <a href="${url}" target="support_window" onclick="logSmartEvent('click_support_link', {'link_name': '${name}'})" class="support-card flex items-center p-4 rounded-xl bg-white/5 border border-white/10 hover:border-orange-500 transition-all group h-auto mb-4 min-h-[44px]">
-                                    ${img ? `<img src="${img}" class="support-img-icon mr-4">` : `<i class="fas fa-external-link-alt text-2xl text-orange-500 mr-4"></i>`}
+                                    ${img ? `<img src="${img}" class="support-img-icon mr-4" onerror="this.style.display='none'">` : `<i class="fas fa-external-link-alt text-2xl text-orange-500 mr-4"></i>`}
                                     <div class="flex-1 text-left">
                                         <div class="font-black text-white leading-tight uppercase text-xs">${name}</div>
                                         <div class="text-[9px] text-gray-400 font-bold uppercase tracking-widest leading-none mt-1">Open Admin Portal</div>
@@ -752,19 +849,32 @@
                             if (!groupedLinks[tag]) groupedLinks[tag] = [];
                             groupedLinks[tag].push({ name, url, img });
                         } else {
-                            flatLinks.push({ name, url });
+                            flatLinks.push({ name, url, img });
                         }
                     }
                 });
 
-                let navHtml = flatLinks.map(i => `<a href="${i.url}" target="pack_hub_window" class="nav-link">${i.name}</a>`).join('');
+                let navHtml = flatLinks.map(i => `<a href="${i.url}" target="pack_hub_window" class="nav-link">${i.img ? `<img src="${i.img}" class="nav-thumb mr-2" onerror="this.style.display='none'">` : ''}${i.name}</a>`).join('');
+                
                 for (const g in groupedLinks) {
                     const label = g.charAt(0).toUpperCase() + g.slice(1);
-                    navHtml += `<div class="dropdown"><span class="nav-link">${label} <i class="fas fa-chevron-down ml-1 text-[8px]"></i></span><div class="dropdown-content">${groupedLinks[g].map(i => `<a href="${i.url}" target="pack_hub_window">${i.img ? `<img src="${i.img}" class="nav-thumb" onerror="this.style.display='none'">` : ''}${i.name}</a>`).join('')}</div></div>`;
+                    navHtml += `
+                        <div class="dropdown">
+                            <span class="nav-link">${label} <i class="fas fa-chevron-down ml-1 text-[8px]"></i></span>
+                            <div class="dropdown-content">
+                                ${groupedLinks[g].map(i => `
+                                    <a href="${i.url}" target="pack_hub_window">
+                                        ${i.img ? `<img src="${i.img}" class="nav-thumb" onerror="this.style.display='none'">` : ''}
+                                        <span>${i.name}</span>
+                                    </a>
+                                `).join('')}
+                            </div>
+                        </div>`;
                 }
+
                 if (menuContainer) menuContainer.innerHTML = navHtml;
                 if (supportContainer) supportContainer.innerHTML = supportHtml;
-            } catch (e) { console.error("CSV Handshake Failed"); }
+            } catch (e) { console.error("CSV Handshake Failed", e); }
         }
 
         function toggleNav() { const nav = document.getElementById('nav-links'); if(nav) nav.classList.toggle('active'); }
@@ -1007,7 +1117,7 @@
                         personaBadge.classList.add('hidden');
                     }
 
-                    // STRICT ARTWORK MATCH FIX: Look up exact cover for hunt.title
+                    // STRICT ARTWORK MATCH
                     const matchedHuntGame = recentGamesNormal.find(g => g.name && g.name.toLowerCase().trim() === hunt.title.toLowerCase().trim()) || 
                                             fullLibraryNormal.find(g => (g.name || g.trophyTitleName || '').toLowerCase().trim() === hunt.title.toLowerCase().trim());
 
