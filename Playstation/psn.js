@@ -2,13 +2,11 @@
  * ==========================================
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Kevin's Official Pack Sync Engine (Max-Payload Firebase Stream)
- * Version: 14.6.0 - WildHorse_Spirit PSN Name Migration & Firebase Sync
- * Timestamp: Sat, July 25, 2026, 9:22 PM EDT
+ * Version: 14.6.2 - DesdemonaTiger Auto-Discovery & Dynamic PSN Resolver
+ * Timestamp: Sat, July 25, 2026 | 9:50 PM EDT
  * Compatibility: Node.js v20+, Firebase Realtime Database REST API
- * Logic: Validates PSN tokens for WildHorse_Spirit and Werewolf3788,
- *        tracks NPSSO expiration status explicitly, streams live payloads to 
- *        Firebase RTDB under /psn/users/wildhorse_spirit, and writes to 
- *        Playstation/psn.json for static fallbacks.
+ * Logic: Auto-discovers missing PSN Account IDs for squad members like 
+ *        DesdemonaTiger via Universal Search API before falling back to private schemas.
  * ==========================================
  */
 
@@ -33,28 +31,21 @@ const {
     getUserFriendsAccountIds,
     getAccountDevices,
     getUserBlockedAccountIds,
-    getUserFriendsRequests
+    getUserFriendsRequests,
+    makeUniversalSearch
 } = psnApi;
 
 const FIREBASE_RTDB_URL = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/psn.json";
 const LOCAL_JSON_PATH = path.join(__dirname, "psn.json");
-
-/* 
- * ==========================================
- * 🚨 JULY 27, 2026 DEACTIVATION PROTOCOL 🚨
- * 'werewolf3788' deactivates on July 27, 2026:
- * Key 'wildhorse_spirit' is now Kevin's primary PSN ID in Firebase.
- * ==========================================
- */
 
 const SQUAD_MAP = {
     werewolf: "werewolf3788",         // Scheduled for deactivation: July 27, 2026
     wildhorse_spirit: "WildHorse_Spirit", // Kevin's active primary PSN ID
     ray: "OneLIVIDMAN",                // Ray
     darkwing: "Darkwing69420",        // TJ
+    marc: "DesdemonaTiger",           // Marc (Auto-Discovery Active)
     mike: "IlIMjolnirIlI",            // Mike (Hidden PSN Profile)
     katy: "Balto20_01",               // Katy (Hidden PSN Profile)
-    marc: "DesdemonaTiger",           // Marc (Hidden PSN Profile)
     seth: "joe-punk_"                 // Seth (Hidden PSN Profile)
 };
 
@@ -62,30 +53,31 @@ const PERSONA_CONFIG = {
     "Kevin": ["werewolf", "wildhorse_spirit"], 
     "Ray": ["ray"],
     "TJ": ["darkwing"],
+    "Marc": ["marc"],
     "Mike": ["mike"],
     "Katy": ["katy"],
-    "Marc": ["marc"],
     "Seth": ["seth"]
 };
 
 const TWITCH_MAP = {
     werewolf: "werewolf3788",
-    wildhorse_spirit: "werewolf3788", // Kevin streams on primary werewolf channel
-    ray: "raymystyro",                // Ray
-    darkwing: "terrdog420",           // TJ
-    mike: "mjolnirgaming",            // Mike
-    seth: "phoenix_darkfire"          // Seth
+    wildhorse_spirit: "werewolf3788",
+    ray: "raymystyro",
+    darkwing: "terrdog420",
+    marc: "",                         // Marc Twitch channel if available
+    mike: "mjolnirgaming",
+    seth: "phoenix_darkfire"
 };
 
 const ACCOUNT_IDS = {
     werewolf: "3728215008151724560",
-    wildhorse_spirit: "",             // Auto-discovered via JWT token resolver
+    wildhorse_spirit: "4087137467908566201",
     ray: "2732733730346312494",
     darkwing: "4398462806362115916",
-    mike: "",                         // Hidden PSN Profile
-    katy: "",                         // Hidden PSN Profile
-    marc: "",                         // Hidden PSN Profile
-    seth: ""                          // Hidden PSN Profile
+    marc: "",                         // Will auto-resolve via Universal Search API
+    mike: "",                         // Hidden PSN -> Fallback schema
+    katy: "",                         // Hidden PSN -> Fallback schema
+    seth: ""                          // Hidden PSN -> Fallback schema
 };
 
 const AMAZON_TAG = "moviesanywhere02-20";
@@ -227,7 +219,7 @@ async function getAuthenticated(userKey, npssoInput) {
         if (isValid) {
             diagnosticReport[`${userKey}_active`] = "yes";
             diagnosticReport[`${userKey}_status`] = "ACTIVE";
-            return { accessToken: currentUserTokens.accessToken, npssoValid: true };
+            return { accessToken: currentUserTokens.accessToken, npssoValid: true, userKey };
         }
         currentUserTokens.accessToken = null;
     }
@@ -242,7 +234,7 @@ async function getAuthenticated(userKey, npssoInput) {
             };
             diagnosticReport[`${userKey}_active`] = "yes";
             diagnosticReport[`${userKey}_status`] = "ACTIVE";
-            return { ...refreshed, npssoValid: true };
+            return { ...refreshed, npssoValid: true, userKey };
         } catch (e) { currentUserTokens.refreshToken = null; }
     }
     
@@ -257,7 +249,7 @@ async function getAuthenticated(userKey, npssoInput) {
             };
             diagnosticReport[`${userKey}_active`] = "yes";
             diagnosticReport[`${userKey}_status`] = "ACTIVE";
-            return { ...auth, npssoValid: true };
+            return { ...auth, npssoValid: true, userKey };
         } catch (e) { 
             console.error(`[AUTH DIAGNOSTIC] Core Key validation failed for entry: ${userKey}. Error: ${e.message}`);
             diagnosticReport[`${userKey}_active`] = "no";
@@ -309,16 +301,35 @@ function generatePrivateProfileFallback(label, userKey, twitchIntel, existingDat
     };
 }
 
+async function resolveAccountIdFromSearch(auth, onlineId) {
+    try {
+        console.log(`[PSN SEARCH] Attempting auto-discovery lookup for ID: ${onlineId}...`);
+        const searchResults = await makeUniversalSearch(auth, onlineId, "domain:conceptCollapse");
+        const match = searchResults?.searchResults?.[0]?.results?.find(r => r.socialMetadata?.onlineId?.toLowerCase() === onlineId.toLowerCase());
+        if (match?.socialMetadata?.accountId) {
+            console.log(`[PSN SEARCH SUCCESS] Discovered Account ID for ${onlineId}: ${match.socialMetadata.accountId}`);
+            return match.socialMetadata.accountId;
+        }
+    } catch (e) {
+        console.warn(`[PSN SEARCH WARN] Could not resolve search ID for ${onlineId}:`, e.message);
+    }
+    return "";
+}
+
 async function getFullUserData(auth, label, userKey, targetId, existingData) {
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
     let resolvedTargetId = targetId;
 
+    // TARGET GUARD & SEARCH RESOLVER: Try JWT decoding for owner or Universal Search for squad members
     if (!resolvedTargetId && auth?.accessToken) {
-        try {
-            const payload = JSON.parse(Buffer.from(auth.accessToken.split('.')[1], 'base64').toString());
-            resolvedTargetId = payload.account_id || "";
-            if (resolvedTargetId) console.log(`[AUTH RESOLVER] Auto-discovered Account ID for ${label}: ${resolvedTargetId}`);
-        } catch(e) {}
+        if (auth.userKey === userKey) {
+            try {
+                const payload = JSON.parse(Buffer.from(auth.accessToken.split('.')[1], 'base64').toString());
+                resolvedTargetId = payload.account_id || "";
+            } catch(e) {}
+        } else {
+            resolvedTargetId = await resolveAccountIdFromSearch(auth, SQUAD_MAP[userKey] || label);
+        }
     }
 
     if (!auth || !resolvedTargetId) {
@@ -482,7 +493,7 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
                 if (!isTargetHunt) gamesToDeepScan--;
                 
                 try {
-                    await sleep(50); // Sony Safety Buffer
+                    await sleep(50);
                     
                     let opt = game.npServiceName ? { npServiceName: game.npServiceName } : { npServiceName: "trophy" };
                     let groupsRes = await getTitleTrophyGroups(auth, game.npCommunicationId, opt).catch(()=>null);
@@ -649,7 +660,7 @@ function writeLocalFile(payload) {
 
 async function main() {
     try {
-        console.log("[INIT] Starting Absolute Master Omni-Collector v14.6.0 (WildHorse_Spirit Engine)...");
+        console.log("[INIT] Starting Absolute Master Omni-Collector v14.6.2 (DesdemonaTiger Auto-Discovery)...");
 
         const previousFirebaseData = await fetchFromFirebase();
 
@@ -659,8 +670,8 @@ async function main() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport,
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York" }), 
-            engineVersion: "14.6.0",
-            codeTimestamp: "Saturday, July 25, 2026 | 9:22 PM EDT"
+            engineVersion: "14.6.2",
+            codeTimestamp: "Saturday, July 25, 2026 | 9:50 PM EDT"
         };
 
         const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
@@ -739,16 +750,13 @@ async function main() {
         if (lists.length > 1) {
             const frequencyMap = {};
             lists.flat().forEach(name => { frequencyMap[name] = (frequencyMap[name] || 0) + (typeof name === 'string' ? 1 : 0); });
-            finalData.mutualSquadFollowers = Object.entries(frequencyMap).filter(([name, count]) => count >= 2).sort((a, b) => b[1] - a[1]).map(([name, count]) => ({ username: name, sharedConnections: count }));
+            finalData.mutualSquadFollowers = Object.entries(frequencyMap).filter(([name, count]) => count >= 2).sort((a,b) => b[1] - a[1]).map(([name, count]) => ({ username: name, sharedConnections: count }));
         }
 
-        // Stream payload directly to Firebase RTDB
         await pushToFirebase(finalData);
-
-        // Save local JSON backup
         writeLocalFile(finalData);
 
-        console.log(`[SUCCESS] Persona Aggregator v14.6.0 WildHorse_Spirit Execution Complete.`);
+        console.log(`[SUCCESS] DesdemonaTiger Execution v14.6.2 Complete.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Execution error caught: ${criticalError.message}`);
         process.exit(0);
