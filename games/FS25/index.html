@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Version Timestamp: Sat, July 25, 2026, 05:40 AM (EDT) -->
+  <!-- Version Timestamp: Sun, July 26, 2026, 03:00 AM (EDT) -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Realtime Tactical Dashboard & Mod Directory</title>
@@ -23,8 +23,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
   <!-- Static Stylesheet & JavaScript Imports with Smart Cache-Buster -->
-  <link rel="stylesheet" href="style.css?v=20260725_0540">
-  <script src="index.js?v=20260725_0540" defer></script>
+  <link rel="stylesheet" href="style.css?v=20260726_0300">
+  <script src="index.js?v=20260726_0300" defer></script>
 </head>
 <body>
 
@@ -65,11 +65,11 @@
           <div class="banner-badges">
             <span id="server-map" class="badge"><i class="fa-solid fa-map-location-dot"></i> Map: Calm Lands</span>
             <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: 00:00</span>
-            <span id="time-speed-badge" class="badge" style="border:1px solid #facc15; color:#facc15;"><i class="fa-solid fa-forward-fast"></i> Speed: 5x</span>
+            <span id="time-speed-badge" class="badge" style="border:1px solid #facc15; color:#facc15;"><i class="fa-solid fa-forward-fast"></i> Speed: 1x</span>
             <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Month: Early Autumn</span>
             <span id="server-weather" class="badge"><i class="fa-solid fa-sun"></i> Weather: Clear</span>
             <span id="server-players" class="badge"><i class="fa-solid fa-users"></i> Players: 0/6</span>
-            <span id="traffic-badge" class="badge" style="border:1px solid #38bdf8;"><i class="fa-solid fa-car"></i> Traffic: ON</span>
+            <span id="traffic-badge" class="badge" style="border:1px solid #38bdf8;"><i class="fa-solid fa-car"></i> Traffic: OFF</span>
           </div>
         </div>
       </div>
@@ -289,7 +289,7 @@
   <!-- Persistent Sticky System Footer -->
   <footer class="system-footer">
     <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sat, July 25, 2026, 05:40 AM (EDT)</strong></span>
+      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sun, July 26, 2026, 03:00 AM (EDT)</strong></span>
       <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
       <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
       <span id="offline-timer" style="display:none; color:#f87171; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: 0m 0s</span>
@@ -313,6 +313,18 @@
     
     let activeUnsubscribe = null;
 
+    function safeRender(data) {
+      if (typeof window.renderDashboard === 'function' && document.readyState !== 'loading') {
+        window.renderDashboard(data);
+      } else {
+        window.addEventListener('DOMContentLoaded', () => {
+          if (typeof window.renderDashboard === 'function') {
+            window.renderDashboard(data);
+          }
+        }, { once: true });
+      }
+    }
+
     function attachLiveSync() {
       if (activeUnsubscribe) {
         activeUnsubscribe();
@@ -323,23 +335,17 @@
         const val = snapshot.val();
         if (val) {
           window.lastFirebaseData = val;
-          if (typeof window.renderDashboard === 'function') {
-            window.renderDashboard(val);
-          }
+          safeRender(val);
         } else {
           console.warn("⚠️ /fs25 returned null. Forcing UI clean fallback state...");
-          if (typeof window.renderDashboard === 'function') {
-            window.renderDashboard({});
-          }
+          safeRender({});
           if (typeof window.setServerStatus === 'function') {
             window.setServerStatus(false);
           }
         }
       }, (error) => {
         console.error("❌ RTDB Stream Disconnected or Denied:", error.message);
-        if (typeof window.renderDashboard === 'function') {
-          window.renderDashboard({});
-        }
+        safeRender({});
         if (typeof window.setServerStatus === 'function') {
           window.setServerStatus(false);
         }
