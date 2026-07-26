@@ -2,13 +2,13 @@
 <!-- 
     ==========================================
     --- PRECISION INTEGRITY PROTOCOL ---
-    Version: 13.3.0-Ray - Sky Blue Theme Theme Update
-    Timestamp: Sat, July 25, 2026 | 11:06 PM EDT
+    Version: 13.7.0-Ray - Squad/Friends Trophy Comparison Engine & Sky Blue Theme
+    Timestamp: Sat, July 25, 2026 | 11:58 PM EDT
     Author: Kevin (Werewolf3788) Admin Engine
     Compatibility: Chrome, Safari, Firefox, Edge | Mobile, Tablet, Desktop
-    Updates: Converted entire Ray dashboard theme from Cardinal Red to Sky Blue (#38BDF8).
-             Maintains full Firestore observer (/users/Raymystyro/progress), SE5 Registry,
-             Multi-Store Launchpad, and Column D Google Drive Thumbnail Loader.
+    Updates: Replaced global PSN percentage with 4-User Squad Comparison 
+             (Ray, Werewolf, Terrdog, DesedemonaTiger). Displays X/4 Squad unlocks 
+             live across trophy checklist rows and the lightbox detail modal.
     ==========================================
 -->
 <html lang="en">
@@ -25,7 +25,6 @@
         function gtag(){dataLayer.push(arguments);}
         gtag('js', new Date());
         
-        // Helper for Chicago Time
         function getChicagoTime() {
             return new Date().toLocaleString("en-US", {timeZone: "America/Chicago", timeZoneName: "short"});
         }
@@ -34,32 +33,32 @@
             'stream_id': '13278632388',
             'page_type': 'dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '13.3.0',
+            'layout_version': '13.7.0',
             'user_id': 'OneLIVIDMAN',
             'engagement_timezone': 'Central Time (Chicago)',
             'engagement_timestamp_local': getChicagoTime(),
             'send_page_view': true,
-            'description': 'RayMystyro / OneLIVIDMAN official gaming progression and PSN telemetry dashboard.'
+            'description': 'RayMystyro / OneLIVIDMAN official squad trophy progression and telemetry dashboard.'
         });
-        gtag('config', 'G-H6Q756MVE8'); // Scott Client GA4 Tag
-        gtag('config', 'G-L376P3NPY4'); // Global Watermark GA4
+        gtag('config', 'G-H6Q756MVE8');
+        gtag('config', 'G-L376P3NPY4');
     </script>
 
     <!-- --- EXTERNAL ASSETS & TAILWIND CDN --- -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- --- CUSTOM STYLES (SKY BLUE THEME) --- -->
+    <!-- --- CUSTOM STYLES (SKY BLUE & SQUAD GOLD THEME) --- -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap');
 
         :root {
             --bg-dark: #0a0a0c;
             --wolf-gray: #1e1e24;
-            --accent-blue: #38BDF8; /* Sky Blue Primary */
-            --accent-blue-dim: #0284C7; /* Sky Blue Dark Accent */
+            --accent-blue: #38BDF8;
+            --accent-blue-dim: #0284C7;
             --danger-red: #ef4444;
-            --warning-orange: #f59e0b;
+            --warning-yellow: #f59e0b;
             --success-green: #10b981;
             --amazon-orange: #FF9900;
             --platinum-silver: #93c5fd;
@@ -131,6 +130,18 @@
         .trophy-icon-sq { width: 50px; height: 50px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
         .trophy-title-text { font-weight: 800; color: var(--accent-blue); font-size: 15px; text-transform: uppercase; }
 
+        /* 12-HOUR YELLOW HIGHLIGHT PULSE FOR CARDS AND CHECKLIST */
+        .recent-earn-yellow-glow {
+            border-color: rgba(245, 158, 11, 0.9) !important;
+            background: rgba(245, 158, 11, 0.08) !important;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.35) inset, 0 0 15px rgba(245, 158, 11, 0.2) !important;
+            animation: yellowEarnPulse 2.5s infinite ease-in-out;
+        }
+        @keyframes yellowEarnPulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.25) inset, 0 0 10px rgba(245, 158, 11, 0.15) !important; }
+            50% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.55) inset, 0 0 22px rgba(245, 158, 11, 0.4) !important; }
+        }
+
         .progress-bar-container { height: 10px; background: #2d2d35; border-radius: 5px; overflow: hidden; }
         .progress-bar-fill { height: 100%; background: linear-gradient(90deg, #38BDF8, #0284C7); transition: width 1.2s ease-out; }
 
@@ -142,6 +153,8 @@
         .status-dot-pulse { width: 10px; height: 10px; border-radius: 50%; position: relative; }
         .status-dot-pulse.online { background: var(--success-green); }
         .status-dot-pulse.online::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; background: inherit; opacity: 0.4; animation: dotPulse 2s infinite; }
+        .status-dot-pulse.expired { background: var(--danger-red); }
+        .status-dot-pulse.expired::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; background: inherit; opacity: 0.4; animation: dotPulse 1.5s infinite; }
         .status-dot-pulse.offline { background: #475569; }
         @keyframes dotPulse { 0% { transform: scale(1); opacity: 0.4; } 70% { transform: scale(2.5); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
 
@@ -217,6 +230,17 @@
         <div class="flex flex-col">
             <span id="health-label" class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Handshake</span>
             <span id="health-value" class="text-[11px] font-black text-white uppercase tracking-tighter">Status: Initializing</span>
+        </div>
+    </div>
+
+    <!-- --- SYSTEM ALERT BANNER --- -->
+    <div id="system-alerts-container" class="max-w-7xl mx-auto w-full px-6 mt-6 hidden">
+        <div class="bg-red-500/10 border-2 border-red-500 p-4 rounded-2xl flex items-center gap-4">
+            <i class="fas fa-triangle-exclamation text-red-500 text-2xl"></i>
+            <div>
+                <div class="text-red-500 font-black uppercase text-xs">PSN NPSSO TOKEN ALERT</div>
+                <div id="alert-message" class="text-white font-bold text-sm">PSN_NPSSO_RAY Token Expired / Update Needed in GitHub Secrets!</div>
+            </div>
         </div>
     </div>
 
@@ -374,11 +398,11 @@
 
             <!-- RIGHT COLUMN -->
             <div class="flex flex-col gap-8 lg:gap-12">
-                <!-- STANDALONE RECENTLY EARNED TROPHY CARD -->
+                <!-- STANDALONE RECENTLY EARNED TROPHY CARD (INTERACTIVE MODAL DETAILED TRIGGER) -->
                 <section id="recent-trophy-card" class="glass-card p-8 border-t-4 border-yellow-500 hidden">
                     <h2 class="text-yellow-500 flex items-center gap-3 mb-6 uppercase"><i class="fas fa-trophy"></i> Recently Earned</h2>
-                    <div class="flex gap-4 items-center bg-white/5 p-4 rounded-xl cursor-pointer" onclick="openLightboxImage(document.getElementById('last-trophy-icon').src, document.getElementById('last-trophy-name').innerText)">
-                        <img id="last-trophy-icon" src="" class="w-16 h-16 rounded-lg object-cover" onerror="this.src='https://via.placeholder.com/64x64/202024/38BDF8?text=🏆'">
+                    <div class="flex gap-4 items-center bg-white/5 p-4 rounded-xl cursor-pointer hover:bg-white/10 transition-colors" onclick="openRecentTrophyLightbox()">
+                        <img id="last-trophy-icon" src="" class="w-16 h-16 rounded-lg object-cover border border-yellow-500/30" onerror="this.src='https://via.placeholder.com/64x64/202024/38BDF8?text=🏆'">
                         <div class="min-w-0 flex-1">
                             <div id="last-trophy-name" class="font-black text-white uppercase truncate">---</div>
                             <div id="last-trophy-game" class="text-[10px] font-black text-yellow-500 uppercase truncate">---</div>
@@ -669,6 +693,11 @@
         const OTHER_MEMBER_TAGS = ["werewolf", "werewolf3788", "wildhorse_spirit", "darkwing", "darkwing69420", "terrdog", "terrdog420", "fluffy", "phoenix_darkfire", "elucidatorvah", "jcrow", "jcrow207", "unicornbunnyshiv"];
 
         let currentTrophyData = [];
+        let lastEarnedTrophyData = null; 
+        let globalPsnPayload = null; // Caches full RTDB payload for Squad Comparison
+
+        // TRACKED SQUAD FRIENDS POOL (Ray, Werewolf/Kevin, Terrdog, DesedemonaTiger)
+        const SQUAD_POOL_TOTAL = 4;
 
         function convertFirebaseArray(data) {
             if (!data) return [];
@@ -688,7 +717,7 @@
         function getRelativeTime(timestamp) {
             if (!timestamp || timestamp === 0) return "Starting...";
             const now = Date.now();
-            const diff = now - timestamp;
+            const diff = Math.max(0, now - timestamp);
             const minutes = Math.floor(diff / 60000);
             const hours = Math.floor(minutes / 60);
             const days = Math.floor(hours / 24);
@@ -697,9 +726,47 @@
             if (years > 0) return years === 1 ? "1 year ago" : `${years} years ago`;
             if (months > 0) return months === 1 ? "1 month ago" : `${months} months ago`;
             if (days > 0) return days === 1 ? "Yesterday" : `${days} days ago`;
-            if (hours > 0) return `${hours}h ago`;
-            if (minutes > 0) return `${minutes}m ago`;
+            if (hours > 0) return `${hours}h ago (${minutes % 60}m ago)`;
+            if (minutes > 0) return `${minutes} mins ago`;
             return "Just now";
+        }
+
+        function formatExactDate(timestamp) {
+            if (!timestamp || timestamp === 0) return "Date Unknown";
+            const d = new Date(timestamp);
+            return d.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }) + " at " + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // --- SQUAD TROPHY UNLOCK CALCULATOR ---
+        function calculateSquadEarnRatio(trophy) {
+            if (!trophy) return { count: 0, total: SQUAD_POOL_TOTAL, text: `0/${SQUAD_POOL_TOTAL} Squad` };
+
+            let count = 0;
+            // Always check Ray (the primary subject)
+            if (trophy.earned) count++;
+
+            if (globalPsnPayload && globalPsnPayload.users) {
+                const werewolf = globalPsnPayload.users.werewolf || globalPsnPayload.users.wildhorse_spirit || {};
+                const terrdog = globalPsnPayload.users.terrdog || {};
+                const tiger = globalPsnPayload.users.desedemonatiger || {};
+
+                const squadFriends = [werewolf, terrdog, tiger];
+
+                squadFriends.forEach(u => {
+                    const uHunt = u.activeHunt || {};
+                    const uTrophies = convertFirebaseArray(uHunt.trophies || u.trophies);
+                    const match = uTrophies.find(t => t && (t.name === trophy.name || (t.id && t.id === trophy.id)));
+                    if (match && match.earned) count++;
+                });
+            }
+
+            // Cap at squad size 4
+            count = Math.min(count, SQUAD_POOL_TOTAL);
+            return {
+                count: count,
+                total: SQUAD_POOL_TOTAL,
+                text: `${count}/${SQUAD_POOL_TOTAL} Squad`
+            };
         }
 
         function logSmartEvent(eventName, params) {
@@ -713,7 +780,7 @@
             const img = document.getElementById('music-widget-img');
             if(!img) return;
             const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=13.3.0`;
+            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=13.7.0`;
         }
 
         async function fetchLiveTwitch() {
@@ -869,6 +936,89 @@
             lb.style.display = 'flex';
         }
 
+        // --- UNIVERSAL TROPHY LIGHTBOX MODAL WITH SQUAD COMPARISON ---
+        window.openTrophyDetailModal = function(t, gameTitle) {
+            if (!t) return;
+            const lb = document.getElementById("generic-lightbox");
+            const lbTitle = document.getElementById("lightbox-title");
+            const lbBody = document.getElementById("lightbox-body");
+            if (!lb) return;
+
+            const isEarned = t.earned === true;
+            const timestamp = t.timestamp || 0;
+            const isWithin12Hours = isEarned && timestamp > 0 && (Date.now() - timestamp <= 12 * 60 * 60 * 1000);
+            
+            // Calculate Squad Unlocks (Ray + Werewolf + Terrdog + DesedemonaTiger)
+            const squadData = calculateSquadEarnRatio(t);
+
+            lbTitle.innerText = (gameTitle || t.game || "PlayStation Title") + " - Trophy Detail";
+
+            // 12-Hour Yellow Golden Highlight Banner
+            let recentBannerHtml = "";
+            if (isWithin12Hours) {
+                recentBannerHtml = `
+                    <div class="w-full bg-yellow-500/20 border-2 border-yellow-400 p-3 rounded-xl flex items-center justify-center gap-2 text-yellow-300 font-black text-xs uppercase tracking-widest animate-pulse shadow-lg">
+                        <i class="fas fa-fire text-yellow-400 text-base"></i> EARNED IN THE PAST 12 HOURS!
+                    </div>
+                `;
+            }
+
+            const descText = t.description || t.detail || (isEarned ? 'Secret Objective Completed.' : 'Keep playing on PlayStation Network to unlock this trophy.');
+
+            lbBody.innerHTML = `
+                <div class="flex flex-col items-center space-y-6 p-2">
+                    ${recentBannerHtml}
+
+                    <!-- ENLARGED TROPHY ARTWORK -->
+                    <div class="relative w-36 h-36 bg-black/60 p-3 rounded-2xl border ${isWithin12Hours ? 'border-yellow-400 shadow-[0_0_30px_rgba(245,158,11,0.5)]' : 'border-white/10 shadow-2xl'} flex items-center justify-center">
+                        <img src="${t.icon || ''}" class="w-full h-full object-cover rounded-xl ${!isEarned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://via.placeholder.com/150x150/202024/38BDF8?text=🏆'">
+                    </div>
+                    
+                    <!-- TITLE & GAME -->
+                    <div class="text-center space-y-1">
+                        <div class="text-xs font-black text-sky-400 uppercase tracking-widest">${gameTitle || t.game || 'PlayStation Game'}</div>
+                        <h4 class="text-2xl sm:text-3xl font-black text-white uppercase leading-tight">${!isEarned && t.hidden ? '<i class="fas fa-eye-slash text-gray-500 mr-2"></i>SECRET TROPHY' : (t.name || 'Trophy Title')}</h4>
+                    </div>
+
+                    <!-- ACCURATE TROPHY DESCRIPTION CRITERIA -->
+                    <div class="w-full bg-white/5 p-5 rounded-2xl border border-white/10 text-gray-200 text-sm leading-relaxed text-center font-medium shadow-inner">
+                        "${descText}"
+                    </div>
+
+                    <!-- METRICS GRID: SQUAD UNLOCKS, EARN DATE, RELATIVE TIME -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full pt-1">
+                        <div class="bg-black/40 p-4 rounded-xl border border-white/10 flex flex-col items-center text-center">
+                            <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Squad Unlocks</span>
+                            <span class="text-xs font-black text-cyan-400 uppercase mt-1">
+                                <i class="fas fa-users mr-1 text-sky-400"></i> ${squadData.text}
+                            </span>
+                        </div>
+
+                        <div class="bg-black/40 p-4 rounded-xl border border-white/10 flex flex-col items-center text-center">
+                            <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Earn Time (Relative)</span>
+                            <span class="text-xs font-black ${isWithin12Hours ? 'text-yellow-400' : 'text-white'} uppercase mt-1">
+                                ${isEarned ? getRelativeTime(timestamp) : 'Not Earned Yet'}
+                            </span>
+                        </div>
+
+                        <div class="bg-black/40 p-4 rounded-xl border border-white/10 flex flex-col items-center text-center">
+                            <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider">Earn Date</span>
+                            <span class="text-xs font-black text-gray-300 uppercase mt-1">
+                                ${isEarned ? formatExactDate(timestamp) : '--'}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            lb.style.display = 'flex';
+        };
+
+        window.openRecentTrophyLightbox = function() {
+            if (lastEarnedTrophyData) {
+                openTrophyDetailModal(lastEarnedTrophyData, lastEarnedTrophyData.game);
+            }
+        };
+
         function closeGenericLightbox() {
             const lb = document.getElementById('generic-lightbox');
             if(lb) lb.style.display = 'none';
@@ -914,6 +1064,7 @@
             }
         }
 
+        // --- REAL-TIME FIREBASE STORAGE & SQUAD OBSERVER ---
         async function updateHub() {
             try {
                 const firebaseRes = await fetch("https://game-tracker-5b2ef-default-rtdb.firebaseio.com/psn.json?t=" + Date.now());
@@ -921,13 +1072,29 @@
                 const psnData = await firebaseRes.json();
                 if (!psnData) return;
 
+                globalPsnPayload = psnData; // Cache for Squad Comparisons
+
                 const user = psnData.users?.ray || psnData.users?.Ray || {};
 
                 const hDot = document.getElementById('health-dot');
                 const hVal = document.getElementById('health-value');
-                if (hDot) { 
-                    hDot.className = "status-dot-pulse online"; 
-                    hVal.innerText = (user.onlineId || "OneLIVIDMAN") + " Handshake: Firebase Live"; 
+                const aBox = document.getElementById('system-alerts-container');
+                const aMsg = document.getElementById('alert-message');
+
+                // DYNAMIC NPSSO TOKEN HANDSHAKE EVALUATION
+                const isTokenValid = user.npssoValid !== false && user.handshakeState !== 'EXPIRED';
+
+                if (!isTokenValid) {
+                    if (hDot) hDot.className = "status-dot-pulse expired";
+                    if (hVal) hVal.innerText = user.handshakeText || "ONELIVIDMAN HANDSHAKE: NPSSO EXPIRED / TOKEN BAD";
+                    if (aBox) {
+                        aBox.classList.remove('hidden');
+                        if (aMsg) aMsg.innerText = "PSN_NPSSO_RAY Token Expired / Update Needed in GitHub Secrets!";
+                    }
+                } else {
+                    if (hDot) hDot.className = "status-dot-pulse online";
+                    if (hVal) hVal.innerText = user.handshakeText || ((user.onlineId || "OneLIVIDMAN") + " HANDSHAKE: FIREBASE LIVE");
+                    if (aBox) aBox.classList.add('hidden');
                 }
 
                 const displayAdmin = document.getElementById('display-admin-name');
@@ -1081,6 +1248,7 @@
                     const checklistHeader = document.querySelector('#checklist-header-text');
                     if(checklistHeader) checklistHeader.innerHTML = `<i class="fas fa-list-check text-sky-400"></i> Trophy Checklist <span class="text-gray-500 ml-2 tracking-widest text-sm">(${completionFraction})</span>`;
 
+                    // RENDER TROPHY CHECKLIST LOG WITH SQUAD COMPARISON RATIO
                     const checklist = document.getElementById('trophy-checklist-container');
                     if(checklist) {
                         if (currentTrophyData.length > 0) {
@@ -1091,23 +1259,25 @@
                                 }
 
                                 const isEarnedRecently = t.earned && t.timestamp > 0 && (Date.now() - t.timestamp <= 12 * 60 * 60 * 1000);
-                                const recentEarnBadge = isEarnedRecently ? `<span class="ml-2 text-[8px] bg-sky-600/30 text-sky-400 border border-sky-500/50 rounded px-1 animate-pulse font-bold tracking-widest"><i class="fas fa-fire mr-1"></i>RECENT</span>` : '';
+                                const yellowBadge = isEarnedRecently ? `<span class="ml-2 text-[8px] bg-yellow-500/20 text-yellow-300 border border-yellow-400 rounded px-1.5 py-0.5 animate-pulse font-extrabold tracking-widest"><i class="fas fa-fire mr-1"></i>RECENT 12H</span>` : '';
+
+                                const squadRatio = calculateSquadEarnRatio(t);
 
                                 return `
-                                <div class="trophy-row ${isEarnedRecently ? 'recent-earn-glow' : ''}" onclick="openLightboxImage('${t.icon}', '${t.name}')">
+                                <div class="trophy-row ${isEarnedRecently ? 'recent-earn-yellow-glow' : ''}" onclick="openTrophyDetailModal(currentTrophyData[${idx}], '${(hunt.title || 'PlayStation Game').replace(/'/g, "\\'")}')">
                                     <img src="${t.icon}" class="trophy-icon-sq ${!t.earned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://via.placeholder.com/50x50/202024/38BDF8?text=🏆'">
                                     <div class="min-w-0 flex-1">
-                                        <div class="trophy-title-text truncate font-black ${t.earned ? 'text-green-500' : 'text-sky-400'} text-xs">
-                                            ${!t.earned && t.hidden ? '<i class="fas fa-eye-slash mr-1 text-gray-500"></i> HIDDEN TROPHY' : t.name}${recentEarnBadge}
+                                        <div class="trophy-title-text truncate font-black ${t.earned ? (isEarnedRecently ? 'text-yellow-400' : 'text-green-400') : 'text-sky-400'} text-xs">
+                                            ${!t.earned && t.hidden ? '<i class="fas fa-eye-slash mr-1 text-gray-500"></i> HIDDEN TROPHY' : t.name}${yellowBadge}
                                         </div>
-                                        <div class="trophy-desc-text truncate text-[10px] opacity-70 text-gray-400">
-                                            ${!t.earned && t.hidden ? 'Keep playing to discover this secret.' : t.description}
+                                        <div class="trophy-desc-text truncate text-[10px] opacity-70 text-gray-400 mt-0.5">
+                                            ${!t.earned && t.hidden ? 'Keep playing to discover this secret.' : (t.description || t.detail || 'Click to view full objective details.')}
                                         </div>
                                         ${individualProgressTracker}
-                                        <div class="text-[8px] font-black text-gray-500 uppercase mt-1 tracking-widest">${t.earnedRate || '0.0'}% Global Earn Rate</div>
+                                        <div class="text-[8px] font-black text-sky-400 uppercase mt-1 tracking-widest"><i class="fas fa-users mr-1"></i> ${squadRatio.text}</div>
                                     </div>
-                                    <div class="min-w-[100px] text-right">
-                                        ${t.earned ? `<div class="font-black text-[9px] text-green-500 uppercase">EARNED</div><div class="text-[8px] text-gray-500 uppercase">${getRelativeTime(t.timestamp)}</div>` : `<div class="text-[9px] font-black uppercase text-gray-600">${t.rarity || t.type}</div>`}
+                                    <div class="min-w-[110px] text-right">
+                                        ${t.earned ? `<div class="font-black text-[9px] ${isEarnedRecently ? 'text-yellow-400' : 'text-green-400'} uppercase">EARNED</div><div class="text-[8px] text-gray-400 uppercase mt-0.5">${getRelativeTime(t.timestamp)}</div>` : `<div class="text-[9px] font-black uppercase text-gray-600">${t.rarity || t.type || 'LOCKED'}</div>`}
                                     </div>
                                 </div>`;
                             }).join('');
@@ -1117,6 +1287,7 @@
                     }
                 }
 
+                // RECENTLY EARNED TROPHY LOGIC & OBJECT HYDRATION FOR MODAL LIGHTBOX
                 let recTrophy = null;
                 const mostRecentNormal = convertFirebaseArray(user.mostRecentTrophies);
                 if (mostRecentNormal.length > 0 && mostRecentNormal[0].name) {
@@ -1125,14 +1296,20 @@
                     const earnedTrophies = currentTrophyData.filter(t => t.earned && t.timestamp > 0);
                     if (earnedTrophies.length > 0) {
                         earnedTrophies.sort((a,b) => b.timestamp - a.timestamp);
+                        const topEarned = earnedTrophies[0];
                         recTrophy = {
-                            name: earnedTrophies[0].name,
-                            icon: earnedTrophies[0].icon,
+                            name: topEarned.name,
+                            icon: topEarned.icon,
                             game: hunt ? hunt.title : "Active Hunt",
-                            timestamp: earnedTrophies[0].timestamp
+                            timestamp: topEarned.timestamp,
+                            description: topEarned.description || topEarned.detail || "Secret Objective Cleared",
+                            type: topEarned.type || topEarned.rarity || "Trophy",
+                            earned: true
                         };
                     }
                 }
+
+                lastEarnedTrophyData = recTrophy; // Store globally for openRecentTrophyLightbox
 
                 const recCard = document.getElementById('recent-trophy-card');
                 if (recTrophy) {
@@ -1149,9 +1326,9 @@
                         if (recCard) {
                             recCard.classList.remove('hidden');
                             if (isTrophyRecent) {
-                                recCard.classList.add('recent-earn-glow');
+                                recCard.classList.add('recent-earn-yellow-glow');
                             } else {
-                                recCard.classList.remove('recent-earn-glow');
+                                recCard.classList.remove('recent-earn-yellow-glow');
                             }
                         }
                     }
