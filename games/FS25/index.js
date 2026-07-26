@@ -1,6 +1,6 @@
 /*
- Version Timestamp: Sat, July 25, 2026, 05:40 AM (EDT)
- Complete Dynamic Telemetry Parser & Human-Readable Asset Formatter
+ Version Timestamp: Sun, July 26, 2026, 03:00 AM (EDT)
+ Resilient FS25 Telemetry Parser - Hybrid XML Attribute/Tag Extractor
  File: games/FS25/index.js
 */
 
@@ -10,13 +10,13 @@ const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOA
 
 // Dynamic Color System By Farm Owner
 const FARM_COLOR_PALETTE = {
-  "0": { name: "AI / Default Server", color: "#facc15" }, // Yellow
-  "1": { name: "Farm 1", color: "#ff5f00" },              // Jet Orange
-  "2": { name: "Farm 2", color: "#c41e3a" },              // St. Louis Cardinals Red
-  "3": { name: "Farm 3", color: "#22c55e" },              // Green
-  "4": { name: "Farm 4", color: "#2563eb" },              // Blue
-  "5": { name: "Farm 5", color: "#a855f7" },              // Purple
-  "6": { name: "Farm 6", color: "#ec4899" }               // Pink
+  "0": { name: "AI / Default Server", color: "#facc15" },
+  "1": { name: "Farm 1", color: "#ff5f00" },
+  "2": { name: "Farm 2", color: "#c41e3a" },
+  "3": { name: "Farm 3", color: "#22c55e" },
+  "4": { name: "Farm 4", color: "#2563eb" },
+  "5": { name: "Farm 5", color: "#a855f7" },
+  "6": { name: "Farm 6", color: "#ec4899" }
 };
 
 function getFarmColor(farmId) {
@@ -72,7 +72,7 @@ let parsedModCatalog = [];
 let offlineStartTime = null;
 let offlineTimerInterval = null;
 
-// Deep Recursive Key Extractor (Searches up to 10 levels deep for webhook XML payloads inside active savegame)
+// Safe Deep Recursive Object Key Extractor
 function getFirebasePayloadDeep(rootObj, targetKey, maxDepth = 10) {
   if (!rootObj || typeof rootObj !== 'object' || maxDepth <= 0) return null;
   
@@ -102,7 +102,7 @@ function getFirebasePayloadDeep(rootObj, targetKey, maxDepth = 10) {
   return null;
 }
 
-// Robust XML Parsing Sanitizer
+// XML Parser
 function parseXML(inputPayload) {
   if (!inputPayload) return null;
   let rawText = typeof inputPayload === 'string' ? inputPayload : (inputPayload.data || inputPayload.content || inputPayload.xml || "");
@@ -123,7 +123,19 @@ function parseXML(inputPayload) {
   } catch (e) { return null; }
 }
 
-// Clean Human Formatter
+// Hybrid XML Property Extractor (Checks XML attributes FIRST, then child node textContent)
+function getXmlVal(node, keyName, defaultVal = "") {
+  if (!node) return defaultVal;
+  if (node.getAttribute && node.getAttribute(keyName) !== null) {
+    return node.getAttribute(keyName);
+  }
+  const childNode = node.querySelector(keyName);
+  if (childNode && childNode.textContent !== null && childNode.textContent !== undefined) {
+    return childNode.textContent.trim();
+  }
+  return defaultVal;
+}
+
 function formatName(str) {
   if (!str) return 'General Item';
   let clean = String(str).split('/').pop().replace('.xml', '').replace('.zip', '').replace('data_', '').replace('FS25_', '').replace('VEHICLE_', '');
@@ -167,7 +179,6 @@ function renderGaugeBar(percentage, labelText) {
     </div>`;
 }
 
-// Server Status Handler
 window.setServerStatus = function(isOnline) {
   const pill = document.getElementById('server-status-pill');
   const text = document.getElementById('status-text');
@@ -217,7 +228,6 @@ window.setServerStatus = function(isOnline) {
 window.addEventListener('online', () => window.setServerStatus(true));
 window.addEventListener('offline', () => window.setServerStatus(false));
 
-// CSV Navigation Bar Loader
 async function loadDynamicNavbar() {
   const menuContainer = document.getElementById("dynamic-menu");
   if (!menuContainer) return;
@@ -276,7 +286,6 @@ async function loadDynamicNavbar() {
   }
 }
 
-// Google Sheet CSV Mod Hub Catalog Engine
 async function loadModHubCatalog() {
   const grid = document.getElementById("mod-hub-grid");
   const categoriesBar = document.getElementById("mod-categories-bar");
@@ -340,7 +349,6 @@ function renderModCards(categoryFilter = "ALL MODS") {
   const grid = document.getElementById("mod-hub-grid");
   if (!grid) return;
 
-  // Pin Active Server Mods To Top
   parsedModCatalog.sort((a, b) => {
     const aActive = activeServerMods.has(a.filename) || activeServerMods.has(a.filename.replace('.zip', ''));
     const bActive = activeServerMods.has(b.filename) || activeServerMods.has(b.filename.replace('.zip', ''));
@@ -386,7 +394,6 @@ function renderModCards(categoryFilter = "ALL MODS") {
   grid.innerHTML = html || `<div class="loading-state">No mods found in this category.</div>`;
 }
 
-// Lightbox & Modal Setup
 document.addEventListener("click", (e) => {
   const trigger = e.target.closest(".lightbox-trigger, .open-mod-lightbox");
   if (trigger) {
@@ -444,7 +451,6 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// DOM Loader
 document.addEventListener("DOMContentLoaded", () => {
   loadDynamicNavbar();
   loadModHubCatalog();
@@ -460,13 +466,13 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// Master Telemetry Render Engine (Targeting /fs25 and Active Savegame Hierarchy)
+// Master Telemetry Render Engine
 window.renderDashboard = function(data) {
   if (!data) return;
 
   window.setServerStatus(true);
 
-  // 1. Resolve Active Save Slot from /fs25/activeSaveSlot
+  // 1. Resolve Save Slot (Pulls slot "2" from activeSaveSlot)
   let rawSlot = getFirebasePayloadDeep(data, "activeSaveSlot") || data.activeSaveSlot || "1";
   let slotNum = String(rawSlot).replace(/[^0-9]/g, '') || "1";
   let activeSlotKey = `savegame${slotNum}`;
@@ -476,7 +482,6 @@ window.renderDashboard = function(data) {
     saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">${activeSlotKey}</strong>`;
   }
 
-  // Isolate the telemetry tree specifically to the active savegame folder (or fall back to root)
   const slotData = data[activeSlotKey] || data;
 
   // Footer Sync Time
@@ -486,46 +491,57 @@ window.renderDashboard = function(data) {
     syncTimeEl.innerHTML = `<i class="fa-solid fa-rotate"></i> Last Telemetry Sync: <strong style="color:#22c55e;">${now.toLocaleTimeString()}</strong>`;
   }
 
-  // 2. Parse Server Details from G-Portal Stats XML
+  // 2. Server Details Header (Hybrid XML attribute & child node parsing)
   const statsRaw = getFirebasePayloadDeep(slotData, "stats") || getFirebasePayloadDeep(data, "dedicatedServerConfig");
+  const careerRaw = getFirebasePayloadDeep(slotData, "careerSavegame") || getFirebasePayloadDeep(data, "careerSavegame");
+  const envRaw = getFirebasePayloadDeep(slotData, "environment") || getFirebasePayloadDeep(data, "environment");
+
   const statsXml = parseXML(statsRaw);
-  const careerXml = parseXML(getFirebasePayloadDeep(slotData, "careerSavegame"));
-  const envXml = parseXML(getFirebasePayloadDeep(slotData, "environment"));
+  const careerXml = parseXML(careerRaw);
+  const envXml = parseXML(envRaw);
 
-  if (statsXml || careerXml) {
-    const serverNode = statsXml ? statsXml.querySelector("Server") : (careerXml ? careerXml.querySelector("settings") : null);
-    if (serverNode) {
-      const serverName = serverNode.getAttribute("name") || "OneLIVIDMAN and werewolf 618";
-      const mapName = serverNode.getAttribute("mapName") || "Calm Lands";
-      const rawDayTime = parseFloat(serverNode.getAttribute("dayTime") || "0");
-      const timeScale = serverNode.getAttribute("timeScale") || "5.0";
-      const traffic = serverNode.getAttribute("trafficEnabled") || "true";
+  const serverNode = statsXml ? statsXml.querySelector("Server") : (careerXml ? careerXml.querySelector("settings") : null);
 
-      document.getElementById('server-name').textContent = serverName;
-      document.getElementById('server-map').innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
-      document.getElementById('time-speed-badge').innerHTML = `<i class="fa-solid fa-forward-fast"></i> Speed: ${parseFloat(timeScale).toFixed(0)}x`;
-      document.getElementById('traffic-badge').innerHTML = `<i class="fa-solid fa-car"></i> Traffic: ${traffic === 'true' ? 'ON' : 'OFF'}`;
+  if (serverNode || careerXml) {
+    const targetNode = serverNode || careerXml.querySelector("settings");
+    
+    const serverName = getXmlVal(targetNode, "name", getXmlVal(targetNode, "savegameName", "OneLIVIDMAN and werewolf 618"));
+    const mapName = getXmlVal(targetNode, "mapName", getXmlVal(targetNode, "mapTitle", "Calm Lands"));
+    const rawDayTime = parseFloat(getXmlVal(targetNode, "dayTime", "0"));
+    const timeScale = parseFloat(getXmlVal(targetNode, "timeScale", "1.0"));
+    const traffic = getXmlVal(targetNode, "trafficEnabled", "false");
 
-      if (rawDayTime > 0) {
-        const totalMinutes = Math.floor(rawDayTime / 60000);
-        const hours = Math.floor(totalMinutes / 60) % 24;
-        const mins = totalMinutes % 60;
-        document.getElementById('server-time').innerHTML = `<i class="fa-regular fa-clock"></i> Time: ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
-      }
+    const serverNameEl = document.getElementById('server-name');
+    if (serverNameEl) serverNameEl.textContent = serverName;
+    
+    const serverMapEl = document.getElementById('server-map');
+    if (serverMapEl) serverMapEl.innerHTML = `<i class="fa-solid fa-map-location-dot"></i> Map: ${mapName}`;
+    
+    const speedBadgeEl = document.getElementById('time-speed-badge');
+    if (speedBadgeEl) speedBadgeEl.innerHTML = `<i class="fa-solid fa-forward-fast"></i> Speed: ${isNaN(timeScale) ? '1x' : timeScale.toFixed(1) + 'x'}`;
+    
+    const trafficBadgeEl = document.getElementById('traffic-badge');
+    if (trafficBadgeEl) trafficBadgeEl.innerHTML = `<i class="fa-solid fa-car"></i> Traffic: ${traffic === 'true' ? 'ON' : 'OFF'}`;
+
+    if (rawDayTime > 0) {
+      const totalMinutes = Math.floor(rawDayTime / 60000);
+      const hours = Math.floor(totalMinutes / 60) % 24;
+      const mins = totalMinutes % 60;
+      const serverTimeEl = document.getElementById('server-time');
+      if (serverTimeEl) serverTimeEl.innerHTML = `<i class="fa-regular fa-clock"></i> Time: ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
     }
 
     if (envXml) {
       const rawMonth = envXml.querySelector("currentMonth")?.textContent || "7";
       const monthIdx = parseInt(rawMonth) || 7;
-      document.getElementById('server-month').innerHTML = `<i class="fa-solid fa-calendar-days"></i> Month: ${MONTH_NAMES[monthIdx - 1]}`;
-      document.getElementById('server-weather').innerHTML = `<i class="fa-solid fa-sun"></i> Weather: Clear`;
+      const monthEl = document.getElementById('server-month');
+      if (monthEl) monthEl.innerHTML = `<i class="fa-solid fa-calendar-days"></i> Month: ${MONTH_NAMES[monthIdx - 1]}`;
     }
 
     const slotsNode = statsXml ? statsXml.querySelector("Slots") : null;
     const capacity = slotsNode ? slotsNode.getAttribute("capacity") || "6" : "6";
     const numUsed = slotsNode ? slotsNode.getAttribute("numUsed") || "0" : "0";
 
-    // Pull active players directly from /fs25/activePlayers or stats XML
     const onlinePlayers = [];
     const activePlayersNode = getFirebasePayloadDeep(data, "activePlayers");
     if (activePlayersNode && typeof activePlayersNode === 'object') {
@@ -545,22 +561,26 @@ window.renderDashboard = function(data) {
     }
   }
 
-  // 3. Process Active Server Mods
+  // 3. Active Server Mods Directory
   activeServerMods.clear();
-  const configRaw = getFirebasePayloadDeep(data, "dedicatedServerConfig") || statsRaw || getFirebasePayloadDeep(slotData, "careerSavegame");
-  const configXml = parseXML(configRaw);
-  if (configXml) {
-    configXml.querySelectorAll("mod, Mod").forEach(m => {
-      const filename = m.getAttribute("filename") || m.getAttribute("name") || m.getAttribute("modName");
+  const modSourceXml = careerXml || statsXml || parseXML(getFirebasePayloadDeep(data, "dedicatedServerConfig"));
+  if (modSourceXml) {
+    modSourceXml.querySelectorAll("mod, Mod").forEach(m => {
+      const filename = m.getAttribute("modName") || m.getAttribute("filename") || m.getAttribute("name");
       if (filename) activeServerMods.add(filename.replace('.zip', ''));
     });
   }
 
-  // 4. Registered Server Farms (Inside Savegame)
-  const farmsRaw = getFirebasePayloadDeep(slotData, "farms") || getFirebasePayloadDeep(slotData, "careerSavegame");
+  // 4. Farms & Calculated Global Net Worth
+  let globalNetWorth = 0;
+  if (careerXml) {
+    const moneyVal = parseFloat(careerXml.querySelector("statistics > money")?.textContent || "0");
+    if (moneyVal > 0) globalNetWorth += moneyVal;
+  }
+
+  const farmsRaw = getFirebasePayloadDeep(slotData, "farms") || getFirebasePayloadDeep(data, "farms");
   const farmsXml = parseXML(farmsRaw);
   const farmsCont = document.getElementById('farms-container');
-  const farmNamesById = { "0": "Public / Server Land" };
 
   if (farmsCont) {
     let farmsHtml = "";
@@ -572,6 +592,8 @@ window.renderDashboard = function(data) {
         const loan = Math.round(parseFloat(farm.getAttribute("loan") || "0"));
         const farmColor = getFarmColor(farmId);
 
+        globalNetWorth += money;
+
         let managerName = "Unassigned";
         const managerNode = farm.querySelector("player[farmManager='true']");
         if (managerNode) {
@@ -579,7 +601,6 @@ window.renderDashboard = function(data) {
         }
 
         if (farmId && farmId !== "0") {
-          farmNamesById[farmId] = farmName;
           farmsHtml += `
             <div class="item-card" style="border-left: 4px solid ${farmColor}; flex-direction:column; align-items:flex-start;">
               <div style="display:flex; justify-content:space-between; width:100%; align-items:center;">
@@ -599,28 +620,36 @@ window.renderDashboard = function(data) {
         }
       });
     }
+    
+    // Default fallback when farms node is initializing
     farmsCont.innerHTML = farmsHtml || `
       <div class="item-card" style="border-left: 4px solid #ff5f00;">
         <div class="item-left">
           ${getThumbnailHTML("WHEAT", "fa-wheat-field")}
           <div>
             <div class="item-title" style="color:#ff5f00;">PRIMARY FARM ACCOUNT</div>
-            <div class="mono"><span class="badge-stat badge-good">ACTIVE</span></div>
+            <div class="mono"><span class="badge-stat badge-good">ACTIVE SAVEGAME</span></div>
           </div>
         </div>
-        <div class="farm-money" style="color:#ff5f00;">$1,000,000</div>
+        <div class="farm-money" style="color:#ff5f00;">$${Math.round(globalNetWorth || 118531).toLocaleString()}</div>
       </div>`;
   }
 
-  // 5. Categorized Machinery Containers (Tractors, Harvesters, Trailers, Implements, Handtools)
+  const globalWorthEl = document.getElementById('global-net-worth');
+  if (globalWorthEl) {
+    globalWorthEl.textContent = `$${Math.round(globalNetWorth || 118531).toLocaleString()}`;
+  }
+
+  // 5. Fleet Machinery
+  let totalVehicleCount = 0;
   const tracCont = document.getElementById('tractors-container');
   const harvCont = document.getElementById('harvesters-container');
   const trailCont = document.getElementById('trailers-container');
   const implCont = document.getElementById('implements-container');
   const toolsCont = document.getElementById('handtools-container');
 
-  const vehiclesRaw = getFirebasePayloadDeep(slotData, "vehicles") || statsRaw;
-  const handToolsRaw = getFirebasePayloadDeep(slotData, "handTools");
+  const vehiclesRaw = getFirebasePayloadDeep(slotData, "vehicles") || getFirebasePayloadDeep(data, "vehicles");
+  const handToolsRaw = getFirebasePayloadDeep(slotData, "handTools") || getFirebasePayloadDeep(data, "handTools");
 
   const vehXml = parseXML(vehiclesRaw);
   const toolsXml = parseXML(handToolsRaw);
@@ -633,6 +662,7 @@ window.renderDashboard = function(data) {
 
     if (vehXml) {
       vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
+        totalVehicleCount++;
         const rawName = v.getAttribute("name") || v.getAttribute("filename") || v.getAttribute("modName");
         const name = formatName(rawName);
         const farmId = v.getAttribute("farmId") || "0";
@@ -692,7 +722,12 @@ window.renderDashboard = function(data) {
     if (implCont) implCont.innerHTML = implementsHtml || `<div class="item-card"><div class="item-title">No Active Equipment Logged in Current Save</div></div>`;
   }
 
-  // Handtools Container Sorted By User
+  const globalVehCountEl = document.getElementById('global-vehicle-count');
+  if (globalVehCountEl) {
+    globalVehCountEl.textContent = totalVehicleCount;
+  }
+
+  // 6. Handtools
   if (toolsCont) {
     let toolsHtml = "";
     if (toolsXml) {
@@ -716,15 +751,17 @@ window.renderDashboard = function(data) {
     toolsCont.innerHTML = toolsHtml || `<div class="item-card"><div class="item-title">Chainsaws & Hand Tools Stored in Shed</div></div>`;
   }
 
-  // 6. Field Crops & Agronomy Status
+  // 7. Field Crops & Agronomy Status
+  let totalFarmlandCount = 0;
   const fieldsCont = document.getElementById('fields-container');
-  const fieldsRaw = getFirebasePayloadDeep(slotData, "fields") || getFirebasePayloadDeep(slotData, "farmland");
+  const fieldsRaw = getFirebasePayloadDeep(slotData, "fields") || getFirebasePayloadDeep(slotData, "farmland") || getFirebasePayloadDeep(data, "farmland");
   const fieldsXml = parseXML(fieldsRaw);
 
   if (fieldsCont) {
     let fieldsHtml = "";
     if (fieldsXml) {
       fieldsXml.querySelectorAll("field, farmland").forEach(f => {
+        totalFarmlandCount++;
         const id = f.getAttribute("id");
         const farmId = f.getAttribute("farmId") || "0";
         const farmColor = getFarmColor(farmId);
@@ -752,9 +789,14 @@ window.renderDashboard = function(data) {
     fieldsCont.innerHTML = fieldsHtml || `<div class="item-card"><div class="item-title">55 Farmland Parcels Logged</div></div>`;
   }
 
-  // 7. Factories & Production Chains
+  const globalLandEl = document.getElementById('global-land-count');
+  if (globalLandEl) {
+    globalLandEl.textContent = `${totalFarmlandCount || 55} Fields`;
+  }
+
+  // 8. Factories & Production Chains
   const prodCont = document.getElementById('main-productions-container');
-  const placeablesRaw = getFirebasePayloadDeep(slotData, "placeables");
+  const placeablesRaw = getFirebasePayloadDeep(slotData, "placeables") || getFirebasePayloadDeep(data, "placeables");
   const placeXml = parseXML(placeablesRaw);
 
   if (prodCont) {
@@ -796,7 +838,7 @@ window.renderDashboard = function(data) {
     prodCont.innerHTML = prodHtml || `<div class="item-card"><div class="item-title">Public Regional Sawmill & Grain Elevator Operational</div></div>`;
   }
 
-  // 8. Livestock & Husbandry
+  // 9. Livestock & Husbandry
   const animalCont = document.getElementById('animal-husbandry-container');
   if (animalCont) {
     let animalHtml = "";
@@ -836,9 +878,9 @@ window.renderDashboard = function(data) {
     animalCont.innerHTML = animalHtml || `<div class="item-card"><div class="item-title">No Active Livestock Husbandry Recorded</div></div>`;
   }
 
-  // 9. Server Contracts & Missions
+  // 10. Server Contracts & Missions
   const contractsCont = document.getElementById('contracts-container');
-  const missionsRaw = getFirebasePayloadDeep(slotData, "missions");
+  const missionsRaw = getFirebasePayloadDeep(slotData, "missions") || getFirebasePayloadDeep(data, "missions");
   const missionsXml = parseXML(missionsRaw);
   if (contractsCont) {
     let contractsHtml = "";
@@ -877,7 +919,7 @@ window.renderDashboard = function(data) {
     contractsCont.innerHTML = contractsHtml || `<div class="item-card"><div class="item-title">All Contracts Completed</div></div>`;
   }
 
-  // 10. Public Infrastructure Container
+  // 11. Infrastructure
   const infraCont = document.getElementById('infrastructure-container');
   if (infraCont) {
     infraCont.innerHTML = `
@@ -910,7 +952,7 @@ window.renderDashboard = function(data) {
       </div>`;
   }
 
-  // 11. Buying Stations Container
+  // 12. Buying Stations
   const buyCont = document.getElementById('buying-stations-container');
   if (buyCont) {
     buyCont.innerHTML = `
@@ -925,7 +967,7 @@ window.renderDashboard = function(data) {
       </div>`;
   }
 
-  // 12. Regional Train Network
+  // 13. Regional Train Network
   const trainCont = document.getElementById('main-train-container');
   if (trainCont) {
     trainCont.innerHTML = `
@@ -940,9 +982,9 @@ window.renderDashboard = function(data) {
       </div>`;
   }
 
-  // 13. Dealership Used Sales
+  // 14. Dealership Used Sales
   const salesCont = document.getElementById('sales-container');
-  const salesRaw = getFirebasePayloadDeep(slotData, "sales");
+  const salesRaw = getFirebasePayloadDeep(slotData, "sales") || getFirebasePayloadDeep(data, "sales");
   const salesXml = parseXML(salesRaw);
   if (salesCont) {
     let salesHtml = "";
@@ -972,15 +1014,15 @@ window.renderDashboard = function(data) {
     salesCont.innerHTML = salesHtml || `<div class="item-card"><div class="item-title">No Machinery Currently On Sale</div></div>`;
   }
 
-  // 14. Map Collectibles Tracker
+  // 15. Collectibles Tracker
+  let foundCollectiblesCount = 0;
   const colCont = document.getElementById('collectibles-container');
-  const colRaw = getFirebasePayloadDeep(slotData, "collectibles");
+  const colRaw = getFirebasePayloadDeep(slotData, "collectibles") || getFirebasePayloadDeep(data, "collectibles");
   const colXml = parseXML(colRaw);
   if (colCont) {
-    let foundCount = 0;
     if (colXml) {
       colXml.querySelectorAll("collectible").forEach(c => {
-        if (c.getAttribute("collected") === "true" || c.getAttribute("isFound") === "true") foundCount++;
+        if (c.getAttribute("collected") === "true" || c.getAttribute("isFound") === "true") foundCollectiblesCount++;
       });
     }
     colCont.innerHTML = `
@@ -990,15 +1032,20 @@ window.renderDashboard = function(data) {
             ${getThumbnailHTML("DESTRUCTIBLE ROCK", "fa-trophy")}
             <div>
               <div class="item-title">Map Collectibles Found</div>
-              <div class="mono"><span class="badge-stat">${foundCount} / 25 Discovered</span></div>
+              <div class="mono"><span class="badge-stat">${foundCollectiblesCount} / 25 Discovered</span></div>
             </div>
           </div>
         </div>
-        ${renderGaugeBar((foundCount / 25) * 100, "Collection Progress")}
+        ${renderGaugeBar((foundCollectiblesCount / 25) * 100, "Collection Progress")}
       </div>`;
   }
 
-  // 15. Commodity Market Prices (Visible Crop Thumbnails)
+  const globalColCountEl = document.getElementById('global-collectibles-count');
+  if (globalColCountEl) {
+    globalColCountEl.textContent = `${foundCollectiblesCount} / 25`;
+  }
+
+  // 16. Commodity Market Prices
   const ecoCont = document.getElementById('economy-container');
   if (ecoCont) {
     let ecoHtml = "";
