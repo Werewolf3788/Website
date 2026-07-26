@@ -2,12 +2,11 @@
 <!-- 
     ==========================================
     --- PRECISION INTEGRITY PROTOCOL ---
-    Project: Kevin's Official Pack Hub - Unified User Dashboard
-    Version: 12.0.0-Wolf - Single-User Unification Engine
-    Timestamp: Sat, July 25, 2026 | 9:45 PM EDT
+    Project: Kevin's Official Pack Hub - Dynamic Dashboard
+    Version: 12.7.0-Wolf - Amazon Tag website3788-20 Update
+    Timestamp: Sat, July 25, 2026 | 10:23 PM EDT
     Compatibility: Chrome, Safari, Firefox, Edge | Mobile, Tablet, Desktop
-    Logic: Unifies PSN Live RTDB telemetry and Firestore game progression
-           under a single user target (WildHorse_Spirit / Werewolf3788 fallback).
+    Logic: Updated default Amazon affiliate tag to website3788-20 globally.
     ==========================================
 -->
 <html lang="en">
@@ -32,12 +31,12 @@
             'stream_id': '13278632388',
             'page_type': 'admin_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '12.0.0',
+            'layout_version': '12.7.0',
             'user_id': 'WildHorse_Spirit',
             'engagement_timezone': 'Eastern Time (New York)',
             'engagement_timestamp_ny': getNYTime(),
             'send_page_view': true,
-            'description': 'Unified Pack Hub featuring isolated user profiles for PSN telemetry and Firestore progression.'
+            'description': 'Official Pack Hub with website3788-20 Amazon tracking tag integration.'
         });
         gtag('config', 'G-L376P3NPY4'); // Watermark GA4
     </script>
@@ -166,6 +165,34 @@
         .kf-k { color: #FF4500; transform: scaleX(-1); z-index: 2; font-weight: 900; font-size: 24px; display: inline-block; }
         .kf-f { color: #ffffff; margin-left: -0.22em; z-index: 1; font-weight: 900; font-size: 24px; text-shadow: 1px 1px 0px rgba(0,0,0,0.8); display: inline-block; }
 
+        /* Store Button Badges */
+        .store-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.2s ease;
+            min-height: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .store-btn-ps { background: rgba(0, 67, 156, 0.25); color: #60a5fa; border-color: rgba(0, 67, 156, 0.5); }
+        .store-btn-ps:hover { background: #00439c; color: #ffffff; }
+
+        .store-btn-xbox { background: rgba(16, 124, 65, 0.25); color: #4ade80; border-color: rgba(16, 124, 65, 0.5); }
+        .store-btn-xbox:hover { background: #107c41; color: #ffffff; }
+
+        .store-btn-steam { background: rgba(23, 26, 33, 0.8); color: #cbd5e1; border-color: rgba(255, 255, 255, 0.2); }
+        .store-btn-steam:hover { background: #171a21; color: #66fcf1; border-color: #66fcf1; }
+
+        .store-btn-amazon { background: rgba(255, 153, 0, 0.2); color: #ff9900; border-color: rgba(255, 153, 0, 0.4); }
+        .store-btn-amazon:hover { background: #ff9900; color: #000000; }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -274,20 +301,33 @@
                             <p id="profile-bio" class="leading-relaxed text-gray-400 text-base lg:text-xl">Official Admin Profile</p>
                         </section>
 
-                        <!-- ACTIVE HUNT HERO -->
+                        <!-- ACTIVE HUNT HERO CARD WITH MULTI-STORE LAUNCHPAD -->
                         <section id="last-played-hero" class="glass-card overflow-hidden">
                             <div class="p-8 lg:p-12 pb-4"><h2 class="mb-6 text-orange-500 flex items-center gap-3 uppercase"><i class="fas fa-history"></i> Active Hunt</h2></div>
-                            <a id="active-game-store-link" href="#" target="psn_store_window" class="block relative w-full aspect-video bg-orange-900/10 border-y border-white/5 group">
-                                <img id="active-game-art" src="" class="w-full h-full object-cover hidden" onerror="this.src='https://via.placeholder.com/600x337/1e1e24/FF5F1F?text=PLAYSTATION+GAME'">
+                            
+                            <!-- Cover Poster Image (Strictly Matched to Hunt Title) -->
+                            <div class="relative w-full aspect-video bg-orange-900/10 border-y border-white/5 cursor-pointer" onclick="openLightboxImage(document.getElementById('active-game-art').src, document.getElementById('active-game-title').innerText)">
+                                <img id="active-game-art" src="" class="w-full h-full object-cover hidden" onerror="this.src='https://via.placeholder.com/600x337/1e1e24/FF5F1F?text=GAME+COVER'">
                                 <div id="active-game-fallback" class="w-full h-full flex items-center justify-center"><i class="fab fa-playstation text-7xl text-orange-500/30"></i></div>
-                                <div class="absolute inset-0 bg-orange-500/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                    <div class="px-6 py-2 bg-black/80 rounded-full border border-orange-500 text-orange-500 font-black text-xs uppercase tracking-widest">View on Amazon / Store</div>
+                            </div>
+
+                            <div class="p-8 lg:p-12 space-y-6">
+                                <div>
+                                    <div id="active-game-title" class="text-xl lg:text-4xl font-black text-white mb-2 uppercase leading-tight">---</div>
+                                    <div id="hunter-persona-badge" class="inline-block px-3 py-1 bg-white/10 text-orange-400 border border-orange-500/50 rounded-full text-[10px] font-black uppercase tracking-widest hidden"></div>
                                 </div>
-                            </a>
-                            <div class="p-8 lg:p-12">
-                                <div id="active-game-title" class="text-xl lg:text-4xl font-black text-white mb-2 uppercase leading-tight">---</div>
-                                <div id="hunter-persona-badge" class="inline-block px-3 py-1 bg-white/10 text-orange-400 border border-orange-500/50 rounded-full text-[10px] font-black uppercase tracking-widest mb-6 hidden"></div>
-                                
+
+                                <!-- MULTI-STORE LAUNCHPAD BUTTONS (website3788-20) -->
+                                <div class="space-y-2">
+                                    <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
+                                        <i class="fas fa-store text-orange-400"></i> Store Launchpad
+                                    </div>
+                                    <div id="active-game-stores-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                        <!-- Injected via JavaScript -->
+                                    </div>
+                                </div>
+
+                                <!-- HUNT PROGRESS & METRICS -->
                                 <div class="space-y-4 bg-white/5 p-6 rounded-2xl border border-white/5">
                                     <div class="flex justify-between items-end"><span class="text-[11px] lg:text-[14px] text-gray-300 font-black uppercase text-orange-400">Hunt Progress</span><span id="active-game-progress-text" class="text-lg lg:text-2xl font-black text-orange-500">0%</span></div>
                                     <div class="progress-bar-container lg:h-5"><div id="active-game-progress-fill" class="progress-bar-fill" style="width: 0%"></div></div>
@@ -321,7 +361,6 @@
                         </div>
                     </div>
 
-                    <!-- Dynamic Game Cards Grid -->
                     <div id="firestore-games-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="p-8 text-center text-gray-500 font-bold uppercase tracking-widest text-xs col-span-2">
                             Connecting to Firestore Progression Stream...
@@ -422,7 +461,7 @@
                 <section class="glass-card p-8 lg:p-12 space-y-5">
                     <h2 class="mb-8 opacity-70 text-center tracking-[0.2em] uppercase text-[11px] font-black leading-relaxed block h-auto text-gray-300">Support & Socials</h2>
                     <div id="dynamic-support-links" class="space-y-4"></div>
-                    <a href="https://www.amazon.com/s?k=gaming&tag=moviesanywhere02-20" target="amazon_store_window" class="flex items-center p-6 rounded-2xl bg-[#FF9900]/10 border border-[#FF9900]/30 hover:border-[#FF9900] transition-all group h-auto min-h-[44px]">
+                    <a href="https://www.amazon.com/s?k=gaming&tag=website3788-20" target="amazon_store_window" class="flex items-center p-6 rounded-2xl bg-[#FF9900]/10 border border-[#FF9900]/30 hover:border-[#FF9900] transition-all group h-auto min-h-[44px]">
                         <i class="fab fa-amazon text-4xl text-[#FF9900] group-hover:scale-110 transition-transform"></i>
                         <div class="flex-1 ml-5 text-left"><div class="font-black lg:text-xl text-white leading-tight">Amazon Store</div><div class="text-[11px] text-gray-300 font-bold uppercase leading-normal">Support the Pack</div></div>
                     </a>
@@ -456,10 +495,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // UNIFIED USER IDENTITY TARGET
         const PRIMARY_USER_ID = "WildHorse_Spirit";
         const FALLBACK_USER_ID = "Werewolf3788";
-        const AMAZON_TAG = "moviesanywhere02-20";
+        const AMAZON_TAG = "website3788-20";
 
         function generateAffiliateUrl(gameName) {
             if (!gameName) return "https://www.amazon.com/s?k=gaming&tag=" + AMAZON_TAG;
@@ -638,7 +676,7 @@
             const img = document.getElementById('music-widget-img');
             if(!img) return;
             const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=12.0.0`;
+            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=12.7.0`;
         }
 
         async function fetchLiveTwitch() {
@@ -937,8 +975,10 @@
                 const sC = document.getElementById('silver-count'); if(sC) sC.innerText = trophies.silver || 0;
                 const bC = document.getElementById('bronze-count'); if(bC) bC.innerText = trophies.bronze || 0;
 
+                // ACTIVE HUNT & RECENT GAMES DATA
                 let hunt = activeUser.activeHunt || wildHorse.activeHunt || wolf.activeHunt;
                 const recentGamesNormal = convertFirebaseArray(activeUser.recentGames || wildHorse.recentGames || wolf.recentGames);
+                const fullLibraryNormal = convertFirebaseArray(activeUser.fullLibrary || wildHorse.fullLibrary || wolf.fullLibrary);
                 
                 if (!hunt && recentGamesNormal.length > 0) {
                     const firstRecent = recentGamesNormal[0];
@@ -967,18 +1007,44 @@
                         personaBadge.classList.add('hidden');
                     }
 
+                    // STRICT ARTWORK MATCH FIX: Look up exact cover for hunt.title
+                    const matchedHuntGame = recentGamesNormal.find(g => g.name && g.name.toLowerCase().trim() === hunt.title.toLowerCase().trim()) || 
+                                            fullLibraryNormal.find(g => (g.name || g.trophyTitleName || '').toLowerCase().trim() === hunt.title.toLowerCase().trim());
+
+                    const resolvedArt = hunt.art || matchedHuntGame?.art || matchedHuntGame?.trophyTitleIconUrl || (recentGamesNormal.length > 0 ? recentGamesNormal[0].art : null);
+
                     const artImg = document.getElementById('active-game-art');
                     const fbBox = document.getElementById('active-game-fallback');
-                    const resolvedArt = persona.currentGameArt || activeUser.currentGameArt || (recentGamesNormal.length > 0 ? recentGamesNormal[0].art : null);
-                    if (resolvedArt && artImg) { artImg.src = resolvedArt; artImg.classList.remove('hidden'); if(fbBox) fbBox.classList.add('hidden'); }
+                    if (resolvedArt && artImg) { 
+                        artImg.src = resolvedArt; 
+                        artImg.classList.remove('hidden'); 
+                        if(fbBox) fbBox.classList.add('hidden'); 
+                    }
+
+                    // MULTI-STORE LAUNCHPAD BUTTON GENERATION (ENFORCED website3788-20)
+                    const storesBar = document.getElementById('active-game-stores-bar');
+                    if (storesBar) {
+                        const cleanGameName = encodeURIComponent((hunt.title || '').replace(/®|™/g, ''));
+                        storesBar.innerHTML = `
+                            <a href="https://store.playstation.com/en-us/search/${cleanGameName}" target="_blank" class="store-btn store-btn-ps">
+                                <i class="fab fa-playstation text-sm"></i> PS Store
+                            </a>
+                            <a href="https://www.xbox.com/en-us/search?q=${cleanGameName}" target="_blank" class="store-btn store-btn-xbox">
+                                <i class="fab fa-xbox text-sm"></i> Xbox Store
+                            </a>
+                            <a href="https://store.steampowered.com/search/?term=${cleanGameName}" target="_blank" class="store-btn store-btn-steam">
+                                <i class="fab fa-steam text-sm"></i> Steam
+                            </a>
+                            <a href="https://www.amazon.com/s?k=${cleanGameName}&tag=website3788-20" target="_blank" class="store-btn store-btn-amazon">
+                                <i class="fab fa-amazon text-sm"></i> Amazon
+                            </a>
+                        `;
+                    }
                     
                     const earnedT = currentTrophyData.filter(t => t.earned && t.timestamp > 0);
                     const jAge = document.getElementById('game-journey-age');
                     if (jAge && earnedT.length > 0) { jAge.innerText = getRelativeTime([...earnedT].sort((a,b) => a.timestamp - b.timestamp)[0].timestamp); }
 
-                    const storeLink = document.getElementById('active-game-store-link');
-                    if(storeLink) storeLink.href = hunt.amazonAffiliateUrl || `https://store.playstation.com/en-us/search/${encodeURIComponent(hunt.title)}`;
-                    
                     const completionFraction = (hunt.velocity && hunt.velocity.completionStatus) ? hunt.velocity.completionStatus : `${earnedT.length}/${currentTrophyData.length}`;
                     
                     const ratio = document.getElementById('active-game-ratio'); 
