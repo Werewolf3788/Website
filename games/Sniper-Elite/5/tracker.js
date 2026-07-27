@@ -1,15 +1,23 @@
+/* === SECTION: File Header & Config === */
 /*
  * ==========================================
- * VERSION TIMESTAMP: Sat, July 25, 2026, 12:15 AM EDT
+ * VERSION TIMESTAMP: Mon, July 27, 2026, 11:15 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Sniper Elite 5 Co-Op Tracker (tracker.js)
- * ARCHITECTURE: 100% Pure Firebase Firestore Real-Time Engine (Zero LocalStorage)
+ * ARCHITECTURE: 100% Pure Firebase Firestore Real-Time Engine (Zero LocalStorage Data)
  * PATH STRUCTURE: /users/{userId}/progress/sniper-elite-5
- * FEATURES: Direct Cloud Read/Write, Simultaneous Operative Stream Observers
+ * FEATURES: Google Auth Pipeline, PSN Gamer Tag Management, Direct Cloud Read/Write, Cookie Memory
  * ==========================================
  */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { 
+    getAuth, 
+    signInAnonymously, 
+    onAuthStateChanged, 
+    GoogleAuthProvider, 
+    signInWithPopup, 
+    signOut 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // --- FIREBASE SDK CONFIGURATION ---
@@ -323,7 +331,7 @@ const typeOrderMap = {
 
 const appState = {
     activeHunter: 'Werewolf3788',
-    // Pure in-memory state sourced strictly from live Firestore snapshots
+    psnUsername: 'werewolf3788',
     teamProgress: {
         'Werewolf3788': {},
         'Raymystyro': {},
@@ -334,6 +342,26 @@ const appState = {
     db: null,
     collapsedSections: {},
     unsubscribers: [],
+
+    /* === COOKIE PREFERENCE ENGINE === */
+    setGamertagCookie: function(gamertag) {
+        const d = new Date();
+        d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
+        document.cookie = `se5_active_gamertag=${encodeURIComponent(gamertag)};expires=${d.toUTCString()};path=/;SameSite=Lax`;
+    },
+
+    getGamertagCookie: function() {
+        const name = "se5_active_gamertag=";
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(name) === 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    },
 
     parseCSV: function(str) {
         const arr = [];
@@ -470,7 +498,22 @@ const appState = {
     },
 
     init: async function() {
-        this.activeHunter = 'Werewolf3788';
+        // 1. Check for URL auto-select parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const userParam = urlParams.get('user');
+
+        if (userParam && USER_DATA_MAP[userParam]) {
+            this.activeHunter = USER_DATA_MAP[userParam];
+            this.setGamertagCookie(this.activeHunter);
+        } else {
+            // 2. Cookie Fallback
+            const savedTag = this.getGamertagCookie();
+            if (savedTag && USER_DATA_MAP[savedTag]) {
+                this.activeHunter = USER_DATA_MAP[savedTag];
+            } else {
+                this.activeHunter = 'Werewolf3788';
+            }
+        }
 
         this.loadNavigation();
         this.setupProfilesUI();
@@ -481,14 +524,11 @@ const appState = {
             this.auth = getAuth(app);
             this.db = getFirestore(app);
 
-            // AUTHENTICATE ANONYMOUSLY & ATTACH LIVE REALTIME LISTENERS
+            // AUTHENTICATE ANONYMOUSLY & ATTACH LIVE LISTENERS
             await signInAnonymously(this.auth);
 
             onAuthStateChanged(this.auth, (user) => {
-                if (user) {
-                    console.log("Firebase Auth Active UID:", user.uid);
-                    this.startLiveTeamListeners();
-                }
+                this.handleAuthState(user);
             });
 
         } catch (err) {
@@ -499,14 +539,75 @@ const appState = {
     },
 
     setupProfilesUI: function() {
-        const profilesContainer = document.getElementById('hunter-profiles');
-        if (profilesContainer) {
-            profilesContainer.innerHTML = `
-                <button class="profile-btn active-btn" data-profile="Werewolf3788" onclick="appState.switchHunter('Werewolf3788')">Werewolf3788</button>
-                <button class="profile-btn" data-profile="Ray" onclick="appState.switchHunter('Ray')">Ray</button>
-                <button class="profile-btn" data-profile="TJ" onclick="appState.switchHunter('TJ')">TJ</button>
-                <button class="profile-btn" data-profile="DesdemonaTiger" onclick="appState.switchHunter('DesdemonaTiger')">DesdemonaTiger</button>
-            `;
+        const userSelect = document.getElementById('userSelect');
+        if (userSelect) {
+            userSelect.value = this.activeHunter;
+            userSelect.addEventListener('change', (e) => {
+                this.switchHunter(e.target.value);
+            });
+        }
+
+        const addCustomBtn = document.getElementById('addCustomUserBtn');
+        if (addCustomBtn) {
+            addCustomBtn.addEventListener('click', () => {
+                const inputTag = prompt("Enter Custom Gamer Tag / Profile Handle:");
+                if (inputTag && inputTag.trim() !== "") {
+                    const cleanTag = inputTag.trim();
+                    this.setGamertagCookie(cleanTag);
+                    
+                    if (userSelect) {
+                        const opt = document.createElement('option');
+                        opt.value = cleanTag;
+                        opt.innerText = cleanTag;
+                        opt.selected = true;
+                        userSelect.appendChild(opt);
+                    }
+                    this.switchHunter(cleanTag);
+                }
+            });
+        }
+
+        const saveIdentityBtn = document.getElementById('saveIdentityBtn');
+        if (saveIdentityBtn) {
+            saveIdentityBtn.addEventListener('click', () => {
+                const customName = document.getElementById('profileCustomName')?.value || this.activeHunter;
+                const psnUser = document.getElementById('profilePsnUser')?.value || "";
+                
+                this.activeHunter = customName;
+                this.psnUsername = psnUser;
+                this.setGamertagCookie(customName);
+                this.sync();
+                alert(`Saved Identity: ${customName} (PSN: ${psnUser})`);
+            });
+        }
+
+        // BIND GOOGLE AUTH BUTTONS DIRECTLY TO PREVENT CLICK DELAYS
+        const googleSignInBtn = document.getElementById("googleSignInBtn");
+        if (googleSignInBtn) {
+            googleSignInBtn.addEventListener("click", () => {
+                if (!this.auth) return;
+                const provider = new GoogleAuthProvider();
+                signInWithPopup(this.auth, provider)
+                    .then((result) => console.log("Google Logged in:", result.user.displayName))
+                    .catch((err) => console.error("Google Auth Rejected:", err));
+            });
+        }
+
+        const signOutBtn = document.getElementById("signOutBtn");
+        if (signOutBtn) {
+            signOutBtn.addEventListener("click", () => {
+                if (!this.auth) return;
+                signOut(this.auth).then(() => {
+                    const demoBanner = document.getElementById("demoNotification");
+                    const adminBadge = document.getElementById("adminBadge");
+                    const userProfileStatus = document.getElementById("userProfileStatus");
+
+                    if (demoBanner) demoBanner.style.display = "block";
+                    if (adminBadge) adminBadge.style.display = "none";
+                    if (googleSignInBtn) googleSignInBtn.style.display = "inline-block";
+                    if (userProfileStatus) userProfileStatus.style.display = "none";
+                });
+            });
         }
 
         const toggleBtn = document.getElementById('mobile-toggle');
@@ -515,6 +616,41 @@ const appState = {
             toggleBtn.addEventListener('click', () => {
                 navLinks.classList.toggle('mobile-active');
             });
+        }
+    },
+
+    handleAuthState: function(user) {
+        const googleSignInBtn = document.getElementById("googleSignInBtn");
+        const userProfileStatus = document.getElementById("userProfileStatus");
+        const userAvatar = document.getElementById("userAvatar");
+        const demoBanner = document.getElementById("demoNotification");
+        const adminBadge = document.getElementById("adminBadge");
+
+        if (user) {
+            console.log("Firebase Auth Active UID:", user.uid);
+            this.startLiveTeamListeners();
+
+            if (!user.isAnonymous) {
+                if (demoBanner) demoBanner.style.display = "none";
+                if (googleSignInBtn) googleSignInBtn.style.display = "none";
+                if (userProfileStatus) userProfileStatus.style.display = "flex";
+                if (userAvatar) userAvatar.src = user.photoURL || "";
+
+                if (user.email === "raykevin71888@gmail.com") {
+                    if (adminBadge) adminBadge.style.display = "block";
+                }
+
+                // Provision and update Firestore identity document
+                const activeUsername = user.displayName || user.email.split('@')[0];
+                const userRef = doc(this.db, 'users', activeUsername);
+                setDoc(userRef, {
+                    displayName: activeUsername,
+                    email: user.email || "",
+                    photoURL: user.photoURL || "",
+                    uid: user.uid,
+                    lastUpdated: new Date().toISOString()
+                }, { merge: true });
+            }
         }
     },
 
@@ -529,10 +665,14 @@ const appState = {
         });
     },
 
-    // 100% PURE FIRESTORE LIVE MULTI-USER OBSERVER
     startLiveTeamListeners: function() {
         this.unsubscribers.forEach(unsub => unsub());
         this.unsubscribers = [];
+
+        // Auto-push initial document structure if opening page for first time
+        if (this.auth && this.auth.currentUser) {
+            this.sync();
+        }
 
         TEAM_PROFILES.forEach(profile => {
             const docName = profile.dbDoc;
@@ -542,6 +682,12 @@ const appState = {
                 if (snap.exists()) {
                     const data = snap.data();
                     const incoming = data.progress || data.trophies || [];
+                    
+                    if (data.psnUsername && docName === this.activeHunter) {
+                        this.psnUsername = data.psnUsername;
+                        if (document.getElementById('profilePsnUser')) document.getElementById('profilePsnUser').value = data.psnUsername;
+                    }
+
                     if (Array.isArray(incoming)) {
                         const map = {};
                         incoming.forEach(it => {
@@ -552,6 +698,8 @@ const appState = {
                         this.teamProgress[docName] = map;
                         this.render();
                     }
+                } else if (docName === this.activeHunter) {
+                    this.sync();
                 }
             }, (err) => {
                 console.warn(`Live Firestore listener warning for ${docName}:`, err.message);
@@ -564,16 +712,14 @@ const appState = {
     switchHunter: function(name) {
         const dbDocName = USER_DATA_MAP[name] || name;
         this.activeHunter = dbDocName;
+        this.setGamertagCookie(dbDocName);
 
         const displayNode = document.getElementById('hunter-display');
         if (displayNode) displayNode.innerText = dbDocName.toUpperCase();
-
-        document.querySelectorAll('.profile-btn').forEach(b => {
-            const profAttr = b.getAttribute('data-profile');
-            b.classList.toggle('active-btn', profAttr && (profAttr.toLowerCase() === name.toLowerCase() || USER_DATA_MAP[profAttr]?.toLowerCase() === dbDocName.toLowerCase()));
-        });
+        if (document.getElementById('profileCustomName')) document.getElementById('profileCustomName').value = dbDocName;
 
         this.render();
+        this.sync();
     },
 
     toggleItem: function(id) {
@@ -585,11 +731,11 @@ const appState = {
         this.sync();
     },
 
-    // DIRECT CLOUD SAVE TO FIRESTORE (NO LOCAL STORAGE)
     sync: async function() {
-        if (!this.auth.currentUser) {
+        if (!this.auth || !this.auth.currentUser) {
             try {
-                await signInAnonymously(this.auth);
+                if (this.auth) await signInAnonymously(this.auth);
+                else return;
             } catch (err) {
                 console.error("Auth Failure during sync retry:", err);
                 return;
@@ -608,6 +754,7 @@ const appState = {
 
             const payload = {
                 user: this.activeHunter,
+                psnUsername: this.psnUsername,
                 gameId: GAME_ID,
                 progress: progressArr,
                 lastUpdated: new Date().toISOString()
@@ -616,10 +763,9 @@ const appState = {
             await setDoc(userRef, { displayName: this.activeHunter, lastUpdated: new Date().toISOString() }, { merge: true });
             await setDoc(userProgressRef, payload, { merge: true });
 
-            console.log(`Live broadcast pushed cleanly to Firestore for: ${this.activeHunter}`);
+            console.log(`Live broadcast pushed cleanly to Firestore for: ${this.activeHunter} at /users/${this.activeHunter}/progress/${GAME_ID}`);
         } catch (error) {
             console.error("CRITICAL FIRESTORE SAVE ERROR:", error);
-            alert(`Save Failed for ${this.activeHunter}. Check internet connection or Firestore rules.`);
         }
     },
 
@@ -652,7 +798,7 @@ const appState = {
             });
 
             const sid = cat.replace(/[^a-z0-9]/gi, '');
-            const isCollapsed = this.collapsedSections[sid] !== false; // Default: Closed on page load
+            const isCollapsed = this.collapsedSections[sid] !== false;
 
             const section = document.createElement('div');
             section.className = `category-section ${isCollapsed ? 'section-collapsed' : ''}`;
