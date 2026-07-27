@@ -1,4 +1,4 @@
-<!-- Version Timestamp: 2026-07-24T21:45:00.000Z -->
+<!-- Version Timestamp: 2026-07-27T23:15:00.000Z -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sniper Elite 5: Master Tracker</title>
     <!-- Linked with smart cache-buster -->
-    <link rel="stylesheet" href="style.css?v=20260724_8">
+    <link rel="stylesheet" href="style.css?v=20260727_10">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Teko:wght@700&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
@@ -32,13 +32,52 @@
                 <div class="system-status">ACTIVE OPERATIVE: <span id="hunter-display">WEREWOLF3788</span></div>
             </div>
 
-            <!-- Profile Selector Buttons -->
-            <div id="hunter-profiles" class="profile-selector">
-                <button class="profile-btn active-btn" data-profile="Werewolf3788" onclick="appState.switchHunter('Werewolf3788')">Werewolf3788</button>
-                <button class="profile-btn" data-profile="Ray" onclick="appState.switchHunter('Ray')">Ray</button>
-                <button class="profile-btn" data-profile="DesdemonaTiger" onclick="appState.switchHunter('DesdemonaTiger')">DesdemonaTiger</button>
+            <!-- Profile Selector Dropdown & Custom Tag Action -->
+            <div id="hunter-profiles" class="profile-selector" style="align-items: center; gap: 8px;">
+                <select id="userSelect" class="profile-btn" style="background:#2a2a2a; color:#ff8800; border:1px solid #3f3f3f; font-weight:700;">
+                    <option value="Werewolf3788">Werewolf3788</option>
+                    <option value="Raymystyro">Raymystyro</option>
+                    <option value="terrdog420">terrdog420</option>
+                    <option value="DesdemonaTiger">DesdemonaTiger</option>
+                </select>
+                <button id="addCustomUserBtn" class="profile-btn">+ Add Tag</button>
+            </div>
+
+            <!-- Firebase Google Auth Block -->
+            <div id="authContainer" class="auth-inline-wrapper" style="display: flex; align-items: center; gap: 12px;">
+                <button id="googleSignInBtn" class="profile-btn" style="background-color: #28a745; border-color: #28a745; cursor: pointer;">🔑 Login</button>
+                <div id="userProfileStatus" class="hidden" style="display: none; align-items: center; gap: 12px;">
+                    <img id="userAvatar" class="user-badge-img" src="" alt="Avatar" style="width:38px; height:38px; border-radius:50%; border:2px solid var(--brand-gold); object-fit:cover;">
+                    <button id="signOutBtn" class="profile-btn" style="padding: 6px 12px; font-size: 12px; cursor: pointer;">Logout</button>
+                </div>
             </div>
         </header>
+
+        <div id="demoNotification" class="demo-banner" style="background: rgba(255, 136, 0, 0.15); border: 1px solid var(--brand-gold); color: #fff; padding: 10px; border-radius: 6px; margin-bottom: 20px; text-align: center; font-weight: bold; font-size: 12px;">
+            Operational Live Sandbox Mode Active. Log In to Commit Multi-User Cloud Synchronization.
+        </div>
+
+        <div id="adminBadge" class="admin-banner hidden" style="display:none; background:#7c3aed; color:#fff; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:900; margin-bottom:20px;">
+            ⚡ OVERWATCH ADMIN ACTIVE (raykevin71888@gmail.com)
+        </div>
+
+        <!-- Gamer Identity & PSN Handle Configuration Card -->
+        <section class="stat-category-block" style="background: var(--card-surface); border: 1px solid var(--card-border); border-left: 5px solid var(--brand-gold); padding: 16px; border-radius: 6px; margin-bottom: 24px;">
+            <div style="font-size: 0.85rem; font-weight: 900; color: var(--brand-gold); margin-bottom: 10px; text-transform: uppercase;">Gamer Identity & PSN Handle Configuration</div>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label for="profileCustomName" style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Operator Profile Name</label>
+                    <input type="text" id="profileCustomName" style="width: 100%; background: #121212; border: 1px solid #3f3f3f; color: #fff; padding: 8px; border-radius: 4px; font-weight: bold;" placeholder="Werewolf3788">
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <label for="profilePsnUser" style="font-size: 11px; color: var(--brand-blue); display: block; margin-bottom: 4px;">Linked PSN Gamer Tag</label>
+                    <input type="text" id="profilePsnUser" style="width: 100%; background: #121212; border: 1px solid var(--brand-blue); color: #fff; padding: 8px; border-radius: 4px; font-weight: bold;" placeholder="werewolf3788">
+                </div>
+                <div style="align-self: flex-end;">
+                    <button id="saveIdentityBtn" class="profile-btn" style="background: var(--brand-gold); border-color: var(--brand-gold); color: #000; height: 38px; cursor: pointer;">Save Profile & Tag</button>
+                </div>
+            </div>
+        </section>
 
         <!-- PROGRESS HUD METRICS -->
         <section class="progress-hud">
@@ -57,7 +96,8 @@
 
         <!-- SITE FOOTER WITH SYSTEM BUILD TIMESTAMP -->
         <footer class="site-footer">
-            <p>System Build Version: <strong>v2.4.5</strong> | Last Updated: <strong>July 24, 2026, 9:45 PM EDT</strong></p>
+            <p>System Build Version: <strong>v2.5.1</strong> | Last Updated: <strong>July 27, 2026, 11:15 PM EDT</strong></p>
+            <p>Support the campaign: <a href="https://www.amazon.com/gp/goldbox?tag=psngaming-20" target="_blank" style="color: var(--brand-gold);">Today's Deals</a> | <a href="https://www.amazon.com/s?k=sniper+elite&tag=psngaming-20" target="_blank" style="color: var(--brand-gold);">Gaming Gear</a></p>
             <p>Lead Developer: Werewolf3788 | Collaborators: Raymystyro, terrdog420, DesdemonaTiger</p>
         </footer>
     </main>
@@ -72,6 +112,6 @@
     </div>
 
     <!-- MAIN TRACKER CONTROLLER SCRIPT -->
-    <script type="module" src="tracker.js?v=20260724_8"></script>
+    <script type="module" src="tracker.js?v=20260727_10"></script>
 </body>
 </html>
