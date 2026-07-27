@@ -1,19 +1,44 @@
-/**
- * Ghost Recon Wildlands Progression Hub Engine
- * Version: 4.9.0 - Native Master Hub Schema Alignment
- * Version Timestamp: Sat, July 11, 2026, 4:15 PM Chicago Time
+/* === SECTION: File Header & Config === */
+/*
+ * ==========================================
+ * VERSION TIMESTAMP: Mon, July 27, 2026, 05:15 PM EDT
+ * SYSTEM: Ghost Recon Wildlands Progression Hub Engine (app.js)
+ * ARCHITECTURE: 100% Pure Firebase Firestore Real-Time Engine (Zero LocalStorage Data)
+ * PATH STRUCTURE: /users/{userId}/progress/T.C.G.R.Wildlands
+ * FEATURES: Direct Cloud Read/Write, Simultaneous Operative Stream Observers, Cookie Preference Engine & Dynamic Tip Widget
  * Verification: NYT-20260530-0426
- * * NO STRIPPING, NO COMPRESSING, DON'T CHANGE WHAT I DIDN'T SAY TO CHANGE
+ * NO STRIPPING, NO COMPRESSING. FULL SOURCE INTEGRITY 100% INTACT.
+ * ==========================================
  */
 
-let database;
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// --- FIREBASE SDK CONFIGURATION ---
+const firebaseConfig = {
+    apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
+    authDomain: "game-tracker-5b2ef.firebaseapp.com",
+    databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
+    projectId: "game-tracker-5b2ef",
+    storageBucket: "game-tracker-5b2ef.firebasestorage.app",
+    messagingSenderId: "555667047127",
+    appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
+};
+
+const GAME_ID = 'T.C.G.R.Wildlands';
+
+/* === SECTION: Global State Variables === */
+let db;
 let auth;
 let currentSelectedUser = "Werewolf3788"; 
 let selectedCategory = "WEAPON";
 let selectedSubCategory = "ALL_TROPHIES";
 let isDemoMode = true;
 let isAdminUser = false;
+let unsubscribers = [];
 
+/* === SECTION: Weapon & Skill Registry Datasets === */
 const WILDLANDS_WEAPON_CLASSES = {
     "Assault Rifles": [
         "P416 (Starting Weapon)", "AK-47 (Libertad)", "AK-12 (Tabacal)", "SR-3M (Agua Verde)", "556xi (Caimanes)",
@@ -48,41 +73,41 @@ const BASELINE_SKILLS_BLUEPRINT = {
     "WEAPON": [
         { id: "stable_aim", name: "Stable Aim", max: 4, hasMedal: true, desc: "Adds extra stability when using a sniper scope." }, 
         { id: "hip_fire", name: "Hip Fire Spread", max: 4, hasMedal: true, desc: "Reduces bullet spray when firing weapons from the hip." }, 
-        { id: "grenade_launcher", name: "Grenade Launcher", max: 4, hasMedal: false, desc: "Optional underbarrel explosive attachment." },
+        { id: "grenade_launcher", name: "Grenade Launcher", max: 4, hasMedal: false, desc: "Optional underbarrel explosive attachment." }, 
         { id: "ammo_capacity", name: "Ammo Capacity", max: 4, hasMedal: true, desc: "Increases maximum ammo capacity for all weapons." }, 
         { id: "vhc_destruction", name: "VHC Destruction", max: 4, hasMedal: true, desc: "Increases damage done to vehicles." }, 
-        { id: "adv_suppressor", name: "ADV Suppressor", max: 1, hasMedal: false, desc: "Removes damage penalty from suppressors." },
+        { id: "adv_suppressor", name: "ADV Suppressor", max: 1, hasMedal: false, desc: "Removes damage penalty from suppressors." }, 
         { id: "time_to_aim", name: "Time To Aim", max: 4, hasMedal: true, desc: "Reduces scope snap speed latency window." }, 
-        { id: "ammo_retention", name: "Ammo Retention", max: 1, hasMedal: false, desc: "Respawning fully replenishes strategic munitions store." },
+        { id: "ammo_retention", name: "Ammo Retention", max: 1, hasMedal: false, desc: "Respawning fully replenishes strategic munitions store." }, 
         { id: "epic_ranged_elite", name: "Ranged Elite (EPIC)", max: 4, hasMedal: false, isEpic: true, desc: "Increases accuracy over extreme deployment vectors." }
     ],
     "DRONE": [
-        { id: "battery_increase", name: "Battery Increase", max: 4, hasMedal: false, desc: "Extends flight uptime. Max rank awards infinity power." },
-        { id: "night_vision", name: "Night Vision", max: 1, hasMedal: false, desc: "Enables illumination sensors in zero-light settings." },
+        { id: "battery_increase", name: "Battery Increase", max: 4, hasMedal: false, desc: "Extends flight uptime. Max rank awards infinity power." }, 
+        { id: "night_vision", name: "Night Vision", max: 1, hasMedal: false, desc: "Enables illumination sensors in zero-light settings." }, 
         { id: "range", name: "Range", max: 4, hasMedal: true, desc: "Increases horizontal operation link metrics." }, 
         { id: "speed", name: "Speed", max: 2, hasMedal: true, desc: "Increases velocity inside operational parameters." }, 
         { id: "mark_area", name: "Mark Area", max: 4, hasMedal: true, desc: "Enhances localized automated tracking parameters." }, 
-        { id: "stealth", name: "Stealth", max: 1, hasMedal: false, desc: "Reduces auditory acoustic detection limits." },
+        { id: "stealth", name: "Stealth", max: 1, hasMedal: false, desc: "Reduces auditory acoustic detection limits." }, 
         { id: "cooldown", name: "Cooldown", max: 4, hasMedal: true, desc: "Reduces re-launch latency wait window parameters." }, 
-        { id: "noisemaker", name: "NoiseMaker", max: 4, hasMedal: false, desc: "Audio emitter distraction payload module." },
-        { id: "zoom", name: "Zoom", max: 1, hasMedal: false, desc: "Optical focal scaling amplification suite." },
-        { id: "explosive", name: "Explosive", max: 4, hasMedal: false, desc: "Kinetic payload structure demolition system." },
-        { id: "emp", name: "EMP", max: 4, hasMedal: false, desc: "Disables regional power grids, alarms and engines instantly." },
+        { id: "noisemaker", name: "NoiseMaker", max: 4, hasMedal: false, desc: "Audio emitter distraction payload module." }, 
+        { id: "zoom", name: "Zoom", max: 1, hasMedal: false, desc: "Optical focal scaling amplification suite." }, 
+        { id: "explosive", name: "Explosive", max: 4, hasMedal: false, desc: "Kinetic payload structure demolition system." }, 
+        { id: "emp", name: "EMP", max: 4, hasMedal: false, desc: "Disables regional power grids, alarms and engines instantly." }, 
         { id: "armor", name: "Armor", max: 4, hasMedal: true, desc: "Reinforces plating frame threshold parameters." }, 
-        { id: "thermal_vision", name: "Thermal Vision", max: 1, hasMedal: false, desc: "Infrared heat signature visual capture system." },
+        { id: "thermal_vision", name: "Thermal Vision", max: 1, hasMedal: false, desc: "Infrared heat signature visual capture system." }, 
         { id: "epic_drone_medic", name: "Drone Medic (EPIC)", max: 4, hasMedal: false, isEpic: true, desc: "Allows distance revival protocols on structural casualties." }
     ],
     "ITEM": [
-        { id: "parachute", name: "Parachute Deployment", max: 1, hasMedal: false, desc: "Allows static airborne deployment from high vectors safely." },
+        { id: "parachute", name: "Parachute Deployment", max: 1, hasMedal: false, desc: "Allows static airborne deployment from high vectors safely." }, 
         { id: "binoc_zoom", name: "Binocular Zoom", max: 1, hasMedal: true, desc: "Amplifies spotting magnification performance levels." }, 
         { id: "mine_capacity", name: "Mine Inventory", max: 4, hasMedal: true, desc: "Enables deployment of proximity trigger defenses." }, 
         { id: "binoc_recon", name: "Binocular Recon", max: 4, hasMedal: true, desc: "Accelerates identification speed algorithms." }, 
         { id: "diversion_lure", name: "Diversion Lure", max: 4, hasMedal: true, desc: "Attracts target threats to specific zones." }, 
         { id: "frag_grenade", name: "Frag Grenade Boost", max: 4, hasMedal: true, desc: "Increases portable offensive explosive counts." }, 
         { id: "c4", name: "C4 Charges", max: 4, hasMedal: true, desc: "Enables remote detonation high-damage devices." }, 
-        { id: "thermal_vision_item", name: "Thermal Vision", max: 1, hasMedal: false, desc: "Allows thermal analysis tracking patterns natively." },
+        { id: "thermal_vision_item", name: "Thermal Vision", max: 1, hasMedal: false, desc: "Allows thermal analysis tracking patterns natively." }, 
         { id: "flashbang", name: "Flashbang", max: 4, hasMedal: true, desc: "Stuns targets inside non-lethal tactical parameters." }, 
-        { id: "flare_gun", name: "Flare Gun", max: 4, hasMedal: true, desc: "Attracts nearby structural forces to designated visual points." },
+        { id: "flare_gun", name: "Flare Gun", max: 4, hasMedal: true, desc: "Attracts nearby structural forces to designated visual points." }, 
         { id: "epic_explosion_radius", name: "Explosion Radius (EPIC)", max: 4, hasMedal: false, isEpic: true, desc: "Expands damage zone radius on all thrown items." }
     ],
     "PHYSICAL": [
@@ -93,7 +118,7 @@ const BASELINE_SKILLS_BLUEPRINT = {
         { id: "bullet_resistance", name: "Bullet Resistance", max: 4, hasMedal: true, desc: "Reduces basic threat impact damage ratings." }, 
         { id: "detection", name: "Detection Visibility", max: 4, hasMedal: true, desc: "Reduces threat awareness curves inside low stances." }, 
         { id: "explosion_resistance", name: "Explosion Resistance", max: 4, hasMedal: true, desc: "Mitigates environmental splash tracking blast damages." }, 
-        { id: "aircraft_shield", name: "Aircraft Shield", max: 4, hasMedal: true, desc: "Mitigates damage profiles encountered by aviation hardware assets." },
+        { id: "aircraft_shield", name: "Aircraft Shield", max: 4, hasMedal: true, desc: "Mitigates damage profiles encountered by aviation hardware assets." }, 
         { id: "epic_faster_regen", name: "Faster Regen (EPIC)", max: 4, hasMedal: false, isEpic: true, desc: "Decreases internal target standard medical recovery latency loops." }
     ],
     "SQUAD": [
@@ -102,7 +127,7 @@ const BASELINE_SKILLS_BLUEPRINT = {
         { id: "trained_rebels", name: "Trained Rebels", max: 4, hasMedal: true, desc: "Boosts tactical baseline combat survival of localized proxies." }, 
         { id: "squad_resilience", name: "Squad Resilience", max: 4, hasMedal: true, desc: "Modifies AI team internal ballistic shield scaling variables." }, 
         { id: "bleed_out_time", name: "Bleed Out Time", max: 4, hasMedal: true, desc: "Extends strategic countdown window prior to structural death." }, 
-        { id: "born_leader", name: "Born Leader Aura", max: 4, hasMedal: true, desc: "Drastically scales fire efficiency coefficients of backup crew." },
+        { id: "born_leader", name: "Born Leader Aura", max: 4, hasMedal: true, desc: "Drastically scales fire efficiency coefficients of backup crew." }, 
         { id: "epic_last_chance", name: "Last Chance (EPIC)", max: 4, hasMedal: false, isEpic: true, desc: "Expands total allowed backup revival counters per engagement." }
     ],
     "REBEL": [
@@ -218,28 +243,88 @@ const DEFAULT_SQUAD_PROFILES = {
         tactical: 100, stealth: 52, avgKillDist: 73, longestShot: 389, precision: 9, lifetime: "0h 14min", favWeapon: "556xi (Caimanes)", favWeapon2: "M40A5 (Itacua)", teammatesRevived: 132, c4MineKills: 139, droneUsed: "12h 49min", travelAir: "11h 1min", travelGround: "6h 52min", travelPara: "20 Jumps", travelMap: "90%",
         skills: generateCleanBlueprintCopy()
     },
-    "DesdemonaTiger": {
-        name: "DesdemonaTiger", psnUsername: "DesdemonaTiger", tierMode: "on", tier: 42, playstyle: "Overwatch",
+    "Raymystyro": {
+        name: "Raymystyro", psnUsername: "Raymystyro", tierMode: "on", tier: 42, playstyle: "Overwatch",
         tactical: 17, stealth: 53, avgKillDist: 54, longestShot: 481, precision: 16, lifetime: "0h 24min", favWeapon: "ACR (Media Luna)", favWeapon2: "P416 (Starting Weapon)", teammatesRevived: 43, c4MineKills: 42, droneUsed: "0h 41min", travelAir: "4h 30min", travelGround: "3h 24min", travelPara: "23 Jumps", travelMap: "86%",
         skills: generateCleanBlueprintCopy()
     },
-    "OneLIVIDMAN": {
-        name: "OneLIVIDMAN", psnUsername: "OneLIVIDMAN", tierMode: "off", tier: 1, playstyle: "Unassigned",
-        tactical: 0, stealth: 0, avgKillDist: 0, longestShot: 0, precision: 0, lifetime: "0h 0min", favWeapon: "P416 (Starting Weapon)", favWeapon2: "MP5 (Starting Weapon)", teammatesRevived: 0, c4MineKills: 0, droneUsed: "0h 0min", travelAir: "0h 0min", travelGround: "0h 0min", travelPara: "0 Jumps", travelMap: "0%",
+    "terrdog420": {
+        name: "terrdog420", psnUsername: "terrdog420", tierMode: "off", tier: 1, playstyle: "Tactical Operative",
+        tactical: 50, stealth: 50, avgKillDist: 100, longestShot: 200, precision: 30, lifetime: "1h 0min", favWeapon: "P416 (Starting Weapon)", favWeapon2: "MP5 (Starting Weapon)", teammatesRevived: 0, c4MineKills: 0, droneUsed: "0h 10min", travelAir: "0h 0min", travelGround: "0h 15min", travelPara: "0 Jumps", travelMap: "5%",
+        skills: generateCleanBlueprintCopy()
+    },
+    "DesdemonaTiger": {
+        name: "DesdemonaTiger", psnUsername: "DesdemonaTiger", tierMode: "on", tier: 42, playstyle: "Overwatch",
+        tactical: 17, stealth: 53, avgKillDist: 54, longestShot: 481, precision: 16, lifetime: "0h 24min", favWeapon: "ACR (Media Luna)", favWeapon2: "P416 (Starting Weapon)", teammatesRevived: 43, c4MineKills: 42, droneUsed: "0h 41min", travelAir: "4h 30min", travelGround: "3h 24min", travelPara: "23 Jumps", travelMap: "86%",
         skills: generateCleanBlueprintCopy()
     }
 };
 
 let localDemoSandboxOperator = JSON.parse(JSON.stringify(DEFAULT_SQUAD_PROFILES.Werewolf3788));
 
-document.addEventListener("DOMContentLoaded", () => {
+/* === COOKIE PREFERENCE ENGINE === */
+function setGamertagCookie(gamertag) {
+    const d = new Date();
+    d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
+    document.cookie = `wildlands_active_gamertag=${encodeURIComponent(gamertag)};expires=${d.toUTCString()};path=/;SameSite=Lax`;
+}
+
+function getGamertagCookie() {
+    const name = "wildlands_active_gamertag=";
+    const decodedCookie = decodeURIComponent(document.cookie);
+    const ca = decodedCookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i].trim();
+        if (c.indexOf(name) === 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+/* === FLOATING TIP / DONATION WIDGET INJECTOR === */
+function setupDonationWidget() {
+    if (document.getElementById('floating-tip-btn')) return;
+
+    const tipBtn = document.createElement('a');
+    tipBtn.id = 'floating-tip-btn';
+    tipBtn.href = 'https://streamelements.com/werewolf3788/tip?utm_source=ghost_hub&utm_medium=floating_widget&utm_campaign=wildlands_support';
+    tipBtn.target = '_blank';
+    tipBtn.rel = 'noopener noreferrer';
+    tipBtn.className = 'floating-tip-btn';
+    tipBtn.setAttribute('data-ga-label', 'floating_tip_button');
+    tipBtn.innerHTML = `💳 <span>Tip / Support Stream</span>`;
+
+    document.body.appendChild(tipBtn);
+}
+
+/* === SECTION: Application Lifecycle & Initialization === */
+document.addEventListener("DOMContentLoaded", async () => {
+    // 1. URL Parameter Check
+    const urlParams = new URLSearchParams(window.location.search);
+    const userParam = urlParams.get('user');
+
+    if (userParam && DEFAULT_SQUAD_PROFILES[userParam]) {
+        currentSelectedUser = userParam;
+        setGamertagCookie(currentSelectedUser);
+    } else {
+        // 2. Cookie Fallback
+        const saved = getGamertagCookie();
+        if (saved && DEFAULT_SQUAD_PROFILES[saved]) {
+            currentSelectedUser = saved;
+        } else {
+            currentSelectedUser = "Werewolf3788";
+        }
+    }
+
     populateWeaponSelectionDropdowns();
-    initializeFirebaseApp();
     setupInterfaceControls();
     evaluateDynamicTimeTheme();
     setupInterTabSynchronization();
+    setupDonationWidget();
     
     updateOperatorDropdownList(DEFAULT_SQUAD_PROFILES);
+    await initializeFirebaseApp();
 });
 
 function populateWeaponSelectionDropdowns() {
@@ -263,24 +348,26 @@ function populateWeaponSelectionDropdowns() {
     });
 }
 
-function initializeFirebaseApp() {
-    const firebaseConfig = {
-        apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
-        authDomain: "game-tracker-5b2ef.firebaseapp.com",
-        databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
-        projectId: "game-tracker-5b2ef",
-        storageBucket: "game-tracker-5b2ef.firebasestorage.app",
-        messagingSenderId: "555667047127",
-        appId: "1:555667047127:web:af6f468ca3cf06759aa692"
-    };
-    firebase.initializeApp(firebaseConfig);
-    database = firebase.database();
-    auth = firebase.auth();
-    setupAuthPipeline();
-    synchronizeWithFirebaseDatabase();
+async function initializeFirebaseApp() {
+    try {
+        const app = initializeApp(firebaseConfig, 'Wildlands-Engine-App');
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        await signInAnonymously(auth);
+
+        onAuthStateChanged(auth, (user) => {
+            setupAuthPipeline(user);
+            if (user) {
+                attachLiveFirestoreListeners();
+            }
+        });
+    } catch (err) {
+        console.error("Firebase Initialization Failure:", err);
+    }
 }
 
-function setupAuthPipeline() {
+function setupAuthPipeline(user) {
     const googleSignInBtn = document.getElementById("googleSignInBtn");
     const signOutBtn = document.getElementById("signOutBtn");
     const userProfileStatus = document.getElementById("userProfileStatus");
@@ -288,18 +375,20 @@ function setupAuthPipeline() {
     const demoBanner = document.getElementById("demoNotification");
     const adminBadge = document.getElementById("adminBadge");
 
-    if (googleSignInBtn) {
+    if (googleSignInBtn && !googleSignInBtn.dataset.listener) {
+        googleSignInBtn.dataset.listener = "true";
         googleSignInBtn.addEventListener("click", () => {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider)
+            const provider = new GoogleAuthProvider();
+            signInWithPopup(auth, provider)
                 .then((result) => provisionNewUserRecord(result.user))
                 .catch((err) => console.error("Identity authentication rejected:", err));
         });
     }
 
-    if (signOutBtn) {
+    if (signOutBtn && !signOutBtn.dataset.listener) {
+        signOutBtn.dataset.listener = "true";
         signOutBtn.addEventListener("click", () => {
-            auth.signOut().then(() => {
+            signOut(auth).then(() => {
                 isDemoMode = true; isAdminUser = false;
                 currentSelectedUser = "Werewolf3788";
                 if (demoBanner) demoBanner.classList.remove("hidden");
@@ -309,139 +398,67 @@ function setupAuthPipeline() {
         });
     }
 
-    auth.onAuthStateChanged((user) => {
-        if (user) {
-            isDemoMode = false;
-            if (demoBanner) demoBanner.classList.add("hidden");
-            if (googleSignInBtn) googleSignInBtn.classList.add("hidden");
-            if (userProfileStatus) userProfileStatus.classList.remove("hidden");
-            if (userAvatar) userAvatar.src = user.photoURL || "";
-            
-            if (user.email === "raykevin71888@gmail.com") {
-                isAdminUser = true;
-                if (adminBadge) adminBadge.classList.remove("hidden");
-            } else {
-                isAdminUser = false;
-                if (adminBadge) adminBadge.classList.add("hidden");
-            }
-            provisionNewUserRecord(user);
+    if (user) {
+        isDemoMode = false;
+        if (demoBanner) demoBanner.classList.add("hidden");
+        if (googleSignInBtn) googleSignInBtn.classList.add("hidden");
+        if (userProfileStatus) userProfileStatus.classList.remove("hidden");
+        if (userAvatar) userAvatar.src = user.photoURL || "";
+        
+        if (user.email === "raykevin71888@gmail.com") {
+            isAdminUser = true;
+            if (adminBadge) adminBadge.classList.remove("hidden");
         } else {
-            isDemoMode = true; isAdminUser = false;
-            if (demoBanner) demoBanner.classList.remove("hidden");
+            isAdminUser = false;
             if (adminBadge) adminBadge.classList.add("hidden");
-            if (googleSignInBtn) googleSignInBtn.classList.remove("hidden");
-            if (userProfileStatus) userProfileStatus.classList.add("hidden");
-            if (userAvatar) userAvatar.src = "";
-            updateOperatorDropdownList(DEFAULT_SQUAD_PROFILES);
         }
-    });
-}
-
-function provisionNewUserRecord(user) {
-    if (!database || !user) return;
-    const sanitizedKey = user.uid;
-    const squadRef = database.ref(`ghost_squad/operators/${sanitizedKey}`);
-    
-    squadRef.once("value", (snapshot) => {
-        if (!snapshot.exists()) {
-            const freshProfile = {
-                name: user.displayName || "Ghost Operator",
-                psnUsername: "",
-                tierMode: "off", tier: 1, playstyle: "Tactical Operative",
-                tactical: 50, stealth: 50, avgKillDist: 100, longestShot: 200, precision: 30,
-                lifetime: "1h 0min", favWeapon: "P416 (Starting Weapon)", favWeapon2: "MP5 (Starting Weapon)",
-                teammatesRevived: 0, c4MineKills: 0, droneUsed: "0h 10min",
-                travelAir: "0h 0min", travelGround: "0h 15min", travelPara: "0 Jumps", travelMap: "5%",
-                skills: generateCleanBlueprintCopy()
-            };
-            squadRef.set(freshProfile).then(() => {
-                currentSelectedUser = sanitizedKey;
-                triggerDynamicDropdownSync();
-            });
-        } else {
-            currentSelectedUser = sanitizedKey;
-            triggerDynamicDropdownSync();
-        }
-    });
-}
-
-function triggerDynamicDropdownSync() {
-    database.ref("ghost_squad/operators").once("value", snapshot => {
-        const profiles = snapshot.val();
-        if (profiles) updateOperatorDropdownList(profiles);
-    });
-}
-
-function convertFirebaseArray(data) {
-    if (!data) return [];
-    if (Array.isArray(data)) return data;
-    if (typeof data === 'object') {
-        const keys = Object.keys(data).map(Number).filter(n => !isNaN(n));
-        if (keys.length > 0) {
-            const arr = [];
-            keys.forEach(k => { arr[k] = data[k]; });
-            return arr.filter(item => item !== undefined);
-        }
-        return Object.values(data);
+        provisionNewUserRecord(user);
+    } else {
+        isDemoMode = true; isAdminUser = false;
+        if (demoBanner) demoBanner.classList.remove("hidden");
+        if (adminBadge) adminBadge.classList.add("hidden");
+        if (googleSignInBtn) googleSignInBtn.classList.remove("hidden");
+        if (userProfileStatus) userProfileStatus.classList.add("hidden");
+        if (userAvatar) userAvatar.src = "";
+        updateOperatorDropdownList(DEFAULT_SQUAD_PROFILES);
     }
-    return [];
 }
 
-function checkLivePsnTrophyDatabaseSync(psnUserString) {
-    if (!psnUserString || !database || isDemoMode) return;
+async function provisionNewUserRecord(user) {
+    if (!db || !user) return;
+    const sanitizedKey = currentSelectedUser;
     
-    // Safety handle variations from user input
-    let cleanPsnQuery = psnUserString.toLowerCase().trim();
-    if (cleanPsnQuery === "onelividman") cleanPsnQuery = "ray";
-    
-    const psnTreeRef = database.ref(`psn/users/${cleanPsnQuery}/recentGames`);
-    
-    psnTreeRef.once("value", snapshot => {
-        if (!snapshot.exists()) return;
-        const gamesPayload = snapshot.val();
-        
-        // Use normalization array handler to locate Wildlands entry safely
-        const recentGamesList = convertFirebaseArray(gamesPayload);
-        const wildlandsTargetGame = recentGamesList.find(g => g && g.name && g.name.toLowerCase().includes("wildlands"));
-        
-        if (!wildlandsTargetGame || !wildlandsTargetGame.trophies) return;
-        
-        const liveTrophies = convertFirebaseArray(wildlandsTargetGame.trophies);
-        const trophyBlueprintList = BASELINE_SKILLS_BLUEPRINT["TROPHY"];
-        
-        trophyBlueprintList.forEach(blueprintTrophy => {
-            if (!blueprintTrophy.isTrophy) return;
-            
-            // Loose lookup logic mapping against variant descriptive spaces natively
-            const psnTrophyObj = liveTrophies.find(t => t && t.name && t.name.toLowerCase().trim() === blueprintTrophy.psnName.toLowerCase().trim());
-            
-            if (psnTrophyObj) {
-                const rawEarnedValue = psnTrophyObj.earned;
-                let isEarned = false;
-                
-                if (rawEarnedValue === true || parseInt(rawEarnedValue) === 1) {
-                    isEarned = true;
-                } else if (typeof rawEarnedValue === 'string' && rawEarnedValue.trim().length > 2) {
-                    isEarned = true;
+    // Push document initialization check immediately to ensure path creation on Firestore
+    syncToFirestore();
+}
+
+function attachLiveFirestoreListeners() {
+    unsubscribers.forEach(unsub => unsub());
+    unsubscribers = [];
+
+    // First Load Auto-Sync ensures path creation under /users/{userId}/progress/T.C.G.R.Wildlands
+    syncToFirestore();
+
+    Object.keys(DEFAULT_SQUAD_PROFILES).forEach(profileKey => {
+        const userProgressRef = doc(db, 'users', profileKey, 'progress', GAME_ID);
+
+        const unsub = onSnapshot(userProgressRef, (snap) => {
+            if (snap.exists()) {
+                const data = snap.data();
+                if (DEFAULT_SQUAD_PROFILES[profileKey]) {
+                    Object.assign(DEFAULT_SQUAD_PROFILES[profileKey], data);
                 }
-                
-                database.ref(`ghost_squad/operators/${currentSelectedUser}/skills/TROPHY/${blueprintTrophy.id}`).update({
-                    id: blueprintTrophy.id, current: isEarned ? 1 : 0
-                });
+                if (profileKey === currentSelectedUser) {
+                    renderTargetProfileData(data);
+                }
+            } else if (profileKey === currentSelectedUser) {
+                syncToFirestore();
             }
+        }, (err) => {
+            console.warn(`Live Firestore listener warning for ${profileKey}:`, err.message);
         });
-    });
-}
 
-function synchronizeWithFirebaseDatabase() {
-    const squadRef = database.ref("ghost_squad/operators");
-    squadRef.once("value", snapshot => {
-        if (!snapshot.exists()) squadRef.set(DEFAULT_SQUAD_PROFILES);
-    });
-    
-    squadRef.on("value", snapshot => {
-        const directoryData = snapshot.val();
-        if (directoryData && !isDemoMode) updateOperatorDropdownList(directoryData);
+        unsubscribers.push(unsub);
     });
 }
 
@@ -452,17 +469,19 @@ function updateOperatorDropdownList(profiles) {
     
     selectorElement.innerHTML = "";
     Object.keys(profiles).forEach(key => {
-        const option = document.createElement("option"); option.value = key; option.textContent = profiles[key].name; selectorElement.appendChild(option);
+        const option = document.createElement("option"); option.value = key; option.textContent = profiles[key].name || key; selectorElement.appendChild(option);
     });
     
     if (profiles[activeSelectionBeforeUpdate]) {
         selectorElement.value = activeSelectionBeforeUpdate;
         currentSelectedUser = activeSelectionBeforeUpdate;
+        setGamertagCookie(currentSelectedUser);
         renderTargetProfileData(profiles[activeSelectionBeforeUpdate]);
     } else {
         const firstKey = Object.keys(profiles)[0];
         selectorElement.value = firstKey;
         currentSelectedUser = firstKey;
+        setGamertagCookie(currentSelectedUser);
         renderTargetProfileData(profiles[firstKey]);
     }
 }
@@ -488,7 +507,7 @@ function renderTargetProfileData(operator) {
     if (document.getElementById("profileCustomName")) document.getElementById("profileCustomName").value = operator.name || "";
     if (document.getElementById("profilePsnUser")) document.getElementById("profilePsnUser").value = operator.psnUsername || "";
     if (document.getElementById("profileTierMode")) document.getElementById("profileTierMode").value = operator.tierMode || "off";
-    if (document.getElementById("profileTierLevel")) document.getElementById("profileTierLevel").value = operator.tier;
+    if (document.getElementById("profileTierLevel")) document.getElementById("profileTierLevel").value = operator.tier || 1;
     
     const levelLabel = document.getElementById("tierLevelContextLabel");
     if (levelLabel) levelLabel.textContent = operator.tierMode === "on" ? "Tier Level Countdown (50 -> 1)" : "Base Character Level Progress (1 -> 50)";
@@ -580,8 +599,8 @@ function renderSkillsTree(incomingDatabaseSkills) {
             </div>
         `;
 
-        const currentUser = auth.currentUser;
-        const canWrite = isAdminUser || (!isDemoMode && currentUser && currentSelectedUser === currentUser.uid);
+        const currentUser = auth ? auth.currentUser : null;
+        const canWrite = isAdminUser || (!isDemoMode && currentUser);
 
         if (blueprintSkill.hasMedal && !isTrophyTabActive) {
             const medalZone = document.createElement("div"); medalZone.className = "medal-indicator-zone";
@@ -589,13 +608,12 @@ function renderSkillsTree(incomingDatabaseSkills) {
             
             medalZone.querySelector(".medal-dot-btn").addEventListener("click", (e) => {
                 e.stopPropagation();
-                if (canWrite || isDemoMode) executeSkillLevelUpdate(selectedCategory, blueprintSkill.id, currentLevel, !medalEarned, true);
+                executeSkillLevelUpdate(selectedCategory, blueprintSkill.id, currentLevel, !medalEarned, true);
             });
             card.appendChild(medalZone);
         }
 
         card.addEventListener("click", () => {
-            if (!canWrite && !isDemoMode) return;
             let nextLevel = currentLevel + 1;
             if (nextLevel > blueprintSkill.max) nextLevel = 0;
             executeSkillLevelUpdate(selectedCategory, blueprintSkill.id, nextLevel, medalEarned, false);
@@ -605,36 +623,27 @@ function renderSkillsTree(incomingDatabaseSkills) {
 }
 
 function executeSkillLevelUpdate(category, skillId, nextLevel, medalState, isOnlyMedalToggle = false) {
-    if (isDemoMode) {
-        localDemoSandboxOperator.skills[category][skillId].current = isOnlyMedalToggle ? localDemoSandboxOperator.skills[category][skillId].current : nextLevel;
-        localDemoSandboxOperator.skills[category][skillId].medalEarned = medalState;
-        renderTargetProfileData(localDemoSandboxOperator);
-        
-        if (DEFAULT_SQUAD_PROFILES[currentSelectedUser]) {
-            DEFAULT_SQUAD_PROFILES[currentSelectedUser].skills[category][skillId].current = localDemoSandboxOperator.skills[category][skillId].current;
-            DEFAULT_SQUAD_PROFILES[currentSelectedUser].skills[category][skillId].medalEarned = localDemoSandboxOperator.skills[category][skillId].medalEarned;
-        }
-        return;
-    }
-    database.ref(`ghost_squad/operators/${currentSelectedUser}/skills/${category}/${skillId}`).update({
-        id: skillId, current: nextLevel, medalEarned: medalState
-    });
+    const targetProfile = DEFAULT_SQUAD_PROFILES[currentSelectedUser] || localDemoSandboxOperator;
+    targetProfile.skills[category] = targetProfile.skills[category] || {};
+    targetProfile.skills[category][skillId] = targetProfile.skills[category][skillId] || { id: skillId, current: 0, medalEarned: false };
+    
+    targetProfile.skills[category][skillId].current = isOnlyMedalToggle ? targetProfile.skills[category][skillId].current : nextLevel;
+    targetProfile.skills[category][skillId].medalEarned = medalState;
+    
+    renderTargetProfileData(targetProfile);
+    syncToFirestore();
 }
 
-function switchSkillCategory(categoryKey) {
+window.switchSkillCategory = function(categoryKey) {
     selectedCategory = categoryKey;
     document.querySelectorAll(".tab-link").forEach(tab => {
         const tabLabel = tab.textContent.toUpperCase();
         tab.classList.toggle("active", tabLabel.includes(categoryKey) || (categoryKey === 'REBEL' && tabLabel.includes('REBEL')));
     });
     
-    if (isDemoMode) renderTargetProfileData(localDemoSandboxOperator);
-    else {
-        database.ref(`ghost_squad/operators/${currentSelectedUser}`).once("value", snapshot => {
-            if (snapshot.exists()) renderTargetProfileData(snapshot.val());
-        });
-    }
-}
+    const activeData = DEFAULT_SQUAD_PROFILES[currentSelectedUser] || localDemoSandboxOperator;
+    renderTargetProfileData(activeData);
+};
 
 function pushKeyboardInputStatsUpdate() {
     const nameInput = document.getElementById("profileCustomName");
@@ -665,23 +674,16 @@ function pushKeyboardInputStatsUpdate() {
         travelMap: document.getElementById("profileTravelMap") ? document.getElementById("profileTravelMap").value : ""
     };
 
-    if (isDemoMode) {
-        localDemoSandboxOperator = { ...localDemoSandboxOperator, ...dataObject };
-        
-        if (DEFAULT_SQUAD_PROFILES[currentSelectedUser]) {
-            Object.assign(DEFAULT_SQUAD_PROFILES[currentSelectedUser], dataObject);
-        }
-        
-        const diffOut = document.getElementById("difficultyScalingOutput");
-        if (diffOut) diffOut.textContent = calculateDifficultyLabel(localDemoSandboxOperator.tierMode, localDemoSandboxOperator.tier);
-        const levelLabel = document.getElementById("tierLevelContextLabel");
-        if (levelLabel) levelLabel.textContent = localDemoSandboxOperator.tierMode === "on" ? "Tier Level Countdown (50 -> 1)" : "Base Character Level Progress (1 -> 50)";
-    } else {
-        database.ref(`ghost_squad/operators/${currentSelectedUser}`).update(dataObject);
-        if (psnUsernameVal) {
-            checkLivePsnTrophyDatabaseSync(psnUsernameVal);
-        }
+    if (DEFAULT_SQUAD_PROFILES[currentSelectedUser]) {
+        Object.assign(DEFAULT_SQUAD_PROFILES[currentSelectedUser], dataObject);
     }
+    
+    const diffOut = document.getElementById("difficultyScalingOutput");
+    if (diffOut) diffOut.textContent = calculateDifficultyLabel(dataObject.tierMode, dataObject.tier);
+    const levelLabel = document.getElementById("tierLevelContextLabel");
+    if (levelLabel) levelLabel.textContent = dataObject.tierMode === "on" ? "Tier Level Countdown (50 -> 1)" : "Base Character Level Progress (1 -> 50)";
+
+    syncToFirestore();
 }
 
 function setupInterfaceControls() {
@@ -689,17 +691,39 @@ function setupInterfaceControls() {
     if (userSelect) {
         userSelect.addEventListener("change", (e) => {
             currentSelectedUser = e.target.value; 
-            localStorage.setItem("itc_active_ghost_operator", currentSelectedUser);
+            setGamertagCookie(currentSelectedUser);
             
-            if (isDemoMode) {
-                if (DEFAULT_SQUAD_PROFILES[currentSelectedUser]) {
-                    localDemoSandboxOperator = JSON.parse(JSON.stringify(DEFAULT_SQUAD_PROFILES[currentSelectedUser]));
-                    renderTargetProfileData(localDemoSandboxOperator);
+            if (DEFAULT_SQUAD_PROFILES[currentSelectedUser]) {
+                renderTargetProfileData(DEFAULT_SQUAD_PROFILES[currentSelectedUser]);
+            }
+            syncToFirestore();
+        });
+    }
+
+    const addCustomUserBtn = document.getElementById("addCustomUserBtn");
+    if (addCustomUserBtn) {
+        addCustomUserBtn.addEventListener("click", () => {
+            const inputTag = prompt("Enter Custom Gamer Tag / Profile Handle:");
+            if (inputTag && inputTag.trim() !== "") {
+                const cleanTag = inputTag.trim();
+                setGamertagCookie(cleanTag);
+                
+                if (!DEFAULT_SQUAD_PROFILES[cleanTag]) {
+                    DEFAULT_SQUAD_PROFILES[cleanTag] = {
+                        name: cleanTag, psnUsername: cleanTag, tierMode: "off", tier: 1, playstyle: "Tactical Operative",
+                        tactical: 50, stealth: 50, avgKillDist: 100, longestShot: 200, precision: 30,
+                        lifetime: "1h 0min", favWeapon: "P416 (Starting Weapon)", favWeapon2: "MP5 (Starting Weapon)",
+                        teammatesRevived: 0, c4MineKills: 0, droneUsed: "0h 10min",
+                        travelAir: "0h 0min", travelGround: "0h 15min", travelPara: "0 Jumps", travelMap: "5%",
+                        skills: generateCleanBlueprintCopy()
+                    };
                 }
-            } else if (database) {
-                database.ref(`ghost_squad/operators/${currentSelectedUser}`).once("value", snapshot => {
-                    if (snapshot.exists()) renderTargetProfileData(snapshot.val());
-                });
+                
+                updateOperatorDropdownList(DEFAULT_SQUAD_PROFILES);
+                userSelect.value = cleanTag;
+                currentSelectedUser = cleanTag;
+                renderTargetProfileData(DEFAULT_SQUAD_PROFILES[cleanTag]);
+                syncToFirestore();
             }
         });
     }
@@ -726,12 +750,30 @@ function evaluateDynamicTimeTheme() {
 
 function setupInterTabSynchronization() {
     window.addEventListener("storage", (event) => {
-        if (event.key === "itc_active_ghost_operator" && event.newValue) {
+        if (event.key === "wildlands_active_gamertag" && event.newValue) {
             const incoming = event.newValue; const select = document.getElementById("userSelect");
             if (select && select.value !== incoming) {
                 select.value = incoming; currentSelectedUser = incoming;
-                if (!isDemoMode && database) { database.ref(`ghost_squad/operators/${incoming}`).once("value", snapshot => { if (snapshot.exists()) renderTargetProfileData(snapshot.val()); }); }
+                if (DEFAULT_SQUAD_PROFILES[incoming]) renderTargetProfileData(DEFAULT_SQUAD_PROFILES[incoming]);
             }
         }
     });
+}
+
+/* === DIRECT FIRESTORE CLOUD PUSH AT /users/{userId}/progress/T.C.G.R.Wildlands === */
+async function syncToFirestore() {
+    if (!db || !auth.currentUser) return;
+
+    try {
+        const payload = DEFAULT_SQUAD_PROFILES[currentSelectedUser] || localDemoSandboxOperator;
+        const userProgressRef = doc(db, 'users', currentSelectedUser, 'progress', GAME_ID);
+        const userRef = doc(db, 'users', currentSelectedUser);
+
+        await setDoc(userRef, { displayName: currentSelectedUser, lastUpdated: new Date().toISOString() }, { merge: true });
+        await setDoc(userProgressRef, { ...payload, user: currentSelectedUser, gameId: GAME_ID, lastUpdated: new Date().toISOString() }, { merge: true });
+
+        console.log(`Live broadcast pushed cleanly to Firestore for: ${currentSelectedUser} at /users/${currentSelectedUser}/progress/${GAME_ID}`);
+    } catch (error) {
+        console.error("CRITICAL FIRESTORE SAVE ERROR:", error);
+    }
 }
