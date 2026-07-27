@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COTW Master Tracker | Werewolf3788</title>
     
-    <link rel="stylesheet" href="./style.css?v=1.3">
+    <link rel="stylesheet" href="./style.css?v=1.5">
 </head>
 <body id="master-body" class="theme-werewolf">
     <div class="background-overlay"></div>
@@ -18,28 +18,70 @@
     </nav>
 
     <div class="tracker-container">
+        <!-- Auth Header & Identity Controls -->
         <div class="profile-header">
             <div class="active-info">
                 <div style="font-size: 0.7rem; text-transform: uppercase; color: #94a3b8;">Master Hunter Console</div>
                 <span id="hunter-name" class="hunter-glow">WEREWOLF3788</span>
             </div>
-            <div class="profile-actions">
-                <button class="profile-btn" onclick="appState.switchHunter('Werewolf3788')">Werewolf</button>
-                <button class="profile-btn" onclick="appState.switchHunter('Raymystyro')">Ray</button>
-                <button class="profile-btn" onclick="appState.switchHunter('terrdog420')">TJ</button>
+
+            <!-- Profile Selector & Custom Tag Action -->
+            <div class="profile-actions" style="align-items: center; gap: 8px;">
+                <select id="userSelect" class="styled-select" style="background:#020617; color:#ff8800; border:2px solid #ff8800; border-radius:8px; padding:6px 12px; font-weight:900;">
+                    <option value="Werewolf3788">Werewolf3788</option>
+                    <option value="Raymystyro">Raymystyro</option>
+                    <option value="terrdog420">terrdog420</option>
+                </select>
+                <button id="addCustomUserBtn" class="profile-btn">+ Add Tag</button>
+            </div>
+
+            <!-- Firebase Google Auth Block -->
+            <div id="authContainer" class="auth-inline-wrapper" style="display: flex; align-items: center; gap: 12px;">
+                <button id="googleSignInBtn" class="profile-btn" style="background-color: #28a745; border-color: #28a745;">🔑 Login</button>
+                <div id="userProfileStatus" class="hidden" style="display: none; align-items: center; gap: 12px;">
+                    <img id="userAvatar" class="user-badge-img" src="" alt="Avatar" style="width:38px; height:38px; border-radius:50%; border:2px solid var(--hunter-color); object-fit:cover;">
+                    <button id="signOutBtn" class="profile-btn" style="padding: 6px 12px; font-size: 12px;">Logout</button>
+                </div>
             </div>
         </div>
 
+        <div id="demoNotification" class="demo-banner" style="background: rgba(255, 136, 0, 0.15); border: 1px solid var(--hunter-color); color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-weight: bold; font-size: 12px;">
+            Operational Sandbox Mode Active. Log In to Commit Multi-User Cloud Synchronization.
+        </div>
+
+        <!-- Identity Management Controls Card -->
+        <div id="adminBadge" class="admin-banner hidden" style="display:none; background:#7c3aed; color:#fff; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:900; margin-bottom:15px;">
+            ⚡ OVERWATCH ADMIN ACTIVE (raykevin71888@gmail.com)
+        </div>
+
+        <div class="stat-category-block" style="background: rgba(15, 23, 42, 0.95); border: 2px solid var(--hunter-color); border-radius: 1rem; padding: 15px; margin-bottom: 25px;">
+            <div style="font-size: 0.8rem; font-weight: 900; color: var(--hunter-color); margin-bottom: 10px; text-transform: uppercase;">Gamer Identity & PSN Handle Configuration</div>
+            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label for="profileCustomName" style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">Operator Profile Name</label>
+                    <input type="text" id="profileCustomName" style="width: 100%; background: #020617; border: 1px solid #334155; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold;" placeholder="Werewolf3788">
+                </div>
+                <div style="flex: 1; min-width: 200px;">
+                    <label for="profilePsnUser" style="font-size: 11px; color: #3b82f6; display: block; margin-bottom: 4px;">Linked PSN Gamer Tag</label>
+                    <input type="text" id="profilePsnUser" style="width: 100%; background: #020617; border: 1px solid #3b82f6; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold;" placeholder="werewolf3788">
+                </div>
+                <div style="align-self: flex-end;">
+                    <button id="saveIdentityBtn" class="profile-btn" style="background: var(--hunter-color); border-color: var(--hunter-color); color: #000; height: 38px;">Save Profile & Tag</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Progress Header -->
         <header class="main-header">
-            <div style="font-size: 0.8rem; font-weight: 900; color: #94a3b8; margin-bottom: 10px;">ANIMAL RANK (LEGACY SYNC)</div>
+            <div style="font-size: 0.8rem; font-weight: 900; color: #94a3b8; margin-bottom: 10px;">ANIMAL RANK (FIRESTORE SYNC)</div>
             <div class="rank-grid">
                 <div class="rank-item">
                     <span class="rank-emoji">👑</span><span class="rank-label">G.O.</span>
                     <div class="rank-controls"><button onclick="adjRank('greatone', -1)">-</button><span id="rank-val-greatone">0</span><button onclick="adjRank('greatone', 1)">+</button></div>
                 </div>
                 <div class="rank-item">
-                    <span class="rank-emoji">🐇</span><span class="rank-label">Fur Type</span>
-                    <div class="rank-controls"><button onclick="adjRank('albino', -1)">-</button><span id="rank-val-albino">0</span><button onclick="adjRank('albino', 1)">+</button></div>
+                    <span class="rank-emoji">🐇</span><span class="rank-label">RARE FUR</span>
+                    <div class="rank-controls"><button onclick="adjRank('rareFur', -1)">-</button><span id="rank-val-rareFur">0</span><button onclick="adjRank('rareFur', 1)">+</button></div>
                 </div>
                 <div class="rank-item">
                     <span class="rank-emoji">💎</span><span class="rank-label">DIAMOND</span>
@@ -71,12 +113,31 @@
 
         <div id="section-container"></div>
 
+        <!-- Lightbox Modal Container -->
+        <div id="lightbox" style="display:none; position:fixed; z-index:9999; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); text-align:center;" onclick="appState.closeLightbox(event)">
+            <span class="lightbox-close" style="position:absolute; top:20px; right:35px; color:#fff; font-size:40px; font-weight:bold; cursor:pointer;">&times;</span>
+            <div style="position:relative; top:50%; transform:translateY(-50%); max-width:90%; margin:0 auto;">
+                <img id="lightbox-img" src="" alt="Collectible Image" style="max-height:80vh; max-width:100%; border:2px solid var(--hunter-color); border-radius:8px;">
+                <div id="lightbox-caption" style="color:#fff; margin-top:15px; font-size:16px; font-weight:bold;"></div>
+                <div style="margin-top:15px;">
+                    <button class="profile-btn" onclick="appState.changeLightboxImage(-1)">❮ Prev</button>
+                    <button class="profile-btn" onclick="appState.changeLightboxImage(1)">Next ❯</button>
+                </div>
+            </div>
+        </div>
+
         <footer class="tracker-footer">
-            <p>Support the hunt: <a href="https://www.amazon.com/gp/goldbox?tag=moviesanywhere02-20" target="_blank">Today's Deals</a> | <a href="https://www.amazon.com/s?k=hunting&tag=moviesanywhere02-20" target="_blank">Hunting Gear</a></p>
+            <p>Support the hunt: <a href="https://www.amazon.com/gp/goldbox?tag=psngaming-20" target="_blank">Today's Deals</a> | <a href="https://www.amazon.com/s?k=hunting&tag=psngaming-20" target="_blank">Hunting Gear</a></p>
             <p style="margin-top: 15px; font-size: 0.7rem;">Lead Developer: Werewolf3788 | Collaborators: Raymystyro, terrdog420</p>
         </footer>
     </div>
 
-    <script type="module" src="./script.js?v=1.3"></script>
+    <!-- Dynamic Floating Tip Widget -->
+    <a href="https://streamelements.com/werewolf3788/tip" target="_blank" rel="noopener noreferrer" class="floating-tip-btn" style="position:fixed; bottom:24px; right:24px; z-index:999; background:linear-gradient(135deg, #FF4500, #d9534f); color:#fff; font-weight:900; font-size:13px; padding:12px 20px; border-radius:50px; text-decoration:none; display:flex; align-items:center; gap:8px; border:1px solid rgba(255,255,255,0.3);">
+        💳 <span>Tip / Support Stream</span>
+    </a>
+
+    <!-- Main JavaScript App module -->
+    <script type="module" src="./script.js?v=1.5"></script>
 </body>
 </html>
