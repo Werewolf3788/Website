@@ -2,10 +2,9 @@
  * ==========================================
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Ghost Recon Wildlands Squad Hub
- * Version: 4.7.0 - Verified Acquisition Storefront Portals Matrix
- * Version Timestamp: Sat, July 11, 2026, 3:55 PM Chicago Time
- * Compatibility: HTML5, Fully Self-Contained inside CodePen Panels
- * Implementation Note: Hardware storefront direct reference links mapped.
+ * Version: 4.8.0 - Verified Acquisition Storefront Portals & GA4 Dual Analytics
+ * Version Timestamp: Mon, July 27, 2026, 02:14 PM EDT
+ * Implementation Note: Hardware storefront direct reference links mapped with UTM parameters.
  * ==========================================
  -->
 <!DOCTYPE html>
@@ -16,341 +15,24 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      gtag('config', 'G-Z9M5LXQ5XN');
-      gtag('config', 'G-L376P3NPY4');
+      
+      // Primary Analytics & Dual Stream Binding
+      gtag('config', 'G-Z9M5LXQ5XN', {
+        'stream_id': '13278632388',
+        'custom_map': { 'dimension1': 'Tom Clancy Ghost Recon Wildlands Skills tracker and weapons tracker' }
+      });
+      gtag('config', 'G-L376P3NPY4', {
+        'stream_id': '13278632388'
+      });
     </script>
     
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ghost Recon Wildlands Squad Hub</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css?v=4.8.0">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <style>
-        :root {
-            --primary-orange: #FF4500;
-            --solid-black: #000000;
-            --ghost-blue: #28a745;
-            --node-blue: #0076a8;
-            --node-locked: #1c2430;
-            --medal-gold: #ffcc00;
-            --corporate-red: #d9534f;
-            --dark-charcoal: #1e1c1c;
-            --text-white: #ffffff;
-        }
-        
-        /* Game Poster Artwork Background Layer Configuration */
-        body {
-            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.85)), url('https://cdnb.artstation.com/p/assets/images/images/003/287/239/4k/petur-arnorsson-thevideogamegallery-27263-3840x2160.jpg?1472040147') no-repeat center center !important;
-            background-size: cover !important;
-            background-attachment: fixed !important;
-            color: var(--text-white);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            font-size: 18px;
-            overflow-x: hidden;
-        }
-
-        .hub-header {
-            background: rgba(0, 0, 0, 0.95);
-            border-bottom: 3px solid var(--primary-orange);
-            padding: 20px 32px;
-            box-sizing: border-box;
-            position: relative;
-            z-index: 100;
-        }
-
-        .header-container {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            gap: 24px;
-        }
-
-        .logo-text {
-            font-size: 32px;
-            margin: 0;
-            letter-spacing: 3px;
-            font-weight: 900;
-            color: var(--text-white);
-        }
-
-        .auth-inline-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .user-badge-img {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 2px solid var(--primary-orange);
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-
-        .control-btn {
-            min-height: 48px;
-            padding: 12px 28px;
-            background-color: var(--corporate-red);
-            color: var(--text-white);
-            border: none;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-radius: 4px;
-        }
-
-        .skills-tabs {
-            display: flex;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            gap: 12px;
-            margin-bottom: 32px;
-            padding-bottom: 16px;
-            border-bottom: 2px solid #333;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .tab-link {
-            min-height: 48px;
-            padding: 12px 24px;
-            background-color: #2a2a2a;
-            color: #eee;
-            border: 1px solid #555;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            white-space: nowrap;
-            flex: 0 0 auto;
-            border-radius: 4px;
-        }
-
-        .tab-link.active {
-            background-color: var(--corporate-red);
-            color: var(--text-white);
-            border-color: transparent;
-        }
-
-        .hub-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 48px;
-            padding: 32px;
-            width: 100vw;
-            max-width: 100%;
-            box-sizing: border-box;
-            position: relative;
-            z-index: 10;
-        }
-
-        @media (min-width: 1200px) {
-            .hub-container {
-                grid-template-columns: 520px 1fr;
-            }
-        }
-
-        .card-panel {
-            background-color: rgba(30, 28, 28, 0.95) !important;
-            border: 2px solid #2e2a2a;
-            padding: 32px;
-            border-radius: 8px;
-            box-sizing: border-box;
-            height: fit-content;
-            position: relative;
-        }
-
-        .stat-category-block {
-            margin-bottom: 40px;
-            border-bottom: 2px solid #2c2828;
-            padding-bottom: 24px;
-        }
-
-        .stat-category-block:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .category-header {
-            font-size: 20px;
-            letter-spacing: 1px;
-            margin-top: 0;
-            margin-bottom: 24px;
-            font-weight: bold;
-        }
-
-        .stat-row {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            gap: 16px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .stat-row label {
-            font-size: 16px;
-            font-weight: 600;
-            color: #eee;
-            white-space: nowrap;
-        }
-
-        .stat-input {
-            background: #000000;
-            border: 2px solid #555;
-            color: #ffffff;
-            padding: 12px 16px;
-            font-size: 18px;
-            width: 220px;
-            text-align: right;
-            border-radius: 6px;
-            min-height: 52px;
-            box-sizing: border-box;
-            flex-shrink: 0;
-        }
-
-        .stat-input:focus {
-            border-color: var(--primary-orange);
-            outline: none;
-        }
-
-        .storefront-matrix {
-            margin-top: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .store-link-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: #111111;
-            border: 1px solid #444444;
-            padding: 14px 20px;
-            border-radius: 6px;
-            text-decoration: none;
-            color: #ffffff;
-            font-weight: bold;
-            font-size: 15px;
-            transition: border-color 0.2s ease, background 0.2s ease;
-        }
-
-        .store-link-card:hover {
-            border-color: var(--primary-orange);
-            background: #161616;
-        }
-
-        .store-tag {
-            padding: 4px 10px;
-            font-size: 11px;
-            text-transform: uppercase;
-            border-radius: 4px;
-            font-weight: 900;
-        }
-
-        .skills-tree-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 24px;
-            min-height: 300px;
-        }
-
-        .skill-card {
-            background: rgba(20, 20, 24, 0.95);
-            border: 2px solid #333;
-            padding: 24px;
-            cursor: pointer;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            border-radius: 6px;
-            min-height: 180px;
-            box-sizing: border-box;
-        }
-
-        .skill-card h4 { font-size: 18px; margin: 0 0 10px 0; }
-        .skill-card p { font-size: 14px; color: #a0aec0; margin: 0 0 12px 0; line-height: 1.4; }
-        .skill-card.unlocked { border-color: var(--node-blue); background: rgba(12, 26, 36, 0.95); }
-        .skill-card.maxed { border-color: var(--ghost-blue); background: rgba(12, 36, 17, 0.95); }
-        .skill-card.epic-node { border: 3px dashed #9b59b6; background: rgba(26, 15, 46, 0.95); }
-        
-        .medal-indicator-zone {
-            margin-top: 16px;
-            border-top: 2px solid #262626;
-            padding-top: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .medal-dot-btn {
-            background: #222;
-            border: 2px solid #555;
-            color: #555;
-            font-size: 24px;
-            cursor: pointer;
-            width: 52px;
-            height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 6px;
-        }
-
-        .medal-dot-btn.earned {
-            color: var(--medal-gold);
-            background: #443600;
-            border-color: var(--medal-gold);
-        }
-
-        .demo-banner {
-            background: #e67e22;
-            color: #ffffff;
-            padding: 20px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 18px;
-            grid-column: 1 / -1;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border-radius: 6px;
-        }
-
-        .admin-banner {
-            background: #8e44ad;
-            color: #ffffff;
-            padding: 10px;
-            text-align: center;
-            font-weight: bold;
-            font-size: 15px;
-            margin-bottom: 24px;
-            text-transform: uppercase;
-            border-radius: 6px;
-        }
-        
-        .styled-select {
-            min-height: 48px;
-            padding: 10px 20px;
-            font-size: 16px;
-            background: #000;
-            color: #fff;
-            border: 2px solid #555;
-            border-radius: 6px;
-        }
-    </style>
 </head>
 <body>
 
@@ -358,15 +40,16 @@
         <div class="header-container">
             <h1 class="logo-text">GHOST HUB</h1>
             
-            <div class="user-selector-wrapper">
-                <select id="userSelect" class="styled-select"></select>
+            <div class="user-selector-wrapper" style="display: flex; gap: 8px; align-items: center;">
+                <select id="userSelect" class="styled-select" data-ga-label="user_profile_selector"></select>
+                <button id="addCustomUserBtn" class="control-btn" style="min-height: 44px; padding: 0 12px; font-size: 13px;" data-ga-label="add_custom_user">+ Add Tag</button>
             </div>
 
             <div id="authContainer" class="auth-inline-wrapper">
-                <button id="googleSignInBtn" class="control-btn" style="background-color: var(--ghost-blue);">🔑 Login</button>
+                <button id="googleSignInBtn" class="control-btn" style="background-color: var(--ghost-blue);" data-ga-label="login_google">🔑 Login</button>
                 <div id="userProfileStatus" class="hidden" style="display: flex; align-items: center; gap: 12px;">
                     <img id="userAvatar" class="user-badge-img" src="" alt="Avatar">
-                    <button id="signOutBtn" class="control-btn" style="font-size: 13px; padding: 6px 12px; min-height: 38px;">Logout</button>
+                    <button id="signOutBtn" class="control-btn" style="font-size: 13px; padding: 6px 12px; min-height: 38px;" data-ga-label="logout">Logout</button>
                 </div>
             </div>
         </div>
@@ -501,19 +184,19 @@
                 </div>
                 
                 <div class="storefront-matrix">
-                    <a href="https://store.ubisoft.com/us/tom-clancys-ghost-recon-wildlands/574474b488a7e3b8638b456a.html" target="_blank" class="store-link-card">
+                    <a href="https://store.ubisoft.com/us/tom-clancys-ghost-recon-wildlands/574474b488a7e3b8638b456a.html?utm_source=ghost_hub&utm_medium=storefront_matrix&utm_campaign=wildlands_tracker" target="_blank" class="store-link-card" data-ga-label="store_ubisoft">
                         <span>Ubisoft Store Connect</span>
                         <span class="store-tag" style="background: #000; color: #fff; border: 1px solid #fff;">Ubisoft</span>
                     </a>
-                    <a href="https://store.playstation.com/en-us/search/Tom%20Clancy%E2%80%99s%20Ghost%20Recon%C2%AE%20Wildlands" target="_blank" class="store-link-card">
+                    <a href="https://store.playstation.com/en-us/search/Tom%20Clancy%E2%80%99s%20Ghost%20Recon%C2%AE%20Wildlands?utm_source=ghost_hub&utm_medium=storefront_matrix&utm_campaign=wildlands_tracker" target="_blank" class="store-link-card" data-ga-label="store_psn">
                         <span>PlayStation Network Marketplace</span>
                         <span class="store-tag" style="background: #003087; color: #fff;">PSN Store</span>
                     </a>
-                    <a href="https://www.xbox.com/en-US/games/store/tom-clancys-ghost-recon-wildlands-standard-edition/c2n9cs4fs1qr" target="_blank" class="store-link-card">
+                    <a href="https://www.xbox.com/en-US/games/store/tom-clancys-ghost-recon-wildlands-standard-edition/c2n9cs4fs1qr?utm_source=ghost_hub&utm_medium=storefront_matrix&utm_campaign=wildlands_tracker" target="_blank" class="store-link-card" data-ga-label="store_xbox">
                         <span>Microsoft Xbox Live Store</span>
                         <span class="store-tag" style="background: #107c10; color: #fff;">Xbox Hub</span>
                     </a>
-                    <a href="https://amzn.to/4h8Avux" target="_blank" class="store-link-card">
+                    <a href="https://amzn.to/4h8Avux" target="_blank" class="store-link-card" data-ga-label="store_amazon">
                         <span>Amazon Special Edition Physical Logistics</span>
                         <span class="store-tag" style="background: #ff9900; color: #000;">Amazon</span>
                     </a>
@@ -524,23 +207,35 @@
         <!-- Right Column -->
         <section class="card-panel skills-panel">
             <div class="skills-tabs">
-                <button class="tab-link active" onclick="switchSkillCategory('WEAPON')">Weapon</button>
-                <button class="tab-link" onclick="switchSkillCategory('DRONE')">Drone</button>
-                <button class="tab-link" onclick="switchSkillCategory('ITEM')">Item</button>
-                <button class="tab-link" onclick="switchSkillCategory('PHYSICAL')">Physical</button>
-                <button class="tab-link" onclick="switchSkillCategory('SQUAD')">Squad</button>
-                <button class="tab-link" onclick="switchSkillCategory('REBEL')">Rebel Support</button>
-                <button class="tab-link" onclick="switchSkillCategory('TROPHY')">Trophies & Recon Items</button>
+                <button class="tab-link active" onclick="switchSkillCategory('WEAPON')" data-ga-label="tab_weapon">Weapon</button>
+                <button class="tab-link" onclick="switchSkillCategory('DRONE')" data-ga-label="tab_drone">Drone</button>
+                <button class="tab-link" onclick="switchSkillCategory('ITEM')" data-ga-label="tab_item">Item</button>
+                <button class="tab-link" onclick="switchSkillCategory('PHYSICAL')" data-ga-label="tab_physical">Physical</button>
+                <button class="tab-link" onclick="switchSkillCategory('SQUAD')" data-ga-label="tab_squad">Squad</button>
+                <button class="tab-link" onclick="switchSkillCategory('REBEL')" data-ga-label="tab_rebel">Rebel Support</button>
+                <button class="tab-link" onclick="switchSkillCategory('TROPHY')" data-ga-label="tab_trophy">Trophies & Recon Items</button>
             </div>
             
             <div id="skillsTreeGrid" class="skills-tree-grid"></div>
         </section>
     </main>
 
+    <!-- Floating Donation / Stream Tip Button -->
+    <a href="https://streamelements.com/werewolf3788/tip" target="_blank" rel="noopener noreferrer" class="floating-tip-btn" data-ga-label="floating_tip_button">
+        💳 <span>Tip / Support Stream</span>
+    </a>
+
+    <footer class="hub-footer">
+        <div class="footer-container">
+            <div class="kf-watermark"><span class="k-letter">K</span><span class="f-letter">F</span></div>
+            <div class="timestamp-note">Active Version: v4.8.0 | GA4 Stream ID: 13278632388</div>
+        </div>
+    </footer>
+
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="app.js?v=4.7.0"></script>
+    <script src="app.js?v=4.8.0"></script>
 </body>
 </html>
