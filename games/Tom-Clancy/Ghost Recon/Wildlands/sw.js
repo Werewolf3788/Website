@@ -1,11 +1,11 @@
 /* === SECTION: File Header & Config === */
 /*
  * ==========================================
- * VERSION TIMESTAMP: Mon, July 27, 2026, 02:05 PM EDT
+ * VERSION TIMESTAMP: Mon, July 27, 2026, 02:10 PM EDT
  * SYSTEM: Dynamic Universal Multi-User Ghost Recon Wildlands Tracker (tracker.js)
  * ARCHITECTURE: 100% Pure Firebase Firestore Real-Time Engine (Zero LocalStorage)
  * PATH STRUCTURE: /users/{userId}/progress/T.C.G.R.Wildlands
- * FEATURES: Direct Cloud Read/Write, Simultaneous Operative Stream Observers
+ * FEATURES: Direct Cloud Read/Write, Simultaneous Operative Stream Observers, Cookie Preference Engine & Dynamic Tip Widget
  * ==========================================
  */
 
@@ -81,6 +81,74 @@ const appState = {
     db: null,
     collapsedSections: {},
     unsubscribers: [],
+
+    /* === COOKIE PREFERENCE ENGINE === */
+    setGamertagCookie: function(gamertag) {
+        const d = new Date();
+        d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); // 365 Days Persistence
+        document.cookie = `active_gamertag=${encodeURIComponent(gamertag)};expires=${d.toUTCString()};path=/;SameSite=Lax`;
+    },
+
+    getGamertagCookie: function() {
+        const name = "active_gamertag=";
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(name) === 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    },
+
+    /* === FLOATING TIP / DONATION WIDGET INJECTOR === */
+    setupDonationWidget: function() {
+        if (document.getElementById('floating-tip-btn')) return;
+
+        const tipBtn = document.createElement('a');
+        tipBtn.id = 'floating-tip-btn';
+        tipBtn.href = 'https://streamelements.com/werewolf3788/tip';
+        tipBtn.target = '_blank';
+        tipBtn.rel = 'noopener noreferrer';
+        tipBtn.innerHTML = `💳 <span>Tip / Support Stream</span>`;
+        
+        // Inline UI CSS styling ensuring standard contrast, zero overlaps, and 44px minimum touch targets
+        tipBtn.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+            background: linear-gradient(135deg, #ff8800, #ff5500);
+            color: #ffffff;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 10px 16px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 44px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        `;
+
+        tipBtn.addEventListener('mouseenter', () => {
+            tipBtn.style.transform = 'scale(1.05)';
+            tipBtn.style.boxShadow = '0 6px 20px rgba(255, 136, 0, 0.6)';
+        });
+
+        tipBtn.addEventListener('mouseleave', () => {
+            tipBtn.style.transform = 'scale(1)';
+            tipBtn.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.4)';
+        });
+
+        document.body.appendChild(tipBtn);
+    },
 
     parseCSV: function(str) {
         const arr = [];
@@ -217,11 +285,27 @@ const appState = {
     },
 
     init: async function() {
-        this.activeHunter = 'Werewolf3788';
+        // 1. Check for URL auto-select parameter (e.g. tracker.html?user=Ray)
+        const urlParams = new URLSearchParams(window.location.search);
+        const userParam = urlParams.get('user');
+
+        if (userParam && USER_DATA_MAP[userParam]) {
+            this.activeHunter = USER_DATA_MAP[userParam];
+            this.setGamertagCookie(this.activeHunter);
+        } else {
+            // 2. Read saved preference cookie; fall back to default if absent
+            const savedTag = this.getGamertagCookie();
+            if (savedTag && USER_DATA_MAP[savedTag]) {
+                this.activeHunter = USER_DATA_MAP[savedTag];
+            } else {
+                this.activeHunter = 'Werewolf3788';
+            }
+        }
 
         this.loadNavigation();
         this.setupProfilesUI();
         this.setupLifecycleListeners();
+        this.setupDonationWidget();
 
         try {
             const app = initializeApp(firebaseConfig, 'Wildlands-User-Hierarchy');
@@ -312,6 +396,9 @@ const appState = {
     switchHunter: function(name) {
         const dbDocName = USER_DATA_MAP[name] || name;
         this.activeHunter = dbDocName;
+
+        // Save preference cookie whenever a profile button is clicked
+        this.setGamertagCookie(dbDocName);
 
         const displayNode = document.getElementById('hunter-display');
         if (displayNode) displayNode.innerText = dbDocName.toUpperCase();
