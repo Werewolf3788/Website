@@ -1,4 +1,4 @@
-<!-- Version Timestamp: v2.4.5 | Last Updated: July 26, 2026, 12:00 AM EDT -->
+<!-- Version Timestamp: v2.5.0 | Last Updated: July 27, 2026, 07:15 PM EDT -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -66,7 +66,46 @@
             text-decoration: none;
             font-size: 1.1rem;
             text-shadow: 0 0 10px var(--ser-glow);
+            white-space: nowrap;
         }
+
+        /* DYNAMIC CSV MENU STYLING */
+        .nav-links { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            padding: 6px 10px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: 0.2s;
+        }
+        .nav-links a:hover { color: var(--ser-color); border-color: var(--ser-color); background: rgba(255, 255, 255, 0.1); }
+
+        .nav-dropdown { position: relative; display: inline-block; }
+        .nav-dropbtn {
+            color: #fff; font-weight: 700; font-size: 0.8rem; text-transform: uppercase;
+            padding: 6px 10px; border-radius: 4px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-family: inherit;
+        }
+        .nav-dropdown:hover .nav-dropbtn { color: var(--ser-color); border-color: var(--ser-color); }
+        .nav-dropdown-content {
+            display: none; position: absolute; background-color: rgba(10, 10, 15, 0.98);
+            min-width: 180px; box-shadow: 0px 8px 16px rgba(0,0,0,0.8); z-index: 1001;
+            border-radius: 6px; border: 1px solid var(--ser-color); overflow: hidden; top: 100%; left: 0; margin-top: 4px;
+        }
+        .nav-dropdown-content a { color: white; padding: 10px 12px; text-decoration: none; display: flex; align-items: center; border-radius: 0; border: none; background: transparent; font-size: 0.8rem; }
+        .nav-dropdown-content a:hover { background-color: rgba(255, 255, 255, 0.1); color: var(--ser-color); }
+        .nav-dropdown:hover .nav-dropdown-content { display: block; }
+        .nav-icon { width: 18px; height: 18px; border-radius: 3px; object-fit: cover; }
+
+        .mobile-menu-toggle { display: none; background: #222; color: #fff; border: 1px solid var(--ser-color); padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
 
         .tracker-container {
             margin-top: calc(var(--nav-height) + 15px);
@@ -94,7 +133,7 @@
         }
 
         .hunter-glow { font-size: 1.6rem; font-weight: 900; color: var(--ser-color); text-shadow: 0 0 15px var(--ser-glow); }
-        .profile-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .profile-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
         
         .profile-btn {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
@@ -145,6 +184,12 @@
 
         .tracker-footer { margin-top: 50px; text-align: center; padding-bottom: 40px; opacity: 0.5; font-size: 10px; }
         .reward-tag { color: #00ff00; font-weight: 900; font-size: 10px; margin-top: 4px; display: block; }
+
+        @media (max-width: 768px) {
+            .mobile-menu-toggle { display: block; }
+            .nav-links { display: none; width: 100%; flex-direction: column; background: #0a0a0f; position: absolute; top: 100%; left: 0; padding: 10px; border-bottom: 2px solid var(--ser-color); }
+            .nav-links.mobile-active { display: flex; }
+        }
     </style>
 </head>
 <body id="master-body">
@@ -152,6 +197,12 @@
 
     <nav class="master-nav">
         <a href="#" class="nav-logo">SNIPER ELITE: RESISTANCE</a>
+        
+        <button class="mobile-menu-toggle" id="mobile-toggle">☰ Menu</button>
+        <div id="dynamic-nav-links" class="nav-links">
+            <span style="color: #aaa; font-size: 11px;">Loading Navigation...</span>
+        </div>
+
         <div id="stat-line" style="font-family: monospace; font-size: 10px; opacity: 0.6; text-transform: uppercase; color: #aaa;">
             LINK: INITIALIZING...
         </div>
@@ -164,11 +215,51 @@
                 <div style="font-size: 0.6rem; text-transform: uppercase; color: #888;">Operative Terminal</div>
                 <span id="hunter-display" class="hunter-glow text-white">KEVIN</span>
             </div>
+
+            <!-- Profile Selector & Custom User Actions -->
             <div class="profile-actions">
-                <button class="profile-btn active-btn" onclick="appState.switchHunter('Kevin')">Kevin</button>
-                <button class="profile-btn" onclick="appState.switchHunter('Ray')">Ray</button>
-                <button class="profile-btn" onclick="appState.switchHunter('TJ')">TJ</button>
-                <button class="profile-btn" onclick="appState.switchHunter('Seth')">Seth</button>
+                <select id="userSelect" class="profile-btn" style="background:#111; color:var(--ser-color); border:1px solid var(--ser-color); font-weight:700;">
+                    <option value="Kevin">Kevin</option>
+                    <option value="Ray">Ray</option>
+                    <option value="TJ">TJ</option>
+                    <option value="Seth">Seth</option>
+                </select>
+                <button id="addCustomUserBtn" class="profile-btn">+ Add Tag</button>
+            </div>
+
+            <!-- Firebase Google Auth Container -->
+            <div id="authContainer" style="display: flex; align-items: center; gap: 10px;">
+                <button id="googleSignInBtn" class="profile-btn" style="background-color: #28a745; border-color: #28a745; cursor: pointer;">🔑 Login</button>
+                <div id="userProfileStatus" style="display: none; align-items: center; gap: 10px;">
+                    <img id="userAvatar" src="" alt="Avatar" style="width:34px; height:38px; border-radius:50%; border:2px solid var(--ser-color); object-fit:cover;">
+                    <button id="signOutBtn" class="profile-btn" style="padding: 6px 10px; font-size: 11px; cursor: pointer;">Logout</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="demoNotification" class="demo-banner" style="background: rgba(255, 136, 0, 0.15); border: 1px solid var(--ser-color); color: #fff; padding: 10px; border-radius: 6px; margin-bottom: 20px; text-align: center; font-weight: bold; font-size: 11px;">
+            Operational Live Sandbox Mode Active. Log In to Commit Multi-User Cloud Synchronization.
+        </div>
+
+        <div id="adminBadge" class="admin-banner" style="display:none; background:#7c3aed; color:#fff; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:900; margin-bottom:20px;">
+            ⚡ OVERWATCH ADMIN ACTIVE (raykevin71888@gmail.com)
+        </div>
+
+        <!-- Identity & PSN Gamer Tag Configuration Card -->
+        <div class="stat-category-block" style="background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.1); border-left: 5px solid var(--ser-color); padding: 15px; border-radius: 0.8rem; margin-bottom: 20px;">
+            <div style="font-size: 0.8rem; font-weight: 900; color: var(--ser-color); margin-bottom: 8px; text-transform: uppercase;">Gamer Identity & PSN Handle Configuration</div>
+            <div style="display: flex; gap: 12px; flex-wrap: wrap; align-items: center;">
+                <div style="flex: 1; min-width: 180px;">
+                    <label for="profileCustomName" style="font-size: 10px; color: #aaa; display: block; margin-bottom: 3px;">Operator Profile Name</label>
+                    <input type="text" id="profileCustomName" style="width: 100%; background: #000; border: 1px solid #444; color: #fff; padding: 8px; border-radius: 4px; font-weight: bold;" placeholder="Kevin">
+                </div>
+                <div style="flex: 1; min-width: 180px;">
+                    <label for="profilePsnUser" style="font-size: 10px; color: #00ccff; display: block; margin-bottom: 3px;">Linked PSN Gamer Tag</label>
+                    <input type="text" id="profilePsnUser" style="width: 100%; background: #000; border: 1px solid #00ccff; color: #fff; padding: 8px; border-radius: 4px; font-weight: bold;" placeholder="werewolf3788">
+                </div>
+                <div style="align-self: flex-end;">
+                    <button id="saveIdentityBtn" class="profile-btn" style="background: var(--ser-color); border-color: var(--ser-color); color: #000; height: 35px; cursor: pointer;">Save Profile & Tag</button>
+                </div>
             </div>
         </div>
 
@@ -182,15 +273,24 @@
         <div id="section-container"></div>
 
         <footer class="site-footer tracker-footer">
-            <p>System Build Version: <strong>v2.4.5</strong> | Last Updated: <strong>July 26, 2026, 12:00 AM EDT</strong></p>
+            <p>System Build Version: <strong>v2.5.0</strong> | Last Updated: <strong>July 27, 2026, 07:15 PM EDT</strong></p>
+            <p>Support the campaign: <a href="https://www.amazon.com/gp/goldbox?tag=psngaming-20" target="_blank" style="color: var(--ser-color);">Today's Deals</a> | <a href="https://www.amazon.com/s?k=sniper+elite&tag=psngaming-20" target="_blank" style="color: var(--ser-color);">Gaming Gear</a></p>
             <p>DESIGNED BY WEREWOLF3788 | OPERATIVES: KEVIN, RAY, TJ, SETH</p>
             <p style="margin-top: 5px; font-family: monospace;">NODE-PROJECT: game-tracker-5b2ef</p>
         </footer>
     </div>
 
+    <!-- MAIN MODULE ENGINE -->
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-        import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { 
+            getAuth, 
+            signInAnonymously, 
+            onAuthStateChanged, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            signOut 
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
         const firebaseConfig = {
@@ -205,6 +305,23 @@
         };
 
         const GAME_ID = 'sniper-elite-resistance';
+
+        const USER_DATA_MAP = {
+            'Kevin': 'Kevin',
+            'kevin': 'Kevin',
+            'Werewolf3788': 'Kevin',
+            'werewolf3788': 'Kevin',
+            'Ray': 'Ray',
+            'ray': 'Ray',
+            'Raymystyro': 'Ray',
+            'raymystyro': 'Ray',
+            'TJ': 'TJ',
+            'tj': 'TJ',
+            'terrdog420': 'TJ',
+            'Terrdog420': 'TJ',
+            'Seth': 'Seth',
+            'seth': 'Seth'
+        };
 
         const userThemes = {
             'Kevin': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
@@ -421,12 +538,126 @@
 
         const appState = {
             activeHunter: 'Kevin',
+            psnUsername: 'werewolf3788',
             hunterData: [],
             collapsedSections: {}, 
             db: null, auth: null, user: null, unsub: null,
 
+            setGamertagCookie: function(gamertag) {
+                const d = new Date();
+                d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
+                document.cookie = `ser_active_gamertag=${encodeURIComponent(gamertag)};expires=${d.toUTCString()};path=/;SameSite=Lax`;
+            },
+
+            getGamertagCookie: function() {
+                const name = "ser_active_gamertag=";
+                const decodedCookie = decodeURIComponent(document.cookie);
+                const ca = decodedCookie.split(';');
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i].trim();
+                    if (c.indexOf(name) === 0) return c.substring(name.length, c.length);
+                }
+                return "";
+            },
+
+            parseCSV: function(str) {
+                const arr = [];
+                let quote = false;
+                for (let row = 0, col = 0, c = 0; c < str.length; c++) {
+                    let cc = str[c], nc = str[c+1];
+                    arr[row] = arr[row] || [];
+                    arr[row][col] = arr[row][col] || '';
+                    if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
+                    if (cc == '"') { quote = !quote; continue; }
+                    if (cc == ',' && !quote) { ++col; continue; }
+                    if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
+                    if (cc == '\n' && !quote) { ++row; col = 0; continue; }
+                    if (cc == '\r' && !quote) { ++row; col = 0; continue; }
+                    arr[row][col] += cc;
+                }
+                return arr;
+            },
+
+            loadNavigation: async function() {
+                const sheetsCsvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv&v=${Date.now()}`;
+                try {
+                    const res = await fetch(sheetsCsvUrl);
+                    if (res.ok) {
+                        const csvText = await res.text();
+                        const parsedRows = this.parseCSV(csvText);
+                        if (parsedRows.length > 1) {
+                            const menuItems = [];
+                            for (let i = 1; i < parsedRows.length; i++) {
+                                const row = parsedRows[i];
+                                if (!row || row.length < 3) continue;
+                                const name = row[0]?.trim();
+                                const group = row[1]?.trim();
+                                const url = row[2]?.trim();
+                                let image = row[3]?.trim();
+
+                                if (url && url.startsWith('http')) {
+                                    if (image && image.includes('drive.google.com')) {
+                                        const m = image.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || image.match(/id=([a-zA-Z0-9_-]+)/);
+                                        if (m) image = `https://drive.google.com/uc?export=view&id=${m[1]}`;
+                                    }
+                                    menuItems.push({ name, group, url, image });
+                                }
+                            }
+                            if (menuItems.length > 0) {
+                                this.buildMenuHTML(menuItems);
+                                return;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn("CSV Fetch Warning:", e.message);
+                }
+            },
+
+            buildMenuHTML: function(menuItems) {
+                const navContainer = document.getElementById('dynamic-nav-links');
+                if (!navContainer) return;
+                const groups = {}, standalone = [];
+
+                menuItems.forEach(item => {
+                    if (item.group) {
+                        groups[item.group] = groups[item.group] || [];
+                        groups[item.group].push(item);
+                    } else standalone.push(item);
+                });
+
+                let html = '';
+                Object.keys(groups).forEach(g => {
+                    const drops = groups[g].map(i => {
+                        const img = i.image ? `<img src="${i.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                        return `<a href="${i.url}">${img}${i.name}</a>`;
+                    }).join('');
+                    html += `<div class="nav-dropdown"><button class="nav-dropbtn">${g} ▾</button><div class="nav-dropdown-content">${drops}</div></div>`;
+                });
+
+                standalone.forEach(i => {
+                    const img = i.image ? `<img src="${i.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                    html += `<a href="${i.url}">${img}${i.name}</a>`;
+                });
+                navContainer.innerHTML = html;
+            },
+
             init: async function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const userParam = urlParams.get('user');
+
+                if (userParam && USER_DATA_MAP[userParam]) {
+                    this.activeHunter = USER_DATA_MAP[userParam];
+                    this.setGamertagCookie(this.activeHunter);
+                } else {
+                    const saved = this.getGamertagCookie();
+                    if (saved && USER_DATA_MAP[saved]) this.activeHunter = USER_DATA_MAP[saved];
+                    else this.activeHunter = 'Kevin';
+                }
+
                 this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
+                this.loadNavigation();
+                this.setupProfilesUI();
                 this.render();
 
                 try {
@@ -438,6 +669,7 @@
 
                     onAuthStateChanged(this.auth, async (u) => {
                         this.user = u;
+                        this.handleAuthState(u);
                         if (u) {
                             document.getElementById('stat-line').innerText = `ID: ${u.uid.substring(0,8)} | ONLINE`;
                             await this.bootstrapUsers();
@@ -448,6 +680,98 @@
                     });
                 } catch (e) { 
                     console.error("Firebase Init Error:", e);
+                }
+            },
+
+            setupProfilesUI: function() {
+                const userSelect = document.getElementById('userSelect');
+                if (userSelect) {
+                    userSelect.value = this.activeHunter;
+                    userSelect.addEventListener('change', (e) => this.switchHunter(e.target.value));
+                }
+
+                const addCustomBtn = document.getElementById('addCustomUserBtn');
+                if (addCustomBtn) {
+                    addCustomBtn.addEventListener('click', () => {
+                        const inputTag = prompt("Enter Custom Gamer Tag:");
+                        if (inputTag && inputTag.trim() !== "") {
+                            const cleanTag = inputTag.trim();
+                            this.setGamertagCookie(cleanTag);
+                            this.switchHunter(cleanTag);
+                        }
+                    });
+                }
+
+                const saveIdentityBtn = document.getElementById('saveIdentityBtn');
+                if (saveIdentityBtn) {
+                    saveIdentityBtn.addEventListener('click', () => {
+                        const customName = document.getElementById('profileCustomName')?.value || this.activeHunter;
+                        const psnUser = document.getElementById('profilePsnUser')?.value || "";
+                        this.activeHunter = customName;
+                        this.psnUsername = psnUser;
+                        this.setGamertagCookie(customName);
+                        this.sync();
+                        alert(`Saved Identity: ${customName} (PSN: ${psnUser})`);
+                    });
+                }
+
+                const googleBtn = document.getElementById("googleSignInBtn");
+                if (googleBtn) {
+                    googleBtn.addEventListener("click", () => {
+                        if (!this.auth) return;
+                        const provider = new GoogleAuthProvider();
+                        signInWithPopup(this.auth, provider)
+                            .then((res) => console.log("Google Logged In:", res.user.displayName))
+                            .catch((err) => console.error("Login Rejected:", err));
+                    });
+                }
+
+                const signOutBtn = document.getElementById("signOutBtn");
+                if (signOutBtn) {
+                    signOutBtn.addEventListener("click", () => {
+                        if (!this.auth) return;
+                        signOut(this.auth).then(() => {
+                            document.getElementById("demoNotification").style.display = "block";
+                            document.getElementById("adminBadge").style.display = "none";
+                            document.getElementById("googleSignInBtn").style.display = "inline-block";
+                            document.getElementById("userProfileStatus").style.display = "none";
+                        });
+                    });
+                }
+
+                const toggleBtn = document.getElementById('mobile-toggle');
+                if (toggleBtn) {
+                    toggleBtn.addEventListener('click', () => {
+                        document.getElementById('dynamic-nav-links')?.classList.toggle('mobile-active');
+                    });
+                }
+            },
+
+            handleAuthState: function(u) {
+                const demoBanner = document.getElementById("demoNotification");
+                const adminBadge = document.getElementById("adminBadge");
+                const googleBtn = document.getElementById("googleSignInBtn");
+                const userStatus = document.getElementById("userProfileStatus");
+                const userAvatar = document.getElementById("userAvatar");
+
+                if (u && !u.isAnonymous) {
+                    if (demoBanner) demoBanner.style.display = "none";
+                    if (googleBtn) googleBtn.style.display = "none";
+                    if (userStatus) userStatus.style.display = "flex";
+                    if (userAvatar) userAvatar.src = u.photoURL || "";
+
+                    if (u.email === "raykevin71888@gmail.com") {
+                        if (adminBadge) adminBadge.style.display = "block";
+                    }
+
+                    const activeUsername = u.displayName || u.email.split('@')[0];
+                    setDoc(doc(this.db, 'users', activeUsername), {
+                        displayName: activeUsername,
+                        email: u.email || "",
+                        photoURL: u.photoURL || "",
+                        uid: u.uid,
+                        lastUpdated: new Date().toISOString()
+                    }, { merge: true });
                 }
             },
 
@@ -468,35 +792,43 @@
             },
 
             loadHunter: function(name) {
-                this.activeHunter = name;
-                document.getElementById('hunter-display').innerText = name.toUpperCase();
+                const dbDocName = USER_DATA_MAP[name] || name;
+                this.activeHunter = dbDocName;
+                this.setGamertagCookie(dbDocName);
+
+                document.getElementById('hunter-display').innerText = dbDocName.toUpperCase();
+                if (document.getElementById('profileCustomName')) document.getElementById('profileCustomName').value = dbDocName;
                 
-                const theme = userThemes[name] || userThemes['Kevin'];
+                const theme = userThemes[dbDocName] || userThemes['Kevin'];
                 document.documentElement.style.setProperty('--ser-color', theme.color);
                 document.documentElement.style.setProperty('--ser-glow', theme.glow);
 
-                document.querySelectorAll('.profile-btn').forEach(b => {
-                    b.classList.toggle('active-btn', b.innerText === name);
-                });
-
                 if (this.unsub) this.unsub();
-                const docRef = doc(this.db, 'users', name, 'progress', GAME_ID);
+                const docRef = doc(this.db, 'users', dbDocName, 'progress', GAME_ID);
                 
                 this.unsub = onSnapshot(docRef, (snap) => {
                     if (snap.exists()) {
                         const data = snap.data();
                         const saved = data.progress || [];
+
+                        if (data.psnUsername && document.getElementById('profilePsnUser')) {
+                            document.getElementById('profilePsnUser').value = data.psnUsername;
+                        }
+
                         this.hunterData = sniperData.map(item => {
                             const status = saved.find(s => s.id === item.id);
                             return { ...item, collected: status ? status.collected : false };
                         });
                         this.render();
+                    } else {
+                        this.sync();
                     }
                 });
             },
 
             render: function() {
                 const container = document.getElementById('section-container');
+                if (!container) return;
                 container.innerHTML = '';
                 const cats = [...new Set(this.hunterData.map(i => i.cat))];
                 let totalFound = 0;
@@ -557,11 +889,16 @@
             switchHunter: function(name) { this.loadHunter(name); },
 
             sync: async function() {
-                if (!this.user) return;
+                if (!this.auth || !this.auth.currentUser) return;
                 const docRef = doc(this.db, 'users', this.activeHunter, 'progress', GAME_ID);
+                const userRef = doc(this.db, 'users', this.activeHunter);
+
                 const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
+                
+                await setDoc(userRef, { displayName: this.activeHunter, lastUpdated: new Date().toISOString() }, { merge: true });
                 await setDoc(docRef, { 
                     user: this.activeHunter, 
+                    psnUsername: this.psnUsername || "",
                     gameId: GAME_ID, 
                     progress, 
                     lastUpdated: new Date().toISOString() 
