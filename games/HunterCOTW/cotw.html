@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COTW Master Tracker | Werewolf3788</title>
     
-    <link rel="stylesheet" href="./style.css?v=1.5">
+    <link rel="stylesheet" href="./style.css?v=1.6">
 </head>
 <body id="master-body" class="theme-werewolf">
     <div class="background-overlay"></div>
@@ -52,6 +52,31 @@
         <!-- Identity Management Controls Card -->
         <div id="adminBadge" class="admin-banner hidden" style="display:none; background:#7c3aed; color:#fff; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:900; margin-bottom:15px;">
             ⚡ OVERWATCH ADMIN ACTIVE (raykevin71888@gmail.com)
+        </div>
+
+        <!-- ACTIVE MAP DEPLOYMENT OVERLAY CARD -->
+        <div id="activeMapDisplayCard" style="background: linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(255, 136, 0, 0.15)); border: 3px solid var(--hunter-color); border-radius: 1rem; padding: 20px; margin-bottom: 25px; box-shadow: 0 0 25px var(--hunter-glow); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px;">
+            <div>
+                <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; font-weight: 900;">🎯 Currently Deployed Reserve</div>
+                <div id="activeMapTitle" style="font-size: 1.6rem; font-weight: 900; color: #fff; text-shadow: 0 0 10px var(--hunter-glow); margin-top: 4px;">Silver Ridge Peaks</div>
+                <div id="activeMapStatsText" style="font-size: 0.85rem; color: var(--hunter-color); font-weight: bold; margin-top: 4px;">Map Progress: 0 / 0 Completed (0%)</div>
+            </div>
+            
+            <div style="display: flex; align-items: center; gap: 12px; min-width: 280px; flex: 1; justify-content: flex-end;">
+                <label for="activeMapSelector" style="font-size: 12px; font-weight: 900; color: #94a3b8; text-transform: uppercase;">Switch Map:</label>
+                <select id="activeMapSelector" style="background: #020617; color: var(--hunter-color); border: 2px solid var(--hunter-color); border-radius: 8px; padding: 10px; font-weight: 900; width: 100%; max-width: 260px;">
+                    <option value="Base Game">Base Game (Hirschfelden & Layton)</option>
+                    <option value="DLC: Medved-Taiga">Medved-Taiga National Park</option>
+                    <option value="DLC: Vurhonga Savanna">Vurhonga Savanna</option>
+                    <option value="DLC: Parque Fernando">Parque Fernando</option>
+                    <option value="DLC: Yukon Valley">Yukon Valley</option>
+                    <option value="DLC: Cuatro Colinas">Cuatro Colinas Game Reserve</option>
+                    <option value="DLC: Silver Ridge" selected>Silver Ridge Peaks</option>
+                    <option value="DLC: Te Awaroa">Te Awaroa National Park</option>
+                    <option value="DLC: Rancho del Arroyo">Rancho del Arroyo</option>
+                    <option value="List of Collectibles">List of Collectibles (All Maps)</option>
+                </select>
+            </div>
         </div>
 
         <div class="stat-category-block" style="background: rgba(15, 23, 42, 0.95); border: 2px solid var(--hunter-color); border-radius: 1rem; padding: 15px; margin-bottom: 25px;">
@@ -138,6 +163,6 @@
     </a>
 
     <!-- Main JavaScript App module -->
-    <script type="module" src="./script.js?v=1.5"></script>
+    <script type="module" src="./script.js?v=1.6"></script>
 </body>
 </html>
