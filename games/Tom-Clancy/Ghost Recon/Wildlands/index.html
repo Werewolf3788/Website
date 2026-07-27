@@ -2,9 +2,9 @@
  * ==========================================
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Ghost Recon Wildlands Squad Hub
- * Version: 4.8.0 - Verified Acquisition Storefront Portals & GA4 Dual Analytics
- * Version Timestamp: Mon, July 27, 2026, 02:14 PM EDT
- * Implementation Note: Hardware storefront direct reference links mapped with UTM parameters.
+ * Version: 4.8.1 - Verified Acquisition Storefront Portals & GA4 Dual Analytics
+ * Version Timestamp: Mon, July 27, 2026, 05:00 PM EDT
+ * Implementation Note: Hardware storefront direct reference links mapped with UTM parameters & psngaming-20 affiliate tag.
  * ==========================================
  -->
 <!DOCTYPE html>
@@ -30,7 +30,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ghost Recon Wildlands Squad Hub</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css?v=4.8.0">
+    <link rel="stylesheet" href="style.css?v=4.8.1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
@@ -196,7 +196,7 @@
                         <span>Microsoft Xbox Live Store</span>
                         <span class="store-tag" style="background: #107c10; color: #fff;">Xbox Hub</span>
                     </a>
-                    <a href="https://amzn.to/4h8Avux" target="_blank" class="store-link-card" data-ga-label="store_amazon">
+                    <a href="https://www.amazon.com/s?k=ghost+recon+wildlands&tag=psngaming-20&utm_source=ghost_hub&utm_medium=storefront_matrix&utm_campaign=wildlands_tracker" target="_blank" class="store-link-card" data-ga-label="store_amazon">
                         <span>Amazon Special Edition Physical Logistics</span>
                         <span class="store-tag" style="background: #ff9900; color: #000;">Amazon</span>
                     </a>
@@ -228,14 +228,17 @@
     <footer class="hub-footer">
         <div class="footer-container">
             <div class="kf-watermark"><span class="k-letter">K</span><span class="f-letter">F</span></div>
-            <div class="timestamp-note">Active Version: v4.8.0 | GA4 Stream ID: 13278632388</div>
+            <div class="timestamp-note">Active Version: v4.8.1 | GA4 Stream ID: 13278632388</div>
         </div>
     </footer>
 
+    <!-- Firebase SDK Compat & ES Module Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="app.js?v=4.8.0"></script>
+    
+    <!-- ES MODULE IMPORT MANDATORY FOR FIREBASE SNAPHOTS -->
+    <script type="module" src="app.js?v=4.8.1"></script>
 </body>
 </html>
