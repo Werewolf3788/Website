@@ -34,9 +34,9 @@ const GAME_ID = 'thehunter-call-of-the-wild';
 const ADMIN_EMAIL = "raykevin71888@gmail.com";
 
 const USER_DATA_MAP = {
-    'Werewolf3788': 'Werewolf3788', 'werewolf3788': 'Werewolf3788', 'WildHorse_Spirit': 'Werewolf3788', 'wildhorse_spirit': 'Werewolf3788',
-    'Raymystyro': 'Raymystyro', 'raymystyro': 'Raymystyro', 'OneLIVIDMAN': 'Raymystyro', 'onelividman': 'Raymystyro',
-    'terrdog420': 'terrdog420', 'Terrdog420': 'terrdog420', 'Darkwing69420': 'terrdog420', 'darkwing69420': 'terrdog420', 'TJ': 'terrdog420',
+    'Werewolf3788': 'Werewolf3788', 'werewolf3788': 'Werewolf3788', 'WildHorse_Spirit': 'Werewolf3788', 'wildhorse_spirit': 'Werewolf3788', 'Kevin_Ray': 'Werewolf3788',
+    'Raymystyro': 'Raymystyro', 'raymystyro': 'Raymystyro', 'OneLIVIDMAN': 'Raymystyro', 'onelividman': 'Raymystyro', 'Ray_Cartnal': 'Raymystyro',
+    'terrdog420': 'terrdog420', 'Terrdog420': 'terrdog420', 'Darkwing69420': 'terrdog420', 'darkwing69420': 'terrdog420', 'TJ': 'terrdog420', 'Terry_Johnson': 'terrdog420',
     'DesdemonaTiger': 'DesdemonaTiger', 'desdemonatiger': 'DesdemonaTiger'
 };
 
