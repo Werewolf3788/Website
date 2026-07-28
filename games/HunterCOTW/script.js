@@ -1,7 +1,7 @@
 /* === SECTION: File Header & Configuration === */
 /*
  * ==========================================
- * VERSION TIMESTAMP: Tue, July 28, 2026, 06:30 AM EDT
+ * VERSION TIMESTAMP: Tue, July 28, 2026, 07:00 AM EDT
  * SYSTEM: theHunter: Call of the Wild Master Tracker (script.js)
  * ARCHITECTURE: Pure Firebase Firestore Engine (Single-Sign-On & Platform Isolation)
  * RESTORATION: 100% FULL SOURCE REGISTRY RESTORED - ZERO STRIPPING / ZERO OMISSIONS
@@ -33,16 +33,41 @@ const firebaseConfig = {
 const GAME_ID = 'thehunter-call-of-the-wild';
 const ADMIN_EMAIL = "raykevin71888@gmail.com";
 
-const USER_DATA_MAP = {
-    'Werewolf3788': 'Werewolf3788', 'werewolf3788': 'Werewolf3788', 'WildHorse_Spirit': 'Werewolf3788', 'wildhorse_spirit': 'Werewolf3788', 'Kevin_Ray': 'Werewolf3788',
-    'Raymystyro': 'Raymystyro', 'raymystyro': 'Raymystyro', 'OneLIVIDMAN': 'Raymystyro', 'onelividman': 'Raymystyro', 'Ray_Cartnal': 'Raymystyro',
-    'terrdog420': 'terrdog420', 'Terrdog420': 'terrdog420', 'Darkwing69420': 'terrdog420', 'darkwing69420': 'terrdog420', 'TJ': 'terrdog420', 'Terry_Johnson': 'terrdog420',
-    'DesdemonaTiger': 'DesdemonaTiger', 'desdemonatiger': 'DesdemonaTiger'
+// Strict Group Hierarchy Sorting Index (1 to 6 Left-to-Right)
+const GROUP_ORDER = {
+    'home': 1,
+    'user': 2,
+    'game': 3,
+    'entertainment': 4,
+    'discord': 5,
+    'co-site': 6
 };
 
+// Primary Email -> Operator Nickname Mapping
 const EMAIL_OPERATOR_MAP = {
     "raykevin71888@gmail.com": "Werewolf3788",
     "cartnalray9@gmail.com": "Raymystyro"
+};
+
+// Comprehensive Gamertag & Real Name Identity Mapping Matrix
+const USER_DATA_MAP = {
+    // Werewolf3788
+    'Werewolf3788': 'Werewolf3788', 'werewolf3788': 'Werewolf3788',
+    'WildHorse_Spirit': 'Werewolf3788', 'wildhorse_spirit': 'Werewolf3788',
+    'Kevin_Ray': 'Werewolf3788', 'Kevin Ray': 'Werewolf3788', 'kevin ray': 'Werewolf3788', 'Kevin Frutiger': 'Werewolf3788',
+
+    // Raymystyro
+    'Raymystyro': 'Raymystyro', 'raymystyro': 'Raymystyro',
+    'OneLIVIDMAN': 'Raymystyro', 'onelividman': 'Raymystyro',
+    'Ray_Cartnal': 'Raymystyro', 'Ray Cartnal': 'Raymystyro', 'ray cartnal': 'Raymystyro',
+
+    // terrdog420
+    'terrdog420': 'terrdog420', 'Terrdog420': 'terrdog420',
+    'Darkwing69420': 'terrdog420', 'darkwing69420': 'terrdog420',
+    'TJ': 'terrdog420', 'tj': 'terrdog420', 'Terry_Johnson': 'terrdog420', 'Terry Johnson': 'terrdog420',
+
+    // DesdemonaTiger
+    'DesdemonaTiger': 'DesdemonaTiger', 'desdemonatiger': 'DesdemonaTiger', 'Desdemona Tiger': 'DesdemonaTiger'
 };
 
 const ICONS = {
@@ -127,8 +152,28 @@ const trophyData = [
     { id: 'head_shoulders_knees', cat: 'Base Game', name: 'Positional Mastery', rank: 'silver', current: 0, goal: 3, type: 'numeric', plat: true, desc: 'Stand, Kneel, Prone.' },
 
     // --- MEDVED TAIGA ---
-    { id: 'med_campaign_main', cat: 'DLC: Medved-Taiga', name: 'Campaign Missions', rank: 'gold', current: 0, goal: 32, type: 'checklist', desc: '32 narrative campaign missions.', subItems: checkSet(["Missions 1-8", "Missions 9-16", "Missions 17-24", "Missions 25-32"]) },
-    { id: 'med_side_registry', cat: 'DLC: Medved-Taiga', name: 'Side Mission Registry', rank: 'gold', current: 0, goal: 50, type: 'numeric', desc: 'Complete 50 side missions.' },
+    { id: 'med_campaign_main', cat: 'DLC: Medved-Taiga', name: 'Campaign Missions', rank: 'gold', current: 0, goal: 32, type: 'checklist', desc: 'The largest campaign in the game with 32 narrative missions.', subItems: checkSet(["Missions 1-8", "Missions 9-16", "Missions 17-24", "Missions 25-32"]) },
+    { id: 'med_side_registry', cat: 'DLC: Medved-Taiga', name: 'Side Mission Registry', rank: 'gold', current: 0, goal: 50, type: 'numeric', desc: 'Complete all 50 side missions across the Taiga.' },
+    { id: 'med_anatoly', cat: 'DLC: Medved-Taiga', name: 'Dr. Anatoly Barnyashev Arc', rank: 'gold', current: 0, goal: 5, type: 'checklist', desc: 'Main arc.', subItems: checkSet(["The Best Defense", "Out of the Way", "The Lost One", "A Grave Concern", "A New Home"]) },
+    { id: 'med_columbus', cat: 'DLC: Medved-Taiga', name: 'Dr. Columbus Neidell Arc', rank: 'gold', current: 0, goal: 5, type: 'checklist', desc: 'Main arc.', subItems: checkSet(["The New World", "A Helping Hand", "Into the Unknown", "The High Ground", "The Heart of the Taiga"]) },
+    { id: 'med_pushkin', cat: 'DLC: Medved-Taiga', name: 'Dimitri Pushkin Arc', rank: 'gold', current: 0, goal: 4, type: 'checklist', desc: 'Side arc.', subItems: checkSet(["The Frozen Eye", "The Dead of Night", "In the Shadows", "The Light of Day"]) },
+    { id: 'med_georgy', cat: 'DLC: Medved-Taiga', name: 'Georgy Grankin Arc', rank: 'gold', current: 0, goal: 4, type: 'checklist', desc: 'Side arc.', subItems: checkSet(["A Ghost from the Past", "The Old Guard", "The Last Stand", "A Quiet Night"]) },
+    { id: 'med_katerina', cat: 'DLC: Medved-Taiga', name: 'Katerina Khasavovna Arc', rank: 'gold', current: 0, goal: 4, type: 'checklist', desc: 'Side arc.', subItems: checkSet(["The Hunter's Path", "The Spirit of the Taiga", "The Great Bear", "The Final Test"]) },
+    { id: 'med_svetlana', cat: 'DLC: Medved-Taiga', name: 'Dr. Svetlana Isakova Arc', rank: 'gold', current: 0, goal: 4, type: 'checklist', desc: 'Side arc.', subItems: checkSet(["The Heart of the Lake", "The Silent Sentinel", "The Frozen River", "The Eternal Winter"]) },
+
+    // --- VURHONGA SAVANNA ---
+    { id: 'vur_narrative_arc', cat: 'DLC: Vurhonga Savanna', name: 'Narrative Missions Arc', rank: 'silver', current: 0, goal: 16, type: 'checklist', desc: 'Grandfather Njabulo missions.', subItems: checkSet(["Missions 1-4", "Missions 5-8", "Missions 9-12", "Missions 13-16"]) },
+    { id: 'vur_side_registry', cat: 'DLC: Vurhonga Savanna', name: 'Side Mission Registry', rank: 'silver', current: 0, goal: 46, type: 'numeric', desc: 'Complete all 46 side missions.' },
+
+    // --- PARQUE FERNANDO ---
+    { id: 'par_narrative_arc', cat: 'DLC: Parque Fernando', name: 'Narrative Missions Arc', rank: 'gold', current: 0, goal: 16, type: 'checklist', desc: 'Complete 16 story missions for Carolina Vargas.', subItems: checkSet(["Narrative 1-4", "Narrative 5-8", "Narrative 9-12", "Narrative 13-16"]) },
+    { id: 'par_side_registry', cat: 'DLC: Parque Fernando', name: 'Side Mission Registry', rank: 'gold', current: 0, goal: 39, type: 'numeric', desc: 'Complete all 39 side missions.' },
+
+    // --- YUKON VALLEY ---
+    { id: 'yuk_main_arc', cat: 'DLC: Yukon Valley', name: 'Warden Jim Murray Arc', rank: 'gold', current: 0, goal: 10, type: 'checklist', desc: 'Full Main Mission Story.', subItems: checkSet(["Welcome to Alaska", "Quarantine", "The Cost of Control", "Picking Up, Dropping Off", "Raise the Barrier", "A Place to Hang Your Hat", "Flash Point", "Tech Support", "A Mine of information", "Gabriella Baden: Bigfoot Hunter"]) },
+
+    // --- CUATRO COLINAS ---
+    { id: 'cua_narrative_arc', cat: 'DLC: Cuatro Colinas', name: 'Narrative Missions Arc', rank: 'gold', current: 0, goal: 14, type: 'checklist', desc: 'Complete 14 story missions for Doña Alejandra.', subItems: checkSet(["Narrative 1-4", "Narrative 5-8", "Narrative 9-12", "Narrative 13-14"]) },
 
     // --- SILVER RIDGE PEAKS ---
     { id: 'srp_narrative_arc', cat: 'DLC: Silver Ridge', name: 'Allan Bradley Arc', rank: 'gold', current: 0, goal: 15, type: 'checklist', desc: 'Complete story missions.', subItems: checkSet(["Missions 1-4", "Missions 5-8", "Missions 9-12", "Missions 13-15"]) },
@@ -184,49 +229,140 @@ const appState = {
         return this.loggedInOperator.toLowerCase() === this.activeHunter.toLowerCase();
     },
 
-    parseCSV: function(str) {
-        const arr = [];
-        let quote = false;
-        for (let row = 0, col = 0, c = 0; c < str.length; c++) {
-            let cc = str[c], nc = str[c+1];
-            arr[row] = arr[row] || [];
-            arr[row][col] = arr[row][col] || '';
-            if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
-            if (cc == '"') { quote = !quote; continue; }
-            if (cc == ',' && !quote) { ++col; continue; }
-            if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
-            if (cc == '\n' && !quote) { ++row; col = 0; continue; }
-            if (cc == '\r' && !quote) { ++row; col = 0; continue; }
-            arr[row][col] += cc;
+    parseCSVLine: function(line) {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"' && line[i + 1] === '"') {
+                current += '"'; i++;
+            } else if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                result.push(current.trim());
+                current = '';
+            } else {
+                current += char;
+            }
         }
-        return arr;
+        result.push(current.trim());
+        return result;
     },
 
+    checkIsActiveTab: function(targetUrl, targetName) {
+        if (!targetUrl || targetUrl === '#') return false;
+
+        const pageTitle = document.title.toLowerCase().trim();
+        const cleanTargetUrl = targetUrl.split('?')[0].split('#')[0].toLowerCase().trim();
+        const targetFilename = cleanTargetUrl.substring(cleanTargetUrl.lastIndexOf('/') + 1);
+
+        const currentPath = window.location.pathname.toLowerCase();
+        const currentFilename = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'cotw.html';
+        const currentHash = window.location.hash.toLowerCase();
+
+        if (currentHash && targetUrl.toLowerCase().includes(currentHash)) return true;
+        if (targetFilename && targetFilename === currentFilename) return true;
+
+        if (targetName) {
+            const cleanName = targetName.toLowerCase().trim();
+            if (pageTitle.includes(cleanName) || cleanName.includes(pageTitle)) return true;
+        }
+
+        return false;
+    },
+
+    /* === SECTION: Google Sheets Navigation Loader ("Website Menu" Tab) === */
     loadNavigation: async function() {
-        const csvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv&v=${Date.now()}`;
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv&t=' + Date.now();
+
         try {
-            const res = await fetch(csvUrl);
-            if (res.ok) {
-                const csvText = await res.text();
-                const rows = this.parseCSV(csvText);
-                if (rows.length > 1) {
-                    const container = document.getElementById('dynamic-nav-links');
-                    if (container) {
-                        let navHTML = '';
-                        for (let i = 1; i < rows.length; i++) {
-                            const name = rows[i][0] ? rows[i][0].trim() : '';
-                            const url = rows[i][2] ? rows[i][2].trim() : '';
-                            if (name && url && url.startsWith('http')) {
-                                navHTML += `<a href="${url}">${name}</a>`;
-                            }
-                        }
-                        container.innerHTML = navHTML || `<a href="../../index.html#/">Home</a>`;
+            const response = await fetch(csvUrl);
+            const data = await response.text();
+            const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
+
+            const groupsMap = {};
+
+            for (let i = 1; i < rows.length; i++) {
+                const columns = this.parseCSVLine(rows[i]);
+                if (columns.length >= 3) {
+                    const name = columns[0];            // Column A (Name)
+                    const groupName = columns[1];       // Column B (Group)
+                    const targetUrl = columns[2];       // Column C (Url with UTM)
+                    const imageUrl = columns[3] || '';  // Column D (Images)
+
+                    if (!name || !groupName) continue;
+
+                    if (!groupsMap[groupName]) {
+                        groupsMap[groupName] = [];
                     }
+
+                    groupsMap[groupName].push({
+                        name: name,
+                        url: targetUrl || '#',
+                        image: imageUrl
+                    });
                 }
             }
-        } catch (e) {
-            console.warn("CSV Nav Notice:", e.message);
+
+            // Group Order Sorting: 1. Home -> 2. User -> 3. Game -> 4. Entertainment -> 5. Discord -> 6. Co-Site
+            const sortedGroups = Object.keys(groupsMap).map(groupName => {
+                const orderKey = groupName.toLowerCase().trim();
+                return {
+                    name: groupName,
+                    weight: GROUP_ORDER[orderKey] || 99,
+                    items: groupsMap[groupName]
+                };
+            }).sort((a, b) => a.weight - b.weight);
+
+            this.renderNav(sortedGroups);
+
+        } catch (err) {
+            console.error("Error loading navigation CSV:", err);
         }
+    },
+
+    renderNav: function(sortedGroups) {
+        const container = document.getElementById('dynamic-nav-links');
+        if (!container) return;
+
+        let html = '';
+
+        sortedGroups.forEach(group => {
+            const hasActiveChild = group.items.some(item => this.checkIsActiveTab(item.url, item.name));
+
+            // Group Header: Yellow (#facc15) if active, Pure White (#ffffff) if inactive
+            const groupBtnClass = hasActiveChild
+                ? 'text-[#facc15] font-black border-b-2 border-[#facc15] drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]'
+                : 'text-white hover:text-[#facc15] font-bold';
+
+            const dropdownItemsHtml = group.items.map(item => {
+                const active = this.checkIsActiveTab(item.url, item.name);
+                const itemClass = active
+                    ? 'flex items-center gap-2 px-4 py-2 text-xs font-black text-[#facc15] bg-slate-800 border-l-4 border-[#facc15]'
+                    : 'flex items-center gap-2 px-4 py-2 text-xs text-white hover:bg-slate-800 hover:text-[#facc15] transition-colors';
+
+                const imgTag = item.image 
+                    ? `<img src="${item.image}" class="w-4 h-4 rounded object-cover shrink-0" alt="" onerror="this.style.display='none'">` 
+                    : '';
+
+                return `<a href="${item.url}" class="${itemClass}">${imgTag}<span>${item.name}</span></a>`;
+            }).join('');
+
+            html += `
+                <div class="relative group/dropdown inline-block">
+                    <button class="${groupBtnClass} py-1 px-3 text-xs uppercase tracking-wider flex items-center gap-1 focus:outline-none">
+                        <span>${group.name}</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-70"></i>
+                    </button>
+                    <div class="hidden group-hover/dropdown:block absolute right-0 w-56 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl overflow-hidden z-50">
+                        ${dropdownItemsHtml}
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
     },
 
     init: async function() {
@@ -310,7 +446,9 @@ const appState = {
             const userEmail = (user.email || "").toLowerCase();
             this.isCurrentUserAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
 
-            this.loggedInOperator = EMAIL_OPERATOR_MAP[userEmail] || USER_DATA_MAP[user.displayName] || user.displayName || userEmail.split('@')[0];
+            // Extract Operator Nickname Handle from Email or Matrix
+            const rawName = user.displayName || userEmail.split('@')[0];
+            this.loggedInOperator = EMAIL_OPERATOR_MAP[userEmail] || USER_DATA_MAP[rawName] || USER_DATA_MAP[user.displayName] || rawName;
 
             if (!this.isCurrentUserAdmin) {
                 this.activeHunter = this.loggedInOperator;
