@@ -1,11 +1,13 @@
 /* === SECTION: File Header & System Architecture === */
 /*
  * ==========================================
- * VERSION TIMESTAMP: Tue, July 28, 2026, 07:45 AM EDT
+ * VERSION TIMESTAMP: Tue, July 28, 2026, 08:00 AM EDT
  * SYSTEM: theHunter: Call of the Wild Master Tracker (script.js)
- * ARCHITECTURE: Pure Firebase Firestore Engine + JSON Navigation Integration
- * PLATFORMS CONFIG: ../../data/game-platforms.json
- * MENU SOURCE: https://github.com/Werewolf3788/Website/blob/main/Menu.json
+ * ARCHITECTURE: Pure Firebase Firestore Engine + Single Sign-On Persistence
+ * FIXES APPLIED:
+ * 1. Default Firebase App Instance (Ensures cross-page auth session sharing)
+ * 2. Hash Route Resolver (Converts #/ links to ../../index.html#/ when in subfolders)
+ * 3. Menu Avatar & 20px Thumbnail Constraint Fix
  * RESTORATION: 100% FULL SOURCE REGISTRY RESTORED - ZERO STRIPPING / ZERO OMISSIONS
  * ==========================================
  */
@@ -727,6 +729,19 @@ const appState = {
         return this.loggedInOperator.toLowerCase() === this.activeHunter.toLowerCase();
     },
 
+    /* === SECTION: URL & Subfolder Path Fixer Engine === */
+    fixMenuUrl: function(targetUrl) {
+        if (!targetUrl || targetUrl === '#') return '#';
+
+        // If link is a root Hash Route (#/settings, #/movies, #/werewolf)
+        // Convert to ../../index.html#/settings so it navigates back to SPA root from subfolder
+        if (targetUrl.startsWith('#/')) {
+            return '../../index.html' + targetUrl;
+        }
+
+        return targetUrl;
+    },
+
     checkIsActiveTab: function(targetUrl, targetName) {
         if (!targetUrl || targetUrl === '#') return false;
 
@@ -758,13 +773,13 @@ const appState = {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const menuItems = await response.json();
-            this.menuItemsRaw = menuItems; // Cache raw items for avatar thumbnail lookup
+            this.menuItemsRaw = menuItems;
             const groupsMap = {};
 
             menuItems.forEach(item => {
                 const groupName = item.group || item.Group;
                 const name = item.name || item.Name;
-                const url = item.url || item.Url || item['Url with UTM'];
+                const rawUrl = item.url || item.Url || item['Url with UTM'];
                 const image = item.image || item.Image || item.Images || '';
 
                 if (!name || !groupName) return;
@@ -775,7 +790,8 @@ const appState = {
 
                 groupsMap[groupName].push({
                     name: name,
-                    url: url || '#',
+                    rawUrl: rawUrl,
+                    url: this.fixMenuUrl(rawUrl),
                     image: image
                 });
             });
@@ -791,7 +807,6 @@ const appState = {
 
             this.renderNav(sortedGroups);
 
-            // Re-sync avatar thumbnail once menu data is loaded
             if (this.activeHunter) {
                 this.updateAvatarFromMenu(this.activeHunter);
             }
@@ -801,7 +816,6 @@ const appState = {
         }
     },
 
-    /* === SECTION: Dynamic Dropdown Menu Engine (Clean & Compact Layout) === */
     renderNav: function(sortedGroups) {
         const container = document.getElementById('dynamic-nav-links');
         if (!container) return;
@@ -809,19 +823,18 @@ const appState = {
         let html = '';
 
         sortedGroups.forEach(group => {
-            const hasActiveChild = group.items.some(item => this.checkIsActiveTab(item.url, item.name));
+            const hasActiveChild = group.items.some(item => this.checkIsActiveTab(item.rawUrl || item.url, item.name));
 
             const groupBtnClass = hasActiveChild
                 ? 'text-[#facc15] font-black border-b-2 border-[#facc15] drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]'
                 : 'text-white hover:text-[#facc15] font-bold';
 
             const dropdownItemsHtml = group.items.map(item => {
-                const active = this.checkIsActiveTab(item.url, item.name);
+                const active = this.checkIsActiveTab(item.rawUrl || item.url, item.name);
                 const itemClass = active
                     ? 'flex items-center gap-2 px-3 py-2 text-xs font-black text-[#facc15] bg-slate-800 border-l-4 border-[#facc15] whitespace-nowrap'
                     : 'flex items-center gap-2 px-3 py-2 text-xs text-white hover:bg-slate-800 hover:text-[#facc15] transition-colors whitespace-nowrap';
 
-                // Strict 20px thumbnail styles to prevent full-res image blowout
                 const imgTag = item.image 
                     ? `<img src="${item.image}" style="width: 20px !important; height: 20px !important; min-width: 20px !important; min-height: 20px !important; max-width: 20px !important; max-height: 20px !important; object-fit: cover; border-radius: 4px; display: inline-block; flex-shrink: 0;" alt="" onerror="this.style.display='none'">` 
                     : '';
@@ -829,7 +842,6 @@ const appState = {
                 return `<a href="${item.url}" class="${itemClass}">${imgTag}<span>${item.name}</span></a>`;
             }).join('');
 
-            // Clean dropdown wrapper using relative positioning & absolute hidden/hover layer
             html += `
                 <div class="relative group/dropdown inline-block" style="position: relative; display: inline-block;">
                     <button class="${groupBtnClass} py-1 px-3 text-xs uppercase tracking-wider flex items-center gap-1 focus:outline-none" style="background: none; border: none; cursor: pointer;">
@@ -845,7 +857,6 @@ const appState = {
 
         container.innerHTML = html;
 
-        // Inject simple hover CSS for dropdown visibility fallback
         if (!document.getElementById('dropdown-hover-style')) {
             const style = document.createElement('style');
             style.id = 'dropdown-hover-style';
@@ -856,12 +867,10 @@ const appState = {
         }
     },
 
-    /* === SECTION: Avatar Image Syncing Engine === */
     updateAvatarFromMenu: function(operatorHandle) {
         const userAvatar = document.getElementById("userAvatar");
         if (!userAvatar || !this.menuItemsRaw) return;
 
-        // Find operator inside Menu.json User group
         const targetHandle = USER_DATA_MAP[operatorHandle] || operatorHandle;
         const matchedUser = this.menuItemsRaw.find(item => {
             const group = item.group || item.Group || '';
@@ -880,7 +889,6 @@ const appState = {
         }
     },
 
-    /* === SECTION: game-platforms.json Platform Filter Loader === */
     loadPlatformOptions: async function() {
         const pSelect = document.getElementById('platformSelect');
         if (!pSelect) return;
@@ -938,7 +946,8 @@ const appState = {
         this.setupMobileMenuToggle();
 
         try {
-            const app = initializeApp(firebaseConfig, 'COTW-Master-App');
+            // FIX: Using default app instance for cross-page auth session sharing
+            const app = initializeApp(firebaseConfig);
             this.auth = getAuth(app);
             this.db = getFirestore(app);
             
@@ -975,12 +984,11 @@ const appState = {
                 const prevCat = this.activeMapCategory;
                 this.activeMapCategory = e.target.value;
 
-                // Sync collapsibles: Expand new active reserve (#1 position), collapse previous
                 const prevSectionId = prevCat.replace(/[^a-zA-Z0-9]/g, '');
                 const newSectionId = this.activeMapCategory.replace(/[^a-zA-Z0-9]/g, '');
 
-                this.collapsedSections[prevSectionId] = true;   // Close old reserve
-                this.collapsedSections[newSectionId] = false;  // Force open active reserve
+                this.collapsedSections[prevSectionId] = true;
+                this.collapsedSections[newSectionId] = false;
 
                 this.updateActiveMapDisplay();
                 this.render();
@@ -1052,7 +1060,6 @@ const appState = {
             if (googleBtn) googleBtn.style.display = "none";
             if (userStatus) userStatus.style.display = "flex";
 
-            // Sync user avatar thumbnail with Menu.json profile image
             this.updateAvatarFromMenu(this.activeHunter);
 
             if (this.isCurrentUserAdmin) {
@@ -1176,10 +1183,9 @@ const appState = {
         
         let cats = [...new Set(this.hunterData.map(t => t.cat))];
 
-        // --- Currently Deployed Reserve Sync: Move active reserve to #1 position ---
         if (this.activeMapCategory && cats.includes(this.activeMapCategory)) {
             cats = cats.filter(c => c !== this.activeMapCategory);
-            cats.unshift(this.activeMapCategory); // Force selected reserve to position #1 top
+            cats.unshift(this.activeMapCategory);
         }
 
         if (selector && selector.options.length <= 1) {
@@ -1206,9 +1212,9 @@ const appState = {
 
             let isCollapsed = this.collapsedSections[sectionId];
             if (cat === this.activeMapCategory && isCollapsed === undefined) {
-                isCollapsed = false; // Default open for active map
+                isCollapsed = false;
             } else if (isCollapsed === undefined) {
-                isCollapsed = true;  // Default collapsed for rest
+                isCollapsed = true;
             }
 
             const percent = Math.round((catMet / items.length) * 100);
