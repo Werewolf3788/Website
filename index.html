@@ -1,4 +1,4 @@
-<!-- Version: 1.0.1 | Timestamp: 2026-07-28T08:45:00Z -->
+<!-- Version: 1.0.2 | Timestamp: 2026-07-28T09:15:00Z -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -26,8 +26,8 @@
             --section-height: 50px;
             
             /* Fallbacks before user settings load from Firestore / LocalStorage */
-            --primary-color: #ff5f1f;   /* Default Glow, Active Tab, Borders */
-            --secondary-color: #1e293b; /* Default Cards & Menu Backgrounds */
+            --primary-color: #ff5f1f;   /* Glows, Active Tab, Borders */
+            --secondary-color: #1e293b; /* Menu & Card Backgrounds */
             
             --color-werewolf: #FF5F1F;
             --color-ray: #C41E3A;
@@ -62,12 +62,12 @@
             padding-bottom: var(--section-height);
         }
 
-        /* === SECTION: Dynamic Card & Surface Theme Integration === */
-        .custom-card, .category-section {
-            background-color: var(--secondary-color, rgba(30, 41, 59, 0.85)) !important;
+        /* === SECTION: Dynamic Surface & Menu Theming (Weather Protection Included) === */
+        /* Standard Cards inherit secondary theme while allowing weather gradient classes to override background */
+        .custom-card {
+            background-color: rgba(30, 41, 59, 0.85);
             backdrop-filter: blur(10px);
-            border: 1px solid var(--primary-color, rgba(255, 255, 255, 0.2)) !important;
-            box-shadow: 0 0 12px var(--primary-color, rgba(255, 95, 31, 0.3)) !important;
+            border: 1px solid var(--primary-color, rgba(255, 255, 255, 0.1));
             border-radius: 1rem;
             position: relative;
             overflow: hidden;
@@ -112,7 +112,7 @@
             font-weight: 900 !important;
         }
 
-        /* Weather Overlay Support */
+        /* Weather Overlay Support - High Priority to Prevent Overrides */
         .weather-layer {
             position: absolute;
             inset: 0;
@@ -128,11 +128,11 @@
             z-index: 10;
         }
 
-        .bg-rain { background: linear-gradient(to bottom, #1e293b, #0f172a); }
-        .bg-cloudy { background: linear-gradient(to bottom, #475569, #1e293b); }
-        .bg-sunny { background: linear-gradient(to bottom, #fbbf24, #f59e0b); }
-        .bg-snowy { background: linear-gradient(to bottom, #1e40af, #3b82f6); }
-        .bg-clear { background: linear-gradient(to bottom, #0f172a, #020617); }
+        .bg-rain { background: linear-gradient(to bottom, #1e293b, #0f172a) !important; }
+        .bg-cloudy { background: linear-gradient(to bottom, #475569, #1e293b) !important; }
+        .bg-sunny { background: linear-gradient(to bottom, #fbbf24, #f59e0b) !important; }
+        .bg-snowy { background: linear-gradient(to bottom, #1e40af, #3b82f6) !important; }
+        .bg-clear { background: linear-gradient(to bottom, #0f172a, #020617) !important; }
 
         .rain-drop {
             position: absolute;
@@ -252,7 +252,7 @@
         .f-sig { color: #000000; display: inline-block; margin-left: -0.22em; position: relative; z-index: 1; }
     </style>
     
-    <!-- Instant Local Theme Cache Reader to Prevent Flash -->
+    <!-- Instant Local Theme Cache Reader -->
     <script>
         (function() {
             const p = localStorage.getItem('user_primary_color');
@@ -333,7 +333,7 @@
                 &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
             </p>
             <p id="footer-version" class="text-slate-600 text-xs mt-2 font-mono">
-                v1.0.1 • 2026-07-28T08:45:00Z
+                v1.0.2 • 2026-07-28T09:15:00Z
             </p>
         </div>
         <div class="kf-watermark">
@@ -342,6 +342,6 @@
     </footer>
 
     <!-- Firebase & SPA Application Engine -->
-    <script type="module" src="./app.js?v=20260728084500"></script>
+    <script type="module" src="./app.js?v=20260728091500"></script>
 </body>
 </html>
