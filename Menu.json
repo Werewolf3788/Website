@@ -1,92 +1,110 @@
 [
   {
+    "name": "Home",
+    "group": "Home",
+    "url": "#/",
+    "image": ""
+  },
+  {
+    "name": "Donations",
+    "group": "Home",
+    "url": "https://streamelements.com/werewolf3788/tip",
+    "image": ""
+  },
+  {
+    "name": "Settings",
+    "group": "Home",
+    "url": "#/settings",
+    "image": ""
+  },
+  {
     "name": "Werewolf3788",
     "group": "User",
-    "url": "https://werewolf3788.github.io/Website/users/kevin/website.html",
+    "url": "#/werewolf",
     "image": "https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-70x70.png"
   },
   {
     "name": "RayMystyro",
     "group": "User",
-    "url": "https://werewolf3788.github.io/Website/users/ray/website.html",
+    "url": "#/raymystyro",
     "image": "https://static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-70x70.png"
   },
   {
     "name": "Darkwing69420",
     "group": "User",
-    "url": "https://werewolf3788.github.io/Website/users/terrodog/index.html",
-    "image": "https://static-cdn.jtvnw.net/jtv_user_pictures/53503674-298d-4302-89ad-4c58c18dcbd9-profile_image-70x70.jpeg"
+    "url": "#/terrdog",
+    "image": "https://static-cdn.jtvnw.net/jtv_user_pictures/9dad426e-04cb-4fc0-a917-25982b3800ce-profile_image-70x70.png"
+  },
+  {
+    "name": "TheHunter: COTW",
+    "group": "Game",
+    "url": "#/games/cotw",
+    "image": ""
+  },
+  {
+    "name": "Sniper Elite 5",
+    "group": "Game",
+    "url": "#/games/se5",
+    "image": "https://rebellion.com/wp-content/uploads/2021/12/SE5_Packshot_RGB_R-1.png"
   },
   {
     "name": "Sniper Elite Resistance",
-    "group": "Games",
-    "url": "https://werewolf3788.github.io/Website/games/Sniper-Elite/SE-Resistance.html",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRX-aHwg910ieO0Ks2NoWuB0-8W6RjExQsrsy-Foy6iJRiTRdk6QUw6tCFzWJLssvhkyd_L&s=10"
+    "group": "Game",
+    "url": "#/games/se-resistance",
+    "image": ""
   },
   {
-    "name": "Home",
-    "group": null,
-    "url": "https://werewolf3788.github.io/Website/",
-    "image": "https://e7.pngegg.com/pngimages/22/547/png-clipart-white-and-orange-icon-oregon-service-home-icon-miscellaneous-angle-thumbnail.png"
+    "name": "Tom Clancy Ghost Recon Wildlands",
+    "group": "Game",
+    "url": "#/games/wildlands",
+    "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/460930/header.jpg"
+  },
+  {
+    "name": "FS25",
+    "group": "Game",
+    "url": "#/games/fs25",
+    "image": "https://image.api.playstation.com/vulcan/ap/rnd/202406/1110/f3560662d08ec4f5efee22247ea7981b244ec5ea52cfd01e.png"
+  },
+  {
+    "name": "Movies",
+    "group": "Entertainment",
+    "url": "#/movies",
+    "image": ""
   },
   {
     "name": "SoundCloud",
     "group": "Entertainment",
     "url": "https://soundcloud.com/djwerewolf3788",
-    "image": null
-  },
-  {
-    "name": "Movies",
-    "group": "Entertainment",
-    "url": "https://werewolf3788.github.io/Website/Movies.html",
-    "image": null
-  },
-  {
-    "name": "TheHunter:COTW",
-    "group": "Games",
-    "url": "https://werewolf3788.github.io/Website/games/HunterCOTW/cotw.html",
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQSh0WTUz4EF1rxtOF2a1dx3BJBjDjoJXYzVA&s"
-  },
-  {
-    "name": "Tom Clancy Ghost Recon Wildlands",
-    "group": "Games",
-    "url": "https://werewolf3788.github.io/Website/games/Tom-Clancy/Ghost%20Recon/Wildlands/index.html",
-    "image": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/460930/capsule_184x69.jpg?t=1764776201"
-  },
-  {
-    "name": "Sniper Elite 5",
-    "group": "Games",
-    "url": "https://werewolf3788.github.io/Website/games/Sniper-Elite/5/index.html",
-    "image": "https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg"
-  },
-  {
-    "name": "FS25",
-    "group": "Games",
-    "url": "https://werewolf3788.github.io/Website/games/FS25/index.html",
-    "image": "https://image.api.playstation.com/vulcan/ap/rnd/202406/1221/cd33050ff279dcceeaa269b6c2a33002a66ac70f11b0cc9f.jpg"
+    "image": ""
   },
   {
     "name": "Join Discord Server",
     "group": "Discord",
     "url": "https://discord.gg/HtrPbqAvpv",
-    "image": null
+    "image": ""
   },
   {
     "name": "Voice Chat Server for games",
     "group": "Discord",
     "url": "https://discord.gg/vuHvHBZm8f",
-    "image": null
+    "image": ""
   },
   {
-    "name": "SK Venture's Advertisment",
-    "group": "Co Sites",
-    "url": "https://skventuresigns.com/index.html?utm_source=smlc_qr&utm_medium=print&utm_campaign=sk_social_indexhtml_qr",
-    "image": null
+    "name": "SK Venture's Advertisement",
+    "group": "Co-Site",
+    "url": "https://skventuresigns.com/index.html",
+    "image": ""
   },
   {
     "name": "SMLC (Support My Local Community)",
-    "group": "Co Sites",
-    "url": "https://www.supportmylocalcommunity.com?utm_source=smlc_qr&utm_medium=print&utm_campaign=smlc_social_wwwsupportmylocalcommunitycom_qr",
-    "image": null
+    "group": "Co-Site",
+    "url": "https://www.supportmylocalcommunity.com",
+    "image": ""
+  },
+  {
+    "name": "Quick-Links",
+    "group": "Co-Site",
+    "url": "https://Werewolf3788.github.io/Quick-Links/Kevin.html",
+    "image": ""
   }
 ]
