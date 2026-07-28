@@ -1,0 +1,100 @@
+/* === SECTION: Multi-Game Platforms Dataset === *//*
+    File Version: 1.0.0
+    Timestamp: 2026-07-28
+    Description: Structured JSON dataset tracking supported platforms and storefronts for Sniper Elite 5, Sniper Elite: Resistance, Farming Simulator 25, and Tom Clancy's Ghost Recon Wildlands.
+*/
+{
+  "games": [
+    {
+      "title": "Sniper Elite 5",
+      "developer": "Rebellion Developments",
+      "platforms": [
+        {
+          "platform_type": "PC",
+          "storefronts": [
+            "Steam",
+            "Epic Games Store",
+            "Microsoft Store",
+            "PC Game Pass"
+          ]
+        },
+        {
+          "platform_type": "Console",
+          "consoles": [
+            "PlayStation 4",
+            "PlayStation 5",
+            "Xbox One",
+            "Xbox Series X/S"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Sniper Elite: Resistance",
+      "developer": "Rebellion Developments",
+      "platforms": [
+        {
+          "platform_type": "PC",
+          "storefronts": [
+            "Steam",
+            "Epic Games Store",
+            "Microsoft Store",
+            "PC Game Pass"
+          ]
+        },
+        {
+          "platform_type": "Console",
+          "consoles": [
+            "PlayStation 4",
+            "PlayStation 5",
+            "Xbox One",
+            "Xbox Series X/S"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Farming Simulator 25",
+      "developer": "GIANTS Software",
+      "platforms": [
+        {
+          "platform_type": "PC",
+          "storefronts": [
+            "Steam",
+            "Epic Games Store",
+            "GIANTS eShop",
+            "Mac App Store"
+          ]
+        },
+        {
+          "platform_type": "Console",
+          "consoles": [
+            "PlayStation 5",
+            "Xbox Series X/S"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Tom Clancy's Ghost Recon Wildlands",
+      "developer": "Ubisoft Paris",
+      "platforms": [
+        {
+          "platform_type": "PC",
+          "storefronts": [
+            "Steam",
+            "Ubisoft Connect",
+            "Epic Games Store"
+          ]
+        },
+        {
+          "platform_type": "Console",
+          "consoles": [
+            "PlayStation 4",
+            "Xbox One"
+          ]
+        }
+      ]
+    }
+  ]
+}
