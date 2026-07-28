@@ -1,13 +1,14 @@
 /* === SECTION: File Header & System Architecture === */
 /*
  * ==========================================
- * VERSION TIMESTAMP: Tue, July 28, 2026, 08:00 AM EDT
+ * VERSION TIMESTAMP: Tue, July 28, 2026, 08:15 AM EDT
  * SYSTEM: theHunter: Call of the Wild Master Tracker (script.js)
  * ARCHITECTURE: Pure Firebase Firestore Engine + Single Sign-On Persistence
  * FIXES APPLIED:
  * 1. Default Firebase App Instance (Ensures cross-page auth session sharing)
- * 2. Hash Route Resolver (Converts #/ links to ../../index.html#/ when in subfolders)
- * 3. Menu Avatar & 20px Thumbnail Constraint Fix
+ * 2. Hash Route Resolver (Converts #/ links to ../../index.html#/ for subfolder navigation)
+ * 3. Dynamic Platform Filtering (Reads game-platforms.json; PS5 excluded for COTW)
+ * 4. Avatar & 20px Thumbnail Constraint Fix
  * RESTORATION: 100% FULL SOURCE REGISTRY RESTORED - ZERO STRIPPING / ZERO OMISSIONS
  * ==========================================
  */
@@ -733,8 +734,12 @@ const appState = {
     fixMenuUrl: function(targetUrl) {
         if (!targetUrl || targetUrl === '#') return '#';
 
-        // If link is a root Hash Route (#/settings, #/movies, #/werewolf)
-        // Convert to ../../index.html#/settings so it navigates back to SPA root from subfolder
+        // Direct home path check
+        if (targetUrl === '#/' || targetUrl === '#') {
+            return '../../index.html#/';
+        }
+
+        // Prepend root location to hash routes when navigating from games/HunterCOTW/ subfolder
         if (targetUrl.startsWith('#/')) {
             return '../../index.html' + targetUrl;
         }
@@ -889,52 +894,77 @@ const appState = {
         }
     },
 
+    /* === SECTION: game-platforms.json Platform Filter Loader === */
     loadPlatformOptions: async function() {
         const pSelect = document.getElementById('platformSelect');
         if (!pSelect) return;
 
-        try {
-            const response = await fetch('../../data/game-platforms.json?v=' + Date.now());
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const endpoints = [
+            '../../data/game-platforms.json?v=' + Date.now(),
+            'https://raw.githubusercontent.com/Werewolf3788/Website/main/data/game-platforms.json?v=' + Date.now()
+        ];
 
-            const data = await response.json();
-            
-            const game = data.games.find(g => 
-                g.title.toLowerCase().includes('thehunter') || 
-                g.title.toLowerCase().includes('call of the wild')
-            );
+        let gamePlatformsData = null;
 
-            if (game && game.platforms) {
-                let optionsHtml = '';
-                
-                game.platforms.forEach(p => {
-                    if (p.platform_type === 'PC' && p.storefronts) {
-                        p.storefronts.forEach(s => {
-                            optionsHtml += `<option value="pc-${s.toLowerCase().replace(/[^a-z0-9]/g, '')}">PC (${s})</option>`;
-                        });
-                    }
-                    if (p.platform_type === 'Console' && p.consoles) {
-                        p.consoles.forEach(c => {
-                            const val = c.toLowerCase().replace(/[^a-z0-9]/g, '');
-                            optionsHtml += `<option value="${val}">${c}</option>`;
-                        });
-                    }
-                });
+        for (const url of endpoints) {
+            try {
+                const res = await fetch(url);
+                if (res.ok) {
+                    gamePlatformsData = await res.json();
+                    break;
+                }
+            } catch (e) {
+                // Try backup endpoint
+            }
+        }
 
-                if (optionsHtml) {
-                    pSelect.innerHTML = optionsHtml;
-                    
-                    const hasActive = Array.from(pSelect.options).some(opt => opt.value === this.activePlatform);
-                    if (hasActive) {
-                        pSelect.value = this.activePlatform;
-                    } else if (pSelect.options.length > 0) {
-                        this.activePlatform = pSelect.options[0].value;
-                        pSelect.value = this.activePlatform;
-                    }
+        if (!gamePlatformsData || !gamePlatformsData.games) return;
+
+        // Find "TheHUNTER: Call of the Wild" in dataset
+        const game = gamePlatformsData.games.find(g => 
+            g.title.toLowerCase().includes('thehunter') || 
+            g.title.toLowerCase().includes('call of the wild')
+        );
+
+        if (game && game.platforms) {
+            let optionsHtml = '';
+
+            game.platforms.forEach(p => {
+                if (p.platform_type === 'PC' && p.storefronts) {
+                    p.storefronts.forEach(s => {
+                        const val = `pc-${s.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+                        optionsHtml += `<option value="${val}">PC (${s})</option>`;
+                    });
+                }
+                if (p.platform_type === 'Console' && p.consoles) {
+                    p.consoles.forEach(c => {
+                        // Standardize string values (e.g. PlayStation 4 -> ps4)
+                        let val = c.toLowerCase().replace(/[^a-z0-9]/g, '');
+                        if (val.includes('playstation4')) val = 'ps4';
+                        if (val.includes('playstation5')) val = 'ps5';
+                        if (val.includes('xboxone')) val = 'xboxone';
+
+                        optionsHtml += `<option value="${val}">${c}</option>`;
+                    });
+                }
+            });
+
+            if (optionsHtml) {
+                pSelect.innerHTML = optionsHtml;
+
+                // Sync selected option with activePlatform state
+                const currentVal = this.activePlatform;
+                const hasMatch = Array.from(pSelect.options).some(opt => opt.value === currentVal || (currentVal === 'ps4' && opt.value.includes('4')));
+
+                if (hasMatch) {
+                    const matchOpt = Array.from(pSelect.options).find(opt => opt.value === currentVal || (currentVal === 'ps4' && opt.value.includes('4')));
+                    pSelect.value = matchOpt.value;
+                    this.activePlatform = matchOpt.value;
+                } else if (pSelect.options.length > 0) {
+                    this.activePlatform = pSelect.options[0].value;
+                    pSelect.value = this.activePlatform;
                 }
             }
-        } catch (err) {
-            console.warn("Notice: Could not load game-platforms.json, falling back to existing select values:", err.message);
         }
     },
 
@@ -946,11 +976,11 @@ const appState = {
         this.setupMobileMenuToggle();
 
         try {
-            // FIX: Using default app instance for cross-page auth session sharing
+            // Default app instance shares authentication session across index.html and subpages
             const app = initializeApp(firebaseConfig);
             this.auth = getAuth(app);
             this.db = getFirestore(app);
-            
+
             await setPersistence(this.auth, browserLocalPersistence);
 
             this.setupAuthPipelineUI();
@@ -1006,7 +1036,6 @@ const appState = {
     setupPlatformControls: function() {
         const pSelect = document.getElementById('platformSelect');
         if (pSelect) {
-            pSelect.value = this.activePlatform;
             pSelect.addEventListener('change', (e) => {
                 this.activePlatform = e.target.value;
                 this.loadHunter(this.activeHunter);
