@@ -4,11 +4,12 @@
  * VERSION TIMESTAMP: Tue, July 28, 2026, 08:15 AM EDT
  * SYSTEM: theHunter: Call of the Wild Master Tracker (script.js)
  * ARCHITECTURE: Pure Firebase Firestore Engine + Single Sign-On Persistence
- * FIXES APPLIED:
- * 1. Default Firebase App Instance (Ensures cross-page auth session sharing)
+ * FEATURES:
+ * 1. Dynamic User Theme Engine (Real-time Firestore / LocalStorage sync for Primary & Secondary colors)
  * 2. Hash Route Resolver (Converts #/ links to ../../index.html#/ for subfolder navigation)
  * 3. Dynamic Platform Filtering (Reads game-platforms.json; PS5 excluded for COTW)
- * 4. Avatar & 20px Thumbnail Constraint Fix
+ * 4. Currently Deployed Reserve #1 Position Ordering & Auto-Expand
+ * 5. Menu Avatar & 20px Thumbnail Constraint Fix (Menu font strictly white)
  * RESTORATION: 100% FULL SOURCE REGISTRY RESTORED - ZERO STRIPPING / ZERO OMISSIONS
  * ==========================================
  */
@@ -699,28 +700,43 @@ const appState = {
     dataLoaded: false,
     currentLightboxData: { categoryId: null, subIdx: null, imgIdx: 0 },
 
+    /* === SECTION: Dynamic Global Theme Engine === */
     applyTheme: function(primary, secondary) {
-        const p = primary || '#ff8800';
-        const s = secondary || '#38bdf8';
-        document.documentElement.style.setProperty('--primary-color', p);
-        document.documentElement.style.setProperty('--secondary-color', s);
-        document.documentElement.style.setProperty('--hunter-color', p);
-        document.documentElement.style.setProperty('--hunter-glow', `${p}99`);
+        if (!primary || !secondary) return;
+
+        // Set document root variables dynamically
+        document.documentElement.style.setProperty('--primary-color', primary);
+        document.documentElement.style.setProperty('--secondary-color', secondary);
+
+        // Cache locally for instant execution on subpages
+        localStorage.setItem('user_primary_color', primary);
+        localStorage.setItem('user_secondary_color', secondary);
     },
 
     syncUserTheme: async function(operatorHandle) {
-        if (!this.db || !operatorHandle) return;
-        try {
-            const userDocRef = doc(this.db, 'users', operatorHandle);
-            const snap = await getDoc(userDocRef);
-            if (snap.exists()) {
-                const data = snap.data();
-                if (data.primaryColor || data.secondaryColor) {
-                    this.applyTheme(data.primaryColor, data.secondaryColor);
+        if (!operatorHandle) return;
+
+        // 1. Check local storage first for instant render (prevents flicker)
+        const cachedPrimary = localStorage.getItem('user_primary_color');
+        const cachedSecondary = localStorage.getItem('user_secondary_color');
+        if (cachedPrimary && cachedSecondary) {
+            this.applyTheme(cachedPrimary, cachedSecondary);
+        }
+
+        // 2. Fetch ground-truth values from Firestore /users/{operatorHandle}
+        if (this.db) {
+            try {
+                const userDocRef = doc(this.db, 'users', operatorHandle);
+                const snap = await getDoc(userDocRef);
+                if (snap.exists()) {
+                    const data = snap.data();
+                    if (data.primaryColor && data.secondaryColor) {
+                        this.applyTheme(data.primaryColor, data.secondaryColor);
+                    }
                 }
+            } catch (e) {
+                console.warn("Theme sync notice:", e.message);
             }
-        } catch (e) {
-            console.warn("Theme sync notice:", e.message);
         }
     },
 
@@ -831,29 +847,29 @@ const appState = {
             const hasActiveChild = group.items.some(item => this.checkIsActiveTab(item.rawUrl || item.url, item.name));
 
             const groupBtnClass = hasActiveChild
-                ? 'text-[#facc15] font-black border-b-2 border-[#facc15] drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]'
-                : 'text-white hover:text-[#facc15] font-bold';
+                ? 'text-white font-black border-b-2 border-[var(--primary-color,#ff5f1f)] drop-shadow-[0_0_8px_var(--primary-color,#ff5f1f)]'
+                : 'text-white hover:text-amber-300 font-bold';
 
             const dropdownItemsHtml = group.items.map(item => {
                 const active = this.checkIsActiveTab(item.rawUrl || item.url, item.name);
                 const itemClass = active
-                    ? 'flex items-center gap-2 px-3 py-2 text-xs font-black text-[#facc15] bg-slate-800 border-l-4 border-[#facc15] whitespace-nowrap'
-                    : 'flex items-center gap-2 px-3 py-2 text-xs text-white hover:bg-slate-800 hover:text-[#facc15] transition-colors whitespace-nowrap';
+                    ? 'flex items-center gap-2 px-3 py-2 text-xs font-black text-white bg-slate-800 border-l-4 border-[var(--primary-color,#ff5f1f)] whitespace-nowrap'
+                    : 'flex items-center gap-2 px-3 py-2 text-xs text-white hover:bg-slate-800 hover:text-amber-300 transition-colors whitespace-nowrap';
 
                 const imgTag = item.image 
                     ? `<img src="${item.image}" style="width: 20px !important; height: 20px !important; min-width: 20px !important; min-height: 20px !important; max-width: 20px !important; max-height: 20px !important; object-fit: cover; border-radius: 4px; display: inline-block; flex-shrink: 0;" alt="" onerror="this.style.display='none'">` 
                     : '';
 
-                return `<a href="${item.url}" class="${itemClass}">${imgTag}<span>${item.name}</span></a>`;
+                return `<a href="${item.url}" class="${itemClass}">${imgTag}<span style="color: #ffffff !important;">${item.name}</span></a>`;
             }).join('');
 
             html += `
                 <div class="relative group/dropdown inline-block" style="position: relative; display: inline-block;">
-                    <button class="${groupBtnClass} py-1 px-3 text-xs uppercase tracking-wider flex items-center gap-1 focus:outline-none" style="background: none; border: none; cursor: pointer;">
-                        <span>${group.name}</span>
-                        <i class="fa-solid fa-chevron-down text-[10px] opacity-70" style="margin-left: 4px;"></i>
+                    <button class="${groupBtnClass} py-1 px-3 text-xs uppercase tracking-wider flex items-center gap-1 focus:outline-none" style="background: var(--secondary-color, #1e293b); border: none; cursor: pointer; border-radius: 6px;">
+                        <span style="color: #ffffff !important;">${group.name}</span>
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-70" style="margin-left: 4px; color: #ffffff;"></i>
                     </button>
-                    <div class="hidden group-hover/dropdown:block absolute right-0 w-56 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl overflow-hidden z-50" style="position: absolute; right: 0; top: 100%; min-width: 200px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.8); z-index: 9999; display: none;">
+                    <div class="hidden group-hover/dropdown:block absolute right-0 w-56 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl overflow-hidden z-50" style="position: absolute; right: 0; top: 100%; min-width: 200px; background-color: var(--secondary-color, #0f172a); border: 1px solid var(--primary-color, #334155); border-radius: 6px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.8); z-index: 9999; display: none;">
                         ${dropdownItemsHtml}
                     </div>
                 </div>
@@ -938,7 +954,6 @@ const appState = {
                 }
                 if (p.platform_type === 'Console' && p.consoles) {
                     p.consoles.forEach(c => {
-                        // Standardize string values (e.g. PlayStation 4 -> ps4)
                         let val = c.toLowerCase().replace(/[^a-z0-9]/g, '');
                         if (val.includes('playstation4')) val = 'ps4';
                         if (val.includes('playstation5')) val = 'ps5';
@@ -952,7 +967,6 @@ const appState = {
             if (optionsHtml) {
                 pSelect.innerHTML = optionsHtml;
 
-                // Sync selected option with activePlatform state
                 const currentVal = this.activePlatform;
                 const hasMatch = Array.from(pSelect.options).some(opt => opt.value === currentVal || (currentVal === 'ps4' && opt.value.includes('4')));
 
