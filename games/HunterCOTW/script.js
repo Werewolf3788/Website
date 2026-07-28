@@ -1,11 +1,12 @@
 /* === SECTION: File Header & System Architecture === */
 /*
  * ==========================================
- * VERSION TIMESTAMP: Tue, July 28, 2026, 07:20 AM EDT
+ * VERSION TIMESTAMP: Tue, July 28, 2026, 07:35 AM EDT
  * SYSTEM: theHunter: Call of the Wild Master Tracker (script.js)
- * ARCHITECTURE: Pure Firebase Firestore Engine + Local JSON Navigation
+ * ARCHITECTURE: Pure Firebase Firestore Engine + JSON Navigation Integration
+ * PLATFORMS CONFIG: ../../data/game-platforms.json
  * MENU SOURCE: https://github.com/Werewolf3788/Website/blob/main/Menu.json
- * RESTORATION: 100% COMPLETE SOURCE REGISTRY MERGED - ZERO STRIPPING / ZERO OMISSIONS
+ * RESTORATION: 100% FULL SOURCE REGISTRY RESTORED - ZERO STRIPPING / ZERO OMISSIONS
  * ==========================================
  */
 
@@ -44,7 +45,7 @@ const GROUP_ORDER = {
     'co-site': 6
 };
 
-// Primary Email -> Operator Nickname Mapping (Highest Priority)
+// Primary Email -> Operator Nickname Mapping
 const EMAIL_OPERATOR_MAP = {
     "raykevin71888@gmail.com": "Werewolf3788",
     "cartnalray9@gmail.com": "Raymystyro"
@@ -98,7 +99,7 @@ const formatAlphaCheckset = (items) => {
         });
 };
 
-// --- FULL TROPHY & COLLECTIBLES REGISTRY (COMPLETE & RESTORED) ---
+// --- FULL TROPHY & COLLECTIBLES REGISTRY (UNCOMPRESSED & UNSTRIPPED) ---
 const trophyData = [
     // --- BASE GAME ---
     { id: 'plat_cotw', cat: 'Base Game', name: 'theHunter', rank: 'platinum', current: 0, goal: 1, type: 'toggle', plat: false, desc: 'Collect every trophy.' },
@@ -681,7 +682,7 @@ const trophyData = [
 
 const appState = {
     activeHunter: 'Werewolf3788',
-    activePlatform: 'ps5',
+    activePlatform: 'ps4',
     loggedInOperator: null,
     isCurrentUserAdmin: false,
     activeMapCategory: 'DLC: Silver Ridge',
@@ -812,8 +813,9 @@ const appState = {
                     ? 'flex items-center gap-2 px-4 py-2 text-xs font-black text-[#facc15] bg-slate-800 border-l-4 border-[#facc15]'
                     : 'flex items-center gap-2 px-4 py-2 text-xs text-white hover:bg-slate-800 hover:text-[#facc15] transition-colors';
 
+                // Strict 20px thumbnail styles to prevent full-res image blowout
                 const imgTag = item.image 
-                    ? `<img src="${item.image}" class="w-4 h-4 rounded object-cover shrink-0" alt="" onerror="this.style.display='none'">` 
+                    ? `<img src="${item.image}" style="width: 20px !important; height: 20px !important; min-width: 20px !important; min-height: 20px !important; object-fit: cover; border-radius: 4px; display: inline-block; shrink-0;" alt="" onerror="this.style.display='none'">` 
                     : '';
 
                 return `<a href="${item.url}" class="${itemClass}">${imgTag}<span>${item.name}</span></a>`;
@@ -835,10 +837,64 @@ const appState = {
         container.innerHTML = html;
     },
 
+    /* === SECTION: game-platforms.json Platform Filter Loader === */
+    loadPlatformOptions: async function() {
+        const pSelect = document.getElementById('platformSelect');
+        if (!pSelect) return;
+
+        try {
+            const response = await fetch('../../data/game-platforms.json?v=' + Date.now());
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+            const data = await response.json();
+            
+            // Locate "TheHUNTER: Call of the Wild" in the game array
+            const game = data.games.find(g => 
+                g.title.toLowerCase().includes('thehunter') || 
+                g.title.toLowerCase().includes('call of the wild')
+            );
+
+            if (game && game.platforms) {
+                let optionsHtml = '';
+                
+                game.platforms.forEach(p => {
+                    if (p.platform_type === 'PC' && p.storefronts) {
+                        p.storefronts.forEach(s => {
+                            optionsHtml += `<option value="pc-${s.toLowerCase().replace(/[^a-z0-9]/g, '')}">PC (${s})</option>`;
+                        });
+                    }
+                    if (p.platform_type === 'Console' && p.consoles) {
+                        p.consoles.forEach(c => {
+                            const val = c.toLowerCase().replace(/[^a-z0-9]/g, '');
+                            optionsHtml += `<option value="${val}">${c}</option>`;
+                        });
+                    }
+                });
+
+                if (optionsHtml) {
+                    pSelect.innerHTML = optionsHtml;
+                    
+                    // Set default or restore active
+                    const hasActive = Array.from(pSelect.options).some(opt => opt.value === this.activePlatform);
+                    if (hasActive) {
+                        pSelect.value = this.activePlatform;
+                    } else if (pSelect.options.length > 0) {
+                        this.activePlatform = pSelect.options[0].value;
+                        pSelect.value = this.activePlatform;
+                    }
+                }
+            }
+        } catch (err) {
+            console.warn("Notice: Could not load game-platforms.json, falling back to existing select values:", err.message);
+        }
+    },
+
     init: async function() {
         this.loadNavigation();
+        this.loadPlatformOptions();
         this.setupActiveMapControls();
         this.setupPlatformControls();
+        this.setupMobileMenuToggle();
 
         try {
             const app = initializeApp(firebaseConfig, 'COTW-Master-App');
@@ -857,13 +913,43 @@ const appState = {
         }
     },
 
+    setupMobileMenuToggle: function() {
+        const toggleBtn = document.getElementById('mobile-menu-toggle');
+        const navContainer = document.getElementById('dynamic-nav-links');
+
+        if (toggleBtn && navContainer) {
+            toggleBtn.addEventListener('click', () => {
+                navContainer.classList.toggle('hidden');
+                navContainer.classList.toggle('flex');
+                navContainer.classList.toggle('flex-col');
+            });
+        }
+    },
+
     setupActiveMapControls: function() {
         const mapSelect = document.getElementById('activeMapSelector');
         if (mapSelect) {
             mapSelect.value = this.activeMapCategory;
             mapSelect.addEventListener('change', (e) => {
+                const prevCat = this.activeMapCategory;
                 this.activeMapCategory = e.target.value;
+
+                // Sync collapsibles: Expand new active reserve (#1 position), collapse previous
+                const prevSectionId = prevCat.replace(/[^a-zA-Z0-9]/g, '');
+                const newSectionId = this.activeMapCategory.replace(/[^a-zA-Z0-9]/g, '');
+
+                this.collapsedSections[prevSectionId] = true;   // Close old reserve
+                this.collapsedSections[newSectionId] = false;  // Force open active reserve
+
                 this.updateActiveMapDisplay();
+                this.render();
+
+                // Smooth scroll to top of section grid
+                setTimeout(() => {
+                    const topCard = document.getElementById(newSectionId);
+                    if (topCard) topCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+
                 if (this.canEditActiveHunter()) this.sync();
             });
         }
@@ -1048,8 +1134,16 @@ const appState = {
         const canEdit = this.canEditActiveHunter();
 
         container.innerHTML = '';
-        const cats = [...new Set(this.hunterData.map(t => t.cat))];
         
+        // Retrieve distinct categories
+        let cats = [...new Set(this.hunterData.map(t => t.cat))];
+
+        // --- Currently Deployed Reserve Sync: Move active reserve to #1 position ---
+        if (this.activeMapCategory && cats.includes(this.activeMapCategory)) {
+            cats = cats.filter(c => c !== this.activeMapCategory);
+            cats.unshift(this.activeMapCategory); // Force selected reserve to position #1 top
+        }
+
         if (selector && selector.options.length <= 1) {
             cats.forEach(cat => {
                 const opt = document.createElement('option');
@@ -1059,7 +1153,7 @@ const appState = {
         }
         
         let globalMet = 0, globalTotal = 0;
-        cats.forEach(cat => {
+        cats.forEach((cat, index) => {
             const items = this.hunterData.filter(t => t.cat === cat);
             let catMet = 0;
             items.forEach(t => {
@@ -1071,7 +1165,15 @@ const appState = {
             });
             
             const sectionId = cat.replace(/[^a-zA-Z0-9]/g, '');
-            const isCollapsed = this.collapsedSections[sectionId] !== false;
+
+            // Position #1 selected reserve is explicitly force-expanded (not collapsed)
+            let isCollapsed = this.collapsedSections[sectionId];
+            if (cat === this.activeMapCategory && isCollapsed === undefined) {
+                isCollapsed = false; // Default open for active map
+            } else if (isCollapsed === undefined) {
+                isCollapsed = true;  // Default collapsed for rest
+            }
+
             const percent = Math.round((catMet / items.length) * 100);
             
             const section = document.createElement('div');
@@ -1079,7 +1181,8 @@ const appState = {
             section.id = sectionId;
             section.innerHTML = `
                 <div class="category-header" onclick="appState.toggleSection('${sectionId}')">
-                    <h2>${cat}</h2><div style="font-weight:900; font-size: 0.8rem;">${catMet}/${items.length} (${percent}%)</div>
+                    <h2>${cat} ${cat === this.activeMapCategory ? '<span style="font-size: 0.7rem; color: #facc15; font-weight: 800; margin-left: 8px;">[DEPLOYED]</span>' : ''}</h2>
+                    <div style="font-weight:900; font-size: 0.8rem;">${catMet}/${items.length} (${percent}%)</div>
                 </div>
                 <div class="section-content"><div class="trophy-grid"></div></div>
             `;
@@ -1173,7 +1276,11 @@ const appState = {
     
     updateRankUI: function() { Object.keys(this.animalRankData).forEach(k => { const el = document.getElementById(`rank-val-${k}`); if (el) el.innerText = this.animalRankData[k]; }); },
     
-    toggleSection: function(id) { const cur = this.collapsedSections[id] !== false; this.collapsedSections[id] = !cur; this.render(); },
+    toggleSection: function(id) { 
+        const cur = this.collapsedSections[id] !== false; 
+        this.collapsedSections[id] = !cur; 
+        this.render(); 
+    },
     
     toggleDrop: function(id) { 
         const el = document.getElementById('drop-' + id);
