@@ -18,7 +18,6 @@
 
     <style>
         :root {
-            /* Applying user-specified mobile settings */
             --header-text-size: 30px;
             --body-text-size: 14px;
             --row-height: 30px;
@@ -39,7 +38,6 @@
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
-        /* Enforcing 80% width per protocol without breaking Tailwind */
         .max-w-7xl {
             width: 80% !important;
             max-width: 80% !important;
@@ -239,7 +237,7 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- Navigation -->
+    <!-- Global Navigation -->
     <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -247,33 +245,56 @@
                     <span class="text-xl font-black tracking-tighter text-sky-400">WEREWOLF<span class="text-white">PROJECT</span></span>
                 </div>
 
-                <!-- Desktop Menu (Populated dynamically via JS) -->
+                <!-- Desktop Dynamic Links -->
                 <div id="desktop-nav-links" class="hidden md:flex items-center space-x-8">
-                    <!-- Placeholder loading state -->
                     <div class="flex items-center space-x-4 animate-pulse">
                         <div class="h-4 w-16 bg-slate-700 rounded"></div>
                         <div class="h-4 w-16 bg-slate-700 rounded"></div>
-                        <div class="h-4 w-20 bg-slate-700 rounded"></div>
                     </div>
                 </div>
 
-                <div class="md:hidden flex items-center">
-                    <button onclick="toggleMobileMenu()" class="text-slate-400 hover:text-white p-2">
-                        <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
-                    </button>
+                <!-- Global Auth Block & Mobile Toggle -->
+                <div class="flex items-center gap-4">
+                    <div id="authContainer" class="flex items-center gap-3">
+                        <button id="googleSignInBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-1.5 px-3 rounded-lg border border-emerald-400 shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-key"></i>
+                            <span>Login</span>
+                        </button>
+                        <div id="userProfileStatus" class="hidden items-center gap-3">
+                            <img id="userAvatar" src="" alt="Avatar" class="w-8 h-8 rounded-full border-2 border-sky-400 object-cover">
+                            <button id="signOutBtn" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs py-1.5 px-3 rounded-lg border border-slate-600 transition-all cursor-pointer">
+                                Logout
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="md:hidden flex items-center">
+                        <button onclick="toggleMobileMenu()" class="text-slate-400 hover:text-white p-2">
+                            <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile Menu (Populated dynamically via JS) -->
+        <!-- Mobile Menu -->
         <div id="mobile-menu" class="md:hidden hidden bg-slate-900 border-b border-slate-700">
             <div id="mobile-nav-links" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                 <!-- Placeholder loading state -->
                  <div class="h-4 w-24 bg-slate-700/50 rounded mb-2 ml-3 animate-pulse"></div>
-                 <div class="h-4 w-24 bg-slate-700/50 rounded ml-3 animate-pulse"></div>
             </div>
         </div>
     </nav>
+
+    <!-- Global Login Alert Banner -->
+    <div id="authBanner" class="bg-amber-500/10 border-b border-amber-500/30 text-amber-300 text-center py-2 px-4 text-xs font-semibold">
+        <i class="fa-solid fa-circle-info mr-2"></i>
+        <span>Viewing Mode: All content is visible. Sign in to save manual progress across game trackers.</span>
+    </div>
+
+    <!-- Admin Badge: Triggered for raykevin71888@gmail.com -->
+    <div id="adminBadge" class="hidden bg-purple-950/90 border-b border-purple-500/50 text-purple-200 text-center py-1.5 px-4 text-xs font-black tracking-wider shadow-lg">
+        ⚡ OVERWATCH ADMIN ACTIVE (raykevin71888@gmail.com)
+    </div>
 
     <!-- Hero Section -->
     <header class="section-padding px-4 flex-grow flex items-center">
@@ -378,7 +399,7 @@
                 
                 <div class="relative z-10 flex flex-col items-center justify-center gap-6 w-full">
                     <h2 class="text-orange-500 outline-text">Werewolf Cinema</h2>
-                    <p class="text-slate-200 font-bold outline-text max-w-md">Access the list of Movie's I own digitally, plus see what they're streaming on, the major brands like google, youtube, apple fandango, and Movies anywhere are all manually added, Amazon is sorta both  manually added or search for Amazon is a Affilated account. Hope you enjoy this setup.</p>
+                    <p class="text-slate-200 font-bold outline-text max-w-md">Access the list of Movies I own digitally, plus see what they're streaming on. Google, YouTube, Apple, Fandango, and Movies Anywhere are manually integrated, along with Amazon affiliate search. Enjoy!</p>
                     
                     <a href="https://werewolf3788.github.io/Website/Movies.html" 
                        target="werewolf_cinema_window" 
@@ -395,29 +416,119 @@
         </div>
     </section>
 
-    <!-- Games Featured -->
+    <!-- SMART FIREBASE GAMING MODULES SECTION -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
                 <div>
-                    <span class="text-sky-500 font-bold uppercase tracking-widest text-xs">Featured Content</span>
-                    <h2 class="mt-2">Gaming Modules</h2>
-                    <p class="mt-4 text-slate-400">
-                        Custom Sniper Elite interfaces and tracking tools integrated directly into the repository.
+                    <span class="text-sky-500 font-bold uppercase tracking-widest text-xs">Real-Time Cloud Telemetry</span>
+                    <h2 class="mt-2">Active Gaming Modules</h2>
+                    <p class="mt-2 text-slate-400 text-sm max-w-xl">
+                        Smart Module Filter: Games only display when active progress is detected in Firestore.
                     </p>
-                    <div class="mt-8">
-                        <a href="./games/sniper-elite-resistance.html" class="text-sky-400 hover:text-sky-300 font-bold flex items-center space-x-2">
-                            <span>Explore Sniper-Elite-Resistance</span>
-                            <i class="fa-solid fa-arrow-right"></i>
-                        </a>
-                    </div>
                 </div>
-                <div class="custom-card p-8 aspect-video flex items-center justify-center overflow-hidden">
-                    <div class="relative w-full h-full bg-slate-800 rounded-lg flex items-center justify-center border border-slate-700">
-                        <i class="fa-solid fa-crosshairs text-6xl text-slate-700 group-hover:text-sky-500 transition-colors"></i>
-                    </div>
+                <div class="text-xs font-mono text-slate-500 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span id="firebase-live-status">FIRESTORE ACTIVE</span>
                 </div>
             </div>
+
+            <!-- DYNAMIC GRID OF GAME MODULES -->
+            <div id="smart-games-grid" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+                <!-- MODULE 1: SNIPER ELITE 5 (Hidden by default until progress exists) -->
+                <div id="module-se5" class="hidden custom-card p-6 border border-amber-500/30 flex-col justify-between hover:border-amber-500/60 transition-all">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[10px] font-black uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded">Sniper Elite 5</span>
+                            <i class="fa-solid fa-crosshairs text-amber-500 text-lg"></i>
+                        </div>
+                        <h3 class="text-xl font-black text-white mb-2">SE5 Master Log</h3>
+                        <p class="text-slate-400 text-xs mb-6 italic">Full mission collectibles, workbenches, stone eagles, and personal letters.</p>
+                        <div id="se5-progress-container" class="space-y-3 mb-6"></div>
+                    </div>
+                    <a href="./games/sniper-elite-5.html" class="mt-4 w-full text-center bg-slate-800 hover:bg-amber-600 text-slate-200 hover:text-white font-bold py-2.5 px-4 rounded-lg text-xs transition-all border border-slate-700 flex items-center justify-center gap-2">
+                        <span>Open SE5 Master Tracker</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+
+                <!-- MODULE 2: THEHUNTER: CALL OF THE WILD (Hidden by default until progress exists) -->
+                <div id="module-cotw" class="hidden custom-card p-6 border border-emerald-500/30 flex-col justify-between hover:border-emerald-500/60 transition-all">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded">theHunter: COTW</span>
+                            <i class="fa-solid fa-paw text-emerald-500 text-lg"></i>
+                        </div>
+                        <h3 class="text-xl font-black text-white mb-2">COTW Master Tracker</h3>
+                        <p class="text-slate-400 text-xs mb-4 italic">Reserves, rare furs, trophy lodge audits, and active map stream deployment.</p>
+
+                        <div id="cotw-active-map-badge" class="mb-4 bg-slate-900/80 border border-emerald-500/40 rounded-lg p-2.5 flex items-center justify-between">
+                            <div class="text-[10px] text-slate-400 font-bold uppercase">Active Deployed Map</div>
+                            <div id="cotw-active-map-name" class="text-xs font-black text-emerald-400">--</div>
+                        </div>
+                        <div id="cotw-progress-container" class="space-y-3 mb-6"></div>
+                    </div>
+                    <a href="./games/thehunter-call-of-the-wild.html" class="mt-4 w-full text-center bg-slate-800 hover:bg-emerald-600 text-slate-200 hover:text-white font-bold py-2.5 px-4 rounded-lg text-xs transition-all border border-slate-700 flex items-center justify-center gap-2">
+                        <span>Open COTW Master Tracker</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+
+                <!-- MODULE 3: SNIPER ELITE: RESISTANCE (Hidden by default until progress exists) -->
+                <div id="module-ser" class="hidden custom-card p-6 border border-sky-500/30 flex-col justify-between hover:border-sky-500/60 transition-all">
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[10px] font-black uppercase tracking-wider bg-sky-500/10 text-sky-400 border border-sky-500/30 px-2 py-0.5 rounded">Sniper Elite Resistance</span>
+                            <i class="fa-solid fa-person-rifle text-sky-500 text-lg"></i>
+                        </div>
+                        <h3 class="text-xl font-black text-white mb-2">Resistance Log</h3>
+                        <p class="text-slate-400 text-xs mb-6 italic">Campaign kill lists, hidden items, gnomes, propaganda posters, and trophies.</p>
+                        <div id="ser-progress-container" class="space-y-3 mb-6"></div>
+                    </div>
+                    <a href="./games/sniper-elite-resistance.html" class="mt-4 w-full text-center bg-slate-800 hover:bg-sky-600 text-slate-200 hover:text-white font-bold py-2.5 px-4 rounded-lg text-xs transition-all border border-slate-700 flex items-center justify-center gap-2">
+                        <span>Open Resistance Tracker</span>
+                        <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                    </a>
+                </div>
+
+            </div>
+
+            <!-- GHOST RECON WILDLANDS FULL TELEMETRY DASHBOARD (DYNAMIC MATRIX) -->
+            <div id="module-grw" class="hidden mt-10 custom-card p-8 border border-red-600/40 shadow-red-950/20 shadow-2xl">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-red-900/50 pb-4 gap-4">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] font-black uppercase tracking-wider bg-red-600/20 text-red-400 border border-red-500/40 px-2.5 py-0.5 rounded">Tom Clancy's Ghost Recon</span>
+                            <span class="text-xs font-mono text-slate-400">Wildlands Operative Telemetry</span>
+                        </div>
+                        <h3 class="text-2xl font-black text-white mt-1">Ghost Recon: Wildlands Matrix</h3>
+                    </div>
+                    <a href="./games/ghost-recon-wildlands.html" class="bg-red-600 hover:bg-red-500 text-white font-bold text-xs py-2 px-5 rounded-lg border border-red-400 transition-all flex items-center gap-2">
+                        <span>Launch Wildlands Portal</span>
+                        <i class="fa-solid fa-up-right-from-square text-[10px]"></i>
+                    </a>
+                </div>
+
+                <!-- SINGLE SHARED MATRIX TABLE (Shared Left Headers + Dynamic User Columns) -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-700 text-slate-400 font-black uppercase text-[11px]">
+                                <th class="py-3 px-4 bg-slate-900/80 w-1/3 min-w-[220px]">Progression Metric / Category</th>
+                                <th id="grw-col-werewolf" class="py-3 px-4 text-orange-400 min-w-[150px]">Werewolf3788</th>
+                                <th id="grw-col-marc" class="py-3 px-4 text-emerald-400 min-w-[150px]">Marc</th>
+                                <th id="grw-col-ray" class="py-3 px-4 text-red-400 min-w-[150px]">Raymystyro</th>
+                                <th id="grw-col-tj" class="py-3 px-4 text-purple-400 min-w-[150px]">terrdog420</th>
+                            </tr>
+                        </thead>
+                        <tbody id="grw-matrix-body" class="divide-y divide-slate-800/60 font-medium text-slate-300">
+                            <!-- Telemetry Rows Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -433,26 +544,46 @@
         </div>
     </footer>
 
-    <script>
-        /* ==========================================
-           JAVASCRIPT SECTION 
-           ========================================== */
-        
+    <!-- MAIN FIREBASE PERSISTENT AUTH & TELEMETRY MODULE -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { 
+            getAuth, 
+            setPersistence, 
+            browserLocalPersistence, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            signOut, 
+            onAuthStateChanged 
+        } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
+            authDomain: "game-tracker-5b2ef.firebaseapp.com",
+            databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
+            projectId: "game-tracker-5b2ef",
+            storageBucket: "game-tracker-5b2ef.firebasestorage.app",
+            messagingSenderId: "555667047127",
+            appId: "1:555667047127:web:af6f468ca3cf06759aa692"
+        };
+
+        const ADMIN_EMAIL = "raykevin71888@gmail.com";
+
         const users = [
             { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf', twitch: 'werewolf3788', theme: 'text-werewolf' },
             { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray', twitch: 'raymystyro', theme: 'text-ray' },
             { id: 'tj', user: 'terrdog420', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', layerId: 'layer-tj', descId: 'weather-desc-tj', twitch: 'terrdog420', theme: 'text-terrdog' }
         ];
 
-        function toggleMobileMenu() {
+        window.toggleMobileMenu = function() {
             const menu = document.getElementById('mobile-menu');
             const icon = document.getElementById('menu-icon');
             menu.classList.toggle('hidden');
             icon.classList.toggle('fa-bars');
             icon.classList.toggle('fa-xmark');
-        }
+        };
 
-        // --- FETCH WITH EXPONENTIAL BACKOFF ---
         async function fetchWithRetry(url, options = {}) {
             let delay = 1000;
             for (let i = 0; i < 5; i++) {
@@ -468,7 +599,7 @@
             }
         }
 
-        // --- DYNAMIC NAVIGATION LOGIC ---
+        // CSV Navigation Engine
         const navCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv';
 
         async function fetchNavData() {
@@ -480,7 +611,6 @@
                 const navOrder = [];
                 const groupIndexMap = {};
 
-                // Skip header (assuming row 0 is header)
                 for (let i = 1; i < rows.length; i++) {
                     const columns = parseCSVLine(rows[i]);
                     if (columns.length >= 3) {
@@ -522,8 +652,6 @@
                 if (node.type === 'standalone') {
                     const item = node.data;
                     const imgTag = item.img ? `<img src="${item.img}" class="w-5 h-5 rounded-full object-cover">` : '';
-                    
-                    // Specific override to keep your 'Movies' link style if it's named exactly that in the sheet
                     const isMovies = item.name.toLowerCase() === 'movies';
                     const textClass = isMovies ? 'text-orange-400 hover:text-orange-300 font-bold' : 'text-slate-300 hover:text-white';
                     const targetAttr = isMovies ? 'target="werewolf_cinema_window"' : '';
@@ -540,7 +668,6 @@
                         </a>
                     `;
                 } else if (node.type === 'group') {
-                    // Render Desktop Dropdown
                     desktopHTML += `
                     <div class="relative group dropdown">
                         <button class="flex items-center space-x-1 text-slate-300 hover:text-white focus:outline-none py-4">
@@ -550,7 +677,6 @@
                         <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
                     `;
                     
-                    // Render Mobile Group Header
                     mobileHTML += `<div class="px-3 py-2 mt-2 text-sky-400 font-bold uppercase text-xs tracking-wider border-b border-slate-700/50">${node.name}</div>`;
 
                     node.items.forEach(item => {
@@ -577,7 +703,7 @@
             mobileContainer.innerHTML = mobileHTML;
         }
 
-        // --- FETCH MOVIE CSV COUNT & SLIDESHOW LOGIC ---
+        // Movie Slideshow
         let cinemaImages = [];
         let currentSlideIndex = 0;
         let activeBgId = 1;
@@ -590,7 +716,7 @@
             for (let i = 0; i < line.length; i++) {
                 const char = line[i];
                 if (char === '"' && line[i+1] === '"') {
-                    current += '"'; i++; // Escaped quote
+                    current += '"'; i++;
                 } else if (char === '"') {
                     inQuotes = !inQuotes;
                 } else if (char === ',' && !inQuotes) {
@@ -611,40 +737,27 @@
             try {
                 const response = await fetchWithRetry(csvUrl);
                 const data = await response.text();
-                
                 const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
-                
                 let validMovieCount = 0;
                 cinemaImages = [];
 
-                // Parse rows and count only if Column A has content
                 for (let i = 1; i < rows.length; i++) {
                     const columns = parseCSVLine(rows[i]);
-                    
-                    // Check if Column A (index 0) exists and is not empty
                     if (columns.length > 0 && columns[0].trim() !== '') {
                         validMovieCount++;
-                        
-                        // Extract Poster URLs from Column B (index 1) for the slideshow
                         if (columns.length > 1 && columns[1] && columns[1].startsWith('http')) {
                             cinemaImages.push(columns[1]);
                         }
                     }
                 }
 
-                if (countDisplay) {
-                    countDisplay.textContent = validMovieCount.toLocaleString();
-                }
-                
-                // Inter-Tab Communication (ITC)
+                if (countDisplay) countDisplay.textContent = validMovieCount.toLocaleString();
                 localStorage.setItem('werewolf_library_count', validMovieCount);
 
                 if (cinemaImages.length > 0) {
-                    // Randomize the slideshow order
                     cinemaImages.sort(() => 0.5 - Math.random());
                     startCinemaSlideshow();
                 }
-
             } catch (error) {
                 console.error('Error fetching library data:', error);
                 if (countDisplay) countDisplay.textContent = 'Service unavailable';
@@ -653,7 +766,6 @@
 
         function startCinemaSlideshow() {
             if (cinemaImages.length === 0 || cinemaInterval) return;
-            
             const layer1 = document.getElementById('cinema-layer-1');
             const layer2 = document.getElementById('cinema-layer-2');
             
@@ -685,7 +797,7 @@
             }, 6000);
         }
 
-        // --- WEATHER LOGIC ---
+        // Weather Engine
         async function updateWeather() {
             for (const u of users) {
                 try {
@@ -694,14 +806,12 @@
                     const code = data.current_weather.weathercode;
                     const temp = Math.round(data.current_weather.temperature);
                     
-                    let type = 'clear';
-                    let desc = 'Clear Skies';
-                    
+                    let type = 'clear', desc = 'Clear Skies';
                     if (code === 0) { type = 'sunny'; desc = 'Sunny'; }
                     else if (code >= 1 && code <= 3) { type = 'cloudy'; desc = 'Partly Cloudy'; }
                     else if (code >= 45 && code <= 48) { type = 'cloudy'; desc = 'Foggy'; }
-                    else if (code >= 51 && code <= 67 || code >= 80 && code <= 82 || code >= 95) { type = 'rain'; desc = 'Raining'; }
-                    else if (code >= 71 && code <= 77 || code >= 85 && code <= 86) { type = 'snowy'; desc = 'Snowing'; }
+                    else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82) || code >= 95) { type = 'rain'; desc = 'Raining'; }
+                    else if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) { type = 'snowy'; desc = 'Snowing'; }
 
                     applyWeatherUI(u, type, `${desc} • ${temp}°F`);
                 } catch (e) {
@@ -718,7 +828,6 @@
             descText.textContent = description;
             card.classList.remove('bg-rain', 'bg-cloudy', 'bg-sunny', 'bg-snowy', 'bg-clear', 'is-sunny');
             card.classList.add(`bg-${type}`);
-            
             if (type === 'sunny') card.classList.add('is-sunny');
 
             layer.innerHTML = '';
@@ -764,7 +873,7 @@
             }
         }
 
-        // --- TWITCH LOGIC ---
+        // Twitch Stream Status
         async function updateTwitchStatus(u) {
             const gameEl = document.getElementById(`twitch-game-${u.id}`);
             const statusIndicator = document.getElementById(`twitch-status-indicator-${u.id}`);
@@ -787,9 +896,336 @@
             }
         }
 
-        // --- DATA REFRESH ---
+        // ==========================================================
+        // --- SMART FIREBASE MODULE FILTER & TELEMETRY ENGINE ---
+        // ==========================================================
+        const teamProfiles = [
+            { name: 'Werewolf3788', dbDoc: 'Werewolf3788', color: '#ff8800' },
+            { name: 'Marc', dbDoc: 'Marc', color: '#10b981' },
+            { name: 'Raymystyro', dbDoc: 'Raymystyro', color: '#ff4444' },
+            { name: 'terrdog420', dbDoc: 'terrdog420', color: '#a855f7' }
+        ];
+
+        const grwMetricsKeys = [
+            { label: 'Tier One Prestige Mode', key: 'tierOneStatus' },
+            { label: 'Tier Level Countdown', key: 'tierLevel' },
+            { label: 'Playstyle Title', key: 'playstyleTitle' },
+            { label: 'Avg Kill Distance', key: 'avgKillDist' },
+            { label: 'Tactical Precision', key: 'tacticalPrecision' },
+            { label: 'Stealth Kills %', key: 'stealthKillsPct' },
+            { label: 'Lifetime Duration', key: 'lifetimeDuration' },
+            { label: 'Longest Shot', key: 'longestShot' },
+            { label: 'Primary Favorite Weapon', key: 'primaryWeapon' },
+            { label: 'Secondary Favorite Weapon', key: 'secondaryWeapon' },
+            { label: 'Teammates Revived', key: 'teammatesRevived' },
+            { label: 'Drone Deployment Time', key: 'droneTime' },
+            { label: 'Map Discovered %', key: 'mapDiscovered' }
+        ];
+
+        let auth, db;
+
+        async function initFirebaseEngine() {
+            try {
+                const app = initializeApp(firebaseConfig, 'Global-Home-App');
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                await setPersistence(auth, browserLocalPersistence);
+                setupAuthUI();
+
+                onAuthStateChanged(auth, (user) => {
+                    handleAuthStateChange(user);
+                });
+
+                attachSmartGameProgressListeners(db);
+
+            } catch (e) {
+                console.error("Firebase Auth/Firestore Init Error:", e);
+            }
+        }
+
+        function setupAuthUI() {
+            const googleBtn = document.getElementById("googleSignInBtn");
+            const signOutBtn = document.getElementById("signOutBtn");
+
+            if (googleBtn) {
+                googleBtn.addEventListener("click", () => {
+                    const provider = new GoogleAuthProvider();
+                    signInWithPopup(auth, provider)
+                        .then((result) => console.log("Google Login Successful:", result.user.displayName))
+                        .catch((err) => console.error("Login Error:", err));
+                });
+            }
+
+            if (signOutBtn) {
+                signOutBtn.addEventListener("click", () => {
+                    signOut(auth).then(() => console.log("User Logged Out"));
+                });
+            }
+        }
+
+        function handleAuthStateChange(user) {
+            const googleBtn = document.getElementById("googleSignInBtn");
+            const userStatus = document.getElementById("userProfileStatus");
+            const userAvatar = document.getElementById("userAvatar");
+            const authBanner = document.getElementById("authBanner");
+            const adminBadge = document.getElementById("adminBadge");
+
+            if (user) {
+                if (googleBtn) googleBtn.style.display = "none";
+                if (userStatus) {
+                    userStatus.style.display = "flex";
+                    userStatus.classList.remove("hidden");
+                }
+                if (userAvatar) userAvatar.src = user.photoURL || "https://placehold.co/32x32/1e293b/ff8800?text=U";
+                if (authBanner) authBanner.style.display = "none";
+
+                if (user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
+                    if (adminBadge) adminBadge.classList.remove("hidden");
+                } else {
+                    if (adminBadge) adminBadge.classList.add("hidden");
+                }
+
+                const activeUsername = user.displayName || user.email.split('@')[0];
+                setDoc(doc(db, 'users', activeUsername), {
+                    displayName: activeUsername,
+                    email: user.email || "",
+                    photoURL: user.photoURL || "",
+                    uid: user.uid,
+                    isAdmin: user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase(),
+                    lastUpdated: new Date().toISOString()
+                }, { merge: true });
+
+            } else {
+                if (googleBtn) googleBtn.style.display = "flex";
+                if (userStatus) userStatus.style.display = "none";
+                if (authBanner) authBanner.style.display = "block";
+                if (adminBadge) adminBadge.classList.add("hidden");
+            }
+        }
+
+        function attachSmartGameProgressListeners(db) {
+            const liveData = {
+                'sniper-elite-5': {},
+                'thehunter-call-of-the-wild': {},
+                'sniper-elite-resistance': {},
+                'ghost-recon-wildlands': {}
+            };
+
+            teamProfiles.forEach(prof => {
+                // Alias check: Listen to both profile name and potential alternative ID (e.g., Werewolf3788 AND Kevin)
+                const docTargets = [prof.dbDoc];
+                if (prof.name === 'Werewolf3788') docTargets.push('Kevin');
+                if (prof.name === 'terrdog420') docTargets.push('TJ');
+                if (prof.name === 'Raymystyro') docTargets.push('Ray');
+
+                docTargets.forEach(docId => {
+                    // 1. Sniper Elite 5
+                    onSnapshot(doc(db, 'users', docId, 'progress', 'sniper-elite-5'), (snap) => {
+                        if (snap.exists()) {
+                            const d = snap.data();
+                            const items = d.progress || d.trophies || [];
+                            const done = items.filter(i => i.collected === true || i.done === true).length;
+                            if (done > 0) {
+                                liveData['sniper-elite-5'][prof.name] = { done, total: items.length || 202, color: prof.color };
+                            }
+                        }
+                        evaluateModuleVisibility('sniper-elite-5', liveData['sniper-elite-5']);
+                    });
+
+                    // 2. theHunter: Call of the Wild
+                    onSnapshot(doc(db, 'users', docId, 'progress', 'thehunter-call-of-the-wild'), (snap) => {
+                        if (snap.exists()) {
+                            const d = snap.data();
+                            const items = d.trophies || d.progress || [];
+                            let doneCount = 0;
+                            items.forEach(t => {
+                                if (t.type === 'checklist' && t.subItems) {
+                                    if (t.subItems.filter(s => s.done).length >= (t.goal || 1)) doneCount++;
+                                } else if ((t.current || 0) >= (t.goal || 1) || t.done === true) {
+                                    doneCount++;
+                                }
+                            });
+
+                            if (d.activeMapCategory && (prof.name === 'Werewolf3788' || docId === 'Kevin')) {
+                                const badge = document.getElementById('cotw-active-map-name');
+                                if (badge) badge.innerText = d.activeMapCategory.replace('DLC: ', '');
+                            }
+
+                            if (doneCount > 0) {
+                                liveData['thehunter-call-of-the-wild'][prof.name] = { done: doneCount, total: items.length || 55, color: prof.color };
+                            }
+                        }
+                        evaluateModuleVisibility('thehunter-call-of-the-wild', liveData['thehunter-call-of-the-wild']);
+                    });
+
+                    // 3. Sniper Elite: Resistance
+                    onSnapshot(doc(db, 'users', docId, 'progress', 'sniper-elite-resistance'), (snap) => {
+                        if (snap.exists()) {
+                            const d = snap.data();
+                            const items = d.progress || d.trophies || [];
+                            const done = items.filter(i => i.collected === true || i.done === true).length;
+                            if (done > 0) {
+                                liveData['sniper-elite-resistance'][prof.name] = { done, total: items.length || 140, color: prof.color };
+                            }
+                        }
+                        evaluateModuleVisibility('sniper-elite-resistance', liveData['sniper-elite-resistance']);
+                    });
+
+                    // 4. Tom Clancy's Ghost Recon Wildlands (LISTENS TO BOTH DOCUMENT IDs)
+                    const wildlandsPaths = ['T.C.G.R.Wildlands', 'ghost-recon-wildlands'];
+                    wildlandsPaths.forEach(gameDocId => {
+                        onSnapshot(doc(db, 'users', docId, 'progress', gameDocId), (snap) => {
+                            if (snap.exists()) {
+                                const d = snap.data();
+                                const payload = d.telemetry || d.stats || d;
+                                
+                                const hasValidMetrics = Object.keys(payload).some(k => 
+                                    k !== 'user' && k !== 'gameId' && k !== 'lastUpdated' && payload[k] !== null && payload[k] !== ''
+                                );
+
+                                if (hasValidMetrics) {
+                                    liveData['ghost-recon-wildlands'][prof.name] = payload;
+                                }
+                            }
+                            evaluateGRWVisibility(liveData['ghost-recon-wildlands']);
+                        });
+                    });
+                });
+            });
+        }
+
+        // SMART VISIBILITY CONTROLLER
+        function evaluateModuleVisibility(gameKey, userMap) {
+            const userKeys = Object.keys(userMap);
+            const modEl = gameKey === 'sniper-elite-5' ? document.getElementById('module-se5') :
+                          gameKey === 'thehunter-call-of-the-wild' ? document.getElementById('module-cotw') :
+                          document.getElementById('module-ser');
+
+            if (!modEl) return;
+
+            if (userKeys.length > 0) {
+                modEl.classList.remove('hidden');
+                modEl.classList.add('flex');
+                if (gameKey === 'sniper-elite-5') renderSE5Progress(userMap);
+                if (gameKey === 'thehunter-call-of-the-wild') renderCOTWProgress(userMap);
+                if (gameKey === 'sniper-elite-resistance') renderSERProgress(userMap);
+            } else {
+                modEl.classList.add('hidden');
+                modEl.classList.remove('flex');
+            }
+        }
+
+        function evaluateGRWVisibility(grwMap) {
+            const modEl = document.getElementById('module-grw');
+            if (!modEl) return;
+            const hasData = Object.keys(grwMap).length > 0;
+
+            if (hasData) {
+                modEl.classList.remove('hidden');
+                renderGRWMatrixTable(grwMap);
+            } else {
+                modEl.classList.add('hidden');
+            }
+        }
+
+        function renderSE5Progress(data) {
+            const container = document.getElementById('se5-progress-container');
+            if (!container) return;
+            let html = '';
+            Object.keys(data).forEach(u => {
+                const info = data[u];
+                const pct = info.total > 0 ? Math.round((info.done / info.total) * 100) : 0;
+                html += `
+                    <div>
+                        <div class="flex justify-between items-center text-xs mb-1">
+                            <span class="font-bold text-slate-200" style="color: ${info.color}">${u}</span>
+                            <span class="font-mono text-[11px] text-slate-400">${info.done}/${info.total} (${pct}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-full h-1.5 border border-slate-800 overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${info.color};"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderCOTWProgress(data) {
+            const container = document.getElementById('cotw-progress-container');
+            if (!container) return;
+            let html = '';
+            Object.keys(data).forEach(u => {
+                const info = data[u];
+                const pct = info.total > 0 ? Math.round((info.done / info.total) * 100) : 0;
+                html += `
+                    <div>
+                        <div class="flex justify-between items-center text-xs mb-1">
+                            <span class="font-bold text-slate-200" style="color: ${info.color}">${u}</span>
+                            <span class="font-mono text-[11px] text-slate-400">${info.done}/${info.total} (${pct}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-full h-1.5 border border-slate-800 overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${info.color};"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function renderSERProgress(data) {
+            const container = document.getElementById('ser-progress-container');
+            if (!container) return;
+            let html = '';
+            Object.keys(data).forEach(u => {
+                const info = data[u];
+                const pct = info.total > 0 ? Math.round((info.done / info.total) * 100) : 0;
+                html += `
+                    <div>
+                        <div class="flex justify-between items-center text-xs mb-1">
+                            <span class="font-bold text-slate-200" style="color: ${info.color}">${u}</span>
+                            <span class="font-mono text-[11px] text-slate-400">${info.done}/${info.total} (${pct}%)</span>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-full h-1.5 border border-slate-800 overflow-hidden">
+                            <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${info.color};"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        // RENDER SHARED MATRIX TABLE FOR GHOST RECON WILDLANDS
+        function renderGRWMatrixTable(grwMap) {
+            const tbody = document.getElementById('grw-matrix-body');
+            if (!tbody) return;
+
+            let tableHtml = '';
+
+            grwMetricsKeys.forEach(metric => {
+                tableHtml += `<tr class="hover:bg-slate-800/40 transition-colors">`;
+                tableHtml += `<td class="py-2.5 px-4 font-bold text-slate-300 bg-slate-900/40 border-r border-slate-800/80">${metric.label}</td>`;
+
+                teamProfiles.forEach(prof => {
+                    const uData = grwMap[prof.name] || {};
+                    const val = uData[metric.key] !== undefined ? uData[metric.key] : '--';
+                    
+                    let styledVal = `<span class="font-mono text-slate-300">${val}</span>`;
+                    if (metric.key === 'tierOneStatus' && val === 'Active') {
+                        styledVal = `<span class="bg-red-600/20 text-red-400 border border-red-500/40 font-black text-[10px] px-2 py-0.5 rounded uppercase">Tier One Active</span>`;
+                    }
+
+                    tableHtml += `<td class="py-2.5 px-4">${styledVal}</td>`;
+                });
+
+                tableHtml += `</tr>`;
+            });
+
+            tbody.innerHTML = tableHtml;
+        }
+
         function refreshData() {
-            fetchNavData();  // Automatically populates header
+            fetchNavData();
             updateWeather();
             users.forEach(updateTwitchStatus);
             fetchMovieData(); 
@@ -797,7 +1233,7 @@
 
         window.onload = () => {
             refreshData();
-            // 5 minute interval refresh
+            initFirebaseEngine();
             setInterval(refreshData, 300000);
         };
     </script>
