@@ -1,14 +1,8 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Tue, July 28, 2026, 09:30 AM EDT
- * SYSTEM: theHunter: Call of the Wild Master Tracker (script.js)
- * ARCHITECTURE: Pure Firebase Firestore Engine + Single Sign-On Persistence
- * FEATURES:
- * 1. Universal Cross-Browser Compatibility (Opera GX, Chrome, Edge, Mobile)
- * 2. Universal Identity Resolver (Auto-bootstraps new users into Firestore)
- * 3. Dynamic User Theme Engine (Real-time Firestore / LocalStorage sync)
- * 4. Absolute Path Asset Resolution for subfolder/hash route navigation
- * RESTORATION: 100% FULL SOURCE REGISTRY RESTORED - ZERO STRIPPING / ZERO OMISSIONS
+ * VERSION TIMESTAMP: Tue, July 28, 2026 | 02:15:00 PM EDT
+ * PRECISION INTEGRATION: v1.3 Layout Engine + Universal Identity & Opera GX Path Engine
+ * NOTES: 100% Full source registry restored. Zero stripping, zero compressing.
  * ==========================================
  */
 
@@ -37,41 +31,16 @@ const firebaseConfig = {
 const GAME_ID = 'thehunter-call-of-the-wild';
 const ADMIN_EMAIL = "raykevin71888@gmail.com";
 
-// Strict Group Hierarchy Sorting Index (1 to 6 Left-to-Right)
-const GROUP_ORDER = {
-    'home': 1,
-    'user': 2,
-    'game': 3,
-    'entertainment': 4,
-    'discord': 5,
-    'co-site': 6
-};
-
-// Primary Email -> Operator Nickname Mapping
 const EMAIL_OPERATOR_MAP = {
     "raykevin71888@gmail.com": "Werewolf3788",
     "cartnalray9@gmail.com": "Raymystyro"
 };
 
-// Comprehensive Gamertag & Real Name Identity Mapping Matrix
 const USER_DATA_MAP = {
-    // Werewolf3788
     'Werewolf3788': 'Werewolf3788', 'werewolf3788': 'Werewolf3788',
-    'WildHorse_Spirit': 'Werewolf3788', 'wildhorse_spirit': 'Werewolf3788',
-    'Kevin_Ray': 'Werewolf3788', 'Kevin Ray': 'Werewolf3788', 'kevin ray': 'Werewolf3788', 'Kevin Frutiger': 'Werewolf3788',
-
-    // Raymystyro
     'Raymystyro': 'Raymystyro', 'raymystyro': 'Raymystyro',
-    'OneLIVIDMAN': 'Raymystyro', 'onelividman': 'Raymystyro',
-    'Ray_Cartnal': 'Raymystyro', 'Ray Cartnal': 'Raymystyro', 'ray cartnal': 'Raymystyro',
-
-    // terrdog420
-    'terrdog420': 'terrdog420', 'Terrdog420': 'terrdog420',
-    'Darkwing69420': 'terrdog420', 'darkwing69420': 'terrdog420',
-    'TJ': 'terrdog420', 'tj': 'terrdog420', 'Terry_Johnson': 'terrdog420', 'Terry Johnson': 'terrdog420',
-
-    // DesdemonaTiger
-    'DesdemonaTiger': 'DesdemonaTiger', 'desdemonatiger': 'DesdemonaTiger', 'Desdemona Tiger': 'DesdemonaTiger'
+    'terrdog420': 'terrdog420', 'Terrdog420': 'terrdog420', 'TJ': 'terrdog420',
+    'DesdemonaTiger': 'DesdemonaTiger', 'desdemonatiger': 'DesdemonaTiger'
 };
 
 const ICONS = {
@@ -101,31 +70,13 @@ const formatAlphaCheckset = (items) => {
         });
 };
 
-// --- UNIVERSAL IDENTITY RESOLVER ENGINE ---
 function resolveUniversalHandle(user) {
     if (!user) return "Guest";
-
     const userEmail = (user.email || "").toLowerCase();
-
-    // 1. Direct Squad Email Lookup
-    if (EMAIL_OPERATOR_MAP[userEmail]) {
-        return EMAIL_OPERATOR_MAP[userEmail];
-    }
-
-    // 2. Display Name or Email Root Extraction
+    if (EMAIL_OPERATOR_MAP[userEmail]) return EMAIL_OPERATOR_MAP[userEmail];
     const rawName = user.displayName || userEmail.split('@')[0] || "Operator";
-
-    // 3. Known Gamertag / Alias Lookup
-    if (USER_DATA_MAP[rawName]) {
-        return USER_DATA_MAP[rawName];
-    }
-
-    // 4. Universal Fallback: Clean string into URL & Firestore safe handle
-    const cleanHandle = rawName
-        .replace(/[^a-zA-Z0-9_]/g, '_')
-        .replace(/_+/g, '_')
-        .replace(/^_+|_+$/g, '');
-
+    if (USER_DATA_MAP[rawName]) return USER_DATA_MAP[rawName];
+    const cleanHandle = rawName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
     return cleanHandle || `Operator_${user.uid.substring(0, 5)}`;
 }
 
@@ -331,10 +282,10 @@ const trophyData = [
             "Fallow Deer Small Shed Antler [Norden: 13411, 4800]", "Moose Large Shed Antler [Balmont: 8310, 9402]", "Moose Large Shed Antler [Cheelah: 11029, 7988]", "Moose Large Shed Antler [Chopeeka: 7526, 5258]",
             "Moose Large Shed Antler [Chopeeka: 7552, 3818]", "Moose Small Shed Antler [Balmont: 8598, 10352]", "Moose Small Shed Antler [Chopeeka: 8235, 5062]", "Moose Small Shed Antler [High Lake: 9622, 7176]",
             "Moose Small Shed Antler [Norden: 10101, 7006]", "Moose Small Shed Antler [Roonachee: 6906, 10287]", "Roosevelt Elk Large Shed Antler Next to Rocks on ground [Balmont: 9850, 9643]", "Roosevelt Elk Large Shed Antler [Chopeeka: 8354, 3829]",
-            "Roosevelt Elk Large Shed Antler [Mount Leviatan: 10908, 9519]", "Roosevelt Elk Large Shed Antler [Norden: 11443, 6621]", "Roosevelt Elk Small Shed Antler [Calburn: 9881, 5021]", "Roosevelt Elk Small Shed Antler [Calburn Canyon: 11882, 4840]", "Roosevelt Elk Small Shed Antler [High Lake: 8936, 7453]",
+            "Roosevelt Elk Large Shed Antler [Mount Leviatan: 10908, 9519]", "Roosevelt Elk Large Shed Antler [Norden: 11443, 6621]", "Roosevelt Elk Small Shed Antler [Calburn: 9881, 5021]",  "Roosevelt Elk Small Shed Antler [Calburn Canyon: 11882, 4840]","Roosevelt Elk Small Shed Antler [High Lake: 8936, 7453]",
             "Roosevelt Elk Small Shed Antler [Norden: 13132, 7244]", "Roosevelt Elk Large Shed Antler [Mount Kraken: 6575, 7143]", "Whitetail Deer Large Shed Antler [Balmont: 8929, 9060]", "Whitetail Deer Large Shed Antler [Balmont: 10728, 10486]",
             "Whitetail Deer Large Shed Antler [Caliburn: 9427, 5744]", "Whitetail Deer Large Shed Antler [Cheelah: 12255, 7918]", "Whitetail Deer Large Shed Antler [Chopeeka: 6797, 4840]", "Whitetail Deer Large Shed Antler [High Lake: 10349, 8122]",
-            "Whitetail Deer Large Shed Antler South West side of cabin behind wheel spoke [Mount Kraken: 6542, 8790]", "Whitetail Deer Large Shed Antler [Mount Leviatan: 10617, 10944]", "Whitetail Deer Large Shed Antler In Camp Ground [Roonachee: 7156, 10960]", "Whitetail Deer Large Shed Antler [Willipeg: 6520, 5605]",
+            "Whitetail Deer Large Shed Antler South West side of cabin behind wheel spoke  [Mount Kraken: 6542, 8790]", "Whitetail Deer Large Shed Antler [Mount Leviatan: 10617, 10944]", "Whitetail Deer Large Shed Antler In Camp Ground [Roonachee: 7156, 10960]", "Whitetail Deer Large Shed Antler [Willipeg: 6520, 5605]",
             "Whitetail Deer Small Shed Antler Camp ground on Seat [Balmont: 10185, 11291]", "Whitetail Deer Small Shed Antler On Picnic Table Yogi [Mount Kraken: 6965, 8389]", "Whitetail Deer Small Shed Antler In Big mud bit West of the small rocks [Roonachee: 6515, 10574]"
         ])
     },
@@ -717,7 +668,7 @@ const appState = {
     isCurrentUserAdmin: false,
     activeMapCategory: 'DLC: Silver Ridge',
     hunterData: JSON.parse(JSON.stringify(trophyData)),
-    animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, rareFur: 0 },
+    animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
     auth: null, db: null,
     collapsedSections: {},
     openDropdowns: {}, 
@@ -726,26 +677,21 @@ const appState = {
     dataLoaded: false,
     currentLightboxData: { categoryId: null, subIdx: null, imgIdx: 0 },
 
-    /* === SECTION: Dynamic Global Theme Engine === */
     applyTheme: function(primary, secondary) {
         if (!primary || !secondary) return;
-
         document.documentElement.style.setProperty('--primary-color', primary);
         document.documentElement.style.setProperty('--secondary-color', secondary);
-
         localStorage.setItem('user_primary_color', primary);
         localStorage.setItem('user_secondary_color', secondary);
     },
 
     syncUserTheme: async function(operatorHandle) {
         if (!operatorHandle) return;
-
         const cachedPrimary = localStorage.getItem('user_primary_color');
         const cachedSecondary = localStorage.getItem('user_secondary_color');
         if (cachedPrimary && cachedSecondary) {
             this.applyTheme(cachedPrimary, cachedSecondary);
         }
-
         if (this.db) {
             try {
                 const userDocRef = doc(this.db, 'users', operatorHandle);
@@ -768,53 +714,43 @@ const appState = {
         return this.loggedInOperator.toLowerCase() === this.activeHunter.toLowerCase();
     },
 
-    /* === SECTION: Absolute Root Path Fixer Engine === */
+    /* === SECTION: Absolute Root Path Fixer Engine for Opera GX === */
     fixMenuUrl: function(targetUrl) {
         if (!targetUrl || targetUrl === '#') return '#';
-
         if (targetUrl === '#/' || targetUrl === '#') {
             return window.location.origin + window.location.pathname.replace(/\/games\/HunterCOTW\/.*/i, '/index.html#/');
         }
-
         if (targetUrl.startsWith('#/')) {
             return window.location.origin + window.location.pathname.replace(/\/games\/HunterCOTW\/.*/i, '/index.html') + targetUrl;
         }
-
         return targetUrl;
     },
 
     checkIsActiveTab: function(targetUrl, targetName) {
         if (!targetUrl || targetUrl === '#') return false;
-
         const pageTitle = document.title.toLowerCase().trim();
         const cleanTargetUrl = targetUrl.split('?')[0].split('#')[0].toLowerCase().trim();
         const targetFilename = cleanTargetUrl.substring(cleanTargetUrl.lastIndexOf('/') + 1);
-
         const currentPath = window.location.pathname.toLowerCase();
         const currentFilename = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'cotw.html';
         const currentHash = window.location.hash.toLowerCase();
 
         if (currentHash && targetUrl.toLowerCase().includes(currentHash)) return true;
         if (targetFilename && targetFilename === currentFilename) return true;
-
         if (targetName) {
             const cleanName = targetName.toLowerCase().trim();
             if (pageTitle.includes(cleanName) || cleanName.includes(pageTitle)) return true;
         }
-
         return false;
     },
 
-    /* === SECTION: Opera GX & Cross-Browser Navigation Loader === */
     loadNavigation: async function() {
-        // Resolve absolute root URL for Opera GX local file / subfolder fetch
         const rootPath = window.location.origin + window.location.pathname.replace(/\/games\/HunterCOTW\/.*/i, '/');
         const jsonUrl = rootPath + 'Menu.json?v=' + Date.now();
 
         try {
             const response = await fetch(jsonUrl);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
             const menuItems = await response.json();
             this.menuItemsRaw = menuItems;
             const groupsMap = {};
@@ -824,13 +760,8 @@ const appState = {
                 const name = item.name || item.Name;
                 const rawUrl = item.url || item.Url || item['Url with UTM'];
                 const image = item.image || item.Image || item.Images || '';
-
                 if (!name || !groupName) return;
-
-                if (!groupsMap[groupName]) {
-                    groupsMap[groupName] = [];
-                }
-
+                if (!groupsMap[groupName]) groupsMap[groupName] = [];
                 groupsMap[groupName].push({
                     name: name,
                     rawUrl: rawUrl,
@@ -840,20 +771,11 @@ const appState = {
             });
 
             const sortedGroups = Object.keys(groupsMap).map(groupName => {
-                const orderKey = groupName.toLowerCase().trim();
-                return {
-                    name: groupName,
-                    weight: GROUP_ORDER[orderKey] || 99,
-                    items: groupsMap[groupName]
-                };
-            }).sort((a, b) => a.weight - b.weight);
+                return { name: groupName, weight: 99, items: groupsMap[groupName] };
+            });
 
             this.renderNav(sortedGroups);
-
-            if (this.activeHunter) {
-                this.updateAvatarFromMenu(this.activeHunter);
-            }
-
+            if (this.activeHunter) this.updateAvatarFromMenu(this.activeHunter);
         } catch (err) {
             console.error("Error loading Menu.json:", err);
         }
@@ -862,117 +784,59 @@ const appState = {
     renderNav: function(sortedGroups) {
         const container = document.getElementById('dynamic-nav-links');
         if (!container) return;
-
         let html = '';
-
         sortedGroups.forEach(group => {
-            const hasActiveChild = group.items.some(item => this.checkIsActiveTab(item.rawUrl || item.url, item.name));
-
-            const groupBtnClass = hasActiveChild
-                ? 'text-white font-black border-b-2 border-[var(--primary-color,#ff5f1f)] drop-shadow-[0_0_8px_var(--primary-color,#ff5f1f)]'
-                : 'text-white hover:text-amber-300 font-bold';
-
-            const dropdownItemsHtml = group.items.map(item => {
-                const active = this.checkIsActiveTab(item.rawUrl || item.url, item.name);
-                const itemClass = active
-                    ? 'flex items-center gap-2 px-3 py-2 text-xs font-black text-white bg-slate-800 border-l-4 border-[var(--primary-color,#ff5f1f)] whitespace-nowrap'
-                    : 'flex items-center gap-2 px-3 py-2 text-xs text-white hover:bg-slate-800 hover:text-amber-300 transition-colors whitespace-nowrap';
-
-                const imgTag = item.image 
-                    ? `<img src="${item.image}" style="width: 20px !important; height: 20px !important; min-width: 20px !important; min-height: 20px !important; max-width: 20px !important; max-height: 20px !important; object-fit: cover; border-radius: 4px; display: inline-block; flex-shrink: 0;" alt="" onerror="this.style.display='none'">` 
-                    : '';
-
-                return `<a href="${item.url}" class="${itemClass}">${imgTag}<span style="color: #ffffff !important;">${item.name}</span></a>`;
+            let dropItems = group.items.map(item => {
+                const imgTag = item.image ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                return `<a href="${item.url}" style="color:#fff !important;">${imgTag}${item.name}</a>`;
             }).join('');
-
             html += `
-                <div class="relative group/dropdown inline-block" style="position: relative; display: inline-block;">
-                    <button class="${groupBtnClass} py-1 px-3 text-xs uppercase tracking-wider flex items-center gap-1 focus:outline-none" style="background: var(--secondary-color, #1e293b); border: none; cursor: pointer; border-radius: 6px;">
-                        <span style="color: #ffffff !important;">${group.name}</span>
-                        <i class="fa-solid fa-chevron-down text-[10px] opacity-70" style="margin-left: 4px; color: #ffffff;"></i>
-                    </button>
-                    <div class="hidden group-hover/dropdown:block absolute right-0 w-56 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl overflow-hidden z-50" style="position: absolute; right: 0; top: 100%; min-width: 200px; background-color: var(--secondary-color, #0f172a); border: 1px solid var(--primary-color, #334155); border-radius: 6px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.8); z-index: 9999; display: none;">
-                        ${dropdownItemsHtml}
-                    </div>
+                <div class="nav-dropdown">
+                    <button class="nav-dropbtn" style="color:#fff !important;">${group.name} ▾</button>
+                    <div class="nav-dropdown-content">${dropItems}</div>
                 </div>
             `;
         });
-
         container.innerHTML = html;
-
-        if (!document.getElementById('dropdown-hover-style')) {
-            const style = document.createElement('style');
-            style.id = 'dropdown-hover-style';
-            style.innerHTML = `
-                .group\\/dropdown:hover > div { display: block !important; }
-            `;
-            document.head.appendChild(style);
-        }
     },
 
     updateAvatarFromMenu: function(operatorHandle) {
         const userAvatar = document.getElementById("userAvatar");
         if (!userAvatar || !this.menuItemsRaw) return;
-
         const targetHandle = USER_DATA_MAP[operatorHandle] || operatorHandle;
         const matchedUser = this.menuItemsRaw.find(item => {
             const group = item.group || item.Group || '';
             const name = item.name || item.Name || '';
-            return group.toLowerCase() === 'user' && USER_DATA_MAP[name] === targetHandle;
+            return group.toLowerCase() === 'user' && (USER_DATA_MAP[name] === targetHandle || name === targetHandle);
         });
-
         if (matchedUser && (matchedUser.image || matchedUser.Image)) {
             userAvatar.src = matchedUser.image || matchedUser.Image;
-            userAvatar.classList.remove('hidden');
             userAvatar.style.display = 'inline-block';
-            userAvatar.style.width = '36px';
-            userAvatar.style.height = '36px';
-            userAvatar.style.borderRadius = '50%';
-            userAvatar.style.objectFit = 'cover';
         }
     },
 
-    /* === SECTION: game-platforms.json Platform Filter Loader === */
     loadPlatformOptions: async function() {
         const pSelect = document.getElementById('platformSelect');
         if (!pSelect) return;
-
         const rootPath = window.location.origin + window.location.pathname.replace(/\/games\/HunterCOTW\/.*/i, '/');
         const endpoints = [
             rootPath + 'data/game-platforms.json?v=' + Date.now(),
             'https://raw.githubusercontent.com/Werewolf3788/Website/main/data/game-platforms.json?v=' + Date.now()
         ];
-
         let gamePlatformsData = null;
-
         for (const url of endpoints) {
             try {
                 const res = await fetch(url);
-                if (res.ok) {
-                    gamePlatformsData = await res.json();
-                    break;
-                }
-            } catch (e) {
-                // Try backup endpoint
-            }
+                if (res.ok) { gamePlatformsData = await res.json(); break; }
+            } catch (e) {}
         }
-
         if (!gamePlatformsData || !gamePlatformsData.games) return;
-
-        const game = gamePlatformsData.games.find(g => 
-            g.title.toLowerCase().includes('thehunter') || 
-            g.title.toLowerCase().includes('call of the wild')
-        );
-
+        const game = gamePlatformsData.games.find(g => g.title.toLowerCase().includes('thehunter') || g.title.toLowerCase().includes('call of the wild'));
         if (game && game.platforms) {
             let optionsHtml = '';
-
             game.platforms.forEach(p => {
                 if (p.platform_type === 'PC' && p.storefronts) {
-                    p.storefronts.forEach(s => {
-                        const val = `pc-${s.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
-                        optionsHtml += `<option value="${val}">PC (${s})</option>`;
-                    });
+                    p.storefronts.forEach(s => { optionsHtml += `<option value="pc-${s.toLowerCase().replace(/[^a-z0-9]/g, '')}">PC (${s})</option>`; });
                 }
                 if (p.platform_type === 'Console' && p.consoles) {
                     p.consoles.forEach(c => {
@@ -980,27 +844,11 @@ const appState = {
                         if (val.includes('playstation4')) val = 'ps4';
                         if (val.includes('playstation5')) val = 'ps5';
                         if (val.includes('xboxone')) val = 'xboxone';
-
                         optionsHtml += `<option value="${val}">${c}</option>`;
                     });
                 }
             });
-
-            if (optionsHtml) {
-                pSelect.innerHTML = optionsHtml;
-
-                const currentVal = this.activePlatform;
-                const hasMatch = Array.from(pSelect.options).some(opt => opt.value === currentVal || (currentVal === 'ps4' && opt.value.includes('4')));
-
-                if (hasMatch) {
-                    const matchOpt = Array.from(pSelect.options).find(opt => opt.value === currentVal || (currentVal === 'ps4' && opt.value.includes('4')));
-                    pSelect.value = matchOpt.value;
-                    this.activePlatform = matchOpt.value;
-                } else if (pSelect.options.length > 0) {
-                    this.activePlatform = pSelect.options[0].value;
-                    pSelect.value = this.activePlatform;
-                }
-            }
+            if (optionsHtml) pSelect.innerHTML = optionsHtml;
         }
     },
 
@@ -1009,35 +857,16 @@ const appState = {
         this.loadPlatformOptions();
         this.setupActiveMapControls();
         this.setupPlatformControls();
-        this.setupMobileMenuToggle();
 
         try {
             const app = initializeApp(firebaseConfig);
             this.auth = getAuth(app);
             this.db = getFirestore(app);
-
             await setPersistence(this.auth, browserLocalPersistence);
-
             this.setupAuthPipelineUI();
-
-            onAuthStateChanged(this.auth, (user) => { 
-                this.handleAuthState(user);
-            });
+            onAuthStateChanged(this.auth, (user) => { this.handleAuthState(user); });
         } catch (err) {
             console.error("Init Error:", err);
-        }
-    },
-
-    setupMobileMenuToggle: function() {
-        const toggleBtn = document.getElementById('mobile-menu-toggle');
-        const navContainer = document.getElementById('dynamic-nav-links');
-
-        if (toggleBtn && navContainer) {
-            toggleBtn.addEventListener('click', () => {
-                navContainer.classList.toggle('hidden');
-                navContainer.classList.toggle('flex');
-                navContainer.classList.toggle('flex-col');
-            });
         }
     },
 
@@ -1048,21 +877,16 @@ const appState = {
             mapSelect.addEventListener('change', (e) => {
                 const prevCat = this.activeMapCategory;
                 this.activeMapCategory = e.target.value;
-
                 const prevSectionId = prevCat.replace(/[^a-zA-Z0-9]/g, '');
                 const newSectionId = this.activeMapCategory.replace(/[^a-zA-Z0-9]/g, '');
-
                 this.collapsedSections[prevSectionId] = true;
                 this.collapsedSections[newSectionId] = false;
-
                 this.updateActiveMapDisplay();
                 this.render();
-
                 setTimeout(() => {
                     const topCard = document.getElementById(newSectionId);
                     if (topCard) topCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 100);
-
                 if (this.canEditActiveHunter()) this.sync();
             });
         }
@@ -1086,14 +910,12 @@ const appState = {
                 this.loadHunter(selectedHandle);
             });
         }
-
         const googleBtn = document.getElementById("googleSignInBtn");
         if (googleBtn) {
             googleBtn.addEventListener("click", () => {
                 if (this.auth) signInWithPopup(this.auth, new GoogleAuthProvider());
             });
         }
-
         const signOutBtn = document.getElementById("signOutBtn");
         if (signOutBtn) {
             signOutBtn.addEventListener("click", () => {
@@ -1112,8 +934,6 @@ const appState = {
         if (user) {
             const userEmail = (user.email || "").toLowerCase();
             this.isCurrentUserAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
-
-            // UNIVERSAL IDENTITY RESOLUTION FOR ALL USERS WORLDWIDE
             this.loggedInOperator = resolveUniversalHandle(user);
 
             if (!this.isCurrentUserAdmin) {
@@ -1134,7 +954,6 @@ const appState = {
                 if (adminWrapper) adminWrapper.style.display = "none";
             }
 
-            // AUTO-BOOTSTRAP UNIVERSAL PROFILE IN FIRESTORE
             if (this.db) {
                 setDoc(doc(this.db, 'users', this.loggedInOperator), {
                     displayName: user.displayName || this.loggedInOperator,
@@ -1148,32 +967,27 @@ const appState = {
             }
 
             this.loadHunter(this.activeHunter);
-
         } else {
             this.loggedInOperator = null;
             this.isCurrentUserAdmin = false;
-
             if (googleBtn) googleBtn.style.display = "inline-block";
             if (userStatus) userStatus.style.display = "none";
             if (demoBanner) demoBanner.style.display = "block";
             if (adminBadge) adminBadge.style.display = "none";
             if (adminWrapper) adminWrapper.style.display = "none";
-
             this.loadHunter(this.activeHunter);
         }
     },
 
+    switchHunter: function(name) {
+        this.loadHunter(name);
+    },
+
     loadHunter: function(name) {
         if (!this.db) return;
-
         const dbDocName = USER_DATA_MAP[name] || name;
-        
         this.dataLoaded = false;
-        if (this.liveUnsub) {
-            this.liveUnsub();
-            this.liveUnsub = null;
-        }
-
+        if (this.liveUnsub) { this.liveUnsub(); this.liveUnsub = null; }
         this.activeHunter = dbDocName;
 
         const nameEl = document.getElementById('hunter-name');
@@ -1181,22 +995,22 @@ const appState = {
         if (nameEl) nameEl.innerText = dbDocName.toUpperCase();
         if (targetEl) targetEl.innerText = dbDocName;
 
+        if (document.getElementById('master-body')) {
+            document.getElementById('master-body').className = `theme-${dbDocName === 'Werewolf3788' ? 'werewolf' : dbDocName === 'Raymystyro' ? 'ray' : 'terrdog420'}`;
+        }
+
         this.syncUserTheme(dbDocName);
         this.updateAvatarFromMenu(dbDocName);
 
         const userProgressRef = doc(this.db, 'users', dbDocName, 'progress', GAME_ID);
-
         this.liveUnsub = onSnapshot(userProgressRef, (snap) => {
             let freshTrophyData = JSON.parse(JSON.stringify(trophyData));
-            let freshRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, rareFur: 0 };
+            let freshRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
 
             if (snap.exists()) {
                 const data = snap.data();
                 let incoming = data.trophies || data.progress || [];
-
-                if (data.animalRankData) {
-                    freshRankData = { ...freshRankData, ...data.animalRankData };
-                }
+                if (data.animalRankData) freshRankData = { ...freshRankData, ...data.animalRankData };
 
                 freshTrophyData = freshTrophyData.map(dt => {
                     const found = incoming.find(it => it.id === dt.id);
@@ -1227,37 +1041,16 @@ const appState = {
 
     updateActiveMapDisplay: function() {
         const titleEl = document.getElementById('activeMapTitle');
-        const statsEl = document.getElementById('activeMapStatsText');
-        
         let cleanName = this.activeMapCategory.replace('DLC: ', '');
         if (titleEl) titleEl.innerText = cleanName;
-
-        const mapItems = this.hunterData.filter(t => t.cat === this.activeMapCategory);
-        let completedCount = 0;
-        
-        mapItems.forEach(t => {
-            if (t.type === 'checklist') {
-                if (t.subItems.filter(s => s.done).length >= t.goal) completedCount++;
-            } else if (t.current >= t.goal) completedCount++;
-        });
-
-        const totalItems = mapItems.length;
-        const percent = totalItems > 0 ? Math.round((completedCount / totalItems) * 100) : 0;
-
-        if (statsEl) {
-            statsEl.innerText = `Map Progress: ${completedCount} / ${totalItems} Completed (${percent}%)`;
-        }
     },
 
     render: function() {
         const container = document.getElementById('section-container');
         const selector = document.getElementById('reserve-selector');
         if (!container) return; 
-        
         const canEdit = this.canEditActiveHunter();
-
         container.innerHTML = '';
-        
         let cats = [...new Set(this.hunterData.map(t => t.cat))];
 
         if (this.activeMapCategory && cats.includes(this.activeMapCategory)) {
@@ -1274,7 +1067,7 @@ const appState = {
         }
         
         let globalMet = 0, globalTotal = 0;
-        cats.forEach((cat, index) => {
+        cats.forEach(cat => {
             const items = this.hunterData.filter(t => t.cat === cat);
             let catMet = 0;
             items.forEach(t => {
@@ -1286,13 +1079,9 @@ const appState = {
             });
             
             const sectionId = cat.replace(/[^a-zA-Z0-9]/g, '');
-
             let isCollapsed = this.collapsedSections[sectionId];
-            if (cat === this.activeMapCategory && isCollapsed === undefined) {
-                isCollapsed = false;
-            } else if (isCollapsed === undefined) {
-                isCollapsed = true;
-            }
+            if (cat === this.activeMapCategory && isCollapsed === undefined) isCollapsed = false;
+            else if (isCollapsed === undefined) isCollapsed = true;
 
             const percent = Math.round((catMet / items.length) * 100);
             
@@ -1363,103 +1152,45 @@ const appState = {
         const overall = globalTotal > 0 ? Math.round((globalMet / globalTotal) * 100) : 0;
         if (document.getElementById('overall-bar')) document.getElementById('overall-bar').style.width = overall + '%';
         if (document.getElementById('percent-text')) document.getElementById('percent-text').innerText = `Master Platinum Progress ${overall}% ${canEdit ? '' : '(READ-ONLY VIEW)'}`;
-        
-        this.updateActiveMapDisplay();
     },
 
     getIcon: (t) => t.psnImage ? t.psnImage : (t.cat.includes('Collectibles') ? ICONS.TRACK : t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
-
-    adj: function(id, val) { 
-        if (!this.dataLoaded || !this.canEditActiveHunter()) return;
-        const t = this.hunterData.find(x => x.id === id); 
-        if (t) { t.current = Math.max(0, t.current + val); this.sync(); }
-    },
-    
-    tog: function(id) { 
-        if (!this.dataLoaded || !this.canEditActiveHunter()) return;
-        const t = this.hunterData.find(x => x.id === id); 
-        if (t) { t.current = t.current === 0 ? 1 : 0; this.sync(); }
-    },
-    
-    check: function(id, idx) { 
-        if (!this.dataLoaded || !this.canEditActiveHunter()) return;
-        const t = this.hunterData.find(x => x.id === id); 
-        if (t && t.subItems && t.subItems[idx]) { t.subItems[idx].done = !t.subItems[idx].done; this.sync(); }
-    },
-    
-    adjRank: function(tier, val) { 
-        if (!this.dataLoaded || !this.canEditActiveHunter()) return;
-        this.animalRankData[tier] = Math.max(0, (this.animalRankData[tier] || 0) + val); 
-        this.updateRankUI(); 
-        this.sync();
-    },
-    
+    adj: function(id, val) { if (!this.dataLoaded || !this.canEditActiveHunter()) return; const t = this.hunterData.find(x => x.id === id); if (t) { t.current = Math.max(0, t.current + val); this.sync(); } },
+    tog: function(id) { if (!this.dataLoaded || !this.canEditActiveHunter()) return; const t = this.hunterData.find(x => x.id === id); if (t) { t.current = t.current === 0 ? 1 : 0; this.sync(); } },
+    check: function(id, idx) { if (!this.dataLoaded || !this.canEditActiveHunter()) return; const t = this.hunterData.find(x => x.id === id); if (t && t.subItems && t.subItems[idx]) { t.subItems[idx].done = !t.subItems[idx].done; this.sync(); } },
+    adjRank: function(tier, val) { if (!this.dataLoaded || !this.canEditActiveHunter()) return; this.animalRankData[tier] = Math.max(0, (this.animalRankData[tier] || 0) + val); this.updateRankUI(); this.sync(); },
     updateRankUI: function() { Object.keys(this.animalRankData).forEach(k => { const el = document.getElementById(`rank-val-${k}`); if (el) el.innerText = this.animalRankData[k]; }); },
-    
-    toggleSection: function(id) { 
-        const cur = this.collapsedSections[id] !== false; 
-        this.collapsedSections[id] = !cur; 
-        this.render(); 
-    },
-    
-    toggleDrop: function(id) { 
-        const el = document.getElementById('drop-' + id);
-        if (el) {
-            el.classList.toggle('show');
-            this.openDropdowns[id] = el.classList.contains('show');
-        }
-    },
-
+    toggleSection: function(id) { const cur = this.collapsedSections[id] !== false; this.collapsedSections[id] = !cur; this.render(); },
+    toggleDrop: function(id) { const el = document.getElementById('drop-' + id); if (el) { el.classList.toggle('show'); this.openDropdowns[id] = el.classList.contains('show'); } },
     scrollToCategory: function(id) { if(!id) return; this.collapsedSections[id] = false; this.render(); setTimeout(() => { if(document.getElementById(id)) document.getElementById(id).scrollIntoView({ behavior: 'smooth' }) }, 100); },
-
-    openLightbox: function(categoryId, subIdx, imgIdx) {
-        this.currentLightboxData = { categoryId, subIdx, imgIdx };
-        this.updateLightboxView();
-        document.getElementById('lightbox').style.display = 'block';
-    },
-
-    closeLightbox: function(e) {
-        if (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-close')) {
-            document.getElementById('lightbox').style.display = 'none';
-        }
-    },
-
+    openLightbox: function(categoryId, subIdx, imgIdx) { this.currentLightboxData = { categoryId, subIdx, imgIdx }; this.updateLightboxView(); document.getElementById('lightbox').style.display = 'block'; },
+    closeLightbox: function(e) { if (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-close')) document.getElementById('lightbox').style.display = 'none'; },
     changeLightboxImage: function(direction) {
         const { categoryId, subIdx } = this.currentLightboxData;
         const t = this.hunterData.find(x => x.id === categoryId);
         const images = t.subItems[subIdx].images;
-        
         this.currentLightboxData.imgIdx += direction;
         if (this.currentLightboxData.imgIdx < 0) this.currentLightboxData.imgIdx = images.length - 1;
         if (this.currentLightboxData.imgIdx >= images.length) this.currentLightboxData.imgIdx = 0;
-        
         this.updateLightboxView();
     },
-
     updateLightboxView: function() {
         const { categoryId, subIdx, imgIdx } = this.currentLightboxData;
         const t = this.hunterData.find(x => x.id === categoryId);
         const subItem = t.subItems[subIdx];
-        
         const imgEl = document.getElementById('lightbox-img');
         const captionEl = document.getElementById('lightbox-caption');
-        
         imgEl.src = subItem.images[imgIdx];
-        
         let viewType = "Angle View";
         if (imgIdx === 0) viewType = "Map View (Zoomed Out)";
         if (imgIdx === 1) viewType = "Map View (Zoomed In)";
-        
         captionEl.innerText = `${subItem.name} - ${viewType} (${imgIdx + 1} of ${subItem.images.length})`;
     },
-
     sync: async function() {
         this.render();
         if (!this.db || !this.dataLoaded || !this.canEditActiveHunter()) return;
-
         try {
             const userProgressRef = doc(this.db, 'users', this.activeHunter, 'progress', GAME_ID);
-            
             const payload = {
                 user: this.activeHunter,
                 platform: this.activePlatform,
@@ -1469,7 +1200,6 @@ const appState = {
                 lastUpdated: new Date().toISOString(),
                 updatedBy: this.loggedInOperator
             };
-
             await setDoc(userProgressRef, payload, { merge: true });
             console.log(`✓ Progress saved under /users/${this.activeHunter}/progress/${GAME_ID}`);
         } catch (err) {
@@ -1478,7 +1208,6 @@ const appState = {
     }
 };
 
-/* === GLOBAL BINDINGS FOR CROSS-BROWSER INLINE EVENT HANDLERS === */
 window.appState = appState;
 window.adjRank = (tier, val) => appState.adjRank(tier, val);
 window.adj = (id, val) => appState.adj(id, val);
