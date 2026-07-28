@@ -1,57 +1,109 @@
 <!DOCTYPE html>
+<!-- 
+    ==========================================================================
+    --- PRECISION INTEGRITY PROTOCOL ---
+    System: theHunter: Call of the Wild Master Tracker
+    Version: 2.0.0-Wolf
+    Timestamp: Tue, July 28, 2026 | 06:25:00 AM EDT
+    Features: Automated Profile Sync, Platform Isolation Engine, Zero Layout Jitter
+    ==========================================================================
+-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COTW Master Tracker | Werewolf3788</title>
-    
-    <link rel="stylesheet" href="./style.css?v=1.6">
+    <title>COTW Master Tracker | Werewolf Project</title>
+
+    <!-- Base Styles & FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./style.css?v=2.0">
 </head>
 <body id="master-body" class="theme-werewolf">
     <div class="background-overlay"></div>
 
-    <nav class="master-nav" target="main-content-window">
-        <a href="https://werewolf3788.firebaseapp.com" class="nav-logo">WEREWOLF3788</a>
-        <div id="dynamic-nav-links" class="nav-links">
-            <span style="color: #94a3b8; font-size: 0.8rem; padding: 8px;">Loading Menu...</span>
+    <!-- STABLE NAV BAR (Prevents layout jump) -->
+    <nav class="master-nav">
+        <a href="../../index.html#/" class="nav-logo">
+            <i class="fa-solid fa-paw"></i> WEREWOLF3788
+        </a>
+        <div id="dynamic-nav-links" class="nav-links min-h-[40px] flex items-center gap-4">
+            <span class="nav-loading-text">Loading Navigation...</span>
         </div>
     </nav>
 
     <div class="tracker-container">
         <!-- Auth Header & Identity Controls -->
         <div class="profile-header">
-            <div class="active-info">
-                <div style="font-size: 0.7rem; text-transform: uppercase; color: #94a3b8;">Master Hunter Console</div>
-                <span id="hunter-name" class="hunter-glow">WEREWOLF3788</span>
+            <div class="active-info flex items-center gap-3">
+                <img id="userAvatar" class="user-badge-img hidden" src="" alt="Avatar" style="width:42px; height:42px; border-radius:50%; border:2px solid var(--hunter-color); object-fit:cover;">
+                <div>
+                    <div style="font-size: 0.7rem; text-transform: uppercase; color: #94a3b8; font-weight: 900;">Master Hunter Console</div>
+                    <span id="hunter-name" class="hunter-glow">GUEST MODE</span>
+                </div>
             </div>
 
-            <!-- Profile Selector & Custom Tag Action -->
-            <div class="profile-actions" style="align-items: center; gap: 8px;">
-                <select id="userSelect" class="styled-select" style="background:#020617; color:#ff8800; border:2px solid #ff8800; border-radius:8px; padding:6px 12px; font-weight:900;">
-                    <option value="Werewolf3788">Werewolf3788</option>
-                    <option value="Raymystyro">Raymystyro</option>
-                    <option value="terrdog420">terrdog420</option>
-                </select>
-                <button id="addCustomUserBtn" class="profile-btn">+ Add Tag</button>
-            </div>
-
-            <!-- Firebase Google Auth Block -->
-            <div id="authContainer" class="auth-inline-wrapper" style="display: flex; align-items: center; gap: 12px;">
-                <button id="googleSignInBtn" class="profile-btn" style="background-color: #28a745; border-color: #28a745;">🔑 Login</button>
+            <!-- Identity & Auth Quick Bar -->
+            <div id="authContainer" class="auth-inline-wrapper" style="display: flex; items-center; gap: 12px;">
+                <button id="googleSignInBtn" class="profile-btn" style="background-color: #28a745; border-color: #28a745;">🔑 Sign In</button>
                 <div id="userProfileStatus" class="hidden" style="display: none; align-items: center; gap: 12px;">
-                    <img id="userAvatar" class="user-badge-img" src="" alt="Avatar" style="width:38px; height:38px; border-radius:50%; border:2px solid var(--hunter-color); object-fit:cover;">
                     <button id="signOutBtn" class="profile-btn" style="padding: 6px 12px; font-size: 12px;">Logout</button>
                 </div>
             </div>
         </div>
 
+        <!-- Sandbox Warning Banner for Guests -->
         <div id="demoNotification" class="demo-banner" style="background: rgba(255, 136, 0, 0.15); border: 1px solid var(--hunter-color); color: #fff; padding: 10px; border-radius: 8px; margin-bottom: 15px; text-align: center; font-weight: bold; font-size: 12px;">
-            Operational Sandbox Mode Active. Log In to Commit Multi-User Cloud Synchronization.
+            Operational Read-Only Preview Active. Sign In to Commit Multi-User Cloud Progress.
         </div>
 
-        <!-- Identity Management Controls Card -->
+        <!-- Admin Overwatch Badge -->
         <div id="adminBadge" class="admin-banner hidden" style="display:none; background:#7c3aed; color:#fff; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:900; margin-bottom:15px;">
             ⚡ OVERWATCH ADMIN ACTIVE (raykevin71888@gmail.com)
+        </div>
+
+        <!-- ACTIVE CONTROL BAR: AUTOMATED OPERATOR & PLATFORM SELECTOR -->
+        <div class="stat-category-block" style="background: rgba(15, 23, 42, 0.95); border: 2px solid var(--hunter-color); border-radius: 1rem; padding: 18px; margin-bottom: 25px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                
+                <div>
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: #94a3b8; font-weight: 900;">Active Hardware & Telemetry Target</div>
+                    <div id="activeTargetBadge" style="font-size: 1.1rem; font-weight: 900; color: #fff; margin-top: 2px;">
+                        Operator: <span id="displayTargetOperator" style="color: var(--hunter-color);">Werewolf3788</span>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+                    
+                    <!-- Admin Operator Switcher Dropdown (Only visible to raykevin71888@gmail.com) -->
+                    <div id="adminOperatorSelectWrapper" class="hidden" style="display: none;">
+                        <label for="adminUserSelect" style="font-size: 11px; font-weight: 900; color: #f59e0b; text-transform: uppercase; margin-right: 6px;">
+                            ⚡ Select Operator:
+                        </label>
+                        <select id="adminUserSelect" style="background:#020617; color:#f59e0b; border:2px solid #f59e0b; border-radius:8px; padding:8px 12px; font-weight:900;">
+                            <option value="Werewolf3788">Werewolf3788</option>
+                            <option value="Raymystyro">Raymystyro</option>
+                            <option value="terrdog420">terrdog420</option>
+                            <option value="DesdemonaTiger">DesdemonaTiger</option>
+                        </select>
+                    </div>
+
+                    <!-- Universal Hardware Platform Selector (PS4, PS5, Steam, Xbox, etc.) -->
+                    <div>
+                        <label for="platformSelect" style="font-size: 11px; font-weight: 900; color: #94a3b8; text-transform: uppercase; margin-right: 6px;">
+                            <i class="fa-solid fa-gamepad"></i> Platform:
+                        </label>
+                        <select id="platformSelect" style="background:#020617; color:var(--hunter-color); border:2px solid var(--hunter-color); border-radius:8px; padding:8px 12px; font-weight:900;">
+                            <option value="ps5">PlayStation 5 (PS5)</option>
+                            <option value="ps4">PlayStation 4 (PS4)</option>
+                            <option value="steam">Steam PC</option>
+                            <option value="xbox">Xbox Series X|S / One</option>
+                            <option value="epic">Epic Games Store</option>
+                        </select>
+                    </div>
+
+                </div>
+
+            </div>
         </div>
 
         <!-- ACTIVE MAP DEPLOYMENT OVERLAY CARD -->
@@ -79,51 +131,16 @@
             </div>
         </div>
 
-        <div class="stat-category-block" style="background: rgba(15, 23, 42, 0.95); border: 2px solid var(--hunter-color); border-radius: 1rem; padding: 15px; margin-bottom: 25px;">
-            <div style="font-size: 0.8rem; font-weight: 900; color: var(--hunter-color); margin-bottom: 10px; text-transform: uppercase;">Gamer Identity & PSN Handle Configuration</div>
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
-                <div style="flex: 1; min-width: 200px;">
-                    <label for="profileCustomName" style="font-size: 11px; color: #94a3b8; display: block; margin-bottom: 4px;">Operator Profile Name</label>
-                    <input type="text" id="profileCustomName" style="width: 100%; background: #020617; border: 1px solid #334155; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold;" placeholder="Werewolf3788">
-                </div>
-                <div style="flex: 1; min-width: 200px;">
-                    <label for="profilePsnUser" style="font-size: 11px; color: #3b82f6; display: block; margin-bottom: 4px;">Linked PSN Gamer Tag</label>
-                    <input type="text" id="profilePsnUser" style="width: 100%; background: #020617; border: 1px solid #3b82f6; color: #fff; padding: 8px; border-radius: 6px; font-weight: bold;" placeholder="werewolf3788">
-                </div>
-                <div style="align-self: flex-end;">
-                    <button id="saveIdentityBtn" class="profile-btn" style="background: var(--hunter-color); border-color: var(--hunter-color); color: #000; height: 38px;">Save Profile & Tag</button>
-                </div>
-            </div>
-        </div>
-
         <!-- Main Progress Header -->
         <header class="main-header">
             <div style="font-size: 0.8rem; font-weight: 900; color: #94a3b8; margin-bottom: 10px;">ANIMAL RANK (FIRESTORE SYNC)</div>
             <div class="rank-grid">
-                <div class="rank-item">
-                    <span class="rank-emoji">👑</span><span class="rank-label">G.O.</span>
-                    <div class="rank-controls"><button onclick="adjRank('greatone', -1)">-</button><span id="rank-val-greatone">0</span><button onclick="adjRank('greatone', 1)">+</button></div>
-                </div>
-                <div class="rank-item">
-                    <span class="rank-emoji">🐇</span><span class="rank-label">RARE FUR</span>
-                    <div class="rank-controls"><button onclick="adjRank('rareFur', -1)">-</button><span id="rank-val-rareFur">0</span><button onclick="adjRank('rareFur', 1)">+</button></div>
-                </div>
-                <div class="rank-item">
-                    <span class="rank-emoji">💎</span><span class="rank-label">DIAMOND</span>
-                    <div class="rank-controls"><button onclick="adjRank('diamond', -1)">-</button><span id="rank-val-diamond">0</span><button onclick="adjRank('diamond', 1)">+</button></div>
-                </div>
-                <div class="rank-item">
-                    <span class="rank-emoji">🥇</span><span class="rank-label">GOLD</span>
-                    <div class="rank-controls"><button onclick="adjRank('gold', -1)">-</button><span id="rank-val-gold">0</span><button onclick="adjRank('gold', 1)">+</button></div>
-                </div>
-                <div class="rank-item">
-                    <span class="rank-emoji">🥈</span><span class="rank-label">SILVER</span>
-                    <div class="rank-controls"><button onclick="adjRank('silver', -1)">-</button><span id="rank-val-silver">0</span><button onclick="adjRank('silver', 1)">+</button></div>
-                </div>
-                <div class="rank-item">
-                    <span class="rank-emoji">🥉</span><span class="rank-label">BRONZE</span>
-                    <div class="rank-controls"><button onclick="adjRank('bronze', -1)">-</button><span id="rank-val-bronze">0</span><button onclick="adjRank('bronze', 1)">+</button></div>
-                </div>
+                <div class="rank-item"><span class="rank-emoji">👑</span><span class="rank-label">G.O.</span><div class="rank-controls"><button onclick="adjRank('greatone', -1)">-</button><span id="rank-val-greatone">0</span><button onclick="adjRank('greatone', 1)">+</button></div></div>
+                <div class="rank-item"><span class="rank-emoji">🐇</span><span class="rank-label">RARE FUR</span><div class="rank-controls"><button onclick="adjRank('rareFur', -1)">-</button><span id="rank-val-rareFur">0</span><button onclick="adjRank('rareFur', 1)">+</button></div></div>
+                <div class="rank-item"><span class="rank-emoji">💎</span><span class="rank-label">DIAMOND</span><div class="rank-controls"><button onclick="adjRank('diamond', -1)">-</button><span id="rank-val-diamond">0</span><button onclick="adjRank('diamond', 1)">+</button></div></div>
+                <div class="rank-item"><span class="rank-emoji">🥇</span><span class="rank-label">GOLD</span><div class="rank-controls"><button onclick="adjRank('gold', -1)">-</button><span id="rank-val-gold">0</span><button onclick="adjRank('gold', 1)">+</button></div></div>
+                <div class="rank-item"><span class="rank-emoji">🥈</span><span class="rank-label">SILVER</span><div class="rank-controls"><button onclick="adjRank('silver', -1)">-</button><span id="rank-val-silver">0</span><button onclick="adjRank('silver', 1)">+</button></div></div>
+                <div class="rank-item"><span class="rank-emoji">🥉</span><span class="rank-label">BRONZE</span><div class="rank-controls"><button onclick="adjRank('bronze', -1)">-</button><span id="rank-val-bronze">0</span><button onclick="adjRank('bronze', 1)">+</button></div></div>
             </div>
             <div style="height: 1px; background: rgba(255,255,255,0.1); margin: 30px 0;"></div>
             <h1 id="game-title">theHunter: Call of the Wild</h1>
@@ -157,12 +174,7 @@
         </footer>
     </div>
 
-    <!-- Dynamic Floating Tip Widget -->
-    <a href="https://streamelements.com/werewolf3788/tip" target="_blank" rel="noopener noreferrer" class="floating-tip-btn" style="position:fixed; bottom:24px; right:24px; z-index:999; background:linear-gradient(135deg, #FF4500, #d9534f); color:#fff; font-weight:900; font-size:13px; padding:12px 20px; border-radius:50px; text-decoration:none; display:flex; align-items:center; gap:8px; border:1px solid rgba(255,255,255,0.3);">
-        💳 <span>Tip / Support Stream</span>
-    </a>
-
-    <!-- Main JavaScript App module -->
-    <script type="module" src="./script.js?v=1.6"></script>
+    <!-- Main JavaScript Module -->
+    <script type="module" src="./script.js?v=2.0"></script>
 </body>
 </html>
