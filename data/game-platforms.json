@@ -75,6 +75,29 @@
         }
       ]
     },
+      {
+      "title": "TheHUNTER: Call of the Wild",
+      "developer": "Expansive Worlds",
+      "platforms": [
+        {
+          "platform_type": "PC",
+          "storefronts": [
+            "Steam",
+            "Epic Games Store",
+            "Microsoft Store",
+            "PC Game Pass"
+          ]
+        },
+        {
+          "platform_type": "Console",
+          "consoles": [
+            "PlayStation 4",
+            "Xbox One",
+            "Xbox Series X/S"
+          ]
+        }
+      ]
+    },
     {
       "title": "Tom Clancy's Ghost Recon Wildlands",
       "developer": "Ubisoft Paris",
