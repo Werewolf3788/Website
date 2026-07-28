@@ -1,15 +1,13 @@
-/* === SECTION: File Header & System Architecture === */
 /*
  * ==========================================
- * VERSION TIMESTAMP: Tue, July 28, 2026, 08:15 AM EDT
+ * VERSION TIMESTAMP: Tue, July 28, 2026, 09:30 AM EDT
  * SYSTEM: theHunter: Call of the Wild Master Tracker (script.js)
  * ARCHITECTURE: Pure Firebase Firestore Engine + Single Sign-On Persistence
  * FEATURES:
- * 1. Dynamic User Theme Engine (Real-time Firestore / LocalStorage sync for Primary & Secondary colors)
- * 2. Hash Route Resolver (Converts #/ links to ../../index.html#/ for subfolder navigation)
- * 3. Dynamic Platform Filtering (Reads game-platforms.json; PS5 excluded for COTW)
- * 4. Currently Deployed Reserve #1 Position Ordering & Auto-Expand
- * 5. Menu Avatar & 20px Thumbnail Constraint Fix (Menu font strictly white)
+ * 1. Universal Cross-Browser Compatibility (Opera GX, Chrome, Edge, Mobile)
+ * 2. Universal Identity Resolver (Auto-bootstraps new users into Firestore)
+ * 3. Dynamic User Theme Engine (Real-time Firestore / LocalStorage sync)
+ * 4. Absolute Path Asset Resolution for subfolder/hash route navigation
  * RESTORATION: 100% FULL SOURCE REGISTRY RESTORED - ZERO STRIPPING / ZERO OMISSIONS
  * ==========================================
  */
@@ -102,6 +100,34 @@ const formatAlphaCheckset = (items) => {
             }
         });
 };
+
+// --- UNIVERSAL IDENTITY RESOLVER ENGINE ---
+function resolveUniversalHandle(user) {
+    if (!user) return "Guest";
+
+    const userEmail = (user.email || "").toLowerCase();
+
+    // 1. Direct Squad Email Lookup
+    if (EMAIL_OPERATOR_MAP[userEmail]) {
+        return EMAIL_OPERATOR_MAP[userEmail];
+    }
+
+    // 2. Display Name or Email Root Extraction
+    const rawName = user.displayName || userEmail.split('@')[0] || "Operator";
+
+    // 3. Known Gamertag / Alias Lookup
+    if (USER_DATA_MAP[rawName]) {
+        return USER_DATA_MAP[rawName];
+    }
+
+    // 4. Universal Fallback: Clean string into URL & Firestore safe handle
+    const cleanHandle = rawName
+        .replace(/[^a-zA-Z0-9_]/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_+|_+$/g, '');
+
+    return cleanHandle || `Operator_${user.uid.substring(0, 5)}`;
+}
 
 // --- FULL TROPHY & COLLECTIBLES REGISTRY (UNCOMPRESSED & UNSTRIPPED) ---
 const trophyData = [
@@ -704,11 +730,9 @@ const appState = {
     applyTheme: function(primary, secondary) {
         if (!primary || !secondary) return;
 
-        // Set document root variables dynamically
         document.documentElement.style.setProperty('--primary-color', primary);
         document.documentElement.style.setProperty('--secondary-color', secondary);
 
-        // Cache locally for instant execution on subpages
         localStorage.setItem('user_primary_color', primary);
         localStorage.setItem('user_secondary_color', secondary);
     },
@@ -716,14 +740,12 @@ const appState = {
     syncUserTheme: async function(operatorHandle) {
         if (!operatorHandle) return;
 
-        // 1. Check local storage first for instant render (prevents flicker)
         const cachedPrimary = localStorage.getItem('user_primary_color');
         const cachedSecondary = localStorage.getItem('user_secondary_color');
         if (cachedPrimary && cachedSecondary) {
             this.applyTheme(cachedPrimary, cachedSecondary);
         }
 
-        // 2. Fetch ground-truth values from Firestore /users/{operatorHandle}
         if (this.db) {
             try {
                 const userDocRef = doc(this.db, 'users', operatorHandle);
@@ -746,18 +768,16 @@ const appState = {
         return this.loggedInOperator.toLowerCase() === this.activeHunter.toLowerCase();
     },
 
-    /* === SECTION: URL & Subfolder Path Fixer Engine === */
+    /* === SECTION: Absolute Root Path Fixer Engine === */
     fixMenuUrl: function(targetUrl) {
         if (!targetUrl || targetUrl === '#') return '#';
 
-        // Direct home path check
         if (targetUrl === '#/' || targetUrl === '#') {
-            return '../../index.html#/';
+            return window.location.origin + window.location.pathname.replace(/\/games\/HunterCOTW\/.*/i, '/index.html#/');
         }
 
-        // Prepend root location to hash routes when navigating from games/HunterCOTW/ subfolder
         if (targetUrl.startsWith('#/')) {
-            return '../../index.html' + targetUrl;
+            return window.location.origin + window.location.pathname.replace(/\/games\/HunterCOTW\/.*/i, '/index.html') + targetUrl;
         }
 
         return targetUrl;
@@ -785,9 +805,11 @@ const appState = {
         return false;
     },
 
-    /* === SECTION: Local/GitHub Menu.json Navigation Loader === */
+    /* === SECTION: Opera GX & Cross-Browser Navigation Loader === */
     loadNavigation: async function() {
-        const jsonUrl = '../../Menu.json?v=' + Date.now();
+        // Resolve absolute root URL for Opera GX local file / subfolder fetch
+        const rootPath = window.location.origin + window.location.pathname.replace(/\/games\/HunterCOTW\/.*/i, '/');
+        const jsonUrl = rootPath + 'Menu.json?v=' + Date.now();
 
         try {
             const response = await fetch(jsonUrl);
@@ -915,8 +937,9 @@ const appState = {
         const pSelect = document.getElementById('platformSelect');
         if (!pSelect) return;
 
+        const rootPath = window.location.origin + window.location.pathname.replace(/\/games\/HunterCOTW\/.*/i, '/');
         const endpoints = [
-            '../../data/game-platforms.json?v=' + Date.now(),
+            rootPath + 'data/game-platforms.json?v=' + Date.now(),
             'https://raw.githubusercontent.com/Werewolf3788/Website/main/data/game-platforms.json?v=' + Date.now()
         ];
 
@@ -936,7 +959,6 @@ const appState = {
 
         if (!gamePlatformsData || !gamePlatformsData.games) return;
 
-        // Find "TheHUNTER: Call of the Wild" in dataset
         const game = gamePlatformsData.games.find(g => 
             g.title.toLowerCase().includes('thehunter') || 
             g.title.toLowerCase().includes('call of the wild')
@@ -990,7 +1012,6 @@ const appState = {
         this.setupMobileMenuToggle();
 
         try {
-            // Default app instance shares authentication session across index.html and subpages
             const app = initializeApp(firebaseConfig);
             this.auth = getAuth(app);
             this.db = getFirestore(app);
@@ -1092,8 +1113,8 @@ const appState = {
             const userEmail = (user.email || "").toLowerCase();
             this.isCurrentUserAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
 
-            const rawName = user.displayName || userEmail.split('@')[0];
-            this.loggedInOperator = EMAIL_OPERATOR_MAP[userEmail] || USER_DATA_MAP[rawName] || USER_DATA_MAP[user.displayName] || rawName;
+            // UNIVERSAL IDENTITY RESOLUTION FOR ALL USERS WORLDWIDE
+            this.loggedInOperator = resolveUniversalHandle(user);
 
             if (!this.isCurrentUserAdmin) {
                 this.activeHunter = this.loggedInOperator;
@@ -1111,6 +1132,19 @@ const appState = {
             } else {
                 if (adminBadge) adminBadge.style.display = "none";
                 if (adminWrapper) adminWrapper.style.display = "none";
+            }
+
+            // AUTO-BOOTSTRAP UNIVERSAL PROFILE IN FIRESTORE
+            if (this.db) {
+                setDoc(doc(this.db, 'users', this.loggedInOperator), {
+                    displayName: user.displayName || this.loggedInOperator,
+                    operatorProfileName: this.loggedInOperator,
+                    email: userEmail,
+                    photoURL: user.photoURL || "",
+                    uid: user.uid,
+                    isAdmin: this.isCurrentUserAdmin,
+                    lastLogin: new Date().toISOString()
+                }, { merge: true });
             }
 
             this.loadHunter(this.activeHunter);
@@ -1444,8 +1478,12 @@ const appState = {
     }
 };
 
+/* === GLOBAL BINDINGS FOR CROSS-BROWSER INLINE EVENT HANDLERS === */
 window.appState = appState;
 window.adjRank = (tier, val) => appState.adjRank(tier, val);
+window.adj = (id, val) => appState.adj(id, val);
+window.tog = (id) => appState.tog(id);
+window.check = (id, idx) => appState.check(id, idx);
 
 appState.init();
 
