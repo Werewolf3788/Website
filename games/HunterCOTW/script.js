@@ -1,7 +1,7 @@
 /* === SECTION: File Header & System Architecture === */
 /*
  * ==========================================
- * VERSION TIMESTAMP: Tue, July 28, 2026, 07:35 AM EDT
+ * VERSION TIMESTAMP: Tue, July 28, 2026, 07:45 AM EDT
  * SYSTEM: theHunter: Call of the Wild Master Tracker (script.js)
  * ARCHITECTURE: Pure Firebase Firestore Engine + JSON Navigation Integration
  * PLATFORMS CONFIG: ../../data/game-platforms.json
@@ -691,6 +691,7 @@ const appState = {
     auth: null, db: null,
     collapsedSections: {},
     openDropdowns: {}, 
+    menuItemsRaw: [],
     liveUnsub: null,
     dataLoaded: false,
     currentLightboxData: { categoryId: null, subIdx: null, imgIdx: 0 },
@@ -757,6 +758,7 @@ const appState = {
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
             const menuItems = await response.json();
+            this.menuItemsRaw = menuItems; // Cache raw items for avatar thumbnail lookup
             const groupsMap = {};
 
             menuItems.forEach(item => {
@@ -789,11 +791,17 @@ const appState = {
 
             this.renderNav(sortedGroups);
 
+            // Re-sync avatar thumbnail once menu data is loaded
+            if (this.activeHunter) {
+                this.updateAvatarFromMenu(this.activeHunter);
+            }
+
         } catch (err) {
             console.error("Error loading Menu.json:", err);
         }
     },
 
+    /* === SECTION: Dynamic Dropdown Menu Engine (Clean & Compact Layout) === */
     renderNav: function(sortedGroups) {
         const container = document.getElementById('dynamic-nav-links');
         if (!container) return;
@@ -810,24 +818,25 @@ const appState = {
             const dropdownItemsHtml = group.items.map(item => {
                 const active = this.checkIsActiveTab(item.url, item.name);
                 const itemClass = active
-                    ? 'flex items-center gap-2 px-4 py-2 text-xs font-black text-[#facc15] bg-slate-800 border-l-4 border-[#facc15]'
-                    : 'flex items-center gap-2 px-4 py-2 text-xs text-white hover:bg-slate-800 hover:text-[#facc15] transition-colors';
+                    ? 'flex items-center gap-2 px-3 py-2 text-xs font-black text-[#facc15] bg-slate-800 border-l-4 border-[#facc15] whitespace-nowrap'
+                    : 'flex items-center gap-2 px-3 py-2 text-xs text-white hover:bg-slate-800 hover:text-[#facc15] transition-colors whitespace-nowrap';
 
                 // Strict 20px thumbnail styles to prevent full-res image blowout
                 const imgTag = item.image 
-                    ? `<img src="${item.image}" style="width: 20px !important; height: 20px !important; min-width: 20px !important; min-height: 20px !important; object-fit: cover; border-radius: 4px; display: inline-block; shrink-0;" alt="" onerror="this.style.display='none'">` 
+                    ? `<img src="${item.image}" style="width: 20px !important; height: 20px !important; min-width: 20px !important; min-height: 20px !important; max-width: 20px !important; max-height: 20px !important; object-fit: cover; border-radius: 4px; display: inline-block; flex-shrink: 0;" alt="" onerror="this.style.display='none'">` 
                     : '';
 
                 return `<a href="${item.url}" class="${itemClass}">${imgTag}<span>${item.name}</span></a>`;
             }).join('');
 
+            // Clean dropdown wrapper using relative positioning & absolute hidden/hover layer
             html += `
-                <div class="relative group/dropdown inline-block">
-                    <button class="${groupBtnClass} py-1 px-3 text-xs uppercase tracking-wider flex items-center gap-1 focus:outline-none">
+                <div class="relative group/dropdown inline-block" style="position: relative; display: inline-block;">
+                    <button class="${groupBtnClass} py-1 px-3 text-xs uppercase tracking-wider flex items-center gap-1 focus:outline-none" style="background: none; border: none; cursor: pointer;">
                         <span>${group.name}</span>
-                        <i class="fa-solid fa-chevron-down text-[10px] opacity-70"></i>
+                        <i class="fa-solid fa-chevron-down text-[10px] opacity-70" style="margin-left: 4px;"></i>
                     </button>
-                    <div class="hidden group-hover/dropdown:block absolute right-0 w-56 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl overflow-hidden z-50">
+                    <div class="hidden group-hover/dropdown:block absolute right-0 w-56 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl overflow-hidden z-50" style="position: absolute; right: 0; top: 100%; min-width: 200px; background-color: #0f172a; border: 1px solid #334155; border-radius: 6px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.8); z-index: 9999; display: none;">
                         ${dropdownItemsHtml}
                     </div>
                 </div>
@@ -835,6 +844,40 @@ const appState = {
         });
 
         container.innerHTML = html;
+
+        // Inject simple hover CSS for dropdown visibility fallback
+        if (!document.getElementById('dropdown-hover-style')) {
+            const style = document.createElement('style');
+            style.id = 'dropdown-hover-style';
+            style.innerHTML = `
+                .group\\/dropdown:hover > div { display: block !important; }
+            `;
+            document.head.appendChild(style);
+        }
+    },
+
+    /* === SECTION: Avatar Image Syncing Engine === */
+    updateAvatarFromMenu: function(operatorHandle) {
+        const userAvatar = document.getElementById("userAvatar");
+        if (!userAvatar || !this.menuItemsRaw) return;
+
+        // Find operator inside Menu.json User group
+        const targetHandle = USER_DATA_MAP[operatorHandle] || operatorHandle;
+        const matchedUser = this.menuItemsRaw.find(item => {
+            const group = item.group || item.Group || '';
+            const name = item.name || item.Name || '';
+            return group.toLowerCase() === 'user' && USER_DATA_MAP[name] === targetHandle;
+        });
+
+        if (matchedUser && (matchedUser.image || matchedUser.Image)) {
+            userAvatar.src = matchedUser.image || matchedUser.Image;
+            userAvatar.classList.remove('hidden');
+            userAvatar.style.display = 'inline-block';
+            userAvatar.style.width = '36px';
+            userAvatar.style.height = '36px';
+            userAvatar.style.borderRadius = '50%';
+            userAvatar.style.objectFit = 'cover';
+        }
     },
 
     /* === SECTION: game-platforms.json Platform Filter Loader === */
@@ -848,7 +891,6 @@ const appState = {
 
             const data = await response.json();
             
-            // Locate "TheHUNTER: Call of the Wild" in the game array
             const game = data.games.find(g => 
                 g.title.toLowerCase().includes('thehunter') || 
                 g.title.toLowerCase().includes('call of the wild')
@@ -874,7 +916,6 @@ const appState = {
                 if (optionsHtml) {
                     pSelect.innerHTML = optionsHtml;
                     
-                    // Set default or restore active
                     const hasActive = Array.from(pSelect.options).some(opt => opt.value === this.activePlatform);
                     if (hasActive) {
                         pSelect.value = this.activePlatform;
@@ -944,7 +985,6 @@ const appState = {
                 this.updateActiveMapDisplay();
                 this.render();
 
-                // Smooth scroll to top of section grid
                 setTimeout(() => {
                     const topCard = document.getElementById(newSectionId);
                     if (topCard) topCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -993,7 +1033,6 @@ const appState = {
     handleAuthState: function(user) {
         const googleBtn = document.getElementById("googleSignInBtn");
         const userStatus = document.getElementById("userProfileStatus");
-        const userAvatar = document.getElementById("userAvatar");
         const demoBanner = document.getElementById("demoNotification");
         const adminBadge = document.getElementById("adminBadge");
         const adminWrapper = document.getElementById("adminOperatorSelectWrapper");
@@ -1012,10 +1051,9 @@ const appState = {
             if (demoBanner) demoBanner.style.display = "none";
             if (googleBtn) googleBtn.style.display = "none";
             if (userStatus) userStatus.style.display = "flex";
-            if (userAvatar) {
-                userAvatar.src = user.photoURL || "https://placehold.co/42x42/1e293b/ff8800?text=U";
-                userAvatar.classList.remove('hidden');
-            }
+
+            // Sync user avatar thumbnail with Menu.json profile image
+            this.updateAvatarFromMenu(this.activeHunter);
 
             if (this.isCurrentUserAdmin) {
                 if (adminBadge) adminBadge.style.display = "block";
@@ -1060,6 +1098,7 @@ const appState = {
         if (targetEl) targetEl.innerText = dbDocName;
 
         this.syncUserTheme(dbDocName);
+        this.updateAvatarFromMenu(dbDocName);
 
         const userProgressRef = doc(this.db, 'users', dbDocName, 'progress', GAME_ID);
 
@@ -1135,7 +1174,6 @@ const appState = {
 
         container.innerHTML = '';
         
-        // Retrieve distinct categories
         let cats = [...new Set(this.hunterData.map(t => t.cat))];
 
         // --- Currently Deployed Reserve Sync: Move active reserve to #1 position ---
@@ -1166,7 +1204,6 @@ const appState = {
             
             const sectionId = cat.replace(/[^a-zA-Z0-9]/g, '');
 
-            // Position #1 selected reserve is explicitly force-expanded (not collapsed)
             let isCollapsed = this.collapsedSections[sectionId];
             if (cat === this.activeMapCategory && isCollapsed === undefined) {
                 isCollapsed = false; // Default open for active map
