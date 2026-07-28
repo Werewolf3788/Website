@@ -1,10 +1,10 @@
 <!-- 
   ==========================================
-  VERSION TIMESTAMP: Tue, July 28, 2026, 12:20 AM EDT
+  VERSION TIMESTAMP: Tue, July 28, 2026, 12:45 AM EDT
   SYSTEM: Werewolf Project - Central User & Operator Settings (settings.html)
   ARCHITECTURE: Pure Firebase Firestore (v11 ESM) Engine
   PATH STRUCTURE: /users/{operatorProfileName}
-  FEATURES: Custom Theme Pickers, Operator Profile Handle, Multi-Platform Gamertag Matrix, Dynamic Firebase Auth Provider Detection, Privacy Policy Link
+  FEATURES: Strict Title-Exact Match Active Nav, Pure White Non-Active Links, Yellow Active Link, Sequential CSV Nav Engine, Custom Theme Pickers, Multi-Platform Gamertags
   RESTORATION: 100% FULL SOURCE FILE - ZERO OMISSIONS / ZERO STRIPPING
   ==========================================
 -->
@@ -13,7 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Werewolf Project | Operator Settings</title>
+    <title>Settings</title>
     
     <!-- Tailwind CSS & FontAwesome -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -30,7 +30,7 @@
 
         body {
             background-color: var(--bg-dark);
-            color: #f1f5f9;
+            color: #ffffff;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             min-height: 100vh;
             display: flex;
@@ -86,8 +86,9 @@
                     <span class="text-xs bg-slate-800 text-slate-400 font-mono px-2 py-1 rounded border border-slate-700">SETTINGS</span>
                 </div>
 
+                <!-- Dynamic CSV Navigation Container -->
                 <div id="dynamic-nav-links" class="hidden md:flex items-center space-x-6 text-sm">
-                    <a href="index.html" class="text-slate-300 hover:text-white transition-colors">Home</a>
+                    <div class="h-4 w-24 bg-slate-800 rounded animate-pulse"></div>
                 </div>
 
                 <!-- Global Auth Control -->
@@ -318,7 +319,7 @@
     <footer class="mt-auto bg-slate-950 py-8 border-t border-slate-800 text-center relative">
         <div class="max-w-7xl mx-auto px-4">
             <p class="text-slate-500 text-xs">
-                &copy; 2026 Werewolf Project. System Version: Tue, July 28, 2026, 12:20 AM EDT.
+                &copy; 2026 Werewolf Project. System Version: Tue, July 28, 2026, 12:45 AM EDT.
             </p>
         </div>
         
@@ -379,6 +380,180 @@
 
         let auth, db, currentUser = null;
 
+        /* === SECTION: Dynamic CSV Navigation Engine === */
+        function parseCSV(str) {
+            const arr = [];
+            let quote = false;
+            for (let row = 0, col = 0, c = 0; c < str.length; c++) {
+                let cc = str[c], nc = str[c+1];
+                arr[row] = arr[row] || [];
+                arr[row][col] = arr[row][col] || '';
+                if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
+                if (cc == '"') { quote = !quote; continue; }
+                if (cc == ',' && !quote) { ++col; continue; }
+                if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
+                if (cc == '\n' && !quote) { ++row; col = 0; continue; }
+                if (cc == '\r' && !quote) { ++row; col = 0; continue; }
+                arr[row][col] += cc;
+            }
+            return arr;
+        }
+
+        // Strict Matching Utility: Yellow only if exact Title or Filename match
+        function isUrlActive(itemUrl, itemName) {
+            if (!itemUrl || itemUrl === '#') return false;
+
+            const cleanUrl = itemUrl.split('?')[0].split('#')[0].toLowerCase().trim();
+            const targetFilename = cleanUrl.substring(cleanUrl.lastIndexOf('/') + 1);
+
+            const currentPath = window.location.pathname.toLowerCase();
+            const currentFilename = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'settings.html';
+
+            // 1. Strict Filename match (e.g. settings.html === settings.html)
+            if (targetFilename && targetFilename.length > 0 && targetFilename === currentFilename) {
+                return true;
+            }
+
+            // 2. Strict Title Match against <title> text
+            if (itemName && itemName.trim().length > 0) {
+                const pageTitle = document.title.toLowerCase();
+                const cleanItemName = itemName.toLowerCase().trim();
+
+                // Split title by standard separators to isolate word tokens
+                const titleTokens = pageTitle.split(/[\s|–—\-\:]+/).filter(t => t.length > 0);
+                if (titleTokens.includes(cleanItemName)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        async function loadNavigation() {
+            const sheetsCsvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv&v=${Date.now()}`;
+            
+            try {
+                const res = await fetch(sheetsCsvUrl);
+                if (!res.ok) throw new Error(`HTTP Error ${res.status}`);
+                
+                const csvText = await res.text();
+                const parsedRows = parseCSV(csvText);
+                
+                if (parsedRows.length <= 1) return;
+
+                const navSequence = [];
+                const groupIndexMap = {};
+
+                for (let i = 1; i < parsedRows.length; i++) {
+                    const row = parsedRows[i];
+                    if (!row || row.length === 0) continue;
+
+                    const name = row[0] ? row[0].trim() : '';
+                    const group = row[1] ? row[1].trim() : '';
+                    const url = row[2] ? row[2].trim() : '#';
+                    let image = row[3] ? row[3].trim() : '';
+
+                    if (!name) continue;
+
+                    if (image && image.includes('drive.google.com')) {
+                        const driveMatch = image.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || image.match(/id=([a-zA-Z0-9_-]+)/);
+                        if (driveMatch) {
+                            image = `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+                        }
+                    }
+
+                    const itemNode = { name, url, image };
+
+                    if (group === '') {
+                        navSequence.push({ type: 'standalone', data: itemNode });
+                    } else {
+                        if (groupIndexMap[group] === undefined) {
+                            groupIndexMap[group] = navSequence.length;
+                            navSequence.push({
+                                type: 'group',
+                                name: group,
+                                items: [itemNode]
+                            });
+                        } else {
+                            navSequence[groupIndexMap[group]].items.push(itemNode);
+                        }
+                    }
+                }
+
+                renderDynamicNav(navSequence);
+
+            } catch (e) {
+                console.warn("Navigation Engine Notice:", e.message);
+                const navContainer = document.getElementById('dynamic-nav-links');
+                if (navContainer) {
+                    navContainer.innerHTML = `<a href="index.html" class="text-white hover:text-amber-300">Home</a>`;
+                }
+            }
+        }
+
+        function renderDynamicNav(navSequence) {
+            const navContainer = document.getElementById('dynamic-nav-links');
+            if (!navContainer) return;
+
+            let navHTML = '';
+
+            navSequence.forEach(node => {
+                if (node.type === 'standalone') {
+                    const item = node.data;
+                    const active = isUrlActive(item.url, item.name);
+                    
+                    // Active Link = Yellow font (#facc15) | Non-Active = Pure White (#ffffff)
+                    const linkClasses = active 
+                        ? 'text-yellow-400 font-black border-b-2 border-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)] transition-colors flex items-center gap-1 py-1' 
+                        : 'text-white hover:text-yellow-400 transition-colors flex items-center gap-1 py-1';
+                    
+                    const imgTag = item.image ? `<img src="${item.image}" class="w-5 h-5 rounded object-cover inline-block mr-1.5" alt="" onerror="this.style.display='none'">` : '';
+                    
+                    navHTML += `
+                        <a href="${item.url}" class="${linkClasses}">
+                            ${imgTag}<span>${item.name}</span>
+                        </a>
+                    `;
+                } else if (node.type === 'group') {
+                    const hasActiveChild = node.items.some(item => isUrlActive(item.url, item.name));
+                    
+                    const dropdownItems = node.items.map(item => {
+                        const active = isUrlActive(item.url, item.name);
+                        
+                        const itemClasses = active 
+                            ? 'block px-4 py-2.5 text-xs font-black text-yellow-400 bg-slate-700/80 hover:bg-slate-700 transition-colors flex items-center' 
+                            : 'block px-4 py-2.5 text-xs text-white hover:bg-slate-700 hover:text-amber-300 transition-colors flex items-center';
+                        
+                        const imgTag = item.image ? `<img src="${item.image}" class="w-4 h-4 rounded object-cover inline-block mr-2" alt="" onerror="this.style.display='none'">` : '';
+                        return `
+                            <a href="${item.url}" class="${itemClasses}">
+                                ${imgTag}<span>${item.name}</span>
+                            </a>
+                        `;
+                    }).join('');
+
+                    // Group Title = Yellow font ONLY if child page is active | Otherwise Pure White
+                    const groupBtnClasses = hasActiveChild 
+                        ? 'text-yellow-400 font-black border-b-2 border-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)] py-1 flex items-center gap-1.5 focus:outline-none' 
+                        : 'text-white hover:text-yellow-400 py-1 flex items-center gap-1.5 focus:outline-none';
+
+                    navHTML += `
+                        <div class="relative group/dropdown inline-block">
+                            <button class="${groupBtnClasses}">
+                                <span>${node.name}</span>
+                                <i class="fa-solid fa-chevron-down text-[10px] opacity-70"></i>
+                            </button>
+                            <div class="hidden group-hover/dropdown:block absolute left-0 w-52 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
+                                ${dropdownItems}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            navContainer.innerHTML = navHTML;
+        }
+
         // Cookie Utility
         function setGamertagCookie(gamertag) {
             const d = new Date();
@@ -412,6 +587,8 @@
         });
 
         async function initSettingsEngine() {
+            loadNavigation();
+
             try {
                 const app = initializeApp(firebaseConfig, 'Settings-App');
                 auth = getAuth(app);
@@ -545,7 +722,6 @@
 
             if (!meta) return;
 
-            // Check if already connected
             if (currentUser.providerData.some(p => p.providerId === selectedProviderId)) {
                 alert(`${meta.name} is already connected to your profile!`);
                 return;
