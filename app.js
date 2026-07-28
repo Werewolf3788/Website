@@ -1,9 +1,12 @@
-/* === SECTION: Smart SPA Engine with Router, Settings & Firebase Auth === */
+/* === SECTION: File Header & System Architecture === */
 /*
-    Version: 1.2.0 | Timestamp: 2026-07-28T03:32:00Z
-    Description: Single Page Application Engine featuring Hash Routing (#/ and #/settings), 
-                 Google Sheets Dynamic Nav, Open-Meteo Weather, Twitch Stream Status, 
-                 Persistent Local Auth, Firestore Telemetry, and Full Operator Settings Matrix.
+    Version: 1.3.0
+    Timestamp: 2026-07-28T04:00:00Z
+    System: Werewolf Project - Master Single Page Application (SPA) Engine
+    Architecture: Pure ESM Modules (Firebase v11 + Firestore + Realtime Database)
+    Routing: Client-Side Hash Routing (#/ and #/settings)
+    Features: Persistent Local Auth, Email-to-Operator Mapping, Platform-Isolated Progress (/users/{Operator}/progress/{platform}),
+              Dynamic Google Sheets Navigation, Weather API, Twitch Stream Status, and Theme Color Customization.
 */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
@@ -24,7 +27,7 @@ import {
 import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 import { getDatabase } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js';
 
-// User Firebase Configuration
+/* === SECTION: User & Admin Email Configuration === */
 const firebaseConfig = {
     apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
     authDomain: "game-tracker-5b2ef.firebaseapp.com",
@@ -37,15 +40,36 @@ const firebaseConfig = {
 
 const ADMIN_EMAIL = "raykevin71888@gmail.com";
 
+// Direct Email-to-Operator Handle Mapping Matrix
+const EMAIL_OPERATOR_MAP = {
+    "raykevin71888@gmail.com": "Werewolf3788",
+    "cartnalray9@gmail.com": "Raymystyro"
+};
+
+// Gamertag & Display Name Mapping Matrix
 const USER_DATA_MAP = {
+    // Werewolf3788 (PSN: WildHorse_Spirit)
     'Werewolf3788': 'Werewolf3788',
     'werewolf3788': 'Werewolf3788',
+    'WildHorse_Spirit': 'Werewolf3788',
+    'wildhorse_spirit': 'Werewolf3788',
+
+    // Raymystyro (PSN: OneLIVIDMAN)
     'Raymystyro': 'Raymystyro',
     'raymystyro': 'Raymystyro',
+    'OneLIVIDMAN': 'Raymystyro',
+    'onelividman': 'Raymystyro',
+
+    // DesdemonaTiger
+    'DesdemonaTiger': 'DesdemonaTiger',
+    'desdemonatiger': 'DesdemonaTiger',
+    'Desdemona Tiger': 'DesdemonaTiger',
+
+    // terrdog420 (PSN: Darkwing69420)
     'terrdog420': 'terrdog420',
     'Terrdog420': 'terrdog420',
-    'Marc': 'Marc',
-    'marc': 'Marc'
+    'Darkwing69420': 'terrdog420',
+    'darkwing69420': 'terrdog420'
 };
 
 const PROVIDER_METADATA = {
@@ -57,6 +81,19 @@ const PROVIDER_METADATA = {
 
 let app, auth, db, rtdb, currentUser = null;
 const googleProvider = new GoogleAuthProvider();
+
+// Resolves logged-in user or display name cleanly to an Operator Profile Handle
+function resolveOperatorHandle(user) {
+    if (!user) return "Guest";
+
+    const userEmail = (user.email || "").toLowerCase();
+    if (EMAIL_OPERATOR_MAP[userEmail]) {
+        return EMAIL_OPERATOR_MAP[userEmail];
+    }
+
+    const rawName = user.displayName || userEmail.split('@')[0];
+    return USER_DATA_MAP[rawName] || USER_DATA_MAP[user.displayName] || rawName;
+}
 
 /* === SECTION: SPA View Templates === */
 function renderHomeView() {
@@ -276,7 +313,7 @@ function renderHomeView() {
                             <tr class="border-b border-slate-700 text-slate-400 font-black uppercase text-[11px]">
                                 <th class="py-3 px-4 bg-slate-900/80 w-1/3 min-w-[220px]">Progression Metric / Category</th>
                                 <th id="grw-col-werewolf" class="py-3 px-4 text-orange-400 min-w-[150px]">Werewolf3788</th>
-                                <th id="grw-col-marc" class="py-3 px-4 text-emerald-400 min-w-[150px]">Marc</th>
+                                <th id="grw-col-desdemona" class="py-3 px-4 text-emerald-400 min-w-[150px]">DesdemonaTiger</th>
                                 <th id="grw-col-ray" class="py-3 px-4 text-red-400 min-w-[150px]">Raymystyro</th>
                                 <th id="grw-col-tj" class="py-3 px-4 text-purple-400 min-w-[150px]">terrdog420</th>
                             </tr>
@@ -330,7 +367,7 @@ function renderSettingsView() {
                 </div>
             </div>
 
-            <!-- CARD 2: Custom Page Theme & Colors -->
+            <!-- CARD 2: Visual Theme Customization -->
             <div class="custom-card p-6 border border-slate-700">
                 <div class="flex items-center gap-3 border-b border-slate-700/60 pb-3 mb-6">
                     <i class="fa-solid fa-palette text-amber-500 text-lg"></i>
@@ -364,7 +401,7 @@ function renderSettingsView() {
                 </div>
             </div>
 
-            <!-- CARD 3: Multi-Platform Gamertags -->
+            <!-- CARD 3: Multi-Platform Gamertags Matrix -->
             <div class="custom-card p-6 border border-slate-700">
                 <div class="flex items-center gap-3 border-b border-slate-700/60 pb-3 mb-6">
                     <i class="fa-solid fa-gamepad text-emerald-400 text-lg"></i>
@@ -377,7 +414,7 @@ function renderSettingsView() {
                             <i class="fa-brands fa-playstation text-blue-500"></i>
                             <span>PlayStation Network (PSN)</span>
                         </label>
-                        <input type="text" id="psnTagInput" placeholder="e.g. Werewolf3788" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
+                        <input type="text" id="psnTagInput" placeholder="e.g. WildHorse_Spirit" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
                     </div>
 
                     <div>
@@ -512,8 +549,6 @@ function router() {
     if (!viewContainer) return;
 
     let hash = window.location.hash || '#/';
-    
-    // Normalize settings route access
     if (window.location.pathname.endsWith('settings.html')) {
         hash = '#/settings';
     }
@@ -521,7 +556,6 @@ function router() {
     const viewFn = routes[hash] || renderNotFoundView;
     viewContainer.innerHTML = viewFn();
 
-    // Trigger post-render initializers depending on active view
     if (hash === '#/' || hash === '') {
         refreshData();
         if (db) attachSmartGameProgressListeners(db);
@@ -601,13 +635,13 @@ function initSettingsEventListeners() {
     document.getElementById('settingsForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        const operatorName = document.getElementById('operatorNameInput').value.trim();
-        if (!operatorName) {
+        const operatorNameInput = document.getElementById('operatorNameInput').value.trim();
+        if (!operatorNameInput) {
             alert("Please enter a valid Operator Profile Name.");
             return;
         }
 
-        const cleanHandle = USER_DATA_MAP[operatorName] || operatorName;
+        const cleanHandle = USER_DATA_MAP[operatorNameInput] || operatorNameInput;
         const primaryColor = document.getElementById('primaryColorInput').value;
         const secondaryColor = document.getElementById('secondaryColorInput').value;
         const avatarUrl = document.getElementById('avatarUrlInput').value.trim();
@@ -658,34 +692,47 @@ function initSettingsEventListeners() {
 
 async function loadUserSettingsToForm(user) {
     if (!user) return;
-    const rawName = user.displayName || user.email.split('@')[0];
-    const operatorHandle = USER_DATA_MAP[rawName] || rawName;
+    const operatorHandle = resolveOperatorHandle(user);
 
     const opInput = document.getElementById('operatorNameInput');
     if (opInput) opInput.value = operatorHandle;
 
+    if (!db) return;
+
     try {
         const userDocRef = doc(db, 'users', operatorHandle);
         const snap = await getDoc(userDocRef);
+        
         if (snap.exists()) {
             const data = snap.data();
-            if (data.photoURL) document.getElementById('avatarUrlInput').value = data.photoURL;
-            if (data.primaryColor) document.getElementById('primaryColorInput').value = data.primaryColor;
-            if (data.secondaryColor) document.getElementById('secondaryColorInput').value = data.secondaryColor;
-            
+            const avatarInput = document.getElementById('avatarUrlInput');
+            const primaryInput = document.getElementById('primaryColorInput');
+            const secondaryInput = document.getElementById('secondaryColorInput');
+
+            if (avatarInput && data.photoURL) avatarInput.value = data.photoURL;
+            if (primaryInput && data.primaryColor) primaryInput.value = data.primaryColor;
+            if (secondaryInput && data.secondaryColor) secondaryInput.value = data.secondaryColor;
+
             if (data.gamertags) {
-                if (document.getElementById('psnTagInput')) document.getElementById('psnTagInput').value = data.gamertags.psn || "";
-                if (document.getElementById('xboxTagInput')) document.getElementById('xboxTagInput').value = data.gamertags.xbox || "";
-                if (document.getElementById('steamTagInput')) document.getElementById('steamTagInput').value = data.gamertags.steam || "";
-                if (document.getElementById('epicTagInput')) document.getElementById('epicTagInput').value = data.gamertags.epic || "";
-                if (document.getElementById('eaTagInput')) document.getElementById('eaTagInput').value = data.gamertags.ea || "";
-                if (document.getElementById('ubisoftTagInput')) document.getElementById('ubisoftTagInput').value = data.gamertags.ubisoft || "";
+                const psnInput = document.getElementById('psnTagInput');
+                const xboxInput = document.getElementById('xboxTagInput');
+                const steamInput = document.getElementById('steamTagInput');
+                const epicInput = document.getElementById('epicTagInput');
+                const eaInput = document.getElementById('eaTagInput');
+                const ubiInput = document.getElementById('ubisoftTagInput');
+
+                if (psnInput) psnInput.value = data.gamertags.psn || "";
+                if (xboxInput) xboxInput.value = data.gamertags.xbox || "";
+                if (steamInput) steamInput.value = data.gamertags.steam || "";
+                if (epicInput) epicInput.value = data.gamertags.epic || "";
+                if (eaInput) eaInput.value = data.gamertags.ea || "";
+                if (ubiInput) ubiInput.value = data.gamertags.ubisoft || "";
             }
 
             applyDynamicTheme(data.primaryColor, data.secondaryColor);
         }
     } catch (e) {
-        console.warn("Could not load saved settings:", e.message);
+        console.warn("Could not load saved settings from Firestore:", e.message);
     }
 }
 
@@ -757,7 +804,7 @@ window.unlinkProvider = async function(providerId) {
     }
 };
 
-/* === SECTION: Helpers & Weather Engine === */
+/* === SECTION: Helpers & Open-Meteo Weather Engine === */
 const users = [
     { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf', twitch: 'werewolf3788', theme: 'text-werewolf' },
     { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray', twitch: 'raymystyro', theme: 'text-ray' },
@@ -789,7 +836,7 @@ async function fetchWithRetry(url, options = {}) {
     }
 }
 
-/* === SECTION: Dynamic Nav Engine (Strict Exact Title & Filename Match) === */
+/* === SECTION: Dynamic Nav Engine (Strict Title Exact & Filename Matching) === */
 const navCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv';
 
 function isUrlActive(itemUrl, itemName) {
@@ -798,17 +845,14 @@ function isUrlActive(itemUrl, itemName) {
     const currentHash = window.location.hash || '#/';
     const cleanItemUrl = itemUrl.trim().toLowerCase();
 
-    // Exact hash route match
     if (cleanItemUrl === currentHash.toLowerCase()) return true;
 
-    // Strict filename match
     const targetFilename = cleanItemUrl.substring(cleanItemUrl.lastIndexOf('/') + 1);
     const currentPath = window.location.pathname.toLowerCase();
     const currentFilename = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
 
     if (targetFilename && targetFilename === currentFilename) return true;
 
-    // Strict title match against document.title
     if (itemName && itemName.trim().length > 0) {
         const pageTitle = document.title.toLowerCase();
         const cleanItemName = itemName.toLowerCase().trim();
@@ -928,7 +972,7 @@ function renderNav(navOrder) {
     mobileContainer.innerHTML = mobileHTML;
 }
 
-/* === SECTION: Movies & Weather Engines === */
+/* === SECTION: Movies Library & Open-Meteo Weather === */
 let cinemaImages = [];
 let currentSlideIndex = 0;
 let activeBgId = 1;
@@ -1124,10 +1168,10 @@ async function updateTwitchStatus(u) {
     }
 }
 
-/* === SECTION: Smart Telemetry Engine === */
+/* === SECTION: Smart Telemetry Engine & Multi-Platform Listener === */
 const teamProfiles = [
     { name: 'Werewolf3788', dbDoc: 'Werewolf3788', color: '#ff8800' },
-    { name: 'Marc', dbDoc: 'Marc', color: '#10b981' },
+    { name: 'DesdemonaTiger', dbDoc: 'DesdemonaTiger', color: '#10b981' },
     { name: 'Raymystyro', dbDoc: 'Raymystyro', color: '#ff4444' },
     { name: 'terrdog420', dbDoc: 'terrdog420', color: '#a855f7' }
 ];
@@ -1210,7 +1254,12 @@ function handleAuthStateChange(user) {
     const adminElements = document.querySelectorAll(".admin-only");
 
     if (user) {
-        console.log("Session Active:", user.email);
+        const userEmail = (user.email || "").toLowerCase();
+        const operatorHandle = resolveOperatorHandle(user);
+        const isAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
+
+        console.log(`Session Active: ${userEmail} -> Resolved Operator: [${operatorHandle}]`);
+
         if (googleBtn) googleBtn.style.display = "none";
         if (userStatus) {
             userStatus.style.display = "flex";
@@ -1220,25 +1269,30 @@ function handleAuthStateChange(user) {
         if (authBanner) authBanner.style.display = "none";
         if (authActionBtn) authActionBtn.textContent = "Sign Out";
 
-        adminElements.forEach(el => el.classList.remove("restricted-view"));
-
-        if (user.email && user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) {
-            if (adminBadge) adminBadge.classList.remove("hidden");
-        } else {
-            if (adminBadge) adminBadge.classList.add("hidden");
+        if (adminBadge) {
+            if (isAdmin) {
+                adminBadge.classList.remove("hidden");
+                adminBadge.style.display = "block";
+            } else {
+                adminBadge.classList.add("hidden");
+                adminBadge.style.display = "none";
+            }
         }
 
-        const activeUsername = user.displayName || user.email.split('@')[0];
-        setDoc(doc(db, 'users', activeUsername), {
-            displayName: activeUsername,
-            email: user.email || "",
-            photoURL: user.photoURL || "",
-            uid: user.uid,
-            isAdmin: user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase(),
-            lastUpdated: new Date().toISOString()
-        }, { merge: true });
+        adminElements.forEach(el => el.classList.remove("restricted-view"));
 
-        // Update settings form and provider list if user is on #/settings
+        if (db) {
+            setDoc(doc(db, 'users', operatorHandle), {
+                displayName: operatorHandle,
+                operatorProfileName: operatorHandle,
+                email: userEmail,
+                photoURL: user.photoURL || "",
+                uid: user.uid,
+                isAdmin: isAdmin,
+                lastUpdated: new Date().toISOString()
+            }, { merge: true });
+        }
+
         if (window.location.hash === '#/settings') {
             loadUserSettingsToForm(user);
             renderSmartProviders(user);
@@ -1270,11 +1324,12 @@ function attachSmartGameProgressListeners(database) {
 
     teamProfiles.forEach(prof => {
         const docTargets = [prof.dbDoc];
-        if (prof.name === 'Werewolf3788') docTargets.push('Kevin');
-        if (prof.name === 'terrdog420') docTargets.push('TJ');
-        if (prof.name === 'Raymystyro') docTargets.push('Ray');
+        if (prof.name === 'Werewolf3788') docTargets.push('WildHorse_Spirit');
+        if (prof.name === 'Raymystyro') docTargets.push('OneLIVIDMAN');
+        if (prof.name === 'terrdog420') docTargets.push('Darkwing69420');
 
         docTargets.forEach(docId => {
+            // Sniper Elite 5
             onSnapshot(doc(database, 'users', docId, 'progress', 'sniper-elite-5'), (snap) => {
                 if (snap.exists()) {
                     const d = snap.data();
@@ -1287,6 +1342,7 @@ function attachSmartGameProgressListeners(database) {
                 evaluateModuleVisibility('sniper-elite-5', liveData['sniper-elite-5']);
             });
 
+            // theHunter: Call of the Wild
             onSnapshot(doc(database, 'users', docId, 'progress', 'thehunter-call-of-the-wild'), (snap) => {
                 if (snap.exists()) {
                     const d = snap.data();
@@ -1300,7 +1356,7 @@ function attachSmartGameProgressListeners(database) {
                         }
                     });
 
-                    if (d.activeMapCategory && (prof.name === 'Werewolf3788' || docId === 'Kevin')) {
+                    if (d.activeMapCategory && prof.name === 'Werewolf3788') {
                         const badge = document.getElementById('cotw-active-map-name');
                         if (badge) badge.innerText = d.activeMapCategory.replace('DLC: ', '');
                     }
@@ -1312,6 +1368,7 @@ function attachSmartGameProgressListeners(database) {
                 evaluateModuleVisibility('thehunter-call-of-the-wild', liveData['thehunter-call-of-the-wild']);
             });
 
+            // Sniper Elite: Resistance
             onSnapshot(doc(database, 'users', docId, 'progress', 'sniper-elite-resistance'), (snap) => {
                 if (snap.exists()) {
                     const d = snap.data();
@@ -1324,6 +1381,7 @@ function attachSmartGameProgressListeners(database) {
                 evaluateModuleVisibility('sniper-elite-resistance', liveData['sniper-elite-resistance']);
             });
 
+            // Ghost Recon Wildlands
             const wildlandsPaths = ['T.C.G.R.Wildlands', 'ghost-recon-wildlands'];
             wildlandsPaths.forEach(gameDocId => {
                 onSnapshot(doc(database, 'users', docId, 'progress', gameDocId), (snap) => {
@@ -1480,9 +1538,8 @@ function refreshData() {
     fetchMovieData(); 
 }
 
-/* === SECTION: Initialization === */
+/* === SECTION: System Boot & Initialization === */
 window.addEventListener('DOMContentLoaded', () => {
-    // Restore saved theme colors on boot
     const savedPrimary = localStorage.getItem('user_primary_color');
     const savedSecondary = localStorage.getItem('user_secondary_color');
     if (savedPrimary || savedSecondary) {
