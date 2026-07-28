@@ -1,12 +1,26 @@
 /* === SECTION: File Header & System Architecture === */
 /*
-    Version: 1.3.0
-    Timestamp: 2026-07-28T04:00:00Z
-    System: Werewolf Project - Master Single Page Application (SPA) Engine
-    Architecture: Pure ESM Modules (Firebase v11 + Firestore + Realtime Database)
-    Routing: Client-Side Hash Routing (#/ and #/settings)
-    Features: Persistent Local Auth, Email-to-Operator Mapping, Platform-Isolated Progress (/users/{Operator}/progress/{platform}),
-              Dynamic Google Sheets Navigation, Weather API, Twitch Stream Status, and Theme Color Customization.
+    ==========================================================================
+    --- PRECISION INTEGRITY PROTOCOL ---
+    System: Master Single Page Application (SPA) Engine & Navigation Hub
+    Version: 1.5.0-Wolf
+    Timestamp: Tue, July 28, 2026 | 06:00:00 AM EDT
+    Compatibility: Chrome, Safari, Firefox, Edge | Mobile, Tablet, Desktop
+    GitHub Repository Paths Synced:
+      - /Movies.html
+      - /security/settings.html
+      - /data/game-platforms.json
+      - /users/werewolf/profile.html (wildhorse_spirit)
+      - /users/raymystyro/profile.html (ray)
+      - /users/terrodog/profile.html (darkwing / darkwing69420)
+      - /games/HunterCOTW/cotw.html
+      - /games/Sniper-Elite/5/index.html
+      - /games/Sniper-Elite/SE-Resistance.html
+      - /games/Tom-Clancy/Ghost Recon/Wildlands
+      - /games/Tom-Clancy/thedivision/1.html
+      - /games/Tom-Clancy/thedivision/2.html
+      - /games/FS25/index.html
+    ==========================================================================
 */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
@@ -25,9 +39,9 @@ import {
     onAuthStateChanged 
 } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
-import { getDatabase } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js';
+import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js';
 
-/* === SECTION: User & Admin Email Configuration === */
+/* === SECTION: Firebase Configuration & Identity Mapping === */
 const firebaseConfig = {
     apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
     authDomain: "game-tracker-5b2ef.firebaseapp.com",
@@ -48,13 +62,13 @@ const EMAIL_OPERATOR_MAP = {
 
 // Gamertag & Display Name Mapping Matrix
 const USER_DATA_MAP = {
-    // Werewolf3788 (PSN: WildHorse_Spirit)
+    // Werewolf3788 (PSN: WildHorse_Spirit / RTDB: wildhorse_spirit)
     'Werewolf3788': 'Werewolf3788',
     'werewolf3788': 'Werewolf3788',
     'WildHorse_Spirit': 'Werewolf3788',
     'wildhorse_spirit': 'Werewolf3788',
 
-    // Raymystyro (PSN: OneLIVIDMAN)
+    // Raymystyro (PSN: OneLIVIDMAN / RTDB: ray)
     'Raymystyro': 'Raymystyro',
     'raymystyro': 'Raymystyro',
     'OneLIVIDMAN': 'Raymystyro',
@@ -65,11 +79,17 @@ const USER_DATA_MAP = {
     'desdemonatiger': 'DesdemonaTiger',
     'Desdemona Tiger': 'DesdemonaTiger',
 
-    // terrdog420 (PSN: Darkwing69420)
+    // terrdog420 (PSN: Darkwing69420 / RTDB: darkwing)
     'terrdog420': 'terrdog420',
     'Terrdog420': 'terrdog420',
     'Darkwing69420': 'terrdog420',
-    'darkwing69420': 'terrdog420'
+    'darkwing69420': 'terrdog420',
+    'TJ': 'terrdog420',
+    'tj': 'terrdog420',
+
+    // Marc
+    'Marc': 'Marc',
+    'marc': 'Marc'
 };
 
 const PROVIDER_METADATA = {
@@ -79,30 +99,32 @@ const PROVIDER_METADATA = {
     'twitter.com': { name: 'Twitter / X', icon: 'fa-brands fa-x-twitter text-slate-300', getProvider: () => new TwitterAuthProvider() }
 };
 
-let app, auth, db, rtdb, currentUser = null;
+let app, auth, db, rtdb;
+let currentUser = null;
+let currentActiveHunterTarget = 'Werewolf3788';
+let liveFirestoreUnsubscribes = [];
+
 const googleProvider = new GoogleAuthProvider();
 
-// Resolves logged-in user or display name cleanly to an Operator Profile Handle
+// Helper: Resolves logged-in user or display name cleanly to an Operator Profile Handle
 function resolveOperatorHandle(user) {
     if (!user) return "Guest";
-
     const userEmail = (user.email || "").toLowerCase();
     if (EMAIL_OPERATOR_MAP[userEmail]) {
         return EMAIL_OPERATOR_MAP[userEmail];
     }
-
     const rawName = user.displayName || userEmail.split('@')[0];
     return USER_DATA_MAP[rawName] || USER_DATA_MAP[user.displayName] || rawName;
 }
 
-/* === SECTION: SPA View Templates === */
+/* === SECTION: SPA Template Engine (Home & Settings Views) === */
 function renderHomeView() {
     return `
-    <!-- Hero Section -->
+    <!-- Hero Header -->
     <header class="section-padding px-4 flex-grow flex items-center">
         <div class="max-w-4xl mx-auto text-center">
-            <h1>Knowing the Players</h1>
-            <p class="mt-6 text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            <h1 class="text-4xl lg:text-6xl font-black uppercase text-white tracking-tight">Knowing the Players</h1>
+            <p class="mt-6 text-slate-400 max-w-2xl mx-auto leading-relaxed text-sm lg:text-base">
                 We all have a PS5 or a PlayStation account, though our usernames are not our gamertags. Click on each player and view their profile to see how they progress through their gaming world.
             </p>
         </div>
@@ -112,81 +134,81 @@ function renderHomeView() {
     <section id="team" class="section-padding bg-slate-900/50">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12">
-                <h2>Project Contributors</h2>
+                <h2 class="text-2xl lg:text-4xl font-black uppercase text-white">Project Contributors</h2>
                 <div class="h-1 w-20 bg-sky-500 mx-auto mt-4 rounded-full"></div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Werewolf3788 -->
-                <div id="card-werewolf" class="custom-card p-6 text-center shadow-werewolf">
+                <div id="card-werewolf" class="custom-card p-6 text-center shadow-werewolf relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80">
                     <div class="weather-layer" id="layer-werewolf"></div>
-                    <div class="card-content">
+                    <div class="card-content relative z-10">
                         <div class="w-24 h-24 mx-auto mb-4 relative">
                             <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-70x70.png" 
-                                 class="w-full h-full rounded-full border-2 border-werewolf object-cover shadow-lg">
+                                 class="w-full h-full rounded-full border-2 border-orange-500 object-cover shadow-lg">
                             <div id="twitch-status-indicator-werewolf" class="hidden absolute bottom-1 right-1">
-                                <span class="status-pulse"></span>
+                                <span class="w-3 h-3 bg-emerald-500 rounded-full inline-block animate-ping"></span>
                             </div>
                         </div>
-                        <h3 class="text-xl mb-1 text-white">Werewolf3788</h3>
-                        <p class="text-werewolf text-xs font-bold uppercase tracking-tighter mb-1">Admin / Streamer</p>
-                        <p id="weather-desc-werewolf" class="weather-desc text-[10px] opacity-70 mb-2 italic">Updating weather...</p>
+                        <h3 class="text-xl font-bold mb-1 text-white">Werewolf3788</h3>
+                        <p class="text-orange-500 text-xs font-bold uppercase tracking-tighter mb-1">Admin / Streamer</p>
+                        <p id="weather-desc-werewolf" class="weather-desc text-[10px] opacity-70 mb-2 italic text-slate-300">Updating weather...</p>
                         <div class="mb-4 min-h-[20px]">
                             <p id="twitch-game-werewolf" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking Twitch...</p>
                         </div>
-                        <a href="./users/kevin/website.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-werewolf text-xs transition-colors">Visit Profile</a>
+                        <a href="#/werewolf" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-orange-500 text-xs transition-colors py-1">Visit Profile</a>
                     </div>
                 </div>
 
                 <!-- Raymystyro -->
-                <div id="card-ray" class="custom-card p-6 text-center shadow-ray">
+                <div id="card-ray" class="custom-card p-6 text-center shadow-ray relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80">
                     <div class="weather-layer" id="layer-ray"></div>
-                    <div class="card-content">
+                    <div class="card-content relative z-10">
                         <div class="w-24 h-24 mx-auto mb-4 relative">
                             <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-70x70.png" 
-                                 class="w-full h-full rounded-full border-2 border-ray object-cover shadow-lg">
+                                 class="w-full h-full rounded-full border-2 border-red-500 object-cover shadow-lg">
                             <div id="twitch-status-indicator-ray" class="hidden absolute bottom-1 right-1">
-                                <span class="status-pulse"></span>
+                                <span class="w-3 h-3 bg-emerald-500 rounded-full inline-block animate-ping"></span>
                             </div>
                         </div>
-                        <h3 class="text-xl mb-1 text-white">Raymystyro</h3>
-                        <p class="text-ray text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
-                        <p id="weather-desc-ray" class="weather-desc text-[10px] opacity-70 mb-2 italic">Updating weather...</p>
+                        <h3 class="text-xl font-bold mb-1 text-white">Raymystyro</h3>
+                        <p class="text-red-500 text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
+                        <p id="weather-desc-ray" class="weather-desc text-[10px] opacity-70 mb-2 italic text-slate-300">Updating weather...</p>
                         <div class="mb-4 min-h-[20px]">
                             <p id="twitch-game-ray" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking Twitch...</p>
                         </div>
-                        <a href="./users/ray/website.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-ray text-xs transition-colors">Visit Profile</a>
+                        <a href="#/raymystyro" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-red-500 text-xs transition-colors py-1">Visit Profile</a>
                     </div>
                 </div>
 
                 <!-- Terrdog420 -->
-                <div id="card-tj" class="custom-card p-6 text-center shadow-terrdog">
+                <div id="card-tj" class="custom-card p-6 text-center shadow-terrdog relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/80">
                     <div class="weather-layer" id="layer-tj"></div>
-                    <div class="card-content">
+                    <div class="card-content relative z-10">
                         <div class="w-24 h-24 mx-auto mb-4 relative">
                             <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/9dad426e-04cb-4fc0-a917-25982b3800ce-profile_image-70x70.png" 
-                                 class="w-full h-full rounded-full border-2 border-terrdog object-cover shadow-lg">
+                                 class="w-full h-full rounded-full border-2 border-purple-500 object-cover shadow-lg">
                             <div id="twitch-status-indicator-tj" class="hidden absolute bottom-1 right-1">
-                                <span class="status-pulse"></span>
+                                <span class="w-3 h-3 bg-emerald-500 rounded-full inline-block animate-ping"></span>
                             </div>
                         </div>
-                        <h3 class="text-xl mb-1 text-white">Terrdog420</h3>
-                        <p class="text-terrdog text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
-                        <p id="weather-desc-tj" class="weather-desc text-[10px] opacity-70 mb-2 italic">Updating weather...</p>
+                        <h3 class="text-xl font-bold mb-1 text-white">Terrdog420</h3>
+                        <p class="text-purple-400 text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
+                        <p id="weather-desc-tj" class="weather-desc text-[10px] opacity-70 mb-2 italic text-slate-300">Updating weather...</p>
                         <div class="mb-4 min-h-[20px]">
                             <p id="twitch-game-tj" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking Twitch...</p>
                         </div>
-                        <a href="./users/tj/overlay.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-terrdog text-xs transition-colors">Visit Profile</a>
+                        <a href="#/terrdog" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-purple-500 text-xs transition-colors py-1">Visit Profile</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Movie Library Section -->
+    <!-- Werewolf Cinema Section -->
     <section class="section-padding bg-slate-900/30">
         <div class="max-w-7xl mx-auto px-4">
-            <div id="cinema-container" class="custom-card p-10 border border-orange-500/30 flex flex-col items-center justify-center shadow-orange-500/10 shadow-2xl text-center relative overflow-hidden min-h-[500px]">
+            <div id="cinema-container" class="custom-card p-10 border border-orange-500/30 flex flex-col items-center justify-center shadow-orange-500/10 shadow-2xl text-center relative overflow-hidden min-h-[500px] rounded-2xl bg-slate-950">
                 <div id="cinema-layer-1" class="absolute inset-0 transition-opacity duration-1000 opacity-100 z-0">
                     <div class="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-50"></div>
                     <div class="absolute inset-0 bg-contain bg-center bg-no-repeat drop-shadow-2xl"></div>
@@ -198,31 +220,32 @@ function renderHomeView() {
                 <div class="absolute inset-0 bg-slate-950/70 z-0"></div>
                 
                 <div class="relative z-10 flex flex-col items-center justify-center gap-6 w-full">
-                    <h2 class="text-orange-500 outline-text">Werewolf Cinema</h2>
-                    <p class="text-slate-200 font-bold outline-text max-w-md">Access the list of Movies I own digitally, plus see what they're streaming on. Google, YouTube, Apple, Fandango, and Movies Anywhere are manually integrated, along with Amazon affiliate search. Enjoy!</p>
+                    <h2 class="text-3xl font-black text-orange-500 uppercase tracking-wider">Werewolf Cinema</h2>
+                    <p class="text-slate-200 font-bold max-w-md text-sm leading-relaxed">
+                        Access the list of Movies I own digitally, plus see what they're streaming on. Google, YouTube, Apple, Fandango, and Movies Anywhere are manually integrated, along with Amazon affiliate search. Enjoy!
+                    </p>
                     
-                    <a href="https://werewolf3788.github.io/Website/Movies.html" 
-                       target="werewolf_cinema_window" 
-                       class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 px-10 rounded-lg transition-all shadow-[0_0_15px_rgba(255,95,31,0.5)] border border-orange-400 outline-text">
-                        MOVIES
+                    <a href="#/movies" 
+                       class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 px-10 rounded-lg transition-all shadow-[0_0_15px_rgba(255,95,31,0.5)] border border-orange-400">
+                        EXPLORE MOVIES
                     </a>
                     
                     <div class="mt-2 flex flex-col items-center">
-                        <span class="text-slate-300 text-xs font-black uppercase tracking-widest outline-text">Total Titles in Archive</span>
-                        <span id="movie-count" class="text-4xl font-black text-white mt-1 outline-text drop-shadow-[0_0_10px_rgba(255,95,31,0.8)]">Loading...</span>
+                        <span class="text-slate-300 text-xs font-black uppercase tracking-widest">Total Titles in Archive</span>
+                        <span id="movie-count" class="text-4xl font-black text-white mt-1 drop-shadow-[0_0_10px_rgba(255,95,31,0.8)]">Loading...</span>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SMART FIREBASE GAMING MODULES SECTION -->
+    <!-- SMART FIRESTORE GAMING MODULES SECTION -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
                 <div>
                     <span class="text-sky-500 font-bold uppercase tracking-widest text-xs">Real-Time Cloud Telemetry</span>
-                    <h2 class="mt-2">Active Gaming Modules</h2>
+                    <h2 class="text-2xl lg:text-3xl font-black text-white uppercase mt-1">Active Gaming Modules</h2>
                     <p class="mt-2 text-slate-400 text-sm max-w-xl">
                         Smart Module Filter: Games only display when active progress is detected in Firestore.
                     </p>
@@ -235,7 +258,7 @@ function renderHomeView() {
 
             <div id="smart-games-grid" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <!-- MODULE 1: SE5 -->
-                <div id="module-se5" class="hidden custom-card p-6 border border-amber-500/30 flex-col justify-between hover:border-amber-500/60 transition-all">
+                <div id="module-se5" class="hidden custom-card p-6 border border-amber-500/30 flex-col justify-between hover:border-amber-500/60 transition-all rounded-2xl bg-slate-900/80">
                     <div>
                         <div class="flex justify-between items-center mb-3">
                             <span class="text-[10px] font-black uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded">Sniper Elite 5</span>
@@ -245,14 +268,14 @@ function renderHomeView() {
                         <p class="text-slate-400 text-xs mb-6 italic">Full mission collectibles, workbenches, stone eagles, and personal letters.</p>
                         <div id="se5-progress-container" class="space-y-3 mb-6"></div>
                     </div>
-                    <a href="./games/sniper-elite-5.html" class="mt-4 w-full text-center bg-slate-800 hover:bg-amber-600 text-slate-200 hover:text-white font-bold py-2.5 px-4 rounded-lg text-xs transition-all border border-slate-700 flex items-center justify-center gap-2">
+                    <a href="#/games/se5" class="mt-4 w-full text-center bg-slate-800 hover:bg-amber-600 text-slate-200 hover:text-white font-bold py-2.5 px-4 rounded-lg text-xs transition-all border border-slate-700 flex items-center justify-center gap-2">
                         <span>Open SE5 Master Tracker</span>
                         <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </a>
                 </div>
 
                 <!-- MODULE 2: COTW -->
-                <div id="module-cotw" class="hidden custom-card p-6 border border-emerald-500/30 flex-col justify-between hover:border-emerald-500/60 transition-all">
+                <div id="module-cotw" class="hidden custom-card p-6 border border-emerald-500/30 flex-col justify-between hover:border-emerald-500/60 transition-all rounded-2xl bg-slate-900/80">
                     <div>
                         <div class="flex justify-between items-center mb-3">
                             <span class="text-[10px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded">theHunter: COTW</span>
@@ -267,14 +290,14 @@ function renderHomeView() {
                         </div>
                         <div id="cotw-progress-container" class="space-y-3 mb-6"></div>
                     </div>
-                    <a href="./games/thehunter-call-of-the-wild.html" class="mt-4 w-full text-center bg-slate-800 hover:bg-emerald-600 text-slate-200 hover:text-white font-bold py-2.5 px-4 rounded-lg text-xs transition-all border border-slate-700 flex items-center justify-center gap-2">
+                    <a href="#/games/cotw" class="mt-4 w-full text-center bg-slate-800 hover:bg-emerald-600 text-slate-200 hover:text-white font-bold py-2.5 px-4 rounded-lg text-xs transition-all border border-slate-700 flex items-center justify-center gap-2">
                         <span>Open COTW Master Tracker</span>
                         <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </a>
                 </div>
 
                 <!-- MODULE 3: SER -->
-                <div id="module-ser" class="hidden custom-card p-6 border border-sky-500/30 flex-col justify-between hover:border-sky-500/60 transition-all">
+                <div id="module-ser" class="hidden custom-card p-6 border border-sky-500/30 flex-col justify-between hover:border-sky-500/60 transition-all rounded-2xl bg-slate-900/80">
                     <div>
                         <div class="flex justify-between items-center mb-3">
                             <span class="text-[10px] font-black uppercase tracking-wider bg-sky-500/10 text-sky-400 border border-sky-500/30 px-2 py-0.5 rounded">Sniper Elite Resistance</span>
@@ -284,7 +307,7 @@ function renderHomeView() {
                         <p class="text-slate-400 text-xs mb-6 italic">Campaign kill lists, hidden items, gnomes, propaganda posters, and trophies.</p>
                         <div id="ser-progress-container" class="space-y-3 mb-6"></div>
                     </div>
-                    <a href="./games/sniper-elite-resistance.html" class="mt-4 w-full text-center bg-slate-800 hover:bg-sky-600 text-slate-200 hover:text-white font-bold py-2.5 px-4 rounded-lg text-xs transition-all border border-slate-700 flex items-center justify-center gap-2">
+                    <a href="#/games/se-resistance" class="mt-4 w-full text-center bg-slate-800 hover:bg-sky-600 text-slate-200 hover:text-white font-bold py-2.5 px-4 rounded-lg text-xs transition-all border border-slate-700 flex items-center justify-center gap-2">
                         <span>Open Resistance Tracker</span>
                         <i class="fa-solid fa-arrow-right text-[10px]"></i>
                     </a>
@@ -292,16 +315,16 @@ function renderHomeView() {
             </div>
 
             <!-- GHOST RECON WILDLANDS MATRIX -->
-            <div id="module-grw" class="hidden mt-10 custom-card p-8 border border-red-600/40 shadow-red-950/20 shadow-2xl">
+            <div id="module-grw" class="hidden mt-10 custom-card p-8 border border-red-600/40 shadow-red-950/20 shadow-2xl rounded-2xl bg-slate-950">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 border-b border-red-900/50 pb-4 gap-4">
                     <div>
                         <div class="flex items-center gap-2">
                             <span class="text-[10px] font-black uppercase tracking-wider bg-red-600/20 text-red-400 border border-red-500/40 px-2.5 py-0.5 rounded">Tom Clancy's Ghost Recon</span>
                             <span class="text-xs font-mono text-slate-400">Wildlands Operative Telemetry</span>
                         </div>
-                        <h3 class="text-2xl font-black text-white mt-1">Ghost Recon: Wildlands Matrix</h3>
+                        <h3 class="text-2xl font-black text-white mt-1 uppercase">Ghost Recon: Wildlands Matrix</h3>
                     </div>
-                    <a href="./games/ghost-recon-wildlands.html" class="bg-red-600 hover:bg-red-500 text-white font-bold text-xs py-2 px-5 rounded-lg border border-red-400 transition-all flex items-center gap-2">
+                    <a href="#/games/wildlands" class="bg-red-600 hover:bg-red-500 text-white font-bold text-xs py-2 px-5 rounded-lg border border-red-400 transition-all flex items-center gap-2">
                         <span>Launch Wildlands Portal</span>
                         <i class="fa-solid fa-up-right-from-square text-[10px]"></i>
                     </a>
@@ -332,7 +355,7 @@ function renderSettingsView() {
     return `
     <section class="max-w-5xl w-full mx-auto px-4 py-8 flex-grow">
         <div class="mb-8 border-b border-slate-800 pb-4">
-            <h1 class="text-3xl font-black text-sky-400 flex items-center gap-3">
+            <h1 class="text-3xl font-black text-sky-400 flex items-center gap-3 uppercase">
                 <i class="fa-solid fa-sliders text-2xl"></i>
                 <span>Operator Profile &amp; Control Settings</span>
             </h1>
@@ -341,11 +364,26 @@ function renderSettingsView() {
 
         <form id="settingsForm" class="space-y-8">
             
-            <!-- CARD 1: Operator Identity -->
-            <div class="custom-card p-6 border border-slate-700">
-                <div class="flex items-center gap-3 border-b border-slate-700/60 pb-3 mb-6">
-                    <i class="fa-solid fa-id-card text-sky-400 text-lg"></i>
-                    <h2 class="text-lg font-bold text-white">1. Operator Identity</h2>
+            <!-- CARD 1: Operator Identity & Admin Selector -->
+            <div class="custom-card p-6 border border-slate-700 rounded-2xl bg-slate-900/90">
+                <div class="flex items-center justify-between border-b border-slate-700/60 pb-3 mb-6">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-id-card text-sky-400 text-lg"></i>
+                        <h2 class="text-lg font-bold text-white uppercase">1. Operator Identity</h2>
+                    </div>
+
+                    <!-- Admin User Switcher Block -->
+                    <div id="adminUserSelectContainer" class="hidden flex items-center gap-2">
+                        <span class="text-[10px] font-black uppercase text-amber-400 bg-amber-950/80 px-2 py-1 rounded border border-amber-500/40">
+                            ⚡ ADMIN SWITCHER
+                        </span>
+                        <select id="adminUserSelect" class="bg-slate-950 text-orange-400 border border-orange-500 font-bold text-xs py-1 px-3 rounded-lg">
+                            <option value="Werewolf3788">Werewolf3788</option>
+                            <option value="Raymystyro">Raymystyro</option>
+                            <option value="terrdog420">terrdog420</option>
+                            <option value="DesdemonaTiger">DesdemonaTiger</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -353,7 +391,7 @@ function renderSettingsView() {
                         <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">
                             Operator Profile Name <span class="text-amber-400">*</span>
                         </label>
-                        <input type="text" id="operatorNameInput" required placeholder="e.g. Werewolf3788" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
+                        <input type="text" id="operatorNameInput" required placeholder="e.g. Werewolf3788" class="w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
                         <p class="text-[11px] text-slate-500 mt-1 italic">This is your primary identifier across game trackers and leaderboard matrices.</p>
                     </div>
 
@@ -361,24 +399,24 @@ function renderSettingsView() {
                         <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">
                             Custom Avatar Image URL
                         </label>
-                        <input type="url" id="avatarUrlInput" placeholder="https://..." class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
+                        <input type="url" id="avatarUrlInput" placeholder="https://..." class="w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
                         <p class="text-[11px] text-slate-500 mt-1 italic">Leave blank to default to your Google profile photo.</p>
                     </div>
                 </div>
             </div>
 
             <!-- CARD 2: Visual Theme Customization -->
-            <div class="custom-card p-6 border border-slate-700">
+            <div class="custom-card p-6 border border-slate-700 rounded-2xl bg-slate-900/90">
                 <div class="flex items-center gap-3 border-b border-slate-700/60 pb-3 mb-6">
                     <i class="fa-solid fa-palette text-amber-500 text-lg"></i>
-                    <h2 class="text-lg font-bold text-white">2. Visual Theme &amp; Accent Customization</h2>
+                    <h2 class="text-lg font-bold text-white uppercase">2. Visual Theme &amp; Accent Customization</h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-center">
                     <div>
                         <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">Primary Accent Color</label>
                         <div class="flex items-center gap-3">
-                            <input type="color" id="primaryColorInput" value="#ff5f1f" class="w-12 h-10 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                            <input type="color" id="primaryColorInput" value="#ff5f1f" class="w-12 h-10 bg-slate-950 border border-slate-700 rounded cursor-pointer p-0.5">
                             <span id="primaryHexLabel" class="font-mono text-xs text-slate-300">#FF5F1F</span>
                         </div>
                     </div>
@@ -386,13 +424,13 @@ function renderSettingsView() {
                     <div>
                         <label class="block text-xs font-black uppercase text-slate-300 tracking-wider mb-2">Secondary Accent Color</label>
                         <div class="flex items-center gap-3">
-                            <input type="color" id="secondaryColorInput" value="#38bdf8" class="w-12 h-10 bg-slate-900 border border-slate-700 rounded cursor-pointer p-0.5">
+                            <input type="color" id="secondaryColorInput" value="#38bdf8" class="w-12 h-10 bg-slate-950 border border-slate-700 rounded cursor-pointer p-0.5">
                             <span id="secondaryHexLabel" class="font-mono text-xs text-slate-300">#38BDF8</span>
                         </div>
                     </div>
 
                     <!-- Live Theme Preview Box -->
-                    <div id="themePreviewBox" class="p-4 rounded-xl border border-slate-700 bg-slate-900/90 text-center space-y-2">
+                    <div id="themePreviewBox" class="p-4 rounded-xl border border-slate-700 bg-slate-950 text-center space-y-2">
                         <div class="text-[10px] font-black uppercase tracking-widest text-slate-400">Live Card Preview</div>
                         <div class="text-sm font-black text-primary-dynamic">Operator Theme Active</div>
                         <div class="text-xs font-semibold text-secondary-dynamic">Secondary Highlight Line</div>
@@ -402,10 +440,10 @@ function renderSettingsView() {
             </div>
 
             <!-- CARD 3: Multi-Platform Gamertags Matrix -->
-            <div class="custom-card p-6 border border-slate-700">
+            <div class="custom-card p-6 border border-slate-700 rounded-2xl bg-slate-900/90">
                 <div class="flex items-center gap-3 border-b border-slate-700/60 pb-3 mb-6">
                     <i class="fa-solid fa-gamepad text-emerald-400 text-lg"></i>
-                    <h2 class="text-lg font-bold text-white">3. Multi-Platform Gamertags</h2>
+                    <h2 class="text-lg font-bold text-white uppercase">3. Multi-Platform Gamertags</h2>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -414,7 +452,7 @@ function renderSettingsView() {
                             <i class="fa-brands fa-playstation text-blue-500"></i>
                             <span>PlayStation Network (PSN)</span>
                         </label>
-                        <input type="text" id="psnTagInput" placeholder="e.g. WildHorse_Spirit" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
+                        <input type="text" id="psnTagInput" placeholder="e.g. WildHorse_Spirit" class="w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
                     </div>
 
                     <div>
@@ -422,7 +460,7 @@ function renderSettingsView() {
                             <i class="fa-brands fa-xbox text-emerald-500"></i>
                             <span>Xbox Live Gamertag</span>
                         </label>
-                        <input type="text" id="xboxTagInput" placeholder="e.g. Werewolf3788" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
+                        <input type="text" id="xboxTagInput" placeholder="e.g. Werewolf3788" class="w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
                     </div>
 
                     <div>
@@ -430,7 +468,7 @@ function renderSettingsView() {
                             <i class="fa-brands fa-steam text-slate-300"></i>
                             <span>Steam ID / Vanity URL</span>
                         </label>
-                        <input type="text" id="steamTagInput" placeholder="e.g. 76561198000000000" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
+                        <input type="text" id="steamTagInput" placeholder="e.g. 76561198000000000" class="w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
                     </div>
 
                     <div>
@@ -438,7 +476,7 @@ function renderSettingsView() {
                             <i class="fa-solid fa-bolt text-purple-400"></i>
                             <span>Epic Games Display Name</span>
                         </label>
-                        <input type="text" id="epicTagInput" placeholder="e.g. Werewolf_Epic" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
+                        <input type="text" id="epicTagInput" placeholder="e.g. Werewolf_Epic" class="w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
                     </div>
 
                     <div>
@@ -446,7 +484,7 @@ function renderSettingsView() {
                             <i class="fa-solid fa-e text-red-500 font-black"></i>
                             <span>EA App / Origin ID</span>
                         </label>
-                        <input type="text" id="eaTagInput" placeholder="e.g. Werewolf_EA" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
+                        <input type="text" id="eaTagInput" placeholder="e.g. Werewolf_EA" class="w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
                     </div>
 
                     <div>
@@ -454,35 +492,35 @@ function renderSettingsView() {
                             <i class="fa-solid fa-circle-notch text-sky-400"></i>
                             <span>Ubisoft Connect Username</span>
                         </label>
-                        <input type="text" id="ubisoftTagInput" placeholder="e.g. Werewolf_Ubi" class="w-full bg-slate-900 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
+                        <input type="text" id="ubisoftTagInput" placeholder="e.g. Werewolf_Ubi" class="w-full bg-slate-950 border border-slate-700 rounded-lg py-2.5 px-4 text-sm text-white focus:outline-none focus:border-sky-400 transition-colors">
                     </div>
                 </div>
             </div>
 
             <!-- CARD 4: Linked Authentication Accounts -->
-            <div class="custom-card p-6 border border-slate-700">
+            <div class="custom-card p-6 border border-slate-700 rounded-2xl bg-slate-900/90">
                 <div class="flex items-center justify-between border-b border-slate-700/60 pb-3 mb-6">
                     <div class="flex items-center gap-3">
                         <i class="fa-solid fa-link text-purple-400 text-lg"></i>
-                        <h2 class="text-lg font-bold text-white">4. Linked Authentication Accounts</h2>
+                        <h2 class="text-lg font-bold text-white uppercase">4. Linked Authentication Accounts</h2>
                     </div>
-                    <span class="text-[10px] font-mono text-slate-400 bg-slate-900 px-2 py-1 rounded border border-slate-800">
+                    <span class="text-[10px] font-mono text-slate-400 bg-slate-950 px-2 py-1 rounded border border-slate-800">
                         FIREBASE AUTO-SYNC
                     </span>
                 </div>
 
                 <div id="dynamicProvidersList" class="space-y-4">
-                    <div class="text-xs text-slate-400 italic text-center py-4 bg-slate-900/40 rounded-xl border border-slate-800">
+                    <div class="text-xs text-slate-400 italic text-center py-4 bg-slate-950 rounded-xl border border-slate-800">
                         Sign in to view your connected authentication accounts.
                     </div>
                 </div>
 
-                <div id="linkNewAccountContainer" class="hidden mt-4 pt-4 border-t border-slate-800/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div id="linkNewAccountContainer" class="hidden mt-4 pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div class="text-xs text-slate-400">
                         <span class="font-bold text-slate-200">Want to connect another login method?</span> Select a provider to link it to your profile.
                     </div>
                     <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <select id="linkProviderSelect" class="bg-slate-900 border border-slate-700 text-xs text-white rounded-lg py-2 px-3 focus:outline-none focus:border-sky-400">
+                        <select id="linkProviderSelect" class="bg-slate-950 border border-slate-700 text-xs text-white rounded-lg py-2 px-3 focus:outline-none focus:border-sky-400">
                             <option value="google.com">Google</option>
                             <option value="facebook.com">Facebook</option>
                             <option value="github.com">GitHub</option>
@@ -494,26 +532,12 @@ function renderSettingsView() {
                         </button>
                     </div>
                 </div>
-
-                <div class="mt-6 pt-4 border-t border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                    <div class="flex items-center gap-3">
-                        <i class="fa-solid fa-shield-halved text-sky-400 text-lg"></i>
-                        <div>
-                            <div class="text-xs font-bold text-white">Data Privacy &amp; Encryption Standards</div>
-                            <div class="text-[11px] text-slate-400">Read our official data handling and credentials privacy policy documentation.</div>
-                        </div>
-                    </div>
-                    <a href="https://github.com/Werewolf3788/Website/blob/main/security/privacy.html" target="_blank" rel="noopener noreferrer" class="text-sky-400 hover:text-sky-300 text-xs font-bold underline flex items-center gap-1.5 shrink-0">
-                        <span>View Privacy Policy</span>
-                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
-                    </a>
-                </div>
             </div>
 
             <!-- Submit Controls -->
             <div class="flex items-center justify-between pt-4">
                 <span id="saveStatusMessage" class="text-xs font-mono font-bold text-emerald-400"></span>
-                <button type="submit" id="saveSettingsBtn" class="btn-primary-dynamic font-black text-sm py-3 px-8 rounded-xl shadow-lg border border-white/20 transition-all flex items-center gap-2 cursor-pointer">
+                <button type="submit" id="saveSettingsBtn" class="bg-orange-600 hover:bg-orange-500 text-white font-black text-sm py-3 px-8 rounded-xl shadow-lg border border-orange-400 transition-all flex items-center gap-2 cursor-pointer">
                     <i class="fa-solid fa-floppy-disk"></i>
                     <span>Save Operator Profile Settings</span>
                 </button>
@@ -524,51 +548,94 @@ function renderSettingsView() {
     `;
 }
 
-function renderNotFoundView() {
-    return `
-    <div class="section-padding text-center flex-grow flex flex-col items-center justify-center">
-        <h1 class="text-6xl text-sky-400 font-black mb-4">404</h1>
-        <p class="text-slate-300 text-lg mb-6">Page view not found inside Werewolf Project SPA.</p>
-        <a href="#/" class="bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-6 rounded-lg border border-sky-400 transition-all">
-            Return Home
-        </a>
-    </div>
-    `;
-}
-
-/* === SECTION: Router Engine === */
-const routes = {
-    '/': renderHomeView,
+/* === SECTION: Exact GitHub Route Mapping Engine === */
+const ROUTE_MAP = {
     '#/': renderHomeView,
+    '#': renderHomeView,
+    '': renderHomeView,
     '#/settings': renderSettingsView,
-    'settings.html': renderSettingsView
+    '#/werewolf': './users/werewolf/profile.html',
+    '#/raymystyro': './users/raymystyro/profile.html',
+    '#/terrdog': './users/terrodog/profile.html',
+    '#/movies': './Movies.html',
+    '#/games/cotw': './games/HunterCOTW/cotw.html',
+    '#/games/se5': './games/Sniper-Elite/5/index.html',
+    '#/games/se-resistance': './games/Sniper-Elite/SE-Resistance.html',
+    '#/games/wildlands': './games/Tom-Clancy/Ghost Recon/Wildlands/index.html',
+    '#/games/division1': './games/Tom-Clancy/thedivision/1.html',
+    '#/games/division2': './games/Tom-Clancy/thedivision/2.html',
+    '#/games/fs25': './games/FS25/index.html'
 };
 
-function router() {
+export async function router() {
     const viewContainer = document.getElementById('app-view');
     if (!viewContainer) return;
 
     let hash = window.location.hash || '#/';
-    if (window.location.pathname.endsWith('settings.html')) {
-        hash = '#/settings';
-    }
+    let routeTarget = ROUTE_MAP[hash];
 
-    const viewFn = routes[hash] || renderNotFoundView;
-    viewContainer.innerHTML = viewFn();
+    if (typeof routeTarget === 'function') {
+        // Internal Inline SPA Templates
+        viewContainer.innerHTML = routeTarget();
 
-    if (hash === '#/' || hash === '') {
-        refreshData();
-        if (db) attachSmartGameProgressListeners(db);
-    } else if (hash === '#/settings') {
-        initSettingsEventListeners();
-        if (currentUser) loadUserSettingsToForm(currentUser);
-        renderSmartProviders(currentUser);
+        if (hash === '#/' || hash === '#' || hash === '') {
+            refreshData();
+            if (db) attachSmartGameProgressListeners(db);
+        } else if (hash === '#/settings') {
+            initSettingsEventListeners();
+            if (currentUser) loadUserSettingsToForm(currentUser);
+            renderSmartProviders(currentUser);
+        }
+    } else {
+        // External GitHub HTML Dynamic Loader
+        let targetPath = routeTarget;
+        if (!targetPath) {
+            if (hash.startsWith('#/users/')) {
+                targetPath = '.' + hash.replace('#', '') + '/profile.html';
+            } else if (hash.startsWith('#/games/')) {
+                targetPath = '.' + hash.replace('#', '') + '.html';
+            } else {
+                targetPath = './users/werewolf/profile.html';
+            }
+        }
+
+        try {
+            const res = await fetch(`${targetPath}?v=${Date.now()}`);
+            if (res.ok) {
+                const htmlText = await res.text();
+                const parser = new DOMParser();
+                const docParsed = parser.parseFromString(htmlText, 'text/html');
+                
+                viewContainer.innerHTML = docParsed.body ? docParsed.body.innerHTML : htmlText;
+
+                // Re-execute loaded HTML inline script tags
+                const scripts = viewContainer.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+                    newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+                    oldScript.parentNode.replaceChild(newScript, oldScript);
+                });
+
+                console.log(`[ROUTER] Injected view: ${targetPath}`);
+            } else {
+                viewContainer.innerHTML = `
+                    <div class="text-center py-20">
+                        <h1 class="text-6xl text-sky-400 font-black mb-4">404</h1>
+                        <p class="text-slate-300 text-lg mb-6">Could not load view from: ${targetPath}</p>
+                        <a href="#/" class="bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-6 rounded-lg border border-sky-400 transition-all">Return Home</a>
+                    </div>
+                `;
+            }
+        } catch (err) {
+            console.error("[ROUTER FETCH ERROR]", err);
+        }
     }
 }
 
 window.addEventListener('hashchange', router);
 
-/* === SECTION: Settings Event Handlers & Theme Logic === */
+/* === SECTION: Dynamic CSS Variable & Settings Theme Engine === */
 function setGamertagCookie(gamertag) {
     const d = new Date();
     d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
@@ -603,6 +670,16 @@ function initSettingsEventListeners() {
         applyDynamicTheme(pInput ? pInput.value : '#ff5f1f', e.target.value);
     });
 
+    const adminSelect = document.getElementById('adminUserSelect');
+    if (adminSelect) {
+        adminSelect.value = currentActiveHunterTarget;
+        adminSelect.addEventListener('change', (e) => {
+            currentActiveHunterTarget = e.target.value;
+            console.log(`[ADMIN OVERRIDE] Target switched to: ${currentActiveHunterTarget}`);
+            loadTargetUserSettingsToForm(currentActiveHunterTarget);
+        });
+    }
+
     document.getElementById("triggerLinkBtn")?.addEventListener("click", async () => {
         if (!currentUser) return;
         const selectedProviderId = document.getElementById("linkProviderSelect").value;
@@ -621,14 +698,8 @@ function initSettingsEventListeners() {
             alert(`Successfully connected ${meta.name}!`);
             renderSmartProviders(auth.currentUser);
         } catch (err) {
-            if (err.code === 'auth/operation-not-allowed') {
-                alert(`${meta.name} is not enabled in your Firebase Console yet.`);
-            } else if (err.code === 'auth/credential-already-in-use') {
-                alert(`This ${meta.name} account is already linked to another Operator profile.`);
-            } else {
-                console.error("Linking Error:", err);
-                alert("Linking failed: " + err.message);
-            }
+            console.error("Linking Error:", err);
+            alert("Linking failed: " + err.message);
         }
     });
 
@@ -672,28 +743,24 @@ function initSettingsEventListeners() {
 
         if (db) {
             try {
-                const userDocRef = doc(db, 'users', cleanHandle);
+                const targetSaveHandle = (currentUser && currentUser.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()) ? cleanHandle : resolveOperatorHandle(currentUser);
+                const userDocRef = doc(db, 'users', targetSaveHandle);
                 await setDoc(userDocRef, payload, { merge: true });
 
                 const msg = document.getElementById('saveStatusMessage');
                 if (msg) {
-                    msg.innerText = "✓ Settings Saved Cleanly to Firestore!";
+                    msg.innerText = `✓ Settings Saved Cleanly to Firestore for [${targetSaveHandle}]!`;
                     setTimeout(() => { msg.innerText = ""; }, 4000);
                 }
             } catch (err) {
                 console.error("Firestore Save Error:", err);
                 alert("Error saving settings: " + err.message);
             }
-        } else {
-            alert("Saved locally to cookies (Database Offline).");
         }
     });
 }
 
-async function loadUserSettingsToForm(user) {
-    if (!user) return;
-    const operatorHandle = resolveOperatorHandle(user);
-
+async function loadTargetUserSettingsToForm(operatorHandle) {
     const opInput = document.getElementById('operatorNameInput');
     if (opInput) opInput.value = operatorHandle;
 
@@ -736,6 +803,13 @@ async function loadUserSettingsToForm(user) {
     }
 }
 
+async function loadUserSettingsToForm(user) {
+    if (!user) return;
+    const operatorHandle = resolveOperatorHandle(user);
+    currentActiveHunterTarget = operatorHandle;
+    loadTargetUserSettingsToForm(operatorHandle);
+}
+
 function renderSmartProviders(user) {
     const listContainer = document.getElementById("dynamicProvidersList");
     const linkContainer = document.getElementById("linkNewAccountContainer");
@@ -743,7 +817,7 @@ function renderSmartProviders(user) {
 
     if (!user) {
         listContainer.innerHTML = `
-            <div class="text-xs text-slate-400 italic text-center py-4 bg-slate-900/40 rounded-xl border border-slate-800">
+            <div class="text-xs text-slate-400 italic text-center py-4 bg-slate-950 rounded-xl border border-slate-800">
                 Sign in to view your connected authentication accounts.
             </div>`;
         if (linkContainer) linkContainer.classList.add("hidden");
@@ -760,7 +834,7 @@ function renderSmartProviders(user) {
         };
 
         html += `
-            <div class="flex items-center justify-between p-4 bg-slate-900/60 rounded-xl border border-slate-800">
+            <div class="flex items-center justify-between p-4 bg-slate-950 rounded-xl border border-slate-800">
                 <div class="flex items-center gap-3">
                     <i class="${meta.icon} text-xl w-6 text-center"></i>
                     <div>
@@ -804,22 +878,12 @@ window.unlinkProvider = async function(providerId) {
     }
 };
 
-/* === SECTION: Helpers & Open-Meteo Weather Engine === */
-const users = [
-    { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf', twitch: 'werewolf3788', theme: 'text-werewolf' },
-    { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray', twitch: 'raymystyro', theme: 'text-ray' },
-    { id: 'tj', user: 'terrdog420', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', layerId: 'layer-tj', descId: 'weather-desc-tj', twitch: 'terrdog420', theme: 'text-terrdog' }
+/* === SECTION: External API Helpers (Open-Meteo Weather & Twitch) === */
+const weatherUsers = [
+    { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf', twitch: 'werewolf3788', theme: 'text-orange-500' },
+    { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray', twitch: 'raymystyro', theme: 'text-red-500' },
+    { id: 'tj', user: 'terrdog420', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', layerId: 'layer-tj', descId: 'weather-desc-tj', twitch: 'terrdog420', theme: 'text-purple-400' }
 ];
-
-window.toggleMobileMenu = function() {
-    const menu = document.getElementById('mobile-menu');
-    const icon = document.getElementById('menu-icon');
-    if (menu && icon) {
-        menu.classList.toggle('hidden');
-        icon.classList.toggle('fa-bars');
-        icon.classList.toggle('fa-xmark');
-    }
-};
 
 async function fetchWithRetry(url, options = {}) {
     let delay = 1000;
@@ -836,36 +900,81 @@ async function fetchWithRetry(url, options = {}) {
     }
 }
 
-/* === SECTION: Dynamic Nav Engine (Strict Title Exact & Filename Matching) === */
+async function updateWeather() {
+    for (const u of weatherUsers) {
+        try {
+            const response = await fetchWithRetry(`https://api.open-meteo.com/v1/forecast?latitude=${u.lat}&longitude=${u.lon}&current_weather=true&temperature_unit=fahrenheit`);
+            const data = await response.json();
+            const code = data.current_weather.weathercode;
+            const temp = Math.round(data.current_weather.temperature);
+            
+            let desc = 'Clear Skies';
+            if (code === 0) desc = 'Sunny';
+            else if (code >= 1 && code <= 3) desc = 'Partly Cloudy';
+            else if (code >= 45 && code <= 48) desc = 'Foggy';
+            else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82) || code >= 95) desc = 'Raining';
+            else if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) desc = 'Snowing';
+
+            const descText = document.getElementById(u.descId);
+            if (descText) descText.textContent = `${desc} • ${temp}°F`;
+        } catch (e) {
+            const el = document.getElementById(u.descId);
+            if (el) el.textContent = "Weather service unavailable";
+        }
+    }
+}
+
+async function updateTwitchStatus(u) {
+    const gameEl = document.getElementById(`twitch-game-${u.id}`);
+    const statusIndicator = document.getElementById(`twitch-status-indicator-${u.id}`);
+    if (!gameEl || !statusIndicator) return;
+
+    try {
+        const response = await fetchWithRetry(`https://decapi.me/twitch/game/${u.twitch}`);
+        const gameName = await response.text();
+        if (gameName && gameName.toLowerCase() !== 'offline' && !gameName.includes('Error')) {
+            gameEl.innerHTML = `<i class="fa-solid fa-gamepad mr-2"></i>Live: ${gameName}`;
+            gameEl.className = `${u.theme} text-[10px] uppercase font-bold italic`;
+            statusIndicator.classList.remove('hidden');
+        } else {
+            gameEl.textContent = 'Currently Offline';
+            gameEl.className = 'text-slate-500 opacity-50 text-[10px] uppercase font-bold';
+            statusIndicator.classList.add('hidden');
+        }
+    } catch (e) { 
+        gameEl.textContent = 'Stream status unavailable';
+        gameEl.className = 'text-slate-500 opacity-50 text-[10px]';
+        statusIndicator.classList.add('hidden');
+    }
+}
+
+/* === SECTION: Dynamic Google Sheets Navigation Loader === */
 const navCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv';
 
-function isUrlActive(itemUrl, itemName) {
-    if (!itemUrl || itemUrl === '#') return false;
-
-    const currentHash = window.location.hash || '#/';
-    const cleanItemUrl = itemUrl.trim().toLowerCase();
-
-    if (cleanItemUrl === currentHash.toLowerCase()) return true;
-
-    const targetFilename = cleanItemUrl.substring(cleanItemUrl.lastIndexOf('/') + 1);
-    const currentPath = window.location.pathname.toLowerCase();
-    const currentFilename = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
-
-    if (targetFilename && targetFilename === currentFilename) return true;
-
-    if (itemName && itemName.trim().length > 0) {
-        const pageTitle = document.title.toLowerCase();
-        const cleanItemName = itemName.toLowerCase().trim();
-        const titleTokens = pageTitle.split(/[\s|–—\-\:]+/).filter(t => t.length > 0);
-        if (titleTokens.includes(cleanItemName)) return true;
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"' && line[i+1] === '"') {
+            current += '"'; i++;
+        } else if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
     }
-
-    return false;
+    result.push(current.trim());
+    return result;
 }
 
 async function fetchNavData() {
     try {
-        const response = await fetchWithRetry(navCsvUrl);
+        const response = await fetchWithRetry(navCsvUrl + '&t=' + Date.now());
         const data = await response.text();
         const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
 
@@ -900,8 +1009,6 @@ async function fetchNavData() {
         renderNav(navOrder);
     } catch (error) {
         console.error("Failed to fetch navigation data:", error);
-        const desktop = document.getElementById('desktop-nav-links');
-        if (desktop) desktop.innerHTML = `<span class="text-red-400 text-sm">Navigation offline</span>`;
     }
 }
 
@@ -916,49 +1023,42 @@ function renderNav(navOrder) {
     navOrder.forEach(node => {
         if (node.type === 'standalone') {
             const item = node.data;
-            const active = isUrlActive(item.url, item.name);
-            const textClass = active ? 'text-yellow-400 font-black border-b-2 border-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]' : 'text-white hover:text-yellow-400';
             const imgTag = item.img ? `<img src="${item.img}" class="w-5 h-5 rounded-full object-cover">` : '';
 
             desktopHTML += `
-                <a href="${item.url}" class="nav-link flex items-center gap-2 ${textClass} transition-colors">
+                <a href="${item.url}" class="nav-link flex items-center gap-2 text-white hover:text-yellow-400 transition-colors py-2 px-3 text-xs font-bold uppercase">
                     ${imgTag}<span>${item.name}</span>
                 </a>
             `;
 
             mobileHTML += `
-                <a href="${item.url}" class="flex items-center gap-2 px-3 py-2 rounded-md ${textClass} hover:bg-slate-800">
+                <a href="${item.url}" class="flex items-center gap-2 px-3 py-2 rounded-md text-white hover:bg-slate-800 text-xs font-bold uppercase">
                     ${imgTag}<span>${item.name}</span>
                 </a>
             `;
         } else if (node.type === 'group') {
-            const hasActiveChild = node.items.some(item => isUrlActive(item.url, item.name));
-            const groupBtnClasses = hasActiveChild ? 'text-yellow-400 font-black border-b-2 border-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.5)]' : 'text-white hover:text-yellow-400';
-
             desktopHTML += `
             <div class="relative group dropdown">
-                <button class="flex items-center space-x-1 ${groupBtnClasses} focus:outline-none py-4">
+                <button class="flex items-center space-x-1 text-white hover:text-yellow-400 focus:outline-none py-2 px-3 text-xs font-bold uppercase">
                     <span>${node.name}</span>
-                    <i class="fa-solid fa-chevron-down text-xs opacity-70"></i>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-70"></i>
                 </button>
-                <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-900 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
             `;
             
             mobileHTML += `<div class="px-3 py-2 mt-2 text-sky-400 font-bold uppercase text-xs tracking-wider border-b border-slate-700/50">${node.name}</div>`;
 
             node.items.forEach(item => {
-                const active = isUrlActive(item.url, item.name);
-                const itemClasses = active ? 'text-yellow-400 font-black bg-slate-700/80' : 'text-white hover:bg-slate-700 hover:text-yellow-400';
                 const imgTag = item.img ? `<img src="${item.img}" class="w-5 h-5 rounded-md object-cover border border-slate-600">` : '';
                 
                 desktopHTML += `
-                    <a href="${item.url}" class="flex items-center gap-3 px-4 py-3 text-sm ${itemClasses} transition-colors">
+                    <a href="${item.url}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-white hover:bg-slate-800 hover:text-yellow-400 transition-colors uppercase">
                         ${imgTag}<span>${item.name}</span>
                     </a>
                 `;
 
                 mobileHTML += `
-                    <a href="${item.url}" class="flex items-center gap-3 px-3 py-2 pl-6 rounded-md text-sm ${itemClasses} hover:bg-slate-800">
+                    <a href="${item.url}" class="flex items-center gap-3 px-3 py-2 pl-6 rounded-md text-xs font-bold text-white hover:bg-slate-800 uppercase">
                         ${imgTag}<span>${item.name}</span>
                     </a>
                 `;
@@ -972,39 +1072,18 @@ function renderNav(navOrder) {
     mobileContainer.innerHTML = mobileHTML;
 }
 
-/* === SECTION: Movies Library & Open-Meteo Weather === */
+/* === SECTION: Werewolf Cinema Slideshow Engine === */
 let cinemaImages = [];
 let currentSlideIndex = 0;
 let activeBgId = 1;
 let cinemaInterval;
-
-function parseCSVLine(line) {
-    const result = [];
-    let current = '';
-    let inQuotes = false;
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        if (char === '"' && line[i+1] === '"') {
-            current += '"'; i++;
-        } else if (char === '"') {
-            inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
-            result.push(current.trim());
-            current = '';
-        } else {
-            current += char;
-        }
-    }
-    result.push(current.trim());
-    return result;
-}
 
 async function fetchMovieData() {
     const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?output=csv';
     const countDisplay = document.getElementById('movie-count');
 
     try {
-        const response = await fetchWithRetry(csvUrl);
+        const response = await fetchWithRetry(csvUrl + '&t=' + Date.now());
         const data = await response.text();
         const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
         let validMovieCount = 0;
@@ -1021,7 +1100,6 @@ async function fetchMovieData() {
         }
 
         if (countDisplay) countDisplay.textContent = validMovieCount.toLocaleString();
-        localStorage.setItem('werewolf_library_count', validMovieCount);
 
         if (cinemaImages.length > 0) {
             cinemaImages.sort(() => 0.5 - Math.random());
@@ -1067,112 +1145,11 @@ function startCinemaSlideshow() {
     }, 6000);
 }
 
-async function updateWeather() {
-    for (const u of users) {
-        try {
-            const response = await fetchWithRetry(`https://api.open-meteo.com/v1/forecast?latitude=${u.lat}&longitude=${u.lon}&current_weather=true&temperature_unit=fahrenheit`);
-            const data = await response.json();
-            const code = data.current_weather.weathercode;
-            const temp = Math.round(data.current_weather.temperature);
-            
-            let type = 'clear', desc = 'Clear Skies';
-            if (code === 0) { type = 'sunny'; desc = 'Sunny'; }
-            else if (code >= 1 && code <= 3) { type = 'cloudy'; desc = 'Partly Cloudy'; }
-            else if (code >= 45 && code <= 48) { type = 'cloudy'; desc = 'Foggy'; }
-            else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82) || code >= 95) { type = 'rain'; desc = 'Raining'; }
-            else if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) { type = 'snowy'; desc = 'Snowing'; }
-
-            applyWeatherUI(u, type, `${desc} • ${temp}°F`);
-        } catch (e) {
-            const el = document.getElementById(u.descId);
-            if (el) el.textContent = "Weather service unavailable";
-        }
-    }
-}
-
-function applyWeatherUI(user, type, description) {
-    const card = document.getElementById(user.cardId);
-    const layer = document.getElementById(user.layerId);
-    const descText = document.getElementById(user.descId);
-    if (!card || !layer || !descText) return;
-    
-    descText.textContent = description;
-    card.classList.remove('bg-rain', 'bg-cloudy', 'bg-sunny', 'bg-snowy', 'bg-clear', 'is-sunny');
-    card.classList.add(`bg-${type}`);
-    if (type === 'sunny') card.classList.add('is-sunny');
-
-    layer.innerHTML = '';
-    layer.classList.add('active');
-
-    if (type === 'rain') {
-        for(let i=0; i<30; i++) {
-            const drop = document.createElement('div');
-            drop.className = 'rain-drop';
-            drop.style.left = Math.random() * 100 + '%';
-            drop.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
-            drop.style.animationDelay = Math.random() * 2 + 's';
-            layer.appendChild(drop);
-        }
-    } else if (type === 'snowy') {
-        const ground = document.createElement('div');
-        ground.className = 'snow-ground';
-        layer.appendChild(ground);
-        for(let i=0; i<40; i++) {
-            const flake = document.createElement('div');
-            flake.className = 'snowflake';
-            const size = Math.random() * 4 + 2 + 'px';
-            flake.style.width = size; flake.style.height = size;
-            flake.style.left = Math.random() * 100 + '%';
-            flake.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            layer.appendChild(flake);
-        }
-    } else if (type === 'cloudy') {
-        for(let i=0; i<3; i++) {
-            const puff = document.createElement('div');
-            puff.className = 'cloud-puff';
-            puff.style.width = (Math.random() * 100 + 100) + 'px';
-            puff.style.height = '60px';
-            puff.style.top = Math.random() * 80 + '%';
-            puff.style.left = Math.random() * 80 + '%';
-            puff.style.animationDelay = (i * -3) + 's';
-            layer.appendChild(puff);
-        }
-    } else if (type === 'sunny') {
-        const sun = document.createElement('div');
-        sun.className = 'sun-glow';
-        layer.appendChild(sun);
-    }
-}
-
-async function updateTwitchStatus(u) {
-    const gameEl = document.getElementById(`twitch-game-${u.id}`);
-    const statusIndicator = document.getElementById(`twitch-status-indicator-${u.id}`);
-    if (!gameEl || !statusIndicator) return;
-
-    try {
-        const response = await fetchWithRetry(`https://decapi.me/twitch/game/${u.twitch}`);
-        const gameName = await response.text();
-        if (gameName && gameName.toLowerCase() !== 'offline') {
-            gameEl.innerHTML = `<i class="fa-solid fa-gamepad mr-2"></i>Live: ${gameName}`;
-            gameEl.className = `${u.theme} text-[10px] uppercase font-bold italic`;
-            statusIndicator.classList.remove('hidden');
-        } else {
-            gameEl.textContent = 'Currently Offline';
-            gameEl.className = 'text-slate-500 opacity-50 text-[10px]';
-            statusIndicator.classList.add('hidden');
-        }
-    } catch (e) { 
-        gameEl.textContent = 'Stream status unavailable';
-        gameEl.className = 'text-slate-500 opacity-50 text-[10px]';
-        statusIndicator.classList.add('hidden');
-    }
-}
-
-/* === SECTION: Smart Telemetry Engine & Multi-Platform Listener === */
+/* === SECTION: Smart Telemetry & Multi-Platform Firestore Engine === */
 const teamProfiles = [
     { name: 'Werewolf3788', dbDoc: 'Werewolf3788', color: '#ff8800' },
     { name: 'DesdemonaTiger', dbDoc: 'DesdemonaTiger', color: '#10b981' },
-    { name: 'Raymystyro', dbDoc: 'Raymystyro', color: '#ff4444' },
+    { name: 'Raymystyro', dbDoc: 'Raymystyro', color: '#ef4444' },
     { name: 'terrdog420', dbDoc: 'terrdog420', color: '#a855f7' }
 ];
 
@@ -1192,6 +1169,254 @@ const grwMetricsKeys = [
     { label: 'Map Discovered %', key: 'mapDiscovered' }
 ];
 
+function attachSmartGameProgressListeners(database) {
+    // Teardown active listeners first
+    liveFirestoreUnsubscribes.forEach(unsub => unsub());
+    liveFirestoreUnsubscribes = [];
+
+    const liveData = {
+        'sniper-elite-5': {},
+        'thehunter-call-of-the-wild': {},
+        'sniper-elite-resistance': {},
+        'ghost-recon-wildlands': {}
+    };
+
+    teamProfiles.forEach(prof => {
+        const docTargets = [prof.dbDoc];
+        if (prof.name === 'Werewolf3788') docTargets.push('WildHorse_Spirit');
+        if (prof.name === 'Raymystyro') docTargets.push('OneLIVIDMAN');
+        if (prof.name === 'terrdog420') docTargets.push('Darkwing69420', 'TJ');
+
+        docTargets.forEach(docId => {
+            // 1. Sniper Elite 5
+            const unsubSE5 = onSnapshot(doc(database, 'users', docId, 'progress', 'sniper-elite-5'), (snap) => {
+                if (snap.exists()) {
+                    const d = snap.data();
+                    const items = d.progress || d.trophies || [];
+                    const done = items.filter(i => i.collected === true || i.done === true).length;
+                    if (done > 0) {
+                        liveData['sniper-elite-5'][prof.name] = { done, total: items.length || 202, color: prof.color };
+                    }
+                }
+                evaluateModuleVisibility('sniper-elite-5', liveData['sniper-elite-5']);
+            });
+            liveFirestoreUnsubscribes.push(unsubSE5);
+
+            // 2. theHunter: Call of the Wild
+            const unsubCOTW = onSnapshot(doc(database, 'users', docId, 'progress', 'thehunter-call-of-the-wild'), (snap) => {
+                if (snap.exists()) {
+                    const d = snap.data();
+                    const items = d.trophies || d.progress || [];
+                    let doneCount = 0;
+                    items.forEach(t => {
+                        if (t.type === 'checklist' && t.subItems) {
+                            if (t.subItems.filter(s => s.done).length >= (t.goal || 1)) doneCount++;
+                        } else if ((t.current || 0) >= (t.goal || 1) || t.done === true) {
+                            doneCount++;
+                        }
+                    });
+
+                    if (d.activeMapCategory && prof.name === 'Werewolf3788') {
+                        const badge = document.getElementById('cotw-active-map-name');
+                        if (badge) badge.innerText = d.activeMapCategory.replace('DLC: ', '');
+                    }
+
+                    if (doneCount > 0) {
+                        liveData['thehunter-call-of-the-wild'][prof.name] = { done: doneCount, total: items.length || 55, color: prof.color };
+                    }
+                }
+                evaluateModuleVisibility('thehunter-call-of-the-wild', liveData['thehunter-call-of-the-wild']);
+            });
+            liveFirestoreUnsubscribes.push(unsubCOTW);
+
+            // 3. Sniper Elite: Resistance
+            const unsubSER = onSnapshot(doc(database, 'users', docId, 'progress', 'sniper-elite-resistance'), (snap) => {
+                if (snap.exists()) {
+                    const d = snap.data();
+                    const items = d.progress || d.trophies || [];
+                    const done = items.filter(i => i.collected === true || i.done === true).length;
+                    if (done > 0) {
+                        liveData['sniper-elite-resistance'][prof.name] = { done, total: items.length || 140, color: prof.color };
+                    }
+                }
+                evaluateModuleVisibility('sniper-elite-resistance', liveData['sniper-elite-resistance']);
+            });
+            liveFirestoreUnsubscribes.push(unsubSER);
+
+            // 4. Ghost Recon Wildlands
+            const wildlandsPaths = ['T.C.G.R.Wildlands', 'ghost-recon-wildlands'];
+            wildlandsPaths.forEach(gameDocId => {
+                const unsubGRW = onSnapshot(doc(database, 'users', docId, 'progress', gameDocId), (snap) => {
+                    if (snap.exists()) {
+                        const d = snap.data();
+                        const payload = d.telemetry || d.stats || d;
+                        
+                        const hasValidMetrics = Object.keys(payload).some(k => 
+                            k !== 'user' && k !== 'gameId' && k !== 'lastUpdated' && payload[k] !== null && payload[k] !== ''
+                        );
+
+                        if (hasValidMetrics) {
+                            liveData['ghost-recon-wildlands'][prof.name] = payload;
+                        }
+                    }
+                    evaluateGRWVisibility(liveData['ghost-recon-wildlands']);
+                });
+                liveFirestoreUnsubscribes.push(unsubGRW);
+            });
+        });
+    });
+}
+
+function evaluateModuleVisibility(gameKey, userMap) {
+    const userKeys = Object.keys(userMap);
+    const modEl = gameKey === 'sniper-elite-5' ? document.getElementById('module-se5') :
+                  gameKey === 'thehunter-call-of-the-wild' ? document.getElementById('module-cotw') :
+                  document.getElementById('module-ser');
+
+    if (!modEl) return;
+
+    if (userKeys.length > 0) {
+        modEl.classList.remove('hidden');
+        modEl.classList.add('flex');
+        if (gameKey === 'sniper-elite-5') renderSE5Progress(userMap);
+        if (gameKey === 'thehunter-call-of-the-wild') renderCOTWProgress(userMap);
+        if (gameKey === 'sniper-elite-resistance') renderSERProgress(userMap);
+    } else {
+        modEl.classList.add('hidden');
+        modEl.classList.remove('flex');
+    }
+}
+
+function evaluateGRWVisibility(grwMap) {
+    const modEl = document.getElementById('module-grw');
+    if (!modEl) return;
+    const hasData = Object.keys(grwMap).length > 0;
+
+    if (hasData) {
+        modEl.classList.remove('hidden');
+        renderGRWMatrixTable(grwMap);
+    } else {
+        modEl.classList.add('hidden');
+    }
+}
+
+function renderSE5Progress(data) {
+    const container = document.getElementById('se5-progress-container');
+    if (!container) return;
+    let html = '';
+    Object.keys(data).forEach(u => {
+        const info = data[u];
+        const pct = info.total > 0 ? Math.round((info.done / info.total) * 100) : 0;
+        html += `
+            <div>
+                <div class="flex justify-between items-center text-xs mb-1">
+                    <span class="font-bold text-slate-200" style="color: ${info.color}">${u}</span>
+                    <span class="font-mono text-[11px] text-slate-400">${info.done}/${info.total} (${pct}%)</span>
+                </div>
+                <div class="w-full bg-slate-950 rounded-full h-1.5 border border-slate-800 overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${info.color};"></div>
+                </div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+function renderCOTWProgress(data) {
+    const container = document.getElementById('cotw-progress-container');
+    if (!container) return;
+    let html = '';
+    Object.keys(data).forEach(u => {
+        const info = data[u];
+        const pct = info.total > 0 ? Math.round((info.done / info.total) * 100) : 0;
+        html += `
+            <div>
+                <div class="flex justify-between items-center text-xs mb-1">
+                    <span class="font-bold text-slate-200" style="color: ${info.color}">${u}</span>
+                    <span class="font-mono text-[11px] text-slate-400">${info.done}/${info.total} (${pct}%)</span>
+                </div>
+                <div class="w-full bg-slate-950 rounded-full h-1.5 border border-slate-800 overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${info.color};"></div>
+                </div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+function renderSERProgress(data) {
+    const container = document.getElementById('ser-progress-container');
+    if (!container) return;
+    let html = '';
+    Object.keys(data).forEach(u => {
+        const info = data[u];
+        const pct = info.total > 0 ? Math.round((info.done / info.total) * 100) : 0;
+        html += `
+            <div>
+                <div class="flex justify-between items-center text-xs mb-1">
+                    <span class="font-bold text-slate-200" style="color: ${info.color}">${u}</span>
+                    <span class="font-mono text-[11px] text-slate-400">${info.done}/${info.total} (${pct}%)</span>
+                </div>
+                <div class="w-full bg-slate-950 rounded-full h-1.5 border border-slate-800 overflow-hidden">
+                    <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${info.color};"></div>
+                </div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+function renderGRWMatrixTable(grwMap) {
+    const tbody = document.getElementById('grw-matrix-body');
+    if (!tbody) return;
+
+    let tableHtml = '';
+
+    grwMetricsKeys.forEach(metric => {
+        tableHtml += `<tr class="hover:bg-slate-800/40 transition-colors">`;
+        tableHtml += `<td class="py-2.5 px-4 font-bold text-slate-300 bg-slate-900/40 border-r border-slate-800/80">${metric.label}</td>`;
+
+        teamProfiles.forEach(prof => {
+            const uData = grwMap[prof.name] || {};
+            const val = uData[metric.key] !== undefined ? uData[metric.key] : '--';
+            
+            let styledVal = `<span class="font-mono text-slate-300">${val}</span>`;
+            if (metric.key === 'tierOneStatus' && val === 'Active') {
+                styledVal = `<span class="bg-red-600/20 text-red-400 border border-red-500/40 font-black text-[10px] px-2 py-0.5 rounded uppercase">Tier One Active</span>`;
+            }
+
+            tableHtml += `<td class="py-2.5 px-4">${styledVal}</td>`;
+        });
+
+        tableHtml += `</tr>`;
+    });
+
+    tbody.innerHTML = tableHtml;
+}
+
+/* === SECTION: Sync Local game-platforms.json to Firestore === */
+export async function syncGamePlatformsToFirestore(operatorHandle) {
+    if (!db || !operatorHandle) return;
+
+    try {
+        const response = await fetch('./data/game-platforms.json?v=' + Date.now());
+        if (!response.ok) return;
+
+        const platformsData = await response.json();
+        const userDocRef = doc(db, 'users', operatorHandle);
+
+        await setDoc(userDocRef, {
+            activePlatforms: platformsData,
+            lastPlatformsSync: new Date().toISOString()
+        }, { merge: true });
+
+        console.log(`✓ Hardware platform matrix synced to Firestore for ${operatorHandle}`);
+    } catch (err) {
+        console.warn("Could not sync game-platforms.json:", err.message);
+    }
+}
+
+/* === SECTION: Auth Monitor & Anti-Bleed Initialization === */
 async function initFirebaseEngine() {
     try {
         app = initializeApp(firebaseConfig, 'Global-Home-App');
@@ -1250,6 +1475,7 @@ function handleAuthStateChange(user) {
     const userAvatar = document.getElementById("userAvatar");
     const authBanner = document.getElementById("authBanner");
     const adminBadge = document.getElementById("adminBadge");
+    const adminSelectContainer = document.getElementById("adminUserSelectContainer");
     const authActionBtn = document.getElementById("auth-action-btn");
     const adminElements = document.querySelectorAll(".admin-only");
 
@@ -1258,7 +1484,9 @@ function handleAuthStateChange(user) {
         const operatorHandle = resolveOperatorHandle(user);
         const isAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
 
-        console.log(`Session Active: ${userEmail} -> Resolved Operator: [${operatorHandle}]`);
+        currentActiveHunterTarget = operatorHandle;
+
+        console.log(`Session Active: ${userEmail} -> Resolved Operator: [${operatorHandle}] | Admin: ${isAdmin}`);
 
         if (googleBtn) googleBtn.style.display = "none";
         if (userStatus) {
@@ -1279,6 +1507,16 @@ function handleAuthStateChange(user) {
             }
         }
 
+        if (adminSelectContainer) {
+            if (isAdmin) {
+                adminSelectContainer.classList.remove("hidden");
+                adminSelectContainer.style.display = "flex";
+            } else {
+                adminSelectContainer.classList.add("hidden");
+                adminSelectContainer.style.display = "none";
+            }
+        }
+
         adminElements.forEach(el => el.classList.remove("restricted-view"));
 
         if (db) {
@@ -1291,6 +1529,8 @@ function handleAuthStateChange(user) {
                 isAdmin: isAdmin,
                 lastUpdated: new Date().toISOString()
             }, { merge: true });
+
+            syncGamePlatformsToFirestore(operatorHandle);
         }
 
         if (window.location.hash === '#/settings') {
@@ -1304,6 +1544,7 @@ function handleAuthStateChange(user) {
         if (userStatus) userStatus.style.display = "none";
         if (authBanner) authBanner.style.display = "block";
         if (adminBadge) adminBadge.classList.add("hidden");
+        if (adminSelectContainer) adminSelectContainer.classList.add("hidden");
         if (authActionBtn) authActionBtn.textContent = "Sign In with Google";
 
         adminElements.forEach(el => el.classList.add("restricted-view"));
@@ -1314,227 +1555,10 @@ function handleAuthStateChange(user) {
     }
 }
 
-function attachSmartGameProgressListeners(database) {
-    const liveData = {
-        'sniper-elite-5': {},
-        'thehunter-call-of-the-wild': {},
-        'sniper-elite-resistance': {},
-        'ghost-recon-wildlands': {}
-    };
-
-    teamProfiles.forEach(prof => {
-        const docTargets = [prof.dbDoc];
-        if (prof.name === 'Werewolf3788') docTargets.push('WildHorse_Spirit');
-        if (prof.name === 'Raymystyro') docTargets.push('OneLIVIDMAN');
-        if (prof.name === 'terrdog420') docTargets.push('Darkwing69420');
-
-        docTargets.forEach(docId => {
-            // Sniper Elite 5
-            onSnapshot(doc(database, 'users', docId, 'progress', 'sniper-elite-5'), (snap) => {
-                if (snap.exists()) {
-                    const d = snap.data();
-                    const items = d.progress || d.trophies || [];
-                    const done = items.filter(i => i.collected === true || i.done === true).length;
-                    if (done > 0) {
-                        liveData['sniper-elite-5'][prof.name] = { done, total: items.length || 202, color: prof.color };
-                    }
-                }
-                evaluateModuleVisibility('sniper-elite-5', liveData['sniper-elite-5']);
-            });
-
-            // theHunter: Call of the Wild
-            onSnapshot(doc(database, 'users', docId, 'progress', 'thehunter-call-of-the-wild'), (snap) => {
-                if (snap.exists()) {
-                    const d = snap.data();
-                    const items = d.trophies || d.progress || [];
-                    let doneCount = 0;
-                    items.forEach(t => {
-                        if (t.type === 'checklist' && t.subItems) {
-                            if (t.subItems.filter(s => s.done).length >= (t.goal || 1)) doneCount++;
-                        } else if ((t.current || 0) >= (t.goal || 1) || t.done === true) {
-                            doneCount++;
-                        }
-                    });
-
-                    if (d.activeMapCategory && prof.name === 'Werewolf3788') {
-                        const badge = document.getElementById('cotw-active-map-name');
-                        if (badge) badge.innerText = d.activeMapCategory.replace('DLC: ', '');
-                    }
-
-                    if (doneCount > 0) {
-                        liveData['thehunter-call-of-the-wild'][prof.name] = { done: doneCount, total: items.length || 55, color: prof.color };
-                    }
-                }
-                evaluateModuleVisibility('thehunter-call-of-the-wild', liveData['thehunter-call-of-the-wild']);
-            });
-
-            // Sniper Elite: Resistance
-            onSnapshot(doc(database, 'users', docId, 'progress', 'sniper-elite-resistance'), (snap) => {
-                if (snap.exists()) {
-                    const d = snap.data();
-                    const items = d.progress || d.trophies || [];
-                    const done = items.filter(i => i.collected === true || i.done === true).length;
-                    if (done > 0) {
-                        liveData['sniper-elite-resistance'][prof.name] = { done, total: items.length || 140, color: prof.color };
-                    }
-                }
-                evaluateModuleVisibility('sniper-elite-resistance', liveData['sniper-elite-resistance']);
-            });
-
-            // Ghost Recon Wildlands
-            const wildlandsPaths = ['T.C.G.R.Wildlands', 'ghost-recon-wildlands'];
-            wildlandsPaths.forEach(gameDocId => {
-                onSnapshot(doc(database, 'users', docId, 'progress', gameDocId), (snap) => {
-                    if (snap.exists()) {
-                        const d = snap.data();
-                        const payload = d.telemetry || d.stats || d;
-                        
-                        const hasValidMetrics = Object.keys(payload).some(k => 
-                            k !== 'user' && k !== 'gameId' && k !== 'lastUpdated' && payload[k] !== null && payload[k] !== ''
-                        );
-
-                        if (hasValidMetrics) {
-                            liveData['ghost-recon-wildlands'][prof.name] = payload;
-                        }
-                    }
-                    evaluateGRWVisibility(liveData['ghost-recon-wildlands']);
-                });
-            });
-        });
-    });
-}
-
-function evaluateModuleVisibility(gameKey, userMap) {
-    const userKeys = Object.keys(userMap);
-    const modEl = gameKey === 'sniper-elite-5' ? document.getElementById('module-se5') :
-                  gameKey === 'thehunter-call-of-the-wild' ? document.getElementById('module-cotw') :
-                  document.getElementById('module-ser');
-
-    if (!modEl) return;
-
-    if (userKeys.length > 0) {
-        modEl.classList.remove('hidden');
-        modEl.classList.add('flex');
-        if (gameKey === 'sniper-elite-5') renderSE5Progress(userMap);
-        if (gameKey === 'thehunter-call-of-the-wild') renderCOTWProgress(userMap);
-        if (gameKey === 'sniper-elite-resistance') renderSERProgress(userMap);
-    } else {
-        modEl.classList.add('hidden');
-        modEl.classList.remove('flex');
-    }
-}
-
-function evaluateGRWVisibility(grwMap) {
-    const modEl = document.getElementById('module-grw');
-    if (!modEl) return;
-    const hasData = Object.keys(grwMap).length > 0;
-
-    if (hasData) {
-        modEl.classList.remove('hidden');
-        renderGRWMatrixTable(grwMap);
-    } else {
-        modEl.classList.add('hidden');
-    }
-}
-
-function renderSE5Progress(data) {
-    const container = document.getElementById('se5-progress-container');
-    if (!container) return;
-    let html = '';
-    Object.keys(data).forEach(u => {
-        const info = data[u];
-        const pct = info.total > 0 ? Math.round((info.done / info.total) * 100) : 0;
-        html += `
-            <div>
-                <div class="flex justify-between items-center text-xs mb-1">
-                    <span class="font-bold text-slate-200" style="color: ${info.color}">${u}</span>
-                    <span class="font-mono text-[11px] text-slate-400">${info.done}/${info.total} (${pct}%)</span>
-                </div>
-                <div class="w-full bg-slate-900 rounded-full h-1.5 border border-slate-800 overflow-hidden">
-                    <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${info.color};"></div>
-                </div>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-function renderCOTWProgress(data) {
-    const container = document.getElementById('cotw-progress-container');
-    if (!container) return;
-    let html = '';
-    Object.keys(data).forEach(u => {
-        const info = data[u];
-        const pct = info.total > 0 ? Math.round((info.done / info.total) * 100) : 0;
-        html += `
-            <div>
-                <div class="flex justify-between items-center text-xs mb-1">
-                    <span class="font-bold text-slate-200" style="color: ${info.color}">${u}</span>
-                    <span class="font-mono text-[11px] text-slate-400">${info.done}/${info.total} (${pct}%)</span>
-                </div>
-                <div class="w-full bg-slate-900 rounded-full h-1.5 border border-slate-800 overflow-hidden">
-                    <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${info.color};"></div>
-                </div>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-function renderSERProgress(data) {
-    const container = document.getElementById('ser-progress-container');
-    if (!container) return;
-    let html = '';
-    Object.keys(data).forEach(u => {
-        const info = data[u];
-        const pct = info.total > 0 ? Math.round((info.done / info.total) * 100) : 0;
-        html += `
-            <div>
-                <div class="flex justify-between items-center text-xs mb-1">
-                    <span class="font-bold text-slate-200" style="color: ${info.color}">${u}</span>
-                    <span class="font-mono text-[11px] text-slate-400">${info.done}/${info.total} (${pct}%)</span>
-                </div>
-                <div class="w-full bg-slate-900 rounded-full h-1.5 border border-slate-800 overflow-hidden">
-                    <div class="h-full rounded-full transition-all duration-500" style="width: ${pct}%; background-color: ${info.color};"></div>
-                </div>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-function renderGRWMatrixTable(grwMap) {
-    const tbody = document.getElementById('grw-matrix-body');
-    if (!tbody) return;
-
-    let tableHtml = '';
-
-    grwMetricsKeys.forEach(metric => {
-        tableHtml += `<tr class="hover:bg-slate-800/40 transition-colors">`;
-        tableHtml += `<td class="py-2.5 px-4 font-bold text-slate-300 bg-slate-900/40 border-r border-slate-800/80">${metric.label}</td>`;
-
-        teamProfiles.forEach(prof => {
-            const uData = grwMap[prof.name] || {};
-            const val = uData[metric.key] !== undefined ? uData[metric.key] : '--';
-            
-            let styledVal = `<span class="font-mono text-slate-300">${val}</span>`;
-            if (metric.key === 'tierOneStatus' && val === 'Active') {
-                styledVal = `<span class="bg-red-600/20 text-red-400 border border-red-500/40 font-black text-[10px] px-2 py-0.5 rounded uppercase">Tier One Active</span>`;
-            }
-
-            tableHtml += `<td class="py-2.5 px-4">${styledVal}</td>`;
-        });
-
-        tableHtml += `</tr>`;
-    });
-
-    tbody.innerHTML = tableHtml;
-}
-
 function refreshData() {
     fetchNavData();
     updateWeather();
-    users.forEach(updateTwitchStatus);
+    weatherUsers.forEach(updateTwitchStatus);
     fetchMovieData(); 
 }
 
