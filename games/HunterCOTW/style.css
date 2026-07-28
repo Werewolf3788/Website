@@ -1,7 +1,8 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Tue, July 28, 2026, 06:30 AM EDT
- * PRECISION INTEGRATION: Dynamic CSS Variables & Jitter-Free Nav
+ * VERSION TIMESTAMP: Tue, July 28, 2026, 02:15 PM EDT
+ * PRECISION INTEGRATION: Restored v1.3 Visual Skin & Stable Layout Grids
+ * NOTES: Strictly retains 80% / 1400px container bounds. Zero left-column collapse.
  * ==========================================
  */
 
@@ -12,7 +13,7 @@
     --hunter-glow: rgba(255, 136, 0, 0.6);
     --bg-dark: #020617;
     --card-bg: rgba(30, 41, 59, 0.95);
-    --nav-height: 64px;
+    --nav-height: 60px;
 }
 
 body {
@@ -44,12 +45,11 @@ h1, h2 {
     z-index: -1;
 }
 
-/* --- STABLE NAVIGATION BAR (Prevents Jitter) --- */
+/* --- NAVIGATION BAR (Restored v1.3 Stability) --- */
 .master-nav {
     position: fixed;
     top: 0; left: 0; right: 0;
     height: var(--nav-height);
-    min-height: var(--nav-height);
     background: rgba(15, 23, 42, 0.95);
     backdrop-filter: blur(12px);
     border-bottom: 2px solid var(--hunter-color);
@@ -70,16 +70,9 @@ h1, h2 {
     text-shadow: 0 0 10px var(--hunter-glow);
 }
 
-.nav-links { 
-    display: flex; 
-    gap: 20px; 
-    flex-wrap: wrap; 
-    min-height: 40px;
-    align-items: center;
-}
-
+.nav-links { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
 .nav-links a {
-    color: #fff;
+    color: #ffffff !important;
     text-decoration: none;
     font-weight: 700;
     font-size: 0.85rem;
@@ -90,16 +83,16 @@ h1, h2 {
     display: flex; 
     align-items: center;
 }
-.nav-links a:hover { color: var(--hunter-color); background: rgba(255, 255, 255, 0.05); }
+.nav-links a:hover { color: var(--hunter-color) !important; background: rgba(255, 255, 255, 0.05); }
 
 .nav-dropdown { position: relative; display: inline-block; }
 .nav-dropbtn {
-    color: #fff; text-decoration: none; font-weight: 700; font-size: 0.85rem;
+    color: #ffffff !important; text-decoration: none; font-weight: 700; font-size: 0.85rem;
     text-transform: uppercase; transition: 0.3s; padding: 8px 12px;
     border-radius: 6px; background: none; border: none; cursor: pointer; font-family: inherit;
 }
 .nav-dropdown:hover .nav-dropbtn, .nav-dropbtn:hover {
-    color: var(--hunter-color); background: rgba(255, 255, 255, 0.05);
+    color: var(--hunter-color) !important; background: rgba(255, 255, 255, 0.05);
 }
 .nav-dropdown-content {
     display: none; position: absolute; background-color: rgba(15, 23, 42, 0.95);
@@ -107,14 +100,14 @@ h1, h2 {
     border-radius: 8px; border: 1px solid var(--hunter-color); overflow: hidden; top: 100%; left: 0; margin-top: 5px;
 }
 .nav-dropdown-content a {
-    color: white; padding: 12px 16px; text-decoration: none; display: flex; align-items: center; border-radius: 0;
+    color: white !important; padding: 12px 16px; text-decoration: none; display: flex; align-items: center; border-radius: 0;
     text-transform: none; font-size: 0.9rem; font-weight: 600;
 }
-.nav-dropdown-content a:hover { background-color: rgba(255, 255, 255, 0.1); color: var(--hunter-color); }
+.nav-dropdown-content a:hover { background-color: rgba(255, 255, 255, 0.1); color: var(--hunter-color) !important; }
 .nav-dropdown:hover .nav-dropdown-content { display: block; }
 .nav-icon { width: 20px; height: 20px; margin-right: 10px; border-radius: 4px; object-fit: cover; background: #000; }
 
-/* --- CONTENT WRAPPER --- */
+/* --- CONTENT WRAPPER (Restored v1.3 Exact 80% / 1400px Grid) --- */
 .tracker-container {
     margin-top: calc(var(--nav-height) + 20px);
     padding: 20px;
@@ -125,7 +118,12 @@ h1, h2 {
     position: relative;
 }
 
-/* Profile Header */
+/* Theme Engine Configuration */
+.theme-werewolf { --hunter-color: #ff8800; --hunter-glow: rgba(255, 136, 0, 0.6); }
+.theme-ray { --hunter-color: #ef4444; --hunter-glow: rgba(239, 68, 68, 0.6); }
+.theme-terrdog420 { --hunter-color: #a855f7; --hunter-glow: rgba(168, 85, 247, 0.6); }
+
+/* Profile Header Block */
 .profile-header {
     display: flex;
     flex-wrap: wrap;
@@ -146,6 +144,7 @@ h1, h2 {
     background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1);
     color: white; padding: 10px 15px; border-radius: 0.8rem; font-weight: 900; cursor: pointer; transition: 0.3s;
 }
+.profile-btn:hover { background: rgba(255, 255, 255, 0.15); border-color: var(--hunter-color); }
 
 /* Animal Rank Grid */
 .rank-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
@@ -201,6 +200,7 @@ select {
 .rank-gold { background: #ffd700; color: #000; }
 .rank-silver { background: #c0c0c0; color: #000; }
 .rank-bronze { background: #cd7f32; color: #000; }
+.rank-albino { background: #cd7f32; color: #000; }
 
 .controls, .toggle-btn, .lock-badge, .dropdown-trigger {
     margin-top: 15px; width: 100%; height: 30px; 
@@ -218,7 +218,7 @@ select {
 .dropdown-content.show { display: block; }
 .sub-item { display: flex; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid #1e293b; align-items: center; }
 .check-btn { width: 32px; height: 32px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #fff; cursor: pointer; }
-.check-btn.is-done { background: var(--primary-color) !important; border-color: var(--primary-color) !important; color: #000 !important; font-weight: 900; }
+.check-btn.is-done { background: #ef4444; border-color: #ef4444; }
 
 .collectible-gallery { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
 .collectible-thumb { width: 44px; height: 44px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); object-fit: cover; cursor: pointer; }
