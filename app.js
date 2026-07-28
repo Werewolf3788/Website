@@ -67,12 +67,14 @@ const USER_DATA_MAP = {
     'werewolf3788': 'Werewolf3788',
     'WildHorse_Spirit': 'Werewolf3788',
     'wildhorse_spirit': 'Werewolf3788',
+    'Kevin_Ray': 'Werewolf3788',
 
     // Raymystyro (PSN: OneLIVIDMAN / RTDB: ray)
     'Raymystyro': 'Raymystyro',
     'raymystyro': 'Raymystyro',
     'OneLIVIDMAN': 'Raymystyro',
     'onelividman': 'Raymystyro',
+    'Ray_Cartnal': 'Raymystyro',
 
     // DesdemonaTiger
     'DesdemonaTiger': 'DesdemonaTiger',
