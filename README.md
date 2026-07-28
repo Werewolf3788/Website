@@ -1,38 +1,39 @@
-<!-- Version Timestamp: 2026-07-22T21:25:00.000Z -->
-# 🐺 Werewolf Project - Gaming & Hub Portal
+<!-- 
+  ============================================================
+  === SECTION: Project Metadata & Header ===
+  Version: 1.0.0
+  Timestamp: 2026-07-28
+  Description: Repository README for Werewolf3788/Website
+  ============================================================
+-->
 
-A dynamic, multi-user gaming progression hub, live tracker, and cross-platform dashboard built with **vanilla Web Standards**, **Firebase v9+ Modular Web SDK**, **Google Authentication**, and hosted live on **GitHub Pages**.
+# Werewolf3788 Personal Web Portal & Digital Hub
 
----
-
-## 🌟 Key Features
-
-*   **Real-time Game Trackers:** Live dynamic progression tracking for *theHunter: Call of the Wild*, *Sniper Elite Resistance*, *Sniper Elite 5*, and *Farming Simulator 25* using Firebase Firestore (`onSnapshot`) and Realtime Database (`onValue`).
-*   **Dynamic Profile System:** Auto-binding Google Accounts (`/users/{uid}`) with cross-tab auto-login observers (`onAuthStateChanged`) and Page Visibility re-connection loops.
-*   **Centralized Navigation (`Menu.json`):** Dynamic, category-grouped menu powered by a single JSON data feed with auto cache-busting (`?v=timestamp`).
-*   **Automated Sync Workflows:** GitHub Actions automation handling background updates for PSN token synchronization and FS25 live game backups.
-*   **Cross-Tab Jump Focus:** `BroadcastChannel` protocol to intercept external links and jump focus to existing open tabs instead of opening duplicates.
-*   **High-Contrast Branding:** Responsive Dark Slate Charcoal (`#1e1c1c`) container layout with high-contrast corporate red action buttons and fixed dual-mode visual styling.
+Welcome to the official repository for my personal web portal, interactive trackers, and digital project hub. This project serves as a centralized platform integrating custom web apps, dynamic UI layouts, community resources, and live tracking utilities.
 
 ---
 
-## 📁 Repository Structure
+## 🚀 Key Features & Architecture
+
+* **Universal Design System:** Built with cross-browser compatibility (Chrome, Safari, Firefox, Edge) and a mobile-first responsive grid utilizing flexible layout variables and dynamic contrast styling.
+* **Interactive UI Components:**
+  * **Universal Lightbox:** Native full-screen image viewing triggers across all media elements.
+  * **Expandable Content Cards:** Clean `flex-grow` layouts with "Read More" triggers opening structured info cards and interactive satellite map pins for regional locations.
+  * **Smart Tabs & Interception:** Prevents duplicate window spawning by routing internal and external links through controlled window/BroadcastChannel states.
+* **Real-Time Data & Syncing (Firebase v9+):**
+  * Public checklists and progress trackers powered by modular Firebase references (`/games/{gameId}` and `/users/{userId}/progress/{gameId}`).
+  * Built-in resilience with automated reconnection loops and `visibilitychange` state recovery.
+* **Analytics & SEO Integration:**
+  * GA4 Dual Binding (`G-L376P3NPY4` + project tags).
+  * Automated dynamic page titles, meta descriptions, Open Graph (OG) tags, and element tracking via `data-ga-label`.
+* **Affiliate Routing Matrix:** Integrated dynamic outbound routing supporting regional directories, gaming trackers, and curated collections.
+
+---
+
+## 📂 Project Structure
 
 ```text
-/ (Root)
-├── .github/workflows/    # Automated GitHub Actions sync scripts (PSN Sync & FS25 Backups)
-├── .nojekyll             # Prevents Jekyll processing on GitHub Pages
-├── README.md             # Project documentation and setup guide
-├── index.html            # Main site landing page
-├── Menu.json             # Global dynamic navigation configuration
-├── Movies.html           # Media and entertainment dashboard
-├── auth.js               # Firebase authentication & lifecycle observers
-├── games/                # Game checklist modules & live tracker dashboards
-│   ├── FS25/
-│   ├── HunterCOTW/
-│   ├── Sniper-Elite/
-│   └── Tom-Clancy/
-├── images/               # Shared media assets & profile avatars
-├── Playstation/          # PSN API & token sync scripts
-├── users/                # Individual user profile & progress portals
-└── tools/                # Utility tools, QR relays, and helper scripts
+├── css/                  # Modular stylesheets with explicit section headers
+├── js/                   # Core application logic, Firebase integration, and UI handlers
+├── assets/               # Images, media files, and layout resources
+└── index.html            # Primary entry point with active version & timestamp footer
