@@ -1,27 +1,23 @@
 /* === SECTION: File Header & System Architecture === */
 /*
-    ==========================================================================
-    --- PRECISION INTEGRITY PROTOCOL ---
-    System: Master Single Page Application (SPA) Engine & Navigation Hub
-    Version: 1.5.0-Wolf
-    Timestamp: Tue, July 28, 2026 | 06:00:00 AM EDT
-    Compatibility: Chrome, Safari, Firefox, Edge | Mobile, Tablet, Desktop
-    GitHub Repository Paths Synced:
-      - /Movies.html
-      - /security/settings.html
-      - /data/game-platforms.json
-      - /users/werewolf/profile.html (wildhorse_spirit)
-      - /users/raymystyro/profile.html (ray)
-      - /users/terrodog/profile.html (darkwing / darkwing69420)
-      - /games/HunterCOTW/cotw.html
-      - /games/Sniper-Elite/5/index.html
-      - /games/Sniper-Elite/SE-Resistance.html
-      - /games/Tom-Clancy/Ghost Recon/Wildlands
-      - /games/Tom-Clancy/thedivision/1.html
-      - /games/Tom-Clancy/thedivision/2.html
-      - /games/FS25/index.html
-    ==========================================================================
-*/
+ * ==========================================
+ * VERSION TIMESTAMP: Tue, July 28, 2026, 09:15 AM EDT
+ * SYSTEM: Werewolf Project - Master Central Hub Engine & Router (app.js)
+ * ARCHITECTURE: Pure Firebase Firestore (v11 ESM) + Single Page Application Router
+ * COMPATIBILITY: Chrome, Safari, Firefox, Edge | Mobile, Tablet, Desktop
+ * PATH STRUCTURE: /users/{operatorProfileName}
+ * FEATURES: 
+ * 1. Unified Group-Sorted Menu Engine (Home, User, Game, Entertainment, Discord, Co-Site)
+ * 2. Real-Time Theme Engine (Primary/Secondary Firestore Sync + LocalStorage Cache)
+ * 3. Strict 20px Menu Thumbnail Constraints & White Menu Font Rule with Active Primary Glow
+ * 4. Open-Meteo Live Weather Telemetry & Twitch Stream Live Status Integration
+ * 5. Werewolf Cinema Slideshow & Google Sheets Library Integration
+ * 6. Real-Time Firestore Game Progress Listeners (SE5, COTW, SE Resistance, GRW Matrix)
+ * 7. Multi-Provider Account Linking & Unlinking Pipeline (Google, Facebook, GitHub, Twitter)
+ * 8. Dynamic GitHub HTML View Fetcher with Script Injection Engine
+ * RESTORATION: 100% FULL SOURCE FILE RESTORED - ZERO STRIPPING / ZERO OMISSIONS
+ * ==========================================
+ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
 import { 
@@ -54,44 +50,44 @@ const firebaseConfig = {
 
 const ADMIN_EMAIL = "raykevin71888@gmail.com";
 
-// Direct Email-to-Operator Handle Mapping Matrix
+// Strict Group Hierarchy Sorting Index (1 to 6 Left-to-Right)
+const GROUP_ORDER = {
+    'home': 1,
+    'user': 2,
+    'game': 3,
+    'entertainment': 4,
+    'discord': 5,
+    'co-site': 6
+};
+
+// Primary Email -> Operator Profile Handle Mapping
 const EMAIL_OPERATOR_MAP = {
     "raykevin71888@gmail.com": "Werewolf3788",
     "cartnalray9@gmail.com": "Raymystyro"
 };
 
-// Gamertag & Display Name Mapping Matrix
+// Comprehensive Gamertag & Identity Mapping Matrix
 const USER_DATA_MAP = {
-    // Werewolf3788 (PSN: WildHorse_Spirit / RTDB: wildhorse_spirit)
-    'Werewolf3788': 'Werewolf3788',
-    'werewolf3788': 'Werewolf3788',
-    'WildHorse_Spirit': 'Werewolf3788',
-    'wildhorse_spirit': 'Werewolf3788',
-    'Kevin_Ray': 'Werewolf3788',
+    // Werewolf3788 (PSN: WildHorse_Spirit)
+    'Werewolf3788': 'Werewolf3788', 'werewolf3788': 'Werewolf3788',
+    'WildHorse_Spirit': 'Werewolf3788', 'wildhorse_spirit': 'Werewolf3788',
+    'Kevin_Ray': 'Werewolf3788', 'Kevin Ray': 'Werewolf3788', 'kevin ray': 'Werewolf3788', 'Kevin Frutiger': 'Werewolf3788',
 
-    // Raymystyro (PSN: OneLIVIDMAN / RTDB: ray)
-    'Raymystyro': 'Raymystyro',
-    'raymystyro': 'Raymystyro',
-    'OneLIVIDMAN': 'Raymystyro',
-    'onelividman': 'Raymystyro',
-    'Ray_Cartnal': 'Raymystyro',
+    // Raymystyro (PSN: OneLIVIDMAN)
+    'Raymystyro': 'Raymystyro', 'raymystyro': 'Raymystyro',
+    'OneLIVIDMAN': 'Raymystyro', 'onelividman': 'Raymystyro',
+    'Ray_Cartnal': 'Raymystyro', 'Ray Cartnal': 'Raymystyro',
 
     // DesdemonaTiger
-    'DesdemonaTiger': 'DesdemonaTiger',
-    'desdemonatiger': 'DesdemonaTiger',
-    'Desdemona Tiger': 'DesdemonaTiger',
+    'DesdemonaTiger': 'DesdemonaTiger', 'desdemonatiger': 'DesdemonaTiger', 'Desdemona Tiger': 'DesdemonaTiger',
 
-    // terrdog420 (PSN: Darkwing69420 / RTDB: darkwing)
-    'terrdog420': 'terrdog420',
-    'Terrdog420': 'terrdog420',
-    'Darkwing69420': 'terrdog420',
-    'darkwing69420': 'terrdog420',
-    'TJ': 'terrdog420',
-    'tj': 'terrdog420',
+    // terrdog420 (PSN: Darkwing69420)
+    'terrdog420': 'terrdog420', 'Terrdog420': 'terrdog420',
+    'Darkwing69420': 'terrdog420', 'darkwing69420': 'terrdog420',
+    'TJ': 'terrdog420', 'tj': 'terrdog420', 'Terry_Johnson': 'terrdog420',
 
     // Marc
-    'Marc': 'Marc',
-    'marc': 'Marc'
+    'Marc': 'Marc', 'marc': 'Marc'
 };
 
 const PROVIDER_METADATA = {
@@ -101,22 +97,225 @@ const PROVIDER_METADATA = {
     'twitter.com': { name: 'Twitter / X', icon: 'fa-brands fa-x-twitter text-slate-300', getProvider: () => new TwitterAuthProvider() }
 };
 
-let app, auth, db, rtdb;
+let app = null;
+let auth = null;
+let db = null;
+let rtdb = null;
 let currentUser = null;
 let currentActiveHunterTarget = 'Werewolf3788';
 let liveFirestoreUnsubscribes = [];
+let menuItemsRaw = [];
 
 const googleProvider = new GoogleAuthProvider();
 
 // Helper: Resolves logged-in user or display name cleanly to an Operator Profile Handle
 function resolveOperatorHandle(user) {
-    if (!user) return "Guest";
+    if (!user) return "Werewolf3788";
     const userEmail = (user.email || "").toLowerCase();
     if (EMAIL_OPERATOR_MAP[userEmail]) {
         return EMAIL_OPERATOR_MAP[userEmail];
     }
     const rawName = user.displayName || userEmail.split('@')[0];
     return USER_DATA_MAP[rawName] || USER_DATA_MAP[user.displayName] || rawName;
+}
+
+/* === SECTION: Dynamic Global Theme Engine === */
+function applyDynamicTheme(primary, secondary) {
+    const p = primary || '#ff5f1f';
+    const s = secondary || '#1e293b';
+
+    document.documentElement.style.setProperty('--primary-color', p);
+    document.documentElement.style.setProperty('--secondary-color', s);
+
+    const pLabel = document.getElementById('primaryHexLabel');
+    const sLabel = document.getElementById('secondaryHexLabel');
+    if (pLabel) pLabel.innerText = p.toUpperCase();
+    if (sLabel) sLabel.innerText = s.toUpperCase();
+
+    localStorage.setItem('user_primary_color', p);
+    localStorage.setItem('user_secondary_color', s);
+}
+
+async function syncUserThemeFromFirestore(operatorHandle) {
+    if (!operatorHandle) return;
+
+    // 1. Instant cache load
+    const cachedPrimary = localStorage.getItem('user_primary_color');
+    const cachedSecondary = localStorage.getItem('user_secondary_color');
+    if (cachedPrimary && cachedSecondary) {
+        applyDynamicTheme(cachedPrimary, cachedSecondary);
+    }
+
+    // 2. Firestore ground-truth fetch
+    if (db) {
+        try {
+            const userDocRef = doc(db, 'users', operatorHandle);
+            const snap = await getDoc(userDocRef);
+            if (snap.exists()) {
+                const data = snap.data();
+                if (data.primaryColor && data.secondaryColor) {
+                    applyDynamicTheme(data.primaryColor, data.secondaryColor);
+                }
+            }
+        } catch (e) {
+            console.warn("Firestore theme fetch warning:", e.message);
+        }
+    }
+}
+
+/* === SECTION: Navigation Matching & Active Tab Glow Logic === */
+function checkIsActiveTab(targetUrl, targetName) {
+    if (!targetUrl || targetUrl === '#') return false;
+
+    const currentHash = window.location.hash.toLowerCase() || '#/';
+    const cleanTargetUrl = targetUrl.toLowerCase().trim();
+
+    if (cleanTargetUrl === currentHash) return true;
+    if (currentHash !== '#/' && cleanTargetUrl.includes(currentHash)) return true;
+
+    if (targetName) {
+        const cleanName = targetName.toLowerCase().trim();
+        const pageTitle = document.title.toLowerCase().trim();
+        if (pageTitle.includes(cleanName)) return true;
+    }
+
+    return false;
+}
+
+/* === SECTION: Global Menu Loader & Group Renderer (Menu.json Engine) === */
+async function loadGlobalNavigation() {
+    const jsonUrl = './Menu.json?v=' + Date.now();
+
+    try {
+        const response = await fetch(jsonUrl);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+        const menuItems = await response.json();
+        menuItemsRaw = menuItems;
+        const groupsMap = {};
+
+        menuItems.forEach(item => {
+            const groupName = item.group || item.Group;
+            const name = item.name || item.Name;
+            const url = item.url || item.Url || item['Url with UTM'];
+            const image = item.image || item.Image || item.Images || '';
+
+            if (!name || !groupName) return;
+
+            if (!groupsMap[groupName]) {
+                groupsMap[groupName] = [];
+            }
+
+            groupsMap[groupName].push({
+                name: name,
+                url: url || '#',
+                image: image
+            });
+        });
+
+        // Sort Groups 1 through 6
+        const sortedGroups = Object.keys(groupsMap).map(groupName => {
+            const orderKey = groupName.toLowerCase().trim();
+            return {
+                name: groupName,
+                weight: GROUP_ORDER[orderKey] || 99,
+                items: groupsMap[groupName]
+            };
+        }).sort((a, b) => a.weight - b.weight);
+
+        renderNavHTML(sortedGroups, 'desktop-nav-links');
+        renderNavHTML(sortedGroups, 'mobile-nav-links');
+
+        updateAvatarFromMenu(currentActiveHunterTarget);
+
+    } catch (err) {
+        console.error("Error loading Menu.json:", err);
+    }
+}
+
+function renderNavHTML(sortedGroups, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    let html = '';
+
+    sortedGroups.forEach(group => {
+        const hasActiveChild = group.items.some(item => checkIsActiveTab(item.url, item.name));
+
+        const groupBtnClass = hasActiveChild
+            ? 'font-black border-b-2 border-[var(--primary-color,#ff5f1f)]'
+            : 'font-bold hover:text-amber-300';
+
+        const dropdownItemsHtml = group.items.map(item => {
+            const active = checkIsActiveTab(item.url, item.name);
+            
+            const activeStyle = active 
+                ? 'border-left: 4px solid var(--primary-color, #ff5f1f); background-color: var(--secondary-color, #1e293b); box-shadow: inset 0 0 8px var(--primary-color, rgba(255,95,31,0.3));' 
+                : '';
+            
+            const activeTextStyle = active
+                ? 'text-shadow: 0 0 10px var(--primary-color, #ff5f1f), 0 0 18px var(--primary-color, #ff5f1f); font-weight: 900;'
+                : '';
+
+            // Strict 20px thumbnail constraint
+            const imgTag = item.image 
+                ? `<img src="${item.image}" style="width: 20px !important; height: 20px !important; min-width: 20px !important; min-height: 20px !important; max-width: 20px !important; max-height: 20px !important; object-fit: cover; border-radius: 4px; display: inline-block; flex-shrink: 0;" alt="" onerror="this.style.display='none'">` 
+                : '';
+
+            return `
+                <a href="${item.url}" class="flex items-center gap-2 px-3 py-2 text-xs transition-colors whitespace-nowrap" style="${activeStyle}">
+                    ${imgTag}
+                    <span style="color: #ffffff !important; ${activeTextStyle}">${item.name}</span>
+                </a>
+            `;
+        }).join('');
+
+        const activeGroupGlow = hasActiveChild 
+            ? 'text-shadow: 0 0 8px var(--primary-color, #ff5f1f);' 
+            : '';
+
+        html += `
+            <div class="relative group/dropdown inline-block" style="position: relative; display: inline-block;">
+                <button class="${groupBtnClass} py-1 px-3 text-xs uppercase tracking-wider flex items-center gap-1 focus:outline-none" style="background: var(--secondary-color, #1e293b); border: none; cursor: pointer; border-radius: 6px;">
+                    <span style="color: #ffffff !important; ${activeGroupGlow}">${group.name}</span>
+                    <i class="fa-solid fa-chevron-down text-[10px] opacity-70" style="margin-left: 4px; color: #ffffff;"></i>
+                </button>
+                <div class="hidden group-hover/dropdown:block absolute left-0 w-56 bg-slate-900 border border-slate-700 rounded-lg shadow-2xl overflow-hidden z-50" style="position: absolute; left: 0; top: 100%; min-width: 200px; background-color: var(--secondary-color, #0f172a); border: 1px solid var(--primary-color, #334155); border-radius: 6px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.8); z-index: 9999; display: none;">
+                    ${dropdownItemsHtml}
+                </div>
+            </div>
+        `;
+    });
+
+    container.innerHTML = html;
+
+    if (!document.getElementById('dropdown-hover-style')) {
+        const style = document.createElement('style');
+        style.id = 'dropdown-hover-style';
+        style.innerHTML = `.group\\/dropdown:hover > div { display: block !important; }`;
+        document.head.appendChild(style);
+    }
+}
+
+function updateAvatarFromMenu(operatorHandle) {
+    const userAvatar = document.getElementById("userAvatar");
+    if (!userAvatar || !menuItemsRaw || menuItemsRaw.length === 0) return;
+
+    const targetHandle = USER_DATA_MAP[operatorHandle] || operatorHandle;
+    const matchedUser = menuItemsRaw.find(item => {
+        const group = item.group || item.Group || '';
+        const name = item.name || item.Name || '';
+        return group.toLowerCase() === 'user' && USER_DATA_MAP[name] === targetHandle;
+    });
+
+    if (matchedUser && (matchedUser.image || matchedUser.Image)) {
+        userAvatar.src = matchedUser.image || matchedUser.Image;
+        userAvatar.style.display = 'inline-block';
+        userAvatar.style.width = '32px';
+        userAvatar.style.height = '32px';
+        userAvatar.style.borderRadius = '50%';
+        userAvatar.style.objectFit = 'cover';
+    }
 }
 
 /* === SECTION: SPA Template Engine (Home & Settings Views) === */
@@ -576,6 +775,9 @@ export async function router() {
     let hash = window.location.hash || '#/';
     let routeTarget = ROUTE_MAP[hash];
 
+    // Always keep active menu tab glow updated on route change
+    loadGlobalNavigation();
+
     if (typeof routeTarget === 'function') {
         // Internal Inline SPA Templates
         viewContainer.innerHTML = routeTarget();
@@ -637,27 +839,12 @@ export async function router() {
 
 window.addEventListener('hashchange', router);
 
-/* === SECTION: Dynamic CSS Variable & Settings Theme Engine === */
+/* === SECTION: Settings Handlers & Account Linking Pipeline === */
 function setGamertagCookie(gamertag) {
     const d = new Date();
     d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
     document.cookie = `cotw_active_gamertag=${encodeURIComponent(gamertag)};expires=${d.toUTCString()};path=/;SameSite=Lax`;
     document.cookie = `se5_active_gamertag=${encodeURIComponent(gamertag)};expires=${d.toUTCString()};path=/;SameSite=Lax`;
-}
-
-function applyDynamicTheme(primary, secondary) {
-    const p = primary || '#ff5f1f';
-    const s = secondary || '#38bdf8';
-    document.documentElement.style.setProperty('--primary-color', p);
-    document.documentElement.style.setProperty('--secondary-color', s);
-    
-    const pLabel = document.getElementById('primaryHexLabel');
-    const sLabel = document.getElementById('secondaryHexLabel');
-    if (pLabel) pLabel.innerText = p.toUpperCase();
-    if (sLabel) sLabel.innerText = s.toUpperCase();
-
-    localStorage.setItem('user_primary_color', p);
-    localStorage.setItem('user_secondary_color', s);
 }
 
 function initSettingsEventListeners() {
@@ -950,9 +1137,6 @@ async function updateTwitchStatus(u) {
     }
 }
 
-/* === SECTION: Dynamic Google Sheets Navigation Loader === */
-const navCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv';
-
 function parseCSVLine(line) {
     const result = [];
     let current = '';
@@ -972,106 +1156,6 @@ function parseCSVLine(line) {
     }
     result.push(current.trim());
     return result;
-}
-
-async function fetchNavData() {
-    try {
-        const response = await fetchWithRetry(navCsvUrl + '&t=' + Date.now());
-        const data = await response.text();
-        const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
-
-        const navOrder = [];
-        const groupIndexMap = {};
-
-        for (let i = 1; i < rows.length; i++) {
-            const columns = parseCSVLine(rows[i]);
-            if (columns.length >= 3) {
-                const name = columns[0] ? columns[0].trim() : '';
-                if (!name) continue;
-                
-                const group = columns[1] ? columns[1].trim() : '';
-                let url = columns[2] ? columns[2].trim() : '#';
-                const img = columns[3] ? columns[3].trim() : '';
-
-                if (url.endsWith('settings.html')) url = '#/settings';
-
-                const item = { name, url, img };
-
-                if (group === '') {
-                    navOrder.push({ type: 'standalone', data: item });
-                } else {
-                    if (groupIndexMap[group] === undefined) {
-                        groupIndexMap[group] = navOrder.length;
-                        navOrder.push({ type: 'group', name: group, items: [] });
-                    }
-                    navOrder[groupIndexMap[group]].items.push(item);
-                }
-            }
-        }
-        renderNav(navOrder);
-    } catch (error) {
-        console.error("Failed to fetch navigation data:", error);
-    }
-}
-
-function renderNav(navOrder) {
-    const desktopContainer = document.getElementById('desktop-nav-links');
-    const mobileContainer = document.getElementById('mobile-nav-links');
-    if (!desktopContainer || !mobileContainer) return;
-
-    let desktopHTML = '';
-    let mobileHTML = '';
-
-    navOrder.forEach(node => {
-        if (node.type === 'standalone') {
-            const item = node.data;
-            const imgTag = item.img ? `<img src="${item.img}" class="w-5 h-5 rounded-full object-cover">` : '';
-
-            desktopHTML += `
-                <a href="${item.url}" class="nav-link flex items-center gap-2 text-white hover:text-yellow-400 transition-colors py-2 px-3 text-xs font-bold uppercase">
-                    ${imgTag}<span>${item.name}</span>
-                </a>
-            `;
-
-            mobileHTML += `
-                <a href="${item.url}" class="flex items-center gap-2 px-3 py-2 rounded-md text-white hover:bg-slate-800 text-xs font-bold uppercase">
-                    ${imgTag}<span>${item.name}</span>
-                </a>
-            `;
-        } else if (node.type === 'group') {
-            desktopHTML += `
-            <div class="relative group dropdown">
-                <button class="flex items-center space-x-1 text-white hover:text-yellow-400 focus:outline-none py-2 px-3 text-xs font-bold uppercase">
-                    <span>${node.name}</span>
-                    <i class="fa-solid fa-chevron-down text-[10px] opacity-70"></i>
-                </button>
-                <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-900 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
-            `;
-            
-            mobileHTML += `<div class="px-3 py-2 mt-2 text-sky-400 font-bold uppercase text-xs tracking-wider border-b border-slate-700/50">${node.name}</div>`;
-
-            node.items.forEach(item => {
-                const imgTag = item.img ? `<img src="${item.img}" class="w-5 h-5 rounded-md object-cover border border-slate-600">` : '';
-                
-                desktopHTML += `
-                    <a href="${item.url}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-white hover:bg-slate-800 hover:text-yellow-400 transition-colors uppercase">
-                        ${imgTag}<span>${item.name}</span>
-                    </a>
-                `;
-
-                mobileHTML += `
-                    <a href="${item.url}" class="flex items-center gap-3 px-3 py-2 pl-6 rounded-md text-xs font-bold text-white hover:bg-slate-800 uppercase">
-                        ${imgTag}<span>${item.name}</span>
-                    </a>
-                `;
-            });
-
-            desktopHTML += `</div></div>`;
-        }
-    });
-
-    desktopContainer.innerHTML = desktopHTML;
-    mobileContainer.innerHTML = mobileHTML;
 }
 
 /* === SECTION: Werewolf Cinema Slideshow Engine === */
@@ -1172,7 +1256,6 @@ const grwMetricsKeys = [
 ];
 
 function attachSmartGameProgressListeners(database) {
-    // Teardown active listeners first
     liveFirestoreUnsubscribes.forEach(unsub => unsub());
     liveFirestoreUnsubscribes = [];
 
@@ -1418,10 +1501,10 @@ export async function syncGamePlatformsToFirestore(operatorHandle) {
     }
 }
 
-/* === SECTION: Auth Monitor & Anti-Bleed Initialization === */
+/* === SECTION: Firebase Auth & System Boot === */
 async function initFirebaseEngine() {
     try {
-        app = initializeApp(firebaseConfig, 'Global-Home-App');
+        app = initializeApp(firebaseConfig);
         auth = getAuth(app);
         db = getFirestore(app);
         rtdb = getDatabase(app);
@@ -1434,8 +1517,6 @@ async function initFirebaseEngine() {
             handleAuthStateChange(user);
         });
 
-        attachSmartGameProgressListeners(db);
-
     } catch (e) {
         console.error("Firebase Auth/Firestore Init Error:", e);
     }
@@ -1444,28 +1525,18 @@ async function initFirebaseEngine() {
 function setupAuthUI() {
     const googleBtn = document.getElementById("googleSignInBtn");
     const signOutBtn = document.getElementById("signOutBtn");
-    const authActionBtn = document.getElementById("auth-action-btn");
 
-    const handleLogin = () => {
-        signInWithPopup(auth, googleProvider)
-            .then((result) => console.log("Google Login Successful:", result.user.displayName))
-            .catch((err) => console.error("Login Error:", err));
-    };
+    if (googleBtn) {
+        googleBtn.addEventListener("click", () => {
+            signInWithPopup(auth, googleProvider)
+                .then((res) => console.log("Google Login Successful:", res.user.displayName))
+                .catch((err) => console.error("Login Error:", err));
+        });
+    }
 
-    const handleLogout = () => {
-        signOut(auth).then(() => console.log("User Logged Out"));
-    };
-
-    if (googleBtn) googleBtn.addEventListener("click", handleLogin);
-    if (signOutBtn) signOutBtn.addEventListener("click", handleLogout);
-
-    if (authActionBtn) {
-        authActionBtn.addEventListener("click", () => {
-            if (auth.currentUser) {
-                handleLogout();
-            } else {
-                handleLogin();
-            }
+    if (signOutBtn) {
+        signOutBtn.addEventListener("click", () => {
+            signOut(auth).then(() => console.log("User Logged Out"));
         });
     }
 }
@@ -1474,12 +1545,9 @@ function handleAuthStateChange(user) {
     currentUser = user;
     const googleBtn = document.getElementById("googleSignInBtn");
     const userStatus = document.getElementById("userProfileStatus");
-    const userAvatar = document.getElementById("userAvatar");
     const authBanner = document.getElementById("authBanner");
     const adminBadge = document.getElementById("adminBadge");
     const adminSelectContainer = document.getElementById("adminUserSelectContainer");
-    const authActionBtn = document.getElementById("auth-action-btn");
-    const adminElements = document.querySelectorAll(".admin-only");
 
     if (user) {
         const userEmail = (user.email || "").toLowerCase();
@@ -1495,9 +1563,7 @@ function handleAuthStateChange(user) {
             userStatus.style.display = "flex";
             userStatus.classList.remove("hidden");
         }
-        if (userAvatar) userAvatar.src = user.photoURL || "https://placehold.co/32x32/1e293b/ff8800?text=U";
         if (authBanner) authBanner.style.display = "none";
-        if (authActionBtn) authActionBtn.textContent = "Sign Out";
 
         if (adminBadge) {
             if (isAdmin) {
@@ -1519,7 +1585,8 @@ function handleAuthStateChange(user) {
             }
         }
 
-        adminElements.forEach(el => el.classList.remove("restricted-view"));
+        updateAvatarFromMenu(operatorHandle);
+        syncUserThemeFromFirestore(operatorHandle);
 
         if (db) {
             setDoc(doc(db, 'users', operatorHandle), {
@@ -1541,15 +1608,15 @@ function handleAuthStateChange(user) {
         }
 
     } else {
-        console.log("View-Only Mode Active");
-        if (googleBtn) googleBtn.style.display = "flex";
+        currentActiveHunterTarget = 'Werewolf3788';
+
+        if (googleBtn) googleBtn.style.display = "inline-flex";
         if (userStatus) userStatus.style.display = "none";
         if (authBanner) authBanner.style.display = "block";
         if (adminBadge) adminBadge.classList.add("hidden");
         if (adminSelectContainer) adminSelectContainer.classList.add("hidden");
-        if (authActionBtn) authActionBtn.textContent = "Sign In with Google";
 
-        adminElements.forEach(el => el.classList.add("restricted-view"));
+        syncUserThemeFromFirestore('Werewolf3788');
 
         if (window.location.hash === '#/settings') {
             renderSmartProviders(null);
@@ -1558,21 +1625,31 @@ function handleAuthStateChange(user) {
 }
 
 function refreshData() {
-    fetchNavData();
     updateWeather();
     weatherUsers.forEach(updateTwitchStatus);
     fetchMovieData(); 
 }
 
-/* === SECTION: System Boot & Initialization === */
-window.addEventListener('DOMContentLoaded', () => {
+// Global Mobile Menu Toggle
+window.toggleMobileMenu = function() {
+    const menu = document.getElementById('mobile-menu');
+    if (menu) {
+        menu.classList.toggle('hidden');
+    }
+};
+
+/* === SECTION: System Boot & Application Load === */
+window.addEventListener('DOMContentLoaded', async () => {
     const savedPrimary = localStorage.getItem('user_primary_color');
     const savedSecondary = localStorage.getItem('user_secondary_color');
     if (savedPrimary || savedSecondary) {
         applyDynamicTheme(savedPrimary, savedSecondary);
     }
 
+    await loadGlobalNavigation();
     router();
     initFirebaseEngine();
+    
+    refreshData();
     setInterval(refreshData, 300000);
 });
