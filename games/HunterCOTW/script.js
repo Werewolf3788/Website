@@ -1,11 +1,11 @@
 /* === SECTION: File Header & Config === */
 /*
  * ==========================================
- * VERSION TIMESTAMP: Mon, July 27, 2026, 06:55 PM EDT
+ * VERSION TIMESTAMP: Mon, July 27, 2026, 11:55 PM EDT
  * SYSTEM: theHunter: Call of the Wild Master Tracker (script.js)
- * ARCHITECTURE: 100% Pure Firebase Firestore Real-Time Engine (Zero LocalStorage Data)
+ * ARCHITECTURE: Pure Firebase Firestore Engine (Role-Based Access & Anti-Bleed State Isolation)
  * PATH STRUCTURE: /users/{userId}/progress/thehunter-call-of-the-wild
- * FEATURES: Active Map Selection Engine, Live Overlay Progress Broadcasting, Rare Fur Mapping & PSN Tag Persistence
+ * FEATURES: Admin Multi-User Override, Self-Only Write Locking, Read-Only Friend Viewing, Zero Cross-Bleed
  * RESTORATION: 100% FULL SOURCE REGISTRY RESTORED - ZERO OMISSIONS / ZERO STRIPPING
  * ==========================================
  */
@@ -13,13 +13,14 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
 import { 
     getAuth, 
-    signInAnonymously, 
-    onAuthStateChanged, 
+    setPersistence,
+    browserLocalPersistence,
     GoogleAuthProvider, 
     signInWithPopup, 
-    signOut 
+    signOut,
+    onAuthStateChanged 
 } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
@@ -32,8 +33,9 @@ const firebaseConfig = {
 };
 
 const GAME_ID = 'thehunter-call-of-the-wild';
+const ADMIN_EMAIL = "raykevin71888@gmail.com";
 
-// Strict Firestore Username Mapping Matrix
+// Strict Firestore Operator Profile / Gamer Handle Mapping Matrix
 const USER_DATA_MAP = {
     'Werewolf3788': 'Werewolf3788',
     'werewolf3788': 'Werewolf3788',
@@ -42,7 +44,9 @@ const USER_DATA_MAP = {
     'terrdog420': 'terrdog420',
     'Terrdog420': 'terrdog420',
     'TJ': 'terrdog420',
-    'tj': 'terrdog420'
+    'tj': 'terrdog420',
+    'Marc': 'Marc',
+    'marc': 'Marc'
 };
 
 const ICONS = {
@@ -658,8 +662,10 @@ const trophyData = [
 
 const appState = {
     activeHunter: 'Werewolf3788',
+    loggedInOperator: null,
+    isCurrentUserAdmin: false,
     psnUsername: 'werewolf3788',
-    activeMapCategory: 'DLC: Silver Ridge', // Default deployment map
+    activeMapCategory: 'DLC: Silver Ridge',
     hunterData: JSON.parse(JSON.stringify(trophyData)),
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, rareFur: 0 },
     auth: null, db: null,
@@ -668,10 +674,15 @@ const appState = {
     psnSynced: false,
     liveUnsub: null,
     dataLoaded: false,
-    refreshIntervalId: null,
     currentLightboxData: { categoryId: null, subIdx: null, imgIdx: 0 },
 
-    /* === COOKIE PREFERENCE ENGINE === */
+    /* Strict Role Guard: Check if active user can write to the currently viewed profile */
+    canEditActiveHunter: function() {
+        if (this.isCurrentUserAdmin) return true; // raykevin71888@gmail.com can edit anyone
+        if (!this.loggedInOperator) return false; // Guest / Unauthenticated users are strictly Read-Only
+        return this.loggedInOperator.toLowerCase() === this.activeHunter.toLowerCase();
+    },
+
     setGamertagCookie: function(gamertag) {
         const d = new Date();
         d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
@@ -850,7 +861,7 @@ const appState = {
             this.auth = getAuth(app);
             this.db = getFirestore(app);
             
-            signInAnonymously(this.auth).catch(err => console.error("FIREBASE AUTH ERROR:", err));
+            await setPersistence(this.auth, browserLocalPersistence);
 
             onAuthStateChanged(this.auth, (user) => { 
                 this.handleAuthState(user);
@@ -868,7 +879,9 @@ const appState = {
             mapSelect.addEventListener('change', (e) => {
                 this.activeMapCategory = e.target.value;
                 this.updateActiveMapDisplay();
-                this.sync();
+                if (this.canEditActiveHunter()) {
+                    this.sync();
+                }
             });
         }
     },
@@ -909,37 +922,22 @@ const appState = {
             });
         }
 
-        const addCustomBtn = document.getElementById('addCustomUserBtn');
-        if (addCustomBtn) {
-            addCustomBtn.addEventListener('click', () => {
-                const inputTag = prompt("Enter Custom Gamer Tag / Profile Handle:");
-                if (inputTag && inputTag.trim() !== "") {
-                    const cleanTag = inputTag.trim();
-                    this.setGamertagCookie(cleanTag);
-                    
-                    if (userSelect) {
-                        const opt = document.createElement('option');
-                        opt.value = cleanTag;
-                        opt.innerText = cleanTag;
-                        opt.selected = true;
-                        userSelect.appendChild(opt);
-                    }
-                    this.switchHunter(cleanTag);
-                }
-            });
-        }
-
         const saveIdentityBtn = document.getElementById('saveIdentityBtn');
         if (saveIdentityBtn) {
             saveIdentityBtn.addEventListener('click', () => {
+                if (!this.canEditActiveHunter()) {
+                    alert("Read-Only Mode: You cannot modify another operator's identity details.");
+                    return;
+                }
                 const customName = document.getElementById('profileCustomName')?.value || this.activeHunter;
                 const psnUser = document.getElementById('profilePsnUser')?.value || "";
                 
-                this.activeHunter = customName;
+                const cleanTag = USER_DATA_MAP[customName] || customName;
+                this.activeHunter = cleanTag;
                 this.psnUsername = psnUser;
-                this.setGamertagCookie(customName);
+                this.setGamertagCookie(cleanTag);
                 this.sync();
-                alert(`Saved Identity: ${customName} (PSN: ${psnUser})`);
+                alert(`Saved Identity: ${cleanTag} (PSN: ${psnUser})`);
             });
         }
 
@@ -959,6 +957,9 @@ const appState = {
             signOutBtn.addEventListener("click", () => {
                 if (!this.auth) return;
                 signOut(this.auth).then(() => {
+                    this.loggedInOperator = null;
+                    this.isCurrentUserAdmin = false;
+
                     const demoBanner = document.getElementById("demoNotification");
                     const adminBadge = document.getElementById("adminBadge");
                     const userProfileStatus = document.getElementById("userProfileStatus");
@@ -967,6 +968,8 @@ const appState = {
                     if (adminBadge) adminBadge.style.display = "none";
                     if (googleSignInBtn) googleSignInBtn.style.display = "inline-block";
                     if (userProfileStatus) userProfileStatus.style.display = "none";
+
+                    this.render();
                 });
             });
         }
@@ -980,42 +983,62 @@ const appState = {
         const adminBadge = document.getElementById("adminBadge");
 
         if (user) {
+            this.isCurrentUserAdmin = user.email ? user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase() : false;
+            
+            // Derive Operator Gamer Name from email/displayName mapping
+            const rawName = user.displayName || user.email.split('@')[0];
+            this.loggedInOperator = USER_DATA_MAP[rawName] || rawName;
+
             this.loadHunter(this.activeHunter);
 
-            if (!user.isAnonymous) {
-                if (demoBanner) demoBanner.style.display = "none";
-                if (googleSignInBtn) googleSignInBtn.style.display = "none";
-                if (userProfileStatus) userProfileStatus.style.display = "flex";
-                if (userAvatar) userAvatar.src = user.photoURL || "";
+            if (demoBanner) demoBanner.style.display = "none";
+            if (googleSignInBtn) googleSignInBtn.style.display = "none";
+            if (userProfileStatus) userProfileStatus.style.display = "flex";
+            if (userAvatar) userAvatar.src = user.photoURL || "https://placehold.co/32x32/1e293b/ff8800?text=U";
 
-                if (user.email === "raykevin71888@gmail.com") {
-                    if (adminBadge) adminBadge.style.display = "block";
-                }
-
-                const activeUsername = user.displayName || user.email.split('@')[0];
-                const userRef = doc(this.db, 'users', activeUsername);
-                setDoc(userRef, {
-                    displayName: activeUsername,
-                    email: user.email || "",
-                    photoURL: user.photoURL || "",
-                    uid: user.uid,
-                    lastUpdated: new Date().toISOString()
-                }, { merge: true });
+            if (this.isCurrentUserAdmin) {
+                if (adminBadge) adminBadge.style.display = "block";
+            } else {
+                if (adminBadge) adminBadge.style.display = "none";
             }
+
+            const activeUsername = this.loggedInOperator;
+            const userRef = doc(this.db, 'users', activeUsername);
+            setDoc(userRef, {
+                displayName: activeUsername,
+                email: user.email || "",
+                photoURL: user.photoURL || "",
+                uid: user.uid,
+                isAdmin: this.isCurrentUserAdmin,
+                lastUpdated: new Date().toISOString()
+            }, { merge: true });
 
             if (document.getElementById('stat-line')) {
-                document.getElementById('stat-line').innerText = `SYNCED DB: ${firebaseConfig.projectId} | USER: ${user.uid}`;
+                document.getElementById('stat-line').innerText = `SYNCED DB: ${firebaseConfig.projectId} | OPERATOR: ${activeUsername} ${this.isCurrentUserAdmin ? '(ADMIN)' : ''}`;
             }
+        } else {
+            this.loggedInOperator = null;
+            this.isCurrentUserAdmin = false;
+
+            if (googleSignInBtn) googleSignInBtn.style.display = "inline-block";
+            if (userProfileStatus) userProfileStatus.style.display = "none";
+            if (demoBanner) demoBanner.style.display = "block";
+            if (adminBadge) adminBadge.style.display = "none";
         }
+        this.render();
     },
 
     loadHunter: function(name) {
-        if (!this.auth.currentUser) return;
+        if (!this.db) return;
 
         const dbDocName = USER_DATA_MAP[name] || name;
-        this.hunterData = JSON.parse(JSON.stringify(trophyData));
-        this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, rareFur: 0 };
+        
+        // Lock sync and destroy active snapshot listener to prevent state pollution
         this.dataLoaded = false;
+        if (this.liveUnsub) {
+            this.liveUnsub();
+            this.liveUnsub = null;
+        }
 
         this.activeHunter = dbDocName;
         this.setGamertagCookie(dbDocName);
@@ -1023,11 +1046,12 @@ const appState = {
         if (document.getElementById('hunter-name')) document.getElementById('hunter-name').innerText = dbDocName.toUpperCase();
         if (document.getElementById('profileCustomName')) document.getElementById('profileCustomName').value = dbDocName;
 
-        if (this.liveUnsub) this.liveUnsub();
-
         const userProgressRef = doc(this.db, 'users', dbDocName, 'progress', GAME_ID);
         
         this.liveUnsub = onSnapshot(userProgressRef, (snap) => {
+            let freshTrophyData = JSON.parse(JSON.stringify(trophyData));
+            let freshRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, rareFur: 0 };
+
             if (snap.exists()) {
                 const data = snap.data();
                 let incoming = data.trophies || data.progress || [];
@@ -1039,12 +1063,11 @@ const appState = {
                 }
 
                 if (data.animalRankData) {
-                    this.animalRankData = { 
-                        ...this.animalRankData, 
+                    freshRankData = { 
+                        ...freshRankData, 
                         ...data.animalRankData,
                         rareFur: data.animalRankData.rareFur ?? data.animalRankData.albino ?? 0 
                     };
-                    this.updateRankUI();
                 }
 
                 if (data.psnUsername) {
@@ -1052,7 +1075,7 @@ const appState = {
                     if (document.getElementById('profilePsnUser')) document.getElementById('profilePsnUser').value = data.psnUsername;
                 }
 
-                this.hunterData = this.hunterData.map(dt => {
+                freshTrophyData = freshTrophyData.map(dt => {
                     const found = incoming.find(it => it.id === dt.id);
                     if (found) {
                         if (dt.type === 'checklist' && found.subItems) {
@@ -1072,11 +1095,16 @@ const appState = {
                     }
                     return dt;
                 });
-            } else {
-                this.dataLoaded = true;
-                this.sync();
             }
+
+            // Assign clean, un-polluted state for this active hunter
+            this.hunterData = freshTrophyData;
+            this.animalRankData = freshRankData;
+            
+            // Unlock state rendering
             this.dataLoaded = true;
+
+            this.updateRankUI();
             this.updateActiveMapDisplay();
             this.render();
         }, (error) => {
@@ -1089,6 +1117,8 @@ const appState = {
         const selector = document.getElementById('reserve-selector');
         if (!container) return; 
         
+        const canEdit = this.canEditActiveHunter();
+
         container.innerHTML = '';
         const cats = [...new Set(this.hunterData.map(t => t.cat))];
         
@@ -1133,14 +1163,15 @@ const appState = {
                 card.className = `trophy-card ${isDone ? 'completed' : ''}`;
                 
                 let ctrl = '';
+                const disabledAttr = canEdit ? '' : 'disabled style="opacity:0.5; cursor:not-allowed;"';
                 
                 if (t.type === 'numeric') {
                     const btnClass = isDone ? 'controls lock-badge' : 'controls';
                     const displayVal = isDone ? `AUDIT VERIFIED (${t.current}/${t.goal})` : `${t.current}/${t.goal}`;
                     ctrl = `<div class="${btnClass}">
-                        <button style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', -1)">-</button>
+                        <button ${disabledAttr} style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', -1)">-</button>
                         <span style="flex-grow:1; text-align:center;">${displayVal}</span>
-                        <button style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', 1)">+</button>
+                        <button ${disabledAttr} style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', 1)">+</button>
                     </div>`;
                 } else if (t.type === 'checklist') {
                     const dropClass = appState.openDropdowns[t.id] ? 'show' : '';
@@ -1158,7 +1189,7 @@ const appState = {
                         return `<div class="sub-item" style="flex-direction: column; align-items: flex-start;">
                                     <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
                                         <span>${s.name}</span>
-                                        <button class="check-btn ${s.done ? 'is-done' : ''}" onclick="appState.check('${t.id}', ${idx})">${s.done ? '✓' : ''}</button>
+                                        <button ${disabledAttr} class="check-btn ${s.done ? 'is-done' : ''}" onclick="appState.check('${t.id}', ${idx})">${s.done ? '✓' : ''}</button>
                                     </div>
                                     ${galleryHTML}
                                 </div>`;
@@ -1168,8 +1199,8 @@ const appState = {
                             <div id="drop-${t.id}" class="dropdown-content ${dropClass}">${subItemsHTML}</div>`;
                 } else {
                     const btnClass = isDone ? 'toggle-btn lock-badge' : 'toggle-btn';
-                    const btnText = isDone ? 'Audit Verified (Undo)' : 'Mark Harvested';
-                    ctrl = `<button class="${btnClass}" style="cursor: pointer;" onclick="appState.tog('${t.id}')">${btnText}</button>`;
+                    const btnText = isDone ? (canEdit ? 'Audit Verified (Undo)' : 'Audit Verified') : 'Mark Harvested';
+                    ctrl = `<button ${disabledAttr} class="${btnClass}" style="cursor: pointer;" onclick="appState.tog('${t.id}')">${btnText}</button>`;
                 }
                 
                 card.innerHTML = `<div style="display:flex; gap:10px; align-items:center;"><img src="${this.getIcon(t)}" class="trophy-icon-img"><div><span class="trophy-rank rank-${t.rank}">${t.rank}</span><div style="font-weight:900; font-size:0.9rem; margin-top:4px;">${t.name}</div></div></div><p style="font-size:0.75rem; font-style:italic; margin:15px 0; color:#cbd5e1; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${t.desc}</p>${ctrl}`;
@@ -1180,20 +1211,33 @@ const appState = {
         
         const overall = globalTotal > 0 ? Math.round((globalMet / globalTotal) * 100) : 0;
         if (document.getElementById('overall-bar')) document.getElementById('overall-bar').style.width = overall + '%';
-        if (document.getElementById('percent-text')) document.getElementById('percent-text').innerText = `Master Platinum Progress ${overall}%`;
+        if (document.getElementById('percent-text')) document.getElementById('percent-text').innerText = `Master Platinum Progress ${overall}% ${canEdit ? '' : '(READ-ONLY VIEW)'}`;
         
         this.updateActiveMapDisplay();
     },
 
     getIcon: (t) => t.psnImage ? t.psnImage : (t.cat.includes('Collectibles') ? ICONS.TRACK : t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
     
-    adj: function(id, val) { const t = this.hunterData.find(x => x.id === id); t.current = Math.max(0, t.current + val); this.sync(); },
+    adj: function(id, val) { 
+        if (!this.dataLoaded || !this.canEditActiveHunter()) return;
+        const t = this.hunterData.find(x => x.id === id); 
+        if (t) { t.current = Math.max(0, t.current + val); this.sync(); }
+    },
     
-    tog: function(id) { const t = this.hunterData.find(x => x.id === id); t.current = t.current === 0 ? 1 : 0; this.sync(); },
+    tog: function(id) { 
+        if (!this.dataLoaded || !this.canEditActiveHunter()) return;
+        const t = this.hunterData.find(x => x.id === id); 
+        if (t) { t.current = t.current === 0 ? 1 : 0; this.sync(); }
+    },
     
-    check: function(id, idx) { const t = this.hunterData.find(x => x.id === id); t.subItems[idx].done = !t.subItems[idx].done; this.sync(); },
+    check: function(id, idx) { 
+        if (!this.dataLoaded || !this.canEditActiveHunter()) return;
+        const t = this.hunterData.find(x => x.id === id); 
+        if (t && t.subItems && t.subItems[idx]) { t.subItems[idx].done = !t.subItems[idx].done; this.sync(); }
+    },
     
     adjRank: function(tier, val) { 
+        if (!this.dataLoaded || !this.canEditActiveHunter()) return;
         this.animalRankData[tier] = Math.max(0, (this.animalRankData[tier] || 0) + val); 
         this.updateRankUI(); 
         this.sync();
@@ -1264,7 +1308,9 @@ const appState = {
     sync: async function() { 
         this.updateActiveMapDisplay();
         this.render(); 
-        if (!this.db || !this.auth.currentUser || !this.dataLoaded) return;
+        
+        // Strict Security Guards: Never write if database is offline, data is loading, or user lacks write permissions
+        if (!this.db || !this.dataLoaded || !this.canEditActiveHunter()) return;
 
         try {
             const userProgressRef = doc(this.db, 'users', this.activeHunter, 'progress', GAME_ID);
