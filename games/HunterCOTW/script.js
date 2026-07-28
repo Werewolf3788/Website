@@ -1,11 +1,11 @@
 /* === SECTION: File Header & Config === */
 /*
  * ==========================================
- * VERSION TIMESTAMP: Mon, July 27, 2026, 11:55 PM EDT
+ * VERSION TIMESTAMP: Tue, July 28, 2026, 02:05 AM EDT
  * SYSTEM: theHunter: Call of the Wild Master Tracker (script.js)
  * ARCHITECTURE: Pure Firebase Firestore Engine (Role-Based Access & Anti-Bleed State Isolation)
  * PATH STRUCTURE: /users/{userId}/progress/thehunter-call-of-the-wild
- * FEATURES: Admin Multi-User Override, Self-Only Write Locking, Read-Only Friend Viewing, Zero Cross-Bleed
+ * FEATURES: Global Theme Propagation, Admin Multi-User Override, Self-Only Write Locking, Read-Only Friend Viewing, Zero Cross-Bleed
  * RESTORATION: 100% FULL SOURCE REGISTRY RESTORED - ZERO OMISSIONS / ZERO STRIPPING
  * ==========================================
  */
@@ -13,14 +13,14 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
 import { 
     getAuth, 
-    setPersistence,
-    browserLocalPersistence,
+    setPersistence, 
+    browserLocalPersistence, 
     GoogleAuthProvider, 
     signInWithPopup, 
-    signOut,
+    signOut, 
     onAuthStateChanged 
 } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
@@ -676,6 +676,39 @@ const appState = {
     dataLoaded: false,
     currentLightboxData: { categoryId: null, subIdx: null, imgIdx: 0 },
 
+    /* === Global Theme Sync Engine === */
+    applyTheme: function(primary, secondary) {
+        if (primary) document.documentElement.style.setProperty('--primary-color', primary);
+        if (secondary) document.documentElement.style.setProperty('--secondary-color', secondary);
+        if (primary) localStorage.setItem('user_primary_color', primary);
+        if (secondary) localStorage.setItem('user_secondary_color', secondary);
+    },
+
+    syncUserTheme: async function(operatorHandle) {
+        // 1. Instant local load to avoid page flicker
+        const localPrimary = localStorage.getItem('user_primary_color');
+        const localSecondary = localStorage.getItem('user_secondary_color');
+        if (localPrimary || localSecondary) {
+            this.applyTheme(localPrimary, localSecondary);
+        }
+
+        // 2. Fetch active choices directly from user profile document in Firestore
+        if (this.db && operatorHandle) {
+            try {
+                const userDocRef = doc(this.db, 'users', operatorHandle);
+                const snap = await getDoc(userDocRef);
+                if (snap.exists()) {
+                    const data = snap.data();
+                    if (data.primaryColor || data.secondaryColor) {
+                        this.applyTheme(data.primaryColor, data.secondaryColor);
+                    }
+                }
+            } catch (e) {
+                console.warn("Theme synchronization notice:", e.message);
+            }
+        }
+    },
+
     /* Strict Role Guard: Check if active user can write to the currently viewed profile */
     canEditActiveHunter: function() {
         if (this.isCurrentUserAdmin) return true; // raykevin71888@gmail.com can edit anyone
@@ -837,6 +870,13 @@ const appState = {
     },
 
     init: async function() {
+        // Immediate local theme application
+        const localPrimary = localStorage.getItem('user_primary_color');
+        const localSecondary = localStorage.getItem('user_secondary_color');
+        if (localPrimary || localSecondary) {
+            this.applyTheme(localPrimary, localSecondary);
+        }
+
         const urlParams = new URLSearchParams(window.location.search);
         const userParam = urlParams.get('user');
 
@@ -862,6 +902,9 @@ const appState = {
             this.db = getFirestore(app);
             
             await setPersistence(this.auth, browserLocalPersistence);
+
+            // Sync theme for active hunter
+            this.syncUserTheme(this.activeHunter);
 
             onAuthStateChanged(this.auth, (user) => { 
                 this.handleAuthState(user);
@@ -989,6 +1032,7 @@ const appState = {
             const rawName = user.displayName || user.email.split('@')[0];
             this.loggedInOperator = USER_DATA_MAP[rawName] || rawName;
 
+            this.syncUserTheme(this.loggedInOperator);
             this.loadHunter(this.activeHunter);
 
             if (demoBanner) demoBanner.style.display = "none";
@@ -1042,6 +1086,7 @@ const appState = {
 
         this.activeHunter = dbDocName;
         this.setGamertagCookie(dbDocName);
+        this.syncUserTheme(dbDocName);
         
         if (document.getElementById('hunter-name')) document.getElementById('hunter-name').innerText = dbDocName.toUpperCase();
         if (document.getElementById('profileCustomName')) document.getElementById('profileCustomName').value = dbDocName;
