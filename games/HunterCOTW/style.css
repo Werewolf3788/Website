@@ -1,18 +1,18 @@
 /*
  * ==========================================
- * NYT TIMESTAMP: Fri, June 19, 2026, 4:40 AM EDT
- * PRECISION INTEGRATION: CSS Skin
- * NOTES: Updated theme engines to bind TJ / terrdog420 explicitly to purple.
- * NO STRIPPING, NO COMPRESSING.
+ * VERSION TIMESTAMP: Tue, July 28, 2026, 06:30 AM EDT
+ * PRECISION INTEGRATION: Dynamic CSS Variables & Jitter-Free Nav
  * ==========================================
  */
 
 :root {
-    --hunter-color: #ff8800;
+    --primary-color: #ff8800;
+    --secondary-color: #38bdf8;
+    --hunter-color: var(--primary-color);
     --hunter-glow: rgba(255, 136, 0, 0.6);
     --bg-dark: #020617;
     --card-bg: rgba(30, 41, 59, 0.95);
-    --nav-height: 60px;
+    --nav-height: 64px;
 }
 
 body {
@@ -44,12 +44,13 @@ h1, h2 {
     z-index: -1;
 }
 
-/* --- NAVIGATION BAR --- */
+/* --- STABLE NAVIGATION BAR (Prevents Jitter) --- */
 .master-nav {
     position: fixed;
     top: 0; left: 0; right: 0;
     height: var(--nav-height);
-    background: rgba(15, 23, 42, 0.9);
+    min-height: var(--nav-height);
+    background: rgba(15, 23, 42, 0.95);
     backdrop-filter: blur(12px);
     border-bottom: 2px solid var(--hunter-color);
     display: flex;
@@ -58,6 +59,7 @@ h1, h2 {
     padding: 0 5%;
     z-index: 1000;
     box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    box-sizing: border-box;
 }
 
 .nav-logo {
@@ -68,7 +70,14 @@ h1, h2 {
     text-shadow: 0 0 10px var(--hunter-glow);
 }
 
-.nav-links { display: flex; gap: 20px; flex-wrap: wrap; }
+.nav-links { 
+    display: flex; 
+    gap: 20px; 
+    flex-wrap: wrap; 
+    min-height: 40px;
+    align-items: center;
+}
+
 .nav-links a {
     color: #fff;
     text-decoration: none;
@@ -115,11 +124,6 @@ h1, h2 {
     margin-right: auto;
     position: relative;
 }
-
-/* Theme Engine Configuration */
-.theme-werewolf { --hunter-color: #ff8800; --hunter-glow: rgba(255, 136, 0, 0.6); }
-.theme-ray { --hunter-color: #ef4444; --hunter-glow: rgba(239, 68, 68, 0.6); }
-.theme-TJ { --hunter-color: #a855f7; --hunter-glow: rgba(168, 85, 247, 0.6); }
 
 /* Profile Header */
 .profile-header {
@@ -197,7 +201,6 @@ select {
 .rank-gold { background: #ffd700; color: #000; }
 .rank-silver { background: #c0c0c0; color: #000; }
 .rank-bronze { background: #cd7f32; color: #000; }
-.rank-albino { background: #cd7f32; color: #000; }
 
 .controls, .toggle-btn, .lock-badge, .dropdown-trigger {
     margin-top: 15px; width: 100%; height: 30px; 
@@ -215,7 +218,10 @@ select {
 .dropdown-content.show { display: block; }
 .sub-item { display: flex; justify-content: space-between; padding: 12px 15px; border-bottom: 1px solid #1e293b; align-items: center; }
 .check-btn { width: 32px; height: 32px; border-radius: 6px; border: 1px solid #334155; background: #1e293b; color: #fff; cursor: pointer; }
-.check-btn.is-done { background: #ef4444; border-color: #ef4444; }
+.check-btn.is-done { background: var(--primary-color) !important; border-color: var(--primary-color) !important; color: #000 !important; font-weight: 900; }
+
+.collectible-gallery { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.collectible-thumb { width: 44px; height: 44px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); object-fit: cover; cursor: pointer; }
 
 @media (max-width: 768px) {
     .nav-links { display: none; }
