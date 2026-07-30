@@ -1,4 +1,4 @@
-<!-- Version: 1.0.8 | Updated: 2026-07-30T00:22:00Z -->
+<!-- Version: 1.1.0 | Updated: 2026-07-30T00:35:00Z -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sniper Elite Resistance Master Tracker</title>
     <style>
+        /* === SECTION: CSS Variables & Global Root Styles === */
         :root {
             --ser-color: #ff8800; /* Default Accent */
             --ser-glow: rgba(255, 136, 0, 0.6);
@@ -14,7 +15,7 @@
             --nav-height: 60px;
         }
 
-        /* --- GLOBAL MOBILE SETTINGS --- */
+        /* --- GLOBAL MOBILE & RESPONSIVE LAYOUT --- */
         body {
             margin: 0;
             padding: 0;
@@ -45,7 +46,7 @@
             z-index: -1;
         }
 
-        /* --- NAVIGATION --- */
+        /* --- SPA NAVIGATION HEADER --- */
         .master-nav {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -60,12 +61,37 @@
             z-index: 1000;
         }
 
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
         .nav-logo {
             font-weight: 900;
             color: var(--ser-color);
             text-decoration: none;
             font-size: 1.1rem;
             text-shadow: 0 0 10px var(--ser-glow);
+        }
+
+        .spa-tab-links {
+            display: flex;
+            gap: 12px;
+        }
+
+        .spa-tab-links a {
+            color: #ffffff; /* Inactive tab default */
+            text-decoration: none;
+            font-weight: 900;
+            font-size: 11px;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .spa-tab-links a.active-tab {
+            color: #ffff00 !important; /* Active Tab Matching Standard */
+            border-bottom: 2px solid #ffff00;
         }
 
         .nav-auth-controls {
@@ -188,8 +214,15 @@
 <body id="master-body">
     <div class="background-overlay"></div>
 
+    <!-- === SECTION: SPA Header Navigation === -->
     <nav class="master-nav">
-        <a href="#" class="nav-logo">SNIPER ELITE: RESISTANCE</a>
+        <div class="nav-brand">
+            <a href="#/" class="nav-logo">SNIPER ELITE: RESISTANCE</a>
+            <div class="spa-tab-links">
+                <a href="#/" id="tab-tracker" class="active-tab">Tracker</a>
+                <a href="#/overview" id="tab-overview">Overview</a>
+            </div>
+        </div>
         <div class="nav-auth-controls">
             <span id="adminBadge" class="admin-badge hidden">ADMIN</span>
             <button id="googleSignInBtn" class="auth-btn">Sign In with Google</button>
@@ -203,33 +236,45 @@
         </div>
     </nav>
 
+    <!-- === SECTION: SPA Dynamic View Containers === -->
     <div class="tracker-container">
-        <!-- OPERATIVE CONSOLE -->
-        <div class="profile-header">
-            <div class="active-info">
-                <div style="font-size: 0.6rem; text-transform: uppercase; color: #888;">Operative Terminal</div>
-                <span id="hunter-display" class="hunter-glow text-white">GUEST OPERATIVE</span>
+        <!-- VIEW: Tracker (Default Route: #/) -->
+        <main id="view-tracker" class="spa-view">
+            <div class="profile-header">
+                <div class="active-info">
+                    <div style="font-size: 0.6rem; text-transform: uppercase; color: #888;">Operative Terminal</div>
+                    <span id="hunter-display" class="hunter-glow text-white">GUEST OPERATIVE</span>
+                </div>
             </div>
-        </div>
 
-        <header class="main-header">
-            <h2>Platinum Registry</h2>
-            <div id="percent-text" style="font-weight: 900; margin-top: 5px; color: #ccc;">TOTAL COLLECTION: 0%</div>
-            <div class="bar-bg"><div id="overall-bar" class="bar-fill"></div></div>
-        </header>
+            <header class="main-header">
+                <h2>Platinum Registry</h2>
+                <div id="percent-text" style="font-weight: 900; margin-top: 5px; color: #ccc;">TOTAL COLLECTION: 0%</div>
+                <div class="bar-bg"><div id="overall-bar" class="bar-fill"></div></div>
+            </header>
 
-        <!-- MISSION REGISTRY RENDERS HERE -->
-        <div id="section-container"></div>
+            <div id="section-container"></div>
+        </main>
+
+        <!-- VIEW: Overview (Route: #/overview) -->
+        <main id="view-overview" class="spa-view hidden">
+            <div class="profile-header">
+                <h2>Game Overview & Intel</h2>
+            </div>
+            <div style="background: var(--card-bg); padding: 20px; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1);">
+                <p>Welcome to the Sniper Elite Resistance Master Telemetry Terminal. Track all workbenches, kill list targets, stone eagles, and trophies synced directly to your Firestore operative profile.</p>
+            </div>
+        </main>
 
         <footer class="tracker-footer">
             <p>SNIPER ELITE: RESISTANCE MASTER TRACKER</p>
-            <p style="margin-top: 5px; font-family: monospace;">NODE-PROJECT: game-tracker-5b2ef | v1.0.8 - 2026-07-30T00:22:00Z</p>
+            <p style="margin-top: 5px; font-family: monospace;">NODE-PROJECT: game-tracker-5b2ef | v1.1.0 - 2026-07-30T00:35:00Z</p>
         </footer>
     </div>
 
+    <!-- === SECTION: Core Module Scripts & SPA Hash Routing === -->
     <script type="module">
-        /* === SECTION: Firebase Authentication & User Provisioning Pipeline === */
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js?v=20260730002200";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js?v=20260730003500";
         import { 
             getAuth, 
             signInAnonymously, 
@@ -237,8 +282,8 @@
             GoogleAuthProvider, 
             signInWithPopup, 
             signOut 
-        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js?v=20260730002200";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js?v=20260730002200";
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js?v=20260730003500";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js?v=20260730003500";
 
         // Global Instance Handles
         let auth;
@@ -258,6 +303,38 @@
         const GAME_ID = 'sniper-elite-resistance';
         const GITHUB_JSON_URL = 'https://raw.githubusercontent.com/Werewolf3788/Website/Test/games/Sniper-Elite/resistance.json';
 
+        /* === SECTION: SPA Client-Side Hash Router === */
+        function initSPARouter() {
+            window.name = "SniperEliteMasterTab";
+            window.addEventListener('hashchange', handleRoute);
+            handleRoute(); // Execute initial route match
+        }
+
+        function handleRoute() {
+            const rawHash = window.location.hash || '#/';
+            const route = rawHash.replace('#', '') || '/';
+
+            const trackerTab = document.getElementById('tab-tracker');
+            const overviewTab = document.getElementById('tab-overview');
+            const viewTracker = document.getElementById('view-tracker');
+            const viewOverview = document.getElementById('view-overview');
+
+            if (route === '/overview') {
+                document.title = "Overview | Sniper Elite Resistance Tracker";
+                if (viewTracker) viewTracker.classList.add('hidden');
+                if (viewOverview) viewOverview.classList.remove('hidden');
+                if (trackerTab) trackerTab.classList.remove('active-tab');
+                if (overviewTab) overviewTab.classList.add('active-tab');
+            } else {
+                document.title = "Sniper Elite Resistance Master Tracker";
+                if (viewOverview) viewOverview.classList.add('hidden');
+                if (viewTracker) viewTracker.classList.remove('hidden');
+                if (overviewTab) overviewTab.classList.remove('active-tab');
+                if (trackerTab) trackerTab.classList.add('active-tab');
+            }
+        }
+
+        /* === SECTION: Firebase Authentication & Provisioning Pipeline === */
         function detectPlatform() {
             const ua = navigator.userAgent || '';
             if (/playstation/i.test(ua)) return 'PlayStation';
@@ -363,7 +440,7 @@
             }
         }
 
-        /* === SECTION: Tracker Application Setup & Dynamic JSON Fetch === */
+        /* === SECTION: Tracker Application Setup & Remote Data Fetch === */
         const appState = {
             activeUser: null,
             currentPlatform: 'PC-Web',
@@ -373,11 +450,11 @@
             unsub: null,
 
             init: async function() {
+                initSPARouter();
                 await this.fetchRemoteDataset();
                 initializeAuthentication(firebaseConfig, GAME_ID);
             },
 
-            /* === DYNAMIC EXTERNAL JSON DATASET FETCH === */
             fetchRemoteDataset: async function() {
                 try {
                     const response = await fetch(`${GITHUB_JSON_URL}?v=${Date.now()}`);
@@ -437,6 +514,7 @@
 
             render: function() {
                 const container = document.getElementById('section-container');
+                if (!container) return;
                 container.innerHTML = '';
                 const cats = [...new Set(this.hunterData.map(i => i.cat))];
                 let totalFound = 0;
