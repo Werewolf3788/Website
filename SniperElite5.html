@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sniper Elite 5 Master Tracker</title>
+    <title>Sniper Elite 5 Master Tracker | Werewolf3788</title>
     
     <!-- Transparent SVG Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
@@ -30,11 +30,11 @@
             --brand-red: #ef4444;
             --btn-bg: #2a2a2a;
             --btn-border: #3f3f3f;
-            --font-body: 'Roboto', system-ui, sans-serif;
+            --font-body: 'Roboto', system-ui, -apple-system, sans-serif;
             --ser-color: #ff8800;
             --ser-glow: rgba(255, 136, 0, 0.6);
             --nav-height: 60px;
-            --csv-nav-height: 42px;
+            --csv-nav-height: 44px;
         }
 
         * {
@@ -71,14 +71,13 @@
         }
 
         h1, h2 {
-            font-size: 24px; 
+            font-size: 22px; 
             text-transform: uppercase;
             letter-spacing: 1px;
             margin: 0;
             line-height: 1.2;
         }
 
-        /* --- TOP NAVIGATION BAR --- */
         .master-nav {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -164,7 +163,6 @@
             color: #ffffff;
         }
 
-        /* --- DYNAMIC MENU BAR (CSV) --- */
         .csv-nav {
             position: fixed;
             top: var(--nav-height);
@@ -267,7 +265,6 @@
             transform: scale(1.15);
         }
 
-        /* --- MAIN CONTAINER --- */
         .tracker-container {
             margin-top: calc(var(--nav-height) + var(--csv-nav-height) + 20px);
             padding: 10px;
@@ -282,7 +279,6 @@
             .tracker-container { width: 95%; }
         }
 
-        /* --- OPERATIVE CONSOLE HEADER --- */
         .profile-header {
             display: flex;
             flex-wrap: wrap;
@@ -298,7 +294,7 @@
         }
 
         .hunter-glow { 
-            font-size: 1.4rem; 
+            font-size: 1.3rem; 
             font-weight: 900; 
             color: var(--ser-color); 
             text-shadow: 0 0 12px var(--ser-glow); 
@@ -340,7 +336,6 @@
             border-color: var(--brand-gold);
         }
 
-        /* --- PROGRESS HUD --- */
         .main-header {
             background: rgba(10, 0, 0, 0.85); 
             padding: 20px 15px; 
@@ -363,10 +358,9 @@
             height: 100%; 
             width: 0%; 
             background: linear-gradient(90deg, var(--brand-blue), var(--ser-color)); 
-            transition: width 0.8s ease-out; 
+            transition: width 0.4s ease-out; 
         }
 
-        /* --- CATEGORY SECTIONS & CARDS --- */
         .category-section {
             background-color: var(--card-surface);
             border: 1px solid var(--card-border);
@@ -445,7 +439,7 @@
             color: #fff; 
             cursor: pointer;
             font-size: 11px;
-            transition: background 0.2s ease;
+            transition: all 0.2s ease;
         }
 
         .lock-badge { 
@@ -454,7 +448,6 @@
             background: #00aa44; 
         }
 
-        /* --- LIGHTBOX MODAL --- */
         .lightbox-modal {
             display: none;
             position: fixed;
@@ -498,7 +491,6 @@
             cursor: pointer;
         }
 
-        /* --- UPDATED FOOTER --- */
         .tracker-footer { 
             margin-top: 50px; 
             text-align: center; 
@@ -611,7 +603,7 @@
                 <span id="footer-clock">00:00:00 AM EDT</span>
             </div>
             <div class="footer-stamp outlined-text">
-                VERSION 1.8.0 | LAST SYSTEM UPDATE: JULY 30, 2026
+                VERSION 1.8.5 | LAST SYSTEM UPDATE: JULY 30, 2026
             </div>
         </footer>
     </div>
@@ -632,8 +624,7 @@
             getFirestore, 
             doc, 
             onSnapshot, 
-            setDoc,
-            getDoc
+            setDoc
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { 
             getAuth, 
@@ -661,12 +652,55 @@
         const RAW_JSON_DATA_URL = "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/se.json";
         const GOOGLE_CSV_MENU_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
 
+        const defaultSniperDataset = [
+            { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'North-east map sector, on a chest inside a single building guarded by 2 soldiers.' },
+            { id: 'm1_pl2', cat: '1: The Atlantic Wall', name: 'Upcoming Delivery', type: 'Personal Letter', desc: 'Central farm, inside the southern farmhouse upstairs; climb the attic ladder.' },
+            { id: 'm1_pl3', cat: '1: The Atlantic Wall', name: 'Violets Are Wilting', type: 'Personal Letter', desc: 'Northern sector building near the AA gun objective; found upstairs in the attic.' },
+            { id: 'm1_pl4', cat: '1: The Atlantic Wall', name: 'Violets Don\'t Wilt', type: 'Personal Letter', desc: 'Town hotel upstairs bedroom; locked inside the wall safe (requires code or charge).' },
+            { id: 'm1_pl5', cat: '1: The Atlantic Wall', name: 'Pests in the Garden', type: 'Personal Letter', desc: 'Far south-west promenade tip, inside the open pagoda structure near rocket launchers.' },
+            { id: 'm1_pl6', cat: '1: The Atlantic Wall', name: 'Boches at the Door', type: 'Personal Letter', desc: 'Inside Marcel\'s resistance house on the ground floor sofa.' },
+            { id: 'm1_cd1', cat: '1: The Atlantic Wall', name: 'Resistance Captured', type: 'Classified Doc', desc: 'Bathhouse main objective item; automatically acquired during infiltration.' },
+            { id: 'm1_cd2', cat: '1: The Atlantic Wall', name: 'Beach Defences', type: 'Classified Doc', desc: 'North-west corner armory building; locked inside the office safe.' },
+            { id: 'm1_cd3', cat: '1: The Atlantic Wall', name: 'Lacking Air Support', type: 'Classified Doc', desc: 'Inside the generator bunker safe; requires a satchel charge to open.' },
+            { id: 'm1_cd4', cat: '1: The Atlantic Wall', name: 'Atlantikwall Report', type: 'Classified Doc', desc: 'Northern AA gun sector building; downstairs office safe.' },
+            { id: 'm1_hi1', cat: '1: The Atlantic Wall', name: 'Resistance Photo', type: 'Hidden Item', desc: 'South-west town sector, upstairs bedroom inside the Pharmacie building.' },
+            { id: 'm1_hi2', cat: '1: The Atlantic Wall', name: 'Radio Tin', type: 'Hidden Item', desc: 'Central farm compound, located directly inside the animal stables.' },
+            { id: 'm1_hi3', cat: '1: The Atlantic Wall', name: 'FFI Flag', type: 'Hidden Item', desc: 'Far west edge of the map, on the ground floor kitchen counter.' },
+            { id: 'm1_se1', cat: '1: The Atlantic Wall', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'North-east map border; perched on a red-tiled chimney outside the play area.' },
+            { id: 'm1_se2', cat: '1: The Atlantic Wall', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'South-west town sector; visible on the roof ridge of the coastal hotel.' },
+            { id: 'm1_se3', cat: '1: The Atlantic Wall', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'South-east bunker beach; perched on the roof peak of the Vantage Point building.' },
+            { id: 'm1_wb1', cat: '1: The Atlantic Wall', name: 'Rifle Workbench', type: 'Workbench', desc: 'Inside the locked room of the Vantage Point building.' },
+            { id: 'm1_wb2', cat: '1: The Atlantic Wall', name: 'SMG Workbench', type: 'Workbench', desc: 'Marcel\'s resistance house attic floor; access via external wall vines.' },
+            { id: 'm1_wb3', cat: '1: The Atlantic Wall', name: 'Pistol Workbench', type: 'Workbench', desc: 'North-west corner locked armory compound room.' },
+            { id: 'm2_pl1', cat: '2: Occupied Residence', name: 'Do Not Fail Me, Nephew.', type: 'Personal Letter', desc: 'Chateau first floor, sitting on a desk inside the small office with red carpet.' },
+            { id: 'm2_pl2', cat: '2: Occupied Residence', name: 'Need A Scapegoat', type: 'Personal Letter', desc: 'Chateau first floor, on a table directly at the foot of the bedroom bed.' },
+            { id: 'm2_pl3', cat: '2: Occupied Residence', name: 'Brother, I Have A Plan.', type: 'Personal Letter', desc: 'Chateau top floor, on a nightstand in the servant\'s quarters dorm room.' },
+            { id: 'm2_pl4', cat: '2: Occupied Residence', name: 'Good Plan, Let\'s Do It.', type: 'Personal Letter', desc: 'Inside the sniper outpost tower north of the chateau courtyard.' },
+            { id: 'm2_cd1', cat: '2: Occupied Residence', name: 'Orders of the Day', type: 'Classified Doc', desc: 'Chateau first floor office. Alternates: Western tent, central outpost, or Woodland Ford.' },
+            { id: 'm2_cd2', cat: '2: Occupied Residence', name: 'Renovations Completed', type: 'Classified Doc', desc: 'Chateau first floor, on the primary desk inside Möller\'s main office.' },
+            { id: 'm2_cd3', cat: '2: Occupied Residence', name: 'Operation Kraken', type: 'Classified Doc', desc: 'Inside Möller\'s hidden wall study; reveal by interacting with office secret triggers.' },
+            { id: 'm2_cd4', cat: '2: Occupied Residence', name: 'New Orders, Effective Immediately', type: 'Classified Doc', desc: 'Inside the locked weapons chamber at the north-east Waffenkammer building.' },
+            { id: 'm2_cd5', cat: '2: Occupied Residence', name: 'Immediate Request For Attic Repairs', type: 'Classified Doc', desc: 'North-east Waffenkammer building table. Alternate: Chateau top floor padlock door.' },
+            { id: 'm2_cd6', cat: '2: Occupied Residence', name: 'Grateful, Thanks.', type: 'Classified Doc', desc: 'Sitting directly on the desk inside Möller\'s secret document study room.' },
+            { id: 'm2_hi1', cat: '2: Occupied Residence', name: 'Old Man Statuette', type: 'Hidden Item', desc: 'Chateau first floor bedroom; open the safe hidden behind the wall painting.' },
+            { id: 'm2_hi2', cat: '2: Occupied Residence', name: 'Group Statuette', type: 'Hidden Item', desc: 'Chateau top floor servant room chest; unlockable via standard lockpicks.' },
+            { id: 'm2_hi3', cat: '2: Occupied Residence', name: 'Soldier Statuette', type: 'Hidden Item', desc: 'Looted from the body of the Sniper positioned in the north tower outpost.' },
+            { id: 'm2_se1', cat: '2: Occupied Residence', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Perched on the roof apex of the munitions farmhouse in the north-west.' },
+            { id: 'm2_se2', cat: '2: Occupied Residence', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Look west from the central river bridge; sits on the jagged river cliffs.' },
+            { id: 'm2_se3', cat: '2: Occupied Residence', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Sits on the roof ridge of the stone outbuilding north of the chateau.' },
+            { id: 'm2_wb1', cat: '2: Occupied Residence', name: 'Rifle Workbench', type: 'Workbench', desc: 'Chateau basement cellar; access via the ramp in the south-east courtyard.' },
+            { id: 'm2_wb2', cat: '2: Occupied Residence', name: 'SMG Workbench', type: 'Workbench', desc: 'Upstairs room of the house west of the chateau; access via external wall vines.' },
+            { id: 'm2_wb3', cat: '2: Occupied Residence', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside the locked weapon vault room at the north-east Waffenkammer building.' }
+        ];
+
         const appState = {
             targetUserId: 'Guest',
             targetDisplayName: 'Guest User',
             targetPlatform: DEFAULT_PLATFORM,
-            masterDataset: [],
+            masterDataset: defaultSniperDataset,
             hunterData: [],
+            // Separate in-memory progress for guest sessions per platform
+            guestProgress: {},
             app: null,
             auth: null,
             db: null,
@@ -725,8 +759,6 @@
                         console.warn(`Dataset endpoint notice (${url}):`, err.message);
                     }
                 }
-
-                this.masterDataset = [];
                 return false;
             },
 
@@ -794,24 +826,7 @@
 
                     navContainer.innerHTML = navHTML;
                 } catch (err) {
-                    console.warn("CSV Menu fetch error, using fallback JSON:", err.message);
-                    this.loadFallbackMenu();
-                }
-            },
-
-            loadFallbackMenu: async function() {
-                const navContainer = document.getElementById('dynamic-nav-links');
-                if (!navContainer) return;
-                try {
-                    const res = await fetch(`Menu.json?v=${Date.now()}`);
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (Array.isArray(data)) {
-                            navContainer.innerHTML = data.map(item => `<a href="${item.url}">${item.name}</a>`).join('');
-                        }
-                    }
-                } catch (e) {
-                    navContainer.innerHTML = `<span style="color:#aaa; font-size:0.8rem;">Navigation Loaded</span>`;
+                    console.warn("CSV Menu fetch notice:", err.message);
                 }
             },
 
@@ -868,14 +883,14 @@
                     });
                 }
 
-                // Auth Action Button Event
+                // Auth Button Event
                 const authBtn = document.getElementById('auth-action-btn');
                 if (authBtn) {
                     authBtn.addEventListener('click', () => {
                         if (this.auth.currentUser && !this.auth.currentUser.isAnonymous) {
                             signOut(this.auth).then(() => {
                                 signInAnonymously(this.auth);
-                                this.showToast("Signed out. Switched to Guest mode.");
+                                this.showToast("Signed out. Switched to Guest preview mode.");
                             });
                         } else {
                             const tempAnon = this.auth.currentUser && this.auth.currentUser.isAnonymous ? this.auth.currentUser : null;
@@ -885,7 +900,7 @@
                                 if (tempAnon) deleteUser(tempAnon).catch(() => {});
                                 this.showToast(`Welcome back, ${res.user.displayName || 'Operative'}!`);
                             }).catch(err => {
-                                this.showToast("Authentication failed.");
+                                this.showToast("Authentication failed or cancelled.");
                             });
                         }
                     });
@@ -893,7 +908,6 @@
 
                 signInAnonymously(this.auth).catch(() => {});
 
-                // Auth Persistence & User Session Listener
                 onAuthStateChanged(this.auth, async (user) => {
                     const badge = document.getElementById('auth-badge');
                     const avatar = document.getElementById('user-avatar');
@@ -901,20 +915,22 @@
                     const btnSpan = authBtn ? authBtn.querySelector('span') : null;
 
                     if (user && !user.isAnonymous) {
-                        const resolvedName = user.displayName || (user.email ? user.email.split('@')[0] : 'Operative');
-                        this.targetUserId = resolvedName;
-                        this.targetDisplayName = resolvedName;
+                        const rawName = user.displayName || (user.email ? user.email.split('@')[0] : 'Operative');
+                        const safeUserId = rawName.replace(/[\/\#\?\[\]]/g, '_');
+                        
+                        this.targetUserId = safeUserId;
+                        this.targetDisplayName = rawName;
 
                         if (badge) badge.style.display = 'flex';
                         if (avatar) avatar.src = user.photoURL || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23aaa"><circle cx="12" cy="8" r="4"/><path d="M12 14c-6.1 0-8 4-8 4v2h16v-2s-1.9-4-8-4z"/></svg>';
-                        if (nameLabel) nameLabel.innerText = resolvedName;
+                        if (nameLabel) nameLabel.innerText = rawName;
                         if (btnSpan) btnSpan.innerText = 'Sign Out';
                         if (authBtn) authBtn.classList.add('logout');
 
-                        await setDoc(doc(this.db, "users", resolvedName), {
+                        await setDoc(doc(this.db, "users", safeUserId), {
                             uid: user.uid,
                             email: user.email || "",
-                            displayName: resolvedName,
+                            displayName: rawName,
                             photoURL: user.photoURL || '',
                             lastLogin: new Date().toISOString()
                         }, { merge: true }).catch(() => {});
@@ -969,14 +985,35 @@
                 this.targetUserId = userId;
                 this.targetPlatform = platform.toLowerCase();
 
-                this.hunterData = this.masterDataset.map(item => ({ ...item, collected: false }));
-
                 const displayNode = document.getElementById('hunter-display');
                 if (displayNode) {
                     displayNode.innerText = `${userId.toUpperCase()} [${this.targetPlatform.toUpperCase()}]`;
                 }
 
                 if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
+
+                const currentUser = this.auth ? this.auth.currentUser : null;
+                const isGuest = !currentUser || currentUser.isAnonymous || userId.toLowerCase() === 'guest';
+
+                if (isGuest) {
+                    // Guest Mode: Use local in-memory progress for the selected platform
+                    if (!this.guestProgress[this.targetPlatform]) {
+                        this.guestProgress[this.targetPlatform] = {};
+                    }
+
+                    const platformSavedMap = this.guestProgress[this.targetPlatform];
+                    this.hunterData = this.masterDataset.map(item => ({
+                        ...item,
+                        collected: !!platformSavedMap[item.id]
+                    }));
+
+                    this.dataLoaded = true;
+                    this.render();
+                    return;
+                }
+
+                // Signed-In Mode: Bind Firestore real-time snapshot
+                this.hunterData = this.masterDataset.map(item => ({ ...item, collected: false }));
 
                 const primaryRef = doc(this.db, "users", userId, "progress", this.targetPlatform, "games", GAME_ID);
 
@@ -1004,29 +1041,34 @@
             },
 
             toggleItem: async function(id) {
-                let currentUser = this.auth.currentUser;
-
-                if (!currentUser || currentUser.isAnonymous) {
-                    this.showToast("Sign in required to save progress.");
-                    return;
-                }
-
-                const activeUsername = currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'Operative');
-                if (activeUsername.toLowerCase() !== this.targetUserId.toLowerCase() && this.targetUserId !== 'Guest') {
-                    this.showToast("Access Denied: You can only edit your own profile progress.");
-                    return;
-                }
-
                 const item = this.hunterData.find(i => i.id === id);
-                if (item) {
-                    item.collected = !item.collected;
-                    this.render();
+                if (!item) return;
+
+                item.collected = !item.collected;
+                this.render();
+
+                const currentUser = this.auth ? this.auth.currentUser : null;
+                const isSignedIn = currentUser && !currentUser.isAnonymous && this.targetUserId.toLowerCase() !== 'guest';
+
+                if (isSignedIn) {
                     this.sync();
+                } else {
+                    // Store in local guest memory for current platform
+                    if (!this.guestProgress[this.targetPlatform]) {
+                        this.guestProgress[this.targetPlatform] = {};
+                    }
+                    this.guestProgress[this.targetPlatform][id] = item.collected;
+
+                    if (item.collected) {
+                        this.showToast("Marked in Guest Preview! Sign in to save permanently across devices.");
+                    }
                 }
             },
 
             sync: async function() {
                 if (!this.db || !this.dataLoaded) return;
+                const currentUser = this.auth ? this.auth.currentUser : null;
+                if (!currentUser || currentUser.isAnonymous || this.targetUserId.toLowerCase() === 'guest') return;
 
                 const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
                 
@@ -1044,7 +1086,7 @@
                         progress: progress
                     }, { merge: true });
                 } catch (err) {
-                    this.showToast("Save failed: Check network or rules.");
+                    this.showToast("Save failed: Check network or security rules.");
                 }
             },
 
