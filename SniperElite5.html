@@ -1,16 +1,11 @@
-<!-- ============================================================================
-   File: index.html
-   Version: 1.7.2 | Updated: 2026-07-30T01:12:00Z
-   Description: Sniper Elite 5 Master Tracker (entertainment-71888)
-   ============================================================================ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sniper Elite 5 Master Tracker | Werewolf3788</title>
+    <title>Sniper Elite 5 Master Tracker</title>
     
-    <!-- Transparent SVG Favicon to eliminate 404 console errors -->
+    <!-- Transparent SVG Favicon -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
 
     <!-- Active Google Analytics (entertainment-71888) -->
@@ -19,12 +14,539 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-JDNSLD3GFE');
     </script>
 
-    <!-- External Stylesheet Import with Smart Cache-Busting -->
-    <link rel="stylesheet" href="style.css?v=20260730">
+    <style>
+        :root {
+            --bg-main: #121212;
+            --card-surface: #1e1e1e;
+            --card-border: #2a2a2a;
+            --text-primary: #ffffff;
+            --text-muted: #aaaaaa;
+            --brand-gold: #ff8800;
+            --brand-blue: #2563eb;
+            --brand-green: #10b981;
+            --brand-red: #ef4444;
+            --btn-bg: #2a2a2a;
+            --btn-border: #3f3f3f;
+            --font-body: 'Roboto', system-ui, sans-serif;
+            --ser-color: #ff8800;
+            --ser-glow: rgba(255, 136, 0, 0.6);
+            --nav-height: 60px;
+            --csv-nav-height: 42px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            background-color: var(--bg-main);
+            background-image: url('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2407270/ss_752a78f3e5c9a0914909a805c8651a0290823528.1920x1080.jpg?t=1738260133');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 14px;
+            line-height: 1.5;
+            min-height: 100vh;
+            width: 100vw;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), rgba(10, 10, 10, 0.95));
+            z-index: -1;
+        }
+
+        .outlined-text {
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 5px rgba(0,0,0,0.8);
+        }
+
+        h1, h2 {
+            font-size: 24px; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        /* --- TOP NAVIGATION BAR --- */
+        .master-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--nav-height);
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 2px solid var(--ser-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            font-weight: 900;
+            color: var(--ser-color);
+            text-decoration: none;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px var(--ser-glow);
+        }
+
+        .nav-auth-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .auth-user-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--btn-border);
+            padding: 4px 10px;
+            border-radius: 20px;
+        }
+
+        .user-avatar {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 1px solid var(--brand-gold);
+        }
+
+        .user-name-label {
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: #fff;
+        }
+
+        .auth-btn {
+            background: var(--brand-blue);
+            color: #ffffff;
+            border: 1px solid var(--brand-gold);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-weight: 800;
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .auth-btn:hover {
+            background: #1d4ed8;
+            box-shadow: 0 0 10px var(--ser-glow);
+        }
+
+        .auth-btn.logout {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--brand-red);
+            color: #f87171;
+        }
+
+        .auth-btn.logout:hover {
+            background: var(--brand-red);
+            color: #ffffff;
+        }
+
+        /* --- DYNAMIC MENU BAR (CSV) --- */
+        .csv-nav {
+            position: fixed;
+            top: var(--nav-height);
+            left: 0; right: 0;
+            min-height: var(--csv-nav-height);
+            background: rgba(10, 10, 12, 0.98);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            padding: 4px 20px;
+            z-index: 999;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        #dynamic-nav-links {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #dynamic-nav-links a, .nav-dropbtn {
+            background-color: var(--btn-bg);
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.82rem;
+            letter-spacing: 0.5px;
+            padding: 5px 12px;
+            min-height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border: 1px solid var(--btn-border);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            white-space: nowrap;
+        }
+
+        #dynamic-nav-links a:hover, .nav-dropbtn:hover {
+            background-color: var(--brand-blue);
+            border-color: var(--brand-gold);
+            color: #ffffff;
+        }
+
+        .nav-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .nav-dropdown-content {
+            display: none;
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            background-color: #161618;
+            min-width: 220px;
+            box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.95);
+            border: 1px solid var(--btn-border);
+            border-radius: 6px;
+            z-index: 1100;
+            padding: 6px;
+        }
+
+        .nav-dropdown-content a {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            margin-bottom: 4px;
+            color: var(--text-muted);
+            background: #202022;
+            border-radius: 4px;
+            text-decoration: none;
+            gap: 10px;
+        }
+
+        .nav-dropdown-content a:hover {
+            background-color: var(--brand-blue);
+            color: #ffffff;
+        }
+
+        .nav-dropdown:hover .nav-dropdown-content {
+            display: block;
+        }
+
+        .menu-thumb {
+            width: 28px;
+            height: 28px;
+            border-radius: 4px;
+            object-fit: cover;
+            border: 1px solid var(--brand-gold);
+            cursor: zoom-in;
+            transition: transform 0.2s;
+        }
+
+        .menu-thumb:hover {
+            transform: scale(1.15);
+        }
+
+        /* --- MAIN CONTAINER --- */
+        .tracker-container {
+            margin-top: calc(var(--nav-height) + var(--csv-nav-height) + 20px);
+            padding: 10px;
+            width: 85%;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+
+        @media (max-width: 768px) {
+            .tracker-container { width: 95%; }
+        }
+
+        /* --- OPERATIVE CONSOLE HEADER --- */
+        .profile-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 15, 20, 0.95);
+            padding: 16px 20px;
+            border-radius: 0.8rem;
+            border: 2px solid var(--ser-color);
+            margin-bottom: 20px;
+            box-shadow: 0 0 15px var(--ser-glow);
+            gap: 15px;
+        }
+
+        .hunter-glow { 
+            font-size: 1.4rem; 
+            font-weight: 900; 
+            color: var(--ser-color); 
+            text-shadow: 0 0 12px var(--ser-glow); 
+        }
+
+        .platform-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .platform-label {
+            font-weight: 900;
+            font-size: 0.85rem;
+            color: var(--brand-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .platform-select-dropdown {
+            background-color: #18181a;
+            color: #ffffff;
+            border: 2px solid var(--ser-color);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-weight: 900;
+            font-size: 0.85rem;
+            cursor: pointer;
+            outline: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        .platform-select-dropdown:hover, .platform-select-dropdown:focus {
+            background-color: var(--brand-blue);
+            border-color: var(--brand-gold);
+        }
+
+        /* --- PROGRESS HUD --- */
+        .main-header {
+            background: rgba(10, 0, 0, 0.85); 
+            padding: 20px 15px; 
+            border-radius: 1rem;
+            border: 2px solid var(--ser-color); 
+            text-align: center; 
+            margin-bottom: 25px;
+        }
+
+        .bar-bg { 
+            background: #000; 
+            height: 16px; 
+            border-radius: 8px; 
+            border: 1px solid #333; 
+            margin: 12px 0; 
+            overflow: hidden; 
+        }
+
+        .bar-fill { 
+            height: 100%; 
+            width: 0%; 
+            background: linear-gradient(90deg, var(--brand-blue), var(--ser-color)); 
+            transition: width 0.8s ease-out; 
+        }
+
+        /* --- CATEGORY SECTIONS & CARDS --- */
+        .category-section {
+            background-color: var(--card-surface);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+
+        .category-header {
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            cursor: pointer; 
+            border-left: 8px solid var(--ser-color);
+            padding: 0 15px; 
+            background: rgba(20, 20, 25, 0.95);
+            height: 48px; 
+            user-select: none;
+        }
+
+        .section-content { 
+            padding: 15px;
+        }
+
+        .section-collapsed .section-content { 
+            display: none; 
+        }
+
+        .item-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+            gap: 12px; 
+        }
+
+        .item-card {
+            background: #161616; 
+            border: 1px solid #2a2a2a;
+            border-radius: 0.6rem; 
+            padding: 12px; 
+            display: flex; 
+            flex-direction: column;
+            justify-content: space-between; 
+            min-height: 120px;
+        }
+
+        .item-card.completed {
+            border-color: var(--brand-green); 
+            background: #102419;
+        }
+
+        .item-type-tag { 
+            font-size: 10px; 
+            padding: 2px 6px; 
+            border-radius: 4px; 
+            font-weight: 900; 
+            text-transform: uppercase; 
+            background: #000; 
+            color: var(--brand-gold); 
+            margin-bottom: 6px; 
+            width: fit-content; 
+            border: 1px solid #444;
+        }
+
+        .toggle-btn, .lock-badge {
+            margin-top: 10px; 
+            width: 100%; 
+            min-height: 36px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            border-radius: 5px; 
+            font-weight: 900; 
+            text-transform: uppercase;
+            border: 1px solid #444; 
+            background: var(--brand-blue); 
+            color: #fff; 
+            cursor: pointer;
+            font-size: 11px;
+            transition: background 0.2s ease;
+        }
+
+        .lock-badge { 
+            border-color: var(--brand-green); 
+            color: #ffffff; 
+            background: #00aa44; 
+        }
+
+        /* --- LIGHTBOX MODAL --- */
+        .lightbox-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .lightbox-modal.active {
+            display: flex;
+        }
+
+        .lightbox-img {
+            max-width: 90vw;
+            max-height: 80vh;
+            border: 2px solid var(--brand-gold);
+            border-radius: 8px;
+            box-shadow: 0 0 30px var(--ser-glow);
+            object-fit: contain;
+        }
+
+        .lightbox-title {
+            margin-top: 14px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--brand-gold);
+            text-align: center;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            color: #fff;
+            font-size: 32px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* --- UPDATED FOOTER --- */
+        .tracker-footer { 
+            margin-top: 50px; 
+            text-align: center; 
+            padding: 20px; 
+            font-size: 12px;
+            border-top: 1px solid #333;
+            background: rgba(5,5,5,0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-status-line {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-family: monospace;
+            font-size: 13px;
+            color: #22c55e;
+            font-weight: 700;
+        }
+
+        .footer-status-line.offline {
+            color: #ef4444;
+        }
+
+        .footer-stamp {
+            color: #888;
+            font-family: monospace;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+
+        .toast-modal {
+            display: none;
+            position: fixed;
+            bottom: 20px; right: 20px;
+            background: #18181b;
+            border: 2px solid var(--ser-color);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 2000;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+            font-weight: bold;
+        }
+    </style>
 </head>
 
 <body id="master-body">
@@ -32,29 +554,44 @@
 
     <!-- PRIMARY NAV -->
     <nav class="master-nav">
-        <a href="#/tracker/Werewolf3788/pc" class="nav-logo outlined-text">SNIPER ELITE 5: MASTER LOG</a>
-        <div id="stat-line" style="font-family: monospace; font-size: 10px; opacity: 0.6; text-transform: uppercase; color: #aaa;" class="outlined-text">
-            LINK: INITIALIZING...
+        <a href="#/tracker/Guest/ps5" class="nav-logo outlined-text">SNIPER ELITE 5: MASTER LOG</a>
+        
+        <div class="nav-auth-controls">
+            <div id="auth-badge" class="auth-user-badge" style="display: none;">
+                <img id="user-avatar" class="user-avatar" src="" alt="User Avatar">
+                <span id="user-name" class="user-name-label">Operative</span>
+            </div>
+            <button id="auth-action-btn" class="auth-btn">
+                <span>Google Sign-In</span>
+            </button>
         </div>
     </nav>
 
-    <!-- DYNAMIC NAVIGATION MENU CONTAINER -->
+    <!-- DYNAMIC CSV MENU BAR -->
     <nav id="csv-menu-bar" class="csv-nav">
-        <div id="dynamic-nav-links" style="display: flex; gap: 15px; flex-wrap: wrap;"></div>
+        <div id="dynamic-nav-links"></div>
     </nav>
 
     <div class="tracker-container">
-        <!-- OPERATIVE TERMINAL CONSOLE -->
+        <!-- OPERATIVE CONSOLE -->
         <div class="profile-header">
             <div class="active-info">
-                <div style="font-size: 0.6rem; text-transform: uppercase; color: #888;" class="outlined-text">Operative Terminal</div>
-                <span id="hunter-display" class="hunter-glow text-white outlined-text">WEREWOLF3788 [PC]</span>
+                <div style="font-size: 0.65rem; text-transform: uppercase; color: #888;" class="outlined-text">Active Session Identity</div>
+                <span id="hunter-display" class="hunter-glow text-white outlined-text">GUEST [PS5]</span>
             </div>
-            <div class="profile-actions">
-                <button class="profile-btn active-btn outlined-text" data-profile="Werewolf3788">Werewolf3788</button>
-                <button class="profile-btn outlined-text" data-profile="Ray">Ray</button>
-                <button class="profile-btn outlined-text" data-profile="TJ">TJ</button>
-                <button class="profile-btn outlined-text" data-profile="Marc">Marc</button>
+
+            <!-- PLATFORM SELECTOR -->
+            <div class="platform-controls">
+                <label for="platform-select" class="platform-label outlined-text">Platform:</label>
+                <select id="platform-select" class="platform-select-dropdown">
+                    <option value="pc">PC</option>
+                    <option value="steam">Steam</option>
+                    <option value="xbox">Xbox</option>
+                    <option value="ps4">PlayStation 4</option>
+                    <option value="ps5" selected>PlayStation 5</option>
+                    <option value="ubisoft">Ubisoft</option>
+                    <option value="ea">EA</option>
+                </select>
             </div>
         </div>
 
@@ -64,20 +601,529 @@
             <div class="bar-bg"><div id="overall-bar" class="bar-fill"></div></div>
         </header>
 
-        <!-- MISSION REGISTRY DYNAMIC CONTAINER -->
+        <!-- MISSION REGISTRY CONTAINER -->
         <div id="section-container"></div>
 
-        <!-- FOOTER WITH BRAND SIGNATURE -->
+        <!-- PINNED FOOTER -->
         <footer class="tracker-footer">
-            <p class="outlined-text">DESIGNED BY WEREWOLF3788 | OPERATIVES: KEVIN, RAY, TJ, MARC</p>
-            <p class="outlined-text" style="margin-top: 5px; font-family: monospace;">NODE-PROJECT: SE5-Master-Tracker</p>
-            <div class="kf-signature" title="KF Signature">
-                <span class="kf-k">K</span><span class="kf-f">F</span>
+            <div id="footer-status" class="footer-status-line outlined-text">
+                <span id="status-indicator">● ONLINE</span>
+                <span id="footer-clock">00:00:00 AM EDT</span>
+            </div>
+            <div class="footer-stamp outlined-text">
+                VERSION 1.8.0 | LAST SYSTEM UPDATE: JULY 30, 2026
             </div>
         </footer>
     </div>
 
-    <!-- MAIN TRACKER SCRIPT MODULE WITH SMART CACHE-BUSTING -->
-    <script type="module" src="tracker.js?v=20260730"></script>
+    <!-- LIGHTBOX OVERLAY -->
+    <div id="lightbox-modal" class="lightbox-modal">
+        <span id="lightbox-close" class="lightbox-close">&times;</span>
+        <img id="lightbox-img" class="lightbox-img" src="" alt="Thumbnail Enlarged">
+        <div id="lightbox-title" class="lightbox-title outlined-text">Image Preview</div>
+    </div>
+
+    <div id="toast-modal" class="toast-modal outlined-text"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
+        import { 
+            getFirestore, 
+            doc, 
+            onSnapshot, 
+            setDoc,
+            getDoc
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { 
+            getAuth, 
+            signInAnonymously, 
+            onAuthStateChanged, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            signOut,
+            deleteUser 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+            authDomain: "entertainment-71888.firebaseapp.com",
+            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+            projectId: "entertainment-71888",
+            storageBucket: "entertainment-71888.firebasestorage.app",
+            messagingSenderId: "660524340277",
+            appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+            measurementId: "G-JDNSLD3GFE"
+        };
+
+        const GAME_ID = "sniper-elite-5";
+        const DEFAULT_PLATFORM = "ps5";
+        const RAW_JSON_DATA_URL = "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/se.json";
+        const GOOGLE_CSV_MENU_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
+
+        const appState = {
+            targetUserId: 'Guest',
+            targetDisplayName: 'Guest User',
+            targetPlatform: DEFAULT_PLATFORM,
+            masterDataset: [],
+            hunterData: [],
+            app: null,
+            auth: null,
+            db: null,
+            analytics: null,
+            collapsedSections: {},
+            masterUnsub: null,
+            dataLoaded: false,
+            lastSyncTime: 0,
+            isOnline: true,
+
+            showToast: function(msg) {
+                const toast = document.getElementById('toast-modal');
+                if (toast) {
+                    toast.innerText = msg;
+                    toast.style.display = 'block';
+                    setTimeout(() => { toast.style.display = 'none'; }, 3500);
+                }
+            },
+
+            openLightbox: function(src, title) {
+                const modal = document.getElementById('lightbox-modal');
+                const img = document.getElementById('lightbox-img');
+                const titleNode = document.getElementById('lightbox-title');
+                if (modal && img) {
+                    img.src = src;
+                    if (titleNode) titleNode.innerText = title || 'Image Preview';
+                    modal.classList.add('active');
+                }
+            },
+
+            closeLightbox: function() {
+                const modal = document.getElementById('lightbox-modal');
+                if (modal) modal.classList.remove('active');
+            },
+
+            loadMasterDataset: async function() {
+                const endpoints = [
+                    `se.json?v=${Date.now()}`,
+                    `/Website/games/Sniper-Elite/5/se.json?v=${Date.now()}`,
+                    `${RAW_JSON_DATA_URL}?v=${Date.now()}`
+                ];
+
+                for (const url of endpoints) {
+                    try {
+                        const response = await fetch(url);
+                        if (response.ok) {
+                            let text = await response.text();
+                            text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
+                            const data = JSON.parse(text);
+                            if (Array.isArray(data) && data.length > 0) {
+                                this.masterDataset = data;
+                                return true;
+                            }
+                        }
+                    } catch (err) {
+                        console.warn(`Dataset endpoint notice (${url}):`, err.message);
+                    }
+                }
+
+                this.masterDataset = [];
+                return false;
+            },
+
+            loadCsvMenu: async function() {
+                const navContainer = document.getElementById('dynamic-nav-links');
+                if (!navContainer) return;
+
+                try {
+                    const response = await fetch(`${GOOGLE_CSV_MENU_URL}&v=${Date.now()}`);
+                    if (!response.ok) throw new Error("CSV Fetch HTTP Error");
+
+                    const textData = await response.text();
+                    const rows = textData.split('\n');
+
+                    const groups = {};
+                    const standalone = [];
+
+                    let startIdx = 0;
+                    if (rows[0] && rows[0].toLowerCase().includes("name")) startIdx = 1;
+
+                    for (let i = startIdx; i < rows.length; i++) {
+                        const rowStr = rows[i].replace(/\r/g, '').trim();
+                        if (!rowStr) continue;
+
+                        const cols = rowStr.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                        const name = cols[0] ? cols[0].replace(/^"|"$/g, '').trim() : '';
+                        const group = cols[1] ? cols[1].replace(/^"|"$/g, '').trim() : '';
+                        const url = cols[2] ? cols[2].replace(/^"|"$/g, '').trim() : '';
+                        const image = cols[3] ? cols[3].replace(/^"|"$/g, '').trim() : '';
+
+                        if (!name || !url) continue;
+
+                        const itemObj = { name, url, image };
+
+                        if (group && group.toLowerCase() !== 'none') {
+                            if (!groups[group]) groups[group] = [];
+                            groups[group].push(itemObj);
+                        } else {
+                            standalone.push(itemObj);
+                        }
+                    }
+
+                    let navHTML = '';
+
+                    Object.keys(groups).forEach(groupName => {
+                        const dropItems = groups[groupName].map(it => {
+                            const imgTag = it.image ? `<img src="${it.image}" class="menu-thumb" alt="" onclick="event.preventDefault(); event.stopPropagation(); window.appState.openLightbox('${it.image}', '${it.name.replace(/'/g, "\\'")}')">` : '';
+                            return `<a href="${it.url}">${imgTag}<span>${it.name}</span></a>`;
+                        }).join('');
+
+                        navHTML += `
+                            <div class="nav-dropdown">
+                                <button class="nav-dropbtn">${groupName} ▾</button>
+                                <div class="nav-dropdown-content">
+                                    ${dropItems}
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    standalone.forEach(it => {
+                        const imgTag = it.image ? `<img src="${it.image}" class="menu-thumb" alt="" onclick="event.preventDefault(); event.stopPropagation(); window.appState.openLightbox('${it.image}', '${it.name.replace(/'/g, "\\'")}')">` : '';
+                        navHTML += `<a href="${it.url}">${imgTag}<span>${it.name}</span></a>`;
+                    });
+
+                    navContainer.innerHTML = navHTML;
+                } catch (err) {
+                    console.warn("CSV Menu fetch error, using fallback JSON:", err.message);
+                    this.loadFallbackMenu();
+                }
+            },
+
+            loadFallbackMenu: async function() {
+                const navContainer = document.getElementById('dynamic-nav-links');
+                if (!navContainer) return;
+                try {
+                    const res = await fetch(`Menu.json?v=${Date.now()}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (Array.isArray(data)) {
+                            navContainer.innerHTML = data.map(item => `<a href="${item.url}">${item.name}</a>`).join('');
+                        }
+                    }
+                } catch (e) {
+                    navContainer.innerHTML = `<span style="color:#aaa; font-size:0.8rem;">Navigation Loaded</span>`;
+                }
+            },
+
+            initSPARouter: function() {
+                window.addEventListener('hashchange', () => {
+                    const hash = window.location.hash.replace('#/', '');
+                    if (hash) {
+                        const parts = hash.split('/');
+                        if (parts[0] === 'tracker' && parts[1]) {
+                            const targetUser = parts[1];
+                            const newPlatform = parts[2] || this.targetPlatform;
+                            this.targetPlatform = newPlatform;
+                            const platformSelect = document.getElementById('platform-select');
+                            if (platformSelect) platformSelect.value = newPlatform.toLowerCase();
+                            this.loadLiveProgress(targetUser, newPlatform);
+                        }
+                    }
+                });
+            },
+
+            init: async function() {
+                this.app = initializeApp(firebaseConfig);
+                this.auth = getAuth(this.app);
+                this.db = getFirestore(this.app);
+
+                try { this.analytics = getAnalytics(this.app); } catch (e) {}
+
+                this.loadCsvMenu();
+                await this.loadMasterDataset();
+
+                const cats = [...new Set(this.masterDataset.map(i => i.cat))];
+                cats.forEach(cat => {
+                    const sid = cat.replace(/[^a-z0-9]/gi, '');
+                    this.collapsedSections[sid] = true;
+                });
+
+                this.initSPARouter();
+                this.initClockAndMonitors();
+
+                // Bind Lightbox Close
+                const closeBtn = document.getElementById('lightbox-close');
+                const modal = document.getElementById('lightbox-modal');
+                if (closeBtn) closeBtn.onclick = () => this.closeLightbox();
+                if (modal) modal.onclick = (e) => { if (e.target === modal) this.closeLightbox(); };
+
+                // Platform Selector Event
+                const platformSelect = document.getElementById('platform-select');
+                if (platformSelect) {
+                    platformSelect.value = this.targetPlatform;
+                    platformSelect.addEventListener('change', (e) => {
+                        this.targetPlatform = e.target.value.toLowerCase();
+                        window.location.hash = `#/tracker/${this.targetUserId}/${this.targetPlatform}`;
+                        this.loadLiveProgress(this.targetUserId, this.targetPlatform);
+                    });
+                }
+
+                // Auth Action Button Event
+                const authBtn = document.getElementById('auth-action-btn');
+                if (authBtn) {
+                    authBtn.addEventListener('click', () => {
+                        if (this.auth.currentUser && !this.auth.currentUser.isAnonymous) {
+                            signOut(this.auth).then(() => {
+                                signInAnonymously(this.auth);
+                                this.showToast("Signed out. Switched to Guest mode.");
+                            });
+                        } else {
+                            const tempAnon = this.auth.currentUser && this.auth.currentUser.isAnonymous ? this.auth.currentUser : null;
+                            const provider = new GoogleAuthProvider();
+                            provider.setCustomParameters({ prompt: 'select_account' });
+                            signInWithPopup(this.auth, provider).then((res) => {
+                                if (tempAnon) deleteUser(tempAnon).catch(() => {});
+                                this.showToast(`Welcome back, ${res.user.displayName || 'Operative'}!`);
+                            }).catch(err => {
+                                this.showToast("Authentication failed.");
+                            });
+                        }
+                    });
+                }
+
+                signInAnonymously(this.auth).catch(() => {});
+
+                // Auth Persistence & User Session Listener
+                onAuthStateChanged(this.auth, async (user) => {
+                    const badge = document.getElementById('auth-badge');
+                    const avatar = document.getElementById('user-avatar');
+                    const nameLabel = document.getElementById('user-name');
+                    const btnSpan = authBtn ? authBtn.querySelector('span') : null;
+
+                    if (user && !user.isAnonymous) {
+                        const resolvedName = user.displayName || (user.email ? user.email.split('@')[0] : 'Operative');
+                        this.targetUserId = resolvedName;
+                        this.targetDisplayName = resolvedName;
+
+                        if (badge) badge.style.display = 'flex';
+                        if (avatar) avatar.src = user.photoURL || 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23aaa"><circle cx="12" cy="8" r="4"/><path d="M12 14c-6.1 0-8 4-8 4v2h16v-2s-1.9-4-8-4z"/></svg>';
+                        if (nameLabel) nameLabel.innerText = resolvedName;
+                        if (btnSpan) btnSpan.innerText = 'Sign Out';
+                        if (authBtn) authBtn.classList.add('logout');
+
+                        await setDoc(doc(this.db, "users", resolvedName), {
+                            uid: user.uid,
+                            email: user.email || "",
+                            displayName: resolvedName,
+                            photoURL: user.photoURL || '',
+                            lastLogin: new Date().toISOString()
+                        }, { merge: true }).catch(() => {});
+                    } else {
+                        this.targetUserId = 'Guest';
+                        this.targetDisplayName = 'Guest User';
+
+                        if (badge) badge.style.display = 'none';
+                        if (btnSpan) btnSpan.innerText = 'Google Sign-In';
+                        if (authBtn) authBtn.classList.remove('logout');
+                    }
+
+                    this.loadLiveProgress(this.targetUserId, this.targetPlatform);
+                });
+
+                this.render();
+            },
+
+            initClockAndMonitors: function() {
+                const updateClock = () => {
+                    const clockNode = document.getElementById('footer-clock');
+                    const statusNode = document.getElementById('status-indicator');
+                    const statusLine = document.getElementById('footer-status');
+
+                    const now = new Date();
+                    const timeStr = now.toLocaleTimeString('en-US', { timeZone: 'America/New_York' }) + ' EDT';
+
+                    if (clockNode) clockNode.innerText = timeStr;
+
+                    const online = navigator.onLine;
+                    this.isOnline = online;
+
+                    if (statusNode && statusLine) {
+                        if (online) {
+                            statusNode.innerText = '● ONLINE';
+                            statusLine.classList.remove('offline');
+                        } else {
+                            statusNode.innerText = '▲ CONNECTION DROPPED (OFFLINE)';
+                            statusLine.classList.add('offline');
+                        }
+                    }
+                };
+
+                updateClock();
+                setInterval(updateClock, 1000);
+
+                window.addEventListener('online', () => updateClock());
+                window.addEventListener('offline', () => updateClock());
+            },
+
+            loadLiveProgress: function(userId, platform = "ps5") {
+                this.targetUserId = userId;
+                this.targetPlatform = platform.toLowerCase();
+
+                this.hunterData = this.masterDataset.map(item => ({ ...item, collected: false }));
+
+                const displayNode = document.getElementById('hunter-display');
+                if (displayNode) {
+                    displayNode.innerText = `${userId.toUpperCase()} [${this.targetPlatform.toUpperCase()}]`;
+                }
+
+                if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
+
+                const primaryRef = doc(this.db, "users", userId, "progress", this.targetPlatform, "games", GAME_ID);
+
+                this.masterUnsub = onSnapshot(primaryRef, (snap) => {
+                    this.lastSyncTime = Date.now();
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        const incoming = data.progress || [];
+                        if (Array.isArray(incoming)) {
+                            this.hunterData = this.masterDataset.map(item => {
+                                const status = incoming.find(s => s.id === item.id);
+                                return { ...item, collected: status ? (status.collected || status.done || false) : false };
+                            });
+                        }
+                        this.dataLoaded = true;
+                        this.render();
+                    } else {
+                        this.hunterData = this.masterDataset.map(item => ({ ...item, collected: false }));
+                        this.dataLoaded = true;
+                        this.render();
+                    }
+                }, (err) => {
+                    console.warn("Snapshot notice:", err.message);
+                });
+            },
+
+            toggleItem: async function(id) {
+                let currentUser = this.auth.currentUser;
+
+                if (!currentUser || currentUser.isAnonymous) {
+                    this.showToast("Sign in required to save progress.");
+                    return;
+                }
+
+                const activeUsername = currentUser.displayName || (currentUser.email ? currentUser.email.split('@')[0] : 'Operative');
+                if (activeUsername.toLowerCase() !== this.targetUserId.toLowerCase() && this.targetUserId !== 'Guest') {
+                    this.showToast("Access Denied: You can only edit your own profile progress.");
+                    return;
+                }
+
+                const item = this.hunterData.find(i => i.id === id);
+                if (item) {
+                    item.collected = !item.collected;
+                    this.render();
+                    this.sync();
+                }
+            },
+
+            sync: async function() {
+                if (!this.db || !this.dataLoaded) return;
+
+                const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
+                
+                const platformRef = doc(this.db, "users", this.targetUserId, "progress", this.targetPlatform);
+                await setDoc(platformRef, { platform: this.targetPlatform, lastActive: new Date().toISOString() }, { merge: true });
+
+                const docRef = doc(this.db, "users", this.targetUserId, "progress", this.targetPlatform, "games", GAME_ID);
+
+                try {
+                    await setDoc(docRef, {
+                        user: this.targetDisplayName,
+                        platform: this.targetPlatform,
+                        gameId: GAME_ID,
+                        lastUpdated: new Date().toISOString(),
+                        progress: progress
+                    }, { merge: true });
+                } catch (err) {
+                    this.showToast("Save failed: Check network or rules.");
+                }
+            },
+
+            toggleSection: function(sid) {
+                this.collapsedSections[sid] = !this.collapsedSections[sid];
+                this.render();
+            },
+
+            render: function() {
+                const container = document.getElementById('section-container');
+                if (!container) return;
+                container.innerHTML = '';
+                const cats = [...new Set(this.hunterData.map(i => i.cat))];
+                let totalFound = 0;
+
+                cats.forEach(cat => {
+                    const items = this.hunterData.filter(i => i.cat === cat);
+                    const count = items.filter(i => i.collected).length;
+                    totalFound += count;
+
+                    const sid = cat.replace(/[^a-z0-9]/gi, '');
+                    const section = document.createElement('div');
+                    section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''}`;
+                    
+                    section.innerHTML = `
+                        <div class="category-header outlined-text" id="header-${sid}">
+                            <h2>${cat}</h2>
+                            <div style="font-weight:900; font-size: 14px; color: #ff8800;">${count}/${items.length} FOUND</div>
+                        </div>
+                        <div class="section-content" id="content-${sid}">
+                            <div class="item-grid"></div>
+                        </div>
+                    `;
+
+                    section.querySelector(`#header-${sid}`).addEventListener('click', () => {
+                        this.toggleSection(sid);
+                    });
+
+                    const grid = section.querySelector('.item-grid');
+                    items.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = `item-card ${item.collected ? 'completed' : ''}`;
+                        card.innerHTML = `
+                            <div>
+                                <div class="item-type-tag">${item.type}</div>
+                                <div class="outlined-text" style="font-weight:900; font-size:14px; margin-bottom:4px;">${item.name}</div>
+                                <div class="outlined-text" style="font-size:12px; color:#ddd; font-style:italic; line-height:1.3;">${item.desc}</div>
+                            </div>
+                            <div class="action-zone"></div>
+                        `;
+
+                        const actionZone = card.querySelector('.action-zone');
+
+                        if (item.collected) {
+                            actionZone.innerHTML = `<button class="lock-badge outlined-text toggle-btn">LOGGED REGISTRY (Undo)</button>`;
+                            actionZone.querySelector('button').addEventListener('click', () => this.toggleItem(item.id));
+                        } else {
+                            const btn = document.createElement('button');
+                            btn.className = 'toggle-btn outlined-text';
+                            btn.innerText = 'Confirm Found';
+                            btn.addEventListener('click', () => this.toggleItem(item.id));
+                            actionZone.appendChild(btn);
+                        }
+
+                        grid.appendChild(card);
+                    });
+                    container.appendChild(section);
+                });
+
+                const percent = Math.round((totalFound / (this.hunterData.length || 1)) * 100) || 0;
+                const barNode = document.getElementById('overall-bar');
+                const textNode = document.getElementById('percent-text');
+                if (barNode) barNode.style.width = percent + '%';
+                if (textNode) textNode.innerText = `TOTAL CAMPAIGN COLLECTION: ${percent}%`;
+            }
+        };
+
+        window.appState = appState;
+        appState.init();
+    </script>
 </body>
 </html>
