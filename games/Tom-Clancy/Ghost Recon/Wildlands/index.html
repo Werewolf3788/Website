@@ -1,12 +1,3 @@
-<!--
- * ==========================================
- * --- PRECISION INTEGRITY PROTOCOL ---
- * Project: Ghost Recon Wildlands Squad Hub
- * Version: 4.8.1 - Verified Acquisition Storefront Portals & GA4 Dual Analytics
- * Version Timestamp: Mon, July 27, 2026, 05:00 PM EDT
- * Implementation Note: Hardware storefront direct reference links mapped with UTM parameters & psngaming-20 affiliate tag.
- * ==========================================
- -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,24 +6,26 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-      
-      // Primary Analytics & Dual Stream Binding
-      gtag('config', 'G-Z9M5LXQ5XN', {
-        'stream_id': '13278632388',
-        'custom_map': { 'dimension1': 'Tom Clancy Ghost Recon Wildlands Skills tracker and weapons tracker' }
-      });
-      gtag('config', 'G-L376P3NPY4', {
-        'stream_id': '13278632388'
-      });
+      gtag('config', 'G-Z9M5LXQ5XN');
     </script>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ghost Recon Wildlands Squad Hub</title>
+    <title>Ghost Recon Wildlands Squad Operations Hub</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css?v=4.8.1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <style>
+        :root {
+            --bar-height: clamp(60px, 10vh, 90px);
+            --primary-orange: #FF4500;
+            --solid-black: #000000;
+            --ghost-blue: #28a745;
+            --node-blue: #0076a8;
+            --node-locked: #1c2430;
+            --medal-gold: #ffcc00;
+        }
+    </style>
+    <link rel="stylesheet" href="style.css?v=2.4">
 </head>
 <body>
 
@@ -40,205 +33,218 @@
         <div class="header-container">
             <h1 class="logo-text">GHOST HUB</h1>
             
-            <div class="user-selector-wrapper" style="display: flex; gap: 8px; align-items: center;">
-                <select id="userSelect" class="styled-select" data-ga-label="user_profile_selector"></select>
-                <button id="addCustomUserBtn" class="control-btn" style="min-height: 44px; padding: 0 12px; font-size: 13px;" data-ga-label="add_custom_user">+ Add Tag</button>
+            <div class="directory-dropdown-wrapper">
+                <button id="directoryMenuBtn" class="control-btn outline-text" style="font-weight:bold; border-color:var(--primary-orange); color:var(--primary-orange);">📁 Intel Directory</button>
+                <div id="directoryDropdownContent" class="directory-menu-pane hidden">
+                    <div id="directoryLoading" style="padding:12px; font-size:12px; color:#8a99ad; text-align:center;">Fetching tactical assets...</div>
+                </div>
             </div>
 
-            <div id="authContainer" class="auth-inline-wrapper">
-                <button id="googleSignInBtn" class="control-btn" style="background-color: var(--ghost-blue);" data-ga-label="login_google">🔑 Login</button>
-                <div id="userProfileStatus" class="hidden" style="display: flex; align-items: center; gap: 12px;">
-                    <img id="userAvatar" class="user-badge-img" src="" alt="Avatar">
-                    <button id="signOutBtn" class="control-btn" style="font-size: 13px; padding: 6px 12px; min-height: 38px;" data-ga-label="logout">Logout</button>
+            <div class="user-selector-wrapper">
+                <select id="userSelect" class="styled-select"></select>
+            </div>
+            
+            <div class="ui-controls">
+                <button id="toggleUiSettings" class="control-btn">🔧</button>
+                <div id="uiSettingsPanel" class="settings-dropdown hidden">
+                    <div class="setting-item">
+                        <label>Theme Mode:</label>
+                        <select id="themeModeSelect">
+                            <option value="system" selected>Match System</option>
+                            <option value="bright">Bright</option>
+                            <option value="dark">Dark</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label>Text Outline Color:</label>
+                        <input type="color" id="outlineColorPicker" value="#000000">
+                    </div>
+                    <div class="setting-item">
+                        <label>Font Style:</label>
+                        <select id="fontStyleSelect">
+                            <option value="default">Ghost Default</option>
+                            <option value="monospace">Tactical Mono</option>
+                            <option value="sans-serif">Clean Sans</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
     <main class="hub-container">
-        <div id="demoNotification" class="demo-banner">Operational Live Sandbox Mode Active. Log In to Commit Multi-User Synchronization.</div>
         
         <section class="card-panel profile-panel">
-            <div id="adminBadge" class="admin-banner hidden">⚡ OVERWATCH ADMIN ACTIVE (raykevin71888@gmail.com)</div>
+            <div class="profile-header">
+                <h2 id="operatorName" class="outline-text">Operator</h2>
+                <div id="tierContainer" class="tier-badge-container">
+                    <span class="tier-label">TIER</span>
+                    <span id="tierLevel" class="tier-value">--</span>
+                </div>
+            </div>
             
             <div class="stat-category-block">
-                <h3 class="category-header" style="color: var(--primary-orange);">IDENTITY CONTROLS</h3>
+                <h3 class="category-header">PLAYSTYLE <span id="playstyleType" class="header-highlight">--</span></h3>
                 <div class="stat-row">
-                    <label for="profileCustomName">Operator Profile Name</label>
-                    <input type="text" id="profileCustomName" class="stat-input" style="text-align: left;">
+                    <span>Average Kill Distance</span>
+                    <span id="avgKillDist" class="stat-val">--</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-labels">
+                        <span>Tactical Precision</span>
+                        <span id="tacticalValue">0%</span>
+                    </div>
+                    <div class="bar-bg"><div id="tacticalBar" class="bar-fill"></div></div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-labels">
+                        <span>Stealth Kills</span>
+                        <span id="stealthValue">0%</span>
+                    </div>
+                    <div class="bar-bg"><div id="stealthBar" class="bar-fill"></div></div>
+                </div>
+            </div>
+
+            <div class="stat-category-block cinematic-wrapper">
+                <h3 class="category-header">COMBAT</h3>
+                <div class="stat-row">
+                    <span>Lifetime</span>
+                    <span id="statLifetime" class="stat-val">--</span>
                 </div>
                 <div class="stat-row">
-                    <label for="profilePsnUser" style="color: var(--node-blue);">Linked PSN Handle</label>
-                    <input type="text" id="profilePsnUser" class="stat-input" placeholder="e.g. werewolf3788" style="text-align: left; border-color: var(--node-blue);">
+                    <span>Longest Shot</span>
+                    <span id="longestShot" class="stat-val">--</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-labels">
+                        <span>Precision</span>
+                        <span id="precisionValue">0%</span>
+                    </div>
+                    <div class="bar-bg"><div id="precisionBar" class="bar-fill"></div></div>
+                </div>
+                <div class="weapons-fav-row">
+                    <div class="weapon-tag"><strong>Favorite Weapon:</strong> <span id="favWeapon">--</span></div>
+                    <div class="weapon-tag"><strong>2nd Favorite Weapon:</strong> <span id="favWeapon2">--</span></div>
                 </div>
             </div>
 
             <div class="stat-category-block">
-                <h3 class="category-header" style="color: var(--primary-orange);">PROGRESSION METRICS</h3>
+                <h3 class="category-header">SUPPORT</h3>
                 <div class="stat-row">
-                    <label for="profileTierMode">Tier One Prestige Mode</label>
-                    <select id="profileTierMode" class="stat-input">
-                        <option value="off">Off / Base</option>
+                    <span>Teammates Revived</span>
+                    <span id="teammatesRevived" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>C4/Mine Kills</span>
+                    <span id="c4MineKills" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Drone Used</span>
+                    <span id="statDroneUsed" class="stat-val">--</span>
+                </div>
+            </div>
+
+            <div class="stat-category-block">
+                <h3 class="category-header">TRAVEL</h3>
+                <div class="stat-row">
+                    <span>Air</span>
+                    <span id="travelAir" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Ground</span>
+                    <span id="travelGround" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Parachute</span>
+                    <span id="travelPara" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Map Discovered</span>
+                    <span id="travelMap" class="stat-val">--</span>
+                </div>
+            </div>
+
+            <div class="steam-widget-card">
+                <iframe src="https://store.steampowered.com/widget/460930/" frameborder="0" width="100%" height="190"></iframe>
+            </div>
+
+            <div class="edit-stats-trigger-container">
+                <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Comprehensive Ghost Profile</button>
+            </div>
+
+            <div id="editStatsPanel" class="edit-stats-panel hidden">
+                <div class="edit-row">
+                    <label>Tier One Mode:</label>
+                    <select id="editTierMode">
+                        <option value="off">Off / Not Reached</option>
                         <option value="on">Active</option>
                     </select>
+                    <input type="number" id="editTierLevel" min="1" max="50" placeholder="Lvl">
                 </div>
-                <div class="stat-row">
-                    <label id="tierLevelContextLabel" for="profileTierLevel">Character Level</label>
-                    <input type="number" id="profileTierLevel" class="stat-input" min="1" max="50" value="1">
-                </div>
-                <div class="stat-row">
-                    <label>Scaling Status:</label>
-                    <span id="difficultyScalingOutput" style="font-weight: bold; font-size: 16px; color: var(--primary-orange);">Easy</span>
-                </div>
-            </div>
-            
-            <div class="stat-category-block">
-                <h3 class="category-header" style="color: var(--primary-orange);">PLAYER STYLE</h3>
-                <div class="stat-row">
-                    <label for="profilePlaystyle">Playstyle Title</label>
-                    <input type="text" id="profilePlaystyle" class="stat-input">
-                </div>
-                <div class="stat-row">
-                    <label for="profileAvgKillDist">Avg Kill Distance (m)</label>
-                    <input type="number" id="profileAvgKillDist" class="stat-input" min="0">
-                </div>
-                <div class="stat-row">
-                    <label for="profileTactical">Tactical Precision (%)</label>
-                    <input type="number" id="profileTactical" class="stat-input" min="0" max="100">
-                </div>
-                <div class="stat-row">
-                    <label for="profileStealth">Stealth Kills (%)</label>
-                    <input type="number" id="profileStealth" class="stat-input" min="0" max="100">
-                </div>
-            </div>
-
-            <div class="stat-category-block">
-                <h3 class="category-header" style="color: var(--primary-orange);">COMBAT</h3>
-                <div class="stat-row">
-                    <label for="profileLifetime">Lifetime Duration</label>
-                    <input type="text" id="profileLifetime" class="stat-input" placeholder="e.g. 14h 20min">
-                </div>
-                <div class="stat-row">
-                    <label for="profileLongestShot">Longest Shot (m)</label>
-                    <input type="number" id="profileLongestShot" class="stat-input" min="0">
-                </div>
-                <div class="stat-row">
-                    <label for="profilePrecision">Overall Accuracy (%)</label>
-                    <input type="number" id="profilePrecision" class="stat-input" min="0" max="100">
-                </div>
-            </div>
-
-            <div class="stat-category-block">
-                <h3 class="category-header" style="color: var(--primary-orange);">WEAPON LOADOUT SELECTION</h3>
-                <div class="stat-row" style="display: block; margin-bottom: 20px;">
-                    <label for="profileFavWeapon" style="display: block; margin-bottom: 8px;">Primary Favorite Weapon</label>
-                    <select id="profileFavWeapon" class="stat-input" style="width: 100%; text-align: left;"></select>
-                </div>
-                <div class="stat-row" style="display: block;">
-                    <label for="profileFavWeapon2" style="display: block; margin-bottom: 8px;">Secondary Favorite Weapon</label>
-                    <select id="profileFavWeapon2" class="stat-input" style="width: 100%; text-align: left;"></select>
-                </div>
-            </div>
-
-            <div class="stat-category-block">
-                <h3 class="category-header" style="color: var(--primary-orange);">SUPPORT</h3>
-                <div class="stat-row">
-                    <label for="profileRevives">Teammates Revived</label>
-                    <input type="number" id="profileRevives" class="stat-input" min="0">
-                </div>
-                <div class="stat-row">
-                    <label for="profileC4Kills">C4 / Mine Kills</label>
-                    <input type="number" id="profileC4Kills" class="stat-input" min="0">
-                </div>
-                <div class="stat-row">
-                    <label for="profileDroneUsed">Drone Time Deployment</label>
-                    <input type="text" id="profileDroneUsed" class="stat-input" placeholder="e.g. 2h 40min">
-                </div>
-            </div>
-
-            <div class="stat-category-block">
-                <h3 class="category-header" style="color: var(--primary-orange);">TRAVEL LOG</h3>
-                <div class="stat-row">
-                    <label for="profileTravelAir">Air Travel Time</label>
-                    <input type="text" id="profileTravelAir" class="stat-input">
-                </div>
-                <div class="stat-row">
-                    <label for="profileTravelGround">Ground Travel Time</label>
-                    <input type="text" id="profileTravelGround" class="stat-input">
-                </div>
-                <div class="stat-row">
-                    <label for="profileTravelPara">Parachute Jumps</label>
-                    <input type="text" id="profileTravelPara" class="stat-input">
-                </div>
-                <div class="stat-row">
-                    <label for="profileTravelMap">Map Discovered (%)</label>
-                    <input type="text" id="profileTravelMap" class="stat-input">
-                </div>
-            </div>
-
-            <!-- Deployment Acquisition Widgets & Storefront Portal Links Matrix -->
-            <div class="stat-category-block">
-                <h3 class="category-header" style="color: var(--primary-orange);">ACQUISITION PROVISIONING</h3>
-                <div class="steam-widget-card" style="margin-bottom: 16px;">
-                    <iframe src="https://store.steampowered.com/widget/460930/" frameborder="0" width="100%" height="190"></iframe>
-                </div>
+                <hr class="panel-divider">
                 
-                <div class="storefront-matrix">
-                    <a href="https://store.ubisoft.com/us/tom-clancys-ghost-recon-wildlands/574474b488a7e3b8638b456a.html?utm_source=ghost_hub&utm_medium=storefront_matrix&utm_campaign=wildlands_tracker" target="_blank" class="store-link-card" data-ga-label="store_ubisoft">
-                        <span>Ubisoft Store Connect</span>
-                        <span class="store-tag" style="background: #000; color: #fff; border: 1px solid #fff;">Ubisoft</span>
-                    </a>
-                    <a href="https://store.playstation.com/en-us/search/Tom%20Clancy%E2%80%99s%20Ghost%20Recon%C2%AE%20Wildlands?utm_source=ghost_hub&utm_medium=storefront_matrix&utm_campaign=wildlands_tracker" target="_blank" class="store-link-card" data-ga-label="store_psn">
-                        <span>PlayStation Network Marketplace</span>
-                        <span class="store-tag" style="background: #003087; color: #fff;">PSN Store</span>
-                    </a>
-                    <a href="https://www.xbox.com/en-US/games/store/tom-clancys-ghost-recon-wildlands-standard-edition/c2n9cs4fs1qr?utm_source=ghost_hub&utm_medium=storefront_matrix&utm_campaign=wildlands_tracker" target="_blank" class="store-link-card" data-ga-label="store_xbox">
-                        <span>Microsoft Xbox Live Store</span>
-                        <span class="store-tag" style="background: #107c10; color: #fff;">Xbox Hub</span>
-                    </a>
-                    <a href="https://www.amazon.com/s?k=ghost+recon+wildlands&tag=psngaming-20&utm_source=ghost_hub&utm_medium=storefront_matrix&utm_campaign=wildlands_tracker" target="_blank" class="store-link-card" data-ga-label="store_amazon">
-                        <span>Amazon Special Edition Physical Logistics</span>
-                        <span class="store-tag" style="background: #ff9900; color: #000;">Amazon</span>
-                    </a>
+                <h4 class="form-section-title">Playstyle & Combat</h4>
+                <div class="edit-grid-inputs">
+                    <div><label>Playstyle Title</label><input type="text" id="editPlaystyle"></div>
+                    <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist"></div>
+                    <div><label>Tactical %</label><input type="number" id="editTactical"></div>
+                    <div><label>Stealth %</label><input type="number" id="editStealth"></div>
+                    <div><label>Lifetime</label><input type="text" id="editLifetime"></div>
+                    <div><label>Longest Shot</label><input type="text" id="editLongest"></div>
+                    <div><label>Precision %</label><input type="number" id="editPrecision"></div>
+                    <div><label>Fav Weapon</label><input type="text" id="editFav1"></div>
+                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><input type="text" id="editFav2"></div>
                 </div>
+
+                <h4 class="form-section-title">Support & Travel</h4>
+                <div class="edit-grid-inputs">
+                    <div><label>Revived</label><input type="number" id="editRevives"></div>
+                    <div><label>Explosive Kills</label><input type="number" id="editExplosiveKills"></div>
+                    <div><label>Drone Used</label><input type="text" id="editDroneTime"></div>
+                    <div><label>Air Travel</label><input type="text" id="editAir"></div>
+                    <div><label>Ground Travel</label><input type="text" id="editGround"></div>
+                    <div><label>Parachute</label><input type="text" id="editPara"></div>
+                    <div><label>Map Disc. %</label><input type="text" id="editMap"></div>
+                </div>
+
+                <button id="saveStatsBtn" class="save-stats-btn">Save Tactical Update</button>
             </div>
         </section>
 
-        <!-- Right Column -->
         <section class="card-panel skills-panel">
             <div class="skills-tabs">
-                <button class="tab-link active" onclick="switchSkillCategory('WEAPON')" data-ga-label="tab_weapon">Weapon</button>
-                <button class="tab-link" onclick="switchSkillCategory('DRONE')" data-ga-label="tab_drone">Drone</button>
-                <button class="tab-link" onclick="switchSkillCategory('ITEM')" data-ga-label="tab_item">Item</button>
-                <button class="tab-link" onclick="switchSkillCategory('PHYSICAL')" data-ga-label="tab_physical">Physical</button>
-                <button class="tab-link" onclick="switchSkillCategory('SQUAD')" data-ga-label="tab_squad">Squad</button>
-                <button class="tab-link" onclick="switchSkillCategory('REBEL')" data-ga-label="tab_rebel">Rebel Support</button>
-                <button class="tab-link" onclick="switchSkillCategory('TROPHY')" data-ga-label="tab_trophy">Trophies & Recon Items</button>
+                <button class="tab-link active" onclick="switchSkillCategory('WEAPON')">Weapon</button>
+                <button class="tab-link" onclick="switchSkillCategory('DRONE')">Drone</button>
+                <button class="tab-link" onclick="switchSkillCategory('ITEM')">Item</button>
+                <button class="tab-link" onclick="switchSkillCategory('PHYSICAL')">Physical</button>
+                <button class="tab-link" onclick="switchSkillCategory('SQUAD')">Squad</button>
+                <button class="tab-link" onclick="switchSkillCategory('REBEL')">Rebel</button>
+                <button class="tab-link" onclick="switchSkillCategory('TROPHY')">Trophies & Recon</button>
             </div>
             
             <div id="skillsTreeGrid" class="skills-tree-grid"></div>
         </section>
-    </main>
 
-    <!-- Floating Donation / Stream Tip Button -->
-    <a href="https://streamelements.com/werewolf3788/tip" target="_blank" rel="noopener noreferrer" class="floating-tip-btn" data-ga-label="floating_tip_button">
-        💳 <span>Tip / Support Stream</span>
-    </a>
+    </main>
 
     <footer class="hub-footer">
         <div class="footer-container">
-            <div class="kf-watermark"><span class="k-letter">K</span><span class="f-letter">F</span></div>
-            <div class="timestamp-note">Active Version: v4.8.1 | GA4 Stream ID: 13278632388</div>
+            <div class="kf-watermark">
+                <span class="k-letter">K</span><span class="f-letter">F</span>
+            </div>
+            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-1402</p>
         </div>
     </footer>
 
-    <!-- Firebase SDK Compat & ES Module Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    
-    <!-- ES MODULE IMPORT MANDATORY FOR FIREBASE SNAPHOTS -->
-    <script type="module" src="app.js?v=4.8.1"></script>
+    <script src="app.js?v=2.4"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+            });
+        }
+    </script>
 </body>
 </html>
