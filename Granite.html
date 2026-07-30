@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Granite Wallpaper & Texture Studio</title>
+    <!-- Tailwind CSS for modern responsive styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        
+        /* Custom scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+
+        /* Finish Shimmer Animations */
+        .gloss-reflection {
+            background: linear-gradient(135deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0.05) 60%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+        }
+        
+        .honed-matte {
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.3);
+            pointer-events: none;
+        }
+
+        /* Custom range slider styling */
+        input[type=range] {
+            accent-color: #38bdf8;
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col overflow-hidden">
+
+    <!-- Top Header -->
+    <header class="bg-slate-900 border-b border-slate-800 px-6 py-3 flex items-center justify-between shrink-0 z-20">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                <i class="fa-solid font-bold fa-cubes text-white text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-lg text-slate-100 flex items-center gap-2">
+                    Granite Wallpaper Studio
+                    <span class="text-xs bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 px-2 py-0.5 rounded-full font-medium">Pro Visualizer</span>
+                </h1>
+                <p class="text-xs text-slate-400">Procedural Mineral Texture Generator & Interior Room Mockup</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-3">
+            <button id="resetBtn" class="px-3 py-1.5 text-xs font-medium text-slate-300 hover:text-white bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-rotate-left"></i> Reset
+            </button>
+            <button id="copyCssBtn" class="px-3 py-1.5 text-xs font-medium text-cyan-300 bg-cyan-950/60 hover:bg-cyan-900/80 border border-cyan-700/50 rounded-lg transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-code"></i> Copy CSS
+            </button>
+            <button id="downloadBtn" class="px-4 py-1.5 text-xs font-semibold text-slate-950 bg-cyan-400 hover:bg-cyan-300 rounded-lg transition-all flex items-center gap-1.5 shadow-md shadow-cyan-500/20">
+                <i class="fa-solid fa-download"></i> Export High-Res Wallpaper
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden relative">
+
+        <!-- Left Controls Sidebar -->
+        <aside class="w-80 bg-slate-900/90 border-r border-slate-800 flex flex-col shrink-0 overflow-y-auto z-10">
+            <div class="p-4 border-b border-slate-800">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-cyan-400"></i> Mineral Parameters
+                </h2>
+            </div>
+
+            <div class="p-4 space-y-5 flex-1">
+                
+                <!-- Base Colors -->
+                <div>
+                    <label class="text-xs font-semibold text-slate-300 block mb-2">Base Stone Color</label>
+                    <div class="grid grid-cols-5 gap-2" id="colorPresets">
+                        <!-- Color swatches injected via JS -->
+                    </div>
+                    <div class="flex items-center gap-2 mt-2">
+                        <input type="color" id="baseColorInput" value="#111827" class="w-8 h-8 rounded border-0 bg-transparent cursor-pointer">
+                        <span class="text-xs text-slate-400 font-mono" id="baseColorHex">#111827</span>
+                    </div>
+                </div>
+
+                <!-- Secondary Mineral / Speckle Color -->
+                <div>
+                    <label class="text-xs font-semibold text-slate-300 block mb-2">Mineral Fleck Color</label>
+                    <div class="flex items-center gap-2">
+                        <input type="color" id="fleckColorInput" value="#e2e8f0" class="w-8 h-8 rounded border-0 bg-transparent cursor-pointer">
+                        <span class="text-xs text-slate-400 font-mono" id="fleckColorHex">#E2E8F0</span>
+                    </div>
+                </div>
+
+                <!-- Quartz / Accent Sparkle Color -->
+                <div>
+                    <label class="text-xs font-semibold text-slate-300 block mb-2">Quartz & Garnet Flecks</label>
+                    <div class="flex items-center gap-2">
+                        <input type="color" id="quartzColorInput" value="#38bdf8" class="w-8 h-8 rounded border-0 bg-transparent cursor-pointer">
+                        <span class="text-xs text-slate-400 font-mono" id="quartzColorHex">#38BDF8</span>
+                    </div>
+                </div>
+
+                <hr class="border-slate-800">
+
+                <!-- Texture Scale -->
+                <div>
+                    <div class="flex justify-between text-xs mb-1">
+                        <span class="text-slate-300 font-medium">Grain Scale</span>
+                        <span class="text-cyan-400 font-mono" id="valGrainScale"> Medium</span>
+                    </div>
+                    <input type="range" id="grainScale" min="1" max="5" step="1" value="3" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Fleck Density -->
+                <div>
+                    <div class="flex justify-between text-xs mb-1">
+                        <span class="text-slate-300 font-medium">Mineral Fleck Density</span>
+                        <span class="text-cyan-400 font-mono" id="valDensity">75%</span>
+                    </div>
+                    <input type="range" id="fleckDensity" min="20" max="100" value="75" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Contrast & Depth -->
+                <div>
+                    <div class="flex justify-between text-xs mb-1">
+                        <span class="text-slate-300 font-medium">Contrast & Vein Noise</span>
+                        <span class="text-cyan-400 font-mono" id="valContrast">60%</span>
+                    </div>
+                    <input type="range" id="contrast" min="10" max="100" value="60" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <!-- Quartz Sparkle Intensity -->
+                <div>
+                    <div class="flex justify-between text-xs mb-1">
+                        <span class="text-slate-300 font-medium">Quartz & Iridescence Shimmer</span>
+                        <span class="text-cyan-400 font-mono" id="valSparkle">40%</span>
+                    </div>
+                    <input type="range" id="sparkle" min="0" max="100" value="40" class="w-full h-1.5 bg-slate-700 rounded-lg appearance-none cursor-pointer">
+                </div>
+
+                <hr class="border-slate-800">
+
+                <!-- Surface Finish -->
+                <div>
+                    <label class="text-xs font-semibold text-slate-300 block mb-2">Surface Finish</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button data-finish="polished" class="finish-btn active-finish px-2 py-2 text-xs font-medium rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex flex-col items-center gap-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Polished
+                        </button>
+                        <button data-finish="honed" class="finish-btn px-2 py-2 text-xs font-medium rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700 flex flex-col items-center gap-1">
+                            <i class="fa-solid fa-matt"></i> Honed
+                        </button>
+                        <button data-finish="leathered" class="finish-btn px-2 py-2 text-xs font-medium rounded-lg bg-slate-800 text-slate-400 hover:text-slate-200 border border-slate-700 flex flex-col items-center gap-1">
+                            <i class="fa-solid fa-mountain"></i> Brushed
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+
+        <!-- Center Viewport & Room Visualizer -->
+        <main class="flex-1 bg-slate-950 flex flex-col relative overflow-hidden">
+            
+            <!-- Room Mode Bar -->
+            <div class="bg-slate-900/60 backdrop-blur border-b border-slate-800 px-6 py-2.5 flex items-center justify-between z-10">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-semibold text-slate-400">Preview Mode:</span>
+                    <button data-mode="full" class="view-mode-btn active-mode px-3 py-1 rounded-md text-xs font-medium bg-slate-800 text-white border border-slate-700">
+                        <i class="fa-solid fa-expand"></i> Full Wallpaper Texture
+                    </button>
+                    <button data-mode="living" class="view-mode-btn px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+                        <i class="fa-solid fa-couch"></i> Modern Living Room
+                    </button>
+                    <button data-mode="kitchen" class="view-mode-btn px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+                        <i class="fa-solid fa-kitchen-set"></i> Kitchen Feature Backsplash
+                    </button>
+                    <button data-mode="bathroom" class="view-mode-btn px-3 py-1 rounded-md text-xs font-medium text-slate-400 hover:text-slate-200 hover:bg-slate-800/60">
+                        <i class="fa-solid fa-bath"></i> Luxury Bathroom Wall
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <button id="zoomToggle" class="text-xs text-slate-400 hover:text-slate-200 bg-slate-800/80 px-2.5 py-1 rounded border border-slate-700 flex items-center gap-1.5">
+                        <i class="fa-solid fa-magnifying-glass-plus"></i> <span id="zoomLabel">100% Zoom</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Interactive Stage Area -->
+            <div class="flex-1 flex items-center justify-center p-6 relative overflow-auto" id="stageContainer">
+                
+                <!-- Full Wallpaper Canvas Container -->
+                <div id="textureContainer" class="relative shadow-2xl rounded-xl overflow-hidden border border-slate-800 transition-all duration-300 max-w-full max-h-full flex items-center justify-center">
+                    <canvas id="graniteCanvas" width="1024" height="1024" class="max-w-full max-h-[75vh] h-auto object-contain rounded-xl"></canvas>
+                    <div id="finishOverlay" class="absolute inset-0 gloss-reflection transition-opacity duration-300"></div>
+                </div>
+
+                <!-- Room Scene Mockup Overlay Container -->
+                <div id="roomMockupContainer" class="hidden relative w-full max-w-4xl h-[75vh] bg-slate-900 rounded-2xl overflow-hidden shadow-2xl border border-slate-800">
+                    <!-- Dynamic Wall Canvas -->
+                    <div class="absolute inset-0 z-0 overflow-hidden" id="roomWallBackground">
+                        <!-- Tiled Granite Canvas Background -->
+                        <div id="tiledGraniteBg" class="w-full h-full bg-repeat"></div>
+                    </div>
+
+                    <!-- Room Overlay SVG Scene Masks -->
+                    <!-- Living Room Scene -->
+                    <div id="sceneLiving" class="room-scene absolute inset-0 z-10 pointer-events-none hidden">
+                        <svg class="w-full h-full" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+                            <!-- Soft Gradient Wall Ambient Shadow -->
+                            <rect width="1000" height="420" fill="url(#topShadow)"/>
+                            <!-- Floor -->
+                            <polygon points="0,420 1000,420 1000,600 0,600" fill="#1e1b18"/>
+                            <polygon points="0,420 1000,420 1000,600 0,600" fill="black" opacity="0.15"/>
+                            <line x1="0" y1="420" x2="1000" y2="420" stroke="#0f0e0d" stroke-width="6"/>
+                            <!-- Sofa -->
+                            <path d="M 200,400 Q 200,320 220,320 L 780,320 Q 800,320 800,400 L 820,500 L 180,500 Z" fill="#334155"/>
+                            <rect x="230" y="340" width="260" height="100" rx="10" fill="#475569"/>
+                            <rect x="510" y="340" width="260" height="100" rx="10" fill="#475569"/>
+                            <rect x="190" y="420" width="620" height="70" rx="15" fill="#1e293b"/>
+                            <!-- Coffee Table -->
+                            <ellipse cx="500" cy="530" rx="180" ry="30" fill="#0f172a" opacity="0.9"/>
+                            <line x1="360" y1="530" x2="380" y2="570" stroke="#64748b" stroke-width="6"/>
+                            <line x1="640" y1="530" x2="620" y2="570" stroke="#64748b" stroke-width="6"/>
+                            <!-- Wall Lamp & Light Glow -->
+                            <circle cx="850" cy="180" r="120" fill="url(#lampGlow)" opacity="0.6"/>
+                            <path d="M 850,0 L 850,140 M 830,140 L 870,140 L 860,165 L 840,165 Z" stroke="#e2e8f0" stroke-width="4" fill="#cbd5e1"/>
+                            <!-- Plant -->
+                            <path d="M 120,480 L 140,480 L 135,550 L 125,550 Z" fill="#78350f"/>
+                            <circle cx="130" cy="450" r="35" fill="#15803d" opacity="0.85"/>
+                            <circle cx="110" cy="430" r="25" fill="#166534" opacity="0.85"/>
+                            <circle cx="150" cy="440" r="28" fill="#22c55e" opacity="0.7"/>
+                            
+                            <defs>
+                                <linearGradient id="topShadow" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="black" stop-opacity="0.6"/>
+                                    <stop offset="100%" stop-color="black" stop-opacity="0.1"/>
+                                </linearGradient>
+                                <radialGradient id="lampGlow">
+                                    <stop offset="0%" stop-color="#fef08a" stop-opacity="0.5"/>
+                                    <stop offset="100%" stop-color="#fef08a" stop-opacity="0"/>
+                                </radialGradient>
+                            </defs>
+                        </svg>
+                    </div>
+
+                    <!-- Kitchen Scene -->
+                    <div id="sceneKitchen" class="room-scene absolute inset-0 z-10 pointer-events-none hidden">
+                        <svg class="w-full h-full" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+                            <!-- Upper Cabinets -->
+                            <rect x="0" y="0" width="1000" height="180" fill="#0f172a"/>
+                            <line x1="0" y1="180" x2="1000" y2="180" stroke="#334155" stroke-width="4"/>
+                            <line x1="250" y1="0" x2="250" y2="180" stroke="#1e293b" stroke-width="2"/>
+                            <line x1="500" y1="0" x2="500" y2="180" stroke="#1e293b" stroke-width="2"/>
+                            <line x1="750" y1="0" x2="750" y2="180" stroke="#1e293b" stroke-width="2"/>
+                            <!-- Under-cabinet LED Strip Glow -->
+                            <rect x="0" y="180" width="1000" height="40" fill="url(#ledGlow)"/>
+                            <!-- Countertop Surface -->
+                            <polygon points="0,420 1000,420 1000,450 0,450" fill="#cbd5e1"/>
+                            <polygon points="0,450 1000,450 1000,600 0,600" fill="#1e293b"/>
+                            <!-- Modern Faucet & Sink Accent -->
+                            <path d="M 470,420 C 470,330 530,330 530,360 L 530,380" fill="none" stroke="#94a3b8" stroke-width="8" stroke-linecap="round"/>
+                            
+                            <defs>
+                                <linearGradient id="ledGlow" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.4"/>
+                                    <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                                </linearGradient>
+                            </defs>
+                        </svg>
+                    </div>
+
+                    <!-- Bathroom Scene -->
+                    <div id="sceneBathroom" class="room-scene absolute inset-0 z-10 pointer-events-none hidden">
+                        <svg class="w-full h-full" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid slice">
+                            <!-- Floor -->
+                            <polygon points="0,480 1000,480 1000,600 0,600" fill="#020617"/>
+                            <!-- Mirror with Backlight -->
+                            <circle cx="500" cy="240" r="150" fill="url(#mirrorGlow)"/>
+                            <circle cx="500" cy="240" r="135" fill="#1e293b" stroke="#38bdf8" stroke-width="3"/>
+                            <circle cx="500" cy="240" r="130" fill="#0f172a" opacity="0.7"/>
+                            <!-- Floating Vanity -->
+                            <rect x="250" y="420" width="500" height="90" rx="10" fill="#0f172a" stroke="#334155" stroke-width="3"/>
+                            <!-- Vessel Sink -->
+                            <ellipse cx="500" cy="415" rx="100" ry="25" fill="#f8fafc"/>
+                            <ellipse cx="500" cy="412" rx="85" ry="18" fill="#e2e8f0"/>
+                            
+                            <defs>
+                                <radialGradient id="mirrorGlow">
+                                    <stop offset="70%" stop-color="#38bdf8" stop-opacity="0.4"/>
+                                    <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+                                </radialGradient>
+                            </defs>
+                        </svg>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Bottom Floating Quick-Info Banner -->
+            <div class="bg-slate-900/80 border-t border-slate-800 px-6 py-2 flex items-center justify-between text-xs text-slate-400 shrink-0">
+                <div class="flex items-center gap-4">
+                    <span><i class="fa-solid fa-layer-group text-cyan-400 mr-1"></i> Texture Resolution: <strong class="text-slate-200">1024x1024 Seamless PNG</strong></span>
+                    <span><i class="fa-solid fa-gem text-amber-400 mr-1"></i> Material: <strong class="text-slate-200" id="presetNameTag">Natural Granite Composite</strong></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="inline-block w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>GPU Canvas Accelerated</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- Right Presets Sidebar -->
+        <aside class="w-80 bg-slate-900/90 border-l border-slate-800 flex flex-col shrink-0 overflow-y-auto z-10">
+            <div class="p-4 border-b border-slate-800">
+                <h2 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                    <i class="fa-solid fa-boxes-stacked text-amber-400"></i> Popular Granite Types
+                </h2>
+            </div>
+
+            <div class="p-4 space-y-3" id="granitePresetsList">
+                <!-- Preset cards rendered dynamically -->
+            </div>
+
+            <div class="p-4 mt-auto border-t border-slate-800 bg-slate-950/40">
+                <div class="p-3 bg-slate-800/50 rounded-xl border border-slate-700/50 text-xs space-y-2">
+                    <div class="font-semibold text-slate-200 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-info text-cyan-400"></i> Interior Design Tip
+                    </div>
+                    <p class="text-slate-400 leading-relaxed" id="designTipText">
+                        Dark granites like Absolute Black or Black Galaxy create dramatic accent walls. Pair with matte brass brassware and warm LED lighting.
+                    </p>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Application Logic Script -->
+    <script>
+        // Preset Granite Definitions
+        const GRANITE_PRESETS = [
+            {
+                id: 'black-galaxy',
+                name: 'Black Galaxy',
+                origin: 'Andhra Pradesh, India',
+                base: '#0d0f12',
+                fleck: '#475569',
+                quartz: '#f59e0b',
+                scale: 3,
+                density: 85,
+                contrast: 70,
+                sparkle: 80,
+                tip: 'Featuring brilliant copper & gold specular flecks, Black Galaxy adds striking depth to modern living rooms and executive feature walls.'
+            },
+            {
+                id: 'kashmir-white',
+                name: 'Kashmir White',
+                origin: 'Tamil Nadu, India',
+                base: '#f1f5f9',
+                fleck: '#64748b',
+                quartz: '#881337',
+                scale: 2,
+                density: 65,
+                contrast: 50,
+                sparkle: 25,
+                tip: 'Soft light cream base with pale grey clouds and dark garnet flecks. Perfect for bright, airy Scandinavian interiors.'
+            },
+            {
+                id: 'blue-pearl',
+                name: 'Blue Pearl Labradorite',
+                origin: 'Larvik, Norway',
+                base: '#0f172a',
+                fleck: '#38bdf8',
+                quartz: '#93c5fd',
+                scale: 3,
+                density: 80,
+                contrast: 75,
+                sparkle: 90,
+                tip: 'Renowned for its shimmering iridescent blue feldspar crystals. Excellent choice for dramatic bathroom feature walls.'
+            },
+            {
+                id: 'imperial-red',
+                name: 'Imperial Ruby Red',
+                origin: 'Rajasthan, India',
+                base: '#7f1d1d',
+                fleck: '#1e293b',
+                quartz: '#fca5a5',
+                scale: 3,
+                density: 75,
+                contrast: 65,
+                sparkle: 40,
+                tip: 'Vibrant deep ruby with black and pink quartz specks. Creates a bold luxury focal point in formal dining areas.'
+            },
+            {
+                id: 'verde-ubatuba',
+                name: 'Verde Ubatuba',
+                origin: 'São Paulo, Brazil',
+                base: '#052e16',
+                fleck: '#84cc16',
+                quartz: '#fbbf24',
+                scale: 2,
+                density: 90,
+                contrast: 80,
+                sparkle: 50,
+                tip: 'Dark forest green with olive and gold specks. Brings an organic, serene luxury feel to luxury kitchens.'
+            },
+            {
+                id: 'colonial-gold',
+                name: 'Colonial Warm Gold',
+                origin: 'Brazil',
+                base: '#fef3c7',
+                fleck: '#78350f',
+                quartz: '#d97706',
+                scale: 3,
+                density: 70,
+                contrast: 55,
+                sparkle: 30,
+                tip: 'Warm honey and amber veining with dark cocoa accents. Pairs beautifully with natural wood furnishings.'
+            }
+        ];
+
+        const SWATCH_COLORS = ['#0d0f12', '#f1f5f9', '#0f172a', '#7f1d1d', '#052e16', '#fef3c7', '#334155', '#451a03', '#1e1b4b', '#1c1917'];
+
+        // App State
+        let state = {
+            baseColor: '#0d0f12',
+            fleckColor: '#475569',
+            quartzColor: '#f59e0b',
+            grainScale: 3,
+            fleckDensity: 85,
+            contrast: 70,
+            sparkle: 80,
+            finish: 'polished',
+            viewMode: 'full',
+            activePreset: 'black-galaxy'
+        };
+
+        // DOM Elements
+        const canvas = document.getElementById('graniteCanvas');
+        const ctx = canvas.getContext('2d');
+        const tiledGraniteBg = document.getElementById('tiledGraniteBg');
+        const finishOverlay = document.getElementById('finishOverlay');
+        const textureContainer = document.getElementById('textureContainer');
+        const roomMockupContainer = document.getElementById('roomMockupContainer');
+        const designTipText = document.getElementById('designTipText');
+        const presetNameTag = document.getElementById('presetNameTag');
+
+        // Initialize UI
+        function initUI() {
+            // Render Color Swatches
+            const swatchesContainer = document.getElementById('colorPresets');
+            swatchesContainer.innerHTML = '';
+            SWATCH_COLORS.forEach(hex => {
+                const btn = document.createElement('button');
+                btn.className = 'w-7 h-7 rounded-full border border-slate-700 hover:scale-110 transition-transform shadow';
+                btn.style.backgroundColor = hex;
+                btn.onclick = () => {
+                    state.baseColor = hex;
+                    document.getElementById('baseColorInput').value = hex;
+                    document.getElementById('baseColorHex').innerText = hex.toUpperCase();
+                    renderGraniteTexture();
+                };
+                swatchesContainer.appendChild(btn);
+            });
+
+            // Render Granite Presets Library Sidebar
+            const presetsList = document.getElementById('granitePresetsList');
+            presetsList.innerHTML = '';
+            GRANITE_PRESETS.forEach(preset => {
+                const card = document.createElement('div');
+                card.id = `preset-card-${preset.id}`;
+                card.className = `p-3 rounded-xl border transition-all cursor-pointer ${
+                    state.activePreset === preset.id 
+                    ? 'bg-slate-800 border-cyan-500 shadow-lg shadow-cyan-500/10' 
+                    : 'bg-slate-900/60 border-slate-800 hover:border-slate-700 hover:bg-slate-800/40'
+                }`;
+                
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-lg border border-slate-700 shadow-inner relative overflow-hidden shrink-0" style="background-color: ${preset.base}">
+                            <div class="absolute inset-0 opacity-60" style="background: radial-gradient(circle, ${preset.fleck} 20%, transparent 20%), radial-gradient(circle, ${preset.quartz} 20%, transparent 20%); background-size: 8px 8px; background-position: 0 0, 4px 4px;"></div>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h3 class="text-xs font-bold text-slate-200 truncate">${preset.name}</h3>
+                            <p class="text-[10px] text-slate-400 flex items-center gap-1">
+                                <i class="fa-solid fa-earth-americas text-slate-500"></i> ${preset.origin}
+                            </p>
+                        </div>
+                    </div>
+                `;
+
+                card.onclick = () => applyPreset(preset);
+                presetsList.appendChild(card);
+            });
+
+            setupEventListeners();
+            renderGraniteTexture();
+        }
+
+        // Apply Preset Data
+        function applyPreset(preset) {
+            state.activePreset = preset.id;
+            state.baseColor = preset.base;
+            state.fleckColor = preset.fleck;
+            state.quartzColor = preset.quartz;
+            state.grainScale = preset.scale;
+            state.fleckDensity = preset.density;
+            state.contrast = preset.contrast;
+            state.sparkle = preset.sparkle;
+
+            // Sync Inputs
+            document.getElementById('baseColorInput').value = preset.base;
+            document.getElementById('baseColorHex').innerText = preset.base.toUpperCase();
+            document.getElementById('fleckColorInput').value = preset.fleck;
+            document.getElementById('fleckColorHex').innerText = preset.fleck.toUpperCase();
+            document.getElementById('quartzColorInput').value = preset.quartz;
+            document.getElementById('quartzColorHex').innerText = preset.quartz.toUpperCase();
+
+            document.getElementById('grainScale').value = preset.scale;
+            document.getElementById('fleckDensity').value = preset.density;
+            document.getElementById('contrast').value = preset.contrast;
+            document.getElementById('sparkle').value = preset.sparkle;
+
+            updateSliderLabels();
+
+            // Highlight Active Preset Card
+            document.querySelectorAll('#granitePresetsList > div').forEach(c => {
+                c.classList.remove('bg-slate-800', 'border-cyan-500', 'shadow-lg');
+                c.classList.add('bg-slate-900/60', 'border-slate-800');
+            });
+            const activeCard = document.getElementById(`preset-card-${preset.id}`);
+            if (activeCard) {
+                activeCard.classList.remove('bg-slate-900/60', 'border-slate-800');
+                activeCard.classList.add('bg-slate-800', 'border-cyan-500', 'shadow-lg');
+            }
+
+            designTipText.innerText = preset.tip;
+            presetNameTag.innerText = `${preset.name} Granite`;
+
+            renderGraniteTexture();
+        }
+
+        function updateSliderLabels() {
+            const scales = ['Micro', 'Fine', 'Medium', 'Coarse', 'Macro'];
+            document.getElementById('valGrainScale').innerText = scales[state.grainScale - 1];
+            document.getElementById('valDensity').innerText = `${state.fleckDensity}%`;
+            document.getElementById('valContrast').innerText = `${state.contrast}%`;
+            document.getElementById('valSparkle').innerText = `${state.sparkle}%`;
+        }
+
+        // Core Procedural Granite Texture Generator
+        function renderGraniteTexture() {
+            const w = canvas.width;
+            const h = canvas.height;
+
+            // Base Fill
+            ctx.fillStyle = state.baseColor;
+            ctx.fillRect(0, 0, w, h);
+
+            // Layer 1: Base Noise / Fine Micro-Grains
+            const imgData = ctx.getImageData(0, 0, w, h);
+            const data = imgData.data;
+
+            // Parse Colors
+            const baseRGB = hexToRgb(state.baseColor);
+            const fleckRGB = hexToRgb(state.fleckColor);
+            const quartzRGB = hexToRgb(state.quartzColor);
+
+            const grainFactor = state.grainScale * 1.5;
+            const density = state.fleckDensity / 100;
+            const contrast = state.contrast / 100;
+
+            // Fast Noise Generation Pass
+            for (let i = 0; i < data.length; i += 4) {
+                const x = (i / 4) % w;
+                const y = Math.floor((i / 4) / w);
+
+                // Multi-frequency noise simulation
+                const n1 = Math.sin(x * 0.05 * grainFactor) * Math.cos(y * 0.05 * grainFactor);
+                const n2 = Math.sin(x * 0.2 + y * 0.1) * 0.5;
+                const randomVal = Math.random();
+
+                if (randomVal < density * 0.3) {
+                    // Micro fleck
+                    const blend = Math.random() * contrast;
+                    data[i] = lerp(baseRGB.r, fleckRGB.r, blend);
+                    data[i+1] = lerp(baseRGB.g, fleckRGB.g, blend);
+                    data[i+2] = lerp(baseRGB.b, fleckRGB.b, blend);
+                }
+            }
+            ctx.putImageData(imgData, 0, 0);
+
+            // Layer 2: Medium Mineral Crystals & Quartz Flecks
+            const numFlecks = Math.floor(15000 * (state.fleckDensity / 100) * (6 - state.grainScale));
+            const maxRadius = state.grainScale * 3.5;
+
+            for (let k = 0; k < numFlecks; k++) {
+                const cx = Math.random() * w;
+                const cy = Math.random() * h;
+                const rx = (Math.random() * maxRadius + 1);
+                const ry = (Math.random() * maxRadius + 1);
+                const angle = Math.random() * Math.PI;
+
+                ctx.beginPath();
+                ctx.ellipse(cx, cy, rx, ry, angle, 0, Math.PI * 2);
+
+                const isQuartz = Math.random() < (state.sparkle / 100);
+                if (isQuartz) {
+                    ctx.fillStyle = `rgba(${quartzRGB.r}, ${quartzRGB.g}, ${quartzRGB.b}, ${0.4 + Math.random() * 0.5})`;
+                } else {
+                    ctx.fillStyle = `rgba(${fleckRGB.r}, ${fleckRGB.g}, ${fleckRGB.b}, ${0.3 + Math.random() * 0.6})`;
+                }
+                ctx.fill();
+            }
+
+            // Layer 3: Iridescent Specular Sparkles
+            if (state.sparkle > 0) {
+                const sparkleCount = Math.floor(2000 * (state.sparkle / 100));
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                for (let s = 0; s < sparkleCount; s++) {
+                    const sx = Math.random() * w;
+                    const sy = Math.random() * h;
+                    const size = Math.random() * 1.8 + 0.5;
+                    ctx.fillRect(sx, sy, size, size);
+                }
+            }
+
+            // Layer 4: Organic Mineral Veining / Shadow Depth Pass
+            ctx.strokeStyle = `rgba(0,0,0, ${0.15 * contrast})`;
+            ctx.lineWidth = state.grainScale * 4;
+            for (let v = 0; v < 4; v++) {
+                ctx.beginPath();
+                let vx = Math.random() * w;
+                let vy = Math.random() * h;
+                ctx.moveTo(vx, vy);
+                for (let step = 0; step < 5; step++) {
+                    vx += (Math.random() - 0.5) * 200;
+                    vy += (Math.random() - 0.5) * 200;
+                    ctx.lineTo(vx, vy);
+                }
+                ctx.stroke();
+            }
+
+            // Update Room Mockup Background with generated seamless texture
+            const dataUrl = canvas.toDataURL('image/png');
+            tiledGraniteBg.style.backgroundImage = `url(${dataUrl})`;
+            tiledGraniteBg.style.backgroundSize = '256px 256px';
+        }
+
+        // Helper Math & Color Functions
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 0, g: 0, b: 0 };
+        }
+
+        function lerp(start, end, amt) {
+            return (1 - amt) * start + amt * end;
+        }
+
+        // Event Listeners Setup
+        function setupEventListeners() {
+            // Color Pickers
+            document.getElementById('baseColorInput').addEventListener('input', (e) => {
+                state.baseColor = e.target.value;
+                document.getElementById('baseColorHex').innerText = e.target.value.toUpperCase();
+                renderGraniteTexture();
+            });
+
+            document.getElementById('fleckColorInput').addEventListener('input', (e) => {
+                state.fleckColor = e.target.value;
+                document.getElementById('fleckColorHex').innerText = e.target.value.toUpperCase();
+                renderGraniteTexture();
+            });
+
+            document.getElementById('quartzColorInput').addEventListener('input', (e) => {
+                state.quartzColor = e.target.value;
+                document.getElementById('quartzColorHex').innerText = e.target.value.toUpperCase();
+                renderGraniteTexture();
+            });
+
+            // Sliders
+            ['grainScale', 'fleckDensity', 'contrast', 'sparkle'].forEach(id => {
+                document.getElementById(id).addEventListener('input', (e) => {
+                    state[id] = parseInt(e.target.value);
+                    updateSliderLabels();
+                    renderGraniteTexture();
+                });
+            });
+
+            // Finish Buttons
+            document.querySelectorAll('.finish-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.finish-btn').forEach(b => {
+                        b.classList.remove('bg-cyan-500/20', 'text-cyan-300', 'border-cyan-500/40');
+                        b.classList.add('bg-slate-800', 'text-slate-400', 'border-slate-700');
+                    });
+                    btn.classList.remove('bg-slate-800', 'text-slate-400', 'border-slate-700');
+                    btn.classList.add('bg-cyan-500/20', 'text-cyan-300', 'border-cyan-500/40');
+
+                    state.finish = btn.dataset.finish;
+                    
+                    // Toggle overlay finish styles
+                    finishOverlay.className = 'absolute inset-0 transition-opacity duration-300 pointer-events-none ';
+                    if (state.finish === 'polished') {
+                        finishOverlay.classList.add('gloss-reflection', 'opacity-100');
+                    } else if (state.finish === 'honed') {
+                        finishOverlay.classList.add('honed-matte', 'opacity-80');
+                    } else {
+                        finishOverlay.classList.add('opacity-30');
+                    }
+                });
+            });
+
+            // Room Mode Toggle Buttons
+            document.querySelectorAll('.view-mode-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.view-mode-btn').forEach(b => {
+                        b.classList.remove('active-mode', 'bg-slate-800', 'text-white', 'border', 'border-slate-700');
+                        b.classList.add('text-slate-400');
+                    });
+                    btn.classList.add('active-mode', 'bg-slate-800', 'text-white', 'border', 'border-slate-700');
+                    btn.classList.remove('text-slate-400');
+
+                    state.viewMode = btn.dataset.mode;
+
+                    // Switch visible viewport element
+                    if (state.viewMode === 'full') {
+                        textureContainer.classList.remove('hidden');
+                        roomMockupContainer.classList.add('hidden');
+                    } else {
+                        textureContainer.classList.add('hidden');
+                        roomMockupContainer.classList.remove('hidden');
+
+                        // Hide all scenes
+                        document.querySelectorAll('.room-scene').forEach(scene => scene.classList.add('hidden'));
+
+                        // Show selected scene
+                        if (state.viewMode === 'living') {
+                            document.getElementById('sceneLiving').classList.remove('hidden');
+                        } else if (state.viewMode === 'kitchen') {
+                            document.getElementById('sceneKitchen').classList.remove('hidden');
+                        } else if (state.viewMode === 'bathroom') {
+                            document.getElementById('sceneBathroom').classList.remove('hidden');
+                        }
+                    }
+                });
+            });
+
+            // Reset Button
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                applyPreset(GRANITE_PRESETS[0]);
+            });
+
+            // Copy CSS snippet
+            document.getElementById('copyCssBtn').addEventListener('click', () => {
+                const cssCode = `/* Granite Wallpaper - ${state.activePreset} */\nbackground-color: ${state.baseColor};\nbackground-image: url('${canvas.toDataURL('image/png')}');\nbackground-repeat: repeat;\nbackground-size: 256px 256px;`;
+                
+                const el = document.createElement('textarea');
+                el.value = cssCode;
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+
+                // Visual Toast Feedback
+                const originalText = document.getElementById('copyCssBtn').innerHTML;
+                document.getElementById('copyCssBtn').innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> Copied!`;
+                setTimeout(() => {
+                    document.getElementById('copyCssBtn').innerHTML = originalText;
+                }, 2000);
+            });
+
+            // Download High-Res PNG Wallpaper Button
+            document.getElementById('downloadBtn').addEventListener('click', () => {
+                const link = document.createElement('a');
+                link.download = `granite-wallpaper-${state.activePreset}-${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+
+            // Zoom Toggle
+            let isZoomed = false;
+            document.getElementById('zoomToggle').addEventListener('click', () => {
+                isZoomed = !isZoomed;
+                if (isZoomed) {
+                    canvas.classList.remove('max-h-[75vh]');
+                    canvas.classList.add('scale-125');
+                    document.getElementById('zoomLabel').innerText = '150% Zoom';
+                } else {
+                    canvas.classList.add('max-h-[75vh]');
+                    canvas.classList.remove('scale-125');
+                    document.getElementById('zoomLabel').innerText = '100% Zoom';
+                }
+            });
+        }
+
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            initUI();
+        });
+    </script>
+</body>
+</html>
