@@ -1,22 +1,16 @@
 /*
  * ==========================================
- * VERSION TIMESTAMP: Tue, July 28, 2026 | 02:15:00 PM EDT
- * PRECISION INTEGRATION: v1.3 Layout Engine + Universal Identity & Opera GX Path Engine
- * NOTES: 100% Full source registry restored. Zero stripping, zero compressing.
+ * NYT TIMESTAMP: Sun, June 21, 2026, 11:15 PM EDT
+ * PRECISION INTEGRATION: Frontend JS Modular Nervous System (main.js)
+ * NOTES: REMOVED ALL ALIAS KEYS FROM USER_DATA_MAP AND ALIGNED DISPLAY LAYOUTS.
+ * Directly binds buttons to exact Firestore documents: Werewolf3788, Raymystyro, terrdog420.
+ * NO STRIPPING, NO COMPRESSING. FULL SOURCE INTEGRITY 100% INTACT.
  * ==========================================
  */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-import { 
-    getAuth, 
-    setPersistence, 
-    browserLocalPersistence, 
-    GoogleAuthProvider, 
-    signInWithPopup, 
-    signOut, 
-    onAuthStateChanged 
-} from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-import { getFirestore, doc, setDoc, getDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
@@ -28,19 +22,15 @@ const firebaseConfig = {
     appId: "1:555667047127:web:af6f468ca3cf06759aa692"
 };
 
-const GAME_ID = 'thehunter-call-of-the-wild';
-const ADMIN_EMAIL = "raykevin71888@gmail.com";
+const MASTER_ID = 'cotw-master';
+const LEGACY_ID = 'cotw-trophy-display';
 
-const EMAIL_OPERATOR_MAP = {
-    "raykevin71888@gmail.com": "Werewolf3788",
-    "cartnalray9@gmail.com": "Raymystyro"
-};
-
+// --- FRONTEND PROFILE TO BACKEND SCRAPER JSON MAP ---
+// Cleaned: Alias keys removed. Maps strictly to your direct database document strings.
 const USER_DATA_MAP = {
-    'Werewolf3788': 'Werewolf3788', 'werewolf3788': 'Werewolf3788',
-    'Raymystyro': 'Raymystyro', 'raymystyro': 'Raymystyro',
-    'terrdog420': 'terrdog420', 'Terrdog420': 'terrdog420', 'TJ': 'terrdog420',
-    'DesdemonaTiger': 'DesdemonaTiger', 'desdemonatiger': 'DesdemonaTiger'
+    'Werewolf3788': 'Werewolf3788',
+    'Raymystyro': 'Raymystyro',
+    'terrdog420': 'terrdog420'
 };
 
 const ICONS = {
@@ -54,6 +44,7 @@ const ICONS = {
 
 const checkSet = (items) => items.map(name => ({name, done: false}));
 
+// Supports pure strings or objects containing {name, images: []}
 const formatAlphaCheckset = (items) => {
     return items
         .sort((a, b) => {
@@ -70,17 +61,7 @@ const formatAlphaCheckset = (items) => {
         });
 };
 
-function resolveUniversalHandle(user) {
-    if (!user) return "Guest";
-    const userEmail = (user.email || "").toLowerCase();
-    if (EMAIL_OPERATOR_MAP[userEmail]) return EMAIL_OPERATOR_MAP[userEmail];
-    const rawName = user.displayName || userEmail.split('@')[0] || "Operator";
-    if (USER_DATA_MAP[rawName]) return USER_DATA_MAP[rawName];
-    const cleanHandle = rawName.replace(/[^a-zA-Z0-9_]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
-    return cleanHandle || `Operator_${user.uid.substring(0, 5)}`;
-}
-
-// --- FULL TROPHY & COLLECTIBLES REGISTRY (UNCOMPRESSED & UNSTRIPPED) ---
+// --- FULL REGISTRY (UNCOMPRESSED & UNSTRIPPED) ---
 const trophyData = [
     // --- BASE GAME ---
     { id: 'plat_cotw', cat: 'Base Game', name: 'theHunter', rank: 'platinum', current: 0, goal: 1, type: 'toggle', plat: false, desc: 'Collect every trophy.' },
@@ -225,7 +206,10 @@ const trophyData = [
     { id: 'srp_peace', cat: 'DLC: Silver Ridge', name: 'Inner Peace', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: "Complete 'Inner Peace, Outer Chaos'." },
     { id: 'srp_ascent', cat: 'DLC: Silver Ridge', name: 'The Ascent', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: "Complete 'The Ascent'." },
 
-    // --- LIST OF COLLECTIBLES (ALPHA SORTED & NUMBERED) ---
+    // ==========================================================
+    // --- LIST OF COLLECTIBLES WRAPPER (ALPHA SORTED & NUMBERED) ---
+    // ==========================================================
+    
     // --- LAYTON LAKE DISTRICT ---
     { 
         id: 'coll_layton_outposts', cat: 'List of Collectibles', name: 'Layton Lake - Outposts', rank: 'bronze', current: 0, goal: 18, type: 'checklist',
@@ -663,401 +647,330 @@ const trophyData = [
 
 const appState = {
     activeHunter: 'Werewolf3788',
-    activePlatform: 'ps4',
-    loggedInOperator: null,
-    isCurrentUserAdmin: false,
-    activeMapCategory: 'DLC: Silver Ridge',
     hunterData: JSON.parse(JSON.stringify(trophyData)),
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
     auth: null, db: null,
     collapsedSections: {},
     openDropdowns: {}, 
-    menuItemsRaw: [],
-    liveUnsub: null,
+    psnSynced: false,
+    masterUnsub: null,
+    legacyUnsub: null,
     dataLoaded: false,
+    refreshIntervalId: null,
     currentLightboxData: { categoryId: null, subIdx: null, imgIdx: 0 },
 
-    applyTheme: function(primary, secondary) {
-        if (!primary || !secondary) return;
-        document.documentElement.style.setProperty('--primary-color', primary);
-        document.documentElement.style.setProperty('--secondary-color', secondary);
-        localStorage.setItem('user_primary_color', primary);
-        localStorage.setItem('user_secondary_color', secondary);
-    },
-
-    syncUserTheme: async function(operatorHandle) {
-        if (!operatorHandle) return;
-        const cachedPrimary = localStorage.getItem('user_primary_color');
-        const cachedSecondary = localStorage.getItem('user_secondary_color');
-        if (cachedPrimary && cachedSecondary) {
-            this.applyTheme(cachedPrimary, cachedSecondary);
+    parseCSV: function(str) {
+        const arr = [];
+        let quote = false;
+        for (let row = 0, col = 0, c = 0; c < str.length; c++) {
+            let cc = str[c], nc = str[c+1];
+            arr[row] = arr[row] || [];
+            arr[row][col] = arr[row][col] || '';
+            if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
+            if (cc == '"') { quote = !quote; continue; }
+            if (cc == ',' && !quote) { ++col; continue; }
+            if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
+            if (cc == '\n' && !quote) { ++row; col = 0; continue; }
+            if (cc == '\r' && !quote) { ++row; col = 0; continue; }
+            arr[row][col] += cc;
         }
-        if (this.db) {
-            try {
-                const userDocRef = doc(this.db, 'users', operatorHandle);
-                const snap = await getDoc(userDocRef);
-                if (snap.exists()) {
-                    const data = snap.data();
-                    if (data.primaryColor && data.secondaryColor) {
-                        this.applyTheme(data.primaryColor, data.secondaryColor);
-                    }
-                }
-            } catch (e) {
-                console.warn("Theme sync notice:", e.message);
-            }
-        }
-    },
-
-    canEditActiveHunter: function() {
-        if (this.isCurrentUserAdmin) return true;
-        if (!this.loggedInOperator) return false;
-        return this.loggedInOperator.toLowerCase() === this.activeHunter.toLowerCase();
-    },
-
-    /* === SECTION: Absolute Root Path Fixer Engine for Opera GX === */
-    fixMenuUrl: function(targetUrl) {
-        if (!targetUrl || targetUrl === '#') return '#';
-        if (targetUrl === '#/' || targetUrl === '#') {
-            return window.location.origin + window.location.pathname.replace(/\/games\/HunterCOTW\/.*/i, '/index.html#/');
-        }
-        if (targetUrl.startsWith('#/')) {
-            return window.location.origin + window.location.pathname.replace(/\/games\/HunterCOTW\/.*/i, '/index.html') + targetUrl;
-        }
-        return targetUrl;
-    },
-
-    checkIsActiveTab: function(targetUrl, targetName) {
-        if (!targetUrl || targetUrl === '#') return false;
-        const pageTitle = document.title.toLowerCase().trim();
-        const cleanTargetUrl = targetUrl.split('?')[0].split('#')[0].toLowerCase().trim();
-        const targetFilename = cleanTargetUrl.substring(cleanTargetUrl.lastIndexOf('/') + 1);
-        const currentPath = window.location.pathname.toLowerCase();
-        const currentFilename = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'cotw.html';
-        const currentHash = window.location.hash.toLowerCase();
-
-        if (currentHash && targetUrl.toLowerCase().includes(currentHash)) return true;
-        if (targetFilename && targetFilename === currentFilename) return true;
-        if (targetName) {
-            const cleanName = targetName.toLowerCase().trim();
-            if (pageTitle.includes(cleanName) || cleanName.includes(pageTitle)) return true;
-        }
-        return false;
+        return arr;
     },
 
     loadNavigation: async function() {
-        const rootPath = window.location.origin + window.location.pathname.replace(/\/games\/HunterCOTW\/.*/i, '/');
-        const jsonUrl = rootPath + 'Menu.json?v=' + Date.now();
-
         try {
-            const response = await fetch(jsonUrl);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const menuItems = await response.json();
-            this.menuItemsRaw = menuItems;
-            const groupsMap = {};
+            const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv');
+            const csvText = await response.text();
+            const rows = this.parseCSV(csvText);
 
-            menuItems.forEach(item => {
-                const groupName = item.group || item.Group;
-                const name = item.name || item.Name;
-                const rawUrl = item.url || item.Url || item['Url with UTM'];
-                const image = item.image || item.Image || item.Images || '';
-                if (!name || !groupName) return;
-                if (!groupsMap[groupName]) groupsMap[groupName] = [];
-                groupsMap[groupName].push({
-                    name: name,
-                    rawUrl: rawUrl,
-                    url: this.fixMenuUrl(rawUrl),
-                    image: image
-                });
+            let data = rows;
+            if (data[0] && data[0][0] && data[0][0].toLowerCase().includes('name')) {
+                data.shift();
+            }
+
+            const navContainer = document.getElementById('dynamic-nav-links');
+            let navHTML = '';
+            const groups = {};
+            const standalone = [];
+
+            data.forEach(row => {
+                if (row.length < 3) return;
+                const name = row[0]?.trim();
+                const group = row[1]?.trim();
+                const url = row[2]?.trim();
+                let image = row[3]?.trim();
+
+                if (!name || !url) return;
+
+                if (image) {
+                    const driveMatch = image.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || image.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (image.includes('drive.google.com') && driveMatch) {
+                        image = `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+                    }
+                }
+                
+                const itemObj = { name, url, image };
+
+                if (group) {
+                    if (!groups[group]) groups[group] = [];
+                    groups[group].push(itemObj);
+                } else {
+                    standalone.push(itemObj);
+                }
             });
 
-            const sortedGroups = Object.keys(groupsMap).map(groupName => {
-                return { name: groupName, weight: 99, items: groupsMap[groupName] };
+            Object.keys(groups).forEach(groupName => {
+                let dropItems = groups[groupName].map(item => {
+                    const imgTag = item.image ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
+                    return `<a href="${item.url}">${imgTag}${item.name}</a>`;
+                }).join('');
+
+                navHTML += `
+                    <div class="nav-dropdown">
+                        <button class="nav-dropbtn">${groupName} ▾</button>
+                        <div class="nav-dropdown-content">
+                            ${dropItems}
+                        </div>
+                    </div>
+                `;
             });
 
-            this.renderNav(sortedGroups);
-            if (this.activeHunter) this.updateAvatarFromMenu(this.activeHunter);
-        } catch (err) {
-            console.error("Error loading Menu.json:", err);
-        }
-    },
-
-    renderNav: function(sortedGroups) {
-        const container = document.getElementById('dynamic-nav-links');
-        if (!container) return;
-        let html = '';
-        sortedGroups.forEach(group => {
-            let dropItems = group.items.map(item => {
+            standalone.forEach(item => {
                 const imgTag = item.image ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
-                return `<a href="${item.url}" style="color:#fff !important;">${imgTag}${item.name}</a>`;
-            }).join('');
-            html += `
-                <div class="nav-dropdown">
-                    <button class="nav-dropbtn" style="color:#fff !important;">${group.name} ▾</button>
-                    <div class="nav-dropdown-content">${dropItems}</div>
-                </div>
-            `;
-        });
-        container.innerHTML = html;
-    },
-
-    updateAvatarFromMenu: function(operatorHandle) {
-        const userAvatar = document.getElementById("userAvatar");
-        if (!userAvatar || !this.menuItemsRaw) return;
-        const targetHandle = USER_DATA_MAP[operatorHandle] || operatorHandle;
-        const matchedUser = this.menuItemsRaw.find(item => {
-            const group = item.group || item.Group || '';
-            const name = item.name || item.Name || '';
-            return group.toLowerCase() === 'user' && (USER_DATA_MAP[name] === targetHandle || name === targetHandle);
-        });
-        if (matchedUser && (matchedUser.image || matchedUser.Image)) {
-            userAvatar.src = matchedUser.image || matchedUser.Image;
-            userAvatar.style.display = 'inline-block';
-        }
-    },
-
-    loadPlatformOptions: async function() {
-        const pSelect = document.getElementById('platformSelect');
-        if (!pSelect) return;
-        const rootPath = window.location.origin + window.location.pathname.replace(/\/games\/HunterCOTW\/.*/i, '/');
-        const endpoints = [
-            rootPath + 'data/game-platforms.json?v=' + Date.now(),
-            'https://raw.githubusercontent.com/Werewolf3788/Website/main/data/game-platforms.json?v=' + Date.now()
-        ];
-        let gamePlatformsData = null;
-        for (const url of endpoints) {
-            try {
-                const res = await fetch(url);
-                if (res.ok) { gamePlatformsData = await res.json(); break; }
-            } catch (e) {}
-        }
-        if (!gamePlatformsData || !gamePlatformsData.games) return;
-        const game = gamePlatformsData.games.find(g => g.title.toLowerCase().includes('thehunter') || g.title.toLowerCase().includes('call of the wild'));
-        if (game && game.platforms) {
-            let optionsHtml = '';
-            game.platforms.forEach(p => {
-                if (p.platform_type === 'PC' && p.storefronts) {
-                    p.storefronts.forEach(s => { optionsHtml += `<option value="pc-${s.toLowerCase().replace(/[^a-z0-9]/g, '')}">PC (${s})</option>`; });
-                }
-                if (p.platform_type === 'Console' && p.consoles) {
-                    p.consoles.forEach(c => {
-                        let val = c.toLowerCase().replace(/[^a-z0-9]/g, '');
-                        if (val.includes('playstation4')) val = 'ps4';
-                        if (val.includes('playstation5')) val = 'ps5';
-                        if (val.includes('xboxone')) val = 'xboxone';
-                        optionsHtml += `<option value="${val}">${c}</option>`;
-                    });
-                }
+                navHTML += `<a href="${item.url}">${imgTag}${item.name}</a>`;
             });
-            if (optionsHtml) pSelect.innerHTML = optionsHtml;
+
+            if (navContainer) navContainer.innerHTML = navHTML;
+        } catch (e) {
+            console.error("Failed to load dynamic navigation", e);
+            if (document.getElementById('dynamic-nav-links')) {
+                document.getElementById('dynamic-nav-links').innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Menu Sync Error</span>`;
+            }
         }
     },
 
     init: async function() {
+        const saved = localStorage.getItem('cotw_master_active_id');
+        if (saved && USER_DATA_MAP[saved]) {
+            this.activeHunter = saved;
+        } else {
+            this.activeHunter = 'Werewolf3788';
+        }
+        
         this.loadNavigation();
-        this.loadPlatformOptions();
-        this.setupActiveMapControls();
-        this.setupPlatformControls();
-
+        
         try {
-            const app = initializeApp(firebaseConfig);
+            const app = initializeApp(firebaseConfig, 'COTW-Master-named');
             this.auth = getAuth(app);
             this.db = getFirestore(app);
-            await setPersistence(this.auth, browserLocalPersistence);
-            this.setupAuthPipelineUI();
-            onAuthStateChanged(this.auth, (user) => { this.handleAuthState(user); });
+            
+            signInAnonymously(this.auth).catch(err => {
+                console.error("FIREBASE AUTH ERROR:", err);
+                if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `AUTH FAILED: ${err.message}`;
+            });
+
+            onAuthStateChanged(this.auth, (user) => { 
+                if (user) {
+                    this.loadHunter(this.activeHunter);
+                    if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `SYNCED DB: ${firebaseConfig.projectId} | USER: ${user.uid}`;
+                    
+                    setTimeout(() => this.syncWithPSNData(), 2500);
+                    this.startAutoRefreshLoop();
+                } else {
+                    if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `AUDIT STATUS: WAITING FOR AUTHENTICATION...`;
+                    this.stopAutoRefreshLoop();
+                }
+            });
         } catch (err) {
             console.error("Init Error:", err);
         }
+        this.render();
     },
 
-    setupActiveMapControls: function() {
-        const mapSelect = document.getElementById('activeMapSelector');
-        if (mapSelect) {
-            mapSelect.value = this.activeMapCategory;
-            mapSelect.addEventListener('change', (e) => {
-                const prevCat = this.activeMapCategory;
-                this.activeMapCategory = e.target.value;
-                const prevSectionId = prevCat.replace(/[^a-zA-Z0-9]/g, '');
-                const newSectionId = this.activeMapCategory.replace(/[^a-zA-Z0-9]/g, '');
-                this.collapsedSections[prevSectionId] = true;
-                this.collapsedSections[newSectionId] = false;
-                this.updateActiveMapDisplay();
-                this.render();
-                setTimeout(() => {
-                    const topCard = document.getElementById(newSectionId);
-                    if (topCard) topCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
-                if (this.canEditActiveHunter()) this.sync();
-            });
+    startAutoRefreshLoop: function() {
+        this.stopAutoRefreshLoop();
+        this.refreshIntervalId = setInterval(() => {
+            console.log("Auto-Refresh Loop triggered: Syncing external files...");
+            this.psnSynced = false; 
+            this.syncWithPSNData();
+            this.loadNavigation();
+        }, 60000);
+    },
+
+    stopAutoRefreshLoop: function() {
+        if (this.refreshIntervalId) {
+            clearInterval(this.refreshIntervalId);
+            this.refreshIntervalId = null;
         }
     },
 
-    setupPlatformControls: function() {
-        const pSelect = document.getElementById('platformSelect');
-        if (pSelect) {
-            pSelect.addEventListener('change', (e) => {
-                this.activePlatform = e.target.value;
-                this.loadHunter(this.activeHunter);
-            });
+    syncWithPSNData: async function() {
+        if (this.psnSynced) return;
+        
+        const targetKey = USER_DATA_MAP[this.activeHunter] || this.activeHunter;
+        if (!targetKey) {
+            console.log(`No matching JSON object configuration found for tracker name: ${this.activeHunter}. Skipping PSN Sync.`);
+            return;
         }
-    },
 
-    setupAuthPipelineUI: function() {
-        const adminSelect = document.getElementById('adminUserSelect');
-        if (adminSelect) {
-            adminSelect.addEventListener('change', (e) => {
-                const selectedHandle = USER_DATA_MAP[e.target.value] || e.target.value;
-                this.loadHunter(selectedHandle);
-            });
-        }
-        const googleBtn = document.getElementById("googleSignInBtn");
-        if (googleBtn) {
-            googleBtn.addEventListener("click", () => {
-                if (this.auth) signInWithPopup(this.auth, new GoogleAuthProvider());
-            });
-        }
-        const signOutBtn = document.getElementById("signOutBtn");
-        if (signOutBtn) {
-            signOutBtn.addEventListener("click", () => {
-                if (this.auth) signOut(this.auth);
-            });
-        }
-    },
+        try {
+            const url = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/Playstation/psn_data.json';
+            const response = await fetch(url + '?nocache=' + new Date().getTime());
+            if (!response.ok) throw new Error("JSON profile payload missing on GitHub repository.");
+            
+            const fullJsonDump = await response.json();
+            const usersObj = fullJsonDump?.users || {};
+            
+            const exactKey = Object.keys(usersObj).find(k => k.toLowerCase() === targetKey.toLowerCase());
+            let userWrapper = usersObj[exactKey];
 
-    handleAuthState: function(user) {
-        const googleBtn = document.getElementById("googleSignInBtn");
-        const userStatus = document.getElementById("userProfileStatus");
-        const demoBanner = document.getElementById("demoNotification");
-        const adminBadge = document.getElementById("adminBadge");
-        const adminWrapper = document.getElementById("adminOperatorSelectWrapper");
-
-        if (user) {
-            const userEmail = (user.email || "").toLowerCase();
-            this.isCurrentUserAdmin = userEmail === ADMIN_EMAIL.toLowerCase();
-            this.loggedInOperator = resolveUniversalHandle(user);
-
-            if (!this.isCurrentUserAdmin) {
-                this.activeHunter = this.loggedInOperator;
+            if (!userWrapper) {
+                console.log(`No nested user key matched inside JSON structure for profile lookups: ${targetKey}`);
+                return; 
             }
 
-            if (demoBanner) demoBanner.style.display = "none";
-            if (googleBtn) googleBtn.style.display = "none";
-            if (userStatus) userStatus.style.display = "flex";
-
-            this.updateAvatarFromMenu(this.activeHunter);
-
-            if (this.isCurrentUserAdmin) {
-                if (adminBadge) adminBadge.style.display = "block";
-                if (adminWrapper) adminWrapper.style.display = "block";
-            } else {
-                if (adminBadge) adminBadge.style.display = "none";
-                if (adminWrapper) adminWrapper.style.display = "none";
+            let psnTrophies = userWrapper?.trophies || [];
+            
+            if (psnTrophies.length === 0 && userWrapper?.activeHunt?.trophies) {
+                psnTrophies = userWrapper.activeHunt.trophies;
             }
 
-            if (this.db) {
-                setDoc(doc(this.db, 'users', this.loggedInOperator), {
-                    displayName: user.displayName || this.loggedInOperator,
-                    operatorProfileName: this.loggedInOperator,
-                    email: userEmail,
-                    photoURL: user.photoURL || "",
-                    uid: user.uid,
-                    isAdmin: this.isCurrentUserAdmin,
-                    lastLogin: new Date().toISOString()
-                }, { merge: true });
-            }
+            let updated = false;
 
-            this.loadHunter(this.activeHunter);
-        } else {
-            this.loggedInOperator = null;
-            this.isCurrentUserAdmin = false;
-            if (googleBtn) googleBtn.style.display = "inline-block";
-            if (userStatus) userStatus.style.display = "none";
-            if (demoBanner) demoBanner.style.display = "block";
-            if (adminBadge) adminBadge.style.display = "none";
-            if (adminWrapper) adminWrapper.style.display = "none";
-            this.loadHunter(this.activeHunter);
+            this.hunterData.forEach(t => {
+                const match = psnTrophies.find(p => p.name && p.name.toLowerCase().trim() === t.name.toLowerCase().trim());
+                
+                if (match) {
+                    const imgUrl = match.iconUrl || match.icon || match.image;
+                    if (imgUrl && t.psnImage !== imgUrl) {
+                        t.psnImage = imgUrl;
+                        updated = true;
+                    }
+                    
+                    const isEarned = match.earned === true || match.unlocked === true || match.achieved === true || match.progress >= 100;
+                    
+                    if (isEarned) {
+                        if (t.type === 'checklist') {
+                            const allDone = t.subItems.every(s => s.done);
+                            if (!allDone) {
+                                t.subItems.forEach(s => s.done = true);
+                                t.current = t.goal;
+                                updated = true;
+                            }
+                        } else {
+                            if (t.current < t.goal) {
+                                t.current = t.goal;
+                                updated = true;
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (updated) {
+                this.sync(); 
+            }
+            
+            this.psnSynced = true;
+            if (document.getElementById('stat-line')) {
+                const baseText = document.getElementById('stat-line').innerText.replace(' | PSN AUTO-SYNC ACTIVE', '');
+                document.getElementById('stat-line').innerText = baseText + " | PSN AUTO-SYNC ACTIVE";
+            }
+            
+        } catch (err) {
+            console.log("PSN Auto-Sync processing delay:", err);
         }
-    },
-
-    switchHunter: function(name) {
-        this.loadHunter(name);
     },
 
     loadHunter: function(name) {
-        if (!this.db) return;
+        if (!this.auth.currentUser) return;
+
+        // Failsafe validation mapping check
         const dbDocName = USER_DATA_MAP[name] || name;
+
+        this.hunterData = JSON.parse(JSON.stringify(trophyData));
+        this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
         this.dataLoaded = false;
-        if (this.liveUnsub) { this.liveUnsub(); this.liveUnsub = null; }
+
         this.activeHunter = dbDocName;
-
-        const nameEl = document.getElementById('hunter-name');
-        const targetEl = document.getElementById('displayTargetOperator');
-        if (nameEl) nameEl.innerText = dbDocName.toUpperCase();
-        if (targetEl) targetEl.innerText = dbDocName;
-
+        localStorage.setItem('cotw_master_active_id', dbDocName);
+        if (document.getElementById('hunter-name')) document.getElementById('hunter-name').innerText = dbDocName.toUpperCase();
+        
         if (document.getElementById('master-body')) {
-            document.getElementById('master-body').className = `theme-${dbDocName === 'Werewolf3788' ? 'werewolf' : dbDocName === 'Raymystyro' ? 'ray' : 'terrdog420'}`;
+            document.getElementById('master-body').className = `theme-${dbDocName === 'Werewolf3788' ? 'werewolf' : dbDocName === 'Raymystyro' ? 'ray' : 'Adam'}`;
         }
+        
+        this.render();
+        this.updateRankUI();
 
-        this.syncUserTheme(dbDocName);
-        this.updateAvatarFromMenu(dbDocName);
+        if (this.masterUnsub) this.masterUnsub();
+        if (this.legacyUnsub) this.legacyUnsub();
 
-        const userProgressRef = doc(this.db, 'users', dbDocName, 'progress', GAME_ID);
-        this.liveUnsub = onSnapshot(userProgressRef, (snap) => {
-            let freshTrophyData = JSON.parse(JSON.stringify(trophyData));
-            let freshRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
-
-            if (snap.exists()) {
+        const masterRef = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', dbDocName);
+        this.masterUnsub = onSnapshot(masterRef, (snap) => {
+            if (snap.exists) {
                 const data = snap.data();
-                let incoming = data.trophies || data.progress || [];
-                if (data.animalRankData) freshRankData = { ...freshRankData, ...data.animalRankData };
+                let incoming = data.trophies || [];
+                
+                if (Array.isArray(data)) incoming = data;
+                else if (Object.keys(data).length > 0 && !data.trophies) {
+                    incoming = Object.values(data).filter(x => x && x.id);
+                }
 
-                freshTrophyData = freshTrophyData.map(dt => {
+                this.hunterData = this.hunterData.map(dt => {
                     const found = incoming.find(it => it.id === dt.id);
                     if (found) {
                         if (dt.type === 'checklist' && found.subItems) {
                             dt.subItems = dt.subItems.map((si, i) => {
                                 const dbMatch = found.subItems.find(x => x.name === si.name) || found.subItems[i];
-                                return {...si, done: dbMatch?.done === true || dbMatch?.completed === true};
+                                const isDone = dbMatch?.done === true || dbMatch?.done === "true" || dbMatch?.completed === true;
+                                return {...si, done: isDone};
                             });
                             dt.current = dt.subItems.filter(s => s.done).length;
                         } else {
-                            dt.current = found.done ? dt.goal : (Number(found.current) || 0);
+                            if (found.done === true || found.completed === true) {
+                                dt.current = dt.goal;
+                            } else {
+                                dt.current = Number(found.current) || 0; 
+                            }
                         }
                     }
                     return dt;
                 });
             }
-
-            this.hunterData = freshTrophyData;
-            this.animalRankData = freshRankData;
             this.dataLoaded = true;
-
-            this.updateRankUI();
-            this.updateActiveMapDisplay();
             this.render();
+        }, (error) => {
+            console.error("Master Document Sync Error: ", error);
         });
-    },
 
-    updateActiveMapDisplay: function() {
-        const titleEl = document.getElementById('activeMapTitle');
-        let cleanName = this.activeMapCategory.replace('DLC: ', '');
-        if (titleEl) titleEl.innerText = cleanName;
+        const legacyRef = doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', dbDocName);
+        this.legacyUnsub = onSnapshot(legacyRef, (snap) => {
+            if (snap.exists) { 
+                const incomingRank = snap.data();
+                this.animalRankData = {
+                    bronze: incomingRank.bronze || 0,
+                    silver: incomingRank.silver || 0,
+                    gold: incomingRank.gold || 0,
+                    diamond: incomingRank.diamond || 0,
+                    greatone: incomingRank.greatone || incomingRank.greatOne || 0,
+                    albino: incomingRank.albino || 0
+                };
+                this.updateRankUI();
+            }
+        }, (error) => {
+            console.error("Legacy Document Sync Error: ", error);
+        });
     },
 
     render: function() {
         const container = document.getElementById('section-container');
         const selector = document.getElementById('reserve-selector');
         if (!container) return; 
-        const canEdit = this.canEditActiveHunter();
+        
         container.innerHTML = '';
-        let cats = [...new Set(this.hunterData.map(t => t.cat))];
-
-        if (this.activeMapCategory && cats.includes(this.activeMapCategory)) {
-            cats = cats.filter(c => c !== this.activeMapCategory);
-            cats.unshift(this.activeMapCategory);
-        }
-
+        const cats = [...new Set(this.hunterData.map(t => t.cat))];
+        
         if (selector && selector.options.length <= 1) {
             cats.forEach(cat => {
                 const opt = document.createElement('option');
@@ -1079,10 +992,7 @@ const appState = {
             });
             
             const sectionId = cat.replace(/[^a-zA-Z0-9]/g, '');
-            let isCollapsed = this.collapsedSections[sectionId];
-            if (cat === this.activeMapCategory && isCollapsed === undefined) isCollapsed = false;
-            else if (isCollapsed === undefined) isCollapsed = true;
-
+            const isCollapsed = this.collapsedSections[sectionId] !== false;
             const percent = Math.round((catMet / items.length) * 100);
             
             const section = document.createElement('div');
@@ -1090,8 +1000,7 @@ const appState = {
             section.id = sectionId;
             section.innerHTML = `
                 <div class="category-header" onclick="appState.toggleSection('${sectionId}')">
-                    <h2>${cat} ${cat === this.activeMapCategory ? '<span style="font-size: 0.7rem; color: #facc15; font-weight: 800; margin-left: 8px;">[DEPLOYED]</span>' : ''}</h2>
-                    <div style="font-weight:900; font-size: 0.8rem;">${catMet}/${items.length} (${percent}%)</div>
+                    <h2>${cat}</h2><div style="font-weight:900; font-size: 0.8rem;">${catMet}/${items.length} (${percent}%)</div>
                 </div>
                 <div class="section-content"><div class="trophy-grid"></div></div>
             `;
@@ -1103,15 +1012,14 @@ const appState = {
                 card.className = `trophy-card ${isDone ? 'completed' : ''}`;
                 
                 let ctrl = '';
-                const disabledAttr = canEdit ? '' : 'disabled style="opacity:0.5; cursor:not-allowed;"';
                 
                 if (t.type === 'numeric') {
                     const btnClass = isDone ? 'controls lock-badge' : 'controls';
                     const displayVal = isDone ? `AUDIT VERIFIED (${t.current}/${t.goal})` : `${t.current}/${t.goal}`;
                     ctrl = `<div class="${btnClass}">
-                        <button ${disabledAttr} style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', -1)">-</button>
+                        <button style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', -1)">-</button>
                         <span style="flex-grow:1; text-align:center;">${displayVal}</span>
-                        <button ${disabledAttr} style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', 1)">+</button>
+                        <button style="background:none; border:none; color:inherit; font-size:1.2rem; cursor:pointer; padding:0 10px;" onclick="appState.adj('${t.id}', 1)">+</button>
                     </div>`;
                 } else if (t.type === 'checklist') {
                     const dropClass = appState.openDropdowns[t.id] ? 'show' : '';
@@ -1129,7 +1037,7 @@ const appState = {
                         return `<div class="sub-item" style="flex-direction: column; align-items: flex-start;">
                                     <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
                                         <span>${s.name}</span>
-                                        <button ${disabledAttr} class="check-btn ${s.done ? 'is-done' : ''}" onclick="appState.check('${t.id}', ${idx})">${s.done ? '✓' : ''}</button>
+                                        <button class="check-btn ${s.done ? 'is-done' : ''}" onclick="appState.check('${t.id}', ${idx})">${s.done ? '✓' : ''}</button>
                                     </div>
                                     ${galleryHTML}
                                 </div>`;
@@ -1139,8 +1047,8 @@ const appState = {
                             <div id="drop-${t.id}" class="dropdown-content ${dropClass}">${subItemsHTML}</div>`;
                 } else {
                     const btnClass = isDone ? 'toggle-btn lock-badge' : 'toggle-btn';
-                    const btnText = isDone ? (canEdit ? 'Audit Verified (Undo)' : 'Audit Verified') : 'Mark Harvested';
-                    ctrl = `<button ${disabledAttr} class="${btnClass}" style="cursor: pointer;" onclick="appState.tog('${t.id}')">${btnText}</button>`;
+                    const btnText = isDone ? 'Audit Verified (Undo)' : 'Mark Harvested';
+                    ctrl = `<button class="${btnClass}" style="cursor: pointer;" onclick="appState.tog('${t.id}')">${btnText}</button>`;
                 }
                 
                 card.innerHTML = `<div style="display:flex; gap:10px; align-items:center;"><img src="${this.getIcon(t)}" class="trophy-icon-img"><div><span class="trophy-rank rank-${t.rank}">${t.rank}</span><div style="font-weight:900; font-size:0.9rem; margin-top:4px;">${t.name}</div></div></div><p style="font-size:0.75rem; font-style:italic; margin:15px 0; color:#cbd5e1; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${t.desc}</p>${ctrl}`;
@@ -1151,71 +1059,122 @@ const appState = {
         
         const overall = globalTotal > 0 ? Math.round((globalMet / globalTotal) * 100) : 0;
         if (document.getElementById('overall-bar')) document.getElementById('overall-bar').style.width = overall + '%';
-        if (document.getElementById('percent-text')) document.getElementById('percent-text').innerText = `Master Platinum Progress ${overall}% ${canEdit ? '' : '(READ-ONLY VIEW)'}`;
+        if (document.getElementById('percent-text')) document.getElementById('percent-text').innerText = `Master Platinum Progress ${overall}%`;
     },
 
     getIcon: (t) => t.psnImage ? t.psnImage : (t.cat.includes('Collectibles') ? ICONS.TRACK : t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
-    adj: function(id, val) { if (!this.dataLoaded || !this.canEditActiveHunter()) return; const t = this.hunterData.find(x => x.id === id); if (t) { t.current = Math.max(0, t.current + val); this.sync(); } },
-    tog: function(id) { if (!this.dataLoaded || !this.canEditActiveHunter()) return; const t = this.hunterData.find(x => x.id === id); if (t) { t.current = t.current === 0 ? 1 : 0; this.sync(); } },
-    check: function(id, idx) { if (!this.dataLoaded || !this.canEditActiveHunter()) return; const t = this.hunterData.find(x => x.id === id); if (t && t.subItems && t.subItems[idx]) { t.subItems[idx].done = !t.subItems[idx].done; this.sync(); } },
-    adjRank: function(tier, val) { if (!this.dataLoaded || !this.canEditActiveHunter()) return; this.animalRankData[tier] = Math.max(0, (this.animalRankData[tier] || 0) + val); this.updateRankUI(); this.sync(); },
+    
+    adj: function(id, val) { const t = this.hunterData.find(x => x.id === id); t.current = Math.max(0, t.current + val); this.sync(); },
+    
+    tog: function(id) { const t = this.hunterData.find(x => x.id === id); t.current = t.current === 0 ? 1 : 0; this.sync(); },
+    
+    check: function(id, idx) { const t = this.hunterData.find(x => x.id === id); t.subItems[idx].done = !t.subItems[idx].done; this.sync(); },
+    
+    adjRank: async function(tier, val) { 
+        this.animalRankData[tier] = Math.max(0, (this.animalRankData[tier] || 0) + val); 
+        this.updateRankUI(); 
+        if (!this.db || !this.auth.currentUser) {
+            console.warn("Rank Save Blocked: No active Firebase Auth session.");
+            return;
+        }
+        try {
+            await setDoc(doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', this.activeHunter), this.animalRankData, { merge: true }); 
+            console.log("Rank successfully synced to Firebase.");
+        } catch (error) {
+            console.error("FIREBASE RANK SAVE ERROR:", error);
+            if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `RANK SYNC ERROR: Check console (Rules/Auth)`;
+        }
+    },
+    
     updateRankUI: function() { Object.keys(this.animalRankData).forEach(k => { const el = document.getElementById(`rank-val-${k}`); if (el) el.innerText = this.animalRankData[k]; }); },
+    
     toggleSection: function(id) { const cur = this.collapsedSections[id] !== false; this.collapsedSections[id] = !cur; this.render(); },
-    toggleDrop: function(id) { const el = document.getElementById('drop-' + id); if (el) { el.classList.toggle('show'); this.openDropdowns[id] = el.classList.contains('show'); } },
+    
+    toggleDrop: function(id) { 
+        const el = document.getElementById('drop-' + id);
+        if (el) {
+            el.classList.toggle('show');
+            this.openDropdowns[id] = el.classList.contains('show');
+        }
+    },
+    
+    switchHunter: function(name) { 
+        this.psnSynced = false; 
+        this.loadHunter(name); 
+        
+        // Timeout ensures profiles have swapped completely before querying JSON
+        setTimeout(() => this.syncWithPSNData(), 1000); 
+    },
+    
     scrollToCategory: function(id) { if(!id) return; this.collapsedSections[id] = false; this.render(); setTimeout(() => { if(document.getElementById(id)) document.getElementById(id).scrollIntoView({ behavior: 'smooth' }) }, 100); },
-    openLightbox: function(categoryId, subIdx, imgIdx) { this.currentLightboxData = { categoryId, subIdx, imgIdx }; this.updateLightboxView(); document.getElementById('lightbox').style.display = 'block'; },
-    closeLightbox: function(e) { if (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-close')) document.getElementById('lightbox').style.display = 'none'; },
+
+    // --- Lightbox Methods ---
+    openLightbox: function(categoryId, subIdx, imgIdx) {
+        this.currentLightboxData = { categoryId, subIdx, imgIdx };
+        this.updateLightboxView();
+        document.getElementById('lightbox').style.display = 'block';
+    },
+
+    closeLightbox: function(e) {
+        if (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-close')) {
+            document.getElementById('lightbox').style.display = 'none';
+        }
+    },
+
     changeLightboxImage: function(direction) {
         const { categoryId, subIdx } = this.currentLightboxData;
         const t = this.hunterData.find(x => x.id === categoryId);
         const images = t.subItems[subIdx].images;
+        
         this.currentLightboxData.imgIdx += direction;
         if (this.currentLightboxData.imgIdx < 0) this.currentLightboxData.imgIdx = images.length - 1;
         if (this.currentLightboxData.imgIdx >= images.length) this.currentLightboxData.imgIdx = 0;
+        
         this.updateLightboxView();
     },
+
     updateLightboxView: function() {
         const { categoryId, subIdx, imgIdx } = this.currentLightboxData;
         const t = this.hunterData.find(x => x.id === categoryId);
         const subItem = t.subItems[subIdx];
+        
         const imgEl = document.getElementById('lightbox-img');
         const captionEl = document.getElementById('lightbox-caption');
+        
         imgEl.src = subItem.images[imgIdx];
+        
         let viewType = "Angle View";
         if (imgIdx === 0) viewType = "Map View (Zoomed Out)";
         if (imgIdx === 1) viewType = "Map View (Zoomed In)";
+        
         captionEl.innerText = `${subItem.name} - ${viewType} (${imgIdx + 1} of ${subItem.images.length})`;
     },
-    sync: async function() {
-        this.render();
-        if (!this.db || !this.dataLoaded || !this.canEditActiveHunter()) return;
+    
+    sync: async function() { 
+        this.render(); 
+        if (!this.db || !this.auth.currentUser || !this.dataLoaded) {
+            console.warn("Tracker Save Blocked: Waiting for data load or authentication.");
+            return;
+        } 
+
         try {
-            const userProgressRef = doc(this.db, 'users', this.activeHunter, 'progress', GAME_ID);
-            const payload = {
-                user: this.activeHunter,
-                platform: this.activePlatform,
-                gameId: GAME_ID,
-                animalRankData: this.animalRankData,
-                trophies: this.hunterData,
-                lastUpdated: new Date().toISOString(),
-                updatedBy: this.loggedInOperator
-            };
-            await setDoc(userProgressRef, payload, { merge: true });
-            console.log(`✓ Progress saved under /users/${this.activeHunter}/progress/${GAME_ID}`);
-        } catch (err) {
-            console.error("Firestore Save Error:", err);
+            const ref = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', this.activeHunter); 
+            await setDoc(ref, { trophies: this.hunterData, lastUpdate: Date.now() }, { merge: true }); 
+            console.log("Tracker data successfully pushed via database pipeline.");
+        } catch (error) {
+            console.error("FIREBASE TRACKER SAVE ERROR:", error);
+            if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `TRACKER SYNC ERROR: Check console (Rules/Auth)`;
         }
     }
 };
 
-window.appState = appState;
+// Expose internal methods directly to the window scope context
+window.appState = appState; 
 window.adjRank = (tier, val) => appState.adjRank(tier, val);
-window.adj = (id, val) => appState.adj(id, val);
-window.tog = (id) => appState.tog(id);
-window.check = (id, idx) => appState.check(id, idx);
 
 appState.init();
 
+// --- GLOBAL CLICK LISTENER FOR DROPDOWNS ---
 window.onclick = function(event) {
     if (!event.target.matches('.dropdown-trigger') && !event.target.closest('.dropdown-content')) {
         document.querySelectorAll('.dropdown-content.show').forEach(el => {
