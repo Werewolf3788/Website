@@ -1,8 +1,10 @@
 /* ============================================================================
    File: tracker.js
-   Version: 1.5.0 | Updated: 2026-07-30T00:58:00Z
-   Description: Dynamic SPA Sniper Elite 5 Tracker Engine (entertainment-71888)
+   Version: 1.6.0 | Updated: 2026-07-30T01:01:36Z
+   Description: Dynamic SPA Sniper Elite 5 Tracker Engine
+   Project: entertainment-71888
    Architecture: /users/{activeUsername}/progress/{platform}/games/sniper-elite-5
+   Data Source: https://raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/se.json
    ============================================================================ */
 
 /* === SECTION: Core Imports & Module Setup === */
@@ -24,6 +26,7 @@ import {
     deleteUser 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js?v=20260730";
 
+// Active Firebase Credentials for entertainment-71888
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -56,8 +59,8 @@ const appState = {
     dataLoaded: false,
     lastSyncTime: 0,
 
+    /* --- DATA ENGINE: Resilient JSON Fetcher --- */
     loadMasterDataset: async function() {
-        // Order endpoints: Local same-directory JSON first to bypass CORS/network blocks
         const endpoints = [
             `se.json?v=${Date.now()}`,
             `/Website/games/Sniper-Elite/5/se.json?v=${Date.now()}`,
@@ -73,7 +76,7 @@ const appState = {
                     const data = JSON.parse(text);
                     if (Array.isArray(data) && data.length > 0) {
                         this.masterDataset = data;
-                        console.log(`[Data Engine] Successfully loaded ${data.length} items from: ${url}`);
+                        console.log(`[Data Engine] Loaded ${data.length} collectibles from: ${url}`);
                         return true;
                     }
                 }
@@ -87,6 +90,7 @@ const appState = {
         return false;
     },
 
+    /* --- NAVIGATION ENGINE --- */
     buildMenuHTML: function(menuItems) {
         const navContainer = document.getElementById('dynamic-nav-links');
         if (!navContainer || !Array.isArray(menuItems)) return;
@@ -179,6 +183,7 @@ const appState = {
         }
     },
 
+    /* --- ROUTER & LIFECYCLE --- */
     initSPARouter: function() {
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.replace('#/', '');
@@ -192,15 +197,21 @@ const appState = {
     },
 
     init: async function() {
+        // Initialize Firebase Apps & Services with new project keys
         this.app = initializeApp(firebaseConfig);
         this.auth = getAuth(this.app);
         this.db = getFirestore(this.app);
-        this.analytics = getAnalytics(this.app);
+        
+        try {
+            this.analytics = getAnalytics(this.app);
+        } catch (analyticsErr) {
+            console.warn("Analytics blocked or unavailable:", analyticsErr.message);
+        }
 
-        // Run nav load without blocking execution flow
+        // Run nav load non-blockingly
         this.loadNavigation().catch(e => console.warn("Nav load notice:", e));
 
-        // Fetch master checklist dataset
+        // Unblocked dataset fetch
         await this.loadMasterDataset();
 
         // Default-collapse category sections
@@ -225,6 +236,7 @@ const appState = {
             });
         });
 
+        // Public anonymous auth for real-time viewing
         signInAnonymously(this.auth).catch(err => console.warn("Anon Auth notice:", err.message));
 
         onAuthStateChanged(this.auth, async (user) => {
@@ -273,7 +285,7 @@ const appState = {
             this.loadLiveProgress(this.targetUserId, this.targetPlatform);
         });
 
-        // Trigger initial render immediately
+        // Trigger initial UI render immediately
         this.render();
     },
 
@@ -317,7 +329,7 @@ const appState = {
                 this.dataLoaded = true;
                 this.render();
             } else {
-                // Legacy Fallback Check
+                // Fallback Legacy Query (/users/{userId}/progress/sniper-elite-5)
                 const legacyRef = doc(this.db, "users", userId, "progress", GAME_ID);
                 this.legacyUnsub = onSnapshot(legacyRef, (legacySnap) => {
                     if (legacySnap.exists()) {
@@ -345,6 +357,7 @@ const appState = {
         this.loadLiveProgress(name, platform);
     },
 
+    /* --- TOGGLE & AUTOMATIC ANON CLEANUP --- */
     toggleItem: async function(id) {
         let currentUser = this.auth.currentUser;
 
@@ -405,7 +418,7 @@ const appState = {
                 progress: progress
             }, { merge: true });
             
-            console.log(`Successfully synced to nested path: /users/${this.targetUserId}/progress/${this.targetPlatform}/games/${GAME_ID}`);
+            console.log(`Synced to: /users/${this.targetUserId}/progress/${this.targetPlatform}/games/${GAME_ID}`);
         } catch (err) {
             console.error("Firestore Multi-Platform Write Error:", err);
             alert("Save failed: Check database security rules.");
@@ -417,6 +430,7 @@ const appState = {
         this.render();
     },
 
+    /* --- DOM RENDERER --- */
     render: function() {
         const container = document.getElementById('section-container');
         if (!container) return;
