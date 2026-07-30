@@ -330,35 +330,6 @@ body.bright-mode .stat-box, body.bright-mode .edit-stats-panel, body.bright-mode
 .setting-item { margin-bottom: 10px; display: flex; flex-direction: column; gap: 5px; }
 .hidden { display: none !important; }
 
-/* === FLOATING TIP WIDGET STYLING === */
-.floating-tip-btn {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    z-index: 9999;
-    background: linear-gradient(135deg, #FF4500, #d9534f);
-    color: #ffffff !important;
-    font-weight: 900;
-    font-size: 13px;
-    padding: 12px 20px;
-    border-radius: 50px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
-    text-decoration: none !important;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-height: 48px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.floating-tip-btn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 6px 25px rgba(255, 69, 0, 0.7);
-}
-
 /* ==========================================================================
    TABLET / MOBILE RESPONSIVE MATRIX (Master Dev Protocol Layout Rules)
    ========================================================================== */
@@ -378,13 +349,6 @@ body.bright-mode .stat-box, body.bright-mode .edit-stats-panel, body.bright-mode
     .cinematic-wrapper { aspect-ratio: 16 / 9; min-height: auto; display: flex; flex-direction: column; justify-content: space-between; }
     .skills-tree-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
     .tab-link { padding: 10px 6px; font-size: 12px; min-width: 75px; }
-    
-    .floating-tip-btn {
-        bottom: 16px;
-        right: 16px;
-        padding: 10px 16px;
-        font-size: 12px;
-    }
 }
 
 @media (max-width: 360px) { .skills-tree-grid { grid-template-columns: repeat(1, 1fr); } }
