@@ -1,186 +1,1117 @@
-const WILDLANDS_WEAPON_CLASSES = {
+{
+  "WILDLANDS_WEAPON_CLASSES": {
     "Assault Rifles": [
-        "P416 (Starting Weapon)", "AK-47 (Libertad)", "AK-12 (Tabacal)", "SR-3M (Agua Verde)", "556xi (Caimanes)",
-        "AUG A3 (Barvechos)", "805 Bren A2 (Villa Verde)", "G2 (Inca Camina)", "L85A2 (Espiritu Santo)",
-        "R5 RGP (Monte Puncu)", "ACR (Media Luna)", "M4A1 (Flor De Oro)", "TAR-21 (Montuyoc)", "Mk 17 (Flor De Oro)"
+      "P416 (Starting Weapon)",
+      "AK-47 (Libertad)",
+      "AK-12 (Tabacal)",
+      "SR-3M (Agua Verde)",
+      "556xi (Caimanes)",
+      "AUG A3 (Barvechos)",
+      "805 Bren A2 (Villa Verde)",
+      "G2 (Inca Camina)",
+      "L85A2 (Espiritu Santo)",
+      "R5 RGP (Monte Puncu)",
+      "ACR (Media Luna)",
+      "M4A1 (Flor De Oro)",
+      "TAR-21 (Montuyoc)",
+      "Mk 17 (Flor De Oro)"
     ],
     "Sniper Rifles": [
-        "M40A5 (Itacua)", "M1891 Mosina (La Cruz)", "SR-25 (Caimanes)", "Dragunov SVD (Villa Verde)", "G28 (San Mateo)",
-        "SRSA1 (Mojocoyo)", "HTI (Montuyoc)", "L115A3 (Monte Puncu)", "MK14 (Koani)", "MSR (Montuyoc)", "SR-1 (Koani)"
+      "M40A5 (Itacua)",
+      "M1891 Mosina (La Cruz)",
+      "SR-25 (Caimanes)",
+      "Dragunov SVD (Villa Verde)",
+      "G28 (San Mateo)",
+      "SRSA1 (Mojocoyo)",
+      "HTI (Montuyoc)",
+      "L115A3 (Monte Puncu)",
+      "MK14 (Koani)",
+      "MSR (Montuyoc)",
+      "SR-1 (Koani)"
     ],
     "Submachine Guns (SMGs)": [
-        "MP5 (Starting Weapon)", "MP7 (Barvechos)", "9x19VSN (Inca Camina)", "PP-19 (Agua Verde)", "SR-635 (Ocoro)",
-        "P90 (La Cruz)", "Vector .45 ACP (Media Luna)", "MPX (Mojocoyo)", "Scorpion EVO 3 (Koani)", "9mm C1 (Remanzo)",
-        "PSG (San Mateo)"
+      "MP5 (Starting Weapon)",
+      "MP7 (Barvechos)",
+      "9x19VSN (Inca Camina)",
+      "PP-19 (Agua Verde)",
+      "SR-635 (Ocoro)",
+      "P90 (La Cruz)",
+      "Vector .45 ACP (Media Luna)",
+      "MPX (Mojocoyo)",
+      "Scorpion EVO 3 (Koani)",
+      "9mm C1 (Remanzo)",
+      "PSG (San Mateo)"
     ],
     "Light Machine Guns (LMGs)": [
-        "MG121 (Itacua)", "MK-48 (Espiritu Santo)", "6P41 (Media Luna)", "Type 95 (Remanzo)", "Mk249 (Malaca)"
+      "MG121 (Itacua)",
+      "MK-48 (Espiritu Santo)",
+      "6P41 (Media Luna)",
+      "Type 95 (Remanzo)",
+      "Mk249 (Malaca)"
     ],
     "Shotguns": [
-        "Super Shorty (Itacua)", "SASG-12 (P.N. De Agua Verde)", "SPAS-12 (La Cruz)"
+      "Super Shorty (Itacua)",
+      "SASG-12 (P.N. De Agua Verde)",
+      "SPAS-12 (La Cruz)"
     ],
     "Handguns / Sidearms": [
-        "P45T (Starting Weapon)", "M9 (Villa Verde)", "5.7 USG (Ocoro)", "M1911 (Ocoro)", "P12 (Tabacal)",
-        "P227 (Malaca)", "Skorpion (Remanzo)", "D-50 (Libertad)"
+      "P45T (Starting Weapon)",
+      "M9 (Villa Verde)",
+      "5.7 USG (Ocoro)",
+      "M1911 (Ocoro)",
+      "P12 (Tabacal)",
+      "P227 (Malaca)",
+      "Skorpion (Remanzo)",
+      "D-50 (Libertad)"
     ],
     "Exotic / Special Program Rewards": [
-        "Custom Cartel Buchone Variant Drop", "Prestige / Tier Reward Exotic Tier"
+      "Custom Cartel Buchone Variant Drop",
+      "Prestige / Tier Reward Exotic Tier"
     ]
-};
-
-const BASELINE_SKILLS_BLUEPRINT = {
+  },
+  "BASELINE_SKILLS_BLUEPRINT": {
     "WEAPON": [
-        { id: "stable_aim", name: "Stable Aim", max: 4, hasMedal: true, desc: "Adds extra stability when using a sniper scope." }, 
-        { id: "hip_fire", name: "Hip Fire Spread", max: 4, hasMedal: true, desc: "Reduces bullet spray when firing weapons from the hip." }, 
-        { id: "grenade_launcher", name: "Grenade Launcher", max: 4, hasMedal: false, desc: "Optional underbarrel explosive attachment." },
-        { id: "ammo_capacity", name: "Ammo Capacity", max: 4, hasMedal: true, desc: "Increases maximum ammo capacity for all weapons." }, 
-        { id: "vhc_destruction", name: "VHC Destruction", max: 4, hasMedal: true, desc: "Increases damage done to vehicles." }, 
-        { id: "adv_suppressor", name: "ADV Suppressor", max: 1, hasMedal: false, desc: "Removes damage penalty from suppressors." },
-        { id: "time_to_aim", name: "Time To Aim", max: 4, hasMedal: true, desc: "Reduces scope snap speed latency window." }, 
-        { id: "ammo_retention", name: "Ammo Retention", max: 1, hasMedal: false, desc: "Respawning fully replenishes strategic munitions store." },
-        { id: "epic_ranged_elite", name: "Ranged Elite (EPIC)", max: 4, hasMedal: false, isEpic: true, desc: "Increases accuracy over extreme deployment vectors." }
+      {
+        "id": "stable_aim",
+        "name": "Stable Aim",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Adds extra stability when using a sniper scope."
+      },
+      {
+        "id": "hip_fire",
+        "name": "Hip Fire Spread",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Reduces bullet spray when firing weapons from the hip."
+      },
+      {
+        "id": "grenade_launcher",
+        "name": "Grenade Launcher",
+        "max": 4,
+        "hasMedal": false,
+        "desc": "Optional underbarrel explosive attachment."
+      },
+      {
+        "id": "ammo_capacity",
+        "name": "Ammo Capacity",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Increases maximum ammo capacity for all weapons."
+      },
+      {
+        "id": "vhc_destruction",
+        "name": "VHC Destruction",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Increases damage done to vehicles."
+      },
+      {
+        "id": "adv_suppressor",
+        "name": "ADV Suppressor",
+        "max": 1,
+        "hasMedal": false,
+        "desc": "Removes damage penalty from suppressors."
+      },
+      {
+        "id": "time_to_aim",
+        "name": "Time To Aim",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Reduces scope snap speed latency window."
+      },
+      {
+        "id": "ammo_retention",
+        "name": "Ammo Retention",
+        "max": 1,
+        "hasMedal": false,
+        "desc": "Respawning fully replenishes strategic munitions store."
+      },
+      {
+        "id": "epic_ranged_elite",
+        "name": "Ranged Elite (EPIC)",
+        "max": 4,
+        "hasMedal": false,
+        "isEpic": true,
+        "desc": "Increases accuracy over extreme deployment vectors."
+      }
     ],
     "DRONE": [
-        { id: "battery_increase", name: "Battery Increase", max: 4, hasMedal: false, desc: "Extends flight uptime. Max rank awards infinity power." },
-        { id: "night_vision", name: "Night Vision", max: 1, hasMedal: false, desc: "Enables illumination sensors in zero-light settings." },
-        { id: "range", name: "Range", max: 4, hasMedal: true, desc: "Increases horizontal operation link metrics." }, 
-        { id: "speed", name: "Speed", max: 2, hasMedal: true, desc: "Increases velocity inside operational parameters." }, 
-        { id: "mark_area", name: "Mark Area", max: 4, hasMedal: true, desc: "Enhances localized automated tracking parameters." }, 
-        { id: "stealth", name: "Stealth", max: 1, hasMedal: false, desc: "Reduces auditory acoustic detection limits." },
-        { id: "cooldown", name: "Cooldown", max: 4, hasMedal: true, desc: "Reduces re-launch latency wait window parameters." }, 
-        { id: "noisemaker", name: "NoiseMaker", max: 4, hasMedal: false, desc: "Audio emitter distraction payload module." },
-        { id: "zoom", name: "Zoom", max: 1, hasMedal: false, desc: "Optical focal scaling amplification suite." },
-        { id: "explosive", name: "Explosive", max: 4, hasMedal: false, desc: "Kinetic payload structure demolition system." },
-        { id: "emp", name: "EMP", max: 4, hasMedal: false, desc: "Disables regional power grids, alarms and engines instantly." },
-        { id: "armor", name: "Armor", max: 4, hasMedal: true, desc: "Reinforces plating frame threshold parameters." }, 
-        { id: "thermal_vision", name: "Thermal Vision", max: 1, hasMedal: false, desc: "Infrared heat signature visual capture system." },
-        { id: "epic_drone_medic", name: "Drone Medic (EPIC)", max: 4, hasMedal: false, isEpic: true, desc: "Allows distance revival protocols on structural casualties." }
+      {
+        "id": "battery_increase",
+        "name": "Battery Increase",
+        "max": 4,
+        "hasMedal": false,
+        "desc": "Extends flight uptime. Max rank awards infinity power."
+      },
+      {
+        "id": "night_vision",
+        "name": "Night Vision",
+        "max": 1,
+        "hasMedal": false,
+        "desc": "Enables illumination sensors in zero-light settings."
+      },
+      {
+        "id": "range",
+        "name": "Range",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Increases horizontal operation link metrics."
+      },
+      {
+        "id": "speed",
+        "name": "Speed",
+        "max": 2,
+        "hasMedal": true,
+        "desc": "Increases velocity inside operational parameters."
+      },
+      {
+        "id": "mark_area",
+        "name": "Mark Area",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Enhances localized automated tracking parameters."
+      },
+      {
+        "id": "stealth",
+        "name": "Stealth",
+        "max": 1,
+        "hasMedal": false,
+        "desc": "Reduces auditory acoustic detection limits."
+      },
+      {
+        "id": "cooldown",
+        "name": "Cooldown",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Reduces re-launch latency wait window parameters."
+      },
+      {
+        "id": "noisemaker",
+        "name": "NoiseMaker",
+        "max": 4,
+        "hasMedal": false,
+        "desc": "Audio emitter distraction payload module."
+      },
+      {
+        "id": "zoom",
+        "name": "Zoom",
+        "max": 1,
+        "hasMedal": false,
+        "desc": "Optical focal scaling amplification suite."
+      },
+      {
+        "id": "explosive",
+        "name": "Explosive",
+        "max": 4,
+        "hasMedal": false,
+        "desc": "Kinetic payload structure demolition system."
+      },
+      {
+        "id": "emp",
+        "name": "EMP",
+        "max": 4,
+        "hasMedal": false,
+        "desc": "Disables regional power grids, alarms and engines instantly."
+      },
+      {
+        "id": "armor",
+        "name": "Armor",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Reinforces plating frame threshold parameters."
+      },
+      {
+        "id": "thermal_vision",
+        "name": "Thermal Vision",
+        "max": 1,
+        "hasMedal": false,
+        "desc": "Infrared heat signature visual capture system."
+      },
+      {
+        "id": "epic_drone_medic",
+        "name": "Drone Medic (EPIC)",
+        "max": 4,
+        "hasMedal": false,
+        "isEpic": true,
+        "desc": "Allows distance revival protocols on structural casualties."
+      }
     ],
     "ITEM": [
-        { id: "parachute", name: "Parachute Deployment", max: 1, hasMedal: false, desc: "Allows static airborne deployment from high vectors safely." },
-        { id: "binoc_zoom", name: "Binocular Zoom", max: 1, hasMedal: true, desc: "Amplifies spotting magnification performance levels." }, 
-        { id: "mine_capacity", name: "Mine Inventory", max: 4, hasMedal: true, desc: "Enables deployment of proximity trigger defenses." }, 
-        { id: "binoc_recon", name: "Binocular Recon", max: 4, hasMedal: true, desc: "Accelerates identification speed algorithms." }, 
-        { id: "diversion_lure", name: "Diversion Lure", max: 4, hasMedal: true, desc: "Attracts target threats to specific zones." }, 
-        { id: "frag_grenade", name: "Frag Grenade Boost", max: 4, hasMedal: true, desc: "Increases portable offensive explosive counts." }, 
-        { id: "c4", name: "C4 Charges", max: 4, hasMedal: true, desc: "Enables remote detonation high-damage devices." }, 
-        { id: "thermal_vision_item", name: "Thermal Vision", max: 1, hasMedal: false, desc: "Allows thermal analysis tracking patterns natively." },
-        { id: "flashbang", name: "Flashbang", max: 4, hasMedal: true, desc: "Stuns targets inside non-lethal tactical parameters." }, 
-        { id: "flare_gun", name: "Flare Gun", max: 4, hasMedal: true, desc: "Attracts nearby structural forces to designated visual points." },
-        { id: "epic_explosion_radius", name: "Explosion Radius (EPIC)", max: 4, hasMedal: false, isEpic: true, desc: "Expands damage zone radius on all thrown items." }
+      {
+        "id": "parachute",
+        "name": "Parachute Deployment",
+        "max": 1,
+        "hasMedal": false,
+        "desc": "Allows static airborne deployment from high vectors safely."
+      },
+      {
+        "id": "binoc_zoom",
+        "name": "Binocular Zoom",
+        "max": 1,
+        "hasMedal": true,
+        "desc": "Amplifies spotting magnification performance levels."
+      },
+      {
+        "id": "mine_capacity",
+        "name": "Mine Inventory",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Enables deployment of proximity trigger defenses."
+      },
+      {
+        "id": "binoc_recon",
+        "name": "Binocular Recon",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Accelerates identification speed algorithms."
+      },
+      {
+        "id": "diversion_lure",
+        "name": "Diversion Lure",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Attracts target threats to specific zones."
+      },
+      {
+        "id": "frag_grenade",
+        "name": "Frag Grenade Boost",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Increases portable offensive explosive counts."
+      },
+      {
+        "id": "c4",
+        "name": "C4 Charges",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Enables remote detonation high-damage devices."
+      },
+      {
+        "id": "thermal_vision_item",
+        "name": "Thermal Vision",
+        "max": 1,
+        "hasMedal": false,
+        "desc": "Allows thermal analysis tracking patterns natively."
+      },
+      {
+        "id": "flashbang",
+        "name": "Flashbang",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Stuns targets inside non-lethal tactical parameters."
+      },
+      {
+        "id": "flare_gun",
+        "name": "Flare Gun",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Attracts nearby structural forces to designated visual points."
+      },
+      {
+        "id": "epic_explosion_radius",
+        "name": "Explosion Radius (EPIC)",
+        "max": 4,
+        "hasMedal": false,
+        "isEpic": true,
+        "desc": "Expands damage zone radius on all thrown items."
+      }
     ],
     "PHYSICAL": [
-        { id: "stamina", name: "Stamina Duration", max: 4, hasMedal: false, desc: "Extends target continuous maximum sprint capacity." }, 
-        { id: "no_pain", name: "No Pain Threshold", max: 4, hasMedal: true, desc: "Provides heavy defensive damage absorption buffers post-revive." }, 
-        { id: "car_shield", name: "Car Shield", max: 4, hasMedal: true, desc: "Ground transit asset incoming damage modifier reduction." }, 
-        { id: "quiet_running", name: "Quiet Running", max: 4, hasMedal: true, desc: "Reduces audible noise threshold during movement loops." }, 
-        { id: "bullet_resistance", name: "Bullet Resistance", max: 4, hasMedal: true, desc: "Reduces basic threat impact damage ratings." }, 
-        { id: "detection", name: "Detection Visibility", max: 4, hasMedal: true, desc: "Reduces threat awareness curves inside low stances." }, 
-        { id: "explosion_resistance", name: "Explosion Resistance", max: 4, hasMedal: true, desc: "Mitigates environmental splash tracking blast damages." }, 
-        { id: "aircraft_shield", name: "Aircraft Shield", max: 4, hasMedal: true, desc: "Mitigates damage profiles encountered by aviation hardware assets." },
-        { id: "epic_faster_regen", name: "Faster Regen (EPIC)", max: 4, hasMedal: false, isEpic: true, desc: "Decreases internal target standard medical recovery latency loops." }
+      {
+        "id": "stamina",
+        "name": "Stamina Duration",
+        "max": 4,
+        "hasMedal": false,
+        "desc": "Extends target continuous maximum sprint capacity."
+      },
+      {
+        "id": "no_pain",
+        "name": "No Pain Threshold",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Provides heavy defensive damage absorption buffers post-revive."
+      },
+      {
+        "id": "car_shield",
+        "name": "Car Shield",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Ground transit asset incoming damage modifier reduction."
+      },
+      {
+        "id": "quiet_running",
+        "name": "Quiet Running",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Reduces audible noise threshold during movement loops."
+      },
+      {
+        "id": "bullet_resistance",
+        "name": "Bullet Resistance",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Reduces basic threat impact damage ratings."
+      },
+      {
+        "id": "detection",
+        "name": "Detection Visibility",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Reduces threat awareness curves inside low stances."
+      },
+      {
+        "id": "explosion_resistance",
+        "name": "Explosion Resistance",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Mitigates environmental splash tracking blast damages."
+      },
+      {
+        "id": "aircraft_shield",
+        "name": "Aircraft Shield",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Mitigates damage profiles encountered by aviation hardware assets."
+      },
+      {
+        "id": "epic_faster_regen",
+        "name": "Faster Regen (EPIC)",
+        "max": 4,
+        "hasMedal": false,
+        "isEpic": true,
+        "desc": "Decreases internal target standard medical recovery latency loops."
+      }
     ],
     "SQUAD": [
-        { id: "revive_speed", name: "Revive Speed", max: 4, hasMedal: true, desc: "Decreases field interaction rescue time windows." }, 
-        { id: "extra_sync", name: "Extra Sync Shot Slot", max: 2, hasMedal: false, desc: "Expands targeting capability across fire teams simultaneously." }, 
-        { id: "trained_rebels", name: "Trained Rebels", max: 4, hasMedal: true, desc: "Boosts tactical baseline combat survival of localized proxies." }, 
-        { id: "squad_resilience", name: "Squad Resilience", max: 4, hasMedal: true, desc: "Modifies AI team internal ballistic shield scaling variables." }, 
-        { id: "bleed_out_time", name: "Bleed Out Time", max: 4, hasMedal: true, desc: "Extends strategic countdown window prior to structural death." }, 
-        { id: "born_leader", name: "Born Leader Aura", max: 4, hasMedal: true, desc: "Drastically scales fire efficiency coefficients of backup crew." },
-        { id: "epic_last_chance", name: "Last Chance (EPIC)", max: 4, hasMedal: false, isEpic: true, desc: "Expands total allowed backup revival counters per engagement." }
+      {
+        "id": "revive_speed",
+        "name": "Revive Speed",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Decreases field interaction rescue time windows."
+      },
+      {
+        "id": "extra_sync",
+        "name": "Extra Sync Shot Slot",
+        "max": 2,
+        "hasMedal": false,
+        "desc": "Expands targeting capability across fire teams simultaneously."
+      },
+      {
+        "id": "trained_rebels",
+        "name": "Trained Rebels",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Boosts tactical baseline combat survival of localized proxies."
+      },
+      {
+        "id": "squad_resilience",
+        "name": "Squad Resilience",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Modifies AI team internal ballistic shield scaling variables."
+      },
+      {
+        "id": "bleed_out_time",
+        "name": "Bleed Out Time",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Extends strategic countdown window prior to structural death."
+      },
+      {
+        "id": "born_leader",
+        "name": "Born Leader Aura",
+        "max": 4,
+        "hasMedal": true,
+        "desc": "Drastically scales fire efficiency coefficients of backup crew."
+      },
+      {
+        "id": "epic_last_chance",
+        "name": "Last Chance (EPIC)",
+        "max": 4,
+        "hasMedal": false,
+        "isEpic": true,
+        "desc": "Expands total allowed backup revival counters per engagement."
+      }
     ],
     "REBEL": [
-        { id: "vehicle_drop", name: "Vehicle Drop-off", max: 9, hasMedal: false, desc: "Deploys tactical transport assets directly into your operational sector." },
-        { id: "guns_for_hire", name: "Guns For Hire", max: 9, hasMedal: false, desc: "Summons explicit squad assets to provide defensive cover support fire." },
-        { id: "mortar", name: "Mortar Strike", max: 9, hasMedal: false, desc: "Applies heavy remote explosive bombardment over target zone area bounds." },
-        { id: "diversion_rebel", name: "Diversion", max: 9, hasMedal: false, desc: "Forces enemy tracking focus elements away from actual entry points." },
-        { id: "spotting", name: "Rebel Spotting", max: 9, hasMedal: false, desc: "Scans coordinates area maps to tag target threats within parameters." }
+      {
+        "id": "vehicle_drop",
+        "name": "Vehicle Drop-off",
+        "max": 9,
+        "hasMedal": false,
+        "desc": "Deploys tactical transport assets directly into your operational sector."
+      },
+      {
+        "id": "guns_for_hire",
+        "name": "Guns For Hire",
+        "max": 9,
+        "hasMedal": false,
+        "desc": "Summons explicit squad assets to provide defensive cover support fire."
+      },
+      {
+        "id": "mortar",
+        "name": "Mortar Strike",
+        "max": 9,
+        "hasMedal": false,
+        "desc": "Applies heavy remote explosive bombardment over target zone area bounds."
+      },
+      {
+        "id": "diversion_rebel",
+        "name": "Diversion",
+        "max": 9,
+        "hasMedal": false,
+        "desc": "Forces enemy tracking focus elements away from actual entry points."
+      },
+      {
+        "id": "spotting",
+        "name": "Rebel Spotting",
+        "max": 9,
+        "hasMedal": false,
+        "desc": "Scans coordinates area maps to tag target threats within parameters."
+      }
     ],
     "TROPHY": [
-        { id: "tr_amaru", name: "A Good Start", desc: "Completed the first mission 'Amaru's rescue'.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "A Good Start" },
-        { id: "tr_symp", name: "Rebel Sympathizer", desc: "Unlocked a Rebel skill.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Rebel Sympathizer" },
-        { id: "tr_boss", name: "Beat the Boss", desc: "Defeated your first boss.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Beat the Boss" },
-        { id: "tr_night", name: "Death in the Dark", desc: "Made a close-combat kill at night.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Death in the Dark" },
-        { id: "tr_legend", name: "Legend Hunter", desc: "Discovered one legend.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Legend Hunter" },
-        { id: "tr_drone_mark", name: "Eye in the Sky", desc: "Marked 100 enemies with a drone.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Eye in the Sky" },
-        { id: "tr_pistol_snipe", name: "With a Pistol!", desc: "Took out a sniper with a pistol.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "With a Pistol!" },
-        { id: "tr_road", name: "Road Warrior", desc: "Drove a vehicle for 100 km.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Road Warrior" },
-        { id: "tr_rebel_max", name: "Real Rebel", desc: "Unlocked all the Rebel skills.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Real Rebel" },
-        { id: "tr_spice", name: "Spice of Life", desc: "Played each type of side mission.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Spice of Life" },
-        { id: "tr_team", name: "Teamwork!", desc: "Completed 3 missions with another player.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Teamwork!" },
-        { id: "tr_highway", name: "Highway Bandit", desc: "Tagged 10 convoys.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Highway Bandit" },
-        { id: "tr_long_shot", name: "Long Shot", desc: "Hit a target more than 400m away.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Long Shot" },
-        { id: "tr_skydive", name: "Fearless", desc: "Skydived 10 times.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Fearless" },
-        { id: "tr_interrogate", name: "Deadly Curious", desc: "Interrogated 20 sources.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Deadly Curious" },
-        { id: "tr_champion", name: "The Champion", desc: "Maxed out your XP and levels.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "The Champion" },
-        { id: "tr_drone_kill", name: "Death from Above", desc: "Killed an enemy with a drone.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Death from Above" },
-        { id: "tr_locks", name: "Broken Locks", desc: "Completed the Security operation.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Broken Locks" },
-        { id: "tr_bad_rep", name: "Bad Reputation", desc: "Completed the Influence operation.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Bad Reputation" },
-        { id: "tr_shutdown", name: "Shut Down", desc: "Completed the Production operation.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Shut Down" },
-        { id: "tr_end", name: "The End", desc: "Finished the story.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "The End" },
-        { id: "tr_blues", name: "Smuggler's Blues", desc: "Completed the Smuggling operation.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Smuggler's Blues" },
-        { id: "tr_c4_generator", name: "Black-out Boomer", desc: "Destroyed a generator with a C4 blast.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Black-out Boomer" },
-        { id: "tr_binoc_mark", name: "Eagle-Eyed", desc: "Marked 100 enemies with the binoculars.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Eagle-Eyed" },
-        { id: "tr_finish_job", name: "Finished the Job", desc: "Killed an enemy hurt by another player.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Finished the Job" },
-        { id: "tr_collector_half", name: "Serious Collector", desc: "Found 50% of the documents in the game.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Serious Collector" },
-        { id: "tr_mission_master", name: "Mission Master", desc: "Completed all Story missions.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Mission Master" },
-        { id: "tr_ultimate_skill", name: "Ultimate Skill", desc: "Bought all updates of a Skill branch.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Ultimate Skill" },
-        { id: "tr_lmg_fanatic", name: "Light Machine-Gun Fanatic", desc: "Collected all light machine-gun models.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Light Machine-Gun Fanatic" },
-        { id: "tr_shotgun_fanatic", name: "Shotguns Fanatic", desc: "Collected all shotguns models.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Shotguns Fanatic" },
-        { id: "tr_handgun_fanatic", name: "Handgun Fanatic", desc: "Collected all handguns models.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Handgun Fanatic" },
-        { id: "tr_heavy_medals", name: "Heavy Medals", desc: "Collected all the bonus medals.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Heavy Medals" },
-        { id: "tr_sniper_fanatic", name: "Sniper Rifle Fanatic", desc: "Collected all sniper rifle models.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Sniper Rifle Fanatic" },
-        { id: "tr_smg_fanatic", name: "Submachine-Gun Fanatic", desc: "Collected all submachine-gun models.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Submachine-Gun Fanatic" },
-        { id: "tr_ar_fanatic", name: "Assault Rifle Fanatic", desc: "Collected all assault rifle models.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Assault Rifle Fanatic" },
-        { id: "tr_no_better_rebel", name: "No Better Rebel", desc: "Maxed out each Rebel skill.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "No Better Rebel" },
-        { id: "tr_top_drone", name: "Top Drone", desc: "Bought all drone-related upgrades.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Top Drone" },
-        { id: "tr_pull", name: "Pull!", desc: "Shot an enemy chopper out of the air with a mortar.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Pull!" },
-        { id: "tr_only_best", name: "Only the Best", desc: "Bought all upgrades.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Only the Best" },
-        { id: "tr_whole_story", name: "The Whole Story", desc: "Found all documents.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "The Whole Story" },
-        { id: "tr_legend_hunter", name: "Legendary Hunter", desc: "Discovered all legends.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Legendary Hunter" },
-        { id: "tr_cluster", name: "Cluster Bomber", desc: "Killed 7 enemies with a single C4 blast.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "Cluster Bomber" },
-        { id: "tr_mousetrap", name: "A Better Mousetrap", desc: "Killed 7 enemies with a single mine.", max: 1, isTrophy: true, sub: "ALL_TROPHIES", psnName: "A Better Mousetrap" },
-
-        /* === RECON REWARD COLLECTIBLES === */
-        { id: "wp_ak47", name: "AK-47 Case", desc: "Assault Rifle Intel Province: Libertad", max: 1, sub: "WEAPONS" },
-        { id: "wp_aug", name: "AUG A3 Case", desc: "Assault Rifle Intel Province: Barvechos", max: 1, sub: "WEAPONS" },
-        { id: "wp_556xi", name: "556xi Case", desc: "Assault Rifle Intel Province: Caimanes", max: 1, sub: "WEAPONS" },
-        { id: "wp_l85a2", name: "L85A2 Case", desc: "Assault Rifle Intel Province: Espiritu Santo", max: 1, sub: "WEAPONS" },
-        { id: "wp_m4a1", name: "M4A1 Case", desc: "Assault Rifle Intel Province: Flor De Oro", max: 1, sub: "WEAPONS" },
-        { id: "wp_mk17", name: "MK17 Case", desc: "Assault Rifle Intel Province: Flor De Oro", max: 1, sub: "WEAPONS" },
-        { id: "wp_g2", name: "G2 Case", desc: "Assault Rifle Intel Province: Inca Camina", max: 1, sub: "WEAPONS" },
-        { id: "wp_acr", name: "ACR Case", desc: "Assault Rifle Intel Province: Media Luna", max: 1, sub: "WEAPONS" },
-        { id: "wp_tar21", name: "TAR-21 Case", desc: "Assault Rifle Intel Province: Montuyoc", max: 1, sub: "WEAPONS" },
-        { id: "wp_sr3m", name: "SR3M Case", desc: "Assault Rifle Intel Province: P.N. De Agua Verde", max: 1, sub: "WEAPONS" },
-        { id: "wp_ak12", name: "AK-12 Case", desc: "Assault Rifle Intel Province: Tabacal", max: 1, sub: "WEAPONS" },
-        { id: "wp_bren", name: "805 Bren A2 Case", desc: "Assault Rifle Intel Province: Villa Verde", max: 1, sub: "WEAPONS" },
-        { id: "wp_mp7", name: "MP7 Case", desc: "SMG Intel Province: Barvechos", max: 1, sub: "WEAPONS" },
-        { id: "wp_9x19vsn", name: "9x19VSN Case", desc: "SMG Intel Province: Inca Camina", max: 1, sub: "WEAPONS" },
-        { id: "wp_scorpion", name: "Scorpion EVO 3 Case", desc: "SMG Intel Province: Koani", max: 1, sub: "WEAPONS" },
-        { id: "wp_p90", name: "P90 Case", desc: "SMG Intel Province: La Cruz", max: 1, sub: "WEAPONS" },
-        { id: "wp_vector", name: "Vector .45 ACP Case", desc: "SMG Intel Province: Media Luna", max: 1, sub: "WEAPONS" },
-        { id: "wp_mpx", name: "MPX Case", desc: "SMG Intel Province: Mojocoyo", max: 1, sub: "WEAPONS" },
-        { id: "wp_sr635", name: "SR-635 Case", desc: "SMG Intel Province: Ocoro", max: 1, sub: "WEAPONS" },
-        { id: "wp_9mmc1", name: "9mm C1 Case", desc: "SMG Intel Province: Remanzo", max: 1, sub: "WEAPONS" },
-        { id: "wp_psg", name: "PSG Case", desc: "SMG Intel Province: San Mateo", max: 1, sub: "WEAPONS" },
-
-        /* === MAP BONUS MEDALS === */
-        { id: "md_air_sh", name: "Aircraft Shield Medal", desc: "Bonus Medal Map Target: Barvechos", max: 1, sub: "MEDALS" },
-        { id: "md_ammo_cap", name: "Ammo Capacity Medal", desc: "Bonus Medal Map Target: Barvechos", max: 1, sub: "MEDALS" },
-        { id: "md_bin_rec", name: "Binocular Recon Medal", desc: "Bonus Medal Map Target: Caimanes", max: 1, sub: "MEDALS" },
-        { id: "md_quiet", name: "Quiet Running Medal", desc: "Bonus Medal Map Target: Espiritu Santo", max: 1, sub: "MEDALS" },
-        { id: "md_bin_zm", name: "Binocular Zoom Medal", desc: "Bonus Medal Map Target: Flor De Oro", max: 1, sub: "MEDALS" },
-        { id: "md_bleed", name: "Bleed Out Time Medal", desc: "Bonus Medal Map Target: Inca Camina", max: 1, sub: "MEDALS" },
-        { id: "md_bullet_it", name: "Bullet Resistance Medal", desc: "Bonus Medal Map Target: Itacua", max: 1, sub: "MEDALS" },
-        { id: "md_leader", name: "Born Leader Medal", desc: "Bonus Medal Map Target: Itacua", max: 1, sub: "MEDALS" },
-        { id: "md_c4", name: "C4 Charges Medal", desc: "Bonus Medal Map Target: Koani", max: 1, sub: "MEDALS" },
-        { id: "md_car_sh", name: "Car Shield Medal", desc: "Bonus Medal Map Target: Koani", max: 1, sub: "MEDALS" },
-
-        /* === ACCESSORY CASE PARTS === */
-        { id: "sc_ta31h", name: "TA31H Scope Case", desc: "Part Vector: Espiritu Santo (AR, Sniper)", max: 1, sub: "SCOPES" },
-        { id: "sc_pkas", name: "PK-AS Scope Case", desc: "Part Vector: Itacua (SMG, AR)", max: 1, sub: "SCOPES" },
-        { id: "sc_panoramic", name: "Panoramic Sight Case", desc: "Part Vector: Itacua (SMG, Shotgun, AR)", max: 1, sub: "SCOPES" },
-        { id: "sc_t5xi", name: "T5Xi Tactical Case", desc: "Part Vector: Koani (Sniper Rifle)", max: 1, sub: "SCOPES" },
-        { id: "sc_micro_g33", name: "Micro T-1 & G33 Case", desc: "Part Vector: Koani (SMG, AR)", max: 1, sub: "SCOPES" }
+      {
+        "id": "tr_amaru",
+        "name": "A Good Start",
+        "desc": "Completed the first mission 'Amaru's rescue'.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "A Good Start"
+      },
+      {
+        "id": "tr_symp",
+        "name": "Rebel Sympathizer",
+        "desc": "Unlocked a Rebel skill.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Rebel Sympathizer"
+      },
+      {
+        "id": "tr_boss",
+        "name": "Beat the Boss",
+        "desc": "Defeated your first boss.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Beat the Boss"
+      },
+      {
+        "id": "tr_night",
+        "name": "Death in the Dark",
+        "desc": "Made a close-combat kill at night.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Death in the Dark"
+      },
+      {
+        "id": "tr_legend",
+        "name": "Legend Hunter",
+        "desc": "Discovered one legend.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Legend Hunter"
+      },
+      {
+        "id": "tr_drone_mark",
+        "name": "Eye in the Sky",
+        "desc": "Marked 100 enemies with a drone.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Eye in the Sky"
+      },
+      {
+        "id": "tr_pistol_snipe",
+        "name": "With a Pistol!",
+        "desc": "Took out a sniper with a pistol.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "With a Pistol!"
+      },
+      {
+        "id": "tr_road",
+        "name": "Road Warrior",
+        "desc": "Drove a vehicle for 100 km.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Road Warrior"
+      },
+      {
+        "id": "tr_rebel_max",
+        "name": "Real Rebel",
+        "desc": "Unlocked all the Rebel skills.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Real Rebel"
+      },
+      {
+        "id": "tr_spice",
+        "name": "Spice of Life",
+        "desc": "Played each type of side mission.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Spice of Life"
+      },
+      {
+        "id": "tr_team",
+        "name": "Teamwork!",
+        "desc": "Completed 3 missions with another player.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Teamwork!"
+      },
+      {
+        "id": "tr_highway",
+        "name": "Highway Bandit",
+        "desc": "Tagged 10 convoys.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Highway Bandit"
+      },
+      {
+        "id": "tr_long_shot",
+        "name": "Long Shot",
+        "desc": "Hit a target more than 400m away.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Long Shot"
+      },
+      {
+        "id": "tr_skydive",
+        "name": "Fearless",
+        "desc": "Skydived 10 times.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Fearless"
+      },
+      {
+        "id": "tr_interrogate",
+        "name": "Deadly Curious",
+        "desc": "Interrogated 20 sources.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Deadly Curious"
+      },
+      {
+        "id": "tr_champion",
+        "name": "The Champion",
+        "desc": "Maxed out your XP and levels.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "The Champion"
+      },
+      {
+        "id": "tr_drone_kill",
+        "name": "Death from Above",
+        "desc": "Killed an enemy with a drone.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Death from Above"
+      },
+      {
+        "id": "tr_locks",
+        "name": "Broken Locks",
+        "desc": "Completed the Security operation.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Broken Locks"
+      },
+      {
+        "id": "tr_bad_rep",
+        "name": "Bad Reputation",
+        "desc": "Completed the Influence operation.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Bad Reputation"
+      },
+      {
+        "id": "tr_shutdown",
+        "name": "Shut Down",
+        "desc": "Completed the Production operation.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Shut Down"
+      },
+      {
+        "id": "tr_end",
+        "name": "The End",
+        "desc": "Finished the story.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "The End"
+      },
+      {
+        "id": "tr_blues",
+        "name": "Smuggler's Blues",
+        "desc": "Completed the Smuggling operation.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Smuggler's Blues"
+      },
+      {
+        "id": "tr_c4_generator",
+        "name": "Black-out Boomer",
+        "desc": "Destroyed a generator with a C4 blast.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Black-out Boomer"
+      },
+      {
+        "id": "tr_binoc_mark",
+        "name": "Eagle-Eyed",
+        "desc": "Marked 100 enemies with the binoculars.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Eagle-Eyed"
+      },
+      {
+        "id": "tr_finish_job",
+        "name": "Finished the Job",
+        "desc": "Killed an enemy hurt by another player.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Finished the Job"
+      },
+      {
+        "id": "tr_collector_half",
+        "name": "Serious Collector",
+        "desc": "Found 50% of the documents in the game.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Serious Collector"
+      },
+      {
+        "id": "tr_mission_master",
+        "name": "Mission Master",
+        "desc": "Completed all Story missions.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Mission Master"
+      },
+      {
+        "id": "tr_ultimate_skill",
+        "name": "Ultimate Skill",
+        "desc": "Bought all updates of a Skill branch.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Ultimate Skill"
+      },
+      {
+        "id": "tr_lmg_fanatic",
+        "name": "Light Machine-Gun Fanatic",
+        "desc": "Collected all light machine-gun models.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Light Machine-Gun Fanatic"
+      },
+      {
+        "id": "tr_shotgun_fanatic",
+        "name": "Shotguns Fanatic",
+        "desc": "Collected all shotguns models.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Shotguns Fanatic"
+      },
+      {
+        "id": "tr_handgun_fanatic",
+        "name": "Handgun Fanatic",
+        "desc": "Collected all handguns models.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Handgun Fanatic"
+      },
+      {
+        "id": "tr_heavy_medals",
+        "name": "Heavy Medals",
+        "desc": "Collected all the bonus medals.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Heavy Medals"
+      },
+      {
+        "id": "tr_sniper_fanatic",
+        "name": "Sniper Rifle Fanatic",
+        "desc": "Collected all sniper rifle models.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Sniper Rifle Fanatic"
+      },
+      {
+        "id": "tr_smg_fanatic",
+        "name": "Submachine-Gun Fanatic",
+        "desc": "Collected all submachine-gun models.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Submachine-Gun Fanatic"
+      },
+      {
+        "id": "tr_ar_fanatic",
+        "name": "Assault Rifle Fanatic",
+        "desc": "Collected all assault rifle models.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Assault Rifle Fanatic"
+      },
+      {
+        "id": "tr_no_better_rebel",
+        "name": "No Better Rebel",
+        "desc": "Maxed out each Rebel skill.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "No Better Rebel"
+      },
+      {
+        "id": "tr_top_drone",
+        "name": "Top Drone",
+        "desc": "Bought all drone-related upgrades.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Top Drone"
+      },
+      {
+        "id": "tr_pull",
+        "name": "Pull!",
+        "desc": "Shot an enemy chopper out of the air with a mortar.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Pull!"
+      },
+      {
+        "id": "tr_only_best",
+        "name": "Only the Best",
+        "desc": "Bought all upgrades.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Only the Best"
+      },
+      {
+        "id": "tr_whole_story",
+        "name": "The Whole Story",
+        "desc": "Found all documents.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "The Whole Story"
+      },
+      {
+        "id": "tr_legend_hunter",
+        "name": "Legendary Hunter",
+        "desc": "Discovered all legends.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Legendary Hunter"
+      },
+      {
+        "id": "tr_cluster",
+        "name": "Cluster Bomber",
+        "desc": "Killed 7 enemies with a single C4 blast.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "Cluster Bomber"
+      },
+      {
+        "id": "tr_mousetrap",
+        "name": "A Better Mousetrap",
+        "desc": "Killed 7 enemies with a single mine.",
+        "max": 1,
+        "isTrophy": true,
+        "sub": "ALL_TROPHIES",
+        "psnName": "A Better Mousetrap"
+      },
+      {
+        "id": "wp_ak47",
+        "name": "AK-47 Case",
+        "desc": "Assault Rifle Intel Province: Libertad",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_aug",
+        "name": "AUG A3 Case",
+        "desc": "Assault Rifle Intel Province: Barvechos",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_556xi",
+        "name": "556xi Case",
+        "desc": "Assault Rifle Intel Province: Caimanes",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_l85a2",
+        "name": "L85A2 Case",
+        "desc": "Assault Rifle Intel Province: Espiritu Santo",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_m4a1",
+        "name": "M4A1 Case",
+        "desc": "Assault Rifle Intel Province: Flor De Oro",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_mk17",
+        "name": "MK17 Case",
+        "desc": "Assault Rifle Intel Province: Flor De Oro",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_g2",
+        "name": "G2 Case",
+        "desc": "Assault Rifle Intel Province: Inca Camina",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_acr",
+        "name": "ACR Case",
+        "desc": "Assault Rifle Intel Province: Media Luna",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_tar21",
+        "name": "TAR-21 Case",
+        "desc": "Assault Rifle Intel Province: Montuyoc",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_sr3m",
+        "name": "SR3M Case",
+        "desc": "Assault Rifle Intel Province: P.N. De Agua Verde",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_ak12",
+        "name": "AK-12 Case",
+        "desc": "Assault Rifle Intel Province: Tabacal",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_bren",
+        "name": "805 Bren A2 Case",
+        "desc": "Assault Rifle Intel Province: Villa Verde",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_mp7",
+        "name": "MP7 Case",
+        "desc": "SMG Intel Province: Barvechos",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_9x19vsn",
+        "name": "9x19VSN Case",
+        "desc": "SMG Intel Province: Inca Camina",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_scorpion",
+        "name": "Scorpion EVO 3 Case",
+        "desc": "SMG Intel Province: Koani",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_p90",
+        "name": "P90 Case",
+        "desc": "SMG Intel Province: La Cruz",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_vector",
+        "name": "Vector .45 ACP Case",
+        "desc": "SMG Intel Province: Media Luna",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_mpx",
+        "name": "MPX Case",
+        "desc": "SMG Intel Province: Mojocoyo",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_sr635",
+        "name": "SR-635 Case",
+        "desc": "SMG Intel Province: Ocoro",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_9mmc1",
+        "name": "9mm C1 Case",
+        "desc": "SMG Intel Province: Remanzo",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "wp_psg",
+        "name": "PSG Case",
+        "desc": "SMG Intel Province: San Mateo",
+        "max": 1,
+        "sub": "WEAPONS"
+      },
+      {
+        "id": "md_air_sh",
+        "name": "Aircraft Shield Medal",
+        "desc": "Bonus Medal Map Target: Barvechos",
+        "max": 1,
+        "sub": "MEDALS"
+      },
+      {
+        "id": "md_ammo_cap",
+        "name": "Ammo Capacity Medal",
+        "desc": "Bonus Medal Map Target: Barvechos",
+        "max": 1,
+        "sub": "MEDALS"
+      },
+      {
+        "id": "md_bin_rec",
+        "name": "Binocular Recon Medal",
+        "desc": "Bonus Medal Map Target: Caimanes",
+        "max": 1,
+        "sub": "MEDALS"
+      },
+      {
+        "id": "md_quiet",
+        "name": "Quiet Running Medal",
+        "desc": "Bonus Medal Map Target: Espiritu Santo",
+        "max": 1,
+        "sub": "MEDALS"
+      },
+      {
+        "id": "md_bin_zm",
+        "name": "Binocular Zoom Medal",
+        "desc": "Bonus Medal Map Target: Flor De Oro",
+        "max": 1,
+        "sub": "MEDALS"
+      },
+      {
+        "id": "md_bleed",
+        "name": "Bleed Out Time Medal",
+        "desc": "Bonus Medal Map Target: Inca Camina",
+        "max": 1,
+        "sub": "MEDALS"
+      },
+      {
+        "id": "md_bullet_it",
+        "name": "Bullet Resistance Medal",
+        "desc": "Bonus Medal Map Target: Itacua",
+        "max": 1,
+        "sub": "MEDALS"
+      },
+      {
+        "id": "md_leader",
+        "name": "Born Leader Medal",
+        "desc": "Bonus Medal Map Target: Itacua",
+        "max": 1,
+        "sub": "MEDALS"
+      },
+      {
+        "id": "md_c4",
+        "name": "C4 Charges Medal",
+        "desc": "Bonus Medal Map Target: Koani",
+        "max": 1,
+        "sub": "MEDALS"
+      },
+      {
+        "id": "md_car_sh",
+        "name": "Car Shield Medal",
+        "desc": "Bonus Medal Map Target: Koani",
+        "max": 1,
+        "sub": "MEDALS"
+      },
+      {
+        "id": "sc_ta31h",
+        "name": "TA31H Scope Case",
+        "desc": "Part Vector: Espiritu Santo (AR, Sniper)",
+        "max": 1,
+        "sub": "SCOPES"
+      },
+      {
+        "id": "sc_pkas",
+        "name": "PK-AS Scope Case",
+        "desc": "Part Vector: Itacua (SMG, AR)",
+        "max": 1,
+        "sub": "SCOPES"
+      },
+      {
+        "id": "sc_panoramic",
+        "name": "Panoramic Sight Case",
+        "desc": "Part Vector: Itacua (SMG, Shotgun, AR)",
+        "max": 1,
+        "sub": "SCOPES"
+      },
+      {
+        "id": "sc_t5xi",
+        "name": "T5Xi Tactical Case",
+        "desc": "Part Vector: Koani (Sniper Rifle)",
+        "max": 1,
+        "sub": "SCOPES"
+      },
+      {
+        "id": "sc_micro_g33",
+        "name": "Micro T-1 & G33 Case",
+        "desc": "Part Vector: Koani (SMG, AR)",
+        "max": 1,
+        "sub": "SCOPES"
+      }
     ]
-};
+  }
+}
