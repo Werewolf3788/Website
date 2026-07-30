@@ -1,7 +1,7 @@
 /* ============================================================================
    File: firebase-auth-pipeline.js
-   Version: 1.0.5 | Updated: 2026-07-30T00:52:00Z
-   Description: Firebase Auth, Analytics & Multi-Platform User Provisioning Pipeline
+   Version: 1.0.6 | Updated: 2026-07-30T00:55:00Z
+   Description: Firebase Auth, Analytics, Auto-Anon Cleanup & Multi-Platform Pipeline
    Project: entertainment-71888
    ============================================================================ */
 
@@ -14,7 +14,8 @@ import {
     onAuthStateChanged, 
     GoogleAuthProvider, 
     signInWithPopup, 
-    signOut 
+    signOut,
+    deleteUser 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js?v=20260730";
 import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js?v=20260730";
 
@@ -36,19 +37,13 @@ const firebaseConfig = {
 };
 
 /* === SECTION: Authentication & Analytics Initialization === */
-/**
- * Initializes Firebase Auth, Firestore & Analytics instances.
- * @param {Object} [config=firebaseConfig] - Firebase project configuration object.
- * @param {string} gameId - Unique ID for the current game module.
- * @param {string} [platform="pc"] - Target gaming platform (e.g., 'pc', 'playstation', 'xbox').
- */
 function initializeAuthentication(config = firebaseConfig, gameId, platform = "pc") {
     app = initializeApp(config, `${gameId}-Auth-App`);
     auth = getAuth(app);
     db = getFirestore(app);
     analytics = getAnalytics(app);
 
-    // Initial Anonymous Auth Fallback for public real-time syncing
+    // Initial Anonymous Auth Fallback
     signInAnonymously(auth).catch((err) => console.warn("Anonymous Auth Warning:", err));
 
     // Session State Listener
@@ -65,14 +60,27 @@ function handleAuthStateChange(user, gameId, platform = "pc") {
     const demoBanner = document.getElementById("demoNotification");
     const adminBadge = document.getElementById("adminBadge");
 
-    // 1. Bind Google Login Popup Event
+    // 1. Bind Google Login Popup Event with Anonymous Account Cleanup
     if (googleSignInBtn && !googleSignInBtn.dataset.listener) {
         googleSignInBtn.dataset.listener = "true";
-        googleSignInBtn.addEventListener("click", () => {
+        googleSignInBtn.addEventListener("click", async () => {
+            const tempAnonUser = auth.currentUser && auth.currentUser.isAnonymous ? auth.currentUser : null;
             const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider)
-                .then((result) => provisionAndSyncUser(result.user, gameId, platform))
-                .catch((err) => console.error("Google Authentication Rejected:", err));
+            
+            try {
+                const result = await signInWithPopup(auth, provider);
+                
+                // If sign-in succeeds and an old anonymous user exists, clean up the anonymous session
+                if (tempAnonUser) {
+                    deleteUser(tempAnonUser).catch(() => {
+                        // Suppress error if token already invalidated by auth provider switch
+                    });
+                }
+
+                provisionAndSyncUser(result.user, gameId, platform);
+            } catch (err) {
+                console.error("Google Authentication Rejected:", err);
+            }
         });
     }
 
@@ -86,6 +94,9 @@ function handleAuthStateChange(user, gameId, platform = "pc") {
                 if (googleSignInBtn) googleSignInBtn.classList.remove("hidden");
                 if (userProfileStatus) userProfileStatus.classList.add("hidden");
                 if (userAvatar) userAvatar.src = "";
+                
+                // Re-authenticate anonymously on logout for public viewing
+                signInAnonymously(auth).catch((err) => console.warn("Anon Auth re-init warning:", err));
             });
         });
     }
@@ -104,7 +115,7 @@ function handleAuthStateChange(user, gameId, platform = "pc") {
             if (adminBadge) adminBadge.classList.add("hidden");
         }
 
-        // Provision / Update Firestore Record with Platform Hierarchy
+        // Provision / Update Firestore Record
         provisionAndSyncUser(user, gameId, platform);
     } else {
         if (demoBanner) demoBanner.classList.remove("hidden");
@@ -119,14 +130,13 @@ function handleAuthStateChange(user, gameId, platform = "pc") {
 async function provisionAndSyncUser(user, gameId, platform = "pc") {
     if (!db || !user || user.isAnonymous) return;
 
-    // Use displayName or fall back to email prefix
     const activeUsername = user.displayName || user.email.split('@')[0];
     const sanitizedPlatform = (platform || "pc").toLowerCase();
 
     // Firestore Path: /users/{activeUsername}
     const userRef = doc(db, 'users', activeUsername);
     
-    // Firestore Nested Subcollection Path: /users/{activeUsername}/progress/{platform}/games/{gameId}
+    // Firestore Nested Path: /users/{activeUsername}/progress/{platform}/games/{gameId}
     const userProgressRef = doc(db, 'users', activeUsername, 'progress', sanitizedPlatform, 'games', gameId);
 
     const userPayload = {
@@ -138,14 +148,11 @@ async function provisionAndSyncUser(user, gameId, platform = "pc") {
     };
 
     try {
-        // Merge primary user profile details
         await setDoc(userRef, userPayload, { merge: true });
 
-        // Ensure platform container document exists for structural integrity
         const platformRef = doc(db, 'users', activeUsername, 'progress', sanitizedPlatform);
         await setDoc(platformRef, { platform: sanitizedPlatform, lastActive: new Date().toISOString() }, { merge: true });
 
-        // Check and provision game progress document under platform
         const progressSnap = await getDoc(userProgressRef);
         if (!progressSnap.exists()) {
             await setDoc(userProgressRef, {
