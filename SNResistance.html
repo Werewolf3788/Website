@@ -1,0 +1,519 @@
+<!-- Version: 1.0.8 | Updated: 2026-07-30T00:22:00Z -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sniper Elite Resistance Master Tracker</title>
+    <style>
+        :root {
+            --ser-color: #ff8800; /* Default Accent */
+            --ser-glow: rgba(255, 136, 0, 0.6);
+            --bg-dark: #050505;
+            --card-bg: rgba(20, 20, 25, 0.95);
+            --nav-height: 60px;
+        }
+
+        /* --- GLOBAL MOBILE SETTINGS --- */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            background-image: url('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2407270/ss_752a78f3e5c9a0914909a805c8651a0290823528.1920x1080.jpg?t=1738260133');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #ffffff;
+            font-family: ui-sans-serif, system-ui, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        h1, h2 {
+            font-size: 30px; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(10, 10, 10, 1));
+            z-index: -1;
+        }
+
+        /* --- NAVIGATION --- */
+        .master-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--nav-height);
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 2px solid var(--ser-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            font-weight: 900;
+            color: var(--ser-color);
+            text-decoration: none;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px var(--ser-glow);
+        }
+
+        .nav-auth-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .auth-btn {
+            background: var(--ser-color);
+            color: #000;
+            border: none;
+            padding: 6px 12px;
+            font-weight: 900;
+            font-size: 11px;
+            border-radius: 4px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+
+        .auth-btn.signOut {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: 1px solid var(--ser-color);
+            object-fit: cover;
+        }
+
+        .admin-badge {
+            background: #ff0055;
+            color: white;
+            font-size: 9px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 3px;
+            text-transform: uppercase;
+        }
+
+        .hidden { display: none !important; }
+
+        .tracker-container {
+            margin-top: calc(var(--nav-height) + 15px);
+            padding: 10px;
+            width: 95%;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+
+        /* --- OPERATIVE CONSOLE --- */
+        .profile-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 15, 20, 0.95);
+            padding: 15px;
+            border-radius: 1rem;
+            border: 3px solid var(--ser-color);
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px var(--ser-glow);
+            gap: 10px;
+        }
+
+        .hunter-glow { font-size: 1.6rem; font-weight: 900; color: var(--ser-color); text-shadow: 0 0 15px var(--ser-glow); }
+
+        /* Progress Header */
+        .main-header {
+            background: rgba(10, 0, 0, 0.85); padding: 25px 15px; border-radius: 1.5rem;
+            border: 2px solid var(--ser-color); text-align: center; margin-bottom: 30px;
+        }
+
+        .bar-bg { background: #000; height: 18px; border-radius: 9px; border: 1px solid #333; margin: 15px 0; overflow: hidden; }
+        .bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--ser-color), #fff); transition: width 0.8s ease-out; }
+
+        .category-header {
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; border-left: 8px solid var(--ser-color);
+            padding: 0 15px; background: rgba(20, 20, 25, 0.95);
+            border-radius: 0.5rem; margin-bottom: 5px;
+            height: 50px; 
+        }
+
+        .section-content { overflow: hidden; transition: max-height 0.4s ease; margin-bottom: 20px; }
+        .section-collapsed .section-content { max-height: 0; margin-bottom: 0; }
+
+        .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; padding: 10px 0; }
+
+        .item-card {
+            background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0.8rem; padding: 12px; display: flex; flex-direction: column;
+            justify-content: space-between; min-height: 120px;
+        }
+        .item-card.completed {
+            border-color: var(--ser-color); background: linear-gradient(135deg, rgba(20, 20, 25, 1), rgba(255, 255, 255, 0.05));
+        }
+
+        .item-type-tag { font-size: 8px; padding: 1px 5px; border-radius: 3px; font-weight: 900; text-transform: uppercase; background: #333; color: #aaa; margin-bottom: 5px; width: fit-content; }
+        
+        .toggle-btn, .lock-badge {
+            margin-top: 10px; width: 100%; height: 30px; 
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 5px; font-weight: 900; text-transform: uppercase;
+            border: 1px solid #444; background: #000; color: #fff; cursor: pointer;
+            font-size: 11px;
+        }
+        .lock-badge { border-color: var(--ser-color); color: var(--ser-color); background: rgba(255, 255, 255, 0.03); cursor: default; }
+
+        .tracker-footer { margin-top: 50px; text-align: center; padding-bottom: 40px; opacity: 0.5; font-size: 10px; }
+        .reward-tag { color: #00ff00; font-weight: 900; font-size: 10px; margin-top: 4px; display: block; }
+    </style>
+</head>
+<body id="master-body">
+    <div class="background-overlay"></div>
+
+    <nav class="master-nav">
+        <a href="#" class="nav-logo">SNIPER ELITE: RESISTANCE</a>
+        <div class="nav-auth-controls">
+            <span id="adminBadge" class="admin-badge hidden">ADMIN</span>
+            <button id="googleSignInBtn" class="auth-btn">Sign In with Google</button>
+            <div id="userProfileStatus" class="hidden" style="display: flex; align-items: center; gap: 8px;">
+                <img id="userAvatar" class="user-avatar" src="" alt="User Avatar" />
+                <button id="signOutBtn" class="auth-btn signOut">Sign Out</button>
+            </div>
+            <div id="stat-line" style="font-family: monospace; font-size: 10px; opacity: 0.6; text-transform: uppercase; color: #aaa;">
+                LINK: INITIALIZING...
+            </div>
+        </div>
+    </nav>
+
+    <div class="tracker-container">
+        <!-- OPERATIVE CONSOLE -->
+        <div class="profile-header">
+            <div class="active-info">
+                <div style="font-size: 0.6rem; text-transform: uppercase; color: #888;">Operative Terminal</div>
+                <span id="hunter-display" class="hunter-glow text-white">GUEST OPERATIVE</span>
+            </div>
+        </div>
+
+        <header class="main-header">
+            <h2>Platinum Registry</h2>
+            <div id="percent-text" style="font-weight: 900; margin-top: 5px; color: #ccc;">TOTAL COLLECTION: 0%</div>
+            <div class="bar-bg"><div id="overall-bar" class="bar-fill"></div></div>
+        </header>
+
+        <!-- MISSION REGISTRY RENDERS HERE -->
+        <div id="section-container"></div>
+
+        <footer class="tracker-footer">
+            <p>SNIPER ELITE: RESISTANCE MASTER TRACKER</p>
+            <p style="margin-top: 5px; font-family: monospace;">NODE-PROJECT: game-tracker-5b2ef | v1.0.8 - 2026-07-30T00:22:00Z</p>
+        </footer>
+    </div>
+
+    <script type="module">
+        /* === SECTION: Firebase Authentication & User Provisioning Pipeline === */
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js?v=20260730002200";
+        import { 
+            getAuth, 
+            signInAnonymously, 
+            onAuthStateChanged, 
+            GoogleAuthProvider, 
+            signInWithPopup, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js?v=20260730002200";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js?v=20260730002200";
+
+        // Global Instance Handles
+        let auth;
+        let db;
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
+            authDomain: "game-tracker-5b2ef.firebaseapp.com",
+            databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
+            projectId: "game-tracker-5b2ef",
+            storageBucket: "game-tracker-5b2ef.firebasestorage.app",
+            messagingSenderId: "555667047127",
+            appId: "1:555667047127:web:af6f468ca3cf06759aa692",
+            measurementId: "G-QJ7ZFH25ER"
+        };
+
+        const GAME_ID = 'sniper-elite-resistance';
+        const GITHUB_JSON_URL = 'https://raw.githubusercontent.com/Werewolf3788/Website/Test/games/Sniper-Elite/resistance.json';
+
+        function detectPlatform() {
+            const ua = navigator.userAgent || '';
+            if (/playstation/i.test(ua)) return 'PlayStation';
+            if (/xbox/i.test(ua)) return 'Xbox';
+            return 'PC-Web';
+        }
+
+        function initializeAuthentication(config, gameId) {
+            const app = initializeApp(config, `${gameId}-Auth-App`);
+            auth = getAuth(app);
+            db = getFirestore(app);
+
+            signInAnonymously(auth).catch((err) => console.warn("Anonymous Auth Warning:", err));
+
+            onAuthStateChanged(auth, (user) => {
+                const platform = detectPlatform();
+                handleAuthStateChange(user, platform, gameId);
+            });
+        }
+
+        function handleAuthStateChange(user, platform, gameId) {
+            const googleSignInBtn = document.getElementById("googleSignInBtn");
+            const signOutBtn = document.getElementById("signOutBtn");
+            const userProfileStatus = document.getElementById("userProfileStatus");
+            const userAvatar = document.getElementById("userAvatar");
+            const adminBadge = document.getElementById("adminBadge");
+
+            if (googleSignInBtn && !googleSignInBtn.dataset.listener) {
+                googleSignInBtn.dataset.listener = "true";
+                googleSignInBtn.addEventListener("click", () => {
+                    const provider = new GoogleAuthProvider();
+                    signInWithPopup(auth, provider)
+                        .then((result) => provisionAndSyncUser(result.user, platform, gameId))
+                        .catch((err) => console.error("Google Authentication Rejected:", err));
+                });
+            }
+
+            if (signOutBtn && !signOutBtn.dataset.listener) {
+                signOutBtn.dataset.listener = "true";
+                signOutBtn.addEventListener("click", () => {
+                    signOut(auth).then(() => {
+                        if (adminBadge) adminBadge.classList.add("hidden");
+                        if (googleSignInBtn) googleSignInBtn.classList.remove("hidden");
+                        if (userProfileStatus) userProfileStatus.classList.add("hidden");
+                        if (userAvatar) userAvatar.src = "";
+                        appState.bindActiveUser(null, platform);
+                    });
+                });
+            }
+
+            if (user && !user.isAnonymous) {
+                if (googleSignInBtn) googleSignInBtn.classList.add("hidden");
+                if (userProfileStatus) userProfileStatus.classList.remove("hidden");
+                if (userAvatar) userAvatar.src = user.photoURL || "";
+
+                if (user.email === "raykevin71888@gmail.com") {
+                    if (adminBadge) adminBadge.classList.remove("hidden");
+                } else {
+                    if (adminBadge) adminBadge.classList.add("hidden");
+                }
+
+                provisionAndSyncUser(user, platform, gameId);
+                appState.bindActiveUser(user, platform);
+            } else {
+                if (adminBadge) adminBadge.classList.add("hidden");
+                if (googleSignInBtn) googleSignInBtn.classList.remove("hidden");
+                if (userProfileStatus) userProfileStatus.classList.add("hidden");
+                if (userAvatar) userAvatar.src = "";
+                appState.bindActiveUser(null, platform);
+            }
+        }
+
+        async function provisionAndSyncUser(user, platform, gameId) {
+            if (!db || !user || user.isAnonymous) return;
+
+            const activeUsername = user.displayName || user.email.split('@')[0];
+            const userRef = doc(db, 'users', activeUsername);
+            const userProgressRef = doc(db, 'users', activeUsername, 'progress', platform, gameId, 'data');
+
+            const userPayload = {
+                displayName: activeUsername,
+                email: user.email || "",
+                photoURL: user.photoURL || "",
+                uid: user.uid,
+                lastPlatform: platform,
+                lastUpdated: new Date().toISOString()
+            };
+
+            try {
+                await setDoc(userRef, userPayload, { merge: true });
+
+                const progressSnap = await getDoc(userProgressRef);
+                if (!progressSnap.exists()) {
+                    await setDoc(userProgressRef, {
+                        user: activeUsername,
+                        gameId: gameId,
+                        platform: platform,
+                        lastUpdated: new Date().toISOString()
+                    }, { merge: true });
+                }
+            } catch (error) {
+                console.error("Error writing user record to Firestore:", error);
+            }
+        }
+
+        /* === SECTION: Tracker Application Setup & Dynamic JSON Fetch === */
+        const appState = {
+            activeUser: null,
+            currentPlatform: 'PC-Web',
+            rawDataSet: [],
+            hunterData: [],
+            collapsedSections: {}, 
+            unsub: null,
+
+            init: async function() {
+                await this.fetchRemoteDataset();
+                initializeAuthentication(firebaseConfig, GAME_ID);
+            },
+
+            /* === DYNAMIC EXTERNAL JSON DATASET FETCH === */
+            fetchRemoteDataset: async function() {
+                try {
+                    const response = await fetch(`${GITHUB_JSON_URL}?v=${Date.now()}`);
+                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                    this.rawDataSet = await response.json();
+                    this.hunterData = this.rawDataSet.map(item => ({ ...item, collected: false }));
+                    this.render();
+                } catch (error) {
+                    console.error("Failed to load dataset from GitHub JSON:", error);
+                    document.getElementById('section-container').innerHTML = `
+                        <div style="color: #ff4444; padding: 20px; text-align: center; font-weight: 900;">
+                            ERROR LOADING DATASET FROM GITHUB REPOSITORY.
+                        </div>
+                    `;
+                }
+            },
+
+            bindActiveUser: function(user, platform) {
+                this.activeUser = user;
+                this.currentPlatform = platform || 'PC-Web';
+                
+                const activeName = (user && !user.isAnonymous) 
+                    ? (user.displayName || user.email.split('@')[0]) 
+                    : 'GUEST OPERATIVE';
+
+                document.getElementById('hunter-display').innerText = `${activeName.toUpperCase()} (${this.currentPlatform})`;
+                
+                if (user && !user.isAnonymous) {
+                    document.getElementById('stat-line').innerText = `ID: ${user.uid.substring(0,8)} | ONLINE [${this.currentPlatform}]`;
+                    this.loadUserData(activeName, this.currentPlatform);
+                } else {
+                    document.getElementById('stat-line').innerText = `PUBLIC | READ-ONLY SYNC`;
+                    if (this.unsub) this.unsub();
+                    this.hunterData = this.rawDataSet.map(item => ({ ...item, collected: false }));
+                    this.render();
+                }
+            },
+
+            loadUserData: function(username, platform) {
+                if (this.unsub) this.unsub();
+                if (!db) return;
+
+                const path = `users/${username}/progress/${platform}/${GAME_ID}/data`;
+                const docRef = doc(db, path);
+                
+                this.unsub = onSnapshot(docRef, (snap) => {
+                    if (snap.exists()) {
+                        const saved = snap.data().progress || [];
+                        this.hunterData = this.rawDataSet.map(item => {
+                            const status = saved.find(s => s.id === item.id);
+                            return { ...item, collected: status ? status.collected : false };
+                        });
+                        this.render();
+                    }
+                }, (err) => console.warn("Live sync warning:", err));
+            },
+
+            render: function() {
+                const container = document.getElementById('section-container');
+                container.innerHTML = '';
+                const cats = [...new Set(this.hunterData.map(i => i.cat))];
+                let totalFound = 0;
+
+                cats.forEach(cat => {
+                    const items = this.hunterData.filter(i => i.cat === cat);
+                    const count = items.filter(i => i.collected).length;
+                    totalFound += count;
+
+                    const sid = cat.replace(/[^a-z0-9]/gi, '');
+                    const section = document.createElement('div');
+                    section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''}`;
+                    section.innerHTML = `
+                        <div class="category-header" onclick="appState.toggleSection('${sid}')">
+                            <h2>${cat}</h2>
+                            <div style="font-weight:900; font-size: 14px; color: var(--ser-color);">${count}/${items.length}</div>
+                        </div>
+                        <div class="section-content">
+                            <div class="item-grid"></div>
+                        </div>
+                    `;
+
+                    const grid = section.querySelector('.item-grid');
+                    items.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = `item-card ${item.collected ? 'completed' : ''}`;
+                        card.innerHTML = `
+                            <div>
+                                <div class="item-type-tag">${item.type}</div>
+                                <div style="font-weight:900; font-size:14px; margin-bottom:4px;">${item.name}</div>
+                                <div style="font-size:11px; color:#aaa; font-style:italic; line-height:1.2;">${item.desc}</div>
+                                ${item.reward ? `<span class="reward-tag">${item.reward}</span>` : ''}
+                            </div>
+                            ${item.collected ? `<div class="lock-badge">COLLECTED</div>` : `<button class="toggle-btn" onclick="appState.toggleItem('${item.id}')">Confirm Found</button>`}
+                        `;
+                        grid.appendChild(card);
+                    });
+                    container.appendChild(section);
+                });
+
+                const percent = Math.round((totalFound / this.hunterData.length) * 100) || 0;
+                document.getElementById('overall-bar').style.width = percent + '%';
+                document.getElementById('percent-text').innerText = `TOTAL COLLECTION: ${percent}%`;
+            },
+
+            toggleItem: async function(id) {
+                const item = this.hunterData.find(i => i.id === id);
+                if (!item) return;
+                item.collected = !item.collected;
+                this.render(); 
+                this.sync();
+            },
+
+            toggleSection: function(id) {
+                this.collapsedSections[id] = !this.collapsedSections[id];
+                this.render();
+            },
+
+            sync: async function() {
+                if (!db || !this.activeUser || this.activeUser.isAnonymous) return;
+                const activeName = this.activeUser.displayName || this.activeUser.email.split('@')[0];
+                
+                const path = `users/${activeName}/progress/${this.currentPlatform}/${GAME_ID}/data`;
+                const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
+                
+                await setDoc(doc(db, path), { 
+                    user: activeName,
+                    gameId: GAME_ID,
+                    platform: this.currentPlatform,
+                    progress, 
+                    lastUpdated: new Date().toISOString() 
+                }, { merge: true });
+            }
+        };
+
+        window.appState = appState;
+        appState.init();
+    </script>
+</body>
+</html>
