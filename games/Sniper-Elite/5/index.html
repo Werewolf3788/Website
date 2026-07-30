@@ -1,117 +1,815 @@
-<!-- Version Timestamp: 2026-07-27T23:15:00.000Z -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sniper Elite 5: Master Tracker</title>
-    <!-- Linked with smart cache-buster -->
-    <link rel="stylesheet" href="style.css?v=20260727_10">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Teko:wght@700&family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    <title>Sniper Elite 5 Master Tracker | Werewolf3788</title>
+    
+    <!-- G-TAGS (Scott's & Personal Projects) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-L376P3NPY4"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-L376P3NPY4');</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-H6Q756MVE8"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-H6Q756MVE8');</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+    <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-Z9M5LXQ5XN');</script>
+
+    <!-- ========================================== -->
+    <!--                  CSS BLOCK                 -->
+    <!-- ========================================== -->
+    <style>
+        /* NYT Timestamp: Sunday, May 31, 2026 at 1:52 AM EDT
+           DEV PROTOCOL: No Stripping. 80% Width. Black Outlines. KF Signature. ITC Named Windows.
+        */
+        :root {
+            --ser-color: #ff8800; /* Kevin Orange Default */
+            --ser-glow: rgba(255, 136, 0, 0.6);
+            --bg-dark: #050505;
+            --card-bg: rgba(20, 20, 25, 0.95);
+            --nav-height: 60px;
+            --csv-nav-height: 40px;
+            --bar-height: auto; /* Fluid footer height */
+        }
+
+        /* --- GLOBAL MOBILE SETTINGS (Kevin Preferences) --- */
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-dark);
+            background-image: url('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2407270/ss_752a78f3e5c9a0914909a805c8651a0290823528.1920x1080.jpg?t=1738260133');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #ffffff;
+            font-family: ui-sans-serif, system-ui, sans-serif;
+            font-size: 14px; /* User Preference: 14 */
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* Black Outlined Text Protocol */
+        .outlined-text {
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 5px rgba(0,0,0,0.8);
+        }
+
+        /* User Preference: Header Text 30 */
+        h1, h2 {
+            font-size: 30px; 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .background-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(10, 10, 10, 1));
+            z-index: -1;
+        }
+
+        /* --- NAVIGATION --- */
+        .master-nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            height: var(--nav-height);
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 2px solid var(--ser-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            z-index: 1000;
+        }
+
+        .nav-logo {
+            font-weight: 900;
+            color: var(--ser-color);
+            text-decoration: none;
+            font-size: 1.1rem;
+            text-shadow: 0 0 10px var(--ser-glow);
+        }
+
+        /* --- CSV DROPDOWN NAV BAR --- */
+        .csv-nav {
+            position: fixed;
+            top: var(--nav-height);
+            left: 0; right: 0;
+            min-height: var(--csv-nav-height);
+            background: rgba(10, 10, 12, 0.98);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            padding: 5px 25px;
+            z-index: 999;
+            flex-wrap: wrap; /* Allows menu to wrap naturally, preventing clipping */
+            gap: 30px;
+        }
+
+        .csv-single-btn, .csv-dropdown-btn {
+            background: transparent; color: #ccc; border: none; font-weight: 900; 
+            font-size: 13px; cursor: pointer; text-transform: uppercase; padding: 5px 0;
+            letter-spacing: 1px; text-decoration: none; display: flex; align-items: center;
+            transition: color 0.2s;
+        }
+        .csv-single-btn:hover, .csv-dropdown-btn:hover { color: var(--ser-color); }
+
+        .csv-dropdown { position: relative; display: inline-block; }
+        
+        .csv-dropdown-content {
+            display: none; position: absolute; background-color: #1a1a1c; 
+            min-width: 260px; box-shadow: 0px 10px 30px 0px rgba(0,0,0,0.9);
+            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0.5rem; 
+            z-index: 1001; top: 100%; left: 0; overflow: hidden;
+            margin-top: 10px;
+        }
+        .csv-dropdown-content.show { display: block; }
+        
+        .csv-dropdown-item {
+            color: #eee; padding: 12px 18px; text-decoration: none; display: flex; 
+            align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+            font-size: 12px; font-weight: 900; text-transform: uppercase; 
+            transition: background 0.2s, color 0.2s;
+        }
+        .csv-dropdown-item:last-child { border-bottom: none; }
+        .csv-dropdown-item:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--ser-color); }
+
+        .tracker-container {
+            margin-top: calc(var(--nav-height) + var(--csv-nav-height) + 15px);
+            padding: 10px;
+            width: 80%; /* Master Dev Protocol Update */
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            position: relative;
+        }
+        
+        @media (max-width: 768px) {
+            .tracker-container { width: 95%; }
+        }
+
+        /* --- OPERATIVE CONSOLE --- */
+        .profile-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(15, 15, 20, 0.95);
+            padding: 15px;
+            border-radius: 1rem;
+            border: 3px solid var(--ser-color);
+            margin-bottom: 20px;
+            box-shadow: 0 0 20px var(--ser-glow);
+            gap: 10px;
+        }
+
+        .hunter-glow { font-size: 1.6rem; font-weight: 900; color: var(--ser-color); text-shadow: 0 0 15px var(--ser-glow); }
+        .profile-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        
+        .profile-btn {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white; padding: 8px 12px; border-radius: 0.5rem; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 11px;
+        }
+        .active-btn { border-color: var(--ser-color); background: rgba(255, 255, 255, 0.15); }
+
+        /* Progress Header */
+        .main-header {
+            background: rgba(10, 0, 0, 0.85); padding: 25px 15px; border-radius: 1.5rem;
+            border: 2px solid var(--ser-color); text-align: center; margin-bottom: 30px;
+        }
+
+        .bar-bg { background: #000; height: 18px; border-radius: 9px; border: 1px solid #333; margin: 15px 0; overflow: hidden; }
+        .bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--ser-color), #fff); transition: width 0.8s ease-out; }
+
+        /* User Preference: Section Height 50 */
+        .category-header {
+            display: flex; justify-content: space-between; align-items: center;
+            cursor: pointer; border-left: 8px solid var(--ser-color);
+            padding: 0 15px; background: rgba(20, 20, 25, 0.95);
+            border-radius: 0.5rem; margin-bottom: 5px;
+            height: 50px; 
+        }
+
+        .section-content { overflow: hidden; transition: max-height 0.4s ease; margin-bottom: 20px; }
+        .section-collapsed .section-content { max-height: 0; margin-bottom: 0; }
+
+        .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; padding: 10px 0; }
+
+        .item-card {
+            background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0.8rem; padding: 12px; display: flex; flex-direction: column;
+            justify-content: space-between; min-height: 120px;
+        }
+        .item-card.completed {
+            border-color: var(--ser-color); background: linear-gradient(135deg, rgba(20, 20, 25, 1), rgba(255, 255, 255, 0.05));
+        }
+
+        .item-type-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 900; text-transform: uppercase; background: #000; color: #fff; margin-bottom: 5px; width: fit-content; border: 1px solid #444;}
+        
+        /* User Preference: Row Height 30 Controls */
+        .toggle-btn, .lock-badge {
+            margin-top: 10px; width: 100%; height: 30px; 
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 5px; font-weight: 900; text-transform: uppercase;
+            border: 1px solid #444; background: #000; color: #fff; cursor: pointer;
+            font-size: 11px;
+        }
+        .lock-badge { border-color: var(--ser-color); color: var(--ser-color); background: rgba(255, 255, 255, 0.03); cursor: default; }
+
+        .tracker-footer { 
+            margin-top: 50px; text-align: center; padding: 20px 0; opacity: 0.8; font-size: 12px;
+            height: var(--bar-height);
+            border-top: 1px solid #333;
+            background: rgba(5,5,5,0.9);
+        }
+        
+        /* KF Signature Branding */
+        .kf-signature {
+            display: inline-block;
+            font-size: 24px;
+            font-weight: 900;
+            margin-top: 10px;
+            font-family: monospace;
+        }
+        .kf-k { color: #FF4500; transform: scaleX(-1); display: inline-block; position: relative; z-index: 2; text-shadow: none; }
+        .kf-f { color: #000000; margin-left: -0.22em; display: inline-block; position: relative; z-index: 1; text-shadow: 0 0 2px rgba(255,255,255,0.3); }
+
+        .reward-tag { color: #00ff00; font-weight: 900; font-size: 10px; margin-top: 4px; display: block; }
+    </style>
 </head>
-<body>
 
-    <!-- TOP GLOBAL DYNAMIC NAVIGATION -->
-    <header class="site-header">
-        <nav class="nav-container">
-            <a href="#" class="brand-title">SNIPER ELITE 5</a>
-            <button class="mobile-menu-toggle" id="mobile-toggle" aria-label="Toggle Navigation">☰</button>
-            <div id="dynamic-nav-links" class="nav-links">
-                <!-- Dynamically populated via tracker.js -->
-            </div>
-        </nav>
-    </header>
+<!-- ========================================== -->
+<!--                 HTML BLOCK                 -->
+<!-- ========================================== -->
+<body id="master-body">
+    <div class="background-overlay"></div>
 
-    <!-- TRACKER HEADER & OPERATIVE SELECTOR -->
-    <main class="main-wrapper">
-        <header class="tracker-header">
-            <div class="header-titles">
-                <h1 class="game-title">SNIPER ELITE 5: MASTER LOG</h1>
-                <div class="system-status">ACTIVE OPERATIVE: <span id="hunter-display">WEREWOLF3788</span></div>
-            </div>
+    <!-- PRIMARY NAV -->
+    <nav class="master-nav">
+        <a href="#" class="nav-logo outlined-text">SNIPER ELITE 5: MASTER LOG</a>
+        <div id="stat-line" style="font-family: monospace; font-size: 10px; opacity: 0.6; text-transform: uppercase; color: #aaa;" class="outlined-text">
+            LINK: INITIALIZING...
+        </div>
+    </nav>
 
-            <!-- Profile Selector Dropdown & Custom Tag Action -->
-            <div id="hunter-profiles" class="profile-selector" style="align-items: center; gap: 8px;">
-                <select id="userSelect" class="profile-btn" style="background:#2a2a2a; color:#ff8800; border:1px solid #3f3f3f; font-weight:700;">
-                    <option value="Werewolf3788">Werewolf3788</option>
-                    <option value="Raymystyro">Raymystyro</option>
-                    <option value="terrdog420">terrdog420</option>
-                    <option value="DesdemonaTiger">DesdemonaTiger</option>
-                </select>
-                <button id="addCustomUserBtn" class="profile-btn">+ Add Tag</button>
-            </div>
+    <!-- CSV DYNAMIC MENU BAR -->
+    <nav id="csv-menu-bar" class="csv-nav">
+        <!-- Rendered by JS -->
+    </nav>
 
-            <!-- Firebase Google Auth Block -->
-            <div id="authContainer" class="auth-inline-wrapper" style="display: flex; align-items: center; gap: 12px;">
-                <button id="googleSignInBtn" class="profile-btn" style="background-color: #28a745; border-color: #28a745; cursor: pointer;">🔑 Login</button>
-                <div id="userProfileStatus" class="hidden" style="display: none; align-items: center; gap: 12px;">
-                    <img id="userAvatar" class="user-badge-img" src="" alt="Avatar" style="width:38px; height:38px; border-radius:50%; border:2px solid var(--brand-gold); object-fit:cover;">
-                    <button id="signOutBtn" class="profile-btn" style="padding: 6px 12px; font-size: 12px; cursor: pointer;">Logout</button>
-                </div>
+    <div class="tracker-container">
+        <!-- OPERATIVE CONSOLE -->
+        <div class="profile-header">
+            <div class="active-info">
+                <div style="font-size: 0.6rem; text-transform: uppercase; color: #888;" class="outlined-text">Operative Terminal</div>
+                <span id="hunter-display" class="hunter-glow text-white outlined-text">KEVIN</span>
             </div>
+            <div class="profile-actions">
+                <button class="profile-btn active-btn outlined-text" onclick="appState.switchHunter('Kevin')">Kevin</button>
+                <button class="profile-btn outlined-text" onclick="appState.switchHunter('Ray')">Ray</button>
+                <button class="profile-btn outlined-text" onclick="appState.switchHunter('TJ')">TJ</button>
+                <button class="profile-btn outlined-text" onclick="appState.switchHunter('Elu Cloud')">Elu Cloud</button>
+            </div>
+        </div>
+
+        <header class="main-header">
+            <h2 class="outlined-text">Intel Registry</h2>
+            <div id="percent-text" class="outlined-text" style="font-weight: 900; margin-top: 5px; color: #ccc;">TOTAL COLLECTION: 0%</div>
+            <div class="bar-bg"><div id="overall-bar" class="bar-fill"></div></div>
         </header>
 
-        <div id="demoNotification" class="demo-banner" style="background: rgba(255, 136, 0, 0.15); border: 1px solid var(--brand-gold); color: #fff; padding: 10px; border-radius: 6px; margin-bottom: 20px; text-align: center; font-weight: bold; font-size: 12px;">
-            Operational Live Sandbox Mode Active. Log In to Commit Multi-User Cloud Synchronization.
-        </div>
+        <!-- MISSION REGISTRY RENDERS HERE -->
+        <div id="section-container"></div>
 
-        <div id="adminBadge" class="admin-banner hidden" style="display:none; background:#7c3aed; color:#fff; padding:6px 12px; border-radius:6px; font-size:11px; font-weight:900; margin-bottom:20px;">
-            ⚡ OVERWATCH ADMIN ACTIVE (raykevin71888@gmail.com)
-        </div>
-
-        <!-- Gamer Identity & PSN Handle Configuration Card -->
-        <section class="stat-category-block" style="background: var(--card-surface); border: 1px solid var(--card-border); border-left: 5px solid var(--brand-gold); padding: 16px; border-radius: 6px; margin-bottom: 24px;">
-            <div style="font-size: 0.85rem; font-weight: 900; color: var(--brand-gold); margin-bottom: 10px; text-transform: uppercase;">Gamer Identity & PSN Handle Configuration</div>
-            <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
-                <div style="flex: 1; min-width: 200px;">
-                    <label for="profileCustomName" style="font-size: 11px; color: var(--text-muted); display: block; margin-bottom: 4px;">Operator Profile Name</label>
-                    <input type="text" id="profileCustomName" style="width: 100%; background: #121212; border: 1px solid #3f3f3f; color: #fff; padding: 8px; border-radius: 4px; font-weight: bold;" placeholder="Werewolf3788">
-                </div>
-                <div style="flex: 1; min-width: 200px;">
-                    <label for="profilePsnUser" style="font-size: 11px; color: var(--brand-blue); display: block; margin-bottom: 4px;">Linked PSN Gamer Tag</label>
-                    <input type="text" id="profilePsnUser" style="width: 100%; background: #121212; border: 1px solid var(--brand-blue); color: #fff; padding: 8px; border-radius: 4px; font-weight: bold;" placeholder="werewolf3788">
-                </div>
-                <div style="align-self: flex-end;">
-                    <button id="saveIdentityBtn" class="profile-btn" style="background: var(--brand-gold); border-color: var(--brand-gold); color: #000; height: 38px; cursor: pointer;">Save Profile & Tag</button>
-                </div>
+        <!-- FOOTER WITH KF SIGNATURE -->
+        <footer class="tracker-footer">
+            <p class="outlined-text">DESIGNED BY WEREWOLF3788 | OPERATIVES: KEVIN, RAY, TJ, ELU CLOUD</p>
+            <p class="outlined-text" style="margin-top: 5px; font-family: monospace;">NODE-PROJECT: SE5-Master-Tracker</p>
+            <div class="kf-signature" title="KF Signature">
+                <span class="kf-k">K</span><span class="kf-f">F</span>
             </div>
-        </section>
-
-        <!-- PROGRESS HUD METRICS -->
-        <section class="progress-hud">
-            <div class="progress-info">
-                <span id="percent-text" class="percent-label">TOTAL CAMPAIGN COLLECTION: 0%</span>
-            </div>
-            <div class="progress-track">
-                <div id="overall-bar" class="progress-fill" style="width: 0%;"></div>
-            </div>
-        </section>
-
-        <!-- MAIN CHECKLIST CONTAINER -->
-        <section id="section-container" class="checklist-container">
-            <!-- Dynamically populated via tracker.js -->
-        </section>
-
-        <!-- SITE FOOTER WITH SYSTEM BUILD TIMESTAMP -->
-        <footer class="site-footer">
-            <p>System Build Version: <strong>v2.5.1</strong> | Last Updated: <strong>July 27, 2026, 11:15 PM EDT</strong></p>
-            <p>Support the campaign: <a href="https://www.amazon.com/gp/goldbox?tag=psngaming-20" target="_blank" style="color: var(--brand-gold);">Today's Deals</a> | <a href="https://www.amazon.com/s?k=sniper+elite&tag=psngaming-20" target="_blank" style="color: var(--brand-gold);">Gaming Gear</a></p>
-            <p>Lead Developer: Werewolf3788 | Collaborators: Raymystyro, terrdog420, DesdemonaTiger</p>
         </footer>
-    </main>
-
-    <!-- LIGHTBOX OVERLAY FOR COLLECTIBLE MEDIA -->
-    <div id="lightbox" class="lightbox-modal" onclick="if(event.target === this) this.style.display='none'">
-        <span class="lightbox-close" onclick="document.getElementById('lightbox').style.display='none'">&times;</span>
-        <div class="lightbox-content">
-            <img id="lightbox-img" src="" alt="Collectible Detail">
-            <div id="lightbox-caption" class="lightbox-caption"></div>
-        </div>
     </div>
 
-    <!-- MAIN TRACKER CONTROLLER SCRIPT -->
-    <script type="module" src="tracker.js?v=20260727_10"></script>
+    <!-- ========================================== -->
+    <!--              JAVASCRIPT BLOCK              -->
+    <!-- ========================================== -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+
+        // Secure environment variable injection for Canvas compatibility
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'game-tracker-5b2ef';
+        let firebaseConfig = {
+            apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
+            authDomain: "game-tracker-5b2ef.firebaseapp.com",
+            databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
+            projectId: "game-tracker-5b2ef",
+            storageBucket: "game-tracker-5b2ef.firebasestorage.app",
+            messagingSenderId: "555667047127",
+            appId: "1:555667047127:web:af6f468ca3cf06759aa692",
+            measurementId: "G-QJ7ZFH25ER"
+        };
+        
+        if (typeof __firebase_config !== 'undefined') {
+            firebaseConfig = JSON.parse(__firebase_config);
+        }
+
+        const userThemes = {
+            'Kevin': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
+            'Ray': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
+            'TJ': { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)' },
+            'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
+        };
+
+        // --- FULL SE5 REGISTRY: MISSIONS 1-8, 10 ---
+        const sniperData = [
+            // MISSION 1: THE ATLANTIC WALL
+            { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.' },
+            { id: 'm1_pl2', cat: '1: The Atlantic Wall', name: 'Upcoming Delivery', type: 'Personal Letter', desc: 'Farm east of Steffen Beckendorf. Climb ladder on western side of outhouse.' },
+            { id: 'm1_pl3', cat: '1: The Atlantic Wall', name: 'Violets Are Wilting', type: 'Personal Letter', desc: 'Attic of the building containing the Atlantikwall Report.' },
+            { id: 'm1_pl4', cat: '1: The Atlantic Wall', name: 'Violets Don\'t Wilt', type: 'Personal Letter', desc: 'Inside hotel safe on the western side of the map.' },
+            { id: 'm1_pl5', cat: '1: The Atlantic Wall', name: 'Pests in the Garden', type: 'Personal Letter', desc: 'Beneath the gazebo table on the pier (south-western map).' },
+            { id: 'm1_pl6', cat: '1: The Atlantic Wall', name: 'Boches at the Door', type: 'Personal Letter', desc: 'Downstairs sofa in the resistance safehouse.' },
+            { id: 'm1_cd1', cat: '1: The Atlantic Wall', name: 'Resistance Captured', type: 'Classified Doc', desc: 'Table inside the boathouse (requires boathouse key from officer).' },
+            { id: 'm1_cd2', cat: '1: The Atlantic Wall', name: 'Beach Defences', type: 'Classified Doc', desc: 'Inside a safe in the north-western shack (SMG workbench area).' },
+            { id: 'm1_cd3', cat: '1: The Atlantic Wall', name: 'Lacking Air Support', type: 'Classified Doc', desc: 'Inside a safe in the room under the radar tower.' },
+            { id: 'm1_cd4', cat: '1: The Atlantic Wall', name: 'Atlantikwall Report', type: 'Classified Doc', desc: 'Kitchen safe in the northern town houses near anti-air gun.' },
+            { id: 'm1_hi1', cat: '1: The Atlantic Wall', name: 'Resistance Photo', type: 'Hidden Item', desc: 'Upstairs table opposite the bed in the western beachfront pharmacy.' },
+            { id: 'm1_hi2', cat: '1: The Atlantic Wall', name: 'Radio Tin', type: 'Hidden Item', desc: 'Table in the stable area of the central farm.' },
+            { id: 'm1_hi3', cat: '1: The Atlantic Wall', name: 'FFI Flag', type: 'Hidden Item', desc: 'Draining board in the downstairs of the western farmhouse.' },
+            { id: 'm1_se1', cat: '1: The Atlantic Wall', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Chimney top of an inaccessible house opposite the eastern shack.' },
+            { id: 'm1_se2', cat: '1: The Atlantic Wall', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'On the roof of the western hotel.' },
+            { id: 'm1_se3', cat: '1: The Atlantic Wall', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'On top of the Vantage Point building in the south-east.' },
+            { id: 'm1_wb1', cat: '1: The Atlantic Wall', name: 'Rifle Workbench', type: 'Workbench', desc: 'Armoury room upstairs after rendezvousing with Blue Viper.' },
+            { id: 'm1_wb2', cat: '1: The Atlantic Wall', name: 'SMG Workbench', type: 'Workbench', desc: 'Attic of the resistance safehouse on the western map edge.' },
+            { id: 'm1_wb3', cat: '1: The Atlantic Wall', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside locked shack above gun battery in the north-west.' },
+
+            // MISSION 2: OCCUPIED RESIDENCE
+            { id: 'm2_pl1', cat: '2: Occupied Residence', name: 'Do Not Fail Me, Nephew', type: 'Personal Letter', desc: 'Table in an open room upstairs overlooking the main courtyard.' },
+            { id: 'm2_pl2', cat: '2: Occupied Residence', name: 'Need a Scapegoat', type: 'Personal Letter', desc: 'Box at foot of bed in Friedrich Kummler\'s quarters (second floor).' },
+            { id: 'm2_pl3', cat: '2: Occupied Residence', name: 'Brother, I Have a Plan', type: 'Personal Letter', desc: 'Third floor dorms in the central part of the chateau.' },
+            { id: 'm2_pl4', cat: '2: Occupied Residence', name: 'Good Plan, Let\'s Do It', type: 'Personal Letter', desc: 'On a box in the sniper outhouse north-east of the garden.' },
+            { id: 'm2_cd1', cat: '2: Occupied Residence', name: 'Orders of the Day', type: 'Classified Doc', desc: 'Inside a locked locker next to the central path lookout tower.' },
+            { id: 'm2_cd2', cat: '2: Occupied Residence', name: 'Renovations Completed', type: 'Classified Doc', desc: 'On the desk inside Moller\'s office.' },
+            { id: 'm2_cd3', cat: '2: Occupied Residence', name: 'Operation Kraken', type: 'Classified Doc', desc: 'In Moller\'s hidden study (pull the painting to enter).' },
+            { id: 'm2_cd4', cat: '2: Occupied Residence', name: 'New Orders, Effective Immediately', type: 'Classified Doc', desc: 'Table inside the far-west resistance safehouse.' },
+            { id: 'm2_cd5', cat: '2: Occupied Residence', name: 'Immediate Request for Attic Repairs', type: 'Classified Doc', desc: 'Table in an outhouse on the far east side.' },
+            { id: 'm2_cd6', cat: '2: Occupied Residence', name: 'Grateful Thanks', type: 'Classified Doc', desc: 'Table beneath Moller\'s painting in his hidden room.' },
+            { id: 'm2_hi1', cat: '2: Occupied Residence', name: 'Old Man Statuette', type: 'Hidden Item', desc: 'Inside the safe hidden behind a painting in Kummler\'s quarters.' },
+            { id: 'm2_hi2', cat: '2: Occupied Residence', name: 'Group Statuette', type: 'Hidden Item', desc: 'Inside a locked trunk in the third-floor dormitories.' },
+            { id: 'm2_hi3', cat: '2: Occupied Residence', name: 'Soldier Statuette', type: 'Hidden Item', desc: 'Looted from the sniper in the north-east outhouse.' },
+            { id: 'm2_se1', cat: '2: Occupied Residence', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'On the roof of the L-shaped farmhouse on the far west.' },
+            { id: 'm2_se2', cat: '2: Occupied Residence', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Tip of a ledge looking west from the main gates bridge.' },
+            { id: 'm2_se3', cat: '2: Occupied Residence', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Eastern side of an outhouse just north of the chateau.' },
+            { id: 'm2_wb1', cat: '2: Occupied Residence', name: 'Rifle Workbench', type: 'Workbench', desc: 'Inside the eastern cellar armoury.' },
+            { id: 'm2_wb2', cat: '2: Occupied Residence', name: 'SMG Workbench', type: 'Workbench', desc: 'Roof area of the western resistance safehouse (climb vines).' },
+            { id: 'm2_wb3', cat: '2: Occupied Residence', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside the eastern outhouse armoury.' },
+
+            // MISSION 3: SPY ACADEMY
+            { id: 'm3_pl1', cat: '3: Spy Academy', name: 'Parking Problems', type: 'Personal Letter', desc: 'On a bin near benches opposite the white Nazi car in the west.' },
+            { id: 'm3_pl2', cat: '3: Spy Academy', name: 'Fragile, Do Not Break', type: 'Personal Letter', desc: 'On top of a steel box at the start checkpoint before the beach.' },
+            { id: 'm3_pl3', cat: '3: Spy Academy', name: 'Do Not Be Late', type: 'Personal Letter', desc: 'Looted from a pointed-hat guard patrolling near western turret.' },
+            { id: 'm3_pl4', cat: '3: Spy Academy', name: 'It\'s Easy Money', type: 'Personal Letter', desc: 'Desk inside the far eastern sniper nest.' },
+            { id: 'm3_pl5', cat: '3: Spy Academy', name: 'Just Attend One', type: 'Personal Letter', desc: 'Looted from an officer near the eastern church.' },
+            { id: 'm3_cd1', cat: '3: Spy Academy', name: 'Priority Package', type: 'Classified Doc', desc: 'Shelf inside a small window-access room south of main buildings.' },
+            { id: 'm3_cd2', cat: '3: Spy Academy', name: 'Won\'t Be Attending', type: 'Classified Doc', desc: 'Table in a well-furnished room slightly east of the main bridge.' },
+            { id: 'm3_cd3', cat: '3: Spy Academy', name: 'Training Scenarios', type: 'Classified Doc', desc: 'Table next to cellar key in the northern sea-jutting room.' },
+            { id: 'm3_cd4', cat: '3: Spy Academy', name: 'Resource Request', type: 'Classified Doc', desc: 'Table at the very top of the eastern church sniper nest.' },
+            { id: 'm3_cd5', cat: '3: Spy Academy', name: 'Armoury Exposed', type: 'Classified Doc', desc: 'Bench chair in the same room as CD2.' },
+            { id: 'm3_hi1', cat: '3: Spy Academy', name: 'Kriegsmarine Playing Cards', type: 'Hidden Item', desc: 'Table inside a pub on the upper western side.' },
+            { id: 'm3_hi2', cat: '3: Spy Academy', name: 'Ornate Compass', type: 'Hidden Item', desc: 'Inside the safe in the northern sea-jutting room.' },
+            { id: 'm3_hi3', cat: '3: Spy Academy', name: 'Covert Ops Field Manual', type: 'Hidden Item', desc: 'Table in the downstairs recreation area opposite the diner.' },
+            { id: 'm3_se1', cat: '3: Spy Academy', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Facing the beach on a south-western building.' },
+            { id: 'm3_se2', cat: '3: Spy Academy', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Beneath the roof of a small turret right of the main building.' },
+            { id: 'm3_se3', cat: '3: Spy Academy', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Top of a sunken tower in the northern sea.' },
+            { id: 'm3_wb1', cat: '3: Spy Academy', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar north of Kraken training room (enter from west).' },
+            { id: 'm3_wb2', cat: '3: Spy Academy', name: 'SMG Workbench', type: 'Workbench', desc: 'Behind a locked resistance door east of the main square statue.' },
+            { id: 'm3_wb3', cat: '3: Spy Academy', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside south-central armoury (requires Satchel Charge).' },
+
+            // MISSION 4: WAR FACTORY
+            { id: 'm4_pl1', cat: '4: War Factory', name: 'Klaus! You Idiot', type: 'Personal Letter', desc: 'Desk in a small building on the bridge towards the north-west.' },
+            { id: 'm4_pl2', cat: '4: War Factory', name: 'The Suspense', type: 'Personal Letter', desc: 'On radio equipment in the control room above the generator.' },
+            { id: 'm4_pl3', cat: '4: War Factory', name: 'Sheers\' Notebook', type: 'Personal Letter', desc: 'Desk in the upstairs western office at the blast furnace.' },
+            { id: 'm4_pl4', cat: '4: War Factory', name: 'Losing the Time', type: 'Personal Letter', desc: 'Desk on the upper level of the northern steelworks.' },
+            { id: 'm4_pl5', cat: '4: War Factory', name: 'Your Order Awaits', type: 'Personal Letter', desc: 'On a box blocking a doorway in the central factory warehouse.' },
+            { id: 'm4_pl6', cat: '4: War Factory', name: 'Ehrlich\'s Done For', type: 'Personal Letter', desc: 'Desk in the main station office (south-west train station).' },
+            { id: 'm4_cd1', cat: '4: War Factory', name: 'Shipping Orders', type: 'Classified Doc', desc: 'Inside safe in the shipping warehouse upstairs office.' },
+            { id: 'm4_cd2', cat: '4: War Factory', name: 'No More Games', type: 'Classified Doc', desc: 'Atop wooden planks in the north-eastern construction area.' },
+            { id: 'm4_cd3', cat: '4: War Factory', name: 'Bureaucratic Oaf', type: 'Classified Doc', desc: 'Table in a central upstairs room accessed via ladder.' },
+            { id: 'm4_cd4', cat: '4: War Factory', name: 'Increase Security', type: 'Classified Doc', desc: 'Locked vat room table on the far eastern side.' },
+            { id: 'm4_hi1', cat: '4: War Factory', name: 'Gold Pocket Watch', type: 'Hidden Item', desc: 'On a pile of wooden beams in the north-eastern scrapyard.' },
+            { id: 'm4_hi2', cat: '4: War Factory', name: 'Stealth Plating', type: 'Hidden Item', desc: 'Atop stacked boxes on the shipping warehouse ground floor.' },
+            { id: 'm4_hi3', cat: '4: War Factory', name: 'P.1000 Ratte Plans', type: 'Hidden Item', desc: 'End of southern walkway upstairs in the train station depot.' },
+            { id: 'm4_se1', cat: '4: War Factory', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'South-eastern wall of a dilapidated turret in far east ruins.' },
+            { id: 'm4_se2', cat: '4: War Factory', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Atop the blast furnace in the south-eastern corner.' },
+            { id: 'm4_se3', cat: '4: War Factory', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Roof of an out-of-bounds building at the southern map tip.' },
+            { id: 'm4_wb1', cat: '4: War Factory', name: 'Rifle Workbench', type: 'Workbench', desc: 'Central factory warehouse cellar (resistance safehouse).' },
+            { id: 'm4_wb2', cat: '4: War Factory', name: 'SMG Workbench', type: 'Workbench', desc: 'Upstairs armoury north of the shipping warehouse.' },
+            { id: 'm4_wb3', cat: '4: War Factory', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury next to the eastern vat room.' },
+
+            // MISSION 5: FESTUNG GUERNSEY
+            { id: 'm5_pl1', cat: '5: Festung Guernsey', name: 'No Need to Worry', type: 'Personal Letter', desc: 'Looted from officer near Martello Tower (south-central).' },
+            { id: 'm5_pl2', cat: '5: Festung Guernsey', name: 'Getting Off the Island', type: 'Personal Letter', desc: 'Underground room beneath the north-eastern dilapidated farm outhouse.' },
+            { id: 'm5_pl3', cat: '5: Festung Guernsey', name: 'Confiscated Goods', type: 'Personal Letter', desc: 'Looted from a brown-uniformed soldier at Mirus Construction Site.' },
+            { id: 'm5_pl4', cat: '5: Festung Guernsey', name: 'Escaping Islanders', type: 'Personal Letter', desc: 'Table in second-floor front room of the western bunker.' },
+            { id: 'm5_pl5', cat: '5: Festung Guernsey', name: 'Harass the Huns', type: 'Personal Letter', desc: 'Underground resistance safehouse near the hospital.' },
+            { id: 'm5_cd1', cat: '5: Festung Guernsey', name: 'Grin and Bear It', type: 'Classified Doc', desc: 'Inside safe in Fort Hommet (climb vines outside to access room).' },
+            { id: 'm5_cd2', cat: '5: Festung Guernsey', name: 'Cut Costs Cost Lives', type: 'Classified Doc', desc: 'Desk opposite safe in hidden facility Scuttle Code room.' },
+            { id: 'm5_cd3', cat: '5: Festung Guernsey', name: 'Oafish Officers', type: 'Classified Doc', desc: 'Table under poster in the western hospital corridor.' },
+            { id: 'm5_cd4', cat: '5: Festung Guernsey', name: 'Transport Troubles', type: 'Classified Doc', desc: 'Table in the library/radio area at the end of the hospital.' },
+            { id: 'm5_cd5', cat: '5: Festung Guernsey', name: 'Drastic Measures', type: 'Classified Doc', desc: 'Table in the ground floor entrance room of the NW observation tower.' },
+            { id: 'm5_hi1', cat: '5: Festung Guernsey', name: 'Todt Uniform Badge', type: 'Hidden Item', desc: 'Table in a green shed at the eastern construction area.' },
+            { id: 'm5_hi2', cat: '5: Festung Guernsey', name: 'Crystal Radio', type: 'Hidden Item', desc: 'Underground room beneath central dilapidated farm (with PL2).' },
+            { id: 'm5_hi3', cat: '5: Festung Guernsey', name: 'Comfort Bag', type: 'Hidden Item', desc: 'Bedroom chest of drawers, second floor of SW blue-window farmhouse.' },
+            { id: 'm5_se1', cat: '5: Festung Guernsey', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Corner of the NW observation tower overlooking the sea.' },
+            { id: 'm5_se2', cat: '5: Festung Guernsey', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Top of the eastern-most spire of the central church.' },
+            { id: 'm5_se3', cat: '5: Festung Guernsey', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Atop the eastern Mirus Munitions Bunker.' },
+            { id: 'm5_wb1', cat: '5: Festung Guernsey', name: 'Rifle Workbench', type: 'Workbench', desc: 'Climb vines to enter the central church\'s eastern spire safehouse.' },
+            { id: 'm5_wb2', cat: '5: Festung Guernsey', name: 'SMG Workbench', type: 'Workbench', desc: 'In the underground safehouse near the hospital (with PL5).' },
+            { id: 'm5_wb3', cat: '5: Festung Guernsey', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside an offshoot room in the northern trenches.' },
+
+            // MISSION 6: LIBÉRATION
+            { id: 'm6_pl1', cat: '6: Libération', name: 'They\'re Out Here', type: 'Personal Letter', desc: 'Looted from one of two soldiers who exit a truck by the start poppy field.' },
+            { id: 'm6_pl2', cat: '6: Libération', name: 'Watch Your Back', type: 'Personal Letter', desc: 'Looted from guard outside western estate (Trautmann target area).' },
+            { id: 'm6_pl3', cat: '6: Libération', name: 'Barely Escaped', type: 'Personal Letter', desc: 'On a black box near the large northern artillery weapon.' },
+            { id: 'm6_pl4', cat: '6: Libération', name: 'Give Me Strength', type: 'Personal Letter', desc: 'Near door inside green shed with wireframe beds (north-east).' },
+            { id: 'm6_pl5', cat: '6: Libération', name: 'Vengeance Is Nigh', type: 'Personal Letter', desc: 'Next to a hole in the roof of the central abandoned outhouse.' },
+            { id: 'm6_cd1', cat: '6: Libération', name: 'Hold the Line', type: 'Classified Doc', desc: 'Opposite radio equipment upstairs in the southern bridge building.' },
+            { id: 'm6_cd2', cat: '6: Libération', name: 'Incoming Armour', type: 'Classified Doc', desc: 'Atop transport cases in a room branching from northern trenches.' },
+            { id: 'm6_cd3', cat: '6: Libération', name: 'Unfit for Duty', type: 'Classified Doc', desc: 'Table in northern upstairs room of the western abandoned barn.' },
+            { id: 'm6_cd4', cat: '6: Libération', name: 'A Surplus Bridge', type: 'Classified Doc', desc: 'On a wooden box in the yard of the eastern burnt buildings.' },
+            { id: 'm6_cd5', cat: '6: Libération', name: 'Resistance Fanatic Located', type: 'Classified Doc', desc: 'Chest of drawers in locked 2nd-floor room (northern building).' },
+            { id: 'm6_hi1', cat: '6: Libération', name: 'Lucky Rabbit\'s Foot', type: 'Hidden Item', desc: 'Looted from bald Nazi near central crashed plane/AA gun.' },
+            { id: 'm6_hi2', cat: '6: Libération', name: 'Stolen Medals', type: 'Hidden Item', desc: 'Table in underground resistance cache beneath central L-shaped building.' },
+            { id: 'm6_hi3', cat: '6: Libération', name: 'Engraved Lighter', type: 'Hidden Item', desc: 'Next to a briefcase upstairs in building right after the bridge.' },
+            { id: 'm6_se1', cat: '6: Libération', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Perched atop the eastern windmill near the start.' },
+            { id: 'm6_se2', cat: '6: Libération', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Rear of the north-western church.' },
+            { id: 'm6_se3', cat: '6: Libération', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Upstairs window frame behind northern tank target.' },
+            { id: 'm6_wb1', cat: '6: Libération', name: 'Rifle Workbench', type: 'Workbench', desc: 'Northern resistance safehouse (climb wall before detonated bridge).' },
+            { id: 'm6_wb2', cat: '6: Libération', name: 'SMG Workbench', type: 'Workbench', desc: 'Central underground cellar (same as HI2 Stolen Medals).' },
+            { id: 'm6_wb3', cat: '6: Libération', name: 'Pistol Workbench', type: 'Workbench', desc: 'Top floor room in southern C-shaped building via scaffolding.' },
+
+            // MISSION 7: SECRET WEAPONS
+            { id: 'm7_pl1', cat: '7: Secret Weapons', name: 'We Had a Deal', type: 'Personal Letter', desc: 'Upstairs table in the eastern trainyard office.' },
+            { id: 'm7_pl2', cat: '7: Secret Weapons', name: 'I\'m Done', type: 'Personal Letter', desc: 'Fireplace of far-eastern abandoned house (climb pipes to enter).' },
+            { id: 'm7_pl3', cat: '7: Secret Weapons', name: 'I Can\'t Work Like This', type: 'Personal Letter', desc: 'Table on steel grate near hoisting V2 rocket in lower level.' },
+            { id: 'm7_pl4', cat: '7: Secret Weapons', name: 'The V2\'s Are Obsolete', type: 'Personal Letter', desc: 'Chair opposite the V2 Launch Site in the central dome.' },
+            { id: 'm7_pl5', cat: '7: Secret Weapons', name: 'Thinking Outside the Box', type: 'Personal Letter', desc: 'Top of zig-zag stairs in the northern dome room.' },
+            { id: 'm7_cd1', cat: '7: Secret Weapons', name: 'Inbound Deliveries', type: 'Classified Doc', desc: 'Looted from head engineer in eastern train station (or safe).' },
+            { id: 'm7_cd2', cat: '7: Secret Weapons', name: 'Dr Junger\'s Schedule', type: 'Classified Doc', desc: 'Near window in SE train station building or western tent.' },
+            { id: 'm7_cd3', cat: '7: Secret Weapons', name: 'A-4B Logistical Issues', type: 'Classified Doc', desc: 'Top floor locked room in the northern Weapons Lab.' },
+            { id: 'm7_cd4', cat: '7: Secret Weapons', name: 'Intruder Sighted', type: 'Classified Doc', desc: 'Looted from sniper behind a tree west of the bridge.' },
+            { id: 'm7_cd5', cat: '7: Secret Weapons', name: 'Pressurisation Report', type: 'Classified Doc', desc: 'Two staircases up inside the SW castle tower.' },
+            { id: 'm7_hi1', cat: '7: Secret Weapons', name: 'Peenemünde Lab ID', type: 'Hidden Item', desc: 'Under a table in the canteen area exiting the V2 dome.' },
+            { id: 'm7_hi2', cat: '7: Secret Weapons', name: 'Luftwaffe Playing Cards', type: 'Hidden Item', desc: 'Table inside guard house next to the blocked northern bridge.' },
+            { id: 'm7_hi3', cat: '7: Secret Weapons', name: 'Prüfstand XII Plans', type: 'Hidden Item', desc: 'Rocky beach riverbank under the eastern side of the bridge.' },
+            { id: 'm7_se1', cat: '7: Secret Weapons', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Among rocks south of the eastern abandoned house.' },
+            { id: 'm7_se2', cat: '7: Secret Weapons', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Inside a dam filter splashing water on the lower bridge out west.' },
+            { id: 'm7_se3', cat: '7: Secret Weapons', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Wall alcove opposite eastern tower in SW castle area.' },
+            { id: 'm7_wb1', cat: '7: Secret Weapons', name: 'Rifle Workbench', type: 'Workbench', desc: 'Axis Armoury north of V2 rockets (requires key or charge).' },
+            { id: 'm7_wb2', cat: '7: Secret Weapons', name: 'SMG Workbench', type: 'Workbench', desc: 'Locked room at end of shower corridor from V2 dome spiral stairs.' },
+            { id: 'm7_wb3', cat: '7: Secret Weapons', name: 'Pistol Workbench', type: 'Workbench', desc: 'Cave behind wooden panels next to SW waterfall.' },
+
+            // MISSION 8: RUBBLE AND RUIN
+            { id: 'm8_pl1', cat: '8: Rubble and Ruin', name: 'It\'s Not Over Yet', type: 'Personal Letter', desc: 'Table in a ground floor side-room of the SE hotel.' },
+            { id: 'm8_pl2', cat: '8: Rubble and Ruin', name: 'Clean Out the Sewer', type: 'Personal Letter', desc: 'Floor behind boxes left of the entrance into the sewers.' },
+            { id: 'm8_pl3', cat: '8: Rubble and Ruin', name: 'He\'s Not the Sharpest', type: 'Personal Letter', desc: 'Locked box behind armoured gun on central theatre balcony.' },
+            { id: 'm8_pl4', cat: '8: Rubble and Ruin', name: 'Your Man Talked', type: 'Personal Letter', desc: 'Table inside locked building in south-central bombed area.' },
+            { id: 'm8_pl5', cat: '8: Rubble and Ruin', name: 'Möller Is Moving', type: 'Personal Letter', desc: 'Ground floor back room of the Sea View Offices (SE).' },
+            { id: 'm8_cd1', cat: '8: Rubble and Ruin', name: 'Secure Radio Lines', type: 'Classified Doc', desc: 'Atop wooden box near three Nazis at the start restaurant.' },
+            { id: 'm8_cd2', cat: '8: Rubble and Ruin', name: 'Broken Resistance', type: 'Classified Doc', desc: 'On a box directly ahead after sliding into the sewers.' },
+            { id: 'm8_cd3', cat: '8: Rubble and Ruin', name: 'Resistance Report', type: 'Classified Doc', desc: 'Table in basement interrogation room (western map).' },
+            { id: 'm8_cd4', cat: '8: Rubble and Ruin', name: 'Flagship Fuel Risks', type: 'Classified Doc', desc: 'Safe inside locked second-floor hotel room.' },
+            { id: 'm8_cd5', cat: '8: Rubble and Ruin', name: 'Priority Pick Up', type: 'Classified Doc', desc: 'Attic floor of the western Metro Du Café starting location.' },
+            { id: 'm8_hi1', cat: '8: Rubble and Ruin', name: 'Hidden Tantō', type: 'Hidden Item', desc: 'Inside chest in locked sewer room opposite entrance.' },
+            { id: 'm8_hi2', cat: '8: Rubble and Ruin', name: 'I-400 V2 Hangar', type: 'Hidden Item', desc: 'Table in western 2nd-floor mainframe room at northern fuel system.' },
+            { id: 'm8_hi3', cat: '8: Rubble and Ruin', name: 'An \'Original\' Adolf', type: 'Hidden Item', desc: 'Next to sleeping bag on upper church floor (climb up, then down).' },
+            { id: 'm8_se1', cat: '8: Rubble and Ruin', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Far west outside boundaries, viewable from front of Sea View Offices.' },
+            { id: 'm8_se2', cat: '8: Rubble and Ruin', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Far east past mission boundary, left of giant silos.' },
+            { id: 'm8_se3', cat: '8: Rubble and Ruin', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Atop Yoshikawa\'s building, visible from the NW rifle workbench.' },
+            { id: 'm8_wb1', cat: '8: Rubble and Ruin', name: 'Rifle Workbench', type: 'Workbench', desc: 'Armoury in first sewer combat area (loot key from troops).' },
+            { id: 'm8_wb2', cat: '8: Rubble and Ruin', name: 'SMG Workbench', type: 'Workbench', desc: 'Upstairs resistance armoury opposite NW Yoshikawa estate.' },
+            { id: 'm8_wb3', cat: '8: Rubble and Ruin', name: 'Pistol Workbench', type: 'Workbench', desc: 'Through floor hole in NW corner of central church (crypt key needed).' },
+
+            // MISSION 10: WOLF MOUNTAIN
+            { id: 'm10_pl1', cat: '10: Wolf Mountain', name: 'Construction Halted', type: 'Personal Letter', desc: 'Inside eastern guardhouse just before the teahouse.' },
+            { id: 'm10_pl2', cat: '10: Wolf Mountain', name: 'Vermin Infestation', type: 'Personal Letter', desc: 'Metal table in the back room of garage north of Berghof.' },
+            { id: 'm10_pl3', cat: '10: Wolf Mountain', name: 'Führer\'s Plans', type: 'Personal Letter', desc: 'Side table in the Berghof\'s ground-floor southern kitchen.' },
+            { id: 'm10_pl4', cat: '10: Wolf Mountain', name: 'Perimeter Problems', type: 'Personal Letter', desc: 'Table inside small building next to winding road before tunnel.' },
+            { id: 'm10_pl5', cat: '10: Wolf Mountain', name: 'Führer\'s Personal Space', type: 'Personal Letter', desc: 'Chest of drawers in NW ground floor room of Berghof.' },
+            { id: 'm10_cd1', cat: '10: Wolf Mountain', name: 'Missing Inventory', type: 'Classified Doc', desc: 'Atop boxes near tents at the SE anti-air gun.' },
+            { id: 'm10_cd2', cat: '10: Wolf Mountain', name: 'Guest of the Führer', type: 'Classified Doc', desc: 'Inside side-office on the southern 2nd-floor Berghof corridor.' },
+            { id: 'm10_cd3', cat: '10: Wolf Mountain', name: 'Routine Reminder', type: 'Classified Doc', desc: 'Safe in a building just before the Stone Eagle #2 tunnel.' },
+            { id: 'm10_cd4', cat: '10: Wolf Mountain', name: 'Communication Operations', type: 'Classified Doc', desc: 'Wooden box at SW sniper lookout point.' },
+            { id: 'm10_cd5', cat: '10: Wolf Mountain', name: 'Additional Flak Positions', type: 'Classified Doc', desc: 'Downstairs table in SW resort-like building (radio objective).' },
+            { id: 'm10_hi1', cat: '10: Wolf Mountain', name: 'Führermuseum Concept Model', type: 'Hidden Item', desc: 'On a box in Berghof foyer (room with covered artwork).' },
+            { id: 'm10_hi2', cat: '10: Wolf Mountain', name: 'Practice Pose Photography', type: 'Hidden Item', desc: 'Safe in Hitler\'s top-floor Berghof quarters.' },
+            { id: 'm10_hi3', cat: '10: Wolf Mountain', name: 'Possible Hitler Disguises', type: 'Hidden Item', desc: 'Table in northern-most room of the eastern tearooms.' },
+            { id: 'm10_se1', cat: '10: Wolf Mountain', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Eastern-facing roof of the main Berghof building.' },
+            { id: 'm10_se2', cat: '10: Wolf Mountain', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Top of eastern tunnel heading to the Berghof.' },
+            { id: 'm10_se3', cat: '10: Wolf Mountain', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Top of a far shed across the northern lake.' },
+            { id: 'm10_wb1', cat: '10: Wolf Mountain', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar of large SW building (requires key or Satchel).' },
+            { id: 'm10_wb2', cat: '10: Wolf Mountain', name: 'SMG Workbench', type: 'Workbench', desc: 'Basement of abandoned shack near eastern anti-air gun.' },
+            { id: 'm10_wb3', cat: '10: Wolf Mountain', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury in Berghof basement (opposite bowling alley).' }
+        ];
+
+        const appState = {
+            activeHunter: 'Kevin',
+            hunterData: [],
+            collapsedSections: {}, 
+            db: null, auth: null, user: null, unsub: null,
+            isLoaded: false,
+
+            init: async function() {
+                this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
+                
+                // [NO STRIPPING] Set all mission sections to collapsed by default
+                const cats = [...new Set(this.hunterData.map(i => i.cat))];
+                cats.forEach(cat => {
+                    const sid = cat.replace(/[^a-z0-9]/gi, '');
+                    this.collapsedSections[sid] = true;
+                });
+
+                this.render();
+
+                try {
+                    const app = initializeApp(firebaseConfig);
+                    this.auth = getAuth(app);
+                    this.db = getFirestore(app);
+                    
+                    // Firebase Mandatory Rule 3: Auth First with Custom Token check
+                    const initAuth = async () => {
+                        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                            await signInWithCustomToken(this.auth, __initial_auth_token);
+                        } else {
+                            await signInAnonymously(this.auth);
+                        }
+                    };
+                    await initAuth();
+
+                    onAuthStateChanged(this.auth, async (u) => {
+                        this.user = u;
+                        if (u) {
+                            document.getElementById('stat-line').innerText = `ID: ${u.uid.substring(0,8)} | ONLINE`;
+                            await this.bootstrapUsers();
+                            this.loadHunter(this.activeHunter);
+                        } else {
+                            document.getElementById('stat-line').innerText = `OFFLINE`;
+                        }
+                    });
+                } catch (e) { 
+                    console.error("Firebase Init Error:", e);
+                }
+            },
+
+            // Firebase Mandatory Rule 1: Strict Paths + Separate Folder Fix for SE5
+            bootstrapUsers: async function() {
+                const names = ['Kevin', 'Ray', 'TJ', 'Elu Cloud'];
+                for (const name of names) {
+                    const path = `artifacts/${appId}/public/data/sniper_elite_5/${name}`;
+                    const docRef = doc(this.db, path);
+                    const snap = await getDoc(docRef);
+                    if (!snap.exists()) {
+                        await setDoc(docRef, { 
+                            initialized: true, 
+                            hunterName: name, 
+                            progress: sniperData.map(i => ({ id: i.id, collected: false })) 
+                        });
+                    }
+                }
+            },
+
+            loadHunter: function(name) {
+                this.activeHunter = name;
+                document.getElementById('hunter-display').innerText = name.toUpperCase();
+                
+                const theme = userThemes[name] || userThemes['Kevin'];
+                document.documentElement.style.setProperty('--ser-color', theme.color);
+                document.documentElement.style.setProperty('--ser-glow', theme.glow);
+
+                document.querySelectorAll('.profile-btn').forEach(b => {
+                    b.classList.toggle('active-btn', b.innerText === name);
+                });
+
+                if (this.unsub) this.unsub();
+                if (!this.user) return; // Guard for unauthenticated queries
+
+                // Prevent UI interaction while Firebase is fetching
+                this.isLoaded = false;
+                this.render();
+
+                const path = `artifacts/${appId}/public/data/sniper_elite_5/${name}`;
+                const docRef = doc(this.db, path);
+                
+                this.unsub = onSnapshot(docRef, (snap) => {
+                    this.isLoaded = true; // Data safely acquired
+                    if (snap.exists()) {
+                        const saved = snap.data().progress || [];
+                        this.hunterData = sniperData.map(item => {
+                            const status = saved.find(s => s.id === item.id);
+                            return { ...item, collected: status ? status.collected : false };
+                        });
+                    }
+                    this.render();
+                }, (error) => {
+                    console.error("Snapshot error:", error);
+                    this.isLoaded = true; // Failsafe
+                    this.render();
+                });
+            },
+
+            render: function() {
+                const container = document.getElementById('section-container');
+                
+                // Guard: Do not render 0% state if Firebase hasn't hydrated the logic yet
+                if (!this.isLoaded) {
+                    document.getElementById('overall-bar').style.width = '0%';
+                    document.getElementById('percent-text').innerText = `SYNCING DATA...`;
+                    container.innerHTML = '<div style="text-align:center; padding: 50px 20px; color: var(--ser-color); font-weight: 900; letter-spacing: 2px; font-size: 18px;" class="outlined-text">ESTABLISHING SECURE LINK...<br><span style="font-size:12px; color:#aaa;">READING FROM FIREBASE</span></div>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                const cats = [...new Set(this.hunterData.map(i => i.cat))];
+                let totalFound = 0;
+
+                cats.forEach(cat => {
+                    const items = this.hunterData.filter(i => i.cat === cat);
+                    const count = items.filter(i => i.collected).length;
+                    totalFound += count;
+
+                    const sid = cat.replace(/[^a-z0-9]/gi, '');
+                    const section = document.createElement('div');
+                    section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''}`;
+                    section.innerHTML = `
+                        <div class="category-header outlined-text" onclick="appState.toggleSection('${sid}')">
+                            <h2>${cat}</h2>
+                            <div style="font-weight:900; font-size: 14px; color: var(--ser-color);">${count}/${items.length}</div>
+                        </div>
+                        <div class="section-content">
+                            <div class="item-grid"></div>
+                        </div>
+                    `;
+
+                    const grid = section.querySelector('.item-grid');
+                    items.forEach(item => {
+                        const card = document.createElement('div');
+                        card.className = `item-card ${item.collected ? 'completed' : ''}`;
+                        card.innerHTML = `
+                            <div>
+                                <div class="item-type-tag">${item.type}</div>
+                                <div class="outlined-text" style="font-weight:900; font-size:14px; margin-bottom:4px;">${item.name}</div>
+                                <div class="outlined-text" style="font-size:11px; color:#ddd; font-style:italic; line-height:1.2;">${item.desc}</div>
+                                ${item.reward ? `<span class="reward-tag outlined-text">${item.reward}</span>` : ''}
+                            </div>
+                            ${item.collected ? `<div class="lock-badge outlined-text">COLLECTED</div>` : `<button class="toggle-btn outlined-text" onclick="appState.toggleItem('${item.id}')">Confirm Found</button>`}
+                        `;
+                        grid.appendChild(card);
+                    });
+                    container.appendChild(section);
+                });
+
+                const percent = Math.round((totalFound / this.hunterData.length) * 100) || 0;
+                document.getElementById('overall-bar').style.width = percent + '%';
+                document.getElementById('percent-text').innerText = `TOTAL COLLECTION: ${percent}%`;
+            },
+
+            toggleItem: async function(id) {
+                const item = this.hunterData.find(i => i.id === id);
+                item.collected = !item.collected;
+                this.render(); 
+                this.sync();
+            },
+
+            toggleSection: function(id) {
+                this.collapsedSections[id] = !this.collapsedSections[id];
+                this.render();
+            },
+
+            switchHunter: function(name) { this.loadHunter(name); },
+
+            sync: async function() {
+                if (!this.user) return;
+                const path = `artifacts/${appId}/public/data/sniper_elite_5/${this.activeHunter}`;
+                const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
+                await setDoc(doc(this.db, path), { progress, lastUpdate: Date.now() }, { merge: true });
+            }
+        };
+
+        window.appState = appState;
+        appState.init();
+
+        /* --- CSV SPREADSHEET PARSER AND MENU BUILDER --- */
+        async function buildTopMenu() {
+            try {
+                const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
+                const response = await fetch(csvUrl);
+                const textData = await response.text();
+                
+                const rows = textData.split('\n');
+                const menuStructure = []; // Array to maintain CSV order
+                const groupMap = {}; // Helper to find existing groups
+                
+                let startIdx = 0;
+                if(rows[0] && rows[0].toLowerCase().includes("name")) {
+                    startIdx = 1; // Skip header
+                }
+
+                for(let i = startIdx; i < rows.length; i++) {
+                    const rowStr = rows[i].replace(/\r/g, '').trim(); // Clean carriage returns
+                    if(!rowStr) continue;
+                    
+                    // Split by comma ignoring commas within quotes
+                    const cols = rowStr.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    let name = cols[0] ? cols[0].replace(/^"|"$/g, '').trim() : '';
+                    let group = cols[1] ? cols[1].replace(/^"|"$/g, '').trim() : '';
+                    let url = cols[2] ? cols[2].replace(/^"|"$/g, '').trim() : '';
+                    let img = cols[3] ? cols[3].replace(/^"|"$/g, '').trim() : '';
+
+                    if(!name || !url) continue;
+                    
+                    // If no group is specified, treat it as a top-level link (e.g., HOME)
+                    if(!group || group.toLowerCase() === 'none') {
+                        menuStructure.push({ type: 'single', name, url, img });
+                    } else {
+                        // Otherwise, group it into a dropdown menu
+                        if(!groupMap[group]) {
+                            const newGroup = { type: 'group', name: group, items: [] };
+                            menuStructure.push(newGroup);
+                            groupMap[group] = newGroup;
+                        }
+                        groupMap[group].items.push({name, url, img});
+                    }
+                }
+
+                const menuBar = document.getElementById('csv-menu-bar');
+                let html = '';
+                
+                // SVG Chevron Down for dropdown indicators
+                const chevron = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; display: inline-block; vertical-align: middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+
+                menuStructure.forEach(item => {
+                    if (item.type === 'single') {
+                        html += `<a href="${item.url}" target="SE5_ITC_Window" class="csv-single-btn outlined-text">${item.name}</a>`;
+                    } else {
+                        const safeId = item.name.replace(/[^a-zA-Z0-9]/g, '');
+                        html += `
+                            <div class="csv-dropdown">
+                                <button class="csv-dropdown-btn outlined-text" data-dropdown="${safeId}">
+                                    ${item.name} ${chevron}
+                                </button>
+                                <div id="dropdown-${safeId}" class="csv-dropdown-content">
+                        `;
+                        
+                        item.items.forEach(sub => {
+                            const imgTag = sub.img ? `<img src="${sub.img}" style="width:26px; height:26px; margin-right:12px; vertical-align:middle; border-radius:6px; object-fit:cover; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">` : '';
+                            html += `<a href="${sub.url}" target="SE5_ITC_Window" class="csv-dropdown-item outlined-text">${imgTag}${sub.name}</a>`;
+                        });
+                        
+                        html += `</div></div>`;
+                    }
+                });
+                
+                menuBar.innerHTML = html;
+                
+            } catch(e) {
+                console.error("Error loading CSV Menu:", e);
+            }
+        }
+
+        // JS Driven Dropdown Toggle (Bulletproof Event Delegation)
+        window.addEventListener('click', function(event) {
+            const btn = event.target.closest('.csv-dropdown-btn');
+            const dropdowns = document.getElementsByClassName("csv-dropdown-content");
+
+            if (btn) {
+                event.preventDefault();
+                event.stopPropagation();
+                const id = btn.getAttribute('data-dropdown');
+                const targetDropdown = document.getElementById('dropdown-' + id);
+                const isCurrentlyOpen = targetDropdown.classList.contains('show');
+
+                // Close all open dropdowns first
+                for (let i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].classList.remove('show');
+                }
+                
+                // Only open it if it wasn't already open
+                if (!isCurrentlyOpen) {
+                    targetDropdown.classList.add('show');
+                }
+            } else {
+                // Close dropdown when clicking anywhere else
+                for (let i = 0; i < dropdowns.length; i++) {
+                    dropdowns[i].classList.remove('show');
+                }
+            }
+        });
+
+        // Initialize CSV Menu
+        buildTopMenu();
+    </script>
 </body>
 </html>
