@@ -1,0 +1,83 @@
+<!-- ============================================================================
+   File: index.html
+   Version: 1.7.2 | Updated: 2026-07-30T01:12:00Z
+   Description: Sniper Elite 5 Master Tracker (entertainment-71888)
+   ============================================================================ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sniper Elite 5 Master Tracker | Werewolf3788</title>
+    
+    <!-- Transparent SVG Favicon to eliminate 404 console errors -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎯</text></svg>">
+
+    <!-- Active Google Analytics (entertainment-71888) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JDNSLD3GFE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-JDNSLD3GFE');
+    </script>
+
+    <!-- External Stylesheet Import with Smart Cache-Busting -->
+    <link rel="stylesheet" href="style.css?v=20260730">
+</head>
+
+<body id="master-body">
+    <div class="background-overlay"></div>
+
+    <!-- PRIMARY NAV -->
+    <nav class="master-nav">
+        <a href="#/tracker/Werewolf3788/pc" class="nav-logo outlined-text">SNIPER ELITE 5: MASTER LOG</a>
+        <div id="stat-line" style="font-family: monospace; font-size: 10px; opacity: 0.6; text-transform: uppercase; color: #aaa;" class="outlined-text">
+            LINK: INITIALIZING...
+        </div>
+    </nav>
+
+    <!-- DYNAMIC NAVIGATION MENU CONTAINER -->
+    <nav id="csv-menu-bar" class="csv-nav">
+        <div id="dynamic-nav-links" style="display: flex; gap: 15px; flex-wrap: wrap;"></div>
+    </nav>
+
+    <div class="tracker-container">
+        <!-- OPERATIVE TERMINAL CONSOLE -->
+        <div class="profile-header">
+            <div class="active-info">
+                <div style="font-size: 0.6rem; text-transform: uppercase; color: #888;" class="outlined-text">Operative Terminal</div>
+                <span id="hunter-display" class="hunter-glow text-white outlined-text">WEREWOLF3788 [PC]</span>
+            </div>
+            <div class="profile-actions">
+                <button class="profile-btn active-btn outlined-text" data-profile="Werewolf3788">Werewolf3788</button>
+                <button class="profile-btn outlined-text" data-profile="Ray">Ray</button>
+                <button class="profile-btn outlined-text" data-profile="TJ">TJ</button>
+                <button class="profile-btn outlined-text" data-profile="Marc">Marc</button>
+            </div>
+        </div>
+
+        <header class="main-header">
+            <h2 class="outlined-text">Intel Registry</h2>
+            <div id="percent-text" class="outlined-text" style="font-weight: 900; margin-top: 5px; color: #ccc;">TOTAL CAMPAIGN COLLECTION: 0%</div>
+            <div class="bar-bg"><div id="overall-bar" class="bar-fill"></div></div>
+        </header>
+
+        <!-- MISSION REGISTRY DYNAMIC CONTAINER -->
+        <div id="section-container"></div>
+
+        <!-- FOOTER WITH BRAND SIGNATURE -->
+        <footer class="tracker-footer">
+            <p class="outlined-text">DESIGNED BY WEREWOLF3788 | OPERATIVES: KEVIN, RAY, TJ, MARC</p>
+            <p class="outlined-text" style="margin-top: 5px; font-family: monospace;">NODE-PROJECT: SE5-Master-Tracker</p>
+            <div class="kf-signature" title="KF Signature">
+                <span class="kf-k">K</span><span class="kf-f">F</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- MAIN TRACKER SCRIPT MODULE WITH SMART CACHE-BUSTING -->
+    <script type="module" src="tracker.js?v=20260730"></script>
+</body>
+</html>
