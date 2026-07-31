@@ -803,6 +803,36 @@
                 });
             }
 
+            formatImageUrl(rawImg, linkUrl) {
+                let clean = (rawImg || '').trim();
+                
+                // Convert Google Drive share/view URLs to direct image stream URLs
+                if (clean.includes('drive.google.com')) {
+                    const driveIdMatch = clean.match(/\/d\/([a-zA-Z0-9_-]+)/) || clean.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                    if (driveIdMatch && driveIdMatch[1]) {
+                        return `https://lh3.googleusercontent.com/d/${driveIdMatch[1]}`;
+                    }
+                }
+
+                // If valid image URL provided, return it
+                if (clean && (clean.startsWith('http://') || clean.startsWith('https://') || clean.startsWith('data:image'))) {
+                    return clean;
+                }
+
+                // Fallback to website domain favicon
+                return this.getFaviconUrl(linkUrl);
+            }
+
+            getFaviconUrl(linkUrl) {
+                try {
+                    if (!linkUrl || !linkUrl.startsWith('http')) return '';
+                    const domain = new URL(linkUrl).hostname;
+                    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                } catch (e) {
+                    return '';
+                }
+            }
+
             renderDynamicMenuBar() {
                 const navContainer = document.getElementById('dynamicMenuBar');
                 if (!navContainer) return;
@@ -841,12 +871,16 @@
                                 <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
                             </button>
                             <div id="dropdown-${this.escapeHtml(groupName)}" class="dropdown-menu hidden space-y-1 pl-3 pt-1">
-                                ${items.map(subItem => `
+                                ${items.map(subItem => {
+                                    const imgUrl = this.formatImageUrl(subItem.image, subItem.url);
+                                    const fallbackFavicon = this.getFaviconUrl(subItem.url);
+                                    return `
                                     <a href="${this.escapeHtml(subItem.url || '#')}" onclick="app.trackLinkClick('${this.escapeHtml(subItem.name)}', '${this.escapeHtml(subItem.url)}', '${this.escapeHtml(groupName)}')" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-2.5 px-3 py-2 rounded-xl text-slate-300 bg-slate-950/60 border border-slate-800 hover:bg-slate-800 hover:text-emerald-400 transition text-xs">
-                                        ${subItem.image ? `<img src="${this.escapeHtml(subItem.image)}" class="w-4 h-4 rounded object-cover" onerror="this.style.display='none'">` : '<i class="fa-solid fa-link text-[10px] text-emerald-500"></i>'}
+                                        <img src="${this.escapeHtml(imgUrl)}" class="w-5 h-5 rounded-md object-cover flex-shrink-0 bg-slate-900 border border-slate-800" onerror="this.onerror=null; ${fallbackFavicon ? `this.src='${fallbackFavicon}';` : "this.style.display='none';"}" />
                                         <span class="truncate">${this.escapeHtml(subItem.name)}</span>
                                     </a>
-                                `).join('')}
+                                `;
+                                }).join('')}
                             </div>
                         </div>
                     `;
@@ -854,9 +888,11 @@
 
                 // Render Ungrouped Links
                 ungrouped.forEach(item => {
+                    const imgUrl = this.formatImageUrl(item.image, item.url);
+                    const fallbackFavicon = this.getFaviconUrl(item.url);
                     html += `
                         <a href="${this.escapeHtml(item.url || '#')}" onclick="app.trackLinkClick('${this.escapeHtml(item.name)}', '${this.escapeHtml(item.url)}', 'Ungrouped')" target="_blank" rel="noopener noreferrer" class="w-full px-3 py-2.5 rounded-xl bg-slate-800/50 border border-slate-800 text-slate-200 hover:text-emerald-400 hover:border-emerald-500/40 flex items-center space-x-2.5 transition text-xs font-medium">
-                            ${item.image ? `<img src="${this.escapeHtml(item.image)}" class="w-4 h-4 rounded object-cover" onerror="this.style.display='none'">` : '<i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-emerald-400"></i>'}
+                            <img src="${this.escapeHtml(imgUrl)}" class="w-5 h-5 rounded-md object-cover flex-shrink-0 bg-slate-900 border border-slate-800" onerror="this.onerror=null; ${fallbackFavicon ? `this.src='${fallbackFavicon}';` : "this.style.display='none';"}" />
                             <span class="truncate">${this.escapeHtml(item.name)}</span>
                         </a>
                     `;
