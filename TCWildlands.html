@@ -1,0 +1,1503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghost Recon Wildlands - Tactical Companion & Progress Tracker</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts for Tactical / Military UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Teko:wght@600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tactical: {
+                            bg: '#0a0d0f',
+                            panel: '#12171c',
+                            card: '#1a2128',
+                            border: '#2a3440',
+                            gold: '#ffb703',
+                            orange: '#fb8500',
+                            cyan: '#00f0ff',
+                            red: '#e63946',
+                            muted: '#6c7a89'
+                        }
+                    },
+                    fontFamily: {
+                        teko: ['Teko', 'sans-serif'],
+                        rajdhani: ['Rajdhani', 'sans-serif'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0a0d0f;
+            color: #e2e8f0;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(255, 183, 3, 0.05) 0%, transparent 70%),
+                linear-gradient(rgba(10, 13, 15, 0.95), rgba(10, 13, 15, 0.95)),
+                url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%202a3440' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .scanline {
+            position: relative;
+            overflow: hidden;
+        }
+        .scanline::after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0a0d0f;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2a3440;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #fb8500;
+        }
+
+        .hud-border {
+            border: 1px solid #2a3440;
+            position: relative;
+        }
+        .hud-border::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: -1px;
+            width: 8px; height: 8px;
+            border-top: 2px solid #fb8500;
+            border-left: 2px solid #fb8500;
+        }
+        .hud-border::after {
+            content: '';
+            position: absolute;
+            bottom: -1px; right: -1px;
+            width: 8px; height: 8px;
+            border-bottom: 2px solid #fb8500;
+            border-right: 2px solid #fb8500;
+        }
+    </style>
+</head>
+<body class="font-sans min-h-screen flex flex-col custom-scrollbar antialiased">
+
+    <header class="bg-tactical-panel border-b border-tactical-border sticky top-0 z-40 shadow-2xl">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+                
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-12 h-12 bg-tactical-card border border-tactical-orange rounded flex items-center justify-center text-tactical-orange text-2xl shadow-lg scanline">
+                        <i class="fa-solid font-bold fa-skull"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-2">
+                            <h1 class="font-teko text-2xl sm:text-3xl tracking-wider text-white uppercase leading-none">
+                                GHOST RECON <span class="text-tactical-orange">WILDLANDS</span>
+                            </h1>
+                            <span class="bg-tactical-orange/20 text-tactical-orange text-xs px-2 py-0.5 rounded border border-tactical-orange/40 font-rajdhani font-semibold">HQ PROGRESS TRACKER</span>
+                        </div>
+                        <p class="text-xs text-tactical-muted font-rajdhani tracking-widest uppercase">OPERATIVE DATA & PROFILE MANAGER</p>
+                    </div>
+                </div>
+
+                <!-- Operative Selector Button Box & Platform/GameID Bar -->
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-tactical-bg p-2 rounded-lg border border-tactical-border">
+                    
+                    <!-- Operative Button Box -->
+                    <div class="flex items-center bg-tactical-card p-1 rounded border border-tactical-border">
+                        <span class="text-[11px] font-rajdhani font-bold text-tactical-muted uppercase px-2">OPERATIVE:</span>
+                        <div class="flex items-center space-x-1">
+                            <button id="userBtnWerewolf" onclick="window.switchUser('Werewolf')" class="px-3 py-1 rounded text-xs font-rajdhani font-bold transition flex items-center gap-1.5 bg-tactical-orange text-tactical-bg shadow">
+                                <i class="fa-solid fa-user-ninja"></i> Werewolf
+                            </button>
+                            <button id="userBtnDesdemonaTiger" onclick="window.switchUser('DesdemonaTiger')" class="px-3 py-1 rounded text-xs font-rajdhani font-bold transition flex items-center gap-1.5 text-tactical-muted hover:text-white hover:bg-tactical-bg">
+                                <i class="fa-solid fa-cat"></i> DesdemonaTiger
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Platform Selector Dropdown -->
+                    <div class="flex items-center space-x-2">
+                        <label for="platformSelect" class="text-xs font-rajdhani font-bold text-tactical-muted uppercase flex items-center gap-1">
+                            <i class="fa-solid fa-gamepad text-tactical-orange"></i> Platform:
+                        </label>
+                        <select id="platformSelect" onchange="window.onProfileKeyChange()" class="bg-tactical-card text-white text-xs font-rajdhani font-bold px-3 py-1.5 rounded border border-tactical-border focus:border-tactical-orange focus:outline-none cursor-pointer">
+                            <option value="PC">PC (Uplay/Steam)</option>
+                            <option value="PS4">PlayStation 4</option>
+                            <option value="PS5">PlayStation 5</option>
+                            <option value="XboxOne">Xbox One</option>
+                            <option value="XboxSeries">Xbox Series X/S</option>
+                        </select>
+                    </div>
+
+                    <!-- Game ID Input -->
+                    <div class="flex items-center space-x-2">
+                        <label for="gameIdInput" class="text-xs font-rajdhani font-bold text-tactical-muted uppercase flex items-center gap-1">
+                            <i class="fa-solid fa-id-badge text-tactical-orange"></i> Game ID:
+                        </label>
+                        <input type="text" id="gameIdInput" value="Tom Clancy Ghost Recon Wildlands" oninput="window.onProfileKeyChange()" onblur="window.onProfileKeyChange()" placeholder="e.g. Tom Clancy Ghost Recon Wildlands" class="bg-tactical-card text-white text-xs font-mono px-3 py-1.5 rounded border border-tactical-border focus:border-tactical-orange focus:outline-none w-48 sm:w-60">
+                    </div>
+
+                    <!-- Action & Sync Status -->
+                    <div class="flex items-center space-x-2 ml-auto">
+                        <button onclick="window.testFirebaseConnection()" class="bg-tactical-card hover:bg-slate-700 text-tactical-cyan border border-tactical-cyan/40 font-rajdhani font-bold text-xs px-2.5 py-1.5 rounded transition flex items-center gap-1">
+                            <i class="fa-solid fa-plug"></i> Test Connection
+                        </button>
+                        <button onclick="window.saveProgressToFirestore()" id="saveBtn" class="bg-tactical-orange hover:bg-yellow-500 text-tactical-bg font-rajdhani font-bold text-xs px-3 py-1.5 rounded transition flex items-center gap-1 shadow">
+                            <i class="fa-solid fa-floppy-disk"></i> Save Progress
+                        </button>
+                        <div id="syncBadge" class="bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-xs px-2 py-1 rounded font-mono flex items-center gap-1.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span id="syncText">Synced</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Path Preview Key Bar -->
+            <div class="mt-2 pt-2 border-t border-tactical-border/50 flex flex-wrap items-center justify-between text-xs font-mono text-tactical-muted">
+                <div class="flex items-center space-x-2">
+                    <span class="text-tactical-orange font-bold font-rajdhani">DATA PATH KEY:</span>
+                    <span id="pathKeyDisplay" class="bg-tactical-bg px-2 py-0.5 rounded border border-tactical-border text-tactical-cyan">
+                        Werewolf-PC-progress-TomClancyGhostReconWildlands
+                    </span>
+                </div>
+                <div class="text-slate-400 text-[11px]" id="lastSavedText">
+                    Last Saved: Never
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 w-full space-y-6">
+
+        <!-- Operator Lifetime Stats & Dossier Card -->
+        <section class="bg-tactical-panel border border-tactical-border rounded-lg p-4 hud-border shadow-2xl">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-tactical-border/80 pb-3 mb-4 gap-2">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded bg-tactical-orange/20 border border-tactical-orange text-tactical-orange flex items-center justify-center font-bold text-xl">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="font-teko text-2xl text-white tracking-wider uppercase leading-none" id="dossierOperativeTitle">OPERATIVE DOSSIER: WEREWOLF</h2>
+                            <span class="bg-tactical-cyan/20 text-tactical-cyan text-[10px] px-2 py-0.5 rounded border border-tactical-cyan/40 font-mono font-bold uppercase" id="dossierActiveBadge">ACTIVE EDITING</span>
+                        </div>
+                        <p class="text-xs text-tactical-muted font-rajdhani">Lifetime Combat Performance & Operational Analytics (Fully Editable)</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="window.saveProgressToFirestore()" class="bg-tactical-card hover:bg-slate-700 text-tactical-cyan border border-tactical-cyan/40 text-xs px-3 py-1.5 rounded font-rajdhani font-bold transition flex items-center gap-1">
+                        <i class="fa-solid fa-pen-to-square"></i> Save Stats
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <!-- Card 1: Core Playstyle & Tactical -->
+                <div class="bg-tactical-card p-3 rounded border border-tactical-border space-y-2">
+                    <div class="text-xs font-rajdhani font-bold text-tactical-orange uppercase border-b border-tactical-border pb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-bullseye"></i> PLAYSTYLE & ACCURACY
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">Playstyle Profile:</label>
+                        <input type="text" id="statPlaystyle" value="Overwatch / Commando" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-white font-rajdhani font-bold text-sm px-2 py-1 rounded border border-tactical-border focus:border-tactical-orange focus:outline-none">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">Avg Kill Dist:</label>
+                            <input type="text" id="statAvgKillDistance" value="68m" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-tactical-orange font-mono text-xs px-2 py-1 rounded border border-tactical-border focus:border-tactical-orange focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">Tactical Precision:</label>
+                            <input type="text" id="statTacticalPrecision" value="78%" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-tactical-cyan font-mono text-xs px-2 py-1 rounded border border-tactical-border focus:border-tactical-cyan focus:outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">Stealth Kills:</label>
+                        <input type="text" id="statStealthKills" value="62%" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-emerald-400 font-mono text-xs px-2 py-1 rounded border border-tactical-border focus:border-emerald-400 focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Card 2: Combat Lifetime -->
+                <div class="bg-tactical-card p-3 rounded border border-tactical-border space-y-2">
+                    <div class="text-xs font-rajdhani font-bold text-tactical-orange uppercase border-b border-tactical-border pb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-crosshair"></i> COMBAT LIFETIME
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">Longest Shot:</label>
+                            <input type="text" id="statLongestShot" value="1,042m" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-amber-400 font-mono text-xs px-2 py-1 rounded border border-tactical-border focus:border-amber-400 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">Precision:</label>
+                            <input type="text" id="statPrecision" value="72%" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-tactical-cyan font-mono text-xs px-2 py-1 rounded border border-tactical-border focus:border-tactical-cyan focus:outline-none">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">Favorite Weapon:</label>
+                        <input type="text" id="statFavWeapon" value="HTI Sniper Rifle" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-white font-sans text-xs px-2 py-1 rounded border border-tactical-border focus:border-tactical-orange focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">2nd Favorite Weapon:</label>
+                        <input type="text" id="statFavWeapon2" value="M4A1 Assault Rifle" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-white font-sans text-xs px-2 py-1 rounded border border-tactical-border focus:border-tactical-orange focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Card 3: Support Stats -->
+                <div class="bg-tactical-card p-3 rounded border border-tactical-border space-y-2">
+                    <div class="text-xs font-rajdhani font-bold text-tactical-orange uppercase border-b border-tactical-border pb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-hand-holding-hand"></i> SUPPORT METRICS
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">Teammates Revived:</label>
+                        <input type="text" id="statTeammatesRevived" value="142" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-emerald-400 font-mono text-xs px-2 py-1 rounded border border-tactical-border focus:border-emerald-400 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">C4 / Mine Kills:</label>
+                        <input type="text" id="statC4MineKills" value="285" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-rose-400 font-mono text-xs px-2 py-1 rounded border border-tactical-border focus:border-rose-400 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">Drone Deployments / Used:</label>
+                        <input type="text" id="statDroneUsed" value="1,820 times" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-tactical-cyan font-mono text-xs px-2 py-1 rounded border border-tactical-border focus:border-tactical-cyan focus:outline-none">
+                    </div>
+                </div>
+
+                <!-- Card 4: Travel & Map Exploration -->
+                <div class="bg-tactical-card p-3 rounded border border-tactical-border space-y-2">
+                    <div class="text-xs font-rajdhani font-bold text-tactical-orange uppercase border-b border-tactical-border pb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-compass"></i> TRAVEL & EXPLORATION
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">Air Travel:</label>
+                            <input type="text" id="statTravelAir" value="240 km" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-white font-mono text-xs px-2 py-1 rounded border border-tactical-border focus:border-tactical-orange focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">Ground Travel:</label>
+                            <input type="text" id="statTravelGround" value="850 km" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-white font-mono text-xs px-2 py-1 rounded border border-tactical-border focus:border-tactical-orange focus:outline-none">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">Parachute:</label>
+                            <input type="text" id="statTravelParachute" value="64 jumps" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-white font-mono text-xs px-2 py-1 rounded border border-tactical-border focus:border-tactical-orange focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-tactical-muted font-rajdhani uppercase font-bold">Map Discovered:</label>
+                            <input type="text" id="statMapDiscovered" value="94%" onchange="window.updateStatsFromUI()" class="w-full bg-tactical-bg text-tactical-gold font-mono text-xs px-2 py-1 rounded border border-tactical-border focus:border-tactical-gold focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Top Overview Stats & Resources -->
+        <section class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            
+            <!-- Overall Progress Card -->
+            <div class="bg-tactical-panel hud-border p-4 rounded shadow flex flex-col justify-between">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-xs font-rajdhani font-bold text-tactical-muted uppercase tracking-wider">Campaign Completion</span>
+                        <h2 id="totalProgressPct" class="text-4xl font-teko font-bold text-white leading-none mt-1">0%</h2>
+                    </div>
+                    <div class="w-10 h-10 rounded bg-tactical-orange/10 border border-tactical-orange/30 flex items-center justify-center text-tactical-orange">
+                        <i class="fa-solid fa-chart-line text-lg"></i>
+                    </div>
+                </div>
+                <div class="w-full bg-tactical-bg h-2 rounded-full overflow-hidden border border-tactical-border mt-3">
+                    <div id="totalProgressBar" class="bg-gradient-to-r from-tactical-orange to-yellow-400 h-full transition-all duration-500" style="width: 0%"></div>
+                </div>
+                <div class="flex justify-between text-[11px] font-mono text-tactical-muted mt-2">
+                    <span id="skillsCompletedCount">Skills: 0/0</span>
+                    <span id="provincesClearedCount">Provinces: 0/21</span>
+                </div>
+            </div>
+
+            <!-- Level & Tier One Mode Card -->
+            <div class="bg-tactical-panel hud-border p-4 rounded shadow flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-xs font-rajdhani font-bold text-tactical-muted uppercase tracking-wider">Operative Rank</span>
+                    <span id="tierModeBadge" class="bg-slate-800 text-slate-300 border border-slate-700 text-[10px] px-2 py-0.5 rounded font-mono font-bold">NORMAL MODE</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[11px] text-tactical-muted font-rajdhani uppercase font-bold">Level (1-30):</label>
+                        <input type="number" id="playerLevel" min="1" max="30" value="30" onchange="window.updateResourceState()" class="w-full bg-tactical-bg text-tactical-orange font-teko text-2xl font-bold px-2 py-0 rounded border border-tactical-border focus:border-tactical-orange focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-tactical-muted font-rajdhani uppercase font-bold">Tier One (50-1):</label>
+                        <input type="number" id="tierLevel" min="1" max="50" value="50" onchange="window.updateResourceState()" class="w-full bg-tactical-bg text-tactical-cyan font-teko text-2xl font-bold px-2 py-0 rounded border border-tactical-border focus:border-tactical-cyan focus:outline-none">
+                    </div>
+                </div>
+                <div class="mt-2 flex items-center justify-between text-xs">
+                    <label class="flex items-center gap-1.5 cursor-pointer text-tactical-muted hover:text-white font-rajdhani font-bold">
+                        <input type="checkbox" id="tierModeToggle" onchange="window.toggleTierMode()" class="rounded bg-tactical-bg border-tactical-border text-tactical-cyan focus:ring-0">
+                        Enable Tier One Mode
+                    </label>
+                </div>
+            </div>
+
+            <!-- Rebel Resources Card (Gas, Meds, Comms, Food) -->
+            <div class="bg-tactical-panel hud-border p-4 rounded shadow md:col-span-2 flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs font-rajdhani font-bold text-tactical-muted uppercase tracking-wider">Rebel Supplies & Resources</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-rajdhani text-tactical-gold font-bold">Skill Points:</span>
+                        <input type="number" id="skillPoints" value="15" onchange="window.updateResourceState()" class="w-16 bg-tactical-bg text-tactical-gold font-mono font-bold text-center text-xs py-0.5 rounded border border-tactical-border focus:border-tactical-gold focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
+                    <!-- Gasoline -->
+                    <div class="bg-tactical-card p-2 rounded border border-tactical-border">
+                        <div class="flex justify-between text-[11px] font-rajdhani font-bold text-tactical-muted mb-1">
+                            <span><i class="fa-solid fa-gas-pump text-amber-500"></i> Gasoline</span>
+                        </div>
+                        <input type="number" id="resGas" value="12500" step="500" onchange="window.updateResourceState()" class="w-full bg-tactical-bg text-white font-mono text-xs font-bold px-2 py-1 rounded border border-tactical-border focus:border-amber-500 focus:outline-none">
+                    </div>
+
+                    <!-- Medication -->
+                    <div class="bg-tactical-card p-2 rounded border border-tactical-border">
+                        <div class="flex justify-between text-[11px] font-rajdhani font-bold text-tactical-muted mb-1">
+                            <span><i class="fa-solid fa-briefcase-medical text-red-500"></i> Medication</span>
+                        </div>
+                        <input type="number" id="resMeds" value="8400" step="500" onchange="window.updateResourceState()" class="w-full bg-tactical-bg text-white font-mono text-xs font-bold px-2 py-1 rounded border border-tactical-border focus:border-red-500 focus:outline-none">
+                    </div>
+
+                    <!-- Comms -->
+                    <div class="bg-tactical-card p-2 rounded border border-tactical-border">
+                        <div class="flex justify-between text-[11px] font-rajdhani font-bold text-tactical-muted mb-1">
+                            <span><i class="fa-solid fa-tower-cell text-cyan-400"></i> Comms</span>
+                        </div>
+                        <input type="number" id="resComms" value="15000" step="500" onchange="window.updateResourceState()" class="w-full bg-tactical-bg text-white font-mono text-xs font-bold px-2 py-1 rounded border border-tactical-border focus:border-cyan-400 focus:outline-none">
+                    </div>
+
+                    <!-- Food -->
+                    <div class="bg-tactical-card p-2 rounded border border-tactical-border">
+                        <div class="flex justify-between text-[11px] font-rajdhani font-bold text-tactical-muted mb-1">
+                            <span><i class="fa-solid fa-boxes-packing text-emerald-400"></i> Food</span>
+                        </div>
+                        <input type="number" id="resFood" value="11200" step="500" onchange="window.updateResourceState()" class="w-full bg-tactical-bg text-white font-mono text-xs font-bold px-2 py-1 rounded border border-tactical-border focus:border-emerald-400 focus:outline-none">
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <nav class="flex border-b border-tactical-border bg-tactical-panel/60 p-1 rounded-lg gap-1 overflow-x-auto">
+            <button onclick="window.switchTab('skills')" id="tab-skills" class="tab-btn active font-rajdhani font-bold text-sm px-4 py-2 rounded flex items-center gap-2 transition text-tactical-orange bg-tactical-card border border-tactical-orange/40 whitespace-nowrap">
+                <i class="fa-solid fa-sitemap"></i> Skill Trees
+            </button>
+            <button onclick="window.switchTab('provinces')" id="tab-provinces" class="tab-btn font-rajdhani font-bold text-sm px-4 py-2 rounded flex items-center gap-2 transition text-tactical-muted hover:text-white hover:bg-tactical-card whitespace-nowrap">
+                <i class="fa-solid fa-map-location-dot"></i> Santa Blanca Operations
+            </button>
+            <button onclick="window.switchTab('weapons')" id="tab-weapons" class="tab-btn font-rajdhani font-bold text-sm px-4 py-2 rounded flex items-center gap-2 transition text-tactical-muted hover:text-white hover:bg-tactical-card whitespace-nowrap">
+                <i class="fa-solid fa-gun"></i> Weapon Arsenal
+            </button>
+            <button onclick="window.switchTab('custom')" id="tab-custom" class="tab-btn font-rajdhani font-bold text-sm px-4 py-2 rounded flex items-center gap-2 transition text-tactical-muted hover:text-white hover:bg-tactical-card whitespace-nowrap">
+                <i class="fa-solid fa-pen-to-square"></i> Manual Edits & Raw JSON
+            </button>
+        </nav>
+
+        <div id="content-skills" class="tab-content block space-y-6">
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-tactical-panel p-3 rounded border border-tactical-border gap-2">
+                <div>
+                    <h3 class="font-teko text-2xl text-white tracking-wide uppercase leading-none">Ghost Tactical Skill Trees</h3>
+                    <p class="text-xs text-tactical-muted">Click ranks or Epic skill toggles to update skill progress in real-time.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="window.maxOutSkills()" class="text-xs bg-tactical-card hover:bg-slate-700 text-tactical-orange border border-tactical-orange/40 px-3 py-1.5 rounded font-rajdhani font-bold transition">
+                        <i class="fa-solid fa-angles-up"></i> Max All Skills
+                    </button>
+                    <button onclick="window.resetSkills()" class="text-xs bg-tactical-card hover:bg-slate-700 text-tactical-red border border-tactical-red/40 px-3 py-1.5 rounded font-rajdhani font-bold transition">
+                        <i class="fa-solid fa-rotate-left"></i> Reset Skills
+                    </button>
+                </div>
+            </div>
+
+            <!-- 6 Skill Trees Grid -->
+            <div id="skillTreesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- JS populates skills tree categories here -->
+            </div>
+        </div>
+
+        <div id="content-provinces" class="tab-content hidden space-y-6">
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-tactical-panel p-3 rounded border border-tactical-border gap-2">
+                <div>
+                    <h3 class="font-teko text-2xl text-white tracking-wide uppercase leading-none">Santa Blanca Cartel Map & Buchon Bosses</h3>
+                    <p class="text-xs text-tactical-muted">Track liberation progress across Bolivia's 21 provinces & cartel bosses.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span id="provinceTotalProgress" class="text-sm font-mono font-bold text-tactical-gold">0 / 21 Cleared</span>
+                </div>
+            </div>
+
+            <!-- Cartel Pillars Grid -->
+            <div id="provincesContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- JS populates Cartel Operations & Provinces -->
+            </div>
+        </div>
+
+        <div id="content-weapons" class="tab-content hidden space-y-6">
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center bg-tactical-panel p-3 rounded border border-tactical-border gap-2">
+                <div>
+                    <h3 class="font-teko text-2xl text-white tracking-wide uppercase leading-none">Operative Armory & Weapons Cases</h3>
+                    <p class="text-xs text-tactical-muted">Check off unlocked weapons and set weapon upgrade level (Tier 1-30 mode).</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="weaponSearch" onkeyup="window.filterWeapons()" placeholder="Search weapon name..." class="bg-tactical-bg text-white text-xs px-3 py-1.5 rounded border border-tactical-border focus:border-tactical-orange focus:outline-none w-48">
+                </div>
+            </div>
+
+            <!-- Weapon Categories -->
+            <div id="weaponsContainer" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- JS populates weapons -->
+            </div>
+        </div>
+
+        <div id="content-custom" class="tab-content hidden space-y-6">
+            
+            <div class="bg-tactical-panel p-4 rounded hud-border space-y-4">
+                <div>
+                    <h3 class="font-teko text-2xl text-white tracking-wide uppercase leading-none">Manual Data Editor & Firebase Sync Structure</h3>
+                    <p class="text-xs text-tactical-muted">Directly edit raw progress JSON or add tactical notes to sync across your platforms.</p>
+                </div>
+
+                <!-- Custom Tactical Notes -->
+                <div>
+                    <label for="customNotesInput" class="block text-xs font-rajdhani font-bold text-tactical-orange uppercase mb-1">
+                        <i class="fa-solid fa-clipboard-user"></i> Operative Tactical Field Notes:
+                    </label>
+                    <textarea id="customNotesInput" rows="3" onblur="window.saveNotes()" placeholder="Add custom notes about weapons locations, squad setups, or completed achievements..." class="w-full bg-tactical-bg text-white font-sans text-xs p-3 rounded border border-tactical-border focus:border-tactical-orange focus:outline-none custom-scrollbar"></textarea>
+                </div>
+
+                <!-- Live JSON Viewer / Editor -->
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-rajdhani font-bold text-tactical-cyan uppercase">
+                            <i class="fa-solid fa-code"></i> Live User Progress JSON Data:
+                        </label>
+                        <div class="flex items-center gap-2">
+                            <button onclick="window.copyRawJson()" class="text-xs bg-tactical-card hover:bg-slate-700 text-slate-200 border border-slate-600 px-2 py-1 rounded font-mono transition">
+                                <i class="fa-regular fa-copy"></i> Copy JSON
+                            </button>
+                            <button onclick="window.applyRawJson()" class="text-xs bg-tactical-orange hover:bg-yellow-500 text-tactical-bg font-bold px-2 py-1 rounded font-rajdhani transition">
+                                <i class="fa-solid fa-check"></i> Apply Manual JSON Edits
+                            </button>
+                        </div>
+                    </div>
+                    <textarea id="rawJsonArea" rows="12" class="w-full bg-tactical-bg text-emerald-400 font-mono text-xs p-3 rounded border border-tactical-border focus:border-tactical-cyan focus:outline-none custom-scrollbar"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="bg-tactical-panel border-t border-tactical-border py-4 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 text-center text-xs text-tactical-muted font-rajdhani flex flex-col sm:flex-row justify-between items-center gap-2">
+            <div>
+                Ghost Recon Wildlands Tracker &bull; Powered by Firebase Firestore Real-Time Database
+            </div>
+            <div class="font-mono text-[11px] text-slate-400">
+                Structure Key: <span class="text-tactical-orange" id="footerKeyDisplay">Werewolf-PC-progress-TomClancyGhostReconWildlands</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Custom Modal Toast Notification Container -->
+    <div id="toastContainer" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+    <!-- Diagnostic Modal for Firebase Configuration Errors -->
+    <div id="firebaseDiagModal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-tactical-panel border-2 border-tactical-red rounded-lg max-w-lg w-full p-6 space-y-4 shadow-2xl hud-border">
+            <div class="flex justify-between items-center border-b border-tactical-border pb-3">
+                <div class="flex items-center space-x-2 text-tactical-red font-teko text-2xl uppercase">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Firebase Setup Action Required</span>
+                </div>
+                <button onclick="document.getElementById('firebaseDiagModal').classList.add('hidden')" class="text-slate-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+            <div id="diagModalBody" class="text-xs font-sans text-slate-300 space-y-3 leading-relaxed">
+                <!-- Diagnostic details inserted here -->
+            </div>
+            <div class="pt-2 flex justify-end">
+                <button onclick="document.getElementById('firebaseDiagModal').classList.add('hidden')" class="bg-tactical-card border border-tactical-border text-white text-xs font-rajdhani font-bold px-4 py-2 rounded hover:bg-slate-700">
+                    Dismiss
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Default Skill Data Structure (Base Template)
+        const DEFAULT_SKILLS = {
+            weapon: {
+                title: "Weapon",
+                icon: "fa-gun",
+                skills: [
+                    { id: "w_grenade", name: "Grenade Launcher", max: 1, current: 0 },
+                    { id: "w_ammo", name: "Ammo Capacity", max: 4, current: 0 },
+                    { id: "w_vshield", name: "Vehicle Shield", max: 4, current: 0 },
+                    { id: "w_suppressor", name: "Adv. Suppressor", max: 1, current: 0 },
+                    { id: "w_aim", name: "Time to Aim", max: 3, current: 0 }
+                ],
+                epic: { name: "Ranged Elite", unlocked: false }
+            },
+            drone: {
+                title: "Drone",
+                icon: "fa-drone",
+                skills: [
+                    { id: "d_battery", name: "Battery Capacity", max: 4, current: 0 },
+                    { id: "d_range", name: "Signal Range", max: 4, current: 0 },
+                    { id: "d_mark", name: "Mark Area", max: 3, current: 0 },
+                    { id: "d_night", name: "Night Vision", max: 1, current: 0 },
+                    { id: "d_speed", name: "Drone Speed", max: 3, current: 0 },
+                    { id: "d_stealth", name: "Stealth Coating", max: 3, current: 0 }
+                ],
+                epic: { name: "Medic Drone", unlocked: false }
+            },
+            item: {
+                title: "Item / Explosives",
+                icon: "fa-bomb",
+                skills: [
+                    { id: "i_bino", name: "Binoculars", max: 3, current: 0 },
+                    { id: "i_c4", name: "C4 Explosive", max: 3, current: 0 },
+                    { id: "i_mine", name: "Land Mines", max: 3, current: 0 },
+                    { id: "i_lure", name: "Diversion Lure", max: 3, current: 0 },
+                    { id: "i_flash", name: "Flashbang", max: 3, current: 0 }
+                ],
+                epic: { name: "Explosion Radius", unlocked: false }
+            },
+            physical: {
+                title: "Physical",
+                icon: "fa-person-running",
+                skills: [
+                    { id: "p_stamina", name: "Stamina Sprint", max: 3, current: 0 },
+                    { id: "p_health", name: "Bullet Resistance", max: 4, current: 0 },
+                    { id: "p_detect", name: "Detection Speed", max: 3, current: 0 },
+                    { id: "p_chute", name: "Parachute", max: 1, current: 0 },
+                    { id: "p_quiet", name: "Quiet Step", max: 3, current: 0 }
+                ],
+                epic: { name: "Resilience", unlocked: false }
+            },
+            squad: {
+                title: "Squad",
+                icon: "fa-users",
+                skills: [
+                    { id: "s_revive", name: "Revive Speed", max: 3, current: 0 },
+                    { id: "s_health", name: "Extra Health", max: 3, current: 0 },
+                    { id: "s_trained", name: "Trained Squad", max: 3, current: 0 },
+                    { id: "s_sync", name: "Sync Shot", max: 3, current: 0 }
+                ],
+                epic: { name: "Squad Born", unlocked: false }
+            },
+            rebel: {
+                title: "Rebel Support",
+                icon: "fa-radio",
+                skills: [
+                    { id: "r_vehicle", name: "Vehicle Drop", max: 3, current: 0 },
+                    { id: "r_guns", name: "Guns for Hire", max: 3, current: 0 },
+                    { id: "r_mortar", name: "Mortar Strike", max: 3, current: 0 },
+                    { id: "r_diversion", name: "Diversion Team", max: 3, current: 0 },
+                    { id: "r_spotting", name: "Rebel Spotting", max: 3, current: 0 }
+                ],
+                epic: { name: "Recon Elite", unlocked: false }
+            }
+        };
+
+        // Default Province Data
+        const DEFAULT_PROVINCES = {
+            security: {
+                title: "Security",
+                boss: "General Baro",
+                provinces: [
+                    { id: "itacua", name: "Itacua", buchon: "La Yuri & El Polito", cleared: false, difficulty: 1 },
+                    { id: "agua_verde", name: "Agua Verde", buchon: "Carzita", cleared: false, difficulty: 2 },
+                    { id: "montuyoc", name: "Montuyoc", buchon: "Carl Bookhart", cleared: false, difficulty: 5 },
+                    { id: "san_mateo", name: "San Mateo", buchon: "El Pozolero", cleared: false, difficulty: 4 },
+                    { id: "media_luna", name: "Media Luna", buchon: "El Comandante", cleared: false, difficulty: 5 }
+                ]
+            },
+            production: {
+                title: "Production",
+                boss: "El Yayo",
+                provinces: [
+                    { id: "ocoro", name: "Ocoro", buchon: "El Emisario", cleared: false, difficulty: 2 },
+                    { id: "espiritu_santo", name: "Espiritu Santo", buchon: "La Santera", cleared: false, difficulty: 4 },
+                    { id: "villa_verde", name: "Villa Verde", buchon: "El Way", cleared: false, difficulty: 3 },
+                    { id: "mojocoya", name: "Mojocoya", buchon: "Antonio", cleared: false, difficulty: 3 },
+                    { id: "remanzo", name: "Remanzo", buchon: "El Gato", cleared: false, difficulty: 4 }
+                ]
+            },
+            smuggling: {
+                title: "Smuggling",
+                boss: "Nidia Flores",
+                provinces: [
+                    { id: "caimanes", name: "Caimanes", buchon: "El Cerebro", cleared: false, difficulty: 3 },
+                    { id: "barvechos", name: "Barvechos", buchon: "El Pulpo", cleared: false, difficulty: 3 },
+                    { id: "pucara", name: "Pucara", buchon: "El Chido", cleared: false, difficulty: 4 },
+                    { id: "libertad", name: "Libertad", buchon: "Marcus Jensen", cleared: false, difficulty: 4 },
+                    { id: "koani", name: "Koani", buchon: "Boston Reed", cleared: false, difficulty: 5 }
+                ]
+            },
+            influence: {
+                title: "Influence",
+                boss: "El Cardenal",
+                provinces: [
+                    { id: "malca", name: "Malca", buchon: "El Chido", cleared: false, difficulty: 3 },
+                    { id: "flor_de_oro", name: "Flor de Oro", buchon: "General Baro", cleared: false, difficulty: 4 },
+                    { id: "inca_camina", name: "Inca Camina", buchon: "La Cabra", cleared: false, difficulty: 5 },
+                    { id: "pucara_inf", name: "Pucara HQ", buchon: "DJ Perico", cleared: false, difficulty: 3 },
+                    { id: "sueno_hq", name: "El Sueño HQ", buchon: "El Sueño", cleared: false, difficulty: 5 }
+                ]
+            }
+        };
+
+        // Default Weapons Data
+        const DEFAULT_WEAPONS = {
+            ar: {
+                title: "Assault Rifles",
+                items: [
+                    { id: "w_m4a1", name: "M4A1", unlocked: false, level: 1 },
+                    { id: "w_ak47", name: "AK-47", unlocked: false, level: 1 },
+                    { id: "w_tar21", name: "TAR-21", unlocked: false, level: 1 },
+                    { id: "w_acr", name: "ACR", unlocked: false, level: 1 },
+                    { id: "w_556xi", name: "556xi", unlocked: false, level: 1 }
+                ]
+            },
+            sniper: {
+                title: "Sniper Rifles",
+                items: [
+                    { id: "w_hti", name: "HTI Desert Tech", unlocked: false, level: 1 },
+                    { id: "w_m40a5", name: "M40A5", unlocked: false, level: 1 },
+                    { id: "w_sr25", name: "SR-25", unlocked: false, level: 1 },
+                    { id: "w_l115a3", name: "L115A3", unlocked: false, level: 1 },
+                    { id: "w_bfg50", name: "BFG-50A", unlocked: false, level: 1 }
+                ]
+            },
+            smg: {
+                title: "Submachine Guns",
+                items: [
+                    { id: "w_mp5", name: "MP5", unlocked: false, level: 1 },
+                    { id: "w_vector", name: "Vector .45 ACP", unlocked: false, level: 1 },
+                    { id: "w_p90", name: "P90", unlocked: false, level: 1 }
+                ]
+            },
+            lmg: {
+                title: "Light Machine Guns",
+                items: [
+                    { id: "w_mk48", name: "MK48", unlocked: false, level: 1 },
+                    { id: "w_stoner", name: "Stoner LMG A1", unlocked: false, level: 1 }
+                ]
+            }
+        };
+
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+            authDomain: "entertainment-71888.firebaseapp.com",
+            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+            projectId: "entertainment-71888",
+            storageBucket: "entertainment-71888.firebasestorage.app",
+            messagingSenderId: "660524340277",
+            appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c"
+        };
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ghost-recon-wildlands';
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let currentUser = null;
+        let unsubscribeDoc = null;
+        let isSaving = false;
+        let autoSaveTimeout = null;
+
+        // Fresh profile initializer (0% starting state for new platform profiles)
+        function getInitialState(user = "Werewolf", platform = "PC", gameId = "Tom Clancy Ghost Recon Wildlands") {
+            return {
+                currentUser: user,
+                platform: platform,
+                gameId: gameId,
+                level: 1,
+                tierMode: false,
+                tierLevel: 50,
+                operatorStats: {
+                    playstyle: "Recruit / Unassigned",
+                    avgKillDistance: "0m",
+                    tacticalPrecision: "0%",
+                    stealthKills: "0%",
+                    longestShot: "0m",
+                    precision: "0%",
+                    favWeapon: "--",
+                    favWeapon2: "--",
+                    teammatesRevived: "0",
+                    c4MineKills: "0",
+                    droneUsed: "0 times",
+                    travelAir: "0 km",
+                    travelGround: "0 km",
+                    travelParachute: "0 jumps",
+                    mapDiscovered: "0%"
+                },
+                resources: {
+                    skillPoints: 0,
+                    gas: 0,
+                    meds: 0,
+                    comms: 0,
+                    food: 0
+                },
+                skills: JSON.parse(JSON.stringify(DEFAULT_SKILLS)),
+                provinces: JSON.parse(JSON.stringify(DEFAULT_PROVINCES)),
+                weapons: JSON.parse(JSON.stringify(DEFAULT_WEAPONS)),
+                customNotes: "",
+                lastUpdated: new Date().toISOString()
+            };
+        }
+
+        // Global State Object
+        window.appState = getInitialState("Werewolf", "PC", "Tom Clancy Ghost Recon Wildlands");
+
+        // Helper function to build Firestore document key
+        function getDocPathKey() {
+            const selectedUser = window.appState.currentUser || "Werewolf";
+            const platform = window.appState.platform || "PC";
+            const rawGameId = window.appState.gameId || "Tom Clancy Ghost Recon Wildlands";
+            const sanitizedGameId = rawGameId.replace(/[^a-zA-Z0-9\-_]/g, '');
+            return `${selectedUser}-${platform}-progress-${sanitizedGameId || 'TomClancyGhostReconWildlands'}`;
+        }
+
+        window.updatePathKeyDisplay = function() {
+            const docId = getDocPathKey();
+            const pDisplay = document.getElementById('pathKeyDisplay');
+            const fDisplay = document.getElementById('footerKeyDisplay');
+            if (pDisplay) pDisplay.innerText = docId;
+            if (fDisplay) fDisplay.innerText = docId;
+        };
+
+        window.onProfileKeyChange = function() {
+            const pSelect = document.getElementById('platformSelect')?.value || 'PC';
+            const gInput = document.getElementById('gameIdInput')?.value.trim() || 'Tom Clancy Ghost Recon Wildlands';
+            
+            const curUser = window.appState.currentUser;
+
+            // Instantly reset state to clean blank slate for this specific user+platform combo
+            window.appState = getInitialState(curUser, pSelect, gInput);
+            
+            window.updatePathKeyDisplay();
+            syncStateToUI();
+            setupFirestoreListener();
+        };
+
+        window.switchUser = function(userName) {
+            const pSelect = document.getElementById('platformSelect')?.value || 'PC';
+            const gInput = document.getElementById('gameIdInput')?.value.trim() || 'Tom Clancy Ghost Recon Wildlands';
+
+            // Instantly reset state to clean blank slate for this newly selected user
+            window.appState = getInitialState(userName, pSelect, gInput);
+
+            const btnW = document.getElementById('userBtnWerewolf');
+            const btnD = document.getElementById('userBtnDesdemonaTiger');
+
+            if (userName === 'Werewolf') {
+                if (btnW) btnW.className = "px-3 py-1 rounded text-xs font-rajdhani font-bold transition flex items-center gap-1.5 bg-tactical-orange text-tactical-bg shadow";
+                if (btnD) btnD.className = "px-3 py-1 rounded text-xs font-rajdhani font-bold transition flex items-center gap-1.5 text-tactical-muted hover:text-white hover:bg-tactical-bg";
+            } else {
+                if (btnD) btnD.className = "px-3 py-1 rounded text-xs font-rajdhani font-bold transition flex items-center gap-1.5 bg-tactical-cyan text-tactical-bg shadow";
+                if (btnW) btnW.className = "px-3 py-1 rounded text-xs font-rajdhani font-bold transition flex items-center gap-1.5 text-tactical-muted hover:text-white hover:bg-tactical-bg";
+            }
+
+            const title = document.getElementById('dossierOperativeTitle');
+            if (title) title.innerText = `OPERATIVE DOSSIER: ${userName.toUpperCase()}`;
+
+            window.updatePathKeyDisplay();
+            syncStateToUI();
+            setupFirestoreListener();
+            showToast(`Loaded Operative Profile: ${userName}`, "info");
+        };
+
+        function setupFirestoreListener() {
+            if (!currentUser) return;
+
+            if (unsubscribeDoc) {
+                unsubscribeDoc();
+            }
+
+            const docId = getDocPathKey();
+            const progressDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'ghost_profiles', docId);
+
+            unsubscribeDoc = onSnapshot(progressDocRef, (docSnap) => {
+                if (!isSaving) {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        if (data && data.progressData) {
+                            const curUser = window.appState.currentUser;
+                            const curPlat = window.appState.platform;
+                            const curGame = window.appState.gameId;
+
+                            window.appState = { 
+                                ...getInitialState(curUser, curPlat, curGame),
+                                ...data.progressData,
+                                currentUser: curUser,
+                                platform: curPlat,
+                                gameId: curGame
+                            };
+                            syncStateToUI();
+                            updateSyncBadge(true, "Synced from Cloud");
+                        }
+                    } else {
+                        // Document doesn't exist in Firestore yet -> write initial state immediately so collection appears in Firebase console!
+                        window.appState = getInitialState(
+                            window.appState.currentUser, 
+                            window.appState.platform, 
+                            window.appState.gameId
+                        );
+                        syncStateToUI();
+                        updateSyncBadge(true, "Creating Cloud Document...");
+                        window.saveProgressToFirestore();
+                    }
+                }
+            }, (error) => {
+                console.error("Firestore snapshot error:", error);
+                updateSyncBadge(false, "Sync Error");
+            });
+        }
+
+        window.saveProgressToFirestore = async function() {
+            if (!currentUser) {
+                try {
+                    const userCredential = await signInAnonymously(auth);
+                    currentUser = userCredential.user;
+                } catch (authErr) {
+                    console.error("Authentication Error:", authErr);
+                    showFirebaseErrorModal("Auth Error", authErr);
+                    updateSyncBadge(false, "Auth Error");
+                    return;
+                }
+            }
+            isSaving = true;
+
+            updateSyncBadge(false, "Saving...");
+
+            const docId = getDocPathKey();
+            const progressDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'ghost_profiles', docId);
+
+            window.appState.lastUpdated = new Date().toISOString();
+
+            try {
+                console.log("Writing to Firestore path:", progressDocRef.path);
+                await setDoc(progressDocRef, {
+                    user: window.appState.currentUser,
+                    platform: window.appState.platform,
+                    gameId: window.appState.gameId,
+                    updatedAt: window.appState.lastUpdated,
+                    progressData: window.appState
+                }, { merge: true });
+
+                updateSyncBadge(true, "Saved to Cloud");
+                const lastSavedEl = document.getElementById('lastSavedText');
+                if (lastSavedEl) {
+                    lastSavedEl.innerText = `Last Saved: ${new Date().toLocaleTimeString()}`;
+                }
+                showToast("Tactical data saved to Cloud Firestore!", "success");
+            } catch (err) {
+                console.error("Error saving progress to Firestore:", err);
+                updateSyncBadge(false, "Save Failed");
+                showFirebaseErrorModal("Firestore Write Blocked", err);
+            } finally {
+                setTimeout(() => { isSaving = false; }, 300);
+            }
+        };
+
+        window.testFirebaseConnection = async function() {
+            showToast("Testing Firebase connection...", "info");
+            try {
+                if (!currentUser) {
+                    const cred = await signInAnonymously(auth);
+                    currentUser = cred.user;
+                }
+                const docId = getDocPathKey();
+                const progressDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'ghost_profiles', docId);
+                console.log("Testing write to path:", progressDocRef.path);
+                await setDoc(progressDocRef, { testPing: new Date().toISOString() }, { merge: true });
+                showToast("Firebase Connection Successful! Document written.", "success");
+                updateSyncBadge(true, "Connected");
+            } catch (err) {
+                showFirebaseErrorModal("Firebase Connection Test Failed", err);
+            }
+        };
+
+        function showFirebaseErrorModal(title, err) {
+            const modal = document.getElementById('firebaseDiagModal');
+            const body = document.getElementById('diagModalBody');
+            if (!modal || !body) return;
+
+            let helpText = "";
+            if (err.code === 'auth/operation-not-allowed') {
+                helpText = `
+                    <p class="text-amber-400 font-bold">Cause: Anonymous Authentication is disabled in your Firebase Console.</p>
+                    <ol class="list-decimal pl-4 space-y-1 text-slate-300">
+                        <li>Go to <a href="https://console.firebase.google.com/" target="_blank" class="text-tactical-cyan underline">Firebase Console</a> &rarr; <b>Authentication</b>.</li>
+                        <li>Click <b>Sign-in method</b> tab.</li>
+                        <li>Enable <b>Anonymous</b> sign-in and click <b>Save</b>.</li>
+                    </ol>
+                `;
+            } else if (err.code === 'permission-denied' || err.message?.includes('permission')) {
+                helpText = `
+                    <p class="text-amber-400 font-bold">Cause: Cloud Firestore Security Rules are blocking writes.</p>
+                    <ol class="list-decimal pl-4 space-y-1 text-slate-300">
+                        <li>Go to <a href="https://console.firebase.google.com/" target="_blank" class="text-tactical-cyan underline">Firebase Console</a> &rarr; <b>Firestore Database</b>.</li>
+                        <li>Click the <b>Rules</b> tab.</li>
+                        <li>Set <code class="bg-black/50 px-1 text-emerald-400">allow read, write: if true;</code> and click <b>Publish</b>.</li>
+                    </ol>
+                `;
+            } else {
+                helpText = `<p class="text-slate-300">Error Code: <code class="text-rose-400">${err.code || 'unknown'}</code><br>Message: ${err.message}</p>`;
+            }
+
+            body.innerHTML = `
+                <p class="font-bold text-white">${title}</p>
+                ${helpText}
+                <div class="p-2 bg-black/40 rounded border border-tactical-border font-mono text-[11px] text-slate-400 break-all">
+                    Target Path: /artifacts/${appId}/public/data/ghost_profiles/${getDocPathKey()}
+                </div>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function autoSaveTrigger() {
+            if (autoSaveTimeout) clearTimeout(autoSaveTimeout);
+            autoSaveTimeout = setTimeout(() => {
+                window.saveProgressToFirestore();
+            }, 300);
+        }
+
+        function syncStateToUI() {
+            const pSelect = document.getElementById('platformSelect');
+            const gInput = document.getElementById('gameIdInput');
+            
+            if (pSelect) pSelect.value = window.appState.platform || 'PC';
+            if (gInput) gInput.value = window.appState.gameId || 'Tom Clancy Ghost Recon Wildlands';
+
+            const playerLvl = document.getElementById('playerLevel');
+            if (playerLvl) playerLvl.value = window.appState.level || 30;
+
+            const tierLvl = document.getElementById('tierLevel');
+            if (tierLvl) tierLvl.value = window.appState.tierLevel || 50;
+
+            const tierTgl = document.getElementById('tierModeToggle');
+            if (tierTgl) tierTgl.checked = !!window.appState.tierMode;
+            
+            toggleTierModeUI(window.appState.tierMode);
+            updateStatsUI();
+
+            if (window.appState.resources) {
+                document.getElementById('skillPoints').value = window.appState.resources.skillPoints || 0;
+                document.getElementById('resGas').value = window.appState.resources.gas || 0;
+                document.getElementById('resMeds').value = window.appState.resources.meds || 0;
+                document.getElementById('resComms').value = window.appState.resources.comms || 0;
+                document.getElementById('resFood').value = window.appState.resources.food || 0;
+            }
+
+            const customNotes = document.getElementById('customNotesInput');
+            if (customNotes) customNotes.value = window.appState.customNotes || '';
+
+            renderSkillTrees();
+            renderProvinces();
+            renderWeapons();
+            calculateOverallProgress();
+            window.updatePathKeyDisplay();
+            updateRawJsonDisplay();
+        }
+
+        window.updateStatsFromUI = function() {
+            window.appState.operatorStats = {
+                playstyle: document.getElementById('statPlaystyle')?.value || '',
+                avgKillDistance: document.getElementById('statAvgKillDistance')?.value || '',
+                tacticalPrecision: document.getElementById('statTacticalPrecision')?.value || '',
+                stealthKills: document.getElementById('statStealthKills')?.value || '',
+                longestShot: document.getElementById('statLongestShot')?.value || '',
+                precision: document.getElementById('statPrecision')?.value || '',
+                favWeapon: document.getElementById('statFavWeapon')?.value || '',
+                favWeapon2: document.getElementById('statFavWeapon2')?.value || '',
+                teammatesRevived: document.getElementById('statTeammatesRevived')?.value || '',
+                c4MineKills: document.getElementById('statC4MineKills')?.value || '',
+                droneUsed: document.getElementById('statDroneUsed')?.value || '',
+                travelAir: document.getElementById('statTravelAir')?.value || '',
+                travelGround: document.getElementById('statTravelGround')?.value || '',
+                travelParachute: document.getElementById('statTravelParachute')?.value || '',
+                mapDiscovered: document.getElementById('statMapDiscovered')?.value || ''
+            };
+
+            updateRawJsonDisplay();
+            autoSaveTrigger();
+        };
+
+        function updateStatsUI() {
+            const stats = window.appState.operatorStats || {};
+            const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+            setVal('statPlaystyle', stats.playstyle || "Overwatch / Commando");
+            setVal('statAvgKillDistance', stats.avgKillDistance || "--");
+            setVal('statTacticalPrecision', stats.tacticalPrecision || "0%");
+            setVal('statStealthKills', stats.stealthKills || "0%");
+            setVal('statLongestShot', stats.longestShot || "--");
+            setVal('statPrecision', stats.precision || "0%");
+            setVal('statFavWeapon', stats.favWeapon || "--");
+            setVal('statFavWeapon2', stats.favWeapon2 || "--");
+            setVal('statTeammatesRevived', stats.teammatesRevived || "--");
+            setVal('statC4MineKills', stats.c4MineKills || "--");
+            setVal('statDroneUsed', stats.droneUsed || "--");
+            setVal('statTravelAir', stats.travelAir || "--");
+            setVal('statTravelGround', stats.travelGround || "--");
+            setVal('statTravelParachute', stats.travelParachute || "--");
+            setVal('statMapDiscovered', stats.mapDiscovered || "--");
+        }
+
+        window.updateResourceState = function() {
+            window.appState.level = parseInt(document.getElementById('playerLevel')?.value || 30);
+            window.appState.tierLevel = parseInt(document.getElementById('tierLevel')?.value || 50);
+            window.appState.resources = {
+                skillPoints: parseInt(document.getElementById('skillPoints')?.value || 0),
+                gas: parseInt(document.getElementById('resGas')?.value || 0),
+                meds: parseInt(document.getElementById('resMeds')?.value || 0),
+                comms: parseInt(document.getElementById('resComms')?.value || 0),
+                food: parseInt(document.getElementById('resFood')?.value || 0)
+            };
+            updateRawJsonDisplay();
+            autoSaveTrigger();
+        };
+
+        window.toggleTierMode = function() {
+            const chk = document.getElementById('tierModeToggle')?.checked;
+            window.appState.tierMode = !!chk;
+            toggleTierModeUI(chk);
+            updateRawJsonDisplay();
+            autoSaveTrigger();
+        };
+
+        function toggleTierModeUI(enabled) {
+            const badge = document.getElementById('tierModeBadge');
+            if (badge) {
+                if (enabled) {
+                    badge.innerText = "TIER ONE ACTIVE";
+                    badge.className = "bg-tactical-cyan/20 text-tactical-cyan border border-tactical-cyan/40 text-[10px] px-2 py-0.5 rounded font-mono font-bold animate-pulse";
+                } else {
+                    badge.innerText = "NORMAL MODE";
+                    badge.className = "bg-slate-800 text-slate-300 border border-slate-700 text-[10px] px-2 py-0.5 rounded font-mono font-bold";
+                }
+            }
+        }
+
+        function renderSkillTrees() {
+            const container = document.getElementById('skillTreesContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const skillsData = window.appState.skills || DEFAULT_SKILLS;
+
+            Object.keys(skillsData).forEach(catKey => {
+                const cat = skillsData[catKey];
+                const card = document.createElement('div');
+                card.className = "bg-tactical-card border border-tactical-border rounded-lg p-4 space-y-3 hud-border";
+
+                let skillsHtml = cat.skills.map(skill => {
+                    let dots = '';
+                    for (let i = 1; i <= skill.max; i++) {
+                        const active = i <= skill.current;
+                        dots += `<button onclick="window.setSkillRank('${catKey}', '${skill.id}', ${i})" class="w-3 h-3 rounded-full transition border ${active ? 'bg-tactical-orange border-yellow-300 shadow-sm shadow-orange-500' : 'bg-tactical-bg border-slate-700 hover:border-slate-500'}"></button>`;
+                    }
+                    return `
+                        <div class="flex items-center justify-between text-xs py-1 border-b border-tactical-border/50">
+                            <span class="font-rajdhani font-semibold text-slate-200">${skill.name}</span>
+                            <div class="flex items-center space-x-1">${dots}</div>
+                        </div>
+                    `;
+                }).join('');
+
+                const epicActive = cat.epic?.unlocked;
+                const epicHtml = `
+                    <div class="pt-2 border-t border-tactical-border flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <i class="fa-solid fa-medal text-tactical-gold"></i>
+                            <span class="text-xs font-rajdhani font-bold text-tactical-gold uppercase">EPIC: ${cat.epic?.name}</span>
+                        </div>
+                        <button onclick="window.toggleEpicSkill('${catKey}')" class="px-2 py-0.5 rounded text-[10px] font-mono font-bold transition border ${epicActive ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : 'bg-slate-800 text-slate-400 border-slate-700'}">
+                            ${epicActive ? 'UNLOCKED' : 'LOCKED'}
+                        </button>
+                    </div>
+                `;
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-tactical-border pb-2">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-8 h-8 rounded bg-tactical-bg border border-tactical-orange/40 text-tactical-orange flex items-center justify-center">
+                                <i class="fa-solid ${cat.icon || 'fa-star'} text-sm"></i>
+                            </div>
+                            <h4 class="font-teko text-xl text-white uppercase tracking-wider leading-none">${cat.title}</h4>
+                        </div>
+                    </div>
+                    <div class="space-y-1">${skillsHtml}</div>
+                    ${epicHtml}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.setSkillRank = function(catKey, skillId, rank) {
+            if (!window.appState.skills[catKey]) return;
+            const skill = window.appState.skills[catKey].skills.find(s => s.id === skillId);
+            if (skill) {
+                skill.current = (skill.current === rank && rank === 1) ? 0 : rank;
+                renderSkillTrees();
+                calculateOverallProgress();
+                updateRawJsonDisplay();
+                autoSaveTrigger();
+            }
+        };
+
+        window.toggleEpicSkill = function(catKey) {
+            if (!window.appState.skills[catKey]) return;
+            window.appState.skills[catKey].epic.unlocked = !window.appState.skills[catKey].epic.unlocked;
+            renderSkillTrees();
+            calculateOverallProgress();
+            updateRawJsonDisplay();
+            autoSaveTrigger();
+        };
+
+        window.maxOutSkills = function() {
+            Object.keys(window.appState.skills).forEach(catKey => {
+                const cat = window.appState.skills[catKey];
+                cat.skills.forEach(s => s.current = s.max);
+                if (cat.epic) cat.epic.unlocked = true;
+            });
+            renderSkillTrees();
+            calculateOverallProgress();
+            updateRawJsonDisplay();
+            autoSaveTrigger();
+            showToast("Maxed out all Tactical Skills", "info");
+        };
+
+        window.resetSkills = function() {
+            Object.keys(window.appState.skills).forEach(catKey => {
+                const cat = window.appState.skills[catKey];
+                cat.skills.forEach(s => s.current = 0);
+                if (cat.epic) cat.epic.unlocked = false;
+            });
+            renderSkillTrees();
+            calculateOverallProgress();
+            updateRawJsonDisplay();
+            autoSaveTrigger();
+            showToast("Reset all Tactical Skills", "warning");
+        };
+
+        function renderProvinces() {
+            const container = document.getElementById('provincesContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const provData = window.appState.provinces || DEFAULT_PROVINCES;
+
+            Object.keys(provData).forEach(pillarKey => {
+                const pillar = provData[pillarKey];
+                const card = document.createElement('div');
+                card.className = "bg-tactical-card border border-tactical-border rounded-lg p-4 space-y-3 hud-border";
+
+                let itemsHtml = pillar.provinces.map(p => `
+                    <div class="flex items-center justify-between p-2 rounded bg-tactical-bg border border-tactical-border/60">
+                        <div>
+                            <div class="text-xs font-rajdhani font-bold text-white">${p.name}</div>
+                            <div class="text-[10px] text-tactical-muted font-mono">Buchon: ${p.buchon}</div>
+                        </div>
+                        <button onclick="window.toggleProvince('${pillarKey}', '${p.id}')" class="px-2 py-1 rounded text-[10px] font-mono font-bold transition ${p.cleared ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'}">
+                            ${p.cleared ? 'CLEARED' : 'HOSTILE'}
+                        </button>
+                    </div>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="border-b border-tactical-border pb-2 flex justify-between items-center">
+                        <div>
+                            <h4 class="font-teko text-xl text-tactical-orange uppercase tracking-wider leading-none">${pillar.title}</h4>
+                            <span class="text-[10px] text-tactical-muted font-mono">Boss: ${pillar.boss}</span>
+                        </div>
+                    </div>
+                    <div class="space-y-2">${itemsHtml}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.toggleProvince = function(pillarKey, provId) {
+            if (!window.appState.provinces[pillarKey]) return;
+            const p = window.appState.provinces[pillarKey].provinces.find(item => item.id === provId);
+            if (p) {
+                p.cleared = !p.cleared;
+                renderProvinces();
+                calculateOverallProgress();
+                updateRawJsonDisplay();
+                autoSaveTrigger();
+            }
+        };
+
+        function renderWeapons() {
+            const container = document.getElementById('weaponsContainer');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const wData = window.appState.weapons || DEFAULT_WEAPONS;
+
+            Object.keys(wData).forEach(catKey => {
+                const cat = wData[catKey];
+                const card = document.createElement('div');
+                card.className = "bg-tactical-card border border-tactical-border rounded-lg p-4 space-y-3 hud-border weapon-card-group";
+
+                let itemsHtml = cat.items.map(w => `
+                    <div class="weapon-item flex items-center justify-between p-2 rounded bg-tactical-bg border border-tactical-border/60" data-name="${w.name.toLowerCase()}">
+                        <div class="flex items-center space-x-2">
+                            <input type="checkbox" ${w.unlocked ? 'checked' : ''} onchange="window.toggleWeaponUnlocked('${catKey}', '${w.id}')" class="rounded bg-tactical-card border-tactical-border text-tactical-orange focus:ring-0">
+                            <span class="text-xs font-rajdhani font-bold text-white">${w.name}</span>
+                        </div>
+                        <div class="flex items-center space-x-1">
+                            <span class="text-[10px] text-tactical-muted font-mono">Lvl:</span>
+                            <input type="number" min="1" max="30" value="${w.level || 1}" onchange="window.setWeaponLevel('${catKey}', '${w.id}', this.value)" class="w-12 bg-tactical-card text-white font-mono text-center text-xs py-0.5 rounded border border-tactical-border focus:border-tactical-orange focus:outline-none">
+                        </div>
+                    </div>
+                `).join('');
+
+                card.innerHTML = `
+                    <div class="border-b border-tactical-border pb-2">
+                        <h4 class="font-teko text-xl text-tactical-cyan uppercase tracking-wider leading-none">${cat.title}</h4>
+                    </div>
+                    <div class="space-y-2">${itemsHtml}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        window.toggleWeaponUnlocked = function(catKey, wId) {
+            const w = window.appState.weapons[catKey]?.items.find(i => i.id === wId);
+            if (w) {
+                w.unlocked = !w.unlocked;
+                updateRawJsonDisplay();
+                autoSaveTrigger();
+            }
+        };
+
+        window.setWeaponLevel = function(catKey, wId, lvl) {
+            const w = window.appState.weapons[catKey]?.items.find(i => i.id === wId);
+            if (w) {
+                w.level = parseInt(lvl) || 1;
+                updateRawJsonDisplay();
+                autoSaveTrigger();
+            }
+        };
+
+        window.filterWeapons = function() {
+            const q = document.getElementById('weaponSearch')?.value.toLowerCase() || '';
+            const items = document.querySelectorAll('.weapon-item');
+            items.forEach(el => {
+                const name = el.getAttribute('data-name') || '';
+                el.style.display = name.includes(q) ? 'flex' : 'none';
+            });
+        };
+
+        function calculateOverallProgress() {
+            let totalSkills = 0;
+            let currentSkills = 0;
+
+            if (window.appState.skills) {
+                Object.keys(window.appState.skills).forEach(k => {
+                    const cat = window.appState.skills[k];
+                    cat.skills.forEach(s => {
+                        totalSkills += s.max;
+                        currentSkills += s.current;
+                    });
+                });
+            }
+
+            let totalProvinces = 0;
+            let clearedProvinces = 0;
+
+            if (window.appState.provinces) {
+                Object.keys(window.appState.provinces).forEach(k => {
+                    const pillar = window.appState.provinces[k];
+                    pillar.provinces.forEach(p => {
+                        totalProvinces++;
+                        if (p.cleared) clearedProvinces++;
+                    });
+                });
+            }
+
+            const skillPct = totalSkills > 0 ? (currentSkills / totalSkills) : 0;
+            const provPct = totalProvinces > 0 ? (clearedProvinces / totalProvinces) : 0;
+            const overallPct = Math.round(((skillPct * 0.5) + (provPct * 0.5)) * 100);
+
+            const totalProgressPct = document.getElementById('totalProgressPct');
+            if (totalProgressPct) totalProgressPct.innerText = `${overallPct}%`;
+
+            const totalProgressBar = document.getElementById('totalProgressBar');
+            if (totalProgressBar) totalProgressBar.style.width = `${overallPct}%`;
+
+            const skillsCount = document.getElementById('skillsCompletedCount');
+            if (skillsCount) skillsCount.innerText = `Skills: ${currentSkills}/${totalSkills}`;
+
+            const provCount = document.getElementById('provincesClearedCount');
+            if (provCount) provCount.innerText = `Provinces: ${clearedProvinces}/${totalProvinces}`;
+
+            const provTotal = document.getElementById('provinceTotalProgress');
+            if (provTotal) provTotal.innerText = `${clearedProvinces} / ${totalProvinces} Cleared`;
+        }
+
+        window.switchTab = function(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = "tab-btn font-rajdhani font-bold text-sm px-4 py-2 rounded flex items-center gap-2 transition text-tactical-muted hover:text-white hover:bg-tactical-card whitespace-nowrap";
+            });
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+
+            const activeBtn = document.getElementById(`tab-${tabName}`);
+            if (activeBtn) {
+                activeBtn.className = "tab-btn active font-rajdhani font-bold text-sm px-4 py-2 rounded flex items-center gap-2 transition text-tactical-orange bg-tactical-card border border-tactical-orange/40 whitespace-nowrap";
+            }
+
+            const content = document.getElementById(`content-${tabName}`);
+            if (content) content.classList.remove('hidden');
+        };
+
+        window.saveNotes = function() {
+            window.appState.customNotes = document.getElementById('customNotesInput')?.value || '';
+            updateRawJsonDisplay();
+            autoSaveTrigger();
+        };
+
+        function updateRawJsonDisplay() {
+            const jsonArea = document.getElementById('rawJsonArea');
+            if (jsonArea) {
+                jsonArea.value = JSON.stringify(window.appState, null, 2);
+            }
+        }
+
+        window.copyRawJson = function() {
+            const jsonArea = document.getElementById('rawJsonArea');
+            if (!jsonArea) return;
+            jsonArea.select();
+            document.execCommand('copy');
+            showToast("Copied JSON to clipboard", "info");
+        };
+
+        window.applyRawJson = function() {
+            try {
+                const jsonArea = document.getElementById('rawJsonArea');
+                const parsed = JSON.parse(jsonArea.value);
+                window.appState = parsed;
+                syncStateToUI();
+                autoSaveTrigger();
+                showToast("Successfully applied custom JSON state", "success");
+            } catch (err) {
+                showToast("Invalid JSON syntax", "error");
+            }
+        };
+
+        function updateSyncBadge(success, msg) {
+            const badge = document.getElementById('syncBadge');
+            const txt = document.getElementById('syncText');
+            if (!badge || !txt) return;
+
+            txt.innerText = msg;
+            if (success) {
+                badge.className = "bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-xs px-2 py-1 rounded font-mono flex items-center gap-1.5";
+            } else {
+                badge.className = "bg-amber-950/80 border border-amber-500/40 text-amber-400 text-xs px-2 py-1 rounded font-mono flex items-center gap-1.5";
+            }
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            if (!container) return;
+
+            const toast = document.createElement('div');
+            let colorClasses = "bg-tactical-panel border-tactical-cyan text-tactical-cyan";
+            if (type === 'success') colorClasses = "bg-tactical-panel border-emerald-500 text-emerald-400";
+            if (type === 'error') colorClasses = "bg-tactical-panel border-rose-500 text-rose-400";
+            if (type === 'warning') colorClasses = "bg-tactical-panel border-tactical-orange text-tactical-orange";
+
+            toast.className = `p-3 rounded border shadow-xl text-xs font-rajdhani font-bold flex items-center gap-2 transition-all duration-300 pointer-events-auto ${colorClasses}`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> <span>${msg}</span>`;
+
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-x-4');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Initialize Authentication & UI
+        window.onload = async function() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const userCredential = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUser = userCredential.user;
+                } else {
+                    const userCredential = await signInAnonymously(auth);
+                    currentUser = userCredential.user;
+                }
+            } catch (err) {
+                console.warn("Auth initialization note:", err);
+            }
+
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    setupFirestoreListener();
+                }
+            });
+
+            // Initial UI Renders
+            renderSkillTrees();
+            renderProvinces();
+            renderWeapons();
+            updateStatsUI();
+            window.updatePathKeyDisplay();
+            updateRawJsonDisplay();
+        };
+    </script>
+</body>
+</html>
