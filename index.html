@@ -1,12 +1,3 @@
-<!-- 
-  ==========================================
-  VERSION TIMESTAMP: Thu, July 23, 2026, 12:40 AM EDT
-  SYSTEM: Werewolf Project Home Production Engine (index.html)
-  DEPLOYMENT: GitHub Pages / Live Server Production Target
-  ARCHITECTURE: Module-Isolated Execution + Firestore Live Sync
-  SQUAD: Werewolf3788 | Raymystyro | Terrdog420 | DesdemonaTiger
-  ==========================================
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -16,27 +7,28 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google Tag Manager - Personal Project Analytics -->
+    <!-- Google Tag Manager - Personal Project -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){try { dataLayer.push(arguments); } catch(e){}}
+      function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-Z9M5LXQ5XN');
     </script>
 
     <style>
         :root {
+            /* Applying user-specified mobile settings */
             --header-text-size: 30px;
             --body-text-size: 14px;
             --row-height: 30px;
             --section-height: 50px;
 
-            /* Site Theme Colors */
-            --color-werewolf: #FF5F1F;
-            --color-ray: #C41E3A;      
-            --color-terrdog: #9333ea;   
-            --color-desdemona: #00f2ff;
+            /* Custom Theme Colors */
+            --color-werewolf: #FF5F1F; /* Jet Orange */
+            --color-ray: #C41E3A;      /* St. Louis Cardinals Red */
+            --color-phoenix: #00f2ff;   /* Blue Flame (Vibrant Cyan) */
+            --color-terrdog: #9333ea;   /* Purple */
         }
 
         body {
@@ -45,12 +37,9 @@
             font-size: var(--body-text-size);
             line-height: var(--row-height);
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            width: 100vw;
-            max-width: 100%;
-            margin: 0;
-            overflow-x: hidden;
         }
 
+        /* Enforcing 80% width per protocol without breaking Tailwind */
         .max-w-7xl {
             width: 80% !important;
             max-width: 80% !important;
@@ -113,9 +102,14 @@
             opacity: 0;
             transition: opacity 1s ease;
         }
-        .weather-layer.active { opacity: 1; }
+        .weather-layer.active {
+            opacity: 1;
+        }
 
-        .card-content { position: relative; z-index: 10; }
+        .card-content {
+            position: relative;
+            z-index: 10;
+        }
 
         .bg-rain { background: linear-gradient(to bottom, #1e293b, #0f172a); }
         .bg-cloudy { background: linear-gradient(to bottom, #475569, #1e293b); }
@@ -123,9 +117,69 @@
         .bg-snowy { background: linear-gradient(to bottom, #1e40af, #3b82f6); }
         .bg-clear { background: linear-gradient(to bottom, #0f172a, #020617); }
 
+        /* Rain Particles */
+        .rain-drop {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            width: 1px;
+            height: 15px;
+            top: -20px;
+            animation: fall linear infinite;
+        }
+
+        /* Cloud Particles */
+        .cloud-puff {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            filter: blur(20px);
+            animation: float 10s ease-in-out infinite;
+        }
+
+        .sun-glow {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
+            animation: pulse-sun 4s ease-in-out infinite;
+        }
+
+        .snow-ground {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: white;
+            filter: blur(8px);
+            opacity: 0.6;
+        }
+        .snowflake {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 0.8;
+            top: -10px;
+            animation: drift linear infinite;
+        }
+
+        @keyframes fall { to { transform: translateY(350px); } }
+        @keyframes drift { to { transform: translateY(350px) translateX(20px); } }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 15px); }
+        }
+        @keyframes pulse-sun {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.3); opacity: 0.8; }
+        }
+
         .status-pulse {
             display: inline-block;
-            width: 8px; height: 8px;
+            width: 8px;
+            height: 8px;
             background-color: #ef4444;
             border-radius: 50%;
             margin-right: 6px;
@@ -146,13 +200,32 @@
         .text-ray { color: var(--color-ray); }
         .shadow-ray { box-shadow: 0 10px 15px -3px rgba(196, 30, 58, 0.4); }
 
+        .border-phoenix { border-color: var(--color-phoenix); }
+        .text-phoenix { 
+            color: var(--color-phoenix); 
+            text-shadow: 0 0 8px rgba(0, 242, 255, 0.6);
+        }
+        .shadow-phoenix { box-shadow: 0 0 20px -5px rgba(0, 242, 255, 0.5); }
+
         .border-terrdog { border-color: var(--color-terrdog); }
         .text-terrdog { color: var(--color-terrdog); }
         .shadow-terrdog { box-shadow: 0 10px 15px -3px rgba(147, 51, 234, 0.4); }
 
+        .is-sunny h3 { color: #0f172a !important; }
+        .is-sunny p { color: #1e293b !important; }
+        .is-sunny .weather-desc { color: #334155 !important; opacity: 0.9; }
+        .is-sunny .border-terrdog, .is-sunny .border-werewolf, .is-sunny .border-ray, .is-sunny .border-phoenix { border-color: rgba(0,0,0,0.4); }
+        .is-sunny .visit-link { color: #0f172a !important; border-color: rgba(0,0,0,0.3) !important; }
+        
+        .is-sunny .text-phoenix { 
+            color: #007788 !important; 
+            text-shadow: none;
+        }
+
         .kf-watermark {
             position: fixed;
-            bottom: 10px; left: 10px;
+            bottom: 10px;
+            left: 10px;
             font-family: 'Arial Black', sans-serif;
             font-size: 28px;
             z-index: 999;
@@ -172,23 +245,17 @@
             <div class="flex items-center justify-between h-16">
                 <div class="flex-shrink-0 flex items-center gap-3">
                     <span class="text-xl font-black tracking-tighter text-sky-400">WEREWOLF<span class="text-white">PROJECT</span></span>
+                    <span id="activeNicknameBadge" class="hidden text-xs bg-slate-800 text-amber-400 font-mono px-2 py-1 rounded border border-amber-500/30"></span>
                 </div>
 
-                <!-- Desktop Menu -->
+                <!-- Desktop Menu (Populated dynamically via JS) -->
                 <div id="desktop-nav-links" class="hidden md:flex items-center space-x-8">
+                    <!-- Placeholder loading state -->
                     <div class="flex items-center space-x-4 animate-pulse">
                         <div class="h-4 w-16 bg-slate-700 rounded"></div>
                         <div class="h-4 w-16 bg-slate-700 rounded"></div>
                         <div class="h-4 w-20 bg-slate-700 rounded"></div>
                     </div>
-                </div>
-
-                <!-- Global Auth Status Pill -->
-                <div id="auth-status-container" class="hidden md:flex items-center ml-4">
-                    <button id="auth-btn" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 text-xs font-bold text-slate-200 py-1.5 px-3 rounded-lg flex items-center gap-2 transition-all">
-                        <i class="fa-solid fa-user text-sky-400"></i>
-                        <span id="auth-user-name">Sign In</span>
-                    </button>
                 </div>
 
                 <div class="md:hidden flex items-center">
@@ -199,9 +266,10 @@
             </div>
         </div>
 
-        <!-- Mobile Menu -->
+        <!-- Mobile Menu (Populated dynamically via JS) -->
         <div id="mobile-menu" class="md:hidden hidden bg-slate-900 border-b border-slate-700">
             <div id="mobile-nav-links" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                 <!-- Placeholder loading state -->
                  <div class="h-4 w-24 bg-slate-700/50 rounded mb-2 ml-3 animate-pulse"></div>
                  <div class="h-4 w-24 bg-slate-700/50 rounded ml-3 animate-pulse"></div>
             </div>
@@ -297,6 +365,7 @@
     <section class="section-padding bg-slate-900/30">
         <div class="max-w-7xl mx-auto px-4">
             <div id="cinema-container" class="custom-card p-10 border border-orange-500/30 flex flex-col items-center justify-center shadow-orange-500/10 shadow-2xl text-center relative overflow-hidden min-h-[500px]">
+                
                 <div id="cinema-layer-1" class="absolute inset-0 transition-opacity duration-1000 opacity-100 z-0">
                     <div class="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-50"></div>
                     <div class="absolute inset-0 bg-contain bg-center bg-no-repeat drop-shadow-2xl"></div>
@@ -310,7 +379,7 @@
                 
                 <div class="relative z-10 flex flex-col items-center justify-center gap-6 w-full">
                     <h2 class="text-orange-500 outline-text">Werewolf Cinema</h2>
-                    <p class="text-slate-200 font-bold outline-text max-w-md">Access the list of Movie's I own digitally, plus see what they're streaming on, the major brands like google, youtube, apple fandango, and Movies anywhere are all manually added, Amazon is sorta both manually added or search for Amazon is a Affilated account. Hope you enjoy this setup.</p>
+                    <p class="text-slate-200 font-bold outline-text max-w-md">Access the list of Movie's I own digitally, plus see what they're streaming on, the major brands like google, youtube, apple fandango, and Movies anywhere are all manually added, Amazon is sorta both  manually added or search for Amazon is a Affilated account. Hope you enjoy this setup.</p>
                     
                     <a href="https://werewolf3788.github.io/Website/Movies.html" 
                        target="werewolf_cinema_window" 
@@ -327,32 +396,32 @@
         </div>
     </section>
 
-    <!-- LIVE ACTIVE PLAYSTATION SQUAD PROGRESS SECTION -->
-    <section class="section-padding">
-        <div class="max-w-7xl mx-auto px-4 space-y-8" id="active-game-section-container">
-            <div class="custom-card p-8 border border-slate-700/80">
-                <div class="flex items-center justify-between mb-6">
-                    <span class="bg-slate-800 text-sky-400 border border-sky-500/30 font-black text-[10px] uppercase px-3 py-1 rounded-full flex items-center gap-2">
-                        <i class="fa-solid fa-satellite-dish"></i> LIVE SQUAD PROGRESS TRACKER
-                    </span>
-                    <span class="text-xs text-emerald-400 font-bold uppercase tracking-widest">FIRESTORE CLOUD ACTIVE</span>
+    <!-- REAL-TIME FIRESTORE CROSS-PLATFORM SQUAD PROGRESS -->
+    <section class="section-padding bg-slate-900/80 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+                <div>
+                    <span class="text-orange-500 font-bold uppercase tracking-widest text-xs">Live Database Matrix</span>
+                    <h2 class="mt-1">Squad Progress Across Platforms</h2>
+                    <p class="mt-2 text-slate-400 text-sm">Real-time player tracking stored directly under <code class="text-sky-400 font-mono">/users/{nickname}/platform/{platform}</code></p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
-                    <div class="md:col-span-1 aspect-video rounded-xl overflow-hidden border border-slate-700 bg-slate-900 relative">
-                        <img id="coop-game-art" src="https://rebellion.com/wp-content/uploads/2022/01/SE5_Render_CoverArt_FINAL-2-scaled.jpg" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-4">
-                            <div class="text-lg font-black text-white uppercase" id="active-game-title-overlay">Sniper Elite 5</div>
-                        </div>
-                    </div>
-                    <div class="md:col-span-2 space-y-5">
-                        <div>
-                            <h2 class="text-2xl font-black text-sky-400 uppercase tracking-tight" id="active-game-heading">Sniper Elite 5</h2>
-                            <p class="text-xs text-slate-400 font-bold uppercase mt-1 tracking-widest">Squad Roster: Werewolf3788 • Raymystyro • Terrdog420 • DesdemonaTiger</p>
-                        </div>
-                        <div class="space-y-4 bg-slate-900/60 p-5 rounded-xl border border-slate-800" id="squad-progress-bars">
-                            <div class="text-xs text-slate-400 italic animate-pulse">Syncing live Firestore progress...</div>
-                        </div>
-                    </div>
+
+                <!-- Platform Filter Toggle -->
+                <div class="flex items-center gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+                    <button onclick="filterPlatformGrid('all')" id="btn-filter-all" class="px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-slate-800 border border-slate-700 hover:bg-slate-700 transition-all">🌐 All Platforms</button>
+                    <button onclick="filterPlatformGrid('playstation')" id="btn-filter-playstation" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all">🎮 PlayStation</button>
+                    <button onclick="filterPlatformGrid('pc')" id="btn-filter-pc" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all">💻 PC</button>
+                    <button onclick="filterPlatformGrid('xbox')" id="btn-filter-xbox" class="px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all">💚 Xbox</button>
+                </div>
+            </div>
+
+            <!-- Dynamic Live Squad Cards Grid -->
+            <div id="squadProgressGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Loading Skeleton -->
+                <div class="custom-card p-6 border border-slate-800 animate-pulse">
+                    <div class="h-4 bg-slate-800 rounded w-1/2 mb-4"></div>
+                    <div class="h-8 bg-slate-800 rounded mb-2"></div>
+                    <div class="h-4 bg-slate-800 rounded w-3/4"></div>
                 </div>
             </div>
         </div>
@@ -370,83 +439,190 @@
         </div>
     </footer>
 
-    <!-- Firebase v9+ Modular Web SDK Engine -->
+    <!-- Firebase Session & Active Nickname Sync Engine -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { 
+            getAuth, 
+            setPersistence, 
+            browserLocalPersistence, 
+            onAuthStateChanged 
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
-          apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
-          authDomain: "game-tracker-5b2ef.firebaseapp.com",
-          databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
-          projectId: "game-tracker-5b2ef",
-          storageBucket: "game-tracker-5b2ef.firebasestorage.app",
-          messagingSenderId: "555667047127",
-          appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
+            apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+            authDomain: "entertainment-71888.firebaseapp.com",
+            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+            projectId: "entertainment-71888",
+            storageBucket: "entertainment-71888.firebasestorage.app",
+            messagingSenderId: "660524340277",
+            appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+            measurementId: "G-JDNSLD3GFE"
         };
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const rtdb = getDatabase(app);
 
-        setPersistence(auth, browserLocalPersistence).catch(err => console.warn("Auth persistence notice:", err.message));
+        let activeFilter = 'all';
+        let liveSquadData = [];
 
-        const authBtn = document.getElementById('auth-btn');
-        const authName = document.getElementById('auth-user-name');
+        // Enforce local persistence across the entire domain repository
+        setPersistence(auth, browserLocalPersistence).then(() => {
+            onAuthStateChanged(auth, (user) => {
+                const badge = document.getElementById("activeNicknameBadge");
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user && !user.isAnonymous) {
-                const name = user.displayName || user.email.split('@')[0];
-                if (authName) authName.innerText = name;
-                if (authBtn) {
-                    authBtn.onclick = () => {
-                        if (confirm(`Logged in as ${user.email}. Sign out?`)) {
-                            signOut(auth);
-                        }
-                    };
+                if (user && !user.isAnonymous) {
+                    const activeNickname = localStorage.getItem('active_gaming_nickname') || user.displayName || user.email.split('@')[0];
+                    localStorage.setItem('active_gaming_nickname', activeNickname);
+                    
+                    if (badge) {
+                        badge.textContent = `🎮 ${activeNickname}`;
+                        badge.classList.remove("hidden");
+                    }
+                } else {
+                    const savedNickname = localStorage.getItem('active_gaming_nickname');
+                    if (savedNickname && badge) {
+                        badge.textContent = `🎮 ${savedNickname} (Guest View)`;
+                        badge.classList.remove("hidden");
+                    } else if (badge) {
+                        badge.classList.add("hidden");
+                    }
                 }
-
-                await setDoc(doc(db, "users", user.uid), {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: name,
-                    photoURL: user.photoURL || '',
-                    lastSeen: new Date().toISOString()
-                }, { merge: true }).catch(err => console.warn("Firestore auth sync notice:", err.message));
-
-            } else {
-                if (authName) authName.innerText = "Sign In";
-                if (authBtn) {
-                    authBtn.onclick = async () => {
-                        try {
-                            const provider = new GoogleAuthProvider();
-                            provider.setCustomParameters({ prompt: 'select_account' });
-                            await signInWithPopup(auth, provider);
-                        } catch (err) {
-                            console.error("Sign-in error:", err.message);
-                        }
-                    };
-                }
-            }
+            });
         });
 
-        window.toggleMobileMenu = function() {
+        // Real-time Squad Firestore Aggregator for index.html
+        function listenToSquadProgress() {
+            const squadUsers = ['Werewolf3788', 'Raymystyro', 'terrdog420', 'DesdemonaTiger'];
+            const platforms = ['playstation', 'pc', 'xbox'];
+
+            squadUsers.forEach(userKey => {
+                platforms.forEach(plat => {
+                    const progressRef = collection(db, 'users', userKey, 'platform', plat, 'progress');
+                    onSnapshot(progressRef, (snap) => {
+                        snap.forEach(doc => {
+                            if (doc.id === 'T.C.G.R.Wildlands') {
+                                const data = doc.data();
+                                const index = liveSquadData.findIndex(item => item.user === userKey && item.platform === plat);
+                                if (index > -1) {
+                                    liveSquadData[index] = data;
+                                } else {
+                                    liveSquadData.push(data);
+                                }
+                            }
+                        });
+                        renderSquadProgressCards();
+                    });
+                });
+            });
+        }
+
+        function renderSquadProgressCards() {
+            const container = document.getElementById('squadProgressGrid');
+            if (!container) return;
+
+            const filteredData = liveSquadData.filter(item => activeFilter === 'all' || item.platform === activeFilter);
+
+            if (filteredData.length === 0) {
+                container.innerHTML = `
+                    <div class="col-span-full custom-card p-8 text-center text-slate-400">
+                        <i class="fa-solid fa-database text-3xl text-slate-600 mb-3 block"></i>
+                        No operator progress records currently registered under the <span class="text-sky-400 font-mono">${activeFilter.toUpperCase()}</span> platform filter.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filteredData.forEach(item => {
+                const platformBadge = item.platform === 'playstation' 
+                    ? `<span class="bg-blue-600/30 text-blue-400 border border-blue-500/50 px-2 py-0.5 rounded text-[10px] font-bold uppercase">🎮 PlayStation</span>`
+                    : item.platform === 'pc' 
+                    ? `<span class="bg-sky-600/30 text-sky-400 border border-sky-500/50 px-2 py-0.5 rounded text-[10px] font-bold uppercase">💻 PC</span>`
+                    : `<span class="bg-emerald-600/30 text-emerald-400 border border-emerald-500/50 px-2 py-0.5 rounded text-[10px] font-bold uppercase">💚 Xbox</span>`;
+
+                html += `
+                    <div class="custom-card p-6 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="text-lg font-bold text-white mb-0">${item.user || 'Ghost Operator'}</h3>
+                                    <span class="text-[11px] text-orange-400 font-mono">${item.playstyle || 'Tactical Operative'}</span>
+                                </div>
+                                ${platformBadge}
+                            </div>
+
+                            <div class="space-y-3 my-4 bg-slate-950/60 p-3 rounded-lg border border-slate-800/80">
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Tier Level:</span>
+                                    <span class="font-bold text-amber-400">Level ${item.tier || 1} (${item.tierMode === 'on' ? 'Tier One Active' : 'Off'})</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Tactical Precision:</span>
+                                    <span class="font-bold text-emerald-400">${item.tactical || 0}%</span>
+                                </div>
+                                <div class="flex justify-between text-xs">
+                                    <span class="text-slate-400">Favorite Weapon:</span>
+                                    <span class="font-bold text-slate-200 truncate max-w-[140px]">${item.favWeapon || 'P416'}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="./games/Tom-Clancy/Ghost%20Recon/Wildlands/index.html?user=${encodeURIComponent(item.user)}&platform=${encodeURIComponent(item.platform)}" 
+                           class="mt-4 block text-center bg-slate-800 hover:bg-slate-700 text-sky-400 font-bold text-xs py-2 px-4 rounded-lg border border-slate-700 transition-colors">
+                            Launch Profile (${item.platform.toUpperCase()})
+                        </a>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        window.filterPlatformGrid = function(platformKey) {
+            activeFilter = platformKey;
+            ['all', 'playstation', 'pc', 'xbox'].forEach(p => {
+                const btn = document.getElementById(`btn-filter-${p}`);
+                if (btn) {
+                    if (p === platformKey) {
+                        btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-white bg-slate-800 border border-slate-700";
+                    } else {
+                        btn.className = "px-3 py-1.5 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all";
+                    }
+                }
+            });
+            renderSquadProgressCards();
+        };
+
+        window.onload = () => {
+            listenToSquadProgress();
+        };
+    </script>
+
+    <!-- Page Logic Script -->
+    <script>
+        const users = [
+            { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf', twitch: 'werewolf3788', theme: 'text-werewolf' },
+            { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray', twitch: 'raymystyro', theme: 'text-ray' },
+            { id: 'tj', user: 'terrdog420', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', layerId: 'layer-tj', descId: 'weather-desc-tj', twitch: 'terrdog420', theme: 'text-terrdog' }
+        ];
+
+        function toggleMobileMenu() {
             const menu = document.getElementById('mobile-menu');
             const icon = document.getElementById('menu-icon');
             menu.classList.toggle('hidden');
             icon.classList.toggle('fa-bars');
             icon.classList.toggle('fa-xmark');
-        };
+        }
 
         async function fetchWithRetry(url, options = {}) {
             let delay = 1000;
             for (let i = 0; i < 5; i++) {
                 try {
                     const response = await fetch(url, options);
-                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
                     return response;
                 } catch (error) {
                     if (i === 4) throw error;
@@ -456,236 +632,109 @@
             }
         }
 
-        // --- PRODUCTION MENU PARSER ENGINE ---
-        async function fetchNavData() {
-            const origin = window.location.origin;
-            const endpoints = [
-                `${origin}/Website/Menu.json?v=${Date.now()}`,
-                `./Menu.json?v=${Date.now()}`,
-                `./Website/Menu.json?v=${Date.now()}`
-            ];
+        const navCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv';
 
-            for (const path of endpoints) {
-                try {
-                    const res = await fetchWithRetry(path);
-                    let text = await res.text();
-                    text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
-                    const data = JSON.parse(text);
-                    if (data) {
-                        renderNav(data);
-                        return;
+        async function fetchNavData() {
+            try {
+                const response = await fetchWithRetry(navCsvUrl);
+                const data = await response.text();
+                const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
+
+                const navOrder = [];
+                const groupIndexMap = {};
+
+                for (let i = 1; i < rows.length; i++) {
+                    const columns = parseCSVLine(rows[i]);
+                    if (columns.length >= 3) {
+                        const name = columns[0] ? columns[0].trim() : '';
+                        if (!name) continue;
+                        
+                        const group = columns[1] ? columns[1].trim() : '';
+                        const url = columns[2] ? columns[2].trim() : '#';
+                        const img = columns[3] ? columns[3].trim() : '';
+
+                        const item = { name, url, img };
+
+                        if (group === '') {
+                            navOrder.push({ type: 'standalone', data: item });
+                        } else {
+                            if (groupIndexMap[group] === undefined) {
+                                groupIndexMap[group] = navOrder.length;
+                                navOrder.push({ type: 'group', name: group, items: [] });
+                            }
+                            navOrder[groupIndexMap[group]].items.push(item);
+                        }
                     }
-                } catch (e) {
-                    // Try next relative endpoint
                 }
+                renderNav(navOrder);
+            } catch (error) {
+                console.error("Failed to fetch navigation data:", error);
+                document.getElementById('desktop-nav-links').innerHTML = `<span class="text-red-400 text-sm">Navigation offline</span>`;
             }
         }
 
-        function renderNav(menuItems) {
+        function renderNav(navOrder) {
             const desktopContainer = document.getElementById('desktop-nav-links');
             const mobileContainer = document.getElementById('mobile-nav-links');
-            if (!desktopContainer || !mobileContainer) return;
-
-            const itemsArray = Array.isArray(menuItems) ? menuItems : (menuItems.items || menuItems.links || []);
-            const groups = {};
-            const standalone = [];
-
-            itemsArray.forEach(item => {
-                if (!item.name || !item.url) return;
-                const node = { name: item.name, url: item.url, image: item.image || item.img || '' };
-                if (item.group) {
-                    if (!groups[item.group]) groups[item.group] = [];
-                    groups[item.group].push(node);
-                } else {
-                    standalone.push(node);
-                }
-            });
 
             let desktopHTML = '';
             let mobileHTML = '';
 
-            Object.keys(groups).forEach(groupName => {
-                desktopHTML += `
-                    <div class="relative group dropdown">
-                        <button class="flex items-center space-x-1 text-slate-300 hover:text-white focus:outline-none py-4 font-bold text-xs uppercase tracking-wider">
-                            <span>${groupName}</span>
-                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
-                        </button>
-                        <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
-                `;
+            navOrder.forEach(node => {
+                if (node.type === 'standalone') {
+                    const item = node.data;
+                    const imgTag = item.img ? `<img src="${item.img}" class="w-5 h-5 rounded-full object-cover">` : '';
+                    const isMovies = item.name.toLowerCase() === 'movies';
+                    const textClass = isMovies ? 'text-orange-400 hover:text-orange-300 font-bold' : 'text-slate-300 hover:text-white';
+                    const targetAttr = isMovies ? 'target="werewolf_cinema_window"' : '';
 
-                mobileHTML += `<div class="px-3 py-2 mt-2 text-sky-400 font-bold uppercase text-xs tracking-wider border-b border-slate-700/50">${groupName}</div>`;
-
-                groups[groupName].forEach(it => {
-                    const imgTag = it.image ? `<img src="${it.image}" class="w-5 h-5 rounded-md object-cover border border-slate-600" onerror="this.style.display='none'">` : '';
                     desktopHTML += `
-                        <a href="${it.url}" class="flex items-center gap-3 px-4 py-3 text-xs font-bold text-slate-300 hover:bg-slate-700 hover:text-sky-400 transition-colors">
-                            ${imgTag}<span>${it.name}</span>
+                        <a href="${item.url}" ${targetAttr} class="nav-link flex items-center gap-2 ${textClass} transition-colors">
+                            ${imgTag}<span>${item.name}</span>
                         </a>
                     `;
+
                     mobileHTML += `
-                        <a href="${it.url}" class="flex items-center gap-3 px-3 py-2 pl-6 rounded-md text-xs font-bold text-slate-300 hover:bg-slate-800">
-                            ${imgTag}<span>${it.name}</span>
+                        <a href="${item.url}" ${targetAttr} class="flex items-center gap-2 px-3 py-2 rounded-md ${textClass} hover:bg-slate-800">
+                            ${imgTag}<span>${item.name}</span>
                         </a>
                     `;
-                });
+                } else if (node.type === 'group') {
+                    desktopHTML += `
+                    <div class="relative group dropdown">
+                        <button class="flex items-center space-x-1 text-slate-300 hover:text-white focus:outline-none py-4">
+                            <span>${node.name}</span>
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                    `;
+                    
+                    mobileHTML += `<div class="px-3 py-2 mt-2 text-sky-400 font-bold uppercase text-xs tracking-wider border-b border-slate-700/50">${node.name}</div>`;
 
-                desktopHTML += `</div></div>`;
-            });
+                    node.items.forEach(item => {
+                        const imgTag = item.img ? `<img src="${item.img}" class="w-5 h-5 rounded-md object-cover border border-slate-600">` : '';
+                        
+                        desktopHTML += `
+                            <a href="${item.url}" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-sky-400 transition-colors">
+                                ${imgTag}<span>${item.name}</span>
+                            </a>
+                        `;
 
-            standalone.forEach(it => {
-                const imgTag = it.image ? `<img src="${it.image}" class="w-5 h-5 rounded-full object-cover" onerror="this.style.display='none'">` : '';
-                const isMovies = it.name.toLowerCase() === 'movies';
-                const textClass = isMovies ? 'text-orange-400 hover:text-orange-300 font-bold' : 'text-slate-300 hover:text-white';
+                        mobileHTML += `
+                            <a href="${item.url}" class="flex items-center gap-3 px-3 py-2 pl-6 rounded-md text-sm text-slate-300 hover:bg-slate-800">
+                                ${imgTag}<span>${item.name}</span>
+                            </a>
+                        `;
+                    });
 
-                desktopHTML += `
-                    <a href="${it.url}" class="nav-link flex items-center gap-2 text-xs font-bold uppercase tracking-wider ${textClass} transition-colors">
-                        ${imgTag}<span>${it.name}</span>
-                    </a>
-                `;
-
-                mobileHTML += `
-                    <a href="${it.url}" class="flex items-center gap-2 px-3 py-2 rounded-md text-xs font-bold ${textClass} hover:bg-slate-800">
-                        ${imgTag}<span>${it.name}</span>
-                    </a>
-                `;
+                    desktopHTML += `</div></div>`;
+                }
             });
 
             desktopContainer.innerHTML = desktopHTML;
             mobileContainer.innerHTML = mobileHTML;
         }
 
-        // --- WEATHER & TWITCH LIVE STATUS ENGINE ---
-        const users = [
-            { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf', twitch: 'werewolf3788', theme: 'text-werewolf' },
-            { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray', twitch: 'raymystyro', theme: 'text-ray' },
-            { id: 'tj', user: 'terrdog420', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', layerId: 'layer-tj', descId: 'weather-desc-tj', twitch: 'terrdog420', theme: 'text-terrdog' }
-        ];
-
-        async function updateWeather() {
-            for (const u of users) {
-                try {
-                    const response = await fetchWithRetry(`https://api.open-meteo.com/v1/forecast?latitude=${u.lat}&longitude=${u.lon}&current_weather=true&temperature_unit=fahrenheit`);
-                    const data = await response.json();
-                    const code = data.current_weather.weathercode;
-                    const temp = Math.round(data.current_weather.temperature);
-                    
-                    let type = 'clear';
-                    let desc = 'Clear Skies';
-                    
-                    if (code === 0) { type = 'sunny'; desc = 'Sunny'; }
-                    else if (code >= 1 && code <= 3) { type = 'cloudy'; desc = 'Partly Cloudy'; }
-                    else if (code >= 45 && code <= 48) { type = 'cloudy'; desc = 'Foggy'; }
-                    else if (code >= 51 && code <= 67 || code >= 80 && code <= 82 || code >= 95) { type = 'rain'; desc = 'Raining'; }
-                    else if (code >= 71 && code <= 77 || code >= 85 && code <= 86) { type = 'snowy'; desc = 'Snowing'; }
-
-                    const descText = document.getElementById(u.descId);
-                    if (descText) descText.textContent = `${desc} • ${temp}°F`;
-                } catch (e) {
-                    const descText = document.getElementById(u.descId);
-                    if (descText) descText.textContent = "Weather service offline";
-                }
-            }
-        }
-
-        async function updateTwitchStatus(u) {
-            const gameEl = document.getElementById(`twitch-game-${u.id}`);
-            const statusIndicator = document.getElementById(`twitch-status-indicator-${u.id}`);
-            if (!gameEl) return;
-
-            try {
-                const response = await fetchWithRetry(`https://decapi.me/twitch/game/${u.twitch}`);
-                const gameName = await response.text();
-                if (gameName && gameName.toLowerCase() !== 'offline' && !gameName.includes('Error')) {
-                    gameEl.innerHTML = `<i class="fa-solid fa-gamepad mr-2"></i>Live: ${gameName}`;
-                    gameEl.className = `${u.theme} text-[10px] uppercase font-bold italic`;
-                    if (statusIndicator) statusIndicator.classList.remove('hidden');
-                } else {
-                    gameEl.textContent = 'Currently Offline';
-                    gameEl.className = 'text-slate-500 opacity-50 text-[10px]';
-                    if (statusIndicator) statusIndicator.classList.add('hidden');
-                }
-            } catch (e) { 
-                gameEl.textContent = 'Stream status offline';
-                gameEl.className = 'text-slate-500 opacity-50 text-[10px]';
-                if (statusIndicator) statusIndicator.classList.add('hidden');
-            }
-        }
-
-        // --- SQUAD ROSTER & MULTI-DOC FIRESTORE OBSERVER ---
-        const squadRoster = [
-            { id: 'werewolf', docIds: ['werewolf', 'Werewolf3788', 'kevin'], display: 'Werewolf3788', color: '#FF5F1F', count: 0, total: 54 },
-            { id: 'Ray', docIds: ['Ray', 'ray', 'raymystyro'], display: 'Raymystyro', color: '#C41E3A', count: 95, total: 233 },
-            { id: 'Terrdog420', docIds: ['Terrdog420', 'terrdog', 'tj'], display: 'Terrdog420', color: '#9333ea', count: 0, total: 54 },
-            { id: 'DesdemonaTiger', docIds: ['DesdemonaTiger', 'desdemonatiger', 'desdemona'], display: 'DesdemonaTiger', color: '#00f2ff', count: 0, total: 54 }
-        ];
-
-        function renderDynamicMatchedGameCards() {
-            const container = document.getElementById('squad-progress-bars');
-            if (!container) return;
-
-            let barsHtml = '';
-            squadRoster.forEach(p => {
-                const percent = Math.round((p.count / Math.max(p.total, 1)) * 100) || 0;
-                barsHtml += `
-                    <div class="space-y-1">
-                        <div class="flex justify-between items-center text-xs font-black uppercase">
-                            <span style="color: ${p.color}">${p.display}</span>
-                            <span class="text-slate-300">${percent}% (${p.count}/${p.total} Objectives)</span>
-                        </div>
-                        <div class="h-3 w-full bg-slate-800 rounded-full overflow-hidden border border-slate-700">
-                            <div class="h-full transition-all duration-1000" style="width: ${percent}%; background-color: ${p.color}"></div>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = barsHtml;
-        }
-
-        function initLiveFirestoreObservers() {
-            squadRoster.forEach(member => {
-                member.docIds.forEach(targetId => {
-                    const docRef = doc(db, "users", targetId, "progress", "sniper-elite-5");
-
-                    onSnapshot(docRef, (snap) => {
-                        if (snap.exists()) {
-                            const data = snap.data();
-                            const items = data.progress || [];
-                            if (Array.isArray(items) && items.length > 0) {
-                                member.total = items.length;
-                                member.count = items.filter(i => i.collected || i.done).length;
-                                renderDynamicMatchedGameCards();
-                            }
-                        }
-                    }, (err) => {
-                        // Suppress background non-matches
-                    });
-                });
-            });
-
-            // Direct RTDB observer for Werewolf3788 active hunt sync
-            const wolfRtdbRef = ref(rtdb, 'psn/users/werewolf');
-            onValue(wolfRtdbRef, (snap) => {
-                if (snap.exists()) {
-                    const wolfData = snap.val();
-                    if (wolfData && wolfData.activeHunt) {
-                        const hunt = wolfData.activeHunt;
-                        if (hunt.progress !== undefined) {
-                            const wolfObj = squadRoster.find(m => m.id === 'werewolf');
-                            if (wolfObj && wolfObj.count === 0) {
-                                wolfObj.count = Math.round((hunt.progress / 100) * 54);
-                                wolfObj.total = 54;
-                                renderDynamicMatchedGameCards();
-                            }
-                        }
-                    }
-                }
-            });
-
-            renderDynamicMatchedGameCards();
-        }
-
-        // --- CINEMA SLIDESHOW LOGIC ---
         let cinemaImages = [];
         let currentSlideIndex = 0;
         let activeBgId = 1;
@@ -719,8 +768,8 @@
             try {
                 const response = await fetchWithRetry(csvUrl);
                 const data = await response.text();
-                const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
                 
+                const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
                 let validMovieCount = 0;
                 cinemaImages = [];
 
@@ -734,7 +783,11 @@
                     }
                 }
 
-                if (countDisplay) countDisplay.textContent = validMovieCount.toLocaleString();
+                if (countDisplay) {
+                    countDisplay.textContent = validMovieCount.toLocaleString();
+                }
+                
+                localStorage.setItem('werewolf_library_count', validMovieCount);
 
                 if (cinemaImages.length > 0) {
                     cinemaImages.sort(() => 0.5 - Math.random());
@@ -742,25 +795,26 @@
                 }
 
             } catch (error) {
-                if (countDisplay) countDisplay.textContent = '1,114';
+                console.error('Error fetching library data:', error);
+                if (countDisplay) countDisplay.textContent = 'Service unavailable';
             }
         }
 
         function startCinemaSlideshow() {
             if (cinemaImages.length === 0 || cinemaInterval) return;
+            
             const layer1 = document.getElementById('cinema-layer-1');
             const layer2 = document.getElementById('cinema-layer-2');
             
             const setSlideImage = (layer, url) => {
-                if (!layer) return;
                 layer.querySelectorAll('div').forEach(el => {
                     el.style.backgroundImage = `url('${url}')`;
                 });
             };
 
             setSlideImage(layer1, cinemaImages[0]);
-            if (layer1) layer1.style.opacity = 1;
-            if (layer2) layer2.style.opacity = 0;
+            layer1.style.opacity = 1;
+            layer2.style.opacity = 0;
 
             cinemaInterval = setInterval(() => {
                 currentSlideIndex = (currentSlideIndex + 1) % cinemaImages.length;
@@ -768,27 +822,128 @@
 
                 if (activeBgId === 1) {
                     setSlideImage(layer2, nextImgUrl);
-                    if (layer2) layer2.style.opacity = 1;
-                    if (layer1) layer1.style.opacity = 0;
+                    layer2.style.opacity = 1;
+                    layer1.style.opacity = 0;
                     activeBgId = 2;
                 } else {
                     setSlideImage(layer1, nextImgUrl);
-                    if (layer1) layer1.style.opacity = 1;
-                    if (layer2) layer2.style.opacity = 0;
+                    layer1.style.opacity = 1;
+                    layer2.style.opacity = 0;
                     activeBgId = 1;
                 }
             }, 6000);
         }
 
-        window.onload = () => {
+        async function updateWeather() {
+            for (const u of users) {
+                try {
+                    const response = await fetchWithRetry(`https://api.open-meteo.com/v1/forecast?latitude=${u.lat}&longitude=${u.lon}&current_weather=true&temperature_unit=fahrenheit`);
+                    const data = await response.json();
+                    const code = data.current_weather.weathercode;
+                    const temp = Math.round(data.current_weather.temperature);
+                    
+                    let type = 'clear';
+                    let desc = 'Clear Skies';
+                    
+                    if (code === 0) { type = 'sunny'; desc = 'Sunny'; }
+                    else if (code >= 1 && code <= 3) { type = 'cloudy'; desc = 'Partly Cloudy'; }
+                    else if (code >= 45 && code <= 48) { type = 'cloudy'; desc = 'Foggy'; }
+                    else if (code >= 51 && code <= 67 || code >= 80 && code <= 82 || code >= 95) { type = 'rain'; desc = 'Raining'; }
+                    else if (code >= 71 && code <= 77 || code >= 85 && code <= 86) { type = 'snowy'; desc = 'Snowing'; }
+
+                    applyWeatherUI(u, type, `${desc} • ${temp}°F`);
+                } catch (e) {
+                    document.getElementById(u.descId).textContent = "Weather service unavailable";
+                }
+            }
+        }
+
+        function applyWeatherUI(user, type, description) {
+            const card = document.getElementById(user.cardId);
+            const layer = document.getElementById(user.layerId);
+            const descText = document.getElementById(user.descId);
+            
+            descText.textContent = description;
+            card.classList.remove('bg-rain', 'bg-cloudy', 'bg-sunny', 'bg-snowy', 'bg-clear', 'is-sunny');
+            card.classList.add(`bg-${type}`);
+            
+            if (type === 'sunny') card.classList.add('is-sunny');
+
+            layer.innerHTML = '';
+            layer.classList.add('active');
+
+            if (type === 'rain') {
+                for(let i=0; i<30; i++) {
+                    const drop = document.createElement('div');
+                    drop.className = 'rain-drop';
+                    drop.style.left = Math.random() * 100 + '%';
+                    drop.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
+                    drop.style.animationDelay = Math.random() * 2 + 's';
+                    layer.appendChild(drop);
+                }
+            } else if (type === 'snowy') {
+                const ground = document.createElement('div');
+                ground.className = 'snow-ground';
+                layer.appendChild(ground);
+                for(let i=0; i<40; i++) {
+                    const flake = document.createElement('div');
+                    flake.className = 'snowflake';
+                    const size = Math.random() * 4 + 2 + 'px';
+                    flake.style.width = size; flake.style.height = size;
+                    flake.style.left = Math.random() * 100 + '%';
+                    flake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    layer.appendChild(flake);
+                }
+            } else if (type === 'cloudy') {
+                for(let i=0; i<3; i++) {
+                    const puff = document.createElement('div');
+                    puff.className = 'cloud-puff';
+                    puff.style.width = (Math.random() * 100 + 100) + 'px';
+                    puff.style.height = '60px';
+                    puff.style.top = Math.random() * 80 + '%';
+                    puff.style.left = Math.random() * 80 + '%';
+                    puff.style.animationDelay = (i * -3) + 's';
+                    layer.appendChild(puff);
+                }
+            } else if (type === 'sunny') {
+                const sun = document.createElement('div');
+                sun.className = 'sun-glow';
+                layer.appendChild(sun);
+            }
+        }
+
+        async function updateTwitchStatus(u) {
+            const gameEl = document.getElementById(`twitch-game-${u.id}`);
+            const statusIndicator = document.getElementById(`twitch-status-indicator-${u.id}`);
+            try {
+                const response = await fetchWithRetry(`https://decapi.me/twitch/game/${u.twitch}`);
+                const gameName = await response.text();
+                if (gameName && gameName.toLowerCase() !== 'offline') {
+                    gameEl.innerHTML = `<i class="fa-solid fa-gamepad mr-2"></i>Live: ${gameName}`;
+                    gameEl.className = `${u.theme} text-[10px] uppercase font-bold italic`;
+                    statusIndicator.classList.remove('hidden');
+                } else {
+                    gameEl.textContent = 'Currently Offline';
+                    gameEl.className = 'text-slate-500 opacity-50 text-[10px]';
+                    statusIndicator.classList.add('hidden');
+                }
+            } catch (e) { 
+                gameEl.textContent = 'Stream status unavailable';
+                gameEl.className = 'text-slate-500 opacity-50 text-[10px]';
+                statusIndicator.classList.add('hidden');
+            }
+        }
+
+        function refreshData() {
             fetchNavData();
             updateWeather();
             users.forEach(updateTwitchStatus);
             fetchMovieData(); 
-            initLiveFirestoreObservers();
+        }
 
-            setInterval(updateWeather, 300000);
-            setInterval(() => users.forEach(updateTwitchStatus), 60000);
+        window.onload = () => {
+            refreshData();
+            setInterval(refreshData, 300000);
         };
     </script>
 </body>
