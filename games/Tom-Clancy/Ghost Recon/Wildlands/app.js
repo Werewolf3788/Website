@@ -1,44 +1,38 @@
-/* === SECTION: File Header & Config === */
-/*
- * ==========================================
- * VERSION TIMESTAMP: Mon, July 27, 2026, 05:15 PM EDT
- * SYSTEM: Ghost Recon Wildlands Progression Hub Engine (app.js)
- * ARCHITECTURE: 100% Pure Firebase Firestore Real-Time Engine (Zero LocalStorage Data)
- * PATH STRUCTURE: /users/{userId}/progress/T.C.G.R.Wildlands
- * FEATURES: Direct Cloud Read/Write, Simultaneous Operative Stream Observers, Cookie Preference Engine & Dynamic Tip Widget
- * Verification: NYT-20260530-0426
- * NO STRIPPING, NO COMPRESSING. FULL SOURCE INTEGRITY 100% INTACT.
- * ==========================================
- */
+/* ============================================================================
+   File: app.js
+   Description: Ghost Recon Wildlands Progression Hub Engine
+   Architecture: Pure Firebase Firestore Real-Time Engine (Multi-Platform Hierarchy)
+   Path Structure: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+   ============================================================================ */
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, onSnapshot, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // --- FIREBASE SDK CONFIGURATION ---
 const firebaseConfig = {
-    apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
-    authDomain: "game-tracker-5b2ef.firebaseapp.com",
-    databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
-    projectId: "game-tracker-5b2ef",
-    storageBucket: "game-tracker-5b2ef.firebasestorage.app",
-    messagingSenderId: "555667047127",
-    appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
+    apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+    authDomain: "entertainment-71888.firebaseapp.com",
+    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+    projectId: "entertainment-71888",
+    storageBucket: "entertainment-71888.firebasestorage.app",
+    messagingSenderId: "660524340277",
+    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+    measurementId: "G-JDNSLD3GFE"
 };
 
 const GAME_ID = 'T.C.G.R.Wildlands';
 
-/* === SECTION: Global State Variables === */
+/* === Global State Variables === */
 let db;
 let auth;
 let currentSelectedUser = "Werewolf3788"; 
+let currentPlatform = "playstation"; // Default platform set to PlayStation
 let selectedCategory = "WEAPON";
 let selectedSubCategory = "ALL_TROPHIES";
-let isDemoMode = true;
-let isAdminUser = false;
 let unsubscribers = [];
 
-/* === SECTION: Weapon & Skill Registry Datasets === */
+/* === Weapon & Skill Registry Datasets === */
 const WILDLANDS_WEAPON_CLASSES = {
     "Assault Rifles": [
         "P416 (Starting Weapon)", "AK-47 (Libertad)", "AK-12 (Tabacal)", "SR-3M (Agua Verde)", "556xi (Caimanes)",
@@ -260,9 +254,7 @@ const DEFAULT_SQUAD_PROFILES = {
     }
 };
 
-let localDemoSandboxOperator = JSON.parse(JSON.stringify(DEFAULT_SQUAD_PROFILES.Werewolf3788));
-
-/* === COOKIE PREFERENCE ENGINE === */
+/* === Cookie Preference Engine === */
 function setGamertagCookie(gamertag) {
     const d = new Date();
     d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
@@ -275,40 +267,31 @@ function getGamertagCookie() {
     const ca = decodedCookie.split(';');
     for (let i = 0; i < ca.length; i++) {
         let c = ca[i].trim();
-        if (c.indexOf(name) === 0) {
-            return c.substring(name.length, c.length);
-        }
+        if (c.indexOf(name) === 0) return c.substring(name.length, c.length);
     }
     return "";
 }
 
-/* === FLOATING TIP / DONATION WIDGET INJECTOR === */
-function setupDonationWidget() {
-    if (document.getElementById('floating-tip-btn')) return;
-
-    const tipBtn = document.createElement('a');
-    tipBtn.id = 'floating-tip-btn';
-    tipBtn.href = 'https://streamelements.com/werewolf3788/tip?utm_source=ghost_hub&utm_medium=floating_widget&utm_campaign=wildlands_support';
-    tipBtn.target = '_blank';
-    tipBtn.rel = 'noopener noreferrer';
-    tipBtn.className = 'floating-tip-btn';
-    tipBtn.setAttribute('data-ga-label', 'floating_tip_button');
-    tipBtn.innerHTML = `💳 <span>Tip / Support Stream</span>`;
-
-    document.body.appendChild(tipBtn);
-}
-
-/* === SECTION: Application Lifecycle & Initialization === */
+/* === Application Lifecycle & Initialization === */
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. URL Parameter Check
     const urlParams = new URLSearchParams(window.location.search);
     const userParam = urlParams.get('user');
+    const platformParam = urlParams.get('platform');
 
+    // 1. Evaluate platform selection: URL param > Dropdown default ('playstation')
+    const platformSelectElement = document.getElementById("platformSelect");
+    if (platformParam) {
+        currentPlatform = platformParam.toLowerCase();
+        if (platformSelectElement) platformSelectElement.value = currentPlatform;
+    } else if (platformSelectElement) {
+        currentPlatform = platformSelectElement.value.toLowerCase() || "playstation";
+    }
+
+    // 2. Evaluate selected operative handle
     if (userParam && DEFAULT_SQUAD_PROFILES[userParam]) {
         currentSelectedUser = userParam;
         setGamertagCookie(currentSelectedUser);
     } else {
-        // 2. Cookie Fallback
         const saved = getGamertagCookie();
         if (saved && DEFAULT_SQUAD_PROFILES[saved]) {
             currentSelectedUser = saved;
@@ -321,7 +304,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupInterfaceControls();
     evaluateDynamicTimeTheme();
     setupInterTabSynchronization();
-    setupDonationWidget();
     
     updateOperatorDropdownList(DEFAULT_SQUAD_PROFILES);
     await initializeFirebaseApp();
@@ -354,10 +336,10 @@ async function initializeFirebaseApp() {
         auth = getAuth(app);
         db = getFirestore(app);
 
+        // Transparent access for all squad mates without needing log in screens
         await signInAnonymously(auth);
 
         onAuthStateChanged(auth, (user) => {
-            setupAuthPipeline(user);
             if (user) {
                 attachLiveFirestoreListeners();
             }
@@ -367,80 +349,16 @@ async function initializeFirebaseApp() {
     }
 }
 
-function setupAuthPipeline(user) {
-    const googleSignInBtn = document.getElementById("googleSignInBtn");
-    const signOutBtn = document.getElementById("signOutBtn");
-    const userProfileStatus = document.getElementById("userProfileStatus");
-    const userAvatar = document.getElementById("userAvatar");
-    const demoBanner = document.getElementById("demoNotification");
-    const adminBadge = document.getElementById("adminBadge");
-
-    if (googleSignInBtn && !googleSignInBtn.dataset.listener) {
-        googleSignInBtn.dataset.listener = "true";
-        googleSignInBtn.addEventListener("click", () => {
-            const provider = new GoogleAuthProvider();
-            signInWithPopup(auth, provider)
-                .then((result) => provisionNewUserRecord(result.user))
-                .catch((err) => console.error("Identity authentication rejected:", err));
-        });
-    }
-
-    if (signOutBtn && !signOutBtn.dataset.listener) {
-        signOutBtn.dataset.listener = "true";
-        signOutBtn.addEventListener("click", () => {
-            signOut(auth).then(() => {
-                isDemoMode = true; isAdminUser = false;
-                currentSelectedUser = "Werewolf3788";
-                if (demoBanner) demoBanner.classList.remove("hidden");
-                if (adminBadge) adminBadge.classList.add("hidden");
-                updateOperatorDropdownList(DEFAULT_SQUAD_PROFILES);
-            });
-        });
-    }
-
-    if (user) {
-        isDemoMode = false;
-        if (demoBanner) demoBanner.classList.add("hidden");
-        if (googleSignInBtn) googleSignInBtn.classList.add("hidden");
-        if (userProfileStatus) userProfileStatus.classList.remove("hidden");
-        if (userAvatar) userAvatar.src = user.photoURL || "";
-        
-        if (user.email === "raykevin71888@gmail.com") {
-            isAdminUser = true;
-            if (adminBadge) adminBadge.classList.remove("hidden");
-        } else {
-            isAdminUser = false;
-            if (adminBadge) adminBadge.classList.add("hidden");
-        }
-        provisionNewUserRecord(user);
-    } else {
-        isDemoMode = true; isAdminUser = false;
-        if (demoBanner) demoBanner.classList.remove("hidden");
-        if (adminBadge) adminBadge.classList.add("hidden");
-        if (googleSignInBtn) googleSignInBtn.classList.remove("hidden");
-        if (userProfileStatus) userProfileStatus.classList.add("hidden");
-        if (userAvatar) userAvatar.src = "";
-        updateOperatorDropdownList(DEFAULT_SQUAD_PROFILES);
-    }
-}
-
-async function provisionNewUserRecord(user) {
-    if (!db || !user) return;
-    const sanitizedKey = currentSelectedUser;
-    
-    // Push document initialization check immediately to ensure path creation on Firestore
-    syncToFirestore();
-}
-
 function attachLiveFirestoreListeners() {
     unsubscribers.forEach(unsub => unsub());
     unsubscribers = [];
 
-    // First Load Auto-Sync ensures path creation under /users/{userId}/progress/T.C.G.R.Wildlands
+    // Ensure path structure exists immediately
     syncToFirestore();
 
     Object.keys(DEFAULT_SQUAD_PROFILES).forEach(profileKey => {
-        const userProgressRef = doc(db, 'users', profileKey, 'progress', GAME_ID);
+        // Path: /users/{username}/platform/{platform}/progress/T.C.G.R.Wildlands
+        const userProgressRef = doc(db, 'users', profileKey, 'platform', currentPlatform, 'progress', GAME_ID);
 
         const unsub = onSnapshot(userProgressRef, (snap) => {
             if (snap.exists()) {
@@ -455,7 +373,7 @@ function attachLiveFirestoreListeners() {
                 syncToFirestore();
             }
         }, (err) => {
-            console.warn(`Live Firestore listener warning for ${profileKey}:`, err.message);
+            console.warn(`Live Firestore listener warning for ${profileKey} on [${currentPlatform}]:`, err.message);
         });
 
         unsubscribers.push(unsub);
@@ -469,7 +387,10 @@ function updateOperatorDropdownList(profiles) {
     
     selectorElement.innerHTML = "";
     Object.keys(profiles).forEach(key => {
-        const option = document.createElement("option"); option.value = key; option.textContent = profiles[key].name || key; selectorElement.appendChild(option);
+        const option = document.createElement("option"); 
+        option.value = key; 
+        option.textContent = profiles[key].name || key; 
+        selectorElement.appendChild(option);
     });
     
     if (profiles[activeSelectionBeforeUpdate]) {
@@ -599,9 +520,6 @@ function renderSkillsTree(incomingDatabaseSkills) {
             </div>
         `;
 
-        const currentUser = auth ? auth.currentUser : null;
-        const canWrite = isAdminUser || (!isDemoMode && currentUser);
-
         if (blueprintSkill.hasMedal && !isTrophyTabActive) {
             const medalZone = document.createElement("div"); medalZone.className = "medal-indicator-zone";
             medalZone.innerHTML = `<span style="font-size: 11px; color: #888;">Bonus Medal Intel:</span><button class="medal-dot-btn ${medalEarned ? 'earned' : ''}">★</button>`;
@@ -623,7 +541,9 @@ function renderSkillsTree(incomingDatabaseSkills) {
 }
 
 function executeSkillLevelUpdate(category, skillId, nextLevel, medalState, isOnlyMedalToggle = false) {
-    const targetProfile = DEFAULT_SQUAD_PROFILES[currentSelectedUser] || localDemoSandboxOperator;
+    const targetProfile = DEFAULT_SQUAD_PROFILES[currentSelectedUser];
+    if (!targetProfile) return;
+
     targetProfile.skills[category] = targetProfile.skills[category] || {};
     targetProfile.skills[category][skillId] = targetProfile.skills[category][skillId] || { id: skillId, current: 0, medalEarned: false };
     
@@ -641,7 +561,7 @@ window.switchSkillCategory = function(categoryKey) {
         tab.classList.toggle("active", tabLabel.includes(categoryKey) || (categoryKey === 'REBEL' && tabLabel.includes('REBEL')));
     });
     
-    const activeData = DEFAULT_SQUAD_PROFILES[currentSelectedUser] || localDemoSandboxOperator;
+    const activeData = DEFAULT_SQUAD_PROFILES[currentSelectedUser];
     renderTargetProfileData(activeData);
 };
 
@@ -700,6 +620,14 @@ function setupInterfaceControls() {
         });
     }
 
+    const platformSelect = document.getElementById("platformSelect");
+    if (platformSelect) {
+        platformSelect.addEventListener("change", (e) => {
+            currentPlatform = e.target.value.toLowerCase();
+            attachLiveFirestoreListeners();
+        });
+    }
+
     const addCustomUserBtn = document.getElementById("addCustomUserBtn");
     if (addCustomUserBtn) {
         addCustomUserBtn.addEventListener("click", () => {
@@ -723,6 +651,8 @@ function setupInterfaceControls() {
                 userSelect.value = cleanTag;
                 currentSelectedUser = cleanTag;
                 renderTargetProfileData(DEFAULT_SQUAD_PROFILES[cleanTag]);
+                
+                attachLiveFirestoreListeners();
                 syncToFirestore();
             }
         });
@@ -751,28 +681,38 @@ function evaluateDynamicTimeTheme() {
 function setupInterTabSynchronization() {
     window.addEventListener("storage", (event) => {
         if (event.key === "wildlands_active_gamertag" && event.newValue) {
-            const incoming = event.newValue; const select = document.getElementById("userSelect");
+            const incoming = event.newValue; 
+            const select = document.getElementById("userSelect");
             if (select && select.value !== incoming) {
-                select.value = incoming; currentSelectedUser = incoming;
+                select.value = incoming; 
+                currentSelectedUser = incoming;
                 if (DEFAULT_SQUAD_PROFILES[incoming]) renderTargetProfileData(DEFAULT_SQUAD_PROFILES[incoming]);
             }
         }
     });
 }
 
-/* === DIRECT FIRESTORE CLOUD PUSH AT /users/{userId}/progress/T.C.G.R.Wildlands === */
+/* === DIRECT FIRESTORE CLOUD PUSH AT /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands === */
 async function syncToFirestore() {
     if (!db || !auth.currentUser) return;
 
     try {
-        const payload = DEFAULT_SQUAD_PROFILES[currentSelectedUser] || localDemoSandboxOperator;
-        const userProgressRef = doc(db, 'users', currentSelectedUser, 'progress', GAME_ID);
+        const payload = DEFAULT_SQUAD_PROFILES[currentSelectedUser];
+        if (!payload) return;
+
+        // Path structure: /users/{username}/platform/{platform}/progress/T.C.G.R.Wildlands
+        const platformRef = doc(db, 'users', currentSelectedUser, 'platform', currentPlatform);
+        const userProgressRef = doc(db, 'users', currentSelectedUser, 'platform', currentPlatform, 'progress', GAME_ID);
         const userRef = doc(db, 'users', currentSelectedUser);
 
+        // Parent metadata document sync
         await setDoc(userRef, { displayName: currentSelectedUser, lastUpdated: new Date().toISOString() }, { merge: true });
-        await setDoc(userProgressRef, { ...payload, user: currentSelectedUser, gameId: GAME_ID, lastUpdated: new Date().toISOString() }, { merge: true });
+        await setDoc(platformRef, { platform: currentPlatform, lastActive: new Date().toISOString() }, { merge: true });
+        
+        // Save progress payload under current platform hierarchy
+        await setDoc(userProgressRef, { ...payload, user: currentSelectedUser, platform: currentPlatform, gameId: GAME_ID, lastUpdated: new Date().toISOString() }, { merge: true });
 
-        console.log(`Live broadcast pushed cleanly to Firestore for: ${currentSelectedUser} at /users/${currentSelectedUser}/progress/${GAME_ID}`);
+        console.log(`Live broadcast pushed to Firestore for: ${currentSelectedUser} [${currentPlatform}] at /users/${currentSelectedUser}/platform/${currentPlatform}/progress/${GAME_ID}`);
     } catch (error) {
         console.error("CRITICAL FIRESTORE SAVE ERROR:", error);
     }
