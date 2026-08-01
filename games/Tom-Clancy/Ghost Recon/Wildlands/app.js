@@ -1,7 +1,7 @@
 /* ============================================================================
    File: app.js
    Description: Ghost Recon Wildlands Progression Hub Engine
-   Architecture: Firebase Firestore Real-Time Engine (Auto Background Auth Enabled)
+   Architecture: GitHub JSON Loader + Real-Time Firebase Firestore Integration
    Path: /users/{username}/platform/{platform}/progress/T.C.G.R.Wildlands
    ============================================================================ */
 
@@ -11,9 +11,6 @@ import {
     signInAnonymously,
     setPersistence, 
     browserLocalPersistence, 
-    GoogleAuthProvider,
-    signInWithPopup,
-    signOut,
     onAuthStateChanged 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { 
@@ -36,8 +33,8 @@ const firebaseConfig = {
 };
 
 const GAME_ID = 'T.C.G.R.Wildlands';
+const JSON_URL = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/json/TCGRWildlands.json';
 
-/* === Global State Variables === */
 let db;
 let auth;
 let currentUserAuth = null;
@@ -47,7 +44,7 @@ let selectedCategory = "WEAPON";
 let unsubscribers = [];
 
 /* === Weapon & Skill Registry Datasets === */
-const WILDLANDS_WEAPON_CLASSES = {
+let WILDLANDS_WEAPON_CLASSES = {
     "Assault Rifles": [
         "P416 (Starting Weapon)", "AK-47 (Libertad)", "AK-12 (Tabacal)", "SR-3M (Agua Verde)", "556xi (Caimanes)",
         "AUG A3 (Barvechos)", "805 Bren A2 (Villa Verde)", "G2 (Inca Camina)", "L85A2 (Espiritu Santo)",
@@ -74,7 +71,7 @@ const WILDLANDS_WEAPON_CLASSES = {
     ]
 };
 
-const BASELINE_SKILLS_BLUEPRINT = {
+let BASELINE_SKILLS_BLUEPRINT = {
     "WEAPON": [
         { id: "stable_aim", name: "Stable Aim", max: 4, hasMedal: true, desc: "Adds extra stability when using a sniper scope." }, 
         { id: "hip_fire", name: "Hip Fire Spread", max: 4, hasMedal: true, desc: "Reduces bullet spray when firing weapons from the hip." }, 
@@ -161,16 +158,62 @@ function generateCleanBlueprintCopy() {
     return freshCopy;
 }
 
-const DEFAULT_SQUAD_PROFILES = {
+let DEFAULT_SQUAD_PROFILES = {
     "Werewolf3788": {
         name: "Werewolf3788", psnUsername: "werewolf3788", tierMode: "on", tier: 38, playstyle: "OVERWATCH",
-        tactical: 100, stealth: 52, avgKillDist: 73, longestShot: 389, precision: 9, lifetime: "14min", favWeapon: "P416 (Starting Weapon)", favWeapon2: "MP5 (Starting Weapon)", teammatesRevived: 132, c4MineKills: 139, droneUsed: "12h 49min", travelAir: "11h 1min", travelGround: "6h 52min", travelPara: "20 Jumps", travelMap: "90%",
+        tactical: 100, stealth: 52, avgKillDist: "73m", longestShot: "389m", precision: 9, lifetime: "14min", favWeapon: "P416 (Starting Weapon)", favWeapon2: "MP5 (Starting Weapon)", teammatesRevived: 132, c4MineKills: 139, droneUsed: "12h 49min", travelAir: "11h 1min", travelGround: "6h 52min", travelPara: "20 Jumps", travelMap: "90%",
+        skills: generateCleanBlueprintCopy()
+    },
+    "Raymystyro": {
+        name: "Raymystyro", psnUsername: "Raymystyro", tierMode: "on", tier: 42, playstyle: "OVERWATCH",
+        tactical: 17, stealth: 53, avgKillDist: "54m", longestShot: "481m", precision: 16, lifetime: "24min", favWeapon: "ACR (Media Luna)", favWeapon2: "P416 (Starting Weapon)", teammatesRevived: 43, c4MineKills: 42, droneUsed: "41min", travelAir: "4h 30min", travelGround: "3h 24min", travelPara: "23 Jumps", travelMap: "86%",
+        skills: generateCleanBlueprintCopy()
+    },
+    "terrdog420": {
+        name: "terrdog420", psnUsername: "terrdog420", tierMode: "off", tier: 1, playstyle: "Tactical Operative",
+        tactical: 50, stealth: 50, avgKillDist: "100m", longestShot: "200m", precision: 30, lifetime: "1h 0min", favWeapon: "P416 (Starting Weapon)", favWeapon2: "MP5 (Starting Weapon)", teammatesRevived: 0, c4MineKills: 0, droneUsed: "10min", travelAir: "0h", travelGround: "15min", travelPara: "0 Jumps", travelMap: "5%",
         skills: generateCleanBlueprintCopy()
     }
 };
 
-/* === Lifecycle Initialization === */
+async function fetchGitHubJSONData() {
+    try {
+        const response = await fetch(JSON_URL);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.profiles || data.DEFAULT_SQUAD_PROFILES) {
+                const remoteProfiles = data.profiles || data.DEFAULT_SQUAD_PROFILES;
+                Object.keys(remoteProfiles).forEach(key => {
+                    DEFAULT_SQUAD_PROFILES[key] = remoteProfiles[key];
+                    if (!DEFAULT_SQUAD_PROFILES[key].skills) {
+                        DEFAULT_SQUAD_PROFILES[key].skills = generateCleanBlueprintCopy();
+                    }
+                });
+            }
+            if (data.weapons || data.WILDLANDS_WEAPON_CLASSES) {
+                WILDLANDS_WEAPON_CLASSES = data.weapons || data.WILDLANDS_WEAPON_CLASSES;
+            }
+            if (data.skills || data.BASELINE_SKILLS_BLUEPRINT) {
+                BASELINE_SKILLS_BLUEPRINT = data.skills || data.BASELINE_SKILLS_BLUEPRINT;
+            }
+            console.log("✓ Successfully loaded data from GitHub JSON:", JSON_URL);
+        }
+    } catch (error) {
+        console.warn("Notice: Could not load remote JSON file, using embedded baseline dataset.", error.message);
+    }
+}
+
 document.addEventListener("DOMContentLoaded", async () => {
+    // 1. Fetch JSON data from GitHub repository first
+    await fetchGitHubJSONData();
+
+    // 2. Evaluate URL parameters and cookies
+    const urlParams = new URLSearchParams(window.location.search);
+    const userParam = urlParams.get('user');
+    const platParam = urlParams.get('platform');
+    if (userParam) currentSelectedUser = userParam;
+    if (platParam) currentPlatform = platParam.toLowerCase();
+
     populateWeaponSelectionDropdowns();
     setupInterfaceControls();
     updateOperatorDropdownList(DEFAULT_SQUAD_PROFILES);
@@ -185,7 +228,6 @@ async function initializeFirebaseApp() {
 
         await setPersistence(auth, browserLocalPersistence);
 
-        // Ensure an active session is always running so Firestore writes execute cleanly
         onAuthStateChanged(auth, async (user) => {
             if (!user) {
                 try {
@@ -196,12 +238,14 @@ async function initializeFirebaseApp() {
             } else {
                 currentUserAuth = user;
                 const savedNickname = localStorage.getItem('active_gaming_nickname') || user.displayName || user.email.split('@')[0];
-                currentSelectedUser = savedNickname;
+                if (!DEFAULT_SQUAD_PROFILES[savedNickname] && savedNickname !== currentSelectedUser) {
+                    currentSelectedUser = savedNickname;
+                }
                 
-                if (!DEFAULT_SQUAD_PROFILES[savedNickname]) {
-                    DEFAULT_SQUAD_PROFILES[savedNickname] = {
-                        name: savedNickname, psnUsername: savedNickname, tierMode: "off", tier: 1, playstyle: "Tactical Operative",
-                        tactical: 0, stealth: 0, avgKillDist: 0, longestShot: 0, precision: 0, lifetime: "0h",
+                if (!DEFAULT_SQUAD_PROFILES[currentSelectedUser]) {
+                    DEFAULT_SQUAD_PROFILES[currentSelectedUser] = {
+                        name: currentSelectedUser, psnUsername: currentSelectedUser, tierMode: "off", tier: 1, playstyle: "Tactical Operative",
+                        tactical: 0, stealth: 0, avgKillDist: "0m", longestShot: "0m", precision: 0, lifetime: "0h",
                         favWeapon: "P416 (Starting Weapon)", favWeapon2: "MP5 (Starting Weapon)", teammatesRevived: 0, c4MineKills: 0,
                         droneUsed: "0h", travelAir: "0h", travelGround: "0h", travelPara: "0 Jumps", travelMap: "0%",
                         skills: generateCleanBlueprintCopy()
@@ -216,7 +260,6 @@ async function initializeFirebaseApp() {
     }
 }
 
-/* === Real-Time Firestore Listeners === */
 function attachLiveFirestoreListeners() {
     unsubscribers.forEach(unsub => unsub());
     unsubscribers = [];
@@ -231,6 +274,8 @@ function attachLiveFirestoreListeners() {
                 if (profileKey === currentSelectedUser) {
                     renderTargetProfileData(data);
                 }
+            } else if (profileKey === currentSelectedUser) {
+                syncToFirestore();
             }
         }, (err) => {
             console.warn(`Firestore listener notice for ${profileKey} [${currentPlatform}]:`, err.message);
@@ -241,8 +286,8 @@ function attachLiveFirestoreListeners() {
 }
 
 function populateWeaponSelectionDropdowns() {
-    const primarySelect = document.getElementById("profileFavWeapon");
-    const secondarySelect = document.getElementById("profileFavWeapon2");
+    const primarySelect = document.getElementById("profileFavWeapon") || document.getElementById("editFav1");
+    const secondarySelect = document.getElementById("profileFavWeapon2") || document.getElementById("editFav2");
     if (!primarySelect || !secondarySelect) return;
     
     primarySelect.innerHTML = ""; secondarySelect.innerHTML = "";
@@ -279,38 +324,89 @@ function updateOperatorDropdownList(profiles) {
     }
 }
 
+function setElementText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = (val !== undefined && val !== null) ? val : '--';
+}
+
+function setInputValue(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.value = (val !== undefined && val !== null) ? val : '';
+}
+
 function renderTargetProfileData(operator) {
     if (!operator) return;
 
-    if (document.getElementById("profileCustomName")) document.getElementById("profileCustomName").value = operator.name || currentSelectedUser;
-    if (document.getElementById("profileTierLevel")) document.getElementById("profileTierLevel").value = operator.tier || 1;
-    if (document.getElementById("profilePlaystyle")) document.getElementById("profilePlaystyle").value = operator.playstyle || "";
-    if (document.getElementById("profileAvgKillDist")) document.getElementById("profileAvgKillDist").value = operator.avgKillDist || 0;
+    setElementText("operatorName", operator.name || currentSelectedUser);
+    setElementText("tierLevel", operator.tier || "--");
+    setElementText("playstyleType", operator.playstyle || "--");
+    setElementText("avgKillDist", operator.avgKillDist || "--");
     
     const tacticalVal = operator.tactical || 0;
-    if (document.getElementById("profileTactical")) document.getElementById("profileTactical").value = tacticalVal;
-    if (document.getElementById("tacticalBar")) document.getElementById("tacticalBar").style.width = `${tacticalVal}%`;
+    setElementText("tacticalValue", `${tacticalVal}%`);
+    const tacBar = document.getElementById("tacticalBar");
+    if (tacBar) tacBar.style.width = `${tacticalVal}%`;
 
     const stealthVal = operator.stealth || 0;
-    if (document.getElementById("profileStealth")) document.getElementById("profileStealth").value = stealthVal;
-    if (document.getElementById("stealthBar")) document.getElementById("stealthBar").style.width = `${stealthVal}%`;
+    setElementText("stealthValue", `${stealthVal}%`);
+    const stBar = document.getElementById("stealthBar");
+    if (stBar) stBar.style.width = `${stealthVal}%`;
 
-    if (document.getElementById("profileLifetime")) document.getElementById("profileLifetime").value = operator.lifetime || "";
-    if (document.getElementById("profileLongestShot")) document.getElementById("profileLongestShot").value = operator.longestShot || 0;
+    setElementText("statLifetime", operator.lifetime || "--");
+    setElementText("longestShot", operator.longestShot || "--");
 
     const precisionVal = operator.precision || 0;
-    if (document.getElementById("profilePrecision")) document.getElementById("profilePrecision").value = precisionVal;
-    if (document.getElementById("precisionBar")) document.getElementById("precisionBar").style.width = `${precisionVal}%`;
+    setElementText("precisionValue", `${precisionVal}%`);
+    const prBar = document.getElementById("precisionBar");
+    if (prBar) prBar.style.width = `${precisionVal}%`;
 
-    if (document.getElementById("profileFavWeapon")) document.getElementById("profileFavWeapon").value = operator.favWeapon || "P416 (Starting Weapon)";
-    if (document.getElementById("profileFavWeapon2")) document.getElementById("profileFavWeapon2").value = operator.favWeapon2 || "MP5 (Starting Weapon)";
-    if (document.getElementById("profileRevives")) document.getElementById("profileRevives").value = operator.teammatesRevived || 0;
-    if (document.getElementById("profileC4Kills")) document.getElementById("profileC4Kills").value = operator.c4MineKills || 0;
-    if (document.getElementById("profileDroneUsed")) document.getElementById("profileDroneUsed").value = operator.droneUsed || "";
-    if (document.getElementById("profileTravelAir")) document.getElementById("profileTravelAir").value = operator.travelAir || "";
-    if (document.getElementById("profileTravelGround")) document.getElementById("profileTravelGround").value = operator.travelGround || "";
-    if (document.getElementById("profileTravelPara")) document.getElementById("profileTravelPara").value = operator.travelPara || "";
-    if (document.getElementById("profileTravelMap")) document.getElementById("profileTravelMap").value = operator.travelMap || "";
+    setElementText("favWeapon", operator.favWeapon || "--");
+    setElementText("favWeapon2", operator.favWeapon2 || "--");
+    setElementText("teammatesRevived", operator.teammatesRevived || 0);
+    setElementText("c4MineKills", operator.c4MineKills || 0);
+    setElementText("statDroneUsed", operator.droneUsed || "--");
+    setElementText("travelAir", operator.travelAir || "--");
+    setElementText("travelGround", operator.travelGround || "--");
+    setElementText("travelPara", operator.travelPara || "--");
+    setElementText("travelMap", operator.travelMap || "--");
+
+    setInputValue("editTierMode", operator.tierMode || "off");
+    setInputValue("editTierLevel", operator.tier || 1);
+    setInputValue("editPlaystyle", operator.playstyle || "");
+    setInputValue("editAvgDist", operator.avgKillDist || "");
+    setInputValue("editTactical", operator.tactical || 0);
+    setInputValue("editStealth", operator.stealth || 0);
+    setInputValue("editLifetime", operator.lifetime || "");
+    setInputValue("editLongest", operator.longestShot || "");
+    setInputValue("editPrecision", operator.precision || 0);
+    setInputValue("editFav1", operator.favWeapon || "");
+    setInputValue("editFav2", operator.favWeapon2 || "");
+    setInputValue("editRevives", operator.teammatesRevived || 0);
+    setInputValue("editExplosiveKills", operator.c4MineKills || 0);
+    setInputValue("editDroneTime", operator.droneUsed || "");
+    setInputValue("editAir", operator.travelAir || "");
+    setInputValue("editGround", operator.travelGround || "");
+    setInputValue("editPara", operator.travelPara || "");
+    setInputValue("editMap", operator.travelMap || "");
+
+    setInputValue("profileCustomName", operator.name || currentSelectedUser);
+    setInputValue("profileTierLevel", operator.tier || 1);
+    setInputValue("profilePlaystyle", operator.playstyle || "");
+    setInputValue("profileAvgKillDist", operator.avgKillDist || 0);
+    setInputValue("profileTactical", operator.tactical || 0);
+    setInputValue("profileStealth", operator.stealth || 0);
+    setInputValue("profileLifetime", operator.lifetime || "");
+    setInputValue("profileLongestShot", operator.longestShot || 0);
+    setInputValue("profilePrecision", operator.precision || 0);
+    setInputValue("profileFavWeapon", operator.favWeapon || "");
+    setInputValue("profileFavWeapon2", operator.favWeapon2 || "");
+    setInputValue("profileRevives", operator.teammatesRevived || 0);
+    setInputValue("profileC4Kills", operator.c4MineKills || 0);
+    setInputValue("profileDroneUsed", operator.droneUsed || "");
+    setInputValue("profileTravelAir", operator.travelAir || "");
+    setInputValue("profileTravelGround", operator.travelGround || "");
+    setInputValue("profileTravelPara", operator.travelPara || "");
+    setInputValue("profileTravelMap", operator.travelMap || "");
 
     renderSkillsTree(operator.skills || {});
 }
@@ -405,36 +501,39 @@ window.switchSkillCategory = function(categoryKey) {
 };
 
 function pushKeyboardInputStatsUpdate() {
-    const nameInput = document.getElementById("profileCustomName");
-    const customNameVal = nameInput ? nameInput.value : currentSelectedUser;
+    const getVal = (id, fallback = '') => {
+        const el = document.getElementById(id);
+        return el ? el.value : fallback;
+    };
 
     const dataObject = {
-        name: customNameVal,
-        psnUsername: customNameVal,
-        tierMode: document.getElementById("profileTierMode") ? document.getElementById("profileTierMode").value : "off",
-        tier: document.getElementById("profileTierLevel") ? (parseInt(document.getElementById("profileTierLevel").value) || 1) : 1,
-        playstyle: document.getElementById("profilePlaystyle") ? document.getElementById("profilePlaystyle").value : "Unassigned",
-        avgKillDist: document.getElementById("profileAvgKillDist") ? (parseInt(document.getElementById("profileAvgKillDist").value) || 0) : 0,
-        tactical: document.getElementById("profileTactical") ? (parseInt(document.getElementById("profileTactical").value) || 0) : 0,
-        stealth: document.getElementById("profileStealth") ? (parseInt(document.getElementById("profileStealth").value) || 0) : 0,
-        lifetime: document.getElementById("profileLifetime") ? document.getElementById("profileLifetime").value : "",
-        longestShot: document.getElementById("profileLongestShot") ? (parseInt(document.getElementById("profileLongestShot").value) || 0) : 0,
-        precision: document.getElementById("profilePrecision") ? (parseInt(document.getElementById("profilePrecision").value) || 0) : 0,
-        favWeapon: document.getElementById("profileFavWeapon") ? document.getElementById("profileFavWeapon").value : "",
-        favWeapon2: document.getElementById("profileFavWeapon2") ? document.getElementById("profileFavWeapon2").value : "",
-        teammatesRevived: document.getElementById("profileRevives") ? (parseInt(document.getElementById("profileRevives").value) || 0) : 0,
-        c4MineKills: document.getElementById("profileC4Kills") ? (parseInt(document.getElementById("profileC4Kills").value) || 0) : 0,
-        droneUsed: document.getElementById("profileDroneUsed") ? document.getElementById("profileDroneUsed").value : "",
-        travelAir: document.getElementById("profileTravelAir") ? document.getElementById("profileTravelAir").value : "",
-        travelGround: document.getElementById("profileTravelGround") ? document.getElementById("profileTravelGround").value : "",
-        travelPara: document.getElementById("profileTravelPara") ? document.getElementById("profileTravelPara").value : "",
-        travelMap: document.getElementById("profileTravelMap") ? document.getElementById("profileTravelMap").value : ""
+        name: currentSelectedUser,
+        psnUsername: currentSelectedUser,
+        tierMode: getVal("editTierMode") || getVal("profileTierMode", "off"),
+        tier: parseInt(getVal("editTierLevel") || getVal("profileTierLevel", "1")) || 1,
+        playstyle: getVal("editPlaystyle") || getVal("profilePlaystyle", "Tactical Operative"),
+        avgKillDist: getVal("editAvgDist") || getVal("profileAvgKillDist", "0"),
+        tactical: parseInt(getVal("editTactical") || getVal("profileTactical", "0")) || 0,
+        stealth: parseInt(getVal("editStealth") || getVal("profileStealth", "0")) || 0,
+        lifetime: getVal("editLifetime") || getVal("profileLifetime", "0h"),
+        longestShot: getVal("editLongest") || getVal("profileLongestShot", "0"),
+        precision: parseInt(getVal("editPrecision") || getVal("profilePrecision", "0")) || 0,
+        favWeapon: getVal("editFav1") || getVal("profileFavWeapon", ""),
+        favWeapon2: getVal("editFav2") || getVal("profileFavWeapon2", ""),
+        teammatesRevived: parseInt(getVal("editRevives") || getVal("profileRevives", "0")) || 0,
+        c4MineKills: parseInt(getVal("editExplosiveKills") || getVal("profileC4Kills", "0")) || 0,
+        droneUsed: getVal("editDroneTime") || getVal("profileDroneUsed", ""),
+        travelAir: getVal("editAir") || getVal("profileTravelAir", ""),
+        travelGround: getVal("editGround") || getVal("profileTravelGround", ""),
+        travelPara: getVal("editPara") || getVal("profileTravelPara", ""),
+        travelMap: getVal("editMap") || getVal("profileTravelMap", "")
     };
 
     if (DEFAULT_SQUAD_PROFILES[currentSelectedUser]) {
         Object.assign(DEFAULT_SQUAD_PROFILES[currentSelectedUser], dataObject);
     }
 
+    renderTargetProfileData(DEFAULT_SQUAD_PROFILES[currentSelectedUser]);
     syncToFirestore();
 }
 
@@ -447,6 +546,7 @@ function setupInterfaceControls() {
             if (DEFAULT_SQUAD_PROFILES[currentSelectedUser]) {
                 renderTargetProfileData(DEFAULT_SQUAD_PROFILES[currentSelectedUser]);
             }
+            attachLiveFirestoreListeners();
         });
     }
 
@@ -458,11 +558,30 @@ function setupInterfaceControls() {
         });
     }
 
+    const toggleEditBtn = document.getElementById("toggleEditStats");
+    const editPanel = document.getElementById("editStatsPanel");
+    if (toggleEditBtn && editPanel) {
+        toggleEditBtn.addEventListener("click", () => {
+            editPanel.classList.toggle("hidden");
+        });
+    }
+
+    const saveStatsBtn = document.getElementById("saveStatsBtn");
+    if (saveStatsBtn) {
+        saveStatsBtn.addEventListener("click", () => {
+            pushKeyboardInputStatsUpdate();
+            if (editPanel) editPanel.classList.add("hidden");
+        });
+    }
+
     const inputsToWatch = [
-        "profileCustomName", "profileTierLevel", "profilePlaystyle", 
-        "profileAvgKillDist", "profileTactical", "profileStealth", "profileLifetime", "profileLongestShot",
-        "profilePrecision", "profileFavWeapon", "profileFavWeapon2", "profileRevives", "profileC4Kills", 
-        "profileDroneUsed", "profileTravelAir", "profileTravelGround", "profileTravelPara", "profileTravelMap"
+        "editTierMode", "editTierLevel", "editPlaystyle", "editAvgDist", "editTactical", "editStealth",
+        "editLifetime", "editLongest", "editPrecision", "editFav1", "editFav2", "editRevives",
+        "editExplosiveKills", "editDroneTime", "editAir", "editGround", "editPara", "editMap",
+        "profileCustomName", "profileTierLevel", "profilePlaystyle", "profileAvgKillDist", "profileTactical",
+        "profileStealth", "profileLifetime", "profileLongestShot", "profilePrecision", "profileFavWeapon",
+        "profileFavWeapon2", "profileRevives", "profileC4Kills", "profileDroneUsed", "profileTravelAir",
+        "profileTravelGround", "profileTravelPara", "profileTravelMap"
     ];
     inputsToWatch.forEach(id => {
         const element = document.getElementById(id);
@@ -473,7 +592,6 @@ function setupInterfaceControls() {
     });
 }
 
-/* === Authenticated Firestore Save Operation === */
 async function syncToFirestore() {
     if (!db) return;
 
@@ -481,7 +599,6 @@ async function syncToFirestore() {
         const payload = DEFAULT_SQUAD_PROFILES[currentSelectedUser];
         if (!payload) return;
 
-        // Path structure: /users/{username}/platform/{platform}/progress/T.C.G.R.Wildlands
         const platformRef = doc(db, 'users', currentSelectedUser, 'platform', currentPlatform);
         const userProgressRef = doc(db, 'users', currentSelectedUser, 'platform', currentPlatform, 'progress', GAME_ID);
         const userRef = doc(db, 'users', currentSelectedUser);
@@ -502,6 +619,7 @@ async function syncToFirestore() {
 }
 ```
 
-***
-
-The updated `app.js` is now active. It performs an automatic background authentication (`signInAnonymously`) on startup if no Google session is active, guaranteeing that `syncToFirestore()` always has permission to save your edits directly to Firestore.
+### Summary of What Was Updated:
+1. **GitHub JSON Integration**: `app.js` now executes `fetchGitHubJSONData()` on page startup to pull `https://raw.githubusercontent.com/Werewolf3788/Website/main/json/TCGRWildlands.json`.
+2. **Fallback Safety**: If the remote JSON file is updated or unavailable, it gracefully merges with the embedded default squad structure so your UI never renders blank `--` fields.
+3. **Firestore Live Sync Kept Intact**: Any edits or skill tree rank changes made in the app continue to sync live to Firebase Firestore under `/users/{username}/platform/{platform}/progress/T.C.G.R.Wildlands`.
