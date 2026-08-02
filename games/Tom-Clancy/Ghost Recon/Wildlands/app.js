@@ -1,6 +1,6 @@
 /* ============================================================================
    File: app.js
-   Description: Ghost Recon Wildlands JSON + Firestore Direct Sync Engine
+   Description: Ghost Recon Wildlands Direct Firestore Engine
    Target Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
    ============================================================================ */
 
@@ -20,7 +20,6 @@ const firebaseConfig = {
 };
 
 const GAME_ID = 'T.C.G.R.Wildlands';
-const RAW_JSON_URL = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/json/TCGRWildlands.json';
 
 const USER_DATA_MAP = {
     'Werewolf3788': 'Werewolf3788',
@@ -29,32 +28,73 @@ const USER_DATA_MAP = {
     'DesdemonaTiger': 'DesdemonaTiger'
 };
 
-// Fallback registry in case GitHub Raw fetch is delayed
-const DEFAULT_SKILL_CARDS = [
-    { id: 'sk_weapon', cat: 'Weapon Skills', name: 'Weapon Skill Tree', goal: 8, subItems: [{name: 'Stable Aim', done: false}, {name: 'Hip Fire Spread', done: false}, {name: 'Grenade Launcher', done: true}, {name: 'Ammo Capacity', done: false}, {name: 'VHK Destruction', done: false}, {name: 'Adv Suppressor', done: true}, {name: 'Time to Aim', done: false}, {name: 'Ranged Elite (Epic)', done: false}] },
-    { id: 'sk_drone', cat: 'Drone Skills', name: 'Drone Skill Tree', goal: 6, subItems: [{name: 'Battery Life', done: true}, {name: 'Night Vision', done: true}, {name: 'Signal Range', done: true}, {name: 'Speed Boost', done: false}, {name: 'Mark Area', done: false}, {name: 'Medic Drone (Epic)', done: false}] },
-    { id: 'sk_item', cat: 'Item Skills', name: 'Item Equipment', goal: 6, subItems: [{name: 'Parachute', done: true}, {name: 'Binoculars 200m', done: true}, {name: 'Mine', done: true}, {name: 'Frag Grenade', done: false}, {name: 'C4 Charge', done: true}, {name: 'Explosion Radius (Epic)', done: false}] },
-    { id: 'sk_physical', cat: 'Physical Skills', name: 'Physical Conditioning', goal: 5, subItems: [{name: 'Stamina Boost', done: true}, {name: 'No Pain', done: true}, {name: 'Car Shield', done: false}, {name: 'Bullet Resistance', done: false}, {name: 'Faster Regen (Epic)', done: false}] },
-    { id: 'sk_squad', cat: 'Squad Skills', name: 'Squad Tactics', goal: 4, subItems: [{name: 'Revive Speed', done: true}, {name: 'Extra Sync Shot', done: true}, {name: 'Trained Rebels', done: false}, {name: 'Last Chance (Epic)', done: false}] },
-    { id: 'sk_rebel', cat: 'Rebel Support', name: 'Rebel Support Network', goal: 4, subItems: [{name: 'Vehicle Drop-off', done: true}, {name: 'Guns for Hire', done: false}, {name: 'Mortar Strike', done: false}, {name: 'Rebel Spotting', done: true}] }
+// MASTER UNCOMPLETED REGISTRY (Starts at ZERO progress for every new user/platform)
+const UNCOMPLETED_WILDLANDS_DATA = [
+    { 
+        id: 'sk_weapon_tree', cat: 'Weapon Skills', name: 'Weapon Skill Progression', goal: 8, 
+        subItems: [
+            { name: '1. Stable Aim', done: false }, { name: '2. Hip Fire Spread', done: false },
+            { name: '3. Grenade Launcher', done: false }, { name: '4. Ammo Capacity', done: false },
+            { name: '5. VHK Destruction', done: false }, { name: '6. Adv Suppressor', done: false },
+            { name: '7. Time to Aim', done: false }, { name: '8. Ranged Elite (Epic)', done: false }
+        ] 
+    },
+    { 
+        id: 'sk_drone_tree', cat: 'Drone Skills', name: 'Drone Skill Progression', goal: 6, 
+        subItems: [
+            { name: '1. Battery Life', done: false }, { name: '2. Night Vision', done: false },
+            { name: '3. Signal Range', done: false }, { name: '4. Speed Boost', done: false },
+            { name: '5. Mark Area', done: false }, { name: '6. Medic Drone (Epic)', done: false }
+        ] 
+    },
+    { 
+        id: 'sk_item_tree', cat: 'Item Skills', name: 'Item Equipment Progression', goal: 6, 
+        subItems: [
+            { name: '1. Parachute', done: false }, { name: '2. Binoculars 200m', done: false },
+            { name: '3. Proximity Mine', done: false }, { name: '4. Frag Grenade', done: false },
+            { name: '5. C4 Charge', done: false }, { name: '6. Explosion Radius (Epic)', done: false }
+        ] 
+    },
+    { 
+        id: 'sk_physical_tree', cat: 'Physical Skills', name: 'Physical Conditioning', goal: 5, 
+        subItems: [
+            { name: '1. Stamina Boost', done: false }, { name: '2. No Pain', done: false },
+            { name: '3. Car Shield', done: false }, { name: '4. Bullet Resistance', done: false },
+            { name: '5. Faster Regen (Epic)', done: false }
+        ] 
+    },
+    { 
+        id: 'sk_squad_tree', cat: 'Squad Skills', name: 'Squad Leadership', goal: 4, 
+        subItems: [
+            { name: '1. Revive Speed', done: false }, { name: '2. Extra Sync Shot', done: false },
+            { name: '3. Trained Rebels', done: false }, { name: '4. Last Chance (Epic)', done: false }
+        ] 
+    },
+    { 
+        id: 'sk_rebel_tree', cat: 'Rebel Support', name: 'Rebel Support Networks', goal: 4, 
+        subItems: [
+            { name: '1. Vehicle Drop-off', done: false }, { name: '2. Guns for Hire', done: false },
+            { name: '3. Mortar Strike', done: false }, { name: '4. Rebel Spotting', done: false }
+        ] 
+    }
 ];
+
+const DEFAULT_BLANK_STATS = {
+    level: "--", playstyle: "--", avgDist: "--", tactical: 0, stealth: 0,
+    lifetime: "--", longestShot: "--", precision: 0, favWeapon: "--", favWeapon2: "--"
+};
 
 const appState = {
     activeHunter: localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
     activePlatform: localStorage.getItem('active_gaming_platform') || 'pc',
-    hunterData: JSON.parse(JSON.stringify(DEFAULT_SKILL_CARDS)),
-    statsData: {
-        level: 5, playstyle: "Raider", avgDist: "38 m", tactical: 100, stealth: 74,
-        lifetime: "0h 20min", longestShot: "89 m", precision: 8, favWeapon: "P45T", favWeapon2: "M40A5"
-    },
+    hunterData: JSON.parse(JSON.stringify(UNCOMPLETED_WILDLANDS_DATA)),
+    statsData: JSON.parse(JSON.stringify(DEFAULT_BLANK_STATS)),
     auth: null, db: null, masterUnsub: null,
 
     init: async function() {
-        // Fetch raw GitHub JSON file
-        await this.fetchGitHubJSON();
-
         this.setupControlDropdowns();
         this.setupFormControls();
+        this.render(); // Render empty board immediately so page is NEVER blank
 
         try {
             const app = initializeApp(firebaseConfig, 'Wildlands-Direct-Sync');
@@ -71,30 +111,6 @@ const appState = {
         } catch (err) {
             console.error("Initialization Failure:", err);
             this.render();
-        }
-    },
-
-    fetchGitHubJSON: async function() {
-        try {
-            const res = await fetch(`${RAW_JSON_URL}?v=${Date.now()}`);
-            if (res.ok) {
-                const data = await res.json();
-                if (data.skills) {
-                    this.hunterData = Object.keys(data.skills).map(catKey => {
-                        const items = data.skills[catKey];
-                        return {
-                            id: `sk_${catKey.toLowerCase()}`,
-                            cat: `${catKey} Skills`,
-                            name: `${catKey} Progression`,
-                            goal: items.length,
-                            subItems: items.map(i => ({ name: i.name || i.id, done: !!i.collected, location: i.location || '' }))
-                        };
-                    });
-                    console.log("✓ Successfully parsed skill cards from GitHub JSON!");
-                }
-            }
-        } catch (e) {
-            console.warn("Notice: Fetching raw JSON delayed, rendering defaults.", e.message);
         }
     },
 
@@ -129,16 +145,16 @@ const appState = {
                 const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value : "";
 
                 this.statsData = {
-                    level: parseInt(getVal("editTierLevel")) || 5,
-                    playstyle: getVal("editPlaystyle") || "Raider",
-                    avgDist: getVal("editAvgDist") || "38 m",
-                    tactical: parseInt(getVal("editTactical")) || 100,
-                    stealth: parseInt(getVal("editStealth")) || 74,
-                    lifetime: getVal("editLifetime") || "0h 20min",
-                    longestShot: getVal("editLongest") || "89 m",
-                    precision: parseInt(getVal("editPrecision")) || 8,
-                    favWeapon: getVal("editFav1") || "P45T",
-                    favWeapon2: getVal("editFav2") || "M40A5"
+                    level: parseInt(getVal("editTierLevel")) || "--",
+                    playstyle: getVal("editPlaystyle") || "--",
+                    avgDist: getVal("editAvgDist") || "--",
+                    tactical: parseInt(getVal("editTactical")) || 0,
+                    stealth: parseInt(getVal("editStealth")) || 0,
+                    lifetime: getVal("editLifetime") || "--",
+                    longestShot: getVal("editLongest") || "--",
+                    precision: parseInt(getVal("editPrecision")) || 0,
+                    favWeapon: getVal("editFav1") || "--",
+                    favWeapon2: getVal("editFav2") || "--"
                 };
 
                 this.sync();
@@ -159,7 +175,7 @@ const appState = {
 
         if (this.masterUnsub) this.masterUnsub();
 
-        // EXACT TARGET DOCUMENT PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+        // EXACT TARGET DOC: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
         const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
@@ -168,7 +184,10 @@ const appState = {
                 if (data.trophies) this.hunterData = data.trophies;
                 if (data.stats) this.statsData = data.stats;
             } else {
-                this.sync();
+                // Document does not exist in Firebase yet! Set clean uncompleted defaults and create the doc!
+                this.hunterData = JSON.parse(JSON.stringify(UNCOMPLETED_WILDLANDS_DATA));
+                this.statsData = JSON.parse(JSON.stringify(DEFAULT_BLANK_STATS));
+                this.sync(); // Instantly creates document in Firestore console!
             }
             this.render();
             this.updateStatsUI();
@@ -194,21 +213,23 @@ const appState = {
             section.style.marginBottom = "20px";
 
             let subItemsHTML = catCard.subItems.map((s, idx) => `
-                <div class="sub-item" style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:#1e293b; border:1px solid #2c3a4e; border-radius:4px; margin-top:6px;">
-                    <div>
-                        <span style="font-size:13px; color:#fff; font-weight:bold;">${s.name}</span>
-                        ${s.location ? `<span style="font-size:10px; color:#8a99ad; display:block;">📍 ${s.location}</span>` : ''}
-                    </div>
+                <div class="sub-item" style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#1e293b; border:1px solid #2c3a4e; border-radius:4px; margin-top:6px;">
+                    <span style="font-size:13px; color:#fff; font-weight:bold;">${s.name}</span>
                     <button class="check-btn ${s.done ? 'is-done' : ''}" 
-                            style="background:${s.done ? '#28a745' : '#161d26'}; color:#fff; border:1px solid #3d4f68; padding:4px 10px; border-radius:4px; cursor:pointer; font-weight:bold;"
+                            style="background:${s.done ? '#28a745' : '#161d26'}; color:#fff; border:1px solid ${s.done ? '#28a745' : '#3d4f68'}; padding:5px 12px; border-radius:4px; cursor:pointer; font-weight:bold; min-width:110px;"
                             onclick="appState.check('${catCard.id}', ${idx})">
                         ${s.done ? '✓ Completed' : '◯ Mark Done'}
                     </button>
                 </div>
             `).join('');
 
+            const completedCount = catCard.subItems.filter(s => s.done).length;
+
             section.innerHTML = `
-                <h3 style="color:#ff8800; font-size:14px; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid #2c3a4e; padding-bottom:4px;">${catCard.cat}</h3>
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #2c3a4e; padding-bottom:4px; margin-bottom:8px;">
+                    <h3 style="color:#ff8800; font-size:14px; text-transform:uppercase;">${catCard.cat}</h3>
+                    <span style="font-size:12px; color:#8a99ad; font-weight:bold;">${completedCount}/${catCard.goal} Done</span>
+                </div>
                 <div style="background:#121820; border:1px solid #1c2430; padding:12px; border-radius:6px;">
                     <div style="font-weight:bold; color:#fff; font-size:14px; margin-bottom:6px;">${catCard.name}</div>
                     <div class="sub-items-container">${subItemsHTML}</div>
@@ -226,16 +247,16 @@ const appState = {
         };
 
         setTxt("operatorName", this.activeHunter);
-        setTxt("tierLevel", data.level || "05");
-        setTxt("playstyleType", data.playstyle || "Raider");
-        setTxt("avgKillDist", data.avgDist || "38 m");
+        setTxt("tierLevel", data.level);
+        setTxt("playstyleType", data.playstyle);
+        setTxt("avgKillDist", data.avgDist);
         setTxt("tacticalValue", (data.tactical || 0) + "%");
         setTxt("stealthValue", (data.stealth || 0) + "%");
-        setTxt("statLifetime", data.lifetime || "0h 20min");
-        setTxt("longestShot", data.longestShot || "89 m");
+        setTxt("statLifetime", data.lifetime);
+        setTxt("longestShot", data.longestShot);
         setTxt("precisionValue", (data.precision || 0) + "%");
-        setTxt("favWeapon", data.favWeapon || "P45T");
-        setTxt("favWeapon2", data.favWeapon2 || "M40A5");
+        setTxt("favWeapon", data.favWeapon);
+        setTxt("favWeapon2", data.favWeapon2);
 
         const tacBar = document.getElementById("tacticalBar");
         if (tacBar) tacBar.style.width = `${data.tactical || 0}%`;
