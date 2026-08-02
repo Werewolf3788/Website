@@ -1,10 +1,9 @@
 /* ============================================================================
    File: app.js
-   Description: Ghost Recon Wildlands Dynamic Engine (GitHub JSON Stream)
-   Firebase Project: entertainment-71888
+   Description: Ghost Recon Wildlands - Instant Seed & Realtime Engine
+   Target Firebase: entertainment-71888
    ============================================================================ */
 
-// 1. Firebase Credentials (entertainment-71888)
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -23,76 +22,74 @@ if (!firebase.apps.length) {
 const auth = firebase.auth();
 const rtdb = firebase.database();
 
-// Active Application State
 let activeOperator = localStorage.getItem('active_gaming_nickname') || "Werewolf3788";
 let activePlatform = localStorage.getItem('active_gaming_platform') || "pc";
 let activeCategory = "WEAPON";
-let dynamicJsonData = null; // Store GitHub JSON data dynamically
 
-const RAW_JSON_URL = "https://raw.githubusercontent.com/Werewolf3788/Website/main/json/TCGRWildlands.json";
+// Hardcoded In-Game Skill Trees Blueprint
+const DEFAULT_SKILLS = {
+    "WEAPON": [
+        { name: "Stable Aim", current: 1, max: 3, collected: true },
+        { name: "Hip Fire Spread", current: 2, max: 3, collected: false },
+        { name: "Grenade Launcher", current: 1, max: 1, collected: true },
+        { name: "Ammo Capacity", current: 2, max: 4, collected: false },
+        { name: "VHK Destruction", current: 1, max: 3, collected: false },
+        { name: "Adv Suppressor", current: 1, max: 1, collected: true },
+        { name: "Time to Aim", current: 1, max: 3, collected: false },
+        { name: "Ranged Elite (Epic)", current: 1, max: 1, collected: false, epic: true }
+    ],
+    "DRONE": [
+        { name: "Battery", current: 2, max: 4, collected: true },
+        { name: "Night Vision", current: 1, max: 1, collected: true },
+        { name: "Range", current: 3, max: 4, collected: true },
+        { name: "Speed", current: 1, max: 3, collected: false },
+        { name: "Mark Area", current: 1, max: 3, collected: false },
+        { name: "Medic Drone (Epic)", current: 1, max: 1, collected: false, epic: true }
+    ],
+    "ITEM": [
+        { name: "Parachute", current: 1, max: 1, collected: true },
+        { name: "Binocular 200m", current: 1, max: 1, collected: true },
+        { name: "Mine", current: 1, max: 1, collected: true },
+        { name: "Frag Grenade", current: 2, max: 3, collected: false },
+        { name: "C4", current: 1, max: 1, collected: true },
+        { name: "Explosion Radius (Epic)", current: 1, max: 1, collected: false, epic: true }
+    ],
+    "PHYSICAL": [
+        { name: "Stamina", current: 2, max: 3, collected: true },
+        { name: "No Pain", current: 1, max: 3, collected: true },
+        { name: "Car Shield", current: 1, max: 3, collected: false },
+        { name: "Bullet Resistance", current: 2, max: 4, collected: false },
+        { name: "Faster Regen (Epic)", current: 1, max: 1, collected: false, epic: true }
+    ],
+    "SQUAD": [
+        { name: "Revive Speed", current: 2, max: 3, collected: true },
+        { name: "Extra Sync Shot", current: 3, max: 3, collected: true },
+        { name: "Trained Rebels", current: 1, max: 3, collected: false },
+        { name: "Last Chance (Epic)", current: 1, max: 1, collected: false, epic: true }
+    ],
+    "REBEL": [
+        { name: "Vehicle Drop-off", current: 3, max: 3, collected: true },
+        { name: "Guns for Hire", current: 2, max: 3, collected: false },
+        { name: "Mortar", current: 1, max: 3, collected: false },
+        { name: "Spotting", current: 3, max: 3, collected: true }
+    ],
+    "TROPHY": [
+        { name: "Master Ghost Operative", current: 1, max: 1, collected: true },
+        { name: "Kingslayer File Collector", current: 1, max: 1, collected: false }
+    ]
+};
 
-// 2. Application Startup
-document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Fetch JSON file from GitHub Repository first
-    await fetchGitHubJSON();
+document.addEventListener("DOMContentLoaded", () => {
+    populateWeaponDropdowns();
+    setupControlDropdowns();
+    setupUIEvents();
 
-    // 2. Read URL Parameters for Custom User/Platform Links
-    const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('user')) activeOperator = urlParams.get('user');
-    if (urlParams.get('platform')) activePlatform = urlParams.get('platform').toLowerCase();
-
-    localStorage.setItem('active_gaming_nickname', activeOperator);
-    localStorage.setItem('active_gaming_platform', activePlatform);
-
-    // 3. Connect to Firebase Anonymously & Stream Data
     auth.signInAnonymously().then(() => {
-        console.log(`✓ Connected to Firebase (entertainment-71888). Active: ${activeOperator} [${activePlatform.toUpperCase()}]`);
-        setupControlDropdowns();
         attachLivePlatformStreams(activeOperator, activePlatform);
     }).catch(err => {
-        console.warn("Auth Notice:", err.message);
-        setupControlDropdowns();
         attachLivePlatformStreams(activeOperator, activePlatform);
     });
-
-    setupUIEvents();
 });
-
-// 3. Fetch GitHub JSON File Live
-async function fetchGitHubJSON() {
-    try {
-        const response = await fetch(`${RAW_JSON_URL}?v=${Date.now()}`);
-        if (response.ok) {
-            dynamicJsonData = await response.json();
-            console.log("✓ Dynamic TCGRWildlands.json successfully loaded from GitHub!");
-            populateWeaponDropdownsFromJSON();
-        }
-    } catch (e) {
-        console.warn("Could not fetch raw GitHub JSON file. Operating on live database fallback.", e.message);
-    }
-}
-
-// 4. Populate Dropdowns Dynamically from JSON
-function populateWeaponDropdownsFromJSON() {
-    const fav1 = document.getElementById("editFav1");
-    const fav2 = document.getElementById("editFav2");
-    if (!fav1 || !fav2) return;
-
-    fav1.innerHTML = ""; fav2.innerHTML = "";
-
-    // Pull weapon list from JSON if present, or fallback to default list
-    const weapons = (dynamicJsonData && dynamicJsonData.weapons) ? dynamicJsonData.weapons : [
-        "P45T (Handgun)", "M40A5 (Sniper Rifle)", "M4A1 (Assault Rifle)", "P416 (Assault Rifle)", 
-        "AK-47 (Assault Rifle)", "ACR (Assault Rifle)", "HTI (Sniper Rifle)", "SR-25 (Sniper Rifle)",
-        "MP5 (Submachine Gun)", "Vector .45 ACP (SMG)", "Stoner LMG (Machine Gun)"
-    ];
-
-    weapons.forEach(w => {
-        const weaponName = (typeof w === 'object') ? (w.name || w.title) : w;
-        fav1.appendChild(new Option(weaponName, weaponName));
-        fav2.appendChild(new Option(weaponName, weaponName));
-    });
-}
 
 function setupControlDropdowns() {
     const userSelector = document.getElementById("userSelect");
@@ -116,55 +113,25 @@ function setupControlDropdowns() {
     }
 }
 
-// 5. Live Firebase Streams with JSON Auto-Seeding
 function attachLivePlatformStreams(operatorKey, platformKey) {
     const basePath = `users/${operatorKey}/platform/${platformKey}`;
 
-    // Stream Profile Stats
     rtdb.ref(`${basePath}/stats`).on("value", (snapshot) => {
         if (snapshot.exists()) {
             renderStatsUI(snapshot.val());
-        } else {
-            // Get default profile from JSON or fallback
-            const defaultStats = (dynamicJsonData && dynamicJsonData.defaultStats) ? dynamicJsonData.defaultStats : {
-                onlineId: operatorKey,
-                platform: platformKey.toUpperCase(),
-                level: 5,
-                playstyle: "Raider",
-                avgDist: "38 m",
-                tactical: 100,
-                stealth: 74,
-                lifetime: "0h 20min",
-                longestShot: "89 m",
-                precision: 8,
-                favWeapon: "P45T",
-                favWeapon2: "M40A5",
-                revives: 0,
-                explosiveKills: 0,
-                droneTime: "0h 8min",
-                airTravel: "0h 7min",
-                groundTravel: "0h 7min",
-                paraTravel: "0 Jumps",
-                mapDisc: "5%"
-            };
-            rtdb.ref(`${basePath}/stats`).set(defaultStats);
-            renderStatsUI(defaultStats);
         }
     });
 
-    // Stream Skill Trees from Firebase / JSON
     rtdb.ref(`${basePath}/skills`).on("value", (snapshot) => {
         if (snapshot.exists()) {
             renderSkillsUI(snapshot.val());
-        } else if (dynamicJsonData && dynamicJsonData.skills) {
-            // Automatically seed brand new database using JSON blueprints!
-            rtdb.ref(`${basePath}/skills`).set(dynamicJsonData.skills);
-            renderSkillsUI(dynamicJsonData.skills);
+        } else {
+            rtdb.ref(`${basePath}/skills`).set(DEFAULT_SKILLS);
+            renderSkillsUI(DEFAULT_SKILLS);
         }
     });
 }
 
-// 6. Skill Node Toggle Mutator
 window.mutateSkillNode = function(category, itemIndex, currentRank, maxRank, isCollected) {
     let nextRank = currentRank + 1;
     let nextCollected = isCollected;
@@ -179,12 +146,9 @@ window.mutateSkillNode = function(category, itemIndex, currentRank, maxRank, isC
     updates[`${targetPath}/current`] = nextRank;
     updates[`${targetPath}/collected`] = nextCollected;
 
-    rtdb.ref().update(updates)
-        .then(() => console.log(`✓ Skill Updated: ${category} Node [${itemIndex}] for ${activeOperator} on ${activePlatform}`))
-        .catch(err => console.error("Firebase Update Error:", err));
+    rtdb.ref().update(updates);
 };
 
-// 7. Render UI Functions
 function renderStatsUI(data) {
     if (!data) return;
     const setTxt = (id, val) => {
@@ -217,30 +181,6 @@ function renderStatsUI(data) {
     if (stBar) stBar.style.width = `${data.stealth || 0}%`;
     const prBar = document.getElementById("precisionBar");
     if (prBar) prBar.style.width = `${data.precision || 0}%`;
-
-    // Pre-fill keyboard form inputs
-    const setVal = (id, val) => {
-        const input = document.getElementById(id);
-        if (input && val !== undefined) input.value = val;
-    };
-
-    setVal("editPlaystyle", data.playstyle);
-    setVal("editAvgDist", data.avgDist);
-    setVal("editTactical", data.tactical);
-    setVal("editStealth", data.stealth);
-    setVal("editLifetime", data.lifetime);
-    setVal("editLongest", data.longestShot);
-    setVal("editPrecision", data.precision);
-    setVal("editFav1", data.favWeapon);
-    setVal("editFav2", data.favWeapon2);
-    setVal("editRevives", data.revives);
-    setVal("editExplosiveKills", data.explosiveKills);
-    setVal("editDroneTime", data.droneTime);
-    setVal("editAir", data.airTravel);
-    setVal("editGround", data.groundTravel);
-    setVal("editPara", data.paraTravel);
-    setVal("editMap", data.mapDisc);
-    setVal("editTierLevel", data.level);
 }
 
 function renderSkillsUI(skillsData) {
@@ -248,12 +188,7 @@ function renderSkillsUI(skillsData) {
     if (!grid) return;
 
     grid.innerHTML = "";
-    const categoryNodes = skillsData[activeCategory] || (dynamicJsonData && dynamicJsonData.skills ? dynamicJsonData.skills[activeCategory] : []);
-
-    if (!Array.isArray(categoryNodes) || categoryNodes.length === 0) {
-        grid.innerHTML = `<div style="color:#8a99ad; text-align:center; padding:20px; width:100%;">No entries mapped under '${activeCategory}'.</div>`;
-        return;
-    }
+    const categoryNodes = skillsData[activeCategory] || DEFAULT_SKILLS[activeCategory] || [];
 
     categoryNodes.forEach((skill, index) => {
         if (!skill) return;
@@ -262,11 +197,10 @@ function renderSkillsUI(skillsData) {
         const isMaxed = currentRank === maxRank;
 
         const card = document.createElement("div");
-        card.className = `skill-card unlocked ${isMaxed ? 'maxed' : ''} ${skill.epic ? 'epic-card' : ''}`;
+        card.className = `skill-card unlocked ${isMaxed ? 'maxed' : ''}`;
         card.innerHTML = `
             <div class="card-top-action">
                 <h4 style="color:#fff; font-size:14px; font-weight:bold;">${skill.name}</h4>
-                ${skill.location ? `<span style="font-size:11px; color:#8a99ad; display:block; margin-top:2px;">📍 ${skill.location}</span>` : ''}
                 <div class="skill-meta-row" style="margin-top:8px;">
                     <div class="skill-rank-indicators">
                         ${Array.from({ length: maxRank }).map((_, rIdx) => `
@@ -296,15 +230,30 @@ window.switchSkillCategory = function(categoryName) {
     });
 
     rtdb.ref(`users/${activeOperator}/platform/${activePlatform}/skills`).once("value").then(snap => {
-        renderSkillsUI(snap.exists() ? snap.val() : (dynamicJsonData && dynamicJsonData.skills ? dynamicJsonData.skills : {}));
+        renderSkillsUI(snap.exists() ? snap.val() : DEFAULT_SKILLS);
     });
 };
+
+function populateWeaponDropdowns() {
+    const fav1 = document.getElementById("editFav1");
+    const fav2 = document.getElementById("editFav2");
+    if (!fav1 || !fav2) return;
+
+    fav1.innerHTML = ""; fav2.innerHTML = "";
+    const weapons = ["P45T", "M40A5", "M4A1", "P416", "AK-47", "ACR", "HTI", "SR-25", "MP5", "Vector .45"];
+    weapons.forEach(w => {
+        fav1.appendChild(new Option(w, w));
+        fav2.appendChild(new Option(w, w));
+    });
+}
 
 function setupUIEvents() {
     const toggleBtn = document.getElementById("toggleEditStats");
     const editPanel = document.getElementById("editStatsPanel");
     if (toggleBtn && editPanel) {
-        toggleBtn.addEventListener("click", () => editPanel.classList.toggle("hidden"));
+        toggleBtn.addEventListener("click", () => {
+            editPanel.classList.toggle("hidden");
+        });
     }
 
     const saveBtn = document.getElementById("saveStatsBtn");
@@ -335,9 +284,8 @@ function setupUIEvents() {
             };
 
             rtdb.ref(`users/${activeOperator}/platform/${activePlatform}/stats`).update(updates).then(() => {
-                console.log("✓ Profile inputs updated successfully!");
                 if (editPanel) editPanel.classList.add("hidden");
-            }).catch(err => console.error("Save Error:", err));
+            });
         });
     }
 }
