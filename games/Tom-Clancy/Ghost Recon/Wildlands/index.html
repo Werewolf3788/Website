@@ -1,236 +1,270 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google Analytics Stream Integration -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-Z9M5LXQ5XN');
+    </script>
+    
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Werewolf Project | Home</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ghost Recon Wildlands Squad Operations Hub</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="style.css?v=3.4">
     
     <style>
-        body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; }
-        .max-w-7xl { width: 80% !important; max-width: 80% !important; margin: 0 auto; }
-        .custom-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; }
-        .styled-select { background: #161d26; color: #fff; border: 1px solid #1c2430; padding: 6px 12px; border-radius: 6px; font-size: 12px; }
+        :root {
+            --bar-height: clamp(60px, 10vh, 90px);
+            --primary-orange: #FF4500;
+            --solid-black: #000000;
+            --ghost-blue: #28a745;
+            --node-blue: #0076a8;
+            --node-locked: #1c2430;
+            --medal-gold: #ffcc00;
+        }
+        .header-controls-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .styled-select {
+            background: #161d26;
+            color: #fff;
+            border: 1px solid #2c3a4e;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: bold;
+            min-height: 40px;
+            cursor: pointer;
+        }
+        .hidden { display: none !important; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-    <!-- Navigation -->
-    <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
-            <div class="flex items-center gap-3">
-                <span class="text-xl font-black text-sky-400">WEREWOLF<span class="text-white">PROJECT</span></span>
-                <span id="activeNicknameBadge" class="hidden text-xs bg-slate-800 text-amber-400 font-mono px-2 py-1 rounded border border-amber-500/30"></span>
-            </div>
+    <header class="hub-header">
+        <div class="header-container">
+            <h1 class="logo-text">GHOST HUB</h1>
+            
+            <div class="header-controls-group">
+                <!-- User Selector Dropdown -->
+                <div class="user-selector-wrapper">
+                    <select id="userSelect" class="styled-select">
+                        <option value="Werewolf3788">Werewolf3788 (Kevin)</option>
+                        <option value="Raymystyro">Raymystyro (Ray)</option>
+                        <option value="terrdog420">terrdog420 (TJ)</option>
+                        <option value="DesdemonaTiger">DesdemonaTiger (Marc)</option>
+                    </select>
+                </div>
 
-            <!-- Navigation Links & Global Platform Selector -->
-            <div id="desktop-nav-links" class="flex items-center space-x-6 text-sm">
-                <a href="index.html" class="text-white font-bold">Home</a>
-                <a href="settings.html" class="text-slate-300 hover:text-white">Settings</a>
-                
-                <!-- Active Platform Selector -->
-                <div class="platform-selector-wrapper flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800">
-                    <i class="fa-solid fa-gamepad text-orange-500 text-xs"></i>
-                    <select id="platformSelect" class="styled-select bg-transparent text-xs text-white focus:outline-none cursor-pointer">
+                <!-- Platform Selector Dropdown -->
+                <div class="platform-selector-wrapper">
+                    <select id="platformSelect" class="styled-select" style="border-color: var(--primary-orange); color: #ffa500;">
                         <option value="pc">💻 PC (Ubisoft Connect)</option>
                         <option value="playstation">🎮 PlayStation (PS5/PS4)</option>
                         <option value="xbox">💚 Xbox (Series X/S)</option>
                     </select>
                 </div>
             </div>
-        </div>
-    </nav>
 
-    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 space-y-12">
-        <header class="text-center py-8">
-            <h1 class="text-3xl font-black text-sky-400">Knowing the Players</h1>
-            <p class="mt-4 text-slate-400">Track squad game progress across platforms stored in real-time.</p>
-        </header>
-
-        <!-- REAL-TIME CROSS-PLATFORM SQUAD PROGRESS -->
-        <section class="bg-slate-900/80 p-6 rounded-xl border border-slate-800">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                <div>
-                    <span class="text-orange-500 font-bold text-xs uppercase">Live Database Matrix</span>
-                    <h2 class="text-xl font-bold text-white">Squad Progress Across Platforms</h2>
+            <div class="ui-controls">
+                <button id="toggleUiSettings" class="control-btn">🔧</button>
+                <div id="uiSettingsPanel" class="settings-dropdown hidden">
+                    <div class="setting-item">
+                        <label>Theme Mode:</label>
+                        <select id="themeModeSelect">
+                            <option value="dark" selected>Dark</option>
+                            <option value="bright">Bright</option>
+                            <option value="system">Match System</option>
+                        </select>
+                    </div>
                 </div>
+            </div>
+        </div>
+    </header>
 
-                <!-- Platform Filter Toggle Buttons -->
-                <div class="flex items-center gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
-                    <button onclick="filterGrid('all')" id="btn-all" class="px-3 py-1 rounded-lg text-xs font-bold text-white bg-slate-800 border border-slate-700">🌐 All</button>
-                    <button onclick="filterGrid('pc')" id="btn-pc" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all">💻 PC</button>
-                    <button onclick="filterGrid('playstation')" id="btn-playstation" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all">🎮 PlayStation</button>
-                    <button onclick="filterGrid('xbox')" id="btn-xbox" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all">💚 Xbox</button>
+    <main class="hub-container">
+        
+        <!-- Left Side: Editable Stats & Profile Panel -->
+        <section class="card-panel profile-panel">
+            <div class="profile-header">
+                <h2 id="operatorName" class="outline-text">Operator</h2>
+                <div id="tierContainer" class="tier-badge-container">
+                    <span class="tier-label">TIER</span>
+                    <span id="tierLevel" class="tier-value">--</span>
+                </div>
+            </div>
+            
+            <div class="stat-category-block">
+                <h3 class="category-header">PLAYSTYLE <span id="playstyleType" class="header-highlight">--</span></h3>
+                <div class="stat-row">
+                    <span>Average Kill Distance</span>
+                    <span id="avgKillDist" class="stat-val">--</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-labels">
+                        <span>Tactical Precision</span>
+                        <span id="tacticalValue">0%</span>
+                    </div>
+                    <div class="bar-bg"><div id="tacticalBar" class="bar-fill"></div></div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-labels">
+                        <span>Stealth Kills</span>
+                        <span id="stealthValue">0%</span>
+                    </div>
+                    <div class="bar-bg"><div id="stealthBar" class="bar-fill"></div></div>
                 </div>
             </div>
 
-            <!-- Dynamic Live Cards Grid -->
-            <div id="squadProgressGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="custom-card p-6 animate-pulse"><div class="h-4 bg-slate-800 rounded w-1/2 mb-4"></div></div>
+            <div class="stat-category-block cinematic-wrapper">
+                <h3 class="category-header">COMBAT</h3>
+                <div class="stat-row">
+                    <span>Lifetime</span>
+                    <span id="statLifetime" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Longest Shot</span>
+                    <span id="longestShot" class="stat-val">--</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-labels">
+                        <span>Precision</span>
+                        <span id="precisionValue">0%</span>
+                    </div>
+                    <div class="bar-bg"><div id="precisionBar" class="bar-fill"></div></div>
+                </div>
+                <div class="weapons-fav-row">
+                    <div class="weapon-tag"><strong>Favorite Weapon:</strong> <span id="favWeapon">--</span></div>
+                    <div class="weapon-tag"><strong>2nd Favorite Weapon:</strong> <span id="favWeapon2">--</span></div>
+                </div>
+            </div>
+
+            <div class="stat-category-block">
+                <h3 class="category-header">SUPPORT</h3>
+                <div class="stat-row">
+                    <span>Teammates Revived</span>
+                    <span id="teammatesRevived" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>C4/Mine Kills</span>
+                    <span id="c4MineKills" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Drone Used</span>
+                    <span id="statDroneUsed" class="stat-val">--</span>
+                </div>
+            </div>
+
+            <div class="stat-category-block">
+                <h3 class="category-header">TRAVEL</h3>
+                <div class="stat-row">
+                    <span>Air</span>
+                    <span id="travelAir" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Ground</span>
+                    <span id="travelGround" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Parachute</span>
+                    <span id="travelPara" class="stat-val">--</span>
+                </div>
+                <div class="stat-row">
+                    <span>Map Discovered</span>
+                    <span id="travelMap" class="stat-val">--</span>
+                </div>
+            </div>
+
+            <div class="steam-widget-card">
+                <iframe src="https://store.steampowered.com/widget/460930/" frameborder="0" width="100%" height="190"></iframe>
+            </div>
+
+            <!-- Edit Trigger Button -->
+            <div class="edit-stats-trigger-container">
+                <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Ghost Profile Inputs</button>
+            </div>
+
+            <!-- Keyboard Editable Form Input Fields -->
+            <div id="editStatsPanel" class="edit-stats-panel hidden">
+                <div class="edit-row">
+                    <label>Tier One Mode:</label>
+                    <select id="editTierMode">
+                        <option value="off">Off / Not Reached</option>
+                        <option value="on">Active</option>
+                    </select>
+                    <input type="number" id="editTierLevel" min="1" max="50" placeholder="Lvl (1-50)">
+                </div>
+                <hr class="panel-divider">
+                
+                <h4 class="form-section-title">Playstyle & Combat Inputs</h4>
+                <div class="edit-grid-inputs">
+                    <div><label>Playstyle Title</label><input type="text" id="editPlaystyle" placeholder="e.g. Overwatch"></div>
+                    <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist" placeholder="e.g. 150m"></div>
+                    <div><label>Tactical %</label><input type="number" id="editTactical" placeholder="0-100"></div>
+                    <div><label>Stealth %</label><input type="number" id="editStealth" placeholder="0-100"></div>
+                    <div><label>Lifetime</label><input type="text" id="editLifetime" placeholder="e.g. 120h"></div>
+                    <div><label>Longest Shot</label><input type="text" id="editLongest" placeholder="e.g. 450m"></div>
+                    <div><label>Precision %</label><input type="number" id="editPrecision" placeholder="0-100"></div>
+                    <div><label>Fav Weapon</label><select id="editFav1"></select></div>
+                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><select id="editFav2"></select></div>
+                </div>
+
+                <h4 class="form-section-title">Support & Travel Inputs</h4>
+                <div class="edit-grid-inputs">
+                    <div><label>Revived</label><input type="number" id="editRevives" placeholder="0"></div>
+                    <div><label>Explosive Kills</label><input type="number" id="editExplosiveKills" placeholder="0"></div>
+                    <div><label>Drone Used</label><input type="text" id="editDroneTime" placeholder="e.g. 15h"></div>
+                    <div><label>Air Travel</label><input type="text" id="editAir" placeholder="e.g. 45h"></div>
+                    <div><label>Ground Travel</label><input type="text" id="editGround" placeholder="e.g. 80h"></div>
+                    <div><label>Parachute</label><input type="text" id="editPara" placeholder="e.g. 30 Jumps"></div>
+                    <div><label>Map Disc. %</label><input type="text" id="editMap" placeholder="e.g. 95%"></div>
+                </div>
+
+                <button id="saveStatsBtn" class="save-stats-btn">Save Tactical Update to Firebase</button>
             </div>
         </section>
+
+        <!-- Right Side: Skills Tab & Interactive Matrix -->
+        <section class="card-panel skills-panel">
+            <div class="skills-tabs">
+                <button class="tab-link active" onclick="switchSkillCategory('WEAPON')">Weapon</button>
+                <button class="tab-link" onclick="switchSkillCategory('DRONE')">Drone</button>
+                <button class="tab-link" onclick="switchSkillCategory('ITEM')">Item</button>
+                <button class="tab-link" onclick="switchSkillCategory('PHYSICAL')">Physical</button>
+                <button class="tab-link" onclick="switchSkillCategory('SQUAD')">Squad</button>
+                <button class="tab-link" onclick="switchSkillCategory('REBEL')">Rebel</button>
+                <button class="tab-link" onclick="switchSkillCategory('TROPHY')">Trophies & Recon</button>
+            </div>
+            
+            <!-- Skill Cards Container -->
+            <div id="skillsTreeGrid" class="skills-tree-grid"></div>
+        </section>
+
     </main>
 
-    <!-- Firebase Active Session & Live Squad Aggregator -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    <footer class="hub-footer">
+        <div class="footer-container">
+            <div class="kf-watermark">
+                <span class="k-letter">K</span><span class="f-letter">F</span>
+            </div>
+            <p class="timestamp-note">Werewolf Project Engine • Connected to Cloud Database</p>
+        </div>
+    </footer>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
-            authDomain: "entertainment-71888.firebaseapp.com",
-            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
-            projectId: "entertainment-71888",
-            storageBucket: "entertainment-71888.firebasestorage.app",
-            messagingSenderId: "660524340277",
-            appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
-            measurementId: "G-JDNSLD3GFE"
-        };
-
-        let activeFilter = 'all';
-        let liveSquadData = [];
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            const db = getFirestore(app);
-            const rtdb = getDatabase(app);
-
-            // Synchronize Nav Platform Selector
-            const navPlatformSelect = document.getElementById('platformSelect');
-            if (navPlatformSelect) {
-                const savedPlatform = localStorage.getItem('active_gaming_platform') || 'pc';
-                navPlatformSelect.value = savedPlatform;
-                navPlatformSelect.addEventListener('change', (e) => {
-                    localStorage.setItem('active_gaming_platform', e.target.value);
-                });
-            }
-
-            await setPersistence(auth, browserLocalPersistence);
-
-            onAuthStateChanged(auth, (user) => {
-                const badge = document.getElementById("activeNicknameBadge");
-                if (user && !user.isAnonymous) {
-                    const activeNickname = localStorage.getItem('active_gaming_nickname') || user.displayName || user.email.split('@')[0];
-                    localStorage.setItem('active_gaming_nickname', activeNickname);
-                    if (badge) { badge.textContent = `🎮 ${activeNickname}`; badge.classList.remove("hidden"); }
-                } else {
-                    const savedNickname = localStorage.getItem('active_gaming_nickname');
-                    if (savedNickname && badge) { badge.textContent = `🎮 ${savedNickname} (Guest View)`; badge.classList.remove("hidden"); }
-                }
-            });
-
-            // Live Squad Realtime Aggregator across Platforms
-            const squadUsers = ['Werewolf3788', 'Raymystyro', 'terrdog420', 'DesdemonaTiger'];
-            const platforms = ['playstation', 'pc', 'xbox'];
-
-            squadUsers.forEach(userKey => {
-                platforms.forEach(plat => {
-                    // Listen to Realtime Database Platform Branch
-                    const rtdbRef = ref(rtdb, `users/${userKey}/platform/${plat}/stats`);
-                    onValue(rtdbRef, (snapshot) => {
-                        if (snapshot.exists()) {
-                            const data = snapshot.val();
-                            const item = {
-                                user: userKey,
-                                platform: plat,
-                                tier: data.level || 1,
-                                playstyle: data.playstyle || 'Tactical Operative',
-                                avgDist: data.avgDist || '0m',
-                                tactical: data.tactical || 80
-                            };
-                            updateSquadData(item);
-                        }
-                    });
-
-                    // Firestore Listener Fallback
-                    const progressRef = collection(db, 'users', userKey, 'platform', plat, 'progress');
-                    onSnapshot(progressRef, (snap) => {
-                        snap.forEach(doc => {
-                            if (doc.id === 'T.C.G.R.Wildlands') {
-                                const data = doc.data();
-                                const item = {
-                                    user: userKey,
-                                    platform: plat,
-                                    tier: data.tier || 1,
-                                    playstyle: data.playstyle || 'Tactical Operative',
-                                    avgDist: data.avgKillDist || '0m',
-                                    tactical: data.tactical || 80
-                                };
-                                updateSquadData(item);
-                            }
-                        });
-                    }, (err) => console.warn("Notice:", err.message));
-                });
-            });
-
-            function updateSquadData(item) {
-                const idx = liveSquadData.findIndex(i => i.user === item.user && i.platform === item.platform);
-                if (idx > -1) liveSquadData[idx] = item;
-                else liveSquadData.push(item);
-                renderGrid();
-            }
-
-            window.renderGrid = function() {
-                const grid = document.getElementById('squadProgressGrid');
-                if (!grid) return;
-
-                const filtered = liveSquadData.filter(i => activeFilter === 'all' || i.platform === activeFilter);
-
-                if (filtered.length === 0) {
-                    grid.innerHTML = `<div class="col-span-full text-slate-500 text-sm py-8 text-center">No active progress recorded for <span class="text-sky-400 font-mono">${activeFilter.toUpperCase()}</span>.</div>`;
-                    return;
-                }
-
-                let html = '';
-                filtered.forEach(item => {
-                    const badgeColor = item.platform === 'playstation' 
-                        ? 'bg-blue-600/30 text-blue-400 border-blue-500/50' 
-                        : item.platform === 'pc' 
-                        ? 'bg-sky-600/30 text-sky-400 border-sky-500/50' 
-                        : 'bg-emerald-600/30 text-emerald-400 border-emerald-500/50';
-
-                    const icon = item.platform === 'playstation' ? '🎮 PSN' : item.platform === 'pc' ? '💻 PC' : '💚 XBOX';
-
-                    html += `
-                        <div class="custom-card p-6 border border-slate-800 flex flex-col justify-between">
-                            <div>
-                                <div class="flex justify-between items-center mb-3">
-                                    <h3 class="text-lg font-bold text-white">${item.user}</h3>
-                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${badgeColor}">${icon}</span>
-                                </div>
-                                <div class="space-y-2 text-xs text-slate-300 bg-slate-950/50 p-3 rounded-lg border border-slate-800">
-                                    <div class="flex justify-between"><span class="text-slate-400">Tier Level:</span> <span class="font-bold text-amber-400">Level ${item.tier}</span></div>
-                                    <div class="flex justify-between"><span class="text-slate-400">Playstyle:</span> <span class="font-bold text-slate-200">${item.playstyle}</span></div>
-                                    <div class="flex justify-between"><span class="text-slate-400">Tactical Precision:</span> <span class="font-bold text-emerald-400">${item.tactical}%</span></div>
-                                </div>
-                            </div>
-                            <a href="./games/Tom-Clancy/Ghost%20Recon/Wildlands/index.html?user=${encodeURIComponent(item.user)}&platform=${encodeURIComponent(item.platform)}" 
-                               class="mt-4 block text-center bg-slate-800 hover:bg-slate-700 text-sky-400 font-bold text-xs py-2 rounded-lg border border-slate-700 transition-colors">
-                                View ${item.platform.toUpperCase()} Profile
-                            </a>
-                        </div>
-                    `;
-                });
-                grid.innerHTML = html;
-            };
-
-            window.filterGrid = function(plat) {
-                activeFilter = plat;
-                ['all', 'pc', 'playstation', 'xbox'].forEach(p => {
-                    const btn = document.getElementById(`btn-${p}`);
-                    if (btn) {
-                        btn.className = p === plat 
-                            ? "px-3 py-1 rounded-lg text-xs font-bold text-white bg-slate-800 border border-slate-700" 
-                            : "px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all";
-                    }
-                });
-                renderGrid();
-            };
-        });
-    </script>
+    <!-- Firebase Compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="app.js?v=3.4"></script>
 </body>
 </html>
