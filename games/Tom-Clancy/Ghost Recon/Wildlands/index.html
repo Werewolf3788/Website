@@ -1,52 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Google Analytics Stream Integration -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-Z9M5LXQ5XN');
-    </script>
-    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ghost Recon Wildlands Squad Operations Hub</title>
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="style.css?v=3.4">
-    
-    <style>
-        :root {
-            --bar-height: clamp(60px, 10vh, 90px);
-            --primary-orange: #FF4500;
-            --solid-black: #000000;
-            --ghost-blue: #28a745;
-            --node-blue: #0076a8;
-            --node-locked: #1c2430;
-            --medal-gold: #ffcc00;
-        }
-        .header-controls-group {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-        .styled-select {
-            background: #161d26;
-            color: #fff;
-            border: 1px solid #2c3a4e;
-            padding: 8px 12px;
-            border-radius: 4px;
-            font-size: 13px;
-            font-weight: bold;
-            min-height: 40px;
-            cursor: pointer;
-        }
-        .hidden { display: none !important; }
-    </style>
+    <link rel="stylesheet" href="style.css?v=3.5">
 </head>
 <body>
 
@@ -54,8 +15,15 @@
         <div class="header-container">
             <h1 class="logo-text">GHOST HUB</h1>
             
+            <div class="directory-dropdown-wrapper">
+                <button id="directoryMenuBtn" class="control-btn outline-text" style="font-weight:bold; border-color:var(--primary-orange); color:var(--primary-orange);">📁 Intel Directory</button>
+                <div id="directoryDropdownContent" class="directory-menu-pane hidden">
+                    <div id="directoryLoading" style="padding:12px; font-size:12px; color:#8a99ad; text-align:center;">Fetching tactical assets...</div>
+                </div>
+            </div>
+
+            <!-- VISIBLE DROPDOWNS: USER & PLATFORM -->
             <div class="header-controls-group">
-                <!-- User Selector Dropdown -->
                 <div class="user-selector-wrapper">
                     <select id="userSelect" class="styled-select">
                         <option value="Werewolf3788">Werewolf3788 (Kevin)</option>
@@ -65,9 +33,8 @@
                     </select>
                 </div>
 
-                <!-- Platform Selector Dropdown -->
                 <div class="platform-selector-wrapper">
-                    <select id="platformSelect" class="styled-select" style="border-color: var(--primary-orange); color: #ffa500;">
+                    <select id="platformSelect" class="styled-select platform-highlight">
                         <option value="pc">💻 PC (Ubisoft Connect)</option>
                         <option value="playstation">🎮 PlayStation (PS5/PS4)</option>
                         <option value="xbox">💚 Xbox (Series X/S)</option>
@@ -93,7 +60,7 @@
 
     <main class="hub-container">
         
-        <!-- Left Side: Editable Stats & Profile Panel -->
+        <!-- LEFT SIDEBAR: PROFILE & KEYBOARD INPUTS -->
         <section class="card-panel profile-panel">
             <div class="profile-header">
                 <h2 id="operatorName" class="outline-text">Operator</h2>
@@ -184,36 +151,28 @@
                 </div>
             </div>
 
-            <div class="steam-widget-card">
-                <iframe src="https://store.steampowered.com/widget/460930/" frameborder="0" width="100%" height="190"></iframe>
-            </div>
-
-            <!-- Edit Trigger Button -->
+            <!-- KEYBOARD EDITABLE TRIGGER BUTTON -->
             <div class="edit-stats-trigger-container">
                 <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Ghost Profile Inputs</button>
             </div>
 
-            <!-- Keyboard Editable Form Input Fields -->
+            <!-- KEYBOARD FORM INPUT BOXES -->
             <div id="editStatsPanel" class="edit-stats-panel hidden">
                 <div class="edit-row">
-                    <label>Tier One Mode:</label>
-                    <select id="editTierMode">
-                        <option value="off">Off / Not Reached</option>
-                        <option value="on">Active</option>
-                    </select>
+                    <label>Tier Level:</label>
                     <input type="number" id="editTierLevel" min="1" max="50" placeholder="Lvl (1-50)">
                 </div>
                 <hr class="panel-divider">
                 
                 <h4 class="form-section-title">Playstyle & Combat Inputs</h4>
                 <div class="edit-grid-inputs">
-                    <div><label>Playstyle Title</label><input type="text" id="editPlaystyle" placeholder="e.g. Overwatch"></div>
-                    <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist" placeholder="e.g. 150m"></div>
-                    <div><label>Tactical %</label><input type="number" id="editTactical" placeholder="0-100"></div>
-                    <div><label>Stealth %</label><input type="number" id="editStealth" placeholder="0-100"></div>
-                    <div><label>Lifetime</label><input type="text" id="editLifetime" placeholder="e.g. 120h"></div>
-                    <div><label>Longest Shot</label><input type="text" id="editLongest" placeholder="e.g. 450m"></div>
-                    <div><label>Precision %</label><input type="number" id="editPrecision" placeholder="0-100"></div>
+                    <div><label>Playstyle Title</label><input type="text" id="editPlaystyle" placeholder="Raider"></div>
+                    <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist" placeholder="38 m"></div>
+                    <div><label>Tactical %</label><input type="number" id="editTactical" placeholder="100"></div>
+                    <div><label>Stealth %</label><input type="number" id="editStealth" placeholder="74"></div>
+                    <div><label>Lifetime</label><input type="text" id="editLifetime" placeholder="0h 20min"></div>
+                    <div><label>Longest Shot</label><input type="text" id="editLongest" placeholder="89 m"></div>
+                    <div><label>Precision %</label><input type="number" id="editPrecision" placeholder="8"></div>
                     <div><label>Fav Weapon</label><select id="editFav1"></select></div>
                     <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><select id="editFav2"></select></div>
                 </div>
@@ -222,18 +181,18 @@
                 <div class="edit-grid-inputs">
                     <div><label>Revived</label><input type="number" id="editRevives" placeholder="0"></div>
                     <div><label>Explosive Kills</label><input type="number" id="editExplosiveKills" placeholder="0"></div>
-                    <div><label>Drone Used</label><input type="text" id="editDroneTime" placeholder="e.g. 15h"></div>
-                    <div><label>Air Travel</label><input type="text" id="editAir" placeholder="e.g. 45h"></div>
-                    <div><label>Ground Travel</label><input type="text" id="editGround" placeholder="e.g. 80h"></div>
-                    <div><label>Parachute</label><input type="text" id="editPara" placeholder="e.g. 30 Jumps"></div>
-                    <div><label>Map Disc. %</label><input type="text" id="editMap" placeholder="e.g. 95%"></div>
+                    <div><label>Drone Used</label><input type="text" id="editDroneTime" placeholder="0h 8min"></div>
+                    <div><label>Air Travel</label><input type="text" id="editAir" placeholder="0h 7min"></div>
+                    <div><label>Ground Travel</label><input type="text" id="editGround" placeholder="0h 7min"></div>
+                    <div><label>Parachute</label><input type="text" id="editPara" placeholder="0 Jumps"></div>
+                    <div><label>Map Disc. %</label><input type="text" id="editMap" placeholder="5%"></div>
                 </div>
 
                 <button id="saveStatsBtn" class="save-stats-btn">Save Tactical Update to Firebase</button>
             </div>
         </section>
 
-        <!-- Right Side: Skills Tab & Interactive Matrix -->
+        <!-- RIGHT PANEL: SKILLS MATRIX -->
         <section class="card-panel skills-panel">
             <div class="skills-tabs">
                 <button class="tab-link active" onclick="switchSkillCategory('WEAPON')">Weapon</button>
@@ -245,26 +204,15 @@
                 <button class="tab-link" onclick="switchSkillCategory('TROPHY')">Trophies & Recon</button>
             </div>
             
-            <!-- Skill Cards Container -->
             <div id="skillsTreeGrid" class="skills-tree-grid"></div>
         </section>
 
     </main>
 
-    <footer class="hub-footer">
-        <div class="footer-container">
-            <div class="kf-watermark">
-                <span class="k-letter">K</span><span class="f-letter">F</span>
-            </div>
-            <p class="timestamp-note">Werewolf Project Engine • Connected to Cloud Database</p>
-        </div>
-    </footer>
-
-    <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="app.js?v=3.4"></script>
+    <script src="app.js?v=3.5"></script>
 </body>
 </html>
