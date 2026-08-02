@@ -1,6 +1,6 @@
 /* ============================================================================
    File: app.js
-   Description: Ghost Recon Wildlands - Real-Time Stats & Skills Engine
+   Description: Ghost Recon Wildlands Engine (Mobile Hamburger Menu + Firestore)
    Target Firestore Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
    ============================================================================ */
 
@@ -61,6 +61,7 @@ const appState = {
     masterUnsub: null,
 
     init: async function() {
+        this.setupMobileMenu();
         this.setupControlDropdowns();
         this.setupFormControls();
 
@@ -75,7 +76,7 @@ const appState = {
 
             onAuthStateChanged(this.auth, (user) => {
                 if (user) {
-                    this.setStatus(`✓ Connected to Firestore [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
+                    this.setStatus(`✓ Connected [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
                     this.loadOperator(this.activeHunter, this.activePlatform);
                 } else {
                     this.setStatus("❌ Auth Failed", "#ef4444");
@@ -83,8 +84,18 @@ const appState = {
             });
         } catch (err) {
             console.error("Firestore Init Error:", err);
-            this.setStatus(`❌ Connection Error: ${err.message}`, "#ef4444");
+            this.setStatus(`❌ Error: ${err.message}`, "#ef4444");
             this.render();
+        }
+    },
+
+    setupMobileMenu: function() {
+        const toggleBtn = document.getElementById("mobileNavToggle");
+        const menuWrapper = document.getElementById("navMenuWrapper");
+        if (toggleBtn && menuWrapper) {
+            toggleBtn.addEventListener("click", () => {
+                menuWrapper.classList.toggle("active");
+            });
         }
     },
 
@@ -340,30 +351,30 @@ const appState = {
 
             const card = document.createElement("div");
             card.className = `skill-card ${isMaxed ? 'maxed' : ''} ${skill.isEpic ? 'epic-card' : ''}`;
-            card.style.cssText = "background:#121820; border:1px solid #1c2430; padding:12px; border-radius:6px; margin-bottom:12px;";
+            card.style.cssText = "background:#121820; border:1px solid #1c2430; padding:16px; border-radius:8px;";
 
             card.innerHTML = `
                 <div class="card-top-action">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h4 style="color:#fff; font-size:14px; font-weight:bold;">${skill.name}</h4>
-                        ${skill.isEpic ? '<span style="color:#ffcc00; font-size:10px; font-weight:bold; border:1px solid #ffcc00; padding:1px 4px; border-radius:2px;">EPIC</span>' : ''}
+                        <h4 style="color:#fff; font-size:16px; font-weight:bold;">${skill.name}</h4>
+                        ${skill.isEpic ? '<span style="color:#ffcc00; font-size:12px; font-weight:bold; border:1px solid #ffcc00; padding:2px 6px; border-radius:4px;">EPIC</span>' : ''}
                     </div>
-                    <p style="font-size:11px; color:#8a99ad; margin:6px 0;">${skill.desc || ''}</p>
+                    <p style="font-size:14px; color:#cbd5e1; margin:8px 0;">${skill.desc || ''}</p>
                     
-                    <div class="skill-meta-row" style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
+                    <div class="skill-meta-row" style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
                         <div style="display:flex; flex-direction:column; gap:4px;">
-                            <span style="font-size:10px; color:#8a99ad; text-transform:uppercase; font-weight:bold;">Skill Rank (${currentRank}/${maxRank})</span>
-                            <div class="skill-rank-indicators" style="display:flex; gap:4px;">
+                            <span style="font-size:12px; color:#cbd5e1; text-transform:uppercase; font-weight:bold;">Skill Rank (${currentRank}/${maxRank})</span>
+                            <div class="skill-rank-indicators" style="display:flex; gap:6px;">
                                 ${Array.from({ length: maxRank }).map((_, rIdx) => `
-                                    <div class="rank-dot" style="width:14px; height:6px; background:${rIdx < currentRank ? (isMaxed ? '#28a745' : '#0076a8') : '#3d4f68'}; border-radius:1px;"></div>
+                                    <div class="rank-dot" style="width:16px; height:8px; background:${rIdx < currentRank ? (isMaxed ? '#28a745' : '#0076a8') : '#3d4f68'}; border-radius:2px;"></div>
                                 `).join('')}
                             </div>
                         </div>
 
                         ${skill.hasMedal ? `
                             <div style="text-align:right;">
-                                <span style="font-size:10px; color:#8a99ad; text-transform:uppercase; font-weight:bold; display:block;">Bonus Medal</span>
-                                <span style="font-size:11px; font-weight:bold; color:${medalEarned ? '#ffcc00' : '#4a5568'};">
+                                <span style="font-size:12px; color:#cbd5e1; text-transform:uppercase; font-weight:bold; display:block;">Bonus Medal</span>
+                                <span style="font-size:14px; font-weight:bold; color:${medalEarned ? '#ffcc00' : '#8a99ad'};">
                                     ${medalEarned ? '🏅 Acquired' : '🔒 Missing'}
                                 </span>
                             </div>
@@ -371,14 +382,14 @@ const appState = {
                     </div>
                 </div>
 
-                <div class="card-bottom-action" style="margin-top:12px; padding-top:10px; border-top:1px solid #1c2430; display:flex; justify-content:space-between; gap:8px;">
-                    <button style="flex:1; background:${isMaxed ? '#112417' : '#161d26'}; color:${isMaxed ? '#28a745' : '#fff'}; border:1px solid ${isMaxed ? '#28a745' : '#3d4f68'}; padding:6px 8px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:bold;"
+                <div class="card-bottom-action" style="margin-top:16px; padding-top:12px; border-top:1px solid #1c2430; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+                    <button style="flex:1; min-height:44px; background:${isMaxed ? '#112417' : '#161d26'}; color:${isMaxed ? '#28a745' : '#fff'}; border:1px solid ${isMaxed ? '#28a745' : '#3d4f68'}; padding:8px 12px; border-radius:6px; cursor:pointer; font-size:16px; font-weight:bold;"
                             onclick="appState.mutateSkillRank('${this.activeCategory}', ${index}, ${currentRank}, ${maxRank})">
                         ${isMaxed ? '✓ Skill Maxed' : '⭐ Rank Up'}
                     </button>
 
                     ${skill.hasMedal ? `
-                        <button style="flex:1; background:${medalEarned ? '#242415' : '#161d26'}; color:${medalEarned ? '#ffcc00' : '#8a99ad'}; border:1px solid ${medalEarned ? '#ffcc00' : '#3d4f68'}; padding:6px 8px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:bold;"
+                        <button style="flex:1; min-height:44px; background:${medalEarned ? '#242415' : '#161d26'}; color:${medalEarned ? '#ffcc00' : '#cbd5e1'}; border:1px solid ${medalEarned ? '#ffcc00' : '#3d4f68'}; padding:8px 12px; border-radius:6px; cursor:pointer; font-size:16px; font-weight:bold;"
                                 onclick="appState.toggleBonusMedal('${this.activeCategory}', ${index})">
                             ${medalEarned ? '🏅 Medal Found' : '🏅 Claim Medal'}
                         </button>
@@ -470,7 +481,7 @@ const appState = {
 
             await setDoc(ref, payload, { merge: true });
             const timeStr = new Date().toLocaleTimeString();
-            this.setStatus(`✓ Saved to Cloud Firestore at ${timeStr}`, "#10b981");
+            this.setStatus(`✓ Saved at ${timeStr}`, "#10b981");
             console.log(`✓ Cloud Firestore updated: /users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
         } catch (error) {
             console.error("FIRESTORE WRITE ERROR:", error);
