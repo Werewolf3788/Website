@@ -5,21 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ghost Recon Wildlands Squad Operations Hub</title>
     <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="style.css?v=4.0">
+    <link rel="stylesheet" href="style.css?v=5.0">
 </head>
 <body>
 
     <header class="hub-header">
         <div class="header-container">
             <h1 class="logo-text">GHOST HUB</h1>
-            
-            <div class="directory-dropdown-wrapper">
-                <button id="directoryMenuBtn" class="control-btn outline-text" style="font-weight:bold; border-color:var(--primary-orange); color:var(--primary-orange);">📁 Intel Directory</button>
-            </div>
 
-            <!-- VISIBLE USER & PLATFORM DROPDOWNS -->
+            <!-- DROPDOWNS: USER & PLATFORM -->
             <div class="header-controls-group">
                 <div class="user-selector-wrapper">
                     <select id="userSelect" class="styled-select">
@@ -43,7 +37,7 @@
 
     <main class="hub-container">
         
-        <!-- LEFT PANEL: STATS & KEYBOARD EDIT FORM -->
+        <!-- LEFT PANEL: STATS & FORM INPUTS -->
         <section class="card-panel profile-panel">
             <div class="profile-header">
                 <h2 id="operatorName" class="outline-text">Operator</h2>
@@ -66,7 +60,7 @@
                 </div>
             </div>
 
-            <div class="stat-category-block cinematic-wrapper">
+            <div class="stat-category-block">
                 <h3 class="category-header">COMBAT</h3>
                 <div class="stat-row"><span>Lifetime</span><span id="statLifetime" class="stat-val">--</span></div>
                 <div class="stat-row"><span>Longest Shot</span><span id="longestShot" class="stat-val">--</span></div>
@@ -87,10 +81,10 @@
             <div id="editStatsPanel" class="edit-stats-panel hidden">
                 <div class="edit-row">
                     <label>Tier Level:</label>
-                    <input type="number" id="editTierLevel" min="1" max="50" placeholder="5">
+                    <input type="number" id="editTierLevel" min="1" max="50" placeholder="e.g. 5">
                 </div>
                 <hr class="panel-divider">
-                <h4 class="form-section-title">Playstyle & Combat</h4>
+                <h4 class="form-section-title">Playstyle & Combat Inputs</h4>
                 <div class="edit-grid-inputs">
                     <div><label>Playstyle</label><input type="text" id="editPlaystyle" placeholder="Raider"></div>
                     <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist" placeholder="38 m"></div>
@@ -106,14 +100,13 @@
             </div>
         </section>
 
-        <!-- RIGHT PANEL: JSON + FIRESTORE HYBRID RENDERER -->
+        <!-- RIGHT PANEL: SKILLS MATRIX & CHECKLISTS -->
         <section class="card-panel skills-panel">
-            <!-- TARGET CONTAINER FOR RENDERER -->
             <div id="section-container" class="skills-tree-grid"></div>
         </section>
 
     </main>
 
-    <script type="module" src="app.js?v=4.0"></script>
+    <script type="module" src="app.js?v=5.0"></script>
 </body>
 </html>
