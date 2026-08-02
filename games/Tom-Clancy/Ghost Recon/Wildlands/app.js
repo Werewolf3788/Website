@@ -1,17 +1,13 @@
-/*
- * ==========================================
- * PRECISION INTEGRATION: Ghost Recon Wildlands Hub (app.js)
- * Architecture: Firestore Modular Pipeline
- * Target Database Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
- * NO STRIPPING, NO COMPRESSING. FULL SOURCE INTEGRITY 100% INTACT.
- * ==========================================
- */
+/* ============================================================================
+   File: app.js
+   Description: Ghost Recon Wildlands JSON + Firestore Direct Sync Engine
+   Target Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+   ============================================================================ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// --- FIREBASE CONFIGURATION (entertainment-71888) ---
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -24,8 +20,8 @@ const firebaseConfig = {
 };
 
 const GAME_ID = 'T.C.G.R.Wildlands';
+const RAW_JSON_URL = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/json/TCGRWildlands.json';
 
-// Cleaned: Direct Database Document Strings
 const USER_DATA_MAP = {
     'Werewolf3788': 'Werewolf3788',
     'Raymystyro': 'Raymystyro',
@@ -33,77 +29,39 @@ const USER_DATA_MAP = {
     'DesdemonaTiger': 'DesdemonaTiger'
 };
 
-const checkSet = (items) => items.map(name => ({ name, done: false }));
-
-const formatAlphaCheckset = (items) => {
-    return items
-        .sort((a, b) => {
-            const nameA = typeof a === 'string' ? a : a.name;
-            const nameB = typeof b === 'string' ? b : b.name;
-            return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
-        })
-        .map((item, idx) => {
-            if (typeof item === 'string') {
-                return { name: `${idx + 1}. ${item}`, done: false, images: [] };
-            } else {
-                return { name: `${idx + 1}. ${item.name}`, done: false, images: item.images || [] };
-            }
-        });
-};
-
-// --- GHOST RECON WILDLANDS FULL REGISTRY ---
-const wildlandsData = [
-    // --- SKILL TREES ---
-    { id: 'sk_weapon_tree', cat: 'Weapon Skills', name: 'Weapon Skill Progression', rank: 'gold', current: 0, goal: 8, type: 'checklist', desc: 'Unlock all weapon skill nodes.', subItems: checkSet(["Stable Aim", "Hip Fire Spread", "Grenade Launcher", "Ammo Capacity", "VHK Destruction", "Adv Suppressor", "Time to Aim", "Ranged Elite (Epic)"]) },
-    { id: 'sk_drone_tree', cat: 'Drone Skills', name: 'Drone Skill Progression', rank: 'gold', current: 0, goal: 6, type: 'checklist', desc: 'Unlock all drone skill nodes.', subItems: checkSet(["Battery Life", "Night Vision", "Signal Range", "Speed Boost", "Mark Area", "Medic Drone (Epic)"]) },
-    { id: 'sk_item_tree', cat: 'Item Skills', name: 'Item Equipment Progression', rank: 'gold', current: 0, goal: 6, type: 'checklist', desc: 'Unlock all equipment items.', subItems: checkSet(["Parachute", "Binoculars 200m", "Proximity Mine", "Frag Grenade", "C4 Charge", "Explosion Radius (Epic)"]) },
-    { id: 'sk_physical_tree', cat: 'Physical Skills', name: 'Physical Conditioning', rank: 'gold', current: 0, goal: 5, type: 'checklist', desc: 'Unlock physical conditioning skills.', subItems: checkSet(["Stamina Boost", "No Pain", "Car Shield", "Bullet Resistance", "Faster Regen (Epic)"]) },
-    { id: 'sk_squad_tree', cat: 'Squad Skills', name: 'Squad Leadership', rank: 'gold', current: 0, goal: 4, type: 'checklist', desc: 'Unlock squad tactics.', subItems: checkSet(["Revive Speed", "Extra Sync Shot", "Trained Rebels", "Last Chance (Epic)"]) },
-    { id: 'sk_rebel_tree', cat: 'Rebel Support', name: 'Rebel Support Networks', rank: 'gold', current: 0, goal: 4, type: 'checklist', desc: 'Unlock rebel support abilities.', subItems: checkSet(["Vehicle Drop-off", "Guns for Hire", "Mortar Strike", "Rebel Spotting"]) },
-
-    // --- REGIONAL COLLECTIBLES ---
-    { id: 'col_itacua', cat: 'Itacua Region', name: 'Itacua Kingslayer & Weapons', rank: 'silver', current: 0, goal: 4, type: 'checklist', desc: 'Collect all items in Itacua.', subItems: checkSet(["Kingslayer File - El Sueño's World", "Weapon Case - M4A1", "Skill Point Crate (+3)", "Buceo & La Yuri Boss Defeated"]) },
-    { id: 'col_san_mateo', cat: 'San Mateo Region', name: 'San Mateo Collectibles', rank: 'silver', current: 0, goal: 3, type: 'checklist', desc: 'Collect all items in San Mateo.', subItems: checkSet(["Kingslayer File - El Pozolero", "Weapon Case - G36C", "Skill Point Crate (+5)"]) }
+// Fallback registry in case GitHub Raw fetch is delayed
+const DEFAULT_SKILL_CARDS = [
+    { id: 'sk_weapon', cat: 'Weapon Skills', name: 'Weapon Skill Tree', goal: 8, subItems: [{name: 'Stable Aim', done: false}, {name: 'Hip Fire Spread', done: false}, {name: 'Grenade Launcher', done: true}, {name: 'Ammo Capacity', done: false}, {name: 'VHK Destruction', done: false}, {name: 'Adv Suppressor', done: true}, {name: 'Time to Aim', done: false}, {name: 'Ranged Elite (Epic)', done: false}] },
+    { id: 'sk_drone', cat: 'Drone Skills', name: 'Drone Skill Tree', goal: 6, subItems: [{name: 'Battery Life', done: true}, {name: 'Night Vision', done: true}, {name: 'Signal Range', done: true}, {name: 'Speed Boost', done: false}, {name: 'Mark Area', done: false}, {name: 'Medic Drone (Epic)', done: false}] },
+    { id: 'sk_item', cat: 'Item Skills', name: 'Item Equipment', goal: 6, subItems: [{name: 'Parachute', done: true}, {name: 'Binoculars 200m', done: true}, {name: 'Mine', done: true}, {name: 'Frag Grenade', done: false}, {name: 'C4 Charge', done: true}, {name: 'Explosion Radius (Epic)', done: false}] },
+    { id: 'sk_physical', cat: 'Physical Skills', name: 'Physical Conditioning', goal: 5, subItems: [{name: 'Stamina Boost', done: true}, {name: 'No Pain', done: true}, {name: 'Car Shield', done: false}, {name: 'Bullet Resistance', done: false}, {name: 'Faster Regen (Epic)', done: false}] },
+    { id: 'sk_squad', cat: 'Squad Skills', name: 'Squad Tactics', goal: 4, subItems: [{name: 'Revive Speed', done: true}, {name: 'Extra Sync Shot', done: true}, {name: 'Trained Rebels', done: false}, {name: 'Last Chance (Epic)', done: false}] },
+    { id: 'sk_rebel', cat: 'Rebel Support', name: 'Rebel Support Network', goal: 4, subItems: [{name: 'Vehicle Drop-off', done: true}, {name: 'Guns for Hire', done: false}, {name: 'Mortar Strike', done: false}, {name: 'Rebel Spotting', done: true}] }
 ];
 
 const appState = {
-    activeHunter: 'Werewolf3788',
-    activePlatform: 'pc',
-    hunterData: JSON.parse(JSON.stringify(wildlandsData)),
+    activeHunter: localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
+    activePlatform: localStorage.getItem('active_gaming_platform') || 'pc',
+    hunterData: JSON.parse(JSON.stringify(DEFAULT_SKILL_CARDS)),
     statsData: {
-        playstyle: 'Raider',
-        avgDist: '38 m',
-        tactical: 100,
-        stealth: 74,
-        lifetime: '0h 20min',
-        longestShot: '89 m',
-        precision: 8,
-        favWeapon: 'P45T',
-        favWeapon2: 'M40A5',
-        level: 5
+        level: 5, playstyle: "Raider", avgDist: "38 m", tactical: 100, stealth: 74,
+        lifetime: "0h 20min", longestShot: "89 m", precision: 8, favWeapon: "P45T", favWeapon2: "M40A5"
     },
-    auth: null,
-    db: null,
-    collapsedSections: {},
-    openDropdowns: {},
-    masterUnsub: null,
-    dataLoaded: false,
+    auth: null, db: null, masterUnsub: null,
 
     init: async function() {
-        const savedUser = localStorage.getItem('active_gaming_nickname');
-        const savedPlat = localStorage.getItem('active_gaming_platform');
-        
-        if (savedUser && USER_DATA_MAP[savedUser]) this.activeHunter = savedUser;
-        if (savedPlat) this.activePlatform = savedPlat.toLowerCase();
+        // Fetch raw GitHub JSON file
+        await this.fetchGitHubJSON();
+
+        this.setupControlDropdowns();
+        this.setupFormControls();
 
         try {
             const app = initializeApp(firebaseConfig, 'Wildlands-Direct-Sync');
             this.auth = getAuth(app);
             this.db = getFirestore(app);
 
-            signInAnonymously(this.auth).catch(err => {
-                console.error("FIREBASE AUTH ERROR:", err);
-            });
+            signInAnonymously(this.auth).catch(err => console.error("Auth Error:", err));
 
             onAuthStateChanged(this.auth, (user) => {
                 if (user) {
@@ -112,10 +70,32 @@ const appState = {
             });
         } catch (err) {
             console.error("Initialization Failure:", err);
+            this.render();
         }
-        this.setupControlDropdowns();
-        this.setupFormControls();
-        this.render();
+    },
+
+    fetchGitHubJSON: async function() {
+        try {
+            const res = await fetch(`${RAW_JSON_URL}?v=${Date.now()}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (data.skills) {
+                    this.hunterData = Object.keys(data.skills).map(catKey => {
+                        const items = data.skills[catKey];
+                        return {
+                            id: `sk_${catKey.toLowerCase()}`,
+                            cat: `${catKey} Skills`,
+                            name: `${catKey} Progression`,
+                            goal: items.length,
+                            subItems: items.map(i => ({ name: i.name || i.id, done: !!i.collected, location: i.location || '' }))
+                        };
+                    });
+                    console.log("✓ Successfully parsed skill cards from GitHub JSON!");
+                }
+            }
+        } catch (e) {
+            console.warn("Notice: Fetching raw JSON delayed, rendering defaults.", e.message);
+        }
     },
 
     setupControlDropdowns: function() {
@@ -168,7 +148,7 @@ const appState = {
     },
 
     loadOperator: function(userName, platform) {
-        if (!this.auth.currentUser) return;
+        if (!this.auth || !this.auth.currentUser) return;
 
         const dbDocName = USER_DATA_MAP[userName] || userName;
         this.activeHunter = dbDocName;
@@ -179,7 +159,7 @@ const appState = {
 
         if (this.masterUnsub) this.masterUnsub();
 
-        // EXACT TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+        // EXACT TARGET DOCUMENT PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
         const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
@@ -188,14 +168,13 @@ const appState = {
                 if (data.trophies) this.hunterData = data.trophies;
                 if (data.stats) this.statsData = data.stats;
             } else {
-                this.hunterData = JSON.parse(JSON.stringify(wildlandsData));
                 this.sync();
             }
-            this.dataLoaded = true;
             this.render();
             this.updateStatsUI();
         }, (err) => {
-            console.error("Firestore Snapshot Error:", err);
+            console.error("Firestore Error:", err);
+            this.render();
         });
     },
 
@@ -204,40 +183,36 @@ const appState = {
     },
 
     render: function() {
-        const container = document.getElementById('section-container') || document.getElementById('skillsTreeGrid');
+        const container = document.getElementById('section-container');
         if (!container) return;
 
         container.innerHTML = '';
-        const cats = [...new Set(this.hunterData.map(t => t.cat))];
 
-        cats.forEach(cat => {
-            const items = this.hunterData.filter(t => t.cat === cat);
+        this.hunterData.forEach(catCard => {
             const section = document.createElement('div');
             section.className = 'category-section';
+            section.style.marginBottom = "20px";
 
-            let cardsHTML = '';
-            items.forEach(t => {
-                const isDone = t.current >= t.goal;
-                
-                let subItemsHTML = t.subItems.map((s, idx) => `
-                    <div class="sub-item" style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
-                        <span style="font-size:12px; color:#ccc;">${s.name}</span>
-                        <button class="check-btn ${s.done ? 'is-done' : ''}" onclick="appState.check('${t.id}', ${idx})">${s.done ? '✓' : '◯'}</button>
+            let subItemsHTML = catCard.subItems.map((s, idx) => `
+                <div class="sub-item" style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:#1e293b; border:1px solid #2c3a4e; border-radius:4px; margin-top:6px;">
+                    <div>
+                        <span style="font-size:13px; color:#fff; font-weight:bold;">${s.name}</span>
+                        ${s.location ? `<span style="font-size:10px; color:#8a99ad; display:block;">📍 ${s.location}</span>` : ''}
                     </div>
-                `).join('');
-
-                cardsHTML += `
-                    <div class="trophy-card skill-card ${isDone ? 'completed maxed' : ''}" style="background:#161d26; border:1px solid #2c3a4e; padding:12px; border-radius:6px; margin-bottom:10px;">
-                        <div style="font-weight:bold; color:#fff; font-size:14px;">${t.name}</div>
-                        <p style="font-size:11px; color:#8a99ad; margin:4px 0;">${t.desc}</p>
-                        <div class="sub-items-container">${subItemsHTML}</div>
-                    </div>
-                `;
-            });
+                    <button class="check-btn ${s.done ? 'is-done' : ''}" 
+                            style="background:${s.done ? '#28a745' : '#161d26'}; color:#fff; border:1px solid #3d4f68; padding:4px 10px; border-radius:4px; cursor:pointer; font-weight:bold;"
+                            onclick="appState.check('${catCard.id}', ${idx})">
+                        ${s.done ? '✓ Completed' : '◯ Mark Done'}
+                    </button>
+                </div>
+            `).join('');
 
             section.innerHTML = `
-                <h3 style="color:#ff8800; font-size:14px; text-transform:uppercase; margin:15px 0 8px 0; border-bottom:1px solid #2c3a4e; padding-bottom:4px;">${cat}</h3>
-                <div class="trophy-grid">${cardsHTML}</div>
+                <h3 style="color:#ff8800; font-size:14px; text-transform:uppercase; margin-bottom:8px; border-bottom:1px solid #2c3a4e; padding-bottom:4px;">${catCard.cat}</h3>
+                <div style="background:#121820; border:1px solid #1c2430; padding:12px; border-radius:6px;">
+                    <div style="font-weight:bold; color:#fff; font-size:14px; margin-bottom:6px;">${catCard.name}</div>
+                    <div class="sub-items-container">${subItemsHTML}</div>
+                </div>
             `;
             container.appendChild(section);
         });
@@ -272,16 +247,17 @@ const appState = {
 
     check: function(id, idx) {
         const t = this.hunterData.find(x => x.id === id);
-        t.subItems[idx].done = !t.subItems[idx].done;
-        t.current = t.subItems.filter(s => s.done).length;
-        this.sync();
+        if (t && t.subItems[idx]) {
+            t.subItems[idx].done = !t.subItems[idx].done;
+            this.sync();
+        }
     },
 
     sync: async function() {
         this.render();
         this.updateStatsUI();
 
-        if (!this.db || !this.auth.currentUser) return;
+        if (!this.db || !this.auth || !this.auth.currentUser) return;
 
         try {
             // TARGET DOC: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
@@ -297,9 +273,9 @@ const appState = {
             };
 
             await setDoc(ref, payload, { merge: true });
-            console.log(`✓ Data synced directly to: /users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
+            console.log(`✓ Data successfully pushed to: /users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
         } catch (error) {
-            console.error("FIRESTORE TRACKER SAVE ERROR:", error);
+            console.error("FIRESTORE SAVE ERROR:", error);
         }
     }
 };
