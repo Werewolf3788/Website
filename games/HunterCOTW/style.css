@@ -1,9 +1,8 @@
 /*
  * ==========================================
- * NYT TIMESTAMP: Fri, June 19, 2026, 4:40 AM EDT
  * PRECISION INTEGRATION: CSS Skin
- * NOTES: Updated theme engines to bind TJ / terrdog420 explicitly to purple.
- * NO STRIPPING, NO COMPRESSING.
+ * NOTES: Clean layout styling for COTW Master Tracker.
+ * Includes platform selector styling around line 125.
  * ==========================================
  */
 
@@ -116,12 +115,12 @@ h1, h2 {
     position: relative;
 }
 
-/* Theme Engine Configuration */
+/* Theme Engine */
 .theme-werewolf { --hunter-color: #ff8800; --hunter-glow: rgba(255, 136, 0, 0.6); }
 .theme-ray { --hunter-color: #ef4444; --hunter-glow: rgba(239, 68, 68, 0.6); }
-.theme-TJ { --hunter-color: #a855f7; --hunter-glow: rgba(168, 85, 247, 0.6); }
+.theme-Adam { --hunter-color: #a855f7; --hunter-glow: rgba(168, 85, 247, 0.6); }
 
-/* Profile Header */
+/* Profile Header & Action Buttons */
 .profile-header {
     display: flex;
     flex-wrap: wrap;
@@ -137,11 +136,31 @@ h1, h2 {
 }
 
 .hunter-glow { font-size: 1.8rem; font-weight: 900; color: var(--hunter-color); text-shadow: 0 0 15px var(--hunter-glow); }
-.profile-actions { display: flex; gap: 10px; }
+.profile-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+/* Platform Dropdown Box (~Line 125) */
+.profile-select {
+    background: rgba(15, 23, 42, 0.95);
+    border: 2px solid var(--hunter-color);
+    color: #ffffff;
+    padding: 8px 12px;
+    border-radius: 0.8rem;
+    font-weight: 900;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    outline: none;
+    transition: 0.3s;
+}
+.profile-select:hover {
+    background: rgba(255, 255, 255, 0.08);
+}
+
 .profile-btn {
     background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1);
     color: white; padding: 10px 15px; border-radius: 0.8rem; font-weight: 900; cursor: pointer; transition: 0.3s;
 }
+.profile-btn:hover { background: rgba(255, 255, 255, 0.15); }
 
 /* Animal Rank Grid */
 .rank-grid { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
