@@ -1,6 +1,6 @@
 /* ============================================================================
    File: app.js
-   Description: Ghost Recon Wildlands Pure Firestore Engine with Live Diagnostics
+   Description: Ghost Recon Wildlands Pure Firestore Engine
    Database: Cloud Firestore (entertainment-71888)
    Target Firestore Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
    ============================================================================ */
@@ -28,16 +28,12 @@ const USER_DATA_MAP = {
     'DesdemonaTiger': 'DesdemonaTiger'
 };
 
-// ABSOLUTE BLANK DEFAULT STATS (No pre-filled fake data)
 const BLANK_STATS = {
     level: "--",
     playstyle: "--",
     avgDist: "--",
-    tactical: 0,
-    stealth: 0,
     lifetime: "--",
     longestShot: "--",
-    precision: 0,
     favWeapon: "--",
     favWeapon2: "--"
 };
@@ -58,7 +54,6 @@ const appState = {
         this.setupControlDropdowns();
         this.setupFormControls();
 
-        // 1. Fetch JSON file structure
         await this.fetchGitHubJSON();
 
         try {
@@ -184,11 +179,31 @@ const appState = {
         }
     },
 
+    populateFormWithCurrentData: function() {
+        const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.value = (val && val !== "--") ? val : "";
+        };
+
+        setVal("editTierLevel", this.statsData.level);
+        setVal("editPlaystyle", this.statsData.playstyle);
+        setVal("editAvgDist", this.statsData.avgDist);
+        setVal("editLifetime", this.statsData.lifetime);
+        setVal("editLongest", this.statsData.longestShot);
+        setVal("editFav1", this.statsData.favWeapon);
+        setVal("editFav2", this.statsData.favWeapon2);
+    },
+
     setupFormControls: function() {
         const toggleBtn = document.getElementById("toggleEditStats");
         const editPanel = document.getElementById("editStatsPanel");
         if (toggleBtn && editPanel) {
-            toggleBtn.addEventListener("click", () => editPanel.classList.toggle("hidden"));
+            toggleBtn.addEventListener("click", () => {
+                editPanel.classList.toggle("hidden");
+                if (!editPanel.classList.contains("hidden")) {
+                    this.populateFormWithCurrentData();
+                }
+            });
         }
 
         const saveBtn = document.getElementById("saveStatsBtn");
@@ -203,15 +218,22 @@ const appState = {
                     level: getVal("editTierLevel"),
                     playstyle: getVal("editPlaystyle"),
                     avgDist: getVal("editAvgDist"),
-                    tactical: parseInt(getVal("editTactical")) || 0,
-                    stealth: parseInt(getVal("editStealth")) || 0,
                     lifetime: getVal("editLifetime"),
                     longestShot: getVal("editLongest"),
-                    precision: parseInt(getVal("editPrecision")) || 0,
                     favWeapon: getVal("editFav1"),
                     favWeapon2: getVal("editFav2")
                 };
 
+                this.sync();
+                if (editPanel) editPanel.classList.add("hidden");
+            });
+        }
+
+        const clearBtn = document.getElementById("clearStatsBtn");
+        if (clearBtn) {
+            clearBtn.addEventListener("click", () => {
+                this.statsData = JSON.parse(JSON.stringify(BLANK_STATS));
+                this.initializeBlankSkillsFromBlueprint();
                 this.sync();
                 if (editPanel) editPanel.classList.add("hidden");
             });
@@ -230,7 +252,6 @@ const appState = {
 
         if (this.masterUnsub) this.masterUnsub();
 
-        // TARGET DOC PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
         const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
@@ -240,7 +261,6 @@ const appState = {
                 if (data.stats) this.statsData = data.stats;
                 this.setStatus(`✓ Loaded Cloud Data for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#10b981");
             } else {
-                // If doc doesn't exist in Cloud Firestore, start clean and blank
                 this.initializeBlankSkillsFromBlueprint();
                 this.statsData = JSON.parse(JSON.stringify(BLANK_STATS));
                 this.setStatus(`⚠️ No Saved Cloud Data for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
@@ -248,7 +268,7 @@ const appState = {
             this.render();
             this.updateStatsUI();
         }, (err) => {
-            console.error("Firestore Read Error:", err);
+            console.error("Firestore Listen Error:", err);
             this.setStatus(`❌ Read Error: ${err.message}`, "#ef4444");
             this.render();
         });
@@ -267,7 +287,7 @@ const appState = {
         const currentCategorySkills = this.hunterSkillsData[this.activeCategory] || [];
 
         if (currentCategorySkills.length === 0) {
-            container.innerHTML = `<div style="color:#8a99ad; text-align:center; padding:20px;">No items mapped under '${this.activeCategory}'.</div>`;
+            container.innerHTML = `<div style="color:#8a99ad; text-align:center; padding:20px;">No items available.</div>`;
             return;
         }
 
@@ -339,20 +359,10 @@ const appState = {
         setTxt("tierLevel", data.level);
         setTxt("playstyleType", data.playstyle);
         setTxt("avgKillDist", data.avgDist);
-        setTxt("tacticalValue", (data.tactical || 0) + "%");
-        setTxt("stealthValue", (data.stealth || 0) + "%");
         setTxt("statLifetime", data.lifetime);
         setTxt("longestShot", data.longestShot);
-        setTxt("precisionValue", (data.precision || 0) + "%");
         setTxt("favWeapon", data.favWeapon);
         setTxt("favWeapon2", data.favWeapon2);
-
-        const tacBar = document.getElementById("tacticalBar");
-        if (tacBar) tacBar.style.width = `${data.tactical || 0}%`;
-        const stBar = document.getElementById("stealthBar");
-        if (stBar) stBar.style.width = `${data.stealth || 0}%`;
-        const prBar = document.getElementById("precisionBar");
-        if (prBar) prBar.style.width = `${data.precision || 0}%`;
     },
 
     mutateSkillRank: function(category, index, currentRank, maxRank) {
@@ -373,7 +383,6 @@ const appState = {
         }
     },
 
-    // DIRECT FIRESTORE WRITE
     sync: async function() {
         this.render();
         this.updateStatsUI();
