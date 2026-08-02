@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ghost Recon Wildlands Squad Operations Hub</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css?v=7.0">
+    <link rel="stylesheet" href="style.css?v=8.0">
 </head>
 <body>
 
@@ -55,24 +55,12 @@
             <div class="stat-category-block">
                 <h3 class="category-header">PLAYSTYLE <span id="playstyleType" class="header-highlight">--</span></h3>
                 <div class="stat-row"><span>Average Kill Distance</span><span id="avgKillDist" class="stat-val">--</span></div>
-                <div class="progress-bar-container">
-                    <div class="progress-labels"><span>Tactical Precision</span><span id="tacticalValue">0%</span></div>
-                    <div class="bar-bg"><div id="tacticalBar" class="bar-fill"></div></div>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-labels"><span>Stealth Kills</span><span id="stealthValue">0%</span></div>
-                    <div class="bar-bg"><div id="stealthBar" class="bar-fill"></div></div>
-                </div>
             </div>
 
             <div class="stat-category-block">
                 <h3 class="category-header">COMBAT</h3>
                 <div class="stat-row"><span>Lifetime</span><span id="statLifetime" class="stat-val">--</span></div>
                 <div class="stat-row"><span>Longest Shot</span><span id="longestShot" class="stat-val">--</span></div>
-                <div class="progress-bar-container">
-                    <div class="progress-labels"><span>Precision</span><span id="precisionValue">0%</span></div>
-                    <div class="bar-bg"><div id="precisionBar" class="bar-fill"></div></div>
-                </div>
                 <div class="weapons-fav-row">
                     <div class="weapon-tag"><strong>Favorite Weapon:</strong> <span id="favWeapon">--</span></div>
                     <div class="weapon-tag"><strong>2nd Favorite Weapon:</strong> <span id="favWeapon2">--</span></div>
@@ -86,22 +74,20 @@
             <div id="editStatsPanel" class="edit-stats-panel hidden">
                 <div class="edit-row">
                     <label>Tier Level:</label>
-                    <input type="number" id="editTierLevel" min="1" max="50" placeholder="e.g. 5">
+                    <input type="text" id="editTierLevel" placeholder="e.g. 5">
                 </div>
                 <hr class="panel-divider">
                 <h4 class="form-section-title">Playstyle & Combat Inputs</h4>
                 <div class="edit-grid-inputs">
                     <div><label>Playstyle</label><input type="text" id="editPlaystyle" placeholder="e.g. Raider"></div>
                     <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist" placeholder="e.g. 38 m"></div>
-                    <div><label>Tactical %</label><input type="number" id="editTactical" placeholder="e.g. 100"></div>
-                    <div><label>Stealth %</label><input type="number" id="editStealth" placeholder="e.g. 74"></div>
                     <div><label>Lifetime</label><input type="text" id="editLifetime" placeholder="e.g. 0h 20min"></div>
                     <div><label>Longest Shot</label><input type="text" id="editLongest" placeholder="e.g. 89 m"></div>
-                    <div><label>Precision %</label><input type="number" id="editPrecision" placeholder="e.g. 8"></div>
                     <div><label>Fav Weapon</label><select id="editFav1"></select></div>
-                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><select id="editFav2"></select></div>
+                    <div><label>2nd Fav Weapon</label><select id="editFav2"></select></div>
                 </div>
                 <button id="saveStatsBtn" class="save-stats-btn">Save Tactical Update to Firebase</button>
+                <button id="clearStatsBtn" style="background:#8b0000; color:#fff; border:1px solid #ff4444; width:100%; padding:10px; border-radius:4px; cursor:pointer; font-weight:bold; margin-top:8px;">🗑️ Clear All Profile Data to Blank</button>
             </div>
         </section>
 
@@ -113,7 +99,6 @@
 
     </main>
 
-    <!-- CRITICAL: type="module" ensures ES import statements do not break JavaScript execution -->
-    <script type="module" src="app.js?v=7.0"></script>
+    <script type="module" src="app.js?v=8.0"></script>
 </body>
 </html>
