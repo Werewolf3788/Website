@@ -1,7 +1,7 @@
 /* ============================================================================
    File: app.js
-   Description: Ghost Recon Wildlands JSON-Driven Firestore Engine
-   Target Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+   Description: Ghost Recon Wildlands Hub - Dual Skill Rank & Medal Tracker
+   Target Firestore Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
    ============================================================================ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -48,7 +48,7 @@ const appState = {
         this.setupControlDropdowns();
         this.setupFormControls();
 
-        // 1. Fetch JSON Blueprint File
+        // 1. Load your JSON structure from GitHub
         await this.fetchGitHubJSON();
 
         try {
@@ -137,8 +137,8 @@ const appState = {
         Object.keys(this.jsonSkillsBlueprint).forEach(cat => {
             this.hunterSkillsData[cat] = this.jsonSkillsBlueprint[cat].map(item => ({
                 ...item,
-                current: 0,
-                collected: false
+                current: 0,         // Rank level starts at 0
+                medalEarned: false  // Medal status starts uncollected
             }));
         });
     },
@@ -204,7 +204,7 @@ const appState = {
 
         if (this.masterUnsub) this.masterUnsub();
 
-        // TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+        // Firestore Target Path
         const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
@@ -213,7 +213,6 @@ const appState = {
                 if (data.skills) this.hunterSkillsData = data.skills;
                 if (data.stats) this.statsData = data.stats;
             } else {
-                // Initialize clean uncompleted dataset on first load
                 this.initializeBlankSkillsFromBlueprint();
                 this.statsData = JSON.parse(JSON.stringify(DEFAULT_BLANK_STATS));
                 this.sync();
@@ -239,7 +238,7 @@ const appState = {
         const currentCategorySkills = this.hunterSkillsData[this.activeCategory] || [];
 
         if (currentCategorySkills.length === 0) {
-            container.innerHTML = `<div style="color:#8a99ad; text-align:center; padding:20px;">No skill items available under '${this.activeCategory}'.</div>`;
+            container.innerHTML = `<div style="color:#8a99ad; text-align:center; padding:20px;">No items mapped under '${this.activeCategory}'.</div>`;
             return;
         }
 
@@ -247,11 +246,13 @@ const appState = {
             const currentRank = skill.current || 0;
             const maxRank = skill.max || 1;
             const isMaxed = currentRank === maxRank;
+            const medalEarned = !!skill.medalEarned;
 
             const card = document.createElement("div");
-            card.className = `skill-card unlocked ${isMaxed ? 'maxed' : ''} ${skill.isEpic ? 'epic-card' : ''}`;
-            card.style.cssText = "background:#121820; border:1px solid #1c2430; padding:12px; border-radius:6px; margin-bottom:10px;";
+            card.className = `skill-card ${isMaxed ? 'maxed' : ''} ${skill.isEpic ? 'epic-card' : ''}`;
+            card.style.cssText = "background:#121820; border:1px solid #1c2430; padding:12px; border-radius:6px; margin-bottom:12px;";
 
+            // DUAL CONTROLS IN SAME BOX: Skill Rank Up + Separate Medal Button
             card.innerHTML = `
                 <div class="card-top-action">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -259,21 +260,45 @@ const appState = {
                         ${skill.isEpic ? '<span style="color:#ffcc00; font-size:10px; font-weight:bold; border:1px solid #ffcc00; padding:1px 4px; border-radius:2px;">EPIC</span>' : ''}
                     </div>
                     <p style="font-size:11px; color:#8a99ad; margin:6px 0;">${skill.desc || ''}</p>
-                    <div class="skill-meta-row" style="margin-top:8px;">
-                        <div class="skill-rank-indicators" style="display:flex; gap:4px;">
-                            ${Array.from({ length: maxRank }).map((_, rIdx) => `
-                                <div class="rank-dot ${rIdx < currentRank ? 'active' : ''}" style="width:14px; height:6px; background:${rIdx < currentRank ? '#0076a8' : '#3d4f68'}; border-radius:1px;"></div>
-                            `).join('')}
+                    
+                    <div class="skill-meta-row" style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
+                        <!-- Skill Rank Indicators -->
+                        <div style="display:flex; flex-direction:column; gap:4px;">
+                            <span style="font-size:10px; color:#8a99ad; text-transform:uppercase; font-weight:bold;">Skill Rank (${currentRank}/${maxRank})</span>
+                            <div class="skill-rank-indicators" style="display:flex; gap:4px;">
+                                ${Array.from({ length: maxRank }).map((_, rIdx) => `
+                                    <div class="rank-dot" style="width:14px; height:6px; background:${rIdx < currentRank ? (isMaxed ? '#28a745' : '#0076a8') : '#3d4f68'}; border-radius:1px;"></div>
+                                `).join('')}
+                            </div>
                         </div>
+
+                        <!-- Separate Bonus Medal Badge State -->
+                        ${skill.hasMedal ? `
+                            <div style="text-align:right;">
+                                <span style="font-size:10px; color:#8a99ad; text-transform:uppercase; font-weight:bold; display:block;">Bonus Medal</span>
+                                <span style="font-size:11px; font-weight:bold; color:${medalEarned ? '#ffcc00' : '#4a5568'};">
+                                    ${medalEarned ? '🏅 Acquired' : '🔒 Missing'}
+                                </span>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
-                <div class="card-bottom-action" style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <span style="font-size:11px; color:#8a99ad;">Rank: ${currentRank}/${maxRank}</span>
-                    <button class="medal-toggle-btn ${skill.collected ? 'medal-earned' : ''}" 
-                            style="background:${skill.collected ? '#28a745' : '#161d26'}; color:#fff; border:1px solid ${skill.collected ? '#28a745' : '#3d4f68'}; padding:4px 10px; border-radius:4px; cursor:pointer; font-weight:bold;"
-                            onclick="appState.mutateSkill('${this.activeCategory}', ${index}, ${currentRank}, ${maxRank}, ${!!skill.collected})">
-                        ${skill.collected ? '✓ Maxed' : '⭐ Rank Up'}
+
+                <!-- BOTTOM CONTROLS INSIDE THE SAME CARD BOX -->
+                <div class="card-bottom-action" style="margin-top:12px; padding-top:10px; border-top:1px solid #1c2430; display:flex; justify-content:space-between; gap:8px;">
+                    <!-- Control 1: Skill Rank Up Button -->
+                    <button style="flex:1; background:${isMaxed ? '#112417' : '#161d26'}; color:${isMaxed ? '#28a745' : '#fff'}; border:1px solid ${isMaxed ? '#28a745' : '#3d4f68'}; padding:6px 8px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:bold;"
+                            onclick="appState.mutateSkillRank('${this.activeCategory}', ${index}, ${currentRank}, ${maxRank})">
+                        ${isMaxed ? '✓ Skill Maxed' : '⭐ Rank Up'}
                     </button>
+
+                    <!-- Control 2: Bonus Medal Separate Toggle Button -->
+                    ${skill.hasMedal ? `
+                        <button style="flex:1; background:${medalEarned ? '#242415' : '#161d26'}; color:${medalEarned ? '#ffcc00' : '#8a99ad'}; border:1px solid ${medalEarned ? '#ffcc00' : '#3d4f68'}; padding:6px 8px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:bold;"
+                                onclick="appState.toggleBonusMedal('${this.activeCategory}', ${index})">
+                            ${medalEarned ? '🏅 Medal Found' : '🏅 Claim Medal'}
+                        </button>
+                    ` : ''}
                 </div>
             `;
             container.appendChild(card);
@@ -307,20 +332,22 @@ const appState = {
         if (prBar) prBar.style.width = `${data.precision || 0}%`;
     },
 
-    mutateSkill: function(category, index, currentRank, maxRank, isCollected) {
+    // Independent Control 1: Mutates Skill Rank only
+    mutateSkillRank: function(category, index, currentRank, maxRank) {
         let nextRank = currentRank + 1;
-        let nextCollected = isCollected;
-
-        if (nextRank > maxRank) {
-            nextRank = 0;
-            nextCollected = !isCollected;
-        } else if (nextRank === maxRank) {
-            nextCollected = true;
-        }
+        if (nextRank > maxRank) nextRank = 0;
 
         if (this.hunterSkillsData[category] && this.hunterSkillsData[category][index]) {
             this.hunterSkillsData[category][index].current = nextRank;
-            this.hunterSkillsData[category][index].collected = nextCollected;
+            this.sync();
+        }
+    },
+
+    // Independent Control 2: Toggles Bonus Medal separately
+    toggleBonusMedal: function(category, index) {
+        if (this.hunterSkillsData[category] && this.hunterSkillsData[category][index]) {
+            const currentMedalState = !!this.hunterSkillsData[category][index].medalEarned;
+            this.hunterSkillsData[category][index].medalEarned = !currentMedalState;
             this.sync();
         }
     },
@@ -332,7 +359,6 @@ const appState = {
         if (!this.db || !this.auth || !this.auth.currentUser) return;
 
         try {
-            // TARGET DOC: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
             const ref = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
             
             const payload = {
