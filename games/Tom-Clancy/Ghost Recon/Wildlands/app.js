@@ -1,7 +1,8 @@
 /* ============================================================================
    File: app.js
-   Description: Ghost Recon Wildlands Hub - Dual Skill Rank & Medal Tracker
-   Target Firestore Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+   Description: Ghost Recon Wildlands Pure Firestore Engine
+   Database: Cloud Firestore (entertainment-71888)
+   Target Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
    ============================================================================ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -11,12 +12,10 @@ import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/f
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
-    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
     projectId: "entertainment-71888",
     storageBucket: "entertainment-71888.firebasestorage.app",
     messagingSenderId: "660524340277",
-    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
-    measurementId: "G-JDNSLD3GFE"
+    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c"
 };
 
 const GAME_ID = 'T.C.G.R.Wildlands';
@@ -29,9 +28,18 @@ const USER_DATA_MAP = {
     'DesdemonaTiger': 'DesdemonaTiger'
 };
 
-const DEFAULT_BLANK_STATS = {
-    level: "--", playstyle: "--", avgDist: "--", tactical: 0, stealth: 0,
-    lifetime: "--", longestShot: "--", precision: 0, favWeapon: "--", favWeapon2: "--"
+// ABSOLUTE BLANK STATS (No pre-filled values)
+const BLANK_STATS = {
+    level: "--",
+    playstyle: "--",
+    avgDist: "--",
+    tactical: 0,
+    stealth: 0,
+    lifetime: "--",
+    longestShot: "--",
+    precision: 0,
+    favWeapon: "--",
+    favWeapon2: "--"
 };
 
 const appState = {
@@ -41,30 +49,33 @@ const appState = {
     jsonWeaponClasses: null,
     jsonSkillsBlueprint: null,
     hunterSkillsData: {},
-    statsData: JSON.parse(JSON.stringify(DEFAULT_BLANK_STATS)),
-    auth: null, db: null, masterUnsub: null,
+    statsData: JSON.parse(JSON.stringify(BLANK_STATS)),
+    auth: null,
+    db: null,
+    masterUnsub: null,
 
     init: async function() {
         this.setupControlDropdowns();
         this.setupFormControls();
 
-        // 1. Load your JSON structure from GitHub
+        // Load JSON structure from GitHub
         await this.fetchGitHubJSON();
 
         try {
-            const app = initializeApp(firebaseConfig, 'Wildlands-Direct-Sync');
+            const app = initializeApp(firebaseConfig, 'Wildlands-Firestore-Direct');
             this.auth = getAuth(app);
             this.db = getFirestore(app);
 
-            signInAnonymously(this.auth).catch(err => console.error("Auth Error:", err));
+            await signInAnonymously(this.auth);
 
             onAuthStateChanged(this.auth, (user) => {
                 if (user) {
+                    console.log("✓ Firestore Auth Active:", user.uid);
                     this.loadOperator(this.activeHunter, this.activePlatform);
                 }
             });
         } catch (err) {
-            console.error("Initialization Failure:", err);
+            console.error("Firestore Init Error:", err);
             this.render();
         }
     },
@@ -82,7 +93,7 @@ const appState = {
                 this.initializeBlankSkillsFromBlueprint();
             }
         } catch (e) {
-            console.warn("Notice: Fetching raw JSON delayed.", e.message);
+            console.warn("Notice: JSON fetch delayed.", e.message);
         }
     },
 
@@ -91,7 +102,8 @@ const appState = {
         const fav2 = document.getElementById("editFav2");
         if (!fav1 || !fav2 || !this.jsonWeaponClasses) return;
 
-        fav1.innerHTML = ""; fav2.innerHTML = "";
+        fav1.innerHTML = '<option value="--">-- Select Weapon --</option>';
+        fav2.innerHTML = '<option value="--">-- Select Weapon --</option>';
 
         Object.keys(this.jsonWeaponClasses).forEach(category => {
             const group1 = document.createElement("optgroup");
@@ -137,8 +149,8 @@ const appState = {
         Object.keys(this.jsonSkillsBlueprint).forEach(cat => {
             this.hunterSkillsData[cat] = this.jsonSkillsBlueprint[cat].map(item => ({
                 ...item,
-                current: 0,         // Rank level starts at 0
-                medalEarned: false  // Medal status starts uncollected
+                current: 0,
+                medalEarned: false
             }));
         });
     },
@@ -171,19 +183,22 @@ const appState = {
         const saveBtn = document.getElementById("saveStatsBtn");
         if (saveBtn) {
             saveBtn.addEventListener("click", () => {
-                const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value : "";
+                const getVal = (id) => {
+                    const el = document.getElementById(id);
+                    return el && el.value.trim() !== "" ? el.value.trim() : "--";
+                };
 
                 this.statsData = {
-                    level: parseInt(getVal("editTierLevel")) || "--",
-                    playstyle: getVal("editPlaystyle") || "--",
-                    avgDist: getVal("editAvgDist") || "--",
+                    level: getVal("editTierLevel"),
+                    playstyle: getVal("editPlaystyle"),
+                    avgDist: getVal("editAvgDist"),
                     tactical: parseInt(getVal("editTactical")) || 0,
                     stealth: parseInt(getVal("editStealth")) || 0,
-                    lifetime: getVal("editLifetime") || "--",
-                    longestShot: getVal("editLongest") || "--",
+                    lifetime: getVal("editLifetime"),
+                    longestShot: getVal("editLongest"),
                     precision: parseInt(getVal("editPrecision")) || 0,
-                    favWeapon: getVal("editFav1") || "--",
-                    favWeapon2: getVal("editFav2") || "--"
+                    favWeapon: getVal("editFav1"),
+                    favWeapon2: getVal("editFav2")
                 };
 
                 this.sync();
@@ -204,7 +219,7 @@ const appState = {
 
         if (this.masterUnsub) this.masterUnsub();
 
-        // Firestore Target Path
+        // EXACT FIRESTORE PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
         const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
@@ -213,14 +228,14 @@ const appState = {
                 if (data.skills) this.hunterSkillsData = data.skills;
                 if (data.stats) this.statsData = data.stats;
             } else {
+                // If doc doesn't exist in Cloud Firestore, initialize clean blank stats
                 this.initializeBlankSkillsFromBlueprint();
-                this.statsData = JSON.parse(JSON.stringify(DEFAULT_BLANK_STATS));
-                this.sync();
+                this.statsData = JSON.parse(JSON.stringify(BLANK_STATS));
             }
             this.render();
             this.updateStatsUI();
         }, (err) => {
-            console.error("Firestore Read Error:", err);
+            console.error("Firestore Listen Error:", err);
             this.render();
         });
     },
@@ -238,7 +253,7 @@ const appState = {
         const currentCategorySkills = this.hunterSkillsData[this.activeCategory] || [];
 
         if (currentCategorySkills.length === 0) {
-            container.innerHTML = `<div style="color:#8a99ad; text-align:center; padding:20px;">No items mapped under '${this.activeCategory}'.</div>`;
+            container.innerHTML = `<div style="color:#8a99ad; text-align:center; padding:20px;">No items available.</div>`;
             return;
         }
 
@@ -252,7 +267,6 @@ const appState = {
             card.className = `skill-card ${isMaxed ? 'maxed' : ''} ${skill.isEpic ? 'epic-card' : ''}`;
             card.style.cssText = "background:#121820; border:1px solid #1c2430; padding:12px; border-radius:6px; margin-bottom:12px;";
 
-            // DUAL CONTROLS IN SAME BOX: Skill Rank Up + Separate Medal Button
             card.innerHTML = `
                 <div class="card-top-action">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
@@ -262,7 +276,6 @@ const appState = {
                     <p style="font-size:11px; color:#8a99ad; margin:6px 0;">${skill.desc || ''}</p>
                     
                     <div class="skill-meta-row" style="margin-top:8px; display:flex; justify-content:space-between; align-items:center;">
-                        <!-- Skill Rank Indicators -->
                         <div style="display:flex; flex-direction:column; gap:4px;">
                             <span style="font-size:10px; color:#8a99ad; text-transform:uppercase; font-weight:bold;">Skill Rank (${currentRank}/${maxRank})</span>
                             <div class="skill-rank-indicators" style="display:flex; gap:4px;">
@@ -272,7 +285,6 @@ const appState = {
                             </div>
                         </div>
 
-                        <!-- Separate Bonus Medal Badge State -->
                         ${skill.hasMedal ? `
                             <div style="text-align:right;">
                                 <span style="font-size:10px; color:#8a99ad; text-transform:uppercase; font-weight:bold; display:block;">Bonus Medal</span>
@@ -284,15 +296,12 @@ const appState = {
                     </div>
                 </div>
 
-                <!-- BOTTOM CONTROLS INSIDE THE SAME CARD BOX -->
                 <div class="card-bottom-action" style="margin-top:12px; padding-top:10px; border-top:1px solid #1c2430; display:flex; justify-content:space-between; gap:8px;">
-                    <!-- Control 1: Skill Rank Up Button -->
                     <button style="flex:1; background:${isMaxed ? '#112417' : '#161d26'}; color:${isMaxed ? '#28a745' : '#fff'}; border:1px solid ${isMaxed ? '#28a745' : '#3d4f68'}; padding:6px 8px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:bold;"
                             onclick="appState.mutateSkillRank('${this.activeCategory}', ${index}, ${currentRank}, ${maxRank})">
                         ${isMaxed ? '✓ Skill Maxed' : '⭐ Rank Up'}
                     </button>
 
-                    <!-- Control 2: Bonus Medal Separate Toggle Button -->
                     ${skill.hasMedal ? `
                         <button style="flex:1; background:${medalEarned ? '#242415' : '#161d26'}; color:${medalEarned ? '#ffcc00' : '#8a99ad'}; border:1px solid ${medalEarned ? '#ffcc00' : '#3d4f68'}; padding:6px 8px; border-radius:4px; cursor:pointer; font-size:12px; font-weight:bold;"
                                 onclick="appState.toggleBonusMedal('${this.activeCategory}', ${index})">
@@ -332,7 +341,6 @@ const appState = {
         if (prBar) prBar.style.width = `${data.precision || 0}%`;
     },
 
-    // Independent Control 1: Mutates Skill Rank only
     mutateSkillRank: function(category, index, currentRank, maxRank) {
         let nextRank = currentRank + 1;
         if (nextRank > maxRank) nextRank = 0;
@@ -343,15 +351,15 @@ const appState = {
         }
     },
 
-    // Independent Control 2: Toggles Bonus Medal separately
     toggleBonusMedal: function(category, index) {
         if (this.hunterSkillsData[category] && this.hunterSkillsData[category][index]) {
-            const currentMedalState = !!this.hunterSkillsData[category][index].medalEarned;
-            this.hunterSkillsData[category][index].medalEarned = !currentMedalState;
+            const currentState = !!this.hunterSkillsData[category][index].medalEarned;
+            this.hunterSkillsData[category][index].medalEarned = !currentState;
             this.sync();
         }
     },
 
+    // DIRECT FIRESTORE WRITE
     sync: async function() {
         this.render();
         this.updateStatsUI();
@@ -371,9 +379,9 @@ const appState = {
             };
 
             await setDoc(ref, payload, { merge: true });
-            console.log(`✓ Firestore updated at: /users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
+            console.log(`✓ Cloud Firestore updated: /users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
         } catch (error) {
-            console.error("FIRESTORE SAVE ERROR:", error);
+            console.error("FIRESTORE WRITE ERROR:", error);
         }
     }
 };
