@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ghost Recon Wildlands Squad Operations Hub</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css?v=8.0">
+    <link rel="stylesheet" href="style.css?v=11.0">
 </head>
 <body>
 
@@ -43,7 +43,7 @@
                 <h2 id="operatorName" class="outline-text">Operator</h2>
                 <div id="tierContainer" class="tier-badge-container">
                     <span class="tier-label">TIER</span>
-                    <span id="tierLevel" class="tier-value">--</span>
+                    <span id="tierLevel" class="tier-value">OFF</span>
                 </div>
             </div>
 
@@ -52,40 +52,89 @@
                 Connecting to Cloud Firestore...
             </div>
             
+            <!-- PLAYSTYLE & PRECISION -->
             <div class="stat-category-block">
                 <h3 class="category-header">PLAYSTYLE <span id="playstyleType" class="header-highlight">--</span></h3>
                 <div class="stat-row"><span>Average Kill Distance</span><span id="avgKillDist" class="stat-val">--</span></div>
+                <div class="stat-row"><span>Tactical Precision</span><span id="tacticalValue" class="stat-val">--</span></div>
+                <div class="stat-row"><span>Stealth Kills</span><span id="stealthValue" class="stat-val">--</span></div>
             </div>
 
+            <!-- COMBAT -->
             <div class="stat-category-block">
                 <h3 class="category-header">COMBAT</h3>
                 <div class="stat-row"><span>Lifetime</span><span id="statLifetime" class="stat-val">--</span></div>
                 <div class="stat-row"><span>Longest Shot</span><span id="longestShot" class="stat-val">--</span></div>
+                <div class="stat-row"><span>Precision</span><span id="precisionValue" class="stat-val">--</span></div>
                 <div class="weapons-fav-row">
                     <div class="weapon-tag"><strong>Favorite Weapon:</strong> <span id="favWeapon">--</span></div>
                     <div class="weapon-tag"><strong>2nd Favorite Weapon:</strong> <span id="favWeapon2">--</span></div>
                 </div>
             </div>
 
+            <!-- SUPPORT -->
+            <div class="stat-category-block">
+                <h3 class="category-header">SUPPORT</h3>
+                <div class="stat-row"><span>Teammates Revived</span><span id="statRevives" class="stat-val">--</span></div>
+                <div class="stat-row"><span>C4 / Mine Kills</span><span id="statExplosiveKills" class="stat-val">--</span></div>
+                <div class="stat-row"><span>Drone Used</span><span id="statDroneTime" class="stat-val">--</span></div>
+            </div>
+
+            <!-- TRAVEL -->
+            <div class="stat-category-block">
+                <h3 class="category-header">TRAVEL</h3>
+                <div class="stat-row"><span>Air Travel</span><span id="statAir" class="stat-val">--</span></div>
+                <div class="stat-row"><span>Ground Travel</span><span id="statGround" class="stat-val">--</span></div>
+                <div class="stat-row"><span>Parachute</span><span id="statPara" class="stat-val">--</span></div>
+                <div class="stat-row"><span>Map Discovered</span><span id="statMap" class="stat-val">--</span></div>
+            </div>
+
             <div class="edit-stats-trigger-container">
                 <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Ghost Profile Inputs</button>
             </div>
 
+            <!-- EDIT FORM WITH TIER MODE TOGGLE -->
             <div id="editStatsPanel" class="edit-stats-panel hidden">
-                <div class="edit-row">
-                    <label>Tier Level:</label>
-                    <input type="text" id="editTierLevel" placeholder="e.g. 5">
+                <h4 class="form-section-title">Tier One Mode Settings</h4>
+                <div class="edit-grid-inputs" style="grid-template-columns: 1fr 1fr; margin-bottom:12px;">
+                    <div>
+                        <label>Tier Mode</label>
+                        <select id="editTierActive" style="background:#161d26; border:1px solid #2c3a4e; color:#fff; padding:8px; border-radius:4px;">
+                            <option value="off">OFF (Disabled)</option>
+                            <option value="on">ON (Active)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Tier Level (1-50)</label>
+                        <input type="text" id="editTierLevel" placeholder="e.g. 5">
+                    </div>
                 </div>
+
                 <hr class="panel-divider">
                 <h4 class="form-section-title">Playstyle & Combat Inputs</h4>
                 <div class="edit-grid-inputs">
                     <div><label>Playstyle</label><input type="text" id="editPlaystyle" placeholder="e.g. Raider"></div>
                     <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist" placeholder="e.g. 38 m"></div>
+                    <div><label>Tactical %</label><input type="text" id="editTactical" placeholder="e.g. 100%"></div>
+                    <div><label>Stealth %</label><input type="text" id="editStealth" placeholder="e.g. 74%"></div>
                     <div><label>Lifetime</label><input type="text" id="editLifetime" placeholder="e.g. 0h 20min"></div>
                     <div><label>Longest Shot</label><input type="text" id="editLongest" placeholder="e.g. 89 m"></div>
+                    <div><label>Precision %</label><input type="text" id="editPrecision" placeholder="e.g. 8%"></div>
                     <div><label>Fav Weapon</label><select id="editFav1"></select></div>
-                    <div><label>2nd Fav Weapon</label><select id="editFav2"></select></div>
+                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><select id="editFav2"></select></div>
                 </div>
+
+                <h4 class="form-section-title">Support & Travel Inputs</h4>
+                <div class="edit-grid-inputs">
+                    <div><label>Teammates Revived</label><input type="text" id="editRevives" placeholder="e.g. 0 Teammates"></div>
+                    <div><label>C4 / Mine Kills</label><input type="text" id="editExplosiveKills" placeholder="e.g. 0 Kills"></div>
+                    <div><label>Drone Used</label><input type="text" id="editDroneTime" placeholder="e.g. 0h 8min"></div>
+                    <div><label>Air Travel</label><input type="text" id="editAir" placeholder="e.g. 0h 7min"></div>
+                    <div><label>Ground Travel</label><input type="text" id="editGround" placeholder="e.g. 0h 7min"></div>
+                    <div><label>Parachute</label><input type="text" id="editPara" placeholder="e.g. 0 Jumps"></div>
+                    <div style="grid-column: span 2;"><label>Map Discovered</label><input type="text" id="editMap" placeholder="e.g. 5%"></div>
+                </div>
+
                 <button id="saveStatsBtn" class="save-stats-btn">Save Tactical Update to Firebase</button>
                 <button id="clearStatsBtn" style="background:#8b0000; color:#fff; border:1px solid #ff4444; width:100%; padding:10px; border-radius:4px; cursor:pointer; font-weight:bold; margin-top:8px;">🗑️ Clear All Profile Data to Blank</button>
             </div>
@@ -99,6 +148,6 @@
 
     </main>
 
-    <script type="module" src="app.js?v=8.0"></script>
+    <script type="module" src="app.js?v=11.0"></script>
 </body>
 </html>
