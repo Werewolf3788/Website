@@ -1,14 +1,28 @@
 {
   "short_name": "GhostHub",
   "name": "Ghost Recon Wildlands Squad Operations Hub",
+  "description": "Squad Progress & Tactical Loadout Tracker for Ghost Recon Wildlands",
   "icons": [
     {
       "src": "https://raw.githack.com/Werewolf3788/SKVentureSigns/main/favicon.ico",
       "type": "image/x-icon",
       "sizes": "64x64 32x32 24x24 16x16"
+    },
+    {
+      "src": "https://placehold.co/192x192/121820/ff8800.png?text=GHOST",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://placehold.co/512x512/121820/ff8800.png?text=GHOST",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
   "start_url": "./index.html",
+  "scope": "./",
   "background_color": "#0b0f14",
   "theme_color": "#121820",
   "display": "standalone",
