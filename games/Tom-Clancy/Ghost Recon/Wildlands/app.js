@@ -1,15 +1,11 @@
 /* ============================================================================
    File: app.js
-   Description: Ghost Recon Wildlands Hub Engine
-   Architecture: Firebase Firestore Real-Time Engine (entertainment-71888)
-   Path Structure: /users/{username}/platform/{platform}/progress/T.C.G.R.Wildlands
+   Description: Ghost Recon Wildlands - Multi-Platform Cross-Save Engine
+   Firebase Project: entertainment-71888
+   Features: Separate progress tracking for PC, PlayStation, and Xbox
    ============================================================================ */
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-// --- TARGET FIREBASE SDK CONFIGURATION (entertainment-71888) ---
+// 1. Firebase Credentials (entertainment-71888)
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -21,248 +17,261 @@ const firebaseConfig = {
     measurementId: "G-JDNSLD3GFE"
 };
 
-const GAME_ID = 'T.C.G.R.Wildlands';
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
 
-/* === Global State Variables === */
-let db;
-let auth;
-let currentSelectedUser = localStorage.getItem('active_gaming_nickname') || "Werewolf3788"; 
-let currentPlatform = "playstation"; 
-let selectedCategory = "WEAPON";
-let unsubscribers = [];
+const auth = firebase.auth();
+const rtdb = firebase.database();
 
-const SQUAD_PROFILES = {};
+// Default Application State
+let activeOperator = localStorage.getItem('active_gaming_nickname') || "Werewolf3788";
+let activePlatform = localStorage.getItem('active_gaming_platform') || "pc"; // Options: 'pc', 'playstation', 'xbox'
+let activeCategory = "WEAPON";
 
-/* === App Initialization === */
-document.addEventListener("DOMContentLoaded", async () => {
-    populateWeaponSelectionDropdowns();
-    setupInterfaceControls();
-    await fetchGitHubJSONData();
-    await initializeFirebaseApp();
+// 2. Cookie Helpers for Remembering Operator & Platform Preferences
+function setCookie(key, value) {
+    const d = new Date();
+    d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); // 1 Year Persistence
+    document.cookie = `${key}=${encodeURIComponent(value)};expires=${d.toUTCString()};path=/;SameSite=Lax`;
+}
+
+function getCookie(key) {
+    const name = `${key}=`;
+    const decoded = decodeURIComponent(document.cookie);
+    const ca = decoded.split(';');
+    for (let i = 0; i < ca.length; i++) {
+        let c = ca[i].trim();
+        if (c.indexOf(name) === 0) return c.substring(name.length, c.length);
+    }
+    return "";
+}
+
+// 3. Application Startup Lifecycle
+document.addEventListener("DOMContentLoaded", () => {
+    // Check URL Parameters for custom direct links (e.g., index.html?user=Werewolf3788&platform=pc)
+    const urlParams = new URLSearchParams(window.location.search);
+    const userParam = urlParams.get('user');
+    const platParam = urlParams.get('platform');
+
+    if (userParam) {
+        activeOperator = userParam;
+        setCookie('active_operator', activeOperator);
+    } else {
+        const savedOperator = getCookie('active_operator');
+        if (savedOperator) activeOperator = savedOperator;
+    }
+
+    if (platParam && ['pc', 'playstation', 'xbox'].includes(platParam.toLowerCase())) {
+        activePlatform = platParam.toLowerCase();
+        setCookie('active_platform', activePlatform);
+    } else {
+        const savedPlatform = getCookie('active_platform');
+        if (savedPlatform) activePlatform = savedPlatform;
+    }
+
+    // Save active state to localStorage
+    localStorage.setItem('active_gaming_nickname', activeOperator);
+    localStorage.setItem('active_gaming_platform', activePlatform);
+
+    // Background Auth Session
+    auth.signInAnonymously().then(() => {
+        console.log(`✓ Connected to Firebase. Active: ${activeOperator} [${activePlatform.toUpperCase()}]`);
+        setupControlDropdowns();
+        attachLivePlatformStreams(activeOperator, activePlatform);
+    }).catch(err => {
+        console.warn("Auth Notice:", err.message);
+        setupControlDropdowns();
+        attachLivePlatformStreams(activeOperator, activePlatform);
+    });
+
+    setupUIEvents();
 });
 
-async function fetchGitHubJSONData() {
-    try {
-        const jsonUrl = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/json/TCGRWildlands.json';
-        const response = await fetch(jsonUrl);
-        if (response.ok) {
-            const data = await response.json();
-            if (data.profiles) {
-                Object.assign(SQUAD_PROFILES, data.profiles);
-            }
-            updateOperatorDropdownList(SQUAD_PROFILES);
+// 4. Interface Dropdown Selectors
+function setupControlDropdowns() {
+    const userSelector = document.getElementById("userSelect");
+    if (userSelector) {
+        userSelector.innerHTML = `
+            <option value="Werewolf3788">Kevin (Werewolf3788)</option>
+            <option value="Raymystyro">Ray (Raymystyro)</option>
+            <option value="terrdog420">TJ (terrdog420)</option>
+            <option value="DesdemonaTiger">Marc (DesdemonaTiger)</option>
+        `;
+        userSelector.value = activeOperator;
+        userSelector.addEventListener("change", (e) => {
+            activeOperator = e.target.value;
+            setCookie('active_operator', activeOperator);
+            localStorage.setItem('active_gaming_nickname', activeOperator);
+            attachLivePlatformStreams(activeOperator, activePlatform);
+        });
+    }
+
+    const platformSelector = document.getElementById("platformSelect");
+    if (platformSelector) {
+        platformSelector.innerHTML = `
+            <option value="pc">💻 PC (Ubisoft Connect)</option>
+            <option value="playstation">🎮 PlayStation (PS5/PS4)</option>
+            <option value="xbox">💚 Xbox (Series X/S/One)</option>
+        `;
+        platformSelector.value = activePlatform;
+        platformSelector.addEventListener("change", (e) => {
+            activePlatform = e.target.value;
+            setCookie('active_platform', activePlatform);
+            localStorage.setItem('active_gaming_platform', activePlatform);
+            attachLivePlatformStreams(activeOperator, activePlatform);
+        });
+    }
+}
+
+// 5. Live Firebase Streams Isolated Per Platform Path
+function attachLivePlatformStreams(operatorKey, platformKey) {
+    const basePath = `users/${operatorKey}/platform/${platformKey}`;
+
+    // Listen to Platform-Specific Stats
+    rtdb.ref(`${basePath}/stats`).on("value", (snapshot) => {
+        if (snapshot.exists()) {
+            renderStatsUI(snapshot.val());
+        } else {
+            // Default initial profile record for new platforms
+            const initStats = {
+                onlineId: operatorKey,
+                platform: platformKey.toUpperCase(),
+                level: 1,
+                playstyle: "Tactical Operative",
+                avgDist: "100m",
+                tactical: 80,
+                stealth: 75
+            };
+            rtdb.ref(`${basePath}/stats`).set(initStats);
+            renderStatsUI(initStats);
         }
-    } catch (e) {
-        console.warn("Notice: Operating on live Firestore datasets:", e.message);
-    }
-}
+    });
 
-async function initializeFirebaseApp() {
-    try {
-        const app = initializeApp(firebaseConfig, 'Wildlands-Engine-App');
-        auth = getAuth(app);
-        db = getFirestore(app);
-
-        // Anonymous background auth allows instant Firestore reads/writes
-        await signInAnonymously(auth);
-
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                attachLiveFirestoreListeners();
-            }
-        });
-    } catch (err) {
-        console.error("Firebase Initialization Failure:", err);
-    }
-}
-
-function attachLiveFirestoreListeners() {
-    unsubscribers.forEach(unsub => unsub());
-    unsubscribers = [];
-
-    const activeUsers = Object.keys(SQUAD_PROFILES).length > 0 
-        ? Object.keys(SQUAD_PROFILES) 
-        : ['Werewolf3788', 'Raymystyro', 'terrdog420', 'DesdemonaTiger'];
-
-    activeUsers.forEach(profileKey => {
-        // Path: /users/{username}/platform/{platform}/progress/T.C.G.R.Wildlands
-        const userProgressRef = doc(db, 'users', profileKey, 'platform', currentPlatform, 'progress', GAME_ID);
-
-        const unsub = onSnapshot(userProgressRef, (snap) => {
-            if (snap.exists()) {
-                const data = snap.data();
-                SQUAD_PROFILES[profileKey] = data;
-                if (profileKey === currentSelectedUser) {
-                    renderTargetProfileData(data);
-                }
-            } else if (profileKey === currentSelectedUser) {
-                syncToFirestore();
-            }
-        }, (err) => {
-            console.warn(`Firestore listener notice for ${profileKey} [${currentPlatform}]:`, err.message);
-        });
-
-        unsubscribers.push(unsub);
+    // Listen to Platform-Specific Skills Tree
+    rtdb.ref(`${basePath}/skills`).on("value", (snapshot) => {
+        const skillsData = snapshot.exists() ? snapshot.val() : {};
+        renderSkillsUI(skillsData);
     });
 }
 
-function populateWeaponSelectionDropdowns() {
-    const primarySelect = document.getElementById("profileFavWeapon") || document.getElementById("editFav1");
-    const secondarySelect = document.getElementById("profileFavWeapon2") || document.getElementById("editFav2");
-    if (!primarySelect || !secondarySelect) return;
-    
-    primarySelect.innerHTML = ""; secondarySelect.innerHTML = "";
+// 6. Skill Toggle Mutator (Isolated to current platform)
+window.mutateSkillNode = function(category, itemIndex, currentRank, maxRank, isCollected) {
+    let nextRank = currentRank + 1;
+    let nextCollected = isCollected;
 
-    const weapons = [
-        "P416 (Starting Weapon)", "AK-47 (Libertad)", "556xi (Caimanes)", "ACR (Media Luna)", "M4A1 (Flor De Oro)",
-        "M40A5 (Itacua)", "SR-25 (Caimanes)", "HTI (Montuyoc)", "MP5 (Starting Weapon)", "Vector .45 ACP (Media Luna)"
-    ];
-
-    weapons.forEach(w => {
-        const opt1 = document.createElement("option"); opt1.value = w; opt1.textContent = w; primarySelect.appendChild(opt1);
-        const opt2 = document.createElement("option"); opt2.value = w; opt2.textContent = w; secondarySelect.appendChild(opt2);
-    });
-}
-
-function updateOperatorDropdownList(profiles) {
-    const selectorElement = document.getElementById("userSelect");
-    if (!selectorElement) return;
-    
-    selectorElement.innerHTML = "";
-    Object.keys(profiles).forEach(key => {
-        const option = document.createElement("option"); 
-        option.value = key; 
-        option.textContent = profiles[key].name || key; 
-        selectorElement.appendChild(option);
-    });
-    
-    if (profiles[currentSelectedUser]) {
-        selectorElement.value = currentSelectedUser;
-        renderTargetProfileData(profiles[currentSelectedUser]);
+    if (nextRank > maxRank) {
+        nextRank = 0;
+        nextCollected = !isCollected;
     }
-}
 
-function renderTargetProfileData(operator) {
-    if (!operator) return;
+    const targetPath = `users/${activeOperator}/platform/${activePlatform}/skills/${category}/${itemIndex}`;
+    const updates = {};
+    updates[`${targetPath}/current`] = nextRank;
+    updates[`${targetPath}/collected`] = nextCollected;
 
-    const setVal = (id, val) => {
+    rtdb.ref().update(updates)
+        .then(() => console.log(`✓ Updated ${category} [${itemIndex}] for ${activeOperator} on ${activePlatform.toUpperCase()}`))
+        .catch(err => console.error("Firebase Update Error:", err));
+};
+
+// 7. Render UI Functions
+function renderStatsUI(data) {
+    if (!data) return;
+    const setTxt = (id, val) => {
         const el = document.getElementById(id);
-        if (el) {
-            if (el.tagName === 'INPUT' || el.tagName === 'SELECT') el.value = val;
-            else el.textContent = val;
-        }
+        if (el) el.innerText = val || "--";
     };
 
-    setVal("operatorName", operator.name || currentSelectedUser);
-    setVal("tierLevel", operator.tier || 1);
-    setVal("playstyleType", operator.playstyle || "OVERWATCH");
-    setVal("avgKillDist", (operator.avgKillDist || 0) + "m");
-    setVal("tacticalValue", (operator.tactical || 0) + "%");
-    setVal("stealthValue", (operator.stealth || 0) + "%");
-    setVal("statLifetime", operator.lifetime || "0h");
-    setVal("longestShot", (operator.longestShot || 0) + "m");
-    setVal("precisionValue", (operator.precision || 0) + "%");
-    setVal("favWeapon", operator.favWeapon || "P416");
-    setVal("favWeapon2", operator.favWeapon2 || "MP5");
-    setVal("teammatesRevived", operator.teammatesRevived || 0);
-    setVal("c4MineKills", operator.c4MineKills || 0);
-    setVal("statDroneUsed", operator.droneUsed || "0h");
-    setVal("travelAir", operator.travelAir || "0h");
-    setVal("travelGround", operator.travelGround || "0h");
-    setVal("travelPara", operator.travelPara || "0 Jumps");
-    setVal("travelMap", operator.travelMap || "0%");
+    setTxt("operatorName", `${data.onlineId || activeOperator}`);
+    setTxt("tierLevel", data.level || "1");
+    setTxt("playstyleType", data.playstyle || "Tactical Operative");
+    setTxt("avgKillDist", data.avgDist || "0m");
+    setTxt("tacticalValue", (data.tactical || 0) + "%");
+    setTxt("stealthValue", (data.stealth || 0) + "%");
 
     const tacBar = document.getElementById("tacticalBar");
-    if (tacBar) tacBar.style.width = `${operator.tactical || 0}%`;
-    const stBar = document.getElementById("stealthBar");
-    if (stBar) stBar.style.width = `${operator.stealth || 0}%`;
-    const prBar = document.getElementById("precisionBar");
-    if (prBar) prBar.style.width = `${operator.precision || 0}%`;
+    if (tacBar) tacBar.style.width = `${data.tactical || 0}%`;
 }
 
-function setupInterfaceControls() {
-    const userSelect = document.getElementById("userSelect");
-    if (userSelect) {
-        userSelect.addEventListener("change", (e) => {
-            currentSelectedUser = e.target.value; 
-            localStorage.setItem('active_gaming_nickname', currentSelectedUser);
-            if (SQUAD_PROFILES[currentSelectedUser]) {
-                renderTargetProfileData(SQUAD_PROFILES[currentSelectedUser]);
-            }
-            syncToFirestore();
-        });
+function renderSkillsUI(skillsData) {
+    const grid = document.getElementById("skillsTreeGrid");
+    if (!grid) return;
+
+    grid.innerHTML = "";
+    const categoryNodes = skillsData[activeCategory] || [];
+
+    if (!Array.isArray(categoryNodes) || categoryNodes.length === 0) {
+        grid.innerHTML = `<div style="color:#8a99ad; text-align:center; padding:20px; width:100%;">No entries recorded for '${activeCategory}' on ${activePlatform.toUpperCase()}.</div>`;
+        return;
     }
 
-    const platformSelect = document.getElementById("platformSelect");
-    if (platformSelect) {
-        platformSelect.addEventListener("change", (e) => {
-            currentPlatform = e.target.value.toLowerCase();
-            attachLiveFirestoreListeners();
-        });
-    }
+    categoryNodes.forEach((skill, index) => {
+        if (!skill) return;
+        const currentRank = parseInt(skill.current) || 0;
+        const maxRank = parseInt(skill.max) || 1;
+        const isMaxed = currentRank === maxRank;
 
-    const editBtn = document.getElementById("toggleEditStats");
+        const card = document.createElement("div");
+        card.className = `skill-card unlocked ${isMaxed ? 'maxed' : ''}`;
+        card.innerHTML = `
+            <div class="card-top-action">
+                <h4 style="color:#fff; font-size:14px; font-weight:bold;">${skill.name || 'Skill Node'}</h4>
+                <div class="skill-meta-row" style="margin-top:8px;">
+                    <div class="skill-rank-indicators">
+                        ${Array.from({ length: maxRank }).map((_, rIdx) => `
+                            <div class="rank-dot ${rIdx < currentRank ? 'active' : ''}"></div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+            <div class="card-bottom-action">
+                <button class="medal-toggle-btn ${skill.collected ? 'medal-earned' : ''}" 
+                        onclick="mutateSkillNode('${activeCategory}', ${index}, ${currentRank}, ${maxRank}, ${!!skill.collected})">
+                    ⭐
+                </button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+window.switchSkillCategory = function(categoryName) {
+    activeCategory = categoryName;
+    document.querySelectorAll(".tab-link").forEach(btn => {
+        btn.classList.remove("active");
+        if (btn.getAttribute("onclick") && btn.getAttribute("onclick").includes(categoryName)) {
+            btn.classList.add("active");
+        }
+    });
+
+    rtdb.ref(`users/${activeOperator}/platform/${activePlatform}/skills`).once("value").then(snap => {
+        renderSkillsUI(snap.exists() ? snap.val() : {});
+    });
+};
+
+function setupUIEvents() {
+    const toggleBtn = document.getElementById("toggleEditStats");
     const editPanel = document.getElementById("editStatsPanel");
-    if (editBtn && editPanel) {
-        editBtn.addEventListener("click", () => editPanel.classList.toggle("hidden"));
+    if (toggleBtn && editPanel) {
+        toggleBtn.addEventListener("click", () => editPanel.classList.toggle("hidden"));
     }
 
     const saveBtn = document.getElementById("saveStatsBtn");
     if (saveBtn) {
         saveBtn.addEventListener("click", () => {
-            pushFormUpdateToState();
-            syncToFirestore();
-            if (editPanel) editPanel.classList.add("hidden");
+            const updates = {
+                onlineId: activeOperator,
+                platform: activePlatform.toUpperCase(),
+                playstyle: document.getElementById("editPlaystyle")?.value || "Tactical Operative",
+                avgDist: document.getElementById("editAvgDist")?.value || "150m",
+                tactical: parseInt(document.getElementById("editTactical")?.value) || 85,
+                stealth: parseInt(document.getElementById("editStealth")?.value) || 80
+            };
+
+            rtdb.ref(`users/${activeOperator}/platform/${activePlatform}/stats`).update(updates).then(() => {
+                if (editPanel) editPanel.classList.add("hidden");
+            });
         });
-    }
-}
-
-function pushFormUpdateToState() {
-    const getVal = (id) => document.getElementById(id) ? document.getElementById(id).value : "";
-
-    const updatedObj = {
-        name: currentSelectedUser,
-        tierMode: getVal("editTierMode") || "off",
-        tier: parseInt(getVal("editTierLevel")) || 1,
-        playstyle: getVal("editPlaystyle") || "Tactical Operative",
-        avgKillDist: parseInt(getVal("editAvgDist")) || 0,
-        tactical: parseInt(getVal("editTactical")) || 0,
-        stealth: parseInt(getVal("editStealth")) || 0,
-        lifetime: getVal("editLifetime") || "0h",
-        longestShot: parseInt(getVal("editLongest")) || 0,
-        precision: parseInt(getVal("editPrecision")) || 0,
-        favWeapon: getVal("editFav1") || "P416",
-        favWeapon2: getVal("editFav2") || "MP5",
-        teammatesRevived: parseInt(getVal("editRevives")) || 0,
-        c4MineKills: parseInt(getVal("editExplosiveKills")) || 0,
-        droneUsed: getVal("editDroneTime") || "0h",
-        travelAir: getVal("editAir") || "0h",
-        travelGround: getVal("editGround") || "0h",
-        travelPara: getVal("editPara") || "0 Jumps",
-        travelMap: getVal("editMap") || "0%"
-    };
-
-    SQUAD_PROFILES[currentSelectedUser] = Object.assign(SQUAD_PROFILES[currentSelectedUser] || {}, updatedObj);
-    renderTargetProfileData(SQUAD_PROFILES[currentSelectedUser]);
-}
-
-async function syncToFirestore() {
-    if (!db) return;
-
-    try {
-        const payload = SQUAD_PROFILES[currentSelectedUser];
-        if (!payload) return;
-
-        const platformRef = doc(db, 'users', currentSelectedUser, 'platform', currentPlatform);
-        const userProgressRef = doc(db, 'users', currentSelectedUser, 'platform', currentPlatform, 'progress', GAME_ID);
-        const userRef = doc(db, 'users', currentSelectedUser);
-
-        await setDoc(userRef, { displayName: currentSelectedUser, lastUpdated: new Date().toISOString() }, { merge: true });
-        await setDoc(platformRef, { platform: currentPlatform, lastActive: new Date().toISOString() }, { merge: true });
-        await setDoc(userProgressRef, { ...payload, user: currentSelectedUser, platform: currentPlatform, gameId: GAME_ID, lastUpdated: new Date().toISOString() }, { merge: true });
-
-        console.log(`✓ Synchronized to Firestore (entertainment-71888): ${currentSelectedUser} [${currentPlatform}]`);
-    } catch (error) {
-        console.error("Firestore Sync Error:", error);
     }
 }
