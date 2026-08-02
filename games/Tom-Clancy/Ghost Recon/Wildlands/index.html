@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ghost Recon Wildlands Squad Operations Hub</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css?v=5.0">
+    <link rel="stylesheet" href="style.css?v=6.0">
 </head>
 <body>
 
@@ -37,7 +37,7 @@
 
     <main class="hub-container">
         
-        <!-- LEFT PANEL: STATS & FORM INPUTS -->
+        <!-- LEFT PANEL: PROFILE STATS & EDIT FORM -->
         <section class="card-panel profile-panel">
             <div class="profile-header">
                 <h2 id="operatorName" class="outline-text">Operator</h2>
@@ -93,20 +93,21 @@
                     <div><label>Lifetime</label><input type="text" id="editLifetime" placeholder="0h 20min"></div>
                     <div><label>Longest Shot</label><input type="text" id="editLongest" placeholder="89 m"></div>
                     <div><label>Precision %</label><input type="number" id="editPrecision" placeholder="8"></div>
-                    <div><label>Fav Weapon</label><input type="text" id="editFav1" placeholder="P45T"></div>
-                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><input type="text" id="editFav2" placeholder="M40A5"></div>
+                    <div><label>Fav Weapon</label><select id="editFav1"></select></div>
+                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><select id="editFav2"></select></div>
                 </div>
                 <button id="saveStatsBtn" class="save-stats-btn">Save Tactical Update to Firebase</button>
             </div>
         </section>
 
-        <!-- RIGHT PANEL: SKILLS MATRIX & CHECKLISTS -->
+        <!-- RIGHT PANEL: SKILLS TABS & MATRIX -->
         <section class="card-panel skills-panel">
+            <div id="skillsCategoryTabs" class="skills-tabs"></div>
             <div id="section-container" class="skills-tree-grid"></div>
         </section>
 
     </main>
 
-    <script type="module" src="app.js?v=5.0"></script>
+    <script type="module" src="app.js?v=6.0"></script>
 </body>
 </html>
