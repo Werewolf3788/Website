@@ -1,7 +1,6 @@
 /* ============================================================================
    File: app.js
-   Description: Ghost Recon Wildlands Pure Firestore Engine
-   Database: Cloud Firestore (entertainment-71888)
+   Description: Ghost Recon Wildlands - Real-Time Stats & Skills Engine
    Target Firestore Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
    ============================================================================ */
 
@@ -233,9 +232,14 @@ const appState = {
         const saveBtn = document.getElementById("saveStatsBtn");
         if (saveBtn) {
             saveBtn.addEventListener("click", () => {
-                const getVal = (id) => {
+                const getVal = (id, suffix = "") => {
                     const el = document.getElementById(id);
-                    return el && el.value.trim() !== "" ? el.value.trim() : "--";
+                    if (!el || el.value.trim() === "") return "--";
+                    let val = el.value.trim();
+                    if (suffix && !val.includes(suffix) && val !== "--") {
+                        val = `${val}${suffix}`;
+                    }
+                    return val;
                 };
 
                 const tierActive = document.getElementById("editTierActive") ? document.getElementById("editTierActive").value : "off";
@@ -245,11 +249,11 @@ const appState = {
                     level: getVal("editTierLevel"),
                     playstyle: getVal("editPlaystyle"),
                     avgDist: getVal("editAvgDist"),
-                    tactical: getVal("editTactical"),
-                    stealth: getVal("editStealth"),
+                    tactical: getVal("editTactical", "%"),
+                    stealth: getVal("editStealth", "%"),
                     lifetime: getVal("editLifetime"),
                     longestShot: getVal("editLongest"),
-                    precision: getVal("editPrecision"),
+                    precision: getVal("editPrecision", "%"),
                     favWeapon: getVal("editFav1"),
                     favWeapon2: getVal("editFav2"),
                     revives: getVal("editRevives"),
@@ -258,7 +262,7 @@ const appState = {
                     airTravel: getVal("editAir"),
                     groundTravel: getVal("editGround"),
                     paraTravel: getVal("editPara"),
-                    mapDisc: getVal("editMap")
+                    mapDisc: getVal("editMap", "%")
                 };
 
                 this.sync();
@@ -289,7 +293,6 @@ const appState = {
 
         if (this.masterUnsub) this.masterUnsub();
 
-        // STRICT PLATFORM ISOLATION: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
         const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
@@ -299,7 +302,6 @@ const appState = {
                 if (data.stats) this.statsData = data.stats;
                 this.setStatus(`✓ Loaded Cloud Data for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#10b981");
             } else {
-                // If doc doesn't exist for this platform, start 100% blank
                 this.initializeBlankSkillsFromBlueprint();
                 this.statsData = JSON.parse(JSON.stringify(BLANK_STATS));
                 this.setStatus(`⚠️ No Saved Cloud Data for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
@@ -391,7 +393,7 @@ const appState = {
         const data = this.statsData;
         const setTxt = (id, val) => {
             const el = document.getElementById(id);
-            if (el) el.innerText = val !== undefined ? val : "--";
+            if (el) el.innerText = (val !== undefined && val !== null && val !== "") ? val : "--";
         };
 
         const tierValEl = document.getElementById("tierLevel");
