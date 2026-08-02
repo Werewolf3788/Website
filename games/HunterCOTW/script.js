@@ -1,6 +1,6 @@
 /* ============================================================================
    File: script.js
-   Description: theHunter: Call of the Wild Pure Firestore Engine (UNLOCKED)
+   Description: theHunter: Call of the Wild Pure Firestore Engine
    Database: Cloud Firestore (entertainment-71888)
    Target Firestore Path: /users/{userId}/platform/{platform}/progress/COTW
    Analytics Tag: G-CTYHDF4MSD
@@ -24,6 +24,7 @@ const firebaseConfig = {
 };
 
 const GAME_ID = 'COTW';
+const MENU_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv';
 
 const USER_DATA_MAP = {
     'Werewolf3788': 'Werewolf3788',
@@ -677,13 +678,18 @@ const appState = {
         return arr;
     },
 
+    /* ----------------------------------------------------
+     * SECTION 4A: Google Sheet Dynamic Navigation Importer
+     * Sheet Layout: Name (A) | Group (B) | Url (C) | Images (D)
+     * ---------------------------------------------------- */
     loadNavigation: async function() {
         try {
-            const response = await fetch('https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv');
+            const response = await fetch(MENU_SHEET_CSV_URL + `?v=${Date.now()}`);
             const csvText = await response.text();
             const rows = this.parseCSV(csvText);
 
             let data = rows;
+            // Strip header row if present
             if (data[0] && data[0][0] && data[0][0].toLowerCase().includes('name')) {
                 data.shift();
             }
@@ -702,6 +708,7 @@ const appState = {
 
                 if (!name || !url) return;
 
+                // Handle Google Drive Image conversion
                 if (image) {
                     const driveMatch = image.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || image.match(/id=([a-zA-Z0-9_-]+)/);
                     if (image.includes('drive.google.com') && driveMatch) {
@@ -719,6 +726,7 @@ const appState = {
                 }
             });
 
+            // Process Dropdown Groups
             Object.keys(groups).forEach(groupName => {
                 let dropItems = groups[groupName].map(item => {
                     const imgTag = item.image ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
@@ -735,6 +743,7 @@ const appState = {
                 `;
             });
 
+            // Process Standalone Menu Links
             standalone.forEach(item => {
                 const imgTag = item.image ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
                 navHTML += `<a href="${item.url}">${imgTag}${item.name}</a>`;
@@ -743,6 +752,9 @@ const appState = {
             if (navContainer) navContainer.innerHTML = navHTML;
         } catch (e) {
             console.error("Failed to load dynamic navigation", e);
+            if (document.getElementById('dynamic-nav-links')) {
+                document.getElementById('dynamic-nav-links').innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Menu Sync Error</span>`;
+            }
         }
     },
 
@@ -797,7 +809,7 @@ const appState = {
     loadHunter: function(userName, platform) {
         if (!this.auth || !this.auth.currentUser) return;
 
-        // 1. Immediately detach existing listeners to block cross-talk
+        // 1. Detach existing listeners to prevent cross-talk
         if (this.masterUnsub) {
             this.masterUnsub();
             this.masterUnsub = null;
