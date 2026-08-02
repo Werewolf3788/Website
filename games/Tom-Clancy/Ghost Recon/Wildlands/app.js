@@ -1,8 +1,8 @@
 /* ============================================================================
    File: app.js
-   Description: Ghost Recon Wildlands Pure Firestore Engine
+   Description: Ghost Recon Wildlands Pure Firestore Engine with Live Diagnostics
    Database: Cloud Firestore (entertainment-71888)
-   Target Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+   Target Firestore Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
    ============================================================================ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -28,7 +28,7 @@ const USER_DATA_MAP = {
     'DesdemonaTiger': 'DesdemonaTiger'
 };
 
-// ABSOLUTE BLANK STATS (No pre-filled values)
+// ABSOLUTE BLANK DEFAULT STATS (No pre-filled fake data)
 const BLANK_STATS = {
     level: "--",
     playstyle: "--",
@@ -58,7 +58,7 @@ const appState = {
         this.setupControlDropdowns();
         this.setupFormControls();
 
-        // Load JSON structure from GitHub
+        // 1. Fetch JSON file structure
         await this.fetchGitHubJSON();
 
         try {
@@ -70,13 +70,24 @@ const appState = {
 
             onAuthStateChanged(this.auth, (user) => {
                 if (user) {
-                    console.log("✓ Firestore Auth Active:", user.uid);
+                    this.setStatus(`✓ Connected to Firestore [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
                     this.loadOperator(this.activeHunter, this.activePlatform);
+                } else {
+                    this.setStatus("❌ Auth Failed", "#ef4444");
                 }
             });
         } catch (err) {
             console.error("Firestore Init Error:", err);
+            this.setStatus(`❌ Connection Error: ${err.message}`, "#ef4444");
             this.render();
+        }
+    },
+
+    setStatus: function(msg, color) {
+        const el = document.getElementById("syncStatus");
+        if (el) {
+            el.innerText = msg;
+            if (color) el.style.borderColor = color;
         }
     },
 
@@ -93,7 +104,7 @@ const appState = {
                 this.initializeBlankSkillsFromBlueprint();
             }
         } catch (e) {
-            console.warn("Notice: JSON fetch delayed.", e.message);
+            console.warn("JSON fetch delayed.", e.message);
         }
     },
 
@@ -219,7 +230,7 @@ const appState = {
 
         if (this.masterUnsub) this.masterUnsub();
 
-        // EXACT FIRESTORE PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+        // TARGET DOC PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
         const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
@@ -227,15 +238,18 @@ const appState = {
                 const data = snap.data();
                 if (data.skills) this.hunterSkillsData = data.skills;
                 if (data.stats) this.statsData = data.stats;
+                this.setStatus(`✓ Loaded Cloud Data for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#10b981");
             } else {
-                // If doc doesn't exist in Cloud Firestore, initialize clean blank stats
+                // If doc doesn't exist in Cloud Firestore, start clean and blank
                 this.initializeBlankSkillsFromBlueprint();
                 this.statsData = JSON.parse(JSON.stringify(BLANK_STATS));
+                this.setStatus(`⚠️ No Saved Cloud Data for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
             }
             this.render();
             this.updateStatsUI();
         }, (err) => {
-            console.error("Firestore Listen Error:", err);
+            console.error("Firestore Read Error:", err);
+            this.setStatus(`❌ Read Error: ${err.message}`, "#ef4444");
             this.render();
         });
     },
@@ -253,7 +267,7 @@ const appState = {
         const currentCategorySkills = this.hunterSkillsData[this.activeCategory] || [];
 
         if (currentCategorySkills.length === 0) {
-            container.innerHTML = `<div style="color:#8a99ad; text-align:center; padding:20px;">No items available.</div>`;
+            container.innerHTML = `<div style="color:#8a99ad; text-align:center; padding:20px;">No items mapped under '${this.activeCategory}'.</div>`;
             return;
         }
 
@@ -366,6 +380,8 @@ const appState = {
 
         if (!this.db || !this.auth || !this.auth.currentUser) return;
 
+        this.setStatus("⏳ Saving to Cloud Firestore...", "#e67e22");
+
         try {
             const ref = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
             
@@ -379,9 +395,12 @@ const appState = {
             };
 
             await setDoc(ref, payload, { merge: true });
+            const timeStr = new Date().toLocaleTimeString();
+            this.setStatus(`✓ Saved to Cloud Firestore at ${timeStr}`, "#10b981");
             console.log(`✓ Cloud Firestore updated: /users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
         } catch (error) {
             console.error("FIRESTORE WRITE ERROR:", error);
+            this.setStatus(`❌ Save Failed: ${error.message}`, "#ef4444");
         }
     }
 };
