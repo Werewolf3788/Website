@@ -162,7 +162,7 @@ h1, h2, h3 {
     border-left: 2px solid #FF4500;
 }
 
-/* EDIT PROFILE BUTTON & FORM INPUTS */
+/* EDIT PROFILE INPUTS */
 .edit-stats-trigger-container { margin-top: 15px; display: flex; width: 100%; }
 .edit-panel-btn { 
     background: #1c2430; 
@@ -221,7 +221,7 @@ h1, h2, h3 {
     font-size: 14px; 
 }
 
-/* SKILLS MATRIX */
+/* SKILLS MATRIX GRID */
 .skills-tabs { display: flex; flex-wrap: wrap; gap: 6px; border-bottom: 1px solid #1c2430; padding-bottom: 12px; margin-bottom: 20px; }
 .tab-link { 
     background-color: #161d26; 
