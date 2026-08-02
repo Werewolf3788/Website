@@ -7,7 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="style.css?v=3.6">
+    <link rel="stylesheet" href="style.css?v=4.0">
 </head>
 <body>
 
@@ -17,9 +17,6 @@
             
             <div class="directory-dropdown-wrapper">
                 <button id="directoryMenuBtn" class="control-btn outline-text" style="font-weight:bold; border-color:var(--primary-orange); color:var(--primary-orange);">📁 Intel Directory</button>
-                <div id="directoryDropdownContent" class="directory-menu-pane hidden">
-                    <div id="directoryLoading" style="padding:12px; font-size:12px; color:#8a99ad; text-align:center;">Fetching tactical assets...</div>
-                </div>
             </div>
 
             <!-- VISIBLE USER & PLATFORM DROPDOWNS -->
@@ -41,26 +38,12 @@
                     </select>
                 </div>
             </div>
-
-            <div class="ui-controls">
-                <button id="toggleUiSettings" class="control-btn">🔧</button>
-                <div id="uiSettingsPanel" class="settings-dropdown hidden">
-                    <div class="setting-item">
-                        <label>Theme Mode:</label>
-                        <select id="themeModeSelect">
-                            <option value="dark" selected>Dark</option>
-                            <option value="bright">Bright</option>
-                            <option value="system">Match System</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
         </div>
     </header>
 
     <main class="hub-container">
         
-        <!-- LEFT PANEL: STATS DISPLAY & KEYBOARD INPUT FORM -->
+        <!-- LEFT PANEL: STATS & KEYBOARD EDIT FORM -->
         <section class="card-panel profile-panel">
             <div class="profile-header">
                 <h2 id="operatorName" class="outline-text">Operator</h2>
@@ -72,41 +55,23 @@
             
             <div class="stat-category-block">
                 <h3 class="category-header">PLAYSTYLE <span id="playstyleType" class="header-highlight">--</span></h3>
-                <div class="stat-row">
-                    <span>Average Kill Distance</span>
-                    <span id="avgKillDist" class="stat-val">--</span>
-                </div>
+                <div class="stat-row"><span>Average Kill Distance</span><span id="avgKillDist" class="stat-val">--</span></div>
                 <div class="progress-bar-container">
-                    <div class="progress-labels">
-                        <span>Tactical Precision</span>
-                        <span id="tacticalValue">0%</span>
-                    </div>
+                    <div class="progress-labels"><span>Tactical Precision</span><span id="tacticalValue">0%</span></div>
                     <div class="bar-bg"><div id="tacticalBar" class="bar-fill"></div></div>
                 </div>
                 <div class="progress-bar-container">
-                    <div class="progress-labels">
-                        <span>Stealth Kills</span>
-                        <span id="stealthValue">0%</span>
-                    </div>
+                    <div class="progress-labels"><span>Stealth Kills</span><span id="stealthValue">0%</span></div>
                     <div class="bar-bg"><div id="stealthBar" class="bar-fill"></div></div>
                 </div>
             </div>
 
             <div class="stat-category-block cinematic-wrapper">
                 <h3 class="category-header">COMBAT</h3>
-                <div class="stat-row">
-                    <span>Lifetime</span>
-                    <span id="statLifetime" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>Longest Shot</span>
-                    <span id="longestShot" class="stat-val">--</span>
-                </div>
+                <div class="stat-row"><span>Lifetime</span><span id="statLifetime" class="stat-val">--</span></div>
+                <div class="stat-row"><span>Longest Shot</span><span id="longestShot" class="stat-val">--</span></div>
                 <div class="progress-bar-container">
-                    <div class="progress-labels">
-                        <span>Precision</span>
-                        <span id="precisionValue">0%</span>
-                    </div>
+                    <div class="progress-labels"><span>Precision</span><span id="precisionValue">0%</span></div>
                     <div class="bar-bg"><div id="precisionBar" class="bar-fill"></div></div>
                 </div>
                 <div class="weapons-fav-row">
@@ -115,105 +80,40 @@
                 </div>
             </div>
 
-            <div class="stat-category-block">
-                <h3 class="category-header">SUPPORT</h3>
-                <div class="stat-row">
-                    <span>Teammates Revived</span>
-                    <span id="teammatesRevived" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>C4/Mine Kills</span>
-                    <span id="c4MineKills" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>Drone Used</span>
-                    <span id="statDroneUsed" class="stat-val">--</span>
-                </div>
-            </div>
-
-            <div class="stat-category-block">
-                <h3 class="category-header">TRAVEL</h3>
-                <div class="stat-row">
-                    <span>Air</span>
-                    <span id="travelAir" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>Ground</span>
-                    <span id="travelGround" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>Parachute</span>
-                    <span id="travelPara" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>Map Discovered</span>
-                    <span id="travelMap" class="stat-val">--</span>
-                </div>
-            </div>
-
-            <!-- KEYBOARD FORM TOGGLE BUTTON -->
             <div class="edit-stats-trigger-container">
                 <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Ghost Profile Inputs</button>
             </div>
 
-            <!-- EDITABLE KEYBOARD INPUT FORM -->
             <div id="editStatsPanel" class="edit-stats-panel hidden">
                 <div class="edit-row">
                     <label>Tier Level:</label>
-                    <input type="number" id="editTierLevel" min="1" max="50" placeholder="Lvl (1-50)">
+                    <input type="number" id="editTierLevel" min="1" max="50" placeholder="5">
                 </div>
                 <hr class="panel-divider">
-                
-                <h4 class="form-section-title">Playstyle & Combat Inputs</h4>
+                <h4 class="form-section-title">Playstyle & Combat</h4>
                 <div class="edit-grid-inputs">
-                    <div><label>Playstyle Title</label><input type="text" id="editPlaystyle" placeholder="Raider"></div>
+                    <div><label>Playstyle</label><input type="text" id="editPlaystyle" placeholder="Raider"></div>
                     <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist" placeholder="38 m"></div>
                     <div><label>Tactical %</label><input type="number" id="editTactical" placeholder="100"></div>
                     <div><label>Stealth %</label><input type="number" id="editStealth" placeholder="74"></div>
                     <div><label>Lifetime</label><input type="text" id="editLifetime" placeholder="0h 20min"></div>
                     <div><label>Longest Shot</label><input type="text" id="editLongest" placeholder="89 m"></div>
                     <div><label>Precision %</label><input type="number" id="editPrecision" placeholder="8"></div>
-                    <div><label>Fav Weapon</label><select id="editFav1"></select></div>
-                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><select id="editFav2"></select></div>
+                    <div><label>Fav Weapon</label><input type="text" id="editFav1" placeholder="P45T"></div>
+                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><input type="text" id="editFav2" placeholder="M40A5"></div>
                 </div>
-
-                <h4 class="form-section-title">Support & Travel Inputs</h4>
-                <div class="edit-grid-inputs">
-                    <div><label>Revived</label><input type="number" id="editRevives" placeholder="0"></div>
-                    <div><label>Explosive Kills</label><input type="number" id="editExplosiveKills" placeholder="0"></div>
-                    <div><label>Drone Used</label><input type="text" id="editDroneTime" placeholder="0h 8min"></div>
-                    <div><label>Air Travel</label><input type="text" id="editAir" placeholder="0h 7min"></div>
-                    <div><label>Ground Travel</label><input type="text" id="editGround" placeholder="0h 7min"></div>
-                    <div><label>Parachute</label><input type="text" id="editPara" placeholder="0 Jumps"></div>
-                    <div><label>Map Disc. %</label><input type="text" id="editMap" placeholder="5%"></div>
-                </div>
-
                 <button id="saveStatsBtn" class="save-stats-btn">Save Tactical Update to Firebase</button>
             </div>
         </section>
 
-        <!-- RIGHT PANEL: SKILLS MATRIX GRID -->
+        <!-- RIGHT PANEL: JSON + FIRESTORE HYBRID RENDERER -->
         <section class="card-panel skills-panel">
-            <div class="skills-tabs">
-                <button class="tab-link active" onclick="switchSkillCategory('WEAPON')">Weapon</button>
-                <button class="tab-link" onclick="switchSkillCategory('DRONE')">Drone</button>
-                <button class="tab-link" onclick="switchSkillCategory('ITEM')">Item</button>
-                <button class="tab-link" onclick="switchSkillCategory('PHYSICAL')">Physical</button>
-                <button class="tab-link" onclick="switchSkillCategory('SQUAD')">Squad</button>
-                <button class="tab-link" onclick="switchSkillCategory('REBEL')">Rebel</button>
-                <button class="tab-link" onclick="switchSkillCategory('TROPHY')">Trophies & Recon</button>
-            </div>
-            
-            <div id="skillsTreeGrid" class="skills-tree-grid"></div>
+            <!-- TARGET CONTAINER FOR RENDERER -->
+            <div id="section-container" class="skills-tree-grid"></div>
         </section>
 
     </main>
 
-    <!-- Firebase Compat SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="app.js?v=3.6"></script>
+    <script type="module" src="app.js?v=4.0"></script>
 </body>
 </html>
