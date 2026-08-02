@@ -5,54 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ghost Recon Wildlands Squad Operations Hub</title>
     <link rel="manifest" href="manifest.json">
-    <link rel="stylesheet" href="style.css?v=11.0">
+    <link rel="stylesheet" href="style.css?v=12.0">
 </head>
 <body>
 
+    <!-- SITE HEADER -->
     <header class="hub-header">
-        <div class="header-container">
-            <h1 class="logo-text">GHOST HUB</h1>
+        <div class="header-inner">
+            <a href="../../../index.html" class="logo-link" title="Return to Homepage">
+                <h1 class="logo-text">GHOST HUB</h1>
+            </a>
 
-            <!-- DROPDOWNS: USER & PLATFORM -->
-            <div class="header-controls-group">
-                <div class="user-selector-wrapper">
-                    <select id="userSelect" class="styled-select">
-                        <option value="Werewolf3788">Werewolf3788 (Kevin)</option>
-                        <option value="Raymystyro">Raymystyro (Ray)</option>
-                        <option value="terrdog420">terrdog420 (TJ)</option>
-                        <option value="DesdemonaTiger">DesdemonaTiger (Marc)</option>
-                    </select>
-                </div>
+            <!-- HAMBURGER MENU BUTTON FOR MOBILE -->
+            <button id="mobileNavToggle" class="hamburger-btn" aria-label="Toggle Navigation Menu">
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+                <span class="hamburger-bar"></span>
+            </button>
 
-                <div class="platform-selector-wrapper">
-                    <select id="platformSelect" class="styled-select platform-highlight">
-                        <option value="pc">💻 PC (Ubisoft Connect)</option>
-                        <option value="playstation">🎮 PlayStation (PS5/PS4)</option>
-                        <option value="xbox">💚 Xbox (Series X/S)</option>
-                    </select>
+            <!-- CONTROLS & NAV -->
+            <div id="navMenuWrapper" class="nav-menu-wrapper">
+                <div class="header-controls-group">
+                    <div class="user-selector-wrapper">
+                        <label for="userSelect" class="sr-only">Select Operator</label>
+                        <select id="userSelect" class="styled-select">
+                            <option value="Werewolf3788">Werewolf3788 (Kevin)</option>
+                            <option value="Raymystyro">Raymystyro (Ray)</option>
+                            <option value="terrdog420">terrdog420 (TJ)</option>
+                            <option value="DesdemonaTiger">DesdemonaTiger (Marc)</option>
+                        </select>
+                    </div>
+
+                    <div class="platform-selector-wrapper">
+                        <label for="platformSelect" class="sr-only">Select Platform</label>
+                        <select id="platformSelect" class="styled-select platform-highlight">
+                            <option value="pc">💻 PC (Ubisoft Connect)</option>
+                            <option value="playstation">🎮 PlayStation (PS5/PS4)</option>
+                            <option value="xbox">💚 Xbox (Series X/S)</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </div>
     </header>
 
+    <!-- MAIN SINGLE-COLUMN STACK (85% WIDTH) -->
     <main class="hub-container">
         
-        <!-- LEFT PANEL: PROFILE STATS & EDIT FORM -->
-        <section class="card-panel profile-panel">
+        <!-- SECTION 1: LIVE STATUS & QUICK CTA (ABOVE THE FOLD) -->
+        <section class="card-section cta-section">
+            <div id="syncStatus" class="status-banner">
+                Connecting to Cloud Firestore...
+            </div>
+            <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Ghost Profile Inputs</button>
+        </section>
+
+        <!-- SECTION 2: OPERATOR PROFILE SUMMARY -->
+        <section class="card-section profile-section">
             <div class="profile-header">
-                <h2 id="operatorName" class="outline-text">Operator</h2>
+                <h2 id="operatorName" class="operator-title">Operator</h2>
                 <div id="tierContainer" class="tier-badge-container">
                     <span class="tier-label">TIER</span>
                     <span id="tierLevel" class="tier-value">OFF</span>
                 </div>
             </div>
 
-            <!-- ON-SCREEN LIVE FIRESTORE STATUS INDICATOR -->
-            <div id="syncStatus" style="background:#161d26; border:1px solid #2c3a4e; color:#8a99ad; padding:8px 12px; border-radius:4px; font-size:11px; font-weight:bold; text-align:center;">
-                Connecting to Cloud Firestore...
-            </div>
-            
-            <!-- PLAYSTYLE & PRECISION -->
+            <!-- PLAYSTYLE BLOCK -->
             <div class="stat-category-block">
                 <h3 class="category-header">PLAYSTYLE <span id="playstyleType" class="header-highlight">--</span></h3>
                 <div class="stat-row"><span>Average Kill Distance</span><span id="avgKillDist" class="stat-val">--</span></div>
@@ -60,7 +78,7 @@
                 <div class="stat-row"><span>Stealth Kills</span><span id="stealthValue" class="stat-val">--</span></div>
             </div>
 
-            <!-- COMBAT -->
+            <!-- COMBAT BLOCK -->
             <div class="stat-category-block">
                 <h3 class="category-header">COMBAT</h3>
                 <div class="stat-row"><span>Lifetime</span><span id="statLifetime" class="stat-val">--</span></div>
@@ -72,7 +90,7 @@
                 </div>
             </div>
 
-            <!-- SUPPORT -->
+            <!-- SUPPORT BLOCK -->
             <div class="stat-category-block">
                 <h3 class="category-header">SUPPORT</h3>
                 <div class="stat-row"><span>Teammates Revived</span><span id="statRevives" class="stat-val">--</span></div>
@@ -80,7 +98,7 @@
                 <div class="stat-row"><span>Drone Used</span><span id="statDroneTime" class="stat-val">--</span></div>
             </div>
 
-            <!-- TRAVEL -->
+            <!-- TRAVEL BLOCK -->
             <div class="stat-category-block">
                 <h3 class="category-header">TRAVEL</h3>
                 <div class="stat-row"><span>Air Travel</span><span id="statAir" class="stat-val">--</span></div>
@@ -88,66 +106,65 @@
                 <div class="stat-row"><span>Parachute</span><span id="statPara" class="stat-val">--</span></div>
                 <div class="stat-row"><span>Map Discovered</span><span id="statMap" class="stat-val">--</span></div>
             </div>
+        </section>
 
-            <div class="edit-stats-trigger-container">
-                <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Ghost Profile Inputs</button>
+        <!-- SECTION 3: COLLAPSIBLE FORM FOR PROFILE INPUTS -->
+        <section id="editStatsPanel" class="card-section edit-stats-panel hidden">
+            <h3 class="form-section-title">Tier One Mode Settings</h3>
+            <div class="form-grid-2col">
+                <div class="form-group">
+                    <label for="editTierActive">Tier Mode</label>
+                    <select id="editTierActive" class="form-control">
+                        <option value="off">OFF (Disabled)</option>
+                        <option value="on">ON (Active)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editTierLevel">Tier Level (1-50)</label>
+                    <input type="text" id="editTierLevel" class="form-control" placeholder="e.g. 5">
+                </div>
             </div>
 
-            <!-- EDIT FORM WITH TIER MODE TOGGLE -->
-            <div id="editStatsPanel" class="edit-stats-panel hidden">
-                <h4 class="form-section-title">Tier One Mode Settings</h4>
-                <div class="edit-grid-inputs" style="grid-template-columns: 1fr 1fr; margin-bottom:12px;">
-                    <div>
-                        <label>Tier Mode</label>
-                        <select id="editTierActive" style="background:#161d26; border:1px solid #2c3a4e; color:#fff; padding:8px; border-radius:4px;">
-                            <option value="off">OFF (Disabled)</option>
-                            <option value="on">ON (Active)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>Tier Level (1-50)</label>
-                        <input type="text" id="editTierLevel" placeholder="e.g. 5">
-                    </div>
-                </div>
+            <hr class="panel-divider">
+            <h3 class="form-section-title">Playstyle & Combat Inputs</h3>
+            <div class="form-grid-2col">
+                <div class="form-group"><label for="editPlaystyle">Playstyle</label><input type="text" id="editPlaystyle" class="form-control" placeholder="e.g. Raider"></div>
+                <div class="form-group"><label for="editAvgDist">Avg Kill Dist</label><input type="text" id="editAvgDist" class="form-control" placeholder="e.g. 38 m"></div>
+                <div class="form-group"><label for="editTactical">Tactical %</label><input type="text" id="editTactical" class="form-control" placeholder="e.g. 100%"></div>
+                <div class="form-group"><label for="editStealth">Stealth %</label><input type="text" id="editStealth" class="form-control" placeholder="e.g. 74%"></div>
+                <div class="form-group"><label for="editLifetime">Lifetime</label><input type="text" id="editLifetime" class="form-control" placeholder="e.g. 0h 20min"></div>
+                <div class="form-group"><label for="editLongest">Longest Shot</label><input type="text" id="editLongest" class="form-control" placeholder="e.g. 89 m"></div>
+                <div class="form-group"><label for="editPrecision">Precision %</label><input type="text" id="editPrecision" class="form-control" placeholder="e.g. 8%"></div>
+                <div class="form-group"><label for="editFav1">Fav Weapon</label><select id="editFav1" class="form-control"></select></div>
+                <div class="form-group full-width"><label for="editFav2">2nd Fav Weapon</label><select id="editFav2" class="form-control"></select></div>
+            </div>
 
-                <hr class="panel-divider">
-                <h4 class="form-section-title">Playstyle & Combat Inputs</h4>
-                <div class="edit-grid-inputs">
-                    <div><label>Playstyle</label><input type="text" id="editPlaystyle" placeholder="e.g. Raider"></div>
-                    <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist" placeholder="e.g. 38 m"></div>
-                    <div><label>Tactical %</label><input type="text" id="editTactical" placeholder="e.g. 100%"></div>
-                    <div><label>Stealth %</label><input type="text" id="editStealth" placeholder="e.g. 74%"></div>
-                    <div><label>Lifetime</label><input type="text" id="editLifetime" placeholder="e.g. 0h 20min"></div>
-                    <div><label>Longest Shot</label><input type="text" id="editLongest" placeholder="e.g. 89 m"></div>
-                    <div><label>Precision %</label><input type="text" id="editPrecision" placeholder="e.g. 8%"></div>
-                    <div><label>Fav Weapon</label><select id="editFav1"></select></div>
-                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><select id="editFav2"></select></div>
-                </div>
+            <h3 class="form-section-title">Support & Travel Inputs</h3>
+            <div class="form-grid-2col">
+                <div class="form-group"><label for="editRevives">Teammates Revived</label><input type="text" id="editRevives" class="form-control" placeholder="e.g. 0 Teammates"></div>
+                <div class="form-group"><label for="editExplosiveKills">C4 / Mine Kills</label><input type="text" id="editExplosiveKills" class="form-control" placeholder="e.g. 0 Kills"></div>
+                <div class="form-group"><label for="editDroneTime">Drone Used</label><input type="text" id="editDroneTime" class="form-control" placeholder="e.g. 0h 8min"></div>
+                <div class="form-group"><label for="editAir">Air Travel</label><input type="text" id="editAir" class="form-control" placeholder="e.g. 0h 7min"></div>
+                <div class="form-group"><label for="editGround">Ground Travel</label><input type="text" id="editGround" class="form-control" placeholder="e.g. 0h 7min"></div>
+                <div class="form-group"><label for="editPara">Parachute</label><input type="text" id="editPara" class="form-control" placeholder="e.g. 0 Jumps"></div>
+                <div class="form-group full-width"><label for="editMap">Map Discovered</label><input type="text" id="editMap" class="form-control" placeholder="e.g. 5%"></div>
+            </div>
 
-                <h4 class="form-section-title">Support & Travel Inputs</h4>
-                <div class="edit-grid-inputs">
-                    <div><label>Teammates Revived</label><input type="text" id="editRevives" placeholder="e.g. 0 Teammates"></div>
-                    <div><label>C4 / Mine Kills</label><input type="text" id="editExplosiveKills" placeholder="e.g. 0 Kills"></div>
-                    <div><label>Drone Used</label><input type="text" id="editDroneTime" placeholder="e.g. 0h 8min"></div>
-                    <div><label>Air Travel</label><input type="text" id="editAir" placeholder="e.g. 0h 7min"></div>
-                    <div><label>Ground Travel</label><input type="text" id="editGround" placeholder="e.g. 0h 7min"></div>
-                    <div><label>Parachute</label><input type="text" id="editPara" placeholder="e.g. 0 Jumps"></div>
-                    <div style="grid-column: span 2;"><label>Map Discovered</label><input type="text" id="editMap" placeholder="e.g. 5%"></div>
-                </div>
-
+            <div class="form-actions-group">
                 <button id="saveStatsBtn" class="save-stats-btn">Save Tactical Update to Firebase</button>
-                <button id="clearStatsBtn" style="background:#8b0000; color:#fff; border:1px solid #ff4444; width:100%; padding:10px; border-radius:4px; cursor:pointer; font-weight:bold; margin-top:8px;">🗑️ Clear All Profile Data to Blank</button>
+                <button id="clearStatsBtn" class="clear-stats-btn">🗑️ Clear All Profile Data to Blank</button>
             </div>
         </section>
 
-        <!-- RIGHT PANEL: SKILLS MATRIX -->
-        <section class="card-panel skills-panel">
-            <div id="skillsCategoryTabs" class="skills-tabs"></div>
-            <div id="section-container" class="skills-tree-grid"></div>
+        <!-- SECTION 4: SKILLS & MEDALS PROGRESSION MATRIX -->
+        <section class="card-section skills-section">
+            <h2 class="section-title">Skill & Medal Matrix</h2>
+            <div id="skillsCategoryTabs" class="skills-tabs-container"></div>
+            <div id="section-container" class="skills-grid"></div>
         </section>
 
     </main>
 
-    <script type="module" src="app.js?v=11.0"></script>
+    <script type="module" src="app.js?v=12.0"></script>
 </body>
 </html>
