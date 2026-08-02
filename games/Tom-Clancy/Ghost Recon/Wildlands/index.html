@@ -1,250 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-Z9M5LXQ5XN');
-    </script>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ghost Recon Wildlands Squad Operations Hub</title>
-    <link rel="manifest" href="manifest.json">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Werewolf Project | Home</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        :root {
-            --bar-height: clamp(60px, 10vh, 90px);
-            --primary-orange: #FF4500;
-            --solid-black: #000000;
-            --ghost-blue: #28a745;
-            --node-blue: #0076a8;
-            --node-locked: #1c2430;
-            --medal-gold: #ffcc00;
-        }
+        body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; }
+        .max-w-7xl { width: 80% !important; max-width: 80% !important; margin: 0 auto; }
+        .custom-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; }
     </style>
-    <link rel="stylesheet" href="style.css?v=2.4">
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
-    <header class="hub-header">
-        <div class="header-container">
-            <h1 class="logo-text">GHOST HUB</h1>
-            
-            <div class="directory-dropdown-wrapper">
-                <button id="directoryMenuBtn" class="control-btn outline-text" style="font-weight:bold; border-color:var(--primary-orange); color:var(--primary-orange);">📁 Intel Directory</button>
-                <div id="directoryDropdownContent" class="directory-menu-pane hidden">
-                    <div id="directoryLoading" style="padding:12px; font-size:12px; color:#8a99ad; text-align:center;">Fetching tactical assets...</div>
-                </div>
+    <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
+            <div class="flex items-center gap-3">
+                <span class="text-xl font-black text-sky-400">WEREWOLF<span class="text-white">PROJECT</span></span>
+                <span id="activeNicknameBadge" class="hidden text-xs bg-slate-800 text-amber-400 font-mono px-2 py-1 rounded border border-amber-500/30"></span>
             </div>
-
-            <div class="user-selector-wrapper">
-                <select id="userSelect" class="styled-select"></select>
-            </div>
-            
-            <div class="ui-controls">
-                <button id="toggleUiSettings" class="control-btn">🔧</button>
-                <div id="uiSettingsPanel" class="settings-dropdown hidden">
-                    <div class="setting-item">
-                        <label>Theme Mode:</label>
-                        <select id="themeModeSelect">
-                            <option value="system" selected>Match System</option>
-                            <option value="bright">Bright</option>
-                            <option value="dark">Dark</option>
-                        </select>
-                    </div>
-                    <div class="setting-item">
-                        <label>Text Outline Color:</label>
-                        <input type="color" id="outlineColorPicker" value="#000000">
-                    </div>
-                    <div class="setting-item">
-                        <label>Font Style:</label>
-                        <select id="fontStyleSelect">
-                            <option value="default">Ghost Default</option>
-                            <option value="monospace">Tactical Mono</option>
-                            <option value="sans-serif">Clean Sans</option>
-                        </select>
-                    </div>
-                </div>
+            <div id="desktop-nav-links" class="flex items-center space-x-6 text-sm">
+                <a href="index.html" class="text-white font-bold">Home</a>
+                <a href="settings.html" class="text-slate-300 hover:text-white">Settings</a>
             </div>
         </div>
-    </header>
+    </nav>
 
-    <main class="hub-container">
-        
-        <section class="card-panel profile-panel">
-            <div class="profile-header">
-                <h2 id="operatorName" class="outline-text">Operator</h2>
-                <div id="tierContainer" class="tier-badge-container">
-                    <span class="tier-label">TIER</span>
-                    <span id="tierLevel" class="tier-value">--</span>
-                </div>
-            </div>
-            
-            <div class="stat-category-block">
-                <h3 class="category-header">PLAYSTYLE <span id="playstyleType" class="header-highlight">--</span></h3>
-                <div class="stat-row">
-                    <span>Average Kill Distance</span>
-                    <span id="avgKillDist" class="stat-val">--</span>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-labels">
-                        <span>Tactical Precision</span>
-                        <span id="tacticalValue">0%</span>
-                    </div>
-                    <div class="bar-bg"><div id="tacticalBar" class="bar-fill"></div></div>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-labels">
-                        <span>Stealth Kills</span>
-                        <span id="stealthValue">0%</span>
-                    </div>
-                    <div class="bar-bg"><div id="stealthBar" class="bar-fill"></div></div>
+    <main class="flex-grow max-w-7xl mx-auto px-4 py-8 space-y-12">
+        <header class="text-center py-8">
+            <h1 class="text-3xl font-black text-sky-400">Knowing the Players</h1>
+            <p class="mt-4 text-slate-400">Track squad game progress stored cleanly in the cloud database.</p>
+        </header>
+
+        <!-- REAL-TIME FIRESTORE CROSS-PLATFORM SQUAD PROGRESS -->
+        <section class="bg-slate-900/80 p-6 rounded-xl border border-slate-800">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <span class="text-orange-500 font-bold text-xs uppercase">Live Database Matrix</span>
+                    <h2 class="text-xl font-bold text-white">Squad Progress Across Platforms</h2>
                 </div>
             </div>
 
-            <div class="stat-category-block cinematic-wrapper">
-                <h3 class="category-header">COMBAT</h3>
-                <div class="stat-row">
-                    <span>Lifetime</span>
-                    <span id="statLifetime" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>Longest Shot</span>
-                    <span id="longestShot" class="stat-val">--</span>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-labels">
-                        <span>Precision</span>
-                        <span id="precisionValue">0%</span>
-                    </div>
-                    <div class="bar-bg"><div id="precisionBar" class="bar-fill"></div></div>
-                </div>
-                <div class="weapons-fav-row">
-                    <div class="weapon-tag"><strong>Favorite Weapon:</strong> <span id="favWeapon">--</span></div>
-                    <div class="weapon-tag"><strong>2nd Favorite Weapon:</strong> <span id="favWeapon2">--</span></div>
-                </div>
-            </div>
-
-            <div class="stat-category-block">
-                <h3 class="category-header">SUPPORT</h3>
-                <div class="stat-row">
-                    <span>Teammates Revived</span>
-                    <span id="teammatesRevived" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>C4/Mine Kills</span>
-                    <span id="c4MineKills" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>Drone Used</span>
-                    <span id="statDroneUsed" class="stat-val">--</span>
-                </div>
-            </div>
-
-            <div class="stat-category-block">
-                <h3 class="category-header">TRAVEL</h3>
-                <div class="stat-row">
-                    <span>Air</span>
-                    <span id="travelAir" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>Ground</span>
-                    <span id="travelGround" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>Parachute</span>
-                    <span id="travelPara" class="stat-val">--</span>
-                </div>
-                <div class="stat-row">
-                    <span>Map Discovered</span>
-                    <span id="travelMap" class="stat-val">--</span>
-                </div>
-            </div>
-
-            <div class="steam-widget-card">
-                <iframe src="https://store.steampowered.com/widget/460930/" frameborder="0" width="100%" height="190"></iframe>
-            </div>
-
-            <div class="edit-stats-trigger-container">
-                <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Comprehensive Ghost Profile</button>
-            </div>
-
-            <div id="editStatsPanel" class="edit-stats-panel hidden">
-                <div class="edit-row">
-                    <label>Tier One Mode:</label>
-                    <select id="editTierMode">
-                        <option value="off">Off / Not Reached</option>
-                        <option value="on">Active</option>
-                    </select>
-                    <input type="number" id="editTierLevel" min="1" max="50" placeholder="Lvl">
-                </div>
-                <hr class="panel-divider">
-                
-                <h4 class="form-section-title">Playstyle & Combat</h4>
-                <div class="edit-grid-inputs">
-                    <div><label>Playstyle Title</label><input type="text" id="editPlaystyle"></div>
-                    <div><label>Avg Kill Dist</label><input type="text" id="editAvgDist"></div>
-                    <div><label>Tactical %</label><input type="number" id="editTactical"></div>
-                    <div><label>Stealth %</label><input type="number" id="editStealth"></div>
-                    <div><label>Lifetime</label><input type="text" id="editLifetime"></div>
-                    <div><label>Longest Shot</label><input type="text" id="editLongest"></div>
-                    <div><label>Precision %</label><input type="number" id="editPrecision"></div>
-                    <div><label>Fav Weapon</label><input type="text" id="editFav1"></div>
-                    <div style="grid-column: span 2;"><label>2nd Fav Weapon</label><input type="text" id="editFav2"></div>
-                </div>
-
-                <h4 class="form-section-title">Support & Travel</h4>
-                <div class="edit-grid-inputs">
-                    <div><label>Revived</label><input type="number" id="editRevives"></div>
-                    <div><label>Explosive Kills</label><input type="number" id="editExplosiveKills"></div>
-                    <div><label>Drone Used</label><input type="text" id="editDroneTime"></div>
-                    <div><label>Air Travel</label><input type="text" id="editAir"></div>
-                    <div><label>Ground Travel</label><input type="text" id="editGround"></div>
-                    <div><label>Parachute</label><input type="text" id="editPara"></div>
-                    <div><label>Map Disc. %</label><input type="text" id="editMap"></div>
-                </div>
-
-                <button id="saveStatsBtn" class="save-stats-btn">Save Tactical Update</button>
+            <div id="squadProgressGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="custom-card p-6 animate-pulse"><div class="h-4 bg-slate-800 rounded w-1/2 mb-4"></div></div>
             </div>
         </section>
-
-        <section class="card-panel skills-panel">
-            <div class="skills-tabs">
-                <button class="tab-link active" onclick="switchSkillCategory('WEAPON')">Weapon</button>
-                <button class="tab-link" onclick="switchSkillCategory('DRONE')">Drone</button>
-                <button class="tab-link" onclick="switchSkillCategory('ITEM')">Item</button>
-                <button class="tab-link" onclick="switchSkillCategory('PHYSICAL')">Physical</button>
-                <button class="tab-link" onclick="switchSkillCategory('SQUAD')">Squad</button>
-                <button class="tab-link" onclick="switchSkillCategory('REBEL')">Rebel</button>
-                <button class="tab-link" onclick="switchSkillCategory('TROPHY')">Trophies & Recon</button>
-            </div>
-            
-            <div id="skillsTreeGrid" class="skills-tree-grid"></div>
-        </section>
-
     </main>
 
-    <footer class="hub-footer">
-        <div class="footer-container">
-            <div class="kf-watermark">
-                <span class="k-letter">K</span><span class="f-letter">F</span>
-            </div>
-            <p class="timestamp-note">Dashboard Verification Ref: NYT-20260530-1402</p>
-        </div>
-    </footer>
+    <!-- Firebase Active Session & Live Squad Aggregator -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-    <script src="app.js?v=2.4"></script>
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+        const firebaseConfig = {
+            apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+            authDomain: "entertainment-71888.firebaseapp.com",
+            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+            projectId: "entertainment-71888",
+            storageBucket: "entertainment-71888.firebasestorage.app",
+            messagingSenderId: "660524340277",
+            appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+            measurementId: "G-JDNSLD3GFE"
+        };
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const app = initializeApp(firebaseConfig);
+            const auth = getAuth(app);
+            const db = getFirestore(app);
+
+            await setPersistence(auth, browserLocalPersistence);
+
+            onAuthStateChanged(auth, (user) => {
+                const badge = document.getElementById("activeNicknameBadge");
+                if (user && !user.isAnonymous) {
+                    const activeNickname = localStorage.getItem('active_gaming_nickname') || user.displayName || user.email.split('@')[0];
+                    localStorage.setItem('active_gaming_nickname', activeNickname);
+                    if (badge) { badge.textContent = `🎮 ${activeNickname}`; badge.classList.remove("hidden"); }
+                } else {
+                    const savedNickname = localStorage.getItem('active_gaming_nickname');
+                    if (savedNickname && badge) { badge.textContent = `🎮 ${savedNickname} (Guest View)`; badge.classList.remove("hidden"); }
+                }
             });
-        }
+
+            // Live Squad Firestore Aggregator
+            const squadUsers = ['Werewolf3788', 'Raymystyro', 'terrdog420', 'DesdemonaTiger'];
+            const platforms = ['playstation', 'pc', 'xbox'];
+            const liveSquadData = [];
+
+            squadUsers.forEach(userKey => {
+                platforms.forEach(plat => {
+                    const progressRef = collection(db, 'users', userKey, 'platform', plat, 'progress');
+                    onSnapshot(progressRef, (snap) => {
+                        snap.forEach(doc => {
+                            if (doc.id === 'T.C.G.R.Wildlands') {
+                                const data = doc.data();
+                                const idx = liveSquadData.findIndex(i => i.user === userKey && i.platform === plat);
+                                if (idx > -1) liveSquadData[idx] = data;
+                                else liveSquadData.push(data);
+                            }
+                        });
+                        renderGrid();
+                    });
+                });
+            });
+
+            function renderGrid() {
+                const grid = document.getElementById('squadProgressGrid');
+                if (!grid) return;
+                let html = '';
+                liveSquadData.forEach(item => {
+                    html += `
+                        <div class="custom-card p-6 border border-slate-800">
+                            <h3 class="text-lg font-bold text-white">${item.user}</h3>
+                            <span class="text-xs text-sky-400 font-mono">${(item.platform || 'pc').toUpperCase()}</span>
+                            <div class="mt-4 text-xs text-slate-300">
+                                <div>Tier Level: ${item.tier || 1}</div>
+                                <div>Playstyle: ${item.playstyle || 'Tactical'}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+                grid.innerHTML = html || `<div class="col-span-full text-slate-500">No active progress recorded yet.</div>`;
+            }
+        });
     </script>
 </body>
 </html>
