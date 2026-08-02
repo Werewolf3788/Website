@@ -1,6 +1,6 @@
 /* ============================================================================
    File: script.js
-   Description: theHunter: Call of the Wild Pure Firestore Engine
+   Description: theHunter: Call of the Wild Pure Firestore Engine (UNLOCKED)
    Database: Cloud Firestore (entertainment-71888)
    Target Firestore Path: /users/{userId}/platform/{platform}/progress/COTW
    Analytics Tag: G-CTYHDF4MSD
@@ -658,7 +658,6 @@ const appState = {
     openDropdowns: {},
     masterUnsub: null,
     legacyUnsub: null,
-    dataLoaded: false,
 
     parseCSV: function(str) {
         const arr = [];
@@ -792,13 +791,13 @@ const appState = {
     },
 
     /* ----------------------------------------------------
-     * SECTION 5: Realtime Firestore Document Loader (ISOLATED)
+     * SECTION 5: Realtime Firestore Document Loader (ISOLATED & UNLOCKED)
      * Target: /users/{userId}/platform/{platform}/progress/COTW
      * ---------------------------------------------------- */
     loadHunter: function(userName, platform) {
         if (!this.auth || !this.auth.currentUser) return;
 
-        // 1. Detach active listeners to prevent cross-talk
+        // 1. Immediately detach existing listeners to block cross-talk
         if (this.masterUnsub) {
             this.masterUnsub();
             this.masterUnsub = null;
@@ -808,15 +807,13 @@ const appState = {
             this.legacyUnsub = null;
         }
 
-        // 2. HARD RESET: Flush local state back to defaults
-        this.dataLoaded = false;
+        // 2. HARD RESET: Flush memory back to baseline blueprint before loading
         this.hunterData = JSON.parse(JSON.stringify(trophyData));
         this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
 
         const dbDocName = USER_DATA_MAP[userName] || userName || 'Werewolf3788';
         this.activeHunter = dbDocName;
         
-        // Ensure platform is assigned safely before constructing doc references
         const rawPlatform = platform || this.activePlatform || 'psn';
         this.activePlatform = String(rawPlatform).toLowerCase().trim();
 
@@ -865,7 +862,6 @@ const appState = {
             } else {
                 this.setStatus(`⚠️ Blank Canvas for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
             }
-            this.dataLoaded = true;
             this.render();
         }, (err) => {
             console.error("Firestore Listen Error:", err);
@@ -1006,7 +1002,7 @@ const appState = {
         this.animalRankData[tier] = Math.max(0, (this.animalRankData[tier] || 0) + val);
         this.updateRankUI();
 
-        if (!this.db || !this.auth.currentUser || !this.dataLoaded) return;
+        if (!this.db || !this.auth || !this.auth.currentUser) return;
 
         try {
             const rankRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', `${GAME_ID}_Ranks`);
@@ -1043,7 +1039,7 @@ const appState = {
         this.render();
         this.updateRankUI();
 
-        if (!this.db || !this.auth || !this.auth.currentUser || !this.dataLoaded) return;
+        if (!this.db || !this.auth || !this.auth.currentUser) return;
 
         this.setStatus("⏳ Saving to Cloud Firestore...", "#e67e22");
 
