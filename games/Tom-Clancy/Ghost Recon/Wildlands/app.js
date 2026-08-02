@@ -29,13 +29,24 @@ const USER_DATA_MAP = {
 };
 
 const BLANK_STATS = {
+    tierActive: "off",
     level: "--",
     playstyle: "--",
     avgDist: "--",
+    tactical: "--",
+    stealth: "--",
     lifetime: "--",
     longestShot: "--",
+    precision: "--",
     favWeapon: "--",
-    favWeapon2: "--"
+    favWeapon2: "--",
+    revives: "--",
+    explosiveKills: "--",
+    droneTime: "--",
+    airTravel: "--",
+    groundTravel: "--",
+    paraTravel: "--",
+    mapDisc: "--"
 };
 
 const appState = {
@@ -185,13 +196,26 @@ const appState = {
             if (el) el.value = (val && val !== "--") ? val : "";
         };
 
+        const tierActiveSel = document.getElementById("editTierActive");
+        if (tierActiveSel) tierActiveSel.value = this.statsData.tierActive || "off";
+
         setVal("editTierLevel", this.statsData.level);
         setVal("editPlaystyle", this.statsData.playstyle);
         setVal("editAvgDist", this.statsData.avgDist);
+        setVal("editTactical", this.statsData.tactical);
+        setVal("editStealth", this.statsData.stealth);
         setVal("editLifetime", this.statsData.lifetime);
         setVal("editLongest", this.statsData.longestShot);
+        setVal("editPrecision", this.statsData.precision);
         setVal("editFav1", this.statsData.favWeapon);
         setVal("editFav2", this.statsData.favWeapon2);
+        setVal("editRevives", this.statsData.revives);
+        setVal("editExplosiveKills", this.statsData.explosiveKills);
+        setVal("editDroneTime", this.statsData.droneTime);
+        setVal("editAir", this.statsData.airTravel);
+        setVal("editGround", this.statsData.groundTravel);
+        setVal("editPara", this.statsData.paraTravel);
+        setVal("editMap", this.statsData.mapDisc);
     },
 
     setupFormControls: function() {
@@ -214,14 +238,27 @@ const appState = {
                     return el && el.value.trim() !== "" ? el.value.trim() : "--";
                 };
 
+                const tierActive = document.getElementById("editTierActive") ? document.getElementById("editTierActive").value : "off";
+
                 this.statsData = {
+                    tierActive: tierActive,
                     level: getVal("editTierLevel"),
                     playstyle: getVal("editPlaystyle"),
                     avgDist: getVal("editAvgDist"),
+                    tactical: getVal("editTactical"),
+                    stealth: getVal("editStealth"),
                     lifetime: getVal("editLifetime"),
                     longestShot: getVal("editLongest"),
+                    precision: getVal("editPrecision"),
                     favWeapon: getVal("editFav1"),
-                    favWeapon2: getVal("editFav2")
+                    favWeapon2: getVal("editFav2"),
+                    revives: getVal("editRevives"),
+                    explosiveKills: getVal("editExplosiveKills"),
+                    droneTime: getVal("editDroneTime"),
+                    airTravel: getVal("editAir"),
+                    groundTravel: getVal("editGround"),
+                    paraTravel: getVal("editPara"),
+                    mapDisc: getVal("editMap")
                 };
 
                 this.sync();
@@ -252,6 +289,7 @@ const appState = {
 
         if (this.masterUnsub) this.masterUnsub();
 
+        // STRICT PLATFORM ISOLATION: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
         const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
@@ -261,6 +299,7 @@ const appState = {
                 if (data.stats) this.statsData = data.stats;
                 this.setStatus(`✓ Loaded Cloud Data for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#10b981");
             } else {
+                // If doc doesn't exist for this platform, start 100% blank
                 this.initializeBlankSkillsFromBlueprint();
                 this.statsData = JSON.parse(JSON.stringify(BLANK_STATS));
                 this.setStatus(`⚠️ No Saved Cloud Data for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
@@ -355,14 +394,38 @@ const appState = {
             if (el) el.innerText = val !== undefined ? val : "--";
         };
 
+        const tierValEl = document.getElementById("tierLevel");
+        const tierBadgeContainer = document.getElementById("tierContainer");
+        
+        if (tierValEl && tierBadgeContainer) {
+            if (data.tierActive === "on") {
+                tierValEl.innerText = (data.level && data.level !== "--") ? data.level : "1";
+                tierBadgeContainer.style.backgroundColor = "#e67e22";
+                tierBadgeContainer.style.opacity = "1";
+            } else {
+                tierValEl.innerText = "OFF";
+                tierBadgeContainer.style.backgroundColor = "#2c3a4e";
+                tierBadgeContainer.style.opacity = "0.7";
+            }
+        }
+
         setTxt("operatorName", this.activeHunter);
-        setTxt("tierLevel", data.level);
         setTxt("playstyleType", data.playstyle);
         setTxt("avgKillDist", data.avgDist);
+        setTxt("tacticalValue", data.tactical);
+        setTxt("stealthValue", data.stealth);
         setTxt("statLifetime", data.lifetime);
         setTxt("longestShot", data.longestShot);
+        setTxt("precisionValue", data.precision);
         setTxt("favWeapon", data.favWeapon);
         setTxt("favWeapon2", data.favWeapon2);
+        setTxt("statRevives", data.revives);
+        setTxt("statExplosiveKills", data.explosiveKills);
+        setTxt("statDroneTime", data.droneTime);
+        setTxt("statAir", data.airTravel);
+        setTxt("statGround", data.groundTravel);
+        setTxt("statPara", data.paraTravel);
+        setTxt("statMap", data.mapDisc);
     },
 
     mutateSkillRank: function(category, index, currentRank, maxRank) {
