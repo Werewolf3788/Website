@@ -7,7 +7,7 @@
     <link rel="manifest" href="manifest.json">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="stylesheet" href="style.css?v=3.5">
+    <link rel="stylesheet" href="style.css?v=3.6">
 </head>
 <body>
 
@@ -22,7 +22,7 @@
                 </div>
             </div>
 
-            <!-- VISIBLE DROPDOWNS: USER & PLATFORM -->
+            <!-- VISIBLE USER & PLATFORM DROPDOWNS -->
             <div class="header-controls-group">
                 <div class="user-selector-wrapper">
                     <select id="userSelect" class="styled-select">
@@ -60,7 +60,7 @@
 
     <main class="hub-container">
         
-        <!-- LEFT SIDEBAR: PROFILE & KEYBOARD INPUTS -->
+        <!-- LEFT PANEL: STATS DISPLAY & KEYBOARD INPUT FORM -->
         <section class="card-panel profile-panel">
             <div class="profile-header">
                 <h2 id="operatorName" class="outline-text">Operator</h2>
@@ -151,12 +151,12 @@
                 </div>
             </div>
 
-            <!-- KEYBOARD EDITABLE TRIGGER BUTTON -->
+            <!-- KEYBOARD FORM TOGGLE BUTTON -->
             <div class="edit-stats-trigger-container">
                 <button id="toggleEditStats" class="edit-panel-btn">✏️ Edit Ghost Profile Inputs</button>
             </div>
 
-            <!-- KEYBOARD FORM INPUT BOXES -->
+            <!-- EDITABLE KEYBOARD INPUT FORM -->
             <div id="editStatsPanel" class="edit-stats-panel hidden">
                 <div class="edit-row">
                     <label>Tier Level:</label>
@@ -192,7 +192,7 @@
             </div>
         </section>
 
-        <!-- RIGHT PANEL: SKILLS MATRIX -->
+        <!-- RIGHT PANEL: SKILLS MATRIX GRID -->
         <section class="card-panel skills-panel">
             <div class="skills-tabs">
                 <button class="tab-link active" onclick="switchSkillCategory('WEAPON')">Weapon</button>
@@ -209,10 +209,11 @@
 
     </main>
 
+    <!-- Firebase Compat SDKs -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-    <script src="app.js?v=3.5"></script>
+    <script src="app.js?v=3.6"></script>
 </body>
 </html>
