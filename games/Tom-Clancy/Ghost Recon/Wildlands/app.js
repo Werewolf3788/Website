@@ -1,6 +1,6 @@
 /* ============================================================================
    File: app.js
-   Description: Ghost Recon Wildlands Direct Firestore Engine
+   Description: Ghost Recon Wildlands JSON-Driven Firestore Engine
    Target Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
    ============================================================================ */
 
@@ -20,6 +20,7 @@ const firebaseConfig = {
 };
 
 const GAME_ID = 'T.C.G.R.Wildlands';
+const RAW_JSON_URL = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/json/TCGRWildlands.json';
 
 const USER_DATA_MAP = {
     'Werewolf3788': 'Werewolf3788',
@@ -27,57 +28,6 @@ const USER_DATA_MAP = {
     'terrdog420': 'terrdog420',
     'DesdemonaTiger': 'DesdemonaTiger'
 };
-
-// MASTER UNCOMPLETED REGISTRY (Starts at ZERO progress for every new user/platform)
-const UNCOMPLETED_WILDLANDS_DATA = [
-    { 
-        id: 'sk_weapon_tree', cat: 'Weapon Skills', name: 'Weapon Skill Progression', goal: 8, 
-        subItems: [
-            { name: '1. Stable Aim', done: false }, { name: '2. Hip Fire Spread', done: false },
-            { name: '3. Grenade Launcher', done: false }, { name: '4. Ammo Capacity', done: false },
-            { name: '5. VHK Destruction', done: false }, { name: '6. Adv Suppressor', done: false },
-            { name: '7. Time to Aim', done: false }, { name: '8. Ranged Elite (Epic)', done: false }
-        ] 
-    },
-    { 
-        id: 'sk_drone_tree', cat: 'Drone Skills', name: 'Drone Skill Progression', goal: 6, 
-        subItems: [
-            { name: '1. Battery Life', done: false }, { name: '2. Night Vision', done: false },
-            { name: '3. Signal Range', done: false }, { name: '4. Speed Boost', done: false },
-            { name: '5. Mark Area', done: false }, { name: '6. Medic Drone (Epic)', done: false }
-        ] 
-    },
-    { 
-        id: 'sk_item_tree', cat: 'Item Skills', name: 'Item Equipment Progression', goal: 6, 
-        subItems: [
-            { name: '1. Parachute', done: false }, { name: '2. Binoculars 200m', done: false },
-            { name: '3. Proximity Mine', done: false }, { name: '4. Frag Grenade', done: false },
-            { name: '5. C4 Charge', done: false }, { name: '6. Explosion Radius (Epic)', done: false }
-        ] 
-    },
-    { 
-        id: 'sk_physical_tree', cat: 'Physical Skills', name: 'Physical Conditioning', goal: 5, 
-        subItems: [
-            { name: '1. Stamina Boost', done: false }, { name: '2. No Pain', done: false },
-            { name: '3. Car Shield', done: false }, { name: '4. Bullet Resistance', done: false },
-            { name: '5. Faster Regen (Epic)', done: false }
-        ] 
-    },
-    { 
-        id: 'sk_squad_tree', cat: 'Squad Skills', name: 'Squad Leadership', goal: 4, 
-        subItems: [
-            { name: '1. Revive Speed', done: false }, { name: '2. Extra Sync Shot', done: false },
-            { name: '3. Trained Rebels', done: false }, { name: '4. Last Chance (Epic)', done: false }
-        ] 
-    },
-    { 
-        id: 'sk_rebel_tree', cat: 'Rebel Support', name: 'Rebel Support Networks', goal: 4, 
-        subItems: [
-            { name: '1. Vehicle Drop-off', done: false }, { name: '2. Guns for Hire', done: false },
-            { name: '3. Mortar Strike', done: false }, { name: '4. Rebel Spotting', done: false }
-        ] 
-    }
-];
 
 const DEFAULT_BLANK_STATS = {
     level: "--", playstyle: "--", avgDist: "--", tactical: 0, stealth: 0,
@@ -87,14 +37,19 @@ const DEFAULT_BLANK_STATS = {
 const appState = {
     activeHunter: localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
     activePlatform: localStorage.getItem('active_gaming_platform') || 'pc',
-    hunterData: JSON.parse(JSON.stringify(UNCOMPLETED_WILDLANDS_DATA)),
+    activeCategory: 'WEAPON',
+    jsonWeaponClasses: null,
+    jsonSkillsBlueprint: null,
+    hunterSkillsData: {},
     statsData: JSON.parse(JSON.stringify(DEFAULT_BLANK_STATS)),
     auth: null, db: null, masterUnsub: null,
 
     init: async function() {
         this.setupControlDropdowns();
         this.setupFormControls();
-        this.render(); // Render empty board immediately so page is NEVER blank
+
+        // 1. Fetch JSON Blueprint File
+        await this.fetchGitHubJSON();
 
         try {
             const app = initializeApp(firebaseConfig, 'Wildlands-Direct-Sync');
@@ -112,6 +67,80 @@ const appState = {
             console.error("Initialization Failure:", err);
             this.render();
         }
+    },
+
+    fetchGitHubJSON: async function() {
+        try {
+            const res = await fetch(`${RAW_JSON_URL}?v=${Date.now()}`);
+            if (res.ok) {
+                const data = await res.json();
+                this.jsonWeaponClasses = data.WILDLANDS_WEAPON_CLASSES || null;
+                this.jsonSkillsBlueprint = data.BASELINE_SKILLS_BLUEPRINT || null;
+
+                this.populateWeaponSelects();
+                this.buildCategoryTabs();
+                this.initializeBlankSkillsFromBlueprint();
+            }
+        } catch (e) {
+            console.warn("Notice: Fetching raw JSON delayed.", e.message);
+        }
+    },
+
+    populateWeaponSelects: function() {
+        const fav1 = document.getElementById("editFav1");
+        const fav2 = document.getElementById("editFav2");
+        if (!fav1 || !fav2 || !this.jsonWeaponClasses) return;
+
+        fav1.innerHTML = ""; fav2.innerHTML = "";
+
+        Object.keys(this.jsonWeaponClasses).forEach(category => {
+            const group1 = document.createElement("optgroup");
+            group1.label = category;
+            const group2 = document.createElement("optgroup");
+            group2.label = category;
+
+            this.jsonWeaponClasses[category].forEach(weapon => {
+                group1.appendChild(new Option(weapon, weapon));
+                group2.appendChild(new Option(weapon, weapon));
+            });
+
+            fav1.appendChild(group1);
+            fav2.appendChild(group2);
+        });
+    },
+
+    buildCategoryTabs: function() {
+        const tabsContainer = document.getElementById("skillsCategoryTabs");
+        if (!tabsContainer || !this.jsonSkillsBlueprint) return;
+
+        tabsContainer.innerHTML = "";
+        const categories = Object.keys(this.jsonSkillsBlueprint);
+
+        categories.forEach(cat => {
+            const btn = document.createElement("button");
+            btn.className = `tab-link ${cat === this.activeCategory ? 'active' : ''}`;
+            btn.innerText = cat;
+            btn.addEventListener("click", () => {
+                this.activeCategory = cat;
+                document.querySelectorAll(".tab-link").forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+                this.render();
+            });
+            tabsContainer.appendChild(btn);
+        });
+    },
+
+    initializeBlankSkillsFromBlueprint: function() {
+        if (!this.jsonSkillsBlueprint) return;
+
+        this.hunterSkillsData = {};
+        Object.keys(this.jsonSkillsBlueprint).forEach(cat => {
+            this.hunterSkillsData[cat] = this.jsonSkillsBlueprint[cat].map(item => ({
+                ...item,
+                current: 0,
+                collected: false
+            }));
+        });
     },
 
     setupControlDropdowns: function() {
@@ -175,24 +204,24 @@ const appState = {
 
         if (this.masterUnsub) this.masterUnsub();
 
-        // EXACT TARGET DOC: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+        // TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
         const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
             if (snap.exists()) {
                 const data = snap.data();
-                if (data.trophies) this.hunterData = data.trophies;
+                if (data.skills) this.hunterSkillsData = data.skills;
                 if (data.stats) this.statsData = data.stats;
             } else {
-                // Document does not exist in Firebase yet! Set clean uncompleted defaults and create the doc!
-                this.hunterData = JSON.parse(JSON.stringify(UNCOMPLETED_WILDLANDS_DATA));
+                // Initialize clean uncompleted dataset on first load
+                this.initializeBlankSkillsFromBlueprint();
                 this.statsData = JSON.parse(JSON.stringify(DEFAULT_BLANK_STATS));
-                this.sync(); // Instantly creates document in Firestore console!
+                this.sync();
             }
             this.render();
             this.updateStatsUI();
         }, (err) => {
-            console.error("Firestore Error:", err);
+            console.error("Firestore Read Error:", err);
             this.render();
         });
     },
@@ -207,35 +236,47 @@ const appState = {
 
         container.innerHTML = '';
 
-        this.hunterData.forEach(catCard => {
-            const section = document.createElement('div');
-            section.className = 'category-section';
-            section.style.marginBottom = "20px";
+        const currentCategorySkills = this.hunterSkillsData[this.activeCategory] || [];
 
-            let subItemsHTML = catCard.subItems.map((s, idx) => `
-                <div class="sub-item" style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:#1e293b; border:1px solid #2c3a4e; border-radius:4px; margin-top:6px;">
-                    <span style="font-size:13px; color:#fff; font-weight:bold;">${s.name}</span>
-                    <button class="check-btn ${s.done ? 'is-done' : ''}" 
-                            style="background:${s.done ? '#28a745' : '#161d26'}; color:#fff; border:1px solid ${s.done ? '#28a745' : '#3d4f68'}; padding:5px 12px; border-radius:4px; cursor:pointer; font-weight:bold; min-width:110px;"
-                            onclick="appState.check('${catCard.id}', ${idx})">
-                        ${s.done ? '✓ Completed' : '◯ Mark Done'}
+        if (currentCategorySkills.length === 0) {
+            container.innerHTML = `<div style="color:#8a99ad; text-align:center; padding:20px;">No skill items available under '${this.activeCategory}'.</div>`;
+            return;
+        }
+
+        currentCategorySkills.forEach((skill, index) => {
+            const currentRank = skill.current || 0;
+            const maxRank = skill.max || 1;
+            const isMaxed = currentRank === maxRank;
+
+            const card = document.createElement("div");
+            card.className = `skill-card unlocked ${isMaxed ? 'maxed' : ''} ${skill.isEpic ? 'epic-card' : ''}`;
+            card.style.cssText = "background:#121820; border:1px solid #1c2430; padding:12px; border-radius:6px; margin-bottom:10px;";
+
+            card.innerHTML = `
+                <div class="card-top-action">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <h4 style="color:#fff; font-size:14px; font-weight:bold;">${skill.name}</h4>
+                        ${skill.isEpic ? '<span style="color:#ffcc00; font-size:10px; font-weight:bold; border:1px solid #ffcc00; padding:1px 4px; border-radius:2px;">EPIC</span>' : ''}
+                    </div>
+                    <p style="font-size:11px; color:#8a99ad; margin:6px 0;">${skill.desc || ''}</p>
+                    <div class="skill-meta-row" style="margin-top:8px;">
+                        <div class="skill-rank-indicators" style="display:flex; gap:4px;">
+                            ${Array.from({ length: maxRank }).map((_, rIdx) => `
+                                <div class="rank-dot ${rIdx < currentRank ? 'active' : ''}" style="width:14px; height:6px; background:${rIdx < currentRank ? '#0076a8' : '#3d4f68'}; border-radius:1px;"></div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-bottom-action" style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                    <span style="font-size:11px; color:#8a99ad;">Rank: ${currentRank}/${maxRank}</span>
+                    <button class="medal-toggle-btn ${skill.collected ? 'medal-earned' : ''}" 
+                            style="background:${skill.collected ? '#28a745' : '#161d26'}; color:#fff; border:1px solid ${skill.collected ? '#28a745' : '#3d4f68'}; padding:4px 10px; border-radius:4px; cursor:pointer; font-weight:bold;"
+                            onclick="appState.mutateSkill('${this.activeCategory}', ${index}, ${currentRank}, ${maxRank}, ${!!skill.collected})">
+                        ${skill.collected ? '✓ Maxed' : '⭐ Rank Up'}
                     </button>
                 </div>
-            `).join('');
-
-            const completedCount = catCard.subItems.filter(s => s.done).length;
-
-            section.innerHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #2c3a4e; padding-bottom:4px; margin-bottom:8px;">
-                    <h3 style="color:#ff8800; font-size:14px; text-transform:uppercase;">${catCard.cat}</h3>
-                    <span style="font-size:12px; color:#8a99ad; font-weight:bold;">${completedCount}/${catCard.goal} Done</span>
-                </div>
-                <div style="background:#121820; border:1px solid #1c2430; padding:12px; border-radius:6px;">
-                    <div style="font-weight:bold; color:#fff; font-size:14px; margin-bottom:6px;">${catCard.name}</div>
-                    <div class="sub-items-container">${subItemsHTML}</div>
-                </div>
             `;
-            container.appendChild(section);
+            container.appendChild(card);
         });
     },
 
@@ -266,10 +307,20 @@ const appState = {
         if (prBar) prBar.style.width = `${data.precision || 0}%`;
     },
 
-    check: function(id, idx) {
-        const t = this.hunterData.find(x => x.id === id);
-        if (t && t.subItems[idx]) {
-            t.subItems[idx].done = !t.subItems[idx].done;
+    mutateSkill: function(category, index, currentRank, maxRank, isCollected) {
+        let nextRank = currentRank + 1;
+        let nextCollected = isCollected;
+
+        if (nextRank > maxRank) {
+            nextRank = 0;
+            nextCollected = !isCollected;
+        } else if (nextRank === maxRank) {
+            nextCollected = true;
+        }
+
+        if (this.hunterSkillsData[category] && this.hunterSkillsData[category][index]) {
+            this.hunterSkillsData[category][index].current = nextRank;
+            this.hunterSkillsData[category][index].collected = nextCollected;
             this.sync();
         }
     },
@@ -288,13 +339,13 @@ const appState = {
                 user: this.activeHunter,
                 platform: this.activePlatform,
                 gameId: GAME_ID,
-                trophies: this.hunterData,
+                skills: this.hunterSkillsData,
                 stats: this.statsData,
                 lastUpdate: Date.now()
             };
 
             await setDoc(ref, payload, { merge: true });
-            console.log(`✓ Data successfully pushed to: /users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
+            console.log(`✓ Firestore updated at: /users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
         } catch (error) {
             console.error("FIRESTORE SAVE ERROR:", error);
         }
