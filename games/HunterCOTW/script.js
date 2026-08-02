@@ -1,36 +1,35 @@
-/*
- * ==========================================
- * NYT TIMESTAMP: Sun, June 21, 2026, 11:15 PM EDT
- * PRECISION INTEGRATION: Frontend JS Modular Nervous System (main.js)
- * NOTES: REMOVED ALL ALIAS KEYS FROM USER_DATA_MAP AND ALIGNED DISPLAY LAYOUTS.
- * Directly binds buttons to exact Firestore documents: Werewolf3788, Raymystyro, terrdog420.
- * NO STRIPPING, NO COMPRESSING. FULL SOURCE INTEGRITY 100% INTACT.
- * ==========================================
- */
+/* ============================================================================
+   File: script.js
+   Description: theHunter: Call of the Wild Pure Firestore Engine
+   Database: Cloud Firestore (entertainment-71888)
+   Target Firestore Path: /users/{userId}/platform/{platform}/progress/COTW
+   Analytics Tag: G-CTYHDF4MSD
+   ============================================================================ */
 
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
+/* ----------------------------------------------------
+ * SECTION 1: Firebase Configuration
+ * Project: entertainment-71888
+ * ---------------------------------------------------- */
 const firebaseConfig = {
-    apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
-    authDomain: "game-tracker-5b2ef.firebaseapp.com",
-    databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
-    projectId: "game-tracker-5b2ef",
-    storageBucket: "game-tracker-5b2ef.firebasestorage.app",
-    messagingSenderId: "555667047127",
-    appId: "1:555667047127:web:af6f468ca3cf06759aa692"
+    apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+    authDomain: "entertainment-71888.firebaseapp.com",
+    projectId: "entertainment-71888",
+    storageBucket: "entertainment-71888.firebasestorage.app",
+    messagingSenderId: "660524340277",
+    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c"
 };
 
-const MASTER_ID = 'cotw-master';
-const LEGACY_ID = 'cotw-trophy-display';
+const GAME_ID = 'COTW';
 
-// --- FRONTEND PROFILE TO BACKEND SCRAPER JSON MAP ---
-// Cleaned: Alias keys removed. Maps strictly to your direct database document strings.
 const USER_DATA_MAP = {
     'Werewolf3788': 'Werewolf3788',
     'Raymystyro': 'Raymystyro',
-    'terrdog420': 'terrdog420'
+    'terrdog420': 'terrdog420',
+    'DesdemonaTiger': 'DesdemonaTiger'
 };
 
 const ICONS = {
@@ -42,9 +41,11 @@ const ICONS = {
     TRACK: "https://placehold.co/44x44/1e293b/facc15?text=TRK"
 };
 
-const checkSet = (items) => items.map(name => ({name, done: false}));
+/* ----------------------------------------------------
+ * SECTION 2: Helper Functions (Defined before trophyData)
+ * ---------------------------------------------------- */
+const checkSet = (items) => items.map(name => ({ name, done: false }));
 
-// Supports pure strings or objects containing {name, images: []}
 const formatAlphaCheckset = (items) => {
     return items
         .sort((a, b) => {
@@ -61,7 +62,9 @@ const formatAlphaCheckset = (items) => {
         });
 };
 
-// --- FULL REGISTRY (UNCOMPRESSED & UNSTRIPPED) ---
+/* ----------------------------------------------------
+ * SECTION 3: Full Trophy & DLC Master Array
+ * ---------------------------------------------------- */
 const trophyData = [
     // --- BASE GAME ---
     { id: 'plat_cotw', cat: 'Base Game', name: 'theHunter', rank: 'platinum', current: 0, goal: 1, type: 'toggle', plat: false, desc: 'Collect every trophy.' },
@@ -206,11 +209,7 @@ const trophyData = [
     { id: 'srp_peace', cat: 'DLC: Silver Ridge', name: 'Inner Peace', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: "Complete 'Inner Peace, Outer Chaos'." },
     { id: 'srp_ascent', cat: 'DLC: Silver Ridge', name: 'The Ascent', rank: 'silver', current: 0, goal: 1, type: 'toggle', desc: "Complete 'The Ascent'." },
 
-    // ==========================================================
-    // --- LIST OF COLLECTIBLES WRAPPER (ALPHA SORTED & NUMBERED) ---
-    // ==========================================================
-    
-    // --- LAYTON LAKE DISTRICT ---
+    // --- LAYTON LAKE COLLECTIBLES ---
     { 
         id: 'coll_layton_outposts', cat: 'List of Collectibles', name: 'Layton Lake - Outposts', rank: 'bronze', current: 0, goal: 18, type: 'checklist',
         subItems: formatAlphaCheckset([
@@ -266,7 +265,7 @@ const trophyData = [
             "Fallow Deer Small Shed Antler [Norden: 13411, 4800]", "Moose Large Shed Antler [Balmont: 8310, 9402]", "Moose Large Shed Antler [Cheelah: 11029, 7988]", "Moose Large Shed Antler [Chopeeka: 7526, 5258]",
             "Moose Large Shed Antler [Chopeeka: 7552, 3818]", "Moose Small Shed Antler [Balmont: 8598, 10352]", "Moose Small Shed Antler [Chopeeka: 8235, 5062]", "Moose Small Shed Antler [High Lake: 9622, 7176]",
             "Moose Small Shed Antler [Norden: 10101, 7006]", "Moose Small Shed Antler [Roonachee: 6906, 10287]", "Roosevelt Elk Large Shed Antler Next to Rocks on ground [Balmont: 9850, 9643]", "Roosevelt Elk Large Shed Antler [Chopeeka: 8354, 3829]",
-            "Roosevelt Elk Large Shed Antler [Mount Leviatan: 10908, 9519]", "Roosevelt Elk Large Shed Antler [Norden: 11443, 6621]", "Roosevelt Elk Small Shed Antler [Calburn: 9881, 5021]",  "Roosevelt Elk Small Shed Antler [Calburn Canyon: 11882, 4840]","Roosevelt Elk Small Shed Antler [High Lake: 8936, 7453]",
+            "Roosevelt Elk Large Shed Antler [Mount Leviatan: 10908, 9519]", "Roosevelt Elk Large Shed Antler [Norden: 11443, 6621]", "Roosevelt Elk Small Shed Antler [Calburn: 9881, 5021]", "Roosevelt Elk Small Shed Antler [Calburn Canyon: 11882, 4840]","Roosevelt Elk Small Shed Antler [High Lake: 8936, 7453]",
             "Roosevelt Elk Small Shed Antler [Norden: 13132, 7244]", "Roosevelt Elk Large Shed Antler [Mount Kraken: 6575, 7143]", "Whitetail Deer Large Shed Antler [Balmont: 8929, 9060]", "Whitetail Deer Large Shed Antler [Balmont: 10728, 10486]",
             "Whitetail Deer Large Shed Antler [Caliburn: 9427, 5744]", "Whitetail Deer Large Shed Antler [Cheelah: 12255, 7918]", "Whitetail Deer Large Shed Antler [Chopeeka: 6797, 4840]", "Whitetail Deer Large Shed Antler [High Lake: 10349, 8122]",
             "Whitetail Deer Large Shed Antler South West side of cabin behind wheel spoke  [Mount Kraken: 6542, 8790]", "Whitetail Deer Large Shed Antler [Mount Leviatan: 10617, 10944]", "Whitetail Deer Large Shed Antler In Camp Ground [Roonachee: 7156, 10960]", "Whitetail Deer Large Shed Antler [Willipeg: 6520, 5605]",
@@ -274,7 +273,7 @@ const trophyData = [
         ])
     },
 
-    // --- HIRSCHFELDEN HUNTING RESERVE ---
+    // --- HIRSCHFELDEN COLLECTIBLES ---
     { 
         id: 'coll_hirsch_outposts', cat: 'List of Collectibles', name: 'Hirschfelden - Outposts & Range', rank: 'bronze', current: 0, goal: 18, type: 'checklist',
         subItems: formatAlphaCheckset([
@@ -342,7 +341,7 @@ const trophyData = [
         ])
     },
 
-    // --- MEDVED-TAIGA NATIONAL PARK ---
+    // --- MEDVED-TAIGA COLLECTIBLES ---
     {
         id: 'coll_medved_outposts', cat: 'List of Collectibles', name: 'Medved-Taiga - Outposts', rank: 'bronze', current: 0, goal: 16, type: 'checklist',
         subItems: formatAlphaCheckset([
@@ -408,7 +407,7 @@ const trophyData = [
         ])
     },
 
-    // --- VURHONGA SAVANNA ---
+    // --- VURHONGA SAVANNA COLLECTIBLES ---
     {
         id: 'coll_vurhonga_outposts', cat: 'List of Collectibles', name: 'Vurhonga Savanna - Outposts', rank: 'bronze', current: 0, goal: 18, type: 'checklist',
         subItems: formatAlphaCheckset([
@@ -453,7 +452,7 @@ const trophyData = [
         ])
     },
 
-    // --- PARQUE FERNANDO ---
+    // --- PARQUE FERNANDO COLLECTIBLES ---
     {
         id: 'coll_parque_outposts', cat: 'List of Collectibles', name: 'Parque Fernando - Outposts & Range', rank: 'bronze', current: 0, goal: 14, type: 'checklist',
         subItems: formatAlphaCheckset([
@@ -489,7 +488,7 @@ const trophyData = [
         ])
     },
 
-    // --- YUKON VALLEY ---
+    // --- YUKON VALLEY COLLECTIBLES ---
     {
         id: 'coll_yukon_outposts', cat: 'List of Collectibles', name: 'Yukon Valley - Outposts', rank: 'bronze', current: 0, goal: 17, type: 'checklist',
         subItems: formatAlphaCheckset([
@@ -519,7 +518,7 @@ const trophyData = [
         ])
     },
 
-    // --- CUATRO COLINAS GAME RESERVE ---
+    // --- CUATRO COLINAS COLLECTIBLES ---
     {
         id: 'coll_cuatro_outposts', cat: 'List of Collectibles', name: 'Cuatro Colinas - Outposts', rank: 'bronze', current: 0, goal: 24, type: 'checklist',
         subItems: formatAlphaCheckset([
@@ -555,7 +554,7 @@ const trophyData = [
         ])
     },
 
-    // --- SILVER RIDGE PEAKS ---
+    // --- SILVER RIDGE PEAKS COLLECTIBLES ---
     {
         id: 'coll_srp_outposts', cat: 'List of Collectibles', name: 'Silver Ridge Peaks - Outposts', rank: 'bronze', current: 0, goal: 21, type: 'checklist',
         subItems: formatAlphaCheckset([
@@ -645,19 +644,21 @@ const trophyData = [
     }
 ];
 
+/* ----------------------------------------------------
+ * SECTION 4: Main Application State & Isolation Logic
+ * ---------------------------------------------------- */
 const appState = {
-    activeHunter: 'Werewolf3788',
+    activeHunter: localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
+    activePlatform: (localStorage.getItem('active_gaming_platform') || 'psn').toLowerCase().trim(),
     hunterData: JSON.parse(JSON.stringify(trophyData)),
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
-    auth: null, db: null,
+    auth: null,
+    db: null,
     collapsedSections: {},
-    openDropdowns: {}, 
-    psnSynced: false,
+    openDropdowns: {},
     masterUnsub: null,
     legacyUnsub: null,
     dataLoaded: false,
-    refreshIntervalId: null,
-    currentLightboxData: { categoryId: null, subIdx: null, imgIdx: 0 },
 
     parseCSV: function(str) {
         const arr = [];
@@ -743,187 +744,108 @@ const appState = {
             if (navContainer) navContainer.innerHTML = navHTML;
         } catch (e) {
             console.error("Failed to load dynamic navigation", e);
-            if (document.getElementById('dynamic-nav-links')) {
-                document.getElementById('dynamic-nav-links').innerHTML = `<span style="color: #ef4444; font-size: 0.8rem; padding: 8px;">Menu Sync Error</span>`;
-            }
         }
     },
 
     init: async function() {
-        const saved = localStorage.getItem('cotw_master_active_id');
-        if (saved && USER_DATA_MAP[saved]) {
-            this.activeHunter = saved;
-        } else {
-            this.activeHunter = 'Werewolf3788';
-        }
-        
+        this.setupControlDropdowns();
         this.loadNavigation();
-        
+
         try {
-            const app = initializeApp(firebaseConfig, 'COTW-Master-named');
+            const app = initializeApp(firebaseConfig, 'COTW-Firestore-Engine');
             this.auth = getAuth(app);
             this.db = getFirestore(app);
-            
-            signInAnonymously(this.auth).catch(err => {
-                console.error("FIREBASE AUTH ERROR:", err);
-                if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `AUTH FAILED: ${err.message}`;
-            });
 
-            onAuthStateChanged(this.auth, (user) => { 
+            await signInAnonymously(this.auth);
+
+            onAuthStateChanged(this.auth, (user) => {
                 if (user) {
-                    this.loadHunter(this.activeHunter);
-                    if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `SYNCED DB: ${firebaseConfig.projectId} | USER: ${user.uid}`;
-                    
-                    setTimeout(() => this.syncWithPSNData(), 2500);
-                    this.startAutoRefreshLoop();
+                    this.setStatus(`✓ Connected to Firestore [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
+                    this.loadHunter(this.activeHunter, this.activePlatform);
                 } else {
-                    if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `AUDIT STATUS: WAITING FOR AUTHENTICATION...`;
-                    this.stopAutoRefreshLoop();
+                    this.setStatus("❌ Auth Failed", "#ef4444");
                 }
             });
         } catch (err) {
-            console.error("Init Error:", err);
-        }
-        this.render();
-    },
-
-    startAutoRefreshLoop: function() {
-        this.stopAutoRefreshLoop();
-        this.refreshIntervalId = setInterval(() => {
-            console.log("Auto-Refresh Loop triggered: Syncing external files...");
-            this.psnSynced = false; 
-            this.syncWithPSNData();
-            this.loadNavigation();
-        }, 60000);
-    },
-
-    stopAutoRefreshLoop: function() {
-        if (this.refreshIntervalId) {
-            clearInterval(this.refreshIntervalId);
-            this.refreshIntervalId = null;
+            console.error("Firestore Init Error:", err);
+            this.setStatus(`❌ Connection Error: ${err.message}`, "#ef4444");
+            this.render();
         }
     },
 
-    syncWithPSNData: async function() {
-        if (this.psnSynced) return;
-        
-        const targetKey = USER_DATA_MAP[this.activeHunter] || this.activeHunter;
-        if (!targetKey) {
-            console.log(`No matching JSON object configuration found for tracker name: ${this.activeHunter}. Skipping PSN Sync.`);
-            return;
+    setStatus: function(msg, color) {
+        const el = document.getElementById("stat-line");
+        if (el) {
+            el.innerText = msg;
+            if (color) el.style.color = color;
         }
+    },
 
-        try {
-            const url = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/Playstation/psn_data.json';
-            const response = await fetch(url + '?nocache=' + new Date().getTime());
-            if (!response.ok) throw new Error("JSON profile payload missing on GitHub repository.");
-            
-            const fullJsonDump = await response.json();
-            const usersObj = fullJsonDump?.users || {};
-            
-            const exactKey = Object.keys(usersObj).find(k => k.toLowerCase() === targetKey.toLowerCase());
-            let userWrapper = usersObj[exactKey];
-
-            if (!userWrapper) {
-                console.log(`No nested user key matched inside JSON structure for profile lookups: ${targetKey}`);
-                return; 
-            }
-
-            let psnTrophies = userWrapper?.trophies || [];
-            
-            if (psnTrophies.length === 0 && userWrapper?.activeHunt?.trophies) {
-                psnTrophies = userWrapper.activeHunt.trophies;
-            }
-
-            let updated = false;
-
-            this.hunterData.forEach(t => {
-                const match = psnTrophies.find(p => p.name && p.name.toLowerCase().trim() === t.name.toLowerCase().trim());
-                
-                if (match) {
-                    const imgUrl = match.iconUrl || match.icon || match.image;
-                    if (imgUrl && t.psnImage !== imgUrl) {
-                        t.psnImage = imgUrl;
-                        updated = true;
-                    }
-                    
-                    const isEarned = match.earned === true || match.unlocked === true || match.achieved === true || match.progress >= 100;
-                    
-                    if (isEarned) {
-                        if (t.type === 'checklist') {
-                            const allDone = t.subItems.every(s => s.done);
-                            if (!allDone) {
-                                t.subItems.forEach(s => s.done = true);
-                                t.current = t.goal;
-                                updated = true;
-                            }
-                        } else {
-                            if (t.current < t.goal) {
-                                t.current = t.goal;
-                                updated = true;
-                            }
-                        }
-                    }
-                }
+    setupControlDropdowns: function() {
+        const platformSelector = document.getElementById("platform-selector");
+        if (platformSelector) {
+            platformSelector.value = this.activePlatform.toUpperCase();
+            platformSelector.addEventListener("change", (e) => {
+                this.switchPlatform(e.target.value);
             });
-
-            if (updated) {
-                this.sync(); 
-            }
-            
-            this.psnSynced = true;
-            if (document.getElementById('stat-line')) {
-                const baseText = document.getElementById('stat-line').innerText.replace(' | PSN AUTO-SYNC ACTIVE', '');
-                document.getElementById('stat-line').innerText = baseText + " | PSN AUTO-SYNC ACTIVE";
-            }
-            
-        } catch (err) {
-            console.log("PSN Auto-Sync processing delay:", err);
         }
     },
 
-    loadHunter: function(name) {
-        if (!this.auth.currentUser) return;
+    /* ----------------------------------------------------
+     * SECTION 5: Realtime Firestore Document Loader (ISOLATED)
+     * Target: /users/{userId}/platform/{platform}/progress/COTW
+     * ---------------------------------------------------- */
+    loadHunter: function(userName, platform) {
+        if (!this.auth || !this.auth.currentUser) return;
 
-        // Failsafe validation mapping check
-        const dbDocName = USER_DATA_MAP[name] || name;
+        // 1. Detach active listeners to prevent cross-talk
+        if (this.masterUnsub) {
+            this.masterUnsub();
+            this.masterUnsub = null;
+        }
+        if (this.legacyUnsub) {
+            this.legacyUnsub();
+            this.legacyUnsub = null;
+        }
 
+        // 2. HARD RESET: Flush local state back to defaults
+        this.dataLoaded = false;
         this.hunterData = JSON.parse(JSON.stringify(trophyData));
         this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
-        this.dataLoaded = false;
 
+        const dbDocName = USER_DATA_MAP[userName] || userName || 'Werewolf3788';
         this.activeHunter = dbDocName;
-        localStorage.setItem('cotw_master_active_id', dbDocName);
-        if (document.getElementById('hunter-name')) document.getElementById('hunter-name').innerText = dbDocName.toUpperCase();
         
-        if (document.getElementById('master-body')) {
-            document.getElementById('master-body').className = `theme-${dbDocName === 'Werewolf3788' ? 'werewolf' : dbDocName === 'Raymystyro' ? 'ray' : 'Adam'}`;
+        // Ensure platform is assigned safely before constructing doc references
+        const rawPlatform = platform || this.activePlatform || 'psn';
+        this.activePlatform = String(rawPlatform).toLowerCase().trim();
+
+        localStorage.setItem('active_gaming_nickname', dbDocName);
+        localStorage.setItem('active_gaming_platform', this.activePlatform);
+
+        if (document.getElementById('hunter-name')) {
+            document.getElementById('hunter-name').innerText = `${dbDocName.toUpperCase()} [${this.activePlatform.toUpperCase()}]`;
         }
-        
+
+        // Render clean slate immediately
         this.render();
         this.updateRankUI();
 
-        if (this.masterUnsub) this.masterUnsub();
-        if (this.legacyUnsub) this.legacyUnsub();
+        // 3. Isolated Document Reference
+        const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
-        const masterRef = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', dbDocName);
-        this.masterUnsub = onSnapshot(masterRef, (snap) => {
-            if (snap.exists) {
+        this.masterUnsub = onSnapshot(docRef, (snap) => {
+            if (snap.exists()) {
                 const data = snap.data();
                 let incoming = data.trophies || [];
-                
-                if (Array.isArray(data)) incoming = data;
-                else if (Object.keys(data).length > 0 && !data.trophies) {
-                    incoming = Object.values(data).filter(x => x && x.id);
-                }
 
-                this.hunterData = this.hunterData.map(dt => {
+                this.hunterData = trophyData.map(dt => {
                     const found = incoming.find(it => it.id === dt.id);
                     if (found) {
                         if (dt.type === 'checklist' && found.subItems) {
                             dt.subItems = dt.subItems.map((si, i) => {
                                 const dbMatch = found.subItems.find(x => x.name === si.name) || found.subItems[i];
-                                const isDone = dbMatch?.done === true || dbMatch?.done === "true" || dbMatch?.completed === true;
+                                const isDone = dbMatch?.done === true || dbMatch?.done === "true";
                                 return {...si, done: isDone};
                             });
                             dt.current = dt.subItems.filter(s => s.done).length;
@@ -931,22 +853,30 @@ const appState = {
                             if (found.done === true || found.completed === true) {
                                 dt.current = dt.goal;
                             } else {
-                                dt.current = Number(found.current) || 0; 
+                                dt.current = Number(found.current) || 0;
                             }
                         }
+                    } else {
+                        dt.current = 0;
                     }
                     return dt;
                 });
+                this.setStatus(`✓ Loaded Cloud Data for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#10b981");
+            } else {
+                this.setStatus(`⚠️ Blank Canvas for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
             }
             this.dataLoaded = true;
             this.render();
-        }, (error) => {
-            console.error("Master Document Sync Error: ", error);
+        }, (err) => {
+            console.error("Firestore Listen Error:", err);
+            this.setStatus(`❌ Read Error: ${err.message}`, "#ef4444");
+            this.render();
         });
 
-        const legacyRef = doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', dbDocName);
-        this.legacyUnsub = onSnapshot(legacyRef, (snap) => {
-            if (snap.exists) { 
+        // 4. Isolated Animal Rank Reference
+        const rankRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', `${GAME_ID}_Ranks`);
+        this.legacyUnsub = onSnapshot(rankRef, (snap) => {
+            if (snap.exists()) {
                 const incomingRank = snap.data();
                 this.animalRankData = {
                     bronze: incomingRank.bronze || 0,
@@ -956,21 +886,31 @@ const appState = {
                     greatone: incomingRank.greatone || incomingRank.greatOne || 0,
                     albino: incomingRank.albino || 0
                 };
-                this.updateRankUI();
+            } else {
+                this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
             }
-        }, (error) => {
-            console.error("Legacy Document Sync Error: ", error);
+            this.updateRankUI();
+        }, (err) => {
+            console.error("Rank Sync Error:", err);
         });
+    },
+
+    switchHunter: function(name) {
+        this.loadHunter(name, this.activePlatform);
+    },
+
+    switchPlatform: function(platformCode) {
+        this.loadHunter(this.activeHunter, platformCode);
     },
 
     render: function() {
         const container = document.getElementById('section-container');
         const selector = document.getElementById('reserve-selector');
-        if (!container) return; 
-        
+        if (!container) return;
+
         container.innerHTML = '';
         const cats = [...new Set(this.hunterData.map(t => t.cat))];
-        
+
         if (selector && selector.options.length <= 1) {
             cats.forEach(cat => {
                 const opt = document.createElement('option');
@@ -978,7 +918,7 @@ const appState = {
                 opt.innerText = cat; selector.appendChild(opt);
             });
         }
-        
+
         let globalMet = 0, globalTotal = 0;
         cats.forEach(cat => {
             const items = this.hunterData.filter(t => t.cat === cat);
@@ -987,14 +927,14 @@ const appState = {
                 if (t.type === 'checklist') t.current = t.subItems.filter(s => s.done).length;
                 const done = t.current >= t.goal;
                 if (done) catMet++;
-                globalTotal++; 
+                globalTotal++;
                 if (done) globalMet++;
             });
-            
+
             const sectionId = cat.replace(/[^a-zA-Z0-9]/g, '');
             const isCollapsed = this.collapsedSections[sectionId] !== false;
             const percent = Math.round((catMet / items.length) * 100);
-            
+
             const section = document.createElement('div');
             section.className = `category-section ${isCollapsed ? 'section-collapsed' : ''}`;
             section.id = sectionId;
@@ -1004,15 +944,15 @@ const appState = {
                 </div>
                 <div class="section-content"><div class="trophy-grid"></div></div>
             `;
-            
+
             const grid = section.querySelector('.trophy-grid');
             items.forEach(t => {
                 const card = document.createElement('div');
                 const isDone = t.current >= t.goal;
                 card.className = `trophy-card ${isDone ? 'completed' : ''}`;
-                
+
                 let ctrl = '';
-                
+
                 if (t.type === 'numeric') {
                     const btnClass = isDone ? 'controls lock-badge' : 'controls';
                     const displayVal = isDone ? `AUDIT VERIFIED (${t.current}/${t.goal})` : `${t.current}/${t.goal}`;
@@ -1025,21 +965,13 @@ const appState = {
                     const dropClass = appState.openDropdowns[t.id] ? 'show' : '';
                     const btnClass = isDone ? 'dropdown-trigger lock-badge' : 'dropdown-trigger';
                     const btnText = isDone ? `Audit Verified (${t.current}/${t.goal})` : `Audit Registry (${t.current}/${t.goal})`;
-                    
+
                     let subItemsHTML = t.subItems.map((s, idx) => {
-                        let galleryHTML = '';
-                        if (s.images && s.images.length > 0) {
-                            let thumbs = s.images.map((imgUrl, imgIdx) => 
-                                `<img src="${imgUrl}" class="collectible-thumb" onclick="appState.openLightbox('${t.id}', ${idx}, ${imgIdx})" alt="View" loading="lazy">`
-                            ).join('');
-                            galleryHTML = `<div class="collectible-gallery">${thumbs}</div>`;
-                        }
                         return `<div class="sub-item" style="flex-direction: column; align-items: flex-start;">
                                     <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
                                         <span>${s.name}</span>
                                         <button class="check-btn ${s.done ? 'is-done' : ''}" onclick="appState.check('${t.id}', ${idx})">${s.done ? '✓' : ''}</button>
                                     </div>
-                                    ${galleryHTML}
                                 </div>`;
                     }).join('');
 
@@ -1050,131 +982,107 @@ const appState = {
                     const btnText = isDone ? 'Audit Verified (Undo)' : 'Mark Harvested';
                     ctrl = `<button class="${btnClass}" style="cursor: pointer;" onclick="appState.tog('${t.id}')">${btnText}</button>`;
                 }
-                
+
                 card.innerHTML = `<div style="display:flex; gap:10px; align-items:center;"><img src="${this.getIcon(t)}" class="trophy-icon-img"><div><span class="trophy-rank rank-${t.rank}">${t.rank}</span><div style="font-weight:900; font-size:0.9rem; margin-top:4px;">${t.name}</div></div></div><p style="font-size:0.75rem; font-style:italic; margin:15px 0; color:#cbd5e1; display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">${t.desc}</p>${ctrl}`;
                 grid.appendChild(card);
             });
             container.appendChild(section);
         });
-        
+
         const overall = globalTotal > 0 ? Math.round((globalMet / globalTotal) * 100) : 0;
         if (document.getElementById('overall-bar')) document.getElementById('overall-bar').style.width = overall + '%';
         if (document.getElementById('percent-text')) document.getElementById('percent-text').innerText = `Master Platinum Progress ${overall}%`;
     },
 
     getIcon: (t) => t.psnImage ? t.psnImage : (t.cat.includes('Collectibles') ? ICONS.TRACK : t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
-    
+
     adj: function(id, val) { const t = this.hunterData.find(x => x.id === id); t.current = Math.max(0, t.current + val); this.sync(); },
-    
+
     tog: function(id) { const t = this.hunterData.find(x => x.id === id); t.current = t.current === 0 ? 1 : 0; this.sync(); },
-    
+
     check: function(id, idx) { const t = this.hunterData.find(x => x.id === id); t.subItems[idx].done = !t.subItems[idx].done; this.sync(); },
-    
-    adjRank: async function(tier, val) { 
-        this.animalRankData[tier] = Math.max(0, (this.animalRankData[tier] || 0) + val); 
-        this.updateRankUI(); 
-        if (!this.db || !this.auth.currentUser) {
-            console.warn("Rank Save Blocked: No active Firebase Auth session.");
-            return;
-        }
+
+    adjRank: async function(tier, val) {
+        this.animalRankData[tier] = Math.max(0, (this.animalRankData[tier] || 0) + val);
+        this.updateRankUI();
+
+        if (!this.db || !this.auth.currentUser || !this.dataLoaded) return;
+
         try {
-            await setDoc(doc(this.db, 'artifacts', LEGACY_ID, 'public', 'data', 'userTrophies', this.activeHunter), this.animalRankData, { merge: true }); 
-            console.log("Rank successfully synced to Firebase.");
+            const rankRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', `${GAME_ID}_Ranks`);
+            await setDoc(rankRef, this.animalRankData, { merge: true });
         } catch (error) {
-            console.error("FIREBASE RANK SAVE ERROR:", error);
-            if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `RANK SYNC ERROR: Check console (Rules/Auth)`;
+            console.error("FIRESTORE RANK SAVE ERROR:", error);
         }
     },
-    
-    updateRankUI: function() { Object.keys(this.animalRankData).forEach(k => { const el = document.getElementById(`rank-val-${k}`); if (el) el.innerText = this.animalRankData[k]; }); },
-    
+
+    updateRankUI: function() { 
+        Object.keys(this.animalRankData).forEach(k => { 
+            const el = document.getElementById(`rank-val-${k}`); 
+            if (el) el.innerText = this.animalRankData[k]; 
+        }); 
+    },
+
     toggleSection: function(id) { const cur = this.collapsedSections[id] !== false; this.collapsedSections[id] = !cur; this.render(); },
-    
-    toggleDrop: function(id) { 
+
+    toggleDrop: function(id) {
         const el = document.getElementById('drop-' + id);
         if (el) {
             el.classList.toggle('show');
             this.openDropdowns[id] = el.classList.contains('show');
         }
     },
-    
-    switchHunter: function(name) { 
-        this.psnSynced = false; 
-        this.loadHunter(name); 
-        
-        // Timeout ensures profiles have swapped completely before querying JSON
-        setTimeout(() => this.syncWithPSNData(), 1000); 
-    },
-    
+
     scrollToCategory: function(id) { if(!id) return; this.collapsedSections[id] = false; this.render(); setTimeout(() => { if(document.getElementById(id)) document.getElementById(id).scrollIntoView({ behavior: 'smooth' }) }, 100); },
 
-    // --- Lightbox Methods ---
-    openLightbox: function(categoryId, subIdx, imgIdx) {
-        this.currentLightboxData = { categoryId, subIdx, imgIdx };
-        this.updateLightboxView();
-        document.getElementById('lightbox').style.display = 'block';
-    },
+    /* ----------------------------------------------------
+     * SECTION 6: Cloud Firestore Isolated Sync Writer
+     * Target: /users/{userId}/platform/{platform}/progress/COTW
+     * ---------------------------------------------------- */
+    sync: async function() {
+        this.render();
+        this.updateRankUI();
 
-    closeLightbox: function(e) {
-        if (e.target.id === 'lightbox' || e.target.classList.contains('lightbox-close')) {
-            document.getElementById('lightbox').style.display = 'none';
-        }
-    },
+        if (!this.db || !this.auth || !this.auth.currentUser || !this.dataLoaded) return;
 
-    changeLightboxImage: function(direction) {
-        const { categoryId, subIdx } = this.currentLightboxData;
-        const t = this.hunterData.find(x => x.id === categoryId);
-        const images = t.subItems[subIdx].images;
-        
-        this.currentLightboxData.imgIdx += direction;
-        if (this.currentLightboxData.imgIdx < 0) this.currentLightboxData.imgIdx = images.length - 1;
-        if (this.currentLightboxData.imgIdx >= images.length) this.currentLightboxData.imgIdx = 0;
-        
-        this.updateLightboxView();
-    },
-
-    updateLightboxView: function() {
-        const { categoryId, subIdx, imgIdx } = this.currentLightboxData;
-        const t = this.hunterData.find(x => x.id === categoryId);
-        const subItem = t.subItems[subIdx];
-        
-        const imgEl = document.getElementById('lightbox-img');
-        const captionEl = document.getElementById('lightbox-caption');
-        
-        imgEl.src = subItem.images[imgIdx];
-        
-        let viewType = "Angle View";
-        if (imgIdx === 0) viewType = "Map View (Zoomed Out)";
-        if (imgIdx === 1) viewType = "Map View (Zoomed In)";
-        
-        captionEl.innerText = `${subItem.name} - ${viewType} (${imgIdx + 1} of ${subItem.images.length})`;
-    },
-    
-    sync: async function() { 
-        this.render(); 
-        if (!this.db || !this.auth.currentUser || !this.dataLoaded) {
-            console.warn("Tracker Save Blocked: Waiting for data load or authentication.");
-            return;
-        } 
+        this.setStatus("⏳ Saving to Cloud Firestore...", "#e67e22");
 
         try {
-            const ref = doc(this.db, 'artifacts', MASTER_ID, 'public', 'data', 'userTrophies', this.activeHunter); 
-            await setDoc(ref, { trophies: this.hunterData, lastUpdate: Date.now() }, { merge: true }); 
-            console.log("Tracker data successfully pushed via database pipeline.");
+            // Track Event in GA4
+            if (typeof gtag === 'function') {
+                gtag('event', 'tracker_sync', {
+                    'event_category': 'Tracker',
+                    'hunter_name': this.activeHunter,
+                    'platform': this.activePlatform
+                });
+            }
+
+            const ref = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
+
+            const payload = {
+                user: this.activeHunter,
+                platform: this.activePlatform,
+                gameId: GAME_ID,
+                trophies: this.hunterData,
+                lastUpdate: Date.now()
+            };
+
+            await setDoc(ref, payload, { merge: true });
+            const timeStr = new Date().toLocaleTimeString();
+            this.setStatus(`✓ Saved to Cloud Firestore at ${timeStr}`, "#10b981");
+            console.log(`✓ Cloud Firestore updated: /users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
         } catch (error) {
-            console.error("FIREBASE TRACKER SAVE ERROR:", error);
-            if (document.getElementById('stat-line')) document.getElementById('stat-line').innerText = `TRACKER SYNC ERROR: Check console (Rules/Auth)`;
+            console.error("FIRESTORE WRITE ERROR:", error);
+            this.setStatus(`❌ Save Failed: ${error.message}`, "#ef4444");
         }
     }
 };
 
-// Expose internal methods directly to the window scope context
-window.appState = appState; 
+window.appState = appState;
 window.adjRank = (tier, val) => appState.adjRank(tier, val);
 
 appState.init();
 
-// --- GLOBAL CLICK LISTENER FOR DROPDOWNS ---
 window.onclick = function(event) {
     if (!event.target.matches('.dropdown-trigger') && !event.target.closest('.dropdown-content')) {
         document.querySelectorAll('.dropdown-content.show').forEach(el => {
