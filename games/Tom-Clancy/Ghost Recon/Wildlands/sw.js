@@ -1,11 +1,10 @@
 /* === SECTION: File Header & Config === */
 /*
  * ==========================================
- * VERSION TIMESTAMP: Mon, July 27, 2026, 02:10 PM EDT
- * SYSTEM: Dynamic Universal Multi-User Ghost Recon Wildlands Tracker (tracker.js)
- * ARCHITECTURE: 100% Pure Firebase Firestore Real-Time Engine (Zero LocalStorage)
- * PATH STRUCTURE: /users/{userId}/progress/T.C.G.R.Wildlands
- * FEATURES: Direct Cloud Read/Write, Simultaneous Operative Stream Observers, Cookie Preference Engine & Dynamic Tip Widget
+ * VERSION TIMESTAMP: Sun, Aug 2, 2026, 01:15 AM EDT
+ * SYSTEM: Universal Ghost Recon Wildlands Platform Tracker (tracker.js)
+ * ARCHITECTURE: 100% Firestore Real-Time Engine
+ * TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
  * ==========================================
  */
 
@@ -13,15 +12,16 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getFirestore, doc, onSnapshot, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// --- FIREBASE SDK CONFIGURATION ---
+// --- FIREBASE SDK CONFIGURATION (entertainment-71888) ---
 const firebaseConfig = {
-    apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
-    authDomain: "game-tracker-5b2ef.firebaseapp.com",
-    databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
-    projectId: "game-tracker-5b2ef",
-    storageBucket: "game-tracker-5b2ef.firebasestorage.app",
-    messagingSenderId: "555667047127",
-    appId: "1:555667047127:web:fc70f96b04d0380a9aa692"
+    apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+    authDomain: "entertainment-71888.firebaseapp.com",
+    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+    projectId: "entertainment-71888",
+    storageBucket: "entertainment-71888.firebasestorage.app",
+    messagingSenderId: "660524340277",
+    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+    measurementId: "G-JDNSLD3GFE"
 };
 
 const GAME_ID = 'T.C.G.R.Wildlands';
@@ -52,7 +52,6 @@ const USER_DATA_MAP = {
 
 /* === SECTION: Wildlands Progression Data Registry === */
 const wildlandsData = [
-    // EXAMPLE ENTRY MATRIX FOR WILDLANDS - ITACUA REGION
     { id: 'itacua_ks1', cat: 'Itacua Region', name: 'Kingslayer File - El Sueño\'s World', type: 'Kingslayer File', desc: 'Found in the Cult Compound main building upstairs desk.' },
     { id: 'itacua_wp1', cat: 'Itacua Region', name: 'Weapon Case - M4A1', type: 'Weapon Case', desc: 'Armory building in the main Santa Blanca outpost.' },
     { id: 'itacua_sp1', cat: 'Itacua Region', name: 'Skill Point Crate (+3)', type: 'Skill Point', desc: 'Located at the rebel observation post near the ridge.' },
@@ -70,7 +69,7 @@ const typeOrderMap = {
 /* === SECTION: Application State & Logic Engine === */
 const appState = {
     activeHunter: 'Werewolf3788',
-    // Pure in-memory state sourced strictly from live Firestore snapshots
+    activePlatform: 'pc', // Default platform ('pc', 'playstation', 'xbox')
     teamProgress: {
         'Werewolf3788': {},
         'Raymystyro': {},
@@ -85,7 +84,7 @@ const appState = {
     /* === COOKIE PREFERENCE ENGINE === */
     setGamertagCookie: function(gamertag) {
         const d = new Date();
-        d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000)); // 365 Days Persistence
+        d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
         document.cookie = `active_gamertag=${encodeURIComponent(gamertag)};expires=${d.toUTCString()};path=/;SameSite=Lax`;
     },
 
@@ -95,229 +94,62 @@ const appState = {
         const ca = decodedCookie.split(';');
         for (let i = 0; i < ca.length; i++) {
             let c = ca[i].trim();
-            if (c.indexOf(name) === 0) {
-                return c.substring(name.length, c.length);
-            }
+            if (c.indexOf(name) === 0) return c.substring(name.length, c.length);
         }
         return "";
     },
 
-    /* === FLOATING TIP / DONATION WIDGET INJECTOR === */
-    setupDonationWidget: function() {
-        if (document.getElementById('floating-tip-btn')) return;
-
-        const tipBtn = document.createElement('a');
-        tipBtn.id = 'floating-tip-btn';
-        tipBtn.href = 'https://streamelements.com/werewolf3788/tip';
-        tipBtn.target = '_blank';
-        tipBtn.rel = 'noopener noreferrer';
-        tipBtn.innerHTML = `💳 <span>Tip / Support Stream</span>`;
-        
-        // Inline UI CSS styling ensuring standard contrast, zero overlaps, and 44px minimum touch targets
-        tipBtn.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 9999;
-            background: linear-gradient(135deg, #ff8800, #ff5500);
-            color: #ffffff;
-            font-weight: 800;
-            font-size: 13px;
-            padding: 10px 16px;
-            border-radius: 50px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-height: 44px;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        `;
-
-        tipBtn.addEventListener('mouseenter', () => {
-            tipBtn.style.transform = 'scale(1.05)';
-            tipBtn.style.boxShadow = '0 6px 20px rgba(255, 136, 0, 0.6)';
-        });
-
-        tipBtn.addEventListener('mouseleave', () => {
-            tipBtn.style.transform = 'scale(1)';
-            tipBtn.style.boxShadow = '0 4px 15px rgba(0, 0, 0, 0.4)';
-        });
-
-        document.body.appendChild(tipBtn);
+    setPlatformCookie: function(platform) {
+        const d = new Date();
+        d.setTime(d.getTime() + (365 * 24 * 60 * 60 * 1000));
+        document.cookie = `active_platform=${encodeURIComponent(platform)};expires=${d.toUTCString()};path=/;SameSite=Lax`;
     },
 
-    parseCSV: function(str) {
-        const arr = [];
-        let quote = false;
-        for (let row = 0, col = 0, c = 0; c < str.length; c++) {
-            let cc = str[c], nc = str[c+1];
-            arr[row] = arr[row] || [];
-            arr[row][col] = arr[row][col] || '';
-            if (cc == '"' && quote && nc == '"') { arr[row][col] += cc; ++c; continue; }
-            if (cc == '"') { quote = !quote; continue; }
-            if (cc == ',' && !quote) { ++col; continue; }
-            if (cc == '\r' && nc == '\n' && !quote) { ++row; col = 0; ++c; continue; }
-            if (cc == '\n' && !quote) { ++row; col = 0; continue; }
-            if (cc == '\r' && !quote) { ++row; col = 0; continue; }
-            arr[row][col] += cc;
+    getPlatformCookie: function() {
+        const name = "active_platform=";
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i].trim();
+            if (c.indexOf(name) === 0) return c.substring(name.length, c.length);
         }
-        return arr;
-    },
-
-    cleanNameFromUrl: function(urlStr) {
-        if (!urlStr) return "Link";
-        try {
-            const cleanUrl = urlStr.split('?')[0].split('#')[0];
-            const parsed = new URL(cleanUrl);
-            const pathSegments = parsed.pathname.split('/').filter(Boolean);
-            let name = pathSegments.pop() || parsed.hostname;
-            name = name.replace(/\.html?$/i, '').replace(/[-_]/g, ' ');
-            if (name.toLowerCase() === 'index') {
-                name = pathSegments.pop() || 'Home';
-            }
-            return name.charAt(0).toUpperCase() + name.slice(1);
-        } catch(e) {
-            return "Menu Link";
-        }
-    },
-
-    buildMenuHTML: function(menuItems) {
-        const navContainer = document.getElementById('dynamic-nav-links');
-        if (!navContainer || !Array.isArray(menuItems)) return;
-
-        const groups = {};
-        const standalone = [];
-
-        menuItems.forEach(item => {
-            if (!item.url) return;
-
-            let displayName = item.name && item.name.trim() !== '' ? item.name : '';
-            if (!displayName || displayName.startsWith('http://') || displayName.startsWith('https://')) {
-                displayName = this.cleanNameFromUrl(item.url);
-            }
-
-            let imgUrl = item.image || '';
-            if (imgUrl && imgUrl.includes('drive.google.com')) {
-                const driveMatch = imgUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || imgUrl.match(/id=([a-zA-Z0-9_-]+)/);
-                if (driveMatch) {
-                    imgUrl = `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
-                }
-            }
-
-            const nodeObj = { name: displayName, url: item.url, image: imgUrl };
-
-            if (item.group && item.group.trim() !== '') {
-                if (!groups[item.group]) groups[item.group] = [];
-                groups[item.group].push(nodeObj);
-            } else {
-                standalone.push(nodeObj);
-            }
-        });
-
-        let navHTML = '';
-
-        Object.keys(groups).forEach(groupName => {
-            const dropItems = groups[groupName].map(it => {
-                const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
-                return `<a href="${it.url}">${imgTag}<span>${it.name}</span></a>`;
-            }).join('');
-
-            navHTML += `
-                <div class="nav-dropdown">
-                    <button class="nav-dropbtn">${groupName} ▾</button>
-                    <div class="nav-dropdown-content">
-                        ${dropItems}
-                    </div>
-                </div>
-            `;
-        });
-
-        standalone.forEach(it => {
-            const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
-            navHTML += `<a href="${it.url}">${imgTag}<span>${it.name}</span></a>`;
-        });
-
-        navContainer.innerHTML = navHTML;
-    },
-
-    loadNavigation: async function() {
-        const sheetsCsvUrl = `https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv&v=${Date.now()}`;
-        
-        try {
-            const res = await fetch(sheetsCsvUrl);
-            if (res.ok) {
-                const csvText = await res.text();
-                const parsedRows = this.parseCSV(csvText);
-                if (parsedRows.length > 1) {
-                    const menuItems = [];
-                    for (let i = 1; i < parsedRows.length; i++) {
-                        const row = parsedRows[i];
-                        if (!row || row.length === 0) continue;
-
-                        const name = row[0] ? row[0].trim() : '';
-                        const group = row[1] ? row[1].trim() : '';
-                        const url = row[2] ? row[2].trim() : '';
-                        const image = row[3] ? row[3].trim() : '';
-
-                        if (url && url.startsWith('http')) {
-                            menuItems.push({ name, url, group, image });
-                        }
-                    }
-
-                    if (menuItems.length > 0) {
-                        this.buildMenuHTML(menuItems);
-                        return;
-                    }
-                }
-            }
-        } catch (e) {
-            console.warn("Google Sheet CSV Fetch Notice:", e.message);
-        }
-
-        const navContainer = document.getElementById('dynamic-nav-links');
-        if (navContainer) {
-            navContainer.innerHTML = `<a href="index.html">Home</a>`;
-        }
+        return "";
     },
 
     init: async function() {
-        // 1. Check for URL auto-select parameter (e.g. tracker.html?user=Ray)
         const urlParams = new URLSearchParams(window.location.search);
         const userParam = urlParams.get('user');
+        const platParam = urlParams.get('platform');
 
         if (userParam && USER_DATA_MAP[userParam]) {
             this.activeHunter = USER_DATA_MAP[userParam];
             this.setGamertagCookie(this.activeHunter);
         } else {
-            // 2. Read saved preference cookie; fall back to default if absent
             const savedTag = this.getGamertagCookie();
-            if (savedTag && USER_DATA_MAP[savedTag]) {
-                this.activeHunter = USER_DATA_MAP[savedTag];
-            } else {
-                this.activeHunter = 'Werewolf3788';
-            }
+            if (savedTag && USER_DATA_MAP[savedTag]) this.activeHunter = USER_DATA_MAP[savedTag];
         }
 
-        this.loadNavigation();
+        if (platParam && ['pc', 'playstation', 'xbox'].includes(platParam.toLowerCase())) {
+            this.activePlatform = platParam.toLowerCase();
+            this.setPlatformCookie(this.activePlatform);
+        } else {
+            const savedPlat = this.getPlatformCookie();
+            if (savedPlat) this.activePlatform = savedPlat.toLowerCase();
+        }
+
         this.setupProfilesUI();
-        this.setupLifecycleListeners();
-        this.setupDonationWidget();
+        this.setupPlatformUI();
 
         try {
-            const app = initializeApp(firebaseConfig, 'Wildlands-User-Hierarchy');
+            const app = initializeApp(firebaseConfig, 'Wildlands-Platform-Engine');
             this.auth = getAuth(app);
             this.db = getFirestore(app);
 
-            // AUTHENTICATE ANONYMOUSLY & ATTACH LIVE REALTIME LISTENERS
             await signInAnonymously(this.auth);
 
             onAuthStateChanged(this.auth, (user) => {
                 if (user) {
-                    console.log("Firebase Auth Active UID:", user.uid);
+                    console.log("✓ Authenticated on entertainment-71888:", user.uid);
                     this.startLiveTeamListeners();
                 }
             });
@@ -330,45 +162,34 @@ const appState = {
     },
 
     setupProfilesUI: function() {
-        const profilesContainer = document.getElementById('hunter-profiles');
-        if (profilesContainer) {
-            profilesContainer.innerHTML = `
-                <button class="profile-btn active-btn" data-profile="Werewolf3788" onclick="appState.switchHunter('Werewolf3788')">Werewolf3788</button>
-                <button class="profile-btn" data-profile="Ray" onclick="appState.switchHunter('Ray')">Ray</button>
-                <button class="profile-btn" data-profile="TJ" onclick="appState.switchHunter('TJ')">TJ</button>
-                <button class="profile-btn" data-profile="DesdemonaTiger" onclick="appState.switchHunter('DesdemonaTiger')">DesdemonaTiger</button>
-            `;
-        }
-
-        const toggleBtn = document.getElementById('mobile-toggle');
-        const navLinks = document.getElementById('dynamic-nav-links');
-        if (toggleBtn && navLinks) {
-            toggleBtn.addEventListener('click', () => {
-                navLinks.classList.toggle('mobile-active');
+        const userSelect = document.getElementById('userSelect');
+        if (userSelect) {
+            userSelect.value = this.activeHunter;
+            userSelect.addEventListener('change', (e) => {
+                this.switchHunter(e.target.value);
             });
         }
     },
 
-    setupLifecycleListeners: function() {
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                console.log("Tab focused: Refreshing multi-user real-time stream...");
-                if (this.auth && this.auth.currentUser) {
-                    this.startLiveTeamListeners();
-                }
-            }
-        });
+    setupPlatformUI: function() {
+        const platformSelect = document.getElementById('platformSelect');
+        if (platformSelect) {
+            platformSelect.value = this.activePlatform;
+            platformSelect.addEventListener('change', (e) => {
+                this.switchPlatform(e.target.value);
+            });
+        }
     },
 
-    // 100% PURE FIRESTORE LIVE MULTI-USER OBSERVER
-    // EXACT PATH: /users/{userId}/progress/T.C.G.R.Wildlands
+    // REAL-TIME FIRESTORE OBSERVER ISOLATED PER USER + PLATFORM
+    // TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
     startLiveTeamListeners: function() {
         this.unsubscribers.forEach(unsub => unsub());
         this.unsubscribers = [];
 
         TEAM_PROFILES.forEach(profile => {
             const docName = profile.dbDoc;
-            const ref = doc(this.db, 'users', docName, 'progress', GAME_ID);
+            const ref = doc(this.db, 'users', docName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
             const unsub = onSnapshot(ref, (snap) => {
                 if (snap.exists()) {
@@ -384,9 +205,12 @@ const appState = {
                         this.teamProgress[docName] = map;
                         this.render();
                     }
+                } else {
+                    this.teamProgress[docName] = {};
+                    this.render();
                 }
             }, (err) => {
-                console.warn(`Live Firestore listener warning for ${docName}:`, err.message);
+                console.warn(`Firestore stream warning for ${docName} [${this.activePlatform}]:`, err.message);
             });
 
             this.unsubscribers.push(unsub);
@@ -396,18 +220,15 @@ const appState = {
     switchHunter: function(name) {
         const dbDocName = USER_DATA_MAP[name] || name;
         this.activeHunter = dbDocName;
-
-        // Save preference cookie whenever a profile button is clicked
         this.setGamertagCookie(dbDocName);
+        this.startLiveTeamListeners();
+        this.render();
+    },
 
-        const displayNode = document.getElementById('hunter-display');
-        if (displayNode) displayNode.innerText = dbDocName.toUpperCase();
-
-        document.querySelectorAll('.profile-btn').forEach(b => {
-            const profAttr = b.getAttribute('data-profile');
-            b.classList.toggle('active-btn', profAttr && (profAttr.toLowerCase() === name.toLowerCase() || USER_DATA_MAP[profAttr]?.toLowerCase() === dbDocName.toLowerCase()));
-        });
-
+    switchPlatform: function(platformKey) {
+        this.activePlatform = platformKey.toLowerCase();
+        this.setPlatformCookie(this.activePlatform);
+        this.startLiveTeamListeners();
         this.render();
     },
 
@@ -420,21 +241,21 @@ const appState = {
         this.sync();
     },
 
-    // DIRECT CLOUD SAVE TO FIRESTORE (NO LOCAL STORAGE)
-    // EXACT PATH: /users/{userId}/progress/T.C.G.R.Wildlands
+    // DIRECT CLOUD SAVE TO FIRESTORE UNDER USER PLATFORM SUB-COLLECTION
+    // TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
     sync: async function() {
         if (!this.auth.currentUser) {
             try {
                 await signInAnonymously(this.auth);
             } catch (err) {
-                console.error("Auth Failure during sync retry:", err);
+                console.error("Auth Retry Error:", err);
                 return;
             }
         }
 
         try {
             const myMap = this.teamProgress[this.activeHunter] || {};
-            const userProgressRef = doc(this.db, 'users', this.activeHunter, 'progress', GAME_ID);
+            const userProgressRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
             const userRef = doc(this.db, 'users', this.activeHunter);
 
             const progressArr = wildlandsData.map(i => ({
@@ -444,6 +265,7 @@ const appState = {
 
             const payload = {
                 user: this.activeHunter,
+                platform: this.activePlatform,
                 gameId: GAME_ID,
                 progress: progressArr,
                 lastUpdated: new Date().toISOString()
@@ -452,7 +274,7 @@ const appState = {
             await setDoc(userRef, { displayName: this.activeHunter, lastUpdated: new Date().toISOString() }, { merge: true });
             await setDoc(userProgressRef, payload, { merge: true });
 
-            console.log(`Live broadcast pushed cleanly to Firestore for: ${this.activeHunter} at /users/${this.activeHunter}/progress/${GAME_ID}`);
+            console.log(`✓ Saved to: /users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
         } catch (error) {
             console.error("CRITICAL FIRESTORE SAVE ERROR:", error);
             alert(`Save Failed for ${this.activeHunter}. Check internet connection or Firestore rules.`);
@@ -495,7 +317,7 @@ const appState = {
 
             section.innerHTML = `
                 <div class="category-header outlined-text" id="header-${sid}">
-                    <h2>${cat}</h2>
+                    <h2>${cat} (${this.activePlatform.toUpperCase()})</h2>
                     <div style="font-weight:900; font-size: 16px; color: #ff8800;">${count}/${items.length} FOUND</div>
                 </div>
                 <div class="section-content" id="content-${sid}">
@@ -555,7 +377,7 @@ const appState = {
         const barNode = document.getElementById('overall-bar');
         const textNode = document.getElementById('percent-text');
         if (barNode) barNode.style.width = percent + '%';
-        if (textNode) textNode.innerText = `TOTAL CAMPAIGN COLLECTION: ${percent}%`;
+        if (textNode) textNode.innerText = `TOTAL CAMPAIGN COLLECTION (${this.activePlatform.toUpperCase()}): ${percent}%`;
     }
 };
 
