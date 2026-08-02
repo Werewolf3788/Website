@@ -11,19 +11,33 @@
         body { background-color: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; }
         .max-w-7xl { width: 80% !important; max-width: 80% !important; margin: 0 auto; }
         .custom-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; }
+        .styled-select { background: #161d26; color: #fff; border: 1px solid #1c2430; padding: 6px 12px; border-radius: 6px; font-size: 12px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
+    <!-- Navigation -->
     <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 flex items-center justify-between h-16">
             <div class="flex items-center gap-3">
                 <span class="text-xl font-black text-sky-400">WEREWOLF<span class="text-white">PROJECT</span></span>
                 <span id="activeNicknameBadge" class="hidden text-xs bg-slate-800 text-amber-400 font-mono px-2 py-1 rounded border border-amber-500/30"></span>
             </div>
+
+            <!-- Navigation Links & Global Platform Selector -->
             <div id="desktop-nav-links" class="flex items-center space-x-6 text-sm">
                 <a href="index.html" class="text-white font-bold">Home</a>
                 <a href="settings.html" class="text-slate-300 hover:text-white">Settings</a>
+                
+                <!-- Active Platform Selector -->
+                <div class="platform-selector-wrapper flex items-center gap-2 bg-slate-950 px-3 py-1.5 rounded-lg border border-slate-800">
+                    <i class="fa-solid fa-gamepad text-orange-500 text-xs"></i>
+                    <select id="platformSelect" class="styled-select bg-transparent text-xs text-white focus:outline-none cursor-pointer">
+                        <option value="pc">💻 PC (Ubisoft Connect)</option>
+                        <option value="playstation">🎮 PlayStation (PS5/PS4)</option>
+                        <option value="xbox">💚 Xbox (Series X/S)</option>
+                    </select>
+                </div>
             </div>
         </div>
     </nav>
@@ -31,18 +45,27 @@
     <main class="flex-grow max-w-7xl mx-auto px-4 py-8 space-y-12">
         <header class="text-center py-8">
             <h1 class="text-3xl font-black text-sky-400">Knowing the Players</h1>
-            <p class="mt-4 text-slate-400">Track squad game progress stored cleanly in the cloud database.</p>
+            <p class="mt-4 text-slate-400">Track squad game progress across platforms stored in real-time.</p>
         </header>
 
-        <!-- REAL-TIME FIRESTORE CROSS-PLATFORM SQUAD PROGRESS -->
+        <!-- REAL-TIME CROSS-PLATFORM SQUAD PROGRESS -->
         <section class="bg-slate-900/80 p-6 rounded-xl border border-slate-800">
-            <div class="flex justify-between items-center mb-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                 <div>
                     <span class="text-orange-500 font-bold text-xs uppercase">Live Database Matrix</span>
                     <h2 class="text-xl font-bold text-white">Squad Progress Across Platforms</h2>
                 </div>
+
+                <!-- Platform Filter Toggle Buttons -->
+                <div class="flex items-center gap-2 bg-slate-950 p-1.5 rounded-xl border border-slate-800">
+                    <button onclick="filterGrid('all')" id="btn-all" class="px-3 py-1 rounded-lg text-xs font-bold text-white bg-slate-800 border border-slate-700">🌐 All</button>
+                    <button onclick="filterGrid('pc')" id="btn-pc" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all">💻 PC</button>
+                    <button onclick="filterGrid('playstation')" id="btn-playstation" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all">🎮 PlayStation</button>
+                    <button onclick="filterGrid('xbox')" id="btn-xbox" class="px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all">💚 Xbox</button>
+                </div>
             </div>
 
+            <!-- Dynamic Live Cards Grid -->
             <div id="squadProgressGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div class="custom-card p-6 animate-pulse"><div class="h-4 bg-slate-800 rounded w-1/2 mb-4"></div></div>
             </div>
@@ -54,6 +77,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, setPersistence, browserLocalPersistence, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
@@ -66,10 +90,24 @@
             measurementId: "G-JDNSLD3GFE"
         };
 
+        let activeFilter = 'all';
+        let liveSquadData = [];
+
         document.addEventListener('DOMContentLoaded', async () => {
             const app = initializeApp(firebaseConfig);
             const auth = getAuth(app);
             const db = getFirestore(app);
+            const rtdb = getDatabase(app);
+
+            // Synchronize Nav Platform Selector
+            const navPlatformSelect = document.getElementById('platformSelect');
+            if (navPlatformSelect) {
+                const savedPlatform = localStorage.getItem('active_gaming_platform') || 'pc';
+                navPlatformSelect.value = savedPlatform;
+                navPlatformSelect.addEventListener('change', (e) => {
+                    localStorage.setItem('active_gaming_platform', e.target.value);
+                });
+            }
 
             await setPersistence(auth, browserLocalPersistence);
 
@@ -85,46 +123,113 @@
                 }
             });
 
-            // Live Squad Firestore Aggregator
+            // Live Squad Realtime Aggregator across Platforms
             const squadUsers = ['Werewolf3788', 'Raymystyro', 'terrdog420', 'DesdemonaTiger'];
             const platforms = ['playstation', 'pc', 'xbox'];
-            const liveSquadData = [];
 
             squadUsers.forEach(userKey => {
                 platforms.forEach(plat => {
+                    // Listen to Realtime Database Platform Branch
+                    const rtdbRef = ref(rtdb, `users/${userKey}/platform/${plat}/stats`);
+                    onValue(rtdbRef, (snapshot) => {
+                        if (snapshot.exists()) {
+                            const data = snapshot.val();
+                            const item = {
+                                user: userKey,
+                                platform: plat,
+                                tier: data.level || 1,
+                                playstyle: data.playstyle || 'Tactical Operative',
+                                avgDist: data.avgDist || '0m',
+                                tactical: data.tactical || 80
+                            };
+                            updateSquadData(item);
+                        }
+                    });
+
+                    // Firestore Listener Fallback
                     const progressRef = collection(db, 'users', userKey, 'platform', plat, 'progress');
                     onSnapshot(progressRef, (snap) => {
                         snap.forEach(doc => {
                             if (doc.id === 'T.C.G.R.Wildlands') {
                                 const data = doc.data();
-                                const idx = liveSquadData.findIndex(i => i.user === userKey && i.platform === plat);
-                                if (idx > -1) liveSquadData[idx] = data;
-                                else liveSquadData.push(data);
+                                const item = {
+                                    user: userKey,
+                                    platform: plat,
+                                    tier: data.tier || 1,
+                                    playstyle: data.playstyle || 'Tactical Operative',
+                                    avgDist: data.avgKillDist || '0m',
+                                    tactical: data.tactical || 80
+                                };
+                                updateSquadData(item);
                             }
                         });
-                        renderGrid();
-                    });
+                    }, (err) => console.warn("Notice:", err.message));
                 });
             });
 
-            function renderGrid() {
+            function updateSquadData(item) {
+                const idx = liveSquadData.findIndex(i => i.user === item.user && i.platform === item.platform);
+                if (idx > -1) liveSquadData[idx] = item;
+                else liveSquadData.push(item);
+                renderGrid();
+            }
+
+            window.renderGrid = function() {
                 const grid = document.getElementById('squadProgressGrid');
                 if (!grid) return;
+
+                const filtered = liveSquadData.filter(i => activeFilter === 'all' || i.platform === activeFilter);
+
+                if (filtered.length === 0) {
+                    grid.innerHTML = `<div class="col-span-full text-slate-500 text-sm py-8 text-center">No active progress recorded for <span class="text-sky-400 font-mono">${activeFilter.toUpperCase()}</span>.</div>`;
+                    return;
+                }
+
                 let html = '';
-                liveSquadData.forEach(item => {
+                filtered.forEach(item => {
+                    const badgeColor = item.platform === 'playstation' 
+                        ? 'bg-blue-600/30 text-blue-400 border-blue-500/50' 
+                        : item.platform === 'pc' 
+                        ? 'bg-sky-600/30 text-sky-400 border-sky-500/50' 
+                        : 'bg-emerald-600/30 text-emerald-400 border-emerald-500/50';
+
+                    const icon = item.platform === 'playstation' ? '🎮 PSN' : item.platform === 'pc' ? '💻 PC' : '💚 XBOX';
+
                     html += `
-                        <div class="custom-card p-6 border border-slate-800">
-                            <h3 class="text-lg font-bold text-white">${item.user}</h3>
-                            <span class="text-xs text-sky-400 font-mono">${(item.platform || 'pc').toUpperCase()}</span>
-                            <div class="mt-4 text-xs text-slate-300">
-                                <div>Tier Level: ${item.tier || 1}</div>
-                                <div>Playstyle: ${item.playstyle || 'Tactical'}</div>
+                        <div class="custom-card p-6 border border-slate-800 flex flex-col justify-between">
+                            <div>
+                                <div class="flex justify-between items-center mb-3">
+                                    <h3 class="text-lg font-bold text-white">${item.user}</h3>
+                                    <span class="px-2 py-0.5 rounded text-[10px] font-bold border ${badgeColor}">${icon}</span>
+                                </div>
+                                <div class="space-y-2 text-xs text-slate-300 bg-slate-950/50 p-3 rounded-lg border border-slate-800">
+                                    <div class="flex justify-between"><span class="text-slate-400">Tier Level:</span> <span class="font-bold text-amber-400">Level ${item.tier}</span></div>
+                                    <div class="flex justify-between"><span class="text-slate-400">Playstyle:</span> <span class="font-bold text-slate-200">${item.playstyle}</span></div>
+                                    <div class="flex justify-between"><span class="text-slate-400">Tactical Precision:</span> <span class="font-bold text-emerald-400">${item.tactical}%</span></div>
+                                </div>
                             </div>
+                            <a href="./games/Tom-Clancy/Ghost%20Recon/Wildlands/index.html?user=${encodeURIComponent(item.user)}&platform=${encodeURIComponent(item.platform)}" 
+                               class="mt-4 block text-center bg-slate-800 hover:bg-slate-700 text-sky-400 font-bold text-xs py-2 rounded-lg border border-slate-700 transition-colors">
+                                View ${item.platform.toUpperCase()} Profile
+                            </a>
                         </div>
                     `;
                 });
-                grid.innerHTML = html || `<div class="col-span-full text-slate-500">No active progress recorded yet.</div>`;
-            }
+                grid.innerHTML = html;
+            };
+
+            window.filterGrid = function(plat) {
+                activeFilter = plat;
+                ['all', 'pc', 'playstation', 'xbox'].forEach(p => {
+                    const btn = document.getElementById(`btn-${p}`);
+                    if (btn) {
+                        btn.className = p === plat 
+                            ? "px-3 py-1 rounded-lg text-xs font-bold text-white bg-slate-800 border border-slate-700" 
+                            : "px-3 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all";
+                    }
+                });
+                renderGrid();
+            };
         });
     </script>
 </body>
