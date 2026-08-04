@@ -1,25 +1,39 @@
 /*
- Version Timestamp: Fri, July 24, 2026, 10:55 AM (EDT)
- Smart Dynamic Savegame Auto-Detection Engine with Normalized FTP Pathing & Total Firebase Overwrite
- File: fs25.js
- Description: Scans G-Portal FTP save directories using explicit absolute pathing, 
-              detects active save by timestamp, cleans XML payloads, and performs 
-              a full Firebase RTDB overwrite (.set) to clear previous save state.
-*/
+ * ==========================================
+ * Version Timestamp: Tuesday, August 4, 2026, 4:37 AM (EDT)
+ * Project: FS25 Smart Sync Pipeline (entertainment-71888 Target)
+ * File: fs25.js
+ * Description: Scans G-Portal FTP save directories using explicit absolute pathing, 
+ *              detects active save by timestamp, cleans XML payloads, and performs 
+ *              a full Firebase RTDB overwrite (.set) to clear previous save state.
+ * Section Notes:
+ *   - Lines 21-25: 5-Minute Safety Timeout Failsafe
+ *   - Lines 27-58: Firebase Admin SDK Initialization (entertainment-71888)
+ *   - Lines 60-69: FTP Connection & Web API Configuration Constants
+ *   - Lines 71-127: Utility & FTP Helper Functions (Fetch, Buffers, Directory Lists)
+ *   - Lines 129-160: Data Sanitization Helpers (Firebase Keys & G-Portal Web View Injection Filters)
+ *   - Lines 162-185: Web API Live Stats Processing
+ *   - Lines 187-251: Dynamic FTP Savegame Slot Auto-Discovery Engine
+ *   - Lines 253-283: XML Telemetry Key Normalization Map & Downloader Loop
+ *   - Lines 285-325: Firebase Realtime Database Overwrite & Execution Teardown
+ * ==========================================
+ */
 
 require('dotenv').config({ path: __dirname + '/.env' });
 const Client = require('ftp');
 const admin = require('firebase-admin');
 
-// Global 5-Minute Safety Timeout Failsafe to prevent hanging GitHub Action runners
+// --- SECTION 1: SAFETY FAILSAFE ---
+// Line 21: Prevents hanging GitHub Action runners or long-running processes
 setTimeout(() => {
   console.log("🚨 Safety Failsafe triggered: Execution exceeded 5 minutes. Exiting.");
   process.exit(0);
 }, 5 * 60 * 1000);
 
-console.log("Initializing FS25 Smart Sync Pipeline for Server 144.126.153.115...");
+console.log("Initializing FS25 Smart Sync Pipeline for Server 144.126.153.115 (Target: entertainment-71888)...");
 
-// Initialize Firebase Admin SDK using Environment Secrets or Local Key Fallback
+// --- SECTION 2: FIREBASE ADMIN INITIALIZATION ---
+// Line 28: Parse Service Account Credentials
 let serviceAccount;
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   try {
@@ -37,16 +51,19 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   }
 }
 
+// Line 46: Target Realtime Database URL updated to entertainment-71888
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
+    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
   });
 }
 
 const db = admin.database();
 const ftpClient = new Client();
 
+// --- SECTION 3: FTP & SERVER CONFIGURATION ---
+// Line 60: Connection Settings for G-Portal Server
 const ftpConfig = {
   host: process.env.FTP_HOST || '144.126.153.115',
   port: parseInt(process.env.FTP_PORT, 10) || 21,
@@ -58,7 +75,8 @@ const ftpConfig = {
 
 const STATS_URL = "http://144.126.153.115:8300/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM";
 
-// Exponential Backoff Fetch Helper for REST Requests
+// --- SECTION 4: NETWORK & FTP HELPER FUNCTIONS ---
+// Line 72: Exponential Backoff Fetch Helper for REST Requests
 async function fetchWithRetry(url, options = {}, retries = 3, backoffMs = 1000) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     const controller = new AbortController();
@@ -78,7 +96,7 @@ async function fetchWithRetry(url, options = {}, retries = 3, backoffMs = 1000) 
   }
 }
 
-// Resilient FTP File Buffer Downloader
+// Line 94: Resilient FTP File Buffer Downloader
 function downloadFileBuffer(client, remotePath) {
   return new Promise((resolve, reject) => {
     client.get(remotePath, (err, stream) => {
@@ -91,7 +109,7 @@ function downloadFileBuffer(client, remotePath) {
   });
 }
 
-// Resilient FTP Directory Listing Promise (returns empty array if path does not exist)
+// Line 108: Resilient FTP Directory Listing Promise
 function safeListFtpDir(client, remotePath) {
   return new Promise((resolve) => {
     client.list(remotePath, (err, list) => {
@@ -105,12 +123,13 @@ function safeListFtpDir(client, remotePath) {
   });
 }
 
-// Sanitizes keys for Firebase Realtime Database compliance (removes . $ # [ ])
+// --- SECTION 5: SANITIZATION ENGINE ---
+// Line 122: Sanitizes keys for Firebase Realtime Database compliance (removes . $ # [ ])
 function sanitizeFirebaseKey(key) {
   return key.replace(/[\.\$\#\[\]]/g, '_');
 }
 
-// Strips G-Portal web view CSS injection (.vue-modal-resizer) and HTML wrappers
+// Line 127: Strips G-Portal web view CSS injection (.vue-modal-resizer) and HTML wrappers
 function sanitizeXmlContent(rawText) {
   if (!rawText) return "";
   let clean = rawText.toString();
@@ -124,11 +143,13 @@ function sanitizeXmlContent(rawText) {
   return clean.trim();
 }
 
+// --- SECTION 6: MAIN PIPELINE EXECUTION ---
+// Line 142: Core Sync Routine
 async function runMainPipeline() {
   let activePlayers = 0;
   let rawStatsXml = "";
 
-  // 1. Query G-Portal Stats HTTP API for Live Player Count and Map State
+  // Line 147: Query G-Portal Stats HTTP API
   try {
     const response = await fetchWithRetry(STATS_URL, { timeout: 8000 }, 3, 1000);
     rawStatsXml = sanitizeXmlContent(await response.text());
@@ -142,15 +163,15 @@ async function runMainPipeline() {
     console.warn("⚠️ Web API stats fetch failed. Proceeding directly to FTP scan.");
   }
 
-  // 2. Establish FTP Uplink to Inspect Directories
+  // Line 161: Establish FTP Uplink to Inspect Directories
   ftpClient.on('ready', async function() {
     console.log("📡 FTP Uplink Connected to 144.126.153.115. Resolving active savegame slot...");
 
     try {
-      // Check both Root and 'profile/' subfolder for savegame directories
       const possibleRootDirs = ['', '/'];
       let discoveredFolders = [];
 
+      // Line 169: Scan root directories for savegame slots
       for (const rootPath of possibleRootDirs) {
         const items = await safeListFtpDir(ftpClient, rootPath);
         const matches = items.filter(item => 
@@ -169,7 +190,7 @@ async function runMainPipeline() {
         });
       }
 
-      // Check profile/ directory explicitly if no savegames found in root
+      // Line 188: Check profile/ subfolder if no savegames found in root
       if (discoveredFolders.length === 0) {
         const profileItems = await safeListFtpDir(ftpClient, 'profile');
         profileItems.filter(item => 
@@ -186,8 +207,8 @@ async function runMainPipeline() {
       let targetFolder = "savegame1";
       let latestTimestamp = 0;
 
+      // Line 204: Identify folder with newest modification timestamp
       if (discoveredFolders.length > 0) {
-        // Find directory with newest modification timestamp
         discoveredFolders.forEach(folder => {
           console.log(`📂 Discovered Save Folder: [ ${folder.fullPath} ] | Timestamp: ${new Date(folder.date).toISOString()}`);
           if (folder.date > latestTimestamp) {
@@ -199,12 +220,11 @@ async function runMainPipeline() {
         console.warn("⚠️ No dynamic save folders listed. Defaulting target to [ savegame1 ]");
       }
 
-      // Extract slot number digit (e.g. savegame2 -> 2)
       const slotMatch = targetFolder.match(/\d+/);
       const activeSlotNumber = slotMatch ? slotMatch[0] : "1";
       console.log(`🎯 DYNAMICALLY TARGETED ACTIVE SAVE: [ ${targetFolder} ] (Slot #${activeSlotNumber})`);
 
-      // Scan directory for XML files
+      // Line 221: Scan directory for XML telemetry files
       let fileList = await safeListFtpDir(ftpClient, targetFolder);
       if (fileList.length === 0 && !targetFolder.startsWith('/')) {
         fileList = await safeListFtpDir(ftpClient, `/${targetFolder}`);
@@ -226,7 +246,7 @@ async function runMainPipeline() {
         masterPayload.dedicatedServerConfig_xml = { data: rawStatsXml };
       }
 
-      // Canonical XML filename mapping to standard Firebase Keys
+      // Line 244: XML Key Normalization Map for Firebase
       const keyMap = {
         'careersavegame': 'careerSavegame',
         'farms': 'farms',
@@ -252,7 +272,7 @@ async function runMainPipeline() {
         'treeplant': 'treePlant'
       };
 
-      // Download and sanitize XML contents
+      // Line 270: Download, sanitize, and attach XML content to master payload
       for (const fileInfo of xmlFiles) {
         const rawBaseName = fileInfo.name.replace(/\.xml$/i, '');
         const lowerBaseName = rawBaseName.toLowerCase();
@@ -274,10 +294,10 @@ async function runMainPipeline() {
         }
       }
 
-      // Complete Firebase Overwrite (.set) to clear previous savegame state
+      // Line 292: Complete Firebase RTDB Overwrite (.set) on /fs25 node
       try {
         await db.ref('fs25').set(masterPayload);
-        console.log(`🏆 TOTAL OVERWRITE SUCCESSFUL! Firebase /fs25 updated to match [ ${targetFolder} ].`);
+        console.log(`🏆 TOTAL OVERWRITE SUCCESSFUL! Firebase /fs25 updated to match [ ${targetFolder} ] on entertainment-71888.`);
       } catch (writeErr) {
         console.error("❌ Firebase Overwrite Error:", writeErr.message);
       }
