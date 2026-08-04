@@ -1,19 +1,19 @@
 /* ============================================================================
    File: tracker.js
-   Version: 1.7.0 | Updated: Tuesday, August 4, 2026
-   Description: Dynamic SPA Sniper Elite 5 Tracker Engine (PlayStation Target)
+   Version: 1.8.0 | Updated: Tuesday, August 4, 2026
+   Description: Dynamic SPA Sniper Elite 5 Tracker Engine (Auth-Free Engine)
    Project: entertainment-71888
    Architecture: /users/{userId}/platform/playstation/progress/sniper-elite-5
    Data Source: https://raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/se.json
    
    Section Notes:
-     - Lines 23-45: Core Imports & Firebase Initialization
-     - Lines 47-51: App Constants (Platform locked to playstation)
-     - Lines 53-118: Dataset & Dynamic Navigation Fetching
-     - Lines 120-210: SPA AppState Lifecycle & Auth Management
-     - Lines 212-300: PlayStation Firestore Path Stream (/users/{userId}/platform/playstation/progress/sniper-elite-5)
-     - Lines 302-385: Item Toggle & User-First Sync Engine
-     - Lines 387-460: Dynamic DOM Renderer
+     - Lines 21-36: Core Imports & Firebase Initialization (No Auth)
+     - Lines 38-42: Target Configuration Constants (Locked to PlayStation)
+     - Lines 44-105: Dataset & Dynamic Navigation Fetching
+     - Lines 107-185: SPA AppState Lifecycle & Path Listeners
+     - Lines 187-240: PlayStation Firestore Path Stream (/users/{userId}/platform/playstation/progress/sniper-elite-5)
+     - Lines 242-290: Direct Auth-Free Toggle & Sync Engine
+     - Lines 292-365: Dynamic DOM Renderer
    ============================================================================ */
 
 /* === SECTION: Core Imports & Module Setup === */
@@ -25,17 +25,8 @@ import {
     onSnapshot, 
     setDoc 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js?v=20260804";
-import { 
-    getAuth, 
-    signInAnonymously, 
-    onAuthStateChanged, 
-    GoogleAuthProvider, 
-    signInWithPopup, 
-    onIdTokenChanged,
-    deleteUser 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js?v=20260804";
 
-// Line 34: Active Firebase Credentials for entertainment-71888
+// Line 25: Active Firebase Credentials for entertainment-71888
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -47,7 +38,7 @@ const firebaseConfig = {
     measurementId: "G-CTYHDF4MSD" // Google Analytics Gaming/Entertainment Measurement ID
 };
 
-// Line 47: Target Configuration (Locked to PlayStation)
+// Line 38: Target Configuration (Locked to PlayStation)
 const GAME_ID = "sniper-elite-5";
 const DEFAULT_PLATFORM = "playstation";
 const RAW_JSON_DATA_URL = "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/se.json";
@@ -60,7 +51,6 @@ const appState = {
     masterDataset: [],
     hunterData: [],
     app: null,
-    auth: null,
     db: null,
     analytics: null,
     collapsedSections: {},
@@ -69,7 +59,7 @@ const appState = {
     lastSyncTime: 0,
 
     /* --- DATA ENGINE: Resilient JSON Fetcher --- */
-    // Line 72: Collectibles Master Dataset Loader
+    // Line 60: Collectibles Master Dataset Loader
     loadMasterDataset: async function() {
         const endpoints = [
             `se.json?v=${Date.now()}`,
@@ -101,7 +91,7 @@ const appState = {
     },
 
     /* --- NAVIGATION ENGINE --- */
-    // Line 104: Dynamic Menu Renderer
+    // Line 92: Dynamic Menu Renderer
     buildMenuHTML: function(menuItems) {
         const navContainer = document.getElementById('dynamic-nav-links');
         if (!navContainer || !Array.isArray(menuItems)) return;
@@ -205,10 +195,9 @@ const appState = {
         });
     },
 
-    // Line 212: Engine Initialization
+    // Line 187: Auth-Free App Engine Initialization
     init: async function() {
         this.app = initializeApp(firebaseConfig);
-        this.auth = getAuth(this.app);
         this.db = getFirestore(this.app);
         
         try {
@@ -241,41 +230,8 @@ const appState = {
             });
         });
 
-        signInAnonymously(this.auth).catch(err => console.warn("Anon Auth notice:", err.message));
-
-        onAuthStateChanged(this.auth, async (user) => {
-            if (user && !user.isAnonymous) {
-                const email = user.email ? user.email.toLowerCase() : '';
-
-                if (email === 'raykevin71888@gmail.com') {
-                    targetToLoad = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
-                    this.targetDisplayName = 'Werewolf3788';
-                } else if (email === 'cartnalray9@gmail.com') {
-                    targetToLoad = 'Ray';
-                    this.targetDisplayName = 'Ray';
-                } else {
-                    targetToLoad = user.displayName || user.email.split('@')[0];
-                    this.targetDisplayName = targetToLoad;
-                }
-
-                // Line 268: User Document Sync
-                await setDoc(doc(this.db, "users", this.targetDisplayName), {
-                    uid: user.uid,
-                    email: user.email,
-                    displayName: this.targetDisplayName,
-                    photoURL: user.photoURL || '',
-                    lastLogin: new Date().toISOString()
-                }, { merge: true }).catch(err => console.warn("Profile sync delay:", err.message));
-            }
-
-            this.loadLiveProgress(targetToLoad);
-        });
-
-        onIdTokenChanged(this.auth, (user) => {
-            if (user) {
-                this.loadLiveProgress(this.targetUserId);
-            }
-        });
+        // Load targeted profile progress directly
+        this.loadLiveProgress(targetToLoad);
 
         document.addEventListener('visibilitychange', () => {
             if (document.visibilityState === 'visible') {
@@ -293,11 +249,12 @@ const appState = {
         this.render();
     },
 
-    /* === SECTION: User-First PlayStation Progress Stream === */
-    // Line 305: Real-time listener pointing directly to /users/{userId}/platform/playstation/progress/sniper-elite-5
+    /* === SECTION: Auth-Free PlayStation Progress Stream === */
+    // Line 230: Direct listener targeting /users/{userId}/platform/playstation/progress/sniper-elite-5
     loadLiveProgress: function(userId) {
         this.targetUserId = userId;
         this.targetPlatform = DEFAULT_PLATFORM; // Locked to playstation
+        this.targetDisplayName = userId;
         localStorage.setItem('se5_selected_user_id', userId);
 
         this.hunterData = this.masterDataset.map(item => ({ ...item, collected: false }));
@@ -312,7 +269,7 @@ const appState = {
 
         if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
 
-        // Line 323: Target Path: /users/{userId}/platform/playstation/progress/sniper-elite-5
+        // Line 248: Target Path: /users/{userId}/platform/playstation/progress/sniper-elite-5
         const primaryRef = doc(this.db, "users", userId, "platform", "playstation", "progress", GAME_ID);
 
         this.masterUnsub = onSnapshot(primaryRef, (snap) => {
@@ -346,39 +303,9 @@ const appState = {
         this.loadLiveProgress(name);
     },
 
-    /* --- TOGGLE & USER-FIRST SYNC ENGINE --- */
-    toggleItem: async function(id) {
-        let currentUser = this.auth.currentUser;
-
-        if (!currentUser || currentUser.isAnonymous) {
-            const tempAnonUser = currentUser && currentUser.isAnonymous ? currentUser : null;
-            
-            try {
-                const provider = new GoogleAuthProvider();
-                provider.setCustomParameters({ prompt: 'select_account' });
-                const result = await signInWithPopup(this.auth, provider);
-                currentUser = result.user;
-
-                if (tempAnonUser) {
-                    deleteUser(tempAnonUser).catch(() => {});
-                }
-            } catch (err) {
-                alert("Sign in required to save changes.");
-                return;
-            }
-        }
-
-        const email = currentUser.email ? currentUser.email.toLowerCase() : '';
-        const activeUsername = currentUser.displayName || email.split('@')[0];
-        const isAdmin = email === 'raykevin71888@gmail.com';
-        const isRay = email === 'cartnalray9@gmail.com' && ['ray', 'raymystyro'].includes(this.targetUserId.toLowerCase());
-        const isOwner = activeUsername.toLowerCase() === this.targetUserId.toLowerCase() || isAdmin;
-
-        if (!isAdmin && !isRay && !isOwner) {
-            alert("Access Denied: You can only edit your own profile progress. Contact Admin to request edits.");
-            return;
-        }
-
+    /* --- DIRECT TOGGLE & SYNC ENGINE --- */
+    // Line 282: Instant item toggle with zero authentication checks
+    toggleItem: function(id) {
         const item = this.hunterData.find(i => i.id === id);
         if (item) {
             item.collected = !item.collected;
@@ -387,13 +314,13 @@ const appState = {
         }
     },
 
-    // Line 392: Sync Payload directly into /users/{userId}/platform/playstation/progress/sniper-elite-5
+    // Line 292: Sync Payload directly into /users/{userId}/platform/playstation/progress/sniper-elite-5
     sync: async function() {
         if (!this.db || !this.dataLoaded) return;
 
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
         
-        // Ensure platform root document exists
+        // Ensure platform parent document exists
         const platformRef = doc(this.db, "users", this.targetUserId, "platform", "playstation");
         await setDoc(platformRef, { active: true, lastActive: new Date().toISOString() }, { merge: true });
 
@@ -412,7 +339,6 @@ const appState = {
             console.log(`[Firestore Success] Synced to: /users/${this.targetUserId}/platform/playstation/progress/${GAME_ID}`);
         } catch (err) {
             console.error("Firestore PlayStation Write Error:", err);
-            alert("Save failed: Check database security rules.");
         }
     },
 
