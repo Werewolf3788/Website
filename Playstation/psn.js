@@ -2,11 +2,17 @@
  * ==========================================
  * --- PRECISION INTEGRITY PROTOCOL ---
  * Project: Kevin's Official Pack Sync Engine (Max-Payload Firebase Stream)
- * Version: 14.6.2 - DesdemonaTiger Auto-Discovery & Dynamic PSN Resolver
- * Timestamp: Sat, July 25, 2026 | 9:50 PM EDT
+ * Version: 14.7.0 - Entertainment DB Migration & Dynamic PSN Resolver
+ * Timestamp: Tuesday, August 4, 2026 | 4:33 AM EDT
  * Compatibility: Node.js v20+, Firebase Realtime Database REST API
  * Logic: Auto-discovers missing PSN Account IDs for squad members like 
  *        DesdemonaTiger via Universal Search API before falling back to private schemas.
+ * Section Notes:
+ *   - Lines 36-39: Firebase RTDB Target (entertainment-71888) & Local Storage Path
+ *   - Lines 41-50: Squad Mapping & Active PSN Identifiers
+ *   - Lines 52-60: Persona Mapping Configurations
+ *   - Lines 62-70: Twitch Cross-Platform Intelligence Handles
+ *   - Lines 72-81: Account ID Pre-resolutions & Fallback Schemas
  * ==========================================
  */
 
@@ -35,12 +41,14 @@ const {
     makeUniversalSearch
 } = psnApi;
 
-const FIREBASE_RTDB_URL = "https://game-tracker-5b2ef-default-rtdb.firebaseio.com/psn.json";
+// Line 37: Realtime Database REST Endpoint updated to entertainment-71888
+const FIREBASE_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn.json";
 const LOCAL_JSON_PATH = path.join(__dirname, "psn.json");
 
+// Line 41: Squad PSN Account Mapping
 const SQUAD_MAP = {
-    werewolf: "werewolf3788",         // Scheduled for deactivation: July 27, 2026
-    wildhorse_spirit: "WildHorse_Spirit", // Kevin's active primary PSN ID
+    werewolf: "werewolf3788",         // Legacy primary ID
+    wildhorse_spirit: "WildHorse_Spirit", // Primary active PSN ID
     ray: "OneLIVIDMAN",                // Ray
     darkwing: "Darkwing69420",        // TJ
     marc: "DesdemonaTiger",           // Marc (Auto-Discovery Active)
@@ -49,6 +57,7 @@ const SQUAD_MAP = {
     seth: "joe-punk_"                 // Seth (Hidden PSN Profile)
 };
 
+// Line 52: Multi-account Persona Hierarchy
 const PERSONA_CONFIG = {
     "Kevin": ["werewolf", "wildhorse_spirit"], 
     "Ray": ["ray"],
@@ -59,6 +68,7 @@ const PERSONA_CONFIG = {
     "Seth": ["seth"]
 };
 
+// Line 62: Stream Intelligence Target Map
 const TWITCH_MAP = {
     werewolf: "werewolf3788",
     wildhorse_spirit: "werewolf3788",
@@ -69,12 +79,13 @@ const TWITCH_MAP = {
     seth: "phoenix_darkfire"
 };
 
+// Line 72: Cached Account IDs & Resolvers
 const ACCOUNT_IDS = {
     werewolf: "3728215008151724560",
     wildhorse_spirit: "4087137467908566201",
     ray: "2732733730346312494",
     darkwing: "4398462806362115916",
-    marc: "",                         // Will auto-resolve via Universal Search API
+    marc: "",                         // Resolved dynamically via Universal Search API
     mike: "",                         // Hidden PSN -> Fallback schema
     katy: "",                         // Hidden PSN -> Fallback schema
     seth: ""                          // Hidden PSN -> Fallback schema
@@ -95,12 +106,14 @@ let diagnosticReport = {
     lastCheck: new Date().toLocaleString("en-US", { timeZone: "America/New_York" })
 };
 
+// Line 98: Affiliate URL Generator
 function generateAffiliateUrl(gameName) {
     if (!gameName || gameName === "Dashboard") return null;
     const cleanName = encodeURIComponent(gameName.replace(/®|™/g, ""));
     return `https://www.amazon.com/s?k=${cleanName}&tag=${AMAZON_TAG}`;
 }
 
+// Line 105: Relative Timestamp Formatter
 function getTrophyAgeString(timestamp) {
     if (!timestamp) return null;
     const past = new Date(timestamp).getTime();
@@ -128,6 +141,7 @@ function getTrophyAgeString(timestamp) {
     return parts.length > 0 ? parts.join(', ') : "Just now";
 }
 
+// Line 133: Legacy Duration Formatter
 function calculateAgeString(startDate, endDate = new Date()) {
     if (!startDate) return "Unknown";
     const start = new Date(startDate);
@@ -142,6 +156,7 @@ function calculateAgeString(startDate, endDate = new Date()) {
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
+// Line 148: Twitch Live Intelligence Fetcher
 async function getTwitchIntel(username) {
     if (!username) return null;
     const intel = { 
@@ -203,6 +218,7 @@ async function getTwitchIntel(username) {
     }
 }
 
+// Line 206: Token Validation Guard
 async function isTokenValid(accessToken) {
     try {
         await getUserRegion({ accessToken }, "me");
@@ -210,6 +226,7 @@ async function isTokenValid(accessToken) {
     } catch (e) { return false; }
 }
 
+// Line 214: OAuth Token Handler & Auto-Refresher
 async function getAuthenticated(userKey, npssoInput) {
     let currentUserTokens = tokenStore[userKey] || {};
     const now = Math.floor(Date.now() / 1000);
@@ -262,6 +279,7 @@ async function getAuthenticated(userKey, npssoInput) {
     return null;
 }
 
+// Line 266: Stream History Deduplicator
 function processStreamHistory(existingHistory, twitchIntel) {
     let history = Array.isArray(existingHistory) ? [...existingHistory] : [];
     
@@ -275,6 +293,7 @@ function processStreamHistory(existingHistory, twitchIntel) {
     return history;
 }
 
+// Line 280: Private Schema Profile Fallback
 function generatePrivateProfileFallback(label, userKey, twitchIntel, existingData) {
     const historicalStreamList = processStreamHistory(existingData?.streamHistory, twitchIntel);
     return {
@@ -301,6 +320,7 @@ function generatePrivateProfileFallback(label, userKey, twitchIntel, existingDat
     };
 }
 
+// Line 308: Universal Search Account Resolver
 async function resolveAccountIdFromSearch(auth, onlineId) {
     try {
         console.log(`[PSN SEARCH] Attempting auto-discovery lookup for ID: ${onlineId}...`);
@@ -316,11 +336,11 @@ async function resolveAccountIdFromSearch(auth, onlineId) {
     return "";
 }
 
+// Line 324: Core Profile Telemetry and Data Aggregator
 async function getFullUserData(auth, label, userKey, targetId, existingData) {
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
     let resolvedTargetId = targetId;
 
-    // TARGET GUARD & SEARCH RESOLVER: Try JWT decoding for owner or Universal Search for squad members
     if (!resolvedTargetId && auth?.accessToken) {
         if (auth.userKey === userKey) {
             try {
@@ -618,8 +638,9 @@ async function getFullUserData(auth, label, userKey, targetId, existingData) {
     }
 }
 
+// Line 545: Firebase RTDB Sync Operations (entertainment-71888)
 async function fetchFromFirebase() {
-    console.log("[FIREBASE] Fetching current state from Realtime Database...");
+    console.log("[FIREBASE] Fetching current state from Realtime Database (entertainment-71888)...");
     try {
         const response = await fetch(FIREBASE_RTDB_URL);
         if (!response.ok) return {};
@@ -644,6 +665,7 @@ async function pushToFirebase(payload) {
     } catch (err) { console.error("[FIREBASE ERROR] Failed database push:", err.message); }
 }
 
+// Line 571: Disk Backup Handler
 function writeLocalFile(payload) {
     console.log(`[FILE SYSTEM] Writing local fallback payload to ${LOCAL_JSON_PATH}...`);
     try {
@@ -658,9 +680,10 @@ function writeLocalFile(payload) {
     }
 }
 
+// Line 586: Core Orchestration Loop
 async function main() {
     try {
-        console.log("[INIT] Starting Absolute Master Omni-Collector v14.6.2 (DesdemonaTiger Auto-Discovery)...");
+        console.log("[INIT] Starting Absolute Master Omni-Collector v14.7.0 (Entertainment DB Target)...");
 
         const previousFirebaseData = await fetchFromFirebase();
 
@@ -670,8 +693,8 @@ async function main() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport,
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York" }), 
-            engineVersion: "14.6.2",
-            codeTimestamp: "Saturday, July 25, 2026 | 9:50 PM EDT"
+            engineVersion: "14.7.0",
+            codeTimestamp: "Tuesday, August 4, 2026 | 4:33 AM EDT"
         };
 
         const wolfAuth = await getAuthenticated("werewolf", process.env.PSN_NPSSO_WEREWOLF);
@@ -756,7 +779,7 @@ async function main() {
         await pushToFirebase(finalData);
         writeLocalFile(finalData);
 
-        console.log(`[SUCCESS] DesdemonaTiger Execution v14.6.2 Complete.`);
+        console.log(`[SUCCESS] Execution v14.7.0 Complete for entertainment-71888.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Execution error caught: ${criticalError.message}`);
         process.exit(0);
