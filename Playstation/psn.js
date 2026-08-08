@@ -1,13 +1,12 @@
 /* ============================================================================
  * File: index.js
  * Location: /index.js
- * Description: Official Squad Pack Sync Engine - 50 Game History & Full Trophies
- *              Expands recent history to 50 titles with deep trophy scanning, 
- *              poster art extraction, and live presence telemetry per Gamer Tag.
+ * Description: Squad Pack Sync Engine - Pure Gamer Tag Mapping
+ *              Authenticates WildHorse_Spirit via process.env.PSN_NPSSO_WEREWOLF.
  * Database: Realtime Database (entertainment-71888)
  * Target Endpoint: https://entertainment-71888-default-rtdb.firebaseio.com/psn.json
- * Version: 15.1.0
- * Last Modified: Saturday, August 08, 2026 | 7:10 PM EDT
+ * Version: 15.3.0
+ * Last Modified: Saturday, August 08, 2026 | 7:20 PM EDT
  * ============================================================================ */
 
 const fs = require("fs");
@@ -50,7 +49,7 @@ const SQUAD_GAMERTAGS = {
     seth: "joe-punk_"
 };
 
-// Stream Intelligence Target Map
+// Stream Intelligence Target Map (Twitch handles retain werewolf3788 branding)
 const TWITCH_MAP = {
     wildhorse_spirit: "werewolf3788",
     ray: "raymystyro",
@@ -456,7 +455,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
 
         const targetSyncId = activeCommId || matchedGame.npCommunicationId || allRecentGames[0]?.npCommunicationId;
 
-        // Expanded deep-scan limit to process up to 50 games and their trophy sets
         let gamesToDeepScan = 50;
 
         for (const game of allRecentGames.slice(0, 60)) { 
@@ -474,7 +472,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
                 bootCount: game.playCount || "Unknown"
             };
 
-            // Expanded to store up to 50 recent games in the payload
             if (recentGames.length < 50) { recentGames.push(recentGameRef); }
 
             const isTargetHunt = (game.npCommunicationId === targetSyncId);
@@ -650,7 +647,7 @@ function writeLocalFile(payload) {
 
 async function main() {
     try {
-        console.log("[INIT] Starting Squad Gamer Tag Engine v15.1.0 (50 Game History Mode)...");
+        console.log("[INIT] Starting Squad Gamer Tag Engine v15.3.0 (PSN_NPSSO_WEREWOLF Active)...");
 
         const previousFirebaseData = await fetchFromFirebase();
 
@@ -659,11 +656,12 @@ async function main() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport,
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York" }), 
-            engineVersion: "15.1.0",
-            codeTimestamp: "Saturday, August 8, 2026 | 7:10 PM EDT"
+            engineVersion: "15.3.0",
+            codeTimestamp: "Saturday, August 8, 2026 | 7:20 PM EDT"
         };
 
-        const wildHorseAuth = await getAuthenticated("wildhorse_spirit", process.env.PSN_NPSSO_WILDHORSE);
+        // Uses PSN_NPSSO_WEREWOLF secret for wildhorse_spirit authentication
+        const wildHorseAuth = await getAuthenticated("wildhorse_spirit", process.env.PSN_NPSSO_WEREWOLF);
         const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
         const masterAuth = wildHorseAuth || rayAuth;
 
@@ -689,7 +687,7 @@ async function main() {
         await pushToFirebase(finalData);
         writeLocalFile(finalData);
 
-        console.log(`[SUCCESS] Gamer Tag Engine v15.1.0 execution complete.`);
+        console.log(`[SUCCESS] Gamer Tag Engine v15.3.0 execution complete.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Execution error caught: ${criticalError.message}`);
         process.exit(0);
