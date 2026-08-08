@@ -2,8 +2,8 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
 # File: .github/workflows/psn-sync.yml
 # Project: PSN Live Sync & Deploy (Dual Stream & Pages Deploy)
-# Version: 15.4.0 - Clean Direct Install, Rebase Concurrency & Node 22
-# Last Modified: Saturday, August 08, 2026 | 7:22 PM EDT
+# Version: 15.5.0 - Pathspec Staging Fix & Clean Diff Check
+# Last Modified: Saturday, August 08, 2026 | 7:27 PM EDT
 # Logic: Runs Node script on 23-min schedule, pushes to Firebase RTDB,
 #        commits updated Playstation/psn.json back to repo with rebase handling,
 #        and deploys static payload directly to GitHub Pages.
@@ -67,10 +67,14 @@ jobs:
         run: |
           git config --global user.name "Werewolf3788-Bot"
           git config --global user.email "werewolf3788-bot@users.noreply.github.com"
-          git add Playstation/psn.json psn.json || true
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Automated PSN Payload Sync [Playstation/psn.json]")
-          git pull --rebase origin main
-          git push origin main
+          git add Playstation/psn.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Automated PSN Payload Sync [Playstation/psn.json]"
+            git pull --rebase origin main
+            git push origin main
+          else
+            echo "No changes detected in Playstation/psn.json to commit."
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
