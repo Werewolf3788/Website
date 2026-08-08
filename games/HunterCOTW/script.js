@@ -1,9 +1,11 @@
 /* ============================================================================
    File: script.js
+   Location: /script.js
    Description: theHunter: Call of the Wild Pure Firestore Engine
    Database: Cloud Firestore (entertainment-71888)
-   Target Firestore Path: /users/{userId}/platform/{platform}/progress/COTW
+   Target Firestore Path: /users/{userId}/platform/playstation/progress/COTW
    Analytics Tag: G-CTYHDF4MSD
+   Last Updated: 2026-08-08 17:50:00 (America/Chicago)
    ============================================================================ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -43,7 +45,7 @@ const ICONS = {
 };
 
 /* ----------------------------------------------------
- * SECTION 2: Helper Functions (Defined before trophyData)
+ * SECTION 2: Helper Functions
  * ---------------------------------------------------- */
 const checkSet = (items) => items.map(name => ({ name, done: false }));
 
@@ -646,11 +648,24 @@ const trophyData = [
 ];
 
 /* ----------------------------------------------------
- * SECTION 4: Main Application State & Isolation Logic
+ * SECTION 4: Helper Methods for Platform Normalization
+ * Force PSN references -> playstation
+ * ---------------------------------------------------- */
+const normalizePlatform = (inputPlatform) => {
+    if (!inputPlatform) return 'playstation';
+    const clean = String(inputPlatform).toLowerCase().trim();
+    if (clean === 'psn' || clean === 'ps' || clean === 'playstation') {
+        return 'playstation';
+    }
+    return clean;
+};
+
+/* ----------------------------------------------------
+ * SECTION 5: Main Application State & Isolation Logic
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
-    activePlatform: (localStorage.getItem('active_gaming_platform') || 'playstation').toLowerCase().trim(),
+    activePlatform: normalizePlatform(localStorage.getItem('active_gaming_platform')),
     hunterData: JSON.parse(JSON.stringify(trophyData)),
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
     auth: null,
@@ -678,10 +693,6 @@ const appState = {
         return arr;
     },
 
-    /* ----------------------------------------------------
-     * SECTION 4A: Google Sheet Dynamic Navigation Importer
-     * Sheet Layout: Name (A) | Group (B) | Url (C) | Images (D)
-     * ---------------------------------------------------- */
     loadNavigation: async function() {
         try {
             const response = await fetch(MENU_SHEET_CSV_URL + `?v=${Date.now()}`);
@@ -689,7 +700,6 @@ const appState = {
             const rows = this.parseCSV(csvText);
 
             let data = rows;
-            // Strip header row if present
             if (data[0] && data[0][0] && data[0][0].toLowerCase().includes('name')) {
                 data.shift();
             }
@@ -708,7 +718,6 @@ const appState = {
 
                 if (!name || !url) return;
 
-                // Handle Google Drive Image conversion
                 if (image) {
                     const driveMatch = image.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || image.match(/id=([a-zA-Z0-9_-]+)/);
                     if (image.includes('drive.google.com') && driveMatch) {
@@ -726,7 +735,6 @@ const appState = {
                 }
             });
 
-            // Process Dropdown Groups
             Object.keys(groups).forEach(groupName => {
                 let dropItems = groups[groupName].map(item => {
                     const imgTag = item.image ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
@@ -743,7 +751,6 @@ const appState = {
                 `;
             });
 
-            // Process Standalone Menu Links
             standalone.forEach(item => {
                 const imgTag = item.image ? `<img src="${item.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
                 navHTML += `<a href="${item.url}">${imgTag}${item.name}</a>`;
@@ -795,7 +802,7 @@ const appState = {
     setupControlDropdowns: function() {
         const platformSelector = document.getElementById("platform-selector");
         if (platformSelector) {
-            platformSelector.value = this.activePlatform.toUpperCase();
+            platformSelector.value = this.activePlatform;
             platformSelector.addEventListener("change", (e) => {
                 this.switchPlatform(e.target.value);
             });
@@ -803,13 +810,12 @@ const appState = {
     },
 
     /* ----------------------------------------------------
-     * SECTION 5: Realtime Firestore Document Loader (ISOLATED & UNLOCKED)
-     * Target: /users/{userId}/platform/{platform}/progress/COTW
+     * SECTION 6: Firestore Document Loader
+     * Path: /users/{userId}/platform/{platform}/progress/COTW
      * ---------------------------------------------------- */
     loadHunter: function(userName, platform) {
         if (!this.auth || !this.auth.currentUser) return;
 
-        // 1. Detach existing listeners to prevent cross-talk
         if (this.masterUnsub) {
             this.masterUnsub();
             this.masterUnsub = null;
@@ -819,15 +825,14 @@ const appState = {
             this.legacyUnsub = null;
         }
 
-        // 2. HARD RESET: Flush memory back to baseline blueprint before loading
         this.hunterData = JSON.parse(JSON.stringify(trophyData));
         this.animalRankData = { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 };
 
         const dbDocName = USER_DATA_MAP[userName] || userName || 'Werewolf3788';
         this.activeHunter = dbDocName;
         
-        const rawPlatform = platform || this.activePlatform || 'playstation';
-        this.activePlatform = String(rawPlatform).toLowerCase().trim();
+        // Force platform mapping to lower-case 'playstation' (never 'psn')
+        this.activePlatform = normalizePlatform(platform);
 
         localStorage.setItem('active_gaming_nickname', dbDocName);
         localStorage.setItem('active_gaming_platform', this.activePlatform);
@@ -836,11 +841,15 @@ const appState = {
             document.getElementById('hunter-name').innerText = `${dbDocName.toUpperCase()} [${this.activePlatform.toUpperCase()}]`;
         }
 
-        // Render clean slate immediately
+        const platformSelector = document.getElementById("platform-selector");
+        if (platformSelector) {
+            platformSelector.value = this.activePlatform;
+        }
+
         this.render();
         this.updateRankUI();
 
-        // 3. Isolated Document Reference
+        // Exact Firestore Target Path
         const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
@@ -881,7 +890,7 @@ const appState = {
             this.render();
         });
 
-        // 4. Isolated Animal Rank Reference
+        // Animal Rank Reference
         const rankRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', `${GAME_ID}_Ranks`);
         this.legacyUnsub = onSnapshot(rankRef, (snap) => {
             if (snap.exists()) {
@@ -1044,7 +1053,7 @@ const appState = {
     scrollToCategory: function(id) { if(!id) return; this.collapsedSections[id] = false; this.render(); setTimeout(() => { if(document.getElementById(id)) document.getElementById(id).scrollIntoView({ behavior: 'smooth' }) }, 100); },
 
     /* ----------------------------------------------------
-     * SECTION 6: Cloud Firestore Isolated Sync Writer
+     * SECTION 7: Cloud Firestore Sync Writer
      * Target: /users/{userId}/platform/{platform}/progress/COTW
      * ---------------------------------------------------- */
     sync: async function() {
