@@ -1,11 +1,12 @@
 # ==========================================
 # --- PRECISION INTEGRITY PROTOCOL ---
+# File: .github/workflows/psn-sync.yml
 # Project: PSN Live Sync & Deploy (Dual Stream & Pages Deploy)
-# Version: 14.5.6 - Stateful Local JSON, Firebase Stream & GH Pages
-# Timestamp: Sat, July 25, 2026, 9:16 PM EDT
+# Version: 15.4.0 - Clean Direct Install, Rebase Concurrency & Node 22
+# Last Modified: Saturday, August 08, 2026 | 7:22 PM EDT
 # Logic: Runs Node script on 23-min schedule, pushes to Firebase RTDB,
-#        commits updated Playstation/psn.json back to repo, and deploys
-#        the repository static payload directly to GitHub Pages.
+#        commits updated Playstation/psn.json back to repo with rebase handling,
+#        and deploys static payload directly to GitHub Pages.
 # ==========================================
 
 name: PSN Sync and Deploy
@@ -34,11 +35,13 @@ jobs:
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Cache Node Modules
         uses: actions/cache@v3
@@ -50,7 +53,7 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          npm ci || npm install psn-api
+          npm install psn-api
 
       - name: Execute PSN Sync Engine
         env:
@@ -58,14 +61,16 @@ jobs:
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
         continue-on-error: true # Prevents red email alerts when Sony NPSSO expires
         run: |
-          node Playstation/psn.js || node psn.js
+          node Playstation/psn.js || node psn.js || node index.js
 
-      - name: Commit and Push Playstation/psn.json
+      - name: Commit and Push PSN Data
         run: |
           git config --global user.name "Werewolf3788-Bot"
-          git config --global user.email "raykevin71888@gmail.com"
-          git add Playstation/psn.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Automated PSN Payload Sync [Playstation/psn.json]" && git push)
+          git config --global user.email "werewolf3788-bot@users.noreply.github.com"
+          git add Playstation/psn.json psn.json || true
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Automated PSN Payload Sync [Playstation/psn.json]")
+          git pull --rebase origin main
+          git push origin main
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
