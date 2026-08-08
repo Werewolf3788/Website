@@ -24,131 +24,66 @@
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: var(--bg-dark);
             background-image: url('https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/2407270/ss_752a78f3e5c9a0914909a805c8651a0290823528.1920x1080.jpg?t=1738260133');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            color: #ffffff;
-            font-family: ui-sans-serif, system-ui, sans-serif;
-            font-size: 16px;
-            line-height: 1.5;
-            overflow-x: hidden;
+            background-size: cover; background-position: center; background-attachment: fixed;
+            color: #ffffff; font-family: ui-sans-serif, system-ui, sans-serif;
+            font-size: 16px; line-height: 1.5; overflow-x: hidden;
         }
 
-        .outlined-text {
-            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 5px rgba(0,0,0,0.8);
-        }
-
-        h1, h2 {
-            font-size: 26px; 
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin: 0;
-            line-height: 1.2;
-        }
+        .outlined-text { text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 5px rgba(0,0,0,0.8); }
+        h1, h2 { font-size: 26px; text-transform: uppercase; letter-spacing: 1px; margin: 0; line-height: 1.2; }
 
         .background-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), rgba(10, 10, 10, 0.98));
             z-index: -1;
         }
 
         /* --- PRIMARY HEADER NAV --- */
         .master-nav {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            height: var(--nav-height);
-            background: rgba(10, 10, 15, 0.98);
-            backdrop-filter: blur(12px);
-            border-bottom: 2px solid var(--ser-color);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 15px;
-            z-index: 1000;
+            position: fixed; top: 0; left: 0; right: 0; height: var(--nav-height);
+            background: rgba(10, 10, 15, 0.98); backdrop-filter: blur(12px);
+            border-bottom: 2px solid var(--ser-color); display: flex;
+            justify-content: space-between; align-items: center; padding: 0 15px; z-index: 1000;
         }
 
-        .nav-logo {
-            font-weight: 900;
-            color: var(--ser-color);
-            text-decoration: none;
-            font-size: 1.1rem;
-            text-shadow: 0 0 10px var(--ser-glow);
-            min-height: 44px;
-            display: flex;
-            align-items: center;
-        }
+        .nav-logo { font-weight: 900; color: var(--ser-color); text-decoration: none; font-size: 1.1rem; text-shadow: 0 0 10px var(--ser-glow); min-height: 44px; display: flex; align-items: center; }
 
         /* --- CSV DROPDOWN MENU BAR --- */
         .csv-nav {
-            position: fixed;
-            top: var(--nav-height);
-            left: 0; right: 0;
-            min-height: var(--csv-nav-height);
-            background: rgba(10, 10, 12, 0.98);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            align-items: center;
-            padding: 0 15px;
-            z-index: 999;
+            position: fixed; top: var(--nav-height); left: 0; right: 0;
+            min-height: var(--csv-nav-height); background: rgba(10, 10, 12, 0.98);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; align-items: center; padding: 0 15px; z-index: 999;
         }
 
         .hamburger-btn {
-            display: none;
-            background: transparent;
-            color: var(--ser-color);
-            border: 1px solid var(--ser-color);
-            border-radius: 6px;
-            font-weight: 900;
-            font-size: 16px;
-            padding: 8px 12px;
-            cursor: pointer;
-            min-height: 44px;
-            min-width: 44px;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-transform: uppercase;
+            display: none; background: transparent; color: var(--ser-color); border: 1px solid var(--ser-color);
+            border-radius: 6px; font-weight: 900; font-size: 16px; padding: 8px 12px; cursor: pointer;
+            min-height: 44px; min-width: 44px; align-items: center; justify-content: center; gap: 8px; text-transform: uppercase;
         }
 
-        .csv-links-container {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            width: 100%;
-            flex-wrap: wrap;
-        }
+        .csv-links-container { display: flex; align-items: center; gap: 20px; width: 100%; flex-wrap: wrap; }
 
         .csv-single-btn, .csv-dropdown-btn {
             background: transparent; color: #ccc; border: none; font-weight: 900; 
             font-size: 14px; cursor: pointer; text-transform: uppercase; padding: 8px 10px;
-            letter-spacing: 1px; text-decoration: none; display: flex; align-items: center;
-            min-height: 44px;
-            transition: color 0.2s;
+            letter-spacing: 1px; text-decoration: none; display: flex; align-items: center; min-height: 44px; transition: color 0.2s;
         }
         .csv-single-btn:hover, .csv-dropdown-btn:hover { color: var(--ser-color); }
 
         .csv-dropdown { position: relative; display: inline-block; }
-        
         .csv-dropdown-content {
-            display: none; position: absolute; background-color: #1a1a1c; 
-            min-width: 260px; box-shadow: 0px 10px 30px 0px rgba(0,0,0,0.9);
-            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0.5rem; 
-            z-index: 1001; top: 100%; left: 0; overflow: hidden;
-            margin-top: 5px;
+            display: none; position: absolute; background-color: #1a1a1c; min-width: 260px;
+            box-shadow: 0px 10px 30px 0px rgba(0,0,0,0.9); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.5rem; z-index: 1001; top: 100%; left: 0; overflow: hidden; margin-top: 5px;
         }
         .csv-dropdown-content.show { display: block; }
-        
         .csv-dropdown-item {
-            color: #eee; padding: 12px 18px; text-decoration: none; display: flex; 
-            align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
-            font-size: 13px; font-weight: 900; text-transform: uppercase; 
-            min-height: 44px;
-            transition: background 0.2s, color 0.2s;
+            color: #eee; padding: 12px 18px; text-decoration: none; display: flex; align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05); font-size: 13px; font-weight: 900; text-transform: uppercase;
+            min-height: 44px; transition: background 0.2s, color 0.2s;
         }
         .csv-dropdown-item:last-child { border-bottom: none; }
         .csv-dropdown-item:hover { background-color: rgba(255, 255, 255, 0.05); color: var(--ser-color); }
@@ -156,18 +91,9 @@
         @media (max-width: 768px) {
             .hamburger-btn { display: flex; }
             .csv-links-container {
-                display: none;
-                flex-direction: column;
-                align-items: stretch;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background: rgba(10, 10, 12, 0.98);
-                border-bottom: 2px solid var(--ser-color);
-                padding: 10px 15px;
-                gap: 5px;
-                box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+                display: none; flex-direction: column; align-items: stretch; position: absolute;
+                top: 100%; left: 0; right: 0; background: rgba(10, 10, 12, 0.98); border-bottom: 2px solid var(--ser-color);
+                padding: 10px 15px; gap: 5px; box-shadow: 0 10px 20px rgba(0,0,0,0.8);
             }
             .csv-links-container.mobile-open { display: flex; }
             .csv-dropdown { width: 100%; }
@@ -399,7 +325,7 @@
             'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
         };
 
-        // Complete 14-Mission Dataset with YouTube Lightbox Embed Timestamps
+        // Complete 14-Mission Dataset with Full Youtube Embeds
         const sniperData = [
             // MISSION 1: THE ATLANTIC WALL (Video: v2ogAx8_CzY)
             { id: "m1_pl1", cat: "1: The Atlantic Wall", name: "Picked Some Violets", type: "Personal Letter", desc: "North-east map sector, on a chest inside a single building guarded by 2 soldiers.", ytEmbed: "https://www.youtube.com/embed/v2ogAx8_CzY?start=0" },
@@ -594,20 +520,20 @@
             { id: "m10_hi2", cat: "10: Wolf Mountain (DLC)", name: "Practise Pose Photography", type: "Hidden Item", desc: "Safe in top floor main bedroom; open via Satchel Charge or key from house guard.", ytEmbed: "https://www.youtube.com/embed/uFkd6Dbi62o?start=447" },
             { id: "m10_se3", cat: "10: Wolf Mountain (DLC)", name: "Stone Eagle #3", type: "Stone Eagle", desc: "Outside map boundary; follow Lakeside Path behind the main house.", ytEmbed: "https://www.youtube.com/embed/uFkd6Dbi62o?start=490" },
 
-            // MISSION 11: LANDING FORCE (DLC 2)
-            { id: "m11_pl1", cat: "11: Landing Force (DLC)", name: "Munition Ignitions", type: "Personal Letter", desc: "Central map sector, resting on a heavy table inside the main objective fortification bunker." },
-            { id: "m11_pl2", cat: "11: Landing Force (DLC)", name: "Bread and Boredom", type: "Personal Letter", desc: "Northern coastal sector; resting on an old wooden table built inside the broken tower." },
-            { id: "m11_pl3", cat: "11: Landing Force (DLC)", name: "Heavy is the Crown", type: "Personal Letter", desc: "Southwest island sector, inside the primary stone Fort command briefing hall table." },
-            { id: "m11_cd1", cat: "11: Landing Force (DLC)", name: "Wine-Stained Warning", type: "Classified Doc", desc: "Western map sector building layout; resting on an office table inside the top floor room." },
-            { id: "m11_cd2", cat: "11: Landing Force (DLC)", name: "Security Measures", type: "Classified Doc", desc: "Eastern fishing sector house near the waves; hidden under the desk framing opposite Workbench 2." },
-            { id: "m11_hi1", cat: "11: Landing Force (DLC)", name: "Military Flask", type: "Hidden Item", desc: "Central sector fortification bunker entry left room corner storage table." },
-            { id: "m11_hi2", cat: "11: Landing Force (DLC)", name: "Binoculars", type: "Hidden Item", desc: "Far southern cliff edge corridor; sitting on the stone hand railing behind the Lighthouse asset." },
-            { id: "m11_se1", cat: "11: Landing Force (DLC)", name: "Stone Eagle #1", type: "Stone Eagle", desc: "Southwest watchtower architecture peak; immediately viewable directly from the default spawn area." },
-            { id: "m11_se2", cat: "11: Landing Force (DLC)", name: "Stone Eagle #2", type: "Stone Eagle", desc: "Northern broken masonry layout; perched on the high stone wall of the ruined tower asset." },
-            { id: "m11_se3", cat: "11: Landing Force (DLC)", name: "Stone Eagle #3", type: "Stone Eagle", desc: "Southeast coastal zone; perched on top of a low, shattered seaside stone building structure." },
-            { id: "m11_wb1", cat: "11: Landing Force (DLC)", name: "Resort Docks Workbench", type: "Workbench", desc: "Western sector residential house; tucked inside the upper-floor side room loft frame." },
-            { id: "m11_wb2", cat: "11: Landing Force (DLC)", name: "Abandoned Fishing Workbench", type: "Workbench", desc: "Eastern fishing sector coastal shanty; sits next to the Classified Document cache room." },
-            { id: "m11_wb3", cat: "11: Landing Force (DLC)", name: "Military Fort Workbench", type: "Workbench", desc: "Southwest Fort complex vault room; unlock using lockpicks or localized bolt cutters." },
+            // MISSION 11: LANDING FORCE (DLC 2) - Video: M7HrUW3BQuE
+            { id: "m11_se1", cat: "11: Landing Force (DLC)", name: "Stone Eagle #1", type: "Stone Eagle", desc: "Southwest watchtower architecture peak; immediately viewable directly from the default spawn area.", ytEmbed: "https://www.youtube.com/embed/M7HrUW3BQuE?start=23" },
+            { id: "m11_pl2", cat: "11: Landing Force (DLC)", name: "Bread and Boredom", type: "Personal Letter", desc: "Northern coastal sector; resting on an old wooden table built inside the broken tower.", ytEmbed: "https://www.youtube.com/embed/M7HrUW3BQuE?start=42" },
+            { id: "m11_cd2", cat: "11: Landing Force (DLC)", name: "Security Measures", type: "Classified Doc", desc: "Eastern fishing sector house near the waves; hidden under the desk framing opposite Workbench 2.", ytEmbed: "https://www.youtube.com/embed/M7HrUW3BQuE?start=87" },
+            { id: "m11_wb2", cat: "11: Landing Force (DLC)", name: "Abandoned Fishing Workbench", type: "Workbench", desc: "Eastern fishing sector coastal shanty; sits next to the Classified Document cache room.", ytEmbed: "https://www.youtube.com/embed/M7HrUW3BQuE?start=111" },
+            { id: "m11_se2", cat: "11: Landing Force (DLC)", name: "Stone Eagle #2", type: "Stone Eagle", desc: "Northern broken masonry layout; perched on the high stone wall of the ruined tower asset.", ytEmbed: "https://www.youtube.com/embed/M7HrUW3BQuE?start=124" },
+            { id: "m11_hi1", cat: "11: Landing Force (DLC)", name: "Military Flask", type: "Hidden Item", desc: "Central sector fortification bunker entry left room corner storage table.", ytEmbed: "https://www.youtube.com/embed/M7HrUW3BQuE?start=157" },
+            { id: "m11_pl1", cat: "11: Landing Force (DLC)", name: "Munition Ignitions", type: "Personal Letter", desc: "Central map sector, resting on a heavy table inside the main objective fortification bunker.", ytEmbed: "https://www.youtube.com/embed/M7HrUW3BQuE?start=185" },
+            { id: "m11_cd1", cat: "11: Landing Force (DLC)", name: "Wine-Stained Warning", type: "Classified Doc", desc: "Western map sector building layout; resting on an office table inside the top floor room.", ytEmbed: "https://www.youtube.com/embed/M7HrUW3BQuE?start=206" },
+            { id: "m11_wb1", cat: "11: Landing Force (DLC)", name: "Resort Docks Workbench", type: "Workbench", desc: "Western sector residential house; tucked inside the upper-floor side room loft frame.", ytEmbed: "https://www.youtube.com/embed/M7HrUW3BQuE?start=246" },
+            { id: "m11_se3", cat: "11: Landing Force (DLC)", name: "Stone Eagle #3", type: "Stone Eagle", desc: "Southeast coastal zone; perched on top of a low, shattered seaside stone building structure.", ytEmbed: "https://www.youtube.com/embed/M7HrUW3BQuE?start=278" },
+            { id: "m11_wb3", cat: "11: Landing Force (DLC)", name: "Military Fort Workbench", type: "Workbench", desc: "Southwest Fort complex vault room; unlock using lockpicks or localized bolt cutters.", ytEmbed: "https://www.youtube.com/embed/M7HrUW3BQuE?start=302" },
+            { id: "m11_pl3", cat: "11: Landing Force (DLC)", name: "Heavy is the Crown", type: "Personal Letter", desc: "Southwest island sector, inside the primary stone Fort command briefing hall table.", ytEmbed: "https://www.youtube.com/embed/M7HrUW3BQuE?start=325" },
+            { id: "m11_hi2", cat: "11: Landing Force (DLC)", name: "Binoculars", type: "Hidden Item", desc: "Far southern cliff edge corridor; sitting on the stone hand railing behind the Lighthouse asset.", ytEmbed: "https://www.youtube.com/embed/M7HrUW3BQuE?start=383" },
 
             // MISSION 12: CONQUEROR (DLC 3) - Trophy Tom Video Timestamps (UvZ3L2jNYcY)
             { id: "m12_pl2", cat: "12: Conqueror (DLC)", name: "Debris-covered Love Letter", type: "Personal Letter", desc: "Central ruins sector; resting on top of a wooden supply crate within the secondary goal radius.", ytEmbed: "https://www.youtube.com/embed/UvZ3L2jNYcY?start=0" },
