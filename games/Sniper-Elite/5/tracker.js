@@ -1,24 +1,23 @@
 /* ============================================================================
    File: tracker.js
-   Version: 1.8.1 | Updated: Friday, August 7, 2026
-   Description: Dynamic SPA Sniper Elite 5 Tracker Engine (Auth-Free Engine)
+   Version: 1.8.3 | Updated: Friday, August 7, 2026
+   Description: Dynamic SPA Sniper Elite 5 Tracker Engine
    Project: entertainment-71888
-   Architecture: /users/{userId}/platform/playstation/progress/sniper-elite-5
-   Data Source: Embedded Local Fallback & Remote GitHub JSON
+   Firestore Path: /users/{userId}/platform/playstation/progress/sniper-elite-5
+   Data Source: Local Embedded Collectibles & GitHub Dynamic Menu Sync
    
    Section Notes:
-     - Lines 21-36: Core Imports & Firebase Initialization (No Auth)
-     - Lines 38-42: Target Configuration Constants (Locked to PlayStation)
+     - Lines 21-36: Firebase Core Configuration (entertainment-71888)
+     - Lines 38-42: System Constants & API Endpoints
      - Lines 44-320: Embedded Master Collectibles Dataset
-     - Lines 322-385: Dataset & Dynamic Navigation Fetching
-     - Lines 387-465: SPA AppState Lifecycle & Path Listeners
-     - Lines 467-520: PlayStation Firestore Path Stream
-     - Lines 522-570: Direct Auth-Free Toggle & Sync Engine
-     - Lines 572-660: Dynamic DOM Renderer & Loading Screen Dismissal
+     - Lines 322-385: SPA AppState Initialization & Menu Loader
+     - Lines 387-465: Firestore Stream Engine & Error Guards
+     - Lines 467-520: Direct Sync Operations
+     - Lines 522-630: DOM Renderer & Hardcoded Loading Screen Dismissal
    ============================================================================ */
 
-/* === SECTION: Core Imports & Module Setup === */
-// Line 21: Firebase SDK Imports
+/* === SECTION: Core Imports & Firebase Config === */
+// Line 21: Modular Web SDK Imports
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js?v=20260804";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js?v=20260804";
 import { 
@@ -28,7 +27,7 @@ import {
     setDoc 
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js?v=20260804";
 
-// Line 31: Firebase Project Configuration (entertainment-71888)
+// Line 31: Project entertainment-71888 Credentials
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -37,7 +36,7 @@ const firebaseConfig = {
     storageBucket: "entertainment-71888.firebasestorage.app",
     messagingSenderId: "660524340277",
     appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
-    measurementId: "G-CTYHDF4MSD" // GA4 Measurement ID for entertainment/gaming
+    measurementId: "G-CTYHDF4MSD"
 };
 
 // Line 43: Configuration Constants
@@ -46,7 +45,7 @@ const DEFAULT_PLATFORM = "playstation";
 const RAW_JSON_DATA_URL = "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/se.json";
 
 /* === SECTION: Embedded Master Collectibles Dataset === */
-// Line 49: Embedded Fallback Array (Used if external fetch is blocked/unavailable)
+// Line 49: Embedded Fallback Array
 const LOCAL_MASTER_DATASET = [
   { "id": "m1_pl1", "cat": "1: The Atlantic Wall", "name": "Picked Some Violets", "type": "Personal Letter", "desc": "North-east map sector, on a chest inside a single building guarded by 2 soldiers." },
   { "id": "m1_pl2", "cat": "1: The Atlantic Wall", "name": "Upcoming Delivery", "type": "Personal Letter", "desc": "Central farm, inside the southern farmhouse upstairs; climb the attic ladder." },
@@ -283,13 +282,12 @@ const LOCAL_MASTER_DATASET = [
   { "id": "m14_cd1", "cat": "14: Kraken Awakes (DLC)", "name": "Salvage Operation", "type": "Classified Doc", "desc": "[EASTERN BORDER] On a desk inside the easternmost border house near the tree line." }
 ];
 
-/* === SECTION: SPA AppState Engine & User-First Firestore Logic === */
-// Line 323: Single Page Application State Management
+/* === SECTION: App Engine Setup & State Engine === */
 const appState = {
     targetUserId: 'Werewolf3788',
     targetDisplayName: 'Werewolf3788',
     targetPlatform: DEFAULT_PLATFORM,
-    masterDataset: LOCAL_MASTER_DATASET, // Preloaded with embedded collectibles
+    masterDataset: LOCAL_MASTER_DATASET,
     hunterData: [],
     app: null,
     db: null,
@@ -299,8 +297,6 @@ const appState = {
     dataLoaded: false,
     lastSyncTime: 0,
 
-    /* --- DATA ENGINE: Resilient JSON Fetcher --- */
-    // Line 338: Attempts remote endpoints with fallback to LOCAL_MASTER_DATASET
     loadMasterDataset: async function() {
         const endpoints = [
             `se.json?v=${Date.now()}`,
@@ -317,24 +313,20 @@ const appState = {
                     const data = JSON.parse(text);
                     if (Array.isArray(data) && data.length > 0) {
                         this.masterDataset = data;
-                        console.log(`[Data Engine] Loaded ${data.length} collectibles remotely from: ${url}`);
                         return true;
                     }
                 }
             } catch (err) {
-                console.warn(`[Data Engine] Endpoint attempt failed (${url}):`, err.message);
+                console.warn(`[Data Engine] Endpoint skipped (${url}):`, err.message);
             }
         }
 
-        console.warn("[Data Engine] Remote load failed; using embedded master dataset fallback.");
         this.masterDataset = LOCAL_MASTER_DATASET;
         return true;
     },
 
-    /* --- NAVIGATION ENGINE --- */
-    // Line 370: Dynamic Menu Navigation Builder
     buildMenuHTML: function(menuItems) {
-        const navContainer = document.getElementById('dynamic-nav-links'); // HTML Target Element
+        const navContainer = document.getElementById('dynamic-nav-links');
         if (!navContainer || !Array.isArray(menuItems)) return;
 
         const groups = {};
@@ -385,9 +377,6 @@ const appState = {
         });
 
         navContainer.innerHTML = navHTML;
-        
-        const warningNode = document.querySelector('div[style*="Menu Load Failure"]');
-        if (warningNode) warningNode.style.display = 'none';
     },
 
     loadNavigation: async function() {
@@ -416,15 +405,8 @@ const appState = {
                 }
             } catch (e) {}
         }
-
-        const navContainer = document.getElementById('dynamic-nav-links');
-        if (navContainer) {
-            navContainer.innerHTML = `<span style="color: #ef4444; font-size: 0.85rem; padding: 8px; font-weight: 700;">Menu Load Failure</span>`;
-        }
     },
 
-    /* --- ROUTER & LIFECYCLE --- */
-    // Line 458: Hash-based Router
     initSPARouter: function() {
         window.addEventListener('hashchange', () => {
             const hash = window.location.hash.replace('#/', '');
@@ -437,18 +419,15 @@ const appState = {
         });
     },
 
-    // Line 470: Auth-Free App Engine Initialization
     init: async function() {
         this.app = initializeApp(firebaseConfig);
         this.db = getFirestore(this.app);
         
         try {
             this.analytics = getAnalytics(this.app);
-        } catch (analyticsErr) {
-            console.warn("Analytics blocked or unavailable:", analyticsErr.message);
-        }
+        } catch (analyticsErr) {}
 
-        this.loadNavigation().catch(e => console.warn("Nav load notice:", e));
+        this.loadNavigation().catch(() => {});
         await this.loadMasterDataset();
 
         const cats = [...new Set(this.masterDataset.map(i => i.cat))];
@@ -472,36 +451,23 @@ const appState = {
             });
         });
 
-        // Load targeted profile progress directly
         this.loadLiveProgress(targetToLoad);
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                const idleDuration = Date.now() - this.lastSyncTime;
-                if (idleDuration > 60000) {
-                    this.loadLiveProgress(this.targetUserId);
-                }
-            }
-        });
-
-        window.addEventListener('online', () => {
-            this.loadLiveProgress(this.targetUserId);
-        });
-
+        // Immediate forced render to guarantee loading overlays vanish
         this.render();
     },
 
-    /* === SECTION: Auth-Free PlayStation Progress Stream === */
-    // Line 520: Direct Firestore Listener Targeting /users/{userId}/platform/playstation/progress/sniper-elite-5
+    /* === SECTION: Auth-Free PlayStation Stream Engine === */
+    // Targets: /users/{userId}/platform/playstation/progress/sniper-elite-5
     loadLiveProgress: function(userId) {
         this.targetUserId = userId;
-        this.targetPlatform = DEFAULT_PLATFORM; // Locked to playstation
+        this.targetPlatform = DEFAULT_PLATFORM;
         this.targetDisplayName = userId;
         localStorage.setItem('se5_selected_user_id', userId);
 
         this.hunterData = this.masterDataset.map(item => ({ ...item, collected: false }));
 
-        const displayNode = document.getElementById('hunter-display'); // HTML Header Profile Element
+        const displayNode = document.getElementById('hunter-display');
         if (displayNode) displayNode.innerText = `${userId.toUpperCase()} [PLAYSTATION]`;
 
         document.querySelectorAll('.profile-btn').forEach(b => {
@@ -511,7 +477,6 @@ const appState = {
 
         if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
 
-        // Line 538: Firestore Document Reference
         const primaryRef = doc(this.db, "users", userId, "platform", "playstation", "progress", GAME_ID);
 
         this.masterUnsub = onSnapshot(primaryRef, (snap) => {
@@ -529,16 +494,13 @@ const appState = {
                     this.targetDisplayName = data.user || data.displayName;
                     if (displayNode) displayNode.innerText = `${this.targetDisplayName.toUpperCase()} [PLAYSTATION]`;
                 }
-                this.dataLoaded = true;
-                this.render();
             } else {
                 this.hunterData = this.masterDataset.map(item => ({ ...item, collected: false }));
-                this.dataLoaded = true;
-                this.render();
             }
+            this.dataLoaded = true;
+            this.render();
         }, (err) => {
-            console.error("PlayStation Progress Stream Error:", err.message);
-            // Force load on stream error so loading message disappears
+            console.error("Firestore Progress Stream Exception:", err.message);
             this.dataLoaded = true;
             this.render();
         });
@@ -548,8 +510,6 @@ const appState = {
         this.loadLiveProgress(name);
     },
 
-    /* --- DIRECT TOGGLE & SYNC ENGINE --- */
-    // Line 571: Instant Item Toggle Logic
     toggleItem: function(id) {
         const item = this.hunterData.find(i => i.id === id);
         if (item) {
@@ -559,17 +519,14 @@ const appState = {
         }
     },
 
-    // Line 581: Firestore Sync Operation
     sync: async function() {
-        if (!this.db || !this.dataLoaded) return;
+        if (!this.db) return;
 
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
         
-        // Ensure parent platform document exists
         const platformRef = doc(this.db, "users", this.targetUserId, "platform", "playstation");
         await setDoc(platformRef, { active: true, lastActive: new Date().toISOString() }, { merge: true });
 
-        // Document Path: /users/{userId}/platform/playstation/progress/sniper-elite-5
         const docRef = doc(this.db, "users", this.targetUserId, "platform", "playstation", "progress", GAME_ID);
 
         try {
@@ -580,8 +537,6 @@ const appState = {
                 lastUpdated: new Date().toISOString(),
                 progress: progress
             }, { merge: true });
-            
-            console.log(`[Firestore Success] Synced to: /users/${this.targetUserId}/platform/playstation/progress/${GAME_ID}`);
         } catch (err) {
             console.error("Firestore PlayStation Write Error:", err);
         }
@@ -592,14 +547,28 @@ const appState = {
         this.render();
     },
 
-    /* --- DOM RENDERER & OVERLAY REMOVAL --- */
-    // Line 612: Dynamic UI Rendering Loop with Loading Screen Dismissal
+    /* --- DOM RENDERER & HTML OVERLAY DISMISSAL --- */
     render: function() {
-        // Clear/Hide any static loading overlay screens
-        const overlays = document.querySelectorAll('#loading-overlay, #loading, .loading-screen, .sync-overlay');
-        overlays.forEach(el => el.style.display = 'none');
+        // Hide overlay containers by ID / class
+        const overlays = document.querySelectorAll(
+            '#loading-overlay, #loading, .loading-screen, .sync-overlay, div[id*="loading"], div[class*="loading"]'
+        );
+        overlays.forEach(el => el.style.setProperty('display', 'none', 'important'));
 
-        const container = document.getElementById('section-container'); // HTML Main Grid Target
+        // Scan text elements to forcibly clear "ESTABLISHING SECURE LINK..." & "READING FROM FIREBASE"
+        const textElements = document.querySelectorAll('div, p, span, h1, h2, h3');
+        textElements.forEach(node => {
+            if (node.innerText) {
+                const text = node.innerText.trim();
+                if (text.includes('ESTABLISHING SECURE LINK') || 
+                    text.includes('READING FROM FIREBASE') || 
+                    text.includes('SYNCING DATA...')) {
+                    node.style.setProperty('display', 'none', 'important');
+                }
+            }
+        });
+
+        const container = document.getElementById('section-container');
         if (!container) return;
         
         container.innerHTML = '';
@@ -613,7 +582,6 @@ const appState = {
 
             const sid = cat.replace(/[^a-z0-9]/gi, '');
             const section = document.createElement('div');
-            // CSS Target: .category-section, .section-collapsed
             section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''}`;
             
             section.innerHTML = `
@@ -630,10 +598,9 @@ const appState = {
                 this.toggleSection(sid);
             });
 
-            const grid = section.querySelector('.item-grid'); // CSS Target: .item-grid
+            const grid = section.querySelector('.item-grid');
             items.forEach(item => {
                 const card = document.createElement('div');
-                // CSS Target: .item-card, .completed
                 card.className = `item-card ${item.collected ? 'completed' : ''}`;
                 card.innerHTML = `
                     <div>
@@ -647,14 +614,12 @@ const appState = {
                 const actionZone = card.querySelector('.action-zone');
 
                 if (item.collected) {
-                    // CSS Target: .lock-badge, .toggle-btn
                     actionZone.innerHTML = `<button class="lock-badge outlined-text toggle-btn" style="background:#00aa44; min-height:44px; cursor:pointer;">LOGGED REGISTRY (Click to Undo)</button>`;
                     actionZone.querySelector('button').addEventListener('click', () => this.toggleItem(item.id));
                 } else {
                     const btn = document.createElement('button');
-                    // CSS Target: .toggle-btn, .outlined-text
                     btn.className = 'toggle-btn outlined-text';
-                    btn.style.minHeight = '44px'; // Enforces mobile minimum touch-target height (44px)
+                    btn.style.minHeight = '44px';
                     btn.innerText = 'Confirm Found';
                     btn.addEventListener('click', () => this.toggleItem(item.id));
                     actionZone.appendChild(btn);
@@ -665,10 +630,9 @@ const appState = {
             container.appendChild(section);
         });
 
-        // Overall progress calculations & bar updates
         const percent = Math.round((totalFound / (this.hunterData.length || 1)) * 100) || 0;
-        const barNode = document.getElementById('overall-bar'); // HTML Target: Progress bar fill element
-        const textNode = document.getElementById('percent-text'); // HTML Target: Percentage label element
+        const barNode = document.getElementById('overall-bar');
+        const textNode = document.getElementById('percent-text');
         if (barNode) barNode.style.width = percent + '%';
         if (textNode) textNode.innerText = `TOTAL CAMPAIGN COLLECTION: ${percent}%`;
     }
