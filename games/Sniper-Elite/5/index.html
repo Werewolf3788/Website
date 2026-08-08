@@ -19,7 +19,7 @@
             --bg-dark: #050505;
             --card-bg: rgba(20, 20, 25, 0.95);
             --nav-height: 60px;
-            --csv-nav-height: 40px;
+            --csv-nav-height: 44px;
             --bar-height: auto;
         }
 
@@ -84,7 +84,7 @@
             align-items: center;
         }
 
-        /* --- CSV DROPDOWN MENU BAR --- */
+        /* --- CSV DROPDOWN MENU BAR (HAMBURGER / SANDWICH SETUP ON MOBILE) --- */
         .csv-nav {
             position: fixed;
             top: var(--nav-height);
@@ -94,10 +94,35 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
-            padding: 5px 15px;
+            padding: 0 15px;
             z-index: 999;
+        }
+
+        /* Hamburger Toggle Button (Hidden on Desktop) */
+        .hamburger-btn {
+            display: none;
+            background: transparent;
+            color: var(--ser-color);
+            border: 1px solid var(--ser-color);
+            border-radius: 6px;
+            font-weight: 900;
+            font-size: 16px;
+            padding: 8px 12px;
+            cursor: pointer;
+            min-height: 44px;
+            min-width: 44px;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-transform: uppercase;
+        }
+
+        .csv-links-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
             flex-wrap: wrap;
-            gap: 15px;
         }
 
         .csv-single-btn, .csv-dropdown-btn {
@@ -129,6 +154,36 @@
         }
         .csv-dropdown-item:last-child { border-bottom: none; }
         .csv-dropdown-item:hover { background-color: rgba(255, 255, 255, 0.05); color: var(--ser-color); }
+
+        /* Mobile Hamburger Responsive Adjustments */
+        @media (max-width: 768px) {
+            .hamburger-btn {
+                display: flex; /* Show Hamburger on Mobile */
+            }
+
+            .csv-links-container {
+                display: none; /* Hide top links by default on Mobile */
+                flex-direction: column;
+                align-items: stretch;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(10, 10, 12, 0.98);
+                border-bottom: 2px solid var(--ser-color);
+                padding: 10px 15px;
+                gap: 5px;
+                box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+            }
+
+            .csv-links-container.mobile-open {
+                display: flex; /* Expand menu when hamburger is clicked */
+            }
+
+            .csv-dropdown { width: 100%; }
+            .csv-dropdown-btn, .csv-single-btn { width: 100%; justify-content: space-between; }
+            .csv-dropdown-content { position: relative; width: 100%; min-width: 100%; margin-top: 0; }
+        }
 
         /* --- LAYOUT CONTAINER (MOBILE STACKING) --- */
         .tracker-container {
@@ -249,7 +304,15 @@
         </div>
     </nav>
 
-    <nav id="csv-menu-bar" class="csv-nav"></nav>
+    <!-- CSV MENU WITH HAMBURGER BUTTON -->
+    <nav id="csv-menu-bar" class="csv-nav">
+        <button id="mobile-hamburger" class="hamburger-btn outlined-text">
+            ☰ MENU
+        </button>
+        <div id="csv-links-wrapper" class="csv-links-container">
+            <!-- Rendered by JS -->
+        </div>
+    </nav>
 
     <div class="tracker-container">
         <!-- OPERATIVE TERMINAL CONSOLE -->
@@ -806,7 +869,7 @@
                     }
                 }
 
-                const menuBar = document.getElementById('csv-menu-bar');
+                const menuWrapper = document.getElementById('csv-links-wrapper');
                 let html = '';
                 
                 const chevron = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; display: inline-block; vertical-align: middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
@@ -833,11 +896,22 @@
                     }
                 });
                 
-                menuBar.innerHTML = html;
+                menuWrapper.innerHTML = html;
                 
             } catch(e) {
                 console.error("Error loading CSV Menu:", e);
             }
+        }
+
+        /* Mobile Hamburger Toggle Listener */
+        const hamburgerBtn = document.getElementById('mobile-hamburger');
+        const linksWrapper = document.getElementById('csv-links-wrapper');
+
+        if (hamburgerBtn && linksWrapper) {
+            hamburgerBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                linksWrapper.classList.toggle('mobile-open');
+            });
         }
 
         window.addEventListener('click', function(event) {
@@ -861,6 +935,9 @@
             } else {
                 for (let i = 0; i < dropdowns.length; i++) {
                     dropdowns[i].classList.remove('show');
+                }
+                if (linksWrapper && !event.target.closest('#csv-menu-bar')) {
+                    linksWrapper.classList.remove('mobile-open');
                 }
             }
         });
