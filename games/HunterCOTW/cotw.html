@@ -1,3 +1,9 @@
+<!--
+  File: index.html
+  Location: /index.html
+  Description: COTW Master Tracker Main Interface & GA4 Setup
+  Last Updated: 2026-08-08 17:50:00 (America/Chicago)
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -37,15 +43,15 @@
         <div class="profile-header">
             <div class="active-info">
                 <div style="font-size: 0.7rem; text-transform: uppercase; color: #94a3b8;">Master Hunter Console</div>
-                <span id="hunter-name" class="hunter-glow">WEREWOLF3788 [playstation]</span>
+                <span id="hunter-name" class="hunter-glow">WEREWOLF3788 [PLAYSTATION]</span>
             </div>
             
             <div class="profile-actions">
-                <!-- Platform Selector Dropdown -->
-                <select id="platform-selector" class="profile-select" onchange="appState.switchPlatform(this.value)">
+                <!-- Platform Selector Dropdown (PlayStation mapped explicitly to 'playstation') -->
+                <select id="platform-selector" class="profile-select">
                     <option value="playstation">PlayStation</option>
-                    <option value="XBOX">Xbox</option>
-                    <option value="PC">PC</option>
+                    <option value="xbox">Xbox</option>
+                    <option value="pc">PC</option>
                 </select>
 
                 <!-- Hunter Profile Buttons -->
@@ -114,7 +120,7 @@
         </footer>
     </div>
 
-    <!-- Modular Script Import (HTML Line 106) -->
+    <!-- Modular Script Import -->
     <script type="module" src="./script.js?v=1.4"></script>
 </body>
 </html>
