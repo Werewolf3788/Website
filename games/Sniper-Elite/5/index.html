@@ -17,9 +17,7 @@
     <!--                 CSS BLOCK                  -->
     <!-- ========================================== -->
     <style>
-        /* NYT Timestamp: Sunday, May 31, 2026 at 1:52 AM EDT
-           DEV PROTOCOL: No Stripping. 80% Width. Black Outlines. KF Signature. ITC Named Windows.
-        */
+        /* CSS Line 20: Root variables for dynamic player themes */
         :root {
             --ser-color: #ff8800; /* Kevin Orange Default */
             --ser-glow: rgba(255, 136, 0, 0.6);
@@ -27,10 +25,10 @@
             --card-bg: rgba(20, 20, 25, 0.95);
             --nav-height: 60px;
             --csv-nav-height: 40px;
-            --bar-height: auto; /* Fluid footer height */
+            --bar-height: auto;
         }
 
-        /* --- GLOBAL MOBILE SETTINGS (Kevin Preferences) --- */
+        /* CSS Line 31: Global Layout & Background setup */
         body {
             margin: 0;
             padding: 0;
@@ -41,17 +39,17 @@
             background-attachment: fixed;
             color: #ffffff;
             font-family: ui-sans-serif, system-ui, sans-serif;
-            font-size: 14px; /* User Preference: 14 */
+            font-size: 14px;
             line-height: 1.5;
             overflow-x: hidden;
         }
 
-        /* Black Outlined Text Protocol */
+        /* CSS Line 48: Text outlines */
         .outlined-text {
             text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000, 0 0 5px rgba(0,0,0,0.8);
         }
 
-        /* User Preference: Header Text 30 */
+        /* CSS Line 53: Typography headers */
         h1, h2 {
             font-size: 30px; 
             text-transform: uppercase;
@@ -60,6 +58,7 @@
             line-height: 1.2;
         }
 
+        /* CSS Line 62: Background darkening overlay */
         .background-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -67,7 +66,7 @@
             z-index: -1;
         }
 
-        /* --- NAVIGATION --- */
+        /* CSS Line 70: Main Fixed Navigation Header */
         .master-nav {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -90,7 +89,7 @@
             text-shadow: 0 0 10px var(--ser-glow);
         }
 
-        /* --- CSV DROPDOWN NAV BAR --- */
+        /* CSS Line 93: CSV Google Sheets Dynamic Menu Bar */
         .csv-nav {
             position: fixed;
             top: var(--nav-height);
@@ -102,7 +101,7 @@
             align-items: center;
             padding: 5px 25px;
             z-index: 999;
-            flex-wrap: wrap; /* Allows menu to wrap naturally, preventing clipping */
+            flex-wrap: wrap;
             gap: 30px;
         }
 
@@ -134,10 +133,11 @@
         .csv-dropdown-item:last-child { border-bottom: none; }
         .csv-dropdown-item:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--ser-color); }
 
+        /* CSS Line 140: 80% Desktop Layout Grid */
         .tracker-container {
             margin-top: calc(var(--nav-height) + var(--csv-nav-height) + 15px);
             padding: 10px;
-            width: 80%; /* Master Dev Protocol Update */
+            width: 80%;
             max-width: 1400px;
             margin-left: auto;
             margin-right: auto;
@@ -148,7 +148,7 @@
             .tracker-container { width: 95%; }
         }
 
-        /* --- OPERATIVE CONSOLE --- */
+        /* CSS Line 155: Player Console Header */
         .profile-header {
             display: flex;
             flex-wrap: wrap;
@@ -169,10 +169,11 @@
         .profile-btn {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
             color: white; padding: 8px 12px; border-radius: 0.5rem; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 11px;
+            min-height: 44px; /* Mobile touch-target rule */
         }
         .active-btn { border-color: var(--ser-color); background: rgba(255, 255, 255, 0.15); }
 
-        /* Progress Header */
+        /* CSS Line 181: Main Progress Bar */
         .main-header {
             background: rgba(10, 0, 0, 0.85); padding: 25px 15px; border-radius: 1.5rem;
             border: 2px solid var(--ser-color); text-align: center; margin-bottom: 30px;
@@ -181,7 +182,7 @@
         .bar-bg { background: #000; height: 18px; border-radius: 9px; border: 1px solid #333; margin: 15px 0; overflow: hidden; }
         .bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--ser-color), #fff); transition: width 0.8s ease-out; }
 
-        /* User Preference: Section Height 50 */
+        /* CSS Line 190: 50px Height Category Headers */
         .category-header {
             display: flex; justify-content: space-between; align-items: center;
             cursor: pointer; border-left: 8px solid var(--ser-color);
@@ -206,7 +207,7 @@
 
         .item-type-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 900; text-transform: uppercase; background: #000; color: #fff; margin-bottom: 5px; width: fit-content; border: 1px solid #444;}
         
-        /* User Preference: Row Height 30 Controls */
+        /* CSS Line 217: 30px Row Controls */
         .toggle-btn, .lock-badge {
             margin-top: 10px; width: 100%; height: 30px; 
             display: flex; align-items: center; justify-content: center;
@@ -223,7 +224,7 @@
             background: rgba(5,5,5,0.9);
         }
         
-        /* KF Signature Branding */
+        /* CSS Line 235: KF Logo Styling */
         .kf-signature {
             display: inline-block;
             font-size: 24px;
@@ -236,7 +237,7 @@
 
         .reward-tag { color: #00ff00; font-weight: 900; font-size: 10px; margin-top: 4px; display: block; }
 
-        /* Loader specific hidden class */
+        /* CSS Line 250: Loader Element hiding */
         .initial-loader {
             text-align: center;
             padding: 50px 20px;
@@ -254,7 +255,6 @@
         .hidden {
             display: none !important;
         }
-
     </style>
 </head>
 
@@ -320,6 +320,7 @@
     <!--              JAVASCRIPT BLOCK              -->
     <!-- ========================================== -->
     <script type="module">
+        // JS Line 332: Firebase SDK Modules
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
@@ -348,7 +349,7 @@
             'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
         };
 
-        // --- FULL SE5 REGISTRY: MISSIONS 1-8, 10 ---
+        // JS Line 365: Master Collectibles Database
         const sniperData = [
             // MISSION 1: THE ATLANTIC WALL
             { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.' },
@@ -540,6 +541,7 @@
             { id: 'm10_wb3', cat: '10: Wolf Mountain', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury in Berghof basement (opposite bowling alley).' }
         ];
 
+        // JS Line 520: Main State Engine
         const appState = {
             activeHunter: 'Kevin',
             hunterData: [],
@@ -550,15 +552,11 @@
             init: async function() {
                 this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
                 
-                // Collapse all sections by default
                 const cats = [...new Set(this.hunterData.map(i => i.cat))];
                 cats.forEach(cat => {
                     const sid = cat.replace(/[^a-z0-9]/gi, '');
                     this.collapsedSections[sid] = true;
                 });
-
-                // Do not clear the loader here; just render structure. 
-                // The loader will be hidden once data is fetched.
 
                 try {
                     const app = initializeApp(firebaseConfig);
@@ -622,7 +620,6 @@
 
                 this.isLoaded = false;
                 
-                // Show loader while switching
                 const loader = document.getElementById('initial-loading-container');
                 if(loader) loader.classList.remove('hidden');
                 
@@ -641,7 +638,6 @@
                         });
                     }
                     
-                    // Hide static loader permanently after first load
                     if(loader) loader.classList.add('hidden');
                     this.render();
                     
@@ -657,7 +653,7 @@
                 const container = document.getElementById('section-container');
                 
                 if (!this.isLoaded) {
-                    return; // Prevent render if data isn't here yet; the loader handles this visually.
+                    return;
                 }
 
                 container.innerHTML = '';
@@ -730,7 +726,7 @@
         window.appState = appState;
         appState.init();
 
-        /* --- CSV SPREADSHEET PARSER & Top Menu Builder --- */
+        /* JS Line 670: CSV Spreadsheet Menu Builder */
         async function buildTopMenu() {
             try {
                 const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
@@ -804,7 +800,7 @@
             }
         }
 
-        // Dropdown Toggle Event Delegation
+        // Dropdown Event Listener
         window.addEventListener('click', function(event) {
             const btn = event.target.closest('.csv-dropdown-btn');
             const dropdowns = document.getElementsByClassName("csv-dropdown-content");
@@ -830,7 +826,6 @@
             }
         });
 
-        // Initialize CSV Navigation Menu
         buildTopMenu();
     </script>
 </body>
