@@ -14,7 +14,7 @@
     <script>window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', 'G-Z9M5LXQ5XN');</script>
 
     <!-- ========================================== -->
-    <!--                  CSS BLOCK                 -->
+    <!--                 CSS BLOCK                  -->
     <!-- ========================================== -->
     <style>
         /* NYT Timestamp: Sunday, May 31, 2026 at 1:52 AM EDT
@@ -235,6 +235,26 @@
         .kf-f { color: #000000; margin-left: -0.22em; display: inline-block; position: relative; z-index: 1; text-shadow: 0 0 2px rgba(255,255,255,0.3); }
 
         .reward-tag { color: #00ff00; font-weight: 900; font-size: 10px; margin-top: 4px; display: block; }
+
+        /* Loader specific hidden class */
+        .initial-loader {
+            text-align: center;
+            padding: 50px 20px;
+            color: var(--ser-color);
+            font-weight: 900;
+            letter-spacing: 2px;
+            font-size: 18px;
+        }
+
+        .initial-loader span {
+            font-size: 12px;
+            color: #aaa;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
     </style>
 </head>
 
@@ -277,6 +297,11 @@
             <div id="percent-text" class="outlined-text" style="font-weight: 900; margin-top: 5px; color: #ccc;">TOTAL COLLECTION: 0%</div>
             <div class="bar-bg"><div id="overall-bar" class="bar-fill"></div></div>
         </header>
+
+        <!-- Initial loading state element -->
+        <div id="initial-loading-container" class="initial-loader outlined-text">
+            ESTABLISHING SECURE LINK...<br><span>READING FROM FIREBASE</span>
+        </div>
 
         <!-- MISSION REGISTRY RENDERS HERE -->
         <div id="section-container"></div>
@@ -431,7 +456,7 @@
             { id: 'm5_wb3', cat: '5: Festung Guernsey', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside an offshoot room in the northern trenches.' },
 
             // MISSION 6: LIBÉRATION
-            { id: 'm6_pl1', cat: '6: Libération', name: 'They\'re Out Here', type: 'Personal Letter', desc: 'Looted from one of two soldiers who exit a truck by the start poppy field.' },
+            { id: 'm6_pl1', cat: '6: Libération', name: 'They\'re Out There', type: 'Personal Letter', desc: 'Looted from one of two soldiers who exit a truck by the start poppy field.' },
             { id: 'm6_pl2', cat: '6: Libération', name: 'Watch Your Back', type: 'Personal Letter', desc: 'Looted from guard outside western estate (Trautmann target area).' },
             { id: 'm6_pl3', cat: '6: Libération', name: 'Barely Escaped', type: 'Personal Letter', desc: 'On a black box near the large northern artillery weapon.' },
             { id: 'm6_pl4', cat: '6: Libération', name: 'Give Me Strength', type: 'Personal Letter', desc: 'Near door inside green shed with wireframe beds (north-east).' },
@@ -525,21 +550,21 @@
             init: async function() {
                 this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
                 
-                // [NO STRIPPING] Set all mission sections to collapsed by default
+                // Collapse all sections by default
                 const cats = [...new Set(this.hunterData.map(i => i.cat))];
                 cats.forEach(cat => {
                     const sid = cat.replace(/[^a-z0-9]/gi, '');
                     this.collapsedSections[sid] = true;
                 });
 
-                this.render();
+                // Do not clear the loader here; just render structure. 
+                // The loader will be hidden once data is fetched.
 
                 try {
                     const app = initializeApp(firebaseConfig);
                     this.auth = getAuth(app);
                     this.db = getFirestore(app);
                     
-                    // Firebase Mandatory Rule 3: Auth First with Custom Token check
                     const initAuth = async () => {
                         if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                             await signInWithCustomToken(this.auth, __initial_auth_token);
@@ -564,7 +589,6 @@
                 }
             },
 
-            // Firebase Mandatory Rule 1: Strict Paths + Separate Folder Fix for SE5
             bootstrapUsers: async function() {
                 const names = ['Kevin', 'Ray', 'TJ', 'Elu Cloud'];
                 for (const name of names) {
@@ -594,17 +618,21 @@
                 });
 
                 if (this.unsub) this.unsub();
-                if (!this.user) return; // Guard for unauthenticated queries
+                if (!this.user) return;
 
-                // Prevent UI interaction while Firebase is fetching
                 this.isLoaded = false;
-                this.render();
+                
+                // Show loader while switching
+                const loader = document.getElementById('initial-loading-container');
+                if(loader) loader.classList.remove('hidden');
+                
+                document.getElementById('section-container').innerHTML = '';
 
                 const path = `artifacts/${appId}/public/data/sniper_elite_5/${name}`;
                 const docRef = doc(this.db, path);
                 
                 this.unsub = onSnapshot(docRef, (snap) => {
-                    this.isLoaded = true; // Data safely acquired
+                    this.isLoaded = true;
                     if (snap.exists()) {
                         const saved = snap.data().progress || [];
                         this.hunterData = sniperData.map(item => {
@@ -612,10 +640,15 @@
                             return { ...item, collected: status ? status.collected : false };
                         });
                     }
+                    
+                    // Hide static loader permanently after first load
+                    if(loader) loader.classList.add('hidden');
                     this.render();
+                    
                 }, (error) => {
                     console.error("Snapshot error:", error);
-                    this.isLoaded = true; // Failsafe
+                    this.isLoaded = true;
+                    if(loader) loader.classList.add('hidden');
                     this.render();
                 });
             },
@@ -623,12 +656,8 @@
             render: function() {
                 const container = document.getElementById('section-container');
                 
-                // Guard: Do not render 0% state if Firebase hasn't hydrated the logic yet
                 if (!this.isLoaded) {
-                    document.getElementById('overall-bar').style.width = '0%';
-                    document.getElementById('percent-text').innerText = `SYNCING DATA...`;
-                    container.innerHTML = '<div style="text-align:center; padding: 50px 20px; color: var(--ser-color); font-weight: 900; letter-spacing: 2px; font-size: 18px;" class="outlined-text">ESTABLISHING SECURE LINK...<br><span style="font-size:12px; color:#aaa;">READING FROM FIREBASE</span></div>';
-                    return;
+                    return; // Prevent render if data isn't here yet; the loader handles this visually.
                 }
 
                 container.innerHTML = '';
@@ -701,7 +730,7 @@
         window.appState = appState;
         appState.init();
 
-        /* --- CSV SPREADSHEET PARSER AND MENU BUILDER --- */
+        /* --- CSV SPREADSHEET PARSER & Top Menu Builder --- */
         async function buildTopMenu() {
             try {
                 const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
@@ -709,19 +738,18 @@
                 const textData = await response.text();
                 
                 const rows = textData.split('\n');
-                const menuStructure = []; // Array to maintain CSV order
-                const groupMap = {}; // Helper to find existing groups
+                const menuStructure = []; 
+                const groupMap = {}; 
                 
                 let startIdx = 0;
                 if(rows[0] && rows[0].toLowerCase().includes("name")) {
-                    startIdx = 1; // Skip header
+                    startIdx = 1; 
                 }
 
                 for(let i = startIdx; i < rows.length; i++) {
-                    const rowStr = rows[i].replace(/\r/g, '').trim(); // Clean carriage returns
+                    const rowStr = rows[i].replace(/\r/g, '').trim(); 
                     if(!rowStr) continue;
                     
-                    // Split by comma ignoring commas within quotes
                     const cols = rowStr.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                     let name = cols[0] ? cols[0].replace(/^"|"$/g, '').trim() : '';
                     let group = cols[1] ? cols[1].replace(/^"|"$/g, '').trim() : '';
@@ -730,11 +758,9 @@
 
                     if(!name || !url) continue;
                     
-                    // If no group is specified, treat it as a top-level link (e.g., HOME)
                     if(!group || group.toLowerCase() === 'none') {
                         menuStructure.push({ type: 'single', name, url, img });
                     } else {
-                        // Otherwise, group it into a dropdown menu
                         if(!groupMap[group]) {
                             const newGroup = { type: 'group', name: group, items: [] };
                             menuStructure.push(newGroup);
@@ -747,7 +773,6 @@
                 const menuBar = document.getElementById('csv-menu-bar');
                 let html = '';
                 
-                // SVG Chevron Down for dropdown indicators
                 const chevron = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; display: inline-block; vertical-align: middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
 
                 menuStructure.forEach(item => {
@@ -779,7 +804,7 @@
             }
         }
 
-        // JS Driven Dropdown Toggle (Bulletproof Event Delegation)
+        // Dropdown Toggle Event Delegation
         window.addEventListener('click', function(event) {
             const btn = event.target.closest('.csv-dropdown-btn');
             const dropdowns = document.getElementsByClassName("csv-dropdown-content");
@@ -791,24 +816,21 @@
                 const targetDropdown = document.getElementById('dropdown-' + id);
                 const isCurrentlyOpen = targetDropdown.classList.contains('show');
 
-                // Close all open dropdowns first
                 for (let i = 0; i < dropdowns.length; i++) {
                     dropdowns[i].classList.remove('show');
                 }
                 
-                // Only open it if it wasn't already open
                 if (!isCurrentlyOpen) {
                     targetDropdown.classList.add('show');
                 }
             } else {
-                // Close dropdown when clicking anywhere else
                 for (let i = 0; i < dropdowns.length; i++) {
                     dropdowns[i].classList.remove('show');
                 }
             }
         });
 
-        // Initialize CSV Menu
+        // Initialize CSV Navigation Menu
         buildTopMenu();
     </script>
 </body>
