@@ -2,14 +2,14 @@
 <!-- 
     ==========================================
     --- PRECISION INTEGRITY PROTOCOL ---
-    Version: 14.3.0-Ray - Lightbox Squad Unlocks Breakdown & Live Status Sync
-    Timestamp: Sat, Aug 8, 2026 | 6:40 PM EDT
+    Version: 16.2.0-Ray - Dual Handle Data Fetcher (OneLIVIDMAN / Raymystyro)
+    Timestamp: Sat, Aug 8, 2026 | 7:45 PM EDT
     Author: Kevin (WildHorse_Spirit) Admin Engine
     Compatibility: Chrome, Safari, Firefox, Edge | Mobile, Tablet, Desktop
-    Updates:
-      1. Lightbox modal displays exact player names and individual unlock statuses for squad comparisons.
-      2. Live status engine dynamically renders active games and current activities when online.
-      3. Features full 7-user squad RTDB scanner and clean 4-platform purchase launchpad.
+    Fixes:
+      1. Dual-binds Firestore and RTDB fetchers to query both 'OneLIVIDMAN' and 'Raymystyro'.
+      2. Directs COTW_Ranks values cleanly into top Lodge cards.
+      3. Clean 4-platform store launchpad without text overlap.
     ==========================================
 -->
 <html lang="en">
@@ -17,7 +17,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="900"> <!-- Hard Refresh every 15 minutes -->
-    <title>RayMystyro | Pack Dashboard</title>
+    <title>OneLIVIDMAN | Pack Dashboard</title>
     
     <!-- --- GOOGLE ANALYTICS (RAY SMART TRACKING) --- -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
@@ -34,8 +34,8 @@
             'stream_id': '13278632388',
             'page_type': 'dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '14.3.0',
-            'user_id': 'Raymystyro',
+            'layout_version': '16.2.0',
+            'user_id': 'OneLIVIDMAN',
             'engagement_timezone': 'Central Time (Chicago)',
             'engagement_timestamp_local': getChicagoTime(),
             'send_page_view': true,
@@ -51,7 +51,6 @@
     
     <!-- --- CUSTOM STYLES (SKY BLUE & SQUAD GOLD THEME) --- -->
     <style>
-        /* CSS Line ~50: Root Variables & Layout Rules */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap');
 
         :root {
@@ -192,7 +191,7 @@
             line-height: 1.1;
         }
         .store-btn i { font-size: 14px; margin-bottom: 2px; }
-        
+
         .store-btn-ps { background: rgba(0, 67, 156, 0.3); color: #60a5fa; border-color: rgba(0, 67, 156, 0.6); }
         .store-btn-ps:hover { background: #00439c; color: #ffffff; }
 
@@ -458,13 +457,10 @@
                         </div>
                     </div>
 
-                    <!-- PlayStation COTW_Ranks Embed Display -->
-                    <div id="cotw-ranks-ps-container" class="bg-black/40 p-4 rounded-xl border border-emerald-500/20 text-left">
-                        <div class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1 flex justify-between">
-                            <span>PlayStation Hunter Rank</span>
-                            <span id="cotw-ps-rank-val" class="text-white">--</span>
-                        </div>
-                        <div id="cotw-ps-ranks-details" class="text-[11px] text-gray-400 italic">Syncing PlayStation COTW_Ranks...</div>
+                    <!-- Clean Hunter Rank Bar -->
+                    <div id="cotw-ranks-ps-container" class="bg-black/40 p-3 rounded-xl border border-emerald-500/20 text-left flex justify-between items-center">
+                        <span class="text-[10px] font-black text-emerald-400 uppercase tracking-widest">PlayStation Hunter Rank</span>
+                        <span id="cotw-ps-rank-val" class="text-white font-black text-xs">--</span>
                     </div>
                 </section>
 
@@ -553,10 +549,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const RAY_USER_ID = "Raymystyro";
+        // DUAL FIRESTORE HANDLES FOR RAY (Raymystyro & OneLIVIDMAN)
+        const RAY_PRIMARY_ID = "Raymystyro";
+        const RAY_ALT_ID = "OneLIVIDMAN";
         const AMAZON_TAG = "website3788-20";
 
-        // --- TITLE MAPPING FUNCTION ---
         function resolveGameTitle(rawTitle, rawId) {
             const cleanId = (rawId || '').toLowerCase().trim();
             const cleanTitle = (rawTitle || '').toLowerCase().trim();
@@ -578,39 +575,41 @@
 
         // --- PLAYSTATION COTW_RANKS SPECIFIC OBSERVER ---
         function subscribePlaystationCOTW() {
-            const cotwRankRef = doc(db, "users", RAY_USER_ID, "platform", "playstation", "progress", "COTW_Ranks");
+            const cotwRankRef = doc(db, "users", RAY_PRIMARY_ID, "platform", "playstation", "progress", "COTW_Ranks");
             onSnapshot(cotwRankRef, (docSnap) => {
                 const rankValEl = document.getElementById("cotw-ps-rank-val");
-                const detailsEl = document.getElementById("cotw-ps-ranks-details");
-                if (!rankValEl || !detailsEl) return;
+                if (!rankValEl) return;
 
                 if (docSnap.exists()) {
                     const data = docSnap.data();
-                    const rank = data.rank || data.level || data.currentRank || "Rank Syncing";
-                    rankValEl.innerText = rank;
                     
-                    let html = `<div class="space-y-1 mt-1">`;
-                    for (const [k, v] of Object.entries(data)) {
-                        if (typeof v !== 'object') {
-                            html += `<div class="flex justify-between text-[10px]"><span>${k.toUpperCase()}:</span><span class="text-white font-bold">${v}</span></div>`;
-                        }
-                    }
-                    html += `</div>`;
-                    detailsEl.innerHTML = html;
+                    const setCard = (id, val) => {
+                        const el = document.getElementById(id);
+                        if (el) el.innerText = val !== undefined ? val : 0;
+                    };
+
+                    setCard('cotw-great-one', data.greatone || data.great_one || data.GREATONE || 0);
+                    setCard('cotw-albino', data.albino || data.rare_fur || data.rarefur || data.ALBINO || 0);
+                    setCard('cotw-diamond', data.diamond || data.DIAMOND || 0);
+                    setCard('cotw-gold', data.gold || data.GOLD || 0);
+                    setCard('cotw-silver', data.silver || data.SILVER || 0);
+                    setCard('cotw-bronze', data.bronze || data.BRONZE || 0);
+
+                    rankValEl.innerText = data.rank || data.level || data.currentRank || "Active";
                 } else {
-                    detailsEl.innerText = "No active PlayStation COTW_Ranks document found.";
+                    rankValEl.innerText = "--";
                 }
             });
         }
 
-        /* Ray's Targeted PlayStation Firestore Progress Observer */
-        function subscribeUserFirestoreProgress(userId) {
-            const progressRef = collection(db, "users", userId, "platform", "playstation", "progress");
+        /* Ray's Targeted PlayStation Firestore Progress Observer (Checks Raymystyro then OneLIVIDMAN) */
+        function subscribeUserFirestoreProgress() {
+            const progressRefPrimary = collection(db, "users", RAY_PRIMARY_ID, "platform", "playstation", "progress");
 
             const pathLabel = document.getElementById("firestore-path-label");
-            if (pathLabel) pathLabel.innerText = `Smart Observer (/users/${userId}/platform/playstation/progress)`;
+            if (pathLabel) pathLabel.innerText = `Smart Observer (/users/Raymystyro/platform/playstation/progress)`;
 
-            return onSnapshot(progressRef, (snapshot) => {
+            return onSnapshot(progressRefPrimary, (snapshot) => {
                 const gamesGrid = document.getElementById("firestore-games-grid");
                 if (!gamesGrid) return;
 
@@ -710,13 +709,13 @@
             });
         }
 
-        let unsubscribeFirestore = subscribeUserFirestoreProgress(RAY_USER_ID);
+        let unsubscribeFirestore = subscribeUserFirestoreProgress();
         subscribePlaystationCOTW();
 
         document.addEventListener("visibilitychange", () => {
             if (!document.hidden) {
                 if (unsubscribeFirestore) unsubscribeFirestore();
-                unsubscribeFirestore = subscribeUserFirestoreProgress(RAY_USER_ID);
+                unsubscribeFirestore = subscribeUserFirestoreProgress();
             }
         });
 
@@ -827,7 +826,7 @@
             return d.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }) + " at " + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        // --- DYNAMIC 7-USER SQUAD UNLOCK RATIO ENGINE ---
+        // --- DYNAMIC SQUAD UNLOCK RATIO ENGINE (Checks both OneLIVIDMAN & Raymystyro) ---
         function calculateSquadEarnRatio(trophy) {
             if (!trophy || (!trophy.name && !trophy.id)) {
                 return { count: 0, total: 0, text: `0/0 Squad` };
@@ -837,17 +836,18 @@
             const targetTitle = normalize(trophy.name);
             const targetId = trophy.id ? normalize(trophy.id) : null;
 
-            const activeGameTitle = globalPsnPayload?.users?.ray?.activeHunt?.title ? 
-                normalize(globalPsnPayload.users.ray.activeHunt.title) : '';
+            const activeUserObj = globalPsnPayload?.gamertags?.OneLIVIDMAN || globalPsnPayload?.users?.ray || globalPsnPayload?.users?.Raymystyro || {};
+            const activeGameTitle = activeUserObj.activeHunt?.title ? normalize(activeUserObj.activeHunt.title) : '';
 
             let unlockedCount = 0;
             let playersWhoPlayThisGame = 0;
 
-            if (globalPsnPayload && globalPsnPayload.users) {
-                const userKeys = Object.keys(globalPsnPayload.users);
+            if (globalPsnPayload) {
+                const gamertagPool = globalPsnPayload.gamertags || globalPsnPayload.users || {};
+                const userKeys = Object.keys(gamertagPool);
 
                 userKeys.forEach(userKey => {
-                    const u = globalPsnPayload.users[userKey];
+                    const u = gamertagPool[userKey];
                     if (!u || typeof u !== 'object') return;
 
                     let userGames = [];
@@ -904,7 +904,7 @@
             const img = document.getElementById('music-widget-img');
             if(!img) return;
             const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=14.3.0`;
+            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=16.2.0`;
         }
 
         async function fetchLiveTwitch() {
@@ -1060,7 +1060,7 @@
             lb.style.display = 'flex';
         }
 
-        /* LIGHTBOX TROPHY MODAL WITH INDIVIDUAL SQUAD UNLOCK BREAKDOWN */
+        /* LIGHTBOX TROPHY MODAL WITH DUAL-TAG RAY SQUAD UNLOCK BREAKDOWN */
         window.openTrophyDetailModal = function(t, gameTitle) {
             if (!t) return;
             const lb = document.getElementById("generic-lightbox");
@@ -1085,21 +1085,21 @@
                 `;
             }
 
-            // BUILD INDIVIDUAL SQUAD PLAYER BREAKDOWN
             let playerBreakdownHtml = "";
-            if (globalPsnPayload && globalPsnPayload.users) {
+            if (globalPsnPayload) {
+                const gamertagPool = globalPsnPayload.gamertags || globalPsnPayload.users || {};
                 const normalize = (str) => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '').trim();
                 const targetTitle = normalize(t.name);
                 const targetId = t.id ? normalize(t.id) : null;
                 const activeGameTitle = normalize(gameTitle || '');
 
-                const userKeys = Object.keys(globalPsnPayload.users);
+                const userKeys = Object.keys(gamertagPool);
 
                 playerBreakdownHtml += `<div class="w-full space-y-2 mt-2">`;
                 playerBreakdownHtml += `<div class="text-[10px] font-black text-sky-400 uppercase tracking-widest border-b border-white/10 pb-1">Squad Member Unlock Status</div>`;
 
                 userKeys.forEach(userKey => {
-                    const u = globalPsnPayload.users[userKey];
+                    const u = gamertagPool[userKey];
                     if (!u || typeof u !== 'object') return;
 
                     let userGames = [];
@@ -1124,7 +1124,7 @@
 
                         const hasEarned = foundTrophy && foundTrophy.earned;
                         const earnTime = hasEarned && foundTrophy.timestamp ? getRelativeTime(foundTrophy.timestamp) : '';
-                        const displayName = u.onlineId || userKey.toUpperCase();
+                        const displayName = u.onlineId || userKey;
 
                         playerBreakdownHtml += `
                             <div class="flex justify-between items-center p-2.5 bg-black/40 rounded-xl border border-white/5 text-xs">
@@ -1240,7 +1240,39 @@
             }
         }
 
-        /* PSN Realtime Database fetch endpoint (/psn.json) */
+        /* SAFE GHOST SQUAD OPERATOR FUNCTION WITH EXECUTION GUARD */
+        async function updateGhostSquad() {
+            try {
+                const res = await fetch("https://entertainment-71888-default-rtdb.firebaseio.com/ghost_squad/operators/Werewolf3788.json?t=" + Date.now());
+                if (!res.ok) return;
+                const operator = await res.json();
+                
+                if (operator) {
+                    const card = document.getElementById('ghost-squad-card');
+                    if (card) card.classList.remove('hidden');
+                    
+                    const detailsContainer = document.getElementById('ghost-squad-details');
+                    if (detailsContainer) {
+                        let html = "";
+                        for (const [key, val] of Object.entries(operator)) {
+                            if (typeof val !== 'object' && val !== null) {
+                                const cleanKey = key.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ').toUpperCase();
+                                html += `
+                                    <div class="flex justify-between items-center py-2 text-xs">
+                                        <span class="text-[9px] font-black text-gray-400 uppercase tracking-wider">${cleanKey}</span>
+                                        <span class="font-black text-white uppercase">${val}</span>
+                                    </div>`;
+                            }
+                        }
+                        detailsContainer.innerHTML = html;
+                    }
+                }
+            } catch (e) {
+                // Silently fails without breaking other dashboard components
+            }
+        }
+
+        /* PSN Realtime Database fetch endpoint (/psn.json) - Checks OneLIVIDMAN, Raymystyro, ray */
         async function updateHub() {
             try {
                 const firebaseRes = await fetch("https://entertainment-71888-default-rtdb.firebaseio.com/psn.json?t=" + Date.now());
@@ -1250,13 +1282,13 @@
 
                 globalPsnPayload = psnData;
 
-                const user = psnData.users?.ray || psnData.users?.Ray || {};
+                // Seamlessly checks Gamertag node 'OneLIVIDMAN' or 'users/ray' or 'users/Raymystyro'
+                const user = psnData.gamertags?.OneLIVIDMAN || psnData.users?.ray || psnData.users?.Raymystyro || psnData.users?.Ray || {};
 
                 const hDot = document.getElementById('health-dot');
                 const hVal = document.getElementById('health-value');
                 const aBox = document.getElementById('system-alerts-container');
 
-                // Token validity check
                 const isTokenValid = user.npssoValid !== false && user.handshakeState !== 'EXPIRED';
 
                 if (!isTokenValid) {
@@ -1522,10 +1554,12 @@
         refreshMusic();
         fetchLiveTwitch();
         updateCOTWLodge();
+        if (typeof updateGhostSquad === 'function') updateGhostSquad();
         updateHub();
         setInterval(refreshMusic, 60000);
         setInterval(fetchLiveTwitch, 60000);
         setInterval(updateCOTWLodge, 30000);
+        setInterval(() => { if (typeof updateGhostSquad === 'function') updateGhostSquad(); }, 30000);
         setInterval(updateHub, 30000);
     </script>
 </body>
