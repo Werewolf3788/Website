@@ -1,576 +1,346 @@
 /* ============================================================================
    File: tracker.js
-   Version: 1.8.3 | Updated: Friday, August 7, 2026
-   Description: Dynamic SPA Sniper Elite 5 Tracker Engine
+   Version: 1.9.0 | Updated: Friday, August 7, 2026
+   Description: Dynamic SPA Sniper Elite 5 Tracker Engine (Firebase v11.6.1 + Canvas Sync)
    Project: entertainment-71888
-   Firestore Path: /users/{userId}/platform/playstation/progress/sniper-elite-5
-   Data Source: Local Embedded Collectibles & GitHub Dynamic Menu Sync
-   
-   Section Notes:
-     - Lines 21-36: Firebase Core Configuration (entertainment-71888)
-     - Lines 38-42: System Constants & API Endpoints
-     - Lines 44-320: Embedded Master Collectibles Dataset
-     - Lines 322-385: SPA AppState Initialization & Menu Loader
-     - Lines 387-465: Firestore Stream Engine & Error Guards
-     - Lines 467-520: Direct Sync Operations
-     - Lines 522-630: DOM Renderer & Hardcoded Loading Screen Dismissal
+   Firestore Path: artifacts/{appId}/public/data/sniper_elite_5/{userId}
+   Data Source: Embedded Master Collectibles & Remote Google Sheets CSV Navigation
    ============================================================================ */
 
-/* === SECTION: Core Imports & Firebase Config === */
-// Line 21: Modular Web SDK Imports
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js?v=20260804";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js?v=20260804";
-import { 
-    getFirestore, 
-    doc, 
-    onSnapshot, 
-    setDoc 
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js?v=20260804";
+/* === SECTION: Core Imports & Firebase Initialization === */
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
+import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-// Line 31: Project entertainment-71888 Credentials
-const firebaseConfig = {
-    apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
-    authDomain: "entertainment-71888.firebaseapp.com",
-    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
-    projectId: "entertainment-71888",
-    storageBucket: "entertainment-71888.firebasestorage.app",
-    messagingSenderId: "660524340277",
-    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
-    measurementId: "G-CTYHDF4MSD"
+// Secure environment variable injection for Canvas compatibility
+const appId = typeof __app_id !== 'undefined' ? __app_id : 'game-tracker-5b2ef';
+let firebaseConfig = {
+    apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
+    authDomain: "game-tracker-5b2ef.firebaseapp.com",
+    databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
+    projectId: "game-tracker-5b2ef",
+    storageBucket: "game-tracker-5b2ef.firebasestorage.app",
+    messagingSenderId: "555667047127",
+    appId: "1:555667047127:web:af6f468ca3cf06759aa692",
+    measurementId: "G-QJ7ZFH25ER"
 };
 
-// Line 43: Configuration Constants
-const GAME_ID = "sniper-elite-5";
-const DEFAULT_PLATFORM = "playstation";
-const RAW_JSON_DATA_URL = "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/Sniper-Elite/5/se.json";
+if (typeof __firebase_config !== 'undefined') {
+    firebaseConfig = JSON.parse(__firebase_config);
+}
+
+const userThemes = {
+    'Kevin': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
+    'Ray': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
+    'TJ': { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)' },
+    'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
+};
 
 /* === SECTION: Embedded Master Collectibles Dataset === */
-// Line 49: Embedded Fallback Array
-const LOCAL_MASTER_DATASET = [
-  { "id": "m1_pl1", "cat": "1: The Atlantic Wall", "name": "Picked Some Violets", "type": "Personal Letter", "desc": "North-east map sector, on a chest inside a single building guarded by 2 soldiers." },
-  { "id": "m1_pl2", "cat": "1: The Atlantic Wall", "name": "Upcoming Delivery", "type": "Personal Letter", "desc": "Central farm, inside the southern farmhouse upstairs; climb the attic ladder." },
-  { "id": "m1_pl3", "cat": "1: The Atlantic Wall", "name": "Violets Are Wilting", "type": "Personal Letter", "desc": "Northern sector building near the AA gun objective; found upstairs in the attic." },
-  { "id": "m1_pl4", "cat": "1: The Atlantic Wall", "name": "Violets Don't Wilt", "type": "Personal Letter", "desc": "Town hotel upstairs bedroom; locked inside the wall safe (requires code or charge)." },
-  { "id": "m1_pl5", "cat": "1: The Atlantic Wall", "name": "Pests in the Garden", "type": "Personal Letter", "desc": "Far south-west promenade tip, inside the open pagoda structure near rocket launchers." },
-  { "id": "m1_pl6", "cat": "1: The Atlantic Wall", "name": "Boches at the Door", "type": "Personal Letter", "desc": "Inside Marcel's resistance house on the ground floor sofa." },
-  { "id": "m1_cd1", "cat": "1: The Atlantic Wall", "name": "Resistance Captured", "type": "Classified Doc", "desc": "Bathhouse main objective item; automatically acquired during infiltration." },
-  { "id": "m1_cd2", "cat": "1: The Atlantic Wall", "name": "Beach Defences", "type": "Classified Doc", "desc": "North-west corner armory building; locked inside the office safe." },
-  { "id": "m1_cd3", "cat": "1: The Atlantic Wall", "name": "Lacking Air Support", "type": "Classified Doc", "desc": "Inside the generator bunker safe; requires a satchel charge to open." },
-  { "id": "m1_cd4", "cat": "1: The Atlantic Wall", "name": "Atlantikwall Report", "type": "Classified Doc", "desc": "Northern AA gun sector building; downstairs office safe." },
-  { "id": "m1_hi1", "cat": "1: The Atlantic Wall", "name": "Resistance Photo", "type": "Hidden Item", "desc": "South-west town sector, upstairs bedroom inside the Pharmacie building." },
-  { "id": "m1_hi2", "cat": "1: The Atlantic Wall", "name": "Radio Tin", "type": "Hidden Item", "desc": "Central farm compound, located directly inside the animal stables." },
-  { "id": "m1_hi3", "cat": "1: The Atlantic Wall", "name": "FFI Flag", "type": "Hidden Item", "desc": "Far west edge of the map, on the ground floor kitchen counter." },
-  { "id": "m1_se1", "cat": "1: The Atlantic Wall", "name": "Stone Eagle #1", "type": "Stone Eagle", "desc": "North-east map border; perched on a red-tiled chimney outside the play area." },
-  { "id": "m1_se2", "cat": "1: The Atlantic Wall", "name": "Stone Eagle #2", "type": "Stone Eagle", "desc": "South-west town sector; visible on the roof ridge of the coastal hotel." },
-  { "id": "m1_se3", "cat": "1: The Atlantic Wall", "name": "Stone Eagle #3", "type": "Stone Eagle", "desc": "South-east bunker beach; perched on the roof peak of the Vantage Point building." },
-  { "id": "m1_wb1", "cat": "1: The Atlantic Wall", "name": "Rifle Workbench", "type": "Workbench", "desc": "Inside the locked room of the Vantage Point building." },
-  { "id": "m1_wb2", "cat": "1: The Atlantic Wall", "name": "SMG Workbench", "type": "Workbench", "desc": "Marcel's resistance house attic floor; access via external wall vines." },
-  { "id": "m1_wb3", "cat": "1: The Atlantic Wall", "name": "Pistol Workbench", "type": "Workbench", "desc": "North-west corner locked armory compound room." },
-  { "id": "m2_pl1", "cat": "2: Occupied Residence", "name": "Do Not Fail Me, Nephew.", "type": "Personal Letter", "desc": "Chateau first floor, sitting on a desk inside the small office with red carpet." },
-  { "id": "m2_pl2", "cat": "2: Occupied Residence", "name": "Need A Scapegoat", "type": "Personal Letter", "desc": "Chateau first floor, on a table directly at the foot of the bedroom bed." },
-  { "id": "m2_pl3", "cat": "2: Occupied Residence", "name": "Brother, I Have A Plan.", "type": "Personal Letter", "desc": "Chateau top floor, on a nightstand in the servant's quarters dorm room." },
-  { "id": "m2_pl4", "cat": "2: Occupied Residence", "name": "Good Plan, Let's Do It.", "type": "Personal Letter", "desc": "Inside the sniper outpost tower north of the chateau courtyard." },
-  { "id": "m2_cd1", "cat": "2: Occupied Residence", "name": "Orders of the Day", "type": "Classified Doc", "desc": "Chateau first floor office. Alternates: Western tent, central outpost, or Woodland Ford." },
-  { "id": "m2_cd2", "cat": "2: Occupied Residence", "name": "Renovations Completed", "type": "Classified Doc", "desc": "Chateau first floor, on the primary desk inside Möller's main office." },
-  { "id": "m2_cd3", "cat": "2: Occupied Residence", "name": "Operation Kraken", "type": "Classified Doc", "desc": "Inside Möller's hidden wall study; reveal by interacting with office secret triggers." },
-  { "id": "m2_cd4", "cat": "2: Occupied Residence", "name": "New Orders, Effective Immediately", "type": "Classified Doc", "desc": "Inside the locked weapons chamber at the north-east Waffenkammer building." },
-  { "id": "m2_cd5", "cat": "2: Occupied Residence", "name": "Immediate Request For Attic Repairs", "type": "Classified Doc", "desc": "North-east Waffenkammer building table. Alternate: Chateau top floor padlock door." },
-  { "id": "m2_cd6", "cat": "2: Occupied Residence", "name": "Grateful, Thanks.", "type": "Classified Doc", "desc": "Sitting directly on the desk inside Möller's secret document study room." },
-  { "id": "m2_hi1", "cat": "2: Occupied Residence", "name": "Old Man Statuette", "type": "Hidden Item", "desc": "Chateau first floor bedroom; open the safe hidden behind the wall painting." },
-  { "id": "m2_hi2", "cat": "2: Occupied Residence", "name": "Group Statuette", "type": "Hidden Item", "desc": "Chateau top floor servant room chest; unlockable via standard lockpicks." },
-  { "id": "m2_hi3", "cat": "2: Occupied Residence", "name": "Soldier Statuette", "type": "Hidden Item", "desc": "Looted from the body of the Sniper positioned in the north tower outpost." },
-  { "id": "m2_se1", "cat": "2: Occupied Residence", "name": "Stone Eagle #1", "type": "Stone Eagle", "desc": "Perched on the roof apex of the munitions farmhouse in the north-west." },
-  { "id": "m2_se2", "cat": "2: Occupied Residence", "name": "Stone Eagle #2", "type": "Stone Eagle", "desc": "Look west from the central river bridge; sits on the jagged river cliffs." },
-  { "id": "m2_se3", "cat": "2: Occupied Residence", "name": "Stone Eagle #3", "type": "Stone Eagle", "desc": "Sits on the roof ridge of the stone outbuilding north of the chateau." },
-  { "id": "m2_wb1", "cat": "2: Occupied Residence", "name": "Rifle Workbench", "type": "Workbench", "desc": "Chateau basement cellar; access via the ramp in the south-east courtyard." },
-  { "id": "m2_wb2", "cat": "2: Occupied Residence", "name": "SMG Workbench", "type": "Workbench", "desc": "Upstairs room of the house west of the chateau; access via external wall vines." },
-  { "id": "m2_wb3", "cat": "2: Occupied Residence", "name": "Pistol Workbench", "type": "Workbench", "desc": "Inside the locked weapon vault room at the north-east Waffenkammer building." },
-  { "id": "m3_pl1", "cat": "3: Spy Academy", "name": "Parking Problems", "type": "Personal Letter", "desc": "South-west town gate area, resting on top of a trash bin next to a white staff car." },
-  { "id": "m3_pl2", "cat": "3: Spy Academy", "name": "Fragile, Do Not Break.", "type": "Personal Letter", "desc": "At the southern end of a long road leading to the town." },
-  { "id": "m3_pl3", "cat": "3: Spy Academy", "name": "Do Not Be Late!", "type": "Personal Letter", "desc": "Looted from an enemy with a triangle-shaped hat patrolling west of the white car." },
-  { "id": "m3_pl4", "cat": "3: Spy Academy", "name": "It's Easy Money", "type": "Personal Letter", "desc": "On a desk inside the stone sniper defense tower along the north-east wall." },
-  { "id": "m3_pl5", "cat": "3: Spy Academy", "name": "Just Attend One!", "type": "Personal Letter", "desc": "Looted from the commanding officer at the very top of the eastern church belltower." },
-  { "id": "m3_cd1", "cat": "3: Spy Academy", "name": "Priority Package!", "type": "Classified Doc", "desc": "On a counter inside the guardhouse next to the road checkpoint barrier." },
-  { "id": "m3_cd2", "cat": "3: Spy Academy", "name": "Won't Be Attending", "type": "Classified Doc", "desc": "South-east section town building top floor room; resting on a table." },
-  { "id": "m3_cd3", "cat": "3: Spy Academy", "name": "Training Scenarios", "type": "Classified Doc", "desc": "Found sitting directly on the desk inside the Spy Master's upper office." },
-  { "id": "m3_cd4", "cat": "3: Spy Academy", "name": "Resource Request", "type": "Classified Doc", "desc": "Top floor room of the eastern church belltower, near the sniper position." },
-  { "id": "m3_cd5", "cat": "3: Spy Academy", "name": "Armoury Exposed.", "type": "Classified Doc", "desc": "South-east section town building top floor room; resting on the couch." },
-  { "id": "m3_hi1", "cat": "3: Spy Academy", "name": "Kriegsmarine Playing Cards", "type": "Hidden Item", "desc": "On a tavern table inside the drinking establishment in the western town sector." },
-  { "id": "m3_hi2", "cat": "3: Spy Academy", "name": "Ornate Compass", "type": "Hidden Item", "desc": "Locked inside the wall safe within the upper Spy Master's Office room." },
-  { "id": "m3_hi3", "cat": "3: Spy Academy", "name": "Covert Ops Field Manual", "type": "Hidden Item", "desc": "Northern sector large training hall; resting on a ground floor table." },
-  { "id": "m3_se1", "cat": "3: Spy Academy", "name": "Stone Eagle #1", "type": "Stone Eagle", "desc": "Look back at the distant island castle from the southern beach starting view." },
-  { "id": "m3_se2", "cat": "3: Spy Academy", "name": "Stone Eagle #2", "type": "Stone Eagle", "desc": "Sits on the side architectural tier of a small tower near the central town road." },
-  { "id": "m3_se3", "cat": "3: Spy Academy", "name": "Stone Eagle #3", "type": "Stone Eagle", "desc": "Perched on top of sunken tower ruins in the water, in the very north." },
-  { "id": "m3_wb1", "cat": "3: Spy Academy", "name": "Rifle Workbench", "type": "Workbench", "desc": "Northern castle ramparts room; clear the padlock or climb outer wall vines." },
-  { "id": "m3_wb2", "cat": "3: Spy Academy", "name": "SMG Workbench", "type": "Workbench", "desc": "Ground floor of the central road building; open the padlocked door or climb in." },
-  { "id": "m3_wb3", "cat": "3: Spy Academy", "name": "Pistol Workbench", "type": "Workbench", "desc": "Inside the secure weapons chamber vault of the Waffenkammer building." },
-  { "id": "m4_pl1", "cat": "4: War Factory", "name": "Klaus! You Idiot!", "type": "Personal Letter", "desc": "On a table inside the gatehouse office at the eastern side of the dam walls." },
-  { "id": "m4_pl2", "cat": "4: War Factory", "name": "The Suspense", "type": "Personal Letter", "desc": "Upstairs in the Machine Control Room building located at the far north edge." },
-  { "id": "m4_pl3", "cat": "4: War Factory", "name": "Sheer's Notebook", "type": "Personal Letter", "desc": "West side of the Blast Furnace structure, upstairs inside the furnace area." },
-  { "id": "m4_pl4", "cat": "4: War Factory", "name": "Losing The Time", "type": "Personal Letter", "desc": "Upstairs side room at the northern tip of the central factory warehouse hall." },
-  { "id": "m4_pl5", "cat": "4: War Factory", "name": "Your Order Awaits", "type": "Personal Letter", "desc": "Ground floor corner desk inside the large industrial foundry warehouse." },
-  { "id": "m4_pl6", "cat": "4: War Factory", "name": "Ehrlich's Done For", "type": "Personal Letter", "desc": "Behind the locked door inside the southwestern Trainyard Office room." },
-  { "id": "m4_cd1", "cat": "4: War Factory", "name": "Shipping Orders", "type": "Classified Doc", "desc": "Logistics office safe item; mandatory main objective clear requirement." },
-  { "id": "m4_cd2", "cat": "4: War Factory", "name": "No More Games.", "type": "Classified Doc", "desc": "Northern map scrapyard; sitting out in the open on a pile of raw logs." },
-  { "id": "m4_cd3", "cat": "4: War Factory", "name": "Bureaucratic Oaf!", "type": "Classified Doc", "desc": "On a small desk inside the office shanty built near the wooden watchtower." },
-  { "id": "m4_cd4", "cat": "4: War Factory", "name": "Increase Security!", "type": "Classified Doc", "desc": "Inside the locked ground floor side office of the Smelting Vat building." },
-  { "id": "m4_hi1", "cat": "4: War Factory", "name": "Gold Pocket Watch", "type": "Hidden Item", "desc": "Northern scrapyard floor, sitting on structural metal beams near the alarm box." },
-  { "id": "m4_hi2", "cat": "4: War Factory", "name": "Stealth Plating", "type": "Hidden Item", "desc": "Ground floor of the Logistics Office depot; resting on a wooden crate." },
-  { "id": "m4_hi3", "cat": "4: War Factory", "name": "P.1000 Ratte Plans", "type": "Hidden Item", "desc": "Upstairs walkway tracking along the southern edge of the main locomotive hall." },
-  { "id": "m4_se1", "cat": "4: War Factory", "name": "Stone Eagle #1", "type": "Stone Eagle", "desc": "Perched on old castle stone ruins viewable across the river along the west edge." },
-  { "id": "m4_se2", "cat": "4: War Factory", "name": "Stone Eagle #2", "type": "Stone Eagle", "desc": "Sits on the roof apex of the circular red furnace building in the southeast." },
-  { "id": "m4_se3", "cat": "4: War Factory", "name": "Stone Eagle #3", "type": "Stone Eagle", "desc": "Perched on the roof peak of the massive red brick factory by the southeast exit." },
-  { "id": "m4_wb1", "cat": "4: War Factory", "name": "Rifle Workbench", "type": "Workbench", "desc": "Basement cellar of the industrial foundry warehouse; lockpick upper entry door." },
-  { "id": "m4_wb2", "cat": "4: War Factory", "name": "SMG Workbench", "type": "Workbench", "desc": "Upstairs storage loft north of Logistics; use a satchel charge or officer key." },
-  { "id": "m4_wb3", "cat": "4: War Factory", "name": "Pistol Workbench", "type": "Workbench", "desc": "Inside the ground floor secure vault room of the Smelting Vat building." },
-  { "id": "m5_pl1", "cat": "5: Festung Guernsey", "name": "No Need to Worry", "type": "Personal Letter", "desc": "Looted from the officer stationed inside the southeastern Martello defense tower." },
-  { "id": "m5_pl2", "cat": "5: Festung Guernsey", "name": "Getting Off The Island.", "type": "Personal Letter", "desc": "In the underground concrete bunker room hidden below the small central farmhouse." },
-  { "id": "m5_pl3", "cat": "5: Festung Guernsey", "name": "Confiscated Goods", "type": "Personal Letter", "desc": "Looted from the brown-uniform target patrolling the Mirus construction pit." },
-  { "id": "m5_pl4", "cat": "5: Festung Guernsey", "name": "Escaping Islanders", "type": "Personal Letter", "desc": "Upstairs defensive platform room inside the large southwestern bunker." },
-  { "id": "m5_pl5", "cat": "5: Festung Guernsey", "name": "Harass The Huns!", "type": "Personal Letter", "desc": "Hospital sector safehouse basement; crawl under the table to access the ladder." },
-  { "id": "m5_cd1", "cat": "5: Festung Guernsey", "name": "Grin and Bear It!", "type": "Classified Doc", "desc": "Fort Hommet bunker safe item; climb external wall vines or use AP ammo on lock." },
-  { "id": "m5_cd2", "cat": "5: Festung Guernsey", "name": "Cut Costs Cost Lives", "type": "Classified Doc", "desc": "Western main battery facility; resting on a desk directly in front of the core safe." },
-  { "id": "m5_cd3", "cat": "5: Festung Guernsey", "name": "Oafish Officers", "type": "Classified Doc", "desc": "On a desk inside a side office tracking the west corridor of the underground hospital." },
-  { "id": "m5_cd4", "cat": "5: Festung Guernsey", "name": "Transport Troubles", "type": "Classified Doc", "desc": "Underground hospital northern sector; main objective item (unmissable)." },
-  { "id": "m5_cd5", "cat": "5: Festung Guernsey", "name": "Drastic Measures", "type": "Classified Doc", "desc": "Western map zone; resting on a ground floor table inside the high observation tower." },
-  { "id": "m5_hi1", "cat": "5: Festung Guernsey", "name": "Todt Uniform Badge", "type": "Hidden Item", "desc": "Inside the green tool shanty built along the upper tier of the Mirus site." },
-  { "id": "m5_hi2", "cat": "5: Festung Guernsey", "name": "Crystal Radio", "type": "Hidden Item", "desc": "In the underground concrete bunker room hidden below the small central farmhouse." },
-  { "id": "m5_hi3", "cat": "5: Festung Guernsey", "name": "Comfort Bag", "type": "Hidden Item", "desc": "Upstairs bedroom closet area inside the primary residential farmhouse." },
-  { "id": "m5_se1", "cat": "5: Festung Guernsey", "name": "Stone Eagle #1", "type": "Stone Eagle", "desc": "Perched on the highest concrete peak of the central stone church tower." },
-  { "id": "m5_se2", "cat": "5: Festung Guernsey", "name": "Stone Eagle #2", "type": "Stone Eagle", "desc": "Sits on a high stone retaining bank running parallel to the northeastern main road." },
-  { "id": "m5_se3", "cat": "5: Festung Guernsey", "name": "Stone Eagle #3", "type": "Stone Eagle", "desc": "Perched directly on top of the western coastal defense observation tower structure." },
-  { "id": "m5_wb1", "cat": "5: Festung Guernsey", "name": "Rifle Workbench", "type": "Workbench", "desc": "Inside the high church tower loft; scale the external wall vines to enter." },
-  { "id": "m5_wb2", "cat": "5: Festung Guernsey", "name": "SMG Workbench", "type": "Workbench", "desc": "Hospital sector safehouse basement; crawl under the table entry corridor." },
-  { "id": "m5_wb3", "cat": "5: Festung Guernsey", "name": "Pistol Workbench", "type": "Workbench", "desc": "Tucked inside a concrete trench segment right next to the northern AA gun." },
-  { "id": "m6_pl1", "cat": "6: Libération", "name": "They're Out There", "type": "Personal Letter", "desc": "Looted from the bald, green-uniformed soldier in the southeastern farmhouse yard." },
-  { "id": "m6_pl2", "cat": "6: Libération", "name": "Watch Your Back", "type": "Personal Letter", "desc": "Looted from the estate guard patrolling outside Major Trautmann's manor yard." },
-  { "id": "m6_pl3", "cat": "6: Libération", "name": "Barely Escaped!", "type": "Personal Letter", "desc": "Northern artillery field fortifications; resting inside the trench network." },
-  { "id": "m6_pl4", "cat": "6: Libération", "name": "Give Me Strength", "type": "Personal Letter", "desc": "Northeastern sector green barracks house; on a crate by the door frames." },
-  { "id": "m6_pl5", "cat": "6: Libération", "name": "Vengeance Is Nigh!", "type": "Personal Letter", "desc": "Central farm sector; hidden upstairs inside the attic space of the old barn house." },
-  { "id": "m6_cd1", "cat": "6: Libération", "name": "Hold The Line", "type": "Classified Doc", "desc": "Southern bridge sector; on a desk inside the primary radio communication bunker room." },
-  { "id": "m6_cd2", "cat": "6: Libération", "name": "Incoming Armour", "type": "Classified Doc", "desc": "Northern trenches; resting on an equipment case inside a dug-out dugout node." },
-  { "id": "m6_cd3", "cat": "6: Libération", "name": "Unfit for Duty", "type": "Classified Doc", "desc": "Southern farm cluster; found on an upper-floor bedroom nightstand." },
-  { "id": "m6_cd4", "cat": "6: Libération", "name": "A Surplus Bridge", "type": "Classified Doc", "desc": "Eastern farmstead compound; resting out in the open yard on a wooden shipping box." },
-  { "id": "m6_cd5", "cat": "6: Libération", "name": "Resistance Fanatic Located", "type": "Classified Doc", "desc": "Northwest sniper town; lockpick the locked upper room of the easternmost town block." },
-  { "id": "m6_hi1", "cat": "6: Libération", "name": "Lucky Rabbit's Foot", "type": "Hidden Item", "desc": "Looted from the body of the green-uniformed soldier guarding the crashed aircraft." },
-  { "id": "m6_hi2", "cat": "6: Libération", "name": "Stolen Medals", "type": "Hidden Item", "desc": "Central river house cache; pry open the loose ground floor boards to drop down." },
-  { "id": "m6_hi3", "cat": "6: Libération", "name": "Engraved Lighter", "type": "Hidden Item", "desc": "Tiger tank sector house; upstairs on a bedroom nightstand right next to a briefcase." },
-  { "id": "m6_se1", "cat": "6: Libération", "name": "Stone Eagle #1", "type": "Stone Eagle", "desc": "Sits on top of the wooden windmill structure in the southeastern poppy fields." },
-  { "id": "m6_se2", "cat": "6: Libération", "name": "Stone Eagle #2", "type": "Stone Eagle", "desc": "Perched on the rear architecture roof peak of the ruined northwestern stone church." },
-  { "id": "m6_se3", "cat": "6: Libération", "name": "Stone Eagle #3", "type": "Stone Eagle", "desc": "Tiger tank crossroad; sitting in the window alcove of the blown-out upper wall ruins." },
-  { "id": "m6_wb1", "cat": "6: Libération", "name": "Rifle Workbench", "type": "Workbench", "desc": "Top floor of the fortification structure flanking the northern bridge explosion zone." },
-  { "id": "m6_wb2", "cat": "6: Libération", "name": "SMG Workbench", "type": "Workbench", "desc": "Central river house cache; pry up loose floorboards to access the secret basement." },
-  { "id": "m6_wb3", "cat": "6: Libération", "name": "Pistol Workbench", "type": "Workbench", "desc": "Southern sector tower block; scale roof tiles and drop through the broken attic gap." },
-  { "id": "m7_pl1", "cat": "7: Secret Weapons", "name": "We Had a Deal", "type": "Personal Letter", "desc": "Eastern trainyard station office; sitting on the main desk directly in front of the safe." },
-  { "id": "m7_pl2", "cat": "7: Secret Weapons", "name": "I'm Done", "type": "Personal Letter", "desc": "Eastern abandoned house; scale external wall drainage pipe to access the upper room floor." },
-  { "id": "m7_pl3", "cat": "7: Secret Weapons", "name": "I Can't Work Like This", "type": "Personal Letter", "desc": "Lake compound hangar; pinned to the side paneling of the hanging blue V2 rocket fuselage." },
-  { "id": "m7_pl4", "cat": "7: Secret Weapons", "name": "The V2's Are Obsolete!", "type": "Personal Letter", "desc": "Guidance sector block bunker peak room; access via key looted from central platform officer." },
-  { "id": "m7_pl5", "cat": "7: Secret Weapons", "name": "Thinking Outside The Box", "type": "Personal Letter", "desc": "Northern dome structure; follow the internal winding metal stairs to the top control tier." },
-  { "id": "m7_cd1", "cat": "7: Secret Weapons", "name": "Inbound Deliveries", "type": "Classified Doc", "desc": "Looted from the brown-uniform target patrolling the locomotive engine rail tracking yard." },
-  { "id": "m7_cd2", "cat": "7: Secret Weapons", "name": "Dr Jungers' Schedule", "type": "Classified Doc", "desc": "Looted straight from the lab coat of Christian Jungers inside the VIP Weapons Lab." },
-  { "id": "m7_cd3", "cat": "7: Secret Weapons", "name": "A-4B Logistical Issues", "type": "Classified Doc", "desc": "VIP Weapons Lab upper blueprint room; sitting out on the main blueprint table layout." },
-  { "id": "m7_cd4", "cat": "7: Secret Weapons", "name": "Intruder Sighted", "type": "Classified Doc", "desc": "Looted from the dispatch motorcycle scout arriving at the default valley infiltration trail." },
-  { "id": "m7_cd5", "cat": "7: Secret Weapons", "name": "Pressurisation Report", "type": "Classified Doc", "desc": "Southwest outpost station; dismantle tower layout boards or use an officer key." },
-  { "id": "m7_hi1", "cat": "7: Secret Weapons", "name": "Peenemünde Lab ID", "type": "Hidden Item", "desc": "Northern dome structure cellar floor; crawl under the cafeteria canteen dining table." },
-  { "id": "m7_hi2", "cat": "7: Secret Weapons", "name": "Luftwaffe Playing Cards", "type": "Hidden Item", "desc": "Northwest sector bridge security station; sitting out on the internal check office table." },
-  { "id": "m7_hi3", "cat": "7: Secret Weapons", "name": "Prüfstand XII Plans", "type": "Hidden Item", "desc": "Southwest riverbank sector; resting on a rock shelf directly underneath the stone bridge vault." },
-  { "id": "m7_se1", "cat": "7: Secret Weapons", "name": "Stone Eagle #1", "type": "Stone Eagle", "desc": "Perched on a rocky hill outcrop directly south of the eastern abandoned safehouse cabin." },
-  { "id": "m7_se2", "cat": "7: Secret Weapons", "name": "Stone Eagle #2", "type": "Stone Eagle", "desc": "Look inside the middle drainage gate pipe spewing water from the northwest rail dam." },
-  { "id": "m7_se3", "cat": "7: Secret Weapons", "name": "Stone Eagle #3", "type": "Stone Eagle", "desc": "Southwest military complex yard; scale wall vines and look tracking across the tower face." },
-  { "id": "m7_wb1", "cat": "7: Secret Weapons", "name": "Rifle Workbench", "type": "Workbench", "desc": "Northwest compound armory; smash the floorboards from above or blow entry doors open." },
-  { "id": "m7_wb2", "cat": "7: Secret Weapons", "name": "SMG Workbench", "type": "Workbench", "desc": "Northern dome structure corridor; unlock the side vault doors using keys from cellar details." },
-  { "id": "m7_wb3", "cat": "7: Secret Weapons", "name": "Pistol Workbench", "type": "Workbench", "desc": "Southwest river waterfall compound; dismantle the hidden cache boards to enter the cave." },
-  { "id": "m8_pl1", "cat": "8: Rubble and Ruin", "name": "It's Not Over Yet!", "type": "Personal Letter", "desc": "South-east hotel, ground floor; found inside a side office sitting on a table." },
-  { "id": "m8_pl2", "cat": "8: Rubble and Ruin", "name": "Clean Out the Sewer", "type": "Personal Letter", "desc": "Sewer track entry tunnel floor; sitting on the floor directly left behind a box crate." },
-  { "id": "m8_pl3", "cat": "8: Rubble and Ruin", "name": "He's Not The Sharpest", "type": "Personal Letter", "desc": "Burned theater segment upper tier; open the locked chest box utilizing a local crowbar." },
-  { "id": "m8_pl4", "cat": "8: Rubble and Ruin", "name": "Your Man Talked!", "type": "Personal Letter", "desc": "South-west building upper locked room floor; scale the external side ladder path." },
-  { "id": "m8_pl5", "cat": "8: Rubble and Ruin", "name": "Möller Is Moving!", "type": "Personal Letter", "desc": "South-east sector, ground floor room counter inside the Sea View Offices asset building." },
-  { "id": "m8_cd1", "cat": "8: Rubble and Ruin", "name": "Secure Radio Lines", "type": "Classified Doc", "desc": "Default street spawn point; resting on top of a supply box left of the 3 troopers." },
-  { "id": "m8_cd2", "cat": "8: Rubble and Ruin", "name": "Broken Resistance", "type": "Classified Doc", "desc": "South-west slide building; resting inside the office room immediately after sliding down." },
-  { "id": "m8_cd3", "cat": "8: Rubble and Ruin", "name": "Resistance Report", "type": "Classified Doc", "desc": "Basement Interrogation Room layout; slip through the tunnel hole breakout section." },
-  { "id": "m8_cd4", "cat": "8: Rubble and Ruin", "name": "Flagship Fuel Risks", "type": "Classified Doc", "desc": "Hotel upper floor room office safe; use the code from Letter #1 or a satchel charge." },
-  { "id": "m8_cd5", "cat": "8: Rubble and Ruin", "name": "Priority Pick Up", "type": "Classified Doc", "desc": "West map sector building; climb the side layout walls to enter the hidden attic loft area." },
-  { "id": "m8_hi1", "cat": "8: Rubble and Ruin", "name": "Stolen Tanto", "type": "Hidden Item", "desc": "Sewer secure vault area; pop open the locked storage chest utilizing a crowbar." },
-  { "id": "m8_hi2", "cat": "8: Rubble and Ruin", "name": "I-400 V2 Hangar", "type": "Hidden Item", "desc": "Submarine dock structure, upstairs floor table immediately above the switch layout vault." },
-  { "id": "m8_hi3", "cat": "8: Rubble and Ruin", "name": "An \"Original\" Adolf", "type": "Hidden Item", "desc": "Church layout tower mezzanine; scale the structural ladders and jump to the mid-tier beam." },
-  { "id": "m8_se1", "cat": "8: Rubble and Ruin", "name": "Stone Eagle #1", "type": "Stone Eagle", "desc": "South-west border exterior building; track alignment behind the red promenade cart." },
-  { "id": "m8_se2", "cat": "8: Rubble and Ruin", "name": "Stone Eagle #2", "type": "Stone Eagle", "desc": "North-east border layout rooftops; look past boundaries tracking east of the sewer entry." },
-  { "id": "m8_se3", "cat": "8: Rubble and Ruin", "name": "Stone Eagle #3", "type": "Stone Eagle", "desc": "Town Hall building structural front facade peak; directly centered above the entry vault." },
-  { "id": "m8_wb1", "cat": "8: Rubble and Ruin", "name": "Rifle Workbench", "type": "Workbench", "desc": "Sewer corridor armory vault room; loot keys from the two guards tracking the portal." },
-  { "id": "m8_wb2", "cat": "8: Rubble and Ruin", "name": "SMG Workbench", "type": "Workbench", "desc": "West sector building attic loft; run and jump across the broken gap framework." },
-  { "id": "m8_wb3", "cat": "8: Rubble and Ruin", "name": "Pistol Workbench", "type": "Workbench", "desc": "Church crypt floor section; drop through the broken northwestern tile floor gap." },
-  { "id": "m9_tr1", "cat": "9: Loose Ends (Trophies & Challenges)", "name": "Brains of the Operation", "type": "Trophy / Challenge", "desc": "Kill Möller with a headshot. Customize rifle with high zoom (e.g., M1903 with A2 Optical) on Civilian difficulty." },
-  { "id": "m9_tr2", "cat": "9: Loose Ends (Trophies & Challenges)", "name": "Can't Outrun A Bullet", "type": "Trophy / Challenge", "desc": "Kill Möller with a rifle at 600m+ (let him reach the end of the road until binoculars show 1000m+ before shooting)." },
-  { "id": "m9_tr3", "cat": "9: Loose Ends (Trophies & Challenges)", "name": "Sight Beyond Sights", "type": "Trophy / Challenge", "desc": "Kill Möller with a rifle while in Iron Sights. Equipping Match ammo helps secure a 1-shot kill." },
-  { "id": "m9_tr4", "cat": "9: Loose Ends (Trophies & Challenges)", "name": "Möllertov Cocktail", "type": "Trophy / Challenge", "desc": "Kill Möller with an explosion." },
-  { "id": "m10_pl1", "cat": "10: Wolf Mountain (DLC)", "name": "Construction Halted", "type": "Personal Letter", "desc": "East Side of the map, in a small house, guarded by one guard." },
-  { "id": "m10_pl2", "cat": "10: Wolf Mountain (DLC)", "name": "Vermin Infestation", "type": "Personal Letter", "desc": "Inside an office in the garage of the main house on a table." },
-  { "id": "m10_pl3", "cat": "10: Wolf Mountain (DLC)", "name": "Führers Plans", "type": "Personal Letter", "desc": "In the main house, in the kitchen on a table." },
-  { "id": "m10_pl4", "cat": "10: Wolf Mountain (DLC)", "name": "Perimeter Problems", "type": "Personal Letter", "desc": "In a house, guarded by many guards, on a table." },
-  { "id": "m10_pl5", "cat": "10: Wolf Mountain (DLC)", "name": "Führer’s Personal Space", "type": "Personal Letter", "desc": "Main house in a room leading to the terrace; on a dresser next to a vase." },
-  { "id": "m10_cd1", "cat": "10: Wolf Mountain (DLC)", "name": "Missing Inventory", "type": "Classified Doc", "desc": "On a box near the tent on the east side of the map." },
-  { "id": "m10_cd2", "cat": "10: Wolf Mountain (DLC)", "name": "Guest of the Führer", "type": "Classified Doc", "desc": "Inside the main house, first floor small office on a table." },
-  { "id": "m10_cd3", "cat": "10: Wolf Mountain (DLC)", "name": "Routine Reminder", "type": "Classified Doc", "desc": "Right of the tunnel in a bunker safe; use Satchel Charge or code from local guard." },
-  { "id": "m10_cd4", "cat": "10: Wolf Mountain (DLC)", "name": "Communication Operation", "type": "Classified Doc", "desc": "On a crate in a sniper tower, Southwest area of the map." },
-  { "id": "m10_cd5", "cat": "10: Wolf Mountain (DLC)", "name": "Additional Flak Positions", "type": "Classified Doc", "desc": "On a table next to the optional objective." },
-  { "id": "m10_hi1", "cat": "10: Wolf Mountain (DLC)", "name": "Führermuseum Concept Model", "type": "Hidden Item", "desc": "Main house ground floor in a gangway with covered furniture." },
-  { "id": "m10_hi2", "cat": "10: Wolf Mountain (DLC)", "name": "Practise Pose Photography", "type": "Hidden Item", "desc": "Safe in top floor main bedroom; open via Satchel Charge or key from house guard." },
-  { "id": "m10_hi3", "cat": "10: Wolf Mountain (DLC)", "name": "Possible Hitler Disguises", "type": "Hidden Item", "desc": "East side of the map in the Tea House, ground floor on a table." },
-  { "id": "m10_se1", "cat": "10: Wolf Mountain (DLC)", "name": "Stone Eagle #1", "type": "Stone Eagle", "desc": "On top of the main house; shoot after exiting the tunnel." },
-  { "id": "m10_se2", "cat": "10: Wolf Mountain (DLC)", "name": "Stone Eagle #2", "type": "Stone Eagle", "desc": "Above the tunnel leading to the main house." },
-  { "id": "m10_se3", "cat": "10: Wolf Mountain (DLC)", "name": "Stone Eagle #3", "type": "Stone Eagle", "desc": "Outside map boundary; follow Lakeside Path behind the main house." },
-  { "id": "m10_wb1", "cat": "10: Wolf Mountain (DLC)", "name": "Rifle Workbench", "type": "Workbench", "desc": "Southwest house basement; enter via Satchel Charge or key from nearby big house enemy." },
-  { "id": "m10_wb2", "cat": "10: Wolf Mountain (DLC)", "name": "SMG Workbench", "type": "Workbench", "desc": "House basement; crawl in from backside or loot key from AA Gun Officer." },
-  { "id": "m10_wb3", "cat": "10: Wolf Mountain (DLC)", "name": "Pistol Workbench", "type": "Workbench", "desc": "Main house basement armory; open with Satchel Charge or house enemy key." },
-  { "id": "m11_pl1", "cat": "11: Landing Force (DLC)", "name": "Munition Ignitions", "type": "Personal Letter", "desc": "Central map sector, resting on a heavy table inside the main objective fortification bunker." },
-  { "id": "m11_pl2", "cat": "11: Landing Force (DLC)", "name": "Bread and Boredom", "type": "Personal Letter", "desc": "Northern coastal sector; resting on an old wooden table built inside the broken tower." },
-  { "id": "m11_pl3", "cat": "11: Landing Force (DLC)", "name": "Heavy is the Crown", "type": "Personal Letter", "desc": "Southwest island sector, inside the primary stone Fort command briefing hall table." },
-  { "id": "m11_cd1", "cat": "11: Landing Force (DLC)", "name": "Wine-Stained Warning", "type": "Classified Doc", "desc": "Western map sector building layout; resting on an office table inside the top floor room." },
-  { "id": "m11_cd2", "cat": "11: Landing Force (DLC)", "name": "Security Measures", "type": "Classified Doc", "desc": "Eastern fishing sector house near the waves; hidden under the desk framing opposite Workbench 2." },
-  { "id": "m11_hi1", "cat": "11: Landing Force (DLC)", "name": "Military Flask", "type": "Hidden Item", "desc": "Central sector fortification bunker entry left room corner storage table." },
-  { "id": "m11_hi2", "cat": "11: Landing Force (DLC)", "name": "Binoculars", "type": "Hidden Item", "desc": "Far southern cliff edge corridor; sitting on the stone hand railing behind the Lighthouse asset." },
-  { "id": "m11_se1", "cat": "11: Landing Force (DLC)", "name": "Stone Eagle #1", "type": "Stone Eagle", "desc": "Southwest watchtower architecture peak; immediately viewable directly from the default spawn area." },
-  { "id": "m11_se2", "cat": "11: Landing Force (DLC)", "name": "Stone Eagle #2", "type": "Stone Eagle", "desc": "Northern broken masonry layout; perched on the high stone wall of the ruined tower asset." },
-  { "id": "m11_se3", "cat": "11: Landing Force (DLC)", "name": "Stone Eagle #3", "type": "Stone Eagle", "desc": "Southeast coastal zone; perched on top of a low, shattered seaside stone building structure." },
-  { "id": "m11_wb1", "cat": "11: Landing Force (DLC)", "name": "Resort Docks Workbench", "type": "Workbench", "desc": "Western sector residential house; tucked inside the upper-floor side room loft frame." },
-  { "id": "m11_wb2", "cat": "11: Landing Force (DLC)", "name": "Abandoned Fishing Workbench", "type": "Workbench", "desc": "Eastern fishing sector coastal shanty; sits next to the Classified Document cache room." },
-  { "id": "m11_wb3", "cat": "11: Landing Force (DLC)", "name": "Military Fort Workbench", "type": "Workbench", "desc": "Southwest Fort complex vault room; unlock using lockpicks or localized bolt cutters." },
-  { "id": "m12_pl1", "cat": "12: Conqueror (DLC)", "name": "Roughly-written Note", "type": "Personal Letter", "desc": "Northwest village sector house layout; sitting directly next to a civilian bedroom frame." },
-  { "id": "m12_pl2", "cat": "12: Conqueror (DLC)", "name": "Debris-covered Love Letter", "type": "Personal Letter", "desc": "Central ruins sector; resting on top of a wooden supply crate within the secondary goal radius." },
-  { "id": "m12_pl3", "cat": "12: Conqueror (DLC)", "name": "An Unfinished Plea for Aid", "type": "Personal Letter", "desc": "Northern sector house floor; on a crate next to the sleeping bag and dual couches layout." },
-  { "id": "m12_cd1", "cat": "12: Conqueror (DLC)", "name": "King of the Tigers", "type": "Classified Doc", "desc": "Town entry roadblock checkpoint sector; resting on top of a plain raw wood shipping crate." },
-  { "id": "m12_cd2", "cat": "12: Conqueror (DLC)", "name": "Operations Dossier", "type": "Classified Doc", "desc": "Northwest perimeter gardens; sitting out on the central table structure inside the gazebo structure." },
-  { "id": "m12_hi1", "cat": "12: Conqueror (DLC)", "name": "Wallet", "type": "Hidden Item", "desc": "Western sector hotel structure room; tracking the location of the yellow elimination target." },
-  { "id": "m12_hi2", "cat": "12: Conqueror (DLC)", "name": "Bronze Statue", "type": "Hidden Item", "desc": "Castle keep interior sector; sitting directly on top of General König's command desk." },
-  { "id": "m12_se1", "cat": "12: Conqueror (DLC)", "name": "Stone Eagle #1", "type": "Stone Eagle", "desc": "Western town sector belfry peak; perched on the high tower ledge near the primary sniper track." },
-  { "id": "m12_se2", "cat": "12: Conqueror (DLC)", "name": "Stone Eagle #2", "type": "Stone Eagle", "desc": "Northern residential cluster; perched squarely on top of a red brick house chimney stack." },
-  { "id": "m12_se3", "cat": "12: Conqueror (DLC)", "name": "Stone Eagle #3", "type": "Stone Eagle", "desc": "Castle fortifications; perched inside an upper window slit of the massive stone defense tower." },
-  { "id": "m12_wb1", "cat": "12: Conqueror (DLC)", "name": "Town Entrance Bunker Workbench", "type": "Workbench", "desc": "Southwest sector defensive line; built inside the entry concrete bunker fortification room." },
-  { "id": "m12_wb2", "cat": "12: Conqueror (DLC)", "name": "Village Attic Workbench", "type": "Workbench", "desc": "Southeast sector cluster house; scale structural lofts to reach the closed attic floor area." },
-  { "id": "m12_wb3", "cat": "12: Conqueror (DLC)", "name": "Castle Grounds Bunker Workbench", "type": "Workbench", "desc": "Castle inner perimeter line; inside the concrete layout bunker trailing the blue asset goals." },
-  { "id": "m13_pl1", "cat": "13: Rough Landing (DLC)", "name": "Emergency Landing", "type": "Personal Letter", "desc": "Western forest cabin area, sitting on a small wooden table." },
-  { "id": "m13_pl2", "cat": "13: Rough Landing (DLC)", "name": "Silly Disagreement", "type": "Personal Letter", "desc": "Central village, upstairs bedroom inside the stone residential house." },
-  { "id": "m13_pl3", "cat": "13: Rough Landing (DLC)", "name": "Imperial Orders", "type": "Personal Letter", "desc": "Eastern crash site command tent, resting on the main briefing desk." },
-  { "id": "m13_pl4", "cat": "13: Rough Landing (DLC)", "name": "Secret Stash", "type": "Personal Letter", "desc": "Southern bridge guard post, inside the checkpoint booth on a crate." },
-  { "id": "m13_pl5", "cat": "13: Rough Landing (DLC)", "name": "Plan of Action", "type": "Personal Letter", "desc": "Northern radar facility office, sitting on an administrative desk." },
-  { "id": "m13_cd1", "cat": "13: Rough Landing (DLC)", "name": "Airforce Radar", "type": "Classified Doc", "desc": "Northern radar bunker vault room; unlock with key or satchel charge." },
-  { "id": "m13_cd2", "cat": "13: Rough Landing (DLC)", "name": "Target Acquired", "type": "Classified Doc", "desc": "Eastern crash site area, on a supply crate beside downed aircraft wreckage." },
-  { "id": "m13_cd3", "cat": "13: Rough Landing (DLC)", "name": "Broken Equipment", "type": "Classified Doc", "desc": "Central village repair workshop, ground floor bench table." },
-  { "id": "m13_cd4", "cat": "13: Rough Landing (DLC)", "name": "Weather Report", "type": "Classified Doc", "desc": "Southern watchtower platform, next to the radio equipment frame." },
-  { "id": "m13_cd5", "cat": "13: Rough Landing (DLC)", "name": "Patrol Routes", "type": "Classified Doc", "desc": "Western forest outpost, locked inside the officer command tent safe." },
-  { "id": "m13_hi1", "cat": "13: Rough Landing (DLC)", "name": "RAF Pilot Badges", "type": "Hidden Item", "desc": "Looted from the patrolling officer guarding the pilot search zone." },
-  { "id": "m13_hi2", "cat": "13: Rough Landing (DLC)", "name": "Ornate Compass", "type": "Hidden Item", "desc": "Inside the locked cellar chest in the central village stone house." },
-  { "id": "m13_hi3", "cat": "13: Rough Landing (DLC)", "name": "Leather Flight Jacket", "type": "Hidden Item", "desc": "Hanging in the bedroom closet of the western forest cabin." },
-  { "id": "m13_se1", "cat": "13: Rough Landing (DLC)", "name": "Stone Eagle #1", "type": "Stone Eagle", "desc": "Perched atop the church belfry roof peak in the central village." },
-  { "id": "m13_se2", "cat": "13: Rough Landing (DLC)", "name": "Stone Eagle #2", "type": "Stone Eagle", "desc": "Sits on a high stone ridge overlooking the northern radar facility." },
-  { "id": "m13_se3", "cat": "13: Rough Landing (DLC)", "name": "Stone Eagle #3", "type": "Stone Eagle", "desc": "Perched on the concrete arch support of the southern railway bridge." },
-  { "id": "m13_wb1", "cat": "13: Rough Landing (DLC)", "name": "Rifle Workbench", "type": "Workbench", "desc": "Central village church crypt basement; unlock with key or satchel." },
-  { "id": "m13_wb2", "cat": "13: Rough Landing (DLC)", "name": "SMG Workbench", "type": "Workbench", "desc": "Western forest bunker depot; crawl through the side air vent." },
-  { "id": "m13_wb3", "cat": "13: Rough Landing (DLC)", "name": "Pistol Workbench", "type": "Workbench", "desc": "Northern radar bunker facility lower armory vault." },
-  { "id": "m14_pl2", "cat": "14: Kraken Awakes (DLC)", "name": "Letter to Vogel", "type": "Personal Letter", "desc": "[ON SHIP] Upper Island Superstructure inside Vogel's office safe. Code is on the desk nearby, or use a Satchel Charge." },
-  { "id": "m14_hi2", "cat": "14: Kraken Awakes (DLC)", "name": "Eagle Plaque", "type": "Hidden Item", "desc": "[INSIDE SHIP] 2nd Level from the bottom of the ship, in a compartment near the room with the large red spotlight." },
-  { "id": "m14_se1", "cat": "14: Kraken Awakes (DLC)", "name": "Stone Eagle #1", "type": "Stone Eagle", "desc": "[ON SHIP] Perched right on the middle mast at the very top of the aircraft carrier." },
-  { "id": "m14_pl1", "cat": "14: Kraken Awakes (DLC)", "name": "Boiler Room Inspection", "type": "Personal Letter", "desc": "[NORTH-WEST DOCKS] Top floor control room inside the dark facility building." },
-  { "id": "m14_cd2", "cat": "14: Kraken Awakes (DLC)", "name": "Successful Raid", "type": "Classified Doc", "desc": "[NORTH DOCKS] Inside the 3rd dock building counting from the ship's main access bridge." },
-  { "id": "m14_se2", "cat": "14: Kraken Awakes (DLC)", "name": "Stone Eagle #2", "type": "Stone Eagle", "desc": "[NORTH-WEST DOCKS] Perched on the outer roof ridge of the dark North-West building." },
-  { "id": "m14_wb2", "cat": "14: Kraken Awakes (DLC)", "name": "Maintenance Workbench", "type": "Workbench", "desc": "[NORTH-WEST DOCKS] Bottom floor of North-West facility. (Door locked—grab key from table near Letter #1). Unlocks: Close Quarters Pack." },
-  { "id": "m14_pl3", "cat": "14: Kraken Awakes (DLC)", "name": "Missing Tools", "type": "Personal Letter", "desc": "[SOUTH-WEST] Top floor comms room of the rectangular building." },
-  { "id": "m14_hi1", "cat": "14: Kraken Awakes (DLC)", "name": "Backpack", "type": "Hidden Item", "desc": "[SOUTH-WEST] Sitting on a supply crate inside the small corner storage shanty." },
-  { "id": "m14_se3", "cat": "14: Kraken Awakes (DLC)", "name": "Stone Eagle #3", "type": "Stone Eagle", "desc": "[SOUTH PERIMETER] Look high up on the masonry chimney stack." },
-  { "id": "m14_wb1", "cat": "14: Kraken Awakes (DLC)", "name": "Administration Workbench", "type": "Workbench", "desc": "[SOUTH DOCKS] South dock building. Climb to upper floor and slide through the air vent. Unlocks: Assault Case." },
-  { "id": "m14_wb3", "cat": "14: Kraken Awakes (DLC)", "name": "Resistance Storage Workbench", "type": "Workbench", "desc": "[SOUTHERN COMPOUND] Slide under the wall gap and clear the barricade to enter. Unlocks: Sustained Fire Mods." },
-  { "id": "m14_cd1", "cat": "14: Kraken Awakes (DLC)", "name": "Salvage Operation", "type": "Classified Doc", "desc": "[EASTERN BORDER] On a desk inside the easternmost border house near the tree line." }
+const sniperData = [
+    // MISSION 1: THE ATLANTIC WALL
+    { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.' },
+    { id: 'm1_pl2', cat: '1: The Atlantic Wall', name: 'Upcoming Delivery', type: 'Personal Letter', desc: 'Farm east of Steffen Beckendorf. Climb ladder on western side of outhouse.' },
+    { id: 'm1_pl3', cat: '1: The Atlantic Wall', name: 'Violets Are Wilting', type: 'Personal Letter', desc: 'Attic of the building containing the Atlantikwall Report.' },
+    { id: 'm1_pl4', cat: '1: The Atlantic Wall', name: 'Violets Don\'t Wilt', type: 'Personal Letter', desc: 'Inside hotel safe on the western side of the map.' },
+    { id: 'm1_pl5', cat: '1: The Atlantic Wall', name: 'Pests in the Garden', type: 'Personal Letter', desc: 'Beneath the gazebo table on the pier (south-western map).' },
+    { id: 'm1_pl6', cat: '1: The Atlantic Wall', name: 'Boches at the Door', type: 'Personal Letter', desc: 'Downstairs sofa in the resistance safehouse.' },
+    { id: 'm1_cd1', cat: '1: The Atlantic Wall', name: 'Resistance Captured', type: 'Classified Doc', desc: 'Table inside the boathouse (requires boathouse key from officer).' },
+    { id: 'm1_cd2', cat: '1: The Atlantic Wall', name: 'Beach Defences', type: 'Classified Doc', desc: 'Inside a safe in the north-western shack (SMG workbench area).' },
+    { id: 'm1_cd3', cat: '1: The Atlantic Wall', name: 'Lacking Air Support', type: 'Classified Doc', desc: 'Inside a safe in the room under the radar tower.' },
+    { id: 'm1_cd4', cat: '1: The Atlantic Wall', name: 'Atlantikwall Report', type: 'Classified Doc', desc: 'Kitchen safe in the northern town houses near anti-air gun.' },
+    { id: 'm1_hi1', cat: '1: The Atlantic Wall', name: 'Resistance Photo', type: 'Hidden Item', desc: 'Upstairs table opposite the bed in the western beachfront pharmacy.' },
+    { id: 'm1_hi2', cat: '1: The Atlantic Wall', name: 'Radio Tin', type: 'Hidden Item', desc: 'Table in the stable area of the central farm.' },
+    { id: 'm1_hi3', cat: '1: The Atlantic Wall', name: 'FFI Flag', type: 'Hidden Item', desc: 'Draining board in the downstairs of the western farmhouse.' },
+    { id: 'm1_se1', cat: '1: The Atlantic Wall', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Chimney top of an inaccessible house opposite the eastern shack.' },
+    { id: 'm1_se2', cat: '1: The Atlantic Wall', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'On the roof of the western hotel.' },
+    { id: 'm1_se3', cat: '1: The Atlantic Wall', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'On top of the Vantage Point building in the south-east.' },
+    { id: 'm1_wb1', cat: '1: The Atlantic Wall', name: 'Rifle Workbench', type: 'Workbench', desc: 'Armoury room upstairs after rendezvousing with Blue Viper.' },
+    { id: 'm1_wb2', cat: '1: The Atlantic Wall', name: 'SMG Workbench', type: 'Workbench', desc: 'Attic of the resistance safehouse on the western map edge.' },
+    { id: 'm1_wb3', cat: '1: The Atlantic Wall', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside locked shack above gun battery in the north-west.' },
+
+    // MISSION 2: OCCUPIED RESIDENCE
+    { id: 'm2_pl1', cat: '2: Occupied Residence', name: 'Do Not Fail Me, Nephew', type: 'Personal Letter', desc: 'Table in an open room upstairs overlooking the main courtyard.' },
+    { id: 'm2_pl2', cat: '2: Occupied Residence', name: 'Need a Scapegoat', type: 'Personal Letter', desc: 'Box at foot of bed in Friedrich Kummler\'s quarters (second floor).' },
+    { id: 'm2_pl3', cat: '2: Occupied Residence', name: 'Brother, I Have a Plan', type: 'Personal Letter', desc: 'Third floor dorms in the central part of the chateau.' },
+    { id: 'm2_pl4', cat: '2: Occupied Residence', name: 'Good Plan, Let\'s Do It', type: 'Personal Letter', desc: 'On a box in the sniper outhouse north-east of the garden.' },
+    { id: 'm2_cd1', cat: '2: Occupied Residence', name: 'Orders of the Day', type: 'Classified Doc', desc: 'Inside a locked locker next to the central path lookout tower.' },
+    { id: 'm2_cd2', cat: '2: Occupied Residence', name: 'Renovations Completed', type: 'Classified Doc', desc: 'On the desk inside Moller\'s office.' },
+    { id: 'm2_cd3', cat: '2: Occupied Residence', name: 'Operation Kraken', type: 'Classified Doc', desc: 'In Moller\'s hidden study (pull the painting to enter).' },
+    { id: 'm2_cd4', cat: '2: Occupied Residence', name: 'New Orders, Effective Immediately', type: 'Classified Doc', desc: 'Table inside the far-west resistance safehouse.' },
+    { id: 'm2_cd5', cat: '2: Occupied Residence', name: 'Immediate Request for Attic Repairs', type: 'Classified Doc', desc: 'Table in an outhouse on the far east side.' },
+    { id: 'm2_cd6', cat: '2: Occupied Residence', name: 'Grateful Thanks', type: 'Classified Doc', desc: 'Table beneath Moller\'s painting in his hidden room.' },
+    { id: 'm2_hi1', cat: '2: Occupied Residence', name: 'Old Man Statuette', type: 'Hidden Item', desc: 'Inside the safe hidden behind a painting in Kummler\'s quarters.' },
+    { id: 'm2_hi2', cat: '2: Occupied Residence', name: 'Group Statuette', type: 'Hidden Item', desc: 'Inside a locked trunk in the third-floor dormitories.' },
+    { id: 'm2_hi3', cat: '2: Occupied Residence', name: 'Soldier Statuette', type: 'Hidden Item', desc: 'Looted from the sniper in the north-east outhouse.' },
+    { id: 'm2_se1', cat: '2: Occupied Residence', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'On the roof of the L-shaped farmhouse on the far west.' },
+    { id: 'm2_se2', cat: '2: Occupied Residence', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Tip of a ledge looking west from the main gates bridge.' },
+    { id: 'm2_se3', cat: '2: Occupied Residence', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Eastern side of an outhouse just north of the chateau.' },
+    { id: 'm2_wb1', cat: '2: Occupied Residence', name: 'Rifle Workbench', type: 'Workbench', desc: 'Inside the eastern cellar armoury.' },
+    { id: 'm2_wb2', cat: '2: Occupied Residence', name: 'SMG Workbench', type: 'Workbench', desc: 'Roof area of the western resistance safehouse (climb vines).' },
+    { id: 'm2_wb3', cat: '2: Occupied Residence', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside the eastern outhouse armoury.' },
+
+    // MISSION 3: SPY ACADEMY
+    { id: 'm3_pl1', cat: '3: Spy Academy', name: 'Parking Problems', type: 'Personal Letter', desc: 'On a bin near benches opposite the white Nazi car in the west.' },
+    { id: 'm3_pl2', cat: '3: Spy Academy', name: 'Fragile, Do Not Break', type: 'Personal Letter', desc: 'On top of a steel box at the start checkpoint before the beach.' },
+    { id: 'm3_pl3', cat: '3: Spy Academy', name: 'Do Not Be Late', type: 'Personal Letter', desc: 'Looted from a pointed-hat guard patrolling near western turret.' },
+    { id: 'm3_pl4', cat: '3: Spy Academy', name: 'It\'s Easy Money', type: 'Personal Letter', desc: 'Desk inside the far eastern sniper nest.' },
+    { id: 'm3_pl5', cat: '3: Spy Academy', name: 'Just Attend One', type: 'Personal Letter', desc: 'Looted from an officer near the eastern church.' },
+    { id: 'm3_cd1', cat: '3: Spy Academy', name: 'Priority Package', type: 'Classified Doc', desc: 'Shelf inside a small window-access room south of main buildings.' },
+    { id: 'm3_cd2', cat: '3: Spy Academy', name: 'Won\'t Be Attending', type: 'Classified Doc', desc: 'Table in a well-furnished room slightly east of the main bridge.' },
+    { id: 'm3_cd3', cat: '3: Spy Academy', name: 'Training Scenarios', type: 'Classified Doc', desc: 'Table next to cellar key in the northern sea-jutting room.' },
+    { id: 'm3_cd4', cat: '3: Spy Academy', name: 'Resource Request', type: 'Classified Doc', desc: 'Table at the very top of the eastern church sniper nest.' },
+    { id: 'm3_cd5', cat: '3: Spy Academy', name: 'Armoury Exposed', type: 'Classified Doc', desc: 'Bench chair in the same room as CD2.' },
+    { id: 'm3_hi1', cat: '3: Spy Academy', name: 'Kriegsmarine Playing Cards', type: 'Hidden Item', desc: 'Table inside a pub on the upper western side.' },
+    { id: 'm3_hi2', cat: '3: Spy Academy', name: 'Ornate Compass', type: 'Hidden Item', desc: 'Inside the safe in the northern sea-jutting room.' },
+    { id: 'm3_hi3', cat: '3: Spy Academy', name: 'Covert Ops Field Manual', type: 'Hidden Item', desc: 'Table in the downstairs recreation area opposite the diner.' },
+    { id: 'm3_se1', cat: '3: Spy Academy', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Facing the beach on a south-western building.' },
+    { id: 'm3_se2', cat: '3: Spy Academy', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Beneath the roof of a small turret right of the main building.' },
+    { id: 'm3_se3', cat: '3: Spy Academy', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Top of a sunken tower in the northern sea.' },
+    { id: 'm3_wb1', cat: '3: Spy Academy', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar north of Kraken training room (enter from west).' },
+    { id: 'm3_wb2', cat: '3: Spy Academy', name: 'SMG Workbench', type: 'Workbench', desc: 'Behind a locked resistance door east of the main square statue.' },
+    { id: 'm3_wb3', cat: '3: Spy Academy', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside south-central armoury (requires Satchel Charge).' },
+
+    // MISSION 4: WAR FACTORY
+    { id: 'm4_pl1', cat: '4: War Factory', name: 'Klaus! You Idiot', type: 'Personal Letter', desc: 'Desk in a small building on the bridge towards the north-west.' },
+    { id: 'm4_pl2', cat: '4: War Factory', name: 'The Suspense', type: 'Personal Letter', desc: 'On radio equipment in the control room above the generator.' },
+    { id: 'm4_pl3', cat: '4: War Factory', name: 'Sheers\' Notebook', type: 'Personal Letter', desc: 'Desk in the upstairs western office at the blast furnace.' },
+    { id: 'm4_pl4', cat: '4: War Factory', name: 'Losing the Time', type: 'Personal Letter', desc: 'Desk on the upper level of the northern steelworks.' },
+    { id: 'm4_pl5', cat: '4: War Factory', name: 'Your Order Awaits', type: 'Personal Letter', desc: 'On a box blocking a doorway in the central factory warehouse.' },
+    { id: 'm4_pl6', cat: '4: War Factory', name: 'Ehrlich\'s Done For', type: 'Personal Letter', desc: 'Desk in the main station office (south-west train station).' },
+    { id: 'm4_cd1', cat: '4: War Factory', name: 'Shipping Orders', type: 'Classified Doc', desc: 'Inside safe in the shipping warehouse upstairs office.' },
+    { id: 'm4_cd2', cat: '4: War Factory', name: 'No More Games', type: 'Classified Doc', desc: 'Atop wooden planks in the north-eastern construction area.' },
+    { id: 'm4_cd3', cat: '4: War Factory', name: 'Bureaucratic Oaf', type: 'Classified Doc', desc: 'Table in a central upstairs room accessed via ladder.' },
+    { id: 'm4_cd4', cat: '4: War Factory', name: 'Increase Security', type: 'Classified Doc', desc: 'Locked vat room table on the far eastern side.' },
+    { id: 'm4_hi1', cat: '4: War Factory', name: 'Gold Pocket Watch', type: 'Hidden Item', desc: 'On a pile of wooden beams in the north-eastern scrapyard.' },
+    { id: 'm4_hi2', cat: '4: War Factory', name: 'Stealth Plating', type: 'Hidden Item', desc: 'Atop stacked boxes on the shipping warehouse ground floor.' },
+    { id: 'm4_hi3', cat: '4: War Factory', name: 'P.1000 Ratte Plans', type: 'Hidden Item', desc: 'End of southern walkway upstairs in the train station depot.' },
+    { id: 'm4_se1', cat: '4: War Factory', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'South-eastern wall of a dilapidated turret in far east ruins.' },
+    { id: 'm4_se2', cat: '4: War Factory', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Atop the blast furnace in the south-eastern corner.' },
+    { id: 'm4_se3', cat: '4: War Factory', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Roof of an out-of-bounds building at the southern map tip.' },
+    { id: 'm4_wb1', cat: '4: War Factory', name: 'Rifle Workbench', type: 'Workbench', desc: 'Central factory warehouse cellar (resistance safehouse).' },
+    { id: 'm4_wb2', cat: '4: War Factory', name: 'SMG Workbench', type: 'Workbench', desc: 'Upstairs armoury north of the shipping warehouse.' },
+    { id: 'm4_wb3', cat: '4: War Factory', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury next to the eastern vat room.' },
+
+    // MISSION 5: FESTUNG GUERNSEY
+    { id: 'm5_pl1', cat: '5: Festung Guernsey', name: 'No Need to Worry', type: 'Personal Letter', desc: 'Looted from officer near Martello Tower (south-central).' },
+    { id: 'm5_pl2', cat: '5: Festung Guernsey', name: 'Getting Off the Island', type: 'Personal Letter', desc: 'Underground room beneath the north-eastern dilapidated farm outhouse.' },
+    { id: 'm5_pl3', cat: '5: Festung Guernsey', name: 'Confiscated Goods', type: 'Personal Letter', desc: 'Looted from a brown-uniformed soldier at Mirus Construction Site.' },
+    { id: 'm5_pl4', cat: '5: Festung Guernsey', name: 'Escaping Islanders', type: 'Personal Letter', desc: 'Table in second-floor front room of the western bunker.' },
+    { id: 'm5_pl5', cat: '5: Festung Guernsey', name: 'Harass the Huns', type: 'Personal Letter', desc: 'Underground resistance safehouse near the hospital.' },
+    { id: 'm5_cd1', cat: '5: Festung Guernsey', name: 'Grin and Bear It', type: 'Classified Doc', desc: 'Inside safe in Fort Hommet (climb vines outside to access room).' },
+    { id: 'm5_cd2', cat: '5: Festung Guernsey', name: 'Cut Costs Cost Lives', type: 'Classified Doc', desc: 'Desk opposite safe in hidden facility Scuttle Code room.' },
+    { id: 'm5_cd3', cat: '5: Festung Guernsey', name: 'Oafish Officers', type: 'Classified Doc', desc: 'Table under poster in the western hospital corridor.' },
+    { id: 'm5_cd4', cat: '5: Festung Guernsey', name: 'Transport Troubles', type: 'Classified Doc', desc: 'Table in the library/radio area at the end of the hospital.' },
+    { id: 'm5_cd5', cat: '5: Festung Guernsey', name: 'Drastic Measures', type: 'Classified Doc', desc: 'Table in the ground floor entrance room of the NW observation tower.' },
+    { id: 'm5_hi1', cat: '5: Festung Guernsey', name: 'Todt Uniform Badge', type: 'Hidden Item', desc: 'Table in a green shed at the eastern construction area.' },
+    { id: 'm5_hi2', cat: '5: Festung Guernsey', name: 'Crystal Radio', type: 'Hidden Item', desc: 'Underground room beneath central dilapidated farm (with PL2).' },
+    { id: 'm5_hi3', cat: '5: Festung Guernsey', name: 'Comfort Bag', type: 'Hidden Item', desc: 'Bedroom chest of drawers, second floor of SW blue-window farmhouse.' },
+    { id: 'm5_se1', cat: '5: Festung Guernsey', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Corner of the NW observation tower overlooking the sea.' },
+    { id: 'm5_se2', cat: '5: Festung Guernsey', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Top of the eastern-most spire of the central church.' },
+    { id: 'm5_se3', cat: '5: Festung Guernsey', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Atop the eastern Mirus Munitions Bunker.' },
+    { id: 'm5_wb1', cat: '5: Festung Guernsey', name: 'Rifle Workbench', type: 'Workbench', desc: 'Climb vines to enter the central church\'s eastern spire safehouse.' },
+    { id: 'm5_wb2', cat: '5: Festung Guernsey', name: 'SMG Workbench', type: 'Workbench', desc: 'In the underground safehouse near the hospital (with PL5).' },
+    { id: 'm5_wb3', cat: '5: Festung Guernsey', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside an offshoot room in the northern trenches.' },
+
+    // MISSION 6: LIBÉRATION
+    { id: 'm6_pl1', cat: '6: Libération', name: 'They\'re Out There', type: 'Personal Letter', desc: 'Looted from one of two soldiers who exit a truck by the start poppy field.' },
+    { id: 'm6_pl2', cat: '6: Libération', name: 'Watch Your Back', type: 'Personal Letter', desc: 'Looted from guard outside western estate (Trautmann target area).' },
+    { id: 'm6_pl3', cat: '6: Libération', name: 'Barely Escaped', type: 'Personal Letter', desc: 'On a black box near the large northern artillery weapon.' },
+    { id: 'm6_pl4', cat: '6: Libération', name: 'Give Me Strength', type: 'Personal Letter', desc: 'Near door inside green shed with wireframe beds (north-east).' },
+    { id: 'm6_pl5', cat: '6: Libération', name: 'Vengeance Is Nigh', type: 'Personal Letter', desc: 'Next to a hole in the roof of the central abandoned outhouse.' },
+    { id: 'm6_cd1', cat: '6: Libération', name: 'Hold the Line', type: 'Classified Doc', desc: 'Opposite radio equipment upstairs in the southern bridge building.' },
+    { id: 'm6_cd2', cat: '6: Libération', name: 'Incoming Armour', type: 'Classified Doc', desc: 'Atop transport cases in a room branching from northern trenches.' },
+    { id: 'm6_cd3', cat: '6: Libération', name: 'Unfit for Duty', type: 'Classified Doc', desc: 'Table in northern upstairs room of the western abandoned barn.' },
+    { id: 'm6_cd4', cat: '6: Libération', name: 'A Surplus Bridge', type: 'Classified Doc', desc: 'On a wooden box in the yard of the eastern burnt buildings.' },
+    { id: 'm6_cd5', cat: '6: Libération', name: 'Resistance Fanatic Located', type: 'Classified Doc', desc: 'Chest of drawers in locked 2nd-floor room (northern building).' },
+    { id: 'm6_hi1', cat: '6: Libération', name: 'Lucky Rabbit\'s Foot', type: 'Hidden Item', desc: 'Looted from bald Nazi near central crashed plane/AA gun.' },
+    { id: 'm6_hi2', cat: '6: Libération', name: 'Stolen Medals', type: 'Hidden Item', desc: 'Table in underground resistance cache beneath central L-shaped building.' },
+    { id: 'm6_hi3', cat: '6: Libération', name: 'Engraved Lighter', type: 'Hidden Item', desc: 'Next to a briefcase upstairs in building right after the bridge.' },
+    { id: 'm6_se1', cat: '6: Libération', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Perched atop the eastern windmill near the start.' },
+    { id: 'm6_se2', cat: '6: Libération', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Rear of the north-western church.' },
+    { id: 'm6_se3', cat: '6: Libération', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Upstairs window frame behind northern tank target.' },
+    { id: 'm6_wb1', cat: '6: Libération', name: 'Rifle Workbench', type: 'Workbench', desc: 'Northern resistance safehouse (climb wall before detonated bridge).' },
+    { id: 'm6_wb2', cat: '6: Libération', name: 'SMG Workbench', type: 'Workbench', desc: 'Central underground cellar (same as HI2 Stolen Medals).' },
+    { id: 'm6_wb3', cat: '6: Libération', name: 'Pistol Workbench', type: 'Workbench', desc: 'Top floor room in southern C-shaped building via scaffolding.' },
+
+    // MISSION 7: SECRET WEAPONS
+    { id: 'm7_pl1', cat: '7: Secret Weapons', name: 'We Had a Deal', type: 'Personal Letter', desc: 'Upstairs table in the eastern trainyard office.' },
+    { id: 'm7_pl2', cat: '7: Secret Weapons', name: 'I\'m Done', type: 'Personal Letter', desc: 'Fireplace of far-eastern abandoned house (climb pipes to enter).' },
+    { id: 'm7_pl3', cat: '7: Secret Weapons', name: 'I Can\'t Work Like This', type: 'Personal Letter', desc: 'Table on steel grate near hoisting V2 rocket in lower level.' },
+    { id: 'm7_pl4', cat: '7: Secret Weapons', name: 'The V2\'s Are Obsolete', type: 'Personal Letter', desc: 'Chair opposite the V2 Launch Site in the central dome.' },
+    { id: 'm7_pl5', cat: '7: Secret Weapons', name: 'Thinking Outside the Box', type: 'Personal Letter', desc: 'Top of zig-zag stairs in the northern dome room.' },
+    { id: 'm7_cd1', cat: '7: Secret Weapons', name: 'Inbound Deliveries', type: 'Classified Doc', desc: 'Looted from head engineer in eastern train station (or safe).' },
+    { id: 'm7_cd2', cat: '7: Secret Weapons', name: 'Dr Junger\'s Schedule', type: 'Classified Doc', desc: 'Near window in SE train station building or western tent.' },
+    { id: 'm7_cd3', cat: '7: Secret Weapons', name: 'A-4B Logistical Issues', type: 'Classified Doc', desc: 'Top floor locked room in the northern Weapons Lab.' },
+    { id: 'm7_cd4', cat: '7: Secret Weapons', name: 'Intruder Sighted', type: 'Classified Doc', desc: 'Looted from sniper behind a tree west of the bridge.' },
+    { id: 'm7_cd5', cat: '7: Secret Weapons', name: 'Pressurisation Report', type: 'Classified Doc', desc: 'Two staircases up inside the SW castle tower.' },
+    { id: 'm7_hi1', cat: '7: Secret Weapons', name: 'Peenemünde Lab ID', type: 'Hidden Item', desc: 'Under a table in the canteen area exiting the V2 dome.' },
+    { id: 'm7_hi2', cat: '7: Secret Weapons', name: 'Luftwaffe Playing Cards', type: 'Hidden Item', desc: 'Table inside guard house next to the blocked northern bridge.' },
+    { id: 'm7_hi3', cat: '7: Secret Weapons', name: 'Prüfstand XII Plans', type: 'Hidden Item', desc: 'Rocky beach riverbank under the eastern side of the bridge.' },
+    { id: 'm7_se1', cat: '7: Secret Weapons', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Among rocks south of the eastern abandoned house.' },
+    { id: 'm7_se2', cat: '7: Secret Weapons', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Inside a dam filter splashing water on the lower bridge out west.' },
+    { id: 'm7_se3', cat: '7: Secret Weapons', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Wall alcove opposite eastern tower in SW castle area.' },
+    { id: 'm7_wb1', cat: '7: Secret Weapons', name: 'Rifle Workbench', type: 'Workbench', desc: 'Axis Armoury north of V2 rockets (requires key or charge).' },
+    { id: 'm7_wb2', cat: '7: Secret Weapons', name: 'SMG Workbench', type: 'Workbench', desc: 'Locked room at end of shower corridor from V2 dome spiral stairs.' },
+    { id: 'm7_wb3', cat: '7: Secret Weapons', name: 'Pistol Workbench', type: 'Workbench', desc: 'Cave behind wooden panels next to SW waterfall.' },
+
+    // MISSION 8: RUBBLE AND RUIN
+    { id: 'm8_pl1', cat: '8: Rubble and Ruin', name: 'It\'s Not Over Yet', type: 'Personal Letter', desc: 'Table in a ground floor side-room of the SE hotel.' },
+    { id: 'm8_pl2', cat: '8: Rubble and Ruin', name: 'Clean Out the Sewer', type: 'Personal Letter', desc: 'Floor behind boxes left of the entrance into the sewers.' },
+    { id: 'm8_pl3', cat: '8: Rubble and Ruin', name: 'He\'s Not the Sharpest', type: 'Personal Letter', desc: 'Locked box behind armoured gun on central theatre balcony.' },
+    { id: 'm8_pl4', cat: '8: Rubble and Ruin', name: 'Your Man Talked', type: 'Personal Letter', desc: 'Table inside locked building in south-central bombed area.' },
+    { id: 'm8_pl5', cat: '8: Rubble and Ruin', name: 'Möller Is Moving', type: 'Personal Letter', desc: 'Ground floor back room of the Sea View Offices (SE).' },
+    { id: 'm8_cd1', cat: '8: Rubble and Ruin', name: 'Secure Radio Lines', type: 'Classified Doc', desc: 'Atop wooden box near three Nazis at the start restaurant.' },
+    { id: 'm8_cd2', cat: '8: Rubble and Ruin', name: 'Broken Resistance', type: 'Classified Doc', desc: 'On a box directly ahead after sliding into the sewers.' },
+    { id: 'm8_cd3', cat: '8: Rubble and Ruin', name: 'Resistance Report', type: 'Classified Doc', desc: 'Table in basement interrogation room (western map).' },
+    { id: 'm8_cd4', cat: '8: Rubble and Ruin', name: 'Flagship Fuel Risks', type: 'Classified Doc', desc: 'Safe inside locked second-floor hotel room.' },
+    { id: 'm8_cd5', cat: '8: Rubble and Ruin', name: 'Priority Pick Up', type: 'Classified Doc', desc: 'Attic floor of the western Metro Du Café starting location.' },
+    { id: 'm8_hi1', cat: '8: Rubble and Ruin', name: 'Hidden Tantō', type: 'Hidden Item', desc: 'Inside chest in locked sewer room opposite entrance.' },
+    { id: 'm8_hi2', cat: '8: Rubble and Ruin', name: 'I-400 V2 Hangar', type: 'Hidden Item', desc: 'Table in western 2nd-floor mainframe room at northern fuel system.' },
+    { id: 'm8_hi3', cat: '8: Rubble and Ruin', name: 'An \'Original\' Adolf', type: 'Hidden Item', desc: 'Next to sleeping bag on upper church floor (climb up, then down).' },
+    { id: 'm8_se1', cat: '8: Rubble and Ruin', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Far west outside boundaries, viewable from front of Sea View Offices.' },
+    { id: 'm8_se2', cat: '8: Rubble and Ruin', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Far east past mission boundary, left of giant silos.' },
+    { id: 'm8_se3', cat: '8: Rubble and Ruin', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Atop Yoshikawa\'s building, visible from the NW rifle workbench.' },
+    { id: 'm8_wb1', cat: '8: Rubble and Ruin', name: 'Rifle Workbench', type: 'Workbench', desc: 'Armoury in first sewer combat area (loot key from troops).' },
+    { id: 'm8_wb2', cat: '8: Rubble and Ruin', name: 'SMG Workbench', type: 'Workbench', desc: 'Upstairs resistance armoury opposite NW Yoshikawa estate.' },
+    { id: 'm8_wb3', cat: '8: Rubble and Ruin', name: 'Pistol Workbench', type: 'Workbench', desc: 'Through floor hole in NW corner of central church (crypt key needed).' },
+
+    // MISSION 10: WOLF MOUNTAIN
+    { id: 'm10_pl1', cat: '10: Wolf Mountain', name: 'Construction Halted', type: 'Personal Letter', desc: 'Inside eastern guardhouse just before the teahouse.' },
+    { id: 'm10_pl2', cat: '10: Wolf Mountain', name: 'Vermin Infestation', type: 'Personal Letter', desc: 'Metal table in the back room of garage north of Berghof.' },
+    { id: 'm10_pl3', cat: '10: Wolf Mountain', name: 'Führer\'s Plans', type: 'Personal Letter', desc: 'Side table in the Berghof\'s ground-floor southern kitchen.' },
+    { id: 'm10_pl4', cat: '10: Wolf Mountain', name: 'Perimeter Problems', type: 'Personal Letter', desc: 'Table inside small building next to winding road before tunnel.' },
+    { id: 'm10_pl5', cat: '10: Wolf Mountain', name: 'Führer\'s Personal Space', type: 'Personal Letter', desc: 'Chest of drawers in NW ground floor room of Berghof.' },
+    { id: 'm10_cd1', cat: '10: Wolf Mountain', name: 'Missing Inventory', type: 'Classified Doc', desc: 'Atop boxes near tents at the SE anti-air gun.' },
+    { id: 'm10_cd2', cat: '10: Wolf Mountain', name: 'Guest of the Führer', type: 'Classified Doc', desc: 'Inside side-office on the southern 2nd-floor Berghof corridor.' },
+    { id: 'm10_cd3', cat: '10: Wolf Mountain', name: 'Routine Reminder', type: 'Classified Doc', desc: 'Safe in a building just before the Stone Eagle #2 tunnel.' },
+    { id: 'm10_cd4', cat: '10: Wolf Mountain', name: 'Communication Operations', type: 'Classified Doc', desc: 'Wooden box at SW sniper lookout point.' },
+    { id: 'm10_cd5', cat: '10: Wolf Mountain', name: 'Additional Flak Positions', type: 'Classified Doc', desc: 'Downstairs table in SW resort-like building (radio objective).' },
+    { id: 'm10_hi1', cat: '10: Wolf Mountain', name: 'Führermuseum Concept Model', type: 'Hidden Item', desc: 'On a box in Berghof foyer (room with covered artwork).' },
+    { id: 'm10_hi2', cat: '10: Wolf Mountain', name: 'Practice Pose Photography', type: 'Hidden Item', desc: 'Safe in Hitler\'s top-floor Berghof quarters.' },
+    { id: 'm10_hi3', cat: '10: Wolf Mountain', name: 'Possible Hitler Disguises', type: 'Hidden Item', desc: 'Table in northern-most room of the eastern tearooms.' },
+    { id: 'm10_se1', cat: '10: Wolf Mountain', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Eastern-facing roof of the main Berghof building.' },
+    { id: 'm10_se2', cat: '10: Wolf Mountain', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Top of eastern tunnel heading to the Berghof.' },
+    { id: 'm10_se3', cat: '10: Wolf Mountain', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Top of a far shed across the northern lake.' },
+    { id: 'm10_wb1', cat: '10: Wolf Mountain', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar of large SW building (requires key or Satchel).' },
+    { id: 'm10_wb2', cat: '10: Wolf Mountain', name: 'SMG Workbench', type: 'Workbench', desc: 'Basement of abandoned shack near eastern anti-air gun.' },
+    { id: 'm10_wb3', cat: '10: Wolf Mountain', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury in Berghof basement (opposite bowling alley).' }
 ];
 
-/* === SECTION: App Engine Setup & State Engine === */
+/* === SECTION: App State Controller === */
 const appState = {
-    targetUserId: 'Werewolf3788',
-    targetDisplayName: 'Werewolf3788',
-    targetPlatform: DEFAULT_PLATFORM,
-    masterDataset: LOCAL_MASTER_DATASET,
+    activeHunter: 'Kevin',
     hunterData: [],
-    app: null,
-    db: null,
-    analytics: null,
-    collapsedSections: {},
-    masterUnsub: null,
-    dataLoaded: false,
-    lastSyncTime: 0,
-
-    loadMasterDataset: async function() {
-        const endpoints = [
-            `se.json?v=${Date.now()}`,
-            `/Website/games/Sniper-Elite/5/se.json?v=${Date.now()}`,
-            `${RAW_JSON_DATA_URL}?v=${Date.now()}`
-        ];
-
-        for (const url of endpoints) {
-            try {
-                const response = await fetch(url);
-                if (response.ok) {
-                    let text = await response.text();
-                    text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
-                    const data = JSON.parse(text);
-                    if (Array.isArray(data) && data.length > 0) {
-                        this.masterDataset = data;
-                        return true;
-                    }
-                }
-            } catch (err) {
-                console.warn(`[Data Engine] Endpoint skipped (${url}):`, err.message);
-            }
-        }
-
-        this.masterDataset = LOCAL_MASTER_DATASET;
-        return true;
-    },
-
-    buildMenuHTML: function(menuItems) {
-        const navContainer = document.getElementById('dynamic-nav-links');
-        if (!navContainer || !Array.isArray(menuItems)) return;
-
-        const groups = {};
-        const standalone = [];
-
-        menuItems.forEach(item => {
-            if (!item.name || !item.url) return;
-
-            let imgUrl = item.image || '';
-            if (imgUrl && imgUrl.includes('drive.google.com')) {
-                const driveMatch = imgUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || imgUrl.match(/id=([a-zA-Z0-9_-]+)/);
-                if (driveMatch) {
-                    imgUrl = `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
-                }
-            }
-
-            const nodeObj = { name: item.name, url: item.url, image: imgUrl };
-
-            if (item.group) {
-                if (!groups[item.group]) groups[item.group] = [];
-                groups[item.group].push(nodeObj);
-            } else {
-                standalone.push(nodeObj);
-            }
-        });
-
-        let navHTML = '';
-
-        Object.keys(groups).forEach(groupName => {
-            const dropItems = groups[groupName].map(it => {
-                const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
-                return `<a href="${it.url}">${imgTag}${it.name}</a>`;
-            }).join('');
-
-            navHTML += `
-                <div class="nav-dropdown">
-                    <button class="nav-dropbtn">${groupName} ▾</button>
-                    <div class="nav-dropdown-content">
-                        ${dropItems}
-                    </div>
-                </div>
-            `;
-        });
-
-        standalone.forEach(it => {
-            const imgTag = it.image ? `<img src="${it.image}" class="nav-icon" alt="" onerror="this.style.display='none'">` : '';
-            navHTML += `<a href="${it.url}">${imgTag}${it.name}</a>`;
-        });
-
-        navContainer.innerHTML = navHTML;
-    },
-
-    loadNavigation: async function() {
-        const timeParam = `?v=${Date.now()}`;
-        const origin = window.location.origin;
-        const pathname = window.location.pathname;
-        const repoName = pathname.split('/')[1] || 'Website';
-        
-        const pathsToTry = [
-            `${origin}/${repoName}/Menu.json${timeParam}`,
-            `/Website/Menu.json${timeParam}`,
-            `../../../../Menu.json${timeParam}`
-        ];
-
-        for (const path of pathsToTry) {
-            try {
-                const res = await fetch(path);
-                if (res.ok) {
-                    let text = await res.text();
-                    text = text.replace(/\/\*[\s\S]*?\*\/|\/\/.*/g, '').trim();
-                    const data = JSON.parse(text);
-                    if (data && Array.isArray(data)) {
-                        this.buildMenuHTML(data);
-                        return;
-                    }
-                }
-            } catch (e) {}
-        }
-    },
-
-    initSPARouter: function() {
-        window.addEventListener('hashchange', () => {
-            const hash = window.location.hash.replace('#/', '');
-            if (hash) {
-                const parts = hash.split('/');
-                if (parts[0] === 'tracker' && parts[1]) {
-                    this.switchHunter(parts[1]);
-                }
-            }
-        });
-    },
+    collapsedSections: {}, 
+    db: null, auth: null, user: null, unsub: null,
+    isLoaded: false,
 
     init: async function() {
-        this.app = initializeApp(firebaseConfig);
-        this.db = getFirestore(this.app);
+        this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
         
-        try {
-            this.analytics = getAnalytics(this.app);
-        } catch (analyticsErr) {}
-
-        this.loadNavigation().catch(() => {});
-        await this.loadMasterDataset();
-
-        const cats = [...new Set(this.masterDataset.map(i => i.cat))];
+        // Collapse all sections by default
+        const cats = [...new Set(this.hunterData.map(i => i.cat))];
         cats.forEach(cat => {
             const sid = cat.replace(/[^a-z0-9]/gi, '');
             this.collapsedSections[sid] = true;
         });
 
-        this.initSPARouter();
-
-        let targetToLoad = localStorage.getItem('se5_selected_user_id') || 'Werewolf3788';
-
-        document.querySelectorAll('.profile-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.preventDefault();
-                const selected = btn.getAttribute('data-profile');
-                if (selected) {
-                    window.location.hash = `#/tracker/${selected}/playstation`;
-                    this.switchHunter(selected);
-                }
-            });
-        });
-
-        this.loadLiveProgress(targetToLoad);
-
-        // Immediate forced render to guarantee loading overlays vanish
         this.render();
-    },
-
-    /* === SECTION: Auth-Free PlayStation Stream Engine === */
-    // Targets: /users/{userId}/platform/playstation/progress/sniper-elite-5
-    loadLiveProgress: function(userId) {
-        this.targetUserId = userId;
-        this.targetPlatform = DEFAULT_PLATFORM;
-        this.targetDisplayName = userId;
-        localStorage.setItem('se5_selected_user_id', userId);
-
-        this.hunterData = this.masterDataset.map(item => ({ ...item, collected: false }));
-
-        const displayNode = document.getElementById('hunter-display');
-        if (displayNode) displayNode.innerText = `${userId.toUpperCase()} [PLAYSTATION]`;
-
-        document.querySelectorAll('.profile-btn').forEach(b => {
-            const profAttr = b.getAttribute('data-profile');
-            b.classList.toggle('active-btn', profAttr && profAttr.toLowerCase() === userId.toLowerCase());
-        });
-
-        if (this.masterUnsub) { this.masterUnsub(); this.masterUnsub = null; }
-
-        const primaryRef = doc(this.db, "users", userId, "platform", "playstation", "progress", GAME_ID);
-
-        this.masterUnsub = onSnapshot(primaryRef, (snap) => {
-            this.lastSyncTime = Date.now();
-            if (snap.exists()) {
-                const data = snap.data();
-                const incoming = data.progress || [];
-                if (Array.isArray(incoming)) {
-                    this.hunterData = this.masterDataset.map(item => {
-                        const status = incoming.find(s => s.id === item.id);
-                        return { ...item, collected: status ? (status.collected || status.done || false) : false };
-                    });
-                }
-                if (data.user || data.displayName) {
-                    this.targetDisplayName = data.user || data.displayName;
-                    if (displayNode) displayNode.innerText = `${this.targetDisplayName.toUpperCase()} [PLAYSTATION]`;
-                }
-            } else {
-                this.hunterData = this.masterDataset.map(item => ({ ...item, collected: false }));
-            }
-            this.dataLoaded = true;
-            this.render();
-        }, (err) => {
-            console.error("Firestore Progress Stream Exception:", err.message);
-            this.dataLoaded = true;
-            this.render();
-        });
-    },
-
-    switchHunter: function(name) {
-        this.loadLiveProgress(name);
-    },
-
-    toggleItem: function(id) {
-        const item = this.hunterData.find(i => i.id === id);
-        if (item) {
-            item.collected = !item.collected;
-            this.render();
-            this.sync();
-        }
-    },
-
-    sync: async function() {
-        if (!this.db) return;
-
-        const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
-        
-        const platformRef = doc(this.db, "users", this.targetUserId, "platform", "playstation");
-        await setDoc(platformRef, { active: true, lastActive: new Date().toISOString() }, { merge: true });
-
-        const docRef = doc(this.db, "users", this.targetUserId, "platform", "playstation", "progress", GAME_ID);
 
         try {
-            await setDoc(docRef, {
-                user: this.targetDisplayName,
-                platform: "playstation",
-                gameId: GAME_ID,
-                lastUpdated: new Date().toISOString(),
-                progress: progress
-            }, { merge: true });
-        } catch (err) {
-            console.error("Firestore PlayStation Write Error:", err);
+            const app = initializeApp(firebaseConfig);
+            this.auth = getAuth(app);
+            this.db = getFirestore(app);
+            
+            const initAuth = async () => {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(this.auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(this.auth);
+                }
+            };
+            await initAuth();
+
+            onAuthStateChanged(this.auth, async (u) => {
+                this.user = u;
+                if (u) {
+                    document.getElementById('stat-line').innerText = `ID: ${u.uid.substring(0,8)} | ONLINE`;
+                    await this.bootstrapUsers();
+                    this.loadHunter(this.activeHunter);
+                } else {
+                    document.getElementById('stat-line').innerText = `OFFLINE`;
+                }
+            });
+        } catch (e) { 
+            console.error("Firebase Init Error:", e);
         }
     },
 
-    toggleSection: function(sid) {
-        this.collapsedSections[sid] = !this.collapsedSections[sid];
-        this.render();
+    bootstrapUsers: async function() {
+        const names = ['Kevin', 'Ray', 'TJ', 'Elu Cloud'];
+        for (const name of names) {
+            const path = `artifacts/${appId}/public/data/sniper_elite_5/${name}`;
+            const docRef = doc(this.db, path);
+            const snap = await getDoc(docRef);
+            if (!snap.exists()) {
+                await setDoc(docRef, { 
+                    initialized: true, 
+                    hunterName: name, 
+                    progress: sniperData.map(i => ({ id: i.id, collected: false })) 
+                });
+            }
+        }
     },
 
-    /* --- DOM RENDERER & HTML OVERLAY DISMISSAL --- */
-    render: function() {
-        // Hide overlay containers by ID / class
-        const overlays = document.querySelectorAll(
-            '#loading-overlay, #loading, .loading-screen, .sync-overlay, div[id*="loading"], div[class*="loading"]'
-        );
-        overlays.forEach(el => el.style.setProperty('display', 'none', 'important'));
+    loadHunter: function(name) {
+        this.activeHunter = name;
+        document.getElementById('hunter-display').innerText = name.toUpperCase();
+        
+        const theme = userThemes[name] || userThemes['Kevin'];
+        document.documentElement.style.setProperty('--ser-color', theme.color);
+        document.documentElement.style.setProperty('--ser-glow', theme.glow);
 
-        // Scan text elements to forcibly clear "ESTABLISHING SECURE LINK..." & "READING FROM FIREBASE"
-        const textElements = document.querySelectorAll('div, p, span, h1, h2, h3');
-        textElements.forEach(node => {
-            if (node.innerText) {
-                const text = node.innerText.trim();
-                if (text.includes('ESTABLISHING SECURE LINK') || 
-                    text.includes('READING FROM FIREBASE') || 
-                    text.includes('SYNCING DATA...')) {
-                    node.style.setProperty('display', 'none', 'important');
-                }
-            }
+        document.querySelectorAll('.profile-btn').forEach(b => {
+            b.classList.toggle('active-btn', b.innerText === name);
         });
 
-        const container = document.getElementById('section-container');
-        if (!container) return;
+        if (this.unsub) this.unsub();
+        if (!this.user) return;
+
+        this.isLoaded = false;
+        this.render();
+
+        const path = `artifacts/${appId}/public/data/sniper_elite_5/${name}`;
+        const docRef = doc(this.db, path);
         
+        this.unsub = onSnapshot(docRef, (snap) => {
+            this.isLoaded = true;
+            if (snap.exists()) {
+                const saved = snap.data().progress || [];
+                this.hunterData = sniperData.map(item => {
+                    const status = saved.find(s => s.id === item.id);
+                    return { ...item, collected: status ? status.collected : false };
+                });
+            }
+            this.render();
+        }, (error) => {
+            console.error("Snapshot error:", error);
+            this.isLoaded = true;
+            this.render();
+        });
+    },
+
+    render: function() {
+        const container = document.getElementById('section-container');
+        
+        if (!this.isLoaded) {
+            document.getElementById('overall-bar').style.width = '0%';
+            document.getElementById('percent-text').innerText = `SYNCING DATA...`;
+            container.innerHTML = '<div style="text-align:center; padding: 50px 20px; color: var(--ser-color); font-weight: 900; letter-spacing: 2px; font-size: 18px;" class="outlined-text">ESTABLISHING SECURE LINK...<br><span style="font-size:12px; color:#aaa;">READING FROM FIREBASE</span></div>';
+            return;
+        }
+
         container.innerHTML = '';
         const cats = [...new Set(this.hunterData.map(i => i.cat))];
         let totalFound = 0;
@@ -583,20 +353,15 @@ const appState = {
             const sid = cat.replace(/[^a-z0-9]/gi, '');
             const section = document.createElement('div');
             section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''}`;
-            
             section.innerHTML = `
-                <div class="category-header outlined-text" id="header-${sid}">
+                <div class="category-header outlined-text" onclick="appState.toggleSection('${sid}')">
                     <h2>${cat}</h2>
-                    <div style="font-weight:900; font-size: 16px; color: #ff8800;">${count}/${items.length} FOUND</div>
+                    <div style="font-weight:900; font-size: 14px; color: var(--ser-color);">${count}/${items.length}</div>
                 </div>
-                <div class="section-content" id="content-${sid}">
+                <div class="section-content">
                     <div class="item-grid"></div>
                 </div>
             `;
-
-            section.querySelector(`#header-${sid}`).addEventListener('click', () => {
-                this.toggleSection(sid);
-            });
 
             const grid = section.querySelector('.item-grid');
             items.forEach(item => {
@@ -605,38 +370,146 @@ const appState = {
                 card.innerHTML = `
                     <div>
                         <div class="item-type-tag">${item.type}</div>
-                        <div class="outlined-text" style="font-weight:900; font-size:15px; margin-bottom:4px;">${item.name}</div>
-                        <div class="outlined-text" style="font-size:12px; color:#ddd; font-style:italic; line-height:1.3;">${item.desc}</div>
+                        <div class="outlined-text" style="font-weight:900; font-size:14px; margin-bottom:4px;">${item.name}</div>
+                        <div class="outlined-text" style="font-size:11px; color:#ddd; font-style:italic; line-height:1.2;">${item.desc}</div>
+                        ${item.reward ? `<span class="reward-tag outlined-text">${item.reward}</span>` : ''}
                     </div>
-                    <div class="action-zone"></div>
+                    ${item.collected ? `<div class="lock-badge outlined-text">COLLECTED</div>` : `<button class="toggle-btn outlined-text" onclick="appState.toggleItem('${item.id}')">Confirm Found</button>`}
                 `;
-
-                const actionZone = card.querySelector('.action-zone');
-
-                if (item.collected) {
-                    actionZone.innerHTML = `<button class="lock-badge outlined-text toggle-btn" style="background:#00aa44; min-height:44px; cursor:pointer;">LOGGED REGISTRY (Click to Undo)</button>`;
-                    actionZone.querySelector('button').addEventListener('click', () => this.toggleItem(item.id));
-                } else {
-                    const btn = document.createElement('button');
-                    btn.className = 'toggle-btn outlined-text';
-                    btn.style.minHeight = '44px';
-                    btn.innerText = 'Confirm Found';
-                    btn.addEventListener('click', () => this.toggleItem(item.id));
-                    actionZone.appendChild(btn);
-                }
-
                 grid.appendChild(card);
             });
             container.appendChild(section);
         });
 
-        const percent = Math.round((totalFound / (this.hunterData.length || 1)) * 100) || 0;
-        const barNode = document.getElementById('overall-bar');
-        const textNode = document.getElementById('percent-text');
-        if (barNode) barNode.style.width = percent + '%';
-        if (textNode) textNode.innerText = `TOTAL CAMPAIGN COLLECTION: ${percent}%`;
+        const percent = Math.round((totalFound / this.hunterData.length) * 100) || 0;
+        document.getElementById('overall-bar').style.width = percent + '%';
+        document.getElementById('percent-text').innerText = `TOTAL COLLECTION: ${percent}%`;
+    },
+
+    toggleItem: async function(id) {
+        const item = this.hunterData.find(i => i.id === id);
+        item.collected = !item.collected;
+        this.render(); 
+        this.sync();
+    },
+
+    toggleSection: function(id) {
+        this.collapsedSections[id] = !this.collapsedSections[id];
+        this.render();
+    },
+
+    switchHunter: function(name) { this.loadHunter(name); },
+
+    sync: async function() {
+        if (!this.user) return;
+        const path = `artifacts/${appId}/public/data/sniper_elite_5/${this.activeHunter}`;
+        const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
+        await setDoc(doc(this.db, path), { progress, lastUpdate: Date.now() }, { merge: true });
     }
 };
 
 window.appState = appState;
 appState.init();
+
+/* === SECTION: CSV Spreadsheet Parser & Top Menu Builder === */
+async function buildTopMenu() {
+    try {
+        const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
+        const response = await fetch(csvUrl);
+        const textData = await response.text();
+        
+        const rows = textData.split('\n');
+        const menuStructure = []; 
+        const groupMap = {}; 
+        
+        let startIdx = 0;
+        if(rows[0] && rows[0].toLowerCase().includes("name")) {
+            startIdx = 1; 
+        }
+
+        for(let i = startIdx; i < rows.length; i++) {
+            const rowStr = rows[i].replace(/\r/g, '').trim(); 
+            if(!rowStr) continue;
+            
+            const cols = rowStr.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+            let name = cols[0] ? cols[0].replace(/^"|"$/g, '').trim() : '';
+            let group = cols[1] ? cols[1].replace(/^"|"$/g, '').trim() : '';
+            let url = cols[2] ? cols[2].replace(/^"|"$/g, '').trim() : '';
+            let img = cols[3] ? cols[3].replace(/^"|"$/g, '').trim() : '';
+
+            if(!name || !url) continue;
+            
+            if(!group || group.toLowerCase() === 'none') {
+                menuStructure.push({ type: 'single', name, url, img });
+            } else {
+                if(!groupMap[group]) {
+                    const newGroup = { type: 'group', name: group, items: [] };
+                    menuStructure.push(newGroup);
+                    groupMap[group] = newGroup;
+                }
+                groupMap[group].items.push({name, url, img});
+            }
+        }
+
+        const menuBar = document.getElementById('csv-menu-bar');
+        let html = '';
+        
+        const chevron = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; display: inline-block; vertical-align: middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
+
+        menuStructure.forEach(item => {
+            if (item.type === 'single') {
+                html += `<a href="${item.url}" target="SE5_ITC_Window" class="csv-single-btn outlined-text">${item.name}</a>`;
+            } else {
+                const safeId = item.name.replace(/[^a-zA-Z0-9]/g, '');
+                html += `
+                    <div class="csv-dropdown">
+                        <button class="csv-dropdown-btn outlined-text" data-dropdown="${safeId}">
+                            ${item.name} ${chevron}
+                        </button>
+                        <div id="dropdown-${safeId}" class="csv-dropdown-content">
+                `;
+                
+                item.items.forEach(sub => {
+                    const imgTag = sub.img ? `<img src="${sub.img}" style="width:26px; height:26px; margin-right:12px; vertical-align:middle; border-radius:6px; object-fit:cover; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">` : '';
+                    html += `<a href="${sub.url}" target="SE5_ITC_Window" class="csv-dropdown-item outlined-text">${imgTag}${sub.name}</a>`;
+                });
+                
+                html += `</div></div>`;
+            }
+        });
+        
+        menuBar.innerHTML = html;
+        
+    } catch(e) {
+        console.error("Error loading CSV Menu:", e);
+    }
+}
+
+// Dropdown Toggle Event Delegation
+window.addEventListener('click', function(event) {
+    const btn = event.target.closest('.csv-dropdown-btn');
+    const dropdowns = document.getElementsByClassName("csv-dropdown-content");
+
+    if (btn) {
+        event.preventDefault();
+        event.stopPropagation();
+        const id = btn.getAttribute('data-dropdown');
+        const targetDropdown = document.getElementById('dropdown-' + id);
+        const isCurrentlyOpen = targetDropdown.classList.contains('show');
+
+        for (let i = 0; i < dropdowns.length; i++) {
+            dropdowns[i].classList.remove('show');
+        }
+        
+        if (!isCurrentlyOpen) {
+            targetDropdown.classList.add('show');
+        }
+    } else {
+        for (let i = 0; i < dropdowns.length; i++) {
+            dropdowns[i].classList.remove('show');
+        }
+    }
+});
+
+// Initialize CSV Navigation Menu
+buildTopMenu();
