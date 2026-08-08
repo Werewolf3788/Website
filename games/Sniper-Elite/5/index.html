@@ -13,9 +13,8 @@
     <!--                 CSS BLOCK                  -->
     <!-- ========================================== -->
     <style>
-        /* Developer Notes: Embedded CSS Styles */
         :root {
-            --ser-color: #ff8800; /* Kevin Orange Default */
+            --ser-color: #ff8800; /* Werewolf Orange Default */
             --ser-glow: rgba(255, 136, 0, 0.6);
             --bg-dark: #050505;
             --card-bg: rgba(20, 20, 25, 0.95);
@@ -24,6 +23,7 @@
             --bar-height: auto;
         }
 
+        /* Mobile Settings & General Rules */
         body {
             margin: 0;
             padding: 0;
@@ -34,7 +34,7 @@
             background-attachment: fixed;
             color: #ffffff;
             font-family: ui-sans-serif, system-ui, sans-serif;
-            font-size: 16px; /* Body text minimum size 16px */
+            font-size: 16px; /* Minimum 16px to prevent mobile auto-zoom */
             line-height: 1.5;
             overflow-x: hidden;
         }
@@ -44,7 +44,7 @@
         }
 
         h1, h2 {
-            font-size: 30px; 
+            font-size: 26px; 
             text-transform: uppercase;
             letter-spacing: 1px;
             margin: 0;
@@ -54,15 +54,16 @@
         .background-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), rgba(10, 10, 10, 1));
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.85), rgba(10, 10, 10, 0.98));
             z-index: -1;
         }
 
+        /* --- PRIMARY HEADER NAV --- */
         .master-nav {
             position: fixed;
             top: 0; left: 0; right: 0;
             height: var(--nav-height);
-            background: rgba(10, 10, 15, 0.95);
+            background: rgba(10, 10, 15, 0.98);
             backdrop-filter: blur(12px);
             border-bottom: 2px solid var(--ser-color);
             display: flex;
@@ -78,27 +79,32 @@
             text-decoration: none;
             font-size: 1.1rem;
             text-shadow: 0 0 10px var(--ser-glow);
+            min-height: 44px;
+            display: flex;
+            align-items: center;
         }
 
+        /* --- CSV DROPDOWN MENU BAR --- */
         .csv-nav {
             position: fixed;
             top: var(--nav-height);
             left: 0; right: 0;
             min-height: var(--csv-nav-height);
             background: rgba(10, 10, 12, 0.98);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
-            padding: 5px 25px;
+            padding: 5px 15px;
             z-index: 999;
             flex-wrap: wrap;
-            gap: 30px;
+            gap: 15px;
         }
 
         .csv-single-btn, .csv-dropdown-btn {
             background: transparent; color: #ccc; border: none; font-weight: 900; 
-            font-size: 13px; cursor: pointer; text-transform: uppercase; padding: 5px 0;
+            font-size: 14px; cursor: pointer; text-transform: uppercase; padding: 8px 10px;
             letter-spacing: 1px; text-decoration: none; display: flex; align-items: center;
+            min-height: 44px; /* Touch target minimum 44px */
             transition: color 0.2s;
         }
         .csv-single-btn:hover, .csv-dropdown-btn:hover { color: var(--ser-color); }
@@ -108,21 +114,23 @@
         .csv-dropdown-content {
             display: none; position: absolute; background-color: #1a1a1c; 
             min-width: 260px; box-shadow: 0px 10px 30px 0px rgba(0,0,0,0.9);
-            border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 0.5rem; 
+            border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 0.5rem; 
             z-index: 1001; top: 100%; left: 0; overflow: hidden;
-            margin-top: 10px;
+            margin-top: 5px;
         }
         .csv-dropdown-content.show { display: block; }
         
         .csv-dropdown-item {
             color: #eee; padding: 12px 18px; text-decoration: none; display: flex; 
             align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
-            font-size: 12px; font-weight: 900; text-transform: uppercase; 
+            font-size: 13px; font-weight: 900; text-transform: uppercase; 
+            min-height: 44px;
             transition: background 0.2s, color 0.2s;
         }
         .csv-dropdown-item:last-child { border-bottom: none; }
-        .csv-dropdown-item:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--ser-color); }
+        .csv-dropdown-item:hover { background-color: rgba(255, 255, 255, 0.05); color: var(--ser-color); }
 
+        /* --- LAYOUT CONTAINER (MOBILE STACKING) --- */
         .tracker-container {
             margin-top: calc(var(--nav-height) + var(--csv-nav-height) + 15px);
             padding: 10px;
@@ -132,107 +140,102 @@
             margin-right: auto;
             position: relative;
         }
-        
-        @media (max-width: 768px) {
-            .tracker-container { width: 95%; }
-        }
 
+        /* --- OPERATIVE TERMINAL CONSOLE --- */
         .profile-header {
             display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column; /* Vertical column for mobile */
+            align-items: stretch;
             background: rgba(15, 15, 20, 0.95);
             padding: 15px;
             border-radius: 1rem;
-            border: 3px solid var(--ser-color);
+            border: 2px solid var(--ser-color);
             margin-bottom: 20px;
             box-shadow: 0 0 20px var(--ser-glow);
-            gap: 10px;
+            gap: 15px;
         }
 
         .hunter-glow { font-size: 1.6rem; font-weight: 900; color: var(--ser-color); text-shadow: 0 0 15px var(--ser-glow); }
-        .profile-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+        .profile-actions { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; width: 100%; }
         
         .profile-btn {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            color: white; padding: 8px 12px; border-radius: 0.5rem; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 11px;
-            min-height: 44px; /* Mobile touch-target rule */
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white; padding: 10px 12px; border-radius: 0.5rem; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 12px;
+            min-height: 44px; /* Touch target minimum 44px */
+            display: flex; align-items: center; justify-content: center;
         }
-        .active-btn { border-color: var(--ser-color); background: rgba(255, 255, 255, 0.15); }
+        .active-btn { border-color: var(--ser-color); background: rgba(255, 255, 255, 0.15); box-shadow: 0 0 10px var(--ser-glow); }
 
+        /* --- PROGRESS HEADER --- */
         .main-header {
-            background: rgba(10, 0, 0, 0.85); padding: 25px 15px; border-radius: 1.5rem;
-            border: 2px solid var(--ser-color); text-align: center; margin-bottom: 30px;
+            background: rgba(10, 0, 0, 0.85); padding: 20px 15px; border-radius: 1rem;
+            border: 2px solid var(--ser-color); text-align: center; margin-bottom: 25px;
         }
 
-        .bar-bg { background: #000; height: 18px; border-radius: 9px; border: 1px solid #333; margin: 15px 0; overflow: hidden; }
+        .bar-bg { background: #000; height: 20px; border-radius: 10px; border: 1px solid #333; margin: 15px 0; overflow: hidden; }
         .bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--ser-color), #fff); transition: width 0.8s ease-out; }
 
-        /* Category Header Height Set to 50px */
+        /* --- CATEGORIES & CARDS --- */
         .category-header {
             display: flex; justify-content: space-between; align-items: center;
             cursor: pointer; border-left: 8px solid var(--ser-color);
             padding: 0 15px; background: rgba(20, 20, 25, 0.95);
-            border-radius: 0.5rem; margin-bottom: 5px;
-            height: 50px; 
+            border-radius: 0.5rem; margin-bottom: 8px;
+            min-height: 50px; 
         }
 
         .section-content { overflow: hidden; transition: max-height 0.4s ease; margin-bottom: 20px; }
         .section-collapsed .section-content { max-height: 0; margin-bottom: 0; }
 
-        .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; padding: 10px 0; }
+        .item-grid { display: grid; grid-template-columns: 1fr; gap: 12px; padding: 10px 0; }
 
         .item-card {
-            background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 0.8rem; padding: 12px; display: flex; flex-direction: column;
-            justify-content: space-between; min-height: 120px;
+            background: var(--card-bg); border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 0.8rem; padding: 15px; display: flex; flex-direction: column;
+            justify-content: space-between; min-height: 130px;
+            gap: 10px;
         }
         .item-card.completed {
             border-color: var(--ser-color); background: linear-gradient(135deg, rgba(20, 20, 25, 1), rgba(255, 255, 255, 0.05));
         }
 
-        .item-type-tag { font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 900; text-transform: uppercase; background: #000; color: #fff; margin-bottom: 5px; width: fit-content; border: 1px solid #444;}
+        .item-type-tag { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 900; text-transform: uppercase; background: #000; color: #fff; margin-bottom: 6px; width: fit-content; border: 1px solid #444;}
         
-        /* Control Row Height Set to 30px */
         .toggle-btn, .lock-badge {
-            margin-top: 10px; width: 100%; height: 30px; 
+            margin-top: 10px; width: 100%; min-height: 44px; /* Touch target minimum 44px */
             display: flex; align-items: center; justify-content: center;
-            border-radius: 5px; font-weight: 900; text-transform: uppercase;
+            border-radius: 6px; font-weight: 900; text-transform: uppercase;
             border: 1px solid #444; background: #000; color: #fff; cursor: pointer;
-            font-size: 11px;
-            min-height: 44px; /* Mobile touch target size */
+            font-size: 13px;
         }
         .lock-badge { border-color: var(--ser-color); color: var(--ser-color); background: rgba(255, 255, 255, 0.03); cursor: default; }
 
         .tracker-footer { 
-            margin-top: 50px; text-align: center; padding: 20px 0; opacity: 0.8; font-size: 12px;
-            height: var(--bar-height);
-            border-top: 1px solid #333;
-            background: rgba(5,5,5,0.9);
+            margin-top: 40px; text-align: center; padding: 25px 15px; opacity: 0.8; font-size: 13px;
+            border-top: 1px solid #333; background: rgba(5,5,5,0.95); border-radius: 1rem 1rem 0 0;
         }
         
-        .kf-signature {
-            display: inline-block;
-            font-size: 24px;
-            font-weight: 900;
-            margin-top: 10px;
-            font-family: monospace;
-        }
-        .kf-k { color: #FF4500; transform: scaleX(-1); display: inline-block; position: relative; z-index: 2; text-shadow: none; }
+        .kf-signature { display: inline-block; font-size: 26px; font-weight: 900; margin-top: 10px; font-family: monospace; }
+        .kf-k { color: #FF4500; transform: scaleX(-1); display: inline-block; position: relative; z-index: 2; }
         .kf-f { color: #000000; margin-left: -0.22em; display: inline-block; position: relative; z-index: 1; text-shadow: 0 0 2px rgba(255,255,255,0.3); }
 
-        .initial-loader {
-            text-align: center;
-            padding: 50px 20px;
-            color: var(--ser-color);
-            font-weight: 900;
-            letter-spacing: 2px;
-            font-size: 18px;
+        .initial-loader { text-align: center; padding: 50px 20px; color: var(--ser-color); font-weight: 900; letter-spacing: 2px; font-size: 18px; }
+        .initial-loader span { font-size: 13px; color: #aaa; }
+        .hidden { display: none !important; }
+
+        /* --- DESKTOP BREAKPOINTS --- */
+        @media (min-width: 769px) {
+            .tracker-container { width: 80%; }
+            .profile-header { flex-direction: row; }
+            .profile-actions { display: flex; width: auto; flex-wrap: nowrap; }
+            .profile-btn { width: auto; min-width: 110px; }
+            .item-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+            h1, h2 { font-size: 30px; }
         }
 
-        .initial-loader span { font-size: 12px; color: #aaa; }
-        .hidden { display: none !important; }
+        @media (max-width: 768px) {
+            .tracker-container { width: 92%; }
+        }
     </style>
 </head>
 
@@ -241,7 +244,7 @@
 
     <nav class="master-nav">
         <a href="#" class="nav-logo outlined-text">SNIPER ELITE 5: MASTER LOG</a>
-        <div id="stat-line" style="font-family: monospace; font-size: 10px; opacity: 0.6; text-transform: uppercase; color: #aaa;" class="outlined-text">
+        <div id="stat-line" style="font-family: monospace; font-size: 11px; opacity: 0.7; text-transform: uppercase; color: #aaa;" class="outlined-text">
             LINK: INITIALIZING...
         </div>
     </nav>
@@ -249,14 +252,15 @@
     <nav id="csv-menu-bar" class="csv-nav"></nav>
 
     <div class="tracker-container">
+        <!-- OPERATIVE TERMINAL CONSOLE -->
         <div class="profile-header">
             <div class="active-info">
-                <div style="font-size: 0.6rem; text-transform: uppercase; color: #888;" class="outlined-text">Operative Terminal</div>
-                <span id="hunter-display" class="hunter-glow text-white outlined-text">KEVIN</span>
+                <div style="font-size: 0.7rem; text-transform: uppercase; color: #aaa;" class="outlined-text">Operative Terminal</div>
+                <span id="hunter-display" class="hunter-glow text-white outlined-text">WEREWOLF</span>
             </div>
             <div class="profile-actions">
-                <button class="profile-btn active-btn outlined-text" onclick="appState.switchHunter('Kevin')">Kevin</button>
-                <button class="profile-btn outlined-text" onclick="appState.switchHunter('Ray')">Ray</button>
+                <button class="profile-btn active-btn outlined-text" onclick="appState.switchHunter('Werewolf')">Werewolf</button>
+                <button class="profile-btn outlined-text" onclick="appState.switchHunter('Raymystyro')">Raymystyro</button>
                 <button class="profile-btn outlined-text" onclick="appState.switchHunter('TJ')">TJ</button>
                 <button class="profile-btn outlined-text" onclick="appState.switchHunter('Elu Cloud')">Elu Cloud</button>
             </div>
@@ -275,7 +279,7 @@
         <div id="section-container"></div>
 
         <footer class="tracker-footer">
-            <p class="outlined-text">DESIGNED BY WEREWOLF3788 | OPERATIVES: KEVIN, RAY, TJ, ELU CLOUD</p>
+            <p class="outlined-text">DESIGNED BY WEREWOLF3788 | OPERATIVES: WEREWOLF, RAYMYSTYRO, TJ, ELU CLOUD</p>
             <p class="outlined-text" style="margin-top: 5px; font-family: monospace;">NODE-PROJECT: SE5-Master-Tracker</p>
             <div class="kf-signature" title="KF Signature">
                 <span class="kf-k">K</span><span class="kf-f">F</span>
@@ -291,7 +295,6 @@
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
         import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-        // Developer Notes: Target active entertainment-71888 Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
             authDomain: "entertainment-71888.firebaseapp.com",
@@ -303,14 +306,14 @@
             measurementId: "G-CTYHDF4MSD"
         };
 
+        // Custom gamer tag themes
         const userThemes = {
-            'Kevin': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
-            'Ray': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
+            'Werewolf': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
+            'Raymystyro': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
             'TJ': { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)' },
             'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
         };
 
-        // Complete SE5 Master Dataset Embedded directly inside JS
         const sniperData = [
             // MISSION 1: THE ATLANTIC WALL
             { id: "m1_pl1", cat: "1: The Atlantic Wall", name: "Picked Some Violets", type: "Personal Letter", desc: "North-east map sector, on a chest inside a single building guarded by 2 soldiers." },
@@ -575,7 +578,7 @@
         ];
 
         const appState = {
-            activeHunter: 'Kevin',
+            activeHunter: 'Werewolf',
             hunterData: [],
             collapsedSections: {}, 
             db: null, auth: null, user: null, unsub: null,
@@ -629,7 +632,7 @@
             },
 
             bootstrapUsers: async function() {
-                const names = ['Kevin', 'Ray', 'TJ', 'Elu Cloud'];
+                const names = ['Werewolf', 'Raymystyro', 'TJ', 'Elu Cloud'];
                 for (const name of names) {
                     const path = `users/${name}/platform/playstation/progress/sniper-elite-5`;
                     const docRef = doc(this.db, path);
@@ -649,7 +652,7 @@
                 this.activeHunter = name;
                 document.getElementById('hunter-display').innerText = name.toUpperCase();
                 
-                const theme = userThemes[name] || userThemes['Kevin'];
+                const theme = userThemes[name] || userThemes['Werewolf'];
                 document.documentElement.style.setProperty('--ser-color', theme.color);
                 document.documentElement.style.setProperty('--ser-glow', theme.glow);
 
