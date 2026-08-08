@@ -650,7 +650,7 @@ const trophyData = [
  * ---------------------------------------------------- */
 const appState = {
     activeHunter: localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
-    activePlatform: (localStorage.getItem('active_gaming_platform') || 'psn').toLowerCase().trim(),
+    activePlatform: (localStorage.getItem('active_gaming_platform') || 'playstation').toLowerCase().trim(),
     hunterData: JSON.parse(JSON.stringify(trophyData)),
     animalRankData: { bronze: 0, silver: 0, gold: 0, diamond: 0, greatone: 0, albino: 0 },
     auth: null,
@@ -826,7 +826,7 @@ const appState = {
         const dbDocName = USER_DATA_MAP[userName] || userName || 'Werewolf3788';
         this.activeHunter = dbDocName;
         
-        const rawPlatform = platform || this.activePlatform || 'psn';
+        const rawPlatform = platform || this.activePlatform || 'playstation';
         this.activePlatform = String(rawPlatform).toLowerCase().trim();
 
         localStorage.setItem('active_gaming_nickname', dbDocName);
@@ -1002,7 +1002,7 @@ const appState = {
         if (document.getElementById('percent-text')) document.getElementById('percent-text').innerText = `Master Platinum Progress ${overall}%`;
     },
 
-    getIcon: (t) => t.psnImage ? t.psnImage : (t.cat.includes('Collectibles') ? ICONS.TRACK : t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
+    getIcon: (t) => t.playstationImage ? t.playstationImage : (t.cat.includes('Collectibles') ? ICONS.TRACK : t.name.includes('Arc') || t.name.includes('Master') || t.name.includes('Missions') ? ICONS.ARC : t.name.includes('Mile') ? ICONS.TRAVEL : t.name.includes('Marksman') ? ICONS.MARK : ICONS.GAME),
 
     adj: function(id, val) { const t = this.hunterData.find(x => x.id === id); t.current = Math.max(0, t.current + val); this.sync(); },
 
