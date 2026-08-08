@@ -1,13 +1,13 @@
 /* ============================================================================
  * File: index.js
  * Location: /index.js
- * Description: Official Squad Pack Sync Engine - Pure Gamertag Mapping
- *              All persona/human name aggregations have been removed. Data 
- *              is processed and stored strictly by active PSN Gamer Tag.
+ * Description: Official Squad Pack Sync Engine - 50 Game History & Full Trophies
+ *              Expands recent history to 50 titles with deep trophy scanning, 
+ *              poster art extraction, and live presence telemetry per Gamer Tag.
  * Database: Realtime Database (entertainment-71888)
  * Target Endpoint: https://entertainment-71888-default-rtdb.firebaseio.com/psn.json
- * Version: 15.0.0
- * Last Modified: Saturday, August 08, 2026 | 7:00 PM EDT
+ * Version: 15.1.0
+ * Last Modified: Saturday, August 08, 2026 | 7:10 PM EDT
  * ============================================================================ */
 
 const fs = require("fs");
@@ -60,7 +60,7 @@ const TWITCH_MAP = {
     seth: "phoenix_darkfire"
 };
 
-// Cached Account IDs & Resolvers
+// Cached Account IDs
 const ACCOUNT_IDS = {
     wildhorse_spirit: "4087137467908566201",
     ray: "2732733730346312494",
@@ -456,9 +456,10 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
 
         const targetSyncId = activeCommId || matchedGame.npCommunicationId || allRecentGames[0]?.npCommunicationId;
 
-        let gamesToDeepScan = 20;
+        // Expanded deep-scan limit to process up to 50 games and their trophy sets
+        let gamesToDeepScan = 50;
 
-        for (const game of allRecentGames.slice(0, 30)) { 
+        for (const game of allRecentGames.slice(0, 60)) { 
             if (BLACKLIST.some(f => game.name.toLowerCase().includes(f))) continue;
             
             const recentGameRef = {
@@ -473,7 +474,8 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
                 bootCount: game.playCount || "Unknown"
             };
 
-            if (recentGames.length < 6) { recentGames.push(recentGameRef); }
+            // Expanded to store up to 50 recent games in the payload
+            if (recentGames.length < 50) { recentGames.push(recentGameRef); }
 
             const isTargetHunt = (game.npCommunicationId === targetSyncId);
             
@@ -561,7 +563,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
             }
         }
 
-        mostRecentTrophies = mostRecentTrophies.sort((a,b) => b.timestamp - a.timestamp).slice(0, 10);
+        mostRecentTrophies = mostRecentTrophies.sort((a,b) => b.timestamp - a.timestamp).slice(0, 50);
         const lastTrophyTime = mostRecentTrophies[0]?.timestamp || 0;
         const proofOfLife = (Date.now() - lastTrophyTime) < 1200000;
 
@@ -648,7 +650,7 @@ function writeLocalFile(payload) {
 
 async function main() {
     try {
-        console.log("[INIT] Starting Squad Gamer Tag Engine v15.0.0 (Entertainment DB Target)...");
+        console.log("[INIT] Starting Squad Gamer Tag Engine v15.1.0 (50 Game History Mode)...");
 
         const previousFirebaseData = await fetchFromFirebase();
 
@@ -657,8 +659,8 @@ async function main() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport,
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York" }), 
-            engineVersion: "15.0.0",
-            codeTimestamp: "Saturday, August 8, 2026 | 7:00 PM EDT"
+            engineVersion: "15.1.0",
+            codeTimestamp: "Saturday, August 8, 2026 | 7:10 PM EDT"
         };
 
         const wildHorseAuth = await getAuthenticated("wildhorse_spirit", process.env.PSN_NPSSO_WILDHORSE);
@@ -667,7 +669,6 @@ async function main() {
 
         finalData.authDiagnostics = diagnosticReport;
 
-        // Loop purely through exact PSN Gamer Tags
         for (const [key, gamerTag] of Object.entries(SQUAD_GAMERTAGS)) {
             const accountId = ACCOUNT_IDS[key];
             const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : (key === 'wildhorse_spirit' && wildHorseAuth) ? wildHorseAuth : masterAuth;
@@ -688,7 +689,7 @@ async function main() {
         await pushToFirebase(finalData);
         writeLocalFile(finalData);
 
-        console.log(`[SUCCESS] Gamer Tag Engine v15.0.0 execution complete.`);
+        console.log(`[SUCCESS] Gamer Tag Engine v15.1.0 execution complete.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Execution error caught: ${criticalError.message}`);
         process.exit(0);
