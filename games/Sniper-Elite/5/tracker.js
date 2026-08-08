@@ -1,6 +1,6 @@
 /* ============================================================================
    File: tracker.js
-   Version: 1.8.0 | Updated: Friday, August 7, 2026
+   Version: 1.8.1 | Updated: Friday, August 7, 2026
    Description: Dynamic SPA Sniper Elite 5 Tracker Engine (Auth-Free Engine)
    Project: entertainment-71888
    Architecture: /users/{userId}/platform/playstation/progress/sniper-elite-5
@@ -12,9 +12,9 @@
      - Lines 44-320: Embedded Master Collectibles Dataset
      - Lines 322-385: Dataset & Dynamic Navigation Fetching
      - Lines 387-465: SPA AppState Lifecycle & Path Listeners
-     - Lines 467-520: PlayStation Firestore Path Stream (/users/{userId}/platform/playstation/progress/sniper-elite-5)
+     - Lines 467-520: PlayStation Firestore Path Stream
      - Lines 522-570: Direct Auth-Free Toggle & Sync Engine
-     - Lines 572-645: Dynamic DOM Renderer
+     - Lines 572-660: Dynamic DOM Renderer & Loading Screen Dismissal
    ============================================================================ */
 
 /* === SECTION: Core Imports & Module Setup === */
@@ -538,6 +538,9 @@ const appState = {
             }
         }, (err) => {
             console.error("PlayStation Progress Stream Error:", err.message);
+            // Force load on stream error so loading message disappears
+            this.dataLoaded = true;
+            this.render();
         });
     },
 
@@ -589,11 +592,16 @@ const appState = {
         this.render();
     },
 
-    /* --- DOM RENDERER --- */
-    // Line 612: Dynamic UI Rendering Loop
+    /* --- DOM RENDERER & OVERLAY REMOVAL --- */
+    // Line 612: Dynamic UI Rendering Loop with Loading Screen Dismissal
     render: function() {
+        // Clear/Hide any static loading overlay screens
+        const overlays = document.querySelectorAll('#loading-overlay, #loading, .loading-screen, .sync-overlay');
+        overlays.forEach(el => el.style.display = 'none');
+
         const container = document.getElementById('section-container'); // HTML Main Grid Target
         if (!container) return;
+        
         container.innerHTML = '';
         const cats = [...new Set(this.hunterData.map(i => i.cat))];
         let totalFound = 0;
