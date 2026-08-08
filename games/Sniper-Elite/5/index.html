@@ -23,7 +23,6 @@
             --bar-height: auto;
         }
 
-        /* Mobile Settings & General Rules */
         body {
             margin: 0;
             padding: 0;
@@ -34,7 +33,7 @@
             background-attachment: fixed;
             color: #ffffff;
             font-family: ui-sans-serif, system-ui, sans-serif;
-            font-size: 16px; /* Minimum 16px to prevent mobile auto-zoom */
+            font-size: 16px;
             line-height: 1.5;
             overflow-x: hidden;
         }
@@ -58,7 +57,7 @@
             z-index: -1;
         }
 
-        /* --- PRIMARY HEADER NAV --- */
+        /* --- PRIMARY NAVIGATION --- */
         .master-nav {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -84,7 +83,7 @@
             align-items: center;
         }
 
-        /* --- CSV DROPDOWN MENU BAR (HAMBURGER / SANDWICH SETUP ON MOBILE) --- */
+        /* --- CSV DROPDOWN MENU BAR --- */
         .csv-nav {
             position: fixed;
             top: var(--nav-height);
@@ -98,7 +97,6 @@
             z-index: 999;
         }
 
-        /* Hamburger Toggle Button (Hidden on Desktop) */
         .hamburger-btn {
             display: none;
             background: transparent;
@@ -129,7 +127,7 @@
             background: transparent; color: #ccc; border: none; font-weight: 900; 
             font-size: 14px; cursor: pointer; text-transform: uppercase; padding: 8px 10px;
             letter-spacing: 1px; text-decoration: none; display: flex; align-items: center;
-            min-height: 44px; /* Touch target minimum 44px */
+            min-height: 44px;
             transition: color 0.2s;
         }
         .csv-single-btn:hover, .csv-dropdown-btn:hover { color: var(--ser-color); }
@@ -155,14 +153,10 @@
         .csv-dropdown-item:last-child { border-bottom: none; }
         .csv-dropdown-item:hover { background-color: rgba(255, 255, 255, 0.05); color: var(--ser-color); }
 
-        /* Mobile Hamburger Responsive Adjustments */
         @media (max-width: 768px) {
-            .hamburger-btn {
-                display: flex; /* Show Hamburger on Mobile */
-            }
-
+            .hamburger-btn { display: flex; }
             .csv-links-container {
-                display: none; /* Hide top links by default on Mobile */
+                display: none;
                 flex-direction: column;
                 align-items: stretch;
                 position: absolute;
@@ -175,17 +169,13 @@
                 gap: 5px;
                 box-shadow: 0 10px 20px rgba(0,0,0,0.8);
             }
-
-            .csv-links-container.mobile-open {
-                display: flex; /* Expand menu when hamburger is clicked */
-            }
-
+            .csv-links-container.mobile-open { display: flex; }
             .csv-dropdown { width: 100%; }
             .csv-dropdown-btn, .csv-single-btn { width: 100%; justify-content: space-between; }
             .csv-dropdown-content { position: relative; width: 100%; min-width: 100%; margin-top: 0; }
         }
 
-        /* --- LAYOUT CONTAINER (MOBILE STACKING) --- */
+        /* --- LAYOUT CONTAINER --- */
         .tracker-container {
             margin-top: calc(var(--nav-height) + var(--csv-nav-height) + 15px);
             padding: 10px;
@@ -196,10 +186,10 @@
             position: relative;
         }
 
-        /* --- OPERATIVE TERMINAL CONSOLE --- */
+        /* --- OPERATIVE CONSOLE --- */
         .profile-header {
             display: flex;
-            flex-direction: column; /* Vertical column for mobile */
+            flex-direction: column;
             align-items: stretch;
             background: rgba(15, 15, 20, 0.95);
             padding: 15px;
@@ -216,7 +206,7 @@
         .profile-btn {
             background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.15);
             color: white; padding: 10px 12px; border-radius: 0.5rem; font-weight: 900; cursor: pointer; transition: 0.3s; font-size: 12px;
-            min-height: 44px; /* Touch target minimum 44px */
+            min-height: 44px;
             display: flex; align-items: center; justify-content: center;
         }
         .active-btn { border-color: var(--ser-color); background: rgba(255, 255, 255, 0.15); box-shadow: 0 0 10px var(--ser-glow); }
@@ -257,13 +247,52 @@
         .item-type-tag { font-size: 11px; padding: 3px 8px; border-radius: 4px; font-weight: 900; text-transform: uppercase; background: #000; color: #fff; margin-bottom: 6px; width: fit-content; border: 1px solid #444;}
         
         .toggle-btn, .lock-badge {
-            margin-top: 10px; width: 100%; min-height: 44px; /* Touch target minimum 44px */
+            margin-top: 10px; width: 100%; min-height: 44px;
             display: flex; align-items: center; justify-content: center;
             border-radius: 6px; font-weight: 900; text-transform: uppercase;
             border: 1px solid #444; background: #000; color: #fff; cursor: pointer;
             font-size: 13px;
         }
         .lock-badge { border-color: var(--ser-color); color: var(--ser-color); background: rgba(255, 255, 255, 0.03); cursor: default; }
+
+        /* --- TEAM OPERATIVE ACTIVITY BADGES --- */
+        .team-status-box {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.15);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .team-label {
+            font-size: 10px;
+            font-weight: 900;
+            color: #888;
+            text-transform: uppercase;
+            margin-right: 4px;
+        }
+
+        .team-badge {
+            font-size: 10px;
+            font-weight: 900;
+            padding: 2px 6px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            border: 1px solid #333;
+            background: rgba(0, 0, 0, 0.6);
+            color: #555; /* Default uncollected state */
+            transition: all 0.3s ease;
+        }
+
+        /* Highlight in green when an operative has collected this item */
+        .team-badge.has-item {
+            border-color: #00ff66;
+            background: rgba(0, 255, 102, 0.15);
+            color: #00ff66;
+            box-shadow: 0 0 8px rgba(0, 255, 102, 0.4);
+        }
 
         .tracker-footer { 
             margin-top: 40px; text-align: center; padding: 25px 15px; opacity: 0.8; font-size: 13px;
@@ -278,7 +307,6 @@
         .initial-loader span { font-size: 13px; color: #aaa; }
         .hidden { display: none !important; }
 
-        /* --- DESKTOP BREAKPOINTS --- */
         @media (min-width: 769px) {
             .tracker-container { width: 80%; }
             .profile-header { flex-direction: row; }
@@ -304,14 +332,11 @@
         </div>
     </nav>
 
-    <!-- CSV MENU WITH HAMBURGER BUTTON -->
     <nav id="csv-menu-bar" class="csv-nav">
         <button id="mobile-hamburger" class="hamburger-btn outlined-text">
             ☰ MENU
         </button>
-        <div id="csv-links-wrapper" class="csv-links-container">
-            <!-- Rendered by JS -->
-        </div>
+        <div id="csv-links-wrapper" class="csv-links-container"></div>
     </nav>
 
     <div class="tracker-container">
@@ -369,7 +394,8 @@
             measurementId: "G-CTYHDF4MSD"
         };
 
-        // Custom gamer tag themes
+        const TEAM_MEMBERS = ['Werewolf', 'Raymystyro', 'TJ', 'Elu Cloud'];
+
         const userThemes = {
             'Werewolf': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
             'Raymystyro': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
@@ -643,8 +669,9 @@
         const appState = {
             activeHunter: 'Werewolf',
             hunterData: [],
+            teamProgress: {}, // Store all operatives' real-time progress
             collapsedSections: {}, 
-            db: null, auth: null, user: null, unsub: null,
+            db: null, auth: null, user: null, teamUnsubs: [],
             isLoaded: false,
 
             init: async function() {
@@ -675,7 +702,7 @@
                         if (u) {
                             document.getElementById('stat-line').innerText = `ID: ${u.uid.substring(0,8)} | ONLINE`;
                             await this.bootstrapUsers();
-                            this.loadHunter(this.activeHunter);
+                            this.listenToEntireTeam();
                         } else {
                             document.getElementById('stat-line').innerText = `OFFLINE`;
                             this.isLoaded = true;
@@ -685,7 +712,7 @@
                         }
                     });
                 } catch (e) { 
-                    console.error("Firebase Init Exception, switching to offline local rendering:", e);
+                    console.error("Firebase Init Exception:", e);
                     document.getElementById('stat-line').innerText = `OFFLINE MODE`;
                     this.isLoaded = true;
                     const loader = document.getElementById('initial-loading-container');
@@ -695,8 +722,7 @@
             },
 
             bootstrapUsers: async function() {
-                const names = ['Werewolf', 'Raymystyro', 'TJ', 'Elu Cloud'];
-                for (const name of names) {
+                for (const name of TEAM_MEMBERS) {
                     const path = `users/${name}/platform/playstation/progress/sniper-elite-5`;
                     const docRef = doc(this.db, path);
                     const snap = await getDoc(docRef);
@@ -711,7 +737,44 @@
                 }
             },
 
-            loadHunter: function(name) {
+            // Listen to real-time updates for ALL operatives simultaneously
+            listenToEntireTeam: function() {
+                this.teamUnsubs.forEach(unsub => unsub());
+                this.teamUnsubs = [];
+
+                TEAM_MEMBERS.forEach(name => {
+                    const path = `users/${name}/platform/playstation/progress/sniper-elite-5`;
+                    const docRef = doc(this.db, path);
+
+                    const unsub = onSnapshot(docRef, (snap) => {
+                        if (snap.exists()) {
+                            this.teamProgress[name] = snap.data().progress || [];
+                        } else {
+                            this.teamProgress[name] = [];
+                        }
+
+                        // Update current active operative's local dataset
+                        if (name === this.activeHunter) {
+                            const saved = this.teamProgress[name];
+                            this.hunterData = sniperData.map(item => {
+                                const status = saved.find(s => s.id === item.id);
+                                return { ...item, collected: status ? status.collected : false };
+                            });
+                        }
+
+                        this.isLoaded = true;
+                        const loader = document.getElementById('initial-loading-container');
+                        if (loader) loader.classList.add('hidden');
+                        this.render();
+                    }, (err) => {
+                        console.error(`Error streaming data for ${name}:`, err);
+                    });
+
+                    this.teamUnsubs.push(unsub);
+                });
+            },
+
+            switchHunter: function(name) {
                 this.activeHunter = name;
                 document.getElementById('hunter-display').innerText = name.toUpperCase();
                 
@@ -723,37 +786,14 @@
                     b.classList.toggle('active-btn', b.innerText === name);
                 });
 
-                if (this.unsub) this.unsub();
-                if (!this.user) {
-                    this.isLoaded = true;
-                    this.render();
-                    return;
-                }
-
-                this.isLoaded = false;
-                const loader = document.getElementById('initial-loading-container');
-                if(loader) loader.classList.remove('hidden');
-
-                const path = `users/${name}/platform/playstation/progress/sniper-elite-5`;
-                const docRef = doc(this.db, path);
-                
-                this.unsub = onSnapshot(docRef, (snap) => {
-                    this.isLoaded = true;
-                    if (snap.exists()) {
-                        const saved = snap.data().progress || [];
-                        this.hunterData = sniperData.map(item => {
-                            const status = saved.find(s => s.id === item.id);
-                            return { ...item, collected: status ? status.collected : false };
-                        });
-                    }
-                    if(loader) loader.classList.add('hidden');
-                    this.render();
-                }, (error) => {
-                    console.error("Snapshot Stream Error:", error);
-                    this.isLoaded = true;
-                    if(loader) loader.classList.add('hidden');
-                    this.render();
+                // Load active hunter data from cached team updates
+                const saved = this.teamProgress[name] || [];
+                this.hunterData = sniperData.map(item => {
+                    const status = saved.find(s => s.id === item.id);
+                    return { ...item, collected: status ? status.collected : false };
                 });
+
+                this.render();
             },
 
             render: function() {
@@ -786,13 +826,31 @@
                     items.forEach(item => {
                         const card = document.createElement('div');
                         card.className = `item-card ${item.collected ? 'completed' : ''}`;
+
+                        // Generate Team Activity Badges
+                        let teamBadgesHTML = '';
+                        TEAM_MEMBERS.forEach(member => {
+                            const memberProgress = this.teamProgress[member] || [];
+                            const memberHasItem = memberProgress.some(i => i.id === item.id && i.collected);
+                            
+                            teamBadgesHTML += `
+                                <span class="team-badge ${memberHasItem ? 'has-item' : ''}">
+                                    ${member}
+                                </span>
+                            `;
+                        });
+
                         card.innerHTML = `
                             <div>
                                 <div class="item-type-tag">${item.type}</div>
                                 <div class="outlined-text" style="font-weight:900; font-size:14px; margin-bottom:4px;">${item.name}</div>
                                 <div class="outlined-text" style="font-size:11px; color:#ddd; font-style:italic; line-height:1.2;">${item.desc}</div>
+                                <div class="team-status-box">
+                                    <span class="team-label">Team Intel:</span>
+                                    ${teamBadgesHTML}
+                                </div>
                             </div>
-                            ${item.collected ? `<div class="lock-badge outlined-text">COLLECTED</div>` : `<button class="toggle-btn outlined-text" onclick="appState.toggleItem('${item.id}')">Confirm Found</button>`}
+                            ${item.collected ? `<div class="lock-badge outlined-text">COLLECTED BY YOU</div>` : `<button class="toggle-btn outlined-text" onclick="appState.toggleItem('${item.id}')">Confirm Found</button>`}
                         `;
                         grid.appendChild(card);
                     });
@@ -806,17 +864,17 @@
 
             toggleItem: async function(id) {
                 const item = this.hunterData.find(i => i.id === id);
-                item.collected = !item.collected;
-                this.render(); 
-                this.sync();
+                if (item) {
+                    item.collected = !item.collected;
+                    this.render(); 
+                    this.sync();
+                }
             },
 
             toggleSection: function(id) {
                 this.collapsedSections[id] = !this.collapsedSections[id];
                 this.render();
             },
-
-            switchHunter: function(name) { this.loadHunter(name); },
 
             sync: async function() {
                 if (!this.user) return;
@@ -903,7 +961,6 @@
             }
         }
 
-        /* Mobile Hamburger Toggle Listener */
         const hamburgerBtn = document.getElementById('mobile-hamburger');
         const linksWrapper = document.getElementById('csv-links-wrapper');
 
