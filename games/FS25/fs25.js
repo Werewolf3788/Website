@@ -1,30 +1,29 @@
 /* ============================================================================
  * File: fs25.js
  * Location: ./fs25.js
- * Description: FS25 Smart Sync Pipeline for G-Portal Dedicated Server.
- *              Scans G-Portal FTP save directories using dynamic auto-discovery,
- *              parses live stats XML, cleans payloads, and performs a complete
- *              overwrite (.set) to Firebase RTDB (entertainment-71888).
+ * Deployment Timestamp: Sun, Aug 09, 2026, 06:16:38 AM (EDT - New York)
+ * Project: entertainment-71888 (/fs25 RTDB Node)
+ * Description: FS25 Optimized G-Portal Telemetry Pipeline.
+ *              Scans all XML, text, and log files, parses live stats XML,
+ *              extracts deep fleet/agronomy/economy telemetry, cross-references
+ *              /FS25_Mods_Info, and performs a complete overwrite (.set) to Firebase.
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com
- * Measurement ID: G-JDNSLD3GFE
- * Last Modified: Sunday, August 09, 2026
  * ============================================================================ */
 
-// Line ~15: Load environment variables from local .env file
 require('dotenv').config({ path: __dirname + '/.env' });
 const Client = require('ftp');
 const admin = require('firebase-admin');
+const { DOMParser } = require('@xmldom/xmldom');
 
-// Line ~20: --- SECTION 1: SAFETY FAILSAFE ---
+// SECTION 1: SAFETY FAILSAFE
 setTimeout(() => {
   console.log("🚨 Safety Failsafe triggered: Execution exceeded 5 minutes. Exiting.");
   process.exit(0);
 }, 5 * 60 * 1000);
 
-console.log("Initializing FS25 Smart Sync Pipeline for Server 144.126.153.115 (Target: entertainment-71888)...");
+console.log("Initializing FS25 Optimized Telemetry Pipeline for Server 144.126.153.115...");
 
-// Line ~28: --- SECTION 2: FIREBASE APP CONFIG & ADMIN INITIALIZATION ---
-// Updated Firebase JS SDK Web Configuration (v7.20.0+)
+// SECTION 2: FIREBASE ADMIN INITIALIZATION
 const firebaseConfig = {
   apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
   authDomain: "entertainment-71888.firebaseapp.com",
@@ -53,7 +52,6 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   }
 }
 
-// Line ~57: Initialize Firebase Admin with Admin Credentials & RTDB Database URL
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
@@ -64,7 +62,7 @@ if (!admin.apps.length) {
 const db = admin.database();
 const ftpClient = new Client();
 
-// Line ~68: --- SECTION 3: FTP & SERVER CONFIGURATION ---
+// SECTION 3: FTP & NETWORK CONFIG
 const ftpConfig = {
   host: process.env.FTP_HOST || '144.126.153.115',
   port: parseInt(process.env.FTP_PORT, 10) || 21,
@@ -76,7 +74,7 @@ const ftpConfig = {
 
 const STATS_URL = "http://144.126.153.115:8300/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM";
 
-// Line ~81: --- SECTION 4: NETWORK & FTP HELPER FUNCTIONS ---
+// SECTION 4: NETWORK & FTP HELPERS
 async function fetchWithRetry(url, options = {}, retries = 3, backoffMs = 1000) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     const controller = new AbortController();
@@ -89,7 +87,6 @@ async function fetchWithRetry(url, options = {}, retries = 3, backoffMs = 1000) 
       return response;
     } catch (err) {
       clearTimeout(timeoutId);
-      console.warn(`⚠️ Attempt ${attempt}/${retries} failed for ${url}: ${err.message}`);
       if (attempt === retries) throw err;
       await new Promise(res => setTimeout(res, backoffMs * Math.pow(2, attempt - 1)));
     }
@@ -121,7 +118,15 @@ function safeListFtpDir(client, remotePath) {
   });
 }
 
-// Line ~126: --- SECTION 5: SANITIZATION ENGINE ---
+function parseXmlString(xmlStr) {
+  if (!xmlStr || typeof xmlStr !== 'string' || !xmlStr.includes('<')) return null;
+  try {
+    return new DOMParser().parseFromString(xmlStr.trim(), "text/xml");
+  } catch (e) {
+    return null;
+  }
+}
+
 function sanitizeFirebaseKey(key) {
   return key.replace(/[\.\$\#\[\]]/g, '_');
 }
@@ -139,7 +144,184 @@ function sanitizeXmlContent(rawText) {
   return clean.trim();
 }
 
-// Line ~143: --- SECTION 6: MAIN PIPELINE EXECUTION ---
+function formatName(str) {
+  if (!str) return 'GENERAL ITEM';
+  let clean = String(str).split('/').pop().replace('.xml', '').replace('.zip', '').replace('FS25_', '');
+  return clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').toUpperCase().trim();
+}
+
+// SECTION 5: ADVANCED TELEMETRY PARSERS
+
+/**
+ * 1. Log Parser: Captures Mod Errors, Warnings, and Player Joins/Leaves
+ */
+function parseServerLogDetailed(rawLogText) {
+  if (!rawLogText) return { errors: [], events: [] };
+  const lines = rawLogText.split(/\r?\n/);
+  const errors = [];
+  const events = [];
+
+  lines.forEach(line => {
+    const trimmed = line.trim();
+    if (!trimmed) return;
+
+    if (trimmed.includes("Error:") || trimmed.includes("Warning:") || trimmed.includes("invalid fillType") || trimmed.includes("invalid fruitType")) {
+      errors.push({
+        timestamp: trimmed.match(/^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})/)?.[1] || "SERVER",
+        message: trimmed
+      });
+    }
+
+    if (trimmed.includes("joined the game") || trimmed.includes("lost connection") || trimmed.includes("Game saved successfully")) {
+      events.push({
+        timestamp: trimmed.match(/^(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2})/)?.[1] || "SERVER",
+        message: trimmed
+      });
+    }
+  });
+
+  return { errors: errors.slice(-50), events: events.slice(-50) };
+}
+
+/**
+ * 2. Deep Vehicle Parser: Drivers, Position Coordinates, Attachments, Fill Unit Contents
+ */
+function parseDetailedVehicles(vehXmlDoc) {
+  if (!vehXmlDoc || !vehXmlDoc.getElementsByTagName) return [];
+  const vehicles = [];
+  const nodes = vehXmlDoc.getElementsByTagName("vehicle");
+
+  for (let i = 0; i < nodes.length; i++) {
+    const v = nodes[i];
+    const name = formatName(v.getAttribute("name") || v.getAttribute("filename"));
+    const id = v.getAttribute("id") || String(i + 1);
+    const farmId = v.getAttribute("farmId") || "0";
+    
+    const posStr = v.getAttribute("position") || "0 0 0";
+    const posParts = posStr.split(" ").map(Number);
+    const posX = posParts[0] || 0;
+    const posZ = posParts[2] || 0;
+
+    const enterable = v.getElementsByTagName("enterable")[0];
+    const driverName = enterable ? enterable.getAttribute("activeDriverFilename") || enterable.getAttribute("driverName") : null;
+    const isOccupied = !!driverName || enterable?.getAttribute("isEntered") === "true";
+
+    const fillUnits = [];
+    const fillNodes = v.getElementsByTagName("fillUnit");
+    for (let j = 0; j < fillNodes.length; j++) {
+      const f = fillNodes[j];
+      const fillType = f.getAttribute("fillType");
+      const fillLevel = parseFloat(f.getAttribute("fillLevel") || "0");
+      if (fillType && fillType !== "UNKNOWN" && fillLevel > 0) {
+        fillUnits.push({ fillType: formatName(fillType), fillLevel: Math.round(fillLevel) });
+      }
+    }
+
+    const attachments = [];
+    const attachNodes = v.getElementsByTagName("relation");
+    for (let k = 0; k < attachNodes.length; k++) {
+      const attId = attachNodes[k].getAttribute("attachedVehicleId");
+      if (attId) attachments.push(attId);
+    }
+
+    vehicles.push({
+      id,
+      name,
+      farmId,
+      position: { x: posX, z: posZ },
+      isOccupied,
+      driverName: driverName ? formatName(driverName) : null,
+      fillUnits,
+      attachments
+    });
+  }
+  return vehicles;
+}
+
+/**
+ * 3. Farmland Agronomy Parser
+ */
+function parseFieldAgronomy(farmlandXmlDoc) {
+  if (!farmlandXmlDoc || !farmlandXmlDoc.getElementsByTagName) return [];
+  const fields = [];
+  const nodes = farmlandXmlDoc.getElementsByTagName("farmland");
+
+  for (let i = 0; i < nodes.length; i++) {
+    const f = nodes[i];
+    const id = f.getAttribute("id");
+    const farmId = f.getAttribute("farmId") || "0";
+    const area = parseFloat(f.getAttribute("area") || "0").toFixed(2);
+
+    fields.push({
+      id,
+      farmId,
+      areaAcres: area,
+      growthStage: f.getAttribute("growthState") || "Growing",
+      fertilizerLevel: f.getAttribute("fertilizedLevel") || "100%",
+      limeRequired: f.getAttribute("limeState") === "1",
+      weedsState: f.getAttribute("weedState") || "None",
+      stonesState: f.getAttribute("stoneState") || "Clean",
+      plowRequired: f.getAttribute("plowState") === "1"
+    });
+  }
+  return fields;
+}
+
+/**
+ * 4. Commodity Price Economy Analyzer
+ */
+function parseCommodityEconomy(placeablesXmlDoc) {
+  if (!placeablesXmlDoc || !placeablesXmlDoc.getElementsByTagName) return [];
+  const economyMap = {};
+  const placeables = placeablesXmlDoc.getElementsByTagName("placeable");
+
+  for (let i = 0; i < placeables.length; i++) {
+    const p = placeables[i];
+    const stationName = formatName(p.getAttribute("filename"));
+    const stats = p.getElementsByTagName("stats");
+
+    for (let j = 0; j < stats.length; j++) {
+      const s = stats[j];
+      const fillType = formatName(s.getAttribute("fillType"));
+      const price = parseFloat(s.getAttribute("meanValue") || s.getAttribute("price") || "0");
+
+      if (fillType && price > 0) {
+        if (!economyMap[fillType] || price > economyMap[fillType].bestPrice) {
+          economyMap[fillType] = {
+            crop: fillType,
+            bestPrice: Math.round(price),
+            bestBuyer: stationName
+          };
+        }
+      }
+    }
+  }
+  return Object.values(economyMap);
+}
+
+/**
+ * 5. Contracts & Missions Parser
+ */
+function parseMissionContracts(missionsXmlDoc) {
+  if (!missionsXmlDoc || !missionsXmlDoc.getElementsByTagName) return [];
+  const contracts = [];
+  const nodes = missionsXmlDoc.getElementsByTagName("mission");
+
+  for (let i = 0; i < nodes.length; i++) {
+    const m = nodes[i];
+    contracts.push({
+      id: m.getAttribute("id") || String(i + 1),
+      type: formatName(m.getAttribute("type") || "Harvest"),
+      fieldId: m.getAttribute("fieldId") || "N/A",
+      reward: Math.round(parseFloat(m.getAttribute("reward") || "0")),
+      reimbursement: Math.round(parseFloat(m.getAttribute("reimbursement") || "0")),
+      status: m.getAttribute("status") === "1" ? "Active" : "Available"
+    });
+  }
+  return contracts;
+}
+
+// SECTION 6: MAIN PIPELINE EXECUTION
 async function runMainPipeline() {
   let activePlayers = 0;
   let rawStatsXml = "";
@@ -158,9 +340,35 @@ async function runMainPipeline() {
   }
 
   ftpClient.on('ready', async function() {
-    console.log("📡 FTP Uplink Connected to 144.126.153.115. Resolving active savegame slot...");
+    console.log("📡 FTP Uplink Connected to 144.126.153.115. Resolving telemetry & /FS25_Mods_Info...");
 
     try {
+      // 1. Pull Crossplay Mod Metadata from /FS25_Mods_Info
+      let fs25ModsCrossplayData = {};
+      try {
+        const modsSnap = await db.ref('FS25_Mods_Info').once('value');
+        fs25ModsCrossplayData = modsSnap.val() || {};
+        console.log(`🔗 Cross-Referenced ${Object.keys(fs25ModsCrossplayData).length} records from /FS25_Mods_Info.`);
+      } catch (e) {
+        console.warn("⚠️ Could not fetch /FS25_Mods_Info node:", e.message);
+      }
+
+      // 2. Download and Parse Server log.txt
+      let rawLogText = "";
+      const logLocations = ['log.txt', '/log.txt', 'profile/log.txt', '/profile/log.txt'];
+      for (const logPath of logLocations) {
+        try {
+          rawLogText = await downloadFileBuffer(ftpClient, logPath);
+          if (rawLogText && rawLogText.length > 0) {
+            console.log(`📄 Successfully pulled live server log from [ ${logPath} ]`);
+            break;
+          }
+        } catch (e) {}
+      }
+
+      const logAnalysis = parseServerLogDetailed(rawLogText);
+
+      // 3. Dynamic Auto-Discovery for Active Savegame Directory
       const possibleRootDirs = ['', '/'];
       let discoveredFolders = [];
 
@@ -214,18 +422,35 @@ async function runMainPipeline() {
       const activeSlotNumber = slotMatch ? slotMatch[0] : "1";
       console.log(`🎯 DYNAMICALLY TARGETED ACTIVE SAVE: [ ${targetFolder} ] (Slot #${activeSlotNumber})`);
 
+      // 4. Download ALL Readable Telemetry Files (.xml, .txt, .cfg, .ini) in Target Save Directory
       let fileList = await safeListFtpDir(ftpClient, targetFolder);
       if (fileList.length === 0 && !targetFolder.startsWith('/')) {
         fileList = await safeListFtpDir(ftpClient, `/${targetFolder}`);
       }
 
-      const xmlFiles = fileList.filter(f => f.type !== 'd' && f.name.toLowerCase().endsWith('.xml'));
-      console.log(`📄 Found ${xmlFiles.length} XML telemetry files inside [ ${targetFolder} ]`);
+      const readableFiles = fileList.filter(f => f.type !== 'd' && (
+        f.name.toLowerCase().endsWith('.xml') ||
+        f.name.toLowerCase().endsWith('.txt') ||
+        f.name.toLowerCase().endsWith('.cfg') ||
+        f.name.toLowerCase().endsWith('.ini')
+      ));
 
+      console.log(`📄 Found ${readableFiles.length} telemetry files inside [ ${targetFolder} ]`);
+
+      // Master Payload Dictionary
       const masterPayload = {
         activePlayers: activePlayers,
         activeSaveSlot: activeSlotNumber,
         lastUpdated: new Date().toISOString(),
+        
+        // Live Server Logs & Errors
+        modErrors: logAnalysis.errors,
+        serverEvents: logAnalysis.events,
+        serverLog_raw: rawLogText.substring(0, 100000),
+
+        // Cross-Referenced Mod Database
+        modCatalogCrossplay: fs25ModsCrossplayData,
+
         config: {
           appId: firebaseConfig.appId,
           measurementId: firebaseConfig.measurementId
@@ -233,10 +458,8 @@ async function runMainPipeline() {
       };
 
       if (rawStatsXml && rawStatsXml.length > 0) {
-        masterPayload.stats = { data: rawStatsXml };
         masterPayload.stats_raw = rawStatsXml;
-        masterPayload.dedicatedServerConfig = { data: rawStatsXml };
-        masterPayload.dedicatedServerConfig_xml = { data: rawStatsXml };
+        masterPayload.dedicatedServerConfig_raw = rawStatsXml;
       }
 
       const keyMap = {
@@ -264,20 +487,22 @@ async function runMainPipeline() {
         'treeplant': 'treePlant'
       };
 
-      for (const fileInfo of xmlFiles) {
-        const rawBaseName = fileInfo.name.replace(/\.xml$/i, '');
+      const rawXmlStore = {};
+
+      for (const fileInfo of readableFiles) {
+        const rawBaseName = fileInfo.name.replace(/\.(xml|txt|cfg|ini)$/i, '');
         const lowerBaseName = rawBaseName.toLowerCase();
         const canonicalKey = sanitizeFirebaseKey(keyMap[lowerBaseName] || rawBaseName);
         const remoteFilePath = `${targetFolder}/${fileInfo.name}`.replace('//', '/');
 
         try {
-          console.log(`⬇️ Syncing: ${fileInfo.name} -> Writing to Firebase key [ ${canonicalKey} ]`);
+          console.log(`⬇️ Syncing: ${fileInfo.name} -> Writing to Firebase key [ ${canonicalKey}_raw ]`);
           const rawContent = await downloadFileBuffer(ftpClient, remoteFilePath);
           const cleanContent = sanitizeXmlContent(rawContent);
 
           if (cleanContent && cleanContent.length > 0) {
-            masterPayload[canonicalKey] = { data: cleanContent };
-            masterPayload[`${canonicalKey}_xml`] = { data: cleanContent };
+            rawXmlStore[lowerBaseName] = cleanContent;
+            // Clean, standardized raw string storage key
             masterPayload[`${canonicalKey}_raw`] = cleanContent;
           }
         } catch (fileErr) {
@@ -285,10 +510,21 @@ async function runMainPipeline() {
         }
       }
 
-      // Line ~285: Write master payload to Firebase Realtime Database (/fs25)
+      // 5. Parse Structured Telemetry Datasets from XML Docs
+      const vehDoc = parseXmlString(rawXmlStore['vehicles']);
+      const landDoc = parseXmlString(rawXmlStore['farmland']);
+      const placeDoc = parseXmlString(rawXmlStore['placeables']);
+      const missDoc = parseXmlString(rawXmlStore['missions']);
+
+      masterPayload.detailedFleet = parseDetailedVehicles(vehDoc);
+      masterPayload.fieldAgronomy = parseFieldAgronomy(landDoc);
+      masterPayload.commodityEconomy = parseCommodityEconomy(placeDoc);
+      masterPayload.activeContracts = parseMissionContracts(missDoc);
+
+      // 6. Write Complete Master Payload to Firebase RTDB (/fs25)
       try {
         await db.ref('fs25').set(masterPayload);
-        console.log(`🏆 TOTAL OVERWRITE SUCCESSFUL! Firebase /fs25 updated to match [ ${targetFolder} ] on entertainment-71888.`);
+        console.log(`🏆 TOTAL OVERWRITE SUCCESSFUL! Firebase /fs25 updated with ALL G-Portal telemetry on entertainment-71888.`);
       } catch (writeErr) {
         console.error("❌ Firebase Overwrite Error:", writeErr.message);
       }
