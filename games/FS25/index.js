@@ -1,6 +1,6 @@
 /*
-  Version Timestamp: Sun, August 09, 2026, 12:40 AM (EDT)
-  Complete Dynamic Telemetry Parser with Clean Mod Hub Rendering & Smart Auto-Hiding Zero State Engine
+  Version Timestamp: Sunday, August 09, 2026, 1:10 AM (EDT)
+  Complete Dynamic Telemetry Parser with Fixed CSV Column Mapping & Realtime Database Sync
   File: games/FS25/index.js
   Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
 */
@@ -70,19 +70,24 @@ const MONTH_NAMES = [
 
 let activeServerMods = new Set();
 let parsedModCatalog = [];
-let renderDebounceTimer = null;
 
-// Smart Image URL Sanitizer with raw.githack CDN Wrapper
+// Image Sanitizer supporting Google Drive & GitHub Raw CDN links
 function sanitizeImageUrl(urlStr) {
   if (!urlStr || typeof urlStr !== 'string') return "";
   let cleanUrl = urlStr.trim().replace(/^["']|["']$/g, '');
+  if (cleanUrl.includes("drive.google.com")) {
+    const match = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      return `https://lh3.googleusercontent.com/d/${match[1]}`;
+    }
+  }
   if (cleanUrl.includes("raw.githubusercontent.com")) {
     cleanUrl = cleanUrl.replace("https://raw.githubusercontent.com/", "https://raw.githack.com/");
   }
   return cleanUrl;
 }
 
-// Deep XML Property Unwrapper for RTDB
+// Deep Object Property Extractor for nested XML Firebase objects
 function getFirebasePayloadDeep(rootObj, targetKey, maxDepth = 10) {
   if (!rootObj || typeof rootObj !== 'object' || maxDepth <= 0) return null;
   
@@ -105,7 +110,7 @@ function getFirebasePayloadDeep(rootObj, targetKey, maxDepth = 10) {
   for (const k of Object.keys(rootObj)) {
     if (typeof rootObj[k] === 'object' && rootObj[k] !== null) {
       const deepResult = getFirebasePayloadDeep(rootObj[k], targetKey, maxDepth - 1);
-      if (deepResult) return deepResult;
+      if (deepResult !== null) return deepResult;
     }
   }
 
@@ -169,25 +174,28 @@ function getThumbnailHTML(key, fallbackIcon = "fa-box") {
   return `<div class="item-icon-box"><i class="fa-solid ${fallbackIcon}"></i></div>`;
 }
 
-function renderGaugeBar(percentage, labelText) {
-  const pct = Math.min(100, Math.max(0, Math.round(percentage)));
-  let barColor = "#ef4444";
-  if (pct >= 71) barColor = "#22c55e";
-  else if (pct >= 40) barColor = "#eab308";
-
-  return `
-    <div class="gauge-wrapper" style="margin-top:4px; width:100%;">
-      <div style="display:flex; justify-content:space-between; font-size:0.7rem; color:#a1a1aa; font-family:var(--font-mono); margin-bottom:2px;">
-        <span>${labelText}</span>
-        <span style="color:${barColor}; font-weight:bold;">${pct}%</span>
-      </div>
-      <div class="progress-container">
-        <div class="progress-bar" style="width: ${pct}%; background-color: ${barColor};"></div>
-      </div>
-    </div>`;
+function parseCSVLine(line) {
+  const result = [];
+  let current = '';
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"' && line[i+1] === '"') {
+      current += '"'; i++;
+    } else if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim());
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim());
+  return result;
 }
 
-// Clean Mod Hub Catalog Parser
+// Clean Mod Hub Catalog Parser (Mapped to Column K for Clean Categories)
 async function loadModHubCatalog() {
   const grid = document.getElementById("mod-hub-grid");
   const categoriesBar = document.getElementById("mod-categories-bar");
@@ -203,57 +211,43 @@ async function loadModHubCatalog() {
     const categoriesSet = new Set(["ALL MODS"]);
 
     for (let i = 1; i < lines.length; i++) {
-      const colRegex = /(?:^|,)(?:"([^"]*)"|([^",]*))/g;
-      const cols = [];
-      let match;
-      while ((match = colRegex.exec(lines[i])) !== null) {
-        cols.push(match[1] !== undefined ? match[1] : match[2]);
-      }
+      const cols = parseCSVLine(lines[i]);
 
       if (cols.length >= 2) {
-        let rawName = cols[0] ? cols[0].trim() : "Unknown Mod";
-        let rawImg = cols[1] ? cols[1].trim() : "";
-        let rawFilename = cols[9] ? cols[9].trim() : "";
-        let rawCategory = cols[6] ? cols[6].trim().toUpperCase() : "GENERAL";
+        let rawName = cols[0] ? cols[0].replace(/^"|"$/g, '').trim() : "";
+        let rawImg = cols[1] ? cols[1].replace(/^"|"$/g, '').trim() : "";
+        let rawUrl = cols[2] ? cols[2].replace(/^"|"$/g, '').trim() : "#";
+        let rawDesc = cols[3] ? cols[3].replace(/^"|"$/g, '').trim() : "No description provided.";
+        let rawCrossplay = cols[4] ? cols[4].replace(/^"|"$/g, '').trim() : "No";
+        let rawAuthor = cols[7] ? cols[7].replace(/^"|"$/g, '').trim() : "Community Modder";
+        let rawSize = cols[8] ? cols[8].replace(/^"|"$/g, '').trim() : "N/A";
+        let rawFilename = cols[9] ? cols[9].replace(/^"|"$/g, '').trim() : "";
         
-        // Clean bloated category descriptions into readable categories
-        if (rawCategory.length > 35 || rawCategory.includes("TRANSPORTATION")) {
-          rawCategory = "GENERAL MODS";
+        // Read Column K (Index 10) for Clean Short Category Names
+        let cleanCategory = cols[10] ? cols[10].replace(/^"|"$/g, '').trim().toUpperCase() : (cols[6] ? cols[6].replace(/^"|"$/g, '').trim().toUpperCase() : "GENERAL");
+        
+        if (cleanCategory.length > 30 || cleanCategory.includes("TRANSPORTATION")) {
+          cleanCategory = "GENERAL MODS";
         }
 
-        if (rawName.includes("http://") || rawName.includes("https://")) {
-          const urlMatch = rawName.match(/(https?:\/\/[^\s"]+)/g);
-          if (urlMatch && urlMatch[0]) {
-            if (!rawImg || !rawImg.startsWith("http")) {
-              rawImg = urlMatch[0];
-            }
-            rawName = rawName.replace(urlMatch[0], "").trim();
-          }
-        }
-
-        if (!rawName || rawName.length > 80) {
-          rawName = rawFilename ? formatName(rawFilename) : "Custom Expansion Mod";
-        }
+        if (!rawName) continue;
 
         const finalImgUrl = sanitizeImageUrl(rawImg);
 
         const mod = {
           name: rawName,
           image: finalImgUrl,
-          url: cols[2] ? cols[2].trim() : "#",
-          description: cols[3] ? cols[3].trim() : "No detailed description provided.",
-          crossplay: cols[4] ? cols[4].trim() : "No",
-          modType: cols[5] ? cols[5].trim() : "Mod",
-          category: rawCategory,
-          author: cols[7] ? cols[7].trim() : "Community Modder",
-          size: cols[8] ? cols[8].trim() : "N/A",
+          url: rawUrl,
+          description: rawDesc,
+          crossplay: rawCrossplay,
+          category: cleanCategory,
+          author: rawAuthor,
+          size: rawSize,
           filename: rawFilename
         };
 
-        if (mod.name) {
-          parsedModCatalog.push(mod);
-          categoriesSet.add(rawCategory);
-        }
+        parsedModCatalog.push(mod);
+        categoriesSet.add(cleanCategory);
       }
     }
 
@@ -265,19 +259,11 @@ async function loadModHubCatalog() {
       categoriesBar.innerHTML = filterHtml;
     }
 
-    debouncedRenderModCards("ALL MODS");
+    renderModCards("ALL MODS");
 
   } catch (e) {
     grid.innerHTML = `<div class="item-card"><div class="item-title"><i class="fa-solid fa-cube"></i> Mod Directory Syncing Offline</div></div>`;
   }
-}
-
-// Debounced Mod Card Renderer to Stop Page Glitching
-function debouncedRenderModCards(categoryFilter = "ALL MODS") {
-  if (renderDebounceTimer) clearTimeout(renderDebounceTimer);
-  renderDebounceTimer = setTimeout(() => {
-    renderModCards(categoryFilter);
-  }, 100);
 }
 
 function renderModCards(categoryFilter = "ALL MODS") {
@@ -331,8 +317,6 @@ function renderModCards(categoryFilter = "ALL MODS") {
 window.renderDashboard = function(data) {
   if (!data) return;
 
-  window.setServerStatus(true);
-
   // 1. Resolve Active Savegame Slot
   let rawSlot = getFirebasePayloadDeep(data, "activeSaveSlot") || data.activeSaveSlot || "1";
   let slotNum = String(rawSlot).replace(/[^0-9]/g, '') || "1";
@@ -356,7 +340,7 @@ window.renderDashboard = function(data) {
 
   const settingsNode = careerXml ? careerXml.querySelector("settings") : null;
   if (settingsNode || statsXml) {
-    const targetNode = settingsNode || statsXml.querySelector("Server");
+    const targetNode = settingsNode || (statsXml ? statsXml.querySelector("Server") : null);
 
     const serverName = getXmlVal(targetNode, "savegameName", getXmlVal(targetNode, "name", "OneLIVIDMAN and werewolf 618"));
     const mapName = getXmlVal(targetNode, "mapTitle", getXmlVal(targetNode, "mapName", "Calm Lands"));
@@ -442,7 +426,6 @@ window.renderDashboard = function(data) {
   // 5. MISSIONS & CONTRACTS ENGINE (Reads /fs25/missions_xml)
   const missionsRaw = getFirebasePayloadDeep(slotData, "missions") || getFirebasePayloadDeep(data, "missions");
   const missionsXml = parseXML(missionsRaw);
-  const contractsCard = document.getElementById('contracts-card') || document.getElementById('contracts-container')?.parentElement;
   const contractsCont = document.getElementById('contracts-container');
 
   if (contractsCont) {
@@ -468,49 +451,47 @@ window.renderDashboard = function(data) {
       });
     }
 
-    // AUTO-HIDE CONTRACTS IF 0 MISSIONS ARE ACTIVE
     if (contractsHtml) {
       contractsCont.innerHTML = contractsHtml;
-      if (contractsCard) contractsCard.style.display = "block";
     } else {
-      if (contractsCard) contractsCard.style.display = "none";
+      contractsCont.innerHTML = `<div class="item-card"><div class="item-title">No Active Server Contracts Running</div></div>`;
     }
   }
 
-  // 6. ANIMAL HUSBANDRY ENGINE (AUTO-HIDES IF 0 PENS)
+  // 6. ANIMAL HUSBANDRY ENGINE
   const placeablesRaw = getFirebasePayloadDeep(slotData, "placeables") || getFirebasePayloadDeep(data, "placeables");
   const placeXml = parseXML(placeablesRaw);
-  const animalCard = document.getElementById('animal-card') || document.getElementById('animal-husbandry-container')?.parentElement;
   const animalCont = document.getElementById('animal-husbandry-container');
 
   if (animalCont) {
     let animalHtml = "";
     if (placeXml) {
-      placeXml.querySelectorAll("placeable[husbandry], placeable:has(husbandry)").forEach(p => {
+      placeXml.querySelectorAll("placeable").forEach(p => {
         const filename = p.getAttribute("filename") || "";
-        const name = formatName(filename);
-        animalHtml += `
-          <div class="item-card" style="border-left: 4px solid #22c55e;">
-            <div class="item-left">
-              ${getThumbnailHTML("COW", "fa-paw")}
-              <div>
-                <div class="item-title">${name}</div>
-                <div class="mono"><span class="badge-stat badge-good">Default Pen Active</span></div>
+        if (filename.toLowerCase().includes("husbandry") || filename.toLowerCase().includes("barn") || filename.toLowerCase().includes("pen")) {
+          const name = formatName(filename);
+          animalHtml += `
+            <div class="item-card" style="border-left: 4px solid #22c55e;">
+              <div class="item-left">
+                ${getThumbnailHTML("COW", "fa-paw")}
+                <div>
+                  <div class="item-title">${name}</div>
+                  <div class="mono"><span class="badge-stat badge-good">Default Pen Active</span></div>
+                </div>
               </div>
-            </div>
-          </div>`;
+            </div>`;
+        }
       });
     }
 
     if (animalHtml) {
       animalCont.innerHTML = animalHtml;
-      if (animalCard) animalCard.style.display = "block";
     } else {
-      if (animalCard) animalCard.style.display = "none"; // Hides completely if 0 pens exist
+      animalCont.innerHTML = `<div class="item-card"><div class="item-title">Map Default Pens Active (No Custom Livestock Facilities Placed)</div></div>`;
     }
   }
 
-  debouncedRenderModCards();
+  renderModCards("ALL MODS");
 };
 
 async function startRealtimeDatabaseListener() {
