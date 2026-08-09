@@ -1,1144 +1,272 @@
-<!--
-  File: index.html
-  Location: /index.html
-  Description: Werewolf Project Main Landing Page with Dynamic Movie Caption,
-               External Text Placement, Alphabetical CSV Navigation, Mobile Drill-Down View, and Live Telemetry.
-  Last Modified: Sunday, August 09, 2026
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Werewolf Project | Home</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <!-- Google Tag Manager - Personal Project -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
-    <script>
-      /* Google Tag Manager / GA4 setup for site metrics */
-      /* HTML JS Line ~17 */
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-Z9M5LXQ5XN');
-      gtag('config', 'G-CTYHDF4MSD');
-    </script>
+  <!-- Line 5: Meta tags & Core Page Setup -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FS25 Realtime Tactical Dashboard & Mod Directory</title>
 
-    <style>
-        /* CSS Variables - Section and Layout Sizing */
-        /* CSS Line ~27 */
-        :root {
-            --header-text-size: clamp(22px, 4vw, 32px);
-            --body-text-size: 16px;
-            --row-height: 1.6;
-            --section-height: clamp(30px, 5vw, 60px);
+  <!-- Line 10: Google Tag Manager / GA4 Integration -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CTYHDF4MSD');
+  </script>
 
-            --color-werewolf: #FF5F1F; /* Jet Orange */
-            --color-ray: #C41E3A;      /* Red */
-            --color-phoenix: #00f2ff;   /* Cyan */
-            --color-terrdog: #9333ea;   /* Purple */
-        }
+  <!-- Line 20: External Stylesheets (FontAwesome & Fonts) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-        body {
-            background-color: #0f172a;
-            color: #f1f5f9;
-            font-size: var(--body-text-size);
-            line-height: var(--row-height);
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            overflow-x: hidden;
-        }
-
-        h1, h2, h3 {
-            font-size: var(--header-text-size);
-            line-height: 1.25;
-            font-weight: 800;
-            color: #38bdf8;
-        }
-
-        .section-padding {
-            padding-top: var(--section-height);
-            padding-bottom: var(--section-height);
-        }
-
-        .nav-link {
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 0;
-            height: 2px;
-            bottom: -4px;
-            left: 0;
-            background-color: #38bdf8;
-            transition: width 0.3s ease;
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
-
-        .dropdown:hover .dropdown-menu {
-            display: block;
-        }
-
-        /* Custom Dynamic Card Styles */
-        /* CSS Line ~80 */
-        .custom-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            position: relative;
-            overflow: hidden;
-            transition: transform 0.3s ease;
-        }
-
-        /* Dynamic Live Weather Animation Overlay Layers */
-        /* CSS Line ~92 */
-        .weather-layer {
-            position: absolute;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 1s ease;
-        }
-        .weather-layer.active {
-            opacity: 1;
-        }
-
-        .card-content {
-            position: relative;
-            z-index: 10;
-        }
-
-        .bg-rain { background: linear-gradient(to bottom, #1e293b, #0f172a); }
-        .bg-cloudy { background: linear-gradient(to bottom, #475569, #1e293b); }
-        .bg-sunny { background: linear-gradient(to bottom, #fbbf24, #f59e0b); }
-        .bg-snowy { background: linear-gradient(to bottom, #1e40af, #3b82f6); }
-        .bg-clear { background: linear-gradient(to bottom, #0f172a, #020617); }
-
-        .rain-drop {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.2);
-            width: 1px;
-            height: 15px;
-            top: -20px;
-            animation: fall linear infinite;
-        }
-
-        .cloud-puff {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 50%;
-            filter: blur(20px);
-            animation: float 10s ease-in-out infinite;
-        }
-
-        .sun-glow {
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            width: 150px;
-            height: 150px;
-            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0) 70%);
-            animation: pulse-sun 4s ease-in-out infinite;
-        }
-
-        .snow-ground {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 30px;
-            background: white;
-            filter: blur(8px);
-            opacity: 0.6;
-        }
-        .snowflake {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            opacity: 0.8;
-            top: -10px;
-            animation: drift linear infinite;
-        }
-
-        @keyframes fall { to { transform: translateY(350px); } }
-        @keyframes drift { to { transform: translateY(350px) translateX(20px); } }
-        @keyframes float {
-            0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(30px, 15px); }
-        }
-        @keyframes pulse-sun {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.3); opacity: 0.8; }
-        }
-
-        .status-pulse {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            background-color: #22c55e;
-            border-radius: 50%;
-            margin-right: 6px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(34, 197, 94, 0); }
-            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-        }
-
-        .border-werewolf { border-color: var(--color-werewolf); }
-        .text-werewolf { color: var(--color-werewolf); }
-        .shadow-werewolf { box-shadow: 0 10px 15px -3px rgba(255, 95, 31, 0.4); }
-
-        .border-ray { border-color: var(--color-ray); }
-        .text-ray { color: var(--color-ray); }
-        .shadow-ray { box-shadow: 0 10px 15px -3px rgba(196, 30, 58, 0.4); }
-
-        .border-terrdog { border-color: var(--color-terrdog); }
-        .text-terrdog { color: var(--color-terrdog); }
-        .shadow-terrdog { box-shadow: 0 10px 15px -3px rgba(147, 51, 234, 0.4); }
-
-        .is-sunny h3 { color: #0f172a !important; }
-        .is-sunny p { color: #1e293b !important; }
-        .is-sunny .weather-desc { color: #334155 !important; opacity: 0.9; }
-        .is-sunny .border-terrdog, .is-sunny .border-werewolf, .is-sunny .border-ray { border-color: rgba(0,0,0,0.4); }
-        .is-sunny .visit-link { color: #0f172a !important; border-color: rgba(0,0,0,0.3) !important; }
-
-        /* Site Signature Watermark */
-        /* CSS Line ~200 */
-        .kf-watermark {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            font-family: 'Arial Black', sans-serif;
-            font-size: 24px;
-            z-index: 999;
-            pointer-events: none;
-            user-select: none;
-            opacity: 0.8;
-        }
-        .k-sig { color: #FF4500; display: inline-block; transform: scaleX(-1); position: relative; z-index: 2; }
-        .f-sig { color: #000000; display: inline-block; margin-left: -0.22em; position: relative; z-index: 1; }
-
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
+  <!-- Line 27: Site Stylesheet & Script Imports with Cache-Buster -->
+  <link rel="stylesheet" href="style.css?v=20260809_0136">
+  <script src="index.js?v=20260809_0136" defer></script>
 </head>
-<body class="min-h-screen flex flex-col">
+<body>
 
-    <!-- Sticky Navigation Bar Container -->
-    <!-- HTML Line ~221 -->
-    <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <div class="flex-shrink-0 flex items-center">
-                    <a href="https://werewolf3788.github.io/Website/" class="text-lg sm:text-xl font-black tracking-tighter text-sky-400">
-                        WEREWOLF<span class="text-white">PROJECT</span>
-                    </a>
-                </div>
-
-                <!-- Desktop / Wide Screen Horizontal Navigation Links (lg breakpoint for tablets) -->
-                <!-- HTML Line ~232 -->
-                <div id="desktop-nav-links" class="hidden lg:flex items-center space-x-6 xl:space-x-8">
-                    <div class="flex items-center space-x-4 animate-pulse">
-                        <div class="h-4 w-16 bg-slate-700 rounded"></div>
-                        <div class="h-4 w-16 bg-slate-700 rounded"></div>
-                        <div class="h-4 w-20 bg-slate-700 rounded"></div>
-                    </div>
-                </div>
-
-                <!-- Mobile & Tablet Hamburger Toggle Switch (Active under lg breakpoint) -->
-                <!-- HTML Line ~242 -->
-                <div class="lg:hidden flex items-center">
-                    <button type="button" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu" class="text-slate-400 hover:text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-slate-800 transition-colors">
-                        <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
+  <!-- Line 33: Top Header Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <i class="fa-solid fa-wheat-field logo-icon"></i>
+      <span>FS25 TELEMETRY HUB</span>
+    </div>
+    <button id="mobile-menu-toggle" type="button" class="mobile-toggle" aria-label="Toggle Navigation Menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+    <nav id="dynamic-menu" class="nav-menu">
+      <a href="https://werewolf3788.github.io/Website/" class="nav-btn"><i class="fa-solid fa-house"></i> Home</a>
     </nav>
+  </header>
 
-    <!-- Mobile/Tablet Slide-Over Modal Drawer Overlay -->
-    <!-- HTML Line ~251 -->
-    <div id="mobile-menu-overlay" class="fixed inset-0 bg-slate-950/95 z-[100] hidden flex flex-col no-scrollbar overflow-y-auto">
-        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90 sticky top-0 z-10">
-            <span class="text-lg font-black text-sky-400">NAVIGATION MENU</span>
-            <button type="button" onclick="toggleMobileMenu()" aria-label="Close navigation menu" class="text-slate-400 hover:text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center">
-                <i class="fa-solid fa-xmark text-2xl"></i>
-            </button>
+  <!-- Line 47: Main Dashboard Content Container -->
+  <main class="dashboard-container">
+    
+    <!-- Line 50: Server Live Banner & Dedicated Map Preview Card -->
+    <section class="server-banner">
+      <div class="banner-layout">
+        <div class="map-preview-box">
+          <!-- Line 54: HTTPS Reverse Proxy via images.weserv.nl for HTTP Map Stream -->
+          <img id="banner-map-thumb" 
+               src="https://images.weserv.nl/?url=144.126.153.115:8300/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=60&size=512" 
+               alt="Live Dedicated Map Overview" 
+               class="lightbox-trigger"
+               onerror="this.parentNode.style.display='none';" />
         </div>
+        <div class="banner-title">
+          <div class="server-header-line">
+            <h1 id="server-name">OneLIVIDMAN and werewolf 618</h1>
+            <span id="server-status-pill" class="status-pill status-online">
+              <span class="status-dot"></span> <span id="status-text">ONLINE</span>
+            </span>
+          </div>
+          <div class="banner-badges">
+            <span id="server-map" class="badge"><i class="fa-solid fa-map-location-dot"></i> Map: Calm Lands</span>
+            <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: 00:00</span>
+            <span id="time-speed-badge" class="badge" style="border:1px solid #facc15; color:#facc15;"><i class="fa-solid fa-forward-fast"></i> Speed: 1x</span>
+            <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Month: Early Autumn</span>
+            <span id="server-weather" class="badge"><i class="fa-solid fa-sun"></i> Weather: Clear</span>
+            <span id="server-players" class="badge"><i class="fa-solid fa-users"></i> Players: 0/6</span>
+            <span id="traffic-badge" class="badge" style="border:1px solid #38bdf8;"><i class="fa-solid fa-car"></i> Traffic: OFF</span>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <div id="mobile-root-view" class="p-6 space-y-3 flex-1">
-            <div class="h-4 w-24 bg-slate-700/50 rounded mb-2 animate-pulse"></div>
-        </div>
-
-        <div id="mobile-folder-view" class="p-6 space-y-4 flex-1 hidden flex flex-col">
-            <button type="button" onclick="closeMobileFolderView()" class="flex items-center gap-2 text-sky-400 hover:text-sky-300 font-bold text-sm bg-slate-900 border border-slate-800 px-4 py-3 rounded-lg w-full min-h-[44px]">
-                <i class="fa-solid fa-arrow-left"></i>
-                <span>Back to All Folders</span>
-            </button>
-            <div id="mobile-folder-title" class="text-xs font-black uppercase text-slate-400 tracking-widest pt-2">FOLDER NAME</div>
-            <div id="mobile-folder-links" class="space-y-2 flex-1 pt-1"></div>
-        </div>
+    <!-- Line 79: Global Summary Metrics Card Row -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <i class="fa-solid fa-scale-balanced metric-icon" style="color:#4ade80;"></i>
+        <div><div class="metric-value" id="global-net-worth">$0</div><div class="metric-label">Global Net Balance</div></div>
+      </div>
+      <div class="metric-card">
+        <i class="fa-solid fa-tractor metric-icon" style="color:#ef4444;"></i>
+        <div><div class="metric-value" id="global-vehicle-count">0</div><div class="metric-label">Total Fleet Machinery</div></div>
+      </div>
+      <div class="metric-card">
+        <i class="fa-solid fa-trophy metric-icon" style="color:#facc15;"></i>
+        <div><div class="metric-value" id="global-collectibles-count">0 / 25</div><div class="metric-label">Collectibles Found</div></div>
+      </div>
+      <div class="metric-card">
+        <i class="fa-solid fa-map-location-dot metric-icon" style="color:#84cc16;"></i>
+        <div><div class="metric-value" id="global-land-count">0 Fields</div><div class="metric-label">Total Map Farmland</div></div>
+      </div>
     </div>
 
-    <!-- Main Landing Hero Section -->
-    <!-- HTML Line ~276 -->
-    <header class="section-padding px-4 sm:px-6 lg:px-8 flex-grow flex items-center">
-        <div class="max-w-4xl mx-auto text-center">
-            <h1 class="text-slate-100">Knowing the Players</h1>
-            <p class="mt-4 sm:mt-6 text-slate-400 max-w-2xl mx-auto leading-relaxed text-sm sm:text-base">
-                We all have a PS5 or a PlayStation account, though our usernames are not our gamertags. Click on each player and view their profile to see how they progress through their gaming world.
-            </p>
-        </div>
-    </header>
+    <!-- Line 100: Grid Layout - 15 Telemetry Cards -->
+    <div class="grid-layout">
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-building-columns"></i><h2>REGISTERED SERVER FARMS</h2></div>
+        <div id="farms-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Syncing farm telemetry...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-tractor"></i><h2>FLEET TRACTORS & RIGS</h2></div>
+        <div id="tractors-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning tractor fleet...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-wheat-field"></i><h2>HARVESTERS & COMBINES</h2></div>
+        <div id="harvesters-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning harvest fleet...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-truck-ramp-box"></i><h2>HAULING TRAILERS & WAGONS</h2></div>
+        <div id="trailers-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning trailers...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-screwdriver-wrench"></i><h2>IMPLEMENTS & ATTACHMENTS</h2></div>
+        <div id="implements-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning equipment...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-toolbox"></i><h2>PLAYER HAND TOOLS</h2></div>
+        <div id="handtools-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning hand tools...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-seedling"></i><h2>FIELD CROPS & AGRONOMY STATUS</h2></div>
+        <div id="fields-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading field telemetry...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-industry"></i><h2>MAP FACTORIES & PRODUCTIONS</h2></div>
+        <div id="main-productions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading factory telemetry...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-cow"></i><h2>LIVESTOCK & ANIMAL HUSBANDRY</h2></div>
+        <div id="animal-husbandry-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading animal pens...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-file-contract"></i><h2>SERVER CONTRACTS & MISSIONS</h2></div>
+        <div id="contracts-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Parsing active contracts...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-city"></i><h2>PUBLIC MAP INFRASTRUCTURE</h2></div>
+        <div id="infrastructure-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Resolving public assets...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-store"></i><h2>BUYING STATIONS & SUPPLY BAYS</h2></div>
+        <div id="buying-stations-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading stations...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-train"></i><h2>REGIONAL TRAIN NETWORK</h2></div>
+        <div id="main-train-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading train network...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-tags"></i><h2>DEALERSHIP USED SALES</h2></div>
+        <div id="sales-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Checking store bargains...</div></div>
+      </div>
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-chart-line"></i><h2>COMMODITY MARKET PRICES</h2></div>
+        <div id="economy-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Fetching crop economy...</div></div>
+      </div>
+    </div>
 
-    <!-- Contributors Team Section -->
-    <!-- HTML Line ~287 -->
-    <section id="team" class="section-padding bg-slate-900/50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-8 sm:mb-12">
-                <h2>Project Contributors</h2>
-                <div class="h-1 w-20 bg-sky-500 mx-auto mt-3 rounded-full"></div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Werewolf3788 Profile Card -->
-                <!-- HTML Line ~297 -->
-                <div id="card-werewolf" class="custom-card p-6 text-center shadow-werewolf">
-                    <div class="weather-layer" id="layer-werewolf"></div>
-                    <div class="card-content">
-                        <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 relative">
-                            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-70x70.png" 
-                                 alt="Werewolf3788 avatar"
-                                 class="w-full h-full rounded-full border-2 border-werewolf object-cover shadow-lg">
-                            <div id="status-indicator-werewolf" class="hidden absolute bottom-1 right-1">
-                                <span class="status-pulse"></span>
-                            </div>
-                        </div>
-                        <h3 class="text-xl mb-1 text-white">Werewolf3788</h3>
-                        <p class="text-werewolf text-xs font-bold uppercase tracking-tighter mb-1">Admin / Streamer</p>
-                        <p id="weather-desc-werewolf" class="weather-desc text-xs opacity-70 mb-2 italic">Updating weather...</p>
-                        <div class="mb-4 min-h-[20px]">
-                            <p id="game-status-werewolf" class="text-slate-400 text-xs uppercase font-bold italic tracking-widest">Checking PlayStation...</p>
-                        </div>
-                        <a id="profile-link-werewolf" href="#" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-werewolf text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
-                    </div>
-                </div>
-
-                <!-- Raymystyro Profile Card -->
-                <!-- HTML Line ~320 -->
-                <div id="card-ray" class="custom-card p-6 text-center shadow-ray">
-                    <div class="weather-layer" id="layer-ray"></div>
-                    <div class="card-content">
-                        <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 relative">
-                            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/032a0367-589f-4763-94de-4fc679a0b2df-profile_image-70x70.png" 
-                                 alt="Raymystyro avatar"
-                                 class="w-full h-full rounded-full border-2 border-ray object-cover shadow-lg">
-                            <div id="status-indicator-ray" class="hidden absolute bottom-1 right-1">
-                                <span class="status-pulse"></span>
-                            </div>
-                        </div>
-                        <h3 class="text-xl mb-1 text-white">Raymystyro</h3>
-                        <p class="text-ray text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
-                        <p id="weather-desc-ray" class="weather-desc text-xs opacity-70 mb-2 italic">Updating weather...</p>
-                        <div class="mb-4 min-h-[20px]">
-                            <p id="game-status-ray" class="text-slate-400 text-xs uppercase font-bold italic tracking-widest">Checking PlayStation...</p>
-                        </div>
-                        <a id="profile-link-ray" href="#" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-ray text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
-                    </div>
-                </div>
-
-                <!-- Terrdog420 Profile Card -->
-                <!-- HTML Line ~343 -->
-                <div id="card-tj" class="custom-card p-6 text-center shadow-terrdog md:col-span-2 lg:col-span-1">
-                    <div class="weather-layer" id="layer-tj"></div>
-                    <div class="card-content">
-                        <div class="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 relative">
-                            <img src="https://static-cdn.jtvnw.net/jtv_user_pictures/9dad426e-04cb-4fc0-a917-25982b3800ce-profile_image-70x70.png" 
-                                 alt="Terrdog420 avatar"
-                                 class="w-full h-full rounded-full border-2 border-terrdog object-cover shadow-lg">
-                            <div id="status-indicator-tj" class="hidden absolute bottom-1 right-1">
-                                <span class="status-pulse"></span>
-                            </div>
-                        </div>
-                        <h3 class="text-xl mb-1 text-white">Terrdog420</h3>
-                        <p class="text-terrdog text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
-                        <p id="weather-desc-tj" class="weather-desc text-xs opacity-70 mb-2 italic">Updating weather...</p>
-                        <div class="mb-4 min-h-[20px]">
-                            <p id="game-status-tj" class="text-slate-400 text-xs uppercase font-bold italic tracking-widest">Checking PlayStation...</p>
-                        </div>
-                        <a id="profile-link-tj" href="#" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-terrdog text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Line 195: Mod Directory Catalog -->
+    <section class="mod-hub-section" style="margin-top: 3rem;">
+      <div class="mod-hub-header">
+        <h2><i class="fa-solid fa-cubes" style="color:var(--accent-gold);"></i> SERVER MODIFICATION DIRECTORY</h2>
+        <p style="color:var(--text-muted); margin-top:4px;">Live synchronized mod catalog cross-referenced against active server files.</p>
+        <div id="mod-categories-bar" class="mod-categories-bar"></div>
+      </div>
+      <div id="mod-hub-grid" class="mod-grid">
+        <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Google Sheet CSV Mod catalog...</div>
+      </div>
     </section>
 
-    <!-- Cinema Movie Library Archive Section -->
-    <!-- HTML Line ~367 -->
-    <section class="section-padding bg-slate-900/30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            
-            <!-- External Text & Archive Portal Button -->
-            <!-- HTML Line ~371 -->
-            <div class="text-center max-w-3xl mx-auto space-y-4">
-                <h2 class="text-orange-500">Werewolf Cinema</h2>
-                <p class="text-slate-300 font-medium text-sm sm:text-base leading-relaxed">
-                    Access the list of Movie's I own digitally, plus see what they're streaming on, the major brands like google, youtube, apple fandango, and Movies anywhere are all manually added, Amazon is sorta both manually added or search for Amazon is a Affilated account. Hope you enjoy this setup.
-                </p>
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-2">
-                    <a href="https://werewolf3788.github.io/Website/Movies.html" 
-                       target="werewolf_cinema_window" 
-                       class="w-full sm:w-auto bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-[0_0_15px_rgba(255,95,31,0.5)] border border-orange-400 min-h-[44px] inline-flex items-center justify-center">
-                        MOVIES ARCHIVE
-                    </a>
-                    <div class="text-center sm:text-left sm:border-l border-slate-700 sm:pl-4">
-                        <span class="text-slate-400 text-[10px] font-black uppercase tracking-widest block">Titles in Archive</span>
-                        <span id="movie-count" class="text-2xl font-black text-white leading-none">Loading...</span>
-                    </div>
-                </div>
-            </div>
+  </main>
 
-            <!-- Dynamic Cinema Slideshow Screen Frame -->
-            <!-- HTML Line ~392 -->
-            <div id="cinema-container" class="custom-card p-4 border border-orange-500/30 flex flex-col items-center justify-end shadow-orange-500/10 shadow-2xl text-center relative overflow-hidden min-h-[300px] sm:min-h-[420px] max-w-4xl mx-auto">
-                <div id="cinema-layer-1" class="absolute inset-0 transition-opacity duration-1000 opacity-100 z-0">
-                    <div class="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-50"></div>
-                    <div class="absolute inset-0 bg-contain bg-center bg-no-repeat drop-shadow-2xl"></div>
-                </div>
-                <div id="cinema-layer-2" class="absolute inset-0 transition-opacity duration-1000 opacity-0 z-0">
-                    <div class="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-50"></div>
-                    <div class="absolute inset-0 bg-contain bg-center bg-no-repeat drop-shadow-2xl"></div>
-                </div>
-                
-                <div class="absolute inset-0 bg-slate-950/40 z-0"></div>
-                
-                <!-- Dynamic Poster Caption Pill -->
-                <div class="relative z-10 mb-2 sm:mb-4 bg-black/70 border border-orange-500/50 px-4 sm:px-6 py-2 rounded-full backdrop-blur-md max-w-md mx-auto">
-                    <span id="cinema-caption-title" class="text-orange-400 font-black text-xs uppercase tracking-wider italic">Featured Poster</span>
-                </div>
-            </div>
+  <!-- Line 210: Lightbox View Modal -->
+  <div id="lightbox-modal" class="lightbox-modal">
+    <span id="lightbox-close" class="lightbox-close">&times;</span>
+    <div id="lightbox-card-body" class="lightbox-body">
+      <img id="lightbox-img" class="lightbox-content" alt="">
+      <div id="lightbox-caption" class="lightbox-caption"></div>
+    </div>
+  </div>
 
-        </div>
-    </section>
+  <!-- Line 220: System Sticky Footer -->
+  <footer class="system-footer">
+    <div class="footer-content">
+      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sun, Aug 09, 2026, 01:36 AM (EDT)</strong></span>
+      <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
+      <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
+      <span id="offline-timer" style="display:none; color:#f87171; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: 0m 0s</span>
+    </div>
+  </footer>
 
-    <!-- Co-Op Games Modules Section -->
-    <!-- HTML Line ~415 -->
-    <section class="section-padding">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="mb-8">
-                <span class="text-sky-500 font-bold uppercase tracking-widest text-xs">Featured Content</span>
-                <h2 class="mt-2">Gaming Modules</h2>
-                <p class="mt-2 text-slate-400 text-sm sm:text-base">
-                    Shared squad operations and co-op game progress mapped directly from Cloud Firestore.
-                </p>
-            </div>
+  <!-- Line 231: Full Entertainment-71888 Firebase Modular Sync Script -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-            <!-- Dynamic Gaming Progress Cards Layout Grid -->
-            <!-- HTML Line ~426 -->
-            <div id="gaming-modules-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="custom-card p-6 border border-slate-700 animate-pulse flex items-center justify-center min-h-[200px]">
-                    <span class="text-slate-400 text-sm font-mono"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Scanning Firestore for multi-player games...</span>
-                </div>
-            </div>
-        </div>
-    </section>
+    // Full Firebase Web Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+      authDomain: "entertainment-71888.firebaseapp.com",
+      databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+      projectId: "entertainment-71888",
+      storageBucket: "entertainment-71888.firebasestorage.app",
+      messagingSenderId: "660524340277",
+      appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+      measurementId: "G-JDNSLD3GFE"
+    };
 
-    <footer class="mt-auto bg-slate-950 py-10 border-t border-slate-800 text-center relative">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <p class="text-slate-500 text-sm">
-                &copy; 2026 Werewolf Project. Built by Werewolf3788 & Friends.
-            </p>
-        </div>
-        
-        <div class="kf-watermark">
-            <span class="k-sig">K</span><span class="f-sig">F</span>
-        </div>
-    </footer>
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+    const fs25Ref = ref(db, 'fs25');
+    
+    let activeUnsubscribe = null;
 
-    <!-- Firebase SDK Modules Script -->
-    <!-- HTML JS Line ~448 -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    function safeRender(data) {
+      if (typeof window.renderDashboard === 'function' && document.readyState !== 'loading') {
+        window.renderDashboard(data);
+      } else {
+        window.addEventListener('DOMContentLoaded', () => {
+          if (typeof window.renderDashboard === 'function') {
+            window.renderDashboard(data);
+          }
+        }, { once: true });
+      }
+    }
 
-        /* Firebase App Credentials Config */
-        /* JS Line ~455 */
-        const firebaseConfig = {
-            apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
-            authDomain: "entertainment-71888.firebaseapp.com",
-            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
-            projectId: "entertainment-71888",
-            storageBucket: "entertainment-71888.firebasestorage.app",
-            messagingSenderId: "660524340277",
-            appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
-            measurementId: "G-JDNSLD3GFE"
-        };
+    function attachLiveSync() {
+      if (activeUnsubscribe) activeUnsubscribe();
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const rtdb = getDatabase(app);
-
-        const PLATFORMS = ['playstation', 'psn', 'pc', 'xbox'];
-        const TARGET_USERS = ['Elu Cloud', 'Raymystyro', 'Terrdog', 'Werewolf3788'];
-
-        /* Query Realtime DB Player Gamertags */
-        /* JS Line ~474 */
-        function getPlayerData(gamertagsObj, possibleTags) {
-            if (!gamertagsObj) return null;
-            for (const tag of possibleTags) {
-                if (gamertagsObj[tag]) return gamertagsObj[tag];
-                const lowerTag = tag.toLowerCase();
-                const foundKey = Object.keys(gamertagsObj).find(k => k.toLowerCase() === lowerTag);
-                if (foundKey && gamertagsObj[foundKey]) return gamertagsObj[foundKey];
-            }
-            return null;
+      console.log("🔗 Connected to entertainment-71888 /fs25 RTDB node...");
+      activeUnsubscribe = onValue(fs25Ref, (snapshot) => {
+        const val = snapshot.val();
+        if (val) {
+          window.lastFirebaseData = val;
+          safeRender(val);
+        } else {
+          console.warn("⚠️ /fs25 node returned null. Forcing fallback UI state...");
+          safeRender({});
+          if (typeof window.setServerStatus === 'function') {
+            window.setServerStatus(false);
+          }
         }
-
-        /* Listen for PlayStation Live Status Updates */
-        /* JS Line ~486 */
-        function listenToPsnPresence() {
-            const psnRef = ref(rtdb, 'psn/gamertags');
-            onValue(psnRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const gamertags = snapshot.val();
-                    
-                    const werewolfData = getPlayerData(gamertags, ['WildHorse_Spirit', 'wildhorse_spirit', 'Werewolf3788', 'werewolf3788']);
-                    updatePsnCardStatus('werewolf', werewolfData, 'var(--color-werewolf)');
-
-                    const rayData = getPlayerData(gamertags, ['OneLIVIDMAN', 'onelividman', 'Raymystyro', 'raymystyro']);
-                    updatePsnCardStatus('ray', rayData, 'var(--color-ray)');
-
-                    const tjData = getPlayerData(gamertags, ['Darkwing69420', 'darkwing69420', 'Darkwing6942', 'Terrdog420', 'terrdog420', 'darkwing']);
-                    updatePsnCardStatus('tj', tjData, 'var(--color-terrdog)');
-                }
-            });
+      }, (error) => {
+        console.error("❌ RTDB Stream Error:", error.message);
+        safeRender({});
+        if (typeof window.setServerStatus === 'function') {
+          window.setServerStatus(false);
         }
+      });
+    }
+
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        signInAnonymously(auth).catch((err) => console.warn("ℹ️ Anonymous Auth Note:", err.message));
+      }
+      attachLiveSync();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") {
+        attachLiveSync();
+      }
+    });
+  </script>
 
-        /* Render Active Game/Status indicators on profile cards */
-        /* JS Line ~506 */
-        function updatePsnCardStatus(userId, userPsnData, themeColor) {
-            const gameEl = document.getElementById(`game-status-${userId}`);
-            const indicator = document.getElementById(`status-indicator-${userId}`);
-            if (!gameEl) return;
-
-            if (userPsnData && (userPsnData.online === true || userPsnData.onlineStatus === 'online')) {
-                const gameName = userPsnData.currentGame || 'Active on PlayStation';
-                gameEl.innerHTML = `<i class="fa-solid fa-gamepad mr-2"></i>${gameName}`;
-                gameEl.style.color = themeColor;
-                gameEl.className = "text-xs uppercase font-bold italic";
-                if (indicator) indicator.classList.remove('hidden');
-            } else {
-                gameEl.textContent = 'Currently Offline';
-                gameEl.className = 'text-slate-500 opacity-50 text-xs';
-                if (indicator) indicator.classList.add('hidden');
-            }
-        }
-
-        /* Calculate Progress Percentages Across Dynamic Firestore Documents */
-        /* JS Line ~526 */
-        function calculateGameProgress(docData) {
-            if (!docData) return 0;
-
-            if (typeof docData.totalCollection === 'number') return Math.round(docData.totalCollection);
-            if (typeof docData.percentage === 'number') return Math.round(docData.percentage);
-            if (typeof docData.overall === 'number') return Math.round(docData.overall);
-            if (typeof docData.completion === 'number') return Math.round(docData.completion);
-            if (typeof docData.progress === 'number') {
-                return docData.progress <= 1 && docData.progress > 0 
-                    ? Math.round(docData.progress * 100) 
-                    : Math.round(docData.progress);
-            }
-
-            if (Array.isArray(docData.progress) && docData.progress.length > 0) {
-                const total = docData.progress.length;
-                const collected = docData.progress.filter(item => 
-                    item && (item.collected === true || item.collected === "true" || item.done === true || item.completed === true)
-                ).length;
-                return total > 0 ? Math.round((collected / total) * 100) : 0;
-            }
-
-            if (Array.isArray(docData.trophies) && docData.trophies.length > 0) {
-                let totalGoal = 0;
-                let currentMet = 0;
-
-                docData.trophies.forEach(t => {
-                    if (t.type === 'checklist' && Array.isArray(t.subItems)) {
-                        totalGoal += t.subItems.length;
-                        currentMet += t.subItems.filter(s => s.done === true || s.done === "true").length;
-                    } else if (Array.isArray(t.items)) {
-                        totalGoal += t.items.length;
-                        currentMet += t.items.filter(s => s.done === true || s.done === "true" || s.completed === true).length;
-                    } else {
-                        const goal = Number(t.goal) || 1;
-                        totalGoal += goal;
-                        if (t.current >= goal || t.completed === true || t.done === true || t.earned === true) {
-                            currentMet += goal;
-                        } else {
-                            currentMet += Math.min(goal, Number(t.current) || 0);
-                        }
-                    }
-                });
-
-                if (totalGoal > 0) return Math.round((currentMet / totalGoal) * 100);
-            }
-
-            return 0;
-        }
-
-        /* Load Multi-Player Game Operations from Firestore */
-        /* JS Line ~578 */
-        async function loadFirestoreSquadProgress() {
-            const container = document.getElementById("gaming-modules-container");
-            if (!container) return;
-
-            try {
-                const gameMap = {};
-
-                for (const userName of TARGET_USERS) {
-                    for (const plat of PLATFORMS) {
-                        try {
-                            const progressColRef = collection(db, "users", userName, "platform", plat, "progress");
-                            const progressSnap = await getDocs(progressColRef);
-
-                            progressSnap.forEach(docSnap => {
-                                const gameId = docSnap.id;
-                                if (gameId.endsWith("_Ranks")) return;
-
-                                const docData = docSnap.data();
-                                const percentage = calculateGameProgress(docData);
-
-                                if (percentage > 0) {
-                                    const cleanGameTitle = gameId.replace(/-/g, ' ').replace(/_/g, ' ').toUpperCase();
-
-                                    if (!gameMap[gameId]) {
-                                        gameMap[gameId] = {
-                                            gameId: gameId,
-                                            title: cleanGameTitle,
-                                            players: []
-                                        };
-                                    }
-
-                                    const existingPlayer = gameMap[gameId].players.find(p => p.name.toLowerCase() === userName.toLowerCase());
-                                    if (!existingPlayer) {
-                                        gameMap[gameId].players.push({
-                                            name: userName,
-                                            platform: plat.toUpperCase(),
-                                            percentage: percentage
-                                        });
-                                    }
-                                }
-                            });
-                        } catch (e) {
-                            // Empty path fallback
-                        }
-                    }
-                }
-
-                const multiPlayerGames = Object.values(gameMap).filter(g => g.players.length >= 2);
-
-                if (multiPlayerGames.length === 0) {
-                    renderNoMultiplayerGames("No active co-op modules with 2 or more active players.");
-                    return;
-                }
-
-                let html = "";
-                multiPlayerGames.forEach(game => {
-                    let playerProgressHTML = "";
-
-                    game.players.forEach(p => {
-                        let nameColor = "#38bdf8";
-                        if (p.name.toLowerCase().includes("werewolf") || p.name.toLowerCase().includes("elu")) nameColor = "var(--color-werewolf)";
-                        if (p.name.toLowerCase().includes("ray")) nameColor = "var(--color-ray)";
-                        if (p.name.toLowerCase().includes("terr") || p.name.toLowerCase().includes("tj")) nameColor = "var(--color-terrdog)";
-
-                        playerProgressHTML += `
-                            <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700/50">
-                                <div class="flex justify-between items-center text-xs mb-1 font-bold">
-                                    <span style="color: ${nameColor};">${p.name} <span class="text-slate-500 font-normal">(${p.platform})</span></span>
-                                    <span class="text-slate-300 font-mono">${p.percentage}%</span>
-                                </div>
-                                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-                                    <div class="h-full rounded-full transition-all duration-500" style="width: ${p.percentage}%; background-color: ${nameColor};"></div>
-                                </div>
-                            </div>
-                        `;
-                    });
-
-                    html += `
-                        <div class="custom-card p-6 border border-slate-700/80 hover:border-sky-500/50 transition-all flex flex-col justify-between">
-                            <div>
-                                <div class="flex items-center justify-between mb-4">
-                                    <span class="text-xs font-bold uppercase tracking-widest text-sky-400"><i class="fa-solid fa-users mr-1"></i> Co-Op Module</span>
-                                    <span class="text-[10px] bg-sky-950 text-sky-300 px-2 py-0.5 rounded border border-sky-800">${game.players.length} Active Players</span>
-                                </div>
-                                <h3 class="text-lg font-black text-white mb-4 uppercase tracking-tight">${game.title}</h3>
-                                <div class="space-y-3 mb-6">
-                                    ${playerProgressHTML}
-                                </div>
-                            </div>
-                            <a href="https://werewolf3788.github.io/Website/games/Sniper-Elite/5/index.html" class="text-sky-400 hover:text-sky-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 pt-4 min-h-[44px]">
-                                <span>Explore Module Tracker</span>
-                                <i class="fa-solid fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    `;
-                });
-
-                container.innerHTML = html;
-
-            } catch (err) {
-                console.error("Firestore Progress Read Error:", err);
-                renderNoMultiplayerGames("Firestore sync offline.");
-            }
-        }
-
-        function renderNoMultiplayerGames(message) {
-            const container = document.getElementById("gaming-modules-container");
-            if (container) {
-                container.innerHTML = `
-                    <div class="custom-card p-6 border border-slate-700 text-center col-span-full">
-                        <i class="fa-solid fa-gamepad text-3xl text-slate-600 mb-2"></i>
-                        <p class="text-slate-400 text-sm">${message}</p>
-                    </div>
-                `;
-            }
-        }
-
-        listenToPsnPresence();
-        loadFirestoreSquadProgress();
-    </script>
-
-    <!-- Navigation, Open-Meteo Weather & Cinema Slideshow Engine -->
-    <!-- HTML JS Line ~689 -->
-    <script>
-        const users = [
-            { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf' },
-            { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray' },
-            { id: 'tj', user: 'terrdog420', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', layerId: 'layer-tj', descId: 'weather-desc-tj' }
-        ];
-
-        let mobileNavTree = [];
-
-        function toggleMobileMenu() {
-            const overlay = document.getElementById('mobile-menu-overlay');
-            if (overlay) {
-                overlay.classList.toggle('hidden');
-                closeMobileFolderView();
-            }
-        }
-
-        function openMobileFolderView(groupName) {
-            const groupNode = mobileNavTree.find(n => n.type === 'group' && n.name === groupName);
-            if (!groupNode) return;
-
-            const rootView = document.getElementById('mobile-root-view');
-            const folderView = document.getElementById('mobile-folder-view');
-            const titleEl = document.getElementById('mobile-folder-title');
-            const linksContainer = document.getElementById('mobile-folder-links');
-
-            titleEl.textContent = groupName.toUpperCase();
-
-            let linksHtml = '';
-            groupNode.items.forEach(item => {
-                const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}" class="w-6 h-6 rounded-md object-cover border border-slate-600">` : '<i class="fa-solid fa-link text-sky-400"></i>';
-                linksHtml += `
-                    <a href="${item.url}" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 hover:text-sky-400 hover:border-sky-500/40 transition-all min-h-[44px]">
-                        ${imgTag}
-                        <span class="font-bold text-sm">${item.name}</span>
-                    </a>
-                `;
-            });
-
-            linksContainer.innerHTML = linksHtml;
-            rootView.classList.add('hidden');
-            folderView.classList.remove('hidden');
-        }
-
-        function closeMobileFolderView() {
-            const rootView = document.getElementById('mobile-root-view');
-            const folderView = document.getElementById('mobile-folder-view');
-            if (rootView && folderView) {
-                folderView.classList.add('hidden');
-                rootView.classList.remove('hidden');
-            }
-        }
-
-        async function fetchWithRetry(url, options = {}) {
-            let delay = 1000;
-            for (let i = 0; i < 5; i++) {
-                try {
-                    const response = await fetch(url, options);
-                    if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-                    return response;
-                } catch (error) {
-                    if (i === 4) throw error;
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    delay *= 2;
-                }
-            }
-        }
-
-        const navCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv';
-
-        async function fetchNavData() {
-            try {
-                const response = await fetchWithRetry(navCsvUrl);
-                const data = await response.text();
-                const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
-
-                const standaloneItems = [];
-                const groupsMap = {};
-
-                for (let i = 1; i < rows.length; i++) {
-                    const columns = parseCSVLine(rows[i]);
-                    if (columns.length >= 3) {
-                        const name = columns[0] ? columns[0].trim() : '';
-                        if (!name) continue;
-                        
-                        const group = columns[1] ? columns[1].trim() : '';
-                        const url = columns[2] ? columns[2].trim() : '#';
-                        const img = columns[3] ? columns[3].trim() : '';
-
-                        const item = { name, url, img };
-                        const lowerName = name.toLowerCase();
-                        const lowerUrl = url.toLowerCase();
-
-                        if (lowerName.includes('kevin') || lowerName.includes('werewolf')) {
-                            const btn = document.getElementById('profile-link-werewolf');
-                            if (btn && url && url !== '#') btn.href = url;
-                        }
-                        if (lowerName.includes('ray') || lowerName.includes('raymystyro')) {
-                            const btn = document.getElementById('profile-link-ray');
-                            if (btn && url && url !== '#') btn.href = url;
-                        }
-                        if (lowerName.includes('darkwing') || lowerName.includes('terrdog') || lowerName.includes('tj') || lowerUrl.includes('darkwing') || lowerUrl.includes('terro') || lowerUrl.includes('terrdog')) {
-                            const btn = document.getElementById('profile-link-tj');
-                            if (btn && url && url !== '#') btn.href = url;
-                        }
-
-                        if (group === '') {
-                            standaloneItems.push(item);
-                        } else {
-                            if (!groupsMap[group]) groupsMap[group] = [];
-                            groupsMap[group].push(item);
-                        }
-                    }
-                }
-
-                standaloneItems.sort((a, b) => a.name.localeCompare(b.name));
-                const sortedGroupNames = Object.keys(groupsMap).sort((a, b) => a.localeCompare(b));
-                const navOrder = [];
-
-                /* Auto-detect protocol to work seamlessly across HTTP & HTTPS */
-                const protocol = window.location.protocol.startsWith('https') ? 'https:' : 'http:';
-
-                navOrder.push({
-                    type: 'standalone',
-                    data: { name: 'Home', url: `${protocol}//werewolf3788.github.io/Website/`, img: '' }
-                });
-
-                standaloneItems.forEach(item => {
-                    if (item.name.toLowerCase() !== 'home') {
-                        navOrder.push({ type: 'standalone', data: item });
-                    }
-                });
-
-                sortedGroupNames.forEach(groupName => {
-                    const items = groupsMap[groupName].sort((a, b) => a.name.localeCompare(b.name));
-                    navOrder.push({ type: 'group', name: groupName, items: items });
-                });
-
-                mobileNavTree = navOrder;
-                renderNav(navOrder);
-            } catch (error) {
-                console.error("Failed to fetch navigation data:", error);
-                document.getElementById('desktop-nav-links').innerHTML = `<span class="text-red-400 text-sm">Navigation offline</span>`;
-            }
-        }
-
-        function renderNav(navOrder) {
-            const desktopContainer = document.getElementById('desktop-nav-links');
-            const mobileContainer = document.getElementById('mobile-root-view');
-
-            let desktopHTML = '';
-            let mobileHTML = '';
-
-            navOrder.forEach(node => {
-                if (node.type === 'standalone') {
-                    const item = node.data;
-                    const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}" class="w-5 h-5 rounded-full object-cover">` : '';
-                    
-                    const isMovies = item.name.toLowerCase() === 'movies';
-                    const textClass = isMovies ? 'text-orange-400 hover:text-orange-300 font-bold' : 'text-slate-300 hover:text-white';
-                    const targetAttr = isMovies ? 'target="werewolf_cinema_window"' : '';
-
-                    desktopHTML += `
-                        <a href="${item.url}" ${targetAttr} class="nav-link flex items-center gap-2 ${textClass} transition-colors min-h-[44px] text-sm">
-                            ${imgTag}<span>${item.name}</span>
-                        </a>
-                    `;
-
-                    mobileHTML += `
-                        <a href="${item.url}" ${targetAttr} onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 ${textClass} hover:bg-slate-800 min-h-[44px]">
-                            ${imgTag}<span>${item.name}</span>
-                        </a>
-                    `;
-                } else if (node.type === 'group') {
-                    desktopHTML += `
-                        <div class="relative group dropdown">
-                            <button type="button" class="flex items-center space-x-1 text-slate-300 hover:text-white focus:outline-none py-4 min-h-[44px] text-sm">
-                                <span>${node.name}</span>
-                                <i class="fa-solid fa-chevron-down text-xs ml-1"></i>
-                            </button>
-                            <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
-                    `;
-
-                    mobileHTML += `
-                        <button type="button" onclick="openMobileFolderView('${node.name.replace(/'/g, "\\'")}')" class="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 hover:border-sky-500/50 hover:text-sky-400 transition-all text-left min-h-[44px]">
-                            <span class="font-bold text-sm">${node.name}</span>
-                            <div class="flex items-center gap-2 text-xs text-sky-400">
-                                <span>${node.items.length} links</span>
-                                <i class="fa-solid fa-chevron-right"></i>
-                            </div>
-                        </button>
-                    `;
-
-                    node.items.forEach(item => {
-                        const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}" class="w-5 h-5 rounded-md object-cover border border-slate-600">` : '';
-                        
-                        desktopHTML += `
-                            <a href="${item.url}" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-sky-400 transition-colors min-h-[44px]">
-                                ${imgTag}<span>${item.name}</span>
-                            </a>
-                        `;
-                    });
-
-                    desktopHTML += `</div></div>`;
-                }
-            });
-
-            desktopContainer.innerHTML = desktopHTML;
-            mobileContainer.innerHTML = mobileHTML;
-        }
-
-        let cinemaImages = [];
-        let currentSlideIndex = 0;
-        let activeBgId = 1;
-        let cinemaInterval;
-
-        function parseCSVLine(line) {
-            const result = [];
-            let current = '';
-            let inQuotes = false;
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"' && line[i+1] === '"') {
-                    current += '"'; i++;
-                } else if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current.trim());
-                    current = '';
-                } else {
-                    current += char;
-                }
-            }
-            result.push(current.trim());
-            return result;
-        }
-
-        function cleanMovieTitleFromUrl(url) {
-            if (!url) return "Featured Movie Title";
-            let filename = url.split('/').pop().split('?')[0];
-            filename = decodeURIComponent(filename)
-                .replace(/\.[^/.]+$/, '')
-                .replace(/[-_]/g, ' ')
-                .replace(/([a-z])([A-Z])/g, '$1 $2');
-            return filename.toUpperCase();
-        }
-
-        async function fetchMovieData() {
-            const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?output=csv';
-            const countDisplay = document.getElementById('movie-count');
-
-            try {
-                const response = await fetchWithRetry(csvUrl);
-                const data = await response.text();
-                const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
-                
-                let validMovieCount = 0;
-                cinemaImages = [];
-
-                for (let i = 1; i < rows.length; i++) {
-                    const columns = parseCSVLine(rows[i]);
-                    if (columns.length > 0 && columns[0].trim() !== '') {
-                        validMovieCount++;
-                        if (columns.length > 1 && columns[1] && (columns[1].startsWith('http') || columns[1].startsWith('//'))) {
-                            cinemaImages.push({
-                                url: columns[1],
-                                title: columns[0].trim() || cleanMovieTitleFromUrl(columns[1])
-                            });
-                        }
-                    }
-                }
-
-                if (countDisplay) {
-                    countDisplay.textContent = validMovieCount.toLocaleString();
-                }
-                
-                localStorage.setItem('werewolf_library_count', validMovieCount);
-
-                if (cinemaImages.length > 0) {
-                    cinemaImages.sort(() => 0.5 - Math.random());
-                    startCinemaSlideshow();
-                }
-
-            } catch (error) {
-                console.error('Error fetching library data:', error);
-                if (countDisplay) countDisplay.textContent = 'Service unavailable';
-            }
-        }
-
-        function startCinemaSlideshow() {
-            if (cinemaImages.length === 0 || cinemaInterval) return;
-            
-            const layer1 = document.getElementById('cinema-layer-1');
-            const layer2 = document.getElementById('cinema-layer-2');
-            const captionTitle = document.getElementById('cinema-caption-title');
-            
-            const setSlideImage = (layer, slideObj) => {
-                layer.querySelectorAll('div').forEach(el => {
-                    el.style.backgroundImage = `url('${slideObj.url}')`;
-                });
-            };
-
-            setSlideImage(layer1, cinemaImages[0]);
-            if (captionTitle) captionTitle.textContent = cinemaImages[0].title;
-            
-            layer1.style.opacity = 1;
-            layer2.style.opacity = 0;
-
-            cinemaInterval = setInterval(() => {
-                currentSlideIndex = (currentSlideIndex + 1) % cinemaImages.length;
-                const nextSlide = cinemaImages[currentSlideIndex];
-
-                if (captionTitle) captionTitle.textContent = nextSlide.title;
-
-                if (activeBgId === 1) {
-                    setSlideImage(layer2, nextSlide);
-                    layer2.style.opacity = 1;
-                    layer1.style.opacity = 0;
-                    activeBgId = 2;
-                } else {
-                    setSlideImage(layer1, nextSlide);
-                    layer1.style.opacity = 1;
-                    layer2.style.opacity = 0;
-                    activeBgId = 1;
-                }
-            }, 6000);
-        }
-
-        async function updateWeather() {
-            for (const u of users) {
-                try {
-                    const response = await fetchWithRetry(`https://api.open-meteo.com/v1/forecast?latitude=${u.lat}&longitude=${u.lon}&current_weather=true&temperature_unit=fahrenheit`);
-                    const data = await response.json();
-                    const code = data.current_weather.weathercode;
-                    const temp = Math.round(data.current_weather.temperature);
-                    
-                    let type = 'clear';
-                    let desc = 'Clear Skies';
-                    
-                    if (code === 0) { type = 'sunny'; desc = 'Sunny'; }
-                    else if (code >= 1 && code <= 3) { type = 'cloudy'; desc = 'Partly Cloudy'; }
-                    else if (code >= 45 && code <= 48) { type = 'cloudy'; desc = 'Foggy'; }
-                    else if (code >= 51 && code <= 67 || code >= 80 && code <= 82 || code >= 95) { type = 'rain'; desc = 'Raining'; }
-                    else if (code >= 71 && code <= 77 || code >= 85 && code <= 86) { type = 'snowy'; desc = 'Snowing'; }
-
-                    applyWeatherUI(u, type, `${desc} • ${temp}°F`);
-                } catch (e) {
-                    document.getElementById(u.descId).textContent = "Weather service unavailable";
-                }
-            }
-        }
-
-        function applyWeatherUI(user, type, description) {
-            const card = document.getElementById(user.cardId);
-            const layer = document.getElementById(user.layerId);
-            const descText = document.getElementById(user.descId);
-            
-            descText.textContent = description;
-            card.classList.remove('bg-rain', 'bg-cloudy', 'bg-sunny', 'bg-snowy', 'bg-clear', 'is-sunny');
-            card.classList.add(`bg-${type}`);
-            
-            if (type === 'sunny') card.classList.add('is-sunny');
-
-            layer.innerHTML = '';
-            layer.classList.add('active');
-
-            if (type === 'rain') {
-                for(let i=0; i<30; i++) {
-                    const drop = document.createElement('div');
-                    drop.className = 'rain-drop';
-                    drop.style.left = Math.random() * 100 + '%';
-                    drop.style.animationDuration = (Math.random() * 0.4 + 0.4) + 's';
-                    drop.style.animationDelay = Math.random() * 2 + 's';
-                    layer.appendChild(drop);
-                }
-            } else if (type === 'snowy') {
-                const ground = document.createElement('div');
-                ground.className = 'snow-ground';
-                layer.appendChild(ground);
-                for(let i=0; i<40; i++) {
-                    const flake = document.createElement('div');
-                    flake.className = 'snowflake';
-                    const size = Math.random() * 4 + 2 + 'px';
-                    flake.style.width = size; flake.style.height = size;
-                    flake.style.left = Math.random() * 100 + '%';
-                    flake.style.animationDuration = (Math.random() * 3 + 2) + 's';
-                    layer.appendChild(flake);
-                }
-            } else if (type === 'cloudy') {
-                for(let i=0; i<3; i++) {
-                    const puff = document.createElement('div');
-                    puff.className = 'cloud-puff';
-                    puff.style.width = (Math.random() * 100 + 100) + 'px';
-                    puff.style.height = '60px';
-                    puff.style.top = Math.random() * 80 + '%';
-                    puff.style.left = Math.random() * 80 + '%';
-                    puff.style.animationDelay = (i * -3) + 's';
-                    layer.appendChild(puff);
-                }
-            } else if (type === 'sunny') {
-                const sun = document.createElement('div');
-                sun.className = 'sun-glow';
-                layer.appendChild(sun);
-            }
-        }
-
-        function refreshData() {
-            fetchNavData(); 
-            updateWeather();
-            fetchMovieData(); 
-        }
-
-        window.onload = () => {
-            refreshData();
-            setInterval(refreshData, 300000);
-        };
-    </script>
 </body>
 </html>
