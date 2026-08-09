@@ -1,7 +1,7 @@
 /* ============================================================================
    File: tracker.js
-   Version: 1.9.0 | Updated: Friday, August 7, 2026
-   Description: Dynamic SPA Sniper Elite 5 Tracker Engine (Firebase v11.6.1 + Canvas Sync)
+   Version: 2.0.0 | Updated: Sunday, August 9, 2026
+   Description: Dynamic SPA Sniper Elite 5 Tracker Engine (In-Game Category Sort)
    Project: entertainment-71888
    Firestore Path: artifacts/{appId}/public/data/sniper_elite_5/{userId}
    Data Source: Embedded Master Collectibles & Remote Google Sheets CSV Navigation
@@ -34,6 +34,15 @@ const userThemes = {
     'Ray': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
     'TJ': { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)' },
     'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
+};
+
+// Strict In-Game Sorting Rank Order
+const IN_GAME_TYPE_ORDER = {
+    'Personal Letter': 1,
+    'Classified Doc': 2,
+    'Hidden Item': 3,
+    'Workbench': 4,
+    'Stone Eagle': 5
 };
 
 /* === SECTION: Embedded Master Collectibles Dataset === */
@@ -346,9 +355,18 @@ const appState = {
         let totalFound = 0;
 
         cats.forEach(cat => {
-            const items = this.hunterData.filter(i => i.cat === cat);
-            const count = items.filter(i => i.collected).length;
+            const rawItems = this.hunterData.filter(i => i.cat === cat);
+            const count = rawItems.filter(i => i.collected).length;
             totalFound += count;
+
+            // Strict In-Game Category Sorting:
+            // 1. Personal Letter -> 2. Classified Doc -> 3. Hidden Item -> 4. Workbench -> 5. Stone Eagle
+            const items = [...rawItems].sort((a, b) => {
+                const orderA = IN_GAME_TYPE_ORDER[a.type] || 99;
+                const orderB = IN_GAME_TYPE_ORDER[b.type] || 99;
+                if (orderA !== orderB) return orderA - orderB;
+                return a.id.localeCompare(b.id);
+            });
 
             const sid = cat.replace(/[^a-z0-9]/gi, '');
             const section = document.createElement('div');
