@@ -2,9 +2,8 @@
    File: games/FS25/index.js
    Deployment Timestamp: Sun, Aug 09, 2026, 19:10:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 & /FS25_Mods_Info RTDB Nodes)
-   Description: Ultimate Tactical Telemetry Engine. Unpacks animal husbandry,
-                construction/antennas, detailed factory storage/production,
-                AI/Player spatial tracking, fuzzy tool image matching,
+   Description: Tactical Dashboard Engine with Precision Farming Integration.
+                Unpacks Soil Type, pH Balance, Nitrogen Levels, Yield Potential %,
                 and complete field agronomy 24/7.
    ========================================================================== */
 
@@ -93,7 +92,6 @@ function resolveItemImage(rawFilename) {
   let targetFilename = "";
 
   if (firebaseImageMappings && Object.keys(firebaseImageMappings).length > 0) {
-    // 1. Direct key match
     const matchedRecord = 
       firebaseImageMappings[cleanFileNameKey] ||
       firebaseImageMappings[cleanDisplayKey] ||
@@ -102,7 +100,6 @@ function resolveItemImage(rawFilename) {
     if (matchedRecord) {
       targetFilename = matchedRecord.filename || matchedRecord.image || matchedRecord.file_name || matchedRecord.imageurl || "";
     } else {
-      // 2. Fuzzy / Keyword Search across all Firebase Images (Handles Chainsaws, Mowers, Tractors)
       const allKeys = Object.keys(firebaseImageMappings);
       const matchedKey = allKeys.find(k => {
         const lowerK = k.toLowerCase();
@@ -309,7 +306,7 @@ function renderModGrid(modsData) {
 }
 
 /* ==========================================================================
-   SECTION 4: Master Tactical Telemetry Engine
+   SECTION 4: Decoupled Tactical Engine with Precision Farming Integration
    ========================================================================== */
 
 window.renderDashboard = function(rawIncomingData) {
@@ -320,7 +317,7 @@ window.renderDashboard = function(rawIncomingData) {
     data = rawIncomingData.val();
   }
 
-  // Mod Directory & Images Node
+  // Mod Catalog Node (/FS25_Mods_Info)
   if (data.FS25_Mods_Info && data.FS25_Mods_Info.Images) {
     firebaseImageMappings = data.FS25_Mods_Info.Images;
   }
@@ -330,13 +327,11 @@ window.renderDashboard = function(rawIncomingData) {
     renderModGrid(window.activeFirebaseModData);
   }
 
-  // Telemetry Subnode
+  // Telemetry Subnode (/fs25)
   const fs25Node = data.fs25 ? data.fs25 : (data.careerSavegame_raw || data.farms_raw ? data : {});
+  if (!fs25Node || Object.keys(fs25Node).length === 0) return;
 
-  if (!fs25Node || Object.keys(fs25Node).length === 0) {
-    console.warn("⚠️ No telemetry keys detected inside fs25 node.");
-    return;
-  }
+  const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
   // Save Slot Banner
   const saveSlotEl = document.getElementById('save-slot-display');
@@ -344,26 +339,17 @@ window.renderDashboard = function(rawIncomingData) {
     saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">savegame${fs25Node.activeSaveSlot || "1"}</strong>`;
   }
 
-  // Parse Raw XML String Nodes
+  /* ------------------------------------------------------------------------
+     CARD 1: SERVER HEADER & WEATHER TELEMETRY
+     ------------------------------------------------------------------------ */
   const careerXml = parseXML(fs25Node.careerSavegame_raw);
-  const farmsXml = parseXML(fs25Node.farms_raw);
-  const vehXml = parseXML(fs25Node.vehicles_raw);
-  const toolsXml = parseXML(fs25Node.handTools_raw);
-  const farmlandXml = parseXML(fs25Node.farmland_raw);
-  const placeXml = parseXML(fs25Node.placeables_raw);
   const envXml = parseXML(fs25Node.environment_raw);
-  const missionsXml = parseXML(fs25Node.missions_raw);
-  const itemsXml = parseXML(fs25Node.items_raw);
-  const playersXml = parseXML(fs25Node.players_raw);
 
-  // Time & Weather Status
   let gameTime = "00:00";
   if (envXml) {
     const dayTimeElem = envXml.querySelector("dayTime, time");
     if (dayTimeElem) gameTime = formatGameTime(dayTimeElem.textContent || dayTimeElem.getAttribute("value"));
   }
-
-  const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
   if (careerXml) {
     const settings = careerXml.querySelector("settings");
@@ -377,8 +363,42 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     1. ACTIVE PLAYERS & AI WORKERS CARD
+     CARD 2: REGISTERED SERVER FARMS
      ------------------------------------------------------------------------ */
+  const farmsXml = parseXML(fs25Node.farms_raw);
+  const farmsCont = document.getElementById('farms-container');
+  let globalNetWorth = 0;
+
+  if (farmsCont) {
+    let farmsHtml = "";
+    if (farmsXml) {
+      farmsXml.querySelectorAll("farm").forEach(farm => {
+        const farmId = farm.getAttribute("farmId") || farm.getAttribute("id");
+        if (farmId && farmId !== "0") {
+          const name = farm.getAttribute("name") || `Farm #${farmId}`;
+          const money = Math.round(parseFloat(farm.getAttribute("money") || "0"));
+          const color = getFarmColor(farmId);
+          globalNetWorth += money;
+
+          farmsHtml += `
+            <div class="telemetry-card" style="border-left: 4px solid ${color}; padding: 0.85rem;">
+              <i class="fa-solid fa-building-columns card-icon" style="color:${color};"></i>
+              <div class="card-details">
+                <strong style="color:${color};">${name}</strong>
+                <span style="font-size:1.05rem; font-weight:700; color:#ffffff;">Balance: $${money.toLocaleString()}</span>
+              </div>
+            </div>`;
+        }
+      });
+    }
+    farmsCont.innerHTML = farmsHtml || `<div class="empty-state">No Active Server Farms Found</div>`;
+  }
+  setTxt('global-net-worth', `$${globalNetWorth.toLocaleString()}`);
+
+  /* ------------------------------------------------------------------------
+     CARD 3: ACTIVE PLAYERS & AI WORKERS
+     ------------------------------------------------------------------------ */
+  const playersXml = parseXML(fs25Node.players_raw);
   const playersCont = document.getElementById('active-players-container');
   if (playersCont) {
     let playersHtml = "";
@@ -426,60 +446,147 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     2. INDIVIDUAL FARM BALANCES & GLOBAL SUMMARY
+     CARD 4: FIELD CROPS & PRECISION FARMING AGRONOMY
      ------------------------------------------------------------------------ */
-  let globalNetWorth = 0;
-  const farmsCont = document.getElementById('farms-container');
-  if (farmsCont) {
-    let farmsHtml = "";
-    if (farmsXml) {
-      farmsXml.querySelectorAll("farm").forEach(farm => {
-        const farmId = farm.getAttribute("farmId") || farm.getAttribute("id");
-        if (farmId && farmId !== "0") {
-          const name = farm.getAttribute("name") || `Farm #${farmId}`;
-          const money = Math.round(parseFloat(farm.getAttribute("money") || "0"));
-          const color = getFarmColor(farmId);
-          globalNetWorth += money;
+  const fieldsCont = document.getElementById('fields-container');
+  const pfXml = parseXML(fs25Node.precisionFarming_raw);
 
-          farmsHtml += `
-            <div class="telemetry-card" style="border-left: 4px solid ${color}; padding: 0.85rem;">
-              <i class="fa-solid fa-building-columns card-icon" style="color:${color};"></i>
-              <div class="card-details">
-                <strong style="color:${color};">${name}</strong>
-                <span style="font-size:1.05rem; font-weight:700; color:#ffffff;">Balance: $${money.toLocaleString()}</span>
+  // Parse Precision Farming Map Data (Soil Type, pH, Nitrogen, Yield Potential)
+  let pfDataMap = {};
+  if (pfXml) {
+    pfXml.querySelectorAll("field, farmland, precisionFarmingField").forEach(pfField => {
+      const fId = pfField.getAttribute("id") || pfField.getAttribute("fieldId");
+      if (fId) {
+        pfDataMap[fId] = {
+          soilType: formatName(pfField.getAttribute("soilType") || pfField.getAttribute("soilTypeName") || "Silty Clay"),
+          pH: parseFloat(pfField.getAttribute("pH") || pfField.getAttribute("phValue") || "6.5").toFixed(1),
+          nitrogen: Math.round(parseFloat(pfField.getAttribute("nitrogen") || pfField.getAttribute("nitrogenLevel") || "0")),
+          yieldPotential: Math.round(parseFloat(pfField.getAttribute("yieldPotential") || pfField.getAttribute("yieldPotentialPercentage") || "100"))
+        };
+      }
+    });
+  }
+
+  if (fieldsCont) {
+    let fieldsHtml = "";
+    let fieldCount = 0;
+
+    if (fs25Node.fieldAgronomy && Object.keys(fs25Node.fieldAgronomy).length > 0) {
+      const fieldList = Object.values(fs25Node.fieldAgronomy);
+      fieldList.forEach(f => {
+        fieldCount++;
+        const id = f.id !== undefined ? f.id : fieldCount;
+        const farmId = f.farmId || "0";
+        const color = getFarmColor(farmId);
+        
+        const acresVal = parseFloat(f.areaAcres || f.hectares * 2.47105 || 0);
+        const acresText = acresVal > 0 ? `${acresVal.toFixed(2)} Acres` : '0.00 Acres';
+
+        let rawCropName = f.fruitTypeName || f.fruitType || f.cropType || f.plantName || "";
+        if (rawCropName === "0" || rawCropName === "NONE" || !rawCropName) {
+          rawCropName = "FALLOW / UNPLANTED";
+        } else {
+          rawCropName = formatName(rawCropName);
+        }
+
+        let rawStateName = f.growthStage || f.growthState || f.state || "";
+        const growthText = rawStateName ? formatName(rawStateName) : "UNSTATED";
+
+        const fert = f.fertilizerLevel !== undefined ? `Fertilizer: ${f.fertilizerLevel}%` : 'Fertilizer: 0%';
+        const lime = f.limeRequired ? `<span class="badge" style="background:#ef4444; color:#fff;">Lime Needed</span>` : '';
+        const plow = f.plowRequired ? `<span class="badge" style="background:#f97316; color:#fff;">Plow Needed</span>` : '';
+        const readyHarvest = growthText.includes("HARVEST") ? `<span class="badge" style="background:#22c55e; color:#fff;">Ready to Harvest</span>` : '';
+
+        // Precision Farming Cross-Reference Insertion
+        const pf = pfDataMap[String(id)] || {};
+        const pfText = pf.soilType 
+          ? `<div class="card-subtext" style="color:#38bdf8; margin-top:2px;">
+               <i class="fa-solid fa-flask"></i> Soil: ${pf.soilType} | pH: ${pf.pH} | N: ${pf.nitrogen} kg/ha | Yield Potential: ${pf.yieldPotential}%
+             </div>` 
+          : '';
+
+        fieldsHtml += `
+          <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
+            <i class="fa-solid fa-seedling card-icon" style="color:${color};"></i>
+            <div class="card-details" style="width:100%;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="color:${color};">Field #${id} (${acresText})</strong>
+                ${readyHarvest}
+              </div>
+              <span style="color:#ffffff; font-weight:600;"><i class="fa-solid fa-wheat-field"></i> Crop: ${rawCropName}</span>
+              <span>Owner: ${farmId === '0' ? 'Public / Unowned' : 'Farm #' + farmId} | ${fert} | State: ${growthText}</span>
+              ${pfText}
+              <div style="margin-top:4px; display:flex; gap:0.4rem;">${lime} ${plow}</div>
+            </div>
+          </div>`;
+      });
+    } else {
+      const farmlandXml = parseXML(fs25Node.farmland_raw);
+      const fieldsXml = parseXML(fs25Node.fields_raw);
+      const activeXml = farmlandXml || fieldsXml;
+
+      if (activeXml) {
+        activeXml.querySelectorAll("farmland, field").forEach(f => {
+          fieldCount++;
+          const id = f.getAttribute("id") || f.getAttribute("fieldId") || fieldCount;
+          const farmId = f.getAttribute("farmId") || "0";
+          const color = getFarmColor(farmId);
+          
+          const areaHa = parseFloat(f.getAttribute("area") || f.getAttribute("ha") || "0");
+          const acresText = areaHa > 0 ? `${(areaHa * 2.47105).toFixed(2)} Acres` : '0.00 Acres';
+
+          let rawCropName = f.getAttribute("fruitTypeName") || f.getAttribute("fruitType") || "";
+          rawCropName = (!rawCropName || rawCropName === "0") ? "FALLOW / UNPLANTED" : formatName(rawCropName);
+
+          let growthText = f.getAttribute("growthState") || f.getAttribute("growthStage") || "";
+          growthText = growthText ? formatName(growthText) : "UNSTATED";
+
+          // Precision Farming Fallback Cross-Reference
+          const pf = pfDataMap[String(id)] || {};
+          const pfText = pf.soilType 
+            ? `<div class="card-subtext" style="color:#38bdf8; margin-top:2px;">
+                 <i class="fa-solid fa-flask"></i> Soil: ${pf.soilType} | pH: ${pf.pH} | N: ${pf.nitrogen} kg/ha | Yield Potential: ${pf.yieldPotential}%
+               </div>` 
+            : '';
+
+          fieldsHtml += `
+            <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
+              <i class="fa-solid fa-seedling card-icon" style="color:${color};"></i>
+              <div class="card-details" style="width:100%;">
+                <strong style="color:${color};">Field #${id} (${acresText})</strong>
+                <span style="color:#ffffff; font-weight:600;"><i class="fa-solid fa-wheat-field"></i> Crop: ${rawCropName}</span>
+                <span>Owner: ${farmId === '0' ? 'Public / Unowned' : 'Farm #' + farmId} | State: ${growthText}</span>
+                ${pfText}
               </div>
             </div>`;
-        }
-      });
+        });
+      }
     }
-    farmsCont.innerHTML = farmsHtml || `<div class="empty-state">No Active Server Farms Found</div>`;
+
+    fieldsCont.innerHTML = fieldsHtml || `<div class="empty-state">No Farmland Logged</div>`;
+    setTxt('global-land-count', `${fieldCount} Fields`);
   }
-  setTxt('global-net-worth', `$${globalNetWorth.toLocaleString()}`);
 
   /* ------------------------------------------------------------------------
-     3. LIVESTOCK & ANIMAL BARNS CARD
+     CARD 5: LIVESTOCK & ANIMAL BARNS
      ------------------------------------------------------------------------ */
   const animalsCont = document.getElementById('animals-container');
   if (animalsCont) {
     let animalsHtml = "";
-    let totalLivestock = 0;
 
     if (placeXml) {
       placeXml.querySelectorAll("placeable").forEach(p => {
         const rawFilename = p.getAttribute("filename") || "";
-        const name = formatName(rawFilename);
+        const lowerName = rawFilename.toLowerCase();
 
-        // Check if building is an animal husbandry facility
-        if (rawFilename.toLowerCase().includes("husbandry") || rawFilename.toLowerCase().includes("barn") || rawFilename.toLowerCase().includes("cow") || rawFilename.toLowerCase().includes("pig") || rawFilename.toLowerCase().includes("sheep") || rawFilename.toLowerCase().includes("chicken")) {
+        if (lowerName.includes("husbandry") || lowerName.includes("barn") || lowerName.includes("cow") || lowerName.includes("pig") || lowerName.includes("sheep") || lowerName.includes("chicken")) {
+          const name = formatName(rawFilename);
           const farmId = p.getAttribute("farmId") || "1";
           const color = getFarmColor(farmId);
           
-          // Animal Details
           const animalNode = p.querySelector("husbandryAnimals, animals");
           const count = animalNode ? (animalNode.getAttribute("numAnimals") || animalNode.children.length || "0") : "0";
-          totalLivestock += parseInt(count) || 0;
 
-          // Food & Water Status
           const foodNode = p.querySelector("husbandryFood, food");
           const foodLevel = foodNode ? Math.round(parseFloat(foodNode.getAttribute("totalAmount") || "0")) : null;
           const waterNode = p.querySelector("husbandryWater, water");
@@ -505,7 +612,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     4. CONSTRUCTION, ANTENNAS & DECORATIONS CARD
+     CARD 6: CONSTRUCTION, ANTENNAS & DECORATIONS
      ------------------------------------------------------------------------ */
   const constructCont = document.getElementById('construction-container');
   if (constructCont) {
@@ -545,68 +652,9 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     5. FIELD CROPS & DETAILED AGRONOMY STATUS
+     CARD 7: PLAYER HAND TOOLS
      ------------------------------------------------------------------------ */
-  let fieldCount = 0;
-  const fieldsCont = document.getElementById('fields-container');
-  if (fieldsCont) {
-    let fieldsHtml = "";
-
-    if (fs25Node.fieldAgronomy) {
-      Object.values(fs25Node.fieldAgronomy).forEach(f => {
-        fieldCount++;
-        const id = f.id !== undefined ? f.id : fieldCount;
-        const farmId = f.farmId || "0";
-        const color = getFarmColor(farmId);
-        const acres = f.areaAcres ? `${f.areaAcres} Acres` : '0.00 Acres';
-        
-        const cropType = f.fruitType || f.cropType ? formatName(f.fruitType || f.cropType) : "FALLOW / UNPLANTED";
-        const growthStage = f.growthStage || f.growthState ? `State: ${formatName(f.growthStage || f.growthState)}` : '';
-        const fert = f.fertilizerLevel !== undefined ? `Fertilizer: ${f.fertilizerLevel}%` : '';
-        
-        const lime = f.limeRequired ? `<span class="badge" style="background:#ef4444; color:#fff;">Lime Needed</span>` : '';
-        const plow = f.plowRequired ? `<span class="badge" style="background:#f97316; color:#fff;">Plow Needed</span>` : '';
-        const readyHarvest = (f.growthStage && String(f.growthStage).toUpperCase().includes("HARVEST")) 
-          ? `<span class="badge" style="background:#22c55e; color:#fff;">Ready to Harvest</span>` : '';
-
-        fieldsHtml += `
-          <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
-            <i class="fa-solid fa-seedling card-icon" style="color:${color};"></i>
-            <div class="card-details" style="width:100%;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <strong style="color:${color};">Field #${id} (${acres})</strong>
-                ${readyHarvest}
-              </div>
-              <span style="color:#ffffff; font-weight:600;"><i class="fa-solid fa-wheat-field"></i> Crop: ${cropType}</span>
-              <span>Owner: ${farmId === '0' ? 'Public / Unowned' : 'Farm #' + farmId} | ${fert} ${growthStage ? '| ' + growthStage : ''}</span>
-              <div style="margin-top:4px; display:flex; gap:0.4rem;">${lime} ${plow}</div>
-            </div>
-          </div>`;
-      });
-    } else if (farmlandXml) {
-      farmlandXml.querySelectorAll("farmland, field").forEach(f => {
-        fieldCount++;
-        const id = f.getAttribute("id");
-        const farmId = f.getAttribute("farmId") || "0";
-        const color = getFarmColor(farmId);
-
-        fieldsHtml += `
-          <div class="telemetry-card" style="border-left: 4px solid ${color};">
-            <i class="fa-solid fa-seedling card-icon" style="color:${color};"></i>
-            <div class="card-details">
-              <strong style="color:${color};">Field #${id}</strong>
-              <span>Owner: ${farmId === '0' ? 'Public' : 'Farm #' + farmId}</span>
-            </div>
-          </div>`;
-      });
-    }
-    fieldsCont.innerHTML = fieldsHtml || `<div class="empty-state">No Farmland Logged</div>`;
-  }
-  setTxt('global-land-count', `${fieldCount} Fields`);
-
-  /* ------------------------------------------------------------------------
-     6. FRIENDLY PLAYER HAND TOOLS MAPPING
-     ------------------------------------------------------------------------ */
+  const toolsXml = parseXML(fs25Node.handTools_raw);
   const toolsCont = document.getElementById('handtools-container');
   if (toolsCont) {
     let toolsHtml = "";
@@ -636,8 +684,9 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     7. FLEET MACHINERY & ATTACHMENT CHAINS
+     CARD 8: FLEET MACHINERY & ATTACHMENT CHAINS
      ------------------------------------------------------------------------ */
+  const vehXml = parseXML(fs25Node.vehicles_raw);
   let vehicleCount = 0;
   const tracCont = document.getElementById('tractors-container');
   const harvCont = document.getElementById('harvesters-container');
@@ -726,8 +775,9 @@ window.renderDashboard = function(rawIncomingData) {
   setTxt('global-vehicle-count', vehicleCount);
 
   /* ------------------------------------------------------------------------
-     8. CONTRACTS, MISSIONS, COLLECTIBLES & PRODUCTIONS
+     CARD 9: CONTRACTS & MISSIONS
      ------------------------------------------------------------------------ */
+  const missionsXml = parseXML(fs25Node.missions_raw);
   const missionsCont = document.getElementById('missions-container');
   if (missionsCont) {
     let missionsHtml = "";
@@ -768,7 +818,10 @@ window.renderDashboard = function(rawIncomingData) {
     missionsCont.innerHTML = missionsHtml || `<div class="empty-state">No Server Contracts Generated Yet</div>`;
   }
 
-  // Collectibles
+  /* ------------------------------------------------------------------------
+     CARD 10: MAP COLLECTIBLES
+     ------------------------------------------------------------------------ */
+  const itemsXml = parseXML(fs25Node.items_raw);
   const collectiblesCont = document.getElementById('collectibles-container');
   if (collectiblesCont) {
     let collectiblesHtml = "";
@@ -805,7 +858,14 @@ window.renderDashboard = function(rawIncomingData) {
       ${collectiblesHtml || `<div class="empty-state">0 / ${totalCollectibles} Collectibles Discovered</div>`}`;
   }
 
+  /* ------------------------------------------------------------------------
+     CARD 11: MAP FACTORIES & PRODUCTIONS
+     ------------------------------------------------------------------------ */
   renderProductions(placeXml);
+
+  /* ------------------------------------------------------------------------
+     CARD 12: SERVER DIAGNOSTIC FEED
+     ------------------------------------------------------------------------ */
   renderTacticalLog(fs25Node.modErrors, fs25Node.serverEvents);
 };
 
@@ -863,7 +923,6 @@ function renderProductions(placeablesDoc) {
     const farmId = p.getAttribute("farmId") || "0";
     const color = getFarmColor(farmId);
 
-    // Extract Factory Production Output & Supply Storage Levels
     let fillLevelsList = [];
     p.querySelectorAll("storage, fillLevel").forEach(fill => {
       const fillType = fill.getAttribute("fillType");
