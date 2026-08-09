@@ -1,14 +1,16 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 06:35 AM (EDT - New York)
-   Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Tactical Dashboard Frontend Engine
+   Deployment Timestamp: Sun, Aug 09, 2026, 06:45 AM (EDT - New York)
+   Project: entertainment-71888 (/fs25 & /FS25_Mods_Info RTDB Nodes)
+   Description: Tactical Telemetry Dashboard & Mod Directory Engine.
+                Matches XML/JSON payloads with GitHub repository image assets
+                and parses Firebase /FS25_Mods_Info row structures.
    ========================================================================== */
 
-// GitHub Repository Raw Image Assets URL
+// Base Raw URL for GitHub Repository Images
 const REPO_IMAGES_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 
-// External Google Sheets CSV Endpoint
+// External Google Sheets CSV Backup Endpoint
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
 
 // Farm Color Palette by Farm ID
@@ -30,27 +32,84 @@ function getFarmColor(farmId) {
 let parsedModCatalog = [];
 
 /* ==========================================================================
-   SECTION 1: Image Resolution & Utility Functions
+   SECTION 1: GitHub Repository Image Resolution Engine
+   Matches equipment, crops, and map items with exact GitHub filenames
    ========================================================================== */
 
 function resolveItemImage(rawFilename) {
   if (!rawFilename) return null;
   const name = formatName(rawFilename).toLowerCase();
   
-  if (name.includes('calm') || name.includes('lands')) return `${REPO_IMAGES_BASE}CalmLands.JPG`;
-  if (name.includes('wheat')) return `${REPO_IMAGES_BASE}Wheat.JPG`;
-  if (name.includes('barley')) return `${REPO_IMAGES_BASE}Barley.JPG`;
-  if (name.includes('canola')) return `${REPO_IMAGES_BASE}Canola.JPG`;
-  if (name.includes('corn') || name.includes('maize')) return `${REPO_IMAGES_BASE}Corn.JPG`;
-  if (name.includes('cow')) return `${REPO_IMAGES_BASE}Cow.JPG`;
-  if (name.includes('pig')) return `${REPO_IMAGES_BASE}Pigs.JPG`;
-  if (name.includes('chicken')) return `${REPO_IMAGES_BASE}Chickens.JPG`;
-  if (name.includes('sheep')) return `${REPO_IMAGES_BASE}Sheep.JPG`;
-  if (name.includes('john deere')) return `${REPO_IMAGES_BASE}John Deere 8R Series.JPG`;
-  if (name.includes('big bud')) return `${REPO_IMAGES_BASE}Big Bud KTTA 700.JPG`;
-  if (name.includes('silo')) return `${REPO_IMAGES_BASE}Elevator Silo.JPG`;
-  
-  return null;
+  let exactFileName = "";
+
+  // Exact Match Mapping against GitHub Repo Filenames
+  if (name.includes('calm') || name.includes('lands')) exactFileName = "CalmLands.JPG";
+  else if (name.includes('st. lawrence') || name.includes('st lawrence')) exactFileName = "St. Lawrence (Map).JPG";
+  else if (name.includes('wheat') && name.includes('swath')) exactFileName = "Wheat Swath.JPG";
+  else if (name.includes('wheat')) exactFileName = "Wheat.JPG";
+  else if (name.includes('barley') && name.includes('swath')) exactFileName = "Barley Swath.JPG";
+  else if (name.includes('barley')) exactFileName = "Barley.JPG";
+  else if (name.includes('canola') && name.includes('swath')) exactFileName = "Canola Swath.JPG";
+  else if (name.includes('canola') && name.includes('oil')) exactFileName = "Canola Oil.JPG";
+  else if (name.includes('canola')) exactFileName = "Canola.JPG";
+  else if (name.includes('corn') || name.includes('maize')) exactFileName = "Corn.JPG";
+  else if (name.includes('oat') && name.includes('swath')) exactFileName = "Oat Swath.JPG";
+  else if (name.includes('oat')) exactFileName = "Oats.JPG";
+  else if (name.includes('sorghum') && name.includes('swath')) exactFileName = "Sorghum Swath.JPG";
+  else if (name.includes('sorghum')) exactFileName = "Sorghum.JPG";
+  else if (name.includes('soybean') && name.includes('swath')) exactFileName = "Soybean Swath.JPG";
+  else if (name.includes('soybean')) exactFileName = "Soybeans.JPG";
+  else if (name.includes('sunflower') && name.includes('oil')) exactFileName = "Sunflower Oil.JPG";
+  else if (name.includes('sunflower')) exactFileName = "Sunflowers.JPG";
+  else if (name.includes('cotton') && name.includes('round')) exactFileName = "Cotton Round Bale.JPG";
+  else if (name.includes('cotton') && name.includes('square')) exactFileName = "Cotton Square Bale.JPG";
+  else if (name.includes('cotton')) exactFileName = "Cotton.JPG";
+  else if (name.includes('rice') && name.includes('long')) exactFileName = "Long Grain Rice.JPG";
+  else if (name.includes('rice') && name.includes('sapling')) exactFileName = "Rice Saplings.JPG";
+  else if (name.includes('rice') && name.includes('oil')) exactFileName = "Rice Oil.JPG";
+  else if (name.includes('rice')) exactFileName = "Rice.JPG";
+  else if (name.includes('grape') && name.includes('juice')) exactFileName = "Grape Juice.JPG";
+  else if (name.includes('grape')) exactFileName = "Grapes.JPG";
+  else if (name.includes('olive') && name.includes('oil')) exactFileName = "Olive Oil.JPG";
+  else if (name.includes('potato') && name.includes('chip')) exactFileName = "Potato Chips.JPG";
+  else if (name.includes('potato')) exactFileName = "Potatoes.JPG";
+  else if (name.includes('sugarbeet') && name.includes('cut')) exactFileName = "Sugar Beet Cut.JPG";
+  else if (name.includes('sugarbeet') || name.includes('sugar beet')) exactFileName = "Sugarbeets.JPG";
+  else if (name.includes('sugarcane')) exactFileName = "Sugarcane.JPG";
+  else if (name.includes('green bean') || name.includes('greenbean')) exactFileName = "Green Beans.JPG";
+  else if (name.includes('carrot')) exactFileName = "Carrots.JPG";
+  else if (name.includes('parsnip')) exactFileName = "Parsnip.JPG";
+  else if (name.includes('beetroot')) exactFileName = "Beetroot.JPG";
+  else if (name.includes('red beet')) exactFileName = "Red Beet.JPG";
+  else if (name.includes('spinach') && name.includes('bag')) exactFileName = "Spinach Bag.JPG";
+  else if (name.includes('spinach')) exactFileName = "Spinach.JPG";
+  else if (name.includes('pea')) exactFileName = "Peas.JPG";
+  else if (name.includes('cabbage')) exactFileName = "Cabbage.JPG";
+  else if (name.includes('spring onion')) exactFileName = "Spring Onions.JPG";
+  else if (name.includes('chili')) exactFileName = "Chili Peppers.JPG";
+  else if (name.includes('garlic')) exactFileName = "Garlic.JPG";
+  else if (name.includes('enoki')) exactFileName = "Enoki.JPG";
+  else if (name.includes('oyster')) exactFileName = "Oyster Mushroom.JPG";
+  else if (name.includes('cow') || name.includes('holstein')) exactFileName = "Cow.JPG";
+  else if (name.includes('pig')) exactFileName = "Pigs.JPG";
+  else if (name.includes('chicken')) exactFileName = "Chickens.JPG";
+  else if (name.includes('sheep')) exactFileName = "Sheep.JPG";
+  else if (name.includes('goat') && name.includes('cheese')) exactFileName = "Goat Cheese.JPG";
+  else if (name.includes('goat')) exactFileName = "Goats.JPG";
+  else if (name.includes('horse')) exactFileName = "Horses.JPG";
+  else if (name.includes('buffalo') && name.includes('mozzarella')) exactFileName = "Buffalo Mozzarella.JPG";
+  else if (name.includes('buffalo')) exactFileName = "Water Buffalos.JPG";
+  else if (name.includes('dog')) exactFileName = "Dogs.JPG";
+  else if (name.includes('john deere')) exactFileName = "John Deere 8R Series.JPG";
+  else if (name.includes('big bud')) exactFileName = "Big Bud KTTA 700.JPG";
+  else if (name.includes('log trailer')) exactFileName = "Log Trailer.JPG";
+  else if (name.includes('silo')) exactFileName = "Elevator Silo.JPG";
+  else if (name.includes('rudolf') || name.includes('storage hall')) exactFileName = "Rudolf Hoermann Round Storage Hall.jpg";
+  else if (name.includes('american midwest') || name.includes('truck shop')) exactFileName = "American Midwest Truck Shop.jpg";
+  else if (name.includes('water')) exactFileName = "Water.jpg";
+
+  // URL Encode space characters and symbols safely for web browser fetches
+  return exactFileName ? `${REPO_IMAGES_BASE}${encodeURIComponent(exactFileName)}` : null;
 }
 
 function parseXML(rawText) {
@@ -75,7 +134,7 @@ function isValidImageUrl(url) {
 }
 
 /* ==========================================================================
-   SECTION 2: Google Sheets Mod Catalog Loader
+   SECTION 2: Google Sheets CSV Mod Catalog Backup Loader
    ========================================================================== */
 
 async function fetchModCatalog() {
@@ -89,10 +148,7 @@ async function fetchModCatalog() {
     const csvText = await response.text();
 
     const rows = parseCSV(csvText);
-    if (rows.length <= 1) {
-      gridContainer.innerHTML = `<div class="empty-state">No mod records found in CSV sheet.</div>`;
-      return;
-    }
+    if (rows.length <= 1) return;
 
     const headers = rows[0].map(h => h.trim().toLowerCase());
     parsedModCatalog = [];
@@ -120,10 +176,13 @@ async function fetchModCatalog() {
       ).join('');
     }
 
-    renderModGrid(parsedModCatalog);
+    // Only render CSV catalog if Firebase /FS25_Mods_Info is unavailable
+    if (!window.hasRenderedFirebaseMods) {
+      renderModGrid(parsedModCatalog);
+    }
 
   } catch (err) {
-    gridContainer.innerHTML = `<div class="empty-state" style="color:#f87171;">Failed to load Mod Catalog.</div>`;
+    console.warn("⚠️ Google Sheet CSV Backup Load Note:", err.message);
   }
 }
 
@@ -163,44 +222,74 @@ window.filterModsCategory = function(selectedCat, btnElem) {
   document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
   if (btnElem) btnElem.classList.add('active');
 
+  const sourceData = window.activeFirebaseModData || parsedModCatalog;
+
   if (selectedCat === 'ALL') {
-    renderModGrid(parsedModCatalog);
+    renderModGrid(sourceData);
   } else {
-    const filtered = parsedModCatalog.filter(m => (m.category || m.type || 'General').toUpperCase() === selectedCat);
+    const filtered = sourceData.filter(m => {
+      const cat = m.category_g || m.category_k || m.category || m.type || 'General';
+      return String(cat).toUpperCase() === selectedCat;
+    });
     renderModGrid(filtered);
   }
 };
 
-function renderModGrid(mods) {
+/* ==========================================================================
+   SECTION 3: Firebase /FS25_Mods_Info Specific Card Grid Renderer
+   Handles row_8, row_9, row_X schema keys (name_a, filename_j, etc.)
+   ========================================================================== */
+
+function renderModGrid(modsData) {
   const gridContainer = document.getElementById('mod-hub-grid');
   if (!gridContainer) return;
 
-  if (!mods || mods.length === 0) {
-    gridContainer.innerHTML = `<div class="empty-state">No matching mods found.</div>`;
+  let modList = [];
+
+  // Convert Firebase Object Schema (e.g. { row_8: {...}, row_9: {...} }) into Array
+  if (Array.isArray(modsData)) {
+    modList = modsData;
+  } else if (modsData && typeof modsData === 'object') {
+    modList = Object.values(modsData);
+  }
+
+  if (modList.length === 0) {
+    gridContainer.innerHTML = `<div class="empty-state">No matching mods found in database.</div>`;
     return;
   }
 
-  gridContainer.innerHTML = mods.map(mod => {
-    const name = mod.name || mod.title || mod['mod name'] || 'Unnamed Mod';
-    const category = mod.category || mod.type || 'General';
-    const desc = mod.description || mod.notes || mod.details || '';
-    const author = mod.author || mod.creator || 'Community Modder';
-    const link = mod.link || mod.url || mod.download || '#';
-    const rawImg = mod.image || mod.thumb || mod.icon || '';
+  gridContainer.innerHTML = modList.map(mod => {
+    // Exact schema parsing matching your /FS25_Mods_Info node structure
+    const name = mod.name_a || mod.name || mod.title || 'Unnamed Mod';
+    const category = mod.category_g || mod.category_k || mod.category || mod.mod_type_f || 'General';
+    const desc = mod.description_d || mod.description || '';
+    const author = mod.author_h || mod.author || 'Community Modder';
+    const link = mod.url_w_utm_c || mod.link || mod.url || '#';
+    const filename = mod.filename_j || mod.filename || '';
+    const size = mod.size_i || mod.size || '';
+    const crossplay = mod.crossplay_e || 'Yes';
+    const rawImg = mod.image_b || mod.image || '';
 
-    const imgHtml = isValidImageUrl(rawImg)
-      ? `<img src="${rawImg}" data-alt="${name}" class="lightbox-trigger mod-card-thumb">`
+    // Match image against GitHub repo or fallback to cube icon
+    const repoMatchedImg = resolveItemImage(filename || name);
+    const finalImg = isValidImageUrl(rawImg) ? rawImg : repoMatchedImg;
+
+    const imgHtml = finalImg
+      ? `<img src="${finalImg}" data-alt="${name}" class="lightbox-trigger mod-card-thumb">`
       : `<div class="mod-card-icon-fallback"><i class="fa-solid fa-cube"></i></div>`;
 
     return `
       <div class="mod-card">
         ${imgHtml}
         <div class="mod-card-body">
-          <span class="mod-category-tag">${category}</span>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="mod-category-tag">${category}</span>
+            <span class="badge" style="font-size:0.7rem; padding:2px 6px;">${crossplay === 'Yes' ? 'Crossplay' : 'PC Only'}</span>
+          </div>
           <h3 class="mod-title">${name}</h3>
-          ${desc ? `<p class="mod-desc">${desc}</p>` : ''}
+          ${desc ? `<p class="mod-desc">${desc.substring(0, 140)}...</p>` : ''}
           <div class="mod-card-footer">
-            <span class="mod-author"><i class="fa-solid fa-user"></i> ${author}</span>
+            <span class="mod-author"><i class="fa-solid fa-user"></i> ${author} ${size ? `(${size})` : ''}</span>
             ${link !== '#' ? `<a href="${link}" target="_blank" rel="noopener" class="mod-download-btn"><i class="fa-solid fa-download"></i> Get Mod</a>` : ''}
           </div>
         </div>
@@ -209,13 +298,26 @@ function renderModGrid(mods) {
 }
 
 /* ==========================================================================
-   SECTION 3: Primary Telemetry Dashboard Renderer
+   SECTION 4: Master Telemetry Dashboard Renderer
    ========================================================================== */
 
 window.renderDashboard = function(data) {
   if (!data) return;
 
+  // Render /FS25_Mods_Info node if present in root Firebase payload
+  if (data.FS25_Mods_Info) {
+    window.activeFirebaseModData = Object.values(data.FS25_Mods_Info);
+    window.hasRenderedFirebaseMods = true;
+    renderModGrid(window.activeFirebaseModData);
+  }
+
   const rootData = data.fs25 || data || {};
+
+  // If modCatalogCrossplay was cross-referenced into /fs25 by pipeline
+  if (!window.hasRenderedFirebaseMods && rootData.modCatalogCrossplay) {
+    window.activeFirebaseModData = Object.values(rootData.modCatalogCrossplay);
+    renderModGrid(window.activeFirebaseModData);
+  }
 
   // Active Savegame Slot Display
   let rawSlot = rootData.activeSaveSlot || "1";
@@ -278,7 +380,7 @@ window.renderDashboard = function(data) {
   const netWorthEl = document.getElementById('global-net-worth');
   if (netWorthEl) netWorthEl.textContent = `$${globalNetWorth.toLocaleString()}`;
 
-  // 4. Vehicles Fleet Rendering
+  // 4. Vehicles Fleet Rendering with GitHub Image Resolution
   let vehicleCount = 0;
   const tracCont = document.getElementById('tractors-container');
   const harvCont = document.getElementById('harvesters-container');
@@ -390,7 +492,6 @@ function renderTacticalLog(modErrors, serverEvents) {
 
   let html = "";
 
-  // Render recent errors
   errors.slice(-10).reverse().forEach(err => {
     html += `
       <div class="log-entry log-error">
@@ -400,7 +501,6 @@ function renderTacticalLog(modErrors, serverEvents) {
       </div>`;
   });
 
-  // Render recent events
   events.slice(-10).reverse().forEach(ev => {
     html += `
       <div class="log-entry log-event">
@@ -449,7 +549,7 @@ function renderProductions(placeablesDoc) {
 }
 
 /* ==========================================================================
-   SECTION 4: Event Listeners & UI Controls
+   SECTION 5: Event Listeners & UI Controls
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -481,7 +581,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleBtn.addEventListener('click', () => navMenu.classList.toggle('open'));
   }
 
-  // Load Mod Directory Catalog from Google Sheet CSV
+  // Load Google Sheets CSV Catalog as secondary fallback
   fetchModCatalog();
 });
 
