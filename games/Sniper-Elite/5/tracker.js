@@ -1,42 +1,36 @@
 /* ============================================================================
    File: tracker.js
-   Version: 2.0.0 | Updated: Sunday, August 9, 2026
-   Description: Dynamic SPA Sniper Elite 5 Tracker Engine (In-Game Category Sort)
+   Deployment Timestamp: Sun, Aug 09, 2026, 01:55 AM (EDT - New York)
    Project: entertainment-71888
-   Firestore Path: artifacts/{appId}/public/data/sniper_elite_5/{userId}
-   Data Source: Embedded Master Collectibles & Remote Google Sheets CSV Navigation
+   Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    ============================================================================ */
 
 /* === SECTION: Core Imports & Firebase Initialization === */
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
-import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
-import { getFirestore, doc, setDoc, onSnapshot, getDoc } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
+import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-// Secure environment variable injection for Canvas compatibility
-const appId = typeof __app_id !== 'undefined' ? __app_id : 'game-tracker-5b2ef';
-let firebaseConfig = {
-    apiKey: "AIzaSyA_O_Qm3bazJpi6wPqafsKLNNJdIUCvQGM",
-    authDomain: "game-tracker-5b2ef.firebaseapp.com",
-    databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com",
-    projectId: "game-tracker-5b2ef",
-    storageBucket: "game-tracker-5b2ef.firebasestorage.app",
-    messagingSenderId: "555667047127",
-    appId: "1:555667047127:web:af6f468ca3cf06759aa692",
-    measurementId: "G-QJ7ZFH25ER"
+// Line 14: Firebase Entertainment Project Config
+const firebaseConfig = {
+    apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+    authDomain: "entertainment-71888.firebaseapp.com",
+    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+    projectId: "entertainment-71888",
+    storageBucket: "entertainment-71888.firebasestorage.app",
+    messagingSenderId: "660524340277",
+    appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+    measurementId: "G-CTYHDF4MSD"
 };
 
-if (typeof __firebase_config !== 'undefined') {
-    firebaseConfig = JSON.parse(__firebase_config);
-}
-
+// Line 27: Gamertag Theme Color Palette
 const userThemes = {
-    'Kevin': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
-    'Ray': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
-    'TJ': { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)' },
+    'Werewolf3788': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
+    'Raymystyro': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
+    'Terrdog': { color: '#a855f7', glow: 'rgba(168, 85, 247, 0.6)' },
     'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
 };
 
-// Strict In-Game Sorting Rank Order
+// Line 36: Strict In-Game Item Type Sorting
 const IN_GAME_TYPE_ORDER = {
     'Personal Letter': 1,
     'Classified Doc': 2,
@@ -45,7 +39,7 @@ const IN_GAME_TYPE_ORDER = {
     'Stone Eagle': 5
 };
 
-/* === SECTION: Embedded Master Collectibles Dataset === */
+/* === SECTION: Master Collectibles Dataset === */
 const sniperData = [
     // MISSION 1: THE ATLANTIC WALL
     { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.' },
@@ -239,11 +233,18 @@ const sniperData = [
 
 /* === SECTION: App State Controller === */
 const appState = {
-    activeHunter: 'Kevin',
+    activeGamertag: 'Werewolf3788',
+    platform: 'playstation',
     hunterData: [],
     collapsedSections: {}, 
     db: null, auth: null, user: null, unsub: null,
     isLoaded: false,
+
+    getDocRef: function() {
+        // Line 169: Direct path schema using gamertag
+        const path = `users/${this.activeGamertag}/platform/${this.platform}/progress/sniper-elite-5`;
+        return doc(this.db, path);
+    },
 
     init: async function() {
         this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
@@ -262,91 +263,85 @@ const appState = {
             this.auth = getAuth(app);
             this.db = getFirestore(app);
             
-            const initAuth = async () => {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(this.auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(this.auth);
-                }
-            };
-            await initAuth();
+            signInAnonymously(this.auth).catch((err) => console.warn("ℹ️ Anonymous auth note:", err.message));
 
             onAuthStateChanged(this.auth, async (u) => {
                 this.user = u;
                 if (u) {
                     document.getElementById('stat-line').innerText = `ID: ${u.uid.substring(0,8)} | ONLINE`;
-                    await this.bootstrapUsers();
-                    this.loadHunter(this.activeHunter);
+                    this.loadHunter(this.activeGamertag);
                 } else {
                     document.getElementById('stat-line').innerText = `OFFLINE`;
+                    this.loadHunterFromLocalStorage(this.activeGamertag);
                 }
             });
         } catch (e) { 
-            console.error("Firebase Init Error:", e);
+            console.warn("⚠️ Firebase Init fallback:", e.message);
+            this.loadHunterFromLocalStorage(this.activeGamertag);
         }
     },
 
-    bootstrapUsers: async function() {
-        const names = ['Kevin', 'Ray', 'TJ', 'Elu Cloud'];
-        for (const name of names) {
-            const path = `artifacts/${appId}/public/data/sniper_elite_5/${name}`;
-            const docRef = doc(this.db, path);
-            const snap = await getDoc(docRef);
-            if (!snap.exists()) {
-                await setDoc(docRef, { 
-                    initialized: true, 
-                    hunterName: name, 
-                    progress: sniperData.map(i => ({ id: i.id, collected: false })) 
-                });
-            }
-        }
+    loadHunterFromLocalStorage: function(gamertag) {
+        const localSaved = localStorage.getItem(`se5_progress_${gamertag}`);
+        const saved = localSaved ? JSON.parse(localSaved) : [];
+        this.hunterData = sniperData.map(item => {
+            const status = saved.find(s => s.id === item.id);
+            return { ...item, collected: status ? status.collected : false };
+        });
+        this.isLoaded = true;
+        this.render();
     },
 
-    loadHunter: function(name) {
-        this.activeHunter = name;
-        document.getElementById('hunter-display').innerText = name.toUpperCase();
+    loadHunter: function(gamertag) {
+        this.activeGamertag = gamertag;
+        document.getElementById('hunter-display').innerText = gamertag.toUpperCase();
         
-        const theme = userThemes[name] || userThemes['Kevin'];
+        const theme = userThemes[gamertag] || userThemes['Werewolf3788'];
         document.documentElement.style.setProperty('--ser-color', theme.color);
         document.documentElement.style.setProperty('--ser-glow', theme.glow);
 
         document.querySelectorAll('.profile-btn').forEach(b => {
-            b.classList.toggle('active-btn', b.innerText === name);
+            b.classList.toggle('active-btn', b.innerText === gamertag);
         });
 
         if (this.unsub) this.unsub();
-        if (!this.user) return;
+        if (!this.db) {
+            this.loadHunterFromLocalStorage(gamertag);
+            return;
+        }
 
         this.isLoaded = false;
         this.render();
 
-        const path = `artifacts/${appId}/public/data/sniper_elite_5/${name}`;
-        const docRef = doc(this.db, path);
+        const docRef = this.getDocRef();
         
         this.unsub = onSnapshot(docRef, (snap) => {
             this.isLoaded = true;
             if (snap.exists()) {
-                const saved = snap.data().progress || [];
+                const docData = snap.data();
+                const saved = docData.progress || [];
                 this.hunterData = sniperData.map(item => {
                     const status = saved.find(s => s.id === item.id);
                     return { ...item, collected: status ? status.collected : false };
                 });
+            } else {
+                this.loadHunterFromLocalStorage(gamertag);
             }
             this.render();
         }, (error) => {
-            console.error("Snapshot error:", error);
-            this.isLoaded = true;
-            this.render();
+            console.warn("Firestore snapshot error (using local storage fallback):", error.message);
+            this.loadHunterFromLocalStorage(gamertag);
         });
     },
 
     render: function() {
         const container = document.getElementById('section-container');
+        if (!container) return;
         
         if (!this.isLoaded) {
             document.getElementById('overall-bar').style.width = '0%';
             document.getElementById('percent-text').innerText = `SYNCING DATA...`;
-            container.innerHTML = '<div style="text-align:center; padding: 50px 20px; color: var(--ser-color); font-weight: 900; letter-spacing: 2px; font-size: 18px;" class="outlined-text">ESTABLISHING SECURE LINK...<br><span style="font-size:12px; color:#aaa;">READING FROM FIREBASE</span></div>';
+            container.innerHTML = '<div style="text-align:center; padding: 50px 20px; color: var(--ser-color); font-weight: 900; letter-spacing: 2px; font-size: 18px;" class="outlined-text">ESTABLISHING SECURE LINK...<br><span style="font-size:12px; color:#aaa;">READING ENTERTAINMENT DATABASE</span></div>';
             return;
         }
 
@@ -359,8 +354,7 @@ const appState = {
             const count = rawItems.filter(i => i.collected).length;
             totalFound += count;
 
-            // Strict In-Game Category Sorting:
-            // 1. Personal Letter -> 2. Classified Doc -> 3. Hidden Item -> 4. Workbench -> 5. Stone Eagle
+            // Strict In-Game Type Sorting
             const items = [...rawItems].sort((a, b) => {
                 const orderA = IN_GAME_TYPE_ORDER[a.type] || 99;
                 const orderB = IN_GAME_TYPE_ORDER[b.type] || 99;
@@ -390,9 +384,10 @@ const appState = {
                         <div class="item-type-tag">${item.type}</div>
                         <div class="outlined-text" style="font-weight:900; font-size:14px; margin-bottom:4px;">${item.name}</div>
                         <div class="outlined-text" style="font-size:11px; color:#ddd; font-style:italic; line-height:1.2;">${item.desc}</div>
-                        ${item.reward ? `<span class="reward-tag outlined-text">${item.reward}</span>` : ''}
                     </div>
-                    ${item.collected ? `<div class="lock-badge outlined-text">COLLECTED</div>` : `<button class="toggle-btn outlined-text" onclick="appState.toggleItem('${item.id}')">Confirm Found</button>`}
+                    ${item.collected 
+                        ? `<button class="toggle-btn outlined-text completed-btn" onclick="appState.toggleItem('${item.id}')">COLLECTED (Undo)</button>` 
+                        : `<button class="toggle-btn outlined-text" onclick="appState.toggleItem('${item.id}')">Confirm Found</button>`}
                 `;
                 grid.appendChild(card);
             });
@@ -406,9 +401,11 @@ const appState = {
 
     toggleItem: async function(id) {
         const item = this.hunterData.find(i => i.id === id);
-        item.collected = !item.collected;
-        this.render(); 
-        this.sync();
+        if (item) {
+            item.collected = !item.collected;
+            this.render(); 
+            this.sync();
+        }
     },
 
     toggleSection: function(id) {
@@ -416,20 +413,36 @@ const appState = {
         this.render();
     },
 
-    switchHunter: function(name) { this.loadHunter(name); },
+    switchHunter: function(gamertag) { this.loadHunter(gamertag); },
 
     sync: async function() {
-        if (!this.user) return;
-        const path = `artifacts/${appId}/public/data/sniper_elite_5/${this.activeHunter}`;
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
-        await setDoc(doc(this.db, path), { progress, lastUpdate: Date.now() }, { merge: true });
+        
+        // Save locally first to prevent loss
+        localStorage.setItem(`se5_progress_${this.activeGamertag}`, JSON.stringify(progress));
+
+        if (!this.db) return;
+        
+        try {
+            const docRef = this.getDocRef();
+            const payload = {
+                activeMission: "3: Spy Academy",
+                gameId: "sniper-elite-5",
+                lastUpdate: Date.now(),
+                platform: this.platform,
+                progress: progress
+            };
+            await setDoc(docRef, payload, { merge: true });
+        } catch (err) {
+            console.warn("Firestore save error (saved to LocalStorage):", err.message);
+        }
     }
 };
 
 window.appState = appState;
 appState.init();
 
-/* === SECTION: CSV Spreadsheet Parser & Top Menu Builder === */
+/* === SECTION: CSV Spreadsheet Parser & Navigation Menu Builder === */
 async function buildTopMenu() {
     try {
         const csvUrl = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
@@ -470,6 +483,7 @@ async function buildTopMenu() {
         }
 
         const menuBar = document.getElementById('csv-menu-bar');
+        if (!menuBar) return;
         let html = '';
         
         const chevron = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="margin-left: 6px; display: inline-block; vertical-align: middle;"><polyline points="6 9 12 15 18 9"></polyline></svg>`;
@@ -503,7 +517,6 @@ async function buildTopMenu() {
     }
 }
 
-// Dropdown Toggle Event Delegation
 window.addEventListener('click', function(event) {
     const btn = event.target.closest('.csv-dropdown-btn');
     const dropdowns = document.getElementsByClassName("csv-dropdown-content");
@@ -529,5 +542,4 @@ window.addEventListener('click', function(event) {
     }
 });
 
-// Initialize CSV Navigation Menu
 buildTopMenu();
