@@ -1,14 +1,15 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 02:00 AM (EDT - New York)
+   Deployment Timestamp: Sun, Aug 09, 2026, 05:35 AM (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Unified G-Portal XML Parser Engine & Google Sheets CSV Mod Catalog
+   Description: Unified G-Portal XML Parser Engine, Google Sheets CSV Mod Catalog,
+                and Flexible HTTP/HTTPS Dual-Protocol Fallback System
    ========================================================================== */
 
 // External Google Sheets CSV Endpoints
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
 
-// Farm Color Palette by Farm ID
+// Line 12: Farm Color Palette by Farm ID (Used for telemetry card borders)
 const FARM_COLOR_PALETTE = {
   "0": { name: "AI / Public", color: "#facc15" },
   "1": { name: "Farm 1", color: "#ff5f00" },
@@ -27,9 +28,11 @@ function getFarmColor(farmId) {
 let activeServerMods = new Set();
 let parsedModCatalog = [];
 
-/* === SECTION 1: Deep Object & XML Parsers for G-Portal Feeds === */
+/* ==========================================================================
+   SECTION 1: Deep Object & Dual-Protocol (HTTP/HTTPS) XML Parsers
+   ========================================================================== */
 
-// Line 36: Extracts nested payload nodes from Firebase
+// Line 36: Extracts nested payload nodes from Firebase RTDB
 function getFirebasePayloadDeep(rootObj, targetKey, maxDepth = 10) {
   if (!rootObj || typeof rootObj !== 'object' || maxDepth <= 0) return null;
   
@@ -63,6 +66,19 @@ function parseXML(inputPayload) {
   } catch (e) { return null; }
 }
 
+// Line 72: Fallback helper to parse XML directly from string variables
+function parseFS25XmlData(xmlString) {
+  if (!xmlString || typeof xmlString !== 'string') return null;
+  try {
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+    return xmlDoc.getElementsByTagName("parsererror").length > 0 ? null : xmlDoc;
+  } catch (err) {
+    console.error("XML Parsing Error:", err);
+    return null;
+  }
+}
+
 function getXmlVal(node, keyName, defaultVal = "") {
   if (!node) return defaultVal;
   try {
@@ -91,9 +107,11 @@ function isValidImageUrl(url) {
   return cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://') || cleanUrl.startsWith('./');
 }
 
-/* === SECTION 2: Google Sheets Mod Catalog Loader === */
+/* ==========================================================================
+   SECTION 2: Google Sheets Mod Catalog Loader & Filtering Engine
+   ========================================================================== */
 
-// Line 102: CSV Fetcher & Renderer
+// Line 118: CSV Fetcher & Mod Card Renderer
 async function fetchModCatalog() {
   const gridContainer = document.getElementById('mod-hub-grid');
   const catBar = document.getElementById('mod-categories-bar');
@@ -225,30 +243,35 @@ function renderModGrid(mods) {
   }).join('');
 }
 
-/* === SECTION 3: Main Firebase Telemetry Dashboard Renderer === */
+/* ==========================================================================
+   SECTION 3: Primary Telemetry Dashboard Renderer (Firebase & Fallback XML)
+   ========================================================================== */
 
-// Line 228: Primary Realtime XML Dashboard Renderer
+// Line 255: Master Render Handler triggered directly by Firebase listener
 window.renderDashboard = function(data) {
   if (!data) return;
 
-  // Resolve Active Savegame
-  let rawSlot = getFirebasePayloadDeep(data, "activeSaveSlot") || "2";
+  // Handles both nested /fs25 node object and direct root RTDB structure
+  const rootData = data.fs25 || data || {};
+
+  // Resolve Active Savegame Slot
+  let rawSlot = getFirebasePayloadDeep(rootData, "activeSaveSlot") || "2";
   let slotNum = String(rawSlot).replace(/[^0-9]/g, '') || "2";
   let activeSlotKey = `savegame${slotNum}`;
-  let slotData = data[activeSlotKey] || data;
+  let slotData = rootData[activeSlotKey] || rootData;
 
   const saveSlotEl = document.getElementById('save-slot-display');
   if (saveSlotEl) {
     saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">${activeSlotKey}</strong>`;
   }
 
-  // Extract Raw G-Portal XML Payloads
-  const careerXml = parseXML(getFirebasePayloadDeep(slotData, "careerSavegame") || getFirebasePayloadDeep(data, "careerSavegame"));
-  const farmsXml = parseXML(getFirebasePayloadDeep(slotData, "farms") || getFirebasePayloadDeep(data, "farms"));
-  const vehXml = parseXML(getFirebasePayloadDeep(slotData, "vehicles") || getFirebasePayloadDeep(data, "vehicles"));
-  const toolsXml = parseXML(getFirebasePayloadDeep(slotData, "handTools") || getFirebasePayloadDeep(data, "handTools"));
-  const farmlandXml = parseXML(getFirebasePayloadDeep(slotData, "farmland") || getFirebasePayloadDeep(data, "farmland"));
-  const placeXml = parseXML(getFirebasePayloadDeep(slotData, "placeables") || getFirebasePayloadDeep(data, "placeables"));
+  // Extract XML Payloads with deep searching + direct XML string fallback parsing
+  const careerXml = parseXML(getFirebasePayloadDeep(slotData, "careerSavegame") || getFirebasePayloadDeep(rootData, "careerSavegame")) || parseFS25XmlData(rootData.careerSavegame || rootData.careerSavegame_raw);
+  const farmsXml = parseXML(getFirebasePayloadDeep(slotData, "farms") || getFirebasePayloadDeep(rootData, "farms")) || parseFS25XmlData(rootData.farms || rootData.farms_raw);
+  const vehXml = parseXML(getFirebasePayloadDeep(slotData, "vehicles") || getFirebasePayloadDeep(rootData, "vehicles")) || parseFS25XmlData(rootData.vehicles || rootData.vehicles_raw);
+  const toolsXml = parseXML(getFirebasePayloadDeep(slotData, "handTools") || getFirebasePayloadDeep(rootData, "handTools")) || parseFS25XmlData(rootData.handTools || rootData.handTools_raw);
+  const farmlandXml = parseXML(getFirebasePayloadDeep(slotData, "farmland") || getFirebasePayloadDeep(rootData, "farmland")) || parseFS25XmlData(rootData.farmland || rootData.farmland_raw);
+  const placeXml = parseXML(getFirebasePayloadDeep(slotData, "placeables") || getFirebasePayloadDeep(rootData, "placeables")) || parseFS25XmlData(rootData.placeables || rootData.placeables_raw);
 
   // 1. Server Header Banner Information
   if (careerXml) {
@@ -293,7 +316,7 @@ window.renderDashboard = function(data) {
   const netWorthEl = document.getElementById('global-net-worth');
   if (netWorthEl) netWorthEl.textContent = `$${globalNetWorth.toLocaleString()}`;
 
-  // 3. Vehicles Fleet Sorting
+  // 3. Fleet Vehicles Sorting
   let vehicleCount = 0;
   const tracCont = document.getElementById('tractors-container');
   const harvCont = document.getElementById('harvesters-container');
@@ -379,28 +402,47 @@ window.renderDashboard = function(data) {
   const landEl = document.getElementById('global-land-count');
   if (landEl) landEl.textContent = `${fieldCount} Fields`;
 
-  // 6. Map Productions
-  const prodCont = document.getElementById('main-productions-container');
-  if (prodCont) {
-    let prodHtml = "";
-    if (placeXml) {
-      placeXml.querySelectorAll("placeable").forEach(p => {
-        const name = formatName(p.getAttribute("filename") || "Factory");
-        prodHtml += `
-          <div class="telemetry-card">
-            <i class="fa-solid fa-industry card-icon"></i>
-            <div class="card-details"><strong>${name}</strong></div>
-          </div>`;
-      });
-    }
-    prodCont.innerHTML = prodHtml || `<div class="empty-state">No Production Buildings Active</div>`;
-  }
+  // 6. Map Productions & Placeables
+  renderProductions(placeXml);
 };
 
-/* === SECTION 4: Event Listeners & Initialization === */
+// Line 392: Dedicated Factory & Production Card Formatter
+function renderProductions(placeablesDoc) {
+  const prodCont = document.getElementById('main-productions-container');
+  if (!prodCont) return;
+
+  if (!placeablesDoc) {
+    prodCont.innerHTML = `<div class="empty-state">No Production Buildings Active</div>`;
+    return;
+  }
+
+  let prodHtml = "";
+  placeablesDoc.querySelectorAll("placeable").forEach(p => {
+    const rawFilename = p.getAttribute("filename") || "";
+    const uniqueId = p.getAttribute("uniqueId") || "";
+    const name = formatName(rawFilename);
+    const farmId = p.getAttribute("farmId") || "0";
+    const color = getFarmColor(farmId);
+
+    prodHtml += `
+      <div class="telemetry-card" style="border-left: 3px solid ${color};">
+        <i class="fa-solid fa-industry card-icon" style="color:${color};"></i>
+        <div class="card-details">
+          <strong style="color:${color};">${name}</strong>
+          ${uniqueId ? `<span class="card-subtext">ID: ${uniqueId.substring(0, 12)}...</span>` : ''}
+        </div>
+      </div>`;
+  });
+
+  prodCont.innerHTML = prodHtml || `<div class="empty-state">No Production Buildings Active</div>`;
+}
+
+/* ==========================================================================
+   SECTION 4: Event Listeners & UI Controls Initialization
+   ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Initialize Lightbox Controls
+  // Lightbox Modal Controls (Only trigger in lightbox mode per project setup)
   const modal = document.getElementById('lightbox-modal');
   const modalImg = document.getElementById('lightbox-img');
   const modalCaption = document.getElementById('lightbox-caption');
@@ -421,14 +463,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (closeBtn) closeBtn.addEventListener('click', () => { modal.style.display = 'none'; });
   if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
 
-  // Mobile Menu Toggle
+  // Mobile Navigation Hamburger Toggle
   const toggleBtn = document.getElementById('mobile-menu-toggle');
   const navMenu = document.getElementById('dynamic-menu');
   if (toggleBtn && navMenu) {
     toggleBtn.addEventListener('click', () => navMenu.classList.toggle('open'));
   }
 
-  // Fetch Google Sheets Mod Directory CSV
+  // Load Mod Directory Catalog from Google Sheet CSV
   fetchModCatalog();
 });
 
