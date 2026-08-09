@@ -1,27 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Meta tags & Core Page Setup -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Realtime Tactical Dashboard & Mod Directory</title>
 
-  <!-- Favicon Fallback (Prevents 404 Console Errors) -->
   <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 
-  <!-- External Stylesheets (FontAwesome & Web Fonts) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- Site Stylesheet & Script Imports with Cache-Buster -->
-  <link rel="stylesheet" href="style.css?v=20260809_1755">
-  <script src="index.js?v=20260809_1755" defer></script>
+  <link rel="stylesheet" href="style.css?v=20260809_1917">
+  <script src="index.js?v=20260809_1917" defer></script>
 </head>
 <body>
 
-  <!-- Top Header Navigation Bar -->
   <header class="navbar">
     <div class="nav-brand">
       <a href="https://werewolf3788.github.io/Website/" class="home-shortcut-btn" aria-label="Home Overview">
@@ -34,7 +29,6 @@
       <i class="fa-solid fa-bars"></i>
     </button>
 
-    <!-- Folders Group Dropdown Navigation -->
     <nav id="dynamic-menu" class="nav-menu">
       <div class="nav-dropdown-wrapper">
         <button type="button" class="dropdown-trigger-btn">
@@ -58,10 +52,8 @@
     </nav>
   </header>
 
-  <!-- Main Dashboard Container -->
   <main class="dashboard-container">
     
-    <!-- Server Banner Section -->
     <section class="server-banner">
       <div class="banner-layout">
         <div class="map-preview-box">
@@ -91,7 +83,6 @@
       </div>
     </section>
 
-    <!-- Global Metric Summary Row -->
     <div class="metrics-row">
       <div class="metric-card">
         <i class="fa-solid fa-scale-balanced metric-icon" style="color:#4ade80;"></i>
@@ -111,7 +102,6 @@
       </div>
     </div>
 
-    <!-- Tactical Live Server Activity & Mod Warnings Feed -->
     <div class="grid-layout-full">
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-terminal"></i><h2>TACTICAL SERVER FEED & MOD DIAGNOSTICS</h2></div>
@@ -119,27 +109,46 @@
       </div>
     </div>
 
-    <!-- Responsive Cards Grid for All Primary Telemetry Categories -->
+    <!-- SEPARATE INDIVIDUAL CARDS GRID -->
     <div class="grid-layout">
-      <!-- Active Server Contracts & Missions -->
+      
+      <!-- Card: Active Online Players -->
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-gamepad"></i><h2>ACTIVE ONLINE PLAYERS</h2></div>
+        <div id="active-players-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Checking connected players...</div></div>
+      </div>
+
+      <!-- Card: Server Farms Balances -->
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-building-columns"></i><h2>REGISTERED SERVER FARMS</h2></div>
+        <div id="farms-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Syncing farm balances...</div></div>
+      </div>
+
+      <!-- Card: Livestock & Animal Barns -->
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-cow"></i><h2>LIVESTOCK & ANIMAL BARNS</h2></div>
+        <div id="animals-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading animal telemetry...</div></div>
+      </div>
+
+      <!-- Card: Placed Objects & Antennas -->
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-tower-cell"></i><h2>CONSTRUCTION & PLACED OBJECTS</h2></div>
+        <div id="construction-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Counting placed objects...</div></div>
+      </div>
+
+      <!-- Card: Contracts & Missions -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-file-contract"></i><h2>ACTIVE CONTRACTS & MISSIONS</h2></div>
         <div id="missions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading contract telemetry...</div></div>
       </div>
 
-      <!-- Map Collectibles -->
+      <!-- Card: Map Collectibles -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-trophy"></i><h2>MAP COLLECTIBLES & DISCOVERIES</h2></div>
         <div id="collectibles-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading collectible items...</div></div>
       </div>
 
-      <!-- Farms -->
-      <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-building-columns"></i><h2>REGISTERED SERVER FARMS</h2></div>
-        <div id="farms-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Syncing farm telemetry...</div></div>
-      </div>
-
-      <!-- Fleet Machinery Categories -->
+      <!-- Fleet Categories -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-tractor"></i><h2>FLEET TRACTORS & RIGS</h2></div>
         <div id="tractors-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning tractor fleet...</div></div>
@@ -156,25 +165,28 @@
         <div class="box-header"><i class="fa-solid fa-screwdriver-wrench"></i><h2>IMPLEMENTS & ATTACHMENTS</h2></div>
         <div id="implements-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning equipment...</div></div>
       </div>
+
+      <!-- Card: Hand Tools -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-toolbox"></i><h2>PLAYER HAND TOOLS</h2></div>
         <div id="handtools-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning hand tools...</div></div>
       </div>
 
-      <!-- Field Crops & Agronomy -->
+      <!-- Card: Field Crops & Precision Farming -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-seedling"></i><h2>FIELD CROPS & AGRONOMY STATUS</h2></div>
         <div id="fields-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading field telemetry...</div></div>
       </div>
 
-      <!-- Productions -->
+      <!-- Card: Factories & Productions -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-industry"></i><h2>MAP FACTORIES & PRODUCTIONS</h2></div>
         <div id="main-productions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading factory telemetry...</div></div>
       </div>
+
     </div>
 
-    <!-- Mod Directory Catalog -->
+    <!-- Server Mod Directory -->
     <section class="mod-hub-section" style="margin-top: 2rem;">
       <div class="mod-hub-header">
         <h2><i class="fa-solid fa-cubes" style="color:var(--accent-gold);"></i> SERVER MODIFICATION DIRECTORY</h2>
@@ -188,7 +200,6 @@
 
   </main>
 
-  <!-- Lightbox View Modal (ALT descriptions shown strictly inside lightbox) -->
   <div id="lightbox-modal" class="lightbox-modal">
     <span id="lightbox-close" class="lightbox-close">&times;</span>
     <div id="lightbox-card-body" class="lightbox-body">
@@ -197,16 +208,14 @@
     </div>
   </div>
 
-  <!-- System Sticky Footer -->
   <footer class="system-footer">
     <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sun, Aug 09, 2026, 17:53:00 (EDT)</strong></span>
+      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sun, Aug 09, 2026, 19:17:00 (EDT)</strong></span>
       <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
       <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
     </div>
   </footer>
 
-  <!-- Combined Hybrid Connector: SDK Realtime Listener + REST Fallback Engine -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -228,7 +237,6 @@
     const auth = getAuth(app);
     const rootRef = ref(db);
 
-    // Primary Modular Realtime Listener
     function attachLiveSync() {
       onValue(rootRef, (snapshot) => {
         const val = snapshot.val();
@@ -236,13 +244,12 @@
           window.renderDashboard(val);
         }
       }, (error) => {
-        console.warn("⚠️ SDK Listener restricted, switching to REST sync:", error.message);
-        loadRESTFallback();
+        console.warn("⚠️ Firebase SDK live sync restricted, fetching REST snapshot:", error.message);
+        loadSingleRESTFetch();
       });
     }
 
-    // Direct REST API Fallback (Bypasses browser ad-blocker network blocks)
-    async function loadRESTFallback() {
+    async function loadSingleRESTFetch() {
       try {
         const response = await fetch("https://entertainment-71888-default-rtdb.firebaseio.com/.json");
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -251,7 +258,7 @@
           window.renderDashboard(data);
         }
       } catch (err) {
-        console.error("⚠️ REST Fetch Error:", err);
+        console.error("⚠️ RTDB REST Fetch Error:", err);
       }
     }
 
@@ -260,10 +267,8 @@
       attachLiveSync();
     });
 
-    // Auto-executes REST load on boot
     document.addEventListener("DOMContentLoaded", () => {
-      loadRESTFallback();
-      setInterval(loadRESTFallback, 30000);
+      loadSingleRESTFetch();
     });
   </script>
 </body>
