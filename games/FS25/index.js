@@ -1,13 +1,13 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 16:52:53 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 09, 2026, 17:10:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 & /FS25_Mods_Info RTDB Nodes)
-   Description: Tactical Telemetry Dashboard & Dynamic Mod Directory Engine.
-                Matches XML/JSON payloads with Firebase /FS25_Mods_Info/Images 
-                and /FS25_Mods_Info/Website nodes dynamically pushed from Google Sheets.
+   Description: Tactical Telemetry Dashboard & Universal Dynamic Image Engine.
+                Matches G-Portal XML telemetry against Firebase /FS25_Mods_Info/Images 
+                and /FS25_Mods_Info/Website nodes pushed from Google Sheets.
    ========================================================================== */
 
-// Base Raw URL for GitHub Repository Images (Protocol agnostic/SSL ready)
+// Base Raw URL for GitHub Repository Images (Works on http & https)
 const REPO_IMAGES_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 
 // External Google Sheets CSV Backup Endpoint
@@ -33,39 +33,62 @@ let parsedModCatalog = [];
 let firebaseImageMappings = {};
 
 /* ==========================================================================
-   SECTION 1: Dynamic Image Resolution Engine
-   Targeting Firebase /FS25_Mods_Info/Images node with fallback options
+   SECTION 1: Universal Image Resolver Engine
+   Matches Live Telemetry XML Items against Firebase /FS25_Mods_Info/Images
    ========================================================================== */
 
 function resolveItemImage(rawFilename) {
   if (!rawFilename) return null;
 
   const rawString = String(rawFilename).trim();
-  const cleanKey = sanitizeKey(rawString);
+  
+  // Generate multi-level key variations to guarantee matching regardless of sheet formatting
+  const displayTitle = formatName(rawString);                  // e.g. "COLOSSUS FRONT MOWER UNREAL"
+  const cleanDisplayKey = sanitizeKey(displayTitle);          // e.g. "colossus_front_mower_unreal"
+  
+  // Extract base XML file name without path/extension
+  const baseFileName = rawString.split('/').pop().replace('.xml', '').replace('.zip', '');
+  const cleanFileNameKey = sanitizeKey(baseFileName);         // e.g. "colossusfrontmower"
+  
+  const cleanRawKey = sanitizeKey(rawString);                 // Sanitized full path
 
   let targetFilename = "";
 
-  // 1. Primary Lookup: Firebase /FS25_Mods_Info/Images node (Pushed from Images tab)
+  // 1. Primary Lookup: Search Firebase /FS25_Mods_Info/Images node
   if (firebaseImageMappings && Object.keys(firebaseImageMappings).length > 0) {
-    const record = firebaseImageMappings[cleanKey] || firebaseImageMappings[rawString];
-    if (record) {
-      targetFilename = record.filename || record.image || record.file_name || record.url || "";
+    
+    // Check keys in order of likelihood
+    const matchedRecord = 
+      firebaseImageMappings[cleanFileNameKey] ||
+      firebaseImageMappings[cleanDisplayKey] ||
+      firebaseImageMappings[cleanRawKey] ||
+      firebaseImageMappings[rawString];
+
+    if (matchedRecord) {
+      targetFilename = matchedRecord.filename || matchedRecord.image || matchedRecord.file_name || matchedRecord.url || matchedRecord.url_w_utm_c || "";
     } else {
-      // Partial / Fuzzy Key Search in Firebase Mappings
-      const matchedKey = Object.keys(firebaseImageMappings).find(k => k.includes(cleanKey) || cleanKey.includes(k));
+      // Partial / Fuzzy Key Search across all Firebase Images entries
+      const allKeys = Object.keys(firebaseImageMappings);
+      const matchedKey = allKeys.find(k => 
+        k.includes(cleanFileNameKey) || 
+        cleanFileNameKey.includes(k) ||
+        k.includes(cleanDisplayKey) ||
+        cleanDisplayKey.includes(k)
+      );
+
       if (matchedKey) {
         const record = firebaseImageMappings[matchedKey];
-        targetFilename = record.filename || record.image || record.file_name || record.url || "";
+        targetFilename = record.filename || record.image || record.file_name || record.url || record.url_w_utm_c || "";
       }
     }
   }
 
-  // 2. Direct Extension Fallback: If rawFilename is already a full file name (e.g. "American Midwest Truck Shop.jpg")
+  // 2. Direct Extension Fallback: If rawFilename is already an image file or direct link
   if (!targetFilename && (rawString.endsWith('.jpg') || rawString.endsWith('.JPG') || rawString.endsWith('.png'))) {
     targetFilename = rawString.split('/').pop();
   }
 
-  // 3. Construct URL safely for both http & https
+  // 3. Construct URL (Supports direct web URLs and GitHub repo images)
   if (targetFilename) {
     if (isValidImageUrl(targetFilename)) return targetFilename;
     return `${REPO_IMAGES_BASE}${encodeURIComponent(targetFilename)}`;
@@ -96,7 +119,7 @@ function sanitizeKey(str) {
 function isValidImageUrl(url) {
   if (!url || typeof url !== 'string') return false;
   const cleanUrl = url.trim();
-  if (cleanUrl.includes(' ') || cleanUrl.length > 250) return false;
+  if (cleanUrl.includes(' ') || cleanUrl.length > 300) return false;
   return cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://') || cleanUrl.startsWith('./');
 }
 
@@ -515,7 +538,7 @@ function renderProductions(placeablesDoc) {
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Lightbox Modal Controls (Ensures ALT image description only shows inside lightbox view)
+  // Lightbox Modal Controls (ALT image description only displays in lightbox mode)
   const modal = document.getElementById('lightbox-modal');
   const modalImg = document.getElementById('lightbox-img');
   const modalCaption = document.getElementById('lightbox-caption');
@@ -543,7 +566,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleBtn.addEventListener('click', () => navMenu.classList.toggle('open'));
   }
 
-  // Load Google Sheets CSV Catalog as backup fallback
+  // Load Google Sheets CSV Catalog as secondary backup
   fetchModCatalog();
 });
 
