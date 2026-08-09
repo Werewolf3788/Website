@@ -1,13 +1,13 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 06:45 AM (EDT - New York)
+   Deployment Timestamp: Sun, Aug 09, 2026, 16:52:53 (EDT - New York)
    Project: entertainment-71888 (/fs25 & /FS25_Mods_Info RTDB Nodes)
-   Description: Tactical Telemetry Dashboard & Mod Directory Engine.
-                Matches XML/JSON payloads with GitHub repository image assets
-                and parses Firebase /FS25_Mods_Info row structures.
+   Description: Tactical Telemetry Dashboard & Dynamic Mod Directory Engine.
+                Matches XML/JSON payloads with Firebase /FS25_Mods_Info/Images 
+                and /FS25_Mods_Info/Website nodes dynamically pushed from Google Sheets.
    ========================================================================== */
 
-// Base Raw URL for GitHub Repository Images
+// Base Raw URL for GitHub Repository Images (Protocol agnostic/SSL ready)
 const REPO_IMAGES_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 
 // External Google Sheets CSV Backup Endpoint
@@ -30,86 +30,48 @@ function getFarmColor(farmId) {
 }
 
 let parsedModCatalog = [];
+let firebaseImageMappings = {};
 
 /* ==========================================================================
-   SECTION 1: GitHub Repository Image Resolution Engine
-   Matches equipment, crops, and map items with exact GitHub filenames
+   SECTION 1: Dynamic Image Resolution Engine
+   Targeting Firebase /FS25_Mods_Info/Images node with fallback options
    ========================================================================== */
 
 function resolveItemImage(rawFilename) {
   if (!rawFilename) return null;
-  const name = formatName(rawFilename).toLowerCase();
-  
-  let exactFileName = "";
 
-  // Exact Match Mapping against GitHub Repo Filenames
-  if (name.includes('calm') || name.includes('lands')) exactFileName = "CalmLands.JPG";
-  else if (name.includes('st. lawrence') || name.includes('st lawrence')) exactFileName = "St. Lawrence (Map).JPG";
-  else if (name.includes('wheat') && name.includes('swath')) exactFileName = "Wheat Swath.JPG";
-  else if (name.includes('wheat')) exactFileName = "Wheat.JPG";
-  else if (name.includes('barley') && name.includes('swath')) exactFileName = "Barley Swath.JPG";
-  else if (name.includes('barley')) exactFileName = "Barley.JPG";
-  else if (name.includes('canola') && name.includes('swath')) exactFileName = "Canola Swath.JPG";
-  else if (name.includes('canola') && name.includes('oil')) exactFileName = "Canola Oil.JPG";
-  else if (name.includes('canola')) exactFileName = "Canola.JPG";
-  else if (name.includes('corn') || name.includes('maize')) exactFileName = "Corn.JPG";
-  else if (name.includes('oat') && name.includes('swath')) exactFileName = "Oat Swath.JPG";
-  else if (name.includes('oat')) exactFileName = "Oats.JPG";
-  else if (name.includes('sorghum') && name.includes('swath')) exactFileName = "Sorghum Swath.JPG";
-  else if (name.includes('sorghum')) exactFileName = "Sorghum.JPG";
-  else if (name.includes('soybean') && name.includes('swath')) exactFileName = "Soybean Swath.JPG";
-  else if (name.includes('soybean')) exactFileName = "Soybeans.JPG";
-  else if (name.includes('sunflower') && name.includes('oil')) exactFileName = "Sunflower Oil.JPG";
-  else if (name.includes('sunflower')) exactFileName = "Sunflowers.JPG";
-  else if (name.includes('cotton') && name.includes('round')) exactFileName = "Cotton Round Bale.JPG";
-  else if (name.includes('cotton') && name.includes('square')) exactFileName = "Cotton Square Bale.JPG";
-  else if (name.includes('cotton')) exactFileName = "Cotton.JPG";
-  else if (name.includes('rice') && name.includes('long')) exactFileName = "Long Grain Rice.JPG";
-  else if (name.includes('rice') && name.includes('sapling')) exactFileName = "Rice Saplings.JPG";
-  else if (name.includes('rice') && name.includes('oil')) exactFileName = "Rice Oil.JPG";
-  else if (name.includes('rice')) exactFileName = "Rice.JPG";
-  else if (name.includes('grape') && name.includes('juice')) exactFileName = "Grape Juice.JPG";
-  else if (name.includes('grape')) exactFileName = "Grapes.JPG";
-  else if (name.includes('olive') && name.includes('oil')) exactFileName = "Olive Oil.JPG";
-  else if (name.includes('potato') && name.includes('chip')) exactFileName = "Potato Chips.JPG";
-  else if (name.includes('potato')) exactFileName = "Potatoes.JPG";
-  else if (name.includes('sugarbeet') && name.includes('cut')) exactFileName = "Sugar Beet Cut.JPG";
-  else if (name.includes('sugarbeet') || name.includes('sugar beet')) exactFileName = "Sugarbeets.JPG";
-  else if (name.includes('sugarcane')) exactFileName = "Sugarcane.JPG";
-  else if (name.includes('green bean') || name.includes('greenbean')) exactFileName = "Green Beans.JPG";
-  else if (name.includes('carrot')) exactFileName = "Carrots.JPG";
-  else if (name.includes('parsnip')) exactFileName = "Parsnip.JPG";
-  else if (name.includes('beetroot')) exactFileName = "Beetroot.JPG";
-  else if (name.includes('red beet')) exactFileName = "Red Beet.JPG";
-  else if (name.includes('spinach') && name.includes('bag')) exactFileName = "Spinach Bag.JPG";
-  else if (name.includes('spinach')) exactFileName = "Spinach.JPG";
-  else if (name.includes('pea')) exactFileName = "Peas.JPG";
-  else if (name.includes('cabbage')) exactFileName = "Cabbage.JPG";
-  else if (name.includes('spring onion')) exactFileName = "Spring Onions.JPG";
-  else if (name.includes('chili')) exactFileName = "Chili Peppers.JPG";
-  else if (name.includes('garlic')) exactFileName = "Garlic.JPG";
-  else if (name.includes('enoki')) exactFileName = "Enoki.JPG";
-  else if (name.includes('oyster')) exactFileName = "Oyster Mushroom.JPG";
-  else if (name.includes('cow') || name.includes('holstein')) exactFileName = "Cow.JPG";
-  else if (name.includes('pig')) exactFileName = "Pigs.JPG";
-  else if (name.includes('chicken')) exactFileName = "Chickens.JPG";
-  else if (name.includes('sheep')) exactFileName = "Sheep.JPG";
-  else if (name.includes('goat') && name.includes('cheese')) exactFileName = "Goat Cheese.JPG";
-  else if (name.includes('goat')) exactFileName = "Goats.JPG";
-  else if (name.includes('horse')) exactFileName = "Horses.JPG";
-  else if (name.includes('buffalo') && name.includes('mozzarella')) exactFileName = "Buffalo Mozzarella.JPG";
-  else if (name.includes('buffalo')) exactFileName = "Water Buffalos.JPG";
-  else if (name.includes('dog')) exactFileName = "Dogs.JPG";
-  else if (name.includes('john deere')) exactFileName = "John Deere 8R Series.JPG";
-  else if (name.includes('big bud')) exactFileName = "Big Bud KTTA 700.JPG";
-  else if (name.includes('log trailer')) exactFileName = "Log Trailer.JPG";
-  else if (name.includes('silo')) exactFileName = "Elevator Silo.JPG";
-  else if (name.includes('rudolf') || name.includes('storage hall')) exactFileName = "Rudolf Hoermann Round Storage Hall.jpg";
-  else if (name.includes('american midwest') || name.includes('truck shop')) exactFileName = "American Midwest Truck Shop.jpg";
-  else if (name.includes('water')) exactFileName = "Water.jpg";
+  const rawString = String(rawFilename).trim();
+  const cleanKey = sanitizeKey(rawString);
 
-  // URL Encode space characters and symbols safely for web browser fetches
-  return exactFileName ? `${REPO_IMAGES_BASE}${encodeURIComponent(exactFileName)}` : null;
+  let targetFilename = "";
+
+  // 1. Primary Lookup: Firebase /FS25_Mods_Info/Images node (Pushed from Images tab)
+  if (firebaseImageMappings && Object.keys(firebaseImageMappings).length > 0) {
+    const record = firebaseImageMappings[cleanKey] || firebaseImageMappings[rawString];
+    if (record) {
+      targetFilename = record.filename || record.image || record.file_name || record.url || "";
+    } else {
+      // Partial / Fuzzy Key Search in Firebase Mappings
+      const matchedKey = Object.keys(firebaseImageMappings).find(k => k.includes(cleanKey) || cleanKey.includes(k));
+      if (matchedKey) {
+        const record = firebaseImageMappings[matchedKey];
+        targetFilename = record.filename || record.image || record.file_name || record.url || "";
+      }
+    }
+  }
+
+  // 2. Direct Extension Fallback: If rawFilename is already a full file name (e.g. "American Midwest Truck Shop.jpg")
+  if (!targetFilename && (rawString.endsWith('.jpg') || rawString.endsWith('.JPG') || rawString.endsWith('.png'))) {
+    targetFilename = rawString.split('/').pop();
+  }
+
+  // 3. Construct URL safely for both http & https
+  if (targetFilename) {
+    if (isValidImageUrl(targetFilename)) return targetFilename;
+    return `${REPO_IMAGES_BASE}${encodeURIComponent(targetFilename)}`;
+  }
+
+  return null;
 }
 
 function parseXML(rawText) {
@@ -126,6 +88,11 @@ function formatName(str) {
   return clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').toUpperCase().trim();
 }
 
+function sanitizeKey(str) {
+  if (!str) return "";
+  return String(str).trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '');
+}
+
 function isValidImageUrl(url) {
   if (!url || typeof url !== 'string') return false;
   const cleanUrl = url.trim();
@@ -134,7 +101,7 @@ function isValidImageUrl(url) {
 }
 
 /* ==========================================================================
-   SECTION 2: Google Sheets CSV Mod Catalog Backup Loader
+   SECTION 2: Backup Mod Catalog Loader (Google Sheets CSV)
    ========================================================================== */
 
 async function fetchModCatalog() {
@@ -176,7 +143,7 @@ async function fetchModCatalog() {
       ).join('');
     }
 
-    // Only render CSV catalog if Firebase /FS25_Mods_Info is unavailable
+    // Only render backup CSV if Firebase /FS25_Mods_Info/Website is unavailable
     if (!window.hasRenderedFirebaseMods) {
       renderModGrid(parsedModCatalog);
     }
@@ -236,8 +203,7 @@ window.filterModsCategory = function(selectedCat, btnElem) {
 };
 
 /* ==========================================================================
-   SECTION 3: Firebase /FS25_Mods_Info Specific Card Grid Renderer
-   Handles row_8, row_9, row_X schema keys (name_a, filename_j, etc.)
+   SECTION 3: Firebase Card Grid Renderer (/FS25_Mods_Info/Website)
    ========================================================================== */
 
 function renderModGrid(modsData) {
@@ -246,7 +212,6 @@ function renderModGrid(modsData) {
 
   let modList = [];
 
-  // Convert Firebase Object Schema (e.g. { row_8: {...}, row_9: {...} }) into Array
   if (Array.isArray(modsData)) {
     modList = modsData;
   } else if (modsData && typeof modsData === 'object') {
@@ -259,7 +224,6 @@ function renderModGrid(modsData) {
   }
 
   gridContainer.innerHTML = modList.map(mod => {
-    // Exact schema parsing matching your /FS25_Mods_Info node structure
     const name = mod.name_a || mod.name || mod.title || 'Unnamed Mod';
     const category = mod.category_g || mod.category_k || mod.category || mod.mod_type_f || 'General';
     const desc = mod.description_d || mod.description || '';
@@ -270,7 +234,6 @@ function renderModGrid(modsData) {
     const crossplay = mod.crossplay_e || 'Yes';
     const rawImg = mod.image_b || mod.image || '';
 
-    // Match image against GitHub repo or fallback to cube icon
     const repoMatchedImg = resolveItemImage(filename || name);
     const finalImg = isValidImageUrl(rawImg) ? rawImg : repoMatchedImg;
 
@@ -304,29 +267,27 @@ function renderModGrid(modsData) {
 window.renderDashboard = function(data) {
   if (!data) return;
 
-  // Render /FS25_Mods_Info node if present in root Firebase payload
+  // 1. Extract Image Mappings from /FS25_Mods_Info/Images node
+  if (data.FS25_Mods_Info && data.FS25_Mods_Info.Images) {
+    firebaseImageMappings = data.FS25_Mods_Info.Images;
+  }
+
+  // 2. Extract Mod Catalog from /FS25_Mods_Info/Website node
   if (data.FS25_Mods_Info) {
-    window.activeFirebaseModData = Object.values(data.FS25_Mods_Info);
+    const websiteMods = data.FS25_Mods_Info.Website || data.FS25_Mods_Info;
+    window.activeFirebaseModData = Object.values(websiteMods);
     window.hasRenderedFirebaseMods = true;
     renderModGrid(window.activeFirebaseModData);
   }
 
   const rootData = data.fs25 || data || {};
 
-  // If modCatalogCrossplay was cross-referenced into /fs25 by pipeline
-  if (!window.hasRenderedFirebaseMods && rootData.modCatalogCrossplay) {
-    window.activeFirebaseModData = Object.values(rootData.modCatalogCrossplay);
-    renderModGrid(window.activeFirebaseModData);
-  }
-
-  // Active Savegame Slot Display
   let rawSlot = rootData.activeSaveSlot || "1";
   const saveSlotEl = document.getElementById('save-slot-display');
   if (saveSlotEl) {
     saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">savegame${rawSlot}</strong>`;
   }
 
-  // Parse Raw XML String Data
   const careerXml = parseXML(rootData.careerSavegame_raw);
   const farmsXml = parseXML(rootData.farms_raw);
   const vehXml = parseXML(rootData.vehicles_raw);
@@ -334,7 +295,6 @@ window.renderDashboard = function(data) {
   const farmlandXml = parseXML(rootData.farmland_raw);
   const placeXml = parseXML(rootData.placeables_raw);
 
-  // 1. Server Banner Information
   if (careerXml) {
     const settings = careerXml.querySelector("settings");
     if (settings) {
@@ -346,10 +306,8 @@ window.renderDashboard = function(data) {
     }
   }
 
-  // 2. Render Tactical Log Feed & Mod Errors
   renderTacticalLog(rootData.modErrors, rootData.serverEvents);
 
-  // 3. Registered Server Farms & Net Balance
   let globalNetWorth = 0;
   const farmsCont = document.getElementById('farms-container');
   if (farmsCont) {
@@ -380,7 +338,6 @@ window.renderDashboard = function(data) {
   const netWorthEl = document.getElementById('global-net-worth');
   if (netWorthEl) netWorthEl.textContent = `$${globalNetWorth.toLocaleString()}`;
 
-  // 4. Vehicles Fleet Rendering with GitHub Image Resolution
   let vehicleCount = 0;
   const tracCont = document.getElementById('tractors-container');
   const harvCont = document.getElementById('harvesters-container');
@@ -392,10 +349,11 @@ window.renderDashboard = function(data) {
 
     vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
       vehicleCount++;
-      const rawName = v.getAttribute("name") || v.getAttribute("filename") || "";
+      const rawName = v.getAttribute("filename") || v.getAttribute("name") || "";
       const name = formatName(rawName);
       const farmId = v.getAttribute("farmId") || "0";
       const color = getFarmColor(farmId);
+      
       const matchedImg = resolveItemImage(rawName);
 
       const imgHtml = matchedImg 
@@ -426,16 +384,22 @@ window.renderDashboard = function(data) {
   const fleetEl = document.getElementById('global-vehicle-count');
   if (fleetEl) fleetEl.textContent = vehicleCount;
 
-  // 5. Hand Tools
   const toolsCont = document.getElementById('handtools-container');
   if (toolsCont) {
     let toolsHtml = "";
     if (toolsXml) {
       toolsXml.querySelectorAll("handTool").forEach(t => {
-        const name = formatName(t.getAttribute("filename") || "Tool");
+        const rawName = t.getAttribute("filename") || "Tool";
+        const name = formatName(rawName);
+        const matchedImg = resolveItemImage(rawName);
+
+        const imgHtml = matchedImg 
+          ? `<img src="${matchedImg}" class="telemetry-card-thumb lightbox-trigger" data-alt="${name}">`
+          : `<i class="fa-solid fa-toolbox card-icon"></i>`;
+
         toolsHtml += `
           <div class="telemetry-card">
-            <i class="fa-solid fa-toolbox card-icon"></i>
+            ${imgHtml}
             <div class="card-details"><strong>${name}</strong></div>
           </div>`;
       });
@@ -443,7 +407,6 @@ window.renderDashboard = function(data) {
     toolsCont.innerHTML = toolsHtml || `<div class="empty-state">No Hand Tools Stored</div>`;
   }
 
-  // 6. Farmland Parcels
   let fieldCount = 0;
   const fieldsCont = document.getElementById('fields-container');
   if (fieldsCont) {
@@ -471,7 +434,6 @@ window.renderDashboard = function(data) {
   const landEl = document.getElementById('global-land-count');
   if (landEl) landEl.textContent = `${fieldCount} Fields`;
 
-  // 7. Map Productions
   renderProductions(placeXml);
 };
 
@@ -549,11 +511,11 @@ function renderProductions(placeablesDoc) {
 }
 
 /* ==========================================================================
-   SECTION 5: Event Listeners & UI Controls
+   SECTION 5: Event Listeners & Lightbox Setup
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Lightbox Modal Controls (Ensures ALT image description only shows inside lightbox mode)
+  // Lightbox Modal Controls (Ensures ALT image description only shows inside lightbox view)
   const modal = document.getElementById('lightbox-modal');
   const modalImg = document.getElementById('lightbox-img');
   const modalCaption = document.getElementById('lightbox-caption');
@@ -581,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleBtn.addEventListener('click', () => navMenu.classList.toggle('open'));
   }
 
-  // Load Google Sheets CSV Catalog as secondary fallback
+  // Load Google Sheets CSV Catalog as backup fallback
   fetchModCatalog();
 });
 
