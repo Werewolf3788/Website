@@ -1,9 +1,10 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 18:06:00 (EDT - New York)
-   Project: entertainment-71888 (/fs25 & /FS25_Mods_Info RTDB Nodes)
-   Description: Direct /fs25 node extractor with raw XML DOM parser for
-                missions, collectibles, farmland, fleet, and farm balances.
+   Deployment Timestamp: Sun, Aug 09, 2026, 18:25:00 (EDT - New York)
+   Project: entertainment-71888 (/fs25 RTDB Node)
+   Description: Complete Realtime Tactical Telemetry Engine. Deep-parses all
+                raw XML nodes and maps attachments, contracts, collectibles,
+                farmlands, and machinery 24/7 regardless of active players.
    ========================================================================== */
 
 // Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
@@ -28,7 +29,7 @@
   }
 })();
 
-// Base Raw URL for GitHub Repository Images (Works on http & https)
+// Base Raw URL for GitHub Repository Images (Supports http & https)
 const REPO_IMAGES_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
 
@@ -293,7 +294,7 @@ function renderModGrid(modsData) {
 }
 
 /* ==========================================================================
-   SECTION 4: Master Telemetry Engine with Explicit /fs25 Subnode Extraction
+   SECTION 4: Master Tactical Telemetry Engine (Full Parser & Cross-Ref)
    ========================================================================== */
 
 window.renderDashboard = function(rawIncomingData) {
@@ -304,7 +305,7 @@ window.renderDashboard = function(rawIncomingData) {
     data = rawIncomingData.val();
   }
 
-  // 1. Ingest Mod Directory & Image Mappings (/FS25_Mods_Info)
+  // Mod Directory & Image Mapping Nodes (/FS25_Mods_Info)
   if (data.FS25_Mods_Info && data.FS25_Mods_Info.Images) {
     firebaseImageMappings = data.FS25_Mods_Info.Images;
   }
@@ -314,7 +315,7 @@ window.renderDashboard = function(rawIncomingData) {
     renderModGrid(window.activeFirebaseModData);
   }
 
-  // 2. Locate /fs25 Telemetry Subnode
+  // Telemetry Node Extraction (/fs25)
   const fs25Node = data.fs25 ? data.fs25 : (data.careerSavegame_raw || data.farms_raw ? data : {});
 
   if (!fs25Node || Object.keys(fs25Node).length === 0) {
@@ -328,7 +329,7 @@ window.renderDashboard = function(rawIncomingData) {
     saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">savegame${fs25Node.activeSaveSlot || "1"}</strong>`;
   }
 
-  // Extract and Parse Raw XML Nodes directly from /fs25
+  // XML Documents Parsing Engine
   const careerXml = parseXML(fs25Node.careerSavegame_raw);
   const farmsXml = parseXML(fs25Node.farms_raw);
   const vehXml = parseXML(fs25Node.vehicles_raw);
@@ -339,7 +340,7 @@ window.renderDashboard = function(rawIncomingData) {
   const missionsXml = parseXML(fs25Node.missions_raw);
   const itemsXml = parseXML(fs25Node.items_raw);
 
-  // Time & Weather Setup
+  // Time & Server Status Setup
   let gameTime = "00:00";
   if (envXml) {
     const dayTimeElem = envXml.querySelector("dayTime, time");
@@ -359,7 +360,7 @@ window.renderDashboard = function(rawIncomingData) {
     }
   }
 
-  // 1. Registered Server Farms & Net Balance
+  // 1. Registered Server Farms & Net Worth Mapping
   let globalNetWorth = 0;
   const farmsCont = document.getElementById('farms-container');
   if (farmsCont) {
@@ -388,43 +389,63 @@ window.renderDashboard = function(rawIncomingData) {
   }
   setTxt('global-net-worth', `$${globalNetWorth.toLocaleString()}`);
 
-  // 2. Active Server Contracts & Missions Card
+  // 2. All Contracts & Missions Card (Always Visible 24/7)
   const missionsCont = document.getElementById('missions-container');
   if (missionsCont) {
     let missionsHtml = "";
 
     if (missionsXml) {
-      missionsXml.querySelectorAll("mission, contract").forEach(m => {
-        const type = formatName(m.getAttribute("type") || m.getAttribute("category") || "Contract");
-        const reward = Math.round(parseFloat(m.getAttribute("reward") || "0"));
+      missionsXml.querySelectorAll("mission, contract, item").forEach(m => {
+        const rawType = m.getAttribute("type") || m.getAttribute("category") || m.getAttribute("name") || "Contract";
+        const type = formatName(rawType);
+        const reward = Math.round(parseFloat(m.getAttribute("reward") || m.getAttribute("payout") || "0"));
         const fieldId = m.getAttribute("fieldId") || m.getAttribute("field") || "N/A";
         const farmId = m.getAttribute("farmId") || "0";
         const color = getFarmColor(farmId);
-        const status = m.getAttribute("status") || "Active";
+
+        let rawStatus = (m.getAttribute("status") || m.getAttribute("state") || "Available").toUpperCase();
+        let statusBadge = `<span class="badge" style="background:rgba(56, 189, 248, 0.2); color:#38bdf8; border:1px solid #38bdf8;">AVAILABLE</span>`;
+        
+        if (rawStatus.includes("RUNNING") || rawStatus.includes("ACTIVE") || rawStatus === "1") {
+          statusBadge = `<span class="badge" style="background:rgba(34, 197, 94, 0.2); color:#4ade80; border:1px solid #4ade80;">IN PROGRESS</span>`;
+        } else if (rawStatus.includes("FINISHED") || rawStatus.includes("SUCCESS") || rawStatus === "2") {
+          statusBadge = `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15; border:1px solid #facc15;">READY FOR PAYOUT</span>`;
+        }
+
+        const fruitType = m.getAttribute("fruitTypeName") ? ` (${formatName(m.getAttribute("fruitTypeName"))})` : '';
 
         missionsHtml += `
           <div class="telemetry-card" style="border-left: 4px solid ${color};">
             <i class="fa-solid fa-file-contract card-icon" style="color:${color};"></i>
             <div class="card-details">
-              <strong style="color:${color};">${type} - Field #${fieldId}</strong>
+              <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                <strong style="color:${color};">${type} - Field #${fieldId}${fruitType}</strong>
+                ${statusBadge}
+              </div>
               <span>Reward: $${reward.toLocaleString()}</span>
-              <span class="card-subtext">Status: ${status}</span>
             </div>
           </div>`;
       });
     }
-    missionsCont.innerHTML = missionsHtml || `<div class="empty-state">No Active Mission Contracts</div>`;
+
+    missionsCont.innerHTML = missionsHtml || `<div class="empty-state">No Server Contracts Generated Yet</div>`;
   }
 
-  // 3. Map Collectibles & Discoveries Card
+  // 3. Map Collectibles & Fraction Counter (e.g. 3 / 100)
   const collectiblesCont = document.getElementById('collectibles-container');
   if (collectiblesCont) {
     let collectiblesHtml = "";
+    let totalCollectibles = 0;
+    let foundCollectibles = 0;
 
     if (itemsXml) {
-      itemsXml.querySelectorAll("item, collectible").forEach(item => {
+      const itemNodes = itemsXml.querySelectorAll("item, collectible");
+      totalCollectibles = itemNodes.length || 100;
+
+      itemNodes.forEach(item => {
         const isFound = item.getAttribute("isFound") === "true" || item.getAttribute("found") === "true";
         if (isFound) {
+          foundCollectibles++;
           const name = formatName(item.getAttribute("className") || item.getAttribute("type") || "Collectible");
           collectiblesHtml += `
             <div class="telemetry-card">
@@ -437,10 +458,17 @@ window.renderDashboard = function(rawIncomingData) {
         }
       });
     }
-    collectiblesCont.innerHTML = collectiblesHtml || `<div class="empty-state">No Map Collectibles Discovered Yet</div>`;
+
+    collectiblesCont.innerHTML = `
+      <div style="margin-bottom:0.5rem; padding:0.4rem 0.6rem; background:#0f172a; border-radius:6px; text-align:center;">
+        <strong style="color:var(--accent-gold); font-size:0.9rem;">
+          <i class="fa-solid fa-trophy"></i> Collectibles Discovered: ${foundCollectibles} / ${totalCollectibles}
+        </strong>
+      </div>
+      ${collectiblesHtml || `<div class="empty-state">0 / ${totalCollectibles} Collectibles Discovered</div>`}`;
   }
 
-  // 4. Fleet Machinery Parsing
+  // 4. Tactical Fleet Machinery, Driver Occupancy, & Full Attachment Chains
   let vehicleCount = 0;
   const tracCont = document.getElementById('tractors-container');
   const harvCont = document.getElementById('harvesters-container');
@@ -457,19 +485,48 @@ window.renderDashboard = function(rawIncomingData) {
       const farmId = v.getAttribute("farmId") || "0";
       const color = getFarmColor(farmId);
       const operatingTime = formatHours(v.getAttribute("operatingTime"));
-      const matchedImg = resolveItemImage(rawName);
 
+      // Occupancy Status
+      let driverBadge = `<span class="badge" style="background:rgba(148, 163, 184, 0.1); color:#94a3b8;">Parked / Unmanned</span>`;
+      const isAiActive = v.getAttribute("aiIsStarted") === "true" || v.getAttribute("isAiJobActive") === "true";
+      const activeUser = v.getAttribute("enteredUserGamertag") || v.getAttribute("driverName");
+
+      if (activeUser) {
+        driverBadge = `<span class="badge" style="background:rgba(34, 197, 94, 0.2); color:#4ade80;"><i class="fa-solid fa-user"></i> Driver: ${activeUser}</span>`;
+      } else if (isAiActive) {
+        driverBadge = `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15;"><i class="fa-solid fa-robot"></i> AI Worker Active</span>`;
+      }
+
+      // Attachment Extraction
+      let attachmentsList = [];
+      v.querySelectorAll("attachedVehicle, attachment, implement").forEach(att => {
+        const attRaw = att.getAttribute("filename") || att.getAttribute("name");
+        if (attRaw) attachmentsList.push(formatName(attRaw));
+      });
+      const attachmentText = attachmentsList.length > 0 ? `<div class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-link"></i> Attached: ${attachmentsList.join(", ")}</div>` : '';
+
+      // Cargo & Fill Status
+      const fillUnit = v.querySelector("fillUnit");
+      const fillType = fillUnit ? fillUnit.getAttribute("fillType") : null;
+      const fillLevel = fillUnit ? Math.round(parseFloat(fillUnit.getAttribute("fillLevel") || "0")) : 0;
+      const cargoText = (fillType && fillType !== "UNKNOWN" && fillLevel > 0) ? `<div class="card-subtext"><i class="fa-solid fa-box-archive"></i> Hauling: ${formatName(fillType)} (${fillLevel.toLocaleString()} L)</div>` : '';
+
+      const matchedImg = resolveItemImage(rawName);
       const imgHtml = matchedImg 
         ? `<img src="${matchedImg}" class="telemetry-card-thumb lightbox-trigger" data-alt="${name}">`
         : `<i class="fa-solid fa-tractor card-icon" style="color:${color};"></i>`;
 
       const card = `
-        <div class="telemetry-card" style="border-left: 4px solid ${color};">
+        <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
           ${imgHtml}
-          <div class="card-details">
-            <strong style="color:${color};">${name}</strong>
-            <span>Owner: Farm #${farmId}</span>
-            <span class="card-subtext">Usage: ${operatingTime}</span>
+          <div class="card-details" style="width:100%;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.4rem;">
+              <strong style="color:${color};">${name}</strong>
+              ${driverBadge}
+            </div>
+            <span>Owner: Farm #${farmId} | Usage: ${operatingTime}</span>
+            ${attachmentText}
+            ${cargoText}
           </div>
         </div>`;
 
@@ -486,7 +543,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (implCont) implCont.innerHTML = implements || `<div class="empty-state">No Active Implements Logged</div>`;
   setTxt('global-vehicle-count', vehicleCount);
 
-  // 5. Player Hand Tools Parsing
+  // 5. Player Hand Tools
   const toolsCont = document.getElementById('handtools-container');
   if (toolsCont) {
     let toolsHtml = "";
