@@ -1,9 +1,9 @@
 <!--
   File: index.html
   Location: /index.html
-  Description: Werewolf Project Main Landing Page with Dynamic CSV Menu Mapping,
-               Live PSN Presence Tracking, and Co-Op Module Progress Aggregation.
-  Last Modified: Saturday, August 08, 2026 | 8:38:33 PM EDT
+  Description: Werewolf Project Main Landing Page with Dynamic Movie Caption,
+               External Text Placement, Alphabetical CSV Navigation, Mobile Drill-Down View, and Live Telemetry.
+  Last Modified: Sunday, August 09, 2026
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -225,6 +225,9 @@
         }
         .k-sig { color: #FF4500; display: inline-block; transform: scaleX(-1); position: relative; z-index: 2; }
         .f-sig { color: #000000; display: inline-block; margin-left: -0.22em; position: relative; z-index: 1; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
@@ -237,6 +240,7 @@
                     <span class="text-xl font-black tracking-tighter text-sky-400">WEREWOLF<span class="text-white">PROJECT</span></span>
                 </div>
 
+                <!-- Desktop Menu -->
                 <div id="desktop-nav-links" class="hidden md:flex items-center space-x-8">
                     <div class="flex items-center space-x-4 animate-pulse">
                         <div class="h-4 w-16 bg-slate-700 rounded"></div>
@@ -245,21 +249,38 @@
                     </div>
                 </div>
 
+                <!-- Mobile Hamburger Toggle -->
                 <div class="md:hidden flex items-center">
-                    <button onclick="toggleMobileMenu()" class="text-slate-400 hover:text-white p-2">
+                    <button type="button" onclick="toggleMobileMenu()" class="text-slate-400 hover:text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center">
                         <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
                     </button>
                 </div>
             </div>
         </div>
-
-        <div id="mobile-menu" class="md:hidden hidden bg-slate-900 border-b border-slate-700">
-            <div id="mobile-nav-links" class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-                 <div class="h-4 w-24 bg-slate-700/50 rounded mb-2 ml-3 animate-pulse"></div>
-                 <div class="h-4 w-24 bg-slate-700/50 rounded ml-3 animate-pulse"></div>
-            </div>
-        </div>
     </nav>
+
+    <!-- Mobile Slide-Over Modal Overlay -->
+    <div id="mobile-menu-overlay" class="fixed inset-0 bg-slate-950/95 z-[100] hidden flex flex-col no-scrollbar overflow-y-auto">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90 sticky top-0 z-10">
+            <span class="text-lg font-black text-sky-400">NAVIGATION MENU</span>
+            <button type="button" onclick="toggleMobileMenu()" class="text-slate-400 hover:text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center">
+                <i class="fa-solid fa-xmark text-2xl"></i>
+            </button>
+        </div>
+
+        <div id="mobile-root-view" class="p-6 space-y-3 flex-1">
+            <div class="h-4 w-24 bg-slate-700/50 rounded mb-2 animate-pulse"></div>
+        </div>
+
+        <div id="mobile-folder-view" class="p-6 space-y-4 flex-1 hidden flex flex-col">
+            <button type="button" onclick="closeMobileFolderView()" class="flex items-center gap-2 text-sky-400 hover:text-sky-300 font-bold text-sm bg-slate-900 border border-slate-800 px-4 py-3 rounded-lg w-full min-h-[44px]">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Back to All Folders</span>
+            </button>
+            <div id="mobile-folder-title" class="text-xs font-black uppercase text-slate-400 tracking-widest pt-2">FOLDER NAME</div>
+            <div id="mobile-folder-links" class="space-y-2 flex-1 pt-1"></div>
+        </div>
+    </div>
 
     <!-- Hero Section -->
     <header class="section-padding px-4 flex-grow flex items-center">
@@ -297,7 +318,7 @@
                         <div class="mb-4 min-h-[20px]">
                             <p id="game-status-werewolf" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking PlayStation...</p>
                         </div>
-                        <a id="profile-link-werewolf" href="#" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-werewolf text-xs transition-colors">Visit Profile</a>
+                        <a id="profile-link-werewolf" href="#" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-werewolf text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
                     </div>
                 </div>
 
@@ -318,7 +339,7 @@
                         <div class="mb-4 min-h-[20px]">
                             <p id="game-status-ray" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking PlayStation...</p>
                         </div>
-                        <a id="profile-link-ray" href="#" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-ray text-xs transition-colors">Visit Profile</a>
+                        <a id="profile-link-ray" href="#" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-ray text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
                     </div>
                 </div>
 
@@ -339,18 +360,38 @@
                         <div class="mb-4 min-h-[20px]">
                             <p id="game-status-tj" class="text-slate-400 text-[10px] uppercase font-bold italic tracking-widest">Checking PlayStation...</p>
                         </div>
-                        <a id="profile-link-tj" href="#" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-terrdog text-xs transition-colors">Visit Profile</a>
+                        <a id="profile-link-tj" href="#" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-terrdog text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Movie Library Section -->
+    <!-- Movie Library Section (Text & Info Above Slideshow) -->
     <section class="section-padding bg-slate-900/30">
-        <div class="max-w-7xl mx-auto px-4">
-            <div id="cinema-container" class="custom-card p-10 border border-orange-500/30 flex flex-col items-center justify-center shadow-orange-500/10 shadow-2xl text-center relative overflow-hidden min-h-[500px]">
-                
+        <div class="max-w-7xl mx-auto px-4 space-y-6">
+            
+            <!-- External Text & Description (Sitting Above Slideshow) -->
+            <div class="text-center max-w-3xl mx-auto space-y-4">
+                <h2 class="text-orange-500">Werewolf Cinema</h2>
+                <p class="text-slate-300 font-medium text-sm leading-relaxed">
+                    Access the list of Movie's I own digitally, plus see what they're streaming on, the major brands like google, youtube, apple fandango, and Movies anywhere are all manually added, Amazon is sorta both manually added or search for Amazon is a Affilated account. Hope you enjoy this setup.
+                </p>
+                <div class="flex items-center justify-center gap-4 pt-2">
+                    <a href="https://werewolf3788.github.io/Website/Movies.html" 
+                       target="werewolf_cinema_window" 
+                       class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 px-8 rounded-lg transition-all shadow-[0_0_15px_rgba(255,95,31,0.5)] border border-orange-400 min-h-[44px] inline-flex items-center justify-center">
+                        MOVIES ARCHIVE
+                    </a>
+                    <div class="text-left border-l border-slate-700 pl-4">
+                        <span class="text-slate-400 text-[10px] font-black uppercase tracking-widest block">Titles in Archive</span>
+                        <span id="movie-count" class="text-2xl font-black text-white leading-none">Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slideshow Container (Pure Image Focus) -->
+            <div id="cinema-container" class="custom-card p-4 border border-orange-500/30 flex flex-col items-center justify-end shadow-orange-500/10 shadow-2xl text-center relative overflow-hidden min-h-[420px] max-w-4xl mx-auto">
                 <div id="cinema-layer-1" class="absolute inset-0 transition-opacity duration-1000 opacity-100 z-0">
                     <div class="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-50"></div>
                     <div class="absolute inset-0 bg-contain bg-center bg-no-repeat drop-shadow-2xl"></div>
@@ -360,28 +401,18 @@
                     <div class="absolute inset-0 bg-contain bg-center bg-no-repeat drop-shadow-2xl"></div>
                 </div>
                 
-                <div class="absolute inset-0 bg-slate-950/70 z-0"></div>
+                <div class="absolute inset-0 bg-slate-950/40 z-0"></div>
                 
-                <div class="relative z-10 flex flex-col items-center justify-center gap-6 w-full">
-                    <h2 class="text-orange-500 outline-text">Werewolf Cinema</h2>
-                    <p class="text-slate-200 font-bold outline-text max-w-md">Access the list of Movie's I own digitally, plus see what they're streaming on, the major brands like google, youtube, apple fandango, and Movies anywhere are all manually added, Amazon is sorta both  manually added or search for Amazon is a Affilated account. Hope you enjoy this setup.</p>
-                    
-                    <a href="https://werewolf3788.github.io/Website/Movies.html" 
-                       target="werewolf_cinema_window" 
-                       class="bg-orange-600 hover:bg-orange-500 text-white font-bold py-3 px-10 rounded-lg transition-all shadow-[0_0_15px_rgba(255,95,31,0.5)] border border-orange-400 outline-text">
-                        MOVIES
-                    </a>
-                    
-                    <div class="mt-2 flex flex-col items-center">
-                        <span class="text-slate-300 text-xs font-black uppercase tracking-widest outline-text">Total Titles in Archive</span>
-                        <span id="movie-count" class="text-4xl font-black text-white mt-1 outline-text drop-shadow-[0_0_10px_rgba(255,95,31,0.8)]">Loading...</span>
-                    </div>
+                <!-- Dynamic Poster Caption Pill (Positioned at bottom of frame) -->
+                <div class="relative z-10 mb-4 bg-black/70 border border-orange-500/50 px-6 py-2 rounded-full backdrop-blur-md max-w-md mx-auto">
+                    <span id="cinema-caption-title" class="text-orange-400 font-black text-xs uppercase tracking-wider italic">Featured Poster</span>
                 </div>
             </div>
+
         </div>
     </section>
 
-    <!-- Games Featured Section (Dynamic Firestore Multi-Player Comparison) -->
+    <!-- Games Featured Section -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4">
             <div class="mb-8">
@@ -497,7 +528,6 @@
                     : Math.round(docData.progress);
             }
 
-            // Handles array of progress objects: progress = [ { collected: true, id: "m1_p1" }, ... ]
             if (Array.isArray(docData.progress) && docData.progress.length > 0) {
                 const total = docData.progress.length;
                 const collected = docData.progress.filter(item => 
@@ -506,7 +536,6 @@
                 return total > 0 ? Math.round((collected / total) * 100) : 0;
             }
 
-            // Trophy array calculation
             if (Array.isArray(docData.trophies) && docData.trophies.length > 0) {
                 let totalGoal = 0;
                 let currentMet = 0;
@@ -582,7 +611,6 @@
                     }
                 }
 
-                // Filter for games played by 2 OR MORE active players (>0%)
                 const multiPlayerGames = Object.values(gameMap).filter(g => g.players.length >= 2);
 
                 if (multiPlayerGames.length === 0) {
@@ -625,7 +653,7 @@
                                     ${playerProgressHTML}
                                 </div>
                             </div>
-                            <a href="https://werewolf3788.github.io/Website/games/Sniper-Elite/5/index.html" class="text-sky-400 hover:text-sky-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 pt-4">
+                            <a href="https://werewolf3788.github.io/Website/games/Sniper-Elite/5/index.html" class="text-sky-400 hover:text-sky-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 pt-4 min-h-[44px]">
                                 <span>Explore Module Tracker</span>
                                 <i class="fa-solid fa-arrow-right"></i>
                             </a>
@@ -657,23 +685,58 @@
         loadFirestoreSquadProgress();
     </script>
 
+    <!-- Navigation, Weather & Cinema Engine -->
     <script>
-        /* ==========================================
-           JAVASCRIPT SECTION 
-           ========================================== */
-        
         const users = [
             { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf' },
             { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray' },
             { id: 'tj', user: 'terrdog420', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', layerId: 'layer-tj', descId: 'weather-desc-tj' }
         ];
 
+        let mobileNavTree = [];
+
         function toggleMobileMenu() {
-            const menu = document.getElementById('mobile-menu');
-            const icon = document.getElementById('menu-icon');
-            menu.classList.toggle('hidden');
-            icon.classList.toggle('fa-bars');
-            icon.classList.toggle('fa-xmark');
+            const overlay = document.getElementById('mobile-menu-overlay');
+            if (overlay) {
+                overlay.classList.toggle('hidden');
+                closeMobileFolderView();
+            }
+        }
+
+        function openMobileFolderView(groupName) {
+            const groupNode = mobileNavTree.find(n => n.type === 'group' && n.name === groupName);
+            if (!groupNode) return;
+
+            const rootView = document.getElementById('mobile-root-view');
+            const folderView = document.getElementById('mobile-folder-view');
+            const titleEl = document.getElementById('mobile-folder-title');
+            const linksContainer = document.getElementById('mobile-folder-links');
+
+            titleEl.textContent = groupName.toUpperCase();
+
+            let linksHtml = '';
+            groupNode.items.forEach(item => {
+                const imgTag = item.img ? `<img src="${item.img}" class="w-6 h-6 rounded-md object-cover border border-slate-600">` : '<i class="fa-solid fa-link text-sky-400"></i>';
+                linksHtml += `
+                    <a href="${item.url}" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 hover:text-sky-400 hover:border-sky-500/40 transition-all min-h-[44px]">
+                        ${imgTag}
+                        <span class="font-bold text-sm">${item.name}</span>
+                    </a>
+                `;
+            });
+
+            linksContainer.innerHTML = linksHtml;
+            rootView.classList.add('hidden');
+            folderView.classList.remove('hidden');
+        }
+
+        function closeMobileFolderView() {
+            const rootView = document.getElementById('mobile-root-view');
+            const folderView = document.getElementById('mobile-folder-view');
+            if (rootView && folderView) {
+                folderView.classList.add('hidden');
+                rootView.classList.remove('hidden');
+            }
         }
 
         async function fetchWithRetry(url, options = {}) {
@@ -699,8 +762,8 @@
                 const data = await response.text();
                 const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
 
-                const navOrder = [];
-                const groupIndexMap = {};
+                const standaloneItems = [];
+                const groupsMap = {};
 
                 for (let i = 1; i < rows.length; i++) {
                     const columns = parseCSVLine(rows[i]);
@@ -713,7 +776,6 @@
                         const img = columns[3] ? columns[3].trim() : '';
 
                         const item = { name, url, img };
-
                         const lowerName = name.toLowerCase();
                         const lowerUrl = url.toLowerCase();
 
@@ -725,23 +787,41 @@
                             const btn = document.getElementById('profile-link-ray');
                             if (btn && url && url !== '#') btn.href = url;
                         }
-                        // Directly assigns the exact CSV URL row for Darkwing / Terrdog / TJ
                         if (lowerName.includes('darkwing') || lowerName.includes('terrdog') || lowerName.includes('tj') || lowerUrl.includes('darkwing') || lowerUrl.includes('terro') || lowerUrl.includes('terrdog')) {
                             const btn = document.getElementById('profile-link-tj');
                             if (btn && url && url !== '#') btn.href = url;
                         }
 
                         if (group === '') {
-                            navOrder.push({ type: 'standalone', data: item });
+                            standaloneItems.push(item);
                         } else {
-                            if (groupIndexMap[group] === undefined) {
-                                groupIndexMap[group] = navOrder.length;
-                                navOrder.push({ type: 'group', name: group, items: [] });
-                            }
-                            navOrder[groupIndexMap[group]].items.push(item);
+                            if (!groupsMap[group]) groupsMap[group] = [];
+                            groupsMap[group].push(item);
                         }
                     }
                 }
+
+                standaloneItems.sort((a, b) => a.name.localeCompare(b.name));
+                const sortedGroupNames = Object.keys(groupsMap).sort((a, b) => a.localeCompare(b));
+                const navOrder = [];
+
+                navOrder.push({
+                    type: 'standalone',
+                    data: { name: 'Home', url: 'https://werewolf3788.github.io/Website/', img: '' }
+                });
+
+                standaloneItems.forEach(item => {
+                    if (item.name.toLowerCase() !== 'home') {
+                        navOrder.push({ type: 'standalone', data: item });
+                    }
+                });
+
+                sortedGroupNames.forEach(groupName => {
+                    const items = groupsMap[groupName].sort((a, b) => a.name.localeCompare(b.name));
+                    navOrder.push({ type: 'group', name: groupName, items: items });
+                });
+
+                mobileNavTree = navOrder;
                 renderNav(navOrder);
             } catch (error) {
                 console.error("Failed to fetch navigation data:", error);
@@ -751,7 +831,7 @@
 
         function renderNav(navOrder) {
             const desktopContainer = document.getElementById('desktop-nav-links');
-            const mobileContainer = document.getElementById('mobile-nav-links');
+            const mobileContainer = document.getElementById('mobile-root-view');
 
             let desktopHTML = '';
             let mobileHTML = '';
@@ -766,39 +846,41 @@
                     const targetAttr = isMovies ? 'target="werewolf_cinema_window"' : '';
 
                     desktopHTML += `
-                        <a href="${item.url}" ${targetAttr} class="nav-link flex items-center gap-2 ${textClass} transition-colors">
+                        <a href="${item.url}" ${targetAttr} class="nav-link flex items-center gap-2 ${textClass} transition-colors min-h-[44px]">
                             ${imgTag}<span>${item.name}</span>
                         </a>
                     `;
 
                     mobileHTML += `
-                        <a href="${item.url}" ${targetAttr} class="flex items-center gap-2 px-3 py-2 rounded-md ${textClass} hover:bg-slate-800">
+                        <a href="${item.url}" ${targetAttr} onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 ${textClass} hover:bg-slate-800 min-h-[44px]">
                             ${imgTag}<span>${item.name}</span>
                         </a>
                     `;
                 } else if (node.type === 'group') {
                     desktopHTML += `
-                    <div class="relative group dropdown">
-                        <button class="flex items-center space-x-1 text-slate-300 hover:text-white focus:outline-none py-4">
-                            <span>${node.name}</span>
-                            <i class="fa-solid fa-chevron-down text-xs"></i>
-                        </button>
-                        <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+                        <div class="relative group dropdown">
+                            <button type="button" class="flex items-center space-x-1 text-slate-300 hover:text-white focus:outline-none py-4 min-h-[44px]">
+                                <span>${node.name}</span>
+                                <i class="fa-solid fa-chevron-down text-xs ml-1"></i>
+                            </button>
+                            <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
                     `;
-                    
-                    mobileHTML += `<div class="px-3 py-2 mt-2 text-sky-400 font-bold uppercase text-xs tracking-wider border-b border-slate-700/50">${node.name}</div>`;
+
+                    mobileHTML += `
+                        <button type="button" onclick="openMobileFolderView('${node.name.replace(/'/g, "\\'")}')" class="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 hover:border-sky-500/50 hover:text-sky-400 transition-all text-left min-h-[44px]">
+                            <span class="font-bold text-sm">${node.name}</span>
+                            <div class="flex items-center gap-2 text-xs text-sky-400">
+                                <span>${node.items.length} links</span>
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+                        </button>
+                    `;
 
                     node.items.forEach(item => {
                         const imgTag = item.img ? `<img src="${item.img}" class="w-5 h-5 rounded-md object-cover border border-slate-600">` : '';
                         
                         desktopHTML += `
-                            <a href="${item.url}" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-sky-400 transition-colors">
-                                ${imgTag}<span>${item.name}</span>
-                            </a>
-                        `;
-
-                        mobileHTML += `
-                            <a href="${item.url}" class="flex items-center gap-3 px-3 py-2 pl-6 rounded-md text-sm text-slate-300 hover:bg-slate-800">
+                            <a href="${item.url}" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-sky-400 transition-colors min-h-[44px]">
                                 ${imgTag}<span>${item.name}</span>
                             </a>
                         `;
@@ -838,6 +920,16 @@
             return result;
         }
 
+        function cleanMovieTitleFromUrl(url) {
+            if (!url) return "Featured Movie Title";
+            let filename = url.split('/').pop().split('?')[0];
+            filename = decodeURIComponent(filename)
+                .replace(/\.[^/.]+$/, '')
+                .replace(/[-_]/g, ' ')
+                .replace(/([a-z])([A-Z])/g, '$1 $2');
+            return filename.toUpperCase();
+        }
+
         async function fetchMovieData() {
             const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?output=csv';
             const countDisplay = document.getElementById('movie-count');
@@ -855,7 +947,10 @@
                     if (columns.length > 0 && columns[0].trim() !== '') {
                         validMovieCount++;
                         if (columns.length > 1 && columns[1] && columns[1].startsWith('http')) {
-                            cinemaImages.push(columns[1]);
+                            cinemaImages.push({
+                                url: columns[1],
+                                title: columns[0].trim() || cleanMovieTitleFromUrl(columns[1])
+                            });
                         }
                     }
                 }
@@ -882,28 +977,33 @@
             
             const layer1 = document.getElementById('cinema-layer-1');
             const layer2 = document.getElementById('cinema-layer-2');
+            const captionTitle = document.getElementById('cinema-caption-title');
             
-            const setSlideImage = (layer, url) => {
+            const setSlideImage = (layer, slideObj) => {
                 layer.querySelectorAll('div').forEach(el => {
-                    el.style.backgroundImage = `url('${url}')`;
+                    el.style.backgroundImage = `url('${slideObj.url}')`;
                 });
             };
 
             setSlideImage(layer1, cinemaImages[0]);
+            if (captionTitle) captionTitle.textContent = cinemaImages[0].title;
+            
             layer1.style.opacity = 1;
             layer2.style.opacity = 0;
 
             cinemaInterval = setInterval(() => {
                 currentSlideIndex = (currentSlideIndex + 1) % cinemaImages.length;
-                const nextImgUrl = cinemaImages[currentSlideIndex];
+                const nextSlide = cinemaImages[currentSlideIndex];
+
+                if (captionTitle) captionTitle.textContent = nextSlide.title;
 
                 if (activeBgId === 1) {
-                    setSlideImage(layer2, nextImgUrl);
+                    setSlideImage(layer2, nextSlide);
                     layer2.style.opacity = 1;
                     layer1.style.opacity = 0;
                     activeBgId = 2;
                 } else {
-                    setSlideImage(layer1, nextImgUrl);
+                    setSlideImage(layer1, nextSlide);
                     layer1.style.opacity = 1;
                     layer2.style.opacity = 0;
                     activeBgId = 1;
