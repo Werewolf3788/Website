@@ -1,8 +1,8 @@
 /* ==========================================================================
    File: games/FS25/style.css
-   Deployment Timestamp: Sun, Aug 09, 2026, 06:35 AM (EDT - New York)
+   Deployment Timestamp: Sun, Aug 09, 2026, 18:13:57 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Tactical Dark Design for FS25 Telemetry Hub
+   Description: Tactical Dark Design for FS25 Telemetry Hub with 85% Desktop Layout
    ========================================================================== */
 
 :root {
@@ -149,12 +149,13 @@ body {
 }
 
 /* ==========================================================================
-   Dashboard Container & Cards System
+   Dashboard Container & Cards System (85% Desktop Screen Layout)
    ========================================================================== */
 
 .dashboard-container {
   padding: 1.5rem;
-  max-width: 1480px;
+  width: 85%;
+  max-width: none;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
@@ -624,7 +625,7 @@ body {
 }
 
 .footer-content {
-  max-width: 1480px;
+  width: 85%;
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
@@ -637,6 +638,11 @@ body {
 
 /* Responsive Viewport Rules (Tablet & Mobile) */
 @media (max-width: 1024px) and (min-width: 768px) {
+  .dashboard-container,
+  .footer-content {
+    width: 92%;
+  }
+
   .grid-layout {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -649,6 +655,12 @@ body {
 }
 
 @media (max-width: 767px) {
+  .dashboard-container,
+  .footer-content {
+    width: 100%;
+    padding: 1rem;
+  }
+
   .mobile-toggle {
     display: flex;
   }
