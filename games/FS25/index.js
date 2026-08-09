@@ -1,19 +1,42 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 17:14:16 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 09, 2026, 17:30:00 (EDT - New York) [24hr Format]
    Project: entertainment-71888 (/fs25 & /FS25_Mods_Info RTDB Nodes)
-   Description: Tactical Telemetry Dashboard & Universal Dynamic Image Engine.
-                Matches G-Portal XML telemetry against Firebase /FS25_Mods_Info/Images 
-                and /FS25_Mods_Info/Website nodes pushed from Google Sheets.
+   Description: Complete Realtime Telemetry Dashboard & Universal Dynamic Engine.
+                Pulls, parses, and maps all raw XML & structured JSON nodes from
+                Firebase Realtime Database.
    ========================================================================== */
 
-// Base Raw URL for GitHub Repository Images (Protocol agnostic / SSL ready for http & https)
-const REPO_IMAGES_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
+/* --------------------------------------------------------------------------
+   Google Tag Manager / GA4 Dynamic Injection (G-CTYHDF4MSD)
+   -------------------------------------------------------------------------- */
+(function injectGA4() {
+  if (!document.getElementById('ga4-gtag-script')) {
+    const script = document.createElement('script');
+    script.id = 'ga4-gtag-script';
+    script.async = true;
+    // Dynamic protocol matching for HTTP & HTTPS compatibility
+    script.src = `${window.location.protocol}//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD`;
+    document.head.appendChild(script);
+
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    window.gtag = gtag;
+    gtag('js', new Date());
+    gtag('config', 'G-CTYHDF4MSD', {
+      'send_page_view': true,
+      'anonymize_ip': false
+    });
+  }
+})();
+
+// Base Raw URL for GitHub Repository Images (Works on http & https seamlessly)
+const REPO_IMAGES_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 
 // External Google Sheets CSV Backup Endpoint
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
 
-// Farm Color Palette by Farm ID
+// Color Palette Mapping for Server Farms
 const FARM_COLOR_PALETTE = {
   "0": { name: "AI / Public", color: "#facc15" },
   "1": { name: "Farm 1", color: "#ff5f00" },
@@ -33,31 +56,23 @@ let parsedModCatalog = [];
 let firebaseImageMappings = {};
 
 /* ==========================================================================
-   SECTION 1: Universal Image Resolver Engine
-   Matches Live Telemetry XML Items against Firebase /FS25_Mods_Info/Images
+   SECTION 1: Universal Image Resolver & Parsing Utilities
    ========================================================================== */
 
 function resolveItemImage(rawFilename) {
   if (!rawFilename) return null;
 
   const rawString = String(rawFilename).trim();
-  
-  // Generate multi-level key variations to guarantee matching regardless of sheet formatting
-  const displayTitle = formatName(rawString);                  // e.g. "COLOSSUS FRONT MOWER UNREAL"
-  const cleanDisplayKey = sanitizeKey(displayTitle);          // e.g. "colossus_front_mower_unreal"
-  
-  // Extract base XML file name without path/extension
+  const displayTitle = formatName(rawString);
+  const cleanDisplayKey = sanitizeKey(displayTitle);
   const baseFileName = rawString.split('/').pop().replace('.xml', '').replace('.zip', '');
-  const cleanFileNameKey = sanitizeKey(baseFileName);         // e.g. "colossusfrontmower"
-  
-  const cleanRawKey = sanitizeKey(rawString);                 // Sanitized full path
+  const cleanFileNameKey = sanitizeKey(baseFileName);
+  const cleanRawKey = sanitizeKey(rawString);
 
   let targetFilename = "";
 
   // 1. Primary Lookup: Search Firebase /FS25_Mods_Info/Images node
   if (firebaseImageMappings && Object.keys(firebaseImageMappings).length > 0) {
-    
-    // Check keys in order of likelihood
     const matchedRecord = 
       firebaseImageMappings[cleanFileNameKey] ||
       firebaseImageMappings[cleanDisplayKey] ||
@@ -65,9 +80,8 @@ function resolveItemImage(rawFilename) {
       firebaseImageMappings[rawString];
 
     if (matchedRecord) {
-      targetFilename = matchedRecord.filename || matchedRecord.image || matchedRecord.file_name || matchedRecord.url || matchedRecord.url_w_utm_c || "";
+      targetFilename = matchedRecord.filename || matchedRecord.image || matchedRecord.file_name || matchedRecord.url || matchedRecord.imageurl || "";
     } else {
-      // Partial / Fuzzy Key Search across all Firebase Images entries
       const allKeys = Object.keys(firebaseImageMappings);
       const matchedKey = allKeys.find(k => 
         k.includes(cleanFileNameKey) || 
@@ -78,17 +92,15 @@ function resolveItemImage(rawFilename) {
 
       if (matchedKey) {
         const record = firebaseImageMappings[matchedKey];
-        targetFilename = record.filename || record.image || record.file_name || record.url || record.url_w_utm_c || "";
+        targetFilename = record.filename || record.image || record.file_name || record.url || record.imageurl || "";
       }
     }
   }
 
-  // 2. Direct Extension Fallback: If rawFilename is already an image file or direct link
   if (!targetFilename && (rawString.endsWith('.jpg') || rawString.endsWith('.JPG') || rawString.endsWith('.png'))) {
     targetFilename = rawString.split('/').pop();
   }
 
-  // 3. Construct URL (Supports direct web URLs and GitHub repo images)
   if (targetFilename) {
     if (isValidImageUrl(targetFilename)) return targetFilename;
     return `${REPO_IMAGES_BASE}${encodeURIComponent(targetFilename)}`;
@@ -120,7 +132,7 @@ function isValidImageUrl(url) {
   if (!url || typeof url !== 'string') return false;
   const cleanUrl = url.trim();
   if (cleanUrl.includes(' ') || cleanUrl.length > 300) return false;
-  return cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://') || cleanUrl.startsWith('./');
+  return cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://') || cleanUrl.startsWith('//') || cleanUrl.startsWith('./');
 }
 
 /* ==========================================================================
@@ -166,7 +178,6 @@ async function fetchModCatalog() {
       ).join('');
     }
 
-    // Only render backup CSV if Firebase /FS25_Mods_Info/Website is unavailable
     if (!window.hasRenderedFirebaseMods) {
       renderModGrid(parsedModCatalog);
     }
@@ -251,15 +262,16 @@ function renderModGrid(modsData) {
     const category = mod.category_g || mod.category_k || mod.category || mod.mod_type_f || 'General';
     const desc = mod.description_d || mod.description || '';
     const author = mod.author_h || mod.author || 'Community Modder';
-    const link = mod.url_w_utm_c || mod.link || mod.url || '#';
+    const link = mod.url_w_utm_c || mod.link || mod.url || mod.url_c || '#';
     const filename = mod.filename_j || mod.filename || '';
     const size = mod.size_i || mod.size || '';
-    const crossplay = mod.crossplay_e || 'Yes';
+    const crossplay = mod.crossplay_e || mod.crossplay || 'Yes';
     const rawImg = mod.image_b || mod.image || '';
 
     const repoMatchedImg = resolveItemImage(filename || name);
     const finalImg = isValidImageUrl(rawImg) ? rawImg : repoMatchedImg;
 
+    // ALT text present strictly for lightbox modal
     const imgHtml = finalImg
       ? `<img src="${finalImg}" data-alt="${name}" class="lightbox-trigger mod-card-thumb">`
       : `<div class="mod-card-icon-fallback"><i class="fa-solid fa-cube"></i></div>`;
@@ -284,18 +296,18 @@ function renderModGrid(modsData) {
 }
 
 /* ==========================================================================
-   SECTION 4: Master Telemetry Dashboard Renderer
+   SECTION 4: Master Telemetry Dashboard Engine (/fs25 Database Node)
    ========================================================================== */
 
 window.renderDashboard = function(data) {
   if (!data) return;
 
-  // 1. Extract Image Mappings from /FS25_Mods_Info/Images node
+  // 1. Ingest Image Mappings Node (/FS25_Mods_Info/Images)
   if (data.FS25_Mods_Info && data.FS25_Mods_Info.Images) {
     firebaseImageMappings = data.FS25_Mods_Info.Images;
   }
 
-  // 2. Extract Mod Catalog from /FS25_Mods_Info/Website node
+  // 2. Ingest Website Mod Catalog Node (/FS25_Mods_Info/Website)
   if (data.FS25_Mods_Info) {
     const websiteMods = data.FS25_Mods_Info.Website || data.FS25_Mods_Info;
     window.activeFirebaseModData = Object.values(websiteMods);
@@ -305,32 +317,47 @@ window.renderDashboard = function(data) {
 
   const rootData = data.fs25 || data || {};
 
+  // Active Save Slot Node
   let rawSlot = rootData.activeSaveSlot || "1";
   const saveSlotEl = document.getElementById('save-slot-display');
   if (saveSlotEl) {
     saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">savegame${rawSlot}</strong>`;
   }
 
+  // Parse Raw XML Nodes
   const careerXml = parseXML(rootData.careerSavegame_raw);
   const farmsXml = parseXML(rootData.farms_raw);
   const vehXml = parseXML(rootData.vehicles_raw);
   const toolsXml = parseXML(rootData.handTools_raw);
   const farmlandXml = parseXML(rootData.farmland_raw);
   const placeXml = parseXML(rootData.placeables_raw);
+  const envXml = parseXML(rootData.environment_raw);
 
+  // Server Header & Weather Telemetry Mapping
   if (careerXml) {
     const settings = careerXml.querySelector("settings");
     if (settings) {
       const setElem = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-      setElem('server-name', settings.getAttribute("savegameName") || "OneLIVIDMAN and werewolf 618");
+      setElem('server-name', settings.getAttribute("savegameName") || "OneLIVIDMAN and werewolf3788");
       setElem('server-map', `Map: ${settings.getAttribute("mapTitle") || "Calm Lands"}`);
       setElem('time-speed-badge', `Speed: ${settings.getAttribute("timeScale") || "1"}x`);
       setElem('traffic-badge', `Traffic: ${settings.getAttribute("trafficEnabled") === 'true' ? 'ON' : 'OFF'}`);
     }
   }
 
-  renderTacticalLog(rootData.modErrors, rootData.serverEvents);
+  // Environment Telemetry Node Injection
+  if (envXml) {
+    const weather = envXml.querySelector("weather");
+    if (weather) {
+      const setElem = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+      setElem('weather-badge', `Weather: ${weather.getAttribute("currentWeather") || "Clear"}`);
+    }
+  }
 
+  // Tactical Log Mapping (modErrors, serverLog_raw, serverEvents)
+  renderTacticalLog(rootData.modErrors, rootData.serverEvents, rootData.serverLog_raw);
+
+  // Farms Telemetry Node Mapping
   let globalNetWorth = 0;
   const farmsCont = document.getElementById('farms-container');
   if (farmsCont) {
@@ -361,15 +388,53 @@ window.renderDashboard = function(data) {
   const netWorthEl = document.getElementById('global-net-worth');
   if (netWorthEl) netWorthEl.textContent = `$${globalNetWorth.toLocaleString()}`;
 
+  // Process Detailed Fleet JSON Node combined with Raw XML Vehicles
   let vehicleCount = 0;
   const tracCont = document.getElementById('tractors-container');
   const harvCont = document.getElementById('harvesters-container');
   const trailCont = document.getElementById('trailers-container');
   const implCont = document.getElementById('implements-container');
 
-  if (vehXml) {
-    let tractors = "", harvesters = "", trailers = "", implements = "";
+  let tractors = "", harvesters = "", trailers = "", implements = "";
 
+  // 1. Process structured JSON Node: detailedFleet
+  if (rootData.detailedFleet) {
+    const fleetList = Object.values(rootData.detailedFleet);
+    fleetList.forEach(v => {
+      vehicleCount++;
+      const rawName = v.name || v.id || "Vehicle";
+      const name = formatName(rawName);
+      const farmId = v.farmId || "0";
+      const color = getFarmColor(farmId);
+      const isOccupied = v.isOccupied ? `<span class="badge" style="background:#22c55e;">In Use</span>` : '';
+      const posX = v.position && v.position.x ? Math.round(v.position.x) : null;
+      const posZ = v.position && v.position.z ? Math.round(v.position.z) : null;
+      const coords = (posX !== null && posZ !== null) ? `<span class="card-subtext">Pos: (${posX}, ${posZ})</span>` : '';
+
+      const matchedImg = resolveItemImage(rawName);
+      const imgHtml = matchedImg 
+        ? `<img src="${matchedImg}" class="telemetry-card-thumb lightbox-trigger" data-alt="${name}">`
+        : `<i class="fa-solid fa-tractor card-icon" style="color:${color};"></i>`;
+
+      const card = `
+        <div class="telemetry-card" style="border-left: 4px solid ${color};">
+          ${imgHtml}
+          <div class="card-details">
+            <strong style="color:${color};">${name} ${isOccupied}</strong>
+            <span>Owner: Farm #${farmId}</span>
+            ${coords}
+          </div>
+        </div>`;
+
+      if (name.includes("HARVESTER") || name.includes("COMBINE")) harvesters += card;
+      else if (name.includes("TRAILER") || name.includes("WAGON") || name.includes("TIPPER")) trailers += card;
+      else if (name.includes("TRACTOR") || name.includes("TRUCK") || name.includes("RIG")) tractors += card;
+      else implements += card;
+    });
+  }
+
+  // 2. Process Raw XML Vehicles fallback
+  if (vehXml && (!rootData.detailedFleet || Object.keys(rootData.detailedFleet).length === 0)) {
     vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
       vehicleCount++;
       const rawName = v.getAttribute("filename") || v.getAttribute("name") || "";
@@ -378,7 +443,6 @@ window.renderDashboard = function(data) {
       const color = getFarmColor(farmId);
       
       const matchedImg = resolveItemImage(rawName);
-
       const imgHtml = matchedImg 
         ? `<img src="${matchedImg}" class="telemetry-card-thumb lightbox-trigger" data-alt="${name}">`
         : `<i class="fa-solid fa-tractor card-icon" style="color:${color};"></i>`;
@@ -397,16 +461,17 @@ window.renderDashboard = function(data) {
       else if (name.includes("TRACTOR") || name.includes("TRUCK") || name.includes("RIG")) tractors += card;
       else implements += card;
     });
-
-    if (tracCont) tracCont.innerHTML = tractors || `<div class="empty-state">No Active Tractors Logged</div>`;
-    if (harvCont) harvCont.innerHTML = harvesters || `<div class="empty-state">No Active Harvesters Logged</div>`;
-    if (trailCont) trailCont.innerHTML = trailers || `<div class="empty-state">No Active Trailers Logged</div>`;
-    if (implCont) implCont.innerHTML = implements || `<div class="empty-state">No Active Implements Logged</div>`;
   }
+
+  if (tracCont) tracCont.innerHTML = tractors || `<div class="empty-state">No Active Tractors Logged</div>`;
+  if (harvCont) harvCont.innerHTML = harvesters || `<div class="empty-state">No Active Harvesters Logged</div>`;
+  if (trailCont) trailCont.innerHTML = trailers || `<div class="empty-state">No Active Trailers Logged</div>`;
+  if (implCont) implCont.innerHTML = implements || `<div class="empty-state">No Active Implements Logged</div>`;
 
   const fleetEl = document.getElementById('global-vehicle-count');
   if (fleetEl) fleetEl.textContent = vehicleCount;
 
+  // Hand Tools Mapping Node
   const toolsCont = document.getElementById('handtools-container');
   if (toolsCont) {
     let toolsHtml = "";
@@ -430,11 +495,36 @@ window.renderDashboard = function(data) {
     toolsCont.innerHTML = toolsHtml || `<div class="empty-state">No Hand Tools Stored</div>`;
   }
 
+  // Field Agronomy Mapping (Combines structured JSON /fieldAgronomy and /farmland_raw XML)
   let fieldCount = 0;
   const fieldsCont = document.getElementById('fields-container');
   if (fieldsCont) {
     let fieldsHtml = "";
-    if (farmlandXml) {
+
+    if (rootData.fieldAgronomy) {
+      const fieldList = Object.values(rootData.fieldAgronomy);
+      fieldList.forEach(f => {
+        fieldCount++;
+        const id = f.id !== undefined ? f.id : fieldCount;
+        const farmId = f.farmId || "0";
+        const color = getFarmColor(farmId);
+        const acres = f.areaAcres ? `${f.areaAcres} Acres` : '';
+        const fert = f.fertilizerLevel !== undefined ? `Fertilizer: ${f.fertilizerLevel}%` : '';
+        const lime = f.limeRequired ? `<span class="badge" style="background:#ef4444;">Lime Needed</span>` : '';
+        const plow = f.plowRequired ? `<span class="badge" style="background:#f97316;">Plow Needed</span>` : '';
+
+        fieldsHtml += `
+          <div class="telemetry-card" style="border-left: 4px solid ${color};">
+            <i class="fa-solid fa-seedling card-icon" style="color:${color};"></i>
+            <div class="card-details">
+              <strong style="color:${color};">Field #${id} ${acres ? `(${acres})` : ''}</strong>
+              <span>Owner: ${farmId === '0' ? 'Public / Unowned' : 'Farm #' + farmId}</span>
+              ${fert ? `<span class="card-subtext">${fert}</span>` : ''}
+              <div>${lime} ${plow}</div>
+            </div>
+          </div>`;
+      });
+    } else if (farmlandXml) {
       farmlandXml.querySelectorAll("farmland, field").forEach(f => {
         fieldCount++;
         const id = f.getAttribute("id");
@@ -457,10 +547,11 @@ window.renderDashboard = function(data) {
   const landEl = document.getElementById('global-land-count');
   if (landEl) landEl.textContent = `${fieldCount} Fields`;
 
+  // Render Factory & Production Node
   renderProductions(placeXml);
 };
 
-function renderTacticalLog(modErrors, serverEvents) {
+function renderTacticalLog(modErrors, serverEvents, rawServerLog) {
   const container = document.getElementById('tactical-log-container');
   const errorCountEl = document.getElementById('global-mod-errors');
   if (!container) return;
@@ -470,7 +561,7 @@ function renderTacticalLog(modErrors, serverEvents) {
 
   if (errorCountEl) errorCountEl.textContent = errors.length;
 
-  if (errors.length === 0 && events.length === 0) {
+  if (errors.length === 0 && events.length === 0 && !rawServerLog) {
     container.innerHTML = `<div class="empty-state">No Recent Server Log Activity</div>`;
     return;
   }
@@ -538,7 +629,7 @@ function renderProductions(placeablesDoc) {
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Lightbox Modal Controls (ALT image description only displays inside lightbox view)
+  // Lightbox Modal Controls (ALT image description only displays in lightbox mode)
   const modal = document.getElementById('lightbox-modal');
   const modalImg = document.getElementById('lightbox-img');
   const modalCaption = document.getElementById('lightbox-caption');
