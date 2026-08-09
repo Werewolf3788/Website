@@ -1,12 +1,14 @@
 /*
- Version Timestamp: Sun, July 26, 2026, 11:55 PM (EDT)
- Complete Dynamic Telemetry Parser with Auto-Githack GitHub CDN Conversion & Smart URL Extraction
- File: games/FS25/index.js
+  Version Timestamp: Sun, August 09, 2026, 12:15 AM (EDT)
+  Complete Dynamic Telemetry Parser with Auto-Githack GitHub CDN Conversion & Direct Realtime Database Telemetry Engine
+  File: games/FS25/index.js
+  Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
 */
 
 // External Endpoints
 const CSV_MENU_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
+const FIREBASE_RTDB_FS25_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
 
 // Dynamic Color System By Farm Owner
 const FARM_COLOR_PALETTE = {
@@ -77,8 +79,6 @@ let offlineTimerInterval = null;
 function sanitizeImageUrl(urlStr) {
   if (!urlStr || typeof urlStr !== 'string') return "";
   let cleanUrl = urlStr.trim();
-  
-  // Auto-convert raw.githubusercontent.com URLs to raw.githack.com CDN execution URLs
   if (cleanUrl.includes("raw.githubusercontent.com")) {
     cleanUrl = cleanUrl.replace("https://raw.githubusercontent.com/", "https://raw.githack.com/");
   }
@@ -303,7 +303,7 @@ async function loadDynamicNavbar() {
   }
 }
 
-// Google Sheet CSV Mod Hub Catalog Parser (Mapped to Columns A through K)
+// Google Sheet CSV Mod Hub Catalog Parser
 async function loadModHubCatalog() {
   const grid = document.getElementById("mod-hub-grid");
   const categoriesBar = document.getElementById("mod-categories-bar");
@@ -331,23 +331,20 @@ async function loadModHubCatalog() {
         let rawImg = cols[1] ? cols[1].trim() : "";
         let rawFilename = cols[9] ? cols[9].trim() : "";
         
-        // Smart URL Extractor: If an image URL got pasted directly inside Column A alongside the name
         if (rawName.includes("http://") || rawName.includes("https://")) {
           const urlMatch = rawName.match(/(https?:\/\/[^\s"]+)/g);
           if (urlMatch && urlMatch[0]) {
             if (!rawImg || !rawImg.startsWith("http")) {
-              rawImg = urlMatch[0]; // Recover extracted image URL
+              rawImg = urlMatch[0];
             }
-            rawName = rawName.replace(urlMatch[0], "").trim(); // Strip URL out of the Name field
+            rawName = rawName.replace(urlMatch[0], "").trim();
           }
         }
 
-        // Clean name fallback if title field is empty or contains description text
         if (!rawName || rawName.toLowerCase().startsWith("for transportation") || rawName.length > 80) {
           rawName = rawFilename ? formatName(rawFilename) : "Custom Expansion Mod";
         }
 
-        // Apply Githack conversion wrapper to image URL
         const finalImgUrl = sanitizeImageUrl(rawImg);
 
         const mod = {
@@ -497,15 +494,15 @@ document.addEventListener("click", (e) => {
   }
 });
 
-// Master Telemetry Render Engine (Runs on Live Firebase Snapshots)
+// Master Telemetry Render Engine (Runs on Live Firebase Snapshots from /fs25)
 window.renderDashboard = function(data) {
   if (!data) return;
 
   window.setServerStatus(true);
 
   // 1. Resolve Active Savegame Slot
-  let rawSlot = getFirebasePayloadDeep(data, "activeSaveSlot") || data.activeSaveSlot || "2";
-  let slotNum = String(rawSlot).replace(/[^0-9]/g, '') || "2";
+  let rawSlot = getFirebasePayloadDeep(data, "activeSaveSlot") || data.activeSaveSlot || "1";
+  let slotNum = String(rawSlot).replace(/[^0-9]/g, '') || "1";
   let activeSlotKey = `savegame${slotNum}`;
   
   const saveSlotEl = document.getElementById('save-slot-display');
@@ -800,88 +797,7 @@ window.renderDashboard = function(data) {
     prodCont.innerHTML = prodHtml || `<div class="item-card"><div class="item-title">Public Regional Sawmill & Grain Elevator Operational</div></div>`;
   }
 
-  // 9. Animal Pens
-  const animalCont = document.getElementById('animal-husbandry-container');
-  if (animalCont) {
-    animalCont.innerHTML = `<div class="item-card"><div class="item-title">No Active Livestock Husbandry Recorded</div></div>`;
-  }
-
-  // 10. Contracts
-  const contractsCont = document.getElementById('contracts-container');
-  if (contractsCont) {
-    contractsCont.innerHTML = `<div class="item-card"><div class="item-title">All Contracts Completed</div></div>`;
-  }
-
-  // 11. Infrastructure
-  const infraCont = document.getElementById('infrastructure-container');
-  if (infraCont) {
-    infraCont.innerHTML = `
-      <div class="item-card" style="border-left: 4px solid #facc15;">
-        <div class="item-left">
-          ${getThumbnailHTML("TRAIN STATION", "fa-train")}
-          <div>
-            <div class="item-title" style="color:#facc15;">PUBLIC REGIONAL TRAIN NETWORK</div>
-            <div class="mono"><span class="badge-stat badge-good">OPERATIONAL RAIL LINE</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="item-card" style="border-left: 4px solid #facc15;">
-        <div class="item-left">
-          ${getThumbnailHTML("GRAIN BARGE", "fa-ship")}
-          <div>
-            <div class="item-title" style="color:#facc15;">RIVER GRAIN TERMINALS</div>
-            <div class="mono"><span class="badge-stat badge-good">ACCEPTING BULK SHIPMENTS</span></div>
-          </div>
-        </div>
-      </div>
-      <div class="item-card" style="border-left: 4px solid #facc15;">
-        <div class="item-left">
-          ${getThumbnailHTML("AMERICAN MIDWEST TRUCK SHOP", "fa-store")}
-          <div>
-            <div class="item-title" style="color:#facc15;">VEHICLE DEALERSHIP & REPAIR BAY</div>
-            <div class="mono"><span class="badge-stat badge-good">OPEN 24/7</span></div>
-          </div>
-        </div>
-      </div>`;
-  }
-
-  // 12. Buying Stations
-  const buyCont = document.getElementById('buying-stations-container');
-  if (buyCont) {
-    buyCont.innerHTML = `
-      <div class="item-card" style="border-left: 4px solid #38bdf8;">
-        <div class="item-left">
-          ${getThumbnailHTML("GRAIN ELEVATOR", "fa-store")}
-          <div>
-            <div class="item-title">COMMUNITY MULTIFRUIT BUYING STATION</div>
-            <div class="mono"><span class="badge-stat badge-good">LOCATION: MAP CENTRAL BAY</span></div>
-          </div>
-        </div>
-      </div>`;
-  }
-
-  // 13. Regional Train Network
-  const trainCont = document.getElementById('main-train-container');
-  if (trainCont) {
-    trainCont.innerHTML = `
-      <div class="item-card" style="border-left: 4px solid #facc15;">
-        <div class="item-left">
-          ${getThumbnailHTML("TRAIN STATION", "fa-train")}
-          <div>
-            <div class="item-title">REGIONAL GRAIN & LOGISTICS TRAIN</div>
-            <div class="mono"><span class="badge-stat badge-good">ACTIVE ON RAIL SYSTEM</span></div>
-          </div>
-        </div>
-      </div>`;
-  }
-
-  // 14. Used Store Bargains
-  const salesCont = document.getElementById('sales-container');
-  if (salesCont) {
-    salesCont.innerHTML = `<div class="item-card"><div class="item-title">No Machinery Currently On Sale</div></div>`;
-  }
-
-  // 15. Collectibles
+  // 9. Collectibles
   let foundCollectiblesCount = 0;
   const colCont = document.getElementById('collectibles-container');
   const colRaw = getFirebasePayloadDeep(slotData, "collectibles") || getFirebasePayloadDeep(data, "collectibles");
@@ -910,7 +826,7 @@ window.renderDashboard = function(data) {
   const globalColEl = document.getElementById('global-collectibles-count');
   if (globalColEl) globalColEl.textContent = `${foundCollectiblesCount} / 25`;
 
-  // 16. Commodity Market Prices
+  // 10. Commodity Market Prices
   const ecoCont = document.getElementById('economy-container');
   const ecoRaw = getFirebasePayloadDeep(slotData, "economy") || getFirebasePayloadDeep(data, "economy");
   const ecoXml = parseXML(ecoRaw);
@@ -956,7 +872,22 @@ window.renderDashboard = function(data) {
   renderModCards();
 };
 
-// Auto-run when DOM loads or when Firebase data arrives
+// DIRECT REALTIME DATABASE TELEMETRY LISTENER FOR /fs25
+async function startRealtimeDatabaseListener() {
+  try {
+    const res = await fetch(`${FIREBASE_RTDB_FS25_URL}?t=` + Date.now());
+    if (!res.ok) return;
+    const fs25Data = await res.json();
+    if (fs25Data && typeof window.renderDashboard === 'function') {
+      window.lastFirebaseData = fs25Data;
+      window.renderDashboard(fs25Data);
+    }
+  } catch (err) {
+    console.warn("[FS25 RTDB Listener Error]", err);
+  }
+}
+
+// Auto-run when DOM loads
 document.addEventListener("DOMContentLoaded", () => {
   loadDynamicNavbar();
   loadModHubCatalog();
@@ -967,7 +898,6 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleBtn.addEventListener("click", () => menuBar.classList.toggle("menu-active"));
   }
 
-  if (window.lastFirebaseData && typeof window.renderDashboard === 'function') {
-    window.renderDashboard(window.lastFirebaseData);
-  }
+  startRealtimeDatabaseListener();
+  setInterval(startRealtimeDatabaseListener, 15000); // Live poll every 15s
 });
