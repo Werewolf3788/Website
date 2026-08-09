@@ -22,8 +22,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
   <!-- Line 27: Site Stylesheet & Script Imports with Cache-Buster -->
-  <link rel="stylesheet" href="style.css?v=20260809_0533">
-  <script src="index.js?v=20260809_0533" defer></script>
+  <link rel="stylesheet" href="style.css?v=20260809_0635">
+  <script src="index.js?v=20260809_0635" defer></script>
 </head>
 <body>
 
@@ -107,8 +107,8 @@
         <div><div class="metric-value" id="global-vehicle-count">0</div><div class="metric-label">Total Fleet Machinery</div></div>
       </div>
       <div class="metric-card">
-        <i class="fa-solid fa-trophy metric-icon" style="color:#facc15;"></i>
-        <div><div class="metric-value" id="global-collectibles-count">0 / 25</div><div class="metric-label">Collectibles Found</div></div>
+        <i class="fa-solid fa-triangle-exclamation metric-icon" style="color:#f87171;"></i>
+        <div><div class="metric-value" id="global-mod-errors">0</div><div class="metric-label">Active Mod Warnings</div></div>
       </div>
       <div class="metric-card">
         <i class="fa-solid fa-map-location-dot metric-icon" style="color:#84cc16;"></i>
@@ -116,7 +116,15 @@
       </div>
     </div>
 
-    <!-- Line 118: Responsive Cards Grid -->
+    <!-- Tactical Live Server Activity & Mod Warnings Feed -->
+    <div class="grid-layout-full">
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-terminal"></i><h2>TACTICAL SERVER FEED & MOD DIAGNOSTICS</h2></div>
+        <div id="tactical-log-container" class="box-content terminal-box"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading live G-Portal server log...</div></div>
+      </div>
+    </div>
+
+    <!-- Responsive Cards Grid -->
     <div class="grid-layout">
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-building-columns"></i><h2>REGISTERED SERVER FARMS</h2></div>
@@ -153,10 +161,10 @@
     </div>
 
     <!-- Mod Directory Catalog -->
-    <section class="mod-hub-section" style="margin-top: 3rem;">
+    <section class="mod-hub-section" style="margin-top: 2rem;">
       <div class="mod-hub-header">
         <h2><i class="fa-solid fa-cubes" style="color:var(--accent-gold);"></i> SERVER MODIFICATION DIRECTORY</h2>
-        <p style="color:var(--text-muted); margin-top:4px;">Live synchronized mod catalog cross-referenced against active server files.</p>
+        <p style="color:var(--text-muted); margin-top:4px;">Live mod catalog cross-referenced against /FS25_Mods_Info and active server files.</p>
         <div id="mod-categories-bar" class="mod-categories-bar"></div>
       </div>
       <div id="mod-hub-grid" class="mod-grid">
@@ -178,7 +186,7 @@
   <!-- System Sticky Footer -->
   <footer class="system-footer">
     <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sun, Aug 09, 2026, 05:33 AM (EDT)</strong></span>
+      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sun, Aug 09, 2026, 06:35 AM (EDT)</strong></span>
       <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
       <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
     </div>
