@@ -1,34 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Version Timestamp: Sun, Aug 09, 2026, 01:25 AM (EDT) -->
+  <!-- Line 5: Meta tags & Core Page Setup -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Realtime Tactical Dashboard & Mod Directory</title>
-  
-  <!-- Google Analytics GA4 (Global Watermark & Personal Stream) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-L376P3NPY4"></script>
+
+  <!-- Line 10: Google Tag Manager / GA4 Integration -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-L376P3NPY4');
-    gtag('config', 'G-Z9M5LXQ5XN');
+    gtag('config', 'G-CTYHDF4MSD');
   </script>
 
-  <!-- FontAwesome Icons & Google Fonts -->
+  <!-- Line 20: External Stylesheets (FontAwesome & Fonts) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- Static Stylesheet & JavaScript Imports with Smart Cache-Buster -->
-  <link rel="stylesheet" href="style.css?v=20260809_0125">
-  <script src="index.js?v=20260809_0125" defer></script>
+  <!-- Line 27: Site Stylesheet & Script Imports with Cache-Buster -->
+  <link rel="stylesheet" href="style.css?v=20260809_0136">
+  <script src="index.js?v=20260809_0136" defer></script>
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  <!-- Line 33: Top Header Navigation Bar -->
   <header class="navbar">
     <div class="nav-brand">
       <i class="fa-solid fa-wheat-field logo-icon"></i>
@@ -42,14 +41,14 @@
     </nav>
   </header>
 
-  <!-- Main Tactical Command Center -->
+  <!-- Line 47: Main Dashboard Content Container -->
   <main class="dashboard-container">
     
-    <!-- Server Overview Banner -->
+    <!-- Line 50: Server Live Banner & Dedicated Map Preview Card -->
     <section class="server-banner">
       <div class="banner-layout">
         <div class="map-preview-box">
-          <!-- UPDATED: HTTPS Reverse Proxy via images.weserv.nl -->
+          <!-- Line 54: HTTPS Reverse Proxy via images.weserv.nl for HTTP Map Stream -->
           <img id="banner-map-thumb" 
                src="https://images.weserv.nl/?url=144.126.153.115:8300/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=60&size=512" 
                alt="Live Dedicated Map Overview" 
@@ -76,7 +75,7 @@
       </div>
     </section>
 
-    <!-- Global Key Metrics Summary Row -->
+    <!-- Line 79: Global Summary Metrics Card Row -->
     <div class="metrics-row">
       <div class="metric-card">
         <i class="fa-solid fa-scale-balanced metric-icon" style="color:#4ade80;"></i>
@@ -96,7 +95,7 @@
       </div>
     </div>
 
-    <!-- Master Unified Dashboard Grid Cards -->
+    <!-- Line 100: Grid Layout - 15 Telemetry Cards -->
     <div class="grid-layout">
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-building-columns"></i><h2>REGISTERED SERVER FARMS</h2></div>
@@ -160,45 +159,55 @@
       </div>
     </div>
 
-    <!-- Server Modification Directory -->
+    <!-- Line 195: Mod Directory Catalog -->
     <section class="mod-hub-section" style="margin-top: 3rem;">
       <div class="mod-hub-header">
         <h2><i class="fa-solid fa-cubes" style="color:var(--accent-gold);"></i> SERVER MODIFICATION DIRECTORY</h2>
         <p style="color:var(--text-muted); margin-top:4px;">Live synchronized mod catalog cross-referenced against active server files.</p>
         <div id="mod-categories-bar" class="mod-categories-bar"></div>
       </div>
-      <div id="mod-hub-grid" class="mod-grid"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Mod catalog...</div></div>
+      <div id="mod-hub-grid" class="mod-grid">
+        <div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading Google Sheet CSV Mod catalog...</div>
+      </div>
     </section>
 
   </main>
 
-  <!-- Interactive Lightbox Modal -->
+  <!-- Line 210: Lightbox View Modal -->
   <div id="lightbox-modal" class="lightbox-modal">
     <span id="lightbox-close" class="lightbox-close">&times;</span>
     <div id="lightbox-card-body" class="lightbox-body">
-      <img id="lightbox-img" class="lightbox-content" alt="Enlarged Preview">
+      <img id="lightbox-img" class="lightbox-content" alt="">
       <div id="lightbox-caption" class="lightbox-caption"></div>
     </div>
   </div>
 
-  <!-- Persistent Sticky System Footer -->
+  <!-- Line 220: System Sticky Footer -->
   <footer class="system-footer">
     <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sun, Aug 09, 2026, 01:25 AM (EDT)</strong></span>
+      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sun, Aug 09, 2026, 01:36 AM (EDT)</strong></span>
       <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
       <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
       <span id="offline-timer" style="display:none; color:#f87171; font-weight:bold;"><i class="fa-solid fa-triangle-exclamation"></i> Server Offline Duration: 0m 0s</span>
     </div>
   </footer>
 
-  <!-- Live Firebase Real-Time Sync Stream -->
+  <!-- Line 231: Full Entertainment-71888 Firebase Modular Sync Script -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
     import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+    // Full Firebase Web Config
     const firebaseConfig = {
-      databaseURL: "https://game-tracker-5b2ef-default-rtdb.firebaseio.com"
+      apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+      authDomain: "entertainment-71888.firebaseapp.com",
+      databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+      projectId: "entertainment-71888",
+      storageBucket: "entertainment-71888.firebasestorage.app",
+      messagingSenderId: "660524340277",
+      appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+      measurementId: "G-JDNSLD3GFE"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -221,25 +230,23 @@
     }
 
     function attachLiveSync() {
-      if (activeUnsubscribe) {
-        activeUnsubscribe();
-      }
+      if (activeUnsubscribe) activeUnsubscribe();
 
-      console.log("🔗 Connecting directly to /fs25 node...");
+      console.log("🔗 Connected to entertainment-71888 /fs25 RTDB node...");
       activeUnsubscribe = onValue(fs25Ref, (snapshot) => {
         const val = snapshot.val();
         if (val) {
           window.lastFirebaseData = val;
           safeRender(val);
         } else {
-          console.warn("⚠️ /fs25 returned null. Forcing UI clean fallback state...");
+          console.warn("⚠️ /fs25 node returned null. Forcing fallback UI state...");
           safeRender({});
           if (typeof window.setServerStatus === 'function') {
             window.setServerStatus(false);
           }
         }
       }, (error) => {
-        console.error("❌ RTDB Stream Disconnected or Denied:", error.message);
+        console.error("❌ RTDB Stream Error:", error.message);
         safeRender({});
         if (typeof window.setServerStatus === 'function') {
           window.setServerStatus(false);
@@ -249,16 +256,13 @@
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
-        signInAnonymously(auth).catch((err) => {
-          console.warn("ℹ️ Anonymous auth note (Public Read active):", err.message);
-        });
+        signInAnonymously(auth).catch((err) => console.warn("ℹ️ Anonymous Auth Note:", err.message));
       }
       attachLiveSync();
     });
 
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "visible") {
-        console.log("🔄 Tab woke up: Re-syncing Firebase Realtime stream...");
         attachLiveSync();
       }
     });
