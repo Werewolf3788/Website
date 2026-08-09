@@ -1,9 +1,9 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 17:53:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 09, 2026, 17:58:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 & /FS25_Mods_Info RTDB Nodes)
-   Description: Complete Realtime Tactical Telemetry & Mod Directory Engine.
-                Parses raw XML strings and structured JSON nodes from Firebase.
+   Description: Tactical Telemetry Dashboard & Universal Dynamic Image Engine.
+                Directly extracts /fs25 raw XML strings and maps them across cards.
    ========================================================================== */
 
 // Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
@@ -14,7 +14,7 @@
       script.id = 'ga4-gtag-script';
       script.async = true;
       script.src = "//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD";
-      script.onerror = () => console.warn("ℹ️ GA4 blocked by client extension.");
+      script.onerror = () => console.warn("ℹ️ GA4 tag skipped by client extension.");
       document.head.appendChild(script);
 
       window.dataLayer = window.dataLayer || [];
@@ -24,15 +24,15 @@
       gtag('config', 'G-CTYHDF4MSD', { 'send_page_view': true, 'anonymize_ip': false });
     }
   } catch (e) {
-    console.warn("ℹ️ GA4 initialization skipped.");
+    console.warn("ℹ️ GA4 initialization bypassed.");
   }
 })();
 
-// Base Raw URL for GitHub Repository Images (Supports http & https)
+// Base Raw URL for GitHub Repository Images (Works on http & https)
 const REPO_IMAGES_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
 
-// Server Farm Color Palette Mapping
+// Farm Color Palette Mapping
 const FARM_COLOR_PALETTE = {
   "0": { name: "AI / Public", color: "#facc15" },
   "1": { name: "Farm 1", color: "#ff5f00" },
@@ -293,7 +293,7 @@ function renderModGrid(modsData) {
 }
 
 /* ==========================================================================
-   SECTION 4: Master Telemetry Dashboard Engine (Deep Parsing & Cross-Ref)
+   SECTION 4: Master Telemetry Engine with Explicit /fs25 Subnode Extraction
    ========================================================================== */
 
 window.renderDashboard = function(rawIncomingData) {
@@ -304,7 +304,7 @@ window.renderDashboard = function(rawIncomingData) {
     data = rawIncomingData.val();
   }
 
-  // Extract Mod Catalog & Image Mappings Node
+  // 1. Process Mod Directory & Images Node (/FS25_Mods_Info)
   if (data.FS25_Mods_Info && data.FS25_Mods_Info.Images) {
     firebaseImageMappings = data.FS25_Mods_Info.Images;
   }
@@ -314,27 +314,33 @@ window.renderDashboard = function(rawIncomingData) {
     renderModGrid(window.activeFirebaseModData);
   }
 
-  // Auto-resolve root telemetry node location
-  const rootData = data.fs25 ? data.fs25 : (data.careerSavegame_raw || data.farms_raw || data.detailedFleet ? data : {});
+  // 2. Target Telemetry Payload Node (/fs25)
+  // Handles cases where payload is root JSON object or directly nested under 'fs25'
+  const fs25Node = data.fs25 ? data.fs25 : (data.careerSavegame_raw || data.farms_raw ? data : {});
 
-  // Active Save Slot Banner Update
-  const saveSlotEl = document.getElementById('save-slot-display');
-  if (saveSlotEl) {
-    saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">savegame${rootData.activeSaveSlot || "1"}</strong>`;
+  if (!fs25Node || Object.keys(fs25Node).length === 0) {
+    console.warn("⚠️ No telemetry keys detected inside fs25 node.");
+    return;
   }
 
-  // Parse Raw XML String Nodes
-  const careerXml = parseXML(rootData.careerSavegame_raw);
-  const farmsXml = parseXML(rootData.farms_raw);
-  const vehXml = parseXML(rootData.vehicles_raw);
-  const toolsXml = parseXML(rootData.handTools_raw);
-  const farmlandXml = parseXML(rootData.farmland_raw);
-  const placeXml = parseXML(rootData.placeables_raw);
-  const envXml = parseXML(rootData.environment_raw);
-  const missionsXml = parseXML(rootData.missions_raw);
-  const itemsXml = parseXML(rootData.items_raw);
+  // Active Save Slot Display
+  const saveSlotEl = document.getElementById('save-slot-display');
+  if (saveSlotEl) {
+    saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">savegame${fs25Node.activeSaveSlot || "1"}</strong>`;
+  }
 
-  // Time & Server Status Setup
+  // Parse Raw XML Strings directly from /fs25 node
+  const careerXml = parseXML(fs25Node.careerSavegame_raw);
+  const farmsXml = parseXML(fs25Node.farms_raw);
+  const vehXml = parseXML(fs25Node.vehicles_raw);
+  const toolsXml = parseXML(fs25Node.handTools_raw);
+  const farmlandXml = parseXML(fs25Node.farmland_raw);
+  const placeXml = parseXML(fs25Node.placeables_raw);
+  const envXml = parseXML(fs25Node.environment_raw);
+  const missionsXml = parseXML(fs25Node.missions_raw);
+  const itemsXml = parseXML(fs25Node.items_raw);
+
+  // Time & Weather Telemetry Setup
   let gameTime = "00:00";
   if (envXml) {
     const dayTimeElem = envXml.querySelector("dayTime, time");
@@ -354,7 +360,7 @@ window.renderDashboard = function(rawIncomingData) {
     }
   }
 
-  // 1. Registered Server Farms
+  // 1. Server Farms & Net Worth Mapping
   let globalNetWorth = 0;
   const farmsCont = document.getElementById('farms-container');
   if (farmsCont) {
@@ -383,7 +389,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
   setTxt('global-net-worth', `$${globalNetWorth.toLocaleString()}`);
 
-  // 2. Active Server Contracts & Missions Card
+  // 2. Contracts & Missions Card Mapping
   const missionsCont = document.getElementById('missions-container');
   if (missionsCont) {
     let missionsHtml = "";
@@ -411,7 +417,7 @@ window.renderDashboard = function(rawIncomingData) {
     missionsCont.innerHTML = missionsHtml || `<div class="empty-state">No Active Mission Contracts</div>`;
   }
 
-  // 3. Collectibles Card
+  // 3. Collectibles & Map Discoveries Card Mapping
   const collectiblesCont = document.getElementById('collectibles-container');
   if (collectiblesCont) {
     let collectiblesHtml = "";
@@ -435,7 +441,7 @@ window.renderDashboard = function(rawIncomingData) {
     collectiblesCont.innerHTML = collectiblesHtml || `<div class="empty-state">No Map Collectibles Discovered Yet</div>`;
   }
 
-  // 4. Fleet Machinery Parsing
+  // 4. Fleet Machinery Parsing (Vehicles XML + Detailed Fleet JSON)
   let vehicleCount = 0;
   const tracCont = document.getElementById('tractors-container');
   const harvCont = document.getElementById('harvesters-container');
@@ -481,7 +487,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (implCont) implCont.innerHTML = implements || `<div class="empty-state">No Active Implements Logged</div>`;
   setTxt('global-vehicle-count', vehicleCount);
 
-  // 5. Hand Tools Parsing
+  // 5. Player Hand Tools Parsing
   const toolsCont = document.getElementById('handtools-container');
   if (toolsCont) {
     let toolsHtml = "";
@@ -505,14 +511,14 @@ window.renderDashboard = function(rawIncomingData) {
     toolsCont.innerHTML = toolsHtml || `<div class="empty-state">No Hand Tools Stored</div>`;
   }
 
-  // 6. Field Agronomy Status
+  // 6. Field Agronomy Status (Farmland XML + FieldAgronomy JSON)
   let fieldCount = 0;
   const fieldsCont = document.getElementById('fields-container');
   if (fieldsCont) {
     let fieldsHtml = "";
 
-    if (rootData.fieldAgronomy) {
-      Object.values(rootData.fieldAgronomy).forEach(f => {
+    if (fs25Node.fieldAgronomy) {
+      Object.values(fs25Node.fieldAgronomy).forEach(f => {
         fieldCount++;
         const id = f.id !== undefined ? f.id : fieldCount;
         const farmId = f.farmId || "0";
@@ -555,7 +561,7 @@ window.renderDashboard = function(rawIncomingData) {
   setTxt('global-land-count', `${fieldCount} Fields`);
 
   renderProductions(placeXml);
-  renderTacticalLog(rootData.modErrors, rootData.serverEvents);
+  renderTacticalLog(fs25Node.modErrors, fs25Node.serverEvents);
 };
 
 function renderTacticalLog(modErrors, serverEvents) {
