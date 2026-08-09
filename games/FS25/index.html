@@ -1,33 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Line 5: Meta tags & Core Page Setup -->
+  <!-- Meta tags & Core Page Setup -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Realtime Tactical Dashboard & Mod Directory</title>
 
-  <!-- Line 10: Google Tag Manager / GA4 Integration -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-CTYHDF4MSD');
-  </script>
+  <!-- Favicon Fallback (Prevents 404 Console Errors) -->
+  <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
 
-  <!-- Line 20: External Stylesheets (FontAwesome & Web Fonts) -->
+  <!-- External Stylesheets (FontAwesome & Web Fonts) -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
 
-  <!-- Line 27: Site Stylesheet & Script Imports with Cache-Buster -->
-  <link rel="stylesheet" href="style.css?v=20260809_0635">
-  <script src="index.js?v=20260809_0635" defer></script>
+  <!-- Site Stylesheet & Script Imports with Cache-Buster -->
+  <link rel="stylesheet" href="style.css?v=20260809_1755">
+  <script src="index.js?v=20260809_1755" defer></script>
 </head>
 <body>
 
-  <!-- Line 33: Top Header Navigation Bar (Home Left, Dropdown Right) -->
+  <!-- Top Header Navigation Bar -->
   <header class="navbar">
     <div class="nav-brand">
       <a href="https://werewolf3788.github.io/Website/" class="home-shortcut-btn" aria-label="Home Overview">
@@ -40,7 +34,7 @@
       <i class="fa-solid fa-bars"></i>
     </button>
 
-    <!-- Line 45: Folders Group Dropdown Navigation -->
+    <!-- Folders Group Dropdown Navigation -->
     <nav id="dynamic-menu" class="nav-menu">
       <div class="nav-dropdown-wrapper">
         <button type="button" class="dropdown-trigger-btn">
@@ -64,9 +58,10 @@
     </nav>
   </header>
 
-  <!-- Line 68: Main Dashboard Container -->
+  <!-- Main Dashboard Container -->
   <main class="dashboard-container">
     
+    <!-- Server Banner Section -->
     <section class="server-banner">
       <div class="banner-layout">
         <div class="map-preview-box">
@@ -78,7 +73,7 @@
         </div>
         <div class="banner-title">
           <div class="server-header-line">
-            <h1 id="server-name">OneLIVIDMAN and werewolf 618</h1>
+            <h1 id="server-name">OneLIVIDMAN and werewolf3788</h1>
             <span id="server-status-pill" class="status-pill status-online">
               <span class="status-dot"></span> <span id="status-text">ONLINE</span>
             </span>
@@ -96,7 +91,7 @@
       </div>
     </section>
 
-    <!-- Line 97: Global Metric Summary Row -->
+    <!-- Global Metric Summary Row -->
     <div class="metrics-row">
       <div class="metric-card">
         <i class="fa-solid fa-scale-balanced metric-icon" style="color:#4ade80;"></i>
@@ -124,12 +119,27 @@
       </div>
     </div>
 
-    <!-- Responsive Cards Grid -->
+    <!-- Responsive Cards Grid for All Primary Telemetry Categories -->
     <div class="grid-layout">
+      <!-- Active Server Contracts & Missions -->
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-file-contract"></i><h2>ACTIVE CONTRACTS & MISSIONS</h2></div>
+        <div id="missions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading contract telemetry...</div></div>
+      </div>
+
+      <!-- Map Collectibles -->
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-trophy"></i><h2>MAP COLLECTIBLES & DISCOVERIES</h2></div>
+        <div id="collectibles-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading collectible items...</div></div>
+      </div>
+
+      <!-- Farms -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-building-columns"></i><h2>REGISTERED SERVER FARMS</h2></div>
         <div id="farms-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Syncing farm telemetry...</div></div>
       </div>
+
+      <!-- Fleet Machinery Categories -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-tractor"></i><h2>FLEET TRACTORS & RIGS</h2></div>
         <div id="tractors-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning tractor fleet...</div></div>
@@ -150,10 +160,14 @@
         <div class="box-header"><i class="fa-solid fa-toolbox"></i><h2>PLAYER HAND TOOLS</h2></div>
         <div id="handtools-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning hand tools...</div></div>
       </div>
+
+      <!-- Field Crops & Agronomy -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-seedling"></i><h2>FIELD CROPS & AGRONOMY STATUS</h2></div>
         <div id="fields-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading field telemetry...</div></div>
       </div>
+
+      <!-- Productions -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-industry"></i><h2>MAP FACTORIES & PRODUCTIONS</h2></div>
         <div id="main-productions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading factory telemetry...</div></div>
@@ -174,7 +188,7 @@
 
   </main>
 
-  <!-- Lightbox View Modal -->
+  <!-- Lightbox View Modal (ALT descriptions shown strictly inside lightbox) -->
   <div id="lightbox-modal" class="lightbox-modal">
     <span id="lightbox-close" class="lightbox-close">&times;</span>
     <div id="lightbox-card-body" class="lightbox-body">
@@ -186,13 +200,13 @@
   <!-- System Sticky Footer -->
   <footer class="system-footer">
     <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sun, Aug 09, 2026, 06:35 AM (EDT)</strong></span>
+      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sun, Aug 09, 2026, 17:53:00 (EDT)</strong></span>
       <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
       <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
     </div>
   </footer>
 
-  <!-- Firebase Modular Connector -->
+  <!-- Combined Hybrid Connector: SDK Realtime Listener + REST Fallback Engine -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
@@ -214,18 +228,42 @@
     const auth = getAuth(app);
     const rootRef = ref(db);
 
+    // Primary Modular Realtime Listener
     function attachLiveSync() {
       onValue(rootRef, (snapshot) => {
         const val = snapshot.val();
         if (val && typeof window.renderDashboard === 'function') {
           window.renderDashboard(val);
         }
+      }, (error) => {
+        console.warn("⚠️ SDK Listener restricted, switching to REST sync:", error.message);
+        loadRESTFallback();
       });
+    }
+
+    // Direct REST API Fallback (Bypasses browser ad-blocker network blocks)
+    async function loadRESTFallback() {
+      try {
+        const response = await fetch("https://entertainment-71888-default-rtdb.firebaseio.com/.json");
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        if (data && typeof window.renderDashboard === 'function') {
+          window.renderDashboard(data);
+        }
+      } catch (err) {
+        console.error("⚠️ REST Fetch Error:", err);
+      }
     }
 
     onAuthStateChanged(auth, (user) => {
       if (!user) signInAnonymously(auth);
       attachLiveSync();
+    });
+
+    // Auto-executes REST load on boot
+    document.addEventListener("DOMContentLoaded", () => {
+      loadRESTFallback();
+      setInterval(loadRESTFallback, 30000);
     });
   </script>
 </body>
