@@ -1,635 +1,97 @@
 /* ==========================================================================
-   File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 20:02:15 (EDT - New York)
-   Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Tactical Telemetry Engine designed for G-Portal savegame XML.
-                Parses licensePlates, multi-fillUnit, attachment chains,
-                aiJobVehicle parameters, and careerSavegame settings.
+   File: Code.gs (Google Apps Script)
+   Deployment Timestamp: Sun, Aug 09, 2026, 20:10:00 (EDT - New York)
+   Project: FS25 Hybrid Realtime Telemetry Sync Engine
+   Description: Expanded G-Portal feed fetcher. Ingests careerSavegame,
+                vehicles, economy, placeables, items, and handTools
+                to populate all 12 dashboard cards in real time.
    ========================================================================== */
 
-// Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
-(function injectGA4() {
-  try {
-    if (!document.getElementById('ga4-gtag-script')) {
-      const script = document.createElement('script');
-      script.id = 'ga4-gtag-script';
-      script.async = true;
-      script.src = "//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD";
-      script.onerror = () => console.warn("ℹ️ GA4 tag skipped by client extension.");
-      document.head.appendChild(script);
+const GPORTAL_FEEDS = {
+  STATS_XML: "http://144.126.153.115:8300/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM",
+  MAP_IMAGE: "http://144.126.153.115:8300/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=60&size=512",
+  SAVEGAME_CAREER: "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=careerSavegame",
+  SAVEGAME_VEHICLES: "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=vehicles",
+  SAVEGAME_ECONOMY: "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=economy",
+  SAVEGAME_PLACEABLES: "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=placeables",
+  SAVEGAME_ITEMS: "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=items",
+  SAVEGAME_HANDTOOLS: "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=handTools",
+  SAVEGAME_MISSIONS: "http://144.126.153.115:8300/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=missions"
+};
 
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){ dataLayer.push(arguments); }
-      window.gtag = gtag;
-      gtag('js', new Date());
-      gtag('config', 'G-CTYHDF4MSD', { 'send_page_view': true, 'anonymize_ip': false });
+const FIREBASE_DB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
+
+function checkAndSyncAllGPortalFeeds() {
+  const timestamp = getNewYorkTimestamp();
+  Logger.log(`[${timestamp}] Initiating Full G-Portal Feed Processing...`);
+
+  try {
+    // Fetch all fast HTML savegame files
+    const fastCareerRaw = fetchUrlContent(GPORTAL_FEEDS.SAVEGAME_CAREER);
+    const fastVehiclesRaw = fetchUrlContent(GPORTAL_FEEDS.SAVEGAME_VEHICLES);
+    const fastEconomyRaw = fetchUrlContent(GPORTAL_FEEDS.SAVEGAME_ECONOMY);
+    const fastPlaceablesRaw = fetchUrlContent(GPORTAL_FEEDS.SAVEGAME_PLACEABLES);
+    const fastItemsRaw = fetchUrlContent(GPORTAL_FEEDS.SAVEGAME_ITEMS);
+    const fastHandToolsRaw = fetchUrlContent(GPORTAL_FEEDS.SAVEGAME_HANDTOOLS);
+    const fastMissionsRaw = fetchUrlContent(GPORTAL_FEEDS.SAVEGAME_MISSIONS);
+    const statsXmlRaw = fetchUrlContent(GPORTAL_FEEDS.STATS_XML);
+
+    const payload = {
+      careerSavegame_raw: extractXmlFromHtmlWrapper(fastCareerRaw),
+      vehicles_raw: extractXmlFromHtmlWrapper(fastVehiclesRaw),
+      farms_raw: extractXmlFromHtmlWrapper(fastEconomyRaw),
+      placeables_raw: extractXmlFromHtmlWrapper(fastPlaceablesRaw),
+      items_raw: extractXmlFromHtmlWrapper(fastItemsRaw),
+      handTools_raw: extractXmlFromHtmlWrapper(fastHandToolsRaw),
+      missions_raw: extractXmlFromHtmlWrapper(fastMissionsRaw) || extractXmlFromHtmlWrapper(fastEconomyRaw),
+      stats_xml_raw: statsXmlRaw,
+      map_image_url: GPORTAL_FEEDS.MAP_IMAGE,
+      lastSystemUpdate: timestamp,
+      syncStatus: "SUCCESS",
+      activeSaveSlot: "1"
+    };
+
+    const options = {
+      method: "patch",
+      contentType: "application/json",
+      payload: JSON.stringify(payload),
+      muteHttpExceptions: true
+    };
+
+    const response = UrlFetchApp.fetch(FIREBASE_DB_URL, options);
+    if (response.getResponseCode() === 200) {
+      Logger.log(`[${timestamp}] ✅ Successfully synced complete telemetry payload to Firebase.`);
+    } else {
+      Logger.log(`[${timestamp}] ⚠️ Firebase HTTP error code: ${response.getResponseCode()}`);
     }
+
+  } catch (error) {
+    Logger.log(`[${timestamp}] ❌ Critical Sync Failure: ${error.message}`);
+  }
+}
+
+function fetchUrlContent(url) {
+  try {
+    const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true });
+    return response.getResponseCode() === 200 ? response.getContentText() : "";
   } catch (e) {
-    console.warn("ℹ️ GA4 initialization bypassed.");
-  }
-})();
-
-// Base Raw URL for GitHub Repository Images
-const REPO_IMAGES_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
-const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
-
-// Friendly Name Mapping for Internal Hand Tools & Items
-const HAND_TOOL_NAMES = {
-  "XP550": "Husqvarna XP550 Chainsaw",
-  "MS261": "Stihl MS261 Chainsaw",
-  "FLASHLIGHT100": "Heavy Duty Flashlight",
-  "PRESSUREWASHER": "Kärcher High Pressure Washer"
-};
-
-// Farm Color Palette Mapping
-const FARM_COLOR_PALETTE = {
-  "0": { name: "AI / Public", color: "#facc15" },
-  "1": { name: "Farm 1", color: "#ff5f00" },
-  "2": { name: "Farm 2", color: "#c41e3a" },
-  "3": { name: "Farm 3", color: "#22c55e" },
-  "4": { name: "Farm 4", color: "#2563eb" },
-  "5": { name: "Farm 5", color: "#a855f7" },
-  "6": { name: "Farm 6", color: "#ec4899" }
-};
-
-function getFarmColor(farmId) {
-  const fid = String(farmId || "0");
-  return FARM_COLOR_PALETTE[fid] ? FARM_COLOR_PALETTE[fid].color : "#facc15";
-}
-
-function formatGameTime(rawTimeSeconds) {
-  if (rawTimeSeconds === undefined || rawTimeSeconds === null) return "00:00";
-  let totalMinutes = Math.floor(parseFloat(rawTimeSeconds) / 60);
-  if (isNaN(totalMinutes)) return "00:00";
-  let hours = Math.floor(totalMinutes / 60) % 24;
-  let minutes = totalMinutes % 60;
-  return `${hours < 10 ? '0' + hours : hours}:${minutes < 10 ? '0' + minutes : minutes}`;
-}
-
-function formatHours(operatingSeconds) {
-  if (!operatingSeconds) return "0.0 hrs";
-  const hours = parseFloat(operatingSeconds) / 3600;
-  return `${hours.toFixed(1)} hrs`;
-}
-
-let parsedModCatalog = [];
-let firebaseImageMappings = {};
-
-/* ==========================================================================
-   SECTION 1: Universal Image Resolver Engine
-   ========================================================================== */
-
-function resolveItemImage(rawFilename) {
-  if (!rawFilename) return null;
-
-  const rawString = String(rawFilename).trim();
-  const displayTitle = formatName(rawString);
-  const cleanDisplayKey = sanitizeKey(displayTitle);
-  const baseFileName = rawString.split('/').pop().replace('.xml', '').replace('.zip', '');
-  const cleanFileNameKey = sanitizeKey(baseFileName);
-  const cleanRawKey = sanitizeKey(rawString);
-
-  let targetFilename = "";
-
-  if (firebaseImageMappings && Object.keys(firebaseImageMappings).length > 0) {
-    const matchedRecord = 
-      firebaseImageMappings[cleanFileNameKey] ||
-      firebaseImageMappings[cleanDisplayKey] ||
-      firebaseImageMappings[cleanRawKey];
-
-    if (matchedRecord) {
-      targetFilename = matchedRecord.filename || matchedRecord.image || matchedRecord.file_name || matchedRecord.imageurl || "";
-    } else {
-      const allKeys = Object.keys(firebaseImageMappings);
-      const matchedKey = allKeys.find(k => {
-        const lowerK = k.toLowerCase();
-        return lowerK.includes(cleanFileNameKey) || 
-               cleanFileNameKey.includes(lowerK) ||
-               (cleanFileNameKey.includes("chainsaw") && lowerK.includes("chainsaw")) ||
-               (cleanFileNameKey.includes("xp550") && lowerK.includes("xp550")) ||
-               (cleanFileNameKey.includes("ms261") && lowerK.includes("ms261"));
-      });
-
-      if (matchedKey) {
-        const record = firebaseImageMappings[matchedKey];
-        targetFilename = record.filename || record.image || record.file_name || record.imageurl || "";
-      }
-    }
-  }
-
-  if (!targetFilename && (rawString.endsWith('.jpg') || rawString.endsWith('.png'))) {
-    targetFilename = rawString.split('/').pop();
-  }
-
-  return targetFilename ? (isValidImageUrl(targetFilename) ? targetFilename : `${REPO_IMAGES_BASE}${encodeURIComponent(targetFilename)}`) : null;
-}
-
-function parseXML(rawText) {
-  if (!rawText || typeof rawText !== 'string') return null;
-  try {
-    const xmlDoc = (new DOMParser()).parseFromString(rawText.trim(), "text/xml");
-    return xmlDoc.getElementsByTagName("parsererror").length > 0 ? null : xmlDoc;
-  } catch (e) { return null; }
-}
-
-function formatName(str) {
-  if (!str) return 'GENERAL ITEM';
-  let clean = String(str).split('/').pop().replace('.xml', '').replace('.zip', '').replace('FS25_', '');
-  return clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').toUpperCase().trim();
-}
-
-function sanitizeKey(str) {
-  return str ? String(str).trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '') : "";
-}
-
-function isValidImageUrl(url) {
-  return url && typeof url === 'string' && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('//') || url.startsWith('./'));
-}
-
-/* ==========================================================================
-   SECTION 2: Backup Mod Catalog Loader
-   ========================================================================== */
-
-async function fetchModCatalog() {
-  const gridContainer = document.getElementById('mod-hub-grid');
-  const catBar = document.getElementById('mod-categories-bar');
-  if (!gridContainer) return;
-
-  try {
-    const response = await fetch(CSV_MODS_URL);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const csvText = await response.text();
-
-    const rows = parseCSV(csvText);
-    if (rows.length <= 1) return;
-
-    const headers = rows[0].map(h => h.trim().toLowerCase());
-    parsedModCatalog = [];
-    const categoriesSet = new Set(['ALL']);
-
-    for (let i = 1; i < rows.length; i++) {
-      const row = rows[i];
-      if (row.length < headers.length) continue;
-      
-      const modObj = {};
-      headers.forEach((header, index) => {
-        modObj[header] = row[index] ? row[index].trim() : '';
-      });
-
-      if (modObj.name || modObj.title || modObj['mod name']) {
-        parsedModCatalog.push(modObj);
-        const cat = modObj.category || modObj.type || 'General';
-        categoriesSet.add(cat.toUpperCase());
-      }
-    }
-
-    if (catBar) {
-      catBar.innerHTML = Array.from(categoriesSet).map(cat => 
-        `<button type="button" class="category-btn ${cat === 'ALL' ? 'active' : ''}" onclick="filterModsCategory('${cat}', this)">${cat}</button>`
-      ).join('');
-    }
-
-    if (!window.hasRenderedFirebaseMods) {
-      renderModGrid(parsedModCatalog);
-    }
-
-  } catch (err) {
-    console.warn("⚠️ Google Sheet CSV Backup Load Note:", err.message);
+    return "";
   }
 }
 
-function parseCSV(text) {
-  const lines = [];
-  let row = [];
-  let inQuotes = false;
-  let currentVal = '';
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const nextChar = text[i + 1];
-
-    if (char === '"' && inQuotes && nextChar === '"') {
-      currentVal += '"';
-      i++;
-    } else if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
-      row.push(currentVal);
-      currentVal = '';
-    } else if ((char === '\r' || char === '\n') && !inQuotes) {
-      if (char === '\r' && nextChar === '\n') i++;
-      row.push(currentVal);
-      if (row.length > 0 && row.some(cell => cell.length > 0)) lines.push(row);
-      row = [];
-      currentVal = '';
-    } else {
-      currentVal += char;
-    }
+function extractXmlFromHtmlWrapper(htmlText) {
+  if (!htmlText) return "";
+  const trimmed = htmlText.trim();
+  if (trimmed.startsWith("<?xml") || trimmed.startsWith("<careerSavegame") || trimmed.startsWith("<vehicles") || trimmed.startsWith("<farms") || trimmed.startsWith("<placeables") || trimmed.startsWith("<missions")) {
+    return trimmed;
   }
-  if (currentVal || row.length > 0) { row.push(currentVal); lines.push(row); }
-  return lines;
+  const preMatch = htmlText.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
+  if (preMatch && preMatch[1]) return preMatch[1].trim();
+  const codeMatch = htmlText.match(/<code[^>]*>([\s\S]*?)<\/code>/i);
+  if (codeMatch && codeMatch[1]) return codeMatch[1].trim();
+  return htmlText;
 }
 
-window.filterModsCategory = function(selectedCat, btnElem) {
-  document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-  if (btnElem) btnElem.classList.add('active');
-
-  const sourceData = window.activeFirebaseModData || parsedModCatalog;
-
-  if (selectedCat === 'ALL') {
-    renderModGrid(sourceData);
-  } else {
-    const filtered = sourceData.filter(m => {
-      const cat = m.category_g || m.category_k || m.category || m.type || 'General';
-      return String(cat).toUpperCase() === selectedCat;
-    });
-    renderModGrid(filtered);
-  }
-};
-
-/* ==========================================================================
-   SECTION 3: Firebase Mod Catalog Card Grid Renderer
-   ========================================================================== */
-
-function renderModGrid(modsData) {
-  const gridContainer = document.getElementById('mod-hub-grid');
-  if (!gridContainer) return;
-
-  let modList = [];
-
-  if (Array.isArray(modsData)) {
-    modList = modsData;
-  } else if (modsData && typeof modsData === 'object') {
-    modList = Object.values(modsData);
-  }
-
-  if (modList.length === 0) {
-    gridContainer.innerHTML = `<div class="empty-state">No matching mods found in database.</div>`;
-    return;
-  }
-
-  gridContainer.innerHTML = modList.map(mod => {
-    const name = mod.name_a || mod.name || mod.title || 'Unnamed Mod';
-    const category = mod.category_g || mod.category_k || mod.category || mod.mod_type_f || 'General';
-    const desc = mod.description_d || mod.description || '';
-    const author = mod.author_h || mod.author || 'Community Modder';
-    const link = mod.url_w_utm_c || mod.link || mod.url || mod.url_c || '#';
-    const filename = mod.filename_j || mod.filename || '';
-    const size = mod.size_i || mod.size || '';
-    const crossplay = mod.crossplay_e || mod.crossplay || 'Yes';
-    const rawImg = mod.image_b || mod.image || '';
-
-    const repoMatchedImg = resolveItemImage(filename || name);
-    const finalImg = isValidImageUrl(rawImg) ? rawImg : repoMatchedImg;
-
-    const imgHtml = finalImg
-      ? `<img src="${finalImg}" data-alt="${name}" class="lightbox-trigger mod-card-thumb">`
-      : `<div class="mod-card-icon-fallback"><i class="fa-solid fa-cube"></i></div>`;
-
-    return `
-      <div class="mod-card">
-        ${imgHtml}
-        <div class="mod-card-body">
-          <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="mod-category-tag">${category}</span>
-            <span class="badge" style="font-size:0.7rem; padding:2px 6px;">${crossplay === 'Yes' ? 'Crossplay' : 'PC Only'}</span>
-          </div>
-          <h3 class="mod-title">${name}</h3>
-          ${desc ? `<p class="mod-desc">${desc.substring(0, 140)}...</p>` : ''}
-          <div class="mod-card-footer">
-            <span class="mod-author"><i class="fa-solid fa-user"></i> ${author} ${size ? `(${size})` : ''}</span>
-            ${link !== '#' ? `<a href="${link}" target="_blank" rel="noopener" class="mod-download-btn"><i class="fa-solid fa-download"></i> Get Mod</a>` : ''}
-          </div>
-        </div>
-      </div>`;
-  }).join('');
+function getNewYorkTimestamp() {
+  return Utilities.formatDate(new Date(), "America/New_York", "yyyy-MM-dd HH:mm:ss");
 }
-
-/* ==========================================================================
-   SECTION 4: Savegame XML Telemetry Dashboard Engine
-   ========================================================================== */
-
-window.renderDashboard = function(rawIncomingData) {
-  if (!rawIncomingData) return;
-
-  let data = rawIncomingData;
-  if (typeof rawIncomingData.val === 'function') {
-    data = rawIncomingData.val();
-  }
-
-  // Mod Catalog Node (/FS25_Mods_Info)
-  if (data.FS25_Mods_Info && data.FS25_Mods_Info.Images) {
-    firebaseImageMappings = data.FS25_Mods_Info.Images;
-  }
-  if (data.FS25_Mods_Info && data.FS25_Mods_Info.Website) {
-    window.activeFirebaseModData = Object.values(data.FS25_Mods_Info.Website);
-    window.hasRenderedFirebaseMods = true;
-    renderModGrid(window.activeFirebaseModData);
-  }
-
-  // Telemetry Node (/fs25)
-  const fs25Node = data.fs25 ? data.fs25 : (data.careerSavegame_raw || data.farms_raw || data.stats_xml_raw ? data : {});
-  if (!fs25Node || Object.keys(fs25Node).length === 0) return;
-
-  const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-
-  // Parse Raw XML Enpoints
-  const careerXml = parseXML(fs25Node.careerSavegame_raw);
-  const vehXml = parseXML(fs25Node.vehicles_raw);
-  const farmsXml = parseXML(fs25Node.farms_raw);
-  const statsXml = parseXML(fs25Node.stats_xml_raw);
-
-  /* ------------------------------------------------------------------------
-     CARD 1: SERVER HEADER & CAREERSAVEGAME SETTINGS
-     ------------------------------------------------------------------------ */
-  if (careerXml) {
-    const settings = careerXml.querySelector("settings");
-    if (settings) {
-      setTxt('server-name', settings.querySelector("savegameName")?.textContent || "OneLIVIDMAN and werewolf 618");
-      setTxt('server-map', `Map: ${settings.querySelector("mapTitle")?.textContent || "Calm Lands"}`);
-      setTxt('traffic-badge', `Traffic: ${settings.querySelector("trafficEnabled")?.textContent === 'true' ? 'ON' : 'OFF'}`);
-      setTxt('time-speed-badge', `Speed: ${settings.querySelector("timeScale")?.textContent || "0.5"}x`);
-    }
-
-    const stats = careerXml.querySelector("statistics");
-    if (stats) {
-      const money = Math.round(parseFloat(stats.querySelector("money")?.textContent || "0"));
-      setTxt('global-net-worth', `$${money.toLocaleString()}`);
-    }
-  }
-
-  /* ------------------------------------------------------------------------
-     CARD 2: LIVE ONLINE PLAYERS & BANNER OVERRIDE
-     ------------------------------------------------------------------------ */
-  const playersCont = document.getElementById('active-players-container');
-  let activeGamertags = [];
-  let totalSlots = "6";
-
-  if (statsXml) {
-    const slotsNode = statsXml.querySelector("Slots");
-    if (slotsNode) totalSlots = slotsNode.getAttribute("capacity") || "6";
-
-    statsXml.querySelectorAll("Player, player").forEach(p => {
-      const isUsed = p.getAttribute("isUsed") === "true";
-      const name = p.textContent ? p.textContent.trim() : p.getAttribute("name");
-      if (isUsed && name) {
-        const uptimeMin = p.getAttribute("uptime") || "0";
-        const posX = p.getAttribute("x") ? parseFloat(p.getAttribute("x")).toFixed(1) : null;
-        const posZ = p.getAttribute("z") ? parseFloat(p.getAttribute("z")).toFixed(1) : null;
-        activeGamertags.push({ name, uptimeMin, posX, posZ });
-      }
-    });
-  }
-
-  if (playersCont) {
-    let playersHtml = "";
-    activeGamertags.forEach(p => {
-      playersHtml += `
-        <div class="telemetry-card" style="border-left: 4px solid #22c55e; padding: 0.85rem;">
-          <i class="fa-solid fa-gamepad card-icon" style="color:#22c55e;"></i>
-          <div class="card-details">
-            <strong style="color:#22c55e; font-size:1.05rem;">${p.name}</strong>
-            <span style="color:#ffffff;">Uptime: ${p.uptimeMin} mins</span>
-            ${p.posX ? `<span class="card-subtext">Coordinates: X: ${p.posX} | Z: ${p.posZ}</span>` : ''}
-          </div>
-        </div>`;
-    });
-
-    playersCont.innerHTML = playersHtml || `<div class="empty-state">No Active Players Connected</div>`;
-  }
-  setTxt('server-players', `Players: ${activeGamertags.length}/${totalSlots}`);
-
-  /* ------------------------------------------------------------------------
-     CARD 3: REGISTERED SERVER FARMS & BALANCES
-     ------------------------------------------------------------------------ */
-  const farmsCont = document.getElementById('farms-container');
-  if (farmsCont) {
-    let farmsHtml = "";
-    if (farmsXml) {
-      farmsXml.querySelectorAll("farm").forEach(farm => {
-        const farmId = farm.getAttribute("farmId") || farm.getAttribute("id");
-        if (farmId && farmId !== "0") {
-          const name = farm.getAttribute("name") || `Farm #${farmId}`;
-          const money = Math.round(parseFloat(farm.getAttribute("money") || "0"));
-          const color = getFarmColor(farmId);
-
-          farmsHtml += `
-            <div class="telemetry-card" style="border-left: 4px solid ${color}; padding: 0.85rem;">
-              <i class="fa-solid fa-building-columns card-icon" style="color:${color};"></i>
-              <div class="card-details">
-                <strong style="color:${color};">${name}</strong>
-                <span style="font-size:1.05rem; font-weight:700; color:#ffffff;">Balance: $${money.toLocaleString()}</span>
-              </div>
-            </div>`;
-        }
-      });
-    }
-    farmsCont.innerHTML = farmsHtml || `<div class="empty-state">No Active Server Farms Found</div>`;
-  }
-
-  /* ------------------------------------------------------------------------
-     CARD 4: VEHICLES, LICENSE PLATES & MULTI-FILL UNITS
-     ------------------------------------------------------------------------ */
-  let vehicleCount = 0;
-  const tracCont = document.getElementById('tractors-container');
-  const harvCont = document.getElementById('harvesters-container');
-  const trailCont = document.getElementById('trailers-container');
-  const implCont = document.getElementById('implements-container');
-
-  let tractors = "", harvesters = "", trailers = "", implements = "";
-
-  if (vehXml) {
-    vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
-      vehicleCount++;
-      const rawFilename = v.getAttribute("filename") || "";
-      const name = formatName(rawFilename);
-      const farmId = v.getAttribute("farmId") || "1";
-      const color = getFarmColor(farmId);
-      const operatingTime = formatHours(v.getAttribute("operatingTime"));
-
-      // License Plate Extraction
-      let plateText = "";
-      const plateNode = v.querySelector("licensePlates");
-      if (plateNode) {
-        plateText = plateNode.getAttribute("characters") || "";
-      }
-      const plateBadge = plateText.trim() 
-        ? `<span class="badge" style="border: 1px solid var(--accent-gold); color: var(--accent-gold);"><i class="fa-solid fa-id-card"></i> ${plateText.trim()}</span>` 
-        : '';
-
-      // AI Worker State
-      const aiNode = v.querySelector("aiFieldWorker");
-      const isAiActive = aiNode ? aiNode.getAttribute("isActive") === "true" : false;
-      const driverBadge = isAiActive 
-        ? `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15;"><i class="fa-solid fa-robot"></i> AI Active</span>` 
-        : `<span class="badge" style="background:rgba(148, 163, 184, 0.1); color:#94a3b8;">Parked</span>`;
-
-      // Multi-Unit Cargo Extraction
-      let cargoList = [];
-      v.querySelectorAll("fillUnit > unit").forEach(u => {
-        const ft = u.getAttribute("fillType");
-        const lvl = Math.round(parseFloat(u.getAttribute("fillLevel") || "0"));
-        if (ft && ft !== "UNKNOWN" && lvl > 0) {
-          cargoList.push(`${formatName(ft)}: ${lvl.toLocaleString()} L`);
-        }
-      });
-
-      const cargoText = cargoList.length > 0 
-        ? `<div class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-box-archive"></i> Unit Contents: ${cargoList.join(" | ")}</div>` 
-        : '';
-
-      const matchedImg = resolveItemImage(rawFilename);
-      const imgHtml = matchedImg 
-        ? `<img src="${matchedImg}" class="telemetry-card-thumb lightbox-trigger" data-alt="${name}">`
-        : `<i class="fa-solid fa-tractor card-icon" style="color:${color};"></i>`;
-
-      const card = `
-        <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
-          ${imgHtml}
-          <div class="card-details" style="width:100%;">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.4rem;">
-              <strong style="color:${color};">${name}</strong>
-              <div style="display:flex; gap:0.4rem; align-items:center;">
-                ${plateBadge}
-                ${driverBadge}
-              </div>
-            </div>
-            <span>Owner: Farm #${farmId} | Usage: ${operatingTime}</span>
-            ${cargoText}
-          </div>
-        </div>`;
-
-      const lowerFile = rawFilename.toLowerCase();
-      if (lowerFile.includes("combine") || lowerFile.includes("harvest") || lowerFile.includes("cutter")) harvesters += card;
-      else if (lowerFile.includes("trailer") || lowerFile.includes("wagon") || lowerFile.includes("z18051")) trailers += card;
-      else if (lowerFile.includes("tractor") || lowerFile.includes("seriesm8") || lowerFile.includes("truck")) tractors += card;
-      else implements += card;
-    });
-  }
-
-  if (tracCont) tracCont.innerHTML = tractors || `<div class="empty-state">No Active Tractors Logged</div>`;
-  if (harvCont) harvCont.innerHTML = harvesters || `<div class="empty-state">No Active Harvesters Logged</div>`;
-  if (trailCont) trailCont.innerHTML = trailers || `<div class="empty-state">No Active Trailers Logged</div>`;
-  if (implCont) implCont.innerHTML = implements || `<div class="empty-state">No Active Implements Logged</div>`;
-  setTxt('global-vehicle-count', vehicleCount);
-
-  /* ------------------------------------------------------------------------
-     CARD 5: FARMLANDS & FIELD ACREAGE
-     ------------------------------------------------------------------------ */
-  const fieldsCont = document.getElementById('fields-container');
-  if (fieldsCont) {
-    let fieldsHtml = "";
-    let fieldCount = 0;
-
-    if (statsXml) {
-      statsXml.querySelectorAll("Farmland, farmland").forEach(f => {
-        fieldCount++;
-        const id = f.getAttribute("id") || f.getAttribute("name");
-        const farmId = f.getAttribute("owner") || "0";
-        const color = getFarmColor(farmId);
-        const areaHa = parseFloat(f.getAttribute("area") || "0");
-        const acresText = (areaHa * 2.47105).toFixed(2);
-        const price = Math.round(parseFloat(f.getAttribute("price") || "0"));
-
-        fieldsHtml += `
-          <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
-            <i class="fa-solid fa-seedling card-icon" style="color:${color};"></i>
-            <div class="card-details" style="width:100%;">
-              <strong style="color:${color};">Farmland #${id} (${acresText} Acres)</strong>
-              <span>Owner: ${farmId === '0' ? 'Public / Buyable' : 'Farm #' + farmId} | Value: $${price.toLocaleString()}</span>
-            </div>
-          </div>`;
-      });
-    }
-
-    fieldsCont.innerHTML = fieldsHtml || `<div class="empty-state">No Farmland Logged</div>`;
-    setTxt('global-land-count', `${fieldCount} Fields`);
-  }
-
-  /* ------------------------------------------------------------------------
-     CARD 6: SERVER MOD DIRECTORY SUMMARY
-     ------------------------------------------------------------------------ */
-  const modErrors = fs25Node.modErrors || [];
-  const serverEvents = fs25Node.serverEvents || [];
-  renderTacticalLog(modErrors, serverEvents);
-};
-
-function renderTacticalLog(modErrors, serverEvents) {
-  const container = document.getElementById('tactical-log-container');
-  const errorCountEl = document.getElementById('global-mod-errors');
-  if (!container) return;
-
-  const errors = Array.isArray(modErrors) ? modErrors : [];
-  const events = Array.isArray(serverEvents) ? serverEvents : [];
-
-  if (errorCountEl) errorCountEl.textContent = errors.length;
-
-  if (errors.length === 0 && events.length === 0) {
-    container.innerHTML = `<div class="empty-state">No Recent Server Log Activity</div>`;
-    return;
-  }
-
-  let html = "";
-  errors.slice(-10).reverse().forEach(err => {
-    html += `
-      <div class="log-entry log-error">
-        <span class="log-time">[${err.timestamp || 'DIAGNOSTIC'}]</span>
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        <span>${err.message || 'Mod Warning Detected'}</span>
-      </div>`;
-  });
-
-  events.slice(-10).reverse().forEach(ev => {
-    html += `
-      <div class="log-entry log-event">
-        <span class="log-time">[${ev.timestamp || 'EVENT'}]</span>
-        <i class="fa-solid fa-satellite-dish"></i>
-        <span>${ev.message || 'Server Event Logged'}</span>
-      </div>`;
-  });
-
-  container.innerHTML = html;
-}
-
-/* ==========================================================================
-   SECTION 5: Event Listeners & Lightbox Setup
-   ========================================================================== */
-
-document.addEventListener('DOMContentLoaded', () => {
-  const modal = document.getElementById('lightbox-modal');
-  const modalImg = document.getElementById('lightbox-img');
-  const modalCaption = document.getElementById('lightbox-caption');
-  const closeBtn = document.getElementById('lightbox-close');
-
-  document.addEventListener('click', (e) => {
-    if (e.target && e.target.classList.contains('lightbox-trigger')) {
-      if (modal && modalImg) {
-        modal.style.display = 'flex';
-        modalImg.src = e.target.src;
-        if (modalCaption) {
-          modalCaption.textContent = e.target.getAttribute('data-alt') || e.target.alt || 'Enlarged Preview';
-        }
-      }
-    }
-  });
-
-  if (closeBtn) closeBtn.addEventListener('click', () => { modal.style.display = 'none'; });
-  if (modal) modal.addEventListener('click', (e) => { if (e.target === modal) modal.style.display = 'none'; });
-
-  const toggleBtn = document.getElementById('mobile-menu-toggle');
-  const navMenu = document.getElementById('dynamic-menu');
-  if (toggleBtn && navMenu) {
-    toggleBtn.addEventListener('click', () => navMenu.classList.toggle('open'));
-  }
-
-  fetchModCatalog();
-});
-
-window.setServerStatus = function(isOnline) {
-  const statusPill = document.getElementById('server-status-pill');
-  const statusText = document.getElementById('status-text');
-  if (statusPill && statusText) {
-    statusPill.className = isOnline ? 'status-pill status-online' : 'status-pill status-offline';
-    statusText.textContent = isOnline ? 'ONLINE' : 'OFFLINE';
-  }
-};
