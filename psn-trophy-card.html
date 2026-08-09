@@ -1,0 +1,462 @@
+<!--
+  File: trophies.html
+  Location: /trophies.html
+  Description: Squad Co-Op PlayStation Trophy & Progress Matrix
+               Reads strictly from /psn/gamertags for active PlayStation handles.
+               Displays only active gamertags (e.g. WildHorse_Spirit).
+  Database Endpoint: https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags
+  Last Modified: Saturday, August 08, 2026 | 9:20 PM EDT
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Squad Trophy Matrix | Werewolf Project</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --color-wildhorse: #FF5F1F;
+            --color-lividman: #C41E3A;
+            --color-darkwing: #9333EA;
+            --color-desdemona: #00F2FF;
+        }
+
+        body {
+            background-color: #0b0f19;
+            color: #f1f5f9;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        .max-w-7xl {
+            width: 85% !important;
+            max-width: 85% !important;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .custom-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .custom-card:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px -3px rgba(0, 0, 0, 0.5);
+        }
+
+        .trophy-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 800;
+            font-family: monospace;
+            border: 1px solid transparent;
+        }
+
+        .trophy-platinum { background: rgba(168, 85, 247, 0.15); border-color: rgba(168, 85, 247, 0.4); color: #c084fc; }
+        .trophy-gold { background: rgba(234, 179, 8, 0.15); border-color: rgba(234, 179, 8, 0.4); color: #fde047; }
+        .trophy-silver { background: rgba(148, 163, 184, 0.15); border-color: rgba(148, 163, 184, 0.4); color: #cbd5e1; }
+        .trophy-bronze { background: rgba(217, 119, 6, 0.15); border-color: rgba(217, 119, 6, 0.4); color: #f97316; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header Navigation -->
+    <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-800 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center justify-between h-16">
+                <a href="https://werewolf3788.github.io/Website/" class="flex items-center space-x-3">
+                    <i class="fa-solid fa-trophy text-amber-400 text-2xl"></i>
+                    <span class="text-xl font-black tracking-tighter text-sky-400">PLAYSTATION<span class="text-white"> SQUAD MATRIX</span></span>
+                </a>
+                <a href="https://werewolf3788.github.io/Website/" class="text-xs font-bold text-slate-400 hover:text-white bg-slate-800 px-4 py-2 rounded-lg border border-slate-700 transition-colors">
+                    <i class="fa-solid fa-arrow-left mr-1.5"></i> Back to Main
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Banner -->
+    <header class="py-10 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-3xl font-black text-sky-400 tracking-tight uppercase">Co-Op Trophy Operations</h1>
+            <p class="mt-3 text-slate-400 text-sm max-w-2xl mx-auto">
+                Real-time PlayStation Network trophy progress for co-op titles shared by active PSN Gamertags (&gt;0% completion).
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 pb-16 flex-grow">
+        <div id="trophy-matrix-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="custom-card p-10 col-span-full text-center flex flex-col items-center justify-center min-h-[300px]">
+                <i class="fa-solid fa-spinner fa-spin text-3xl text-sky-400 mb-3"></i>
+                <span class="text-slate-400 text-sm font-mono">Syncing squad trophy payloads from Realtime Database...</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- Interactive Lightbox Modal -->
+    <div id="trophy-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden shadow-2xl">
+            <div id="modal-header" class="p-6 border-b border-slate-800 relative bg-cover bg-center">
+                <div class="absolute inset-0 bg-slate-950/80"></div>
+                <div class="relative z-10 flex justify-between items-start">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-widest text-sky-400"><i class="fa-solid fa-shield-halved mr-1"></i> Squad Trophy Breakdown</span>
+                        <h2 id="modal-game-title" class="text-2xl font-black text-white mt-1 uppercase">Game Title</h2>
+                    </div>
+                    <button onclick="closeModal()" class="text-slate-400 hover:text-white bg-slate-800 p-2 rounded-lg border border-slate-700">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="modal-trophy-list" class="p-6 overflow-y-auto space-y-3 flex-grow">
+                <!-- Dynamic Trophy Items -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modules -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+            authDomain: "entertainment-71888.firebaseapp.com",
+            databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+            projectId: "entertainment-71888",
+            storageBucket: "entertainment-71888.firebasestorage.app",
+            messagingSenderId: "660524340277",
+            appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const rtdb = getDatabase(app);
+
+        // Explicit PSN Gamertag Color & Display Configurations
+        const PLAYER_CONFIG = {
+            'WildHorse_Spirit': { label: 'WildHorse_Spirit', color: '#FF5F1F' },
+            'wildhorse_spirit': { label: 'WildHorse_Spirit', color: '#FF5F1F' },
+            'OneLIVIDMAN': { label: 'OneLIVIDMAN', color: '#C41E3A' },
+            'onelividman': { label: 'OneLIVIDMAN', color: '#C41E3A' },
+            'Darkwing69420': { label: 'Darkwing69420', color: '#9333EA' },
+            'darkwing69420': { label: 'Darkwing69420', color: '#9333EA' },
+            'DesdemonaTiger': { label: 'DesdemonaTiger', color: '#00F2FF' },
+            'desdemonatiger': { label: 'DesdemonaTiger', color: '#00F2FF' },
+            'Balto20_01': { label: 'Balto20_01', color: '#10B981' },
+            'balto20_01': { label: 'Balto20_01', color: '#10B981' },
+            'ILIMjolnirILI': { label: 'ILIMjolnirILI', color: '#EAB308' },
+            'ilimjolnirili': { label: 'ILIMjolnirILI', color: '#EAB308' },
+            'joe-punk_': { label: 'joe-punk_', color: '#EC4899' }
+        };
+
+        let rawGamertagsCache = {};
+
+        function listenToRealtimeTrophies() {
+            const psnRef = ref(rtdb, 'psn/gamertags');
+            onValue(psnRef, (snapshot) => {
+                const grid = document.getElementById('trophy-matrix-grid');
+                if (!snapshot.exists()) {
+                    grid.innerHTML = `<div class="custom-card p-6 text-center col-span-full"><p class="text-slate-400">No PSN data available.</p></div>`;
+                    return;
+                }
+
+                rawGamertagsCache = snapshot.val();
+                processCoOpGames(rawGamertagsCache);
+            });
+        }
+
+        function processCoOpGames(gamertags) {
+            const grid = document.getElementById('trophy-matrix-grid');
+            const coOpGamesMap = {};
+
+            Object.entries(gamertags).forEach(([tag, playerData]) => {
+                if (!playerData) return;
+
+                const playerTheme = PLAYER_CONFIG[tag] || { label: tag, color: '#38bdf8' };
+                const gameList = [...(playerData.recentGames || []), ...(playerData.fullLibrary || [])];
+                const seenCommIds = new Set();
+
+                gameList.forEach(game => {
+                    const commId = game.npCommunicationId;
+                    if (!commId || seenCommIds.has(commId)) return;
+                    seenCommIds.add(commId);
+
+                    const progressVal = Number(game.progress) || 0;
+
+                    // Ignore players with 0% progress
+                    if (progressVal <= 0) return;
+
+                    const titleName = game.name || game.trophyTitleName || 'Unknown Title';
+                    const posterArt = game.art || game.trophyTitleIconUrl || game.image?.url || playerData.currentGameArt;
+                    const lastPlayedTime = game.lastPlayed ? new Date(game.lastPlayed).getTime() : 0;
+
+                    if (!coOpGamesMap[commId]) {
+                        coOpGamesMap[commId] = {
+                            commId,
+                            title: titleName,
+                            posterArt: posterArt,
+                            latestTrophyTimestamp: lastPlayedTime,
+                            players: []
+                        };
+                    } else {
+                        if (!coOpGamesMap[commId].posterArt && posterArt) {
+                            coOpGamesMap[commId].posterArt = posterArt;
+                        }
+                        if (lastPlayedTime > coOpGamesMap[commId].latestTrophyTimestamp) {
+                            coOpGamesMap[commId].latestTrophyTimestamp = lastPlayedTime;
+                        }
+                    }
+
+                    const summary = game.earnedTrophies || {
+                        platinum: game.progress === 100 ? 1 : 0,
+                        gold: 0, silver: 0, bronze: 0
+                    };
+
+                    const totalEarned = game.earnedTotal || (summary.platinum + summary.gold + summary.silver + summary.bronze) || 0;
+
+                    coOpGamesMap[commId].players.push({
+                        tag,
+                        label: playerTheme.label,
+                        color: playerTheme.color,
+                        progress: progressVal,
+                        earnedTotal: totalEarned,
+                        definedTotal: game.definedTotal || 0,
+                        lastPlayedTime: lastPlayedTime,
+                        trophies: summary
+                    });
+                });
+            });
+
+            // Keep games played by 2 OR MORE active players (>0%)
+            let filteredGames = Object.values(coOpGamesMap).filter(g => g.players.length >= 2);
+
+            // Sort cards by most recent activity date (newest first)
+            filteredGames.sort((a, b) => b.latestTrophyTimestamp - a.latestTrophyTimestamp);
+
+            if (filteredGames.length === 0) {
+                grid.innerHTML = `
+                    <div class="custom-card p-8 text-center col-span-full">
+                        <i class="fa-solid fa-gamepad text-4xl text-slate-600 mb-3"></i>
+                        <p class="text-slate-400 text-sm">No co-op games found where 2 or more PSN Gamertags have unlocked trophies (&gt;0% progress).</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = "";
+            filteredGames.forEach(game => {
+                let playersHTML = "";
+
+                game.players.forEach(p => {
+                    playersHTML += `
+                        <div class="bg-slate-900/90 p-3 rounded-lg border border-slate-700/60 mb-2">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-xs font-bold" style="color: ${p.color};">${p.label}</span>
+                                <span class="text-xs font-mono font-bold text-slate-300">${p.progress}%</span>
+                            </div>
+                            
+                            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-2">
+                                <div class="h-full rounded-full" style="width: ${p.progress}%; background-color: ${p.color};"></div>
+                            </div>
+
+                            <div class="flex items-center gap-1.5 flex-wrap">
+                                <span class="trophy-badge trophy-platinum"><i class="fa-solid fa-trophy"></i> ${p.trophies.platinum || 0}</span>
+                                <span class="trophy-badge trophy-gold"><i class="fa-solid fa-trophy"></i> ${p.trophies.gold || 0}</span>
+                                <span class="trophy-badge trophy-silver"><i class="fa-solid fa-trophy"></i> ${p.trophies.silver || 0}</span>
+                                <span class="trophy-badge trophy-bronze"><i class="fa-solid fa-trophy"></i> ${p.trophies.bronze || 0}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                const bgArt = game.posterArt ? `style="background-image: url('${game.posterArt}');"` : '';
+
+                html += `
+                    <div class="custom-card flex flex-col justify-between">
+                        <div class="h-32 bg-cover bg-center relative p-4 flex items-end" ${bgArt}>
+                            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-transparent"></div>
+                            <div class="relative z-10 w-full flex justify-between items-end">
+                                <h3 class="text-lg font-black text-white uppercase tracking-tight drop-shadow-md leading-tight">${game.title}</h3>
+                                <span class="text-[10px] font-bold bg-sky-950 text-sky-300 px-2 py-0.5 rounded border border-sky-800 shrink-0 ml-2">
+                                    ${game.players.length} Players Active
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="p-4 flex-grow flex flex-col justify-between">
+                            <div>${playersHTML}</div>
+
+                            <button onclick="window.inspectGameTrophies('${game.commId}', '${encodeURIComponent(game.title)}', '${encodeURIComponent(game.posterArt || '')}')" 
+                                    class="w-full mt-3 bg-slate-800 hover:bg-slate-700 text-sky-400 hover:text-sky-300 font-bold text-xs py-2.5 px-4 rounded-lg border border-slate-700 transition-colors flex items-center justify-between">
+                                <span>Inspect Trophy Matrix</span>
+                                <i class="fa-solid fa-magnifying-glass font-bold"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        // Interactive Lightbox Modal Trigger
+        window.inspectGameTrophies = function(commId, encodedTitle, encodedArt) {
+            const title = decodeURIComponent(encodedTitle);
+            const art = decodeURIComponent(encodedArt);
+
+            const modal = document.getElementById('trophy-modal');
+            const titleEl = document.getElementById('modal-game-title');
+            const headerEl = document.getElementById('modal-header');
+            const listEl = document.getElementById('modal-trophy-list');
+
+            titleEl.textContent = title;
+            if (art) {
+                headerEl.style.backgroundImage = `url('${art}')`;
+            } else {
+                headerEl.style.backgroundImage = 'none';
+            }
+
+            let trophyMasterMap = {};
+            let playerSummaries = [];
+
+            // Extract trophies and progress across all squad members for this game
+            Object.entries(rawGamertagsCache).forEach(([tag, playerData]) => {
+                if (!playerData) return;
+                const playerLabel = PLAYER_CONFIG[tag]?.label || tag;
+                const playerColor = PLAYER_CONFIG[tag]?.color || '#38bdf8';
+
+                const gameList = [...(playerData.recentGames || []), ...(playerData.fullLibrary || [])];
+                const matchedGame = gameList.find(g => g.npCommunicationId === commId);
+
+                if (matchedGame && matchedGame.progress > 0) {
+                    playerSummaries.push({
+                        label: playerLabel,
+                        color: playerColor,
+                        progress: matchedGame.progress,
+                        ratio: matchedGame.ratio || `${matchedGame.earnedTotal || 0}/${matchedGame.definedTotal || 0}`,
+                        trophies: matchedGame.earnedTrophies || { platinum: 0, gold: 0, silver: 0, bronze: 0 }
+                    });
+                }
+
+                const activeHunt = playerData.activeHunt;
+                if (activeHunt && activeHunt.npCommunicationId === commId && Array.isArray(activeHunt.trophies)) {
+                    activeHunt.trophies.forEach(t => {
+                        const tId = t.trophyId || t.name;
+                        if (!trophyMasterMap[tId]) {
+                            trophyMasterMap[tId] = {
+                                name: t.name || t.trophyName,
+                                icon: t.icon || t.trophyIconUrl,
+                                type: t.type || t.trophyType || 'bronze',
+                                desc: t.description || t.trophyDetail || 'Secret Trophy',
+                                rarity: t.rarity || 'Common',
+                                earnedBy: []
+                            };
+                        }
+                        if (t.earned) {
+                            trophyMasterMap[tId].earnedBy.push({ label: playerLabel, color: playerColor });
+                        }
+                    });
+                }
+            });
+
+            const trophiesArray = Object.values(trophyMasterMap);
+
+            let html = "";
+
+            // Render Player Co-Op Comparison Bar at top of Modal
+            if (playerSummaries.length > 0) {
+                html += `<div class="mb-4 bg-slate-950 p-4 rounded-xl border border-slate-800"><h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-3"><i class="fa-solid fa-users text-sky-400 mr-1.5"></i> Squad Completion Matrix</h4><div class="grid grid-cols-1 sm:grid-cols-2 gap-3">`;
+                playerSummaries.forEach(p => {
+                    html += `
+                        <div class="bg-slate-900 p-3 rounded-lg border border-slate-800">
+                            <div class="flex justify-between items-center text-xs font-bold mb-1">
+                                <span style="color:${p.color};">${p.label}</span>
+                                <span class="font-mono text-slate-300">${p.progress}% (${p.ratio})</span>
+                            </div>
+                            <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-2">
+                                <div class="h-full" style="width:${p.progress}%; background-color:${p.color};"></div>
+                            </div>
+                            <div class="flex gap-1">
+                                <span class="trophy-badge trophy-platinum"><i class="fa-solid fa-trophy"></i> ${p.trophies.platinum || 0}</span>
+                                <span class="trophy-badge trophy-gold"><i class="fa-solid fa-trophy"></i> ${p.trophies.gold || 0}</span>
+                                <span class="trophy-badge trophy-silver"><i class="fa-solid fa-trophy"></i> ${p.trophies.silver || 0}</span>
+                                <span class="trophy-badge trophy-bronze"><i class="fa-solid fa-trophy"></i> ${p.trophies.bronze || 0}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                html += `</div></div>`;
+            }
+
+            // Render Individual Trophy Item List if Deep Scanned
+            if (trophiesArray.length > 0) {
+                html += `<h4 class="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2 mt-4"><i class="fa-solid fa-list-check text-sky-400 mr-1.5"></i> Unlocked Trophy Register</h4>`;
+                trophiesArray.forEach(t => {
+                    let earnedBadges = t.earnedBy.map(e => `
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded" style="background:${e.color}20; color:${e.color}; border:1px solid ${e.color}50;">
+                            ✓ ${e.label}
+                        </span>
+                    `).join(' ');
+
+                    if (!earnedBadges) {
+                        earnedBadges = `<span class="text-[10px] text-slate-500 italic">Unearned by Squad</span>`;
+                    }
+
+                    let badgeClass = 'trophy-bronze';
+                    if (t.type === 'platinum') badgeClass = 'trophy-platinum';
+                    if (t.type === 'gold') badgeClass = 'trophy-gold';
+                    if (t.type === 'silver') badgeClass = 'trophy-silver';
+
+                    html += `
+                        <div class="bg-slate-950/70 p-4 rounded-xl border border-slate-800 flex items-center gap-4 mb-2">
+                            <img src="${t.icon || 'https://placehold.co/44x44/1e293b/ff8800?text=TRPHY'}" class="w-12 h-12 rounded-lg border border-slate-700 object-cover shrink-0">
+                            <div class="flex-grow">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <span class="trophy-badge ${badgeClass}">${t.type.toUpperCase()}</span>
+                                    <h4 class="text-sm font-bold text-white">${t.name}</h4>
+                                </div>
+                                <p class="text-xs text-slate-400 line-clamp-1 mb-2">${t.desc}</p>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-[10px] text-slate-500 font-mono">Rarity: ${t.rarity}</span>
+                                    <span class="text-slate-700">•</span>
+                                    ${earnedBadges}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            listEl.innerHTML = html;
+            modal.classList.remove('hidden');
+        };
+
+        window.closeModal = function() {
+            document.getElementById('trophy-modal').classList.add('hidden');
+        };
+
+        listenToRealtimeTrophies();
+    </script>
+</body>
+</html>
