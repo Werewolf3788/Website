@@ -1,15 +1,17 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 05:35 AM (EDT - New York)
+   Deployment Timestamp: Sun, Aug 09, 2026, 06:35 AM (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Unified G-Portal XML Parser Engine, Google Sheets CSV Mod Catalog,
-                and Flexible HTTP/HTTPS Dual-Protocol Fallback System
+   Description: Tactical Dashboard Frontend Engine
    ========================================================================== */
 
-// External Google Sheets CSV Endpoints
+// GitHub Repository Raw Image Assets URL
+const REPO_IMAGES_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
+
+// External Google Sheets CSV Endpoint
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
 
-// Line 12: Farm Color Palette by Farm ID (Used for telemetry card borders)
+// Farm Color Palette by Farm ID
 const FARM_COLOR_PALETTE = {
   "0": { name: "AI / Public", color: "#facc15" },
   "1": { name: "Farm 1", color: "#ff5f00" },
@@ -25,79 +27,44 @@ function getFarmColor(farmId) {
   return FARM_COLOR_PALETTE[fid] ? FARM_COLOR_PALETTE[fid].color : "#facc15";
 }
 
-let activeServerMods = new Set();
 let parsedModCatalog = [];
 
 /* ==========================================================================
-   SECTION 1: Deep Object & Dual-Protocol (HTTP/HTTPS) XML Parsers
+   SECTION 1: Image Resolution & Utility Functions
    ========================================================================== */
 
-// Line 36: Extracts nested payload nodes from Firebase RTDB
-function getFirebasePayloadDeep(rootObj, targetKey, maxDepth = 10) {
-  if (!rootObj || typeof rootObj !== 'object' || maxDepth <= 0) return null;
+function resolveItemImage(rawFilename) {
+  if (!rawFilename) return null;
+  const name = formatName(rawFilename).toLowerCase();
   
-  if (rootObj[targetKey] !== undefined) {
-    if (typeof rootObj[targetKey] === 'string' || typeof rootObj[targetKey] === 'number') return rootObj[targetKey];
-    if (rootObj[targetKey] && rootObj[targetKey].data) return rootObj[targetKey].data;
-  }
+  if (name.includes('calm') || name.includes('lands')) return `${REPO_IMAGES_BASE}CalmLands.JPG`;
+  if (name.includes('wheat')) return `${REPO_IMAGES_BASE}Wheat.JPG`;
+  if (name.includes('barley')) return `${REPO_IMAGES_BASE}Barley.JPG`;
+  if (name.includes('canola')) return `${REPO_IMAGES_BASE}Canola.JPG`;
+  if (name.includes('corn') || name.includes('maize')) return `${REPO_IMAGES_BASE}Corn.JPG`;
+  if (name.includes('cow')) return `${REPO_IMAGES_BASE}Cow.JPG`;
+  if (name.includes('pig')) return `${REPO_IMAGES_BASE}Pigs.JPG`;
+  if (name.includes('chicken')) return `${REPO_IMAGES_BASE}Chickens.JPG`;
+  if (name.includes('sheep')) return `${REPO_IMAGES_BASE}Sheep.JPG`;
+  if (name.includes('john deere')) return `${REPO_IMAGES_BASE}John Deere 8R Series.JPG`;
+  if (name.includes('big bud')) return `${REPO_IMAGES_BASE}Big Bud KTTA 700.JPG`;
+  if (name.includes('silo')) return `${REPO_IMAGES_BASE}Elevator Silo.JPG`;
   
-  for (const k of Object.keys(rootObj)) {
-    if (typeof rootObj[k] === 'object' && rootObj[k] !== null) {
-      const deepResult = getFirebasePayloadDeep(rootObj[k], targetKey, maxDepth - 1);
-      if (deepResult) return deepResult;
-    }
-  }
   return null;
 }
 
-// Line 55: Converts G-Portal raw XML text into DOM objects
-function parseXML(inputPayload) {
-  if (!inputPayload) return null;
-  let rawText = typeof inputPayload === 'string' ? inputPayload : (inputPayload.data || inputPayload.xml || "");
+function parseXML(rawText) {
   if (!rawText || typeof rawText !== 'string') return null;
-
   try {
-    let sanitizedXml = rawText.trim().replace(/^[\uFEFF\xA0]+/, '');
-    const xmlStartIndex = sanitizedXml.indexOf("<");
-    if (xmlStartIndex > 0) sanitizedXml = sanitizedXml.substring(xmlStartIndex);
-
-    const xmlDoc = (new DOMParser()).parseFromString(sanitizedXml.trim(), "text/xml");
+    const xmlDoc = (new DOMParser()).parseFromString(rawText.trim(), "text/xml");
     return xmlDoc.getElementsByTagName("parsererror").length > 0 ? null : xmlDoc;
   } catch (e) { return null; }
-}
-
-// Line 72: Fallback helper to parse XML directly from string variables
-function parseFS25XmlData(xmlString) {
-  if (!xmlString || typeof xmlString !== 'string') return null;
-  try {
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlString, "text/xml");
-    return xmlDoc.getElementsByTagName("parsererror").length > 0 ? null : xmlDoc;
-  } catch (err) {
-    console.error("XML Parsing Error:", err);
-    return null;
-  }
-}
-
-function getXmlVal(node, keyName, defaultVal = "") {
-  if (!node) return defaultVal;
-  try {
-    if (node.getAttribute && node.getAttribute(keyName) !== null) {
-      return node.getAttribute(keyName);
-    }
-    const childNode = node.querySelector(keyName);
-    if (childNode && childNode.textContent !== null) {
-      return childNode.textContent.trim();
-    }
-  } catch (e) {}
-  return defaultVal;
 }
 
 function formatName(str) {
   if (!str) return 'GENERAL ITEM';
   let clean = String(str).split('/').pop().replace('.xml', '').replace('.zip', '').replace('FS25_', '');
-  clean = clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ');
-  return clean.toUpperCase().trim();
+  return clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').toUpperCase().trim();
 }
 
 function isValidImageUrl(url) {
@@ -108,10 +75,9 @@ function isValidImageUrl(url) {
 }
 
 /* ==========================================================================
-   SECTION 2: Google Sheets Mod Catalog Loader & Filtering Engine
+   SECTION 2: Google Sheets Mod Catalog Loader
    ========================================================================== */
 
-// Line 118: CSV Fetcher & Mod Card Renderer
 async function fetchModCatalog() {
   const gridContainer = document.getElementById('mod-hub-grid');
   const catBar = document.getElementById('mod-categories-bar');
@@ -157,8 +123,7 @@ async function fetchModCatalog() {
     renderModGrid(parsedModCatalog);
 
   } catch (err) {
-    console.error("❌ Google Sheet CSV Load Failed:", err);
-    gridContainer.innerHTML = `<div class="empty-state" style="color:#f87171;">Failed to load Google Sheets Mod Catalog.</div>`;
+    gridContainer.innerHTML = `<div class="empty-state" style="color:#f87171;">Failed to load Mod Catalog.</div>`;
   }
 }
 
@@ -244,48 +209,45 @@ function renderModGrid(mods) {
 }
 
 /* ==========================================================================
-   SECTION 3: Primary Telemetry Dashboard Renderer (Firebase & Fallback XML)
+   SECTION 3: Primary Telemetry Dashboard Renderer
    ========================================================================== */
 
-// Line 255: Master Render Handler triggered directly by Firebase listener
 window.renderDashboard = function(data) {
   if (!data) return;
 
-  // Handles both nested /fs25 node object and direct root RTDB structure
   const rootData = data.fs25 || data || {};
 
-  // Resolve Active Savegame Slot
-  let rawSlot = getFirebasePayloadDeep(rootData, "activeSaveSlot") || "2";
-  let slotNum = String(rawSlot).replace(/[^0-9]/g, '') || "2";
-  let activeSlotKey = `savegame${slotNum}`;
-  let slotData = rootData[activeSlotKey] || rootData;
-
+  // Active Savegame Slot Display
+  let rawSlot = rootData.activeSaveSlot || "1";
   const saveSlotEl = document.getElementById('save-slot-display');
   if (saveSlotEl) {
-    saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">${activeSlotKey}</strong>`;
+    saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">savegame${rawSlot}</strong>`;
   }
 
-  // Extract XML Payloads with deep searching + direct XML string fallback parsing
-  const careerXml = parseXML(getFirebasePayloadDeep(slotData, "careerSavegame") || getFirebasePayloadDeep(rootData, "careerSavegame")) || parseFS25XmlData(rootData.careerSavegame || rootData.careerSavegame_raw);
-  const farmsXml = parseXML(getFirebasePayloadDeep(slotData, "farms") || getFirebasePayloadDeep(rootData, "farms")) || parseFS25XmlData(rootData.farms || rootData.farms_raw);
-  const vehXml = parseXML(getFirebasePayloadDeep(slotData, "vehicles") || getFirebasePayloadDeep(rootData, "vehicles")) || parseFS25XmlData(rootData.vehicles || rootData.vehicles_raw);
-  const toolsXml = parseXML(getFirebasePayloadDeep(slotData, "handTools") || getFirebasePayloadDeep(rootData, "handTools")) || parseFS25XmlData(rootData.handTools || rootData.handTools_raw);
-  const farmlandXml = parseXML(getFirebasePayloadDeep(slotData, "farmland") || getFirebasePayloadDeep(rootData, "farmland")) || parseFS25XmlData(rootData.farmland || rootData.farmland_raw);
-  const placeXml = parseXML(getFirebasePayloadDeep(slotData, "placeables") || getFirebasePayloadDeep(rootData, "placeables")) || parseFS25XmlData(rootData.placeables || rootData.placeables_raw);
+  // Parse Raw XML String Data
+  const careerXml = parseXML(rootData.careerSavegame_raw);
+  const farmsXml = parseXML(rootData.farms_raw);
+  const vehXml = parseXML(rootData.vehicles_raw);
+  const toolsXml = parseXML(rootData.handTools_raw);
+  const farmlandXml = parseXML(rootData.farmland_raw);
+  const placeXml = parseXML(rootData.placeables_raw);
 
-  // 1. Server Header Banner Information
+  // 1. Server Banner Information
   if (careerXml) {
     const settings = careerXml.querySelector("settings");
     if (settings) {
       const setElem = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-      setElem('server-name', getXmlVal(settings, "savegameName", "OneLIVIDMAN and werewolf 618"));
-      setElem('server-map', `Map: ${getXmlVal(settings, "mapTitle", "Calm Lands")}`);
-      setElem('time-speed-badge', `Speed: ${getXmlVal(settings, "timeScale", "1")}x`);
-      setElem('traffic-badge', `Traffic: ${getXmlVal(settings, "trafficEnabled", "false") === 'true' ? 'ON' : 'OFF'}`);
+      setElem('server-name', settings.getAttribute("savegameName") || "OneLIVIDMAN and werewolf 618");
+      setElem('server-map', `Map: ${settings.getAttribute("mapTitle") || "Calm Lands"}`);
+      setElem('time-speed-badge', `Speed: ${settings.getAttribute("timeScale") || "1"}x`);
+      setElem('traffic-badge', `Traffic: ${settings.getAttribute("trafficEnabled") === 'true' ? 'ON' : 'OFF'}`);
     }
   }
 
-  // 2. Registered Server Farms
+  // 2. Render Tactical Log Feed & Mod Errors
+  renderTacticalLog(rootData.modErrors, rootData.serverEvents);
+
+  // 3. Registered Server Farms & Net Balance
   let globalNetWorth = 0;
   const farmsCont = document.getElementById('farms-container');
   if (farmsCont) {
@@ -316,7 +278,7 @@ window.renderDashboard = function(data) {
   const netWorthEl = document.getElementById('global-net-worth');
   if (netWorthEl) netWorthEl.textContent = `$${globalNetWorth.toLocaleString()}`;
 
-  // 3. Fleet Vehicles Sorting
+  // 4. Vehicles Fleet Rendering
   let vehicleCount = 0;
   const tracCont = document.getElementById('tractors-container');
   const harvCont = document.getElementById('harvesters-container');
@@ -332,10 +294,15 @@ window.renderDashboard = function(data) {
       const name = formatName(rawName);
       const farmId = v.getAttribute("farmId") || "0";
       const color = getFarmColor(farmId);
+      const matchedImg = resolveItemImage(rawName);
+
+      const imgHtml = matchedImg 
+        ? `<img src="${matchedImg}" class="telemetry-card-thumb lightbox-trigger" data-alt="${name}">`
+        : `<i class="fa-solid fa-tractor card-icon" style="color:${color};"></i>`;
 
       const card = `
         <div class="telemetry-card" style="border-left: 4px solid ${color};">
-          <i class="fa-solid fa-tractor card-icon" style="color:${color};"></i>
+          ${imgHtml}
           <div class="card-details">
             <strong style="color:${color};">${name}</strong>
             <span>Owner: Farm #${farmId}</span>
@@ -357,7 +324,7 @@ window.renderDashboard = function(data) {
   const fleetEl = document.getElementById('global-vehicle-count');
   if (fleetEl) fleetEl.textContent = vehicleCount;
 
-  // 4. Hand Tools
+  // 5. Hand Tools
   const toolsCont = document.getElementById('handtools-container');
   if (toolsCont) {
     let toolsHtml = "";
@@ -374,7 +341,7 @@ window.renderDashboard = function(data) {
     toolsCont.innerHTML = toolsHtml || `<div class="empty-state">No Hand Tools Stored</div>`;
   }
 
-  // 5. Farmland Parcels
+  // 6. Farmland Parcels
   let fieldCount = 0;
   const fieldsCont = document.getElementById('fields-container');
   if (fieldsCont) {
@@ -402,11 +369,50 @@ window.renderDashboard = function(data) {
   const landEl = document.getElementById('global-land-count');
   if (landEl) landEl.textContent = `${fieldCount} Fields`;
 
-  // 6. Map Productions & Placeables
+  // 7. Map Productions
   renderProductions(placeXml);
 };
 
-// Line 392: Dedicated Factory & Production Card Formatter
+function renderTacticalLog(modErrors, serverEvents) {
+  const container = document.getElementById('tactical-log-container');
+  const errorCountEl = document.getElementById('global-mod-errors');
+  if (!container) return;
+
+  const errors = Array.isArray(modErrors) ? modErrors : [];
+  const events = Array.isArray(serverEvents) ? serverEvents : [];
+
+  if (errorCountEl) errorCountEl.textContent = errors.length;
+
+  if (errors.length === 0 && events.length === 0) {
+    container.innerHTML = `<div class="empty-state">No Recent Server Log Activity</div>`;
+    return;
+  }
+
+  let html = "";
+
+  // Render recent errors
+  errors.slice(-10).reverse().forEach(err => {
+    html += `
+      <div class="log-entry log-error">
+        <span class="log-time">[${err.timestamp || 'DIAGNOSTIC'}]</span>
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span>${err.message || 'Mod Warning Detected'}</span>
+      </div>`;
+  });
+
+  // Render recent events
+  events.slice(-10).reverse().forEach(ev => {
+    html += `
+      <div class="log-entry log-event">
+        <span class="log-time">[${ev.timestamp || 'EVENT'}]</span>
+        <i class="fa-solid fa-satellite-dish"></i>
+        <span>${ev.message || 'Server Event Logged'}</span>
+      </div>`;
+  });
+
+  container.innerHTML = html;
+}
+
 function renderProductions(placeablesDoc) {
   const prodCont = document.getElementById('main-productions-container');
   if (!prodCont) return;
@@ -423,10 +429,15 @@ function renderProductions(placeablesDoc) {
     const name = formatName(rawFilename);
     const farmId = p.getAttribute("farmId") || "0";
     const color = getFarmColor(farmId);
+    const matchedImg = resolveItemImage(rawFilename);
+
+    const imgHtml = matchedImg 
+      ? `<img src="${matchedImg}" class="telemetry-card-thumb lightbox-trigger" data-alt="${name}">`
+      : `<i class="fa-solid fa-industry card-icon" style="color:${color};"></i>`;
 
     prodHtml += `
       <div class="telemetry-card" style="border-left: 3px solid ${color};">
-        <i class="fa-solid fa-industry card-icon" style="color:${color};"></i>
+        ${imgHtml}
         <div class="card-details">
           <strong style="color:${color};">${name}</strong>
           ${uniqueId ? `<span class="card-subtext">ID: ${uniqueId.substring(0, 12)}...</span>` : ''}
@@ -438,11 +449,11 @@ function renderProductions(placeablesDoc) {
 }
 
 /* ==========================================================================
-   SECTION 4: Event Listeners & UI Controls Initialization
+   SECTION 4: Event Listeners & UI Controls
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Lightbox Modal Controls (Only trigger in lightbox mode per project setup)
+  // Lightbox Modal Controls (Ensures ALT image description only shows inside lightbox mode)
   const modal = document.getElementById('lightbox-modal');
   const modalImg = document.getElementById('lightbox-img');
   const modalCaption = document.getElementById('lightbox-caption');
