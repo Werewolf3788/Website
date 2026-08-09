@@ -1,19 +1,21 @@
 /* ============================================================================
  * File: fs25.js
- * Location: /fs25.js
+ * Location: ./fs25.js
  * Description: FS25 Smart Sync Pipeline for G-Portal Dedicated Server.
  *              Scans G-Portal FTP save directories using dynamic auto-discovery,
  *              parses live stats XML, cleans payloads, and performs a complete
  *              overwrite (.set) to Firebase RTDB (entertainment-71888).
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com
- * Last Modified: Saturday, August 08, 2026 | 7:45 PM CDT (Chicago Time)
+ * Measurement ID: G-JDNSLD3GFE
+ * Last Modified: Sunday, August 09, 2026
  * ============================================================================ */
 
+// Line ~15: Load environment variables from local .env file
 require('dotenv').config({ path: __dirname + '/.env' });
 const Client = require('ftp');
 const admin = require('firebase-admin');
 
-// --- SECTION 1: SAFETY FAILSAFE ---
+// Line ~20: --- SECTION 1: SAFETY FAILSAFE ---
 setTimeout(() => {
   console.log("🚨 Safety Failsafe triggered: Execution exceeded 5 minutes. Exiting.");
   process.exit(0);
@@ -21,7 +23,19 @@ setTimeout(() => {
 
 console.log("Initializing FS25 Smart Sync Pipeline for Server 144.126.153.115 (Target: entertainment-71888)...");
 
-// --- SECTION 2: FIREBASE ADMIN INITIALIZATION ---
+// Line ~28: --- SECTION 2: FIREBASE APP CONFIG & ADMIN INITIALIZATION ---
+// Updated Firebase JS SDK Web Configuration (v7.20.0+)
+const firebaseConfig = {
+  apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
+  authDomain: "entertainment-71888.firebaseapp.com",
+  databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
+  projectId: "entertainment-71888",
+  storageBucket: "entertainment-71888.firebasestorage.app",
+  messagingSenderId: "660524340277",
+  appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+  measurementId: "G-JDNSLD3GFE"
+};
+
 let serviceAccount;
 if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   try {
@@ -39,17 +53,18 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   }
 }
 
+// Line ~57: Initialize Firebase Admin with Admin Credentials & RTDB Database URL
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
+    databaseURL: firebaseConfig.databaseURL
   });
 }
 
 const db = admin.database();
 const ftpClient = new Client();
 
-// --- SECTION 3: FTP & SERVER CONFIGURATION ---
+// Line ~68: --- SECTION 3: FTP & SERVER CONFIGURATION ---
 const ftpConfig = {
   host: process.env.FTP_HOST || '144.126.153.115',
   port: parseInt(process.env.FTP_PORT, 10) || 21,
@@ -61,7 +76,7 @@ const ftpConfig = {
 
 const STATS_URL = "http://144.126.153.115:8300/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM";
 
-// --- SECTION 4: NETWORK & FTP HELPER FUNCTIONS ---
+// Line ~81: --- SECTION 4: NETWORK & FTP HELPER FUNCTIONS ---
 async function fetchWithRetry(url, options = {}, retries = 3, backoffMs = 1000) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     const controller = new AbortController();
@@ -106,7 +121,7 @@ function safeListFtpDir(client, remotePath) {
   });
 }
 
-// --- SECTION 5: SANITIZATION ENGINE ---
+// Line ~126: --- SECTION 5: SANITIZATION ENGINE ---
 function sanitizeFirebaseKey(key) {
   return key.replace(/[\.\$\#\[\]]/g, '_');
 }
@@ -124,7 +139,7 @@ function sanitizeXmlContent(rawText) {
   return clean.trim();
 }
 
-// --- SECTION 6: MAIN PIPELINE EXECUTION ---
+// Line ~143: --- SECTION 6: MAIN PIPELINE EXECUTION ---
 async function runMainPipeline() {
   let activePlayers = 0;
   let rawStatsXml = "";
@@ -210,7 +225,11 @@ async function runMainPipeline() {
       const masterPayload = {
         activePlayers: activePlayers,
         activeSaveSlot: activeSlotNumber,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
+        config: {
+          appId: firebaseConfig.appId,
+          measurementId: firebaseConfig.measurementId
+        }
       };
 
       if (rawStatsXml && rawStatsXml.length > 0) {
@@ -266,6 +285,7 @@ async function runMainPipeline() {
         }
       }
 
+      // Line ~285: Write master payload to Firebase Realtime Database (/fs25)
       try {
         await db.ref('fs25').set(masterPayload);
         console.log(`🏆 TOTAL OVERWRITE SUCCESSFUL! Firebase /fs25 updated to match [ ${targetFolder} ] on entertainment-71888.`);
