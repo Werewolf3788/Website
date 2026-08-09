@@ -2,14 +2,13 @@ name: FS25 Live Backup Sync
 
 on:
   schedule:
-    # Triggers precisely every 16 minutes to avoid overlapping server saves
     - cron: '*/16 * * * *'
-  workflow_dispatch: # Allows manual "Run workflow" trigger in GitHub Actions tab
+  workflow_dispatch:
 
 jobs:
   run-sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 5 # Prevents long runs if G-Portal FTP connection drops
+    timeout-minutes: 5
 
     steps:
     - name: Checkout Code Repository
@@ -23,11 +22,10 @@ jobs:
     - name: Install Node Dependencies
       run: |
         cd games/FS25
-        npm install firebase-admin ftp dotenv
+        npm install firebase-admin ftp dotenv @xmldom/xmldom
 
     - name: Run G-Portal to Firebase Bridge
       env:
-        # Pulls your credentials safely out of GitHub's encrypted secrets vault
         FTP_HOST: ${{ secrets.FTP_HOST }}
         FTP_PORT: ${{ secrets.FTP_PORT }}
         FTP_USER: ${{ secrets.FTP_USER }}
