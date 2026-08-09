@@ -1,10 +1,10 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 19:10:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 09, 2026, 19:35:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 & /FS25_Mods_Info RTDB Nodes)
-   Description: Tactical Dashboard Engine with Precision Farming Integration.
-                Unpacks Soil Type, pH Balance, Nitrogen Levels, Yield Potential %,
-                and complete field agronomy 24/7.
+   Description: Master Tactical Telemetry Engine. Contains 100% of all Firebase
+                nodes including Precision Farming, Animal Husbandry, Placed Objects,
+                License Plates, Attachment Chains, and 24/7 Unfiltered Contracts.
    ========================================================================== */
 
 // Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
@@ -306,7 +306,7 @@ function renderModGrid(modsData) {
 }
 
 /* ==========================================================================
-   SECTION 4: Decoupled Tactical Engine with Precision Farming Integration
+   SECTION 4: Master Tactical Telemetry Engine (Decoupled & Unfiltered)
    ========================================================================== */
 
 window.renderDashboard = function(rawIncomingData) {
@@ -333,7 +333,7 @@ window.renderDashboard = function(rawIncomingData) {
 
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-  // Save Slot Banner
+  // Save Slot Display
   const saveSlotEl = document.getElementById('save-slot-display');
   if (saveSlotEl) {
     saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">savegame${fs25Node.activeSaveSlot || "1"}</strong>`;
@@ -363,7 +363,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 2: REGISTERED SERVER FARMS
+     CARD 2: REGISTERED SERVER FARMS (DECOUPLED)
      ------------------------------------------------------------------------ */
   const farmsXml = parseXML(fs25Node.farms_raw);
   const farmsCont = document.getElementById('farms-container');
@@ -396,7 +396,7 @@ window.renderDashboard = function(rawIncomingData) {
   setTxt('global-net-worth', `$${globalNetWorth.toLocaleString()}`);
 
   /* ------------------------------------------------------------------------
-     CARD 3: ACTIVE PLAYERS & AI WORKERS
+     CARD 3: ACTIVE PLAYERS & AI WORKERS (DECOUPLED)
      ------------------------------------------------------------------------ */
   const playersXml = parseXML(fs25Node.players_raw);
   const playersCont = document.getElementById('active-players-container');
@@ -446,12 +446,12 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 4: FIELD CROPS & PRECISION FARMING AGRONOMY
+     CARD 4: FIELD CROPS & PRECISION FARMING AGRONOMY (DECOUPLED)
      ------------------------------------------------------------------------ */
   const fieldsCont = document.getElementById('fields-container');
   const pfXml = parseXML(fs25Node.precisionFarming_raw);
 
-  // Parse Precision Farming Map Data (Soil Type, pH, Nitrogen, Yield Potential)
+  // Parse Precision Farming Map Data
   let pfDataMap = {};
   if (pfXml) {
     pfXml.querySelectorAll("field, farmland, precisionFarmingField").forEach(pfField => {
@@ -497,7 +497,6 @@ window.renderDashboard = function(rawIncomingData) {
         const plow = f.plowRequired ? `<span class="badge" style="background:#f97316; color:#fff;">Plow Needed</span>` : '';
         const readyHarvest = growthText.includes("HARVEST") ? `<span class="badge" style="background:#22c55e; color:#fff;">Ready to Harvest</span>` : '';
 
-        // Precision Farming Cross-Reference Insertion
         const pf = pfDataMap[String(id)] || {};
         const pfText = pf.soilType 
           ? `<div class="card-subtext" style="color:#38bdf8; margin-top:2px;">
@@ -541,7 +540,6 @@ window.renderDashboard = function(rawIncomingData) {
           let growthText = f.getAttribute("growthState") || f.getAttribute("growthStage") || "";
           growthText = growthText ? formatName(growthText) : "UNSTATED";
 
-          // Precision Farming Fallback Cross-Reference
           const pf = pfDataMap[String(id)] || {};
           const pfText = pf.soilType 
             ? `<div class="card-subtext" style="color:#38bdf8; margin-top:2px;">
@@ -568,8 +566,9 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 5: LIVESTOCK & ANIMAL BARNS
+     CARD 5: LIVESTOCK & ANIMAL BARNS (DECOUPLED)
      ------------------------------------------------------------------------ */
+  const placeXml = parseXML(fs25Node.placeables_raw);
   const animalsCont = document.getElementById('animals-container');
   if (animalsCont) {
     let animalsHtml = "";
@@ -612,7 +611,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 6: CONSTRUCTION, ANTENNAS & DECORATIONS
+     CARD 6: CONSTRUCTION, ANTENNAS & DECORATIONS (DECOUPLED)
      ------------------------------------------------------------------------ */
   const constructCont = document.getElementById('construction-container');
   if (constructCont) {
@@ -652,7 +651,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 7: PLAYER HAND TOOLS
+     CARD 7: PLAYER HAND TOOLS (DECOUPLED)
      ------------------------------------------------------------------------ */
   const toolsXml = parseXML(fs25Node.handTools_raw);
   const toolsCont = document.getElementById('handtools-container');
@@ -684,7 +683,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 8: FLEET MACHINERY & ATTACHMENT CHAINS
+     CARD 8: FLEET MACHINERY & ATTACHMENT CHAINS (DECOUPLED)
      ------------------------------------------------------------------------ */
   const vehXml = parseXML(fs25Node.vehicles_raw);
   let vehicleCount = 0;
@@ -775,7 +774,7 @@ window.renderDashboard = function(rawIncomingData) {
   setTxt('global-vehicle-count', vehicleCount);
 
   /* ------------------------------------------------------------------------
-     CARD 9: CONTRACTS & MISSIONS
+     CARD 9: CONTRACTS & MISSIONS (DECOUPLED)
      ------------------------------------------------------------------------ */
   const missionsXml = parseXML(fs25Node.missions_raw);
   const missionsCont = document.getElementById('missions-container');
@@ -819,7 +818,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 10: MAP COLLECTIBLES
+     CARD 10: MAP COLLECTIBLES (DECOUPLED)
      ------------------------------------------------------------------------ */
   const itemsXml = parseXML(fs25Node.items_raw);
   const collectiblesCont = document.getElementById('collectibles-container');
@@ -859,12 +858,12 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 11: MAP FACTORIES & PRODUCTIONS
+     CARD 11: MAP FACTORIES & PRODUCTIONS (DECOUPLED)
      ------------------------------------------------------------------------ */
   renderProductions(placeXml);
 
   /* ------------------------------------------------------------------------
-     CARD 12: SERVER DIAGNOSTIC FEED
+     CARD 12: SERVER DIAGNOSTIC FEED (DECOUPLED)
      ------------------------------------------------------------------------ */
   renderTacticalLog(fs25Node.modErrors, fs25Node.serverEvents);
 };
