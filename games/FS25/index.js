@@ -1,9 +1,9 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 17:58:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 09, 2026, 18:06:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 & /FS25_Mods_Info RTDB Nodes)
-   Description: Tactical Telemetry Dashboard & Universal Dynamic Image Engine.
-                Directly extracts /fs25 raw XML strings and maps them across cards.
+   Description: Direct /fs25 node extractor with raw XML DOM parser for
+                missions, collectibles, farmland, fleet, and farm balances.
    ========================================================================== */
 
 // Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
@@ -304,7 +304,7 @@ window.renderDashboard = function(rawIncomingData) {
     data = rawIncomingData.val();
   }
 
-  // 1. Process Mod Directory & Images Node (/FS25_Mods_Info)
+  // 1. Ingest Mod Directory & Image Mappings (/FS25_Mods_Info)
   if (data.FS25_Mods_Info && data.FS25_Mods_Info.Images) {
     firebaseImageMappings = data.FS25_Mods_Info.Images;
   }
@@ -314,8 +314,7 @@ window.renderDashboard = function(rawIncomingData) {
     renderModGrid(window.activeFirebaseModData);
   }
 
-  // 2. Target Telemetry Payload Node (/fs25)
-  // Handles cases where payload is root JSON object or directly nested under 'fs25'
+  // 2. Locate /fs25 Telemetry Subnode
   const fs25Node = data.fs25 ? data.fs25 : (data.careerSavegame_raw || data.farms_raw ? data : {});
 
   if (!fs25Node || Object.keys(fs25Node).length === 0) {
@@ -329,7 +328,7 @@ window.renderDashboard = function(rawIncomingData) {
     saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">savegame${fs25Node.activeSaveSlot || "1"}</strong>`;
   }
 
-  // Parse Raw XML Strings directly from /fs25 node
+  // Extract and Parse Raw XML Nodes directly from /fs25
   const careerXml = parseXML(fs25Node.careerSavegame_raw);
   const farmsXml = parseXML(fs25Node.farms_raw);
   const vehXml = parseXML(fs25Node.vehicles_raw);
@@ -340,7 +339,7 @@ window.renderDashboard = function(rawIncomingData) {
   const missionsXml = parseXML(fs25Node.missions_raw);
   const itemsXml = parseXML(fs25Node.items_raw);
 
-  // Time & Weather Telemetry Setup
+  // Time & Weather Setup
   let gameTime = "00:00";
   if (envXml) {
     const dayTimeElem = envXml.querySelector("dayTime, time");
@@ -360,7 +359,7 @@ window.renderDashboard = function(rawIncomingData) {
     }
   }
 
-  // 1. Server Farms & Net Worth Mapping
+  // 1. Registered Server Farms & Net Balance
   let globalNetWorth = 0;
   const farmsCont = document.getElementById('farms-container');
   if (farmsCont) {
@@ -389,7 +388,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
   setTxt('global-net-worth', `$${globalNetWorth.toLocaleString()}`);
 
-  // 2. Contracts & Missions Card Mapping
+  // 2. Active Server Contracts & Missions Card
   const missionsCont = document.getElementById('missions-container');
   if (missionsCont) {
     let missionsHtml = "";
@@ -417,7 +416,7 @@ window.renderDashboard = function(rawIncomingData) {
     missionsCont.innerHTML = missionsHtml || `<div class="empty-state">No Active Mission Contracts</div>`;
   }
 
-  // 3. Collectibles & Map Discoveries Card Mapping
+  // 3. Map Collectibles & Discoveries Card
   const collectiblesCont = document.getElementById('collectibles-container');
   if (collectiblesCont) {
     let collectiblesHtml = "";
@@ -441,7 +440,7 @@ window.renderDashboard = function(rawIncomingData) {
     collectiblesCont.innerHTML = collectiblesHtml || `<div class="empty-state">No Map Collectibles Discovered Yet</div>`;
   }
 
-  // 4. Fleet Machinery Parsing (Vehicles XML + Detailed Fleet JSON)
+  // 4. Fleet Machinery Parsing
   let vehicleCount = 0;
   const tracCont = document.getElementById('tractors-container');
   const harvCont = document.getElementById('harvesters-container');
@@ -511,7 +510,7 @@ window.renderDashboard = function(rawIncomingData) {
     toolsCont.innerHTML = toolsHtml || `<div class="empty-state">No Hand Tools Stored</div>`;
   }
 
-  // 6. Field Agronomy Status (Farmland XML + FieldAgronomy JSON)
+  // 6. Field Agronomy Status
   let fieldCount = 0;
   const fieldsCont = document.getElementById('fields-container');
   if (fieldsCont) {
