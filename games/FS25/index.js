@@ -1,13 +1,13 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 17:10:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 09, 2026, 17:14:16 (EDT - New York)
    Project: entertainment-71888 (/fs25 & /FS25_Mods_Info RTDB Nodes)
    Description: Tactical Telemetry Dashboard & Universal Dynamic Image Engine.
                 Matches G-Portal XML telemetry against Firebase /FS25_Mods_Info/Images 
                 and /FS25_Mods_Info/Website nodes pushed from Google Sheets.
    ========================================================================== */
 
-// Base Raw URL for GitHub Repository Images (Works on http & https)
+// Base Raw URL for GitHub Repository Images (Protocol agnostic / SSL ready for http & https)
 const REPO_IMAGES_BASE = "https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 
 // External Google Sheets CSV Backup Endpoint
@@ -538,7 +538,7 @@ function renderProductions(placeablesDoc) {
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // Lightbox Modal Controls (ALT image description only displays in lightbox mode)
+  // Lightbox Modal Controls (ALT image description only displays inside lightbox view)
   const modal = document.getElementById('lightbox-modal');
   const modalImg = document.getElementById('lightbox-img');
   const modalCaption = document.getElementById('lightbox-caption');
