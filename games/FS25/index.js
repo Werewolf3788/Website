@@ -1,10 +1,10 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 18:25:00 (EDT - New York)
-   Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Complete Realtime Tactical Telemetry Engine. Deep-parses all
-                raw XML nodes and maps attachments, contracts, collectibles,
-                farmlands, and machinery 24/7 regardless of active players.
+   Deployment Timestamp: Sun, Aug 09, 2026, 18:29:20 (EDT - New York)
+   Project: entertainment-71888 (/fs25 & /FS25_Mods_Info RTDB Nodes)
+   Description: Complete Tactical Telemetry Engine. Maps all 8 Firebase nodes
+                including license plates, attachment chains, driver states,
+                contracts, agronomy flags, collectibles, and server logs.
    ========================================================================== */
 
 // Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
@@ -294,7 +294,7 @@ function renderModGrid(modsData) {
 }
 
 /* ==========================================================================
-   SECTION 4: Master Tactical Telemetry Engine (Full Parser & Cross-Ref)
+   SECTION 4: Master Tactical Telemetry Engine (All 8 Firebase Nodes)
    ========================================================================== */
 
 window.renderDashboard = function(rawIncomingData) {
@@ -305,7 +305,7 @@ window.renderDashboard = function(rawIncomingData) {
     data = rawIncomingData.val();
   }
 
-  // Mod Directory & Image Mapping Nodes (/FS25_Mods_Info)
+  // Node 8: Mod Directory & Images (/FS25_Mods_Info)
   if (data.FS25_Mods_Info && data.FS25_Mods_Info.Images) {
     firebaseImageMappings = data.FS25_Mods_Info.Images;
   }
@@ -315,7 +315,7 @@ window.renderDashboard = function(rawIncomingData) {
     renderModGrid(window.activeFirebaseModData);
   }
 
-  // Telemetry Node Extraction (/fs25)
+  // Node Root Resolver (/fs25)
   const fs25Node = data.fs25 ? data.fs25 : (data.careerSavegame_raw || data.farms_raw ? data : {});
 
   if (!fs25Node || Object.keys(fs25Node).length === 0) {
@@ -323,13 +323,13 @@ window.renderDashboard = function(rawIncomingData) {
     return;
   }
 
-  // Active Save Slot Display
+  // Save Slot Banner
   const saveSlotEl = document.getElementById('save-slot-display');
   if (saveSlotEl) {
     saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">savegame${fs25Node.activeSaveSlot || "1"}</strong>`;
   }
 
-  // XML Documents Parsing Engine
+  // Parse Raw XML Nodes
   const careerXml = parseXML(fs25Node.careerSavegame_raw);
   const farmsXml = parseXML(fs25Node.farms_raw);
   const vehXml = parseXML(fs25Node.vehicles_raw);
@@ -340,7 +340,7 @@ window.renderDashboard = function(rawIncomingData) {
   const missionsXml = parseXML(fs25Node.missions_raw);
   const itemsXml = parseXML(fs25Node.items_raw);
 
-  // Time & Server Status Setup
+  // Node 1: Server Configuration & Environment
   let gameTime = "00:00";
   if (envXml) {
     const dayTimeElem = envXml.querySelector("dayTime, time");
@@ -360,7 +360,7 @@ window.renderDashboard = function(rawIncomingData) {
     }
   }
 
-  // 1. Registered Server Farms & Net Worth Mapping
+  // Node 2: Farms & Finances
   let globalNetWorth = 0;
   const farmsCont = document.getElementById('farms-container');
   if (farmsCont) {
@@ -389,7 +389,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
   setTxt('global-net-worth', `$${globalNetWorth.toLocaleString()}`);
 
-  // 2. All Contracts & Missions Card (Always Visible 24/7)
+  // Node 4: Contracts & Missions
   const missionsCont = document.getElementById('missions-container');
   if (missionsCont) {
     let missionsHtml = "";
@@ -431,7 +431,7 @@ window.renderDashboard = function(rawIncomingData) {
     missionsCont.innerHTML = missionsHtml || `<div class="empty-state">No Server Contracts Generated Yet</div>`;
   }
 
-  // 3. Map Collectibles & Fraction Counter (e.g. 3 / 100)
+  // Node 6: Collectibles
   const collectiblesCont = document.getElementById('collectibles-container');
   if (collectiblesCont) {
     let collectiblesHtml = "";
@@ -468,7 +468,7 @@ window.renderDashboard = function(rawIncomingData) {
       ${collectiblesHtml || `<div class="empty-state">0 / ${totalCollectibles} Collectibles Discovered</div>`}`;
   }
 
-  // 4. Tactical Fleet Machinery, Driver Occupancy, & Full Attachment Chains
+  // Node 3: Fleet Machinery, License Plates, Attachments & Driver Occupancy
   let vehicleCount = 0;
   const tracCont = document.getElementById('tractors-container');
   const harvCont = document.getElementById('harvesters-container');
@@ -486,6 +486,16 @@ window.renderDashboard = function(rawIncomingData) {
       const color = getFarmColor(farmId);
       const operatingTime = formatHours(v.getAttribute("operatingTime"));
 
+      // License Plate Extractor
+      let plateText = "";
+      const plateNode = v.querySelector("licensePlate, licensePlates");
+      if (plateNode) {
+        plateText = plateNode.getAttribute("number") || plateNode.getAttribute("characters") || plateNode.textContent || "";
+      }
+      const plateBadge = plateText.trim() 
+        ? `<span class="badge" style="border: 1px solid var(--accent-gold); color: var(--accent-gold);"><i class="fa-solid fa-id-card"></i> ${plateText.trim()}</span>` 
+        : '';
+
       // Occupancy Status
       let driverBadge = `<span class="badge" style="background:rgba(148, 163, 184, 0.1); color:#94a3b8;">Parked / Unmanned</span>`;
       const isAiActive = v.getAttribute("aiIsStarted") === "true" || v.getAttribute("isAiJobActive") === "true";
@@ -497,19 +507,23 @@ window.renderDashboard = function(rawIncomingData) {
         driverBadge = `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15;"><i class="fa-solid fa-robot"></i> AI Worker Active</span>`;
       }
 
-      // Attachment Extraction
+      // Attachments Extraction
       let attachmentsList = [];
       v.querySelectorAll("attachedVehicle, attachment, implement").forEach(att => {
         const attRaw = att.getAttribute("filename") || att.getAttribute("name");
         if (attRaw) attachmentsList.push(formatName(attRaw));
       });
-      const attachmentText = attachmentsList.length > 0 ? `<div class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-link"></i> Attached: ${attachmentsList.join(", ")}</div>` : '';
+      const attachmentText = attachmentsList.length > 0 
+        ? `<div class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-link"></i> Attached: ${attachmentsList.join(", ")}</div>` 
+        : '';
 
-      // Cargo & Fill Status
+      // Fill Cargo Status
       const fillUnit = v.querySelector("fillUnit");
       const fillType = fillUnit ? fillUnit.getAttribute("fillType") : null;
       const fillLevel = fillUnit ? Math.round(parseFloat(fillUnit.getAttribute("fillLevel") || "0")) : 0;
-      const cargoText = (fillType && fillType !== "UNKNOWN" && fillLevel > 0) ? `<div class="card-subtext"><i class="fa-solid fa-box-archive"></i> Hauling: ${formatName(fillType)} (${fillLevel.toLocaleString()} L)</div>` : '';
+      const cargoText = (fillType && fillType !== "UNKNOWN" && fillLevel > 0) 
+        ? `<div class="card-subtext"><i class="fa-solid fa-box-archive"></i> Hauling: ${formatName(fillType)} (${fillLevel.toLocaleString()} L)</div>` 
+        : '';
 
       const matchedImg = resolveItemImage(rawName);
       const imgHtml = matchedImg 
@@ -522,7 +536,10 @@ window.renderDashboard = function(rawIncomingData) {
           <div class="card-details" style="width:100%;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.4rem;">
               <strong style="color:${color};">${name}</strong>
-              ${driverBadge}
+              <div style="display:flex; gap:0.4rem; align-items:center;">
+                ${plateBadge}
+                ${driverBadge}
+              </div>
             </div>
             <span>Owner: Farm #${farmId} | Usage: ${operatingTime}</span>
             ${attachmentText}
@@ -543,7 +560,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (implCont) implCont.innerHTML = implements || `<div class="empty-state">No Active Implements Logged</div>`;
   setTxt('global-vehicle-count', vehicleCount);
 
-  // 5. Player Hand Tools
+  // Node 6: Player Hand Tools
   const toolsCont = document.getElementById('handtools-container');
   if (toolsCont) {
     let toolsHtml = "";
@@ -567,7 +584,7 @@ window.renderDashboard = function(rawIncomingData) {
     toolsCont.innerHTML = toolsHtml || `<div class="empty-state">No Hand Tools Stored</div>`;
   }
 
-  // 6. Field Agronomy Status
+  // Node 5: Field Agronomy & Farmland Status
   let fieldCount = 0;
   const fieldsCont = document.getElementById('fields-container');
   if (fieldsCont) {
@@ -616,7 +633,10 @@ window.renderDashboard = function(rawIncomingData) {
   }
   setTxt('global-land-count', `${fieldCount} Fields`);
 
+  // Node 7: Factories & World Objects
   renderProductions(placeXml);
+
+  // Node 7: Server Diagnostic Logs
   renderTacticalLog(fs25Node.modErrors, fs25Node.serverEvents);
 };
 
