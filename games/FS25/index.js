@@ -1,13 +1,12 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 21:05:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 09, 2026, 23:15:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Master Tactical Telemetry Engine. Combines Active Player
-                Occupied Machinery extraction, X/Z map coordinates, Two-Pass
-                attacher joint chain resolution, multi-unit fill percentages,
-                placeable category classification (Water, Greenhouses, Buy/Sell),
-                and universal dual-format XML/HTML parsing without omitting
-                or deleting previous functions.
+   Description: Cumulative Master Tactical Telemetry Engine. Merges Active 
+                Occupied Machinery extraction, strict driver occupancy checks,
+                total active mods count, placeable category classification 
+                (Water, Greenhouses, Buy/Sell), two-pass attacher joint chain 
+                resolution, player X/Z coordinates, and 24/7 unfiltered cards.
    ========================================================================== */
 
 // Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
@@ -269,7 +268,7 @@ window.filterModsCategory = function(selectedCat, btnElem) {
 };
 
 /* ==========================================================================
-   SECTION 3: Firebase Mod Catalog Card Grid Renderer
+   SECTION 3: Firebase Mod Catalog Card Grid Renderer (With Total Count)
    ========================================================================== */
 
 function renderModGrid(modsData) {
@@ -282,6 +281,25 @@ function renderModGrid(modsData) {
     modList = modsData;
   } else if (modsData && typeof modsData === 'object') {
     modList = Object.values(modsData);
+  }
+
+  const catBar = document.getElementById('mod-categories-bar');
+  if (catBar && modList.length > 0) {
+    const categoriesSet = new Set(['ALL']);
+    modList.forEach(mod => {
+      const cat = mod.category_g || mod.category_k || mod.category || mod.mod_type_f || 'General';
+      categoriesSet.add(String(cat).toUpperCase());
+    });
+
+    catBar.innerHTML = `
+      <div style="margin-bottom:0.75rem; text-align:center; font-weight:700; color:var(--accent-gold); font-size:1.05rem;">
+        <i class="fa-solid fa-cubes"></i> Total Server Mods Active: ${modList.length}
+      </div>
+      <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
+        ${Array.from(categoriesSet).map(cat => 
+          `<button type="button" class="category-btn ${cat === 'ALL' ? 'active' : ''}" onclick="filterModsCategory('${cat}', this)">${cat}</button>`
+        ).join('')}
+      </div>`;
   }
 
   if (modList.length === 0) {
@@ -354,7 +372,7 @@ window.renderDashboard = function(rawIncomingData) {
 
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-  // Parse ALL Raw XML Endpoints Simultaneously
+  // Parse ALL Raw XML Endpoints
   const careerXml = parseXML(fs25Node.careerSavegame_raw);
   const vehXml = parseXML(fs25Node.vehicles_raw);
   const farmsXml = parseXML(fs25Node.farms_raw);
@@ -439,11 +457,11 @@ window.renderDashboard = function(rawIncomingData) {
     let farmsHtml = "";
     let calculatedNetWorth = 0;
 
-    if (farmsXml) {
+    if (farmsXml && farmsXml.querySelectorAll("farm, Farm").length > 0) {
       farmsXml.querySelectorAll("farm, Farm").forEach(farm => {
         const farmId = farm.getAttribute("farmId") || farm.getAttribute("id");
         if (farmId && farmId !== "0") {
-          const name = farm.getAttribute("name") || `Farm #${farmId}`;
+          const name = farm.getAttribute("name") || FARM_COLOR_PALETTE[farmId]?.name || `Farm #${farmId}`;
           const money = Math.round(parseFloat(farm.getAttribute("money") || "0"));
           const color = getFarmColor(farmId);
           calculatedNetWorth += money;
@@ -460,7 +478,19 @@ window.renderDashboard = function(rawIncomingData) {
       });
     }
 
-    farmsCont.innerHTML = farmsHtml || `<div class="empty-state">No Server Farms Found</div>`;
+    if (!farmsHtml) {
+      const color = getFarmColor("1");
+      farmsHtml = `
+        <div class="telemetry-card" style="border-left: 4px solid ${color}; padding: 0.85rem;">
+          <i class="fa-solid fa-building-columns card-icon" style="color:${color};"></i>
+          <div class="card-details">
+            <strong style="color:${color};">My Farm (Farm #1)</strong>
+            <span style="font-size:1.05rem; font-weight:700; color:#ffffff;">Registered Active Farm</span>
+          </div>
+        </div>`;
+    }
+
+    farmsCont.innerHTML = farmsHtml;
     if (calculatedNetWorth > 0) setTxt('global-net-worth', `$${calculatedNetWorth.toLocaleString()}`);
   }
 
@@ -524,7 +554,6 @@ window.renderDashboard = function(rawIncomingData) {
         const color = getFarmColor(farmId);
         const name = formatName(rawFilename);
 
-        // Position coordinates extraction
         const compNode = p.querySelector("component");
         const posAttr = p.getAttribute("position") || (compNode ? compNode.getAttribute("position") : null);
         let locText = "";
@@ -533,7 +562,6 @@ window.renderDashboard = function(rawIncomingData) {
           if (parts.length >= 3) locText = `X: ${parseFloat(parts[0]).toFixed(1)} | Z: ${parseFloat(parts[2]).toFixed(1)}`;
         }
 
-        // Category Tag Classifier
         let objTypeTag = "";
         if (lowerName.includes("windmill") || lowerName.includes("water") || lowerName.includes("station")) {
           objTypeTag = "WATER & UTILITIES";
@@ -582,9 +610,10 @@ window.renderDashboard = function(rawIncomingData) {
   const missionsCont = document.getElementById('missions-container');
   if (missionsCont) {
     let missionsHtml = "";
+    const activeMissionsXml = missionsXml || farmsXml;
 
-    if (missionsXml) {
-      missionsXml.querySelectorAll("mission, contract, item, Mission").forEach(m => {
+    if (activeMissionsXml) {
+      activeMissionsXml.querySelectorAll("mission, contract, item, Mission").forEach(m => {
         const rawType = m.getAttribute("type") || m.getAttribute("category") || m.getAttribute("name") || "Contract";
         const type = formatName(rawType);
         const reward = Math.round(parseFloat(m.getAttribute("reward") || m.getAttribute("payout") || "0"));
@@ -691,7 +720,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 9: FLEET MACHINERY, ATTACHMENT CHAINS & OCCUPIED VEHICLES
+     CARD 9: FLEET MACHINERY, ATTACHMENTS & STRICT DRIVER CHECK
      ------------------------------------------------------------------------ */
   let vehicleCount = 0;
   const tracCont = document.getElementById('tractors-container');
@@ -701,7 +730,7 @@ window.renderDashboard = function(rawIncomingData) {
 
   let tractors = "", harvesters = "", trailers = "", implements = "";
 
-  // Two-Pass Lookup: Map every vehicle uniqueId to its readable name and details
+  // Two-Pass Lookup: Map every vehicle uniqueId to its readable name
   let vehicleObjMap = {};
   if (vehXml) {
     vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
@@ -720,7 +749,6 @@ window.renderDashboard = function(rawIncomingData) {
       const color = getFarmColor(farmId);
       const operatingTime = formatHours(v.getAttribute("operatingTime"));
 
-      // License Plate
       let plateText = "";
       const plateNode = v.querySelector("licensePlates, licensePlate");
       if (plateNode) {
@@ -730,23 +758,19 @@ window.renderDashboard = function(rawIncomingData) {
         ? `<span class="badge" style="border: 1px solid var(--accent-gold); color: var(--accent-gold);"><i class="fa-solid fa-id-card"></i> ${plateText.trim()}</span>` 
         : '';
 
-      // Occupancy & Driver Check
-      const enterableNode = v.querySelector("enterable");
-      const enteredUser = v.getAttribute("enteredUserGamertag") || v.getAttribute("driverName");
+      // Strict Driver Verification
+      const enteredUser = (v.getAttribute("enteredUserGamertag") || v.getAttribute("driverName") || "").trim();
       const aiNode = v.querySelector("aiFieldWorker");
       const isAiActive = aiNode ? aiNode.getAttribute("isActive") === "true" : false;
-      const isPlayerOccupied = enterableNode || enteredUser || isAiActive;
 
       let driverBadge = `<span class="badge" style="background:rgba(148, 163, 184, 0.1); color:#94a3b8;">Parked / Unmanned</span>`;
-      if (enteredUser) {
+      if (enteredUser.length > 0) {
         driverBadge = `<span class="badge" style="background:rgba(34, 197, 94, 0.2); color:#4ade80;"><i class="fa-solid fa-user"></i> Driver: ${enteredUser}</span>`;
-      } else if (isPlayerOccupied && !isAiActive) {
-        driverBadge = `<span class="badge" style="background:rgba(34, 197, 94, 0.2); color:#4ade80;"><i class="fa-solid fa-user"></i> Driver Occupied</span>`;
       } else if (isAiActive) {
         driverBadge = `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15;"><i class="fa-solid fa-robot"></i> AI Active</span>`;
       }
 
-      // Multi-Unit Fill Cargo Extraction with Percentages
+      // Cargo & Fill Levels
       let cargoList = [];
       v.querySelectorAll("fillUnit > unit, fillUnit").forEach(u => {
         const ft = u.getAttribute("fillType");
@@ -767,7 +791,7 @@ window.renderDashboard = function(rawIncomingData) {
         ? `<div class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-box-archive"></i> Unit Contents: ${cargoList.join(" | ")}</div>` 
         : '';
 
-      // Resolve Attachment Chains (e.g. Front Mowers, Headers, Trailers)
+      // Attachment Chains
       let attachedNames = [];
       v.querySelectorAll("attachedImplement").forEach(att => {
         const targetId = att.getAttribute("attachedVehicleUniqueId");
@@ -780,7 +804,6 @@ window.renderDashboard = function(rawIncomingData) {
         ? `<div class="card-subtext" style="color:#4ade80;"><i class="fa-solid fa-link"></i> Attached Equipment: ${attachedNames.join(", ")}</div>`
         : '';
 
-      // Extract Coordinates & Component Position
       const compNode = v.querySelector("component");
       let posText = "";
       if (compNode && compNode.getAttribute("position")) {
