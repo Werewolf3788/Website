@@ -1,10 +1,11 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 20:00:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 09, 2026, 20:10:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Direct Subnode Resolver & Tactical Telemetry Engine.
-                Correctly extracts data nested inside /fs25 node to prevent
-                cards from freezing on loading states.
+   Description: Universal Dual-Format Telemetry Engine. Auto-detects and 
+                extracts both G-Portal HTML wrapped feeds and raw FS25 XML
+                savegame payloads without losing coordinates, farms, 
+                contracts, or livestock data.
    ========================================================================== */
 
 // Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
@@ -76,8 +77,36 @@ let parsedModCatalog = [];
 let firebaseImageMappings = {};
 
 /* ==========================================================================
-   SECTION 1: Universal Image Resolver Engine
+   SECTION 1: Smart Dual-Format Raw String Extractor & XML Parser
    ========================================================================== */
+
+function smartExtractPayload(rawInput) {
+  if (!rawInput || typeof rawInput !== 'string') return "";
+  const trimmed = rawInput.trim();
+
+  // If already pure XML string
+  if (trimmed.startsWith("<?xml") || trimmed.startsWith("<Server") || trimmed.startsWith("<careerSavegame") || trimmed.startsWith("<vehicles") || trimmed.startsWith("<farms") || trimmed.startsWith("<placeables") || trimmed.startsWith("<missions")) {
+    return trimmed;
+  }
+
+  // Extract from HTML <pre> or <code> wrapper tags if returned via G-Portal HTML
+  const preMatch = trimmed.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
+  if (preMatch && preMatch[1]) return preMatch[1].trim();
+
+  const codeMatch = trimmed.match(/<code[^>]*>([\s\S]*?)<\/code>/i);
+  if (codeMatch && codeMatch[1]) return codeMatch[1].trim();
+
+  return trimmed;
+}
+
+function parseXML(rawText) {
+  const cleanXmlText = smartExtractPayload(rawText);
+  if (!cleanXmlText) return null;
+  try {
+    const xmlDoc = (new DOMParser()).parseFromString(cleanXmlText, "text/xml");
+    return xmlDoc.getElementsByTagName("parsererror").length > 0 ? null : xmlDoc;
+  } catch (e) { return null; }
+}
 
 function resolveItemImage(rawFilename) {
   if (!rawFilename) return null;
@@ -122,14 +151,6 @@ function resolveItemImage(rawFilename) {
   }
 
   return targetFilename ? (isValidImageUrl(targetFilename) ? targetFilename : `${REPO_IMAGES_BASE}${encodeURIComponent(targetFilename)}`) : null;
-}
-
-function parseXML(rawText) {
-  if (!rawText || typeof rawText !== 'string') return null;
-  try {
-    const xmlDoc = (new DOMParser()).parseFromString(rawText.trim(), "text/xml");
-    return xmlDoc.getElementsByTagName("parsererror").length > 0 ? null : xmlDoc;
-  } catch (e) { return null; }
 }
 
 function formatName(str) {
@@ -306,7 +327,7 @@ function renderModGrid(modsData) {
 }
 
 /* ==========================================================================
-   SECTION 4: Master Tactical Telemetry Engine (/fs25 Node Direct Extractor)
+   SECTION 4: Master Telemetry Engine (Smart Dual-Format Parsing)
    ========================================================================== */
 
 window.renderDashboard = function(rawIncomingData) {
@@ -317,7 +338,7 @@ window.renderDashboard = function(rawIncomingData) {
     data = rawIncomingData.val();
   }
 
-  // Mod Catalog Node (/FS25_Mods_Info)
+  // Mod Directory Node (/FS25_Mods_Info)
   if (data.FS25_Mods_Info && data.FS25_Mods_Info.Images) {
     firebaseImageMappings = data.FS25_Mods_Info.Images;
   }
@@ -327,23 +348,13 @@ window.renderDashboard = function(rawIncomingData) {
     renderModGrid(window.activeFirebaseModData);
   }
 
-  // DIRECT SUBNODE RESOLVER: Resolves data placed directly under /fs25 node
+  // Telemetry Node (/fs25)
   const fs25Node = data.fs25 ? data.fs25 : (data.careerSavegame_raw || data.farms_raw || data.stats_xml_raw ? data : {});
-
-  if (!fs25Node || Object.keys(fs25Node).length === 0) {
-    console.warn("⚠️ Telemetry payload pending under /fs25.");
-    return;
-  }
+  if (!fs25Node || Object.keys(fs25Node).length === 0) return;
 
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-  // Save Slot Display
-  const saveSlotEl = document.getElementById('save-slot-display');
-  if (saveSlotEl) {
-    saveSlotEl.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: <strong style="color:#ffffff;">savegame${fs25Node.activeSaveSlot || "1"}</strong>`;
-  }
-
-  // Parse Raw XML Strings directly from /fs25
+  // Parse Smart-Extracted XML Nodes
   const careerXml = parseXML(fs25Node.careerSavegame_raw);
   const vehXml = parseXML(fs25Node.vehicles_raw);
   const farmsXml = parseXML(fs25Node.farms_raw);
@@ -352,33 +363,38 @@ window.renderDashboard = function(rawIncomingData) {
   const toolsXml = parseXML(fs25Node.handTools_raw);
   const missionsXml = parseXML(fs25Node.missions_raw);
   const statsXml = parseXML(fs25Node.stats_xml_raw);
-  const envXml = parseXML(fs25Node.environment_raw);
 
   /* ------------------------------------------------------------------------
      CARD 1: SERVER BANNER & SETTINGS
      ------------------------------------------------------------------------ */
-  let gameTime = "00:00";
-  if (envXml) {
-    const dayTimeElem = envXml.querySelector("dayTime, time");
-    if (dayTimeElem) gameTime = formatGameTime(dayTimeElem.textContent || dayTimeElem.getAttribute("value"));
-  }
-
   if (careerXml) {
     const settings = careerXml.querySelector("settings");
     if (settings) {
       setTxt('server-name', settings.querySelector("savegameName")?.textContent || "OneLIVIDMAN and werewolf 618");
       setTxt('server-map', `Map: ${settings.querySelector("mapTitle")?.textContent || "Calm Lands"}`);
-      setTxt('server-time', `Time: ${gameTime}`);
-      setTxt('time-speed-badge', `Speed: ${settings.querySelector("timeScale")?.textContent || "1"}x`);
       setTxt('traffic-badge', `Traffic: ${settings.querySelector("trafficEnabled")?.textContent === 'true' ? 'ON' : 'OFF'}`);
+      setTxt('time-speed-badge', `Speed: ${settings.querySelector("timeScale")?.textContent || "0.5"}x`);
+    }
+
+    const stats = careerXml.querySelector("statistics");
+    if (stats) {
+      const money = Math.round(parseFloat(stats.querySelector("money")?.textContent || "0"));
+      setTxt('global-net-worth', `$${money.toLocaleString()}`);
+    }
+  } else if (statsXml) {
+    const serverNode = statsXml.querySelector("Server");
+    if (serverNode) {
+      setTxt('server-name', serverNode.getAttribute("name") || "OneLIVIDMAN and werewolf 618");
+      setTxt('server-map', `Map: ${serverNode.getAttribute("mapName") || "Calm Lands"}`);
+      setTxt('server-time', `Time: ${formatGameTime(serverNode.getAttribute("dayTime"))}`);
     }
   }
 
   /* ------------------------------------------------------------------------
-     CARD 2: LIVE ONLINE PLAYERS PARSER (<Player isUsed="true">)
+     CARD 2: LIVE ONLINE PLAYERS WITH X & Z COORDINATES
      ------------------------------------------------------------------------ */
   const playersCont = document.getElementById('active-players-container');
-  let activeGamertags = new Set();
+  let activeGamertags = [];
   let totalSlots = "6";
 
   if (statsXml) {
@@ -388,50 +404,49 @@ window.renderDashboard = function(rawIncomingData) {
     statsXml.querySelectorAll("Player, player").forEach(p => {
       const isUsed = p.getAttribute("isUsed") === "true";
       const name = p.textContent ? p.textContent.trim() : p.getAttribute("name");
-      if (isUsed && name) activeGamertags.add(name);
-    });
-  }
-
-  if (vehXml) {
-    vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
-      const driver = v.getAttribute("enteredUserGamertag") || v.getAttribute("driverName");
-      if (driver && driver.trim().length > 0) activeGamertags.add(driver.trim());
+      if (isUsed && name) {
+        const uptimeMin = p.getAttribute("uptime") || "0";
+        const posX = p.getAttribute("x") ? parseFloat(p.getAttribute("x")).toFixed(1) : null;
+        const posZ = p.getAttribute("z") ? parseFloat(p.getAttribute("z")).toFixed(1) : null;
+        activeGamertags.push({ name, uptimeMin, posX, posZ });
+      }
     });
   }
 
   if (playersCont) {
     let playersHtml = "";
-    activeGamertags.forEach(tag => {
+    activeGamertags.forEach(p => {
       playersHtml += `
         <div class="telemetry-card" style="border-left: 4px solid #22c55e; padding: 0.85rem;">
           <i class="fa-solid fa-gamepad card-icon" style="color:#22c55e;"></i>
           <div class="card-details">
-            <strong style="color:#22c55e; font-size:1.05rem;">${tag}</strong>
-            <span style="color:#ffffff;">Active Playing Session</span>
+            <strong style="color:#22c55e; font-size:1.05rem;">${p.name}</strong>
+            <span style="color:#ffffff;">Uptime: ${p.uptimeMin} mins</span>
+            ${p.posX ? `<span class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-location-dot"></i> Coordinates: X: ${p.posX} | Z: ${p.posZ}</span>` : ''}
           </div>
         </div>`;
     });
 
     playersCont.innerHTML = playersHtml || `<div class="empty-state">No Active Players Connected</div>`;
   }
-  setTxt('server-players', `Players: ${activeGamertags.size}/${totalSlots}`);
+  setTxt('server-players', `Players: ${activeGamertags.length}/${totalSlots}`);
 
   /* ------------------------------------------------------------------------
      CARD 3: REGISTERED SERVER FARMS & BALANCES
      ------------------------------------------------------------------------ */
   const farmsCont = document.getElementById('farms-container');
-  let globalNetWorth = 0;
-
   if (farmsCont) {
     let farmsHtml = "";
+    let calculatedNetWorth = 0;
+
     if (farmsXml) {
-      farmsXml.querySelectorAll("farm").forEach(farm => {
+      farmsXml.querySelectorAll("farm, Farm").forEach(farm => {
         const farmId = farm.getAttribute("farmId") || farm.getAttribute("id");
         if (farmId && farmId !== "0") {
           const name = farm.getAttribute("name") || `Farm #${farmId}`;
           const money = Math.round(parseFloat(farm.getAttribute("money") || "0"));
           const color = getFarmColor(farmId);
-          globalNetWorth += money;
+          calculatedNetWorth += money;
 
           farmsHtml += `
             <div class="telemetry-card" style="border-left: 4px solid ${color}; padding: 0.85rem;">
@@ -444,9 +459,10 @@ window.renderDashboard = function(rawIncomingData) {
         }
       });
     }
-    farmsCont.innerHTML = farmsHtml || `<div class="empty-state">No Server Farms Found</div>`;
+
+    farmsCont.innerHTML = farmsHtml || `<div class="empty-state">No Active Server Farms Found</div>`;
+    if (calculatedNetWorth > 0) setTxt('global-net-worth', `$${calculatedNetWorth.toLocaleString()}`);
   }
-  setTxt('global-net-worth', `$${globalNetWorth.toLocaleString()}`);
 
   /* ------------------------------------------------------------------------
      CARD 4: LIVESTOCK & ANIMAL BARNS
@@ -454,8 +470,9 @@ window.renderDashboard = function(rawIncomingData) {
   const animalsCont = document.getElementById('animals-container');
   if (animalsCont) {
     let animalsHtml = "";
+
     if (placeXml) {
-      placeXml.querySelectorAll("placeable").forEach(p => {
+      placeXml.querySelectorAll("placeable, Placeable").forEach(p => {
         const rawFilename = p.getAttribute("filename") || "";
         const lowerName = rawFilename.toLowerCase();
 
@@ -500,7 +517,7 @@ window.renderDashboard = function(rawIncomingData) {
     let objectCount = 0;
 
     if (placeXml) {
-      placeXml.querySelectorAll("placeable").forEach(p => {
+      placeXml.querySelectorAll("placeable, Placeable").forEach(p => {
         const rawFilename = p.getAttribute("filename") || "";
         const lowerName = rawFilename.toLowerCase();
 
@@ -539,7 +556,7 @@ window.renderDashboard = function(rawIncomingData) {
     let missionsHtml = "";
 
     if (missionsXml) {
-      missionsXml.querySelectorAll("mission, contract, item").forEach(m => {
+      missionsXml.querySelectorAll("mission, contract, item, Mission").forEach(m => {
         const rawType = m.getAttribute("type") || m.getAttribute("category") || m.getAttribute("name") || "Contract";
         const type = formatName(rawType);
         const reward = Math.round(parseFloat(m.getAttribute("reward") || m.getAttribute("payout") || "0"));
@@ -572,7 +589,7 @@ window.renderDashboard = function(rawIncomingData) {
       });
     }
 
-    missionsCont.innerHTML = missionsHtml || `<div class="empty-state">No Server Contracts Generated Yet</div>`;
+    missionsCont.innerHTML = missionsHtml || `<div class="empty-state">No Active Server Contracts Generated Yet</div>`;
   }
 
   /* ------------------------------------------------------------------------
@@ -585,7 +602,7 @@ window.renderDashboard = function(rawIncomingData) {
     let foundCollectibles = 0;
 
     if (itemsXml) {
-      const itemNodes = itemsXml.querySelectorAll("item, collectible");
+      const itemNodes = itemsXml.querySelectorAll("item, collectible, Item");
       totalCollectibles = itemNodes.length || 100;
 
       itemNodes.forEach(item => {
@@ -621,7 +638,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (toolsCont) {
     let toolsHtml = "";
     if (toolsXml) {
-      toolsXml.querySelectorAll("handTool").forEach(t => {
+      toolsXml.querySelectorAll("handTool, HandTool").forEach(t => {
         const rawFilename = t.getAttribute("filename") || "Tool";
         const baseName = formatName(rawFilename);
         
@@ -661,43 +678,36 @@ window.renderDashboard = function(rawIncomingData) {
       vehicleCount++;
       const rawName = v.getAttribute("filename") || v.getAttribute("name") || "";
       const name = formatName(rawName);
-      const farmId = v.getAttribute("farmId") || "0";
+      const farmId = v.getAttribute("farmId") || "1";
       const color = getFarmColor(farmId);
       const operatingTime = formatHours(v.getAttribute("operatingTime"));
 
       let plateText = "";
-      const plateNode = v.querySelector("licensePlate, licensePlates");
+      const plateNode = v.querySelector("licensePlates, licensePlate");
       if (plateNode) {
-        plateText = plateNode.getAttribute("number") || plateNode.getAttribute("characters") || plateNode.textContent || "";
+        plateText = plateNode.getAttribute("characters") || plateNode.getAttribute("number") || "";
       }
       const plateBadge = plateText.trim() 
         ? `<span class="badge" style="border: 1px solid var(--accent-gold); color: var(--accent-gold);"><i class="fa-solid fa-id-card"></i> ${plateText.trim()}</span>` 
         : '';
 
-      let driverBadge = `<span class="badge" style="background:rgba(148, 163, 184, 0.1); color:#94a3b8;">Parked / Unmanned</span>`;
-      const isAiActive = v.getAttribute("aiIsStarted") === "true" || v.getAttribute("isAiJobActive") === "true";
-      const activeUser = v.getAttribute("enteredUserGamertag") || v.getAttribute("driverName");
+      const aiNode = v.querySelector("aiFieldWorker");
+      const isAiActive = aiNode ? aiNode.getAttribute("isActive") === "true" : false;
+      const driverBadge = isAiActive 
+        ? `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15;"><i class="fa-solid fa-robot"></i> AI Active</span>` 
+        : `<span class="badge" style="background:rgba(148, 163, 184, 0.1); color:#94a3b8;">Parked / Unmanned</span>`;
 
-      if (activeUser) {
-        driverBadge = `<span class="badge" style="background:rgba(34, 197, 94, 0.2); color:#4ade80;"><i class="fa-solid fa-user"></i> Driver: ${activeUser}</span>`;
-      } else if (isAiActive) {
-        driverBadge = `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15;"><i class="fa-solid fa-robot"></i> AI Worker Active</span>`;
-      }
-
-      let attachmentsList = [];
-      v.querySelectorAll("attachedVehicle, attachment, implement").forEach(att => {
-        const attRaw = att.getAttribute("filename") || att.getAttribute("name");
-        if (attRaw) attachmentsList.push(formatName(attRaw));
+      let cargoList = [];
+      v.querySelectorAll("fillUnit > unit, fillUnit").forEach(u => {
+        const ft = u.getAttribute("fillType");
+        const lvl = Math.round(parseFloat(u.getAttribute("fillLevel") || "0"));
+        if (ft && ft !== "UNKNOWN" && lvl > 0) {
+          cargoList.push(`${formatName(ft)}: ${lvl.toLocaleString()} L`);
+        }
       });
-      const attachmentText = attachmentsList.length > 0 
-        ? `<div class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-link"></i> Attached: ${attachmentsList.join(", ")}</div>` 
-        : '';
 
-      const fillUnit = v.querySelector("fillUnit");
-      const fillType = fillUnit ? fillUnit.getAttribute("fillType") : null;
-      const fillLevel = fillUnit ? Math.round(parseFloat(fillUnit.getAttribute("fillLevel") || "0")) : 0;
-      const cargoText = (fillType && fillType !== "UNKNOWN" && fillLevel > 0) 
-        ? `<div class="card-subtext"><i class="fa-solid fa-box-archive"></i> Hauling: ${formatName(fillType)} (${fillLevel.toLocaleString()} L)</div>` 
+      const cargoText = cargoList.length > 0 
+        ? `<div class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-box-archive"></i> Unit Contents: ${cargoList.join(" | ")}</div>` 
         : '';
 
       const matchedImg = resolveItemImage(rawName);
@@ -717,14 +727,14 @@ window.renderDashboard = function(rawIncomingData) {
               </div>
             </div>
             <span>Owner: Farm #${farmId} | Usage: ${operatingTime}</span>
-            ${attachmentText}
             ${cargoText}
           </div>
         </div>`;
 
-      if (name.includes("HARVESTER") || name.includes("COMBINE")) harvesters += card;
-      else if (name.includes("TRAILER") || name.includes("WAGON") || name.includes("TIPPER")) trailers += card;
-      else if (name.includes("TRACTOR") || name.includes("TRUCK") || name.includes("RIG")) tractors += card;
+      const lowerFile = rawName.toLowerCase();
+      if (lowerFile.includes("combine") || lowerFile.includes("harvest") || lowerFile.includes("cutter") || lowerFile.includes("rmf9r")) harvesters += card;
+      else if (lowerFile.includes("trailer") || lowerFile.includes("wagon") || lowerFile.includes("z18051") || lowerFile.includes("supercollect")) trailers += card;
+      else if (lowerFile.includes("tractor") || lowerFile.includes("seriesm8") || lowerFile.includes("truck")) tractors += card;
       else implements += card;
     });
   }
@@ -736,45 +746,14 @@ window.renderDashboard = function(rawIncomingData) {
   setTxt('global-vehicle-count', vehicleCount);
 
   /* ------------------------------------------------------------------------
-     CARD 10: FIELD CROPS & AGRONOMY STATUS
+     CARD 10: FARMLANDS & FIELD CROPS
      ------------------------------------------------------------------------ */
-  let fieldCount = 0;
   const fieldsCont = document.getElementById('fields-container');
   if (fieldsCont) {
     let fieldsHtml = "";
+    let fieldCount = 0;
 
-    if (fs25Node.fieldAgronomy) {
-      Object.values(fs25Node.fieldAgronomy).forEach(f => {
-        fieldCount++;
-        const id = f.id !== undefined ? f.id : fieldCount;
-        const farmId = f.farmId || "0";
-        const color = getFarmColor(farmId);
-        const acres = f.areaAcres ? `${f.areaAcres} Acres` : '0.00 Acres';
-        
-        const cropType = f.fruitType || f.cropType ? formatName(f.fruitType || f.cropType) : "FALLOW / UNPLANTED";
-        const growthStage = f.growthStage || f.growthState ? `State: ${formatName(f.growthStage || f.growthState)}` : '';
-        const fert = f.fertilizerLevel !== undefined ? `Fertilizer: ${f.fertilizerLevel}%` : '';
-        
-        const lime = f.limeRequired ? `<span class="badge" style="background:#ef4444; color:#fff;">Lime Needed</span>` : '';
-        const plow = f.plowRequired ? `<span class="badge" style="background:#f97316; color:#fff;">Plow Needed</span>` : '';
-        const readyHarvest = (f.growthStage && String(f.growthStage).toUpperCase().includes("HARVEST")) 
-          ? `<span class="badge" style="background:#22c55e; color:#fff;">Ready to Harvest</span>` : '';
-
-        fieldsHtml += `
-          <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
-            <i class="fa-solid fa-seedling card-icon" style="color:${color};"></i>
-            <div class="card-details" style="width:100%;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <strong style="color:${color};">Field #${id} (${acres})</strong>
-                ${readyHarvest}
-              </div>
-              <span style="color:#ffffff; font-weight:600;"><i class="fa-solid fa-wheat-field"></i> Crop: ${cropType}</span>
-              <span>Owner: ${farmId === '0' ? 'Public / Unowned' : 'Farm #' + farmId} | ${fert} ${growthStage ? '| ' + growthStage : ''}</span>
-              <div style="margin-top:4px; display:flex; gap:0.4rem;">${lime} ${plow}</div>
-            </div>
-          </div>`;
-      });
-    } else if (statsXml) {
+    if (statsXml) {
       statsXml.querySelectorAll("Farmland, farmland").forEach(f => {
         fieldCount++;
         const id = f.getAttribute("id") || f.getAttribute("name");
@@ -782,23 +761,31 @@ window.renderDashboard = function(rawIncomingData) {
         const color = getFarmColor(farmId);
         const areaHa = parseFloat(f.getAttribute("area") || "0");
         const acresText = (areaHa * 2.47105).toFixed(2);
+        const price = Math.round(parseFloat(f.getAttribute("price") || "0"));
 
         fieldsHtml += `
           <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
             <i class="fa-solid fa-seedling card-icon" style="color:${color};"></i>
             <div class="card-details" style="width:100%;">
               <strong style="color:${color};">Farmland #${id} (${acresText} Acres)</strong>
-              <span>Owner: ${farmId === '0' ? 'Public / Buyable' : 'Farm #' + farmId}</span>
+              <span>Owner: ${farmId === '0' ? 'Public / Buyable' : 'Farm #' + farmId} | Value: $${price.toLocaleString()}</span>
             </div>
           </div>`;
       });
     }
+
     fieldsCont.innerHTML = fieldsHtml || `<div class="empty-state">No Farmland Logged</div>`;
     setTxt('global-land-count', `${fieldCount} Fields`);
   }
 
-  // Productions & Diagnostics
+  /* ------------------------------------------------------------------------
+     CARD 11: MAP FACTORIES & PRODUCTIONS
+     ------------------------------------------------------------------------ */
   renderProductions(placeXml);
+
+  /* ------------------------------------------------------------------------
+     CARD 12: SERVER DIAGNOSTIC FEED
+     ------------------------------------------------------------------------ */
   renderTacticalLog(fs25Node.modErrors, fs25Node.serverEvents);
 };
 
@@ -849,13 +836,21 @@ function renderProductions(placeablesDoc) {
   }
 
   let prodHtml = "";
-  placeablesDoc.querySelectorAll("placeable").forEach(p => {
+  placeablesDoc.querySelectorAll("placeable, Placeable").forEach(p => {
     const rawFilename = p.getAttribute("filename") || "";
     const uniqueId = p.getAttribute("uniqueId") || "";
     const name = formatName(rawFilename);
     const farmId = p.getAttribute("farmId") || "0";
     const color = getFarmColor(farmId);
 
+    let fillLevelsList = [];
+    p.querySelectorAll("storage > fillLevel, fillLevel").forEach(fill => {
+      const fillType = fill.getAttribute("fillType");
+      const level = Math.round(parseFloat(fill.getAttribute("fillLevel") || fill.textContent || "0"));
+      if (fillType && level > 0) fillLevelsList.push(`${formatName(fillType)}: ${level.toLocaleString()} L`);
+    });
+
+    const storageText = fillLevelsList.length > 0 ? `<div class="card-subtext"><i class="fa-solid fa-boxes-stacked"></i> Stock: ${fillLevelsList.join(" | ")}</div>` : '';
     const matchedImg = resolveItemImage(rawFilename);
     const imgHtml = matchedImg 
       ? `<img src="${matchedImg}" class="telemetry-card-thumb lightbox-trigger" data-alt="${name}">`
@@ -866,6 +861,7 @@ function renderProductions(placeablesDoc) {
         ${imgHtml}
         <div class="card-details" style="width:100%;">
           <strong style="color:${color};">${name}</strong>
+          ${storageText}
           ${uniqueId ? `<span class="card-subtext">ID: ${uniqueId.substring(0, 12)}...</span>` : ''}
         </div>
       </div>`;
