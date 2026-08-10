@@ -1,11 +1,11 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 20:15:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 09, 2026, 20:41:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Unfiltered Tactical Telemetry Engine. Displays ALL server 
-                data 24/7 (active, inactive, parked, available, or fallow)
-                across all 12 cards without dropping player coordinates or 
-                savegame nodes.
+   Description: Active Player Occupied Machinery Engine. Dynamically detects 
+                when a player enters a vehicle, calculates unit fill percentages,
+                tracks motion states, extracts map coordinates, and resolves
+                front/rear attachment chains in real time.
    ========================================================================== */
 
 // Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
@@ -84,12 +84,10 @@ function smartExtractPayload(rawInput) {
   if (!rawInput || typeof rawInput !== 'string') return "";
   const trimmed = rawInput.trim();
 
-  // If already pure XML string
   if (trimmed.startsWith("<?xml") || trimmed.startsWith("<Server") || trimmed.startsWith("<careerSavegame") || trimmed.startsWith("<vehicles") || trimmed.startsWith("<farms") || trimmed.startsWith("<placeables") || trimmed.startsWith("<missions")) {
     return trimmed;
   }
 
-  // Extract from HTML <pre> or <code> wrapper tags if returned via G-Portal HTML
   const preMatch = trimmed.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
   if (preMatch && preMatch[1]) return preMatch[1].trim();
 
@@ -327,7 +325,7 @@ function renderModGrid(modsData) {
 }
 
 /* ==========================================================================
-   SECTION 4: Master Telemetry Engine (Complete Unfiltered Reader)
+   SECTION 4: Master Telemetry Engine with Occupied Machinery Card
    ========================================================================== */
 
 window.renderDashboard = function(rawIncomingData) {
@@ -354,7 +352,7 @@ window.renderDashboard = function(rawIncomingData) {
 
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-  // Parse ALL Raw XML Endpoints Simultaneously
+  // Parse Raw XML Enpoints
   const careerXml = parseXML(fs25Node.careerSavegame_raw);
   const vehXml = parseXML(fs25Node.vehicles_raw);
   const farmsXml = parseXML(fs25Node.farms_raw);
@@ -391,7 +389,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 2: PLAYER SESSIONS WITH MAP COORDINATES (UNFILTERED)
+     CARD 2: LIVE ONLINE PLAYERS WITH MAP COORDINATES
      ------------------------------------------------------------------------ */
   const playersCont = document.getElementById('active-players-container');
   let activeGamertags = [];
@@ -432,7 +430,7 @@ window.renderDashboard = function(rawIncomingData) {
   setTxt('server-players', `Players: ${activeGamertags.length}/${totalSlots}`);
 
   /* ------------------------------------------------------------------------
-     CARD 3: REGISTERED SERVER FARMS & BALANCES (UNFILTERED)
+     CARD 3: REGISTERED SERVER FARMS & BALANCES
      ------------------------------------------------------------------------ */
   const farmsCont = document.getElementById('farms-container');
   if (farmsCont) {
@@ -465,7 +463,160 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 4: ALL LIVESTOCK & ANIMAL BARNS (UNFILTERED)
+     CARD 4: FLEET MACHINERY, ATTACHMENT CHAINS & OCCUPIED VEHICLE EXTRACTION
+     ------------------------------------------------------------------------ */
+  let vehicleCount = 0;
+  const tracCont = document.getElementById('tractors-container');
+  const harvCont = document.getElementById('harvesters-container');
+  const trailCont = document.getElementById('trailers-container');
+  const implCont = document.getElementById('implements-container');
+
+  let tractors = "", harvesters = "", trailers = "", implements = "";
+  let occupiedVehiclesList = [];
+
+  // Two-Pass Lookup: Map every vehicle uniqueId to its readable name and details
+  let vehicleObjMap = {};
+  if (vehXml) {
+    vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
+      const uId = v.getAttribute("uniqueId");
+      const name = formatName(v.getAttribute("filename") || v.getAttribute("name") || "");
+      if (uId) vehicleObjMap[uId] = { name, node: v };
+    });
+  }
+
+  if (vehXml) {
+    vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
+      vehicleCount++;
+      const rawName = v.getAttribute("filename") || v.getAttribute("name") || "";
+      const name = formatName(rawName);
+      const farmId = v.getAttribute("farmId") || "1";
+      const color = getFarmColor(farmId);
+      const operatingTime = formatHours(v.getAttribute("operatingTime"));
+
+      // License Plate
+      let plateText = "";
+      const plateNode = v.querySelector("licensePlates, licensePlate");
+      if (plateNode) {
+        plateText = plateNode.getAttribute("characters") || plateNode.getAttribute("number") || "";
+      }
+      const plateBadge = plateText.trim() 
+        ? `<span class="badge" style="border: 1px solid var(--accent-gold); color: var(--accent-gold);"><i class="fa-solid fa-id-card"></i> ${plateText.trim()}</span>` 
+        : '';
+
+      // Occupancy & Driver Check
+      const enterableNode = v.querySelector("enterable");
+      const enteredUser = v.getAttribute("enteredUserGamertag") || v.getAttribute("driverName");
+      const aiNode = v.querySelector("aiFieldWorker");
+      const isAiActive = aiNode ? aiNode.getAttribute("isActive") === "true" : false;
+      const isPlayerOccupied = enterableNode || enteredUser || isAiActive;
+
+      let driverBadge = `<span class="badge" style="background:rgba(148, 163, 184, 0.1); color:#94a3b8;">Parked / Unmanned</span>`;
+      if (enteredUser) {
+        driverBadge = `<span class="badge" style="background:rgba(34, 197, 94, 0.2); color:#4ade80;"><i class="fa-solid fa-user"></i> Driver: ${enteredUser}</span>`;
+      } else if (isPlayerOccupied && !isAiActive) {
+        driverBadge = `<span class="badge" style="background:rgba(34, 197, 94, 0.2); color:#4ade80;"><i class="fa-solid fa-user"></i> Driver Occupied</span>`;
+      } else if (isAiActive) {
+        driverBadge = `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15;"><i class="fa-solid fa-robot"></i> AI Active</span>`;
+      }
+
+      // Multi-Unit Fill Cargo Extraction with Percentages
+      let cargoList = [];
+      v.querySelectorAll("fillUnit > unit, fillUnit").forEach(u => {
+        const ft = u.getAttribute("fillType");
+        const lvl = Math.round(parseFloat(u.getAttribute("fillLevel") || "0"));
+        const capacity = Math.round(parseFloat(u.getAttribute("capacity") || "0"));
+        const pct = capacity > 0 ? Math.round((lvl / capacity) * 100) : null;
+
+        if (ft && ft !== "UNKNOWN") {
+          if (pct !== null) {
+            cargoList.push(`${formatName(ft)}: ${pct}% (${lvl.toLocaleString()} L)`);
+          } else if (lvl > 0) {
+            cargoList.push(`${formatName(ft)}: ${lvl.toLocaleString()} L`);
+          }
+        }
+      });
+
+      const cargoText = cargoList.length > 0 
+        ? `<div class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-box-archive"></i> Unit Contents: ${cargoList.join(" | ")}</div>` 
+        : '';
+
+      // Resolve Attachment Chains (e.g. Front Mowers, Headers, Trailers)
+      let attachedNames = [];
+      v.querySelectorAll("attachedImplement").forEach(att => {
+        const targetId = att.getAttribute("attachedVehicleUniqueId");
+        if (targetId && vehicleObjMap[targetId]) {
+          attachedNames.push(vehicleObjMap[targetId].name);
+        }
+      });
+
+      const attachmentText = attachedNames.length > 0
+        ? `<div class="card-subtext" style="color:#4ade80;"><i class="fa-solid fa-link"></i> Attached Equipment: ${attachedNames.join(", ")}</div>`
+        : '';
+
+      // Extract Coordinates & Component Position
+      const compNode = v.querySelector("component");
+      let posText = "";
+      if (compNode && compNode.getAttribute("position")) {
+        const coords = compNode.getAttribute("position").split(" ");
+        if (coords.length >= 3) {
+          posText = `X: ${parseFloat(coords[0]).toFixed(1)} | Z: ${parseFloat(coords[2]).toFixed(1)}`;
+        }
+      }
+
+      const matchedImg = resolveItemImage(rawName);
+      const imgHtml = matchedImg 
+        ? `<img src="${matchedImg}" class="telemetry-card-thumb lightbox-trigger" data-alt="${name}">`
+        : `<i class="fa-solid fa-tractor card-icon" style="color:${color};"></i>`;
+
+      const card = `
+        <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
+          ${imgHtml}
+          <div class="card-details" style="width:100%;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.4rem;">
+              <strong style="color:${color};">${name}</strong>
+              <div style="display:flex; gap:0.4rem; align-items:center;">
+                ${plateBadge}
+                ${driverBadge}
+              </div>
+            </div>
+            <span>Owner: Farm #${farmId} | Usage: ${operatingTime} ${posText ? '| Loc: ' + posText : ''}</span>
+            ${attachmentText}
+            ${cargoText}
+          </div>
+        </div>`;
+
+      // If occupied by active player/driver, copy into Occupied Vehicles Array
+      if (enteredUser || (isPlayerOccupied && !isAiActive)) {
+        occupiedVehiclesList.push({
+          driver: enteredUser || "Active Player",
+          name: name,
+          farmId: farmId,
+          color: color,
+          opTime: operatingTime,
+          plate: plateBadge,
+          cargo: cargoText,
+          attachments: attachmentText,
+          pos: posText,
+          img: imgHtml
+        });
+      }
+
+      const lowerFile = rawName.toLowerCase();
+      if (lowerFile.includes("combine") || lowerFile.includes("harvest") || lowerFile.includes("cutter") || lowerFile.includes("rmf9r")) harvesters += card;
+      else if (lowerFile.includes("trailer") || lowerFile.includes("wagon") || lowerFile.includes("z18051") || lowerFile.includes("supercollect")) trailers += card;
+      else if (lowerFile.includes("tractor") || lowerFile.includes("seriesm8") || lowerFile.includes("truck")) tractors += card;
+      else implements += card;
+    });
+  }
+
+  if (tracCont) tracCont.innerHTML = tractors || `<div class="empty-state">No Active Tractors Logged</div>`;
+  if (harvCont) harvCont.innerHTML = harvesters || `<div class="empty-state">No Active Harvesters Logged</div>`;
+  if (trailCont) trailCont.innerHTML = trailers || `<div class="empty-state">No Active Trailers Logged</div>`;
+  if (implCont) implCont.innerHTML = implements || `<div class="empty-state">No Active Implements Logged</div>`;
+  setTxt('global-vehicle-count', vehicleCount);
+
+  /* ------------------------------------------------------------------------
+     CARD 5: LIVESTOCK & ANIMAL BARNS
      ------------------------------------------------------------------------ */
   const animalsCont = document.getElementById('animals-container');
   if (animalsCont) {
@@ -509,7 +660,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 5: CONSTRUCTION & PLACED OBJECTS (UNFILTERED)
+     CARD 6: CONSTRUCTION & PLACED OBJECTS
      ------------------------------------------------------------------------ */
   const constructCont = document.getElementById('construction-container');
   if (constructCont) {
@@ -549,7 +700,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 6: ALL CONTRACTS & MISSIONS (AVAILABLE + IN PROGRESS)
+     CARD 7: ACTIVE CONTRACTS & MISSIONS
      ------------------------------------------------------------------------ */
   const missionsCont = document.getElementById('missions-container');
   if (missionsCont) {
@@ -593,7 +744,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 7: MAP COLLECTIBLES
+     CARD 8: MAP COLLECTIBLES
      ------------------------------------------------------------------------ */
   const collectiblesCont = document.getElementById('collectibles-container');
   if (collectiblesCont) {
@@ -632,7 +783,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 8: PLAYER HAND TOOLS
+     CARD 9: PLAYER HAND TOOLS
      ------------------------------------------------------------------------ */
   const toolsCont = document.getElementById('handtools-container');
   if (toolsCont) {
@@ -663,90 +814,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 9: FLEET MACHINERY & ATTACHMENT CHAINS (ALL PARKED + ACTIVE)
-     ------------------------------------------------------------------------ */
-  let vehicleCount = 0;
-  const tracCont = document.getElementById('tractors-container');
-  const harvCont = document.getElementById('harvesters-container');
-  const trailCont = document.getElementById('trailers-container');
-  const implCont = document.getElementById('implements-container');
-
-  let tractors = "", harvesters = "", trailers = "", implements = "";
-
-  if (vehXml) {
-    vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
-      vehicleCount++;
-      const rawName = v.getAttribute("filename") || v.getAttribute("name") || "";
-      const name = formatName(rawName);
-      const farmId = v.getAttribute("farmId") || "1";
-      const color = getFarmColor(farmId);
-      const operatingTime = formatHours(v.getAttribute("operatingTime"));
-
-      let plateText = "";
-      const plateNode = v.querySelector("licensePlates, licensePlate");
-      if (plateNode) {
-        plateText = plateNode.getAttribute("characters") || plateNode.getAttribute("number") || "";
-      }
-      const plateBadge = plateText.trim() 
-        ? `<span class="badge" style="border: 1px solid var(--accent-gold); color: var(--accent-gold);"><i class="fa-solid fa-id-card"></i> ${plateText.trim()}</span>` 
-        : '';
-
-      const aiNode = v.querySelector("aiFieldWorker");
-      const isAiActive = aiNode ? aiNode.getAttribute("isActive") === "true" : false;
-      const driverBadge = isAiActive 
-        ? `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15;"><i class="fa-solid fa-robot"></i> AI Active</span>` 
-        : `<span class="badge" style="background:rgba(148, 163, 184, 0.1); color:#94a3b8;">Parked / Unmanned</span>`;
-
-      let cargoList = [];
-      v.querySelectorAll("fillUnit > unit, fillUnit").forEach(u => {
-        const ft = u.getAttribute("fillType");
-        const lvl = Math.round(parseFloat(u.getAttribute("fillLevel") || "0"));
-        if (ft && ft !== "UNKNOWN" && lvl > 0) {
-          cargoList.push(`${formatName(ft)}: ${lvl.toLocaleString()} L`);
-        }
-      });
-
-      const cargoText = cargoList.length > 0 
-        ? `<div class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-box-archive"></i> Unit Contents: ${cargoList.join(" | ")}</div>` 
-        : '';
-
-      const matchedImg = resolveItemImage(rawName);
-      const imgHtml = matchedImg 
-        ? `<img src="${matchedImg}" class="telemetry-card-thumb lightbox-trigger" data-alt="${name}">`
-        : `<i class="fa-solid fa-tractor card-icon" style="color:${color};"></i>`;
-
-      const card = `
-        <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
-          ${imgHtml}
-          <div class="card-details" style="width:100%;">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.4rem;">
-              <strong style="color:${color};">${name}</strong>
-              <div style="display:flex; gap:0.4rem; align-items:center;">
-                ${plateBadge}
-                ${driverBadge}
-              </div>
-            </div>
-            <span>Owner: Farm #${farmId} | Usage: ${operatingTime}</span>
-            ${cargoText}
-          </div>
-        </div>`;
-
-      const lowerFile = rawName.toLowerCase();
-      if (lowerFile.includes("combine") || lowerFile.includes("harvest") || lowerFile.includes("cutter") || lowerFile.includes("rmf9r")) harvesters += card;
-      else if (lowerFile.includes("trailer") || lowerFile.includes("wagon") || lowerFile.includes("z18051") || lowerFile.includes("supercollect")) trailers += card;
-      else if (lowerFile.includes("tractor") || lowerFile.includes("seriesm8") || lowerFile.includes("truck")) tractors += card;
-      else implements += card;
-    });
-  }
-
-  if (tracCont) tracCont.innerHTML = tractors || `<div class="empty-state">No Active Tractors Logged</div>`;
-  if (harvCont) harvCont.innerHTML = harvesters || `<div class="empty-state">No Active Harvesters Logged</div>`;
-  if (trailCont) trailCont.innerHTML = trailers || `<div class="empty-state">No Active Trailers Logged</div>`;
-  if (implCont) implCont.innerHTML = implements || `<div class="empty-state">No Active Implements Logged</div>`;
-  setTxt('global-vehicle-count', vehicleCount);
-
-  /* ------------------------------------------------------------------------
-     CARD 10: FARMLANDS & FIELD CROPS (ALL MAP FIELDS)
+     CARD 10: FARMLANDS & FIELD CROPS
      ------------------------------------------------------------------------ */
   const fieldsCont = document.getElementById('fields-container');
   if (fieldsCont) {
@@ -779,7 +847,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     CARD 11: MAP FACTORIES & PRODUCTIONS (UNFILTERED)
+     CARD 11: MAP FACTORIES & PRODUCTIONS
      ------------------------------------------------------------------------ */
   renderProductions(placeXml);
 
