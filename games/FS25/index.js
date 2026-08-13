@@ -1,11 +1,20 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Wed, Aug 12, 2026, 21:45:00 (EDT - New York)
+   Deployment Timestamp: Wed, Aug 12, 2026, 21:55:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Tactical Telemetry & Fleet Management Engine. Parses XML feeds
-                and Firebase RTDB to render persistent vehicle, farmland,
-                placeable object states, production chains, and contracts.
+   Description: Tactical Telemetry Engine with Detailed FS25 Missions & Contracts
+                Parsing (Job Types, Crops, Payouts, Client Farm, Status).
    ========================================================================== */
+
+/* ------------------------------------------------------------------------
+   HTML Target Reference Notes:
+   - Mod Hub Grid -> Target ID in HTML: 'mod-hub-grid' (Line ~195)
+   - Active Players Container -> Target ID in HTML: 'active-players-container' (Line ~310)
+   - Construction & Placed Objects -> Target ID: 'misc-container' / 'construction-container' (Line ~390)
+   - Contracts & Missions -> Target ID: 'missions-container' (Line ~480)
+   - Fleet Machinery -> Target IDs: 'tractors-container', 'harvesters-container',
+     'trailers-container', 'implements-container' (Line ~575)
+   ------------------------------------------------------------------------ */
 
 // Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
 (function injectGA4() {
@@ -492,7 +501,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     4. CONSTRUCTION, PLACED OBJECTS & PRODUCTION CHAINS (FIXES INFINITE LOADING)
+     4. CONSTRUCTION, PLACED OBJECTS & PRODUCTION CHAINS
      ------------------------------------------------------------------------ */
   const animalsCont = document.getElementById('animals-container');
   const genCont = document.getElementById('generators-container');
@@ -523,7 +532,6 @@ window.renderDashboard = function(rawIncomingData) {
         if (parts.length >= 3) locText = `X: ${parseFloat(parts[0]).toFixed(1)} | Z: ${parseFloat(parts[2]).toFixed(1)}`;
       }
 
-      // Production Chain Storage & Inputs/Outputs Parser
       let fillLevelsList = [];
       p.querySelectorAll("storage > fillLevel, fillLevel, productionPoint > fillLevel").forEach(fill => {
         const fillType = fill.getAttribute("fillType");
@@ -633,7 +641,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (prodCont) prodCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-industry"></i> Total Production Factories: ${prodCount}</strong></div>${prodHtml || `<div class="empty-state">No Production Buildings Logged</div>`}`;
 
   /* ------------------------------------------------------------------------
-     5. CONTRACTS & MISSIONS (PARSES BOTH <missions> AND <contracts> NODES)
+     5. DETAILED CONTRACTS & MISSIONS PARSER
      ------------------------------------------------------------------------ */
   const missionsCont = document.getElementById('missions-container');
   if (missionsCont) {
@@ -641,35 +649,52 @@ window.renderDashboard = function(rawIncomingData) {
     let missionCount = 0;
 
     if (missionsXml) {
-      missionsXml.querySelectorAll("mission, contract, item, Mission, Contract, missions > *").forEach(m => {
+      // Direct query for FS25 inner contract nodes across root and nested nodes
+      const allMissionNodes = missionsXml.querySelectorAll("mission, contract, item, Mission, Contract, missions > *");
+
+      allMissionNodes.forEach(m => {
         missionCount++;
-        const rawType = m.getAttribute("type") || m.getAttribute("category") || m.getAttribute("name") || "Contract";
-        const type = formatName(rawType);
-        const reward = Math.round(parseFloat(m.getAttribute("reward") || m.getAttribute("payout") || "0"));
-        const fieldId = m.getAttribute("fieldId") || m.getAttribute("field") || "N/A";
-        const farmId = m.getAttribute("farmId") || "0";
+
+        // Job Type (Harvest, Fertilize, Sow, Bale, Transport)
+        const rawType = m.getAttribute("type") || m.getAttribute("category") || m.getAttribute("name") || m.querySelector("type")?.textContent || "Contract Job";
+        const jobType = formatName(rawType);
+
+        // Field Number Extraction (fieldIndex, fieldId, field, or inner child node)
+        const fieldId = m.getAttribute("fieldIndex") || m.getAttribute("fieldId") || m.getAttribute("field") || m.querySelector("field")?.getAttribute("id") || "N/A";
+
+        // Reward Payout Extraction
+        const rawReward = m.getAttribute("reward") || m.getAttribute("payout") || m.querySelector("reward")?.textContent || "0";
+        const reward = Math.round(parseFloat(rawReward));
+
+        // Client / Owner Farm
+        const farmId = m.getAttribute("farmId") || m.getAttribute("owner") || m.getAttribute("clientFarmId") || "0";
+        const farmName = FARM_COLOR_PALETTE[farmId]?.name || `Farm #${farmId}`;
         const color = getFarmColor(farmId);
 
-        let rawStatus = (m.getAttribute("status") || m.getAttribute("state") || "AVAILABLE").toUpperCase();
+        // Crop Type / Fruit Name
+        const fruitTypeName = m.getAttribute("fruitTypeName") || m.getAttribute("fruitType") || m.querySelector("fruitType")?.textContent || "";
+        const fruitText = fruitTypeName ? ` | Crop: ${formatName(fruitTypeName)}` : '';
+
+        // Status Normalization (FS25 uses 0=AVAILABLE, 1=IN_PROGRESS, 2=FINISHED)
+        let rawStatus = String(m.getAttribute("status") || m.getAttribute("state") || m.getAttribute("statusId") || "0").toUpperCase();
         let statusBadge = `<span class="badge" style="background:rgba(56, 189, 248, 0.2); color:#38bdf8; border:1px solid #38bdf8;">AVAILABLE</span>`;
         
-        if (rawStatus.includes("RUNNING") || rawStatus.includes("ACTIVE") || rawStatus.includes("IN_PROGRESS") || rawStatus === "1") {
+        if (rawStatus === "1" || rawStatus.includes("RUNNING") || rawStatus.includes("ACTIVE") || rawStatus.includes("IN_PROGRESS")) {
           statusBadge = `<span class="badge" style="background:rgba(34, 197, 94, 0.2); color:#4ade80; border:1px solid #4ade80;">IN PROGRESS</span>`;
-        } else if (rawStatus.includes("FINISHED") || rawStatus.includes("SUCCESS") || rawStatus.includes("COMPLETED") || rawStatus === "2") {
+        } else if (rawStatus === "2" || rawStatus.includes("FINISHED") || rawStatus.includes("SUCCESS") || rawStatus.includes("COMPLETED")) {
           statusBadge = `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15; border:1px solid #facc15;">READY FOR PAYOUT</span>`;
         }
-
-        const fruitType = m.getAttribute("fruitTypeName") ? ` (${formatName(m.getAttribute("fruitTypeName"))})` : '';
 
         missionsHtml += `
           <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
             <i class="fa-solid fa-file-contract card-icon" style="color:${color};"></i>
             <div class="card-details" style="width:100%;">
-              <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
-                <strong style="color:${color};">${type} - Field #${fieldId}${fruitType}</strong>
+              <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:0.5rem; flex-wrap:wrap;">
+                <strong style="color:${color}; font-size:1rem;">${jobType} - Field #${fieldId}</strong>
                 ${statusBadge}
               </div>
-              <span>Reward: $${reward.toLocaleString()}</span>
+              <span style="color:#ffffff; font-weight:700;">Payout: $${reward.toLocaleString()}</span>
+              <span class="card-subtext" style="color:#94a3b8;">Client: ${farmName}${fruitText}</span>
             </div>
           </div>`;
       });
@@ -758,7 +783,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   /* ------------------------------------------------------------------------
-     7. FLEET MACHINERY & VEHICLES (UPDATED CLASSIFICATION FOR JOHN DEERE & KUBOTA)
+     7. FLEET MACHINERY & VEHICLES
      ------------------------------------------------------------------------ */
   let vehicleCount = 0;
   let tracCount = 0, harvCount = 0, trailCount = 0, implCount = 0;
@@ -873,7 +898,6 @@ window.renderDashboard = function(rawIncomingData) {
       const lowerFile = rawName.toLowerCase();
       const categoryType = (v.getAttribute("category") || "").toLowerCase();
 
-      // Broadened checks to capture John Deere, Kubota, Roadrunner, Skidsteers & Trucks under Tractors & Rigs
       if (lowerFile.includes("combine") || lowerFile.includes("harvest") || lowerFile.includes("cutter") || lowerFile.includes("rmf9r") || categoryType.includes("harvester")) {
         harvCount++; harvesters += card;
       } else if (lowerFile.includes("trailer") || lowerFile.includes("wagon") || lowerFile.includes("z18051") || lowerFile.includes("supercollect") || lowerFile.includes("liqui") || categoryType.includes("trailer")) {
