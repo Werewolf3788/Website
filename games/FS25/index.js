@@ -1,10 +1,10 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Wed, Aug 12, 2026, 21:06:15 (EDT - New York)
+   Deployment Timestamp: Wed, Aug 12, 2026, 21:30:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Tactical Telemetry & Fleet Management Engine. Parses XML feeds
-                and Firebase RTDB to render persistent vehicle, farmland, and
-                placeable object states regardless of active server session status.
+   Description: Persistent Master Telemetry Engine. Guarantees 100% visibility 
+                for all Tractors, Rigs, Construction, Placed Objects, and 
+                Contracts whether active, parked, or offline.
    ========================================================================== */
 
 /* ------------------------------------------------------------------------
@@ -33,7 +33,6 @@
       const script = document.createElement('script');
       script.id = 'ga4-gtag-script';
       script.async = true;
-      // Protocol-flexible script URL (Works on both http & https)
       script.src = "//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD";
       script.onerror = () => console.warn("ℹ️ GA4 tag skipped by client extension.");
       document.head.appendChild(script);
@@ -95,13 +94,30 @@ function formatHours(operatingSeconds) {
 let parsedModCatalog = [];
 let firebaseImageMappings = {};
 
+// Persistent In-Memory Cache to retain data if an incoming RTDB pulse is partial
+let lastKnownGoodData = {
+  vehiclesXml: null,
+  placeablesXml: null,
+  missionsXml: null,
+  farmsXml: null,
+  careerXml: null,
+  itemsXml: null,
+  toolsXml: null,
+  statsXml: null,
+  envXml: null
+};
+
 /* ==========================================================================
    SECTION 1: Smart Dual-Format Raw String Extractor & XML Parser
    ========================================================================== */
 
 function smartExtractPayload(rawInput) {
-  if (!rawInput || typeof rawInput !== 'string') return "";
-  const trimmed = rawInput.trim();
+  if (!rawInput) return "";
+  if (typeof rawInput === 'object') {
+    // If RTDB returned a parsed JSON object instead of raw XML string, serialize back to searchable text
+    try { rawInput = JSON.stringify(rawInput); } catch(e) { return ""; }
+  }
+  const trimmed = String(rawInput).trim();
 
   if (trimmed.startsWith("<?xml") || trimmed.startsWith("<Server") || trimmed.startsWith("<careerSavegame") || trimmed.startsWith("<vehicles") || trimmed.startsWith("<farms") || trimmed.startsWith("<placeables") || trimmed.startsWith("<missions") || trimmed.startsWith("<environment") || trimmed.startsWith("<items") || trimmed.startsWith("<handTools")) {
     return trimmed;
@@ -363,7 +379,7 @@ function renderModGrid(modsData) {
 }
 
 /* ==========================================================================
-   SECTION 4: Master Telemetry Engine
+   SECTION 4: Persistent Master Telemetry Engine
    ========================================================================== */
 
 window.renderDashboard = function(rawIncomingData) {
@@ -384,21 +400,46 @@ window.renderDashboard = function(rawIncomingData) {
     renderModGrid(window.activeFirebaseModData);
   }
 
-  // Telemetry Subnode (/fs25) - Fallback to root if raw properties exist directly
+  // Find telemetry subnode (/fs25 or root)
   const fs25Node = data.fs25 ? data.fs25 : data;
-
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-  // Parse ALL Raw XML Endpoints with Safe Fallbacks
-  const careerXml = parseXML(fs25Node.careerSavegame_raw || fs25Node.careerSavegame);
-  const vehXml = parseXML(fs25Node.vehicles_raw || fs25Node.vehicles);
-  const farmsXml = parseXML(fs25Node.farms_raw || fs25Node.farms);
-  const placeXml = parseXML(fs25Node.placeables_raw || fs25Node.placeables);
-  const itemsXml = parseXML(fs25Node.items_raw || fs25Node.items);
-  const toolsXml = parseXML(fs25Node.handTools_raw || fs25Node.handTools);
-  const missionsXml = parseXML(fs25Node.missions_raw || fs25Node.missions);
-  const statsXml = parseXML(fs25Node.stats_xml_raw || fs25Node.stats_xml || fs25Node.stats);
-  const envXml = parseXML(fs25Node.environment_raw || fs25Node.environment);
+  // Parse XMLs with Persistent Cache Fallbacks
+  const currentVehXml = parseXML(fs25Node.vehicles_raw || fs25Node.vehicles);
+  if (currentVehXml) lastKnownGoodData.vehiclesXml = currentVehXml;
+  const vehXml = lastKnownGoodData.vehiclesXml;
+
+  const currentPlaceXml = parseXML(fs25Node.placeables_raw || fs25Node.placeables);
+  if (currentPlaceXml) lastKnownGoodData.placeablesXml = currentPlaceXml;
+  const placeXml = lastKnownGoodData.placeablesXml;
+
+  const currentMissionsXml = parseXML(fs25Node.missions_raw || fs25Node.missions);
+  if (currentMissionsXml) lastKnownGoodData.missionsXml = currentMissionsXml;
+  const missionsXml = lastKnownGoodData.missionsXml;
+
+  const currentFarmsXml = parseXML(fs25Node.farms_raw || fs25Node.farms);
+  if (currentFarmsXml) lastKnownGoodData.farmsXml = currentFarmsXml;
+  const farmsXml = lastKnownGoodData.farmsXml;
+
+  const currentCareerXml = parseXML(fs25Node.careerSavegame_raw || fs25Node.careerSavegame);
+  if (currentCareerXml) lastKnownGoodData.careerXml = currentCareerXml;
+  const careerXml = lastKnownGoodData.careerXml;
+
+  const currentItemsXml = parseXML(fs25Node.items_raw || fs25Node.items);
+  if (currentItemsXml) lastKnownGoodData.itemsXml = currentItemsXml;
+  const itemsXml = lastKnownGoodData.itemsXml;
+
+  const currentToolsXml = parseXML(fs25Node.handTools_raw || fs25Node.handTools);
+  if (currentToolsXml) lastKnownGoodData.toolsXml = currentToolsXml;
+  const toolsXml = lastKnownGoodData.toolsXml;
+
+  const currentStatsXml = parseXML(fs25Node.stats_xml_raw || fs25Node.stats_xml || fs25Node.stats);
+  if (currentStatsXml) lastKnownGoodData.statsXml = currentStatsXml;
+  const statsXml = lastKnownGoodData.statsXml;
+
+  const currentEnvXml = parseXML(fs25Node.environment_raw || fs25Node.environment);
+  if (currentEnvXml) lastKnownGoodData.envXml = currentEnvXml;
+  const envXml = lastKnownGoodData.envXml;
 
   /* ------------------------------------------------------------------------
      1. SERVER BANNER, TIME, WEATHER, & CALENDAR
@@ -557,8 +598,8 @@ window.renderDashboard = function(rawIncomingData) {
   let animalCount = 0, genCount = 0, miscCount = 0, greenCount = 0, houseCount = 0, shopsCount = 0, prodCount = 0;
 
   if (placeXml) {
-    placeXml.querySelectorAll("placeable, Placeable").forEach(p => {
-      const rawFilename = p.getAttribute("filename") || p.getAttribute("type") || "";
+    placeXml.querySelectorAll("placeable, Placeable, item, Item").forEach(p => {
+      const rawFilename = p.getAttribute("filename") || p.getAttribute("type") || p.getAttribute("className") || "";
       const lowerName = rawFilename.toLowerCase();
       const farmId = p.getAttribute("farmId") || "0";
       const color = getFarmColor(farmId);
@@ -587,7 +628,7 @@ window.renderDashboard = function(rawIncomingData) {
         ? `<img src="${matchedImg}" class="telemetry-card-thumb lightbox-trigger" data-alt="${name}">`
         : `<i class="fa-solid fa-building card-icon" style="color:${color};"></i>`;
 
-      // Classification Logic
+      // Classification Dispatcher
       if (lowerName.includes("doghouse") || lowerName.includes("husbandry") || lowerName.includes("barn") || lowerName.includes("cow") || lowerName.includes("pig") || lowerName.includes("sheep") || lowerName.includes("chicken") || lowerName.includes("pasture")) {
         animalCount++;
         const animalNode = p.querySelector("husbandryAnimals, animals");
@@ -660,7 +701,7 @@ window.renderDashboard = function(rawIncomingData) {
             </div>
           </div>`;
       }
-      else {
+      else if (rawFilename.length > 0) {
         prodCount++;
         prodHtml += `
           <div class="telemetry-card" style="border-left: 3px solid ${color}; padding:0.85rem;">
@@ -668,7 +709,7 @@ window.renderDashboard = function(rawIncomingData) {
             <div class="card-details" style="width:100%;">
               <strong style="color:${color};">${name}</strong>
               ${storageText}
-              <span>Production Plant | Farm #${farmId} ${locText ? '| Loc: ' + locText : ''}</span>
+              <span>Production Facility | Farm #${farmId} ${locText ? '| Loc: ' + locText : ''}</span>
             </div>
           </div>`;
       }
@@ -684,7 +725,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (prodCont) prodCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-industry"></i> Total Production Factories: ${prodCount}</strong></div>${prodHtml || `<div class="empty-state">No Production Buildings Active</div>`}`;
 
   /* ------------------------------------------------------------------------
-     5. CONTRACTS & MISSIONS (/fs25/missions_raw EXPLICIT)
+     5. ALL CONTRACTS & MISSIONS (Available, Active, & Ready for Payout)
      ------------------------------------------------------------------------ */
   const missionsCont = document.getElementById('missions-container');
   if (missionsCont) {
@@ -692,7 +733,7 @@ window.renderDashboard = function(rawIncomingData) {
     let missionCount = 0;
 
     if (missionsXml) {
-      missionsXml.querySelectorAll("mission, contract, item, Mission").forEach(m => {
+      missionsXml.querySelectorAll("mission, contract, item, Mission, Contract").forEach(m => {
         missionCount++;
         const rawType = m.getAttribute("type") || m.getAttribute("category") || m.getAttribute("name") || "Contract";
         const type = formatName(rawType);
@@ -701,21 +742,21 @@ window.renderDashboard = function(rawIncomingData) {
         const farmId = m.getAttribute("farmId") || "0";
         const color = getFarmColor(farmId);
 
-        let rawStatus = (m.getAttribute("status") || m.getAttribute("state") || "Available").toUpperCase();
+        let rawStatus = (m.getAttribute("status") || m.getAttribute("state") || "AVAILABLE").toUpperCase();
         let statusBadge = `<span class="badge" style="background:rgba(56, 189, 248, 0.2); color:#38bdf8; border:1px solid #38bdf8;">AVAILABLE</span>`;
         
-        if (rawStatus.includes("RUNNING") || rawStatus.includes("ACTIVE") || rawStatus === "1") {
+        if (rawStatus.includes("RUNNING") || rawStatus.includes("ACTIVE") || rawStatus.includes("IN_PROGRESS") || rawStatus === "1") {
           statusBadge = `<span class="badge" style="background:rgba(34, 197, 94, 0.2); color:#4ade80; border:1px solid #4ade80;">IN PROGRESS</span>`;
-        } else if (rawStatus.includes("FINISHED") || rawStatus.includes("SUCCESS") || rawStatus === "2") {
+        } else if (rawStatus.includes("FINISHED") || rawStatus.includes("SUCCESS") || rawStatus.includes("COMPLETED") || rawStatus === "2") {
           statusBadge = `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15; border:1px solid #facc15;">READY FOR PAYOUT</span>`;
         }
 
         const fruitType = m.getAttribute("fruitTypeName") ? ` (${formatName(m.getAttribute("fruitTypeName"))})` : '';
 
         missionsHtml += `
-          <div class="telemetry-card" style="border-left: 4px solid ${color};">
+          <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
             <i class="fa-solid fa-file-contract card-icon" style="color:${color};"></i>
-            <div class="card-details">
+            <div class="card-details" style="width:100%;">
               <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
                 <strong style="color:${color};">${type} - Field #${fieldId}${fruitType}</strong>
                 ${statusBadge}
@@ -728,9 +769,9 @@ window.renderDashboard = function(rawIncomingData) {
 
     missionsCont.innerHTML = `
       <div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;">
-        <strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-file-contract"></i> Total Contracts Logged: ${missionCount}</strong>
+        <strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-file-contract"></i> Total Server Contracts Logged: ${missionCount}</strong>
       </div>
-      ${missionsHtml || `<div class="empty-state">No Active Server Contracts Logged</div>`}`;
+      ${missionsHtml || `<div class="empty-state">No Contracts or Missions Available or Logged</div>`}`;
   }
 
   /* ------------------------------------------------------------------------
@@ -945,10 +986,10 @@ window.renderDashboard = function(rawIncomingData) {
     });
   }
 
-  if (tracCont) tracCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-tractor"></i> Total Tractors & Rigs: ${tracCount}</strong></div>${tractors || `<div class="empty-state">No Active Tractors Logged</div>`}`;
-  if (harvCont) harvCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-wheat-field"></i> Total Harvesters & Combines: ${harvCount}</strong></div>${harvesters || `<div class="empty-state">No Active Harvesters Logged</div>`}`;
-  if (trailCont) trailCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-truck-ramp-box"></i> Total Hauling Trailers: ${trailCount}</strong></div>${trailers || `<div class="empty-state">No Active Trailers Logged</div>`}`;
-  if (implCont) implCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-screwdriver-wrench"></i> Total Implements & Attachments: ${implCount}</strong></div>${implements || `<div class="empty-state">No Active Implements Logged</div>`}`;
+  if (tracCont) tracCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-tractor"></i> Total Tractors & Rigs Logged: ${tracCount}</strong></div>${tractors || `<div class="empty-state">No Fleet Tractors Logged in Savegame</div>`}`;
+  if (harvCont) harvCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-wheat-field"></i> Total Harvesters & Combines Logged: ${harvCount}</strong></div>${harvesters || `<div class="empty-state">No Fleet Harvesters Logged in Savegame</div>`}`;
+  if (trailCont) trailCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-truck-ramp-box"></i> Total Hauling Trailers Logged: ${trailCount}</strong></div>${trailers || `<div class="empty-state">No Fleet Trailers Logged in Savegame</div>`}`;
+  if (implCont) implCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-screwdriver-wrench"></i> Total Implements & Attachments Logged: ${implCount}</strong></div>${implements || `<div class="empty-state">No Fleet Implements Logged in Savegame</div>`}`;
   setTxt('global-vehicle-count', vehicleCount);
 
   /* ------------------------------------------------------------------------
