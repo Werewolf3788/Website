@@ -1,11 +1,30 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 09, 2026, 23:55:00 (EDT - New York)
+   Deployment Timestamp: Wed, Aug 12, 2026, 21:06:15 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Cumulative Master Tactical Telemetry Engine with Category
-                Item Counter Banners across all cards and restored Generator/Antenna
-                classification engine reading live from Firebase RTDB.
+   Description: Tactical Telemetry & Fleet Management Engine. Parses XML feeds
+                and Firebase RTDB to render persistent vehicle, farmland, and
+                placeable object states regardless of active server session status.
    ========================================================================== */
+
+/* ------------------------------------------------------------------------
+   HTML Target Reference Notes:
+   - Line ~195: Mod Hub Grid -> Target ID in HTML: 'mod-hub-grid'
+   - Line ~196: Mod Category Bar -> Target ID in HTML: 'mod-categories-bar'
+   - Line ~310: Active Players Container -> Target ID in HTML: 'active-players-container'
+   - Line ~350: Farms Container -> Target ID in HTML: 'farms-container'
+   - Line ~390: Placeables & Facilities Containers ->
+     Target IDs: 'animals-container', 'generators-container', 'misc-container',
+                 'greenhouses-container', 'farmhouses-container', 
+                 'shops-selling-container', 'main-productions-container'
+   - Line ~480: Missions Container -> Target ID in HTML: 'missions-container'
+   - Line ~515: Collectibles Container -> Target ID in HTML: 'collectibles-container'
+   - Line ~545: Hand Tools Container -> Target ID in HTML: 'handtools-container'
+   - Line ~575: Fleet Vehicles -> Target IDs: 'tractors-container', 'harvesters-container',
+                 'trailers-container', 'implements-container'
+   - Line ~680: Farmlands -> Target ID in HTML: 'fields-container'
+   - Line ~720: Diagnostics Log -> Target ID in HTML: 'tactical-log-container'
+   ------------------------------------------------------------------------ */
 
 // Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
 (function injectGA4() {
@@ -14,6 +33,7 @@
       const script = document.createElement('script');
       script.id = 'ga4-gtag-script';
       script.async = true;
+      // Protocol-flexible script URL (Works on both http & https)
       script.src = "//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD";
       script.onerror = () => console.warn("ℹ️ GA4 tag skipped by client extension.");
       document.head.appendChild(script);
@@ -29,7 +49,7 @@
   }
 })();
 
-// Base Raw URL for GitHub Repository Images
+// Base Protocol-Relative URLs for Repository Assets and Sheets
 const REPO_IMAGES_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
 
@@ -83,7 +103,7 @@ function smartExtractPayload(rawInput) {
   if (!rawInput || typeof rawInput !== 'string') return "";
   const trimmed = rawInput.trim();
 
-  if (trimmed.startsWith("<?xml") || trimmed.startsWith("<Server") || trimmed.startsWith("<careerSavegame") || trimmed.startsWith("<vehicles") || trimmed.startsWith("<farms") || trimmed.startsWith("<placeables") || trimmed.startsWith("<missions") || trimmed.startsWith("<environment")) {
+  if (trimmed.startsWith("<?xml") || trimmed.startsWith("<Server") || trimmed.startsWith("<careerSavegame") || trimmed.startsWith("<vehicles") || trimmed.startsWith("<farms") || trimmed.startsWith("<placeables") || trimmed.startsWith("<missions") || trimmed.startsWith("<environment") || trimmed.startsWith("<items") || trimmed.startsWith("<handTools")) {
     return trimmed;
   }
 
@@ -143,7 +163,7 @@ function resolveItemImage(rawFilename) {
     }
   }
 
-  if (!targetFilename && (rawString.endsWith('.jpg') || rawString.endsWith('.png'))) {
+  if (!targetFilename && (rawString.endsWith('.jpg') || rawString.endsWith('.png') || rawString.endsWith('.webp'))) {
     targetFilename = rawString.split('/').pop();
   }
 
@@ -364,22 +384,21 @@ window.renderDashboard = function(rawIncomingData) {
     renderModGrid(window.activeFirebaseModData);
   }
 
-  // Telemetry Subnode (/fs25)
-  const fs25Node = data.fs25 ? data.fs25 : (data.careerSavegame_raw || data.farms_raw || data.stats_xml_raw ? data : {});
-  if (!fs25Node || Object.keys(fs25Node).length === 0) return;
+  // Telemetry Subnode (/fs25) - Fallback to root if raw properties exist directly
+  const fs25Node = data.fs25 ? data.fs25 : data;
 
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-  // Parse ALL Raw XML Endpoints
-  const careerXml = parseXML(fs25Node.careerSavegame_raw);
-  const vehXml = parseXML(fs25Node.vehicles_raw);
-  const farmsXml = parseXML(fs25Node.farms_raw);
-  const placeXml = parseXML(fs25Node.placeables_raw);
-  const itemsXml = parseXML(fs25Node.items_raw);
-  const toolsXml = parseXML(fs25Node.handTools_raw);
-  const missionsXml = parseXML(fs25Node.missions_raw);
-  const statsXml = parseXML(fs25Node.stats_xml_raw);
-  const envXml = parseXML(fs25Node.environment_raw);
+  // Parse ALL Raw XML Endpoints with Safe Fallbacks
+  const careerXml = parseXML(fs25Node.careerSavegame_raw || fs25Node.careerSavegame);
+  const vehXml = parseXML(fs25Node.vehicles_raw || fs25Node.vehicles);
+  const farmsXml = parseXML(fs25Node.farms_raw || fs25Node.farms);
+  const placeXml = parseXML(fs25Node.placeables_raw || fs25Node.placeables);
+  const itemsXml = parseXML(fs25Node.items_raw || fs25Node.items);
+  const toolsXml = parseXML(fs25Node.handTools_raw || fs25Node.handTools);
+  const missionsXml = parseXML(fs25Node.missions_raw || fs25Node.missions);
+  const statsXml = parseXML(fs25Node.stats_xml_raw || fs25Node.stats_xml || fs25Node.stats);
+  const envXml = parseXML(fs25Node.environment_raw || fs25Node.environment);
 
   /* ------------------------------------------------------------------------
      1. SERVER BANNER, TIME, WEATHER, & CALENDAR
@@ -539,7 +558,7 @@ window.renderDashboard = function(rawIncomingData) {
 
   if (placeXml) {
     placeXml.querySelectorAll("placeable, Placeable").forEach(p => {
-      const rawFilename = p.getAttribute("filename") || "";
+      const rawFilename = p.getAttribute("filename") || p.getAttribute("type") || "";
       const lowerName = rawFilename.toLowerCase();
       const farmId = p.getAttribute("farmId") || "0";
       const color = getFarmColor(farmId);
@@ -569,8 +588,7 @@ window.renderDashboard = function(rawIncomingData) {
         : `<i class="fa-solid fa-building card-icon" style="color:${color};"></i>`;
 
       // Classification Logic
-      // A. ANIMALS (Includes Doghouse, Cow Barn, Pig Pen, Sheep, Chicken)
-      if (lowerName.includes("doghouse") || lowerName.includes("husbandry") || lowerName.includes("barn") || lowerName.includes("cow") || lowerName.includes("pig") || lowerName.includes("sheep") || lowerName.includes("chicken")) {
+      if (lowerName.includes("doghouse") || lowerName.includes("husbandry") || lowerName.includes("barn") || lowerName.includes("cow") || lowerName.includes("pig") || lowerName.includes("sheep") || lowerName.includes("chicken") || lowerName.includes("pasture")) {
         animalCount++;
         const animalNode = p.querySelector("husbandryAnimals, animals");
         const count = animalNode ? (animalNode.getAttribute("numAnimals") || animalNode.children.length || "0") : "0";
@@ -585,8 +603,7 @@ window.renderDashboard = function(rawIncomingData) {
             </div>
           </div>`;
       }
-      // B. GENERATORS (5G Antennas, Solar Farms, Wind Turbines, Radio Towers, Signs)
-      else if (lowerName.includes("antenna") || lowerName.includes("solar") || lowerName.includes("windturbine") || lowerName.includes("radio") || lowerName.includes("sign")) {
+      else if (lowerName.includes("antenna") || lowerName.includes("solar") || lowerName.includes("windturbine") || lowerName.includes("generator") || lowerName.includes("radio") || lowerName.includes("sign")) {
         genCount++;
         genHtml += `
           <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
@@ -597,7 +614,6 @@ window.renderDashboard = function(rawIncomingData) {
             </div>
           </div>`;
       }
-      // C. GREENHOUSES
       else if (lowerName.includes("greenhouse")) {
         greenCount++;
         greenHtml += `
@@ -610,8 +626,7 @@ window.renderDashboard = function(rawIncomingData) {
             </div>
           </div>`;
       }
-      // D. FARMHOUSES
-      else if (lowerName.includes("house") || lowerName.includes("shouse") || lowerName.includes("farmhouse")) {
+      else if (lowerName.includes("house") || lowerName.includes("shouse") || lowerName.includes("farmhouse") || lowerName.includes("cabin")) {
         houseCount++;
         houseHtml += `
           <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
@@ -622,8 +637,7 @@ window.renderDashboard = function(rawIncomingData) {
             </div>
           </div>`;
       }
-      // E. SHOPS, RESTAURANTS, STORES & SELLING POINTS (Lumber Yard, Dairy, Farmers Market)
-      else if (lowerName.includes("buying") || lowerName.includes("sell") || lowerName.includes("market") || lowerName.includes("restaurant") || lowerName.includes("dairy") || lowerName.includes("lumber") || lowerName.includes("shop")) {
+      else if (lowerName.includes("buying") || lowerName.includes("sell") || lowerName.includes("market") || lowerName.includes("restaurant") || lowerName.includes("dairy") || lowerName.includes("lumber") || lowerName.includes("shop") || lowerName.includes("station")) {
         shopsCount++;
         shopsHtml += `
           <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
@@ -635,8 +649,7 @@ window.renderDashboard = function(rawIncomingData) {
             </div>
           </div>`;
       }
-      // F. MISCELLANEOUS (Ramps, Carports, Storage Halls, Sheds)
-      else if (lowerName.includes("ramp") || lowerName.includes("carport") || lowerName.includes("hall") || lowerName.includes("shed")) {
+      else if (lowerName.includes("ramp") || lowerName.includes("carport") || lowerName.includes("hall") || lowerName.includes("shed") || lowerName.includes("garage") || lowerName.includes("bunker")) {
         miscCount++;
         miscHtml += `
           <div class="telemetry-card" style="border-left: 3px solid ${color}; padding:0.85rem;">
@@ -647,7 +660,6 @@ window.renderDashboard = function(rawIncomingData) {
             </div>
           </div>`;
       }
-      // G. FACTORIES & PRODUCTION FACILITIES
       else {
         prodCount++;
         prodHtml += `
@@ -718,7 +730,7 @@ window.renderDashboard = function(rawIncomingData) {
       <div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;">
         <strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-file-contract"></i> Total Contracts Logged: ${missionCount}</strong>
       </div>
-      ${missionsHtml || `<div class="empty-state">No Active Server Contracts Generated Yet</div>`}`;
+      ${missionsHtml || `<div class="empty-state">No Active Server Contracts Logged</div>`}`;
   }
 
   /* ------------------------------------------------------------------------
@@ -815,7 +827,7 @@ window.renderDashboard = function(rawIncomingData) {
   let vehicleObjMap = {};
   if (vehXml) {
     vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
-      const uId = v.getAttribute("uniqueId");
+      const uId = v.getAttribute("uniqueId") || v.getAttribute("id");
       const name = formatName(v.getAttribute("filename") || v.getAttribute("name") || "");
       if (uId) vehicleObjMap[uId] = { name, node: v };
     });
@@ -824,7 +836,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (vehXml) {
     vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
       vehicleCount++;
-      const rawName = v.getAttribute("filename") || v.getAttribute("name") || "";
+      const rawName = v.getAttribute("filename") || v.getAttribute("name") || "Vehicle";
       const name = formatName(rawName);
       const farmId = v.getAttribute("farmId") || "1";
       const color = getFarmColor(farmId);
@@ -840,7 +852,7 @@ window.renderDashboard = function(rawIncomingData) {
         ? `<span class="badge" style="border: 1px solid var(--accent-gold); color: var(--accent-gold);"><i class="fa-solid fa-id-card"></i> ${plateText.trim()}</span>` 
         : '';
 
-      // Strict Driver Check
+      // Driver Check
       const enteredUser = (v.getAttribute("enteredUserGamertag") || v.getAttribute("driverName") || "").trim();
       const aiNode = v.querySelector("aiFieldWorker");
       const isAiActive = aiNode ? aiNode.getAttribute("isActive") === "true" : false;
@@ -852,7 +864,7 @@ window.renderDashboard = function(rawIncomingData) {
         driverBadge = `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15;"><i class="fa-solid fa-robot"></i> AI Active</span>`;
       }
 
-      // Multi-Unit Fill Cargo Extraction with Percentages
+      // Fill Cargo Extraction
       let cargoList = [];
       v.querySelectorAll("fillUnit > unit, fillUnit").forEach(u => {
         const ft = u.getAttribute("fillType");
@@ -873,10 +885,10 @@ window.renderDashboard = function(rawIncomingData) {
         ? `<div class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-box-archive"></i> Unit Contents: ${cargoList.join(" | ")}</div>` 
         : '';
 
-      // Bidirectional Attachment Resolution
+      // Attachment Resolution
       let attachedNames = [];
       v.querySelectorAll("attachedImplement").forEach(att => {
-        const targetId = att.getAttribute("attachedVehicleUniqueId");
+        const targetId = att.getAttribute("attachedVehicleUniqueId") || att.getAttribute("uniqueId");
         if (targetId && vehicleObjMap[targetId]) {
           attachedNames.push(vehicleObjMap[targetId].name);
         }
@@ -919,11 +931,13 @@ window.renderDashboard = function(rawIncomingData) {
         </div>`;
 
       const lowerFile = rawName.toLowerCase();
-      if (lowerFile.includes("combine") || lowerFile.includes("harvest") || lowerFile.includes("cutter") || lowerFile.includes("rmf9r")) {
+      const categoryType = (v.getAttribute("category") || "").toLowerCase();
+
+      if (lowerFile.includes("combine") || lowerFile.includes("harvest") || lowerFile.includes("cutter") || lowerFile.includes("rmf9r") || categoryType.includes("harvester")) {
         harvCount++; harvesters += card;
-      } else if (lowerFile.includes("trailer") || lowerFile.includes("wagon") || lowerFile.includes("z18051") || lowerFile.includes("supercollect")) {
+      } else if (lowerFile.includes("trailer") || lowerFile.includes("wagon") || lowerFile.includes("z18051") || lowerFile.includes("supercollect") || categoryType.includes("trailer")) {
         trailCount++; trailers += card;
-      } else if (lowerFile.includes("tractor") || lowerFile.includes("seriesm8") || lowerFile.includes("truck")) {
+      } else if (lowerFile.includes("tractor") || lowerFile.includes("seriesm8") || lowerFile.includes("truck") || lowerFile.includes("rig") || categoryType.includes("tractor")) {
         tracCount++; tractors += card;
       } else {
         implCount++; implements += card;
