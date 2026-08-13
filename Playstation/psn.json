@@ -9,7 +9,7 @@
       "handshakeState": "EXPIRED",
       "handshakeText": "BALTO20_01 HANDSHAKE: NPSSO EXPIRED",
       "inboundFriendRequestsCount": 0,
-      "lastUpdated": "8/13/2026, 2:10:08 PM",
+      "lastUpdated": "8/13/2026, 3:29:35 PM",
       "level": 0,
       "note": "PSN Auth Inactive or Token Expired",
       "npssoStatus": "EXPIRED / UPDATE NEEDED",
@@ -61,12 +61,12 @@
       "npssoStatus": "ACTIVE",
       "handshakeText": "DARKWING69420 HANDSHAKE: FIREBASE LIVE",
       "handshakeState": "LIVE",
-      "online": false,
-      "currentGame": "Call of Duty®: Black Ops",
-      "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/c3f7e132-d92c-4066-9995-059bbc4485c7.png",
+      "online": true,
+      "currentGame": "Deadliest Deep Sea Catch Fishing Simulator",
+      "currentGameArt": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/54620A4F5ECAFA96ACA539D6EB72AB543268206A.PNG",
       "currentGameActivity": "Pot with friend",
-      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Call%20of%20Duty%3A%20Black%20Ops&tag=moviesanywhere02-20",
-      "currentCommunicationId": "NPWR59811_00",
+      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Deadliest%20Deep%20Sea%20Catch%20Fishing%20Simulator&tag=moviesanywhere02-20",
+      "currentCommunicationId": "NPWR51841_00",
       "platform": "PS5",
       "twitch": {
         "isLive": false,
@@ -85,25 +85,25 @@
         "chatRules": null,
         "channelCreationRaw": "Mar 23. 2025 - 12:32:08 AM (UTC)"
       },
-      "gamesPlayed": 21,
+      "gamesPlayed": 22,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/3RD/30006_s.png",
       "bio": "Official Pack Member Profile",
       "psnAccountAge": "7 months",
       "earliestTrophyDate": "2025-12-22T11:15:30.000Z",
-      "latestTrophyDate": 1786098402000,
+      "latestTrophyDate": 1786646558000,
       "plus": true,
       "level": 82,
       "region": "US",
       "trophySummary": {
         "accountId": "4398462806362115916",
         "trophyLevel": 82,
-        "trophyPoint": 4875,
+        "trophyPoint": 4905,
         "trophyLevelBasePoint": 4860,
         "trophyLevelNextPoint": 4920,
-        "progress": 25,
+        "progress": 75,
         "tier": 1,
         "earnedTrophies": {
-          "bronze": 181,
+          "bronze": 183,
           "silver": 42,
           "gold": 10,
           "platinum": 0
@@ -111,10 +111,44 @@
         "platinum": 0,
         "gold": 10,
         "silver": 42,
-        "bronze": 181,
-        "total": 233
+        "bronze": 183,
+        "total": 235
       },
       "recentGames": [
+        {
+          "npCommunicationId": "NPWR51841_00",
+          "name": "Deadliest Deep Sea Catch Fishing Simulator",
+          "art": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/54620A4F5ECAFA96ACA539D6EB72AB543268206A.PNG",
+          "lastPlayed": "2026-08-13T18:42:38Z",
+          "npServiceName": "trophy",
+          "trophySetVersion": "01.00",
+          "trophyTitleName": "Deadliest Deep Sea Catch Fishing Simulator",
+          "trophyTitleDetail": "Deadliest Deep Sea Catch Fishing Simulator",
+          "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/54620A4F5ECAFA96ACA539D6EB72AB543268206A.PNG",
+          "trophyTitlePlatform": "PS4",
+          "hasTrophyGroups": false,
+          "trophyGroupCount": 1,
+          "definedTrophies": {
+            "bronze": 9,
+            "silver": 8,
+            "gold": 7,
+            "platinum": 1
+          },
+          "progress": 2,
+          "earnedTrophies": {
+            "bronze": 2,
+            "silver": 0,
+            "gold": 0,
+            "platinum": 0
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-08-13T18:42:38Z",
+          "earnedTotal": 2,
+          "definedTotal": 25,
+          "ratio": "2/25",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Deadliest%20Deep%20Sea%20Catch%20Fishing%20Simulator&tag=moviesanywhere02-20",
+          "bootCount": "Unknown"
+        },
         {
           "npCommunicationId": "NPWR59811_00",
           "name": "Call of Duty®: Black Ops",
@@ -819,116 +853,37 @@
         }
       ],
       "activeHunt": {
-        "title": "Call of Duty®: Black Ops",
-        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Call%20of%20Duty%3A%20Black%20Ops&tag=moviesanywhere02-20",
-        "progress": 5,
+        "title": "Deadliest Deep Sea Catch Fishing Simulator",
+        "amazonAffiliateUrl": "https://www.amazon.com/s?k=Deadliest%20Deep%20Sea%20Catch%20Fishing%20Simulator&tag=moviesanywhere02-20",
+        "progress": 2,
         "velocity": {
-          "firstEarned": "8/7/2026, 5:09:51 AM",
+          "firstEarned": "8/13/2026, 2:42:00 PM",
           "huntingDuration": "1 day",
           "hunterPersona": "Steady Hunter",
-          "completionStatus": "5/70"
+          "completionStatus": "2/25"
         },
         "groups": [
           {
             "trophyGroupId": "default",
-            "progress": 7,
+            "progress": 2,
             "earnedTrophies": {
-              "bronze": 5,
+              "bronze": 2,
               "silver": 0,
               "gold": 0,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-08-07T10:26:42Z",
-            "trophyGroupName": "Call of Duty®: Black Ops",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/c3f7e132-d92c-4066-9995-059bbc4485c7.png",
+            "lastUpdatedDateTime": "2026-08-13T18:42:38Z",
+            "trophyGroupName": "Deadliest Deep Sea Catch Fishing Simulator",
+            "trophyGroupDetail": "Deadliest Deep Sea Catch Fishing Simulator",
+            "trophyGroupIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/54620A4F5ECAFA96ACA539D6EB72AB543268206A.PNG",
             "definedTrophies": {
-              "bronze": 33,
-              "silver": 14,
-              "gold": 1,
+              "bronze": 9,
+              "silver": 8,
+              "gold": 7,
               "platinum": 1
             },
-            "name": "Call of Duty®: Black Ops",
-            "ratio": "5/49"
-          },
-          {
-            "trophyGroupId": "001",
-            "progress": 0,
-            "earnedTrophies": {
-              "bronze": 0,
-              "silver": 0,
-              "gold": 0,
-              "platinum": 0
-            },
-            "trophyGroupName": "Call of Duty®: Black Ops - First Strike",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/c3f7e132-d92c-4066-9995-059bbc4485c7.png",
-            "definedTrophies": {
-              "bronze": 3,
-              "silver": 1,
-              "gold": 0,
-              "platinum": 0
-            },
-            "name": "Call of Duty®: Black Ops - First Strike",
-            "ratio": "0/4"
-          },
-          {
-            "trophyGroupId": "002",
-            "progress": 0,
-            "earnedTrophies": {
-              "bronze": 0,
-              "silver": 0,
-              "gold": 0,
-              "platinum": 0
-            },
-            "trophyGroupName": "Call of Duty®: Black Ops - Escalation",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/c3f7e132-d92c-4066-9995-059bbc4485c7.png",
-            "definedTrophies": {
-              "bronze": 4,
-              "silver": 1,
-              "gold": 0,
-              "platinum": 0
-            },
-            "name": "Call of Duty®: Black Ops - Escalation",
-            "ratio": "0/5"
-          },
-          {
-            "trophyGroupId": "003",
-            "progress": 0,
-            "earnedTrophies": {
-              "bronze": 0,
-              "silver": 0,
-              "gold": 0,
-              "platinum": 0
-            },
-            "trophyGroupName": "Call of Duty®: Black Ops - Annihilation",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/c3f7e132-d92c-4066-9995-059bbc4485c7.png",
-            "definedTrophies": {
-              "bronze": 4,
-              "silver": 1,
-              "gold": 0,
-              "platinum": 0
-            },
-            "name": "Call of Duty®: Black Ops - Annihilation",
-            "ratio": "0/5"
-          },
-          {
-            "trophyGroupId": "004",
-            "progress": 0,
-            "earnedTrophies": {
-              "bronze": 0,
-              "silver": 0,
-              "gold": 0,
-              "platinum": 0
-            },
-            "trophyGroupName": "Call of Duty®: Black Ops - Rezurrection",
-            "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/c3f7e132-d92c-4066-9995-059bbc4485c7.png",
-            "definedTrophies": {
-              "bronze": 5,
-              "silver": 1,
-              "gold": 1,
-              "platinum": 0
-            },
-            "name": "Call of Duty®: Black Ops - Rezurrection",
-            "ratio": "0/7"
+            "name": "Deadliest Deep Sea Catch Fishing Simulator",
+            "ratio": "2/25"
           }
         ],
         "trophies": [
@@ -936,18 +891,18 @@
             "trophyId": 0,
             "trophyHidden": false,
             "trophyType": "platinum",
-            "trophyName": "Platinum",
-            "trophyDetail": "Awarded when all other trophies have been unlocked",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/2f7e346c-9c2f-46e7-af0a-f1ea29172778.png",
+            "trophyName": "Master of the Deep Sea",
+            "trophyDetail": "Unlock all trophies",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/57F0450F61257B7FC0604FCA4AD35C7B82FB982A.PNG",
             "trophyGroupId": "default",
-            "name": "Platinum",
+            "name": "Master of the Deep Sea",
             "type": "platinum",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/2f7e346c-9c2f-46e7-af0a-f1ea29172778.png",
-            "description": "Awarded when all other trophies have been unlocked",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/57F0450F61257B7FC0604FCA4AD35C7B82FB982A.PNG",
+            "description": "Unlock all trophies",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -959,22 +914,22 @@
             "trophyId": 1,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Death to Dictators",
-            "trophyDetail": "Take down Castro with a headshot.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/33484a39-8759-42e1-b103-b2f16865b03b.png",
+            "trophyName": "First Cast",
+            "trophyDetail": "Finish the tutorial — welcome aboard, rookie.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/767EF1549F5C9AE7AAEB9AAB1BA092CFF0F9E136.PNG",
             "trophyGroupId": "default",
-            "name": "Death to Dictators",
+            "name": "First Cast",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/33484a39-8759-42e1-b103-b2f16865b03b.png",
-            "description": "Take down Castro with a headshot.",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/767EF1549F5C9AE7AAEB9AAB1BA092CFF0F9E136.PNG",
+            "description": "Finish the tutorial — welcome aboard, rookie.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": true,
-            "earnedDate": "8/7/2026, 5:09:51 AM",
-            "earnedAge": "6 days, 9 hours",
-            "timestamp": 1786093791000,
+            "earnedDate": "8/13/2026, 2:42:38 PM",
+            "earnedAge": "46 mins",
+            "timestamp": 1786646558000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -982,41 +937,18 @@
             "trophyId": 2,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Sacrifice ",
-            "trophyDetail": "Ensure your squad escapes safely from Cuba.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/96496bf0-9e7c-4207-a351-f51c16839779.png",
+            "trophyName": "Floating Ambition",
+            "trophyDetail": "Buy 20 floats — every line in the water counts.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/8923E9D357FC0A57AA0F42C47CAB7D263B2C50CA.PNG",
             "trophyGroupId": "default",
-            "name": "Sacrifice ",
+            "name": "Floating Ambition",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/96496bf0-9e7c-4207-a351-f51c16839779.png",
-            "description": "Ensure your squad escapes safely from Cuba.",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/8923E9D357FC0A57AA0F42C47CAB7D263B2C50CA.PNG",
+            "description": "Buy 20 floats — every line in the water counts.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": true,
-            "earnedDate": "8/7/2026, 5:28:26 AM",
-            "earnedAge": "6 days, 8 hours, 41 mins",
-            "timestamp": 1786094906000,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 3,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Vehicular Slaughter",
-            "trophyDetail": "Destroy all enemies on vehicles during the prison break.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/e2fec198-1c25-4c96-a23a-1545b57ef719.png",
-            "trophyGroupId": "default",
-            "name": "Vehicular Slaughter",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/e2fec198-1c25-4c96-a23a-1545b57ef719.png",
-            "description": "Destroy all enemies on vehicles during the prison break.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1025,21 +957,44 @@
             "targetValue": 0
           },
           {
-            "trophyId": 4,
+            "trophyId": 3,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Slingshot Kid ",
-            "trophyDetail": "Destroy all slingshot targets in 3 attempts.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/93ef16e8-ed19-4246-a07e-5bfac8384b26.png",
+            "trophyName": "Sea Scholar",
+            "trophyDetail": "Learn 2 skills — knowledge is your sharpest hook.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/3B98645AD39A003BA5534A8137B08B53CE1D9ED7.PNG",
             "trophyGroupId": "default",
-            "name": "Slingshot Kid ",
+            "name": "Sea Scholar",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/93ef16e8-ed19-4246-a07e-5bfac8384b26.png",
-            "description": "Destroy all slingshot targets in 3 attempts.",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/3B98645AD39A003BA5534A8137B08B53CE1D9ED7.PNG",
+            "description": "Learn 2 skills — knowledge is your sharpest hook.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
+            "earned": true,
+            "earnedDate": "8/13/2026, 2:42:00 PM",
+            "earnedAge": "47 mins",
+            "timestamp": 1786646520000,
+            "currentValue": 0,
+            "targetValue": 0
+          },
+          {
+            "trophyId": 4,
+            "trophyHidden": false,
+            "trophyType": "bronze",
+            "trophyName": "Ship Shape Start",
+            "trophyDetail": "Execute your first ship upgrade — a smoother ride awaits.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/918C799869A3D739AB225B7B57AB0F9DEF30066D.PNG",
+            "trophyGroupId": "default",
+            "name": "Ship Shape Start",
+            "type": "bronze",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/918C799869A3D739AB225B7B57AB0F9DEF30066D.PNG",
+            "description": "Execute your first ship upgrade — a smoother ride awaits.",
+            "rarity": "Rare",
+            "earnedRate": "0.0",
+            "hidden": false,
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1051,22 +1006,22 @@
             "trophyId": 5,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Give me liberty, or give me death",
-            "trophyDetail": "Escape Vorkuta.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/5c0300f8-50a4-4aae-9a14-4b71d7a7cccc.png",
+            "trophyName": "Fueling Routine",
+            "trophyDetail": "Refueled 5 times — keeping the tank full and the engines humming.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/5C4844BE42D3F83A9589AB3E05723C8387AF8929.PNG",
             "trophyGroupId": "default",
-            "name": "Give me liberty, or give me death",
+            "name": "Fueling Routine",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/5c0300f8-50a4-4aae-9a14-4b71d7a7cccc.png",
-            "description": "Escape Vorkuta.",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/5C4844BE42D3F83A9589AB3E05723C8387AF8929.PNG",
+            "description": "Refueled 5 times — keeping the tank full and the engines humming.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": true,
-            "earnedDate": "8/7/2026, 5:55:15 AM",
-            "earnedAge": "6 days, 8 hours, 14 mins",
-            "timestamp": 1786096515000,
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -1074,22 +1029,22 @@
             "trophyId": 6,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "VIP",
-            "trophyDetail": "Receive orders from Lancer.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/36d45829-cbe0-440e-8d08-361cfa41d4f1.png",
+            "trophyName": "Crab Rookie",
+            "trophyDetail": "Sell 150 crabs — the sea’s starting to pay off.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/7957C8D7555F5AF5EAB628230C5CEA8CEF5D1F1C.PNG",
             "trophyGroupId": "default",
-            "name": "VIP",
+            "name": "Crab Rookie",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/36d45829-cbe0-440e-8d08-361cfa41d4f1.png",
-            "description": "Receive orders from Lancer.",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/7957C8D7555F5AF5EAB628230C5CEA8CEF5D1F1C.PNG",
+            "description": "Sell 150 crabs — the sea’s starting to pay off.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": true,
-            "earnedDate": "8/7/2026, 6:00:19 AM",
-            "earnedAge": "6 days, 8 hours, 9 mins",
-            "timestamp": 1786096819000,
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -1097,22 +1052,22 @@
             "trophyId": 7,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "A safer place",
-            "trophyDetail": "Sabotage the Soviet space program.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/69915511-50b4-427b-aba4-f9df6c2427de.png",
+            "trophyName": "Civic Fisherman",
+            "trophyDetail": "Pay 5 taxes — the government thanks you for your catch.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/F5F2965C2E338C6CF6B8A80964B66C686FB71162.PNG",
             "trophyGroupId": "default",
-            "name": "A safer place",
+            "name": "Civic Fisherman",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/69915511-50b4-427b-aba4-f9df6c2427de.png",
-            "description": "Sabotage the Soviet space program.",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/F5F2965C2E338C6CF6B8A80964B66C686FB71162.PNG",
+            "description": "Pay 5 taxes — the government thanks you for your catch.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": true,
-            "earnedDate": "8/7/2026, 6:26:42 AM",
-            "earnedAge": "6 days, 7 hours, 43 mins",
-            "timestamp": 1786098402000,
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -1120,18 +1075,18 @@
             "trophyId": 8,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Tough Economy",
-            "trophyDetail": "Use no more than 6 TOW guided missiles to destroy the tanks in the defense of Khe Sanh.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/d95baf6b-b6dc-465c-914c-181d862246e3.png",
+            "trophyName": "Crustacean Beginner",
+            "trophyDetail": "Collect 300 crustacean — the traps are doing their job.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/D76194ABC77099265FC840B2FF403BAAA53ED82E.PNG",
             "trophyGroupId": "default",
-            "name": "Tough Economy",
+            "name": "Crustacean Beginner",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/d95baf6b-b6dc-465c-914c-181d862246e3.png",
-            "description": "Use no more than 6 TOW guided missiles to destroy the tanks in the defense of Khe Sanh.",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/D76194ABC77099265FC840B2FF403BAAA53ED82E.PNG",
+            "description": "Collect 300 crustacean — the traps are doing their job.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1143,18 +1098,18 @@
             "trophyId": 9,
             "trophyHidden": false,
             "trophyType": "bronze",
-            "trophyName": "Looks don't count",
-            "trophyDetail": "Break the siege in the battle of Khe Sanh.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/2bcbabb1-c3be-4876-b2df-6282a6c5da19.png",
+            "trophyName": "Grids Beginner",
+            "trophyDetail": "Buy 20 grids — more traps, more treasure.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/A6155D09A3E59AC2211F631B182197DF4A821996.PNG",
             "trophyGroupId": "default",
-            "name": "Looks don't count",
+            "name": "Grids Beginner",
             "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/2bcbabb1-c3be-4876-b2df-6282a6c5da19.png",
-            "description": "Break the siege in the battle of Khe Sanh.",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/A6155D09A3E59AC2211F631B182197DF4A821996.PNG",
+            "description": "Buy 20 grids — more traps, more treasure.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1165,19 +1120,19 @@
           {
             "trophyId": 10,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Raining Pain",
-            "trophyDetail": "Rack up a body count of 20 NVA using air support in Hue City.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/094997d9-78db-4651-9134-ae26d1745c7e.png",
+            "trophyType": "silver",
+            "trophyName": "Float Collector",
+            "trophyDetail": "Buy 50 floats — a small ocean of opportunity.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/F5C3D4E8F1361B7145381102CFEF1B2B70824B2C.PNG",
             "trophyGroupId": "default",
-            "name": "Raining Pain",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/094997d9-78db-4651-9134-ae26d1745c7e.png",
-            "description": "Rack up a body count of 20 NVA using air support in Hue City.",
+            "name": "Float Collector",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/F5C3D4E8F1361B7145381102CFEF1B2B70824B2C.PNG",
+            "description": "Buy 50 floats — a small ocean of opportunity.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1188,19 +1143,19 @@
           {
             "trophyId": 11,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "The Dragon Within",
-            "trophyDetail": "Kill 10 NVA with Dragon's Breath rounds.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/fbc8bd56-68e8-4cb4-b7f4-a1a30929571b.png",
+            "trophyType": "silver",
+            "trophyName": "Deep Sea Expert",
+            "trophyDetail": "Learn 4 skills — experience pays off in every wave.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/F5280DA9E70A3098B7C0FFA662E503C871DC87FD.PNG",
             "trophyGroupId": "default",
-            "name": "The Dragon Within",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/fbc8bd56-68e8-4cb4-b7f4-a1a30929571b.png",
-            "description": "Kill 10 NVA with Dragon's Breath rounds.",
+            "name": "Deep Sea Expert",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/F5280DA9E70A3098B7C0FFA662E503C871DC87FD.PNG",
+            "description": "Learn 4 skills — experience pays off in every wave.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1211,19 +1166,19 @@
           {
             "trophyId": 12,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "SOG Rules",
-            "trophyDetail": "Retrieve the dossier and the defector from Hue City.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/ca3e5caa-c8a7-4b6a-86aa-c5641502484a.png",
+            "trophyType": "silver",
+            "trophyName": "Upgrade Enthusiast",
+            "trophyDetail": "Execute 3 ship upgrades — your boat’s becoming a beast.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/980D5393308725C3E93820B45D1FFBA94BF99D03.PNG",
             "trophyGroupId": "default",
-            "name": "SOG Rules",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/ca3e5caa-c8a7-4b6a-86aa-c5641502484a.png",
-            "description": "Retrieve the dossier and the defector from Hue City.",
+            "name": "Upgrade Enthusiast",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/980D5393308725C3E93820B45D1FFBA94BF99D03.PNG",
+            "description": "Execute 3 ship upgrades — your boat’s becoming a beast.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1234,19 +1189,19 @@
           {
             "trophyId": 13,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Heavy Hand",
-            "trophyDetail": "Use the Grim Reaper to destroy the MG emplacement.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/c73a762f-045f-44a6-bc4f-7315a57efb12.png",
+            "trophyType": "silver",
+            "trophyName": "Fuel Strategist",
+            "trophyDetail": "Refueled 15 times — never stranded, always prepared.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/3441D7157AF19BDD80AC38748DCCC7415A1029C2.PNG",
             "trophyGroupId": "default",
-            "name": "Heavy Hand",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/c73a762f-045f-44a6-bc4f-7315a57efb12.png",
-            "description": "Use the Grim Reaper to destroy the MG emplacement.",
+            "name": "Fuel Strategist",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/3441D7157AF19BDD80AC38748DCCC7415A1029C2.PNG",
+            "description": "Refueled 15 times — never stranded, always prepared.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1257,19 +1212,19 @@
           {
             "trophyId": 14,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Up close and personal",
-            "trophyDetail": "Silently take out 3 VC.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/0bceea39-143c-4411-ae54-83bff714a3cf.png",
+            "trophyType": "silver",
+            "trophyName": "Crab Specialist",
+            "trophyDetail": "Sell 500 crabs — business is boiling.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/732D02CBDA96E2F759D63BD8BAA726CD6E5E4191.PNG",
             "trophyGroupId": "default",
-            "name": "Up close and personal",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/0bceea39-143c-4411-ae54-83bff714a3cf.png",
-            "description": "Silently take out 3 VC.",
+            "name": "Crab Specialist",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/732D02CBDA96E2F759D63BD8BAA726CD6E5E4191.PNG",
+            "description": "Sell 500 crabs — business is boiling.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1280,19 +1235,19 @@
           {
             "trophyId": 15,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Double Trouble",
-            "trophyDetail": "Use only dual wield weapons to escape Kowloon.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/f3fbc974-9673-4855-a49d-fe6bb4bd6db5.png",
+            "trophyType": "silver",
+            "trophyName": "Reliable Taxpayer",
+            "trophyDetail": "Pay 10 taxes — the price of prosperity.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/F2CB80A7DB58F0F9D76DD5C1D2B667D3C7A7C3BB.PNG",
             "trophyGroupId": "default",
-            "name": "Double Trouble",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/f3fbc974-9673-4855-a49d-fe6bb4bd6db5.png",
-            "description": "Use only dual wield weapons to escape Kowloon.",
+            "name": "Reliable Taxpayer",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/F2CB80A7DB58F0F9D76DD5C1D2B667D3C7A7C3BB.PNG",
+            "description": "Pay 10 taxes — the price of prosperity.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1303,19 +1258,19 @@
           {
             "trophyId": 16,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Broken English",
-            "trophyDetail": "Escape Kowloon.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/601a1453-3907-46b8-9ec3-961df52865b7.png",
+            "trophyType": "silver",
+            "trophyName": "Crustacean Hauler",
+            "trophyDetail": "Collect 600 crustacean — you're making serious pulls now.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/0E2C68D635FE79A8B71866AC318DB9E36A8DD10D.PNG",
             "trophyGroupId": "default",
-            "name": "Broken English",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/601a1453-3907-46b8-9ec3-961df52865b7.png",
-            "description": "Escape Kowloon.",
+            "name": "Crustacean Hauler",
+            "type": "silver",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/0E2C68D635FE79A8B71866AC318DB9E36A8DD10D.PNG",
+            "description": "Collect 600 crustacean — you're making serious pulls now.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1327,18 +1282,18 @@
             "trophyId": 17,
             "trophyHidden": false,
             "trophyType": "silver",
-            "trophyName": "Lord Nelson",
-            "trophyDetail": "Destroy all targets and structures while making your way up the river.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/e94b2b18-8a36-42e3-a26f-0d99f457441a.png",
+            "trophyName": "Fleet Starter",
+            "trophyDetail": "Buy 4 ships — from single boat to fleet commander.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/53621B802A134B6DCB46AE26CB29ABA1CEDC26B5.PNG",
             "trophyGroupId": "default",
-            "name": "Lord Nelson",
+            "name": "Fleet Starter",
             "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/e94b2b18-8a36-42e3-a26f-0d99f457441a.png",
-            "description": "Destroy all targets and structures while making your way up the river.",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/53621B802A134B6DCB46AE26CB29ABA1CEDC26B5.PNG",
+            "description": "Buy 4 ships — from single boat to fleet commander.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1349,19 +1304,19 @@
           {
             "trophyId": 18,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Never get off the boat",
-            "trophyDetail": "Find the Soviet connection in Laos.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/23acdac9-88ae-4790-be16-1fa42c0d28d9.png",
+            "trophyType": "gold",
+            "trophyName": "Float Tycoon",
+            "trophyDetail": "Buy 100 floats — you've mastered the art of the bait.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/A47DBCEEC0329E0147339F760A06156114E2EDD4.PNG",
             "trophyGroupId": "default",
-            "name": "Never get off the boat",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/23acdac9-88ae-4790-be16-1fa42c0d28d9.png",
-            "description": "Find the Soviet connection in Laos.",
+            "name": "Float Tycoon",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/A47DBCEEC0329E0147339F760A06156114E2EDD4.PNG",
+            "description": "Buy 100 floats — you've mastered the art of the bait.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1372,19 +1327,19 @@
           {
             "trophyId": 19,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Pathfinder",
-            "trophyDetail": "Guide the squad through the Soviet outpost without them getting killed.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/1f012827-a840-404d-befb-8515da614a82.png",
+            "trophyType": "gold",
+            "trophyName": "Master of the Deep",
+            "trophyDetail": "Learn 6 skills — you’re a legend beneath the surface.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/23368B344E48527088F0680983BC75E73A24612D.PNG",
             "trophyGroupId": "default",
-            "name": "Pathfinder",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/1f012827-a840-404d-befb-8515da614a82.png",
-            "description": "Guide the squad through the Soviet outpost without them getting killed.",
+            "name": "Master of the Deep",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/23368B344E48527088F0680983BC75E73A24612D.PNG",
+            "description": "Learn 6 skills — you’re a legend beneath the surface.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1395,19 +1350,19 @@
           {
             "trophyId": 20,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Mr. Black OP",
-            "trophyDetail": "Enter the Soviet relay station undetected.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/86e8fbe5-1422-4e30-9361-c280d9df2097.png",
+            "trophyType": "gold",
+            "trophyName": "Shipwright Master",
+            "trophyDetail": "Execute 5 ship upgrades — now that’s a vessel to envy.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/089A1EC6B7CED9594A5411703FB4637E0E0DE6AE.PNG",
             "trophyGroupId": "default",
-            "name": "Mr. Black OP",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/86e8fbe5-1422-4e30-9361-c280d9df2097.png",
-            "description": "Enter the Soviet relay station undetected.",
+            "name": "Shipwright Master",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/089A1EC6B7CED9594A5411703FB4637E0E0DE6AE.PNG",
+            "description": "Execute 5 ship upgrades — now that’s a vessel to envy.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1418,19 +1373,19 @@
           {
             "trophyId": 21,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "With extreme prejudice",
-            "trophyDetail": "Get to the POW compound in the Hind using only rockets.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/28777c31-6773-4af1-a525-2a804276a8b0.png",
+            "trophyType": "gold",
+            "trophyName": "Fuel Commander",
+            "trophyDetail": "Refueled 30 times — running a smooth operation.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/248693C4B2A1DC276E50FEEEAD03C45AF62520AF.PNG",
             "trophyGroupId": "default",
-            "name": "With extreme prejudice",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/28777c31-6773-4af1-a525-2a804276a8b0.png",
-            "description": "Get to the POW compound in the Hind using only rockets.",
+            "name": "Fuel Commander",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/248693C4B2A1DC276E50FEEEAD03C45AF62520AF.PNG",
+            "description": "Refueled 30 times — running a smooth operation.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1441,19 +1396,19 @@
           {
             "trophyId": 22,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Russian bar-b-q",
-            "trophyDetail": "Incinerate 10 enemies with the flamethrower attachment in the POW compound.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/124cced1-ff0a-4e8b-b873-abfa2f95a1dd.png",
+            "trophyType": "gold",
+            "trophyName": "Crab King",
+            "trophyDetail": "Sell 1,000 crabs — your claws are in the market.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/4A280B1E9438853A4140012426775BD67E9018AA.PNG",
             "trophyGroupId": "default",
-            "name": "Russian bar-b-q",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/124cced1-ff0a-4e8b-b873-abfa2f95a1dd.png",
-            "description": "Incinerate 10 enemies with the flamethrower attachment in the POW compound.",
+            "name": "Crab King",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/4A280B1E9438853A4140012426775BD67E9018AA.PNG",
+            "description": "Sell 1,000 crabs — your claws are in the market.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1464,19 +1419,19 @@
           {
             "trophyId": 23,
             "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Light Foot",
-            "trophyDetail": "Escape the ship with 2:15 left on the timer in Veteran.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/4f4b05ae-da6d-4c06-8386-6839e5dafa28.png",
+            "trophyType": "gold",
+            "trophyName": "Tax Veteran",
+            "trophyDetail": "Pay 20 taxes — running legit, deep-sea style.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/43A559A08DD8F51F3E86B4809252BB8318E12BED.PNG",
             "trophyGroupId": "default",
-            "name": "Light Foot",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/4f4b05ae-da6d-4c06-8386-6839e5dafa28.png",
-            "description": "Escape the ship with 2:15 left on the timer in Veteran.",
+            "name": "Tax Veteran",
+            "type": "gold",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/43A559A08DD8F51F3E86B4809252BB8318E12BED.PNG",
+            "description": "Pay 20 taxes — running legit, deep-sea style.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -1487,1054 +1442,19 @@
           {
             "trophyId": 24,
             "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Some wounds never heal",
-            "trophyDetail": "Escape the Past.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/14f55c18-9a09-4cf6-af58-943ba3ef0ce6.png",
-            "trophyGroupId": "default",
-            "name": "Some wounds never heal",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/14f55c18-9a09-4cf6-af58-943ba3ef0ce6.png",
-            "description": "Escape the Past.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 25,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "I hate monkeys",
-            "trophyDetail": "Kill 7 monkeys in under 10 seconds in the Rebirth labs.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/59e5854b-338d-4702-8d93-3d1d1c0248b1.png",
-            "trophyGroupId": "default",
-            "name": "I hate monkeys",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/59e5854b-338d-4702-8d93-3d1d1c0248b1.png",
-            "description": "Kill 7 monkeys in under 10 seconds in the Rebirth labs.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 26,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "No Leaks",
-            "trophyDetail": "Make it through the NOVA 6 gas without dying on Rebirth Island.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/eacf6662-5eed-478e-a4dc-013c7124e5cb.png",
-            "trophyGroupId": "default",
-            "name": "No Leaks",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/eacf6662-5eed-478e-a4dc-013c7124e5cb.png",
-            "description": "Make it through the NOVA 6 gas without dying on Rebirth Island.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 27,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Clarity",
-            "trophyDetail": "Crack the code.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/d0f3b199-5ed3-4e4d-b892-cbf1aa26f3e3.png",
-            "trophyGroupId": "default",
-            "name": "Clarity",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/d0f3b199-5ed3-4e4d-b892-cbf1aa26f3e3.png",
-            "description": "Crack the code.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 28,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Double Whammy",
-            "trophyDetail": "Destroy both helicopters with one Valkyrie rocket from the deck of the ship.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/9a4642a1-477e-4b13-a118-7313f5c855b1.png",
-            "trophyGroupId": "default",
-            "name": "Double Whammy",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/9a4642a1-477e-4b13-a118-7313f5c855b1.png",
-            "description": "Destroy both helicopters with one Valkyrie rocket from the deck of the ship.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 29,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Stand Down",
-            "trophyDetail": "Complete the campaign on any difficulty.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/56bea366-e7ce-4a22-9157-62ab3ddc9439.png",
-            "trophyGroupId": "default",
-            "name": "Stand Down",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/56bea366-e7ce-4a22-9157-62ab3ddc9439.png",
-            "description": "Complete the campaign on any difficulty.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 30,
-            "trophyHidden": false,
             "trophyType": "gold",
-            "trophyName": "BLACK OP MASTER",
-            "trophyDetail": "Complete the campaign on Hardened or Veteran difficulty.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/a8641594-c226-4248-99ce-664a07860101.png",
+            "trophyName": "Crustacean Tycoon",
+            "trophyDetail": "Collect 1,500 crustacean — this sea is your kingdom.",
+            "trophyIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/92E717F4CA19D00337ED8B4A490888C28ECBCC92.PNG",
             "trophyGroupId": "default",
-            "name": "BLACK OP MASTER",
+            "name": "Crustacean Tycoon",
             "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/a8641594-c226-4248-99ce-664a07860101.png",
-            "description": "Complete the campaign on Hardened or Veteran difficulty.",
+            "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/92E717F4CA19D00337ED8B4A490888C28ECBCC92.PNG",
+            "description": "Collect 1,500 crustacean — this sea is your kingdom.",
             "rarity": "Rare",
             "earnedRate": "0.0",
             "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 31,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Frag Master",
-            "trophyDetail": "Kill 5 enemies with a single frag grenade in the campaign.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/d28a1c68-60c2-40f9-8140-266ebabf2830.png",
-            "trophyGroupId": "default",
-            "name": "Frag Master",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/d28a1c68-60c2-40f9-8140-266ebabf2830.png",
-            "description": "Kill 5 enemies with a single frag grenade in the campaign.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 32,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Sally Likes Blood",
-            "trophyDetail": "Demonstrate killer economic sensibilities by taking down 3 enemies with a single bullet.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/de3ef629-5b35-4459-b659-37e9169dbbf3.png",
-            "trophyGroupId": "default",
-            "name": "Sally Likes Blood",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/de3ef629-5b35-4459-b659-37e9169dbbf3.png",
-            "description": "Demonstrate killer economic sensibilities by taking down 3 enemies with a single bullet.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 33,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Unconventional Warfare",
-            "trophyDetail": "Use the explosive bolts to kill 30 enemies in the campaign.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/720aaf9f-0633-4add-b3ca-1e37695d7cab.png",
-            "trophyGroupId": "default",
-            "name": "Unconventional Warfare",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/720aaf9f-0633-4add-b3ca-1e37695d7cab.png",
-            "description": "Use the explosive bolts to kill 30 enemies in the campaign.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 34,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Cold Warrior",
-            "trophyDetail": "Complete \"Operation 40,\" \"Vorkuta,\" and \"Executive Order\" on Veteran difficulty.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/9dcfaa78-6865-4f01-a869-8d5155e9c550.png",
-            "trophyGroupId": "default",
-            "name": "Cold Warrior",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/9dcfaa78-6865-4f01-a869-8d5155e9c550.png",
-            "description": "Complete \"Operation 40,\" \"Vorkuta,\" and \"Executive Order\" on Veteran difficulty.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 35,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Down and Dirty",
-            "trophyDetail": "Complete \"SOG\" and \"The Defector\" on Veteran difficulty.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/de87224d-ea8d-471a-96a8-42764e85aa65.png",
-            "trophyGroupId": "default",
-            "name": "Down and Dirty",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/de87224d-ea8d-471a-96a8-42764e85aa65.png",
-            "description": "Complete \"SOG\" and \"The Defector\" on Veteran difficulty.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 36,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "It's your funeral",
-            "trophyDetail": "Complete \"Numbers,\" \"Project Nova,\" and \"Victor Charlie\" on Veteran difficulty.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/f291c6b6-3622-4fc7-b3ef-c62f48ca2637.png",
-            "trophyGroupId": "default",
-            "name": "It's your funeral",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/f291c6b6-3622-4fc7-b3ef-c62f48ca2637.png",
-            "description": "Complete \"Numbers,\" \"Project Nova,\" and \"Victor Charlie\" on Veteran difficulty.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 37,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Not Today",
-            "trophyDetail": "Complete \"Crash Site,\" \"WMD,\" and \"Payback\" on Veteran difficulty.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/8a0c5f8b-5565-4e15-8d61-28a41ca2849d.png",
-            "trophyGroupId": "default",
-            "name": "Not Today",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/8a0c5f8b-5565-4e15-8d61-28a41ca2849d.png",
-            "description": "Complete \"Crash Site,\" \"WMD,\" and \"Payback\" on Veteran difficulty.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 38,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Burn Notice",
-            "trophyDetail": "Complete \"Rebirth\" and \"Redemption\" on Veteran difficulty.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/135e9cf2-ce1d-45b8-ad9d-b261c9e3dee4.png",
-            "trophyGroupId": "default",
-            "name": "Burn Notice",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/135e9cf2-ce1d-45b8-ad9d-b261c9e3dee4.png",
-            "description": "Complete \"Rebirth\" and \"Redemption\" on Veteran difficulty.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 39,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Closer Analysis",
-            "trophyDetail": "Find all the hidden intel.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/18355926-5b79-440c-aad2-6e3c34b83602.png",
-            "trophyGroupId": "default",
-            "name": "Closer Analysis",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/18355926-5b79-440c-aad2-6e3c34b83602.png",
-            "description": "Find all the hidden intel.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 40,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Ready For Deployment",
-            "trophyDetail": "Reach rank 10 in Combat Training.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/5ddd783c-dd1f-4608-b30e-3a8073a1ee1b.png",
-            "trophyGroupId": "default",
-            "name": "Ready For Deployment",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/5ddd783c-dd1f-4608-b30e-3a8073a1ee1b.png",
-            "description": "Reach rank 10 in Combat Training.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 41,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "The Collector",
-            "trophyDetail": "Buy every weapon off the walls in a single Zombies game.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/0b1ed47c-f673-4a3b-a6a4-93642ba44421.png",
-            "trophyGroupId": "default",
-            "name": "The Collector",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/0b1ed47c-f673-4a3b-a6a4-93642ba44421.png",
-            "description": "Buy every weapon off the walls in a single Zombies game.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 42,
-            "trophyHidden": true,
-            "trophyType": "bronze",
-            "trophyName": "See Me, Stab Me, Heal Me",
-            "trophyDetail": "Fire a Pack-a-Punched Ballistic Knife at a downed ally to revive them from a distance.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/5538ec00-76de-41c0-ae40-5f2880a3dcc2.png",
-            "trophyGroupId": "default",
-            "name": "See Me, Stab Me, Heal Me",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/5538ec00-76de-41c0-ae40-5f2880a3dcc2.png",
-            "description": "Fire a Pack-a-Punched Ballistic Knife at a downed ally to revive them from a distance.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": true,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 43,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Hands Off the Merchandise",
-            "trophyDetail": "Kill the Pentagon thief before it can steal your load-out.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/10d4153e-ee5b-4b4b-8987-2cf2c2c7e20f.PNG",
-            "trophyGroupId": "default",
-            "name": "Hands Off the Merchandise",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/10d4153e-ee5b-4b4b-8987-2cf2c2c7e20f.PNG",
-            "description": "Kill the Pentagon thief before it can steal your load-out.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 44,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Sacrificial Lamb",
-            "trophyDetail": "Shoot at or be shot by an ally with a Pack-a-Punch crossbow and kill six zombies with the explosion.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/e3375754-1cc4-4d47-83dc-f50d5f04cd42.png",
-            "trophyGroupId": "default",
-            "name": "Sacrificial Lamb",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/e3375754-1cc4-4d47-83dc-f50d5f04cd42.png",
-            "description": "Shoot at or be shot by an ally with a Pack-a-Punch crossbow and kill six zombies with the explosion.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 45,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Insert Coin",
-            "trophyDetail": "Access the terminal and battle the forces of the Cosmic Silverback in Dead Ops Arcade.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/1dd3d763-363c-49af-8be8-d1e1e32a91d2.png",
-            "trophyGroupId": "default",
-            "name": "Insert Coin",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/1dd3d763-363c-49af-8be8-d1e1e32a91d2.png",
-            "description": "Access the terminal and battle the forces of the Cosmic Silverback in Dead Ops Arcade.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 46,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Easy Rhino",
-            "trophyDetail": "In Dead Ops Arcade, use a Speed Boost to blast through 20 or more enemies at one time.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/5cec2166-1e85-4be3-949d-9f38423aee04.png",
-            "trophyGroupId": "default",
-            "name": "Easy Rhino",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/5cec2166-1e85-4be3-949d-9f38423aee04.png",
-            "description": "In Dead Ops Arcade, use a Speed Boost to blast through 20 or more enemies at one time.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 47,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Just ask me nicely",
-            "trophyDetail": "Break free from the torture chair.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/783755a3-242b-4807-b703-4049c0634af6.png",
-            "trophyGroupId": "default",
-            "name": "Just ask me nicely",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/783755a3-242b-4807-b703-4049c0634af6.png",
-            "description": "Break free from the torture chair.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 48,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Eaten by a Grue",
-            "trophyDetail": "Play Zork on the terminal.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/1cdf8a6b-ec6b-49a9-8366-df9e8c2a33c5.png",
-            "trophyGroupId": "default",
-            "name": "Eaten by a Grue",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/1cdf8a6b-ec6b-49a9-8366-df9e8c2a33c5.png",
-            "description": "Play Zork on the terminal.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 49,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "The eagle has landers",
-            "trophyDetail": "In Ascension, escape on all 3 lunar landers.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/6b1c5164-a778-4882-95ae-78d4a4fd184e.png",
-            "trophyGroupId": "001",
-            "name": "The eagle has landers",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/6b1c5164-a778-4882-95ae-78d4a4fd184e.png",
-            "description": "In Ascension, escape on all 3 lunar landers.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - First Strike",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 50,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "They are going THROUGH!",
-            "trophyDetail": "In Ascension, kill at least 5 zombies with 1 Gersh Device.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/e94a9c39-6049-4042-a4d1-e0ef1b63d794.png",
-            "trophyGroupId": "001",
-            "name": "They are going THROUGH!",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/e94a9c39-6049-4042-a4d1-e0ef1b63d794.png",
-            "description": "In Ascension, kill at least 5 zombies with 1 Gersh Device.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - First Strike",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 51,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Space Race",
-            "trophyDetail": "In Ascension, Pack-a-Punch a weapon before round 8.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/19707f0d-0f24-4928-b36f-077ce2764667.png",
-            "trophyGroupId": "001",
-            "name": "Space Race",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/19707f0d-0f24-4928-b36f-077ce2764667.png",
-            "description": "In Ascension, Pack-a-Punch a weapon before round 8.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - First Strike",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 52,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Chimp on the barbie",
-            "trophyDetail": "In Ascension, kill a space monkey with a fire trap.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/3b4f9fd2-ae03-4b7e-839e-d63fcf1db89f.png",
-            "trophyGroupId": "001",
-            "name": "Chimp on the barbie",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/3b4f9fd2-ae03-4b7e-839e-d63fcf1db89f.png",
-            "description": "In Ascension, kill a space monkey with a fire trap.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - First Strike",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 53,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Stand-in",
-            "trophyDetail": "In Call of the Dead, send the crew to Paradise in solo or co-op.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/5324268b-df82-4a3d-9323-673b9b3e8568.png",
-            "trophyGroupId": "002",
-            "name": "Stand-in",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/5324268b-df82-4a3d-9323-673b9b3e8568.png",
-            "description": "In Call of the Dead, send the crew to Paradise in solo or co-op.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Escalation",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 54,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Ensemble Cast",
-            "trophyDetail": "In Call of the Dead, send the crew to Paradise in co-op.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/f2fb78cc-dd96-4929-852c-328c5c1e4af3.png",
-            "trophyGroupId": "002",
-            "name": "Ensemble Cast",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/f2fb78cc-dd96-4929-852c-328c5c1e4af3.png",
-            "description": "In Call of the Dead, send the crew to Paradise in co-op.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Escalation",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 55,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Stuntman",
-            "trophyDetail": "In Call of the Dead, make a zombie explode using the V-R11.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/ef328126-8340-4757-ab5b-1174f9f444a7.png",
-            "trophyGroupId": "002",
-            "name": "Stuntman",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/ef328126-8340-4757-ab5b-1174f9f444a7.png",
-            "description": "In Call of the Dead, make a zombie explode using the V-R11.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Escalation",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 56,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Shooting on Location",
-            "trophyDetail": "In Call of the Dead, kill 10 zombies with one Scavenger shot from over 100 feet away.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/bc57659b-17aa-4cdb-a20c-ce0fb2849fd5.png",
-            "trophyGroupId": "002",
-            "name": "Shooting on Location",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/bc57659b-17aa-4cdb-a20c-ce0fb2849fd5.png",
-            "description": "In Call of the Dead, kill 10 zombies with one Scavenger shot from over 100 feet away.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Escalation",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 57,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Quiet on the Set",
-            "trophyDetail": "In Call of the Dead, cut the lights on the Director.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/c8441f43-c7ea-4739-9a56-49a6f8c648c3.png",
-            "trophyGroupId": "002",
-            "name": "Quiet on the Set",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/c8441f43-c7ea-4739-9a56-49a6f8c648c3.png",
-            "description": "In Call of the Dead, cut the lights on the Director.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Escalation",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 58,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Time Travel Will Tell",
-            "trophyDetail": "In Shangri-La, acquire the focusing stone.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/e41dae34-31f4-4a07-9d29-f5a2024f20ed.png",
-            "trophyGroupId": "003",
-            "name": "Time Travel Will Tell",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/e41dae34-31f4-4a07-9d29-f5a2024f20ed.png",
-            "description": "In Shangri-La, acquire the focusing stone.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Annihilation",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 59,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Blinded By the Fright",
-            "trophyDetail": "In Shangri-La, kill a Shrieker zombie while blinded by it.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/8f7226a1-d5e9-4997-86e3-95f938704d25.png",
-            "trophyGroupId": "003",
-            "name": "Blinded By the Fright",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/8f7226a1-d5e9-4997-86e3-95f938704d25.png",
-            "description": "In Shangri-La, kill a Shrieker zombie while blinded by it.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Annihilation",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 60,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Zomb Disposal",
-            "trophyDetail": "In Shangri-La, dispose of a Napalm zombie without it harming any players.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/f31b8ee0-8123-4d47-8288-ccfb531ec218.png",
-            "trophyGroupId": "003",
-            "name": "Zomb Disposal",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/f31b8ee0-8123-4d47-8288-ccfb531ec218.png",
-            "description": "In Shangri-La, dispose of a Napalm zombie without it harming any players.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Annihilation",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 61,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Monkey See, Monkey Don't",
-            "trophyDetail": "In Shangri-La, get something from the monkeys.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/6d093a9a-262a-4cfd-8b98-4bb364dc0068.png",
-            "trophyGroupId": "003",
-            "name": "Monkey See, Monkey Don't",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/6d093a9a-262a-4cfd-8b98-4bb364dc0068.png",
-            "description": "In Shangri-La, get something from the monkeys.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Annihilation",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 62,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Small Consolation",
-            "trophyDetail": "In Shangri-La, use the 31-79 JGb215 on each type of zombie.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/855477c9-6ad4-4133-8d4b-c2ad541be44b.png",
-            "trophyGroupId": "003",
-            "name": "Small Consolation",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/855477c9-6ad4-4133-8d4b-c2ad541be44b.png",
-            "description": "In Shangri-La, use the 31-79 JGb215 on each type of zombie.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Annihilation",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 63,
-            "trophyHidden": false,
-            "trophyType": "silver",
-            "trophyName": "Cryogenic Slumber Party",
-            "trophyDetail": "In Moon, complete Richtofen's grand scheme.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/48f6b1fc-c7fc-466b-b4e3-5fd97973ad43.png",
-            "trophyGroupId": "004",
-            "name": "Cryogenic Slumber Party",
-            "type": "silver",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/48f6b1fc-c7fc-466b-b4e3-5fd97973ad43.png",
-            "description": "In Moon, complete Richtofen's grand scheme.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Rezurrection",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 64,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "One Small Hack for a Man...",
-            "trophyDetail": "In Moon, hack something.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/0eb7d44c-c322-465c-979f-35f02413aee2.png",
-            "trophyGroupId": "004",
-            "name": "One Small Hack for a Man...",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/0eb7d44c-c322-465c-979f-35f02413aee2.png",
-            "description": "In Moon, hack something.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Rezurrection",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 65,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "One Giant Leap",
-            "trophyDetail": "In Moon, become trapped in the Receiving Area and free yourself through resurrection in co-op.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/d783f668-71fa-48e4-a44e-5a0b0ef0e615.png",
-            "trophyGroupId": "004",
-            "name": "One Giant Leap",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/d783f668-71fa-48e4-a44e-5a0b0ef0e615.png",
-            "description": "In Moon, become trapped in the Receiving Area and free yourself through resurrection in co-op.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Rezurrection",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 66,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Perks in Spaaaaace!",
-            "trophyDetail": "In Moon, purchase every perk in one game.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/324a8c30-309b-44ea-a613-c1fc84c2fb46.png",
-            "trophyGroupId": "004",
-            "name": "Perks in Spaaaaace!",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/324a8c30-309b-44ea-a613-c1fc84c2fb46.png",
-            "description": "In Moon, purchase every perk in one game.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Rezurrection",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 67,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Fully Armed and Operational",
-            "trophyDetail": "In Moon, acquire 3 pack-a-punched weapons at the same time.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/0143b6a7-dc3a-4d15-9038-b17888619753.png",
-            "trophyGroupId": "004",
-            "name": "Fully Armed and Operational",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/0143b6a7-dc3a-4d15-9038-b17888619753.png",
-            "description": "In Moon, acquire 3 pack-a-punched weapons at the same time.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Rezurrection",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 68,
-            "trophyHidden": false,
-            "trophyType": "bronze",
-            "trophyName": "Ground Control",
-            "trophyDetail": "In Moon, prevent each excavator from breaching the base in one game.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/d1255cb7-d139-4544-a494-72b1b6a07226.png",
-            "trophyGroupId": "004",
-            "name": "Ground Control",
-            "type": "bronze",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/d1255cb7-d139-4544-a494-72b1b6a07226.png",
-            "description": "In Moon, prevent each excavator from breaching the base in one game.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Rezurrection",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "targetValue": 0
-          },
-          {
-            "trophyId": 69,
-            "trophyHidden": false,
-            "trophyType": "gold",
-            "trophyName": "Big Bang Theory",
-            "trophyDetail": "In Moon, gain sweet, sweet, revenge.",
-            "trophyIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/79e65595-49e7-47bc-8e12-452e9a661c16.PNG",
-            "trophyGroupId": "004",
-            "name": "Big Bang Theory",
-            "type": "gold",
-            "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/79e65595-49e7-47bc-8e12-452e9a661c16.PNG",
-            "description": "In Moon, gain sweet, sweet, revenge.",
-            "rarity": "Rare",
-            "earnedRate": "0.0",
-            "hidden": false,
-            "groupName": "Call of Duty®: Black Ops - Rezurrection",
+            "groupName": "Deadliest Deep Sea Catch Fishing Simulator",
             "earned": false,
             "earnedDate": null,
             "earnedAge": null,
@@ -2543,16 +1463,32 @@
             "targetValue": 0
           }
         ],
-        "npCommunicationId": "NPWR59811_00"
+        "npCommunicationId": "NPWR51841_00"
       },
       "mostRecentTrophies": [
+        {
+          "game": "Deadliest Deep Sea Catch Fishing Simulator",
+          "name": "First Cast",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/767EF1549F5C9AE7AAEB9AAB1BA092CFF0F9E136.PNG",
+          "timestamp": 1786646558000,
+          "date": "8/13/2026, 2:42:38 PM",
+          "age": "46 mins"
+        },
+        {
+          "game": "Deadliest Deep Sea Catch Fishing Simulator",
+          "name": "Sea Scholar",
+          "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/3B98645AD39A003BA5534A8137B08B53CE1D9ED7.PNG",
+          "timestamp": 1786646520000,
+          "date": "8/13/2026, 2:42:00 PM",
+          "age": "47 mins"
+        },
         {
           "game": "Call of Duty®: Black Ops",
           "name": "A safer place",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/69915511-50b4-427b-aba4-f9df6c2427de.png",
           "timestamp": 1786098402000,
           "date": "8/7/2026, 6:26:42 AM",
-          "age": "6 days, 7 hours, 43 mins"
+          "age": "6 days, 9 hours, 2 mins"
         },
         {
           "game": "Call of Duty®: Black Ops",
@@ -2560,7 +1496,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/36d45829-cbe0-440e-8d08-361cfa41d4f1.png",
           "timestamp": 1786096819000,
           "date": "8/7/2026, 6:00:19 AM",
-          "age": "6 days, 8 hours, 9 mins"
+          "age": "6 days, 9 hours, 29 mins"
         },
         {
           "game": "Call of Duty®: Black Ops",
@@ -2568,7 +1504,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/5c0300f8-50a4-4aae-9a14-4b71d7a7cccc.png",
           "timestamp": 1786096515000,
           "date": "8/7/2026, 5:55:15 AM",
-          "age": "6 days, 8 hours, 14 mins"
+          "age": "6 days, 9 hours, 34 mins"
         },
         {
           "game": "Call of Duty®: Black Ops",
@@ -2576,7 +1512,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/96496bf0-9e7c-4207-a351-f51c16839779.png",
           "timestamp": 1786094906000,
           "date": "8/7/2026, 5:28:26 AM",
-          "age": "6 days, 8 hours, 41 mins"
+          "age": "6 days, 10 hours"
         },
         {
           "game": "Call of Duty®: Black Ops",
@@ -2584,7 +1520,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59811_00/33484a39-8759-42e1-b103-b2f16865b03b.png",
           "timestamp": 1786093791000,
           "date": "8/7/2026, 5:09:51 AM",
-          "age": "6 days, 9 hours"
+          "age": "6 days, 10 hours, 19 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2592,7 +1528,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/355b5148-7986-451d-9ca7-351706168e2b.PNG",
           "timestamp": 1785958550000,
           "date": "8/5/2026, 3:35:50 PM",
-          "age": "1 week, 22 hours, 34 mins"
+          "age": "1 week, 23 hours, 53 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2600,7 +1536,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/91a1dc7c-37ce-4e79-bb7d-cfde4c52e489.PNG",
           "timestamp": 1785958451000,
           "date": "8/5/2026, 3:34:11 PM",
-          "age": "1 week, 22 hours, 35 mins"
+          "age": "1 week, 23 hours, 55 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2608,7 +1544,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/2bcf1872-2563-47eb-9552-ee909522dd80.PNG",
           "timestamp": 1785956234000,
           "date": "8/5/2026, 2:57:14 PM",
-          "age": "1 week, 23 hours, 12 mins"
+          "age": "1 week, 1 day, 32 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2616,7 +1552,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/35c25b7e-0917-44c2-a701-9a2a3edcc0a5.PNG",
           "timestamp": 1785954718000,
           "date": "8/5/2026, 2:31:58 PM",
-          "age": "1 week, 23 hours, 38 mins"
+          "age": "1 week, 1 day, 57 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2624,7 +1560,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/c4628eb2-fc35-40c9-8f7d-5470f9fe1529.PNG",
           "timestamp": 1785951386000,
           "date": "8/5/2026, 1:36:26 PM",
-          "age": "1 week, 1 day, 33 mins"
+          "age": "1 week, 1 day, 1 hour, 52 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2632,7 +1568,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/67a2824c-da21-43f6-8d62-640f8edf5789.PNG",
           "timestamp": 1785950763000,
           "date": "8/5/2026, 1:26:03 PM",
-          "age": "1 week, 1 day, 43 mins"
+          "age": "1 week, 1 day, 2 hours, 3 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2640,7 +1576,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/c691533d-f39d-4729-ba24-3efe307eeaae.PNG",
           "timestamp": 1785631490000,
           "date": "8/1/2026, 8:44:50 PM",
-          "age": "1 week, 4 days, 17 hours, 25 mins"
+          "age": "1 week, 4 days, 18 hours, 44 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2648,7 +1584,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/0a9b75b5-a0ce-41f5-9632-5c1129f480f5.PNG",
           "timestamp": 1785630070000,
           "date": "8/1/2026, 8:21:10 PM",
-          "age": "1 week, 4 days, 17 hours, 48 mins"
+          "age": "1 week, 4 days, 19 hours, 8 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2656,7 +1592,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/cd513b4c-f97d-4470-8517-ac1883b340e2.PNG",
           "timestamp": 1785628930000,
           "date": "8/1/2026, 8:02:10 PM",
-          "age": "1 week, 4 days, 18 hours, 7 mins"
+          "age": "1 week, 4 days, 19 hours, 27 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2664,7 +1600,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/5db9b8d4-fcc6-4e5b-a5ef-9736b077d489.PNG",
           "timestamp": 1785625534000,
           "date": "8/1/2026, 7:05:34 PM",
-          "age": "1 week, 4 days, 19 hours, 4 mins"
+          "age": "1 week, 4 days, 20 hours, 23 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2672,7 +1608,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/b774aff9-7c7e-449c-bccf-13001fe11dc9.PNG",
           "timestamp": 1785623575000,
           "date": "8/1/2026, 6:32:55 PM",
-          "age": "1 week, 4 days, 19 hours, 37 mins"
+          "age": "1 week, 4 days, 20 hours, 56 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2680,7 +1616,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/ea7121f3-8370-4a2d-a57d-dbc6efe54d2e.PNG",
           "timestamp": 1785619920000,
           "date": "8/1/2026, 5:32:00 PM",
-          "age": "1 week, 4 days, 20 hours, 37 mins"
+          "age": "1 week, 4 days, 21 hours, 57 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2688,7 +1624,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/b341607f-938f-4c07-906b-40037d1b1a2b.PNG",
           "timestamp": 1785617702000,
           "date": "8/1/2026, 4:55:02 PM",
-          "age": "1 week, 4 days, 21 hours, 14 mins"
+          "age": "1 week, 4 days, 22 hours, 34 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2696,7 +1632,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/aeb56e81-ad96-4714-81ea-e753b6d7127a.PNG",
           "timestamp": 1785617692000,
           "date": "8/1/2026, 4:54:52 PM",
-          "age": "1 week, 4 days, 21 hours, 15 mins"
+          "age": "1 week, 4 days, 22 hours, 34 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2704,7 +1640,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/8c6089b1-a90f-4166-8d14-cfb7a6ea9280.PNG",
           "timestamp": 1785615885000,
           "date": "8/1/2026, 4:24:45 PM",
-          "age": "1 week, 4 days, 21 hours, 45 mins"
+          "age": "1 week, 4 days, 23 hours, 4 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2712,7 +1648,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/d2144a0b-1d3c-4776-932f-8c69eb4cbbfb.PNG",
           "timestamp": 1785615885000,
           "date": "8/1/2026, 4:24:45 PM",
-          "age": "1 week, 4 days, 21 hours, 45 mins"
+          "age": "1 week, 4 days, 23 hours, 4 mins"
         },
         {
           "game": "Call of Duty®: Black Ops II",
@@ -2720,7 +1656,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR59721_00/1f5deb02-befb-43dd-a80d-e67ab3259b13.PNG",
           "timestamp": 1785614170000,
           "date": "8/1/2026, 3:56:10 PM",
-          "age": "1 week, 4 days, 22 hours, 13 mins"
+          "age": "1 week, 4 days, 23 hours, 33 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2728,7 +1664,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a7b100a3-62d7-4549-a8ca-34bb714c904f.png",
           "timestamp": 1783995460000,
           "date": "7/13/2026, 10:17:40 PM",
-          "age": "1 month, 15 hours, 52 mins"
+          "age": "1 month, 17 hours, 11 mins"
         },
         {
           "game": "Red Dead Redemption 2",
@@ -2736,7 +1672,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09412_00_005BE1C07B44C5D5137CFF609DF9C1BD125CE56787/BA5008F413B2B7B57C0EC06FAD76BBF02D7ECE42.PNG",
           "timestamp": 1783755177000,
           "date": "7/11/2026, 3:32:57 AM",
-          "age": "1 month, 3 days, 10 hours, 37 mins"
+          "age": "1 month, 3 days, 11 hours, 56 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2744,7 +1680,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1f50f943-df32-4507-badf-0794f2a9a949.png",
           "timestamp": 1783723376000,
           "date": "7/10/2026, 6:42:56 PM",
-          "age": "1 month, 3 days, 19 hours, 27 mins"
+          "age": "1 month, 3 days, 20 hours, 46 mins"
         },
         {
           "game": "Red Dead Redemption 2",
@@ -2752,7 +1688,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09412_00_005BE1C07B44C5D5137CFF609DF9C1BD125CE56787/1B051A40B957F9041697BF289BCF4C0565D80504.PNG",
           "timestamp": 1783556901000,
           "date": "7/8/2026, 8:28:21 PM",
-          "age": "1 month, 5 days, 17 hours, 41 mins"
+          "age": "1 month, 5 days, 19 hours, 1 min"
         },
         {
           "game": "Farming Simulator 25",
@@ -2760,7 +1696,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a2da6ef1-3be2-4c37-940f-413ce501dbe7.png",
           "timestamp": 1783455698000,
           "date": "7/7/2026, 4:21:38 PM",
-          "age": "1 month, 6 days, 21 hours, 48 mins"
+          "age": "1 month, 6 days, 23 hours, 7 mins"
         },
         {
           "game": "Red Dead Redemption 2",
@@ -2768,7 +1704,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09412_00_005BE1C07B44C5D5137CFF609DF9C1BD125CE56787/09DAA4C882BDA8C58A2912DDCAAD49804D8837BC.PNG",
           "timestamp": 1783408826000,
           "date": "7/7/2026, 3:20:26 AM",
-          "age": "1 month, 1 week, 10 hours, 49 mins"
+          "age": "1 month, 1 week, 12 hours, 8 mins"
         },
         {
           "game": "Red Dead Redemption 2",
@@ -2776,7 +1712,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09412_00_005BE1C07B44C5D5137CFF609DF9C1BD125CE56787/17BA1A60D9354F58068032916F3B59BE7591B4F6.PNG",
           "timestamp": 1783403158000,
           "date": "7/7/2026, 1:45:58 AM",
-          "age": "1 month, 1 week, 12 hours, 24 mins"
+          "age": "1 month, 1 week, 13 hours, 43 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2784,7 +1720,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/181a79cb-3721-443f-89a7-97c836a54c3c.png",
           "timestamp": 1783309047000,
           "date": "7/5/2026, 11:37:27 PM",
-          "age": "1 month, 1 week, 1 day, 14 hours, 32 mins"
+          "age": "1 month, 1 week, 1 day, 15 hours, 51 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -2792,7 +1728,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/EC9C5F559BEB9632DBA8686CED48D16E96939754.PNG",
           "timestamp": 1782370728000,
           "date": "6/25/2026, 2:58:48 AM",
-          "age": "1 month, 2 weeks, 5 days, 11 hours, 11 mins"
+          "age": "1 month, 2 weeks, 5 days, 12 hours, 30 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -2800,7 +1736,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/8BB42BF73C2AE38DB6E30D922C0D3245288DA4E2.PNG",
           "timestamp": 1781931539000,
           "date": "6/20/2026, 12:58:59 AM",
-          "age": "1 month, 3 weeks, 3 days, 13 hours, 10 mins"
+          "age": "1 month, 3 weeks, 3 days, 14 hours, 30 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -2808,7 +1744,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/E3D04C671AA6C5F2669CED3EBF39411AE08A7170.PNG",
           "timestamp": 1781843541000,
           "date": "6/19/2026, 12:32:21 AM",
-          "age": "1 month, 3 weeks, 4 days, 13 hours, 37 mins"
+          "age": "1 month, 3 weeks, 4 days, 14 hours, 57 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -2816,7 +1752,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/3DC8ED25F3DC19EE94FEAC45D557F3D611C67A7D.PNG",
           "timestamp": 1781772858000,
           "date": "6/18/2026, 4:54:18 AM",
-          "age": "1 month, 3 weeks, 5 days, 9 hours, 15 mins"
+          "age": "1 month, 3 weeks, 5 days, 10 hours, 35 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -2824,7 +1760,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/0167840B5FF9A8F75E78D07367E4F6CC6C855A81.PNG",
           "timestamp": 1781759672000,
           "date": "6/18/2026, 1:14:32 AM",
-          "age": "1 month, 3 weeks, 5 days, 12 hours, 55 mins"
+          "age": "1 month, 3 weeks, 5 days, 14 hours, 14 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -2832,7 +1768,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/C584A5BE44818DA53B8BBA0A96ACE202E10275A6.PNG",
           "timestamp": 1781682150000,
           "date": "6/17/2026, 3:42:30 AM",
-          "age": "1 month, 3 weeks, 6 days, 10 hours, 27 mins"
+          "age": "1 month, 3 weeks, 6 days, 11 hours, 46 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -2840,7 +1776,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/E6DFF026D742C7FD4F6933C7C654DEDB1F0ADA00.PNG",
           "timestamp": 1781681946000,
           "date": "6/17/2026, 3:39:06 AM",
-          "age": "1 month, 3 weeks, 6 days, 10 hours, 30 mins"
+          "age": "1 month, 3 weeks, 6 days, 11 hours, 50 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -2848,7 +1784,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/50E1A1D1FFC25AD8EA6277BBECCF2E993319D19F.PNG",
           "timestamp": 1781590304000,
           "date": "6/16/2026, 2:11:44 AM",
-          "age": "1 month, 4 weeks, 11 hours, 58 mins"
+          "age": "1 month, 4 weeks, 13 hours, 17 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -2856,7 +1792,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/4C32E581B3C74C4D9C4361C9E284EF7145EB5A43.PNG",
           "timestamp": 1781503799000,
           "date": "6/15/2026, 2:09:59 AM",
-          "age": "1 month, 4 weeks, 1 day, 11 hours, 59 mins"
+          "age": "1 month, 4 weeks, 1 day, 13 hours, 19 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2864,7 +1800,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/99255d15-c101-4bea-9599-b2b47a4891a6.png",
           "timestamp": 1781412888000,
           "date": "6/14/2026, 12:54:48 AM",
-          "age": "2 months, 13 hours, 15 mins"
+          "age": "2 months, 14 hours, 34 mins"
         },
         {
           "game": "Tom Clancy’s Ghost Recon® Wildlands",
@@ -2872,7 +1808,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/DE459E9450AD61F9AADB1615DD4EDC3A074DB290.PNG",
           "timestamp": 1781391903000,
           "date": "6/13/2026, 7:05:03 PM",
-          "age": "2 months, 19 hours, 4 mins"
+          "age": "2 months, 20 hours, 24 mins"
         },
         {
           "game": "Tom Clancy’s Ghost Recon® Wildlands",
@@ -2880,7 +1816,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/2A67FCD6DD8461F523A349C8E5EE95329E3F07D3.PNG",
           "timestamp": 1781389860000,
           "date": "6/13/2026, 6:31:00 PM",
-          "age": "2 months, 19 hours, 38 mins"
+          "age": "2 months, 20 hours, 58 mins"
         },
         {
           "game": "Tom Clancy’s Ghost Recon® Wildlands",
@@ -2888,7 +1824,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/9D5CC2F2EE3EBB4BCE12C8C66C48A1552CD1C393.PNG",
           "timestamp": 1781389542000,
           "date": "6/13/2026, 6:25:42 PM",
-          "age": "2 months, 19 hours, 44 mins"
+          "age": "2 months, 21 hours, 3 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -2896,7 +1832,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/D2E2ED63E8597FA0BC6F137F23413089C3E38311.PNG",
           "timestamp": 1781248841000,
           "date": "6/12/2026, 3:20:41 AM",
-          "age": "2 months, 2 days, 10 hours, 49 mins"
+          "age": "2 months, 2 days, 12 hours, 8 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2904,7 +1840,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/43ab0b63-2c82-4a21-90e0-f155eb9836fc.png",
           "timestamp": 1781036035000,
           "date": "6/9/2026, 4:13:55 PM",
-          "age": "2 months, 4 days, 21 hours, 56 mins"
+          "age": "2 months, 4 days, 23 hours, 15 mins"
         },
         {
           "game": "Construction Simulator",
@@ -2912,7 +1848,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/c268c5ad-cc87-49ac-9cf6-247e2d8a90fa.png",
           "timestamp": 1780891211000,
           "date": "6/8/2026, 12:00:11 AM",
-          "age": "2 months, 6 days, 14 hours, 9 mins"
+          "age": "2 months, 6 days, 15 hours, 29 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -2920,7 +1856,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/6036822d-efc3-435c-98ea-08d0ed604b70.png",
           "timestamp": 1780859004000,
           "date": "6/7/2026, 3:03:24 PM",
-          "age": "2 months, 6 days, 23 hours, 6 mins"
+          "age": "2 months, 1 week, 25 mins"
         },
         {
           "game": "Construction Simulator",
@@ -2928,27 +1864,42 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/a83370ab-36d4-46ca-87ee-370c669ecbe9.png",
           "timestamp": 1780812529000,
           "date": "6/7/2026, 2:08:49 AM",
-          "age": "2 months, 1 week, 12 hours, 1 min"
-        },
-        {
-          "game": "Construction Simulator",
-          "name": "First Joyride",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/2f92bbbc-9304-4821-8df7-780d56413730.png",
-          "timestamp": 1780392584000,
-          "date": "6/2/2026, 5:29:44 AM",
-          "age": "2 months, 1 week, 5 days, 8 hours, 40 mins"
-        },
-        {
-          "game": "Construction Simulator",
-          "name": "Beam Me Up, Hape",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR25227_00/c0a71cc9-a392-4e09-91eb-34b87578e883.png",
-          "timestamp": 1780119873000,
-          "date": "5/30/2026, 1:44:33 AM",
-          "age": "2 months, 2 weeks, 1 day, 12 hours, 25 mins"
+          "age": "2 months, 1 week, 13 hours, 20 mins"
         }
       ],
       "streamHistory": [],
       "fullLibrary": [
+        {
+          "npCommunicationId": "NPWR51841_00",
+          "name": "Deadliest Deep Sea Catch Fishing Simulator",
+          "art": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/54620A4F5ECAFA96ACA539D6EB72AB543268206A.PNG",
+          "lastPlayed": "2026-08-13T18:42:38Z",
+          "npServiceName": "trophy",
+          "trophySetVersion": "01.00",
+          "trophyTitleName": "Deadliest Deep Sea Catch Fishing Simulator",
+          "trophyTitleDetail": "Deadliest Deep Sea Catch Fishing Simulator",
+          "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/54620A4F5ECAFA96ACA539D6EB72AB543268206A.PNG",
+          "trophyTitlePlatform": "PS4",
+          "hasTrophyGroups": false,
+          "trophyGroupCount": 1,
+          "definedTrophies": {
+            "bronze": 9,
+            "silver": 8,
+            "gold": 7,
+            "platinum": 1
+          },
+          "progress": 2,
+          "earnedTrophies": {
+            "bronze": 2,
+            "silver": 0,
+            "gold": 0,
+            "platinum": 0
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-08-13T18:42:38Z",
+          "earnedTotal": 2,
+          "definedTotal": 25
+        },
         {
           "npCommunicationId": "NPWR59811_00",
           "name": "Call of Duty®: Black Ops",
@@ -3622,16 +2573,41 @@
           "isMe": false
         },
         "presence": {
-          "availability": "unavailable",
-          "lastAvailableDate": "2026-08-10T20:38:41.226Z",
+          "availability": "availableToPlay",
           "primaryPlatformInfo": {
-            "onlineStatus": "offline",
+            "onlineStatus": "online",
             "platform": "PS5",
             "lastOnlineDate": "2026-08-10T20:38:41.226Z"
           }
         },
         "telemetry": [],
         "titles": [
+          {
+            "npServiceName": "trophy",
+            "npCommunicationId": "NPWR51841_00",
+            "trophySetVersion": "01.00",
+            "trophyTitleName": "Deadliest Deep Sea Catch Fishing Simulator",
+            "trophyTitleDetail": "Deadliest Deep Sea Catch Fishing Simulator",
+            "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/54620A4F5ECAFA96ACA539D6EB72AB543268206A.PNG",
+            "trophyTitlePlatform": "PS4",
+            "hasTrophyGroups": false,
+            "trophyGroupCount": 1,
+            "definedTrophies": {
+              "bronze": 9,
+              "silver": 8,
+              "gold": 7,
+              "platinum": 1
+            },
+            "progress": 2,
+            "earnedTrophies": {
+              "bronze": 2,
+              "silver": 0,
+              "gold": 0,
+              "platinum": 0
+            },
+            "hiddenFlag": false,
+            "lastUpdatedDateTime": "2026-08-13T18:42:38Z"
+          },
           {
             "npServiceName": "trophy2",
             "npCommunicationId": "NPWR59811_00",
@@ -4172,7 +3148,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "8/13/2026, 2:10:05 PM"
+      "lastUpdated": "8/13/2026, 3:29:32 PM"
     },
     "DesdemonaTiger": {
       "accountId": "",
@@ -4183,7 +3159,7 @@
       "handshakeState": "EXPIRED",
       "handshakeText": "DESDEMONATIGER HANDSHAKE: NPSSO EXPIRED",
       "inboundFriendRequestsCount": 0,
-      "lastUpdated": "8/13/2026, 2:10:05 PM",
+      "lastUpdated": "8/13/2026, 3:29:32 PM",
       "level": 0,
       "note": "PSN Auth Inactive or Token Expired",
       "npssoStatus": "EXPIRED / UPDATE NEEDED",
@@ -4214,7 +3190,7 @@
       "handshakeState": "EXPIRED",
       "handshakeText": "ILIMJOLNIRILI HANDSHAKE: NPSSO EXPIRED",
       "inboundFriendRequestsCount": 0,
-      "lastUpdated": "8/13/2026, 2:10:07 PM",
+      "lastUpdated": "8/13/2026, 3:29:35 PM",
       "level": 0,
       "note": "PSN Auth Inactive or Token Expired",
       "npssoStatus": "EXPIRED / UPDATE NEEDED",
@@ -6207,7 +5183,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 5:39:34 AM",
-            "earnedAge": "2 months, 2 weeks, 8 hours, 30 mins",
+            "earnedAge": "2 months, 2 weeks, 9 hours, 49 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -6230,7 +5206,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 7:10:37 AM",
-            "earnedAge": "2 months, 2 weeks, 6 hours, 58 mins",
+            "earnedAge": "2 months, 2 weeks, 8 hours, 18 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -6253,7 +5229,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:22:57 AM",
-            "earnedAge": "2 months, 2 weeks, 4 hours, 46 mins",
+            "earnedAge": "2 months, 2 weeks, 6 hours, 5 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -6276,7 +5252,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 12:30:03 AM",
-            "earnedAge": "2 months, 1 week, 13 hours, 39 mins",
+            "earnedAge": "2 months, 1 week, 14 hours, 58 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -6299,7 +5275,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 2:31:33 AM",
-            "earnedAge": "2 months, 1 week, 11 hours, 38 mins",
+            "earnedAge": "2 months, 1 week, 12 hours, 57 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -6322,7 +5298,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:37:01 AM",
-            "earnedAge": "2 months, 1 week, 9 hours, 32 mins",
+            "earnedAge": "2 months, 1 week, 10 hours, 51 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -6345,7 +5321,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:01:02 AM",
-            "earnedAge": "1 month, 5 days, 8 hours, 8 mins",
+            "earnedAge": "1 month, 5 days, 9 hours, 27 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -6368,7 +5344,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 3:09:14 AM",
-            "earnedAge": "1 month, 2 days, 11 hours",
+            "earnedAge": "1 month, 2 days, 12 hours, 19 mins",
             "timestamp": 1783840154000,
             "currentValue": 0,
             "targetValue": 0
@@ -6416,7 +5392,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 2:29:22 AM",
-            "earnedAge": "1 month, 2 days, 11 hours, 40 mins",
+            "earnedAge": "1 month, 2 days, 12 hours, 59 mins",
             "timestamp": 1783837762000,
             "currentValue": 0,
             "targetValue": "40"
@@ -6439,7 +5415,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 3:21:21 AM",
-            "earnedAge": "1 month, 2 days, 10 hours, 48 mins",
+            "earnedAge": "1 month, 2 days, 12 hours, 7 mins",
             "timestamp": 1783840881000,
             "currentValue": 0,
             "targetValue": 0
@@ -6486,7 +5462,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 1:44:51 AM",
-            "earnedAge": "1 month, 2 days, 12 hours, 24 mins",
+            "earnedAge": "1 month, 2 days, 13 hours, 44 mins",
             "timestamp": 1783835091000,
             "currentValue": 0,
             "targetValue": "16"
@@ -6509,7 +5485,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/25/2026, 2:27:33 AM",
-            "earnedAge": "2 weeks, 5 days, 11 hours, 42 mins",
+            "earnedAge": "2 weeks, 5 days, 13 hours, 1 min",
             "timestamp": 1784960853000,
             "currentValue": 0,
             "targetValue": 0
@@ -6532,7 +5508,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/22/2026, 4:25:24 AM",
-            "earnedAge": "3 weeks, 1 day, 9 hours, 44 mins",
+            "earnedAge": "3 weeks, 1 day, 11 hours, 3 mins",
             "timestamp": 1784708724000,
             "currentValue": 0,
             "targetValue": 0
@@ -6578,7 +5554,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 5:39:35 AM",
-            "earnedAge": "2 months, 2 weeks, 8 hours, 29 mins",
+            "earnedAge": "2 months, 2 weeks, 9 hours, 49 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -6601,7 +5577,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:08:00 AM",
-            "earnedAge": "2 months, 2 weeks, 5 hours, 1 min",
+            "earnedAge": "2 months, 2 weeks, 6 hours, 20 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -6624,7 +5600,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 1:09:35 AM",
-            "earnedAge": "1 month, 2 days, 12 hours, 59 mins",
+            "earnedAge": "1 month, 2 days, 14 hours, 19 mins",
             "timestamp": 1783832975000,
             "currentValue": 0,
             "targetValue": 0
@@ -6744,7 +5720,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/28/2026, 7:42:16 PM",
-            "earnedAge": "2 weeks, 1 day, 18 hours, 27 mins",
+            "earnedAge": "2 weeks, 1 day, 19 hours, 46 mins",
             "timestamp": 1785282136000,
             "currentValue": 0,
             "targetValue": "150"
@@ -6768,7 +5744,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/7/2026, 8:48:36 PM",
-            "earnedAge": "5 days, 17 hours, 20 mins",
+            "earnedAge": "5 days, 18 hours, 40 mins",
             "timestamp": 1786150116000,
             "currentValue": 0,
             "targetValue": "300"
@@ -6792,7 +5768,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 11:45:56 PM",
-            "earnedAge": "1 month, 2 days, 14 hours, 23 mins",
+            "earnedAge": "1 month, 2 days, 15 hours, 42 mins",
             "timestamp": 1783827956000,
             "currentValue": 0,
             "targetValue": "350"
@@ -6816,7 +5792,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/30/2026, 1:37:10 AM",
-            "earnedAge": "2 weeks, 12 hours, 32 mins",
+            "earnedAge": "2 weeks, 13 hours, 51 mins",
             "timestamp": 1785389830000,
             "currentValue": 0,
             "targetValue": "100000"
@@ -6840,7 +5816,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 2:47:40 AM",
-            "earnedAge": "1 month, 5 days, 11 hours, 21 mins",
+            "earnedAge": "1 month, 5 days, 12 hours, 41 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -6864,7 +5840,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/20/2026, 8:08:27 AM",
-            "earnedAge": "3 weeks, 3 days, 6 hours, 1 min",
+            "earnedAge": "3 weeks, 3 days, 7 hours, 20 mins",
             "timestamp": 1784549307000,
             "currentValue": 0,
             "targetValue": "150"
@@ -6912,7 +5888,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/8/2026, 11:47:08 PM",
-            "earnedAge": "1 month, 5 days, 14 hours, 22 mins",
+            "earnedAge": "1 month, 5 days, 15 hours, 41 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -6936,7 +5912,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 2:28:49 AM",
-            "earnedAge": "1 month, 2 days, 11 hours, 40 mins",
+            "earnedAge": "1 month, 2 days, 13 hours",
             "timestamp": 1783837729000,
             "currentValue": 0,
             "targetValue": "50"
@@ -6959,7 +5935,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 12:57:10 AM",
-            "earnedAge": "1 month, 5 days, 13 hours, 12 mins",
+            "earnedAge": "1 month, 5 days, 14 hours, 31 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -6983,7 +5959,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 7:56:27 PM",
-            "earnedAge": "1 month, 2 days, 18 hours, 13 mins",
+            "earnedAge": "1 month, 2 days, 19 hours, 32 mins",
             "timestamp": 1783814187000,
             "currentValue": 0,
             "targetValue": "20"
@@ -7006,7 +5982,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 3:17:32 AM",
-            "earnedAge": "1 month, 2 days, 10 hours, 52 mins",
+            "earnedAge": "1 month, 2 days, 12 hours, 11 mins",
             "timestamp": 1783840652000,
             "currentValue": 0,
             "targetValue": 0
@@ -7030,7 +6006,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 8:50:07 PM",
-            "earnedAge": "1 month, 2 days, 17 hours, 19 mins",
+            "earnedAge": "1 month, 2 days, 18 hours, 38 mins",
             "timestamp": 1783817407000,
             "currentValue": 0,
             "targetValue": "50"
@@ -7054,7 +6030,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 11:30:33 PM",
-            "earnedAge": "1 month, 2 days, 14 hours, 39 mins",
+            "earnedAge": "1 month, 2 days, 15 hours, 58 mins",
             "timestamp": 1783827033000,
             "currentValue": 0,
             "targetValue": "250"
@@ -7078,7 +6054,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 12:11:02 AM",
-            "earnedAge": "1 month, 2 days, 13 hours, 58 mins",
+            "earnedAge": "1 month, 2 days, 15 hours, 17 mins",
             "timestamp": 1783829462000,
             "currentValue": 0,
             "targetValue": "50"
@@ -7102,7 +6078,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 6:38:04 PM",
-            "earnedAge": "1 month, 2 days, 19 hours, 31 mins",
+            "earnedAge": "1 month, 2 days, 20 hours, 50 mins",
             "timestamp": 1783809484000,
             "currentValue": 0,
             "targetValue": "100"
@@ -7126,7 +6102,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/24/2026, 9:07:07 PM",
-            "earnedAge": "2 weeks, 5 days, 17 hours, 2 mins",
+            "earnedAge": "2 weeks, 5 days, 18 hours, 21 mins",
             "timestamp": 1784941627000,
             "currentValue": 0,
             "targetValue": "50"
@@ -7150,7 +6126,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 2:26:14 AM",
-            "earnedAge": "1 month, 2 days, 11 hours, 43 mins",
+            "earnedAge": "1 month, 2 days, 13 hours, 2 mins",
             "timestamp": 1783837574000,
             "currentValue": 0,
             "targetValue": "41"
@@ -7174,7 +6150,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 7:59:36 PM",
-            "earnedAge": "1 month, 2 days, 18 hours, 9 mins",
+            "earnedAge": "1 month, 2 days, 19 hours, 29 mins",
             "timestamp": 1783814376000,
             "currentValue": 0,
             "targetValue": "39"
@@ -7198,7 +6174,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 2:55:08 AM",
-            "earnedAge": "1 month, 2 days, 11 hours, 14 mins",
+            "earnedAge": "1 month, 2 days, 12 hours, 33 mins",
             "timestamp": 1783839308000,
             "currentValue": 0,
             "targetValue": "24"
@@ -7222,7 +6198,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/20/2026, 3:52:37 AM",
-            "earnedAge": "3 weeks, 3 days, 10 hours, 16 mins",
+            "earnedAge": "3 weeks, 3 days, 11 hours, 36 mins",
             "timestamp": 1784533957000,
             "currentValue": 0,
             "targetValue": "24"
@@ -7246,7 +6222,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/29/2026, 3:59:45 AM",
-            "earnedAge": "2 weeks, 1 day, 10 hours, 9 mins",
+            "earnedAge": "2 weeks, 1 day, 11 hours, 29 mins",
             "timestamp": 1785311985000,
             "currentValue": 0,
             "targetValue": "24"
@@ -7292,7 +6268,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/6/2026, 11:57:12 PM",
-            "earnedAge": "2 months, 1 week, 14 hours, 12 mins",
+            "earnedAge": "2 months, 1 week, 15 hours, 31 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -7316,7 +6292,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 5:57:02 AM",
-            "earnedAge": "2 months, 1 week, 8 hours, 12 mins",
+            "earnedAge": "2 months, 1 week, 9 hours, 31 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -7385,7 +6361,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/22/2026, 1:01:45 AM",
-            "earnedAge": "3 weeks, 1 day, 13 hours, 7 mins",
+            "earnedAge": "3 weeks, 1 day, 14 hours, 27 mins",
             "timestamp": 1784696505000,
             "currentValue": 0,
             "targetValue": 0
@@ -7572,7 +6548,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/8/2026, 4:12:07 AM",
-            "earnedAge": "5 days, 9 hours, 57 mins",
+            "earnedAge": "5 days, 11 hours, 16 mins",
             "timestamp": 1786176727000,
             "currentValue": 0,
             "targetValue": 0
@@ -7596,7 +6572,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/8/2026, 4:12:08 AM",
-            "earnedAge": "5 days, 9 hours, 57 mins",
+            "earnedAge": "5 days, 11 hours, 16 mins",
             "timestamp": 1786176728000,
             "currentValue": 0,
             "targetValue": "2"
@@ -7642,7 +6618,7 @@
             "groupName": "Landing Force",
             "earned": true,
             "earnedDate": "7/20/2026, 9:21:29 AM",
-            "earnedAge": "3 weeks, 3 days, 4 hours, 48 mins",
+            "earnedAge": "3 weeks, 3 days, 6 hours, 7 mins",
             "timestamp": 1784553689000,
             "currentValue": 0,
             "targetValue": 0
@@ -7803,7 +6779,7 @@
             "groupName": "Kraken Awakes",
             "earned": true,
             "earnedDate": "7/20/2026, 4:28:46 PM",
-            "earnedAge": "3 weeks, 2 days, 21 hours, 40 mins",
+            "earnedAge": "3 weeks, 2 days, 23 hours",
             "timestamp": 1784579326000,
             "currentValue": 0,
             "targetValue": 0
@@ -7826,7 +6802,7 @@
             "groupName": "Kraken Awakes",
             "earned": true,
             "earnedDate": "7/20/2026, 4:28:45 PM",
-            "earnedAge": "3 weeks, 2 days, 21 hours, 40 mins",
+            "earnedAge": "3 weeks, 2 days, 23 hours",
             "timestamp": 1784579325000,
             "currentValue": 0,
             "targetValue": 0
@@ -7864,7 +6840,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c212cf07-0bf2-4b56-a617-e10e7f524dbe.png",
           "timestamp": 1786176728000,
           "date": "8/8/2026, 4:12:08 AM",
-          "age": "5 days, 9 hours, 57 mins"
+          "age": "5 days, 11 hours, 16 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -7872,7 +6848,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3552602f-8568-4f5a-98bd-ff686db0a6fc.png",
           "timestamp": 1786176727000,
           "date": "8/8/2026, 4:12:07 AM",
-          "age": "5 days, 9 hours, 57 mins"
+          "age": "5 days, 11 hours, 16 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -7880,7 +6856,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e2e38296-39e7-46f8-ac29-64746b727036.png",
           "timestamp": 1786150116000,
           "date": "8/7/2026, 8:48:36 PM",
-          "age": "5 days, 17 hours, 20 mins"
+          "age": "5 days, 18 hours, 40 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -7888,7 +6864,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fe3a0ec8-7699-4fae-b840-85670b1cf11b.png",
           "timestamp": 1785389830000,
           "date": "7/30/2026, 1:37:10 AM",
-          "age": "2 weeks, 12 hours, 32 mins"
+          "age": "2 weeks, 13 hours, 51 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -7896,7 +6872,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3183744c-91c8-4340-ac4a-5e429c0a61f4.png",
           "timestamp": 1785311985000,
           "date": "7/29/2026, 3:59:45 AM",
-          "age": "2 weeks, 1 day, 10 hours, 9 mins"
+          "age": "2 weeks, 1 day, 11 hours, 29 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -7904,7 +6880,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e1cbccd2-5c90-41ec-9653-3e39e56ae689.png",
           "timestamp": 1785282136000,
           "date": "7/28/2026, 7:42:16 PM",
-          "age": "2 weeks, 1 day, 18 hours, 27 mins"
+          "age": "2 weeks, 1 day, 19 hours, 46 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -7912,7 +6888,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c95870e7-4545-4eb0-9c94-26d48461b9fc.png",
           "timestamp": 1784960853000,
           "date": "7/25/2026, 2:27:33 AM",
-          "age": "2 weeks, 5 days, 11 hours, 42 mins"
+          "age": "2 weeks, 5 days, 13 hours, 1 min"
         },
         {
           "game": "Sniper Elite 5",
@@ -7920,7 +6896,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c5f3010a-c566-4bc9-8ea8-aad2c53c7b21.png",
           "timestamp": 1784941627000,
           "date": "7/24/2026, 9:07:07 PM",
-          "age": "2 weeks, 5 days, 17 hours, 2 mins"
+          "age": "2 weeks, 5 days, 18 hours, 21 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -7928,7 +6904,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d30e7fed-73bb-427e-80f2-5b199eb625ee.png",
           "timestamp": 1784708724000,
           "date": "7/22/2026, 4:25:24 AM",
-          "age": "3 weeks, 1 day, 9 hours, 44 mins"
+          "age": "3 weeks, 1 day, 11 hours, 3 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -7936,7 +6912,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/368221f5-a2a4-4696-9bcb-cdea5a482b82.png",
           "timestamp": 1784696505000,
           "date": "7/22/2026, 1:01:45 AM",
-          "age": "3 weeks, 1 day, 13 hours, 7 mins"
+          "age": "3 weeks, 1 day, 14 hours, 27 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -7944,7 +6920,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f8c33498-f881-44bd-843c-2bf78141c1ab.png",
           "timestamp": 1784579326000,
           "date": "7/20/2026, 4:28:46 PM",
-          "age": "3 weeks, 2 days, 21 hours, 40 mins"
+          "age": "3 weeks, 2 days, 23 hours"
         },
         {
           "game": "Sniper Elite 5",
@@ -7952,7 +6928,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c1842419-7765-45a0-9ccd-3358032dcb8f.png",
           "timestamp": 1784579325000,
           "date": "7/20/2026, 4:28:45 PM",
-          "age": "3 weeks, 2 days, 21 hours, 40 mins"
+          "age": "3 weeks, 2 days, 23 hours"
         },
         {
           "game": "Sniper Elite 5",
@@ -7960,7 +6936,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/702698d3-3b28-443f-a6da-0bf8087a7456.png",
           "timestamp": 1784553689000,
           "date": "7/20/2026, 9:21:29 AM",
-          "age": "3 weeks, 3 days, 4 hours, 48 mins"
+          "age": "3 weeks, 3 days, 6 hours, 7 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -7968,7 +6944,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f0446d48-10f4-4bde-be46-d8019bea9311.png",
           "timestamp": 1784549307000,
           "date": "7/20/2026, 8:08:27 AM",
-          "age": "3 weeks, 3 days, 6 hours, 1 min"
+          "age": "3 weeks, 3 days, 7 hours, 20 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -7976,7 +6952,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/83ec1770-119f-4cda-b294-cf93cfc5bdb3.png",
           "timestamp": 1784533957000,
           "date": "7/20/2026, 3:52:37 AM",
-          "age": "3 weeks, 3 days, 10 hours, 16 mins"
+          "age": "3 weeks, 3 days, 11 hours, 36 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -7984,7 +6960,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c6fe9f95-9c4b-463c-bad5-e797cc3a39f7.png",
           "timestamp": 1783840881000,
           "date": "7/12/2026, 3:21:21 AM",
-          "age": "1 month, 2 days, 10 hours, 48 mins"
+          "age": "1 month, 2 days, 12 hours, 7 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -7992,7 +6968,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0bb96f58-bc48-404f-b396-33995fdd456d.png",
           "timestamp": 1783840652000,
           "date": "7/12/2026, 3:17:32 AM",
-          "age": "1 month, 2 days, 10 hours, 52 mins"
+          "age": "1 month, 2 days, 12 hours, 11 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8000,7 +6976,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ba205084-5d0a-4648-8657-aaa38dd43533.png",
           "timestamp": 1783840154000,
           "date": "7/12/2026, 3:09:14 AM",
-          "age": "1 month, 2 days, 11 hours"
+          "age": "1 month, 2 days, 12 hours, 19 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8008,7 +6984,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d1b43e92-5d28-4cc9-9ac5-d3ce63f7b8bf.png",
           "timestamp": 1783839308000,
           "date": "7/12/2026, 2:55:08 AM",
-          "age": "1 month, 2 days, 11 hours, 14 mins"
+          "age": "1 month, 2 days, 12 hours, 33 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8016,7 +6992,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/761c0fa3-7ed7-4f99-a0e1-3de4d8157aae.png",
           "timestamp": 1783837762000,
           "date": "7/12/2026, 2:29:22 AM",
-          "age": "1 month, 2 days, 11 hours, 40 mins"
+          "age": "1 month, 2 days, 12 hours, 59 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8024,7 +7000,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6f30398b-e22a-406e-8858-b724b01ddcf5.png",
           "timestamp": 1783837729000,
           "date": "7/12/2026, 2:28:49 AM",
-          "age": "1 month, 2 days, 11 hours, 40 mins"
+          "age": "1 month, 2 days, 13 hours"
         },
         {
           "game": "Sniper Elite 5",
@@ -8032,7 +7008,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f3a31a12-29c7-4f70-899e-2d800aec3489.png",
           "timestamp": 1783837574000,
           "date": "7/12/2026, 2:26:14 AM",
-          "age": "1 month, 2 days, 11 hours, 43 mins"
+          "age": "1 month, 2 days, 13 hours, 2 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8040,7 +7016,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8c66d9c8-46f8-4612-b3be-9d4c98df287a.png",
           "timestamp": 1783835091000,
           "date": "7/12/2026, 1:44:51 AM",
-          "age": "1 month, 2 days, 12 hours, 24 mins"
+          "age": "1 month, 2 days, 13 hours, 44 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8048,7 +7024,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/eb1b1d0e-ccc9-4294-9410-e81aa1821dfe.png",
           "timestamp": 1783832975000,
           "date": "7/12/2026, 1:09:35 AM",
-          "age": "1 month, 2 days, 12 hours, 59 mins"
+          "age": "1 month, 2 days, 14 hours, 19 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8056,7 +7032,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb867a5e-ac51-44d3-89a0-8e35a4f6d191.png",
           "timestamp": 1783829462000,
           "date": "7/12/2026, 12:11:02 AM",
-          "age": "1 month, 2 days, 13 hours, 58 mins"
+          "age": "1 month, 2 days, 15 hours, 17 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8064,7 +7040,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/179b85d2-7b74-4bee-8d07-28e5710738a0.png",
           "timestamp": 1783827956000,
           "date": "7/11/2026, 11:45:56 PM",
-          "age": "1 month, 2 days, 14 hours, 23 mins"
+          "age": "1 month, 2 days, 15 hours, 42 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8072,7 +7048,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/af2c0033-427c-4fff-befc-59eb5ac6a0ca.png",
           "timestamp": 1783827033000,
           "date": "7/11/2026, 11:30:33 PM",
-          "age": "1 month, 2 days, 14 hours, 39 mins"
+          "age": "1 month, 2 days, 15 hours, 58 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8080,7 +7056,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ecd5a5ce-ab47-4165-b965-4704b194e2af.png",
           "timestamp": 1783817407000,
           "date": "7/11/2026, 8:50:07 PM",
-          "age": "1 month, 2 days, 17 hours, 19 mins"
+          "age": "1 month, 2 days, 18 hours, 38 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8088,7 +7064,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c7fd0246-3d96-47fd-8ea8-4f6a96aec5c2.png",
           "timestamp": 1783814376000,
           "date": "7/11/2026, 7:59:36 PM",
-          "age": "1 month, 2 days, 18 hours, 9 mins"
+          "age": "1 month, 2 days, 19 hours, 29 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8096,7 +7072,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/134f9030-0fee-4b0e-9efc-79a603aee163.png",
           "timestamp": 1783814187000,
           "date": "7/11/2026, 7:56:27 PM",
-          "age": "1 month, 2 days, 18 hours, 13 mins"
+          "age": "1 month, 2 days, 19 hours, 32 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8104,7 +7080,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40109781-5a63-4f98-abc0-263fc65548e0.png",
           "timestamp": 1783809484000,
           "date": "7/11/2026, 6:38:04 PM",
-          "age": "1 month, 2 days, 19 hours, 31 mins"
+          "age": "1 month, 2 days, 20 hours, 50 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8112,7 +7088,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 6:01:02 AM",
-          "age": "1 month, 5 days, 8 hours, 8 mins"
+          "age": "1 month, 5 days, 9 hours, 27 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8120,7 +7096,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 2:47:40 AM",
-          "age": "1 month, 5 days, 11 hours, 21 mins"
+          "age": "1 month, 5 days, 12 hours, 41 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8128,7 +7104,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 12:57:10 AM",
-          "age": "1 month, 5 days, 13 hours, 12 mins"
+          "age": "1 month, 5 days, 14 hours, 31 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8136,7 +7112,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/8/2026, 11:47:08 PM",
-          "age": "1 month, 5 days, 14 hours, 22 mins"
+          "age": "1 month, 5 days, 15 hours, 41 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -8144,7 +7120,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/8/2026, 8:02:28 PM",
-          "age": "1 month, 5 days, 18 hours, 7 mins"
+          "age": "1 month, 5 days, 19 hours, 26 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -8152,7 +7128,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 5:02:18 PM",
-          "age": "1 month, 5 days, 21 hours, 7 mins"
+          "age": "1 month, 5 days, 22 hours, 26 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -8160,7 +7136,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 5:02:18 PM",
-          "age": "1 month, 5 days, 21 hours, 7 mins"
+          "age": "1 month, 5 days, 22 hours, 26 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -8168,7 +7144,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 4:08:04 PM",
-          "age": "1 month, 5 days, 22 hours, 1 min"
+          "age": "1 month, 5 days, 23 hours, 20 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -8176,7 +7152,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 3:51:31 PM",
-          "age": "1 month, 5 days, 22 hours, 18 mins"
+          "age": "1 month, 5 days, 23 hours, 37 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -8184,7 +7160,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
           "timestamp": 1781835746000,
           "date": "6/18/2026, 10:22:26 PM",
-          "age": "1 month, 3 weeks, 4 days, 15 hours, 47 mins"
+          "age": "1 month, 3 weeks, 4 days, 17 hours, 6 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -8192,7 +7168,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/dfea8051-1069-4b36-aa19-ad69bf37e018.png",
           "timestamp": 1781834713000,
           "date": "6/18/2026, 10:05:13 PM",
-          "age": "1 month, 3 weeks, 4 days, 16 hours, 4 mins"
+          "age": "1 month, 3 weeks, 4 days, 17 hours, 23 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -8200,7 +7176,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/64aeea65-eb3f-4687-beb4-5c7a3c04d518.png",
           "timestamp": 1781832897000,
           "date": "6/18/2026, 9:34:57 PM",
-          "age": "1 month, 3 weeks, 4 days, 16 hours, 34 mins"
+          "age": "1 month, 3 weeks, 4 days, 17 hours, 53 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -8208,7 +7184,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/60207a2c-adf7-4aea-a20d-5cf5246bcc48.png",
           "timestamp": 1781829801000,
           "date": "6/18/2026, 8:43:21 PM",
-          "age": "1 month, 3 weeks, 4 days, 17 hours, 26 mins"
+          "age": "1 month, 3 weeks, 4 days, 18 hours, 45 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -8216,7 +7192,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/4fefc9f5-3760-4951-81c3-687680ab244f.png",
           "timestamp": 1781829801000,
           "date": "6/18/2026, 8:43:21 PM",
-          "age": "1 month, 3 weeks, 4 days, 17 hours, 26 mins"
+          "age": "1 month, 3 weeks, 4 days, 18 hours, 45 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -8224,7 +7200,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/c1d46ffd-6a43-47c8-8d4d-c00cb3d2ee6b.png",
           "timestamp": 1781183157000,
           "date": "6/11/2026, 9:05:57 AM",
-          "age": "2 months, 3 days, 5 hours, 3 mins"
+          "age": "2 months, 3 days, 6 hours, 22 mins"
         },
         {
           "game": "LEGO® Star Wars™ II: The Original Trilogy",
@@ -8232,7 +7208,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/cb79cd2a-a989-483d-94db-69d50d5bc393.png",
           "timestamp": 1780838083000,
           "date": "6/7/2026, 9:14:43 AM",
-          "age": "2 months, 1 week, 4 hours, 54 mins"
+          "age": "2 months, 1 week, 6 hours, 14 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8240,7 +7216,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb348a13-2723-45cc-abba-50a1b68d1838.png",
           "timestamp": 1780826222000,
           "date": "6/7/2026, 5:57:02 AM",
-          "age": "2 months, 1 week, 8 hours, 12 mins"
+          "age": "2 months, 1 week, 9 hours, 31 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8248,7 +7224,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d439e89b-1afb-408d-8257-e1922809047b.png",
           "timestamp": 1780821421000,
           "date": "6/7/2026, 4:37:01 AM",
-          "age": "2 months, 1 week, 9 hours, 32 mins"
+          "age": "2 months, 1 week, 10 hours, 51 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -8256,7 +7232,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c603cb71-3a6d-4f20-8b7c-284cd8b1a8e4.png",
           "timestamp": 1780813893000,
           "date": "6/7/2026, 2:31:33 AM",
-          "age": "2 months, 1 week, 11 hours, 38 mins"
+          "age": "2 months, 1 week, 12 hours, 57 mins"
         }
       ],
       "streamHistory": [],
@@ -12075,7 +11051,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "8/13/2026, 2:09:54 PM"
+      "lastUpdated": "8/13/2026, 3:29:18 PM"
     },
     "WildHorse_Spirit": {
       "onlineId": "WildHorse_Spirit",
@@ -14067,7 +13043,7 @@
             "groupName": "theHunter: Call of the Wild",
             "earned": true,
             "earnedDate": "8/9/2026, 4:18:34 AM",
-            "earnedAge": "4 days, 9 hours, 50 mins",
+            "earnedAge": "4 days, 11 hours, 9 mins",
             "timestamp": 1786263514000,
             "currentValue": 0,
             "targetValue": 0
@@ -16681,7 +15657,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/B8F49834161CD63C15E80F0434BEC6B4FBFD7DC9.PNG",
           "timestamp": 1786263514000,
           "date": "8/9/2026, 4:18:34 AM",
-          "age": "4 days, 9 hours, 50 mins"
+          "age": "4 days, 11 hours, 9 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16689,7 +15665,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f238c8de-14fb-40b1-92f3-486f1b8e4e81.png",
           "timestamp": 1786256773000,
           "date": "8/9/2026, 2:26:13 AM",
-          "age": "4 days, 11 hours, 42 mins"
+          "age": "4 days, 13 hours, 2 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16697,7 +15673,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/179b85d2-7b74-4bee-8d07-28e5710738a0.png",
           "timestamp": 1786241239000,
           "date": "8/8/2026, 10:07:19 PM",
-          "age": "4 days, 16 hours, 1 min"
+          "age": "4 days, 17 hours, 21 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16705,7 +15681,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1786181129000,
           "date": "8/8/2026, 5:25:29 AM",
-          "age": "5 days, 8 hours, 43 mins"
+          "age": "5 days, 10 hours, 2 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16713,7 +15689,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/134f9030-0fee-4b0e-9efc-79a603aee163.png",
           "timestamp": 1786177425000,
           "date": "8/8/2026, 4:23:45 AM",
-          "age": "5 days, 9 hours, 45 mins"
+          "age": "5 days, 11 hours, 4 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16721,7 +15697,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c212cf07-0bf2-4b56-a617-e10e7f524dbe.png",
           "timestamp": 1786176720000,
           "date": "8/8/2026, 4:12:00 AM",
-          "age": "5 days, 9 hours, 57 mins"
+          "age": "5 days, 11 hours, 16 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16729,7 +15705,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3552602f-8568-4f5a-98bd-ff686db0a6fc.png",
           "timestamp": 1786176719000,
           "date": "8/8/2026, 4:11:59 AM",
-          "age": "5 days, 9 hours, 57 mins"
+          "age": "5 days, 11 hours, 16 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16737,7 +15713,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/1aa67e71-276b-41ac-a5c7-f3387add22d5.png",
           "timestamp": 1786164901000,
           "date": "8/8/2026, 12:55:01 AM",
-          "age": "5 days, 13 hours, 14 mins"
+          "age": "5 days, 14 hours, 33 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16745,7 +15721,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2d66ad9-d7cc-4e79-a4dd-ef6bdc0f5ed8.png",
           "timestamp": 1786160190000,
           "date": "8/7/2026, 11:36:30 PM",
-          "age": "5 days, 14 hours, 32 mins"
+          "age": "5 days, 15 hours, 51 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -16753,7 +15729,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/17d25bb5-bc66-4bb1-b738-0222980cdc4a.png",
           "timestamp": 1785286584000,
           "date": "7/28/2026, 8:56:24 PM",
-          "age": "2 weeks, 1 day, 17 hours, 12 mins"
+          "age": "2 weeks, 1 day, 18 hours, 32 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -16761,7 +15737,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/abdafcab-a032-4c14-aebb-35a725196a88.png",
           "timestamp": 1783655746000,
           "date": "7/9/2026, 11:55:46 PM",
-          "age": "1 month, 4 days, 14 hours, 13 mins"
+          "age": "1 month, 4 days, 15 hours, 32 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -16769,7 +15745,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1f50f943-df32-4507-badf-0794f2a9a949.png",
           "timestamp": 1783653609000,
           "date": "7/9/2026, 11:20:09 PM",
-          "age": "1 month, 4 days, 14 hours, 49 mins"
+          "age": "1 month, 4 days, 16 hours, 8 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -16777,7 +15753,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/f0be7786-622f-4b8b-b2e0-5e42a256abe8.png",
           "timestamp": 1783653510000,
           "date": "7/9/2026, 11:18:30 PM",
-          "age": "1 month, 4 days, 14 hours, 50 mins"
+          "age": "1 month, 4 days, 16 hours, 9 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -16785,7 +15761,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/b16c113b-e933-4adc-8b5b-f7f017f6471e.png",
           "timestamp": 1783652524000,
           "date": "7/9/2026, 11:02:04 PM",
-          "age": "1 month, 4 days, 15 hours, 7 mins"
+          "age": "1 month, 4 days, 16 hours, 26 mins"
         },
         {
           "game": "Team Sonic Racing",
@@ -16793,7 +15769,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR14885_00_00F2A3274FDB932ACC6913B736135C6C2A0AA71AC5/5BF56615ACCE8560CD1A9FFDB22A730CAA6696B2.PNG",
           "timestamp": 1737849625000,
           "date": "1/25/2025, 7:00:25 PM",
-          "age": "1 yr, 6 months, 2 weeks, 5 days, 18 hours, 8 mins"
+          "age": "1 yr, 6 months, 2 weeks, 5 days, 19 hours, 28 mins"
         },
         {
           "game": "It Takes Two",
@@ -16801,7 +15777,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR20783_00_00ABCCED328035CD3A5F97C330B0048280CFD60A01/C39385669A01DB1251308FFCDD06AD3225FEA82D.PNG",
           "timestamp": 1627786271000,
           "date": "7/31/2021, 10:51:11 PM",
-          "age": "5 yrs, 1 week, 6 days, 15 hours, 18 mins"
+          "age": "5 yrs, 1 week, 6 days, 16 hours, 37 mins"
         },
         {
           "game": "It Takes Two",
@@ -16809,7 +15785,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR20783_00_00ABCCED328035CD3A5F97C330B0048280CFD60A01/447CD0EAAC4A9FEF9DD7D95AB78B6F3FF9D082A6.PNG",
           "timestamp": 1627786117000,
           "date": "7/31/2021, 10:48:37 PM",
-          "age": "5 yrs, 1 week, 6 days, 15 hours, 20 mins"
+          "age": "5 yrs, 1 week, 6 days, 16 hours, 39 mins"
         },
         {
           "game": "It Takes Two",
@@ -16817,7 +15793,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR20783_00_00ABCCED328035CD3A5F97C330B0048280CFD60A01/C848570D8A9EC21B566C12F3CABD94D3BF5329B5.PNG",
           "timestamp": 1627785108000,
           "date": "7/31/2021, 10:31:48 PM",
-          "age": "5 yrs, 1 week, 6 days, 15 hours, 37 mins"
+          "age": "5 yrs, 1 week, 6 days, 16 hours, 56 mins"
         },
         {
           "game": "It Takes Two",
@@ -16825,7 +15801,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR20783_00_00ABCCED328035CD3A5F97C330B0048280CFD60A01/1035B9A285B8D270C37BC403CDCA914279946FB7.PNG",
           "timestamp": 1627782753000,
           "date": "7/31/2021, 9:52:33 PM",
-          "age": "5 yrs, 1 week, 6 days, 16 hours, 16 mins"
+          "age": "5 yrs, 1 week, 6 days, 17 hours, 35 mins"
         },
         {
           "game": "Call of Duty®: Black Ops 4",
@@ -16833,7 +15809,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR16409_00_009BD3030E36B7A8CAF3B943FDB144D2C88F2E34C4/CDB0CA63DFFEF506B0101A37628E1E1E06BADC05.PNG",
           "timestamp": 1626035966000,
           "date": "7/11/2021, 4:39:26 PM",
-          "age": "5 yrs, 1 month, 3 days, 21 hours, 29 mins"
+          "age": "5 yrs, 1 month, 3 days, 22 hours, 49 mins"
         },
         {
           "game": "Friday the 13: The Game",
@@ -16841,7 +15817,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR12903_00_00DEBECE45FBC6B56DBF1F04B934BF7994190737B6/AD83515DFF80AFD75265CF2D4F6F06884D49CD80.PNG",
           "timestamp": 1625547083000,
           "date": "7/6/2021, 12:51:23 AM",
-          "age": "5 yrs, 1 month, 1 week, 2 days, 13 hours, 17 mins"
+          "age": "5 yrs, 1 month, 1 week, 2 days, 14 hours, 37 mins"
         },
         {
           "game": "Friday the 13: The Game",
@@ -16849,7 +15825,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR12903_00_00DEBECE45FBC6B56DBF1F04B934BF7994190737B6/7730565A312894C037BC311D695ED68DBAABBB14.PNG",
           "timestamp": 1625366783000,
           "date": "7/3/2021, 10:46:23 PM",
-          "age": "5 yrs, 1 month, 1 week, 4 days, 15 hours, 22 mins"
+          "age": "5 yrs, 1 month, 1 week, 4 days, 16 hours, 42 mins"
         },
         {
           "game": "Friday the 13: The Game",
@@ -16857,7 +15833,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR12903_00_00DEBECE45FBC6B56DBF1F04B934BF7994190737B6/169525CF56E1240F81C641D9AB305371371EB9D6.PNG",
           "timestamp": 1625366783000,
           "date": "7/3/2021, 10:46:23 PM",
-          "age": "5 yrs, 1 month, 1 week, 4 days, 15 hours, 22 mins"
+          "age": "5 yrs, 1 month, 1 week, 4 days, 16 hours, 42 mins"
         },
         {
           "game": "Friday the 13: The Game",
@@ -16865,7 +15841,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR12903_00_00DEBECE45FBC6B56DBF1F04B934BF7994190737B6/116A69F89E93B1C49EE4906469481D65C8607685.PNG",
           "timestamp": 1625365777000,
           "date": "7/3/2021, 10:29:37 PM",
-          "age": "5 yrs, 1 month, 1 week, 4 days, 15 hours, 39 mins"
+          "age": "5 yrs, 1 month, 1 week, 4 days, 16 hours, 58 mins"
         },
         {
           "game": "Friday the 13: The Game",
@@ -16873,7 +15849,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR12903_00_00DEBECE45FBC6B56DBF1F04B934BF7994190737B6/E56F6771346E2A8423C3E3A10D0E56875DAA0016.PNG",
           "timestamp": 1625365776000,
           "date": "7/3/2021, 10:29:36 PM",
-          "age": "5 yrs, 1 month, 1 week, 4 days, 15 hours, 39 mins"
+          "age": "5 yrs, 1 month, 1 week, 4 days, 16 hours, 58 mins"
         },
         {
           "game": "Monster Jam Steel Titans",
@@ -16881,7 +15857,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR17512_00_00BD2D4ECF7C4C11B8443A8CE2692D9443D3B1F521/A01D425BB76217188EBB3E3B60BD88571A3052BA.PNG",
           "timestamp": 1624410344000,
           "date": "6/22/2021, 9:05:44 PM",
-          "age": "5 yrs, 1 month, 3 weeks, 1 day, 17 hours, 3 mins"
+          "age": "5 yrs, 1 month, 3 weeks, 1 day, 18 hours, 22 mins"
         },
         {
           "game": "Wreckfest",
@@ -16889,7 +15865,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13335_00_00ABD81555C00BD51AA0CB540C3BCCD8A326DA55CC/F6B2FC4D2FD343BFB3719932EC255323A92066B3.PNG",
           "timestamp": 1624338642000,
           "date": "6/22/2021, 1:10:42 AM",
-          "age": "5 yrs, 1 month, 3 weeks, 2 days, 12 hours, 58 mins"
+          "age": "5 yrs, 1 month, 3 weeks, 2 days, 14 hours, 17 mins"
         },
         {
           "game": "Team Sonic Racing",
@@ -16897,7 +15873,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR14885_00_00F2A3274FDB932ACC6913B736135C6C2A0AA71AC5/33E0D4F81138E266A98A2F5D34EFED28D1B4DE30.PNG",
           "timestamp": 1624334963000,
           "date": "6/22/2021, 12:09:23 AM",
-          "age": "5 yrs, 1 month, 3 weeks, 2 days, 13 hours, 59 mins"
+          "age": "5 yrs, 1 month, 3 weeks, 2 days, 15 hours, 19 mins"
         },
         {
           "game": "Team Sonic Racing",
@@ -16905,7 +15881,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR14885_00_00F2A3274FDB932ACC6913B736135C6C2A0AA71AC5/0C8C3BB6FCBB2F412A2B432745444B63E7B6903E.PNG",
           "timestamp": 1624334946000,
           "date": "6/22/2021, 12:09:06 AM",
-          "age": "5 yrs, 1 month, 3 weeks, 2 days, 14 hours"
+          "age": "5 yrs, 1 month, 3 weeks, 2 days, 15 hours, 19 mins"
         },
         {
           "game": "Team Sonic Racing",
@@ -16913,7 +15889,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR14885_00_00F2A3274FDB932ACC6913B736135C6C2A0AA71AC5/D4122F41D92E6B17E523C39210ADB21747A66141.PNG",
           "timestamp": 1624334810000,
           "date": "6/22/2021, 12:06:50 AM",
-          "age": "5 yrs, 1 month, 3 weeks, 2 days, 14 hours, 2 mins"
+          "age": "5 yrs, 1 month, 3 weeks, 2 days, 15 hours, 21 mins"
         },
         {
           "game": "Call of Duty®: WWII",
@@ -16921,7 +15897,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR11595_00_00F101528D668EF21B72E363608FEB3858F77AD165/F664A0BBB76D41651EBD86A88AFBFDBCD7DB82D0.PNG",
           "timestamp": 1624219751000,
           "date": "6/20/2021, 4:09:11 PM",
-          "age": "5 yrs, 1 month, 3 weeks, 3 days, 22 hours"
+          "age": "5 yrs, 1 month, 3 weeks, 3 days, 23 hours, 19 mins"
         },
         {
           "game": "World of Warships: Legends",
@@ -16929,7 +15905,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR17700_00_00A500DD8E0AEC8F508444929C81BB32D5130B832A/417D557CC4BA11B2BCBDBDCE0A8438805B7937F8.PNG",
           "timestamp": 1624217439000,
           "date": "6/20/2021, 3:30:39 PM",
-          "age": "5 yrs, 1 month, 3 weeks, 3 days, 22 hours, 38 mins"
+          "age": "5 yrs, 1 month, 3 weeks, 3 days, 23 hours, 57 mins"
         },
         {
           "game": "Watch Dogs®: Legion",
@@ -16937,7 +15913,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR16685_00_00294E3876238E443D89DD0FAACFB9E512A36E63AF/B7A197101D8BCF481FFBCBA998B141827E2A20DB.PNG",
           "timestamp": 1623376998000,
           "date": "6/10/2021, 10:03:18 PM",
-          "age": "5 yrs, 2 months, 4 days, 16 hours, 5 mins"
+          "age": "5 yrs, 2 months, 4 days, 17 hours, 25 mins"
         },
         {
           "game": "Need for Speed™ Heat",
@@ -16945,7 +15921,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR18041_00_005939904E99277C7FBD3A6FFEE1A781FC684496B6/07CECD1518BE956EEF23EBCA1C193A56F94CE41E.PNG",
           "timestamp": 1623037307000,
           "date": "6/6/2021, 11:41:47 PM",
-          "age": "5 yrs, 2 months, 1 week, 1 day, 14 hours, 27 mins"
+          "age": "5 yrs, 2 months, 1 week, 1 day, 15 hours, 46 mins"
         },
         {
           "game": "Need for Speed™ Heat",
@@ -16953,7 +15929,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR18041_00_005939904E99277C7FBD3A6FFEE1A781FC684496B6/E518236CBD89439208249539D66B2152AAC484DD.PNG",
           "timestamp": 1623036741000,
           "date": "6/6/2021, 11:32:21 PM",
-          "age": "5 yrs, 2 months, 1 week, 1 day, 14 hours, 36 mins"
+          "age": "5 yrs, 2 months, 1 week, 1 day, 15 hours, 56 mins"
         },
         {
           "game": "Need for Speed™ Heat",
@@ -16961,7 +15937,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR18041_00_005939904E99277C7FBD3A6FFEE1A781FC684496B6/3638DFFB931221620F5D01E468E10FDC23C3AA7E.PNG",
           "timestamp": 1623035918000,
           "date": "6/6/2021, 11:18:38 PM",
-          "age": "5 yrs, 2 months, 1 week, 1 day, 14 hours, 50 mins"
+          "age": "5 yrs, 2 months, 1 week, 1 day, 16 hours, 9 mins"
         },
         {
           "game": "Need for Speed™ Heat",
@@ -16969,7 +15945,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR18041_00_005939904E99277C7FBD3A6FFEE1A781FC684496B6/4B8CFC023ACFE8037B221C0B99EC9DF30B17304A.PNG",
           "timestamp": 1623035918000,
           "date": "6/6/2021, 11:18:38 PM",
-          "age": "5 yrs, 2 months, 1 week, 1 day, 14 hours, 50 mins"
+          "age": "5 yrs, 2 months, 1 week, 1 day, 16 hours, 9 mins"
         },
         {
           "game": "Need for Speed™ Heat",
@@ -16977,7 +15953,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR18041_00_005939904E99277C7FBD3A6FFEE1A781FC684496B6/C6D9A996D48169A276A65DDAF4C5CA3B0859D7A1.PNG",
           "timestamp": 1623034650000,
           "date": "6/6/2021, 10:57:30 PM",
-          "age": "5 yrs, 2 months, 1 week, 1 day, 15 hours, 11 mins"
+          "age": "5 yrs, 2 months, 1 week, 1 day, 16 hours, 31 mins"
         },
         {
           "game": "Need for Speed™",
@@ -16985,7 +15961,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR08538_00_005BCD0C95E2E5EDAB4E272262983CCE2406A84C56/D6E6D703534BDA9FC1D426DF2387FC8DE1191A3A.PNG",
           "timestamp": 1622864191000,
           "date": "6/4/2021, 11:36:31 PM",
-          "age": "5 yrs, 2 months, 1 week, 3 days, 14 hours, 32 mins"
+          "age": "5 yrs, 2 months, 1 week, 3 days, 15 hours, 52 mins"
         },
         {
           "game": "Need for Speed™",
@@ -16993,7 +15969,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR08538_00_005BCD0C95E2E5EDAB4E272262983CCE2406A84C56/252AA3195E6F23F4C86BD70B2A3CD73A6A416282.PNG",
           "timestamp": 1622863771000,
           "date": "6/4/2021, 11:29:31 PM",
-          "age": "5 yrs, 2 months, 1 week, 3 days, 14 hours, 39 mins"
+          "age": "5 yrs, 2 months, 1 week, 3 days, 15 hours, 59 mins"
         },
         {
           "game": "Need for Speed™",
@@ -17001,7 +15977,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR08538_00_005BCD0C95E2E5EDAB4E272262983CCE2406A84C56/4262D18C75471FE33851832ABABAC6C9E5BE02E5.PNG",
           "timestamp": 1622862612000,
           "date": "6/4/2021, 11:10:12 PM",
-          "age": "5 yrs, 2 months, 1 week, 3 days, 14 hours, 59 mins"
+          "age": "5 yrs, 2 months, 1 week, 3 days, 16 hours, 18 mins"
         },
         {
           "game": "Need for Speed™",
@@ -17009,7 +15985,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR08538_00_005BCD0C95E2E5EDAB4E272262983CCE2406A84C56/21A7A768F2ED439912ACB1DB0A052D0C917FF106.PNG",
           "timestamp": 1622862113000,
           "date": "6/4/2021, 11:01:53 PM",
-          "age": "5 yrs, 2 months, 1 week, 3 days, 15 hours, 7 mins"
+          "age": "5 yrs, 2 months, 1 week, 3 days, 16 hours, 26 mins"
         },
         {
           "game": "Marvel's Avengers",
@@ -17017,7 +15993,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR16769_00_009BF7258D59743AAE2DC7B2BDE9B9B945487A95D0/54941D52088EB961E21E2F39F2351E7C02A64373.PNG",
           "timestamp": 1621801996000,
           "date": "5/23/2021, 4:33:16 PM",
-          "age": "5 yrs, 2 months, 3 weeks, 1 day, 21 hours, 36 mins"
+          "age": "5 yrs, 2 months, 3 weeks, 1 day, 22 hours, 55 mins"
         },
         {
           "game": "Marvel's Avengers",
@@ -17025,7 +16001,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR16769_00_009BF7258D59743AAE2DC7B2BDE9B9B945487A95D0/5563C31A929F83AE6B423397E8EC23DD0F7E17AA.PNG",
           "timestamp": 1621801060000,
           "date": "5/23/2021, 4:17:40 PM",
-          "age": "5 yrs, 2 months, 3 weeks, 1 day, 21 hours, 51 mins"
+          "age": "5 yrs, 2 months, 3 weeks, 1 day, 23 hours, 10 mins"
         },
         {
           "game": "Marvel's Avengers",
@@ -17033,7 +16009,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR16769_00_009BF7258D59743AAE2DC7B2BDE9B9B945487A95D0/D727189A945334D824B60308E28835B34F3FCC3B.PNG",
           "timestamp": 1621800914000,
           "date": "5/23/2021, 4:15:14 PM",
-          "age": "5 yrs, 2 months, 3 weeks, 1 day, 21 hours, 54 mins"
+          "age": "5 yrs, 2 months, 3 weeks, 1 day, 23 hours, 13 mins"
         },
         {
           "game": "Guitar Hero Live",
@@ -17041,7 +16017,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR08716_00_00778FDA83C56DFB0625E9C9F6B3DCD3B726AE7C94/FA6D0BA7BD48693D3A52B890F14398405AA8728D.PNG",
           "timestamp": 1621221848000,
           "date": "5/16/2021, 11:24:08 PM",
-          "age": "5 yrs, 2 months, 4 weeks, 1 day, 14 hours, 45 mins"
+          "age": "5 yrs, 2 months, 4 weeks, 1 day, 16 hours, 4 mins"
         },
         {
           "game": "Guitar Hero Live",
@@ -17049,7 +16025,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR08716_00_00778FDA83C56DFB0625E9C9F6B3DCD3B726AE7C94/18861CFD5899B91C3037834C8243E36083BC9894.PNG",
           "timestamp": 1620298353000,
           "date": "5/6/2021, 6:52:33 AM",
-          "age": "5 yrs, 3 months, 1 week, 3 days, 7 hours, 16 mins"
+          "age": "5 yrs, 3 months, 1 week, 3 days, 8 hours, 36 mins"
         },
         {
           "game": "Saints Row: Gat out of Hell",
@@ -17057,7 +16033,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR07362_00_00B6D7067AA86E8AAC336F28722FDE677716A1F054/2AEB7F9C64A66A950661175E971532040FF94D21.PNG",
           "timestamp": 1620291559000,
           "date": "5/6/2021, 4:59:19 AM",
-          "age": "5 yrs, 3 months, 1 week, 3 days, 9 hours, 10 mins"
+          "age": "5 yrs, 3 months, 1 week, 3 days, 10 hours, 29 mins"
         },
         {
           "game": "Guitar Hero Live",
@@ -17065,7 +16041,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR08716_00_00778FDA83C56DFB0625E9C9F6B3DCD3B726AE7C94/B58E4AD01A41B85CCB1B5597284ECEF8FF8EA138.PNG",
           "timestamp": 1620267188000,
           "date": "5/5/2021, 10:13:08 PM",
-          "age": "5 yrs, 3 months, 1 week, 3 days, 15 hours, 56 mins"
+          "age": "5 yrs, 3 months, 1 week, 3 days, 17 hours, 15 mins"
         },
         {
           "game": "Guitar Hero Live",
@@ -17073,7 +16049,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR08716_00_00778FDA83C56DFB0625E9C9F6B3DCD3B726AE7C94/C067AF1AD3D50B8DB0ED45FA56F14F89A35E525F.PNG",
           "timestamp": 1620267188000,
           "date": "5/5/2021, 10:13:08 PM",
-          "age": "5 yrs, 3 months, 1 week, 3 days, 15 hours, 56 mins"
+          "age": "5 yrs, 3 months, 1 week, 3 days, 17 hours, 15 mins"
         }
       ],
       "streamHistory": [],
@@ -24749,7 +23725,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "8/13/2026, 2:09:29 PM"
+      "lastUpdated": "8/13/2026, 3:28:49 PM"
     },
     "joe-punk_": {
       "accountId": "",
@@ -24762,7 +23738,7 @@
       "handshakeState": "EXPIRED",
       "handshakeText": "JOE-PUNK_ HANDSHAKE: NPSSO EXPIRED",
       "inboundFriendRequestsCount": 0,
-      "lastUpdated": "8/13/2026, 2:10:10 PM",
+      "lastUpdated": "8/13/2026, 3:29:37 PM",
       "level": 0,
       "note": "PSN Auth Inactive or Token Expired",
       "npssoStatus": "EXPIRED / UPDATE NEEDED",
@@ -24783,10 +23759,10 @@
         "isLive": false,
         "game": "Marvel: Ultimate Alliance",
         "gameArt": null,
-        "followers": "0",
+        "followers": "76",
         "latestFollower": "None",
         "followerNames": [],
-        "avatar": null,
+        "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/705599df-3e5f-4d6f-9c95-3ff34317d268-profile_image-300x300.png",
         "age": "8 years, 6 months",
         "bio": null,
         "statusMessage": "WackaDoo Wednesday!/ ThrowBack Thursday Double Feature! Ep 1 Bringing Back Times of Nostalgia",
@@ -24805,9 +23781,9 @@
     "wildhorse_spirit_status": "ACTIVE",
     "ray_active": "yes",
     "ray_status": "ACTIVE",
-    "lastCheck": "8/13/2026, 2:09:03 PM"
+    "lastCheck": "8/13/2026, 3:28:16 PM"
   },
-  "lastGlobalUpdate": "8/13/2026, 2:09:04 PM",
+  "lastGlobalUpdate": "8/13/2026, 3:28:16 PM",
   "engineVersion": "15.3.0",
   "codeTimestamp": "Saturday, August 8, 2026 | 7:20 PM EDT"
 }
