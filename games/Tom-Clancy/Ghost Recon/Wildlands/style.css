@@ -1,20 +1,24 @@
 /* ============================================================================
-   RESPONSIVE DESIGN & STYLING (Ghost Recon Wildlands Hub)
-   - Width: 85% Page Layout
-   - Single Column Vertical Stack Architecture
-   - Touch Target Standards: 44px Minimum Height/Width
-   - Minimum Typography: 16px Base
+   FILE: style.css
+   DESCRIPTION: Wildlands In-Game HUD Interface, Responsive Columns & Clickable Slots
+   TIMESTAMP (24-HR NY TIME): 2026-08-16 16:55 EDT
    ============================================================================ */
 
 :root {
-    --bg-dark: #0b0f14;
-    --card-bg: #121820;
-    --card-border: #1c2430;
+    --bg-dark: #070a0e;
+    --card-bg: #0d1219;
+    --card-border: #16202c;
+    --wildlands-blue: #0088cc;
+    --wildlands-blue-dark: #004d73;
+    --wildlands-blue-light: #38bdf8;
+    --wildlands-gold: #eab308;
+    --wildlands-green: #10b981;
     --accent-orange: #ff8800;
-    --accent-blue: #0076a8;
-    --accent-green: #28a745;
     --text-white: #ffffff;
-    --text-muted: #cbd5e1;
+    --text-muted: #94a3b8;
+    --slot-empty: #1e293b;
+    --slot-filled: #0088cc;
+    --slot-max: #10b981;
     --touch-min: 44px;
 }
 
@@ -28,12 +32,23 @@ body {
     background-color: var(--bg-dark);
     color: var(--text-white);
     font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-    font-size: 16px; /* 16px Minimum Base to eliminate mobile zooming */
+    font-size: 16px;
     line-height: 1.5;
     -webkit-text-size-adjust: 100%;
 }
 
-/* --- HEADER & NAVIGATION --- */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+/* --- HEADER & NAVIGATION (Lines 49 - 110) --- */
 .hub-header {
     background-color: var(--card-bg);
     border-bottom: 2px solid var(--card-border);
@@ -45,7 +60,7 @@ body {
 
 .header-inner {
     width: 85%;
-    max-width: 1400px;
+    max-width: 1500px;
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
@@ -64,7 +79,7 @@ body {
 .logo-text {
     font-size: 24px;
     font-weight: 900;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
 }
 
 .header-controls-group {
@@ -74,8 +89,8 @@ body {
 }
 
 .styled-select {
-    background: #161d26;
-    border: 1px solid #2c3a4e;
+    background: #121822;
+    border: 1px solid #233144;
     color: var(--text-white);
     font-size: 16px;
     font-weight: 600;
@@ -108,14 +123,14 @@ body {
     border-radius: 2px;
 }
 
-/* --- MAIN LAYOUT (85% WIDTH SINGLE COLUMN STACK) --- */
+/* --- APP CONTAINER & STRUCTURE (Lines 112 - 165) --- */
 .hub-container {
     width: 85%;
-    max-width: 1400px;
-    margin: 24px auto;
+    max-width: 1500px;
+    margin: 20px auto;
     display: flex;
-    flex-direction: column; /* Single vertical column stacking */
-    gap: 20px;
+    flex-direction: column;
+    gap: 16px;
 }
 
 .card-section {
@@ -125,7 +140,6 @@ body {
     padding: 20px;
 }
 
-/* --- ABOVE-THE-FOLD CTA SECTION --- */
 .cta-section {
     display: flex;
     flex-direction: column;
@@ -133,10 +147,10 @@ body {
 }
 
 .status-banner {
-    background: #161d26;
-    border: 1px solid #2c3a4e;
+    background: #101620;
+    border: 1px solid #233144;
     color: var(--text-muted);
-    padding: 12px;
+    padding: 10px;
     border-radius: 6px;
     font-size: 16px;
     font-weight: 700;
@@ -144,8 +158,8 @@ body {
 }
 
 .edit-panel-btn {
-    background: #1c2836;
-    border: 1px solid #2c3a4e;
+    background: #172230;
+    border: 1px solid #28394e;
     color: var(--text-white);
     font-size: 16px;
     font-weight: 700;
@@ -153,14 +167,35 @@ body {
     border-radius: 6px;
     min-height: var(--touch-min);
     cursor: pointer;
-    transition: background 0.2s ease;
+    text-align: center;
 }
 
 .edit-panel-btn:hover {
-    background: #253548;
+    background: #233347;
 }
 
-/* --- PROFILE DISPLAY CARDS --- */
+/* --- DUAL COLUMN DESKTOP ENGINE (Lines 167 - 210) --- */
+.desktop-dual-layout {
+    display: grid;
+    grid-template-columns: 360px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.left-stats-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.right-skills-column {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-height: 600px;
+}
+
+/* --- STATS HUD CARD (Lines 212 - 275) --- */
 .profile-header {
     display: flex;
     justify-content: space-between;
@@ -171,21 +206,28 @@ body {
 }
 
 .operator-title {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: 800;
+}
+
+.level-indicator-sub {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--accent-orange);
+    letter-spacing: 1px;
 }
 
 .tier-badge-container {
     display: flex;
     align-items: center;
     gap: 8px;
-    background-color: #2c3a4e;
+    background-color: #233144;
     padding: 6px 12px;
     border-radius: 6px;
 }
 
 .tier-label {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 800;
     color: var(--text-muted);
 }
@@ -197,28 +239,36 @@ body {
 }
 
 .stat-category-block {
-    margin-bottom: 16px;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #1c2430;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #141c26;
+}
+
+.category-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
 }
 
 .category-header {
-    font-size: 18px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: 800;
     color: var(--accent-orange);
-    margin-bottom: 8px;
+    letter-spacing: 0.5px;
 }
 
 .header-highlight {
     color: var(--text-white);
-    font-size: 16px;
+    font-size: 15px;
+    font-weight: 700;
 }
 
 .stat-row {
     display: flex;
     justify-content: space-between;
-    padding: 6px 0;
-    font-size: 16px;
+    padding: 4px 0;
+    font-size: 15px;
     color: var(--text-muted);
 }
 
@@ -232,14 +282,20 @@ body {
     flex-direction: column;
     gap: 6px;
     margin-top: 8px;
-    background: #161d26;
+    background: #101620;
     padding: 10px;
     border-radius: 6px;
 }
 
-/* --- FORM & INPUTS --- */
+/* --- EDIT FORM (Lines 277 - 330) --- */
 .edit-stats-panel.hidden {
     display: none;
+}
+
+.panel-divider {
+    border: 0;
+    border-top: 1px solid var(--card-border);
+    margin: 16px 0;
 }
 
 .form-section-title {
@@ -270,9 +326,14 @@ body {
     color: var(--text-muted);
 }
 
+.helper-text {
+    font-size: 12px;
+    color: #8a99ad;
+}
+
 .form-control {
-    background: #161d26;
-    border: 1px solid #2c3a4e;
+    background: #121822;
+    border: 1px solid #233144;
     color: var(--text-white);
     font-size: 16px;
     padding: 10px 12px;
@@ -289,7 +350,7 @@ body {
 }
 
 .save-stats-btn {
-    background: #0076a8;
+    background: #0088cc;
     border: none;
     color: var(--text-white);
     font-size: 16px;
@@ -312,50 +373,269 @@ body {
     cursor: pointer;
 }
 
-/* --- SKILLS MATRIX & TABS --- */
-.section-title {
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--accent-orange);
-    margin-bottom: 12px;
-}
-
+/* --- AUTHENTIC WILDLANDS SKILL TREE HUD (Lines 332 - 470) --- */
 .skills-tabs-container {
     display: flex;
     gap: 8px;
     overflow-x: auto;
     padding-bottom: 8px;
-    margin-bottom: 16px;
+    border-bottom: 1px solid var(--card-border);
 }
 
 .tab-link {
-    background: #161d26;
-    border: 1px solid #2c3a4e;
+    background: #121822;
+    border: 1px solid #233144;
     color: var(--text-muted);
     font-size: 16px;
-    font-weight: 700;
-    padding: 8px 16px;
+    font-weight: 800;
+    padding: 10px 18px;
     border-radius: 6px;
     min-height: var(--touch-min);
     cursor: pointer;
     white-space: nowrap;
+    text-transform: uppercase;
 }
 
 .tab-link.active {
-    background: var(--accent-orange);
+    background: var(--wildlands-blue);
     color: var(--text-white);
-    border-color: var(--accent-orange);
+    border-color: var(--wildlands-blue-light);
 }
 
-.skills-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 16px;
+/* Horizontal Column Branch Architecture */
+.tree-columns-wrapper {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    padding: 16px 0;
+    align-items: flex-start;
 }
 
-/* --- MOBILE RESPONSIVE MEDIA QUERIES --- */
+.tree-column {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 220px;
+    flex: 1;
+}
+
+.tree-column-header {
+    font-size: 13px;
+    font-weight: 900;
+    color: var(--accent-orange);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed #233144;
+}
+
+/* In-game Skill Node Bar */
+.wildlands-skill-block {
+    background: #141d28;
+    border: 1px solid #233144;
+    border-radius: 4px;
+    padding: 10px 12px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all 0.15s ease-in-out;
+    min-height: 70px;
+}
+
+.wildlands-skill-block:hover {
+    border-color: var(--wildlands-blue);
+}
+
+.wildlands-skill-block.is-selected {
+    border-color: var(--wildlands-blue-light);
+    box-shadow: 0 0 10px rgba(0, 136, 204, 0.4);
+}
+
+.wildlands-skill-block.is-locked {
+    opacity: 0.55;
+    background: #0f141c;
+    border-color: #1a2330;
+}
+
+.wildlands-skill-block.is-unlocked {
+    background: #0d263d;
+    border-color: var(--wildlands-blue);
+}
+
+.wildlands-skill-block.is-maxed {
+    background: #0b3021;
+    border-color: var(--wildlands-green);
+}
+
+.wildlands-skill-block.is-epic {
+    border-color: var(--wildlands-gold);
+    background: #33260a;
+}
+
+.skill-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.skill-title-text {
+    font-size: 14px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-white);
+}
+
+.medal-toggle-btn {
+    background: transparent;
+    border: none;
+    font-size: 18px;
+    color: #475569;
+    cursor: pointer;
+    padding: 4px 6px;
+    min-height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, transform 0.1s ease;
+}
+
+.medal-toggle-btn.earned {
+    color: var(--wildlands-gold);
+    text-shadow: 0 0 8px rgba(234, 179, 8, 0.9);
+}
+
+.medal-toggle-btn:hover {
+    transform: scale(1.15);
+}
+
+/* In-Game Rank Slot Bars (The Horizontal Dashes) */
+.skill-slots-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    padding-top: 4px;
+}
+
+.skill-slot-dash {
+    height: 10px;
+    flex: 1;
+    max-width: 32px;
+    background: var(--slot-empty);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.skill-slot-dash:hover {
+    filter: brightness(1.25);
+}
+
+.skill-slot-dash.filled {
+    background: var(--wildlands-blue-light);
+}
+
+.skill-slot-dash.max-filled {
+    background: var(--wildlands-green);
+}
+
+/* Bottom Inspect Box (In-Game Style) */
+.inspect-panel {
+    background: #101620;
+    border: 1px solid #233144;
+    border-radius: 6px;
+    padding: 16px;
+    margin-top: auto;
+}
+
+.inspect-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+}
+
+.inspect-title {
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--wildlands-blue-light);
+    text-transform: uppercase;
+}
+
+.inspect-req {
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--accent-orange);
+}
+
+.inspect-desc {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.inspect-action-bar {
+    display: flex;
+    gap: 12px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+}
+
+.inspect-btn {
+    min-height: var(--touch-min);
+    font-size: 15px;
+    font-weight: 800;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.inspect-btn-rank {
+    background: var(--wildlands-blue);
+    border: 1px solid var(--wildlands-blue-light);
+    color: var(--text-white);
+    flex: 1;
+}
+
+.inspect-btn-rank.is-max {
+    background: #0f3d24;
+    border-color: var(--wildlands-green);
+    color: var(--wildlands-green);
+}
+
+.inspect-btn-medal {
+    background: #2b230f;
+    border: 1px solid var(--wildlands-gold);
+    color: var(--wildlands-gold);
+}
+
+.inspect-btn-medal.active-medal {
+    background: var(--wildlands-gold);
+    color: #000000;
+}
+
+/* --- MOBILE RESPONSIVE MEDIA QUERIES (Lines 472 - 520) --- */
+@media (max-width: 992px) {
+    .desktop-dual-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .tree-columns-wrapper {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .tree-column {
+        width: 100%;
+    }
+}
+
 @media (max-width: 768px) {
-    /* Full width on smaller mobile screens */
     .hub-container, .header-inner {
         width: 92%;
     }
@@ -385,5 +665,9 @@ body {
 
     .styled-select {
         width: 100%;
+    }
+
+    .inspect-action-bar {
+        flex-direction: column;
     }
 }
