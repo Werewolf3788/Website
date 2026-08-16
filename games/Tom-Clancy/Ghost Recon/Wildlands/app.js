@@ -1,13 +1,15 @@
 /* ============================================================================
-   File: app.js
-   Description: Ghost Recon Wildlands Engine (Mobile Hamburger Menu + Firestore)
-   Target Firestore Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+   FILE: app.js
+   DESCRIPTION: Wildlands Full Skill Slots, Click Handlers, Tree Branches, & Firestore
+   TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+   TIMESTAMP (24-HR NY TIME): 2026-08-16 16:55 EDT
    ============================================================================ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
+// --- FIREBASE CONFIGURATION (Line 14) ---
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -18,42 +20,220 @@ const firebaseConfig = {
 };
 
 const GAME_ID = 'T.C.G.R.Wildlands';
-const RAW_JSON_URL = 'https://raw.githubusercontent.com/Werewolf3788/Website/main/json/TCGRWildlands.json';
 
-const USER_DATA_MAP = {
-    'Werewolf3788': 'Werewolf3788',
-    'Raymystyro': 'Raymystyro',
-    'terrdog420': 'terrdog420',
-    'DesdemonaTiger': 'DesdemonaTiger'
+// --- WILDLANDS STRUCTURED TREE (Exact In-Game Columns & Slots) ---
+const WILDLANDS_TREE = {
+    "WEAPON": [
+        {
+            tierName: "BASE SKILLS",
+            skills: [
+                { id: "w_stable_aim", name: "Stable Aim", reqLevel: 1, maxSlots: 4, desc: "Adds extra stability when using a sniper scope or sighting weapons.", hasMedal: true },
+                { id: "w_hip_fire", name: "Hip Fire Spread", reqLevel: 1, maxSlots: 4, desc: "Reduces bullet spray when firing weapons from the hip.", hasMedal: true }
+            ]
+        },
+        {
+            tierName: "LEVEL 5",
+            skills: [
+                { id: "w_grenade_launcher", name: "Grenade Launcher", reqLevel: 5, maxSlots: 1, desc: "An optional underbarrel grenade launcher attachment for specific assault rifles.", hasMedal: false },
+                { id: "w_ammo_cap", name: "Ammo Capacity", reqLevel: 5, maxSlots: 4, desc: "Increases maximum reserve ammunition capacity across all weapon classes.", hasMedal: true },
+                { id: "w_vhc_destruct", name: "VHC Destruction", reqLevel: 5, maxSlots: 4, desc: "Increases ballistic damage dealt to enemy vehicles and helicopters.", hasMedal: true }
+            ]
+        },
+        {
+            tierName: "LEVEL 14",
+            skills: [
+                { id: "w_adv_suppressor", name: "Adv Suppressor", reqLevel: 14, maxSlots: 1, desc: "Removes the damage reduction penalty from using suppressors with weapons.", hasMedal: false },
+                { id: "w_time_to_aim", name: "Time to Aim", reqLevel: 14, maxSlots: 4, desc: "Reduces the time it takes to aim down sights with weapons when using large scopes.", hasMedal: true },
+                { id: "w_ammo_retention", name: "Ammo Retention", reqLevel: 14, maxSlots: 1, desc: "Tactical reload retains remaining ammunition in current magazine.", hasMedal: false }
+            ]
+        },
+        {
+            tierName: "EPIC SKILL",
+            skills: [
+                { id: "w_ranged_elite", name: "Ranged Elite", reqLevel: 30, maxSlots: 1, desc: "Significantly increases long-range weapon ballistic accuracy.", isEpic: true, hasMedal: false }
+            ]
+        }
+    ],
+    "DRONE": [
+        {
+            tierName: "BASE SKILLS",
+            skills: [
+                { id: "d_battery", name: "Battery", reqLevel: 1, maxSlots: 4, desc: "Increases the autonomy and flight duration of the recon drone.", hasMedal: false },
+                { id: "d_night_vision", name: "Night Vision", reqLevel: 1, maxSlots: 1, desc: "Enables night vision optics mode on the drone.", hasMedal: false },
+                { id: "d_range", name: "Range", reqLevel: 1, maxSlots: 4, desc: "Increases the horizontal radio transmission signal range.", hasMedal: true }
+            ]
+        },
+        {
+            tierName: "LEVEL 7",
+            skills: [
+                { id: "d_speed", name: "Speed", reqLevel: 7, maxSlots: 3, desc: "Increases drone acceleration and top flight velocity.", hasMedal: true },
+                { id: "d_mark_area", name: "Mark Area", reqLevel: 7, maxSlots: 3, desc: "Expands the automatic enemy visual marking detection radius.", hasMedal: true },
+                { id: "d_stealth", name: "Stealth", reqLevel: 7, maxSlots: 3, desc: "Reduces drone motor noise, decreasing enemy detection range.", hasMedal: false },
+                { id: "d_cooldown", name: "Cooldown", reqLevel: 7, maxSlots: 3, desc: "Reduces drone recharge cooldown duration between deployments.", hasMedal: true },
+                { id: "d_noisemaker", name: "Noisemaker", reqLevel: 7, maxSlots: 1, desc: "Emits noise pulse to attract hostiles to a specific point.", hasMedal: false }
+            ]
+        },
+        {
+            tierName: "LEVEL 15",
+            skills: [
+                { id: "d_zoom", name: "Zoom", reqLevel: 15, maxSlots: 2, desc: "Increases optical magnification levels for the drone camera.", hasMedal: false },
+                { id: "d_explosive", name: "Explosive", reqLevel: 15, maxSlots: 1, desc: "Equips the drone with remote-detonated C4 charges.", hasMedal: false },
+                { id: "d_emp", name: "EMP", reqLevel: 15, maxSlots: 1, desc: "Emits electromagnetic pulse disabling lights, vehicles, and generators.", hasMedal: false },
+                { id: "d_armor", name: "Armor", reqLevel: 15, maxSlots: 3, desc: "Increases the drone's resistance against small-arms fire.", hasMedal: true },
+                { id: "d_thermal", name: "Thermal Vision", reqLevel: 15, maxSlots: 1, desc: "Enables thermal heat-signature imaging mode on the drone.", hasMedal: false }
+            ]
+        },
+        {
+            tierName: "EPIC SKILL",
+            skills: [
+                { id: "d_medic", name: "Medic", reqLevel: 30, maxSlots: 1, desc: "Allows drone to deploy a revive dart on downed squad members.", isEpic: true, hasMedal: false }
+            ]
+        }
+    ],
+    "ITEM": [
+        {
+            tierName: "BASE SKILLS",
+            skills: [
+                { id: "i_parachute", name: "Parachute", reqLevel: 1, maxSlots: 1, desc: "Enables base jumping and safe parachute drops from aircraft.", hasMedal: false },
+                { id: "i_binoc_zoom", name: "Binocular Zoom", reqLevel: 1, maxSlots: 3, desc: "Increases the maximum optical zoom of tactical binoculars.", hasMedal: true },
+                { id: "i_mine", name: "Mine", reqLevel: 1, maxSlots: 4, desc: "Unlocks proximity mines and increases inventory carrying capacity.", hasMedal: true },
+                { id: "i_diversion_lure", name: "Diversion Lure", reqLevel: 1, maxSlots: 4, desc: "Unlocks noise lures to distract enemies to targeted spots.", hasMedal: true }
+            ]
+        },
+        {
+            tierName: "LEVEL 4",
+            skills: [
+                { id: "i_frag_grenade", name: "Frag Grenade", reqLevel: 4, maxSlots: 4, desc: "Increases fragmentation grenade maximum inventory quantity.", hasMedal: true },
+                { id: "i_c4", name: "C4", reqLevel: 4, maxSlots: 4, desc: "Enables deployment of remote-detonated C4 explosives.", hasMedal: true },
+                { id: "i_binoc_recon", name: "Binocular Recon", reqLevel: 4, maxSlots: 3, desc: "Increases the target identification speed and range of binoculars.", hasMedal: true },
+                { id: "i_thermal_vis", name: "Thermal Vision", reqLevel: 4, maxSlots: 1, desc: "Unlocks personal infantry helmet thermal vision goggles.", hasMedal: false }
+            ]
+        },
+        {
+            tierName: "LEVEL 10",
+            skills: [
+                { id: "i_flashbang", name: "Flashbang", reqLevel: 10, maxSlots: 4, desc: "Increases carrying capacity of tactical flashbang grenades.", hasMedal: false },
+                { id: "i_flare_gun", name: "Flare Gun", reqLevel: 10, maxSlots: 4, desc: "Unlocks distress flare gun to draw enemy or rebel attention.", hasMedal: true }
+            ]
+        },
+        {
+            tierName: "EPIC SKILL",
+            skills: [
+                { id: "i_explosion_radius", name: "Explosion Radius", reqLevel: 30, maxSlots: 1, desc: "Expands the blast lethality radius of all explosive ordnance.", isEpic: true, hasMedal: false }
+            ]
+        }
+    ],
+    "PHYSICAL": [
+        {
+            tierName: "BASE SKILLS",
+            skills: [
+                { id: "p_stamina", name: "Stamina", reqLevel: 1, maxSlots: 4, desc: "Extends sprint duration before tactical fatigue.", hasMedal: false },
+                { id: "p_no_pain", name: "No Pain", reqLevel: 1, maxSlots: 4, desc: "Increases duration of damage resistance after being revived.", hasMedal: true }
+            ]
+        },
+        {
+            tierName: "LEVEL 6",
+            skills: [
+                { id: "p_car_shield", name: "Car Shield", reqLevel: 6, maxSlots: 4, desc: "Reduces damage sustained while seated inside motor vehicles.", hasMedal: true },
+                { id: "p_quiet_running", name: "Quiet Running", reqLevel: 6, maxSlots: 4, desc: "Reduces footstep noise generated while sprinting.", hasMedal: true },
+                { id: "p_bullet_resist", name: "Bullet Resistance", reqLevel: 6, maxSlots: 4, desc: "Increases direct ballistic damage absorption.", hasMedal: true }
+            ]
+        },
+        {
+            tierName: "LEVEL 17",
+            skills: [
+                { id: "p_detection", name: "Detection", reqLevel: 17, maxSlots: 4, desc: "Slows enemy visual awareness and detection speed.", hasMedal: true },
+                { id: "p_explosion_resist", name: "Explosion Resistance", reqLevel: 17, maxSlots: 4, desc: "Reduces explosive splash damage taken.", hasMedal: true },
+                { id: "p_aircraft_shield", name: "Aircraft Shield", reqLevel: 17, maxSlots: 4, desc: "Reduces damage taken while pilot or passenger in aircraft.", hasMedal: true }
+            ]
+        },
+        {
+            tierName: "EPIC SKILL",
+            skills: [
+                { id: "p_faster_regen", name: "Faster Regen", reqLevel: 30, maxSlots: 1, desc: "Accelerates natural health recovery cooldown.", isEpic: true, hasMedal: false }
+            ]
+        }
+    ],
+    "SQUAD": [
+        {
+            tierName: "BASE SKILLS",
+            skills: [
+                { id: "s_revive_speed", name: "Revive Speed", reqLevel: 1, maxSlots: 4, desc: "Reduces time required to revive downed squad members.", hasMedal: true },
+                { id: "s_extra_sync", name: "Extra Sync Shot", reqLevel: 1, maxSlots: 3, desc: "Unlocks simultaneous targeted sync shots with squadmates.", hasMedal: false }
+            ]
+        },
+        {
+            tierName: "LEVEL 8",
+            skills: [
+                { id: "s_trained_rebels", name: "Trained Rebels", reqLevel: 8, maxSlots: 4, desc: "Boosts combat damage efficiency of allied Kataris 26 rebels.", hasMedal: true },
+                { id: "s_squad_resilience", name: "Squad Resilience", reqLevel: 8, maxSlots: 4, desc: "Increases health resistance for AI teammates.", hasMedal: true }
+            ]
+        },
+        {
+            tierName: "LEVEL 16",
+            skills: [
+                { id: "s_bleed_out", name: "Bleed Out Time", reqLevel: 16, maxSlots: 4, desc: "Extends bleedout timer before operator death.", hasMedal: false },
+                { id: "s_born_leader", name: "Born Leader", reqLevel: 16, maxSlots: 4, desc: "Improves overall damage dealt by squad members.", hasMedal: true }
+            ]
+        },
+        {
+            tierName: "EPIC SKILL",
+            skills: [
+                { id: "s_last_chance", name: "Last Chance", reqLevel: 30, maxSlots: 1, desc: "Grants an additional self-revive attempt per engagement.", isEpic: true, hasMedal: false }
+            ]
+        }
+    ],
+    "REBEL SUPPORT": [
+        {
+            tierName: "REBEL OPERATIONS",
+            skills: [
+                { id: "r_vehicle_drop", name: "Vehicle Drop-off", reqLevel: 1, maxSlots: 3, desc: "Rebel vehicle delivery: Rank 1 SUV, Rank 2 Armored Vehicle, Rank 3 Helicopter.", hasMedal: false },
+                { id: "r_guns_hire", name: "Guns For Hire", reqLevel: 1, maxSlots: 3, desc: "Summons Kataris 26 rebel squad to reinforce your position.", hasMedal: false },
+                { id: "r_mortar", name: "Mortar", reqLevel: 1, maxSlots: 3, desc: "Orders high-explosive rebel mortar artillery strike on target coordinates.", hasMedal: false },
+                { id: "r_diversion", name: "Diversion", reqLevel: 1, maxSlots: 3, desc: "Commands rebel forces to attack nearby enemy posts as a decoy.", hasMedal: false },
+                { id: "r_spotting", name: "Spotting", reqLevel: 1, maxSlots: 3, desc: "Rebel recon teams scan and highlight all hostiles in designated zone.", hasMedal: false }
+            ]
+        }
+    ]
+};
+
+const WEAPONS_CATALOG = {
+    "Assault Rifles": ["P416", "M4A1", "ACR", "AK-47", "AK-12", "556xi", "TAR-21", "AUG A3", "805 Bren A2", "G2"],
+    "Sniper Rifles": ["M40A5", "HTI", "SR-25", "L115A3", "MK14", "G28", "MSR", "Dragunov (SVD)", "SR-1"],
+    "Submachine Guns": ["MP5", "Vector .45 ACP", "P90", "MPX", "PP-19", "SR-635", "Scorpion EVO 3", "PSG"],
+    "Light Machine Guns": ["MG121", "MK48", "Stoner LMG A1", "Type 95", "6P41", "MK249"],
+    "Shotguns": ["Super Shorty", "SASG-12", "SPAS-12", "ITA 12S"],
+    "Handguns": ["P226", "M1911", "5.7 USG", "D-50", "P12", "P45T", "Skorpion"]
 };
 
 const BLANK_STATS = {
+    playerLevel: 1,
     tierActive: "off",
-    level: "--",
-    playstyle: "--",
-    avgDist: "--",
-    tactical: "--",
-    stealth: "--",
-    lifetime: "--",
-    longestShot: "--",
-    precision: "--",
-    favWeapon: "--",
-    favWeapon2: "--",
-    revives: "--",
-    explosiveKills: "--",
-    droneTime: "--",
-    airTravel: "--",
-    groundTravel: "--",
-    paraTravel: "--",
-    mapDisc: "--"
+    tierLevel: 50,
+    playstyle: "Rakkasan",
+    avgDist: "0 m",
+    tactical: "0%",
+    stealth: "0%",
+    lifetime: "0h 0min",
+    longestShot: "0 m",
+    precision: "0%",
+    favWeapon: "P416",
+    favWeapon2: "MP5",
+    revives: "0 Teammates",
+    explosiveKills: "0 Kills",
+    droneTime: "0h 0min",
+    airTravel: "0h 0min",
+    groundTravel: "0h 0min",
+    paraTravel: "0 Jumps",
+    mapDisc: "5%"
 };
 
+// --- APP CONTROLLER ---
 const appState = {
     activeHunter: localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
     activePlatform: localStorage.getItem('active_gaming_platform') || 'pc',
     activeCategory: 'WEAPON',
-    jsonWeaponClasses: null,
-    jsonSkillsBlueprint: null,
+    selectedSkillId: 'w_stable_aim',
     hunterSkillsData: {},
     statsData: JSON.parse(JSON.stringify(BLANK_STATS)),
     auth: null,
@@ -61,14 +241,15 @@ const appState = {
     masterUnsub: null,
 
     init: async function() {
+        this.initializeBlankSkills();
         this.setupMobileMenu();
         this.setupControlDropdowns();
         this.setupFormControls();
-
-        await this.fetchGitHubJSON();
+        this.populateWeaponSelects();
+        this.buildCategoryTabs();
 
         try {
-            const app = initializeApp(firebaseConfig, 'Wildlands-Firestore-Direct');
+            const app = initializeApp(firebaseConfig, 'Wildlands-HUD-Engine');
             this.auth = getAuth(app);
             this.db = getFirestore(app);
 
@@ -76,7 +257,7 @@ const appState = {
 
             onAuthStateChanged(this.auth, (user) => {
                 if (user) {
-                    this.setStatus(`✓ Connected [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
+                    this.setStatus(`✓ Online [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
                     this.loadOperator(this.activeHunter, this.activePlatform);
                 } else {
                     this.setStatus("❌ Auth Failed", "#ef4444");
@@ -85,17 +266,32 @@ const appState = {
         } catch (err) {
             console.error("Firestore Init Error:", err);
             this.setStatus(`❌ Error: ${err.message}`, "#ef4444");
-            this.render();
+            this.renderTree();
         }
+    },
+
+    initializeBlankSkills: function() {
+        this.hunterSkillsData = {};
+        Object.keys(WILDLANDS_TREE).forEach(cat => {
+            this.hunterSkillsData[cat] = {};
+            WILDLANDS_TREE[cat].forEach(tier => {
+                tier.skills.forEach(skill => {
+                    this.hunterSkillsData[cat][skill.id] = {
+                        current: 0,
+                        medalEarned: false
+                    };
+                });
+            });
+        });
     },
 
     setupMobileMenu: function() {
         const toggleBtn = document.getElementById("mobileNavToggle");
         const menuWrapper = document.getElementById("navMenuWrapper");
         if (toggleBtn && menuWrapper) {
-            toggleBtn.addEventListener("click", () => {
+            toggleBtn.onclick = () => {
                 menuWrapper.classList.toggle("active");
-            });
+            };
         }
     },
 
@@ -107,157 +303,110 @@ const appState = {
         }
     },
 
-    fetchGitHubJSON: async function() {
-        try {
-            const res = await fetch(`${RAW_JSON_URL}?v=${Date.now()}`);
-            if (res.ok) {
-                const data = await res.json();
-                this.jsonWeaponClasses = data.WILDLANDS_WEAPON_CLASSES || null;
-                this.jsonSkillsBlueprint = data.BASELINE_SKILLS_BLUEPRINT || null;
+    setupControlDropdowns: function() {
+        const userSelect = document.getElementById("userSelect");
+        if (userSelect) {
+            userSelect.value = this.activeHunter;
+            userSelect.onchange = (e) => {
+                this.loadOperator(e.target.value, this.activePlatform);
+            };
+        }
 
-                this.populateWeaponSelects();
-                this.buildCategoryTabs();
-                this.initializeBlankSkillsFromBlueprint();
-            }
-        } catch (e) {
-            console.warn("JSON fetch delayed.", e.message);
+        const platformSelect = document.getElementById("platformSelect");
+        if (platformSelect) {
+            platformSelect.value = this.activePlatform;
+            platformSelect.onchange = (e) => {
+                this.loadOperator(this.activeHunter, e.target.value);
+            };
         }
     },
 
     populateWeaponSelects: function() {
         const fav1 = document.getElementById("editFav1");
         const fav2 = document.getElementById("editFav2");
-        if (!fav1 || !fav2 || !this.jsonWeaponClasses) return;
+        if (!fav1 || !fav2) return;
 
-        fav1.innerHTML = '<option value="--">-- Select Weapon --</option>';
-        fav2.innerHTML = '<option value="--">-- Select Weapon --</option>';
+        fav1.innerHTML = '';
+        fav2.innerHTML = '';
 
-        Object.keys(this.jsonWeaponClasses).forEach(category => {
-            const group1 = document.createElement("optgroup");
-            group1.label = category;
-            const group2 = document.createElement("optgroup");
-            group2.label = category;
+        Object.keys(WEAPONS_CATALOG).forEach(cat => {
+            const grp1 = document.createElement("optgroup");
+            grp1.label = cat;
+            const grp2 = document.createElement("optgroup");
+            grp2.label = cat;
 
-            this.jsonWeaponClasses[category].forEach(weapon => {
-                group1.appendChild(new Option(weapon, weapon));
-                group2.appendChild(new Option(weapon, weapon));
+            WEAPONS_CATALOG[cat].forEach(wpn => {
+                grp1.appendChild(new Option(wpn, wpn));
+                grp2.appendChild(new Option(wpn, wpn));
             });
 
-            fav1.appendChild(group1);
-            fav2.appendChild(group2);
+            fav1.appendChild(grp1);
+            fav2.appendChild(grp2);
         });
     },
 
     buildCategoryTabs: function() {
-        const tabsContainer = document.getElementById("skillsCategoryTabs");
-        if (!tabsContainer || !this.jsonSkillsBlueprint) return;
+        const container = document.getElementById("skillsCategoryTabs");
+        if (!container) return;
 
-        tabsContainer.innerHTML = "";
-        const categories = Object.keys(this.jsonSkillsBlueprint);
-
-        categories.forEach(cat => {
+        container.innerHTML = "";
+        Object.keys(WILDLANDS_TREE).forEach(cat => {
             const btn = document.createElement("button");
             btn.className = `tab-link ${cat === this.activeCategory ? 'active' : ''}`;
             btn.innerText = cat;
-            btn.addEventListener("click", () => {
+            btn.onclick = () => {
                 this.activeCategory = cat;
+                const firstSkill = WILDLANDS_TREE[cat][0].skills[0];
+                if (firstSkill) this.selectedSkillId = firstSkill.id;
+
                 document.querySelectorAll(".tab-link").forEach(b => b.classList.remove("active"));
                 btn.classList.add("active");
-                this.render();
-            });
-            tabsContainer.appendChild(btn);
+                this.renderTree();
+            };
+            container.appendChild(btn);
         });
-    },
-
-    initializeBlankSkillsFromBlueprint: function() {
-        if (!this.jsonSkillsBlueprint) return;
-
-        this.hunterSkillsData = {};
-        Object.keys(this.jsonSkillsBlueprint).forEach(cat => {
-            this.hunterSkillsData[cat] = this.jsonSkillsBlueprint[cat].map(item => ({
-                ...item,
-                current: 0,
-                medalEarned: false
-            }));
-        });
-    },
-
-    setupControlDropdowns: function() {
-        const userSelector = document.getElementById("userSelect");
-        if (userSelector) {
-            userSelector.value = this.activeHunter;
-            userSelector.addEventListener("change", (e) => {
-                this.switchOperator(e.target.value, this.activePlatform);
-            });
-        }
-
-        const platformSelector = document.getElementById("platformSelect");
-        if (platformSelector) {
-            platformSelector.value = this.activePlatform;
-            platformSelector.addEventListener("change", (e) => {
-                this.switchOperator(this.activeHunter, e.target.value);
-            });
-        }
-    },
-
-    populateFormWithCurrentData: function() {
-        const setVal = (id, val) => {
-            const el = document.getElementById(id);
-            if (el) el.value = (val && val !== "--") ? val : "";
-        };
-
-        const tierActiveSel = document.getElementById("editTierActive");
-        if (tierActiveSel) tierActiveSel.value = this.statsData.tierActive || "off";
-
-        setVal("editTierLevel", this.statsData.level);
-        setVal("editPlaystyle", this.statsData.playstyle);
-        setVal("editAvgDist", this.statsData.avgDist);
-        setVal("editTactical", this.statsData.tactical);
-        setVal("editStealth", this.statsData.stealth);
-        setVal("editLifetime", this.statsData.lifetime);
-        setVal("editLongest", this.statsData.longestShot);
-        setVal("editPrecision", this.statsData.precision);
-        setVal("editFav1", this.statsData.favWeapon);
-        setVal("editFav2", this.statsData.favWeapon2);
-        setVal("editRevives", this.statsData.revives);
-        setVal("editExplosiveKills", this.statsData.explosiveKills);
-        setVal("editDroneTime", this.statsData.droneTime);
-        setVal("editAir", this.statsData.airTravel);
-        setVal("editGround", this.statsData.groundTravel);
-        setVal("editPara", this.statsData.paraTravel);
-        setVal("editMap", this.statsData.mapDisc);
     },
 
     setupFormControls: function() {
         const toggleBtn = document.getElementById("toggleEditStats");
         const editPanel = document.getElementById("editStatsPanel");
+        const tierSel = document.getElementById("editTierActive");
+        const tierGroup = document.getElementById("tierLevelGroup");
+
+        if (tierSel && tierGroup) {
+            tierSel.onchange = (e) => {
+                tierGroup.style.display = (e.target.value === "on") ? "flex" : "none";
+            };
+        }
+
         if (toggleBtn && editPanel) {
-            toggleBtn.addEventListener("click", () => {
+            toggleBtn.onclick = () => {
                 editPanel.classList.toggle("hidden");
                 if (!editPanel.classList.contains("hidden")) {
-                    this.populateFormWithCurrentData();
+                    this.populateForm();
                 }
-            });
+            };
         }
 
         const saveBtn = document.getElementById("saveStatsBtn");
         if (saveBtn) {
-            saveBtn.addEventListener("click", () => {
+            saveBtn.onclick = () => {
                 const getVal = (id, suffix = "") => {
                     const el = document.getElementById(id);
                     if (!el || el.value.trim() === "") return "--";
                     let val = el.value.trim();
-                    if (suffix && !val.includes(suffix) && val !== "--") {
-                        val = `${val}${suffix}`;
-                    }
+                    if (suffix && !val.includes(suffix) && val !== "--") val = `${val}${suffix}`;
                     return val;
                 };
 
-                const tierActive = document.getElementById("editTierActive") ? document.getElementById("editTierActive").value : "off";
+                const pLevel = parseInt(document.getElementById("editPlayerLevel").value, 10) || 1;
+                const tierMode = document.getElementById("editTierActive").value;
+                const tLevel = parseInt(document.getElementById("editTierLevel").value, 10) || 50;
 
                 this.statsData = {
-                    tierActive: tierActive,
-                    level: getVal("editTierLevel"),
+                    playerLevel: Math.min(Math.max(pLevel, 1), 30),
+                    tierActive: (pLevel >= 30 && tierMode === "on") ? "on" : "off",
+                    tierLevel: Math.min(Math.max(tLevel, 1), 50),
                     playstyle: getVal("editPlaystyle"),
                     avgDist: getVal("editAvgDist"),
                     tactical: getVal("editTactical", "%"),
@@ -278,214 +427,363 @@ const appState = {
 
                 this.sync();
                 if (editPanel) editPanel.classList.add("hidden");
-            });
+            };
         }
 
         const clearBtn = document.getElementById("clearStatsBtn");
         if (clearBtn) {
-            clearBtn.addEventListener("click", () => {
+            clearBtn.onclick = () => {
                 this.statsData = JSON.parse(JSON.stringify(BLANK_STATS));
-                this.initializeBlankSkillsFromBlueprint();
+                this.initializeBlankSkills();
                 this.sync();
                 if (editPanel) editPanel.classList.add("hidden");
-            });
+            };
+        }
+    },
+
+    populateForm: function() {
+        const setVal = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.value = (val !== undefined && val !== null && val !== "--") ? val : "";
+        };
+
+        setVal("editPlayerLevel", this.statsData.playerLevel || 1);
+        const tierSel = document.getElementById("editTierActive");
+        if (tierSel) tierSel.value = this.statsData.tierActive || "off";
+
+        setVal("editTierLevel", this.statsData.tierLevel || 50);
+        setVal("editPlaystyle", this.statsData.playstyle);
+        setVal("editAvgDist", this.statsData.avgDist);
+        setVal("editTactical", this.statsData.tactical);
+        setVal("editStealth", this.statsData.stealth);
+        setVal("editLifetime", this.statsData.lifetime);
+        setVal("editLongest", this.statsData.longestShot);
+        setVal("editPrecision", this.statsData.precision);
+        setVal("editFav1", this.statsData.favWeapon);
+        setVal("editFav2", this.statsData.favWeapon2);
+        setVal("editRevives", this.statsData.revives);
+        setVal("editExplosiveKills", this.statsData.explosiveKills);
+        setVal("editDroneTime", this.statsData.droneTime);
+        setVal("editAir", this.statsData.airTravel);
+        setVal("editGround", this.statsData.groundTravel);
+        setVal("editPara", this.statsData.paraTravel);
+        setVal("editMap", this.statsData.mapDisc);
+
+        const tierGroup = document.getElementById("tierLevelGroup");
+        if (tierGroup) {
+            tierGroup.style.display = (this.statsData.tierActive === "on") ? "flex" : "none";
         }
     },
 
     loadOperator: function(userName, platform) {
-        if (!this.auth || !this.auth.currentUser) return;
-
-        const dbDocName = USER_DATA_MAP[userName] || userName;
-        this.activeHunter = dbDocName;
+        this.activeHunter = userName;
         this.activePlatform = platform.toLowerCase();
 
-        localStorage.setItem('active_gaming_nickname', dbDocName);
+        localStorage.setItem('active_gaming_nickname', this.activeHunter);
         localStorage.setItem('active_gaming_platform', this.activePlatform);
 
         if (this.masterUnsub) this.masterUnsub();
 
-        const docRef = doc(this.db, 'users', dbDocName, 'platform', this.activePlatform, 'progress', GAME_ID);
+        const docRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
             if (snap.exists()) {
                 const data = snap.data();
-                if (data.skills) this.hunterSkillsData = data.skills;
-                if (data.stats) this.statsData = data.stats;
-                this.setStatus(`✓ Loaded Cloud Data for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#10b981");
+                if (data.stats) this.statsData = { ...BLANK_STATS, ...data.stats };
+                if (data.skills) {
+                    this.mergeLoadedSkills(data.skills);
+                } else {
+                    this.initializeBlankSkills();
+                }
+                this.setStatus(`✓ Sync Active [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
             } else {
-                this.initializeBlankSkillsFromBlueprint();
+                this.initializeBlankSkills();
                 this.statsData = JSON.parse(JSON.stringify(BLANK_STATS));
-                this.setStatus(`⚠️ No Saved Cloud Data for ${dbDocName} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
+                this.setStatus(`⚠️ No Saved Cloud Data for ${this.activeHunter} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
             }
-            this.render();
             this.updateStatsUI();
+            this.renderTree();
         }, (err) => {
             console.error("Firestore Listen Error:", err);
             this.setStatus(`❌ Read Error: ${err.message}`, "#ef4444");
-            this.render();
         });
     },
 
-    switchOperator: function(userName, platform) {
-        this.loadOperator(userName, platform);
-    },
+    mergeLoadedSkills: function(incomingSkills) {
+        Object.keys(WILDLANDS_TREE).forEach(cat => {
+            if (!this.hunterSkillsData[cat]) this.hunterSkillsData[cat] = {};
+            const savedCat = incomingSkills[cat] || {};
 
-    render: function() {
-        const container = document.getElementById('section-container');
-        if (!container) return;
-
-        container.innerHTML = '';
-
-        const currentCategorySkills = this.hunterSkillsData[this.activeCategory] || [];
-
-        if (currentCategorySkills.length === 0) {
-            container.innerHTML = `<div style="color:#8a99ad; text-align:center; padding:20px;">No items available.</div>`;
-            return;
-        }
-
-        currentCategorySkills.forEach((skill, index) => {
-            const currentRank = skill.current || 0;
-            const maxRank = skill.max || 1;
-            const isMaxed = currentRank === maxRank;
-            const medalEarned = !!skill.medalEarned;
-
-            const card = document.createElement("div");
-            card.className = `skill-card ${isMaxed ? 'maxed' : ''} ${skill.isEpic ? 'epic-card' : ''}`;
-            card.style.cssText = "background:#121820; border:1px solid #1c2430; padding:16px; border-radius:8px;";
-
-            card.innerHTML = `
-                <div class="card-top-action">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <h4 style="color:#fff; font-size:16px; font-weight:bold;">${skill.name}</h4>
-                        ${skill.isEpic ? '<span style="color:#ffcc00; font-size:12px; font-weight:bold; border:1px solid #ffcc00; padding:2px 6px; border-radius:4px;">EPIC</span>' : ''}
-                    </div>
-                    <p style="font-size:14px; color:#cbd5e1; margin:8px 0;">${skill.desc || ''}</p>
-                    
-                    <div class="skill-meta-row" style="margin-top:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-                        <div style="display:flex; flex-direction:column; gap:4px;">
-                            <span style="font-size:12px; color:#cbd5e1; text-transform:uppercase; font-weight:bold;">Skill Rank (${currentRank}/${maxRank})</span>
-                            <div class="skill-rank-indicators" style="display:flex; gap:6px;">
-                                ${Array.from({ length: maxRank }).map((_, rIdx) => `
-                                    <div class="rank-dot" style="width:16px; height:8px; background:${rIdx < currentRank ? (isMaxed ? '#28a745' : '#0076a8') : '#3d4f68'}; border-radius:2px;"></div>
-                                `).join('')}
-                            </div>
-                        </div>
-
-                        ${skill.hasMedal ? `
-                            <div style="text-align:right;">
-                                <span style="font-size:12px; color:#cbd5e1; text-transform:uppercase; font-weight:bold; display:block;">Bonus Medal</span>
-                                <span style="font-size:14px; font-weight:bold; color:${medalEarned ? '#ffcc00' : '#8a99ad'};">
-                                    ${medalEarned ? '🏅 Acquired' : '🔒 Missing'}
-                                </span>
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-
-                <div class="card-bottom-action" style="margin-top:16px; padding-top:12px; border-top:1px solid #1c2430; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-                    <button style="flex:1; min-height:44px; background:${isMaxed ? '#112417' : '#161d26'}; color:${isMaxed ? '#28a745' : '#fff'}; border:1px solid ${isMaxed ? '#28a745' : '#3d4f68'}; padding:8px 12px; border-radius:6px; cursor:pointer; font-size:16px; font-weight:bold;"
-                            onclick="appState.mutateSkillRank('${this.activeCategory}', ${index}, ${currentRank}, ${maxRank})">
-                        ${isMaxed ? '✓ Skill Maxed' : '⭐ Rank Up'}
-                    </button>
-
-                    ${skill.hasMedal ? `
-                        <button style="flex:1; min-height:44px; background:${medalEarned ? '#242415' : '#161d26'}; color:${medalEarned ? '#ffcc00' : '#cbd5e1'}; border:1px solid ${medalEarned ? '#ffcc00' : '#3d4f68'}; padding:8px 12px; border-radius:6px; cursor:pointer; font-size:16px; font-weight:bold;"
-                                onclick="appState.toggleBonusMedal('${this.activeCategory}', ${index})">
-                            ${medalEarned ? '🏅 Medal Found' : '🏅 Claim Medal'}
-                        </button>
-                    ` : ''}
-                </div>
-            `;
-            container.appendChild(card);
+            WILDLANDS_TREE[cat].forEach(tier => {
+                tier.skills.forEach(skill => {
+                    const saved = savedCat[skill.id];
+                    this.hunterSkillsData[cat][skill.id] = {
+                        current: saved ? (saved.current || 0) : 0,
+                        medalEarned: saved ? !!saved.medalEarned : false
+                    };
+                });
+            });
         });
     },
 
     updateStatsUI: function() {
-        const data = this.statsData;
         const setTxt = (id, val) => {
             const el = document.getElementById(id);
             if (el) el.innerText = (val !== undefined && val !== null && val !== "") ? val : "--";
         };
 
+        const d = this.statsData;
+        const pLevel = d.playerLevel || 1;
+        setTxt("operatorName", this.activeHunter);
+        setTxt("playerLevelDisplay", `LEVEL ${pLevel < 10 ? '0' + pLevel : pLevel}`);
+
         const tierValEl = document.getElementById("tierLevel");
         const tierBadgeContainer = document.getElementById("tierContainer");
-        
+
         if (tierValEl && tierBadgeContainer) {
-            if (data.tierActive === "on") {
-                tierValEl.innerText = (data.level && data.level !== "--") ? data.level : "1";
-                tierBadgeContainer.style.backgroundColor = "#e67e22";
+            if (d.tierActive === "on" && pLevel >= 30) {
+                tierValEl.innerText = `${d.tierLevel || 50}`;
+                tierBadgeContainer.style.backgroundColor = "#ff8800";
                 tierBadgeContainer.style.opacity = "1";
             } else {
                 tierValEl.innerText = "OFF";
-                tierBadgeContainer.style.backgroundColor = "#2c3a4e";
+                tierBadgeContainer.style.backgroundColor = "#233144";
                 tierBadgeContainer.style.opacity = "0.7";
             }
         }
 
-        setTxt("operatorName", this.activeHunter);
-        setTxt("playstyleType", data.playstyle);
-        setTxt("avgKillDist", data.avgDist);
-        setTxt("tacticalValue", data.tactical);
-        setTxt("stealthValue", data.stealth);
-        setTxt("statLifetime", data.lifetime);
-        setTxt("longestShot", data.longestShot);
-        setTxt("precisionValue", data.precision);
-        setTxt("favWeapon", data.favWeapon);
-        setTxt("favWeapon2", data.favWeapon2);
-        setTxt("statRevives", data.revives);
-        setTxt("statExplosiveKills", data.explosiveKills);
-        setTxt("statDroneTime", data.droneTime);
-        setTxt("statAir", data.airTravel);
-        setTxt("statGround", data.groundTravel);
-        setTxt("statPara", data.paraTravel);
-        setTxt("statMap", data.mapDisc);
+        setTxt("playstyleType", d.playstyle);
+        setTxt("avgKillDist", d.avgDist);
+        setTxt("tacticalValue", d.tactical);
+        setTxt("stealthValue", d.stealth);
+        setTxt("statLifetime", d.lifetime);
+        setTxt("longestShot", d.longestShot);
+        setTxt("precisionValue", d.precision);
+        setTxt("favWeapon", d.favWeapon);
+        setTxt("favWeapon2", d.favWeapon2);
+        setTxt("statRevives", d.revives);
+        setTxt("statExplosiveKills", d.explosiveKills);
+        setTxt("statDroneTime", d.droneTime);
+        setTxt("statAir", d.airTravel);
+        setTxt("statGround", d.groundTravel);
+        setTxt("statPara", d.paraTravel);
+        setTxt("statMap", d.mapDisc);
     },
 
-    mutateSkillRank: function(category, index, currentRank, maxRank) {
-        let nextRank = currentRank + 1;
-        if (nextRank > maxRank) nextRank = 0;
+    renderTree: function() {
+        const container = document.getElementById('treeContainer');
+        if (!container) return;
+        container.innerHTML = '';
 
-        if (this.hunterSkillsData[category] && this.hunterSkillsData[category][index]) {
-            this.hunterSkillsData[category][index].current = nextRank;
-            this.sync();
+        const tiers = WILDLANDS_TREE[this.activeCategory] || [];
+        const currentLevel = this.statsData.playerLevel || 1;
+
+        let activeSelectedSkillObj = null;
+        let activeSelectedSkillMeta = null;
+
+        tiers.forEach(tier => {
+            const col = document.createElement("div");
+            col.className = "tree-column";
+
+            const colHeader = document.createElement("div");
+            colHeader.className = "tree-column-header";
+            colHeader.innerText = tier.tierName;
+            col.appendChild(colHeader);
+
+            tier.skills.forEach(skill => {
+                const saved = (this.hunterSkillsData[this.activeCategory] && this.hunterSkillsData[this.activeCategory][skill.id]) || { current: 0, medalEarned: false };
+                const currentRank = saved.current || 0;
+                const maxRank = skill.maxSlots || 1;
+                const isMaxed = currentRank >= maxRank;
+                const isLocked = currentLevel < skill.reqLevel;
+                const isSelected = this.selectedSkillId === skill.id;
+
+                if (isSelected) {
+                    activeSelectedSkillObj = skill;
+                    activeSelectedSkillMeta = saved;
+                }
+
+                const block = document.createElement("div");
+                block.className = `wildlands-skill-block ${isLocked ? 'is-locked' : 'is-unlocked'} ${isMaxed ? 'is-maxed' : ''} ${skill.isEpic ? 'is-epic' : ''} ${isSelected ? 'is-selected' : ''}`;
+
+                // Header Row with Title and Bonus Medal
+                const titleRow = document.createElement("div");
+                titleRow.className = "skill-title-row";
+                titleRow.innerHTML = `
+                    <span class="skill-title-text">${skill.name}</span>
+                    ${skill.hasMedal ? `<button class="medal-toggle-btn ${saved.medalEarned ? 'earned' : ''}" title="Toggle Bonus Medal">★</button>` : ''}
+                `;
+
+                // Handle Bonus Medal Click Directly
+                if (skill.hasMedal) {
+                    const starBtn = titleRow.querySelector(".medal-toggle-btn");
+                    starBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        this.selectedSkillId = skill.id;
+                        this.toggleBonusMedal(skill.id);
+                    };
+                }
+
+                // Handle Selection on Card Header Click
+                titleRow.onclick = () => {
+                    this.selectedSkillId = skill.id;
+                    this.renderTree();
+                };
+
+                block.appendChild(titleRow);
+
+                // Slot Dashes Row
+                const slotsRow = document.createElement("div");
+                slotsRow.className = "skill-slots-row";
+
+                for (let i = 0; i < maxRank; i++) {
+                    const dash = document.createElement("div");
+                    const isFilled = i < currentRank;
+                    dash.className = `skill-slot-dash ${isFilled ? (isMaxed ? 'max-filled' : 'filled') : ''}`;
+                    dash.title = `Slot ${i + 1} of ${maxRank}`;
+                    
+                    // Clicking slot directly sets rank to that level (or clears if already active)
+                    dash.onclick = (e) => {
+                        e.stopPropagation();
+                        this.selectedSkillId = skill.id;
+                        if (currentRank === i + 1) {
+                            this.setExplicitRank(skill.id, skill.reqLevel, i);
+                        } else {
+                            this.setExplicitRank(skill.id, skill.reqLevel, i + 1);
+                        }
+                    };
+
+                    slotsRow.appendChild(dash);
+                }
+
+                block.appendChild(slotsRow);
+                col.appendChild(block);
+            });
+
+            container.appendChild(col);
+        });
+
+        this.renderInspectBox(activeSelectedSkillObj, activeSelectedSkillMeta);
+    },
+
+    renderInspectBox: function(skill, meta) {
+        const inspectPanel = document.getElementById("inspectPanel");
+        if (!inspectPanel) return;
+
+        if (!skill) {
+            inspectPanel.innerHTML = `<p class="inspect-desc">Select any skill block or slot to inspect details, rank slots, or toggle bonus medals.</p>`;
+            return;
+        }
+
+        const currentRank = meta ? meta.current : 0;
+        const maxRank = skill.maxSlots || 1;
+        const isMaxed = currentRank >= maxRank;
+        const isLocked = (this.statsData.playerLevel || 1) < skill.reqLevel;
+        const medalEarned = meta ? !!meta.medalEarned : false;
+
+        inspectPanel.innerHTML = `
+            <div class="inspect-top-row">
+                <h3 class="inspect-title">${skill.name}</h3>
+                <span class="inspect-req">${isLocked ? `🔒 LOCKED (REQUIRED LEVEL ${skill.reqLevel})` : `UNLOCKED (RANK ${currentRank}/${maxRank})`}</span>
+            </div>
+            <p class="inspect-desc">${skill.desc}</p>
+
+            <div class="inspect-action-bar">
+                <button class="inspect-btn inspect-btn-rank ${isMaxed ? 'is-max' : ''}" id="btnRankUp">
+                    ${isLocked ? `🔒 Locked (Lvl ${skill.reqLevel})` : (isMaxed ? '✓ Max Rank (Click to Reset)' : `⭐ Upgrade Rank Slot (${currentRank + 1}/${maxRank})`)}
+                </button>
+
+                ${skill.hasMedal ? `
+                    <button class="inspect-btn inspect-btn-medal ${medalEarned ? 'active-medal' : ''}" id="btnToggleMedal">
+                        ${medalEarned ? '★ Bonus Medal Found' : '☆ Claim Bonus Medal'}
+                    </button>
+                ` : ''}
+            </div>
+        `;
+
+        const rankBtn = document.getElementById("btnRankUp");
+        if (rankBtn) {
+            rankBtn.onclick = () => {
+                this.cycleRank(skill.id, skill.reqLevel, maxRank);
+            };
+        }
+
+        const medalBtn = document.getElementById("btnToggleMedal");
+        if (medalBtn) {
+            medalBtn.onclick = () => {
+                this.toggleBonusMedal(skill.id);
+            };
         }
     },
 
-    toggleBonusMedal: function(category, index) {
-        if (this.hunterSkillsData[category] && this.hunterSkillsData[category][index]) {
-            const currentState = !!this.hunterSkillsData[category][index].medalEarned;
-            this.hunterSkillsData[category][index].medalEarned = !currentState;
-            this.sync();
+    setExplicitRank: function(skillId, reqLevel, targetRank) {
+        const currentLevel = this.statsData.playerLevel || 1;
+        if (currentLevel < reqLevel) {
+            alert(`This skill unlocks at Character Level ${reqLevel}. Update your level in 'Edit Tactical Profile' first.`);
+            return;
         }
+
+        const cat = this.activeCategory;
+        if (!this.hunterSkillsData[cat]) this.hunterSkillsData[cat] = {};
+        if (!this.hunterSkillsData[cat][skillId]) this.hunterSkillsData[cat][skillId] = { current: 0, medalEarned: false };
+
+        this.hunterSkillsData[cat][skillId].current = targetRank;
+        this.sync();
+    },
+
+    cycleRank: function(skillId, reqLevel, maxSlots) {
+        const currentLevel = this.statsData.playerLevel || 1;
+        if (currentLevel < reqLevel) {
+            alert(`This skill unlocks at Character Level ${reqLevel}. Update your level in 'Edit Tactical Profile' first.`);
+            return;
+        }
+
+        const cat = this.activeCategory;
+        if (!this.hunterSkillsData[cat]) this.hunterSkillsData[cat] = {};
+        if (!this.hunterSkillsData[cat][skillId]) this.hunterSkillsData[cat][skillId] = { current: 0, medalEarned: false };
+
+        let nextRank = this.hunterSkillsData[cat][skillId].current + 1;
+        if (nextRank > maxSlots) nextRank = 0;
+
+        this.hunterSkillsData[cat][skillId].current = nextRank;
+        this.sync();
+    },
+
+    toggleBonusMedal: function(skillId) {
+        const cat = this.activeCategory;
+        if (!this.hunterSkillsData[cat]) this.hunterSkillsData[cat] = {};
+        if (!this.hunterSkillsData[cat][skillId]) this.hunterSkillsData[cat][skillId] = { current: 0, medalEarned: false };
+
+        const current = !!this.hunterSkillsData[cat][skillId].medalEarned;
+        this.hunterSkillsData[cat][skillId].medalEarned = !current;
+        this.sync();
     },
 
     sync: async function() {
-        this.render();
+        this.renderTree();
         this.updateStatsUI();
 
         if (!this.db || !this.auth || !this.auth.currentUser) return;
 
-        this.setStatus("⏳ Saving to Cloud Firestore...", "#e67e22");
+        this.setStatus("⏳ Saving to Cloud Firestore...", "#ff8800");
 
         try {
             const ref = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
-            
             const payload = {
                 user: this.activeHunter,
                 platform: this.activePlatform,
                 gameId: GAME_ID,
                 skills: this.hunterSkillsData,
                 stats: this.statsData,
-                lastUpdate: Date.now()
+                lastUpdated: new Date().toISOString()
             };
 
             await setDoc(ref, payload, { merge: true });
-            const timeStr = new Date().toLocaleTimeString();
-            this.setStatus(`✓ Saved at ${timeStr}`, "#10b981");
-            console.log(`✓ Cloud Firestore updated: /users/${this.activeHunter}/platform/${this.activePlatform}/progress/${GAME_ID}`);
-        } catch (error) {
-            console.error("FIRESTORE WRITE ERROR:", error);
-            this.setStatus(`❌ Save Failed: ${error.message}`, "#ef4444");
+            const nyTime = new Date().toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
+            this.setStatus(`✓ Saved to Firestore [${nyTime} NY]`, "#10b981");
+        } catch (err) {
+            console.error("Firestore Save Error:", err);
+            this.setStatus(`❌ Save Error: ${err.message}`, "#ef4444");
         }
     }
 };
