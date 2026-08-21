@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- ==========================================================================
-     Multi-Chat Stream Hub (GitHub Pages Edition)
-     Timestamp (24hr New York Time): 2026-08-21 18:52:14 EDT
+     Multi-Chat Stream Hub (Direct Embedded Hub)
+     Timestamp (24hr New York Time): 2026-08-21 18:55:00 EDT
      ========================================================================== -->
 <html lang="en">
 <head>
@@ -11,6 +11,8 @@
 
   <!-- ==========================================================================
        Google Analytics (GA4 Tag: G-CTYHDF4MSD)
+       - Enhanced Measurement & Signals Enabled
+       - 14 Month Data Retention Configured
        ========================================================================== -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
   <script>
@@ -22,7 +24,7 @@
       'send_page_view': true,
       'user_properties': {
         'gamer_tag': 'werewolf3788',
-        'host': 'github_pages'
+        'platform_type': 'multi_chat_embedded'
       },
       'cookie_flags': 'SameSite=None;Secure'
     });
@@ -30,23 +32,22 @@
 
   <!-- ==========================================================================
        CSS STYLING (Starts at Line 36)
-       - High contrast responsive layout for Desktop, Tablet, and Mobile
-       - Touch targets 44x44px minimum
+       - Strict full-height card embeds (100% viewport fit)
+       - Responsive stack for mobile/tablet with >=44px touch targets
        ========================================================================== -->
   <style>
-    /* CSS Line 42: Color Variables */
+    /* CSS Line 42: Global Palette & Resets */
     :root {
       --bg-main: #0b0e14;
       --card-bg: #141824;
       --card-border: #23293c;
       --text-main: #f3f4f6;
       --text-muted: #9ca3af;
-      --accent-indigo: #6366f1;
-      --accent-hover: #4f46e5;
+      --primary-accent: #6366f1;
       --nimo-color: #26bbff;
       --streamlabs-color: #31f49f;
       --tikfinity-color: #ff004f;
-      --header-height: 64px;
+      --header-height: 56px;
     }
 
     * {
@@ -66,20 +67,18 @@
       flex-direction: column;
     }
 
-    /* CSS Line 74: Top Header Bar */
+    /* CSS Line 73: Sticky Header */
     header {
-      min-height: var(--header-height);
+      height: var(--header-height);
       background-color: #0f121d;
       border-bottom: 2px solid var(--card-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 16px;
+      padding: 0 16px;
       position: sticky;
       top: 0;
       z-index: 100;
-      flex-wrap: wrap;
-      gap: 10px;
     }
 
     .brand-logo {
@@ -88,30 +87,29 @@
       gap: 10px;
       text-decoration: none;
       color: var(--text-main);
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 700;
       min-height: 44px;
       min-width: 44px;
     }
 
     .brand-logo span {
-      color: var(--accent-indigo);
+      color: var(--primary-accent);
     }
 
-    /* CSS Line 107: Header Controls */
+    /* CSS Line 103: Switcher Controls */
     .controls {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      gap: 6px;
     }
 
     .btn {
       background-color: var(--card-bg);
       color: var(--text-main);
       border: 1px solid var(--card-border);
-      padding: 10px 16px;
+      padding: 8px 14px;
       border-radius: 6px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: 600;
       cursor: pointer;
       min-height: 44px;
@@ -119,40 +117,25 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
       transition: background 0.2s, border-color 0.2s;
     }
 
-    .btn:hover {
-      background-color: var(--card-border);
+    .btn:hover, .btn.active {
+      background-color: var(--primary-accent);
+      border-color: var(--primary-accent);
     }
 
-    .btn-primary {
-      background-color: var(--accent-indigo);
-      border-color: var(--accent-indigo);
-      color: #fff;
-    }
-
-    .btn-primary:hover {
-      background-color: var(--accent-hover);
-    }
-
-    .btn.active {
-      background-color: var(--accent-indigo);
-      border-color: var(--accent-indigo);
-    }
-
-    /* CSS Line 152: Main Grid Container */
+    /* CSS Line 131: Main Layout Grid */
     main {
       flex: 1;
-      padding: 12px;
+      padding: 10px;
       display: grid;
-      gap: 12px;
+      gap: 10px;
       grid-template-columns: repeat(3, 1fr);
       height: calc(100vh - var(--header-height));
     }
 
-    /* CSS Line 161: Chat Cards */
+    /* CSS Line 140: Chat Box Container Cards */
     .chat-card {
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -160,18 +143,18 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     }
 
     .chat-header {
-      padding: 10px 14px;
+      padding: 8px 12px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       font-weight: 700;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       border-bottom: 1px solid var(--card-border);
-      background-color: rgba(0, 0, 0, 0.3);
+      background-color: rgba(0, 0, 0, 0.25);
     }
 
     .chat-header .badge {
@@ -188,7 +171,7 @@
 
     .card-actions {
       display: flex;
-      gap: 6px;
+      gap: 4px;
     }
 
     .btn-icon {
@@ -197,7 +180,7 @@
       color: var(--text-muted);
       cursor: pointer;
       font-size: 1.1rem;
-      padding: 6px 10px;
+      padding: 4px 8px;
       min-height: 44px;
       min-width: 44px;
       display: flex;
@@ -207,18 +190,16 @@
     }
 
     .btn-icon:hover {
-      background-color: rgba(255, 255, 255, 0.08);
       color: var(--text-main);
+      background-color: rgba(255, 255, 255, 0.08);
     }
 
-    .chat-body {
+    .iframe-wrapper {
       flex: 1;
       width: 100%;
       height: 100%;
       position: relative;
       background: #000;
-      display: flex;
-      flex-direction: column;
     }
 
     iframe {
@@ -226,45 +207,28 @@
       height: 100%;
       border: none;
       display: block;
-      flex: 1;
     }
 
-    /* CSS Line 239: Fallback Overlay for Protected Frames */
-    .fallback-box {
+    /* CSS Line 213: Streamlabs Config Bar */
+    .widget-config-bar {
+      padding: 6px 10px;
+      background: #0d1017;
+      border-bottom: 1px solid var(--card-border);
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding: 24px;
-      text-align: center;
-      background: radial-gradient(circle at center, #1b202c 0%, #0d1017 100%);
-      gap: 12px;
+      gap: 6px;
     }
 
-    .fallback-box h3 {
-      font-size: 1.05rem;
-      color: #fff;
-    }
-
-    .fallback-box p {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      max-width: 320px;
-    }
-
-    .url-input {
-      width: 90%;
-      max-width: 320px;
-      padding: 10px;
-      background: #0b0e14;
+    .widget-config-bar input {
+      flex: 1;
+      background: var(--card-bg);
       border: 1px solid var(--card-border);
-      border-radius: 6px;
+      border-radius: 4px;
       color: #fff;
-      font-size: 0.85rem;
+      padding: 6px 10px;
+      font-size: 0.8rem;
     }
 
-    /* CSS Line 275: Responsive View Breakpoints */
+    /* CSS Line 232: Responsive Breakpoints */
     @media (max-width: 1024px) {
       main {
         grid-template-columns: 1fr 1fr;
@@ -272,34 +236,37 @@
       }
       .card-tikfinity {
         grid-column: span 2;
-        min-height: 500px;
+        min-height: 600px;
       }
       .chat-card {
-        min-height: 500px;
+        min-height: 600px;
       }
     }
 
     @media (max-width: 768px) {
       header {
         flex-direction: column;
-        align-items: stretch;
+        height: auto;
+        padding: 8px;
+        gap: 6px;
       }
 
       .controls {
+        width: 100%;
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(4, 1fr);
       }
 
       main {
         display: flex;
         flex-direction: column;
         height: auto;
-        padding: 8px;
+        padding: 6px;
       }
 
       .chat-card {
-        height: 70vh;
-        min-height: 420px;
+        height: 75vh;
+        min-height: 450px;
       }
 
       main.mobile-tab-view .chat-card {
@@ -307,7 +274,7 @@
       }
       main.mobile-tab-view .chat-card.active-tab {
         display: flex;
-        height: calc(100vh - 140px);
+        height: calc(100vh - 110px);
       }
     }
   </style>
@@ -315,30 +282,27 @@
 
 <body>
   <!-- ==========================================================================
-       HEADER & NAVIGATION (Starts at Line 328)
+       HEADER (Starts at Line 285)
        ========================================================================== -->
   <header>
     <a href="#" class="brand-logo" title="Reload Dashboard">
       <span>🛡️</span> Multi-Chat Hub
     </a>
 
-    <div class="controls">
-      <button class="btn btn-primary" onclick="launchAllPopouts()" title="Open synchronized popouts for all 3 chats">
-        🚀 Launch All Popouts
-      </button>
+    <nav class="controls" aria-label="Layout Switcher">
       <button class="btn active" id="btn-all" onclick="setLayout('all')">All Feeds</button>
       <button class="btn" id="btn-nimo" onclick="setLayout('nimo')">Nimo</button>
       <button class="btn" id="btn-streamlabs" onclick="setLayout('streamlabs')">Streamlabs</button>
       <button class="btn" id="btn-tikfinity" onclick="setLayout('tikfinity')">TikFinity</button>
-    </div>
+    </nav>
   </header>
 
   <!-- ==========================================================================
-       MAIN CONTENT: CHAT FEEDS (Starts at Line 348)
+       MAIN CONTENT: DIRECT EMBED CARDS (Starts at Line 301)
        ========================================================================== -->
   <main id="chat-container">
 
-    <!-- BOX 1: NIMO TV -->
+    <!-- BOX 1: NIMO TV DIRECT EMBED -->
     <section class="chat-card card-nimo" id="box-nimo">
       <div class="chat-header">
         <div>
@@ -346,56 +310,64 @@
           <span>Nimo TV Chat</span>
         </div>
         <div class="card-actions">
-          <button class="btn-icon" onclick="openPopout('https://dashboard.nimo.tv/popout/chat/1465016441', 'NimoChat', 450, 700)" title="Popout Chat">↗️</button>
+          <button class="btn-icon" onclick="reloadFrame('frame-nimo')" title="Refresh Frame">🔄</button>
         </div>
       </div>
-      <div class="chat-body" id="nimo-body">
-        <div class="fallback-box">
-          <h3>Nimo TV Security Protection</h3>
-          <p>Nimo TV blocks embedded iframes on GitHub Pages via security headers. Open the dedicated popout window below.</p>
-          <button class="btn btn-primary" onclick="openPopout('https://dashboard.nimo.tv/popout/chat/1465016441', 'NimoChat', 450, 700)">
-            Open Nimo Popout
-          </button>
-        </div>
+      <div class="iframe-wrapper">
+        <iframe 
+          id="frame-nimo" 
+          src="https://dashboard.nimo.tv/popout/chat/1465016441" 
+          title="Nimo TV Chat"
+          allow="autoplay; encrypted-media; fullscreen"
+          loading="lazy">
+        </iframe>
       </div>
     </section>
 
-    <!-- BOX 2: STREAMLABS -->
+    <!-- BOX 2: STREAMLABS DIRECT EMBED -->
     <section class="chat-card card-streamlabs" id="box-streamlabs">
       <div class="chat-header">
         <div>
           <span class="badge"></span>
-          <span>Streamlabs Chat</span>
+          <span>Streamlabs Chat Box</span>
         </div>
         <div class="card-actions">
-          <button class="btn-icon" onclick="openPopout('https://streamlabs.com/multichat', 'StreamlabsChat', 450, 700)" title="Popout Multichat">↗️</button>
+          <button class="btn-icon" onclick="reloadFrame('frame-streamlabs')" title="Refresh Frame">🔄</button>
         </div>
       </div>
-      <div class="chat-body" id="streamlabs-body">
-        <div class="fallback-box">
-          <h3>Streamlabs Multichat</h3>
-          <p>Open the live dashboard popout, or paste your <strong>Streamlabs Chat Box Widget URL</strong> below to embed it directly inside GitHub Pages.</p>
-          <button class="btn btn-primary" onclick="openPopout('https://streamlabs.com/multichat', 'StreamlabsChat', 450, 700)">
-            Open Multichat Popout
-          </button>
-          <input type="text" id="sl-widget-url" class="url-input" placeholder="Paste Widget URL & Enter..." onchange="saveStreamlabsWidget(this.value)" />
-        </div>
+      
+      <!-- Optional config input if you want to switch between standard multichat and the widget feed -->
+      <div class="widget-config-bar">
+        <input 
+          type="text" 
+          id="sl-input" 
+          placeholder="Paste Streamlabs Chat Box Widget URL here..." 
+          onchange="updateStreamlabsSrc(this.value)" />
+      </div>
+
+      <div class="iframe-wrapper">
+        <iframe 
+          id="frame-streamlabs" 
+          src="https://streamlabs.com/multichat" 
+          title="Streamlabs Chat"
+          allow="autoplay; encrypted-media; fullscreen"
+          loading="lazy">
+        </iframe>
       </div>
     </section>
 
-    <!-- BOX 3: TIKFINITY -->
+    <!-- BOX 3: TIKFINITY DIRECT EMBED -->
     <section class="chat-card card-tikfinity" id="box-tikfinity">
       <div class="chat-header">
         <div>
           <span class="badge"></span>
-          <span>TikFinity Chat (CID: 2565805)</span>
+          <span>TikFinity Chat</span>
         </div>
         <div class="card-actions">
           <button class="btn-icon" onclick="reloadFrame('frame-tikfinity')" title="Refresh Frame">🔄</button>
-          <button class="btn-icon" onclick="openPopout('https://tikfinity.zerody.one/widget/chat?cid=2565805', 'TikFinityChat', 450, 700)" title="Popout Frame">↗️</button>
         </div>
       </div>
-      <div class="chat-body">
+      <div class="iframe-wrapper">
         <iframe 
           id="frame-tikfinity" 
           src="https://tikfinity.zerody.one/widget/chat?cid=2565805" 
@@ -409,77 +381,39 @@
   </main>
 
   <!-- ==========================================================================
-       JAVASCRIPT LOGIC (Starts at Line 427)
+       JAVASCRIPT (Starts at Line 384)
        ========================================================================== -->
   <script>
-    // JS Line 430: Check Local Storage for Custom Widget URL on Load
+    // JS Line 387: On Page Load check for saved Streamlabs Widget URL
     window.addEventListener('DOMContentLoaded', () => {
-      const savedSLUrl = localStorage.getItem('streamlabs_widget_url');
-      if (savedSLUrl) {
-        embedStreamlabsWidget(savedSLUrl);
+      const savedSL = localStorage.getItem('werewolf_sl_widget');
+      if (savedSL) {
+        document.getElementById('sl-input').value = savedSL;
+        document.getElementById('frame-streamlabs').src = savedSL;
       }
     });
 
-    // JS Line 438: Save & Embed Streamlabs Widget
-    function saveStreamlabsWidget(url) {
-      if (url && url.includes('streamlabs.com/widgets/chat-box')) {
-        localStorage.setItem('streamlabs_widget_url', url);
-        embedStreamlabsWidget(url);
+    // JS Line 396: Update Streamlabs Widget URL and persist in storage
+    function updateStreamlabsSrc(newUrl) {
+      if (newUrl.trim() !== '') {
+        localStorage.setItem('werewolf_sl_widget', newUrl.trim());
+        document.getElementById('frame-streamlabs').src = newUrl.trim();
+        gtag('event', 'streamlabs_widget_updated', { 'gamer_tag': 'werewolf3788' });
       }
     }
 
-    function embedStreamlabsWidget(url) {
-      const container = document.getElementById('streamlabs-body');
-      container.innerHTML = `<iframe id="frame-streamlabs" src="${url}" title="Streamlabs Chat Box" allow="autoplay; encrypted-media; fullscreen" loading="lazy"></iframe>`;
-    }
-
-    // JS Line 451: Standalone Window Popout Manager
-    function openPopout(url, windowName, width, height) {
-      const left = window.screenLeft + (window.outerWidth - width) / 2;
-      const top = window.screenTop + (window.outerHeight - height) / 2;
-      const features = `width=${width},height=${height},left=${left},top=${top},menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes`;
-      
-      window.open(url, windowName, features);
-
-      gtag('event', 'chat_popout_launched', {
-        'window_name': windowName,
-        'destination_url': url
-      });
-    }
-
-    // JS Line 466: Launch All 3 Chats Side-by-Side
-    function launchAllPopouts() {
-      const chats = [
-        { url: 'https://dashboard.nimo.tv/popout/chat/1465016441', name: 'NimoPopout', left: 40 },
-        { url: 'https://streamlabs.com/multichat', name: 'StreamlabsPopout', left: 510 },
-        { url: 'https://tikfinity.zerody.one/widget/chat?cid=2565805', name: 'TikFinityPopout', left: 980 }
-      ];
-
-      chats.forEach(chat => {
-        const features = `width=450,height=720,left=${chat.left},top=80,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes`;
-        window.open(chat.url, chat.name, features);
-      });
-
-      gtag('event', 'launch_all_popouts_clicked', {
-        'user_role': 'werewolf3788'
-      });
-    }
-
-    // JS Line 485: Frame Reload Function
+    // JS Line 405: Reload Individual Frame
     function reloadFrame(frameId) {
       const frame = document.getElementById(frameId);
       if (frame) {
-        const currentSrc = frame.src;
+        const src = frame.src;
         frame.src = '';
-        frame.src = currentSrc;
-
-        gtag('event', 'chat_iframe_refresh', {
-          'chat_target': frameId
-        });
+        frame.src = src;
+        gtag('event', 'chat_frame_reload', { 'target': frameId });
       }
     }
 
-    // JS Line 499: View Mode Switcher
+    // JS Line 416: Layout & Responsive Tab Switcher
     function setLayout(mode) {
       const container = document.getElementById('chat-container');
       const buttons = document.querySelectorAll('.controls .btn');
@@ -512,9 +446,7 @@
         });
       }
 
-      gtag('event', 'chat_view_change', {
-        'view_mode': mode
-      });
+      gtag('event', 'chat_view_change', { 'mode': mode });
     }
   </script>
 </body>
