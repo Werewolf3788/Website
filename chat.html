@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- ==========================================================================
-     Multi-Chat Stream Hub (werewolf3788)
-     Timestamp (24hr New York Time): 2026-08-21 18:54:12 EDT
+     Multi-Chat Stream Hub (Direct Embed Edition)
+     Timestamp (24hr New York Time): 2026-08-21 18:57:30 EDT
      ========================================================================== -->
 <html lang="en">
 <head>
@@ -24,7 +24,7 @@
       'send_page_view': true,
       'user_properties': {
         'gamer_tag': 'werewolf3788',
-        'app_type': 'stream_chat_hub'
+        'platform_type': 'multi_chat_hub'
       },
       'cookie_flags': 'SameSite=None;Secure'
     });
@@ -32,7 +32,7 @@
 
   <!-- ==========================================================================
        CSS STYLING (Starts at Line 36)
-       - High-contrast responsive design (Mobile stack / Desktop multi-column)
+       - High-contrast responsive design (Mobile stack / Desktop 3-column)
        - Minimum 44x44px touch targets
        ========================================================================== -->
   <style>
@@ -122,7 +122,7 @@
       border-color: var(--accent);
     }
 
-    /* CSS Line 128: Main 3-Column Layout */
+    /* CSS Line 128: Main 3-Column Screen Grid */
     main {
       flex: 1;
       padding: 10px;
@@ -132,7 +132,7 @@
       height: calc(100vh - var(--header-h));
     }
 
-    /* CSS Line 137: Chat Cards */
+    /* CSS Line 137: Chat Card Container */
     .chat-card {
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -271,11 +271,11 @@
   </header>
 
   <!-- ==========================================================================
-       MAIN CONTENT: CHAT IFRAMES (Starts at Line 276)
+       MAIN CONTENT: 3 DIRECT CHAT IFRAMES (Starts at Line 276)
        ========================================================================== -->
   <main id="chat-container">
 
-    <!-- BOX 1: NIMO TV -->
+    <!-- BOX 1: NIMO TV POPOUT CHAT -->
     <section class="chat-card card-nimo" id="box-nimo">
       <div class="chat-header">
         <div>
@@ -295,12 +295,12 @@
       </div>
     </section>
 
-    <!-- BOX 2: STREAMLABS CHAT BOX WIDGET (Token Embedded) -->
+    <!-- BOX 2: STREAMLABS CHAT BOX WIDGET -->
     <section class="chat-card card-streamlabs" id="box-streamlabs">
       <div class="chat-header">
         <div>
           <span class="badge"></span>
-          <span>Streamlabs Chat</span>
+          <span>Streamlabs Chat Box</span>
         </div>
         <button class="btn-reload" onclick="reloadFrame('frame-streamlabs')" title="Reload Streamlabs Chat">🔄</button>
       </div>
@@ -308,19 +308,19 @@
         <iframe 
           id="frame-streamlabs" 
           src="https://streamlabs.com/widgets/chat-box/v1/159CD4288F7EBA08FF901B1FBA29CB4EFBAEF68409E8A01BC855182E8D5DD545DB4761E7894E0E8B11D76B89F8F023C971C95D986311F34F8819A7DFEE6C212E629E64D0E64E871684947854EA06C107514B216CAD910C375FD4D105629B855DD69BA3179CA2C7D3BC3EEAB8DD54D49FC3062A523A67446A8329F99E3D" 
-          title="Streamlabs Chat Box"
+          title="Streamlabs Chat Box Widget"
           allow="autoplay; encrypted-media; fullscreen"
           loading="lazy">
         </iframe>
       </div>
     </section>
 
-    <!-- BOX 3: TIKFINITY -->
+    <!-- BOX 3: TIKFINITY LIVE CHAT -->
     <section class="chat-card card-tikfinity" id="box-tikfinity">
       <div class="chat-header">
         <div>
           <span class="badge"></span>
-          <span>TikFinity Chat</span>
+          <span>TikFinity Chat (CID: 2565805)</span>
         </div>
         <button class="btn-reload" onclick="reloadFrame('frame-tikfinity')" title="Reload TikFinity Chat">🔄</button>
       </div>
@@ -338,10 +338,10 @@
   </main>
 
   <!-- ==========================================================================
-       JAVASCRIPT LOGIC (Starts at Line 343)
+       JAVASCRIPT LOGIC (Starts at Line 341)
        ========================================================================== -->
   <script>
-    // JS Line 345: Frame Reloader
+    // JS Line 343: Frame Reloader
     function reloadFrame(frameId) {
       const frame = document.getElementById(frameId);
       if (frame) {
@@ -352,7 +352,7 @@
       }
     }
 
-    // JS Line 356: View Switcher
+    // JS Line 354: View Switcher
     function setLayout(mode) {
       const container = document.getElementById('chat-container');
       const buttons = document.querySelectorAll('.controls .btn');
