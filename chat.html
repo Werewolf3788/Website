@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <!-- ==========================================================================
-     Multi-Chat Stream Hub (Direct Embedded Hub)
-     Timestamp (24hr New York Time): 2026-08-21 18:55:00 EDT
+     Multi-Chat Stream Hub (werewolf3788)
+     Timestamp (24hr New York Time): 2026-08-21 18:54:12 EDT
      ========================================================================== -->
 <html lang="en">
 <head>
@@ -10,7 +10,7 @@
   <title>Multi-Stream Chat Hub | werewolf3788</title>
 
   <!-- ==========================================================================
-       Google Analytics (GA4 Tag: G-CTYHDF4MSD)
+       Google Analytics (GA4 Tag: G-CTYHDF4MSD) via GTM / gtag.js
        - Enhanced Measurement & Signals Enabled
        - 14 Month Data Retention Configured
        ========================================================================== -->
@@ -24,7 +24,7 @@
       'send_page_view': true,
       'user_properties': {
         'gamer_tag': 'werewolf3788',
-        'platform_type': 'multi_chat_embedded'
+        'app_type': 'stream_chat_hub'
       },
       'cookie_flags': 'SameSite=None;Secure'
     });
@@ -32,22 +32,22 @@
 
   <!-- ==========================================================================
        CSS STYLING (Starts at Line 36)
-       - Strict full-height card embeds (100% viewport fit)
-       - Responsive stack for mobile/tablet with >=44px touch targets
+       - High-contrast responsive design (Mobile stack / Desktop multi-column)
+       - Minimum 44x44px touch targets
        ========================================================================== -->
   <style>
-    /* CSS Line 42: Global Palette & Resets */
+    /* CSS Line 42: Global Resets & Theme Variables */
     :root {
-      --bg-main: #0b0e14;
-      --card-bg: #141824;
-      --card-border: #23293c;
+      --bg-dark: #0a0c10;
+      --card-bg: #141721;
+      --card-border: #222738;
       --text-main: #f3f4f6;
       --text-muted: #9ca3af;
-      --primary-accent: #6366f1;
+      --accent: #6366f1;
       --nimo-color: #26bbff;
       --streamlabs-color: #31f49f;
       --tikfinity-color: #ff004f;
-      --header-height: 56px;
+      --header-h: 56px;
     }
 
     * {
@@ -58,7 +58,7 @@
 
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      background-color: var(--bg-main);
+      background-color: var(--bg-dark);
       color: var(--text-main);
       font-size: 16px;
       line-height: 1.5;
@@ -67,10 +67,10 @@
       flex-direction: column;
     }
 
-    /* CSS Line 73: Sticky Header */
+    /* CSS Line 73: Top Header Bar */
     header {
-      height: var(--header-height);
-      background-color: #0f121d;
+      height: var(--header-h);
+      background-color: #0d1017;
       border-bottom: 2px solid var(--card-border);
       display: flex;
       align-items: center;
@@ -81,23 +81,20 @@
       z-index: 100;
     }
 
-    .brand-logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      text-decoration: none;
-      color: var(--text-main);
+    .brand-title {
       font-size: 1.1rem;
       font-weight: 700;
-      min-height: 44px;
-      min-width: 44px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .brand-logo span {
-      color: var(--primary-accent);
+    .brand-title span {
+      color: var(--accent);
     }
 
-    /* CSS Line 103: Switcher Controls */
+    /* CSS Line 100: View Switcher Controls */
     .controls {
       display: flex;
       gap: 6px;
@@ -121,21 +118,21 @@
     }
 
     .btn:hover, .btn.active {
-      background-color: var(--primary-accent);
-      border-color: var(--primary-accent);
+      background-color: var(--accent);
+      border-color: var(--accent);
     }
 
-    /* CSS Line 131: Main Layout Grid */
+    /* CSS Line 128: Main 3-Column Layout */
     main {
       flex: 1;
       padding: 10px;
       display: grid;
       gap: 10px;
       grid-template-columns: repeat(3, 1fr);
-      height: calc(100vh - var(--header-height));
+      height: calc(100vh - var(--header-h));
     }
 
-    /* CSS Line 140: Chat Box Container Cards */
+    /* CSS Line 137: Chat Cards */
     .chat-card {
       background-color: var(--card-bg);
       border: 1px solid var(--card-border);
@@ -154,7 +151,7 @@
       font-weight: 700;
       font-size: 0.9rem;
       border-bottom: 1px solid var(--card-border);
-      background-color: rgba(0, 0, 0, 0.25);
+      background-color: rgba(0, 0, 0, 0.3);
     }
 
     .chat-header .badge {
@@ -169,12 +166,7 @@
     .card-streamlabs .badge { background-color: var(--streamlabs-color); }
     .card-tikfinity .badge { background-color: var(--tikfinity-color); }
 
-    .card-actions {
-      display: flex;
-      gap: 4px;
-    }
-
-    .btn-icon {
+    .btn-reload {
       background: none;
       border: none;
       color: var(--text-muted);
@@ -189,7 +181,7 @@
       border-radius: 4px;
     }
 
-    .btn-icon:hover {
+    .btn-reload:hover {
       color: var(--text-main);
       background-color: rgba(255, 255, 255, 0.08);
     }
@@ -209,26 +201,7 @@
       display: block;
     }
 
-    /* CSS Line 213: Streamlabs Config Bar */
-    .widget-config-bar {
-      padding: 6px 10px;
-      background: #0d1017;
-      border-bottom: 1px solid var(--card-border);
-      display: flex;
-      gap: 6px;
-    }
-
-    .widget-config-bar input {
-      flex: 1;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 4px;
-      color: #fff;
-      padding: 6px 10px;
-      font-size: 0.8rem;
-    }
-
-    /* CSS Line 232: Responsive Breakpoints */
+    /* CSS Line 207: Responsive Breakpoints (Tablet / Mobile) */
     @media (max-width: 1024px) {
       main {
         grid-template-columns: 1fr 1fr;
@@ -236,10 +209,10 @@
       }
       .card-tikfinity {
         grid-column: span 2;
-        min-height: 600px;
+        min-height: 550px;
       }
       .chat-card {
-        min-height: 600px;
+        min-height: 550px;
       }
     }
 
@@ -282,12 +255,12 @@
 
 <body>
   <!-- ==========================================================================
-       HEADER (Starts at Line 285)
+       HEADER (Starts at Line 260)
        ========================================================================== -->
   <header>
-    <a href="#" class="brand-logo" title="Reload Dashboard">
+    <div class="brand-title">
       <span>🛡️</span> Multi-Chat Hub
-    </a>
+    </div>
 
     <nav class="controls" aria-label="Layout Switcher">
       <button class="btn active" id="btn-all" onclick="setLayout('all')">All Feeds</button>
@@ -298,20 +271,18 @@
   </header>
 
   <!-- ==========================================================================
-       MAIN CONTENT: DIRECT EMBED CARDS (Starts at Line 301)
+       MAIN CONTENT: CHAT IFRAMES (Starts at Line 276)
        ========================================================================== -->
   <main id="chat-container">
 
-    <!-- BOX 1: NIMO TV DIRECT EMBED -->
+    <!-- BOX 1: NIMO TV -->
     <section class="chat-card card-nimo" id="box-nimo">
       <div class="chat-header">
         <div>
           <span class="badge"></span>
           <span>Nimo TV Chat</span>
         </div>
-        <div class="card-actions">
-          <button class="btn-icon" onclick="reloadFrame('frame-nimo')" title="Refresh Frame">🔄</button>
-        </div>
+        <button class="btn-reload" onclick="reloadFrame('frame-nimo')" title="Reload Nimo Chat">🔄</button>
       </div>
       <div class="iframe-wrapper">
         <iframe 
@@ -324,48 +295,34 @@
       </div>
     </section>
 
-    <!-- BOX 2: STREAMLABS DIRECT EMBED -->
+    <!-- BOX 2: STREAMLABS CHAT BOX WIDGET (Token Embedded) -->
     <section class="chat-card card-streamlabs" id="box-streamlabs">
       <div class="chat-header">
         <div>
           <span class="badge"></span>
-          <span>Streamlabs Chat Box</span>
+          <span>Streamlabs Chat</span>
         </div>
-        <div class="card-actions">
-          <button class="btn-icon" onclick="reloadFrame('frame-streamlabs')" title="Refresh Frame">🔄</button>
-        </div>
+        <button class="btn-reload" onclick="reloadFrame('frame-streamlabs')" title="Reload Streamlabs Chat">🔄</button>
       </div>
-      
-      <!-- Optional config input if you want to switch between standard multichat and the widget feed -->
-      <div class="widget-config-bar">
-        <input 
-          type="text" 
-          id="sl-input" 
-          placeholder="Paste Streamlabs Chat Box Widget URL here..." 
-          onchange="updateStreamlabsSrc(this.value)" />
-      </div>
-
       <div class="iframe-wrapper">
         <iframe 
           id="frame-streamlabs" 
-          src="https://streamlabs.com/multichat" 
-          title="Streamlabs Chat"
+          src="https://streamlabs.com/widgets/chat-box/v1/159CD4288F7EBA08FF901B1FBA29CB4EFBAEF68409E8A01BC855182E8D5DD545DB4761E7894E0E8B11D76B89F8F023C971C95D986311F34F8819A7DFEE6C212E629E64D0E64E871684947854EA06C107514B216CAD910C375FD4D105629B855DD69BA3179CA2C7D3BC3EEAB8DD54D49FC3062A523A67446A8329F99E3D" 
+          title="Streamlabs Chat Box"
           allow="autoplay; encrypted-media; fullscreen"
           loading="lazy">
         </iframe>
       </div>
     </section>
 
-    <!-- BOX 3: TIKFINITY DIRECT EMBED -->
+    <!-- BOX 3: TIKFINITY -->
     <section class="chat-card card-tikfinity" id="box-tikfinity">
       <div class="chat-header">
         <div>
           <span class="badge"></span>
           <span>TikFinity Chat</span>
         </div>
-        <div class="card-actions">
-          <button class="btn-icon" onclick="reloadFrame('frame-tikfinity')" title="Refresh Frame">🔄</button>
-        </div>
+        <button class="btn-reload" onclick="reloadFrame('frame-tikfinity')" title="Reload TikFinity Chat">🔄</button>
       </div>
       <div class="iframe-wrapper">
         <iframe 
@@ -381,39 +338,21 @@
   </main>
 
   <!-- ==========================================================================
-       JAVASCRIPT (Starts at Line 384)
+       JAVASCRIPT LOGIC (Starts at Line 343)
        ========================================================================== -->
   <script>
-    // JS Line 387: On Page Load check for saved Streamlabs Widget URL
-    window.addEventListener('DOMContentLoaded', () => {
-      const savedSL = localStorage.getItem('werewolf_sl_widget');
-      if (savedSL) {
-        document.getElementById('sl-input').value = savedSL;
-        document.getElementById('frame-streamlabs').src = savedSL;
-      }
-    });
-
-    // JS Line 396: Update Streamlabs Widget URL and persist in storage
-    function updateStreamlabsSrc(newUrl) {
-      if (newUrl.trim() !== '') {
-        localStorage.setItem('werewolf_sl_widget', newUrl.trim());
-        document.getElementById('frame-streamlabs').src = newUrl.trim();
-        gtag('event', 'streamlabs_widget_updated', { 'gamer_tag': 'werewolf3788' });
-      }
-    }
-
-    // JS Line 405: Reload Individual Frame
+    // JS Line 345: Frame Reloader
     function reloadFrame(frameId) {
       const frame = document.getElementById(frameId);
       if (frame) {
         const src = frame.src;
         frame.src = '';
         frame.src = src;
-        gtag('event', 'chat_frame_reload', { 'target': frameId });
+        gtag('event', 'chat_frame_reloaded', { 'target': frameId });
       }
     }
 
-    // JS Line 416: Layout & Responsive Tab Switcher
+    // JS Line 356: View Switcher
     function setLayout(mode) {
       const container = document.getElementById('chat-container');
       const buttons = document.querySelectorAll('.controls .btn');
@@ -446,7 +385,7 @@
         });
       }
 
-      gtag('event', 'chat_view_change', { 'mode': mode });
+      gtag('event', 'chat_layout_changed', { 'layout_mode': mode });
     }
   </script>
 </body>
