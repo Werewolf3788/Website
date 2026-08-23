@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Line 4: Metadata & Viewport Configuration -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Sniper Elite 5: Master Log & Progress Tracker</title>
     
-    <!-- Line 9: Universal Google Analytics 4 Tag (G-CTYHDF4MSD) -->
+    <!-- Universal Google Analytics 4 Tag (G-CTYHDF4MSD) -->
     <script async src="//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -18,17 +17,15 @@
         });
     </script>
 
-    <!-- Line 22: Embedded Master Stylesheet (Restored Terminal & HUD Layout) -->
     <style>
         :root {
             --ser-color: #ff8800;
             --ser-glow: rgba(255, 136, 0, 0.6);
             --bg-dark: #07080a;
-            --bg-card: rgba(18, 20, 26, 0.94);
-            --bg-card-hover: rgba(28, 30, 38, 0.95);
+            --bg-card: #12141a;
+            --bg-card-hover: #181b24;
             --text-main: #ffffff;
-            --text-dim: #a0a5b5;
-            --border-dim: rgba(255, 136, 0, 0.4);
+            --border-dim: rgba(255, 136, 0, 0.35);
         }
 
         * {
@@ -46,8 +43,8 @@
             background-attachment: fixed;
             color: var(--text-main);
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            font-size: 16px;
-            line-height: 1.5;
+            font-size: 15px;
+            line-height: 1.4;
             min-height: 100vh;
             padding-bottom: 75px;
             overflow-x: hidden;
@@ -169,7 +166,7 @@
             font-weight: bold;
         }
 
-        /* Top Box 1: Operative Terminal & Active Mission Selector */
+        /* Top Operative Terminal */
         .terminal-container {
             max-width: 1400px;
             margin: 18px auto 0 auto;
@@ -252,7 +249,7 @@
             background: #242630;
         }
 
-        /* Top Box 2: Intel Registry HUD Meter */
+        /* Top Intel Registry Box */
         .intel-container {
             max-width: 1400px;
             margin: 14px auto 14px auto;
@@ -304,7 +301,7 @@
             transition: width 0.4s ease-in-out;
         }
 
-        /* Mission List Container & Category Sections */
+        /* Collectibles Container */
         #section-container {
             max-width: 1400px;
             margin: 0 auto;
@@ -347,85 +344,167 @@
         }
 
         .category-content {
-            padding: 14px;
-            background: rgba(10, 11, 15, 0.85);
+            padding: 16px;
+            background: rgba(10, 11, 15, 0.90);
         }
 
+        /* 2-Column Responsive Card Grid */
         .item-grid {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 12px;
+            gap: 16px;
         }
 
-        @media (min-width: 640px) { .item-grid { grid-template-columns: repeat(2, 1fr); } }
-        @media (min-width: 1024px) { .item-grid { grid-template-columns: repeat(3, 1fr); } }
-        @media (min-width: 1400px) { .item-grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (min-width: 800px) {
+            .item-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
 
+        /* Card Container */
         .item-card {
-            background: var(--bg-card);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 6px;
-            padding: 14px;
+            background: #111319;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            padding: 16px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            min-height: 160px;
+            min-height: 220px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
         .item-card:hover {
-            background: var(--bg-card-hover);
-            border-color: rgba(255, 136, 0, 0.3);
+            background: #161822;
+            border-color: rgba(255, 136, 0, 0.4);
         }
 
         .item-card.completed {
-            border-color: rgba(76, 175, 80, 0.6);
-            background: rgba(15, 28, 18, 0.95);
+            border-color: rgba(76, 175, 80, 0.7);
+            background: #0d1a11;
         }
 
-        .item-type-tag {
+        .item-type-badge {
             display: inline-block;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 900;
             text-transform: uppercase;
-            padding: 2px 6px;
+            padding: 4px 8px;
             border-radius: 4px;
-            background: #252830;
-            color: var(--ser-color);
-            letter-spacing: 0.5px;
+            background: #252834;
+            color: #fff;
+            letter-spacing: 0.8px;
+            margin-bottom: 8px;
         }
 
-        .toggle-btn {
-            width: 100%;
-            background: #222530;
-            color: #fff;
-            border: 1px solid #444;
+        .item-title {
+            font-size: 1.05rem;
+            font-weight: 900;
+            color: #ffffff;
+            margin-bottom: 6px;
+        }
+
+        .item-desc {
+            font-size: 0.82rem;
+            color: #bbb;
+            font-style: italic;
+            line-height: 1.4;
+            margin-bottom: 14px;
+        }
+
+        /* Team Intel Multi-Player Row */
+        .team-intel-row {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 0;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            margin-bottom: 12px;
+        }
+
+        .team-intel-label {
+            font-size: 0.68rem;
+            font-weight: 900;
+            color: #777;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            margin-right: 4px;
+        }
+
+        .team-badge {
+            font-size: 0.68rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 4px 8px;
             border-radius: 4px;
-            font-size: 0.78rem;
-            font-weight: 800;
+            background: #1a1d26;
+            color: #666;
+            border: 1px solid #2a2e3d;
+            transition: all 0.2s ease;
+        }
+
+        .team-badge.is-collected {
+            background: rgba(0, 204, 102, 0.15);
+            color: #00ff88;
+            border-color: #00cc66;
+            box-shadow: 0 0 8px rgba(0, 255, 136, 0.4);
+            font-weight: 900;
+        }
+
+        /* Button Actions Row */
+        .card-actions-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .watch-clip-btn {
+            background: #4a0d13;
+            border: 1px solid #75141e;
+            color: #ffb3b8;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            text-decoration: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 44px;
+            transition: all 0.2s ease;
+        }
+
+        .watch-clip-btn:hover {
+            background: #75141e;
+            color: #fff;
+        }
+
+        .confirm-toggle-btn {
+            background: #000000;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
             cursor: pointer;
             min-height: 44px;
-            margin-top: 10px;
+            transition: all 0.2s ease;
         }
 
-        .toggle-btn.completed-btn {
-            background: #1b4724;
-            border-color: #2e7d32;
-            color: #a5d6a7;
+        .confirm-toggle-btn:hover {
+            border-color: var(--ser-color);
+            color: var(--ser-color);
         }
 
-        .yt-clip-btn {
-            font-size: 10px;
-            text-decoration: none;
-            padding: 3px 8px;
-            border-radius: 4px;
-            background: #cc0000;
-            color: #fff;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            min-height: 24px;
+        .confirm-toggle-btn.completed-state {
+            background: #113819;
+            border-color: #1c662d;
+            color: #79e08f;
         }
 
         /* Sticky Bottom Verification Footer */
@@ -459,7 +538,6 @@
 </head>
 <body>
 
-    <!-- Header Navigation & Status -->
     <header>
         <div class="header-top">
             <div class="header-title outlined-text">Sniper Elite 5: Master Log</div>
@@ -468,7 +546,6 @@
         <nav id="csv-menu-bar"></nav>
     </header>
 
-    <!-- Top Box 1: Unified Master Operative Terminal Box -->
     <section class="terminal-container">
         <div class="master-terminal-card">
             <div class="terminal-group">
@@ -477,9 +554,7 @@
             </div>
             <div class="terminal-group">
                 <div class="terminal-label">Active Mission Focus</div>
-                <select id="mission-focus-select" class="mission-select-box outlined-text" onchange="appState.setActiveMission(this.value)">
-                    <!-- Populated dynamically by tracker.js -->
-                </select>
+                <select id="mission-focus-select" class="mission-select-box outlined-text" onchange="appState.setActiveMission(this.value)"></select>
             </div>
             <div class="operative-buttons-row">
                 <button class="profile-btn active-btn" onclick="appState.switchHunter('Werewolf3788')">Werewolf3788</button>
@@ -490,7 +565,6 @@
         </div>
     </section>
 
-    <!-- Top Box 2: Intel Registry Box -->
     <section class="intel-container">
         <div class="intel-card">
             <div class="intel-title outlined-text">Intel Registry</div>
@@ -501,12 +575,8 @@
         </div>
     </section>
 
-    <!-- Dynamic Collectibles Category Block -->
-    <main id="section-container">
-        <!-- Rendered completely by tracker.js -->
-    </main>
+    <main id="section-container"></main>
 
-    <!-- Master Tracker Script with Dynamic Cache-Buster -->
-    <script type="module" src="tracker.js?v=20260823_0025"></script>
+    <script type="module" src="tracker.js?v=20260823_0045"></script>
 </body>
 </html>
