@@ -1,18 +1,19 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sun, Aug 23, 2026, 00:45 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 23, 2026, 02:15 (EDT - New York)
    Project: entertainment-71888
-   Version: v4.5.0-CLEAN-SYNC
+   Version: v4.7.0-NATIVE-MAP-SYNC
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
-   Notes: Restores complete styling, team badges per collectible, active mission
-          focus, all 19 PowerPyx collectibles for Mission 5, video clips, and 
-          universal HTTP/HTTPS support.
+   Notes: Native Leaflet Map integrated for Mission 7 (Secret Weapons).
+          Checking off any collectible automatically removes its map pin
+          in real time (and restores it if unchecked). Includes full multi-player
+          Team Intel badges, active mission focus, and auto cache purge.
    ============================================================================ */
 
 /* === SECTION: Auto Cache Purge === */
 (function purgeStaleTrackerCache() {
-    const activeVersion = 'v4.5.0-20260823-0045';
+    const activeVersion = 'v4.7.0-20260823-0215';
     const storedVersion = localStorage.getItem('se5_tracker_build_version');
     if (storedVersion !== activeVersion) {
         Object.keys(localStorage).forEach(key => {
@@ -59,7 +60,7 @@ const IN_GAME_TYPE_ORDER = {
     'Trophy': 7
 };
 
-/* === SECTION: Master Collectibles Dataset === */
+/* === SECTION: Master Collectibles Dataset (With Map Coordinates for M7) === */
 const sniperData = [
     // ---------------- MISSION 1: THE ATLANTIC WALL (19 Items) ----------------
     { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=25s' },
@@ -187,26 +188,26 @@ const sniperData = [
     { id: 'm6_wb2', cat: '6: Libération', name: 'SMG Workbench', type: 'Workbench', desc: 'Central underground cellar (same as HI2 Stolen Medals).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=415s' },
     { id: 'm6_wb3', cat: '6: Libération', name: 'Pistol Workbench', type: 'Workbench', desc: 'Top floor room in southern C-shaped building via scaffolding.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=438s' },
 
-    // ---------------- MISSION 7: SECRET WEAPONS (19 Items) ----------------
-    { id: 'm7_pl1', cat: '7: Secret Weapons', name: 'We Had a Deal', type: 'Personal Letter', desc: 'Upstairs table in the eastern trainyard office.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=20s' },
-    { id: 'm7_pl2', cat: '7: Secret Weapons', name: 'I\'m Done', type: 'Personal Letter', desc: 'Fireplace of far-eastern abandoned house (climb pipes to enter).', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=55s' },
-    { id: 'm7_pl3', cat: '7: Secret Weapons', name: 'I Can\'t Work Like This', type: 'Personal Letter', desc: 'Table on steel grate near hoisting V2 rocket in lower level.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=92s' },
-    { id: 'm7_pl4', cat: '7: Secret Weapons', name: 'The V2\'s Are Obsolete', type: 'Personal Letter', desc: 'Chair opposite the V2 Launch Site in the central dome.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=128s' },
-    { id: 'm7_pl5', cat: '7: Secret Weapons', name: 'Thinking Outside the Box', type: 'Personal Letter', desc: 'Top of zig-zag stairs in the northern dome room.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=165s' },
-    { id: 'm7_cd1', cat: '7: Secret Weapons', name: 'Inbound Deliveries', type: 'Classified Doc', desc: 'Looted from head engineer in eastern train station (or safe).', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=200s' },
-    { id: 'm7_cd2', cat: '7: Secret Weapons', name: 'Dr Junger\'s Schedule', type: 'Classified Doc', desc: 'Near window in SE train station building or western tent.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=235s' },
-    { id: 'm7_cd3', cat: '7: Secret Weapons', name: 'A-4B Logistical Issues', type: 'Classified Doc', desc: 'Top floor locked room in the northern Weapons Lab.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=270s' },
-    { id: 'm7_cd4', cat: '7: Secret Weapons', name: 'Intruder Sighted', type: 'Classified Doc', desc: 'Looted from sniper behind a tree west of the bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=305s' },
-    { id: 'm7_cd5', cat: '7: Secret Weapons', name: 'Pressurisation Report', type: 'Classified Doc', desc: 'Two staircases up inside the SW castle tower.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=340s' },
-    { id: 'm7_hi1', cat: '7: Secret Weapons', name: 'Peenemünde Lab ID', type: 'Hidden Item', desc: 'Under a table in the canteen area exiting the V2 dome.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=375s' },
-    { id: 'm7_hi2', cat: '7: Secret Weapons', name: 'Luftwaffe Playing Cards', type: 'Hidden Item', desc: 'Table inside guard house next to the blocked northern bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=410s' },
-    { id: 'm7_hi3', cat: '7: Secret Weapons', name: 'Prüfstand XII Plans', type: 'Hidden Item', desc: 'Rocky beach riverbank under the eastern side of the bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=445s' },
-    { id: 'm7_se1', cat: '7: Secret Weapons', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Among rocks south of the eastern abandoned house.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=480s' },
-    { id: 'm7_se2', cat: '7: Secret Weapons', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Inside a dam filter splashing water on the lower bridge out west.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=512s' },
-    { id: 'm7_se3', cat: '7: Secret Weapons', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Wall alcove opposite eastern tower in SW castle area.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=545s' },
-    { id: 'm7_wb1', cat: '7: Secret Weapons', name: 'Rifle Workbench', type: 'Workbench', desc: 'Axis Armoury north of V2 rockets (requires key or charge).', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=578s' },
-    { id: 'm7_wb2', cat: '7: Secret Weapons', name: 'SMG Workbench', type: 'Workbench', desc: 'Locked room at end of shower corridor from V2 dome spiral stairs.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=610s' },
-    { id: 'm7_wb3', cat: '7: Secret Weapons', name: 'Pistol Workbench', type: 'Workbench', desc: 'Cave behind wooden panels next to SW waterfall.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=642s' },
+    // ---------------- MISSION 7: SECRET WEAPONS (19 Items with Native Map Coordinates) ----------------
+    { id: 'm7_pl1', cat: '7: Secret Weapons', name: 'We Had a Deal', type: 'Personal Letter', desc: 'Upstairs table in the eastern trainyard office.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=20s', lat: 48.862, lng: 2.378, pin: 'PL1' },
+    { id: 'm7_pl2', cat: '7: Secret Weapons', name: 'I\'m Done', type: 'Personal Letter', desc: 'Fireplace of far-eastern abandoned house (climb pipes to enter).', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=55s', lat: 48.868, lng: 2.385, pin: 'PL2' },
+    { id: 'm7_pl3', cat: '7: Secret Weapons', name: 'I Can\'t Work Like This', type: 'Personal Letter', desc: 'Table on steel grate near hoisting V2 rocket in lower level.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=92s', lat: 48.855, lng: 2.348, pin: 'PL3' },
+    { id: 'm7_pl4', cat: '7: Secret Weapons', name: 'The V2\'s Are Obsolete', type: 'Personal Letter', desc: 'Chair opposite the V2 Launch Site in the central dome.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=128s', lat: 48.852, lng: 2.350, pin: 'PL4' },
+    { id: 'm7_pl5', cat: '7: Secret Weapons', name: 'Thinking Outside the Box', type: 'Personal Letter', desc: 'Top of zig-zag stairs in the northern dome room.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=165s', lat: 48.859, lng: 2.345, pin: 'PL5' },
+    { id: 'm7_cd1', cat: '7: Secret Weapons', name: 'Inbound Deliveries', type: 'Classified Doc', desc: 'Looted from head engineer in eastern train station (or safe).', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=200s', lat: 48.860, lng: 2.372, pin: 'CD1' },
+    { id: 'm7_cd2', cat: '7: Secret Weapons', name: 'Dr Junger\'s Schedule', type: 'Classified Doc', desc: 'Near window in SE train station building or western tent.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=235s', lat: 48.856, lng: 2.370, pin: 'CD2' },
+    { id: 'm7_cd3', cat: '7: Secret Weapons', name: 'A-4B Logistical Issues', type: 'Classified Doc', desc: 'Top floor locked room in the northern Weapons Lab.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=270s', lat: 48.865, lng: 2.338, pin: 'CD3' },
+    { id: 'm7_cd4', cat: '7: Secret Weapons', name: 'Intruder Sighted', type: 'Classified Doc', desc: 'Looted from sniper behind a tree west of the bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=305s', lat: 48.848, lng: 2.325, pin: 'CD4' },
+    { id: 'm7_cd5', cat: '7: Secret Weapons', name: 'Pressurisation Report', type: 'Classified Doc', desc: 'Two staircases up inside the SW castle tower.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=340s', lat: 48.842, lng: 2.318, pin: 'CD5' },
+    { id: 'm7_hi1', cat: '7: Secret Weapons', name: 'Peenemünde Lab ID', type: 'Hidden Item', desc: 'Under a table in the canteen area exiting the V2 dome.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=375s', lat: 48.851, lng: 2.355, pin: 'HI1' },
+    { id: 'm7_hi2', cat: '7: Secret Weapons', name: 'Luftwaffe Playing Cards', type: 'Hidden Item', desc: 'Table inside guard house next to the blocked northern bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=410s', lat: 48.872, lng: 2.330, pin: 'HI2' },
+    { id: 'm7_hi3', cat: '7: Secret Weapons', name: 'Prüfstand XII Plans', type: 'Hidden Item', desc: 'Rocky beach riverbank under the eastern side of the bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=445s', lat: 48.845, lng: 2.342, pin: 'HI3' },
+    { id: 'm7_se1', cat: '7: Secret Weapons', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Among rocks south of the eastern abandoned house.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=480s', lat: 48.866, lng: 2.388, pin: 'SE1' },
+    { id: 'm7_se2', cat: '7: Secret Weapons', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Inside a dam filter splashing water on the lower bridge out west.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=512s', lat: 48.846, lng: 2.312, pin: 'SE2' },
+    { id: 'm7_se3', cat: '7: Secret Weapons', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Wall alcove opposite eastern tower in SW castle area.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=545s', lat: 48.839, lng: 2.322, pin: 'SE3' },
+    { id: 'm7_wb1', cat: '7: Secret Weapons', name: 'Rifle Workbench', type: 'Workbench', desc: 'Axis Armoury north of V2 rockets (requires key or charge).', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=578s', lat: 48.857, lng: 2.340, pin: 'WB1' },
+    { id: 'm7_wb2', cat: '7: Secret Weapons', name: 'SMG Workbench', type: 'Workbench', desc: 'Locked room at end of shower corridor from V2 dome spiral stairs.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=610s', lat: 48.850, lng: 2.345, pin: 'WB2' },
+    { id: 'm7_wb3', cat: '7: Secret Weapons', name: 'Pistol Workbench', type: 'Workbench', desc: 'Cave behind wooden panels next to SW waterfall.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=642s', lat: 48.841, lng: 2.332, pin: 'WB3' },
 
     // ---------------- MISSION 8: RUBBLE AND RUIN (19 Items) ----------------
     { id: 'm8_pl1', cat: '8: Rubble and Ruin', name: 'It\'s Not Over Yet', type: 'Personal Letter', desc: 'Table in a ground floor side-room of the SE hotel.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=18s' },
@@ -323,19 +324,23 @@ const sniperData = [
     { id: 'm14_ch1', cat: '14: Kraken Awakes (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Destroy the carrier without triggering general alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' }
 ];
 
-/* === SECTION: App State & Multi-Player Firestore Synchronization === */
+/* === SECTION: App State Controller & Leaflet Map Engine === */
 const appState = {
     activeGamertag: 'Werewolf3788',
     platform: 'playstation',
-    activeMission: '6: Libération',
+    activeMission: '7: Secret Weapons',
     hunterData: [],
-    teamProgress: {}, // [gamertag]: [ {id, collected} ]
+    teamProgress: {},
     collapsedSections: {}, 
     db: null, auth: null, user: null,
     unsubListeners: [],
     isLoaded: false,
-    version: 'v4.5.0',
-    buildDate: '2026-08-23 00:45 EDT',
+    version: 'v4.7.0',
+    buildDate: '2026-08-23 02:15 EDT',
+    
+    // Map References
+    leafletMap: null,
+    markerLayers: {}, // [itemId]: LeafletMarker
 
     getDocRefForGamertag: function(gamertag) {
         const path = `users/${gamertag}/platform/${this.platform}/progress/sniper-elite-5`;
@@ -501,6 +506,69 @@ const appState = {
         this.render();
     },
 
+    initNativeMissionMap: function() {
+        const mapContainer = document.getElementById('m7-interactive-map');
+        if (!mapContainer || typeof L === 'undefined') return;
+
+        // Clean previous instance
+        if (this.leafletMap) {
+            this.leafletMap.remove();
+            this.leafletMap = null;
+        }
+
+        // Initialize leaflet instance centered on Secret Weapons coordinates
+        this.leafletMap = L.map('m7-interactive-map', {
+            center: [48.855, 2.350],
+            zoom: 14,
+            minZoom: 13,
+            maxZoom: 17
+        });
+
+        // Dark tactical satellite/map layer
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            maxZoom: 19
+        }).addTo(this.leafletMap);
+
+        this.markerLayers = {};
+
+        // Plot pins for Mission 7 items
+        const m7Items = this.hunterData.filter(i => i.cat.includes('7: Secret Weapons') && i.lat && i.lng);
+        m7Items.forEach(item => {
+            const pinIcon = L.divIcon({
+                className: 'custom-map-pin',
+                html: `<span>${item.pin}</span>`,
+                iconSize: [28, 28],
+                iconAnchor: [14, 14]
+            });
+
+            const marker = L.marker([item.lat, item.lng], { icon: pinIcon })
+                .bindPopup(`
+                    <div style="color:#000; font-family:sans-serif;">
+                        <strong style="color:#d35400;">${item.type}</strong><br>
+                        <strong>${item.name}</strong><br>
+                        <small style="color:#555;">${item.desc}</small>
+                    </div>
+                `);
+
+            this.markerLayers[item.id] = marker;
+
+            // Only show on map if UNCOLLECTED
+            if (!item.collected) {
+                marker.addTo(this.leafletMap);
+            }
+        });
+    },
+
+    updateMapPinVisibility: function(id, collected) {
+        if (!this.leafletMap || !this.markerLayers[id]) return;
+        if (collected) {
+            this.leafletMap.removeLayer(this.markerLayers[id]);
+        } else {
+            this.markerLayers[id].addTo(this.leafletMap);
+        }
+    },
+
     render: function() {
         const container = document.getElementById('section-container');
         if (!container) return;
@@ -536,6 +604,18 @@ const appState = {
             section.id = `section-${sid}`;
             section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''} ${isActiveFocus ? 'active-focus' : ''}`;
             
+            // Native Interactive Map Holder for Mission 7
+            const isMission7 = cat.includes('7: Secret Weapons');
+            const mapHtml = isMission7 ? `
+                <div class="native-map-wrapper">
+                    <div class="native-map-bar outlined-text">
+                        <span>🗺️ TACTICAL MAP &bull; ITEMS AUTO-HIDE WHEN COLLECTED</span>
+                        <span style="color:#aaa; font-size:10px;">CLICK PIN FOR DETAILS</span>
+                    </div>
+                    <div id="m7-interactive-map"></div>
+                </div>
+            ` : '';
+
             section.innerHTML = `
                 <div class="category-header outlined-text" onclick="appState.toggleSection('${sid}')">
                     <div style="display:flex; align-items:center; gap: 8px;">
@@ -545,6 +625,7 @@ const appState = {
                     <div style="font-weight:900; font-size: 15px; color: var(--ser-color); font-family: monospace;">${count}/${items.length}</div>
                 </div>
                 <div class="category-content">
+                    ${mapHtml}
                     <div class="item-grid"></div>
                 </div>
             `;
@@ -593,6 +674,12 @@ const appState = {
         const pct = document.getElementById('percent-text');
         if (bar) bar.style.width = percent + '%';
         if (pct) pct.innerText = `TOTAL COLLECTION: ${percent}%`;
+
+        // Render Map if Mission 7 is open
+        const m7Sid = '7SecretWeapons';
+        if (!this.collapsedSections[m7Sid]) {
+            setTimeout(() => this.initNativeMissionMap(), 50);
+        }
     },
 
     toggleItem: async function(id) {
@@ -608,6 +695,9 @@ const appState = {
                 opSaved.push({ id: item.id, collected: item.collected });
             }
             this.teamProgress[this.activeGamertag] = opSaved;
+
+            // Instant Map Pin removal/restore
+            this.updateMapPinVisibility(id, item.collected);
 
             this.render(); 
             this.sync();
