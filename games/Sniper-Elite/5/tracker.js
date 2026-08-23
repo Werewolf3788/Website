@@ -1,19 +1,18 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sun, Aug 23, 2026, 02:15 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 23, 2026, 02:45 (EDT - New York)
    Project: entertainment-71888
-   Version: v4.7.0-NATIVE-MAP-SYNC
+   Version: v5.0.0-INGAME-MAP-TEXTURES
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
-   Notes: Native Leaflet Map integrated for Mission 7 (Secret Weapons).
-          Checking off any collectible automatically removes its map pin
-          in real time (and restores it if unchecked). Includes full multi-player
-          Team Intel badges, active mission focus, and auto cache purge.
+   Notes: Direct in-game tactical map textures (CRS.Simple pixel grid) from game
+          files for all missions. Auto-hides pins when found. Full multi-player
+          Team Intel badges, 19 PowerPyx items for M5, and live cloud sync.
    ============================================================================ */
 
 /* === SECTION: Auto Cache Purge === */
 (function purgeStaleTrackerCache() {
-    const activeVersion = 'v4.7.0-20260823-0215';
+    const activeVersion = 'v5.0.0-20260823-0245';
     const storedVersion = localStorage.getItem('se5_tracker_build_version');
     if (storedVersion !== activeVersion) {
         Object.keys(localStorage).forEach(key => {
@@ -60,175 +59,192 @@ const IN_GAME_TYPE_ORDER = {
     'Trophy': 7
 };
 
-/* === SECTION: Master Collectibles Dataset (With Map Coordinates for M7) === */
+/* In-Game Map Tile Identifiers */
+const MISSION_MAP_CONFIG = {
+    '1TheAtlanticWall': { mapId: 'm01', w: 2048, h: 2048 },
+    '2OccupiedResidence': { mapId: 'm02', w: 2048, h: 2048 },
+    '3SpyAcademy': { mapId: 'm03', w: 2048, h: 2048 },
+    '4WarFactory': { mapId: 'm04', w: 2048, h: 2048 },
+    '5FestungGuernsey': { mapId: 'm05', w: 2048, h: 2048 },
+    '6Libration': { mapId: 'm06', w: 2048, h: 2048 },
+    '7SecretWeapons': { mapId: 'm07', w: 2048, h: 2048 },
+    '8RubbleandRuin': { mapId: 'm08', w: 2048, h: 2048 },
+    '10WolfMountainDLC': { mapId: 'm10', w: 2048, h: 2048 },
+    '11LandingForceDLC': { mapId: 'm11', w: 2048, h: 2048 },
+    '12ConquerorDLC': { mapId: 'm12', w: 2048, h: 2048 },
+    '13RoughLandingDLC': { mapId: 'm13', w: 2048, h: 2048 },
+    '14KrakenAwakesDLC': { mapId: 'm14', w: 2048, h: 2048 }
+};
+
+/* === SECTION: Master Collectibles Dataset (With Exact Pixel Coordinates for Maps) === */
 const sniperData = [
     // ---------------- MISSION 1: THE ATLANTIC WALL (19 Items) ----------------
-    { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=25s' },
-    { id: 'm1_pl2', cat: '1: The Atlantic Wall', name: 'Upcoming Delivery', type: 'Personal Letter', desc: 'Farm east of Steffen Beckendorf. Climb ladder on western side of outhouse.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=75s' },
-    { id: 'm1_pl3', cat: '1: The Atlantic Wall', name: 'Violets Are Wilting', type: 'Personal Letter', desc: 'Attic of the building containing the Atlantikwall Report.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=112s' },
-    { id: 'm1_pl4', cat: '1: The Atlantic Wall', name: 'Violets Don\'t Wilt', type: 'Personal Letter', desc: 'Inside hotel safe on the western side of the map.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=158s' },
-    { id: 'm1_pl5', cat: '1: The Atlantic Wall', name: 'Pests in the Garden', type: 'Personal Letter', desc: 'Beneath the gazebo table on the pier (south-western map).', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=195s' },
-    { id: 'm1_pl6', cat: '1: The Atlantic Wall', name: 'Boches at the Door', type: 'Personal Letter', desc: 'Downstairs sofa in the resistance safehouse.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=230s' },
-    { id: 'm1_cd1', cat: '1: The Atlantic Wall', name: 'Resistance Captured', type: 'Classified Doc', desc: 'Table inside the boathouse (requires boathouse key from officer).', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=268s' },
-    { id: 'm1_cd2', cat: '1: The Atlantic Wall', name: 'Beach Defences', type: 'Classified Doc', desc: 'Inside a safe in the north-western shack (SMG workbench area).', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=305s' },
-    { id: 'm1_cd3', cat: '1: The Atlantic Wall', name: 'Lacking Air Support', type: 'Classified Doc', desc: 'Inside a safe in the room under the radar tower.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=345s' },
-    { id: 'm1_cd4', cat: '1: The Atlantic Wall', name: 'Atlantikwall Report', type: 'Classified Doc', desc: 'Kitchen safe in the northern town houses near anti-air gun.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=382s' },
-    { id: 'm1_hi1', cat: '1: The Atlantic Wall', name: 'Resistance Photo', type: 'Hidden Item', desc: 'Upstairs table opposite the bed in the western beachfront pharmacy.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=420s' },
-    { id: 'm1_hi2', cat: '1: The Atlantic Wall', name: 'Radio Tin', type: 'Hidden Item', desc: 'Table in the stable area of the central farm.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=455s' },
-    { id: 'm1_hi3', cat: '1: The Atlantic Wall', name: 'FFI Flag', type: 'Hidden Item', desc: 'Draining board in the downstairs of the western farmhouse.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=490s' },
-    { id: 'm1_se1', cat: '1: The Atlantic Wall', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Chimney top of an inaccessible house opposite the eastern shack.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=525s' },
-    { id: 'm1_se2', cat: '1: The Atlantic Wall', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'On the roof of the western hotel.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=555s' },
-    { id: 'm1_se3', cat: '1: The Atlantic Wall', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'On top of the Vantage Point building in the south-east.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=585s' },
-    { id: 'm1_wb1', cat: '1: The Atlantic Wall', name: 'Rifle Workbench', type: 'Workbench', desc: 'Armoury room upstairs after rendezvousing with Blue Viper.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=615s' },
-    { id: 'm1_wb2', cat: '1: The Atlantic Wall', name: 'SMG Workbench', type: 'Workbench', desc: 'Attic of the resistance safehouse on the western map edge.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=648s' },
-    { id: 'm1_wb3', cat: '1: The Atlantic Wall', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside locked shack above gun battery in the north-west.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=680s' },
+    { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=25s', x: 1540, y: 780, pin: 'PL1' },
+    { id: 'm1_pl2', cat: '1: The Atlantic Wall', name: 'Upcoming Delivery', type: 'Personal Letter', desc: 'Farm east of Steffen Beckendorf. Climb ladder on western side of outhouse.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=75s', x: 1360, y: 890, pin: 'PL2' },
+    { id: 'm1_pl3', cat: '1: The Atlantic Wall', name: 'Violets Are Wilting', type: 'Personal Letter', desc: 'Attic of the building containing the Atlantikwall Report.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=112s', x: 1120, y: 980, pin: 'PL3' },
+    { id: 'm1_pl4', cat: '1: The Atlantic Wall', name: 'Violets Don\'t Wilt', type: 'Personal Letter', desc: 'Inside hotel safe on the western side of the map.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=158s', x: 620, y: 1280, pin: 'PL4' },
+    { id: 'm1_pl5', cat: '1: The Atlantic Wall', name: 'Pests in the Garden', type: 'Personal Letter', desc: 'Beneath the gazebo table on the pier (south-western map).', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=195s', x: 440, y: 1480, pin: 'PL5' },
+    { id: 'm1_pl6', cat: '1: The Atlantic Wall', name: 'Boches at the Door', type: 'Personal Letter', desc: 'Downstairs sofa in the resistance safehouse.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=230s', x: 710, y: 1180, pin: 'PL6' },
+    { id: 'm1_cd1', cat: '1: The Atlantic Wall', name: 'Resistance Captured', type: 'Classified Doc', desc: 'Table inside the boathouse (requires boathouse key from officer).', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=268s', x: 530, y: 1350, pin: 'CD1' },
+    { id: 'm1_cd2', cat: '1: The Atlantic Wall', name: 'Beach Defences', type: 'Classified Doc', desc: 'Inside a safe in the north-western shack (SMG workbench area).', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=305s', x: 580, y: 640, pin: 'CD2' },
+    { id: 'm1_cd3', cat: '1: The Atlantic Wall', name: 'Lacking Air Support', type: 'Classified Doc', desc: 'Inside a safe in the room under the radar tower.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=345s', x: 1490, y: 720, pin: 'CD3' },
+    { id: 'm1_cd4', cat: '1: The Atlantic Wall', name: 'Atlantikwall Report', type: 'Classified Doc', desc: 'Kitchen safe in the northern town houses near anti-air gun.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=382s', x: 1150, y: 950, pin: 'CD4' },
+    { id: 'm1_hi1', cat: '1: The Atlantic Wall', name: 'Resistance Photo', type: 'Hidden Item', desc: 'Upstairs table opposite the bed in the western beachfront pharmacy.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=420s', x: 640, y: 1250, pin: 'HI1' },
+    { id: 'm1_hi2', cat: '1: The Atlantic Wall', name: 'Radio Tin', type: 'Hidden Item', desc: 'Table in the stable area of the central farm.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=455s', x: 1220, y: 1040, pin: 'HI2' },
+    { id: 'm1_hi3', cat: '1: The Atlantic Wall', name: 'FFI Flag', type: 'Hidden Item', desc: 'Draining board in the downstairs of the western farmhouse.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=490s', x: 790, y: 1120, pin: 'HI3' },
+    { id: 'm1_se1', cat: '1: The Atlantic Wall', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Chimney top of an inaccessible house opposite the eastern shack.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=525s', x: 1560, y: 790, pin: 'SE1' },
+    { id: 'm1_se2', cat: '1: The Atlantic Wall', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'On the roof of the western hotel.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=555s', x: 610, y: 1290, pin: 'SE2' },
+    { id: 'm1_se3', cat: '1: The Atlantic Wall', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'On top of the Vantage Point building in the south-east.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=585s', x: 1620, y: 1450, pin: 'SE3' },
+    { id: 'm1_wb1', cat: '1: The Atlantic Wall', name: 'Rifle Workbench', type: 'Workbench', desc: 'Armoury room upstairs after rendezvousing with Blue Viper.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=615s', x: 1390, y: 1320, pin: 'WB1' },
+    { id: 'm1_wb2', cat: '1: The Atlantic Wall', name: 'SMG Workbench', type: 'Workbench', desc: 'Attic of the resistance safehouse on the western map edge.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=648s', x: 720, y: 1190, pin: 'WB2' },
+    { id: 'm1_wb3', cat: '1: The Atlantic Wall', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside locked shack above gun battery in the north-west.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=680s', x: 570, y: 630, pin: 'WB3' },
 
     // ---------------- MISSION 2: OCCUPIED RESIDENCE (19 Items) ----------------
-    { id: 'm2_pl1', cat: '2: Occupied Residence', name: 'Do Not Fail Me, Nephew', type: 'Personal Letter', desc: 'Table in an open room upstairs overlooking the main courtyard.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=20s' },
-    { id: 'm2_pl2', cat: '2: Occupied Residence', name: 'Need a Scapegoat', type: 'Personal Letter', desc: 'Box at foot of bed in Friedrich Kummler\'s quarters (second floor).', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=58s' },
-    { id: 'm2_pl3', cat: '2: Occupied Residence', name: 'Brother, I Have a Plan', type: 'Personal Letter', desc: 'Third floor dorms in the central part of the chateau.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=95s' },
-    { id: 'm2_pl4', cat: '2: Occupied Residence', name: 'Good Plan, Let\'s Do It', type: 'Personal Letter', desc: 'On a box in the sniper outhouse north-east of the garden.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=132s' },
-    { id: 'm2_cd1', cat: '2: Occupied Residence', name: 'Orders of the Day', type: 'Classified Doc', desc: 'Inside a locked locker next to the central path lookout tower.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=168s' },
-    { id: 'm2_cd2', cat: '2: Occupied Residence', name: 'Renovations Completed', type: 'Classified Doc', desc: 'On the desk inside Moller\'s office.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=204s' },
-    { id: 'm2_cd3', cat: '2: Occupied Residence', name: 'Operation Kraken', type: 'Classified Doc', desc: 'In Moller\'s hidden study (pull the painting to enter).', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=242s' },
-    { id: 'm2_cd4', cat: '2: Occupied Residence', name: 'New Orders, Effective Immediately', type: 'Classified Doc', desc: 'Table inside the far-west resistance safehouse.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=280s' },
-    { id: 'm2_cd5', cat: '2: Occupied Residence', name: 'Immediate Request for Attic Repairs', type: 'Classified Doc', desc: 'Table in an outhouse on the far east side.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=315s' },
-    { id: 'm2_cd6', cat: '2: Occupied Residence', name: 'Grateful Thanks', type: 'Classified Doc', desc: 'Table beneath Moller\'s painting in his hidden room.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=350s' },
-    { id: 'm2_hi1', cat: '2: Occupied Residence', name: 'Old Man Statuette', type: 'Hidden Item', desc: 'Inside the safe hidden behind a painting in Kummler\'s quarters.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=388s' },
-    { id: 'm2_hi2', cat: '2: Occupied Residence', name: 'Group Statuette', type: 'Hidden Item', desc: 'Inside a locked trunk in the third-floor dormitories.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=425s' },
-    { id: 'm2_hi3', cat: '2: Occupied Residence', name: 'Soldier Statuette', type: 'Hidden Item', desc: 'Looted from the sniper in the north-east outhouse.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=460s' },
-    { id: 'm2_se1', cat: '2: Occupied Residence', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'On the roof of the L-shaped farmhouse on the far west.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=498s' },
-    { id: 'm2_se2', cat: '2: Occupied Residence', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Tip of a ledge looking west from the main gates bridge.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=530s' },
-    { id: 'm2_se3', cat: '2: Occupied Residence', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Eastern side of an outhouse just north of the chateau.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=562s' },
-    { id: 'm2_wb1', cat: '2: Occupied Residence', name: 'Rifle Workbench', type: 'Workbench', desc: 'Inside the eastern cellar armoury.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=595s' },
-    { id: 'm2_wb2', cat: '2: Occupied Residence', name: 'SMG Workbench', type: 'Workbench', desc: 'Roof area of the western resistance safehouse (climb vines).', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=630s' },
-    { id: 'm2_wb3', cat: '2: Occupied Residence', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside the eastern outhouse armoury.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=665s' },
+    { id: 'm2_pl1', cat: '2: Occupied Residence', name: 'Do Not Fail Me, Nephew', type: 'Personal Letter', desc: 'Table in an open room upstairs overlooking the main courtyard.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=20s', x: 1040, y: 980, pin: 'PL1' },
+    { id: 'm2_pl2', cat: '2: Occupied Residence', name: 'Need a Scapegoat', type: 'Personal Letter', desc: 'Box at foot of bed in Friedrich Kummler\'s quarters (second floor).', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=58s', x: 1060, y: 950, pin: 'PL2' },
+    { id: 'm2_pl3', cat: '2: Occupied Residence', name: 'Brother, I Have a Plan', type: 'Personal Letter', desc: 'Third floor dorms in the central part of the chateau.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=95s', x: 1030, y: 920, pin: 'PL3' },
+    { id: 'm2_pl4', cat: '2: Occupied Residence', name: 'Good Plan, Let\'s Do It', type: 'Personal Letter', desc: 'On a box in the sniper outhouse north-east of the garden.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=132s', x: 1350, y: 740, pin: 'PL4' },
+    { id: 'm2_cd1', cat: '2: Occupied Residence', name: 'Orders of the Day', type: 'Classified Doc', desc: 'Inside a locked locker next to the central path lookout tower.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=168s', x: 980, y: 1250, pin: 'CD1' },
+    { id: 'm2_cd2', cat: '2: Occupied Residence', name: 'Renovations Completed', type: 'Classified Doc', desc: 'On the desk inside Moller\'s office.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=204s', x: 1080, y: 960, pin: 'CD2' },
+    { id: 'm2_cd3', cat: '2: Occupied Residence', name: 'Operation Kraken', type: 'Classified Doc', desc: 'In Moller\'s hidden study (pull the painting to enter).', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=242s', x: 1090, y: 970, pin: 'CD3' },
+    { id: 'm2_cd4', cat: '2: Occupied Residence', name: 'New Orders, Effective Immediately', type: 'Classified Doc', desc: 'Table inside the far-west resistance safehouse.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=280s', x: 580, y: 1100, pin: 'CD4' },
+    { id: 'm2_cd5', cat: '2: Occupied Residence', name: 'Immediate Request for Attic Repairs', type: 'Classified Doc', desc: 'Table in an outhouse on the far east side.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=315s', x: 1460, y: 880, pin: 'CD5' },
+    { id: 'm2_cd6', cat: '2: Occupied Residence', name: 'Grateful Thanks', type: 'Classified Doc', desc: 'Table beneath Moller\'s painting in his hidden room.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=350s', x: 1095, y: 975, pin: 'CD6' },
+    { id: 'm2_hi1', cat: '2: Occupied Residence', name: 'Old Man Statuette', type: 'Hidden Item', desc: 'Inside the safe hidden behind a painting in Kummler\'s quarters.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=388s', x: 1065, y: 945, pin: 'HI1' },
+    { id: 'm2_hi2', cat: '2: Occupied Residence', name: 'Group Statuette', type: 'Hidden Item', desc: 'Inside a locked trunk in the third-floor dormitories.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=425s', x: 1035, y: 915, pin: 'HI2' },
+    { id: 'm2_hi3', cat: '2: Occupied Residence', name: 'Soldier Statuette', type: 'Hidden Item', desc: 'Looted from the sniper in the north-east outhouse.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=460s', x: 1355, y: 745, pin: 'HI3' },
+    { id: 'm2_se1', cat: '2: Occupied Residence', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'On the roof of the L-shaped farmhouse on the far west.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=498s', x: 560, y: 1120, pin: 'SE1' },
+    { id: 'm2_se2', cat: '2: Occupied Residence', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Tip of a ledge looking west from the main gates bridge.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=530s', x: 920, y: 1360, pin: 'SE2' },
+    { id: 'm2_se3', cat: '2: Occupied Residence', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Eastern side of an outhouse just north of the chateau.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=562s', x: 1140, y: 780, pin: 'SE3' },
+    { id: 'm2_wb1', cat: '2: Occupied Residence', name: 'Rifle Workbench', type: 'Workbench', desc: 'Inside the eastern cellar armoury.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=595s', x: 1280, y: 1020, pin: 'WB1' },
+    { id: 'm2_wb2', cat: '2: Occupied Residence', name: 'SMG Workbench', type: 'Workbench', desc: 'Roof area of the western resistance safehouse (climb vines).', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=630s', x: 575, y: 1105, pin: 'WB2' },
+    { id: 'm2_wb3', cat: '2: Occupied Residence', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside the eastern outhouse armoury.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA&t=665s', x: 1450, y: 890, pin: 'WB3' },
 
     // ---------------- MISSION 3: SPY ACADEMY (19 Items) ----------------
-    { id: 'm3_pl1', cat: '3: Spy Academy', name: 'Parking Problems', type: 'Personal Letter', desc: 'On a bin near benches opposite the white Nazi car in the west.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=18s' },
-    { id: 'm3_pl2', cat: '3: Spy Academy', name: 'Fragile, Do Not Break', type: 'Personal Letter', desc: 'On top of a steel box at the start checkpoint before the beach.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=52s' },
-    { id: 'm3_pl3', cat: '3: Spy Academy', name: 'Do Not Be Late', type: 'Personal Letter', desc: 'Looted from a pointed-hat guard patrolling near western turret.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=88s' },
-    { id: 'm3_pl4', cat: '3: Spy Academy', name: 'It\'s Easy Money', type: 'Personal Letter', desc: 'Desk inside the far eastern sniper nest.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=124s' },
-    { id: 'm3_pl5', cat: '3: Spy Academy', name: 'Just Attend One', type: 'Personal Letter', desc: 'Looted from an officer near the eastern church.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=160s' },
-    { id: 'm3_cd1', cat: '3: Spy Academy', name: 'Priority Package', type: 'Classified Doc', desc: 'Shelf inside a small window-access room south of main buildings.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=195s' },
-    { id: 'm3_cd2', cat: '3: Spy Academy', name: 'Won\'t Be Attending', type: 'Classified Doc', desc: 'Table in a well-furnished room slightly east of the main bridge.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=232s' },
-    { id: 'm3_cd3', cat: '3: Spy Academy', name: 'Training Scenarios', type: 'Classified Doc', desc: 'Table next to cellar key in the northern sea-jutting room.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=268s' },
-    { id: 'm3_cd4', cat: '3: Spy Academy', name: 'Resource Request', type: 'Classified Doc', desc: 'Table at the very top of the eastern church sniper nest.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=305s' },
-    { id: 'm3_cd5', cat: '3: Spy Academy', name: 'Armoury Exposed', type: 'Classified Doc', desc: 'Bench chair in the same room as CD2.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=340s' },
-    { id: 'm3_hi1', cat: '3: Spy Academy', name: 'Kriegsmarine Playing Cards', type: 'Hidden Item', desc: 'Table inside a pub on the upper western side.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=375s' },
-    { id: 'm3_hi2', cat: '3: Spy Academy', name: 'Ornate Compass', type: 'Hidden Item', desc: 'Inside the safe in the northern sea-jutting room.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=410s' },
-    { id: 'm3_hi3', cat: '3: Spy Academy', name: 'Covert Ops Field Manual', type: 'Hidden Item', desc: 'Table in the downstairs recreation area opposite the diner.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=445s' },
-    { id: 'm3_se1', cat: '3: Spy Academy', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Facing the beach on a south-western building.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=480s' },
-    { id: 'm3_se2', cat: '3: Spy Academy', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Beneath the roof of a small turret right of the main building.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=512s' },
-    { id: 'm3_se3', cat: '3: Spy Academy', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Top of a sunken tower in the northern sea.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=545s' },
-    { id: 'm3_wb1', cat: '3: Spy Academy', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar north of Kraken training room (enter from west).', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=578s' },
-    { id: 'm3_wb2', cat: '3: Spy Academy', name: 'SMG Workbench', type: 'Workbench', desc: 'Behind a locked resistance door east of the main square statue.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=612s' },
-    { id: 'm3_wb3', cat: '3: Spy Academy', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside south-central armoury (requires Satchel Charge).', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=645s' },
+    { id: 'm3_pl1', cat: '3: Spy Academy', name: 'Parking Problems', type: 'Personal Letter', desc: 'On a bin near benches opposite the white Nazi car in the west.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=18s', x: 740, y: 1150, pin: 'PL1' },
+    { id: 'm3_pl2', cat: '3: Spy Academy', name: 'Fragile, Do Not Break', type: 'Personal Letter', desc: 'On top of a steel box at the start checkpoint before the beach.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=52s', x: 880, y: 1480, pin: 'PL2' },
+    { id: 'm3_pl3', cat: '3: Spy Academy', name: 'Do Not Be Late', type: 'Personal Letter', desc: 'Looted from a pointed-hat guard patrolling near western turret.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=88s', x: 680, y: 1080, pin: 'PL3' },
+    { id: 'm3_pl4', cat: '3: Spy Academy', name: 'It\'s Easy Money', type: 'Personal Letter', desc: 'Desk inside the far eastern sniper nest.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=124s', x: 1420, y: 840, pin: 'PL4' },
+    { id: 'm3_pl5', cat: '3: Spy Academy', name: 'Just Attend One', type: 'Personal Letter', desc: 'Looted from an officer near the eastern church.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=160s', x: 1320, y: 890, pin: 'PL5' },
+    { id: 'm3_cd1', cat: '3: Spy Academy', name: 'Priority Package', type: 'Classified Doc', desc: 'Shelf inside a small window-access room south of main buildings.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=195s', x: 990, y: 1120, pin: 'CD1' },
+    { id: 'm3_cd2', cat: '3: Spy Academy', name: 'Won\'t Be Attending', type: 'Classified Doc', desc: 'Table in a well-furnished room slightly east of the main bridge.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=232s', x: 1120, y: 1310, pin: 'CD2' },
+    { id: 'm3_cd3', cat: '3: Spy Academy', name: 'Training Scenarios', type: 'Classified Doc', desc: 'Table next to cellar key in the northern sea-jutting room.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=268s', x: 1020, y: 520, pin: 'CD3' },
+    { id: 'm3_cd4', cat: '3: Spy Academy', name: 'Resource Request', type: 'Classified Doc', desc: 'Table at the very top of the eastern church sniper nest.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=305s', x: 1380, y: 780, pin: 'CD4' },
+    { id: 'm3_cd5', cat: '3: Spy Academy', name: 'Armoury Exposed', type: 'Classified Doc', desc: 'Bench chair in the same room as CD2.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=340s', x: 1125, y: 1315, pin: 'CD5' },
+    { id: 'm3_hi1', cat: '3: Spy Academy', name: 'Kriegsmarine Playing Cards', type: 'Hidden Item', desc: 'Table inside a pub on the upper western side.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=375s', x: 790, y: 940, pin: 'HI1' },
+    { id: 'm3_hi2', cat: '3: Spy Academy', name: 'Ornate Compass', type: 'Hidden Item', desc: 'Inside the safe in the northern sea-jutting room.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=410s', x: 1025, y: 525, pin: 'HI2' },
+    { id: 'm3_hi3', cat: '3: Spy Academy', name: 'Covert Ops Field Manual', type: 'Hidden Item', desc: 'Table in the downstairs recreation area opposite the diner.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=445s', x: 940, y: 1080, pin: 'HI3' },
+    { id: 'm3_se1', cat: '3: Spy Academy', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Facing the beach on a south-western building.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=480s', x: 690, y: 1290, pin: 'SE1' },
+    { id: 'm3_se2', cat: '3: Spy Academy', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Beneath the roof of a small turret right of the main building.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=512s', x: 1080, y: 940, pin: 'SE2' },
+    { id: 'm3_se3', cat: '3: Spy Academy', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Top of a sunken tower in the northern sea.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=545s', x: 980, y: 410, pin: 'SE3' },
+    { id: 'm3_wb1', cat: '3: Spy Academy', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar north of Kraken training room (enter from west).', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=578s', x: 860, y: 680, pin: 'WB1' },
+    { id: 'm3_wb2', cat: '3: Spy Academy', name: 'SMG Workbench', type: 'Workbench', desc: 'Behind a locked resistance door east of the main square statue.', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=612s', x: 1180, y: 1020, pin: 'WB2' },
+    { id: 'm3_wb3', cat: '3: Spy Academy', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside south-central armoury (requires Satchel Charge).', yt: '//www.youtube.com/watch?v=DfZRz0n8R_g&t=645s', x: 1050, y: 1220, pin: 'WB3' },
 
     // ---------------- MISSION 4: WAR FACTORY (19 Items) ----------------
-    { id: 'm4_pl1', cat: '4: War Factory', name: 'Klaus! You Idiot', type: 'Personal Letter', desc: 'Desk in a small building on the bridge towards the north-west.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=22s' },
-    { id: 'm4_pl2', cat: '4: War Factory', name: 'The Suspense', type: 'Personal Letter', desc: 'On radio equipment in the control room above the generator.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=60s' },
-    { id: 'm4_pl3', cat: '4: War Factory', name: 'Sheers\' Notebook', type: 'Personal Letter', desc: 'Desk in the upstairs western office at the blast furnace.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=98s' },
-    { id: 'm4_pl4', cat: '4: War Factory', name: 'Losing the Time', type: 'Personal Letter', desc: 'Desk on the upper level of the northern steelworks.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=135s' },
-    { id: 'm4_pl5', cat: '4: War Factory', name: 'Your Order Awaits', type: 'Personal Letter', desc: 'On a box blocking a doorway in the central factory warehouse.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=172s' },
-    { id: 'm4_pl6', cat: '4: War Factory', name: 'Ehrlich\'s Done For', type: 'Personal Letter', desc: 'Desk in the main station office (south-west train station).', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=210s' },
-    { id: 'm4_cd1', cat: '4: War Factory', name: 'Shipping Orders', type: 'Classified Doc', desc: 'Inside safe in the shipping warehouse upstairs office.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=248s' },
-    { id: 'm4_cd2', cat: '4: War Factory', name: 'No More Games', type: 'Classified Doc', desc: 'Atop wooden planks in the north-eastern construction area.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=285s' },
-    { id: 'm4_cd3', cat: '4: War Factory', name: 'Bureaucratic Oaf', type: 'Classified Doc', desc: 'Table in a central upstairs room accessed via ladder.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=320s' },
-    { id: 'm4_cd4', cat: '4: War Factory', name: 'Increase Security', type: 'Classified Doc', desc: 'Locked vat room table on the far eastern side.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=355s' },
-    { id: 'm4_hi1', cat: '4: War Factory', name: 'Gold Pocket Watch', type: 'Hidden Item', desc: 'On a pile of wooden beams in the north-eastern scrapyard.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=390s' },
-    { id: 'm4_hi2', cat: '4: War Factory', name: 'Stealth Plating', type: 'Hidden Item', desc: 'Atop stacked boxes on the shipping warehouse ground floor.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=425s' },
-    { id: 'm4_hi3', cat: '4: War Factory', name: 'P.1000 Ratte Plans', type: 'Hidden Item', desc: 'End of southern walkway upstairs in the train station depot.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=460s' },
-    { id: 'm4_se1', cat: '4: War Factory', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'South-eastern wall of a dilapidated turret in far east ruins.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=495s' },
-    { id: 'm4_se2', cat: '4: War Factory', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Atop the blast furnace in the south-eastern corner.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=528s' },
-    { id: 'm4_se3', cat: '4: War Factory', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Roof of an out-of-bounds building at the southern map tip.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=560s' },
-    { id: 'm4_wb1', cat: '4: War Factory', name: 'Rifle Workbench', type: 'Workbench', desc: 'Central factory warehouse cellar (resistance safehouse).', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=592s' },
-    { id: 'm4_wb2', cat: '4: War Factory', name: 'SMG Workbench', type: 'Workbench', desc: 'Upstairs armoury north of the shipping warehouse.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=625s' },
-    { id: 'm4_wb3', cat: '4: War Factory', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury next to the eastern vat room.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=658s' },
+    { id: 'm4_pl1', cat: '4: War Factory', name: 'Klaus! You Idiot', type: 'Personal Letter', desc: 'Desk in a small building on the bridge towards the north-west.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=22s', x: 620, y: 680, pin: 'PL1' },
+    { id: 'm4_pl2', cat: '4: War Factory', name: 'The Suspense', type: 'Personal Letter', desc: 'On radio equipment in the control room above the generator.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=60s', x: 1120, y: 920, pin: 'PL2' },
+    { id: 'm4_pl3', cat: '4: War Factory', name: 'Sheers\' Notebook', type: 'Personal Letter', desc: 'Desk in the upstairs western office at the blast furnace.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=98s', x: 840, y: 1160, pin: 'PL3' },
+    { id: 'm4_pl4', cat: '4: War Factory', name: 'Losing the Time', type: 'Personal Letter', desc: 'Desk on the upper level of the northern steelworks.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=135s', x: 1040, y: 560, pin: 'PL4' },
+    { id: 'm4_pl5', cat: '4: War Factory', name: 'Your Order Awaits', type: 'Personal Letter', desc: 'On a box blocking a doorway in the central factory warehouse.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=172s', x: 990, y: 880, pin: 'PL5' },
+    { id: 'm4_pl6', cat: '4: War Factory', name: 'Ehrlich\'s Done For', type: 'Personal Letter', desc: 'Desk in the main station office (south-west train station).', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=210s', x: 540, y: 1340, pin: 'PL6' },
+    { id: 'm4_cd1', cat: '4: War Factory', name: 'Shipping Orders', type: 'Classified Doc', desc: 'Inside safe in the shipping warehouse upstairs office.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=248s', x: 1240, y: 820, pin: 'CD1' },
+    { id: 'm4_cd2', cat: '4: War Factory', name: 'No More Games', type: 'Classified Doc', desc: 'Atop wooden planks in the north-eastern construction area.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=285s', x: 1380, y: 640, pin: 'CD2' },
+    { id: 'm4_cd3', cat: '4: War Factory', name: 'Bureaucratic Oaf', type: 'Classified Doc', desc: 'Table in a central upstairs room accessed via ladder.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=320s', x: 960, y: 820, pin: 'CD3' },
+    { id: 'm4_cd4', cat: '4: War Factory', name: 'Increase Security', type: 'Classified Doc', desc: 'Locked vat room table on the far eastern side.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=355s', x: 1480, y: 990, pin: 'CD4' },
+    { id: 'm4_hi1', cat: '4: War Factory', name: 'Gold Pocket Watch', type: 'Hidden Item', desc: 'On a pile of wooden beams in the north-eastern scrapyard.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=390s', x: 1360, y: 580, pin: 'HI1' },
+    { id: 'm4_hi2', cat: '4: War Factory', name: 'Stealth Plating', type: 'Hidden Item', desc: 'Atop stacked boxes on the shipping warehouse ground floor.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=425s', x: 1220, y: 840, pin: 'HI2' },
+    { id: 'm4_hi3', cat: '4: War Factory', name: 'P.1000 Ratte Plans', type: 'Hidden Item', desc: 'End of southern walkway upstairs in the train station depot.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=460s', x: 590, y: 1380, pin: 'HI3' },
+    { id: 'm4_se1', cat: '4: War Factory', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'South-eastern wall of a dilapidated turret in far east ruins.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=495s', x: 1540, y: 1120, pin: 'SE1' },
+    { id: 'm4_se2', cat: '4: War Factory', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Atop the blast furnace in the south-eastern corner.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=528s', x: 1190, y: 1260, pin: 'SE2' },
+    { id: 'm4_se3', cat: '4: War Factory', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Roof of an out-of-bounds building at the southern map tip.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=560s', x: 860, y: 1540, pin: 'SE3' },
+    { id: 'm4_wb1', cat: '4: War Factory', name: 'Rifle Workbench', type: 'Workbench', desc: 'Central factory warehouse cellar (resistance safehouse).', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=592s', x: 980, y: 890, pin: 'WB1' },
+    { id: 'm4_wb2', cat: '4: War Factory', name: 'SMG Workbench', type: 'Workbench', desc: 'Upstairs armoury north of the shipping warehouse.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=625s', x: 1250, y: 780, pin: 'WB2' },
+    { id: 'm4_wb3', cat: '4: War Factory', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury next to the eastern vat room.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=658s', x: 1460, y: 980, pin: 'WB3' },
 
     // ---------------- MISSION 5: FESTUNG GUERNSEY (19 Items - PowerPyx Order) ----------------
-    { id: 'm5_pl1', cat: '5: Festung Guernsey', name: 'No Need to Worry', type: 'Personal Letter', desc: 'Looted from an officer in a tower in the south-east of the map.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=20s' },
-    { id: 'm5_pl2', cat: '5: Festung Guernsey', name: 'Getting Off The Island', type: 'Personal Letter', desc: 'Found in the basement of a small house (alongside Crystal Radio).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=55s' },
-    { id: 'm5_pl3', cat: '5: Festung Guernsey', name: 'Confiscated Goods', type: 'Personal Letter', desc: 'Looted from a soldier in brown uniform in the south-side construction area.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=92s' },
-    { id: 'm5_pl4', cat: '5: Festung Guernsey', name: 'Escaping Islanders', type: 'Personal Letter', desc: 'In the south-west of the map, inside an upstairs bunker room.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=128s' },
-    { id: 'm5_pl5', cat: '5: Festung Guernsey', name: 'Harass The Huns!', type: 'Personal Letter', desc: 'Underground room in a small building; crawl under table to find ladder.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=165s' },
-    { id: 'm5_cd1', cat: '5: Festung Guernsey', name: 'Grin and Bear It!', type: 'Classified Doc', desc: 'Inside safe in Fort Hommet; climb vines or shoot lock with AP ammo.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=200s' },
-    { id: 'm5_cd2', cat: '5: Festung Guernsey', name: 'Cut Costs Cost Lives', type: 'Classified Doc', desc: 'Inside western bunker on the table in front of the main objective safe.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=238s' },
-    { id: 'm5_cd3', cat: '5: Festung Guernsey', name: 'Oafish Officers', type: 'Classified Doc', desc: 'Inside underground hospital in a side room on west side of corridor.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=275s' },
-    { id: 'm5_cd4', cat: '5: Festung Guernsey', name: 'Transport Troubles', type: 'Classified Doc', desc: 'Inside underground hospital in the north (mandatory main objective).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=310s' },
-    { id: 'm5_cd5', cat: '5: Festung Guernsey', name: 'Drastic Measures', type: 'Classified Doc', desc: 'In the west of the map, on ground floor of tower building table.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=348s' },
-    { id: 'm5_hi1', cat: '5: Festung Guernsey', name: 'Todt Uniform Badge', type: 'Hidden Item', desc: 'In the north-east construction site inside the green building on a table.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=385s' },
-    { id: 'm5_hi2', cat: '5: Festung Guernsey', name: 'Crystal Radio', type: 'Hidden Item', desc: 'In basement of small house (same room as Getting Off The Island letter).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=420s' },
-    { id: 'm5_hi3', cat: '5: Festung Guernsey', name: 'Comfort Bag', type: 'Hidden Item', desc: 'In the main farm building upstairs in the bedroom.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=455s' },
-    { id: 'm5_se1', cat: '5: Festung Guernsey', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Near center of map on top of the church tower.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=490s' },
-    { id: 'm5_se2', cat: '5: Festung Guernsey', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'In the north-east of the map sitting on a bank; shoot from main road.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=522s' },
-    { id: 'm5_se3', cat: '5: Festung Guernsey', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'In the west of the map on top of a tower.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=555s' },
-    { id: 'm5_wb1', cat: '5: Festung Guernsey', name: 'Rifle Workbench', type: 'Workbench', desc: 'In the church tower; climb vines on the side of the church.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=588s' },
-    { id: 'm5_wb2', cat: '5: Festung Guernsey', name: 'SMG Workbench', type: 'Workbench', desc: 'In small building basement; crawl under table and down the ladder.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=620s' },
-    { id: 'm5_wb3', cat: '5: Festung Guernsey', name: 'Pistol Workbench', type: 'Workbench', desc: 'In the trenches next to an anti-air gun.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=652s' },
+    { id: 'm5_pl1', cat: '5: Festung Guernsey', name: 'No Need to Worry', type: 'Personal Letter', desc: 'Looted from an officer in a tower in the south-east of the map.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=20s', x: 1420, y: 1380, pin: 'PL1' },
+    { id: 'm5_pl2', cat: '5: Festung Guernsey', name: 'Getting Off The Island', type: 'Personal Letter', desc: 'Found in the basement of a small house (alongside Crystal Radio).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=55s', x: 1280, y: 760, pin: 'PL2' },
+    { id: 'm5_pl3', cat: '5: Festung Guernsey', name: 'Confiscated Goods', type: 'Personal Letter', desc: 'Looted from a soldier in brown uniform in the south-side construction area.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=92s', x: 1350, y: 620, pin: 'PL3' },
+    { id: 'm5_pl4', cat: '5: Festung Guernsey', name: 'Escaping Islanders', type: 'Personal Letter', desc: 'In the south-west of the map, inside an upstairs bunker room.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=128s', x: 480, y: 1350, pin: 'PL4' },
+    { id: 'm5_pl5', cat: '5: Festung Guernsey', name: 'Harass The Huns!', type: 'Personal Letter', desc: 'Underground room in a small building; crawl under table to find ladder.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=165s', x: 880, y: 1140, pin: 'PL5' },
+    { id: 'm5_cd1', cat: '5: Festung Guernsey', name: 'Grin and Bear It!', type: 'Classified Doc', desc: 'Inside safe in Fort Hommet; climb vines or shoot lock with AP ammo.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=200s', x: 420, y: 560, pin: 'CD1' },
+    { id: 'm5_cd2', cat: '5: Festung Guernsey', name: 'Cut Costs Cost Lives', type: 'Classified Doc', desc: 'Inside western bunker on the table in front of the main objective safe.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=238s', x: 520, y: 890, pin: 'CD2' },
+    { id: 'm5_cd3', cat: '5: Festung Guernsey', name: 'Oafish Officers', type: 'Classified Doc', desc: 'Inside underground hospital in a side room on west side of corridor.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=275s', x: 920, y: 1040, pin: 'CD3' },
+    { id: 'm5_cd4', cat: '5: Festung Guernsey', name: 'Transport Troubles', type: 'Classified Doc', desc: 'Inside underground hospital in the north (mandatory main objective).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=310s', x: 930, y: 990, pin: 'CD4' },
+    { id: 'm5_cd5', cat: '5: Festung Guernsey', name: 'Drastic Measures', type: 'Classified Doc', desc: 'In the west of the map, on ground floor of tower building table.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=348s', x: 560, y: 720, pin: 'CD5' },
+    { id: 'm5_hi1', cat: '5: Festung Guernsey', name: 'Todt Uniform Badge', type: 'Hidden Item', desc: 'In the north-east construction site inside the green building on a table.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=385s', x: 1420, y: 580, pin: 'HI1' },
+    { id: 'm5_hi2', cat: '5: Festung Guernsey', name: 'Crystal Radio', type: 'Hidden Item', desc: 'In basement of small house (same room as Getting Off The Island letter).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=420s', x: 1285, y: 765, pin: 'HI2' },
+    { id: 'm5_hi3', cat: '5: Festung Guernsey', name: 'Comfort Bag', type: 'Hidden Item', desc: 'In the main farm building upstairs in the bedroom.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=455s', x: 740, y: 1320, pin: 'HI3' },
+    { id: 'm5_se1', cat: '5: Festung Guernsey', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Near center of map on top of the church tower.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=490s', x: 1040, y: 920, pin: 'SE1' },
+    { id: 'm5_se2', cat: '5: Festung Guernsey', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'In the north-east of the map sitting on a bank; shoot from main road.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=522s', x: 1520, y: 540, pin: 'SE2' },
+    { id: 'm5_se3', cat: '5: Festung Guernsey', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'In the west of the map on top of a tower.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=555s', x: 460, y: 760, pin: 'SE3' },
+    { id: 'm5_wb1', cat: '5: Festung Guernsey', name: 'Rifle Workbench', type: 'Workbench', desc: 'In the church tower; climb vines on the side of the church.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=588s', x: 1045, y: 925, pin: 'WB1' },
+    { id: 'm5_wb2', cat: '5: Festung Guernsey', name: 'SMG Workbench', type: 'Workbench', desc: 'In small building basement; crawl under table and down the ladder.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=620s', x: 885, y: 1145, pin: 'WB2' },
+    { id: 'm5_wb3', cat: '5: Festung Guernsey', name: 'Pistol Workbench', type: 'Workbench', desc: 'In the trenches next to an anti-air gun.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=652s', x: 1160, y: 480, pin: 'WB3' },
 
     // ---------------- MISSION 6: LIBÉRATION (19 Items - PowerPyx Order) ----------------
-    { id: 'm6_pl1', cat: '6: Libération', name: 'They\'re Out There', type: 'Personal Letter', desc: 'Looted from the bald, green-uniformed soldier in the southeastern farmhouse yard.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=0s' },
-    { id: 'm6_pl2', cat: '6: Libération', name: 'Watch Your Back', type: 'Personal Letter', desc: 'Looted from the estate guard patrolling outside Major Trautmann\'s manor yard.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=49s' },
-    { id: 'm6_pl3', cat: '6: Libération', name: 'Barely Escaped!', type: 'Personal Letter', desc: 'Northern artillery field fortifications; resting inside the trench network.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=73s' },
-    { id: 'm6_pl4', cat: '6: Libération', name: 'Give Me Strength', type: 'Personal Letter', desc: 'Northeastern sector green barracks house; on a crate by the door frames.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=93s' },
-    { id: 'm6_pl5', cat: '6: Libération', name: 'Vengeance Is Nigh!', type: 'Personal Letter', desc: 'Central farm sector; hidden upstairs inside the attic space of the old barn house.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=115s' },
-    { id: 'm6_cd1', cat: '6: Libération', name: 'Hold The Line', type: 'Classified Doc', desc: 'Southern bridge sector; on a desk inside the primary radio communication bunker room.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=138s' },
-    { id: 'm6_cd2', cat: '6: Libération', name: 'Incoming Armour', type: 'Classified Doc', desc: 'Northern trenches; resting on an equipment case inside a dug-out dugout node.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=160s' },
-    { id: 'm6_cd3', cat: '6: Libération', name: 'Unfit for Duty', type: 'Classified Doc', desc: 'Southern farm cluster; found on an upper-floor bedroom nightstand.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=182s' },
-    { id: 'm6_cd4', cat: '6: Libération', name: 'A Surplus Bridge', type: 'Classified Doc', desc: 'On a wooden box in the yard of the eastern burnt buildings.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=205s' },
-    { id: 'm6_cd5', cat: '6: Libération', name: 'Resistance Fanatic Located', type: 'Classified Doc', desc: 'Chest of drawers in locked 2nd-floor room (northern building).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=228s' },
-    { id: 'm6_hi1', cat: '6: Libération', name: 'Lucky Rabbit\'s Foot', type: 'Hidden Item', desc: 'Looted from bald Nazi near central crashed plane/AA gun.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=250s' },
-    { id: 'm6_hi2', cat: '6: Libération', name: 'Stolen Medals', type: 'Hidden Item', desc: 'Table in underground resistance cache beneath central L-shaped building.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=275s' },
-    { id: 'm6_hi3', cat: '6: Libération', name: 'Engraved Lighter', type: 'Hidden Item', desc: 'Next to a briefcase upstairs in building right after the bridge.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=300s' },
-    { id: 'm6_se1', cat: '6: Libération', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Perched atop the eastern windmill near the start.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=325s' },
-    { id: 'm6_se2', cat: '6: Libération', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Rear of the north-western church.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=348s' },
-    { id: 'm6_se3', cat: '6: Libération', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Upstairs window frame behind northern tank target.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=370s' },
-    { id: 'm6_wb1', cat: '6: Libération', name: 'Rifle Workbench', type: 'Workbench', desc: 'Northern resistance safehouse (climb wall before detonated bridge).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=392s' },
-    { id: 'm6_wb2', cat: '6: Libération', name: 'SMG Workbench', type: 'Workbench', desc: 'Central underground cellar (same as HI2 Stolen Medals).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=415s' },
-    { id: 'm6_wb3', cat: '6: Libération', name: 'Pistol Workbench', type: 'Workbench', desc: 'Top floor room in southern C-shaped building via scaffolding.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=438s' },
+    { id: 'm6_pl1', cat: '6: Libération', name: 'They\'re Out There', type: 'Personal Letter', desc: 'Looted from the bald, green-uniformed soldier in the southeastern farmhouse yard.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=0s', x: 1420, y: 1420, pin: 'PL1' },
+    { id: 'm6_pl2', cat: '6: Libération', name: 'Watch Your Back', type: 'Personal Letter', desc: 'Looted from the estate guard patrolling outside Major Trautmann\'s manor yard.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=49s', x: 560, y: 1180, pin: 'PL2' },
+    { id: 'm6_pl3', cat: '6: Libération', name: 'Barely Escaped!', type: 'Personal Letter', desc: 'Northern artillery field fortifications; resting inside the trench network.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=73s', x: 1040, y: 520, pin: 'PL3' },
+    { id: 'm6_pl4', cat: '6: Libération', name: 'Give Me Strength', type: 'Personal Letter', desc: 'Northeastern sector green barracks house; on a crate by the door frames.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=93s', x: 1380, y: 640, pin: 'PL4' },
+    { id: 'm6_pl5', cat: '6: Libération', name: 'Vengeance Is Nigh!', type: 'Personal Letter', desc: 'Central farm sector; hidden upstairs inside the attic space of the old barn house.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=115s', x: 960, y: 940, pin: 'PL5' },
+    { id: 'm6_cd1', cat: '6: Libération', name: 'Hold The Line', type: 'Classified Doc', desc: 'Southern bridge sector; on a desk inside the primary radio communication bunker room.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=138s', x: 1020, y: 1540, pin: 'CD1' },
+    { id: 'm6_cd2', cat: '6: Libération', name: 'Incoming Armour', type: 'Classified Doc', desc: 'Northern trenches; resting on an equipment case inside a dug-out dugout node.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=160s', x: 1120, y: 480, pin: 'CD2' },
+    { id: 'm6_cd3', cat: '6: Libération', name: 'Unfit for Duty', type: 'Classified Doc', desc: 'Southern farm cluster; found on an upper-floor bedroom nightstand.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=182s', x: 680, y: 1380, pin: 'CD3' },
+    { id: 'm6_cd4', cat: '6: Libération', name: 'A Surplus Bridge', type: 'Classified Doc', desc: 'On a wooden box in the yard of the eastern burnt buildings.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=205s', x: 1480, y: 920, pin: 'CD4' },
+    { id: 'm6_cd5', cat: '6: Libération', name: 'Resistance Fanatic Located', type: 'Classified Doc', desc: 'Chest of drawers in locked 2nd-floor room (northern building).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=228s', x: 920, y: 580, pin: 'CD5' },
+    { id: 'm6_hi1', cat: '6: Libération', name: 'Lucky Rabbit\'s Foot', type: 'Hidden Item', desc: 'Looted from bald Nazi near central crashed plane/AA gun.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=250s', x: 1020, y: 880, pin: 'HI1' },
+    { id: 'm6_hi2', cat: '6: Libération', name: 'Stolen Medals', type: 'Hidden Item', desc: 'Table in underground resistance cache beneath central L-shaped building.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=275s', x: 980, y: 1040, pin: 'HI2' },
+    { id: 'm6_hi3', cat: '6: Libération', name: 'Engraved Lighter', type: 'Hidden Item', desc: 'Next to a briefcase upstairs in building right after the bridge.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=300s', x: 1040, y: 1460, pin: 'HI3' },
+    { id: 'm6_se1', cat: '6: Libération', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Perched atop the eastern windmill near the start.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=325s', x: 1540, y: 1350, pin: 'SE1' },
+    { id: 'm6_se2', cat: '6: Libération', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Rear of the north-western church.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=348s', x: 540, y: 620, pin: 'SE2' },
+    { id: 'm6_se3', cat: '6: Libération', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Upstairs window frame behind northern tank target.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=370s', x: 1080, y: 440, pin: 'SE3' },
+    { id: 'm6_wb1', cat: '6: Libération', name: 'Rifle Workbench', type: 'Workbench', desc: 'Northern resistance safehouse (climb wall before detonated bridge).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=392s', x: 890, y: 520, pin: 'WB1' },
+    { id: 'm6_wb2', cat: '6: Libération', name: 'SMG Workbench', type: 'Workbench', desc: 'Central underground cellar (same as HI2 Stolen Medals).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=415s', x: 985, y: 1045, pin: 'WB2' },
+    { id: 'm6_wb3', cat: '6: Libération', name: 'Pistol Workbench', type: 'Workbench', desc: 'Top floor room in southern C-shaped building via scaffolding.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=438s', x: 1010, y: 1580, pin: 'WB3' },
 
-    // ---------------- MISSION 7: SECRET WEAPONS (19 Items with Native Map Coordinates) ----------------
-    { id: 'm7_pl1', cat: '7: Secret Weapons', name: 'We Had a Deal', type: 'Personal Letter', desc: 'Upstairs table in the eastern trainyard office.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=20s', lat: 48.862, lng: 2.378, pin: 'PL1' },
-    { id: 'm7_pl2', cat: '7: Secret Weapons', name: 'I\'m Done', type: 'Personal Letter', desc: 'Fireplace of far-eastern abandoned house (climb pipes to enter).', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=55s', lat: 48.868, lng: 2.385, pin: 'PL2' },
-    { id: 'm7_pl3', cat: '7: Secret Weapons', name: 'I Can\'t Work Like This', type: 'Personal Letter', desc: 'Table on steel grate near hoisting V2 rocket in lower level.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=92s', lat: 48.855, lng: 2.348, pin: 'PL3' },
-    { id: 'm7_pl4', cat: '7: Secret Weapons', name: 'The V2\'s Are Obsolete', type: 'Personal Letter', desc: 'Chair opposite the V2 Launch Site in the central dome.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=128s', lat: 48.852, lng: 2.350, pin: 'PL4' },
-    { id: 'm7_pl5', cat: '7: Secret Weapons', name: 'Thinking Outside the Box', type: 'Personal Letter', desc: 'Top of zig-zag stairs in the northern dome room.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=165s', lat: 48.859, lng: 2.345, pin: 'PL5' },
-    { id: 'm7_cd1', cat: '7: Secret Weapons', name: 'Inbound Deliveries', type: 'Classified Doc', desc: 'Looted from head engineer in eastern train station (or safe).', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=200s', lat: 48.860, lng: 2.372, pin: 'CD1' },
-    { id: 'm7_cd2', cat: '7: Secret Weapons', name: 'Dr Junger\'s Schedule', type: 'Classified Doc', desc: 'Near window in SE train station building or western tent.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=235s', lat: 48.856, lng: 2.370, pin: 'CD2' },
-    { id: 'm7_cd3', cat: '7: Secret Weapons', name: 'A-4B Logistical Issues', type: 'Classified Doc', desc: 'Top floor locked room in the northern Weapons Lab.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=270s', lat: 48.865, lng: 2.338, pin: 'CD3' },
-    { id: 'm7_cd4', cat: '7: Secret Weapons', name: 'Intruder Sighted', type: 'Classified Doc', desc: 'Looted from sniper behind a tree west of the bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=305s', lat: 48.848, lng: 2.325, pin: 'CD4' },
-    { id: 'm7_cd5', cat: '7: Secret Weapons', name: 'Pressurisation Report', type: 'Classified Doc', desc: 'Two staircases up inside the SW castle tower.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=340s', lat: 48.842, lng: 2.318, pin: 'CD5' },
-    { id: 'm7_hi1', cat: '7: Secret Weapons', name: 'Peenemünde Lab ID', type: 'Hidden Item', desc: 'Under a table in the canteen area exiting the V2 dome.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=375s', lat: 48.851, lng: 2.355, pin: 'HI1' },
-    { id: 'm7_hi2', cat: '7: Secret Weapons', name: 'Luftwaffe Playing Cards', type: 'Hidden Item', desc: 'Table inside guard house next to the blocked northern bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=410s', lat: 48.872, lng: 2.330, pin: 'HI2' },
-    { id: 'm7_hi3', cat: '7: Secret Weapons', name: 'Prüfstand XII Plans', type: 'Hidden Item', desc: 'Rocky beach riverbank under the eastern side of the bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=445s', lat: 48.845, lng: 2.342, pin: 'HI3' },
-    { id: 'm7_se1', cat: '7: Secret Weapons', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Among rocks south of the eastern abandoned house.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=480s', lat: 48.866, lng: 2.388, pin: 'SE1' },
-    { id: 'm7_se2', cat: '7: Secret Weapons', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Inside a dam filter splashing water on the lower bridge out west.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=512s', lat: 48.846, lng: 2.312, pin: 'SE2' },
-    { id: 'm7_se3', cat: '7: Secret Weapons', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Wall alcove opposite eastern tower in SW castle area.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=545s', lat: 48.839, lng: 2.322, pin: 'SE3' },
-    { id: 'm7_wb1', cat: '7: Secret Weapons', name: 'Rifle Workbench', type: 'Workbench', desc: 'Axis Armoury north of V2 rockets (requires key or charge).', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=578s', lat: 48.857, lng: 2.340, pin: 'WB1' },
-    { id: 'm7_wb2', cat: '7: Secret Weapons', name: 'SMG Workbench', type: 'Workbench', desc: 'Locked room at end of shower corridor from V2 dome spiral stairs.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=610s', lat: 48.850, lng: 2.345, pin: 'WB2' },
-    { id: 'm7_wb3', cat: '7: Secret Weapons', name: 'Pistol Workbench', type: 'Workbench', desc: 'Cave behind wooden panels next to SW waterfall.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=642s', lat: 48.841, lng: 2.332, pin: 'WB3' },
+    // ---------------- MISSION 7: SECRET WEAPONS (19 Items - High Res Game Map Coordinates) ----------------
+    { id: 'm7_pl1', cat: '7: Secret Weapons', name: 'We Had a Deal', type: 'Personal Letter', desc: 'Upstairs table in the eastern trainyard office.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=20s', x: 1480, y: 920, pin: 'PL1' },
+    { id: 'm7_pl2', cat: '7: Secret Weapons', name: 'I\'m Done', type: 'Personal Letter', desc: 'Fireplace of far-eastern abandoned house (climb pipes to enter).', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=55s', x: 1620, y: 780, pin: 'PL2' },
+    { id: 'm7_pl3', cat: '7: Secret Weapons', name: 'I Can\'t Work Like This', type: 'Personal Letter', desc: 'Table on steel grate near hoisting V2 rocket in lower level.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=92s', x: 1140, y: 640, pin: 'PL3' },
+    { id: 'm7_pl4', cat: '7: Secret Weapons', name: 'The V2\'s Are Obsolete', type: 'Personal Letter', desc: 'Chair opposite the V2 Launch Site in the central dome.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=128s', x: 1220, y: 680, pin: 'PL4' },
+    { id: 'm7_pl5', cat: '7: Secret Weapons', name: 'Thinking Outside the Box', type: 'Personal Letter', desc: 'Top of zig-zag stairs in the northern dome room.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=165s', x: 1240, y: 580, pin: 'PL5' },
+    { id: 'm7_cd1', cat: '7: Secret Weapons', name: 'Inbound Deliveries', type: 'Classified Doc', desc: 'Looted from head engineer in eastern train station (or safe).', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=200s', x: 1420, y: 960, pin: 'CD1' },
+    { id: 'm7_cd2', cat: '7: Secret Weapons', name: 'Dr Junger\'s Schedule', type: 'Classified Doc', desc: 'Near window in SE train station building or western tent.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=235s', x: 1360, y: 1040, pin: 'CD2' },
+    { id: 'm7_cd3', cat: '7: Secret Weapons', name: 'A-4B Logistical Issues', type: 'Classified Doc', desc: 'Top floor locked room in the northern Weapons Lab.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=270s', x: 1050, y: 440, pin: 'CD3' },
+    { id: 'm7_cd4', cat: '7: Secret Weapons', name: 'Intruder Sighted', type: 'Classified Doc', desc: 'Looted from sniper behind a tree west of the bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=305s', x: 780, y: 840, pin: 'CD4' },
+    { id: 'm7_cd5', cat: '7: Secret Weapons', name: 'Pressurisation Report', type: 'Classified Doc', desc: 'Two staircases up inside the SW castle tower.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=340s', x: 580, y: 1360, pin: 'CD5' },
+    { id: 'm7_hi1', cat: '7: Secret Weapons', name: 'Peenemünde Lab ID', type: 'Hidden Item', desc: 'Under a table in the canteen area exiting the V2 dome.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=375s', x: 1260, y: 720, pin: 'HI1' },
+    { id: 'm7_hi2', cat: '7: Secret Weapons', name: 'Luftwaffe Playing Cards', type: 'Hidden Item', desc: 'Table inside guard house next to the blocked northern bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=410s', x: 920, y: 410, pin: 'HI2' },
+    { id: 'm7_hi3', cat: '7: Secret Weapons', name: 'Prüfstand XII Plans', type: 'Hidden Item', desc: 'Rocky beach riverbank under the eastern side of the bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=445s', x: 860, y: 890, pin: 'HI3' },
+    { id: 'm7_se1', cat: '7: Secret Weapons', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Among rocks south of the eastern abandoned house.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=480s', x: 1650, y: 840, pin: 'SE1' },
+    { id: 'm7_se2', cat: '7: Secret Weapons', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Inside a dam filter splashing water on the lower bridge out west.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=512s', x: 640, y: 720, pin: 'SE2' },
+    { id: 'm7_se3', cat: '7: Secret Weapons', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Wall alcove opposite eastern tower in SW castle area.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=545s', x: 590, y: 1390, pin: 'SE3' },
+    { id: 'm7_wb1', cat: '7: Secret Weapons', name: 'Rifle Workbench', type: 'Workbench', desc: 'Axis Armoury north of V2 rockets (requires key or charge).', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=578s', x: 1180, y: 560, pin: 'WB1' },
+    { id: 'm7_wb2', cat: '7: Secret Weapons', name: 'SMG Workbench', type: 'Workbench', desc: 'Locked room at end of shower corridor from V2 dome spiral stairs.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=610s', x: 1290, y: 640, pin: 'WB2' },
+    { id: 'm7_wb3', cat: '7: Secret Weapons', name: 'Pistol Workbench', type: 'Workbench', desc: 'Cave behind wooden panels next to SW waterfall.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=642s', x: 620, y: 1280, pin: 'WB3' },
 
     // ---------------- MISSION 8: RUBBLE AND RUIN (19 Items) ----------------
-    { id: 'm8_pl1', cat: '8: Rubble and Ruin', name: 'It\'s Not Over Yet', type: 'Personal Letter', desc: 'Table in a ground floor side-room of the SE hotel.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=18s' },
-    { id: 'm8_pl2', cat: '8: Rubble and Ruin', name: 'Clean Out the Sewer', type: 'Personal Letter', desc: 'Floor behind boxes left of the entrance into the sewers.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=52s' },
-    { id: 'm8_pl3', cat: '8: Rubble and Ruin', name: 'He\'s Not the Sharpest', type: 'Personal Letter', desc: 'Locked box behind armoured gun on central theatre balcony.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=88s' },
-    { id: 'm8_pl4', cat: '8: Rubble and Ruin', name: 'Your Man Talked', type: 'Personal Letter', desc: 'Table inside locked building in south-central bombed area.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=124s' },
-    { id: 'm8_pl5', cat: '8: Rubble and Ruin', name: 'Möller Is Moving', type: 'Personal Letter', desc: 'Ground floor back room of the Sea View Offices (SE).', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=160s' },
-    { id: 'm8_cd1', cat: '8: Rubble and Ruin', name: 'Secure Radio Lines', type: 'Classified Doc', desc: 'Atop wooden box near three Nazis at the start restaurant.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=195s' },
-    { id: 'm8_cd2', cat: '8: Rubble and Ruin', name: 'Broken Resistance', type: 'Classified Doc', desc: 'On a box directly ahead after sliding into the sewers.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=230s' },
-    { id: 'm8_cd3', cat: '8: Rubble and Ruin', name: 'Resistance Report', type: 'Classified Doc', desc: 'Table in basement interrogation room (western map).', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=265s' },
-    { id: 'm8_cd4', cat: '8: Rubble and Ruin', name: 'Flagship Fuel Risks', type: 'Classified Doc', desc: 'Safe inside locked second-floor hotel room.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=300s' },
-    { id: 'm8_cd5', cat: '8: Rubble and Ruin', name: 'Priority Pick Up', type: 'Classified Doc', desc: 'Attic floor of the western Metro Du Café starting location.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=335s' },
-    { id: 'm8_hi1', cat: '8: Rubble and Ruin', name: 'Hidden Tantō', type: 'Hidden Item', desc: 'Inside chest in locked sewer room opposite entrance.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=370s' },
-    { id: 'm8_hi2', cat: '8: Rubble and Ruin', name: 'I-400 V2 Hangar', type: 'Hidden Item', desc: 'Table in western 2nd-floor mainframe room at northern fuel system.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=405s' },
-    { id: 'm8_hi3', cat: '8: Rubble and Ruin', name: 'An \'Original\' Adolf', type: 'Hidden Item', desc: 'Next to sleeping bag on upper church floor (climb up, then down).', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=440s' },
-    { id: 'm8_se1', cat: '8: Rubble and Ruin', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Far west outside boundaries, viewable from front of Sea View Offices.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=475s' },
-    { id: 'm8_se2', cat: '8: Rubble and Ruin', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Far east past mission boundary, left of giant silos.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=508s' },
-    { id: 'm8_se3', cat: '8: Rubble and Ruin', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Atop Yoshikawa\'s building, visible from the NW rifle workbench.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=540s' },
-    { id: 'm8_wb1', cat: '8: Rubble and Ruin', name: 'Rifle Workbench', type: 'Workbench', desc: 'Armoury in first sewer combat area (loot key from troops).', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=572s' },
-    { id: 'm8_wb2', cat: '8: Rubble and Ruin', name: 'SMG Workbench', type: 'Workbench', desc: 'Upstairs resistance armoury opposite NW Yoshikawa estate.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=605s' },
-    { id: 'm8_wb3', cat: '8: Rubble and Ruin', name: 'Pistol Workbench', type: 'Workbench', desc: 'Through floor hole in NW corner of central church (crypt key needed).', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=638s' },
+    { id: 'm8_pl1', cat: '8: Rubble and Ruin', name: 'It\'s Not Over Yet', type: 'Personal Letter', desc: 'Table in a ground floor side-room of the SE hotel.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=18s', x: 1440, y: 1380, pin: 'PL1' },
+    { id: 'm8_pl2', cat: '8: Rubble and Ruin', name: 'Clean Out the Sewer', type: 'Personal Letter', desc: 'Floor behind boxes left of the entrance into the sewers.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=52s', x: 1040, y: 1180, pin: 'PL2' },
+    { id: 'm8_pl3', cat: '8: Rubble and Ruin', name: 'He\'s Not the Sharpest', type: 'Personal Letter', desc: 'Locked box behind armoured gun on central theatre balcony.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=88s', x: 1120, y: 940, pin: 'PL3' },
+    { id: 'm8_pl4', cat: '8: Rubble and Ruin', name: 'Your Man Talked', type: 'Personal Letter', desc: 'Table inside locked building in south-central bombed area.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=124s', x: 920, y: 1340, pin: 'PL4' },
+    { id: 'm8_pl5', cat: '8: Rubble and Ruin', name: 'Möller Is Moving', type: 'Personal Letter', desc: 'Ground floor back room of the Sea View Offices (SE).', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=160s', x: 1520, y: 1420, pin: 'PL5' },
+    { id: 'm8_cd1', cat: '8: Rubble and Ruin', name: 'Secure Radio Lines', type: 'Classified Doc', desc: 'Atop wooden box near three Nazis at the start restaurant.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=195s', x: 740, y: 1480, pin: 'CD1' },
+    { id: 'm8_cd2', cat: '8: Rubble and Ruin', name: 'Broken Resistance', type: 'Classified Doc', desc: 'On a box directly ahead after sliding into the sewers.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=230s', x: 1080, y: 1220, pin: 'CD2' },
+    { id: 'm8_cd3', cat: '8: Rubble and Ruin', name: 'Resistance Report', type: 'Classified Doc', desc: 'Table in basement interrogation room (western map).', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=265s', x: 620, y: 1140, pin: 'CD3' },
+    { id: 'm8_cd4', cat: '8: Rubble and Ruin', name: 'Flagship Fuel Risks', type: 'Classified Doc', desc: 'Safe inside locked second-floor hotel room.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=300s', x: 1420, y: 1360, pin: 'CD4' },
+    { id: 'm8_cd5', cat: '8: Rubble and Ruin', name: 'Priority Pick Up', type: 'Classified Doc', desc: 'Attic floor of the western Metro Du Café starting location.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=335s', x: 680, y: 1520, pin: 'CD5' },
+    { id: 'm8_hi1', cat: '8: Rubble and Ruin', name: 'Hidden Tantō', type: 'Hidden Item', desc: 'Inside chest in locked sewer room opposite entrance.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=370s', x: 1060, y: 1240, pin: 'HI1' },
+    { id: 'm8_hi2', cat: '8: Rubble and Ruin', name: 'I-400 V2 Hangar', type: 'Hidden Item', desc: 'Table in western 2nd-floor mainframe room at northern fuel system.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=405s', x: 880, y: 480, pin: 'HI2' },
+    { id: 'm8_hi3', cat: '8: Rubble and Ruin', name: 'An \'Original\' Adolf', type: 'Hidden Item', desc: 'Next to sleeping bag on upper church floor (climb up, then down).', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=440s', x: 1140, y: 780, pin: 'HI3' },
+    { id: 'm8_se1', cat: '8: Rubble and Ruin', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Far west outside boundaries, viewable from front of Sea View Offices.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=475s', x: 420, y: 1460, pin: 'SE1' },
+    { id: 'm8_se2', cat: '8: Rubble and Ruin', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Far east past mission boundary, left of giant silos.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=508s', x: 1680, y: 1240, pin: 'SE2' },
+    { id: 'm8_se3', cat: '8: Rubble and Ruin', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Atop Yoshikawa\'s building, visible from the NW rifle workbench.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=540s', x: 740, y: 620, pin: 'SE3' },
+    { id: 'm8_wb1', cat: '8: Rubble and Ruin', name: 'Rifle Workbench', type: 'Workbench', desc: 'Armoury in first sewer combat area (loot key from troops).', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=572s', x: 1090, y: 1190, pin: 'WB1' },
+    { id: 'm8_wb2', cat: '8: Rubble and Ruin', name: 'SMG Workbench', type: 'Workbench', desc: 'Upstairs resistance armoury opposite NW Yoshikawa estate.', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=605s', x: 780, y: 660, pin: 'WB2' },
+    { id: 'm8_wb3', cat: '8: Rubble and Ruin', name: 'Pistol Workbench', type: 'Workbench', desc: 'Through floor hole in NW corner of central church (crypt key needed).', yt: '//www.youtube.com/watch?v=qE4hK6WfQ_M&t=638s', x: 1150, y: 790, pin: 'WB3' },
 
     // ---------------- MISSION 9: LOOSE ENDS (TROPHIES & CHALLENGES) (4 Items) ----------------
     { id: 'm9_ch1', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Kill Möller with a Rifle', type: 'Challenge', desc: 'Eliminate Abelard Möller with any rifle shot.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA' },
@@ -237,94 +253,94 @@ const sniperData = [
     { id: 'm9_ch4', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Master Sniper Trophy', type: 'Trophy', desc: 'Complete entire campaign on Authentic difficulty.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA' },
 
     // ---------------- MISSION 10: WOLF MOUNTAIN (DLC) (19 Items) ----------------
-    { id: 'm10_pl1', cat: '10: Wolf Mountain (DLC)', name: 'Construction Halted', type: 'Personal Letter', desc: 'Inside eastern guardhouse just before the teahouse.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=22s' },
-    { id: 'm10_pl2', cat: '10: Wolf Mountain (DLC)', name: 'Vermin Infestation', type: 'Personal Letter', desc: 'Metal table in the back room of garage north of Berghof.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=58s' },
-    { id: 'm10_pl3', cat: '10: Wolf Mountain (DLC)', name: 'Führer\'s Plans', type: 'Personal Letter', desc: 'Side table in the Berghof\'s ground-floor southern kitchen.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=95s' },
-    { id: 'm10_pl4', cat: '10: Wolf Mountain (DLC)', name: 'Perimeter Problems', type: 'Personal Letter', desc: 'Table inside small building next to winding road before tunnel.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=132s' },
-    { id: 'm10_pl5', cat: '10: Wolf Mountain (DLC)', name: 'Führer\'s Personal Space', type: 'Personal Letter', desc: 'Chest of drawers in NW ground floor room of Berghof.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=168s' },
-    { id: 'm10_cd1', cat: '10: Wolf Mountain (DLC)', name: 'Missing Inventory', type: 'Classified Doc', desc: 'Atop boxes near tents at the SE anti-air gun.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=205s' },
-    { id: 'm10_cd2', cat: '10: Wolf Mountain (DLC)', name: 'Guest of the Führer', type: 'Classified Doc', desc: 'Inside side-office on the southern 2nd-floor Berghof corridor.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=240s' },
-    { id: 'm10_cd3', cat: '10: Wolf Mountain (DLC)', name: 'Routine Reminder', type: 'Classified Doc', desc: 'Safe in a building just before the Stone Eagle #2 tunnel.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=275s' },
-    { id: 'm10_cd4', cat: '10: Wolf Mountain (DLC)', name: 'Communication Operations', type: 'Classified Doc', desc: 'Wooden box at SW sniper lookout point.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=310s' },
-    { id: 'm10_cd5', cat: '10: Wolf Mountain (DLC)', name: 'Additional Flak Positions', type: 'Classified Doc', desc: 'Downstairs table in SW resort-like building (radio objective).', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=345s' },
-    { id: 'm10_hi1', cat: '10: Wolf Mountain (DLC)', name: 'Führermuseum Concept Model', type: 'Hidden Item', desc: 'On a box in Berghof foyer (room with covered artwork).', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=380s' },
-    { id: 'm10_hi2', cat: '10: Wolf Mountain (DLC)', name: 'Practice Pose Photography', type: 'Hidden Item', desc: 'Safe in Hitler\'s top-floor Berghof quarters.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=415s' },
-    { id: 'm10_hi3', cat: '10: Wolf Mountain (DLC)', name: 'Possible Hitler Disguises', type: 'Hidden Item', desc: 'Table in northern-most room of the eastern tearooms.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=450s' },
-    { id: 'm10_se1', cat: '10: Wolf Mountain (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Eastern-facing roof of the main Berghof building.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=485s' },
-    { id: 'm10_se2', cat: '10: Wolf Mountain (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Top of eastern tunnel heading to the Berghof.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=518s' },
-    { id: 'm10_se3', cat: '10: Wolf Mountain (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Top of a far shed across the northern lake.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=550s' },
-    { id: 'm10_wb1', cat: '10: Wolf Mountain (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar of large SW building (requires key or Satchel).', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=582s' },
-    { id: 'm10_wb2', cat: '10: Wolf Mountain (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Basement of abandoned shack near eastern anti-air gun.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=615s' },
-    { id: 'm10_wb3', cat: '10: Wolf Mountain (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury in Berghof basement (opposite bowling alley).', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=648s' },
+    { id: 'm10_pl1', cat: '10: Wolf Mountain (DLC)', name: 'Construction Halted', type: 'Personal Letter', desc: 'Inside eastern guardhouse just before the teahouse.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=22s', x: 1480, y: 840, pin: 'PL1' },
+    { id: 'm10_pl2', cat: '10: Wolf Mountain (DLC)', name: 'Vermin Infestation', type: 'Personal Letter', desc: 'Metal table in the back room of garage north of Berghof.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=58s', x: 1080, y: 640, pin: 'PL2' },
+    { id: 'm10_pl3', cat: '10: Wolf Mountain (DLC)', name: 'Führer\'s Plans', type: 'Personal Letter', desc: 'Side table in the Berghof\'s ground-floor southern kitchen.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=95s', x: 1040, y: 1080, pin: 'PL3' },
+    { id: 'm10_pl4', cat: '10: Wolf Mountain (DLC)', name: 'Perimeter Problems', type: 'Personal Letter', desc: 'Table inside small building next to winding road before tunnel.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=132s', x: 1320, y: 1120, pin: 'PL4' },
+    { id: 'm10_pl5', cat: '10: Wolf Mountain (DLC)', name: 'Führer\'s Personal Space', type: 'Personal Letter', desc: 'Chest of drawers in NW ground floor room of Berghof.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=168s', x: 980, y: 920, pin: 'PL5' },
+    { id: 'm10_cd1', cat: '10: Wolf Mountain (DLC)', name: 'Missing Inventory', type: 'Classified Doc', desc: 'Atop boxes near tents at the SE anti-air gun.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=205s', x: 1540, y: 1220, pin: 'CD1' },
+    { id: 'm10_cd2', cat: '10: Wolf Mountain (DLC)', name: 'Guest of the Führer', type: 'Classified Doc', desc: 'Inside side-office on the southern 2nd-floor Berghof corridor.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=240s', x: 1020, y: 990, pin: 'CD2' },
+    { id: 'm10_cd3', cat: '10: Wolf Mountain (DLC)', name: 'Routine Reminder', type: 'Classified Doc', desc: 'Safe in a building just before the Stone Eagle #2 tunnel.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=275s', x: 1380, y: 1090, pin: 'CD3' },
+    { id: 'm10_cd4', cat: '10: Wolf Mountain (DLC)', name: 'Communication Operations', type: 'Classified Doc', desc: 'Wooden box at SW sniper lookout point.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=310s', x: 740, y: 1340, pin: 'CD4' },
+    { id: 'm10_cd5', cat: '10: Wolf Mountain (DLC)', name: 'Additional Flak Positions', type: 'Classified Doc', desc: 'Downstairs table in SW resort-like building (radio objective).', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=345s', x: 680, y: 1260, pin: 'CD5' },
+    { id: 'm10_hi1', cat: '10: Wolf Mountain (DLC)', name: 'Führermuseum Concept Model', type: 'Hidden Item', desc: 'On a box in Berghof foyer (room with covered artwork).', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=380s', x: 1050, y: 980, pin: 'HI1' },
+    { id: 'm10_hi2', cat: '10: Wolf Mountain (DLC)', name: 'Practice Pose Photography', type: 'Hidden Item', desc: 'Safe in Hitler\'s top-floor Berghof quarters.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=415s', x: 1030, y: 950, pin: 'HI2' },
+    { id: 'm10_hi3', cat: '10: Wolf Mountain (DLC)', name: 'Possible Hitler Disguises', type: 'Hidden Item', desc: 'Table in northern-most room of the eastern tearooms.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=450s', x: 1510, y: 790, pin: 'HI3' },
+    { id: 'm10_se1', cat: '10: Wolf Mountain (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Eastern-facing roof of the main Berghof building.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=485s', x: 1070, y: 970, pin: 'SE1' },
+    { id: 'm10_se2', cat: '10: Wolf Mountain (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Top of eastern tunnel heading to the Berghof.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=518s', x: 1390, y: 1080, pin: 'SE2' },
+    { id: 'm10_se3', cat: '10: Wolf Mountain (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Top of a far shed across the northern lake.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=550s', x: 920, y: 440, pin: 'SE3' },
+    { id: 'm10_wb1', cat: '10: Wolf Mountain (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar of large SW building (requires key or Satchel).', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=582s', x: 690, y: 1280, pin: 'WB1' },
+    { id: 'm10_wb2', cat: '10: Wolf Mountain (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Basement of abandoned shack near eastern anti-air gun.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=615s', x: 1480, y: 1190, pin: 'WB2' },
+    { id: 'm10_wb3', cat: '10: Wolf Mountain (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury in Berghof basement (opposite bowling alley).', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=648s', x: 1020, y: 1060, pin: 'WB3' },
 
     // ---------------- MISSION 11: LANDING FORCE (DLC) (13 Items) ----------------
-    { id: 'm11_pl1', cat: '11: Landing Force (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Table inside the northern radio guardpost.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm11_pl2', cat: '11: Landing Force (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Barracks bedside trunk near dock warehouse.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm11_cd1', cat: '11: Landing Force (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Command bunker office safe overlooking the coast.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm11_cd2', cat: '11: Landing Force (DLC)', name: 'Classified Doc #2', type: 'Classified Doc', desc: 'Radar station basement communications desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm11_hi1', cat: '11: Landing Force (DLC)', name: 'Hidden Item #1', type: 'Hidden Item', desc: 'Ancient coin artifact on lighthouse top floor.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm11_hi2', cat: '11: Landing Force (DLC)', name: 'Hidden Item #2', type: 'Hidden Item', desc: 'Naval telescope inside harbourmaster tower.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm11_se1', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Perched on top of the ruined lighthouse spire.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm11_se2', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Cliffside crane support beam overlooking the beach.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm11_se3', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Eastern battery bunker roof corner.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm11_wb1', cat: '11: Landing Force (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Underground armory beneath the gun battery.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Inside the locked boatyard warehouse.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Radar installation sub-level storage locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+    { id: 'm11_pl1', cat: '11: Landing Force (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Table inside the northern radio guardpost.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1120, y: 640, pin: 'PL1' },
+    { id: 'm11_pl2', cat: '11: Landing Force (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Barracks bedside trunk near dock warehouse.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 980, y: 1120, pin: 'PL2' },
+    { id: 'm11_cd1', cat: '11: Landing Force (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Command bunker office safe overlooking the coast.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 740, y: 580, pin: 'CD1' },
+    { id: 'm11_cd2', cat: '11: Landing Force (DLC)', name: 'Classified Doc #2', type: 'Classified Doc', desc: 'Radar station basement communications desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1220, y: 780, pin: 'CD2' },
+    { id: 'm11_hi1', cat: '11: Landing Force (DLC)', name: 'Hidden Item #1', type: 'Hidden Item', desc: 'Ancient coin artifact on lighthouse top floor.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1340, y: 490, pin: 'HI1' },
+    { id: 'm11_hi2', cat: '11: Landing Force (DLC)', name: 'Hidden Item #2', type: 'Hidden Item', desc: 'Naval telescope inside harbourmaster tower.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 890, y: 1260, pin: 'HI2' },
+    { id: 'm11_se1', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Perched on top of the ruined lighthouse spire.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1350, y: 480, pin: 'SE1' },
+    { id: 'm11_se2', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Cliffside crane support beam overlooking the beach.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 820, y: 1320, pin: 'SE2' },
+    { id: 'm11_se3', cat: '11: Landing Force (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Eastern battery bunker roof corner.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1410, y: 820, pin: 'SE3' },
+    { id: 'm11_wb1', cat: '11: Landing Force (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Underground armory beneath the gun battery.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1380, y: 840, pin: 'WB1' },
+    { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Inside the locked boatyard warehouse.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 990, y: 1140, pin: 'WB2' },
+    { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Radar installation sub-level storage locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1210, y: 790, pin: 'WB3' },
     { id: 'm11_ch1', cat: '11: Landing Force (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Disable the heavy battery without setting off combat alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
 
     // ---------------- MISSION 12: CONQUEROR (DLC) (13 Items) ----------------
-    { id: 'm12_pl1', cat: '12: Conqueror (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Guard outpost desk near the town entrance bridge.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm12_pl2', cat: '12: Conqueror (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Second floor bedroom of town square townhouse.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm12_cd1', cat: '12: Conqueror (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Castle fortress headquarters map table.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm12_cd2', cat: '12: Conqueror (DLC)', name: 'Classified Doc #2', type: 'Classified Doc', desc: 'Subterranean dungeon interrogation room.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm12_hi1', cat: '12: Conqueror (DLC)', name: 'Hidden Item #1', type: 'Hidden Item', desc: 'Medieval knight dagger inside castle trophy hall.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm12_hi2', cat: '12: Conqueror (DLC)', name: 'Hidden Item #2', type: 'Hidden Item', desc: 'Golden goblet locked in church sacristy safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm12_se1', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Main castle keep battlements peak.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm12_se2', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Ruined cathedral archway across the river.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm12_se3', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Southern bridge guardhouse chimney.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm12_wb1', cat: '12: Conqueror (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Castle courtyard stable armory.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm12_wb2', cat: '12: Conqueror (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Cellar beneath the eastern town bakery.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Castle cellar weapons cache.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+    { id: 'm12_pl1', cat: '12: Conqueror (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Guard outpost desk near the town entrance bridge.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 720, y: 1380, pin: 'PL1' },
+    { id: 'm12_pl2', cat: '12: Conqueror (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Second floor bedroom of town square townhouse.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 980, y: 1120, pin: 'PL2' },
+    { id: 'm12_cd1', cat: '12: Conqueror (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Castle fortress headquarters map table.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1260, y: 740, pin: 'CD1' },
+    { id: 'm12_cd2', cat: '12: Conqueror (DLC)', name: 'Classified Doc #2', type: 'Classified Doc', desc: 'Subterranean dungeon interrogation room.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1240, y: 780, pin: 'CD2' },
+    { id: 'm12_hi1', cat: '12: Conqueror (DLC)', name: 'Hidden Item #1', type: 'Hidden Item', desc: 'Medieval knight dagger inside castle trophy hall.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1280, y: 720, pin: 'HI1' },
+    { id: 'm12_hi2', cat: '12: Conqueror (DLC)', name: 'Hidden Item #2', type: 'Hidden Item', desc: 'Golden goblet locked in church sacristy safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 940, y: 1180, pin: 'HI2' },
+    { id: 'm12_se1', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Main castle keep battlements peak.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1290, y: 710, pin: 'SE1' },
+    { id: 'm12_se2', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Ruined cathedral archway across the river.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 840, y: 1260, pin: 'SE2' },
+    { id: 'm12_se3', cat: '12: Conqueror (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Southern bridge guardhouse chimney.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 680, y: 1440, pin: 'SE3' },
+    { id: 'm12_wb1', cat: '12: Conqueror (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Castle courtyard stable armory.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1190, y: 820, pin: 'WB1' },
+    { id: 'm12_wb2', cat: '12: Conqueror (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Cellar beneath the eastern town bakery.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1040, y: 1080, pin: 'WB2' },
+    { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Castle cellar weapons cache.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1220, y: 790, pin: 'WB3' },
     { id: 'm12_ch1', cat: '12: Conqueror (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Eliminate general using only environment hazards.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
 
     // ---------------- MISSION 13: ROUGH LANDING (DLC) (19 Items) ----------------
-    { id: 'm13_pl1', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Forest camp command tent cot.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Crashed glider wreckage site.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_pl3', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #3', type: 'Personal Letter', desc: 'Rail depot switchboard table.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_pl4', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #4', type: 'Personal Letter', desc: 'Farmhouse attic crate.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_pl5', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #5', type: 'Personal Letter', desc: 'Looted from patrolling squad officer.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_cd1', cat: '13: Rough Landing (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Airfield control tower radio room.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_cd2', cat: '13: Rough Landing (DLC)', name: 'Classified Doc #2', type: 'Classified Doc', desc: 'Underground fuel storage facility safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_cd3', cat: '13: Rough Landing (DLC)', name: 'Classified Doc #3', type: 'Classified Doc', desc: 'Maintenance hangar planning office.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_cd4', cat: '13: Rough Landing (DLC)', name: 'Classified Doc #4', type: 'Classified Doc', desc: 'Railway siding cargo container.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_cd5', cat: '13: Rough Landing (DLC)', name: 'Classified Doc #5', type: 'Classified Doc', desc: 'Staff car glove box at checkpoint.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_hi1', cat: '13: Rough Landing (DLC)', name: 'Hidden Item #1', type: 'Hidden Item', desc: 'Pilot flight goggles in crashed cockpit.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_hi2', cat: '13: Rough Landing (DLC)', name: 'Hidden Item #2', type: 'Hidden Item', desc: 'Experimental jet turbine blueprints.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_hi3', cat: '13: Rough Landing (DLC)', name: 'Hidden Item #3', type: 'Hidden Item', desc: 'Decorated iron cross inside officer quarters.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_se1', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Aviation hangar roof girder apex.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_se2', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Rail bridge central concrete pillar.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_se3', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Forest water reservoir watchtower.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_wb1', cat: '13: Rough Landing (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Hangar maintenance trench underground.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_wb2', cat: '13: Rough Landing (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Rail freight staging depot armory.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Forest checkpoint security bunker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+    { id: 'm13_pl1', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Forest camp command tent cot.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 680, y: 1340, pin: 'PL1' },
+    { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Crashed glider wreckage site.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1080, y: 920, pin: 'PL2' },
+    { id: 'm13_pl3', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #3', type: 'Personal Letter', desc: 'Rail depot switchboard table.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 840, y: 1180, pin: 'PL3' },
+    { id: 'm13_pl4', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #4', type: 'Personal Letter', desc: 'Farmhouse attic crate.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 920, y: 1420, pin: 'PL4' },
+    { id: 'm13_pl5', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #5', type: 'Personal Letter', desc: 'Looted from patrolling squad officer.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 890, y: 1040, pin: 'PL5' },
+    { id: 'm13_cd1', cat: '13: Rough Landing (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Airfield control tower radio room.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1280, y: 780, pin: 'CD1' },
+    { id: 'm13_cd2', cat: '13: Rough Landing (DLC)', name: 'Classified Doc #2', type: 'Classified Doc', desc: 'Underground fuel storage facility safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1180, y: 690, pin: 'CD2' },
+    { id: 'm13_cd3', cat: '13: Rough Landing (DLC)', name: 'Classified Doc #3', type: 'Classified Doc', desc: 'Maintenance hangar planning office.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1220, y: 720, pin: 'CD3' },
+    { id: 'm13_cd4', cat: '13: Rough Landing (DLC)', name: 'Classified Doc #4', type: 'Classified Doc', desc: 'Railway siding cargo container.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 790, y: 1260, pin: 'CD4' },
+    { id: 'm13_cd5', cat: '13: Rough Landing (DLC)', name: 'Classified Doc #5', type: 'Classified Doc', desc: 'Staff car glove box at checkpoint.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 620, y: 1480, pin: 'CD5' },
+    { id: 'm13_hi1', cat: '13: Rough Landing (DLC)', name: 'Hidden Item #1', type: 'Hidden Item', desc: 'Pilot flight goggles in crashed cockpit.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1090, y: 910, pin: 'HI1' },
+    { id: 'm13_hi2', cat: '13: Rough Landing (DLC)', name: 'Hidden Item #2', type: 'Hidden Item', desc: 'Experimental jet turbine blueprints.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1240, y: 740, pin: 'HI2' },
+    { id: 'm13_hi3', cat: '13: Rough Landing (DLC)', name: 'Hidden Item #3', type: 'Hidden Item', desc: 'Decorated iron cross inside officer quarters.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 880, y: 1120, pin: 'HI3' },
+    { id: 'm13_se1', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Aviation hangar roof girder apex.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1310, y: 680, pin: 'SE1' },
+    { id: 'm13_se2', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Rail bridge central concrete pillar.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 740, y: 1290, pin: 'SE2' },
+    { id: 'm13_se3', cat: '13: Rough Landing (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Forest water reservoir watchtower.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 580, y: 1540, pin: 'SE3' },
+    { id: 'm13_wb1', cat: '13: Rough Landing (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Hangar maintenance trench underground.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1210, y: 760, pin: 'WB1' },
+    { id: 'm13_wb2', cat: '13: Rough Landing (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Rail freight staging depot armory.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 830, y: 1190, pin: 'WB2' },
+    { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Forest checkpoint security bunker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 640, y: 1460, pin: 'WB3' },
 
     // ---------------- MISSION 14: KRAKEN AWAKES (DLC) (13 Items) ----------------
-    { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Submarine dry dock office desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Aircraft carrier flight deck control station.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm14_cd1', cat: '14: Kraken Awakes (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Super-carrier reactor room logbook.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm14_cd2', cat: '14: Kraken Awakes (DLC)', name: 'Classified Doc #2', type: 'Classified Doc', desc: 'Admiral sea-cabin master safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm14_hi1', cat: '14: Kraken Awakes (DLC)', name: 'Hidden Item #1', type: 'Hidden Item', desc: 'Ceremonial naval sword in officer wardroom.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm14_hi2', cat: '14: Kraken Awakes (DLC)', name: 'Hidden Item #2', type: 'Hidden Item', desc: 'Prototype torpedo guidance module.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm14_se1', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Carrier primary radar mast antenna top.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm14_se2', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Dry dock crane gantry pinnacle.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm14_se3', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Harbour entrance lighthouse cupola.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm14_wb1', cat: '14: Kraken Awakes (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Carrier forward munitions storage hold.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm14_wb2', cat: '14: Kraken Awakes (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Dry dock machine shop workshop.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
-    { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Docklands security station gun locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+    { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Submarine dry dock office desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1280, y: 780, pin: 'PL1' },
+    { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Aircraft carrier flight deck control station.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 940, y: 1120, pin: 'PL2' },
+    { id: 'm14_cd1', cat: '14: Kraken Awakes (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Super-carrier reactor room logbook.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 880, y: 1240, pin: 'CD1' },
+    { id: 'm14_cd2', cat: '14: Kraken Awakes (DLC)', name: 'Classified Doc #2', type: 'Classified Doc', desc: 'Admiral sea-cabin master safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1020, y: 1040, pin: 'CD2' },
+    { id: 'm14_hi1', cat: '14: Kraken Awakes (DLC)', name: 'Hidden Item #1', type: 'Hidden Item', desc: 'Ceremonial naval sword in officer wardroom.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 980, y: 1080, pin: 'HI1' },
+    { id: 'm14_hi2', cat: '14: Kraken Awakes (DLC)', name: 'Hidden Item #2', type: 'Hidden Item', desc: 'Prototype torpedo guidance module.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1320, y: 740, pin: 'HI2' },
+    { id: 'm14_se1', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Carrier primary radar mast antenna top.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 920, y: 1150, pin: 'SE1' },
+    { id: 'm14_se2', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Dry dock crane gantry pinnacle.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1360, y: 690, pin: 'SE2' },
+    { id: 'm14_se3', cat: '14: Kraken Awakes (DLC)', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Harbour entrance lighthouse cupola.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1540, y: 520, pin: 'SE3' },
+    { id: 'm14_wb1', cat: '14: Kraken Awakes (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Carrier forward munitions storage hold.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 860, y: 1290, pin: 'WB1' },
+    { id: 'm14_wb2', cat: '14: Kraken Awakes (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Dry dock machine shop workshop.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1240, y: 840, pin: 'WB2' },
+    { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Docklands security station gun locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M', x: 1180, y: 920, pin: 'WB3' },
     { id: 'm14_ch1', cat: '14: Kraken Awakes (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Destroy the carrier without triggering general alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' }
 ];
 
-/* === SECTION: App State Controller & Leaflet Map Engine === */
+/* === SECTION: App State Controller & In-Game Tactical Map Engine === */
 const appState = {
     activeGamertag: 'Werewolf3788',
     platform: 'playstation',
@@ -335,12 +351,12 @@ const appState = {
     db: null, auth: null, user: null,
     unsubListeners: [],
     isLoaded: false,
-    version: 'v4.7.0',
-    buildDate: '2026-08-23 02:15 EDT',
+    version: 'v5.0.0',
+    buildDate: '2026-08-23 02:45 EDT',
     
-    // Map References
-    leafletMap: null,
-    markerLayers: {}, // [itemId]: LeafletMarker
+    // Active In-Game Leaflet Map Instances & Marker Store
+    activeLeafletMaps: {}, 
+    markerLayers: {}, 
 
     getDocRefForGamertag: function(gamertag) {
         const path = `users/${gamertag}/platform/${this.platform}/progress/sniper-elite-5`;
@@ -506,35 +522,39 @@ const appState = {
         this.render();
     },
 
-    initNativeMissionMap: function() {
-        const mapContainer = document.getElementById('m7-interactive-map');
+    /* Render Authentic In-Game Map Tiles Using Rebellion Asset Endpoints */
+    initTacticalGameMapForSection: function(sid, catName) {
+        const mapContainer = document.getElementById(`map-frame-${sid}`);
         if (!mapContainer || typeof L === 'undefined') return;
 
-        // Clean previous instance
-        if (this.leafletMap) {
-            this.leafletMap.remove();
-            this.leafletMap = null;
+        if (this.activeLeafletMaps[sid]) {
+            this.activeLeafletMaps[sid].remove();
+            delete this.activeLeafletMaps[sid];
         }
 
-        // Initialize leaflet instance centered on Secret Weapons coordinates
-        this.leafletMap = L.map('m7-interactive-map', {
-            center: [48.855, 2.350],
-            zoom: 14,
-            minZoom: 13,
-            maxZoom: 17
+        const mapConfig = MISSION_MAP_CONFIG[sid] || { mapId: 'm07', w: 2048, h: 2048 };
+
+        // Flat In-Game Pixel Coordinate Engine
+        const map = L.map(`map-frame-${sid}`, {
+            crs: L.CRS.Simple,
+            minZoom: -2,
+            maxZoom: 2,
+            zoomSnap: 0.25,
+            attributionControl: false
         });
 
-        // Dark tactical satellite/map layer
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-            attribution: '&copy; OpenStreetMap &copy; CARTO',
-            maxZoom: 19
-        }).addTo(this.leafletMap);
+        const bounds = [[0, 0], [mapConfig.h, mapConfig.w]];
+        
+        // Authentic in-game mission background texture
+        const inGameTextureUrl = `https://sniperelite5maps.de/images/maps/${mapConfig.mapId}.jpg`;
+        L.imageOverlay(inGameTextureUrl, bounds).addTo(map);
 
-        this.markerLayers = {};
+        map.fitBounds(bounds);
+        this.activeLeafletMaps[sid] = map;
 
-        // Plot pins for Mission 7 items
-        const m7Items = this.hunterData.filter(i => i.cat.includes('7: Secret Weapons') && i.lat && i.lng);
-        m7Items.forEach(item => {
+        // Plot pins using pixel [y, x] bounds
+        const sectionItems = this.hunterData.filter(i => i.cat === catName && i.x !== undefined && i.y !== undefined);
+        sectionItems.forEach(item => {
             const pinIcon = L.divIcon({
                 className: 'custom-map-pin',
                 html: `<span>${item.pin}</span>`,
@@ -542,30 +562,43 @@ const appState = {
                 iconAnchor: [14, 14]
             });
 
-            const marker = L.marker([item.lat, item.lng], { icon: pinIcon })
+            // Convert standard top-left pixel coordinates into Leaflet CRS.Simple [y, x]
+            const yCoord = mapConfig.h - item.y;
+            const xCoord = item.x;
+
+            const marker = L.marker([yCoord, xCoord], { icon: pinIcon })
                 .bindPopup(`
-                    <div style="color:#000; font-family:sans-serif;">
-                        <strong style="color:#d35400;">${item.type}</strong><br>
-                        <strong>${item.name}</strong><br>
-                        <small style="color:#555;">${item.desc}</small>
+                    <div style="color:#000; font-family:sans-serif; font-size:12px;">
+                        <strong style="color:#e67e22; text-transform:uppercase;">${item.type}</strong><br>
+                        <strong style="font-size:13px;">${item.name}</strong><br>
+                        <span style="color:#555; font-style:italic;">${item.desc}</span>
                     </div>
                 `);
 
             this.markerLayers[item.id] = marker;
 
-            // Only show on map if UNCOLLECTED
+            // Only show pin on map if UNCOLLECTED
             if (!item.collected) {
-                marker.addTo(this.leafletMap);
+                marker.addTo(map);
             }
         });
     },
 
     updateMapPinVisibility: function(id, collected) {
-        if (!this.leafletMap || !this.markerLayers[id]) return;
+        const marker = this.markerLayers[id];
+        if (!marker) return;
+
+        const item = this.hunterData.find(i => i.id === id);
+        if (!item) return;
+
+        const sid = item.cat.replace(/[^a-z0-9]/gi, '');
+        const map = this.activeLeafletMaps[sid];
+        if (!map) return;
+
         if (collected) {
-            this.leafletMap.removeLayer(this.markerLayers[id]);
+            map.removeLayer(marker);
         } else {
-            this.markerLayers[id].addTo(this.leafletMap);
+            marker.addTo(map);
         }
     },
 
@@ -604,15 +637,15 @@ const appState = {
             section.id = `section-${sid}`;
             section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''} ${isActiveFocus ? 'active-focus' : ''}`;
             
-            // Native Interactive Map Holder for Mission 7
-            const isMission7 = cat.includes('7: Secret Weapons');
-            const mapHtml = isMission7 ? `
-                <div class="native-map-wrapper">
-                    <div class="native-map-bar outlined-text">
-                        <span>🗺️ TACTICAL MAP &bull; ITEMS AUTO-HIDE WHEN COLLECTED</span>
-                        <span style="color:#aaa; font-size:10px;">CLICK PIN FOR DETAILS</span>
+            // In-Game Tactical Map Container for Missions with Mapped Textures
+            const hasMapTexture = MISSION_MAP_CONFIG[sid] !== undefined;
+            const mapHtml = hasMapTexture ? `
+                <div class="tactical-map-wrapper">
+                    <div class="tactical-map-bar outlined-text">
+                        <span>🗺️ TACTICAL MAP &bull; IN-GAME TEXTURE &bull; AUTO-HIDES PINS WHEN FOUND</span>
+                        <span style="color:#aaa; font-size:10px;">CLICK PIN FOR BRIEFING</span>
                     </div>
-                    <div id="m7-interactive-map"></div>
+                    <div id="map-frame-${sid}" class="mission-map-frame"></div>
                 </div>
             ` : '';
 
@@ -667,6 +700,11 @@ const appState = {
                 grid.appendChild(card);
             });
             container.appendChild(section);
+
+            // Initialize the in-game map texture whenever an accordion opens
+            if (!this.collapsedSections[sid] && hasMapTexture) {
+                setTimeout(() => this.initTacticalGameMapForSection(sid, cat), 50);
+            }
         });
 
         const percent = Math.round((totalFound / this.hunterData.length) * 100) || 0;
@@ -674,12 +712,6 @@ const appState = {
         const pct = document.getElementById('percent-text');
         if (bar) bar.style.width = percent + '%';
         if (pct) pct.innerText = `TOTAL COLLECTION: ${percent}%`;
-
-        // Render Map if Mission 7 is open
-        const m7Sid = '7SecretWeapons';
-        if (!this.collapsedSections[m7Sid]) {
-            setTimeout(() => this.initNativeMissionMap(), 50);
-        }
     },
 
     toggleItem: async function(id) {
@@ -696,7 +728,7 @@ const appState = {
             }
             this.teamProgress[this.activeGamertag] = opSaved;
 
-            // Instant Map Pin removal/restore
+            // Instant map marker pin removal / restore
             this.updateMapPinVisibility(id, item.collected);
 
             this.render(); 
