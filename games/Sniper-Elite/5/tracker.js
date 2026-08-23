@@ -1,19 +1,18 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sun, Aug 23, 2026, 00:35 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 23, 2026, 00:45 (EDT - New York)
    Project: entertainment-71888
-   Version: v4.4.0-TEAM-INTEL-SYNC
+   Version: v4.5.0-CLEAN-SYNC
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
-   Notes: Restores Team Intel badges on every collectible card showing live
-          collected status for all operatives simultaneously across Firebase.
-          Full 19 PowerPyx items for Mission 5, video links, & auto cache purge.
+   Notes: Restores complete styling, team badges per collectible, active mission
+          focus, all 19 PowerPyx collectibles for Mission 5, video clips, and 
+          universal HTTP/HTTPS support.
    ============================================================================ */
 
 /* === SECTION: Auto Cache Purge === */
-// Line 16: Purges stale LocalStorage keys to guarantee the new dataset loads
 (function purgeStaleTrackerCache() {
-    const activeVersion = 'v4.4.0-20260823-0035';
+    const activeVersion = 'v4.5.0-20260823-0045';
     const storedVersion = localStorage.getItem('se5_tracker_build_version');
     if (storedVersion !== activeVersion) {
         Object.keys(localStorage).forEach(key => {
@@ -26,12 +25,10 @@
 })();
 
 /* === SECTION: Core Imports & Firebase Initialization === */
-// Line 32: Universal Protocol-relative dynamic module imports
 import { initializeApp } from '//www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-// Line 37: Firebase Entertainment Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -43,7 +40,6 @@ const firebaseConfig = {
     measurementId: "G-CTYHDF4MSD"
 };
 
-// Line 50: Gamertag Theme Color Palette & Operative List
 const ALL_OPERATIVES = ['Werewolf3788', 'Raymystyro', 'Terrdog', 'Elu Cloud'];
 
 const userThemes = {
@@ -53,7 +49,6 @@ const userThemes = {
     'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
 };
 
-// Line 61: Strict In-Game Item Type Priority Order
 const IN_GAME_TYPE_ORDER = {
     'Personal Letter': 1,
     'Classified Doc': 2,
@@ -64,8 +59,7 @@ const IN_GAME_TYPE_ORDER = {
     'Trophy': 7
 };
 
-/* === SECTION: Master Collectibles Dataset (All 14 Missions & DLC) === */
-// Line 73: Complete registry with individual YouTube walkthrough timestamps
+/* === SECTION: Master Collectibles Dataset === */
 const sniperData = [
     // ---------------- MISSION 1: THE ATLANTIC WALL (19 Items) ----------------
     { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=25s' },
@@ -329,19 +323,19 @@ const sniperData = [
     { id: 'm14_ch1', cat: '14: Kraken Awakes (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Destroy the carrier without triggering general alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' }
 ];
 
-/* === SECTION: App State Controller & Multi-Player Cloud Engine === */
+/* === SECTION: App State & Multi-Player Firestore Synchronization === */
 const appState = {
     activeGamertag: 'Werewolf3788',
     platform: 'playstation',
     activeMission: '6: Libération',
     hunterData: [],
-    teamProgress: {}, // Maps { [gamertag]: [ {id, collected} ] }
+    teamProgress: {}, // [gamertag]: [ {id, collected} ]
     collapsedSections: {}, 
     db: null, auth: null, user: null,
     unsubListeners: [],
     isLoaded: false,
-    version: 'v4.4.0',
-    buildDate: '2026-08-23 00:35 EDT',
+    version: 'v4.5.0',
+    buildDate: '2026-08-23 00:45 EDT',
 
     getDocRefForGamertag: function(gamertag) {
         const path = `users/${gamertag}/platform/${this.platform}/progress/sniper-elite-5`;
@@ -351,13 +345,11 @@ const appState = {
     init: async function() {
         this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
         
-        // Initialize local team registry
         ALL_OPERATIVES.forEach(op => {
             const localSaved = localStorage.getItem(`se5_progress_${op}`);
             this.teamProgress[op] = localSaved ? JSON.parse(localSaved) : [];
         });
 
-        // Collapse all sections except active target by default
         const cats = [...new Set(this.hunterData.map(i => i.cat))];
         cats.forEach(cat => {
             const sid = cat.replace(/[^a-z0-9]/gi, '');
@@ -417,7 +409,6 @@ const appState = {
         this.render();
         this.sync();
         
-        // Smooth scroll to target mission category
         const targetSid = catName.replace(/[^a-z0-9]/gi, '');
         const targetEl = document.getElementById('section-' + targetSid);
         if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -441,9 +432,7 @@ const appState = {
         `;
     },
 
-    // Listen simultaneously to all 4 players in Firebase Firestore
     attachAllTeamListeners: function() {
-        // Clear previous listeners if any
         this.unsubListeners.forEach(u => u());
         this.unsubListeners = [];
 
@@ -534,7 +523,6 @@ const appState = {
             const count = rawItems.filter(i => i.collected).length;
             totalFound += count;
 
-            // Strict In-Game Type Priority Sorting
             const items = [...rawItems].sort((a, b) => {
                 const orderA = IN_GAME_TYPE_ORDER[a.type] || 99;
                 const orderB = IN_GAME_TYPE_ORDER[b.type] || 99;
@@ -566,7 +554,6 @@ const appState = {
                 const card = document.createElement('div');
                 card.className = `item-card ${item.collected ? 'completed' : ''}`;
                 
-                // Construct Team Intel Badges for all 4 players
                 let teamBadgesHtml = '';
                 ALL_OPERATIVES.forEach(op => {
                     const opProgress = this.teamProgress[op] || [];
@@ -613,7 +600,6 @@ const appState = {
         if (item) {
             item.collected = !item.collected;
             
-            // Update current operative teamProgress cache
             const opSaved = this.teamProgress[this.activeGamertag] || [];
             const existing = opSaved.find(s => s.id === id);
             if (existing) {
@@ -636,7 +622,6 @@ const appState = {
     sync: async function() {
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
         
-        // Save locally first to guarantee zero loss
         localStorage.setItem(`se5_progress_${this.activeGamertag}`, JSON.stringify(progress));
 
         if (!this.db) return;
@@ -661,7 +646,6 @@ window.appState = appState;
 appState.init();
 
 /* === SECTION: Dynamic CSV Spreadsheet Parser & Navigation Menu === */
-// Line 670: Dynamic navigation parser loading from Google Sheets
 async function buildTopMenu() {
     try {
         const csvUrl = "//docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
@@ -736,7 +720,6 @@ async function buildTopMenu() {
     }
 }
 
-// Line 748: Dropdown navigation click handler
 window.addEventListener('click', function(event) {
     const btn = event.target.closest('.csv-dropdown-btn');
     const dropdowns = document.getElementsByClassName("csv-dropdown-content");
