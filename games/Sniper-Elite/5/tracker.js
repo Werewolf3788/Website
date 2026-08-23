@@ -1,23 +1,23 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sat, Aug 22, 2026, 22:42 (EDT - New York)
+   Deployment Timestamp: Sat, Aug 22, 2026, 22:46 (EDT - New York)
    Project: entertainment-71888
+   Version: v3.4.1-STABLE-19COUNT
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
-   Notes: Configured for HTTP & HTTPS compatibility. Includes all 14 missions,
-          trophy challenges, and DLC packs in strict in-game sequence 
-          (Personal Letters -> Classified Docs -> Hidden Items -> Stone Eagles -> Workbenches)
-          with unique video clip timestamps and auto cache-busting.
+   Notes: Configured for HTTP & HTTPS compatibility. Includes auto-injected sticky
+          footer displaying the live version and build timestamp for instant verification.
    ============================================================================ */
 
-/* === SECTION: Dynamic Layout Styles (Prevents CSS Card Clipping) === */
-// Line 16: CSS Grid injections for responsive card displays
+/* === SECTION: Dynamic Layout & Sticky Footer Styles === */
+// Line 16: CSS Grid injections and sticky bottom footer styling
 (function injectTrackerCSS() {
     const styleId = 'se5-tracker-grid-fix';
     if (!document.getElementById(styleId)) {
         const style = document.createElement('style');
         style.id = styleId;
         style.textContent = `
+            body { padding-bottom: 50px !important; }
             .category-section { width: 100%; margin-bottom: 16px; }
             .section-content { max-height: none !important; overflow: visible !important; }
             .section-collapsed .section-content { display: none !important; }
@@ -31,18 +31,46 @@
             .item-card { min-height: 140px; display: flex; flex-direction: column; justify-content: space-between; }
             .toggle-btn { min-height: 44px; touch-action: manipulation; }
             .yt-clip-btn { min-height: 24px; }
+            
+            /* Sticky Verification Footer */
+            #se5-sticky-footer {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                background: rgba(10, 10, 10, 0.95);
+                border-top: 1px solid var(--ser-color, #ff8800);
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.8);
+                color: #ccc;
+                font-family: inherit;
+                font-size: 11px;
+                padding: 6px 14px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-sizing: border-box;
+                z-index: 99999;
+            }
+            #se5-sticky-footer .footer-badge {
+                background: #111;
+                border: 1px solid #333;
+                padding: 2px 6px;
+                border-radius: 4px;
+                color: #fff;
+                font-weight: bold;
+            }
         `;
         document.head.appendChild(style);
     }
 })();
 
 /* === SECTION: Core Imports & Firebase Initialization === */
-// Line 43: Universal Protocol-relative dynamic module imports
+// Line 69: Universal Protocol-relative dynamic module imports
 import { initializeApp } from '//www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-// Line 48: Firebase Entertainment Configuration
+// Line 74: Firebase Entertainment Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -54,7 +82,7 @@ const firebaseConfig = {
     measurementId: "G-CTYHDF4MSD"
 };
 
-// Line 61: Gamertag Theme Color Palette
+// Line 87: Gamertag Theme Color Palette
 const userThemes = {
     'Werewolf3788': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
     'Raymystyro': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
@@ -62,7 +90,7 @@ const userThemes = {
     'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
 };
 
-// Line 70: Strict In-Game Item Type Order
+// Line 96: Strict In-Game Item Type Order
 const IN_GAME_TYPE_ORDER = {
     'Personal Letter': 1,
     'Classified Doc': 2,
@@ -73,8 +101,8 @@ const IN_GAME_TYPE_ORDER = {
     'Trophy': 7
 };
 
-/* === SECTION: Complete Sniper Elite 5 Database (Base Game + DLC) === */
-// Line 82: Master Collectibles & Objective Registry
+/* === SECTION: Master Collectibles Dataset (All 14 Missions & DLC) === */
+// Line 108: Item database with direct YT clips
 const sniperData = [
     // ---------------- MISSION 1: THE ATLANTIC WALL (19) ----------------
     { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=25s' },
@@ -346,9 +374,11 @@ const appState = {
     collapsedSections: {}, 
     db: null, auth: null, user: null, unsub: null,
     isLoaded: false,
+    version: 'v3.4.1',
+    buildDate: '2026-08-22 22:46 EDT',
 
     getDocRef: function() {
-        // Line 392: Dynamic path schema referencing gamertag
+        // Line 418: Dynamic path schema referencing gamertag
         const path = `users/${this.activeGamertag}/platform/${this.platform}/progress/sniper-elite-5`;
         return doc(this.db, path);
     },
@@ -364,13 +394,14 @@ const appState = {
         });
 
         this.render();
+        this.renderStickyFooter();
 
         try {
             const app = initializeApp(firebaseConfig);
             this.auth = getAuth(app);
             this.db = getFirestore(app);
             
-            signInAnonymously(this.auth).catch((err) => console.warn("ℹ️ Anonymous auth note:", err.message));
+            signInAnonymously(this.auth).catch((err) => console.warn("ℹ️ Anonymous auth notice:", err.message));
 
             onAuthStateChanged(this.auth, async (u) => {
                 this.user = u;
@@ -388,6 +419,24 @@ const appState = {
             console.warn("⚠️ Firebase Init fallback:", e.message);
             this.loadHunterFromLocalStorage(this.activeGamertag);
         }
+    },
+
+    renderStickyFooter: function() {
+        let footer = document.getElementById('se5-sticky-footer');
+        if (!footer) {
+            footer = document.createElement('div');
+            footer.id = 'se5-sticky-footer';
+            document.body.appendChild(footer);
+        }
+        footer.innerHTML = `
+            <div>
+                <span class="footer-badge">${this.version}</span>
+                <span style="margin-left:8px; color:#ff8800; font-weight:bold;">BUILD: ${this.buildDate}</span>
+            </div>
+            <div style="font-size:10px; color:#888;">
+                OPERATIVES: Werewolf3788, Raymystyro, Terrdog, ELU CLOUD
+            </div>
+        `;
     },
 
     loadHunterFromLocalStorage: function(gamertag) {
@@ -533,7 +582,7 @@ const appState = {
     sync: async function() {
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
         
-        // Save locally first to guarantee zero loss
+        // Save locally first to guarantee zero data loss
         localStorage.setItem(`se5_progress_${this.activeGamertag}`, JSON.stringify(progress));
 
         if (!this.db) return;
@@ -549,7 +598,7 @@ const appState = {
             };
             await setDoc(docRef, payload, { merge: true });
         } catch (err) {
-            console.warn("Firestore save error (saved to LocalStorage):", err.message);
+            console.warn("Firestore save fallback error:", err.message);
         }
     }
 };
@@ -558,7 +607,7 @@ window.appState = appState;
 appState.init();
 
 /* === SECTION: CSV Parser & Responsive Navigation Bar === */
-// Line 579: Dynamic nav builder from Google Sheets
+// Line 632: Loads navigation options dynamically from Google Sheets
 async function buildTopMenu() {
     try {
         const csvUrl = "//docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
@@ -633,7 +682,7 @@ async function buildTopMenu() {
     }
 }
 
-// Line 657: Dropdown toggle handler
+// Line 710: Dropdown menu click handler
 window.addEventListener('click', function(event) {
     const btn = event.target.closest('.csv-dropdown-btn');
     const dropdowns = document.getElementsByClassName("csv-dropdown-content");
