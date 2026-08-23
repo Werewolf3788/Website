@@ -1,19 +1,19 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sun, Aug 23, 2026, 00:25 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 23, 2026, 00:35 (EDT - New York)
    Project: entertainment-71888
-   Version: v4.3.0-DASHBOARD-RESTORED
+   Version: v4.4.0-TEAM-INTEL-SYNC
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
-   Notes: Exact replica of Operative Terminal and Intel Registry dashboard layout.
-          Features all 19 Mission 5 PowerPyx items, live multi-player syncing,
-          active target focus switching, video clips, and HTTP/HTTPS support.
+   Notes: Restores Team Intel badges on every collectible card showing live
+          collected status for all operatives simultaneously across Firebase.
+          Full 19 PowerPyx items for Mission 5, video links, & auto cache purge.
    ============================================================================ */
 
 /* === SECTION: Auto Cache Purge === */
-// Line 16: Automatically clears stale cache keys to ensure fresh 19-item count
+// Line 16: Purges stale LocalStorage keys to guarantee the new dataset loads
 (function purgeStaleTrackerCache() {
-    const activeVersion = 'v4.3.0-20260823-0025';
+    const activeVersion = 'v4.4.0-20260823-0035';
     const storedVersion = localStorage.getItem('se5_tracker_build_version');
     if (storedVersion !== activeVersion) {
         Object.keys(localStorage).forEach(key => {
@@ -43,7 +43,9 @@ const firebaseConfig = {
     measurementId: "G-CTYHDF4MSD"
 };
 
-// Line 50: Gamertag Theme Color Palette
+// Line 50: Gamertag Theme Color Palette & Operative List
+const ALL_OPERATIVES = ['Werewolf3788', 'Raymystyro', 'Terrdog', 'Elu Cloud'];
+
 const userThemes = {
     'Werewolf3788': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
     'Raymystyro': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
@@ -51,7 +53,7 @@ const userThemes = {
     'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
 };
 
-// Line 59: Strict In-Game Item Type Priority Order
+// Line 61: Strict In-Game Item Type Priority Order
 const IN_GAME_TYPE_ORDER = {
     'Personal Letter': 1,
     'Classified Doc': 2,
@@ -63,7 +65,7 @@ const IN_GAME_TYPE_ORDER = {
 };
 
 /* === SECTION: Master Collectibles Dataset (All 14 Missions & DLC) === */
-// Line 71: Complete registry with individual YouTube walkthrough timestamps
+// Line 73: Complete registry with individual YouTube walkthrough timestamps
 const sniperData = [
     // ---------------- MISSION 1: THE ATLANTIC WALL (19 Items) ----------------
     { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=25s' },
@@ -170,26 +172,26 @@ const sniperData = [
     { id: 'm5_wb2', cat: '5: Festung Guernsey', name: 'SMG Workbench', type: 'Workbench', desc: 'In small building basement; crawl under table and down the ladder.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=620s' },
     { id: 'm5_wb3', cat: '5: Festung Guernsey', name: 'Pistol Workbench', type: 'Workbench', desc: 'In the trenches next to an anti-air gun.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=652s' },
 
-    // ---------------- MISSION 6: LIBÉRATION (19 Items) ----------------
-    { id: 'm6_pl1', cat: '6: Libération', name: 'They\'re Out There', type: 'Personal Letter', desc: 'Looted from one of two soldiers who exit a truck by the start poppy field.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=25s' },
-    { id: 'm6_pl2', cat: '6: Libération', name: 'Watch Your Back', type: 'Personal Letter', desc: 'Looted from guard outside western estate (Trautmann target area).', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=62s' },
-    { id: 'm6_pl3', cat: '6: Libération', name: 'Barely Escaped', type: 'Personal Letter', desc: 'On a black box near the large northern artillery weapon.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=98s' },
-    { id: 'm6_pl4', cat: '6: Libération', name: 'Give Me Strength', type: 'Personal Letter', desc: 'Near door inside green shed with wireframe beds (north-east).', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=135s' },
-    { id: 'm6_pl5', cat: '6: Libération', name: 'Vengeance Is Nigh', type: 'Personal Letter', desc: 'Next to a hole in the roof of the central abandoned outhouse.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=170s' },
-    { id: 'm6_cd1', cat: '6: Libération', name: 'Hold the Line', type: 'Classified Doc', desc: 'Opposite radio equipment upstairs in the southern bridge building.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=205s' },
-    { id: 'm6_cd2', cat: '6: Libération', name: 'Incoming Armour', type: 'Classified Doc', desc: 'Atop transport cases in a room branching from northern trenches.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=240s' },
-    { id: 'm6_cd3', cat: '6: Libération', name: 'Unfit for Duty', type: 'Classified Doc', desc: 'Table in northern upstairs room of the western abandoned barn.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=275s' },
-    { id: 'm6_cd4', cat: '6: Libération', name: 'A Surplus Bridge', type: 'Classified Doc', desc: 'On a wooden box in the yard of the eastern burnt buildings.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=310s' },
-    { id: 'm6_cd5', cat: '6: Libération', name: 'Resistance Fanatic Located', type: 'Classified Doc', desc: 'Chest of drawers in locked 2nd-floor room (northern building).', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=345s' },
-    { id: 'm6_hi1', cat: '6: Libération', name: 'Lucky Rabbit\'s Foot', type: 'Hidden Item', desc: 'Looted from bald Nazi near central crashed plane/AA gun.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=380s' },
-    { id: 'm6_hi2', cat: '6: Libération', name: 'Stolen Medals', type: 'Hidden Item', desc: 'Table in underground resistance cache beneath central L-shaped building.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=415s' },
-    { id: 'm6_hi3', cat: '6: Libération', name: 'Engraved Lighter', type: 'Hidden Item', desc: 'Next to a briefcase upstairs in building right after the bridge.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=450s' },
-    { id: 'm6_se1', cat: '6: Libération', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Perched atop the eastern windmill near the start.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=485s' },
-    { id: 'm6_se2', cat: '6: Libération', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Rear of the north-western church.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=518s' },
-    { id: 'm6_se3', cat: '6: Libération', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Upstairs window frame behind northern tank target.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=550s' },
-    { id: 'm6_wb1', cat: '6: Libération', name: 'Rifle Workbench', type: 'Workbench', desc: 'Northern resistance safehouse (climb wall before detonated bridge).', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=582s' },
-    { id: 'm6_wb2', cat: '6: Libération', name: 'SMG Workbench', type: 'Workbench', desc: 'Central underground cellar (same as HI2 Stolen Medals).', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=615s' },
-    { id: 'm6_wb3', cat: '6: Libération', name: 'Pistol Workbench', type: 'Workbench', desc: 'Top floor room in southern C-shaped building via scaffolding.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=648s' },
+    // ---------------- MISSION 6: LIBÉRATION (19 Items - PowerPyx Order) ----------------
+    { id: 'm6_pl1', cat: '6: Libération', name: 'They\'re Out There', type: 'Personal Letter', desc: 'Looted from the bald, green-uniformed soldier in the southeastern farmhouse yard.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=0s' },
+    { id: 'm6_pl2', cat: '6: Libération', name: 'Watch Your Back', type: 'Personal Letter', desc: 'Looted from the estate guard patrolling outside Major Trautmann\'s manor yard.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=49s' },
+    { id: 'm6_pl3', cat: '6: Libération', name: 'Barely Escaped!', type: 'Personal Letter', desc: 'Northern artillery field fortifications; resting inside the trench network.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=73s' },
+    { id: 'm6_pl4', cat: '6: Libération', name: 'Give Me Strength', type: 'Personal Letter', desc: 'Northeastern sector green barracks house; on a crate by the door frames.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=93s' },
+    { id: 'm6_pl5', cat: '6: Libération', name: 'Vengeance Is Nigh!', type: 'Personal Letter', desc: 'Central farm sector; hidden upstairs inside the attic space of the old barn house.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=115s' },
+    { id: 'm6_cd1', cat: '6: Libération', name: 'Hold The Line', type: 'Classified Doc', desc: 'Southern bridge sector; on a desk inside the primary radio communication bunker room.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=138s' },
+    { id: 'm6_cd2', cat: '6: Libération', name: 'Incoming Armour', type: 'Classified Doc', desc: 'Northern trenches; resting on an equipment case inside a dug-out dugout node.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=160s' },
+    { id: 'm6_cd3', cat: '6: Libération', name: 'Unfit for Duty', type: 'Classified Doc', desc: 'Southern farm cluster; found on an upper-floor bedroom nightstand.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=182s' },
+    { id: 'm6_cd4', cat: '6: Libération', name: 'A Surplus Bridge', type: 'Classified Doc', desc: 'On a wooden box in the yard of the eastern burnt buildings.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=205s' },
+    { id: 'm6_cd5', cat: '6: Libération', name: 'Resistance Fanatic Located', type: 'Classified Doc', desc: 'Chest of drawers in locked 2nd-floor room (northern building).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=228s' },
+    { id: 'm6_hi1', cat: '6: Libération', name: 'Lucky Rabbit\'s Foot', type: 'Hidden Item', desc: 'Looted from bald Nazi near central crashed plane/AA gun.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=250s' },
+    { id: 'm6_hi2', cat: '6: Libération', name: 'Stolen Medals', type: 'Hidden Item', desc: 'Table in underground resistance cache beneath central L-shaped building.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=275s' },
+    { id: 'm6_hi3', cat: '6: Libération', name: 'Engraved Lighter', type: 'Hidden Item', desc: 'Next to a briefcase upstairs in building right after the bridge.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=300s' },
+    { id: 'm6_se1', cat: '6: Libération', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Perched atop the eastern windmill near the start.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=325s' },
+    { id: 'm6_se2', cat: '6: Libération', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Rear of the north-western church.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=348s' },
+    { id: 'm6_se3', cat: '6: Libération', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Upstairs window frame behind northern tank target.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=370s' },
+    { id: 'm6_wb1', cat: '6: Libération', name: 'Rifle Workbench', type: 'Workbench', desc: 'Northern resistance safehouse (climb wall before detonated bridge).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=392s' },
+    { id: 'm6_wb2', cat: '6: Libération', name: 'SMG Workbench', type: 'Workbench', desc: 'Central underground cellar (same as HI2 Stolen Medals).', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=415s' },
+    { id: 'm6_wb3', cat: '6: Libération', name: 'Pistol Workbench', type: 'Workbench', desc: 'Top floor room in southern C-shaped building via scaffolding.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=438s' },
 
     // ---------------- MISSION 7: SECRET WEAPONS (19 Items) ----------------
     { id: 'm7_pl1', cat: '7: Secret Weapons', name: 'We Had a Deal', type: 'Personal Letter', desc: 'Upstairs table in the eastern trainyard office.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=20s' },
@@ -327,27 +329,34 @@ const sniperData = [
     { id: 'm14_ch1', cat: '14: Kraken Awakes (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Destroy the carrier without triggering general alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' }
 ];
 
-/* === SECTION: App State Controller & Cloud Engine === */
+/* === SECTION: App State Controller & Multi-Player Cloud Engine === */
 const appState = {
     activeGamertag: 'Werewolf3788',
     platform: 'playstation',
     activeMission: '6: Libération',
     hunterData: [],
+    teamProgress: {}, // Maps { [gamertag]: [ {id, collected} ] }
     collapsedSections: {}, 
-    db: null, auth: null, user: null, unsub: null,
+    db: null, auth: null, user: null,
+    unsubListeners: [],
     isLoaded: false,
-    version: 'v4.3.0',
-    buildDate: '2026-08-23 00:25 EDT',
+    version: 'v4.4.0',
+    buildDate: '2026-08-23 00:35 EDT',
 
-    getDocRef: function() {
-        // Line 428: Direct Firestore document reference
-        const path = `users/${this.activeGamertag}/platform/${this.platform}/progress/sniper-elite-5`;
+    getDocRefForGamertag: function(gamertag) {
+        const path = `users/${gamertag}/platform/${this.platform}/progress/sniper-elite-5`;
         return doc(this.db, path);
     },
 
     init: async function() {
         this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
         
+        // Initialize local team registry
+        ALL_OPERATIVES.forEach(op => {
+            const localSaved = localStorage.getItem(`se5_progress_${op}`);
+            this.teamProgress[op] = localSaved ? JSON.parse(localSaved) : [];
+        });
+
         // Collapse all sections except active target by default
         const cats = [...new Set(this.hunterData.map(i => i.cat))];
         cats.forEach(cat => {
@@ -371,7 +380,7 @@ const appState = {
                 if (u) {
                     const statEl = document.getElementById('stat-line');
                     if (statEl) statEl.innerText = `ID: ${u.uid.substring(0,8)} | ONLINE`;
-                    this.loadHunter(this.activeGamertag);
+                    this.attachAllTeamListeners();
                 } else {
                     const statEl = document.getElementById('stat-line');
                     if (statEl) statEl.innerText = `OFFLINE`;
@@ -432,9 +441,47 @@ const appState = {
         `;
     },
 
+    // Listen simultaneously to all 4 players in Firebase Firestore
+    attachAllTeamListeners: function() {
+        // Clear previous listeners if any
+        this.unsubListeners.forEach(u => u());
+        this.unsubListeners = [];
+
+        ALL_OPERATIVES.forEach(op => {
+            const docRef = this.getDocRefForGamertag(op);
+            const unsub = onSnapshot(docRef, (snap) => {
+                if (snap.exists()) {
+                    const docData = snap.data();
+                    const saved = docData.progress || [];
+                    this.teamProgress[op] = saved;
+                    localStorage.setItem(`se5_progress_${op}`, JSON.stringify(saved));
+                    
+                    if (op === this.activeGamertag) {
+                        if (docData.activeMission) {
+                            this.activeMission = docData.activeMission;
+                            const select = document.getElementById('mission-focus-select');
+                            if (select) select.value = this.activeMission;
+                        }
+                        this.hunterData = sniperData.map(item => {
+                            const status = saved.find(s => s.id === item.id);
+                            return { ...item, collected: status ? status.collected : false };
+                        });
+                    }
+                }
+                this.isLoaded = true;
+                this.render();
+            }, (err) => {
+                console.warn(`Firestore snapshot fallback for ${op}:`, err.message);
+                this.loadHunterFromLocalStorage(this.activeGamertag);
+            });
+            this.unsubListeners.push(unsub);
+        });
+    },
+
     loadHunterFromLocalStorage: function(gamertag) {
         const localSaved = localStorage.getItem(`se5_progress_${gamertag}`);
         const saved = localSaved ? JSON.parse(localSaved) : [];
+        this.teamProgress[gamertag] = saved;
         this.hunterData = sniperData.map(item => {
             const status = saved.find(s => s.id === item.id);
             return { ...item, collected: status ? status.collected : false };
@@ -443,7 +490,7 @@ const appState = {
         this.render();
     },
 
-    loadHunter: function(gamertag) {
+    switchHunter: function(gamertag) {
         this.activeGamertag = gamertag;
         const displayEl = document.getElementById('hunter-display');
         if (displayEl) displayEl.innerText = gamertag.toUpperCase();
@@ -456,39 +503,13 @@ const appState = {
             b.classList.toggle('active-btn', b.innerText === gamertag);
         });
 
-        if (this.unsub) this.unsub();
-        if (!this.db) {
-            this.loadHunterFromLocalStorage(gamertag);
-            return;
-        }
-
-        this.isLoaded = false;
-        this.render();
-
-        const docRef = this.getDocRef();
-        
-        this.unsub = onSnapshot(docRef, (snap) => {
-            this.isLoaded = true;
-            if (snap.exists()) {
-                const docData = snap.data();
-                const saved = docData.progress || [];
-                if (docData.activeMission) {
-                    this.activeMission = docData.activeMission;
-                    const select = document.getElementById('mission-focus-select');
-                    if (select) select.value = this.activeMission;
-                }
-                this.hunterData = sniperData.map(item => {
-                    const status = saved.find(s => s.id === item.id);
-                    return { ...item, collected: status ? status.collected : false };
-                });
-            } else {
-                this.loadHunterFromLocalStorage(gamertag);
-            }
-            this.render();
-        }, (error) => {
-            console.warn("Firestore snapshot error (using local storage fallback):", error.message);
-            this.loadHunterFromLocalStorage(gamertag);
+        const currentSaved = this.teamProgress[gamertag] || [];
+        this.hunterData = sniperData.map(item => {
+            const status = currentSaved.find(s => s.id === item.id);
+            return { ...item, collected: status ? status.collected : false };
         });
+
+        this.render();
     },
 
     render: function() {
@@ -544,16 +565,36 @@ const appState = {
             items.forEach(item => {
                 const card = document.createElement('div');
                 card.className = `item-card ${item.collected ? 'completed' : ''}`;
+                
+                // Construct Team Intel Badges for all 4 players
+                let teamBadgesHtml = '';
+                ALL_OPERATIVES.forEach(op => {
+                    const opProgress = this.teamProgress[op] || [];
+                    const opStatus = opProgress.find(s => s.id === item.id);
+                    const isCollected = opStatus ? opStatus.collected : false;
+                    teamBadgesHtml += `<span class="team-badge ${isCollected ? 'is-collected' : ''}">${op.toUpperCase()}</span>`;
+                });
+
                 card.innerHTML = `
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 4px;">
-                        <div class="item-type-tag">${item.type}</div>
-                        ${item.yt ? `<a href="${item.yt}" target="_blank" rel="noopener noreferrer" class="yt-clip-btn outlined-text">▶ VIDEO CLIP</a>` : ''}
+                    <div>
+                        <div class="item-type-badge">${item.type}</div>
+                        <div class="item-title outlined-text">${item.name}</div>
+                        <div class="item-desc outlined-text">${item.desc}</div>
                     </div>
-                    <div class="outlined-text" style="font-weight:900; font-size:14px; margin-bottom:4px;">${item.name}</div>
-                    <div class="outlined-text" style="font-size:11px; color:#ddd; font-style:italic; line-height:1.3; margin-bottom:12px;">${item.desc}</div>
-                    ${item.collected 
-                        ? `<button class="toggle-btn outlined-text completed-btn" onclick="appState.toggleItem('${item.id}')">COLLECTED (Undo)</button>` 
-                        : `<button class="toggle-btn outlined-text" onclick="appState.toggleItem('${item.id}')">Confirm Found</button>`}
+                    <div>
+                        <div class="team-intel-row">
+                            <span class="team-intel-label">TEAM INTEL:</span>
+                            ${teamBadgesHtml}
+                        </div>
+                        <div class="card-actions-row">
+                            ${item.yt 
+                                ? `<a href="${item.yt}" target="_blank" rel="noopener noreferrer" class="watch-clip-btn outlined-text">🎥 WATCH CLIP</a>` 
+                                : `<span></span>`}
+                            <button class="confirm-toggle-btn outlined-text ${item.collected ? 'completed-state' : ''}" onclick="appState.toggleItem('${item.id}')">
+                                ${item.collected ? 'COLLECTED (Undo)' : 'CONFIRM FOUND'}
+                            </button>
+                        </div>
+                    </div>
                 `;
                 grid.appendChild(card);
             });
@@ -571,6 +612,17 @@ const appState = {
         const item = this.hunterData.find(i => i.id === id);
         if (item) {
             item.collected = !item.collected;
+            
+            // Update current operative teamProgress cache
+            const opSaved = this.teamProgress[this.activeGamertag] || [];
+            const existing = opSaved.find(s => s.id === id);
+            if (existing) {
+                existing.collected = item.collected;
+            } else {
+                opSaved.push({ id: item.id, collected: item.collected });
+            }
+            this.teamProgress[this.activeGamertag] = opSaved;
+
             this.render(); 
             this.sync();
         }
@@ -581,8 +633,6 @@ const appState = {
         this.render();
     },
 
-    switchHunter: function(gamertag) { this.loadHunter(gamertag); },
-
     sync: async function() {
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
         
@@ -592,7 +642,7 @@ const appState = {
         if (!this.db) return;
         
         try {
-            const docRef = this.getDocRef();
+            const docRef = this.getDocRefForGamertag(this.activeGamertag);
             const payload = {
                 activeMission: this.activeMission,
                 gameId: "sniper-elite-5",
@@ -611,7 +661,7 @@ window.appState = appState;
 appState.init();
 
 /* === SECTION: Dynamic CSV Spreadsheet Parser & Navigation Menu === */
-// Line 650: Dynamic navigation parser loading from Google Sheets
+// Line 670: Dynamic navigation parser loading from Google Sheets
 async function buildTopMenu() {
     try {
         const csvUrl = "//docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
@@ -686,7 +736,7 @@ async function buildTopMenu() {
     }
 }
 
-// Line 728: Dropdown navigation click handler
+// Line 748: Dropdown navigation click handler
 window.addEventListener('click', function(event) {
     const btn = event.target.closest('.csv-dropdown-btn');
     const dropdowns = document.getElementsByClassName("csv-dropdown-content");
