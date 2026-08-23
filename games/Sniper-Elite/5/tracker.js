@@ -1,20 +1,19 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sat, Aug 22, 2026, 23:40 (EDT - New York)
+   Deployment Timestamp: Sat, Aug 22, 2026, 23:55 (EDT - New York)
    Project: entertainment-71888
-   Version: v3.6.0-MASTER-FULL
+   Version: v4.0.0-POWERPYX-FULL
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
-   Notes: Complete tracker with automatic local storage cache purge,
-          dynamic sticky verification footer, HTTP & HTTPS support,
-          and exact in-game sequence: Personal Letter -> Classified Doc -> 
-          Hidden Item -> Stone Eagle -> Workbench -> Challenge -> Trophy.
+   Notes: Works on HTTP & HTTPS. Full dataset for all 14 missions.
+          Features auto cache-purge, strict in-game sequence:
+          (PL -> CD -> HI -> SE -> WB -> CH -> TR), and custom video timestamps.
    ============================================================================ */
 
-/* === SECTION: Automatic Cache Cleaner & Dynamic Styles === */
-// Line 16: Purges old local storage cache keys to force the updated 19-item count
+/* === SECTION: Auto Cache Purge & Dynamic Styles === */
+// Line 16: Automatically flushes stale LocalStorage caches
 (function purgeStaleTrackerCache() {
-    const activeVersion = 'v3.6.0-20260822-2340';
+    const activeVersion = 'v4.0.0-20260822-2355';
     const storedVersion = localStorage.getItem('se5_tracker_build_version');
     if (storedVersion !== activeVersion) {
         Object.keys(localStorage).forEach(key => {
@@ -26,14 +25,14 @@
     }
 })();
 
-// Line 31: Styles for grid display, layout cards, and sticky bottom verification bar
+// Line 31: Dynamic UI Grid & Sticky Verification Footer Injector
 (function injectTrackerStyles() {
     const styleId = 'se5-tracker-master-styles';
     if (!document.getElementById(styleId)) {
         const style = document.createElement('style');
         style.id = styleId;
         style.textContent = `
-            body { padding-bottom: 60px !important; }
+            body { padding-bottom: 65px !important; }
             .category-section { width: 100%; margin-bottom: 16px; background: #121316; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; overflow: hidden; }
             .category-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #1a1b20; cursor: pointer; user-select: none; min-height: 48px; border-bottom: 1px solid transparent; }
             .category-header:hover { background: #22242b; }
@@ -205,26 +204,26 @@ const sniperData = [
     { id: 'm4_wb2', cat: '4: War Factory', name: 'SMG Workbench', type: 'Workbench', desc: 'Upstairs armoury north of the shipping warehouse.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=625s' },
     { id: 'm4_wb3', cat: '4: War Factory', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury next to the eastern vat room.', yt: '//www.youtube.com/watch?v=gT8vWJ7E_bQ&t=658s' },
 
-    // ---------------- MISSION 5: FESTUNG GUERNSEY (19 Items) ----------------
-    { id: 'm5_pl1', cat: '5: Festung Guernsey', name: 'No Need to Worry', type: 'Personal Letter', desc: 'Looted from officer near Martello Tower (south-central).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=20s' },
-    { id: 'm5_pl2', cat: '5: Festung Guernsey', name: 'Getting Off the Island', type: 'Personal Letter', desc: 'Underground room beneath the north-eastern dilapidated farm outhouse.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=55s' },
-    { id: 'm5_pl3', cat: '5: Festung Guernsey', name: 'Confiscated Goods', type: 'Personal Letter', desc: 'Looted from a brown-uniformed soldier at Mirus Construction Site.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=92s' },
-    { id: 'm5_pl4', cat: '5: Festung Guernsey', name: 'Escaping Islanders', type: 'Personal Letter', desc: 'Table in second-floor front room of the western bunker.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=128s' },
-    { id: 'm5_pl5', cat: '5: Festung Guernsey', name: 'Harass the Huns', type: 'Personal Letter', desc: 'Underground resistance safehouse near the hospital.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=165s' },
-    { id: 'm5_cd1', cat: '5: Festung Guernsey', name: 'Grin and Bear It', type: 'Classified Doc', desc: 'Inside safe in Fort Hommet (climb vines outside to access room).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=200s' },
-    { id: 'm5_cd2', cat: '5: Festung Guernsey', name: 'Cut Costs Cost Lives', type: 'Classified Doc', desc: 'Desk opposite safe in hidden facility Scuttle Code room.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=238s' },
-    { id: 'm5_cd3', cat: '5: Festung Guernsey', name: 'Oafish Officers', type: 'Classified Doc', desc: 'Table under poster in the western hospital corridor.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=275s' },
-    { id: 'm5_cd4', cat: '5: Festung Guernsey', name: 'Transport Troubles', type: 'Classified Doc', desc: 'Table in the library/radio area at the end of the hospital.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=310s' },
-    { id: 'm5_cd5', cat: '5: Festung Guernsey', name: 'Drastic Measures', type: 'Classified Doc', desc: 'Table in the ground floor entrance room of the NW observation tower.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=348s' },
-    { id: 'm5_hi1', cat: '5: Festung Guernsey', name: 'Todt Uniform Badge', type: 'Hidden Item', desc: 'Table in a green shed at the eastern construction area.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=385s' },
-    { id: 'm5_hi2', cat: '5: Festung Guernsey', name: 'Crystal Radio', type: 'Hidden Item', desc: 'Underground room beneath central dilapidated farm (with PL2).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=420s' },
-    { id: 'm5_hi3', cat: '5: Festung Guernsey', name: 'Comfort Bag', type: 'Hidden Item', desc: 'Bedroom chest of drawers, second floor of SW blue-window farmhouse.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=455s' },
-    { id: 'm5_se1', cat: '5: Festung Guernsey', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Corner of the NW observation tower overlooking the sea.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=490s' },
-    { id: 'm5_se2', cat: '5: Festung Guernsey', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Top of the eastern-most spire of the central church.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=522s' },
-    { id: 'm5_se3', cat: '5: Festung Guernsey', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Atop the eastern Mirus Munitions Bunker.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=555s' },
-    { id: 'm5_wb1', cat: '5: Festung Guernsey', name: 'Rifle Workbench', type: 'Workbench', desc: 'Climb vines to enter the central church\'s eastern spire safehouse.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=588s' },
-    { id: 'm5_wb2', cat: '5: Festung Guernsey', name: 'SMG Workbench', type: 'Workbench', desc: 'In the underground safehouse near the hospital (with PL5).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=620s' },
-    { id: 'm5_wb3', cat: '5: Festung Guernsey', name: 'Pistol Workbench', type: 'Workbench', desc: 'Inside an offshoot room in the northern trenches.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=652s' },
+    // ---------------- MISSION 5: FESTUNG GUERNSEY (19 Items - PowerPyx Order) ----------------
+    { id: 'm5_pl1', cat: '5: Festung Guernsey', name: 'No Need to Worry', type: 'Personal Letter', desc: 'Looted from an officer in a tower in the south-east of the map.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=20s' },
+    { id: 'm5_pl2', cat: '5: Festung Guernsey', name: 'Getting Off The Island', type: 'Personal Letter', desc: 'Found in the basement of a small house (alongside Crystal Radio).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=55s' },
+    { id: 'm5_pl3', cat: '5: Festung Guernsey', name: 'Confiscated Goods', type: 'Personal Letter', desc: 'Looted from a soldier in brown uniform in the south-side construction area.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=92s' },
+    { id: 'm5_pl4', cat: '5: Festung Guernsey', name: 'Escaping Islanders', type: 'Personal Letter', desc: 'In the south-west of the map, inside an upstairs bunker room.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=128s' },
+    { id: 'm5_pl5', cat: '5: Festung Guernsey', name: 'Harass The Huns!', type: 'Personal Letter', desc: 'Underground room in a small building; crawl under table to find ladder.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=165s' },
+    { id: 'm5_cd1', cat: '5: Festung Guernsey', name: 'Grin and Bear It!', type: 'Classified Doc', desc: 'Inside safe in Fort Hommet; climb vines or shoot lock with AP ammo.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=200s' },
+    { id: 'm5_cd2', cat: '5: Festung Guernsey', name: 'Cut Costs Cost Lives', type: 'Classified Doc', desc: 'Inside western bunker on the table in front of the main objective safe.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=238s' },
+    { id: 'm5_cd3', cat: '5: Festung Guernsey', name: 'Oafish Officers', type: 'Classified Doc', desc: 'Inside underground hospital in a side room on west side of corridor.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=275s' },
+    { id: 'm5_cd4', cat: '5: Festung Guernsey', name: 'Transport Troubles', type: 'Classified Doc', desc: 'Inside underground hospital in the north (mandatory main objective).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=310s' },
+    { id: 'm5_cd5', cat: '5: Festung Guernsey', name: 'Drastic Measures', type: 'Classified Doc', desc: 'In the west of the map, on ground floor of tower building table.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=348s' },
+    { id: 'm5_hi1', cat: '5: Festung Guernsey', name: 'Todt Uniform Badge', type: 'Hidden Item', desc: 'In the north-east construction site inside the green building on a table.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=385s' },
+    { id: 'm5_hi2', cat: '5: Festung Guernsey', name: 'Crystal Radio', type: 'Hidden Item', desc: 'In basement of small house (same room as Getting Off The Island letter).', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=420s' },
+    { id: 'm5_hi3', cat: '5: Festung Guernsey', name: 'Comfort Bag', type: 'Hidden Item', desc: 'In the main farm building upstairs in the bedroom.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=455s' },
+    { id: 'm5_se1', cat: '5: Festung Guernsey', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Near center of map on top of the church tower.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=490s' },
+    { id: 'm5_se2', cat: '5: Festung Guernsey', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'In the north-east of the map sitting on a bank; shoot from main road.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=522s' },
+    { id: 'm5_se3', cat: '5: Festung Guernsey', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'In the west of the map on top of a tower.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=555s' },
+    { id: 'm5_wb1', cat: '5: Festung Guernsey', name: 'Rifle Workbench', type: 'Workbench', desc: 'In the church tower; climb vines on the side of the church.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=588s' },
+    { id: 'm5_wb2', cat: '5: Festung Guernsey', name: 'SMG Workbench', type: 'Workbench', desc: 'In small building basement; crawl under table and down the ladder.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=620s' },
+    { id: 'm5_wb3', cat: '5: Festung Guernsey', name: 'Pistol Workbench', type: 'Workbench', desc: 'In the trenches next to an anti-air gun.', yt: '//www.youtube.com/watch?v=wX8_vU5P9aA&t=652s' },
 
     // ---------------- MISSION 6: LIBÉRATION (19 Items) ----------------
     { id: 'm6_pl1', cat: '6: Libération', name: 'They\'re Out There', type: 'Personal Letter', desc: 'Looted from one of two soldiers who exit a truck by the start poppy field.', yt: '//www.youtube.com/watch?v=YpL45R3h_4E&t=25s' },
@@ -391,8 +390,8 @@ const appState = {
     collapsedSections: {}, 
     db: null, auth: null, user: null, unsub: null,
     isLoaded: false,
-    version: 'v3.6.0',
-    buildDate: '2026-08-22 23:40 EDT',
+    version: 'v4.0.0',
+    buildDate: '2026-08-22 23:55 EDT',
 
     getDocRef: function() {
         // Line 428: Direct Firestore document reference
@@ -599,7 +598,7 @@ const appState = {
     sync: async function() {
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
         
-        // Save locally first to guarantee zero loss
+        // Save locally first to guarantee zero data loss
         localStorage.setItem(`se5_progress_${this.activeGamertag}`, JSON.stringify(progress));
 
         if (!this.db) return;
@@ -624,7 +623,7 @@ window.appState = appState;
 appState.init();
 
 /* === SECTION: Dynamic CSV Spreadsheet Parser & Navigation Menu === */
-// Line 635: Navigation options loaded dynamically from Google Sheets
+// Line 635: Dynamic navigation parser loading from Google Sheets
 async function buildTopMenu() {
     try {
         const csvUrl = "//docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
@@ -699,7 +698,7 @@ async function buildTopMenu() {
     }
 }
 
-// Line 713: Dropdown navigation toggle listener
+// Line 713: Dropdown navigation click handler
 window.addEventListener('click', function(event) {
     const btn = event.target.closest('.csv-dropdown-btn');
     const dropdowns = document.getElementsByClassName("csv-dropdown-content");
