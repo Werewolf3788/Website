@@ -17,7 +17,7 @@
         });
     </script>
 
-    <!-- Leaflet Interactive Map CDN (Universal Protocol) -->
+    <!-- Leaflet Custom Game Map Engine CDN -->
     <link rel="stylesheet" href="//unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <script src="//unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
@@ -352,8 +352,8 @@
             background: rgba(10, 11, 15, 0.90);
         }
 
-        /* Native Leaflet Map Frame */
-        .native-map-wrapper {
+        /* Tactical Game Map Frame Container */
+        .tactical-map-wrapper {
             width: 100%;
             margin-bottom: 18px;
             border-radius: 8px;
@@ -363,7 +363,7 @@
             background: #000;
         }
 
-        .native-map-bar {
+        .tactical-map-bar {
             background: #141720;
             padding: 10px 16px;
             font-weight: 900;
@@ -376,30 +376,30 @@
             align-items: center;
         }
 
-        #m7-interactive-map {
+        .mission-map-frame {
             width: 100%;
-            height: 460px;
-            background: #0a0b10;
+            height: 480px;
+            background: #000000;
         }
 
-        /* Custom Leaflet Marker Styling */
+        /* Custom In-Game Marker Pin Styling */
         .custom-map-pin {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(10, 12, 16, 0.9);
+            background: rgba(10, 12, 16, 0.92);
             border: 2px solid var(--ser-color);
             color: #fff;
             border-radius: 50%;
-            font-size: 11px;
+            font-size: 10px;
             font-weight: 900;
-            box-shadow: 0 0 8px var(--ser-glow);
+            box-shadow: 0 0 10px var(--ser-glow);
             cursor: pointer;
             transition: transform 0.15s ease;
         }
 
         .custom-map-pin:hover {
-            transform: scale(1.2);
+            transform: scale(1.3);
             border-color: #ffffff;
         }
 
@@ -632,6 +632,6 @@
 
     <main id="section-container"></main>
 
-    <script type="module" src="tracker.js?v=20260823_0215"></script>
+    <script type="module" src="tracker.js?v=20260823_0245"></script>
 </body>
 </html>
