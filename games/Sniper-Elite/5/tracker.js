@@ -1,19 +1,19 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sat, Aug 22, 2026, 23:55 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 23, 2026, 00:25 (EDT - New York)
    Project: entertainment-71888
-   Version: v4.0.0-POWERPYX-FULL
+   Version: v4.3.0-DASHBOARD-RESTORED
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
-   Notes: Works on HTTP & HTTPS. Full dataset for all 14 missions.
-          Features auto cache-purge, strict in-game sequence:
-          (PL -> CD -> HI -> SE -> WB -> CH -> TR), and custom video timestamps.
+   Notes: Exact replica of Operative Terminal and Intel Registry dashboard layout.
+          Features all 19 Mission 5 PowerPyx items, live multi-player syncing,
+          active target focus switching, video clips, and HTTP/HTTPS support.
    ============================================================================ */
 
-/* === SECTION: Auto Cache Purge & Dynamic Styles === */
-// Line 16: Automatically flushes stale LocalStorage caches
+/* === SECTION: Auto Cache Purge === */
+// Line 16: Automatically clears stale cache keys to ensure fresh 19-item count
 (function purgeStaleTrackerCache() {
-    const activeVersion = 'v4.0.0-20260822-2355';
+    const activeVersion = 'v4.3.0-20260823-0025';
     const storedVersion = localStorage.getItem('se5_tracker_build_version');
     if (storedVersion !== activeVersion) {
         Object.keys(localStorage).forEach(key => {
@@ -25,68 +25,13 @@
     }
 })();
 
-// Line 31: Dynamic UI Grid & Sticky Verification Footer Injector
-(function injectTrackerStyles() {
-    const styleId = 'se5-tracker-master-styles';
-    if (!document.getElementById(styleId)) {
-        const style = document.createElement('style');
-        style.id = styleId;
-        style.textContent = `
-            body { padding-bottom: 65px !important; }
-            .category-section { width: 100%; margin-bottom: 16px; background: #121316; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; overflow: hidden; }
-            .category-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; background: #1a1b20; cursor: pointer; user-select: none; min-height: 48px; border-bottom: 1px solid transparent; }
-            .category-header:hover { background: #22242b; }
-            .section-collapsed .category-header { border-bottom: none; }
-            .section-collapsed .section-content { display: none !important; }
-            .section-content { padding: 14px; background: #0f1013; max-height: none !important; overflow: visible !important; }
-            .item-grid { display: grid !important; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important; gap: 12px !important; height: auto !important; overflow: visible !important; }
-            .item-card { background: #15161a; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 6px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; min-height: 160px; }
-            .item-card:hover { background: #1c1d22; border-color: rgba(255, 255, 255, 0.2); }
-            .item-card.completed { border-color: rgba(76, 175, 80, 0.5); background: #0f1a12; }
-            .item-type-tag { display: inline-block; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; padding: 2px 6px; border-radius: 4px; background: #252830; color: var(--ser-color, #ff8800); letter-spacing: 0.5px; }
-            .toggle-btn { width: 100%; background: #22242c; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 0.78rem; font-weight: 800; cursor: pointer; min-height: 44px; margin-top: 10px; }
-            .toggle-btn.completed-btn { background: #1b4724; border-color: #2e7d32; color: #a5d6a7; }
-            .yt-clip-btn { font-size: 10px; text-decoration: none; padding: 2px 8px; border-radius: 4px; background: #cc0000; color: #fff; font-weight: bold; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 4px; min-height: 24px; }
-            
-            /* Sticky Verification Footer */
-            #se5-sticky-footer {
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                background: rgba(10, 10, 10, 0.96);
-                border-top: 1px solid var(--ser-color, #ff8800);
-                box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.85);
-                color: #ccc;
-                font-family: inherit;
-                font-size: 11px;
-                padding: 8px 16px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                box-sizing: border-box;
-                z-index: 99999;
-            }
-            .footer-badge {
-                background: #111;
-                border: 1px solid #333;
-                padding: 2px 8px;
-                border-radius: 4px;
-                color: #fff;
-                font-weight: bold;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-})();
-
 /* === SECTION: Core Imports & Firebase Initialization === */
-// Line 79: Universal Protocol-relative dynamic module imports
+// Line 32: Universal Protocol-relative dynamic module imports
 import { initializeApp } from '//www.gstatic.com/firebasejs/11.6.1/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from '//www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from '//www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 
-// Line 84: Firebase Entertainment Configuration
+// Line 37: Firebase Entertainment Configuration
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -98,7 +43,7 @@ const firebaseConfig = {
     measurementId: "G-CTYHDF4MSD"
 };
 
-// Line 97: Gamertag Theme Color Palette
+// Line 50: Gamertag Theme Color Palette
 const userThemes = {
     'Werewolf3788': { color: '#ff8800', glow: 'rgba(255, 136, 0, 0.6)' },
     'Raymystyro': { color: '#ff4444', glow: 'rgba(255, 68, 68, 0.6)' },
@@ -106,7 +51,7 @@ const userThemes = {
     'Elu Cloud': { color: '#00ccff', glow: 'rgba(0, 204, 255, 0.6)' }
 };
 
-// Line 106: In-Game Strict Item Priority Sorting
+// Line 59: Strict In-Game Item Type Priority Order
 const IN_GAME_TYPE_ORDER = {
     'Personal Letter': 1,
     'Classified Doc': 2,
@@ -118,7 +63,7 @@ const IN_GAME_TYPE_ORDER = {
 };
 
 /* === SECTION: Master Collectibles Dataset (All 14 Missions & DLC) === */
-// Line 118: Complete registry with individual YouTube timestamps
+// Line 71: Complete registry with individual YouTube walkthrough timestamps
 const sniperData = [
     // ---------------- MISSION 1: THE ATLANTIC WALL (19 Items) ----------------
     { id: 'm1_pl1', cat: '1: The Atlantic Wall', name: 'Picked Some Violets', type: 'Personal Letter', desc: 'Far eastern side, south of radar tower, inside a small shack.', yt: '//www.youtube.com/watch?v=k9Xg3Jc-2p8&t=25s' },
@@ -382,16 +327,17 @@ const sniperData = [
     { id: 'm14_ch1', cat: '14: Kraken Awakes (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Destroy the carrier without triggering general alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' }
 ];
 
-/* === SECTION: App State Controller & Cloud Sync === */
+/* === SECTION: App State Controller & Cloud Engine === */
 const appState = {
     activeGamertag: 'Werewolf3788',
     platform: 'playstation',
+    activeMission: '6: Libération',
     hunterData: [],
     collapsedSections: {}, 
     db: null, auth: null, user: null, unsub: null,
     isLoaded: false,
-    version: 'v4.0.0',
-    buildDate: '2026-08-22 23:55 EDT',
+    version: 'v4.3.0',
+    buildDate: '2026-08-23 00:25 EDT',
 
     getDocRef: function() {
         // Line 428: Direct Firestore document reference
@@ -402,13 +348,14 @@ const appState = {
     init: async function() {
         this.hunterData = sniperData.map(item => ({ ...item, collected: false }));
         
-        // Collapse all sections by default
+        // Collapse all sections except active target by default
         const cats = [...new Set(this.hunterData.map(i => i.cat))];
         cats.forEach(cat => {
             const sid = cat.replace(/[^a-z0-9]/gi, '');
-            this.collapsedSections[sid] = true;
+            this.collapsedSections[sid] = (cat !== this.activeMission);
         });
 
+        this.populateMissionSelector();
         this.render();
         this.renderStickyFooter();
 
@@ -437,6 +384,36 @@ const appState = {
         }
     },
 
+    populateMissionSelector: function() {
+        const select = document.getElementById('mission-focus-select');
+        if (!select) return;
+        const cats = [...new Set(this.hunterData.map(i => i.cat))];
+        select.innerHTML = '';
+        cats.forEach(cat => {
+            const opt = document.createElement('option');
+            opt.value = cat;
+            opt.innerText = cat.toUpperCase();
+            if (cat === this.activeMission) opt.selected = true;
+            select.appendChild(opt);
+        });
+    },
+
+    setActiveMission: function(catName) {
+        this.activeMission = catName;
+        const cats = [...new Set(this.hunterData.map(i => i.cat))];
+        cats.forEach(c => {
+            const sid = c.replace(/[^a-z0-9]/gi, '');
+            this.collapsedSections[sid] = (c !== catName);
+        });
+        this.render();
+        this.sync();
+        
+        // Smooth scroll to target mission category
+        const targetSid = catName.replace(/[^a-z0-9]/gi, '');
+        const targetEl = document.getElementById('section-' + targetSid);
+        if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+
     renderStickyFooter: function() {
         let footer = document.getElementById('se5-sticky-footer');
         if (!footer) {
@@ -447,9 +424,9 @@ const appState = {
         footer.innerHTML = `
             <div>
                 <span class="footer-badge">${this.version}</span>
-                <span style="margin-left:8px; color:#ff8800; font-weight:bold;">BUILD: ${this.buildDate}</span>
+                <span style="margin-left:8px; color:var(--ser-color, #ff8800); font-weight:bold;">BUILD: ${this.buildDate}</span>
             </div>
-            <div style="font-size:10px; color:#888;">
+            <div style="font-size:10px; color:#aaa;" class="outlined-text">
                 OPERATIVES: Werewolf3788, Raymystyro, Terrdog, ELU CLOUD
             </div>
         `;
@@ -495,6 +472,11 @@ const appState = {
             if (snap.exists()) {
                 const docData = snap.data();
                 const saved = docData.progress || [];
+                if (docData.activeMission) {
+                    this.activeMission = docData.activeMission;
+                    const select = document.getElementById('mission-focus-select');
+                    if (select) select.value = this.activeMission;
+                }
                 this.hunterData = sniperData.map(item => {
                     const status = saved.find(s => s.id === item.id);
                     return { ...item, collected: status ? status.collected : false };
@@ -504,7 +486,7 @@ const appState = {
             }
             this.render();
         }, (error) => {
-            console.warn("Firestore snapshot fallback:", error.message);
+            console.warn("Firestore snapshot error (using local storage fallback):", error.message);
             this.loadHunterFromLocalStorage(gamertag);
         });
     },
@@ -540,14 +522,20 @@ const appState = {
             });
 
             const sid = cat.replace(/[^a-z0-9]/gi, '');
+            const isActiveFocus = (cat === this.activeMission);
             const section = document.createElement('div');
-            section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''}`;
+            section.id = `section-${sid}`;
+            section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''} ${isActiveFocus ? 'active-focus' : ''}`;
+            
             section.innerHTML = `
                 <div class="category-header outlined-text" onclick="appState.toggleSection('${sid}')">
-                    <h2 style="font-size: 0.95rem; font-weight: 900; letter-spacing: 0.5px; color: #fff; text-transform: uppercase;">${cat}</h2>
-                    <div style="font-weight:900; font-size: 14px; color: var(--ser-color);">${count}/${items.length}</div>
+                    <div style="display:flex; align-items:center; gap: 8px;">
+                        <h2 style="font-size: 1rem; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase;">${cat}</h2>
+                        ${isActiveFocus ? `<span style="color:var(--ser-color); font-size:11px; font-weight:900; letter-spacing:1px;">[ACTIVE TARGET]</span>` : ''}
+                    </div>
+                    <div style="font-weight:900; font-size: 15px; color: var(--ser-color); font-family: monospace;">${count}/${items.length}</div>
                 </div>
-                <div class="section-content">
+                <div class="category-content">
                     <div class="item-grid"></div>
                 </div>
             `;
@@ -598,7 +586,7 @@ const appState = {
     sync: async function() {
         const progress = this.hunterData.map(i => ({ id: i.id, collected: i.collected }));
         
-        // Save locally first to guarantee zero data loss
+        // Save locally first to guarantee zero loss
         localStorage.setItem(`se5_progress_${this.activeGamertag}`, JSON.stringify(progress));
 
         if (!this.db) return;
@@ -606,7 +594,7 @@ const appState = {
         try {
             const docRef = this.getDocRef();
             const payload = {
-                activeMission: "5: Festung Guernsey",
+                activeMission: this.activeMission,
                 gameId: "sniper-elite-5",
                 lastUpdate: Date.now(),
                 platform: this.platform,
@@ -623,7 +611,7 @@ window.appState = appState;
 appState.init();
 
 /* === SECTION: Dynamic CSV Spreadsheet Parser & Navigation Menu === */
-// Line 635: Dynamic navigation parser loading from Google Sheets
+// Line 650: Dynamic navigation parser loading from Google Sheets
 async function buildTopMenu() {
     try {
         const csvUrl = "//docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv";
@@ -698,7 +686,7 @@ async function buildTopMenu() {
     }
 }
 
-// Line 713: Dropdown navigation click handler
+// Line 728: Dropdown navigation click handler
 window.addEventListener('click', function(event) {
     const btn = event.target.closest('.csv-dropdown-btn');
     const dropdowns = document.getElementsByClassName("csv-dropdown-content");
