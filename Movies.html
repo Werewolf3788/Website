@@ -1,33 +1,88 @@
 <!DOCTYPE html>
+<!-- ================================================================= -->
+<!-- WEREWOLF CINEMA LIBRARY - PWA + PUSH NOTIFICATIONS + UTM MENU     -->
+<!-- Line 1: HTML Document Structure & GA4 / GTM Setup                 -->
+<!-- Line 170: CSS Styles (PWA Navigation, UTM Folders, Cards, Modals) -->
+<!-- Line 385: App Scaffolding (Header, Nav Drawer, Filters, Lightbox) -->
+<!-- Line 490: Realtime Push Notifications, SSE Stream & UTM Engine   -->
+<!-- Date & Time (NYT 24hr): 08/25/2026 01:25:00 EDT                   -->
+<!-- ================================================================= -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Werewolf Cinema Library</title>
     
+    <!-- Web App Manifest for PWA Support -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#8b0000">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg">
+
     <script src="https://raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/language_alphabets.js"></script>
     <script src="https://raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/fontSwitcher.js"></script>
 
+    <!-- Google Analytics 4 (GA4) & GTM Tracking -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
+      gtag('config', 'G-CTYHDF4MSD', { 'send_page_view': true, 'cookie_flags': 'SameSite=None;Secure' });
       gtag('config', 'G-Z9M5LXQ5XN');
       gtag('config', 'G-L376P3NPY4');
     </script>
 </head>
 <body class="theme-dark">
 
+<!-- Top App Bar Navigation with Hamburger Menu -->
+<nav id="top-navbar">
+    <button id="nav-toggle-btn" class="nav-btn black-outline" onclick="toggleNavMenu()" aria-label="Open Navigation Menu">
+        ☰
+    </button>
+    <div class="nav-brand black-outline" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+        WEREWOLF <span>CINEMA</span>
+    </div>
+    <div class="nav-actions">
+        <button id="notify-toggle-btn" class="nav-btn notify-bell black-outline" onclick="toggleNotifications()" title="Push Notifications Toggle">
+            🔔 <span id="notify-status-text">OFF</span>
+        </button>
+    </div>
+</nav>
+
+<!-- Dynamic Navigation Drawer (UTM Links & Groups) -->
+<div id="nav-drawer-overlay" onclick="closeNavMenu()"></div>
+<div id="nav-drawer">
+    <div class="drawer-header">
+        <div class="drawer-title black-outline">⚡ NAVIGATION & LINKS</div>
+        <button class="drawer-close black-outline" onclick="closeNavMenu()">✕</button>
+    </div>
+    
+    <!-- Notification Settings Control Panel inside Drawer -->
+    <div class="drawer-notify-box">
+        <div class="drawer-section-label">🔔 New Movie Notifications</div>
+        <div class="notify-control-row">
+            <span id="drawer-notify-desc">Get instant alerts when films are added.</span>
+            <button id="drawer-notify-toggle" class="f-btn black-outline" onclick="toggleNotifications()">Enable</button>
+        </div>
+    </div>
+
+    <div class="drawer-section-label">🔗 QUICK DIRECTORY & UTM LINKS</div>
+    <div id="utm-links-container">
+        <div class="loading-spinner"></div> Loading links...
+    </div>
+</div>
+
 <div id="wp-custom-wrapper" class="master-85-width">
+    <!-- Header Section -->
     <div id="library-header">
         <div id="header-clock" class="black-outline">Loading Time...</div>
         <div id="cinema-logo" class="black-outline">WEREWOLF <span>CINEMA</span></div>
-        <div id="movie-counter" class="black-outline">Syncing Library...</div>
+        <div id="movie-counter" class="black-outline">Cinema Inventory: <span>...</span></div>
         
         <div id="sync-status-badge" class="black-outline">
-            <span id="sync-dot" class="dot-idle"></span>
-            <span id="sync-text">Connecting...</span>
+            <span id="sync-dot" class="dot-synced"></span>
+            <span id="sync-text">Live Firebase Realtime Stream Active</span>
         </div>
         
         <div id="affiliate-disclosure">
@@ -35,21 +90,25 @@
             <br><span class="ma-highlight black-outline">🚀 PRO TIP:</span> Buy on Amazon to sync with <strong>Movies Anywhere (MA)</strong>!</p>
         </div>
 
+        <!-- Controls & Filters -->
         <div id="controls-container">
             <div id="search-box-wrapper">
                 <input type="text" id="movie-search" placeholder="Search titles, actors, or years..." onkeyup="runFilters()">
             </div>
+            
             <div id="filter-dropdowns">
                 <select id="type-select" class="f-select" onchange="runFilters()">
                     <option value="">All Content</option>
                     <option value="Movie">Movies</option>
                     <option value="TV">TV Shows</option>
                 </select>
+                
                 <select id="rating-select" class="f-select" onchange="runFilters()">
                     <option value="">All Ratings</option>
                 </select>
+                
                 <select id="platform-select" class="f-select" onchange="runFilters()">
-                    <option value="">All Platforms</option>
+                    <option value="">All Digital Stores</option>
                     <option value="amazon">Amazon</option>
                     <option value="google">Google Play</option>
                     <option value="youtube">YouTube</option>
@@ -57,6 +116,11 @@
                     <option value="apple">Apple TV</option>
                     <option value="fandango">Fandango</option>
                 </select>
+
+                <select id="stream-service-select" class="f-select" onchange="runFilters()">
+                    <option value="">All Free & Sub Streams</option>
+                </select>
+                
                 <select id="holiday-select" class="f-select" onchange="runFilters()">
                     <option value="">All Holidays</option>
                     <option value="Christmas">Christmas</option>
@@ -67,15 +131,19 @@
                     <option value="St. Patrick's">St. Patrick's Day</option>
                     <option value="Easter">Easter</option>
                 </select>
+                
                 <select id="genre-select" class="f-select" onchange="document.getElementById('collection-select').value=''; runFilters()">
                     <option value="">All Genres</option>
                 </select>
+                
                 <select id="collection-select" class="f-select" onchange="document.getElementById('genre-select').value=''; runFilters()">
                     <option value="">All Collections</option>
                 </select>
+                
                 <select id="artist-select" class="f-select" onchange="runFilters()">
                     <option value="">All Artists</option>
                 </select>
+                
                 <select id="sort-select" class="f-select" onchange="runFilters()">
                     <option value="newest">Recently Added</option>
                     <option value="oldest">Oldest Added</option>
@@ -84,13 +152,16 @@
                     <option value="new-old">Year: New-Old</option>
                     <option value="old-new">Year: Old-New</option>
                 </select>
+                
                 <button class="f-btn btn-reset black-outline" onclick="resetFilters()">Reset</button>
             </div>
         </div>
     </div>
 
+    <!-- Movie Gallery Grid -->
     <div id="movie-library-grid"></div>
 
+    <!-- Support Tip Footer -->
     <div id="library-footer-tip">
         <a href="https://streamlabs.com/werewolf3788/tip?utm_source=werewolf_cinema_library&utm_medium=outbound_link&utm_campaign=cinema_navigation&utm_content=support_tip" onclick="trackOutboundClick(this.href, 'Support Tip')" target="werewolf_cinema_window" class="tip-link black-outline">
             💰 Support the Library - Send a Tip!
@@ -98,10 +169,13 @@
     </div>
 </div>
 
+<!-- A-Z Alphabetical Sidebar -->
 <div id="dynamic-nav-sidebar" class="black-outline"></div>
 
+<!-- Back to Top Button -->
 <button id="back-to-top" class="black-outline" onclick="window.scrollTo({top:0, behavior:'smooth'})">⬆ TOP</button>
 
+<!-- Movie Lightbox Modal -->
 <div id="movie-lightbox" class="hidden-ui" onclick="closeLightbox(event)">
     <div class="lightbox-content" id="lightbox-inner" onclick="event.stopPropagation()">
         <div id="lb-video-wrapper" style="display: none;">
@@ -115,15 +189,17 @@
                 <div id="lb-meta-container" class="lb-meta black-outline"></div>
                 <div id="lb-rating-desc" class="lb-meta black-outline" style="color: #f5c518; font-size: 11px; margin-top: 5px; font-weight: 700; display: none;"></div>
                 
-                <div id="lb-streaming" class="lb-meta black-outline" style="color: #00aeef; font-size: 14px; margin: 10px 0; display: none;"></div>
+                <div id="lb-streaming" class="lb-meta black-outline" style="color: #00aeef; font-size: 13px; margin: 10px 0; display: none; white-space: pre-line; text-align: left; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; border: 1px solid #222;"></div>
                 <div id="lb-date-added" class="black-outline" style="font-size:12px; color:#1ce783; margin-bottom:10px;"></div>
                 
                 <div id="lb-tv-binge-container" style="display: none;"></div>
 
                 <div id="lb-artists" class="black-outline"></div>
+                
+                <p id="lb-description-text" class="black-outline" style="font-size: 12px; color: #ccc; line-height: 1.5; margin-top: 10px; text-align: left;"></p>
             </div>
 
-            <h3 id="lb-store-heading" class="black-outline" style="font-size: 14px; color: #fff; margin: 20px 0 10px; text-transform: uppercase; font-weight: 400;">Buy / Rent</h3>
+            <h3 id="lb-store-heading" class="black-outline" style="font-size: 14px; color: #fff; margin: 20px 0 10px; text-transform: uppercase; font-weight: 400; display: none;">Buy / Rent / Sync</h3>
             <div id="lb-buttons" class="button-container"></div>
         </div>
     </div>
@@ -134,18 +210,171 @@
 <div id="kf-watermark">
     <span class="kf-k">K</span><span class="kf-f">F</span>
 </div>
+
 <style>
-:root { --text-main: #fff; --header-bg: rgba(0, 0, 0, 0.9); --card-bg: rgba(15, 15, 15, 0.98); }
+/* ========================================================= */
+/* CSS STYLING SECTION (Line 170)                            */
+/* ========================================================= */
+:root { --text-main: #fff; --header-bg: rgba(0, 0, 0, 0.9); --card-bg: rgba(15, 15, 15, 0.98); --accent-red: #8b0000; }
 body { 
     background: #000; 
     color: var(--text-main); 
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-    font-size: 14px; 
+    font-size: 16px; 
     margin: 0; 
     padding: 0; 
     overflow-x: hidden;
     transition: background 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
+
+/* Top Sticky Navigation Bar */
+#top-navbar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 56px;
+    background: rgba(10, 10, 15, 0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid var(--accent-red);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 15px;
+    box-sizing: border-box;
+    z-index: 10000;
+}
+.nav-brand {
+    font-size: 18px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+.nav-brand span { color: #ff0000; }
+.nav-btn {
+    min-width: 44px;
+    min-height: 44px;
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+.nav-btn:hover { background: rgba(255, 255, 255, 0.1); }
+.notify-bell {
+    font-size: 13px;
+    font-weight: 800;
+    background: #181824;
+    border: 1px solid #333;
+    padding: 4px 10px;
+    gap: 5px;
+}
+.notify-bell.active {
+    border-color: #1ce783;
+    color: #1ce783;
+}
+
+/* Navigation Drawer */
+#nav-drawer-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 19998;
+    display: none;
+}
+#nav-drawer-overlay.active { display: block; }
+#nav-drawer {
+    position: fixed;
+    top: 0;
+    left: -320px;
+    width: 300px;
+    height: 100vh;
+    background: #0d0d12;
+    border-right: 2px solid var(--accent-red);
+    box-shadow: 5px 0 25px rgba(0,0,0,0.8);
+    z-index: 19999;
+    transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 15px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+#nav-drawer.active { left: 0; }
+.drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 15px;
+}
+.drawer-title { font-size: 14px; font-weight: 900; color: #ff0000; letter-spacing: 1px; }
+.drawer-close { background: none; border: none; color: #fff; font-size: 18px; font-weight: 900; cursor: pointer; min-width: 44px; min-height: 44px; }
+.drawer-section-label { font-size: 11px; font-weight: 900; color: #888; text-transform: uppercase; margin: 15px 0 8px; letter-spacing: 0.5px; }
+
+.drawer-notify-box {
+    background: #14141e;
+    border: 1px solid #28283a;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+.notify-control-row { display: flex; flex-direction: column; gap: 8px; }
+#drawer-notify-desc { font-size: 11px; color: #aaa; }
+
+/* UTM Links Accordion & Single Links */
+.utm-folder-wrapper { margin-bottom: 8px; }
+.utm-folder-btn {
+    width: 100%;
+    min-height: 44px;
+    background: #14141e;
+    color: #ffd166;
+    border: 1px solid #28283a;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    font-weight: 800;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.utm-folder-content {
+    display: none;
+    flex-direction: column;
+    background: #08080c;
+    border-left: 2px solid var(--accent-red);
+    margin-left: 10px;
+    padding: 6px 0;
+}
+.utm-folder-content.open { display: flex; }
+.utm-link-item {
+    padding: 10px 14px;
+    color: #eee;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    border-radius: 4px;
+    transition: 0.2s;
+}
+.utm-link-item:hover { background: #1c1c28; color: #ff0000; }
+.utm-single-item {
+    background: #14141e;
+    border: 1px solid #28283a;
+    margin-bottom: 8px;
+}
+
 h2, #cinema-logo { font-size: 30px !important; text-align: center; width: 100%; }
 .black-outline { text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000 !important; }
 .master-85-width { width: 85% !important; margin: 0 auto; max-width: 2560px; display: flex; flex-direction: column; align-items: center; }
@@ -158,7 +387,7 @@ body.theme-dark.bg-moviesanywhere { background: radial-gradient(circle at center
 body.theme-dark.bg-apple { background: radial-gradient(circle at center top, #242426 0%, #0a0a0b 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, #3a1600 0%, #0e0500 50%, #000000 100%) fixed !important; }
 
-#library-header { width: 100%; background: var(--header-bg); border-bottom: 2px solid #8b0000; padding: 40px 20px; border-radius: 0 0 24px 24px; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
+#library-header { width: 100%; background: var(--header-bg); border-bottom: 2px solid #8b0000; padding: 30px 20px 25px; border-radius: 0 0 24px 24px; margin-bottom: 30px; display: flex; flex-direction: column; align-items: center; text-align: center; position: relative; }
 #header-clock { position: absolute; top: 10px; right: 20px; font-size: 12px; color: #ff0000; }
 #cinema-logo span { color: #8b0000; }
 #movie-counter { margin-top: 5px; font-weight: 700; color: #aaa; transition: color 0.3s; }
@@ -181,9 +410,10 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 .toast.show { transform: translateY(0); opacity: 1; }
 
 #controls-container { width: 100%; margin-top: 25px; display: flex; flex-direction: column; align-items: center; }
-#movie-search { width: 90%; max-width: 600px; padding: 14px 25px; border-radius: 50px; background: #111; border: 1px solid #333; color: #fff; margin-bottom: 20px; text-align: center; }
+#movie-search { width: 90%; max-width: 600px; padding: 14px 25px; border-radius: 50px; background: #111; border: 1px solid #333; color: #fff; margin-bottom: 20px; text-align: center; outline: none; min-height: 44px; }
+#movie-search:focus { border-color: #ff0000; }
 #filter-dropdowns { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; }
-.f-select { background: #111; color: #ffff00; border: 1px solid #444; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+.f-select { background: #111; color: #ffff00; border: 1px solid #444; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; min-height: 44px; outline: none; }
 
 /* Dynamic Navigation Overlay */
 #dynamic-nav-sidebar {
@@ -201,9 +431,9 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     z-index: 9999;
     max-height: 85vh;
     overflow-y: auto;
-    scrollbar-width: none; /* Firefox */
+    scrollbar-width: none;
 }
-#dynamic-nav-sidebar::-webkit-scrollbar { display: none; /* Safari/Chrome */ }
+#dynamic-nav-sidebar::-webkit-scrollbar { display: none; }
 .nav-item {
     color: #888;
     font-size: 11px;
@@ -219,7 +449,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 }
 .nav-year { font-size: 10px; letter-spacing: -0.5px; }
 
-/* Back to top button */
 #back-to-top {
     position: fixed;
     bottom: 20px;
@@ -235,6 +464,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     z-index: 10000;
     transition: 0.3s;
     box-shadow: 0 0 10px rgba(255,0,0,0.5);
+    min-height: 44px;
 }
 #back-to-top:hover {
     transform: scale(1.1);
@@ -357,7 +587,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     cursor: pointer;
 }
 
-#movie-library-grid { display: grid; gap: 15px; width: 100%; grid-template-columns: repeat(2, 1fr); padding-right: 25px; /* space for A-Z nav */ }
+#movie-library-grid { display: grid; gap: 15px; width: 100%; grid-template-columns: repeat(2, 1fr); padding-right: 25px; }
 @media (min-width: 768px) { #movie-library-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; } }
 .movie-card { background: var(--card-bg); border: 1px solid #222; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; transition: 0.3s; cursor: pointer; position: relative; }
 .movie-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(139,0,0,0.5); border-color: #8b0000; }
@@ -384,29 +614,29 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 .stream-link:hover { color: #fff; text-decoration: underline; }
 #lb-video-wrapper { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; display: none; flex-direction: column; border-radius: 20px; overflow: hidden; }
 #lb-video-wrapper.active { display: flex; }
-.close-btn { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.8); border: 1px solid #fff; color: #fff; border-radius: 50%; width: 40px; height: 40px; font-weight: 900; cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; }
-.close-video-btn { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.85); border: 1px solid #ff0000; color: #ff0000; padding: 6px 14px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; z-index: 150; }
+.close-btn { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.8); border: 1px solid #fff; color: #fff; border-radius: 50%; width: 44px; height: 44px; font-weight: 900; cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; }
+.close-video-btn { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.85); border: 1px solid #ff0000; color: #ff0000; padding: 6px 14px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; z-index: 150; min-height: 44px; }
 #lb-yt-iframe { width: 100%; height: 100%; border: none; }
 .button-container { display: grid; gap: 8px; width: 100%; margin-top: 5px; grid-template-columns: repeat(3, 1fr); }
-.m-link { padding: 10px 4px; border-radius: 8px; font-size: 10px; font-weight: 400 !important; text-transform: uppercase; color: #fff; text-decoration: none; text-align: center; transition: 0.3s; text-shadow: none !important; }
+.m-link { padding: 10px 4px; border-radius: 8px; font-size: 10px; font-weight: 700 !important; text-transform: uppercase; color: #fff; text-decoration: none; text-align: center; transition: 0.3s; text-shadow: none !important; min-height: 44px; display: flex; align-items: center; justify-content: center; }
 .btn-amazon { background: #FF9900 !important; color: #000 !important; }
 .btn-google { background: #4285F4; }
 .btn-moviesanywhere { background: #00aeef; }
 .btn-apple { background: #555; }
 .btn-fandango { background: #ff7300; }
 .btn-youtube { background: #FF0000; border: none; font-family: inherit; cursor: pointer; }
-.f-btn { background: #111; color: #ff0000; border: 1px solid #444; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+.f-btn { background: #111; color: #ff0000; border: 1px solid #444; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; min-height: 44px; }
 .f-btn:hover { background: #ff0000; color: #fff; border-color: #ff0000; }
 #kf-watermark { position: fixed; bottom: 10px; left: 10px; font-size: 24px; font-weight: 900; opacity: 0.8; z-index: 10000; pointer-events: none; }
 .kf-k { color: #FF4500; transform: scaleX(-1); display: inline-block; }
 .kf-f { color: #000; margin-left: -0.22em; text-shadow: 0 0 2px #fff; }
 #library-footer-tip { width: 100%; display: flex; justify-content: center; margin: 40px 0; }
-.tip-link { padding: 15px 40px; background: linear-gradient(135deg, #8b0000, #ff0000); color: #fff !important; font-weight: 900; border-radius: 50px; text-decoration: none; border: 2px solid #fff; transition: 0.3s; }
+.tip-link { padding: 15px 40px; background: linear-gradient(135deg, #8b0000, #ff0000); color: #fff !important; font-weight: 900; border-radius: 50px; text-decoration: none; border: 2px solid #fff; transition: 0.3s; min-height: 44px; display: flex; align-items: center; }
 .tip-link:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,0,0,0.6); }
 
 @media (max-width: 768px) {
     .master-85-width { width: 95% !important; }
-    #library-header { padding: 25px 15px; }
+    #library-header { padding: 20px 15px; }
 }
 @media (max-width: 480px) {
     .lightbox-content { height: 95vh; border-radius: 12px; }
@@ -419,7 +649,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     #back-to-top { right: 20px; font-size: 9px; padding: 8px 10px; }
 }
 
-/* Loading Spinners */
 .loading-spinner {
     display: inline-block;
     width: 14px;
@@ -435,16 +664,209 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     to { transform: rotate(360deg); }
 }
 </style>
+
 <script>
-// --- CORE ENGINE ---
+// =========================================================
+// JAVASCRIPT APP LOGIC & PROGRESSIVE BATCH ENGINE (Line 490) 
+// =========================================================
 (function() {
     let movies = [];
-    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?output=csv";
-    let currentDataHash = null;
+    let currentFilteredList = [];
+    
+    // Batch Pagination Configurations (60 Cards initially, then append 60 on scroll)
+    const BATCH_SIZE = 60;
+    let currentRenderLimit = BATCH_SIZE;
 
-    // Track state indexes of absolute oldest and newest additions
+    const FIREBASE_ENDPOINT = "https://entertainment-71888-default-rtdb.firebaseio.com/movies_guide.json";
+    const FIREBASE_UTM_ENDPOINT = "https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
+    const CACHE_STORAGE_KEY = "ww_cinema_cache_v2";
+    const NOTIFY_PREF_KEY = "ww_cinema_push_enabled";
+    const SEEN_MOVIES_KEY = "ww_cinema_seen_ids";
+
     let oldestMovieIndex = null;
     let newestMoviesSet = new Set();
+    const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    // Blacklist digital stores from free/subscription streaming lists
+    const EXCLUDED_STREAMERS = /amazon video|apple tv store|itunes|google play movies|google play|youtube|fandango at home|fandango|vudu|buy\/rent|check apps|no free streams|spectrum on demand|amc\+\s*amazon channel|justwatch tv|vudu free/i;
+
+    // --- PWA SERVICE WORKER REGISTRATION ---
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('PWA Service Worker registered:', reg.scope))
+                .catch(err => console.log('Service Worker registration failed:', err));
+        });
+    }
+
+    // --- DRAWER & UTM FOLDER MANAGEMENT ---
+    window.toggleNavMenu = () => {
+        document.getElementById('nav-drawer').classList.add('active');
+        document.getElementById('nav-drawer-overlay').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeNavMenu = () => {
+        document.getElementById('nav-drawer').classList.remove('active');
+        document.getElementById('nav-drawer-overlay').classList.remove('active');
+        document.body.style.overflow = 'auto';
+    };
+
+    window.toggleUtmFolder = (folderId, btn) => {
+        const content = document.getElementById(folderId);
+        if (content) {
+            const isOpen = content.classList.toggle('open');
+            const arrow = btn.querySelector('.folder-arrow');
+            if (arrow) arrow.textContent = isOpen ? '▲' : '▼';
+        }
+    };
+
+    async function loadUtmLinksFromFirebase() {
+        const container = document.getElementById('utm-links-container');
+        try {
+            const res = await fetch(FIREBASE_UTM_ENDPOINT);
+            if (!res.ok) throw new Error("Could not fetch UTM links");
+            const data = await res.json();
+            
+            if (!data) {
+                container.innerHTML = '<div style="color:#666; font-size:12px;">No links configured.</div>';
+                return;
+            }
+
+            let html = '';
+            let folderIndex = 0;
+
+            Object.keys(data).forEach(key => {
+                const item = data[key];
+                
+                // If it contains grouped sub-links (object with multiple links)
+                if (typeof item === 'object' && item !== null && !item.url) {
+                    folderIndex++;
+                    const folderId = `utm-folder-${folderIndex}`;
+                    let subLinksHtml = '';
+                    
+                    Object.keys(item).forEach(subKey => {
+                        const sub = item[subKey];
+                        const subTitle = sub.title || subKey;
+                        const subUrl = typeof sub === 'string' ? sub : (sub.url || '#');
+                        subLinksHtml += `
+                            <a href="${subUrl}" target="_blank" rel="noopener noreferrer" class="utm-link-item" onclick="trackOutboundClick('${subUrl}', 'Drawer Link: ${subTitle}')">
+                                🔗 ${subTitle}
+                            </a>
+                        `;
+                    });
+
+                    html += `
+                        <div class="utm-folder-wrapper">
+                            <button class="utm-folder-btn black-outline" onclick="toggleUtmFolder('${folderId}', this)">
+                                <span>📁 ${key}</span>
+                                <span class="folder-arrow">▼</span>
+                            </button>
+                            <div id="${folderId}" class="utm-folder-content">
+                                ${subLinksHtml}
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    // Single Standalone Link
+                    const title = item.title || key;
+                    const url = typeof item === 'string' ? item : (item.url || '#');
+                    html += `
+                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="utm-link-item utm-single-item black-outline" onclick="trackOutboundClick('${url}', 'Drawer Link: ${title}')">
+                            🌐 ${title}
+                        </a>
+                    `;
+                }
+            });
+
+            container.innerHTML = html;
+        } catch (e) {
+            console.error("UTM link fetch failure: ", e);
+            container.innerHTML = '<div style="color:#ef233c; font-size:12px;">Could not load links.</div>';
+        }
+    }
+
+    // --- PUSH NOTIFICATION ENGINE ---
+    function updateNotificationUI(isEnabled) {
+        const statusText = document.getElementById('notify-status-text');
+        const bellBtn = document.getElementById('notify-toggle-btn');
+        const drawerBtn = document.getElementById('drawer-notify-toggle');
+
+        if (isEnabled) {
+            statusText.textContent = 'ON';
+            bellBtn.classList.add('active');
+            drawerBtn.textContent = 'Disable';
+            drawerBtn.style.background = '#8b0000';
+        } else {
+            statusText.textContent = 'OFF';
+            bellBtn.classList.remove('active');
+            drawerBtn.textContent = 'Enable';
+            drawerBtn.style.background = '#111';
+        }
+    }
+
+    window.toggleNotifications = async () => {
+        const currentlyEnabled = localStorage.getItem(NOTIFY_PREF_KEY) === 'true';
+
+        if (currentlyEnabled) {
+            // User requested to remove/turn off push notifications
+            localStorage.setItem(NOTIFY_PREF_KEY, 'false');
+            updateNotificationUI(false);
+            triggerToast('Push notifications disabled.');
+            return;
+        }
+
+        if (!('Notification' in window)) {
+            alert('Push Notifications are not supported in this browser.');
+            return;
+        }
+
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+            localStorage.setItem(NOTIFY_PREF_KEY, 'true');
+            updateNotificationUI(true);
+            triggerToast('Push notifications enabled for new movies!');
+            
+            // Welcome alert
+            new Notification('🎬 Werewolf Cinema', {
+                body: 'Instant alerts activated. You will be notified when new movies are added!',
+                icon: 'https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'
+            });
+        } else {
+            alert('Notification permission was denied. Please allow notifications in browser settings.');
+        }
+    };
+
+    /**
+     * Checks if a movie's dateAdded matches today or is brand new, then fires push notifications immediately
+     */
+    function checkNewMoviePushAlerts(movieList) {
+        const isEnabled = localStorage.getItem(NOTIFY_PREF_KEY) === 'true';
+        if (!isEnabled || !('Notification' in window) || Notification.permission !== 'granted') return;
+
+        let seenIds = JSON.parse(localStorage.getItem(SEEN_MOVIES_KEY) || '[]');
+        const todayString = new Date().toLocaleDateString();
+
+        movieList.forEach(m => {
+            const movieId = m.imdbId || m.title;
+            if (!seenIds.includes(movieId)) {
+                // If added today or marked new
+                const addedDateObj = new Date(m.timestamp);
+                const isAddedToday = m.timestamp > 0 && (addedDateObj.toLocaleDateString() === todayString || (Date.now() - m.timestamp < 86400000));
+                
+                if (isAddedToday && seenIds.length > 0) {
+                    new Notification(`🎬 New Movie Added: ${m.title}`, {
+                        body: `${m.title} (${m.year}) is now available in the library!`,
+                        icon: m.image || 'https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg',
+                        tag: `movie-add-${movieId}`
+                    });
+                }
+                seenIds.push(movieId);
+            }
+        });
+
+        localStorage.setItem(SEEN_MOVIES_KEY, JSON.stringify(seenIds));
+    }
 
     function isValidUrl(str) {
         if (!str) return false;
@@ -452,11 +874,9 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         return s.startsWith('http://') || s.startsWith('https://');
     }
 
-    // Dynamic Outbound UTM Link Parameter Appender
     window.appendUtm = (url, title = 'outbound') => {
         if (!url) return '';
         const cleanUrl = url.trim();
-        // Keep Amazon affiliate URLs completely clean of UTM to preserve custom cookie assignments
         if (cleanUrl.includes('amazon.com') || cleanUrl.includes('amzn.to')) {
             return cleanUrl;
         }
@@ -476,19 +896,14 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             return urlObj.toString();
         } catch (e) {
             const separator = cleanUrl.includes('?') ? '&' : '?';
-            const utmString = `utm_source=${utmSource}&utm_medium=${utmMedium}&utm_campaign=${utmCampaign}&utm_content=${utmContent}`;
-            return cleanUrl + separator + utmString;
+            return `${cleanUrl}${separator}utm_source=${utmSource}&utm_medium=${utmMedium}&utm_campaign=${utmCampaign}&utm_content=${utmContent}`;
         }
     };
 
-    // Google Analytics Semantic Outbound Click Categorizer
     window.trackOutboundClick = (url, label) => {
         if (typeof gtag === 'function') {
             const isAmazon = url.includes('amazon.com') || url.includes('amzn.to');
-            const eventName = isAmazon ? 'click_affiliate_buy' : 'click_provider_buy';
-            
-            // Explicitly declares commission structures dynamically to analytics
-            gtag('event', eventName, {
+            gtag('event', isAmazon ? 'click_affiliate_buy' : 'click_provider_buy', {
                 'event_category': isAmazon ? 'Affiliate Outbound Acquisition' : 'Provider Direct Referrals',
                 'event_label': label,
                 'destination_url': url,
@@ -499,211 +914,55 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         }
     };
 
-    // Explicit Filter: Identifies if a string points to a free/subscription/with-ads streamer
-    function isFreeOrSubscriptionStream(name) {
-        const lower = name.toLowerCase();
-        
-        // Allowed free or subscription services
-        const knownStreamers = /netflix|hulu|disney|max|peacock|paramount|crunchyroll|tubi|pluto|freevee|kanopy|hoopla|cinemax|apple tv\+/.test(lower);
-        if (knownStreamers) return true;
+    function resolveAppOrWebUrl(url, platform) {
+        if (!url || !url.startsWith("http")) return "";
+        let finalUrl = url.trim();
 
-        // If it explicitly states free, ads, prime or holds "+" symbol
-        if (/free|ads|prime|\+/.test(lower)) return true;
-
-        // Strictly buy/rent storefronts to exclude from the streaming recommendations
-        const strictlyBuyRent = /\b(amazon video|apple tv store|itunes|google play movies|google play|youtube|fandango at home|fandango|vudu)\b/.test(lower);
-        if (strictlyBuyRent) return false;
-
-        return true; // Default fallback to true for other unclassified streamers
-    }
-
-    // Dynamic search URL deep-linker generator for external streaming search catalogs
-    function getStreamingSearchUrl(platformKey, movieTitle) {
-        const query = encodeURIComponent(movieTitle);
-        switch (platformKey) {
-            case 'netflix':
-                return `https://www.netflix.com/search?q=${query}`;
-            case 'hulu':
-                // Protects fragile Hulu query structures with dynamic search engine queries
-                return `https://www.google.com/search?q=Watch+${encodeURIComponent(movieTitle)}+on+Hulu`;
-            case 'peacock':
-            case 'peacock premium':
-                // Avoids Peacock's authentication gate search exceptions
-                return `https://www.google.com/search?q=Watch+${encodeURIComponent(movieTitle)}+on+Peacock`;
-            case 'disney+':
-            case 'disney plus':
-                // Eliminates unauthenticated Disney+ 404 errors completely via clean Google Search redirects
-                return `https://www.google.com/search?q=Watch+${encodeURIComponent(movieTitle)}+on+Disney+Plus`;
-            case 'max':
-            case 'hbo max':
-                // Bypasses authenticated-only Max directory search requirements
-                return `https://www.google.com/search?q=Watch+${encodeURIComponent(movieTitle)}+on+Max`;
-            case 'paramount+':
-            case 'paramount plus':
-                // Prevents unauthenticated Paramount+ 404 search exceptions
-                return `https://www.google.com/search?q=Watch+${encodeURIComponent(movieTitle)}+on+Paramount+Plus`;
-            case 'crunchyroll':
-                return `https://www.crunchyroll.com/search?q=${query}`;
-            case 'tubi':
-            case 'tubi tv':
-                return `https://tubitv.com/search/${query}`;
-            case 'pluto tv':
-            case 'pluto':
-                return `https://pluto.tv/on-demand/search/${query}`;
-            case 'freevee':
-                return `https://www.amazon.com/s?k=${query}&i=instant-video`;
-            case 'amazon':
-            case 'prime':
-            case 'amazon prime':
-            case 'amazon video':
-            case 'amazon prime video':
-                return `https://www.amazon.com/s?k=${query}&i=instant-video`;
-            case 'google':
-            case 'google play':
-            case 'google play movies':
-                return `https://play.google.com/store/search?q=${query}&c=movies`;
-            case 'apple':
-            case 'apple tv':
-            case 'apple tv store':
-            case 'itunes':
-                return `https://tv.apple.com/search?term=${query}`;
-            case 'fandango':
-            case 'vudu':
-            case 'fandango at home':
-                return `https://www.vudu.com/content/movies/search?searchString=${query}`;
-            case 'youtube':
-                return `https://www.youtube.com/results?search_query=${query}`;
-            case 'moviesanywhere':
-            case 'movies anywhere':
-            case 'ma':
-                return `https://moviesanywhere.com/search?q=${query}`;
-            case 'kanopy':
-                return `https://www.google.com/search?q=site:kanopy.com+${encodeURIComponent(movieTitle)}`;
-            case 'hoopla':
-                return `https://www.hoopladigital.com/search?q=${query}`;
-            case 'cinemax':
-                // Preserves Batched commission-earning landing targets
-                return 'https://www.amazon.com/gp/video/channel/82d58d06-360f-4b41-a276-945c01205d62?&linkCode=ll2&tag=moviesanywhere02-20&linkId=332d0f3133b19a4ca8f34eec4ca698a4&language=en_US&ref_=as_li_ss_tl';
-            default:
-                return null;
-        }
-    }
-
-    // --- DYNAMIC SIDEBAR SCROLL EVENT ---
-    window.scrollToSection = (val, type) => {
-        setTimeout(() => {
-            const cards = document.querySelectorAll('.movie-card');
-            for (let card of cards) {
-                const csvIndex = parseInt(card.getAttribute('data-csv-index'));
-                const m = movies.find(item => item.csvIndex === csvIndex);
-                if (!m) continue;
-
-                let isMatch = false;
-                if (type === 'alpha') {
-                    let rawTitle = m.title.replace(/[^\w\s-]/gi, '').trim().toUpperCase();
-                    if (val === '#') {
-                        isMatch = /^[0-9]/.test(rawTitle);
-                    } else {
-                        isMatch = rawTitle.startsWith(val);
-                    }
-                } else if (type === 'added') {
-                    isMatch = (m.timestamp > 0 && new Date(m.timestamp).getFullYear() == val);
-                } else if (type === 'release') {
-                    isMatch = (parseInt(m.year) == val);
-                }
-
-                if (isMatch) {
-                    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    break;
-                }
+        if (finalUrl.includes('amazon.com')) {
+            if (!finalUrl.includes('moviesanywhere02-20')) {
+                const sep = finalUrl.includes('?') ? '&' : '?';
+                finalUrl += `${sep}tag=moviesanywhere02-20`;
             }
-        }, 150);
-    };
-
-    // --- DYNAMIC SIDEBAR RENDERER ---
-    function buildSidebar(filteredList, sortMode) {
-        const sidebar = document.getElementById('dynamic-nav-sidebar');
-        if (!sidebar) return;
-        sidebar.innerHTML = '';
-        
-        if (sortMode === 'az' || sortMode === 'za') {
-            const letters = ['#','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
-            letters.forEach(l => {
-                const d = document.createElement('div');
-                d.className = 'nav-item';
-                d.textContent = l;
-                d.onclick = () => scrollToSection(l, 'alpha');
-                sidebar.appendChild(d);
-            });
-        } else if (sortMode === 'newest' || sortMode === 'oldest') {
-            const years = new Set();
-            filteredList.forEach(m => {
-                if (m.timestamp > 0) years.add(new Date(m.timestamp).getFullYear());
-            });
-            const sortedYears = Array.from(years).sort((a,b) => b - a);
-            sortedYears.forEach(y => {
-                const d = document.createElement('div');
-                d.className = 'nav-item nav-year';
-                d.textContent = y;
-                d.onclick = () => scrollToSection(y, 'added');
-                sidebar.appendChild(d);
-            });
-        } else if (sortMode === 'new-old' || sortMode === 'old-new') {
-            const years = new Set();
-            filteredList.forEach(m => {
-                if (m.year) years.add(parseInt(m.year));
-            });
-            const sortedYears = Array.from(years).filter(y => !isNaN(y)).sort((a,b) => b - a);
-            sortedYears.forEach(y => {
-                const d = document.createElement('div');
-                d.className = 'nav-item nav-year';
-                d.textContent = y;
-                d.onclick = () => scrollToSection(y, 'release');
-                sidebar.appendChild(d);
-            });
+            if (isMobileDevice) {
+                return finalUrl.replace(/^https?:\/\/(www\.)?amazon\.com/i, 'primevideo://');
+            }
+            return finalUrl;
         }
+
+        if (platform === 'youtube' && isMobileDevice) {
+            const vidMatch = finalUrl.match(/(?:youtu\.be\/|v\/|embed\/|watch\?v=|\&v=)([^#\&\?]*)/);
+            if (vidMatch && vidMatch[1].length === 11) {
+                return `vnd.youtube://${vidMatch[1]}`;
+            }
+        }
+
+        return finalUrl;
     }
 
-    // --- FALLBACK STREAMING LINK DICTIONARY ---
-    const streamMap = {
-        'disney+': 'https://www.disneyplus.com',
-        'disney plus': 'https://www.disneyplus.com',
-        'hulu': 'https://www.hulu.com',
-        'netflix': 'https://www.netflix.com',
-        'max': 'https://www.max.com',
-        'hbo max': 'https://www.max.com',
-        'paramount+': 'https://www.paramountplus.com',
-        'paramount plus': 'https://www.paramountplus.com',
-        'peacock': 'https://www.peacocktv.com',
-        'peacock premium': 'https://www.peacocktv.com',
-        'crunchyroll': 'https://www.crunchyroll.com',
-        'tubi': 'https://tubitv.com',
-        'tubi tv': 'https://tubitv.com',
-        'pluto tv': 'https://pluto.tv',
-        'pluto': 'https://pluto.tv',
-        'freevee': 'https://www.amazon.com/freevee',
-        'kanopy': 'https://www.kanopy.com',
-        'hoopla': 'https://www.hoopladigital.com',
-        'amazon': 'https://www.amazon.com',
-        'prime': 'https://www.amazon.com',
-        'amazon video': 'https://www.amazon.com',
-        'amazon prime video': 'https://www.amazon.com',
-        'google': 'https://play.google.com',
-        'play': 'https://play.google.com',
-        'google play movies': 'https://play.google.com',
-        'apple': 'https://tv.apple.com',
-        'apple tv': 'https://tv.apple.com',
-        'apple tv store': 'https://tv.apple.com',
-        'itunes': 'https://tv.apple.com',
-        'fandango': 'https://www.vudu.com',
-        'vudu': 'https://www.vudu.com',
-        'fandango at home': 'https://www.vudu.com',
-        'youtube': 'https://www.youtube.com',
-        'movies anywhere': 'https://moviesanywhere.com',
-        'moviesanywhere': 'https://moviesanywhere.com',
-        'ma': 'https://moviesanywhere.com',
-        'cinemax': 'https://www.amazon.com/gp/video/channel/82d58d06-360f-4b41-a276-945c01205d62?&linkCode=ll2&tag=moviesanywhere02-20&linkId=332d0f3133b19a4ca8f34eec4ca698a4&language=en_US&ref_=as_li_ss_tl'
-    };
+    function extractCleanStreamPlatforms(rawStreaming) {
+        if (!rawStreaming || typeof rawStreaming !== 'string') return [];
+        let cleaned = rawStreaming
+            .replace(/No Free Streams/gi, '')
+            .replace(/Stream:\s*/gi, '')
+            .replace(/\|\s*Buy\/Rent:.*$/gi, '')
+            .replace(/Buy\/Rent:.*$/gi, '')
+            .replace(/Available to Stream On:\s*/gi, '')
+            .replace(/🆓 Free \/ With Ads:\s*/gi, '')
+            .replace(/📺 Subscription:\s*/gi, '')
+            .replace(/🛒 Prime \/ Add-on Channels:\s*/gi, '');
+
+        const rawParts = cleaned.split(/[\n,|•]/);
+        const uniqueSet = new Set();
+
+        rawParts.forEach(p => {
+            let item = p.replace(/^[•\s\-\*]+/, '').trim();
+            if (item && item.length > 1 && !EXCLUDED_STREAMERS.test(item)) {
+                uniqueSet.add(item);
+            }
+        });
+
+        return Array.from(uniqueSet);
+    }
 
     function isHolidaySeason(holidayName) {
         const now = new Date();
@@ -711,22 +970,14 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         const date = now.getDate();
 
         switch (holidayName) {
-            case 'Christmas':
-                return (month === 10 && date >= 15) || month === 11 || (month === 0 && date <= 5);
-            case 'Halloween':
-                return (month === 8 && date >= 15) || month === 9 || (month === 10 && date <= 3);
-            case 'Thanksgiving':
-                return month === 10;
-            case '4th of July':
-                return (month === 5 && date >= 20) || (month === 6 && date <= 10);
-            case 'Valentine\'s':
-                return month === 1 && date <= 16;
-            case 'St. Patrick\'s':
-                return month === 2 && date <= 20;
-            case 'Easter':
-                return (month === 2 && date >= 15) || month === 3;
-            default:
-                return false;
+            case 'Christmas': return (month === 10 && date >= 15) || month === 11 || (month === 0 && date <= 5);
+            case 'Halloween': return (month === 8 && date >= 15) || month === 9 || (month === 10 && date <= 3);
+            case 'Thanksgiving': return month === 10;
+            case '4th of July': return (month === 5 && date >= 20) || (month === 6 && date <= 10);
+            case 'Valentine\'s': return month === 1 && date <= 16;
+            case 'St. Patrick\'s': return month === 2 && date <= 20;
+            case 'Easter': return (month === 2 && date >= 15) || month === 3;
+            default: return false;
         }
     }
 
@@ -736,27 +987,26 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             if (/\b(christmas|xmas)\b/i.test(tag)) return { emoji: '🎄', name: 'Christmas', color: '#15803d', border: '#22c55e' };
             if (/\b(halloween|spooky)\b/i.test(tag)) return { emoji: '🎃', name: 'Halloween', color: '#ea580c', border: '#f97316' };
             if (/\bthanksgiving\b/i.test(tag)) return { emoji: '🦃', name: 'Thanksgiving', color: '#b45309', border: '#f59e0b' };
-            if (/\b(independence\s+day|4th\s+of\s+july|fourth\s+of\s+july|july\s+4)\b/i.test(tag)) return { emoji: '🎆', name: '4th of July', color: '#1d4ed8', border: '#3b82f6' };
-            if (/\b(valentine|valentines\s+day|cupid)\b/i.test(tag)) return { emoji: '💝', name: 'Valentine\'s', color: '#be185d', border: '#ec4899' };
-            if (/\b(st\s*.\s*patrick|leprechaun|shamrock|irish)\b/i.test(tag)) return { emoji: '🍀', name: 'St. Patrick\'s', color: '#047857', border: '#10b981' };
+            if (/\b(independence\s+day|4th\s+of\s+july|july\s+4)\b/i.test(tag)) return { emoji: '🎆', name: '4th of July', color: '#1d4ed8', border: '#3b82f6' };
+            if (/\b(valentine|valentines)\b/i.test(tag)) return { emoji: '💝', name: 'Valentine\'s', color: '#be185d', border: '#ec4899' };
+            if (/\b(st\s*.\s*patrick|shamrock|irish)\b/i.test(tag)) return { emoji: '🍀', name: 'St. Patrick\'s', color: '#047857', border: '#10b981' };
             if (/\beaster\b/i.test(tag)) return { emoji: '🐰', name: 'Easter', color: '#a21caf', border: '#d946ef' };
         }
 
-        const textToSearch = [m.title, m.description, m.genre, m.collection].join(' ').toLowerCase();
-
-        if (/\b(christmas|xmas|santa\s+claus|santa|grinch|scrooge|mistletoe|north\s+pole|advent|nativity)\b/i.test(textToSearch)) {
+        const text = [m.title, m.description, m.genre, m.collection].join(' ').toLowerCase();
+        if (/\b(christmas|xmas|santa\s+claus|santa|grinch|scrooge|mistletoe|north\s+pole|advent|nativity)\b/i.test(text)) {
             return { emoji: '🎄', name: 'Christmas', color: '#15803d', border: '#22c55e' };
-        } else if (/\b(halloween|michael\s+myers|hocus\s+pocus|trick\s+or\s+treat|jack-o-lantern|samhain)\b/i.test(textToSearch)) {
+        } else if (/\b(halloween|michael\s+myers|hocus\s+pocus|trick\s+or\s+treat|jack-o-lantern)\b/i.test(text)) {
             return { emoji: '🎃', name: 'Halloween', color: '#ea580c', border: '#f97316' };
-        } else if (/\b(thanksgiving|thanksgiving\s+day|pilgrim|gobble)\b/i.test(textToSearch)) {
+        } else if (/\b(thanksgiving|pilgrim|gobble)\b/i.test(text)) {
             return { emoji: '🦃', name: 'Thanksgiving', color: '#b45309', border: '#f59e0b' };
-        } else if (/\b(independence\s+day|4th\s+of\s+july|fourth\s+of\s+july)\b/i.test(textToSearch)) {
+        } else if (/\b(independence\s+day|4th\s+of\s+july)\b/i.test(text)) {
             return { emoji: '🎆', name: '4th of July', color: '#1d4ed8', border: '#3b82f6' };
-        } else if (/\b(valentine|valentines\s+day|cupid)\b/i.test(textToSearch)) {
+        } else if (/\b(valentine|valentines\s+day|cupid)\b/i.test(text)) {
             return { emoji: '💝', name: 'Valentine\'s', color: '#be185d', border: '#ec4899' };
-        } else if (/\b(st\s*.\s*patrick|leprechaun|shamrock)\b/i.test(textToSearch)) {
+        } else if (/\b(st\s*.\s*patrick|leprechaun|shamrock)\b/i.test(text)) {
             return { emoji: '🍀', name: 'St. Patrick\'s', color: '#047857', border: '#10b981' };
-        } else if (/\b(easter|easter\s+bunny|egg\s+hunt)\b/i.test(textToSearch)) {
+        } else if (/\b(easter|easter\s+bunny|egg\s+hunt)\b/i.test(text)) {
             return { emoji: '🐰', name: 'Easter', color: '#a21caf', border: '#d946ef' };
         }
         return null;
@@ -764,255 +1014,169 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
     function getHolidayMetadata(m) {
         const holiday = detectHoliday(m);
-        if (holiday && isHolidaySeason(holiday.name)) {
-            return holiday;
-        }
-        return null;
-    }
-
-    function hashString(str) {
-        let hash = 0;
-        for (let i = 0; i < str.length; i++) hash = Math.imul(31, hash) + str.charCodeAt(i) | 0;
-        return hash;
-    }
-
-    function triggerToast(message) {
-        const tContainer = document.getElementById('toast-container');
-        if (!tContainer) return;
-
-        const toast = document.createElement('div');
-        toast.className = 'toast black-outline';
-        toast.innerHTML = `🔔 <span>${message}</span>`;
-        tContainer.appendChild(toast);
-
-        setTimeout(() => toast.classList.add('show'), 100);
-
-        setTimeout(() => {
-            toast.classList.remove('show');
-            setTimeout(() => toast.remove(), 400);
-        }, 5000);
+        return (holiday && isHolidaySeason(holiday.name)) ? holiday : null;
     }
 
     function getSafeTimestamp(ds) {
         if (!ds) return 0;
+        const parsed = Date.parse(ds);
+        if (!isNaN(parsed)) return parsed;
+
         const cleanDs = ds.trim().replace(/\s+/g, ' ');
-        
         const parts = cleanDs.split(' ');
-        const datePart = parts[0];
-        const timePart = parts[1] || '';
-        let ampmPart = parts[2] || '';
-        
-        const dp = datePart.split(/[\/\-\.]/);
-        if (dp.length < 3) return 0;
-        let m = parseInt(dp[0]), d = parseInt(dp[1]), y = parseInt(dp[2]);
-        if (isNaN(m) || isNaN(d) || isNaN(y)) return 0;
-        if (y < 100) y += (y < 50 ? 2000 : 1900);
-        
-        let hr = 0, min = 0, sec = 0;
-        if (timePart) {
-            const tp = timePart.split(':');
-            hr = parseInt(tp[0]) || 0;
-            min = parseInt(tp[1]) || 0;
-            
-            const lastPart = tp[tp.length - 1] || '';
-            const ampmMatch = lastPart.match(/([a-zA-Z]+)/);
-            if (ampmMatch) {
-                ampmPart = ampmMatch[1];
-                sec = parseInt(lastPart.replace(/[a-zA-Z]+/g, '')) || 0;
-            } else {
-                sec = parseInt(tp[2]) || 0;
-            }
-            
-            if (ampmPart) {
-                const meridian = ampmPart.toUpperCase();
-                if (meridian === 'PM' && hr < 12) hr += 12;
-                if (meridian === 'AM' && hr === 12) hr = 0;
+        const dp = parts[0].split(/[\/\-\.]/);
+        if (dp.length >= 3) {
+            let m = parseInt(dp[0]), d = parseInt(dp[1]), y = parseInt(dp[2]);
+            if (!isNaN(m) && !isNaN(d) && !isNaN(y)) {
+                if (y < 100) y += (y < 50 ? 2000 : 1900);
+                return new Date(y, m-1, d).getTime() || 0;
             }
         }
-        
-        return new Date(y, m-1, d, hr, min, sec).getTime() || 0;
+        return 0;
     }
 
-    async function loadCSV() {
+    function initLiveFirebaseStream() {
         const syncDot = document.getElementById('sync-dot');
         const syncText = document.getElementById('sync-text');
-        
-        if (syncDot && syncText) {
-            syncDot.className = 'dot-checking';
-            syncText.textContent = 'Checking Google Sheets...';
+
+        // Check Local Storage Cache First for 0ms initial render
+        const cachedData = localStorage.getItem(CACHE_STORAGE_KEY);
+        if (cachedData) {
+            try {
+                processFirebasePayload(JSON.parse(cachedData), false);
+            } catch (err) {}
         }
 
-        try {
-            const noCacheUrl = CSV_URL + "&t=" + new Date().getTime();
-            const res = await fetch(noCacheUrl, { cache: 'no-store' });
-            const text = await res.text();
-            parseCSV(text);
-
-            setTimeout(() => {
-                if (syncDot && syncText) {
-                    syncDot.className = 'dot-synced';
-                    syncText.textContent = 'Synced with Google Sheets';
+        const eventSource = new EventSource(FIREBASE_ENDPOINT);
+        eventSource.addEventListener('put', function(e) {
+            try {
+                const parsed = JSON.parse(e.data);
+                if (parsed && parsed.data) {
+                    processFirebasePayload(parsed.data, true);
                 }
-            }, 800);
-        } catch (e) { 
-            console.error("CSV Sync Failure", e);
-            if (syncDot && syncText) {
-                syncDot.className = 'dot-error';
-                syncText.textContent = 'Sync Connection Offline';
-            }
-        }
+            } catch (err) {}
+        });
+
+        fetch(FIREBASE_ENDPOINT)
+            .then(res => res.json())
+            .then(data => {
+                if (data) {
+                    processFirebasePayload(data, true);
+                    if (syncDot && syncText) {
+                        syncDot.className = 'dot-synced';
+                        syncText.textContent = 'Live Firebase Realtime Stream Active';
+                    }
+                }
+            })
+            .catch(err => {
+                if (syncDot && syncText) {
+                    syncDot.className = 'dot-error';
+                    syncText.textContent = 'Firebase Connection Offline';
+                }
+            });
     }
 
-    function parseCSV(data) {
-        let newHash = hashString(data);
-        if (currentDataHash === newHash) return; 
-        let isUpdate = currentDataHash !== null;
-        currentDataHash = newHash;
-
-        let rows = [], currentRow = [], currentCell = '', inQuotes = false;
-        for (let i=0; i<data.length; i++) {
-            let char = data[i], next = data[i+1];
-            if (char === '"' && inQuotes && next === '"') { currentCell += '"'; i++; }
-            else if (char === '"') inQuotes = !inQuotes;
-            else if (char === ',' && !inQuotes) { currentRow.push(currentCell.trim()); currentCell = ''; }
-            else if ((char === '\n' || char === '\r') && !inQuotes) {
-                if (char === '\r' && next === '\n') i++;
-                currentRow.push(currentCell.trim()); rows.push(currentRow); currentRow = []; currentCell = '';
-            } else currentCell += char;
+    function processFirebasePayload(dataObj, saveCache = true) {
+        if (saveCache) {
+            localStorage.setItem(CACHE_STORAGE_KEY, JSON.stringify(dataObj));
         }
-        if (currentCell || currentRow.length) { currentRow.push(currentCell.trim()); rows.push(currentRow); }
-        
-        movies = rows.slice(1).map((v, index) => {
+
+        const rawKeys = Object.keys(dataObj);
+        movies = rawKeys.map((key, index) => {
+            const v = dataObj[key];
             const p = { 
-                amazon: (v[3] && isValidUrl(v[3])) ? v[3].trim() : '', 
-                google: (v[4] && isValidUrl(v[4])) ? v[4].trim() : '', 
-                youtube: (v[5] && isValidUrl(v[5])) ? v[5].trim() : '', 
-                moviesanywhere: (v[6] && isValidUrl(v[6])) ? v[6].trim() : '', 
-                apple: (v[7] && isValidUrl(v[7])) ? v[7].trim() : '', 
-                fandango: (v[8] && isValidUrl(v[8])) ? v[8].trim() : '' 
+                amazon: (v.amazon && isValidUrl(v.amazon)) ? v.amazon.trim() : '', 
+                google: (v.google && isValidUrl(v.google)) ? v.google.trim() : '', 
+                youtube: (v.youtube && isValidUrl(v.youtube)) ? v.youtube.trim() : '', 
+                moviesanywhere: (v.ma && isValidUrl(v.ma)) ? v.ma.trim() : '', 
+                apple: (v.apple && isValidUrl(v.apple)) ? v.apple.trim() : '', 
+                fandango: (v.fandango && isValidUrl(v.fandango)) ? v.fandango.trim() : '' 
             };
+
+            let castArr = [];
+            if (Array.isArray(v.actors)) {
+                castArr = v.actors.map(a => a.toString().trim()).filter(Boolean);
+            } else if (v.actors && typeof v.actors === 'string') {
+                castArr = v.actors.split(',').map(s => s.trim()).filter(Boolean);
+            }
+
+            const rawStreamingStr = v.streaming || '';
+            const cleanStreamPlatforms = extractCleanStreamPlatforms(rawStreamingStr);
+
             return {
-                title: v[0]||'', image: v[1]||'', year: v[2]||'', 
+                title: v.title || key || '',
+                image: (v.poster && v.poster !== 'N/A') ? v.poster : '',
+                year: v.year || '',
                 platforms: p,
-                dateAdded: v[9]||'', imdbId: v[10]||'', 
-                cast: v[11] ? v[11].split(',').map(s=>s.trim()).filter(Boolean) : [],
-                edition: v[12]||'', collection: v[13]||'', genre: v[14]||'', runtime: v[15]||'',
-                type: v[16]||'', streaming: v[17]||'', description: v[18]||'',
-                holidayTag: v[19]||'', 
-                videoRating: v[20]||'', 
-                ratingDescription: v[21]||'', 
-                timestamp: getSafeTimestamp(v[9]),
-                csvIndex: index
+                dateAdded: v.dateAdded || '',
+                imdbId: v.id || '',
+                cast: castArr,
+                edition: v.edition || '',
+                collection: v.collection || '',
+                genre: v.genre || '',
+                runtime: v.runtime || '',
+                type: v.type || 'Movie',
+                streaming: rawStreamingStr,
+                streamPlatforms: cleanStreamPlatforms,
+                description: v.description || '',
+                holidayTag: v.holidays || '',
+                videoRating: v.rating || '',
+                ratingDescription: v.ratingReason || '',
+                timestamp: getSafeTimestamp(v.dateAdded),
+                libIndex: index
             };
         }).filter(m => {
             const hasValidLink = m.platforms.amazon || m.platforms.google || m.platforms.youtube || 
                                  m.platforms.moviesanywhere || m.platforms.apple || m.platforms.fandango;
-            // MASTER GATE UPGRADE: Allow non-storefront titles to load if streaming details exist
-            return m.title && m.title.length < 120 && (hasValidLink || (m.streaming && m.streaming.trim() !== ''));
+            return m.title && (hasValidLink || (m.streaming && m.streaming.trim() !== ''));
         });
 
-        const totalMoviesCount = movies.length;
-        if (totalMoviesCount > 0) {
-            let firstValidIdx = -1;
-            let lastValidIdx = -1;
-            for (let i = 0; i < totalMoviesCount; i++) {
-                if (movies[i].timestamp > 0) {
-                    if (firstValidIdx === -1) firstValidIdx = i;
-                    lastValidIdx = i;
-                }
-            }
-
-            if (firstValidIdx === -1) {
-                const start = new Date(2011, 0, 1).getTime();
-                const end = Date.now();
-                const step = (end - start) / Math.max(1, totalMoviesCount - 1);
-                for (let i = 0; i < totalMoviesCount; i++) {
-                    movies[i].timestamp = start + i * step;
-                }
-            } else {
-                const firstValidT = movies[firstValidIdx].timestamp;
-                const lastValidT = movies[lastValidIdx].timestamp;
-
-                if (firstValidIdx > 0) {
-                    const baselineStart = new Date(2011, 0, 1).getTime();
-                    const span = firstValidT - baselineStart;
-                    const step = span / firstValidIdx;
-                    for (let i = 0; i < firstValidIdx; i++) {
-                        movies[i].timestamp = baselineStart + i * step;
-                    }
-                }
-
-                const forwardCount = totalMoviesCount - 1 - lastValidIdx;
-                if (forwardCount > 0) {
-                    const todayT = Date.now();
-                    const span = todayT - lastValidT;
-                    const step = span / (forwardCount + 1);
-                    for (let i = lastValidIdx + 1; i < totalMoviesCount; i++) {
-                        movies[i].timestamp = lastValidT + (i - lastValidIdx) * step;
-                    }
-                }
-
-                let prevValidIdx = firstValidIdx;
-                for (let i = firstValidIdx + 1; i <= lastValidIdx; i++) {
-                    if (movies[i].timestamp > 0) {
-                        if (i - prevValidIdx > 1) {
-                            const tStart = movies[prevValidIdx].timestamp;
-                            const tEnd = movies[i].timestamp;
-                            const steps = i - prevValidIdx;
-                            const step = (tEnd - tStart) / steps;
-                            for (let j = prevValidIdx + 1; j < i; j++) {
-                                movies[j].timestamp = tStart + (j - prevValidIdx) * step;
-                            }
-                        }
-                        prevValidIdx = i;
-                    }
-                }
-            }
-        }
-
-        const validDateAddedList = movies.filter(m => m.timestamp > 0);
-        
-        if (movies.length > 0) {
-            oldestMovieIndex = 0;
-        } else {
-            oldestMovieIndex = null;
-        }
-
+        const validDates = [...movies].filter(m => m.timestamp > 0);
         newestMoviesSet.clear();
-        if (validDateAddedList.length > 0) {
-            const sortedByNewest = [...validDateAddedList].sort((a,b) => (b.timestamp - a.timestamp) || (b.csvIndex - a.csvIndex));
-            sortedByNewest.slice(0, 8).forEach(m => newestMoviesSet.add(m.csvIndex));
+
+        if (validDates.length > 0) {
+            validDates.sort((a, b) => a.timestamp - b.timestamp);
+            oldestMovieIndex = validDates[0].libIndex;
+
+            const sortedNew = [...validDates].sort((a, b) => b.timestamp - a.timestamp);
+            sortedNew.slice(0, 8).forEach(m => newestMoviesSet.add(m.libIndex));
         }
+
+        // Check for new additions to trigger instant push alerts
+        checkNewMoviePushAlerts(movies);
 
         updateDropdowns();
         runFilters();
-        if (isUpdate) {
-            const counter = document.getElementById('movie-counter');
-            counter.innerHTML = `Live Sync Completed! <span style="color:#1ce783;">(New Edits Live)</span>`;
-            setTimeout(() => { counter.innerHTML = `Cinema Inventory: <span>${movies.length}</span>`; }, 4000);
-            
-            triggerToast(`Library Updated! Synced ${movies.length} films directly from your Google Sheet.`);
-        }
     }
 
-    // --- STREAMING_CHUNK: Movie layout rendering pipeline ---
-    window.renderMovies = (list) => {
+    function renderMovieGridBatch() {
         const grid = document.getElementById('movie-library-grid');
-        grid.innerHTML = '';
-        list.forEach(m => {
+        
+        if (currentFilteredList.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: #888; padding: 40px;">No movies found matching criteria.</div>';
+            return;
+        }
+
+        if (currentRenderLimit === BATCH_SIZE) {
+            grid.innerHTML = '';
+        }
+
+        const startIndex = grid.children.length;
+        const visibleSlice = currentFilteredList.slice(startIndex, currentRenderLimit);
+
+        visibleSlice.forEach(m => {
             const card = document.createElement('div');
-            
             const isTV = m.type && m.type.toLowerCase().includes('tv');
             card.className = 'movie-card' + (isTV ? ' tv-show-card' : '');
-            card.setAttribute('data-csv-index', m.csvIndex);
+            card.setAttribute('data-lib-index', m.libIndex);
             card.onclick = () => openLightbox(m);
             
             const hasEdition = m.edition && m.edition.toLowerCase() !== 'standard' && m.edition.trim() !== '';
             
             let ribbonBadgeHtml = '';
-            if (m.csvIndex === oldestMovieIndex) {
-                ribbonBadgeHtml = `<div class="status-badge badge-oldest black-outline">🏆 1st Movie</div>`;
-            } else if (newestMoviesSet.has(m.csvIndex)) {
+            if (m.libIndex === oldestMovieIndex) {
+                ribbonBadgeHtml = `<div class="status-badge badge-oldest black-outline">🏆 1st Digital</div>`;
+            } else if (newestMoviesSet.has(m.libIndex)) {
                 ribbonBadgeHtml = `<div class="status-badge badge-new black-outline">🆕 New to Library</div>`;
             }
 
@@ -1051,16 +1215,18 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 }
             }
 
+            const holidayEmoji = holidayMeta ? ` ${holidayMeta.emoji}` : '';
+
             card.innerHTML = `
                 <div class="poster-box">
                     ${ribbonBadgeHtml}
                     ${holidayBadgeHtml}
-                    <img src="${m.image}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
+                    <img src="${m.image}" alt="${m.title} Poster" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
                     ${tvBadgeHtml}
                     <div class="poster-year-badge black-outline">${m.year}</div>
                 </div>
                 <div class="movie-info">
-                    <div class="movie-title black-outline">${m.title} ${holidayMeta ? holidayMeta.emoji : ''}</div>
+                    <div class="movie-title black-outline">${m.title}${holidayEmoji}</div>
                     <div class="main-desc">${m.description || 'N/A'}</div>
                     ${ownershipHtml}
                     <div class="main-meta-row black-outline">
@@ -1073,18 +1239,27 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             `;
             grid.appendChild(card);
         });
-        document.getElementById('movie-counter').innerHTML = `Cinema Inventory: <span>${list.length}</span>`;
-    };
+    }
+
+    window.addEventListener('scroll', () => {
+        if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 800) {
+            if (currentRenderLimit < currentFilteredList.length) {
+                currentRenderLimit += BATCH_SIZE;
+                renderMovieGridBatch();
+            }
+        }
+    });
 
     window.runFilters = () => {
         const query = document.getElementById('movie-search').value.toLowerCase();
         const typeF = document.getElementById('type-select').value;
         const ratingF = document.getElementById('rating-select').value;
         const platformF = document.getElementById('platform-select').value;
+        const streamF = document.getElementById('stream-service-select').value.toLowerCase().trim();
         const holidayF = document.getElementById('holiday-select').value;
         const genreF = document.getElementById('genre-select').value;
         const collF = document.getElementById('collection-select').value;
-        const artF = document.getElementById('artist-select').value;
+        const artF = document.getElementById('artist-select').value.toLowerCase().trim();
         const sort = document.getElementById('sort-select').value;
         const queryWords = query.split(/\s+/).filter(w => w.length > 0);
 
@@ -1093,12 +1268,15 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             document.body.classList.add('bg-' + platformF);
         }
 
-        let filtered = movies.filter(m => {
+        const isFiltered = !!(query || typeF || ratingF || platformF || streamF || holidayF || genreF || collF || artF);
+
+        currentFilteredList = movies.filter(m => {
             const pool = [m.title, m.year, ...m.cast].join(' ').toLowerCase();
             const searchMatch = queryWords.length === 0 || queryWords.every(word => pool.includes(word));
             
             const typeMatch = !typeF || (typeF === 'TV' ? m.type.toLowerCase().includes('tv') : m.type.toLowerCase().includes('movie'));
             const platformMatch = !platformF || (m.platforms[platformF] && m.platforms[platformF].trim() !== '');
+            const streamMatch = !streamF || (m.streamPlatforms && m.streamPlatforms.some(sp => sp.toLowerCase() === streamF));
             const ratingMatch = !ratingF || m.videoRating === ratingF;
 
             const holidayObj = detectHoliday(m);
@@ -1106,22 +1284,32 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             
             const genreMatch = !genreF || m.genre.toLowerCase().includes(genreF.toLowerCase());
             const collMatch = !collF || m.collection === collF;
-            const artMatch = !artF || m.cast.some(a => a.toLowerCase() === artF.toLowerCase());
-            return searchMatch && typeMatch && platformMatch && ratingMatch && holidayMatch && genreMatch && collMatch && artMatch;
+            const artMatch = !artF || m.cast.some(a => a.toLowerCase() === artF || a.toLowerCase().includes(artF));
+            
+            return searchMatch && typeMatch && platformMatch && streamMatch && ratingMatch && holidayMatch && genreMatch && collMatch && artMatch;
         });
 
         if (collF && sort === 'newest') {
-            filtered.sort((a,b) => (parseInt(a.year)||0) - (parseInt(b.year)||0) || a.title.localeCompare(b.title));
+            currentFilteredList.sort((a,b) => (parseInt(a.year)||0) - (parseInt(b.year)||0) || a.title.localeCompare(b.title));
         } else {
-            if (sort === 'newest') filtered.sort((a,b) => (b.timestamp - a.timestamp) || (b.csvIndex - a.csvIndex));
-            else if (sort === 'oldest') filtered.sort((a,b) => (a.timestamp - b.timestamp) || (a.csvIndex - b.csvIndex));
-            else if (sort === 'az') filtered.sort((a,b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
-            else if (sort === 'za') filtered.sort((a,b) => b.title.toLowerCase().localeCompare(a.title.toLowerCase()));
-            else if (sort === 'new-old') filtered.sort((a,b) => (parseInt(b.year)||0) - (parseInt(a.year)||0));
-            else if (sort === 'old-new') filtered.sort((a,b) => (parseInt(b.year)||0) - (parseInt(a.year)||0));
+            if (sort === 'newest') currentFilteredList.sort((a,b) => (b.timestamp - a.timestamp) || a.title.localeCompare(b.title));
+            else if (sort === 'oldest') currentFilteredList.sort((a,b) => (a.timestamp - b.timestamp) || a.title.localeCompare(b.title));
+            else if (sort === 'az') currentFilteredList.sort((a,b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
+            else if (sort === 'za') currentFilteredList.sort((a,b) => b.title.toLowerCase().localeCompare(a.title.toLowerCase()));
+            else if (sort === 'new-old') currentFilteredList.sort((a,b) => (parseInt(b.year)||0) - (parseInt(a.year)||0));
+            else if (sort === 'old-new') currentFilteredList.sort((a,b) => (parseInt(a.year)||0) - (parseInt(b.year)||0));
         }
-        renderMovies(filtered);
-        buildSidebar(filtered, sort);
+
+        const counter = document.getElementById('movie-counter');
+        if (isFiltered) {
+            counter.innerHTML = `Filtered Inventory: <span>${currentFilteredList.length}</span> / <span>${movies.length}</span>`;
+        } else {
+            counter.innerHTML = `Cinema Inventory: <span>${movies.length}</span>`;
+        }
+
+        currentRenderLimit = BATCH_SIZE;
+        renderMovieGridBatch();
+        buildSidebar(currentFilteredList, sort);
     };
 
     window.filterByActor = (actorName) => {
@@ -1130,6 +1318,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         document.getElementById('genre-select').value = '';
         document.getElementById('collection-select').value = '';
         document.getElementById('holiday-select').value = '';
+        document.getElementById('stream-service-select').value = '';
         document.getElementById('artist-select').value = actorName;
         
         if (typeof gtag === 'function') {
@@ -1143,149 +1332,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         document.getElementById('controls-container').scrollIntoView({ behavior: 'smooth' });
     };
 
-    // --- STREAMING_CHUNK: Integrating automated TV tracker API... ---
-    async function buildTvTracker(m) {
-        const bingeContainer = document.getElementById('lb-tv-binge-container');
-        if (!bingeContainer) return;
-
-        bingeContainer.innerHTML = `
-            <div class="binge-header black-outline">📺 SERIES WATCHLIST COMPANION</div>
-            <div style="text-align: center; color: #aaa; font-size: 11px; padding: 15px;">
-                <span class="loading-spinner"></span> Loading episode directory...
-            </div>
-        `;
-
-        try {
-            let lookupUrl = '';
-            let rawId = m.imdbId ? m.imdbId.trim() : '';
-
-            if (rawId.toLowerCase().startsWith('tvdb-')) {
-                const cleanTvdbId = rawId.replace(/tvdb-/i, '').trim();
-                lookupUrl = `https://api.tvmaze.com/lookup/shows?thetvdb=${cleanTvdbId}`;
-            } else if (rawId.startsWith('tt')) {
-                lookupUrl = `https://api.tvmaze.com/lookup/shows?imdb=${rawId}`;
-            } else if (/^\d+$/.test(rawId)) {
-                lookupUrl = `https://api.tvmaze.com/lookup/shows?thetvdb=${rawId}`;
-            } else {
-                lookupUrl = `https://api.tvmaze.com/singlesearch/shows?q=${encodeURIComponent(m.title)}`;
-            }
-
-            const showResponse = await fetch(lookupUrl);
-            if (!showResponse.ok) throw new Error('Could not resolve show ID');
-            const showData = await showResponse.json();
-
-            const epResponse = await fetch(`https://api.tvmaze.com/shows/${showData.id}/episodes`);
-            if (!epResponse.ok) throw new Error('Could not fetch episode list');
-            const episodes = await epResponse.json();
-
-            if (!episodes || episodes.length === 0) {
-                throw new Error('No cataloged episodes available');
-            }
-
-            const storageKey = `ww_binge_${m.title.replace(/[^a-zA-Z0-9]/g, '_')}_${m.year}`;
-            let progress = JSON.parse(localStorage.getItem(storageKey) || '{"completed":[]}');
-            
-            let listHtml = '';
-            episodes.forEach(ep => {
-                const epIdentifier = `${ep.season}x${ep.number}`;
-                const checked = progress.completed.includes(epIdentifier) ? 'checked' : '';
-                const epTitle = ep.name || `Episode ${ep.number}`;
-                listHtml += `
-                    <label class="binge-ep-row black-outline" title="${epTitle} (Aired: ${ep.airdate || 'N/A'})">
-                        <input type="checkbox" class="binge-checkbox" data-ep="${epIdentifier}" ${checked} 
-                               onchange="updateBingeProgress('${storageKey}', '${epIdentifier}', this, ${episodes.length})">
-                        <span>S${ep.season}E${ep.number} - ${epTitle}</span>
-                    </label>
-                `;
-            });
-
-            bingeContainer.innerHTML = `
-                <div class="binge-header black-outline">📺 SERIES WATCHLIST COMPANION</div>
-                <div class="binge-progress-bar-wrapper">
-                    <div class="binge-progress-bar" id="binge-progress-bar-el" style="width: 0%;"></div>
-                </div>
-                <div class="binge-progress-text" id="binge-progress-text-el">0 of ${episodes.length} complete</div>
-                <div class="binge-episode-list">
-                    ${listHtml}
-                </div>
-            `;
-
-            window.updateBingeProgress = function(key, epId, element, totalCount) {
-                let prog = JSON.parse(localStorage.getItem(key) || '{"completed":[]}');
-                if (element.checked) {
-                    if (!prog.completed.includes(epId)) prog.completed.push(epId);
-                } else {
-                    prog.completed = prog.completed.filter(item => item !== epId);
-                }
-                localStorage.setItem(key, JSON.stringify(prog));
-                setBingeUI(prog.completed.length, totalCount);
-            };
-
-            function setBingeUI(count, total) {
-                const percent = total > 0 ? (count / total) * 100 : 0;
-                const bar = document.getElementById('binge-progress-bar-el');
-                const txt = document.getElementById('binge-progress-text-el');
-                if (bar) bar.style.width = percent + '%';
-                if (txt) txt.textContent = `${count} of ${total} episodes watched (${Math.round(percent)}%)`;
-            }
-
-            setBingeUI(progress.completed.length, episodes.length);
-
-        } catch (err) {
-            console.warn("TVMaze API Lookup failure, falling back to mock engine", err);
-            renderFallbackTracker(m, bingeContainer);
-        }
-    }
-
-    function renderFallbackTracker(m, bingeContainer) {
-        const storageKey = `ww_binge_${m.title.replace(/[^a-zA-Z0-9]/g, '_')}_${m.year}`;
-        let progress = JSON.parse(localStorage.getItem(storageKey) || '{"completed":[]}');
-        
-        let listHtml = '';
-        for(let i = 1; i <= 8; i++) {
-            const checked = progress.completed.includes(i) ? 'checked' : '';
-            listHtml += `
-                <label class="binge-ep-row black-outline">
-                    <input type="checkbox" class="binge-checkbox" data-ep="${i}" ${checked} onchange="updateBingeProgressFallback('${storageKey}', ${i}, this)">
-                    <span>Episode ${i}</span>
-                </label>
-            `;
-        }
-
-        bingeContainer.innerHTML = `
-            <div class="binge-header black-outline">📺 SERIES WATCHLIST COMPANION (Offline Fallback)</div>
-            <div class="binge-progress-bar-wrapper">
-                <div class="binge-progress-bar" id="binge-progress-bar-el" style="width: 0%;"></div>
-            </div>
-            <div class="binge-progress-text" id="binge-progress-text-el">0 of 8 complete</div>
-            <div class="binge-episode-list">
-                ${listHtml}
-            </div>
-        `;
-
-        window.updateBingeProgressFallback = function(key, epNum, element) {
-            let prog = JSON.parse(localStorage.getItem(key) || '{"completed":[]}');
-            if (element.checked) {
-                if (!prog.completed.includes(epNum)) prog.completed.push(epNum);
-            } else {
-                prog.completed = prog.completed.filter(item => item !== epNum);
-            }
-            localStorage.setItem(key, JSON.stringify(prog));
-            setBingeUI(prog.completed.length);
-        };
-
-        function setBingeUI(count) {
-            const percent = (count / 8) * 100;
-            const bar = document.getElementById('binge-progress-bar-el');
-            const txt = document.getElementById('binge-progress-text-el');
-            if (bar) bar.style.width = percent + '%';
-            if (txt) txt.textContent = `${count} of 8 episodes watched (${Math.round(percent)}%)`;
-        }
-
-        setBingeUI(progress.completed.length);
-    }
-
-    // --- STREAMING_CHUNK: Lightbox detail window bindings... ---
     window.openLightbox = (m) => {
         const lb = document.getElementById('movie-lightbox');
         document.getElementById('lightbox-inner').style.backgroundImage = `url('${m.image}')`;
@@ -1314,125 +1360,65 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             tvBingeBox.style.display = 'none';
         }
 
-        if (typeof gtag === 'function') {
-            gtag('event', 'view_movie_details', {
-                'movie_title': m.title,
-                'movie_year': m.year,
-                'video_rating': m.videoRating || 'N/A',
-                'streaming_availability': m.streaming || 'None',
-                'content_type': m.type || 'Movie',
-                'library_category': 'Digital Movie Purchases Catalog'
-            });
-        }
-
         const streamContainer = document.getElementById('lb-streaming');
-        let streamText = m.streaming ? m.streaming.trim() : '';
-        
-        if (!streamText || streamText.toLowerCase() === 'no free streams' || streamText.toLowerCase() === 'not streaming') {
-            streamContainer.style.display = 'none';
+        if (m.streamPlatforms && m.streamPlatforms.length > 0) {
+            streamContainer.innerText = "Available to Stream On:\n• " + m.streamPlatforms.join("\n• ");
+            streamContainer.style.display = 'block';
         } else {
-            let cleanedText = streamText.replace(/No Free Streams\s*\|\s*/gi, '').replace(/Buy\/Rent:\s*/gi, '');
-            const streamParts = cleanedText.split(/\s*[,|]\s*/).map(rawName => {
-                let s = rawName.trim();
-                if (!s) return null;
-                
-                // Exclude purchaseable platforms from the general streaming section
-                if (!isFreeOrSubscriptionStream(s)) return null;
-
-                let key = s.toLowerCase();
-                let targetUrl = null;
-                let isYouTube = false;
-                let isAppTarget = false;
-
-                const getAmzUrl = (url) => {
-                    if (!url) return null;
-                    let amzUrl = url.trim();
-                    if (amzUrl && !amzUrl.includes('moviesanywhere02-20')) {
-                        amzUrl += amzUrl.includes('?') ? '&tag=moviesanywhere02-20' : '?tag=moviesanywhere02-20';
-                    }
-                    return amzUrl;
-                };
-
-                // Precision check: evaluates direct custom database URLs; falls back cleanly to search engines on empty results
-                if ((key.includes('amazon') || key.includes('prime'))) {
-                    targetUrl = m.platforms.amazon ? getAmzUrl(m.platforms.amazon) : getStreamingSearchUrl('amazon', m.title);
-                    isAppTarget = true;
-                } else if (key.includes('youtube')) {
-                    targetUrl = m.platforms.youtube ? m.platforms.youtube : getStreamingSearchUrl('youtube', m.title);
-                    isYouTube = true;
-                } else if (key.includes('google') || key.includes('play')) {
-                    targetUrl = m.platforms.google ? m.platforms.google : getStreamingSearchUrl('google', m.title);
-                } else if (key.includes('apple') || key.includes('itunes')) {
-                    targetUrl = m.platforms.apple ? m.platforms.apple : getStreamingSearchUrl('apple', m.title);
-                    isAppTarget = true;
-                } else if (key.includes('fandango') || key.includes('vudu')) {
-                    targetUrl = m.platforms.fandango ? m.platforms.fandango : getStreamingSearchUrl('fandango', m.title);
-                } else if (key.includes('movies anywhere') || key === 'ma') {
-                    targetUrl = m.platforms.moviesanywhere ? m.platforms.moviesanywhere : getStreamingSearchUrl('moviesanywhere', m.title);
-                } else {
-                    for (const mapKey of Object.keys(streamMap)) {
-                        if (key.includes(mapKey)) {
-                            targetUrl = getStreamingSearchUrl(mapKey, m.title) || streamMap[mapKey];
-                            if (mapKey === 'youtube') isYouTube = true;
-                            if (mapKey.includes('amazon') || mapKey.includes('prime') || mapKey.includes('apple') || mapKey === 'cinemax') isAppTarget = true;
-                            break;
-                        }
-                    }
-                }
-                if (targetUrl) {
-                    if (isYouTube) return `<a href="#" onclick="playYouTube('${targetUrl}', '${m.title.replace(/'/g, "\\'")}_stream'); return false;" class="stream-link black-outline">${s}</a>`;
-                    let linkTarget = isAppTarget ? '_blank' : 'werewolf_cinema_window';
-                    
-                    let finalUrl = targetUrl;
-                    if (!targetUrl.includes('amazon.com') && !targetUrl.includes('amzn.to')) {
-                        finalUrl = appendUtm(targetUrl, m.title + '_' + s);
-                    }
-                    return `<a href="${finalUrl}" onclick="trackOutboundClick(this.href, '${s}: ${m.title.replace(/'/g, "\\'")}')" target="${linkTarget}" class="stream-link black-outline">${s}</a>`;
-                }
-                return `<span class="black-outline">${s}</span>`;
-            }).filter(Boolean);
-            
-            if (streamParts.length > 0) {
-                streamContainer.innerHTML = `Available on: ${streamParts.join(', ')}`;
-                streamContainer.style.display = 'block';
-            } else { streamContainer.style.display = 'none'; }
+            streamContainer.style.display = 'none';
         }
+
         const actorLinksHtml = m.cast.map(actor => `<span class="actor-link black-outline" onclick="filterByActor('${actor.replace(/'/g, "\\'")}')">${actor}</span>`).join(' • ');
-        document.getElementById('lb-artists').innerHTML = `<strong class="black-outline">Starring:</strong><br>${actorLinksHtml}`;
-        const hasMA = m.platforms.moviesanywhere && m.platforms.moviesanywhere.trim() !== '';
-        document.getElementById('lb-store-heading').textContent = hasMA ? "Buy / Rent / Sync" : "Buy / Rent";
+        document.getElementById('lb-artists').innerHTML = `<strong class="black-outline">Starring:</strong><br>${actorLinksHtml || 'Cast details unavailable.'}`;
+        document.getElementById('lb-description-text').textContent = m.description || 'No description available.';
+
         let btns = [];
         const p = m.platforms;
-        if (p.amazon && p.amazon.trim() !== '') {
-            let amzUrl = p.amazon.trim();
-            if (!amzUrl.includes('moviesanywhere02-20')) amzUrl += amzUrl.includes('?') ? '&tag=moviesanywhere02-20' : '?tag=moviesanywhere02-20';
-            btns.push(`<a href="${amzUrl}" onclick="trackOutboundClick(this.href, 'Amazon: ${m.title.replace(/'/g, "\\'")}')" target="_blank" class="m-link btn-amazon">Amazon</a>`);
+        if (p.amazon) {
+            const amz = resolveAppOrWebUrl(p.amazon, 'amazon');
+            btns.push(`<a href="${amz}" onclick="trackOutboundClick(this.href, 'Amazon: ${m.title.replace(/'/g, "\\'")}')" target="_blank" class="m-link btn-amazon">Amazon</a>`);
         }
-        if (p.google && p.google.trim() !== '') {
-            let googleUrl = appendUtm(p.google.trim(), m.title + '_google');
-            btns.push(`<a href="${googleUrl}" onclick="trackOutboundClick(this.href, 'Google: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="m-link btn-google">Google</a>`);
+        if (p.google) {
+            const goog = appendUtm(p.google, m.title + '_google');
+            btns.push(`<a href="${goog}" onclick="trackOutboundClick(this.href, 'Google: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="m-link btn-google">Google</a>`);
         }
-        if (p.moviesanywhere && p.moviesanywhere.trim() !== '') {
-            let maUrl = appendUtm(p.moviesanywhere.trim(), m.title + '_moviesanywhere');
-            btns.push(`<a href="${maUrl}" onclick="trackOutboundClick(this.href, 'MoviesAnywhere: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="m-link btn-moviesanywhere">MA</a>`);
+        if (p.moviesanywhere) {
+            const ma = appendUtm(p.moviesanywhere, m.title + '_moviesanywhere');
+            btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MoviesAnywhere: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="m-link btn-moviesanywhere">MA</a>`);
         }
-        if (p.apple && p.apple.trim() !== '') {
-            let appleUrl = appendUtm(p.apple.trim(), m.title + '_apple');
-            btns.push(`<a href="${appleUrl}" onclick="trackOutboundClick(this.href, 'AppleTV: ${m.title.replace(/'/g, "\\'")}')" target="_blank" class="m-link btn-apple">Apple TV</a>`);
+        if (p.apple) {
+            const app = appendUtm(p.apple, m.title + '_apple');
+            btns.push(`<a href="${app}" onclick="trackOutboundClick(this.href, 'AppleTV: ${m.title.replace(/'/g, "\\'")}')" target="_blank" class="m-link btn-apple">Apple TV</a>`);
         }
-        if (p.fandango && p.fandango.trim() !== '') {
-            let fandangoUrl = appendUtm(p.fandango.trim(), m.title + '_fandango');
-            btns.push(`<a href="${fandangoUrl}" onclick="trackOutboundClick(this.href, 'Fandango: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="m-link btn-fandango">Fandango</a>`);
+        if (p.fandango) {
+            const fan = appendUtm(p.fandango, m.title + '_fandango');
+            btns.push(`<a href="${fan}" onclick="trackOutboundClick(this.href, 'Fandango: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="m-link btn-fandango">Fandango</a>`);
         }
-        if (p.youtube && p.youtube.trim() !== '') {
+        if (p.youtube) {
             btns.push(`<button onclick="playYouTube('${p.youtube}', '${m.title.replace(/'/g, "\\'")}')" class="m-link btn-youtube">YouTube</button>`);
         }
-        document.getElementById('lb-buttons').innerHTML = btns.join('');
+
+        const storeHeading = document.getElementById('lb-store-heading');
+        const buttonBox = document.getElementById('lb-buttons');
+        
+        buttonBox.innerHTML = btns.join('');
+        if (btns.length > 0) {
+            const hasMA = p.moviesanywhere && p.moviesanywhere.trim() !== '';
+            storeHeading.textContent = hasMA ? "Buy / Rent / Sync" : "Buy / Rent";
+            storeHeading.style.display = 'block';
+        } else {
+            storeHeading.style.display = 'none';
+        }
+
         lb.classList.add('active');
         document.body.style.overflow = 'hidden';
     };
 
-    window.closeLightbox = () => { document.getElementById('movie-lightbox').classList.remove('active'); document.body.style.overflow = 'auto'; closeYouTube(); };
+    window.closeLightbox = () => { 
+        document.getElementById('movie-lightbox').classList.remove('active'); 
+        document.body.style.overflow = 'auto'; 
+        closeYouTube(); 
+    };
     
     window.playYouTube = (u, title = 'YouTube Video') => {
         const vid = u.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
@@ -1450,17 +1436,33 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         if(e) e.stopPropagation();
         const videoWrapper = document.getElementById('lb-video-wrapper');
         const iframe = document.getElementById('lb-yt-iframe');
-        if(videoWrapper && iframe) { videoWrapper.classList.remove('active'); videoWrapper.style.display = "none"; iframe.src = ""; }
+        if(videoWrapper && iframe) { 
+            videoWrapper.classList.remove('active'); 
+            videoWrapper.style.display = "none"; 
+            iframe.src = ""; 
+        }
     };
 
     function updateDropdowns() {
-        const gSet = new Set(), cSet = new Set(), aSet = new Set(), rSet = new Set();
+        const gSet = new Set(), cSet = new Set(), aSet = new Set(), rSet = new Set(), sSet = new Set();
+        
         movies.forEach(m => { 
             if(m.genre) m.genre.split(',').forEach(g => { const clean = g.trim(); if(clean) gSet.add(clean); });
             if(m.collection) cSet.add(m.collection);
-            m.cast.forEach(a => aSet.add(a));
             if(m.videoRating) rSet.add(m.videoRating.trim());
+
+            if (Array.isArray(m.cast)) {
+                m.cast.forEach(a => {
+                    const cleanA = a.trim();
+                    if (cleanA) aSet.add(cleanA);
+                });
+            }
+
+            if (m.streamPlatforms && Array.isArray(m.streamPlatforms)) {
+                m.streamPlatforms.forEach(p => sSet.add(p));
+            }
         });
+
         const fill = (id, set, label) => {
             const el = document.getElementById(id); if (!el) return;
             const cur = el.value; el.innerHTML = `<option value="">All ${label}</option>`;
@@ -1471,11 +1473,16 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             });
             el.appendChild(fragment);
         };
-        fill('genre-select', gSet, 'Genres'); fill('collection-select', cSet, 'Collections'); fill('artist-select', aSet, 'Artists'); fill('rating-select', rSet, 'Ratings');
+
+        fill('genre-select', gSet, 'Genres'); 
+        fill('collection-select', cSet, 'Collections'); 
+        fill('artist-select', aSet, 'Artists'); 
+        fill('rating-select', rSet, 'Ratings');
+        fill('stream-service-select', sSet, 'Free & Sub Streams');
     }
 
     window.resetFilters = () => { 
-        ['movie-search','type-select','rating-select','platform-select','holiday-select','genre-select','collection-select','artist-select'].forEach(id => {
+        ['movie-search','type-select','rating-select','platform-select','stream-service-select','holiday-select','genre-select','collection-select','artist-select'].forEach(id => {
             const el = document.getElementById(id);
             if (el) el.value = '';
         }); 
@@ -1483,20 +1490,63 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         runFilters(); 
     };
 
-    const startClock = () => { const update = () => { const now = new Date(); document.getElementById('header-clock').textContent = `${now.toLocaleDateString()} | ${now.toLocaleTimeString()}`; }; update(); setInterval(update, 1000); };
-    window.onload = () => { 
-        startClock(); 
-        loadCSV(); 
-        setInterval(loadCSV, 30000); 
-
-        if (typeof gtag === 'function') {
-            gtag('event', 'view_digital_library', {
-                'library_owner': 'Werewolf3788',
-                'catalog_type': 'Personal Owned Collection Directory',
-                'attribution_policy': 'Amazon Affiliate Only Monetized',
-                'library_category': 'Digital Movie Purchases Catalog'
+    function buildSidebar(filteredList, sortMode) {
+        const sidebar = document.getElementById('dynamic-nav-sidebar');
+        if (!sidebar) return;
+        sidebar.innerHTML = '';
+        
+        if (sortMode === 'az' || sortMode === 'za') {
+            const letters = ['#','A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'];
+            letters.forEach(l => {
+                const d = document.createElement('div');
+                d.className = 'nav-item';
+                d.textContent = l;
+                d.onclick = () => {
+                    const cards = document.querySelectorAll('.movie-card');
+                    for (let c of cards) {
+                        const title = c.querySelector('.movie-title').textContent.trim().toUpperCase();
+                        if ((l === '#' && /^[0-9]/.test(title)) || title.startsWith(l)) {
+                            c.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            break;
+                        }
+                    }
+                };
+                sidebar.appendChild(d);
             });
         }
+    }
+
+    function triggerToast(msg) {
+        const container = document.getElementById('toast-container');
+        if (!container) return;
+        const toast = document.createElement('div');
+        toast.className = 'toast black-outline';
+        toast.textContent = msg;
+        container.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 50);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }, 4000);
+    }
+
+    const startClock = () => { 
+        const update = () => { 
+            const now = new Date(); 
+            document.getElementById('header-clock').textContent = `${now.toLocaleDateString()} | ${now.toLocaleTimeString()}`; 
+        }; 
+        update(); 
+        setInterval(update, 1000); 
+    };
+
+    window.onload = () => { 
+        startClock(); 
+        initLiveFirebaseStream(); 
+        loadUtmLinksFromFirebase();
+
+        // Check local notification status
+        const isNotifyActive = localStorage.getItem(NOTIFY_PREF_KEY) === 'true';
+        updateNotificationUI(isNotifyActive);
     };
 })();
 </script>
