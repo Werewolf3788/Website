@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <!-- ================================================================= -->
-<!-- WEREWOLF CINEMA LIBRARY - FULL GRID RESTORED & STREAM MERGE FIX   -->
+<!-- WEREWOLF CINEMA LIBRARY - GROUPED UTM MENU & PWA APPS             -->
 <!-- Line 1: HTML Document Structure & GA4 / GTM Setup                 -->
 <!-- Line 170: CSS Styles (Responsive Layout, Badges & Lightbox)       -->
-<!-- Line 385: App Scaffolding (Header, Nav Drawer, Filters, Lightbox) -->
-<!-- Line 490: Resilient Realtime Data Merger & Filtering Engine       -->
-<!-- Date & Time (NYT 24hr): 08/25/2026 01:50:00 EDT                   -->
+<!-- Line 400: App Scaffolding (Header, Nav Drawer, Filters, Lightbox) -->
+<!-- Line 510: Live Firebase Realtime Stream & Grouped UTM Engine      -->
+<!-- Date & Time (NYT 24hr): 08/25/2026 01:58:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -50,11 +50,11 @@
     </div>
 </nav>
 
-<!-- Dynamic Navigation Drawer (UTM Links & Groups) -->
+<!-- Dynamic Navigation Drawer (Grouped UTM Links) -->
 <div id="nav-drawer-overlay" onclick="closeNavMenu()"></div>
 <div id="nav-drawer">
     <div class="drawer-header">
-        <div class="drawer-title black-outline">⚡ NAVIGATION & LINKS</div>
+        <div class="drawer-title black-outline">⚡ NAVIGATION & DIRECTORY</div>
         <button class="drawer-close black-outline" onclick="closeNavMenu()">✕</button>
     </div>
     
@@ -66,9 +66,9 @@
         </div>
     </div>
 
-    <div class="drawer-section-label">🔗 QUICK DIRECTORY & UTM LINKS</div>
+    <div class="drawer-section-label">📂 FEATURED DIRECTORY & LINKS</div>
     <div id="utm-links-container">
-        <div class="loading-spinner"></div> Loading links...
+        <div class="loading-spinner"></div> Loading menu links...
     </div>
 </div>
 
@@ -291,8 +291,8 @@ body {
 #nav-drawer {
     position: fixed;
     top: 0;
-    left: -320px;
-    width: 300px;
+    left: -330px;
+    width: 320px;
     height: 100vh;
     background: #0d0d12;
     border-right: 2px solid var(--accent-red);
@@ -328,16 +328,16 @@ body {
 .notify-control-row { display: flex; flex-direction: column; gap: 8px; }
 #drawer-notify-desc { font-size: 11px; color: #aaa; }
 
-/* UTM Links Accordion & Single Links */
-.utm-folder-wrapper { margin-bottom: 8px; }
-.utm-folder-btn {
+/* Grouped UTM Links Folder Accordion */
+.utm-group-box { margin-bottom: 10px; }
+.utm-group-btn {
     width: 100%;
     min-height: 44px;
     background: #14141e;
     color: #ffd166;
     border: 1px solid #28283a;
-    border-radius: 6px;
-    padding: 8px 12px;
+    border-radius: 8px;
+    padding: 10px 14px;
     font-size: 13px;
     font-weight: 800;
     text-align: left;
@@ -345,33 +345,46 @@ body {
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
+    transition: 0.2s;
 }
-.utm-folder-content {
+.utm-group-btn:hover { border-color: var(--accent-red); background: #1c1c28; }
+.utm-group-items {
     display: none;
     flex-direction: column;
-    background: #08080c;
+    gap: 4px;
+    background: #09090e;
     border-left: 2px solid var(--accent-red);
     margin-left: 10px;
-    padding: 6px 0;
+    padding: 6px 0 6px 8px;
 }
-.utm-folder-content.open { display: flex; }
-.utm-link-item {
-    padding: 10px 14px;
-    color: #eee;
+.utm-group-items.open { display: flex; }
+
+.utm-item-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    color: #ddd;
     text-decoration: none;
     font-size: 13px;
     font-weight: 700;
-    display: flex;
-    align-items: center;
+    border-radius: 6px;
     min-height: 44px;
-    border-radius: 4px;
     transition: 0.2s;
 }
-.utm-link-item:hover { background: #1c1c28; color: #ff0000; }
-.utm-single-item {
+.utm-item-link:hover { background: #1f1f2e; color: #ff0000; }
+.utm-item-img {
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    object-fit: cover;
+    background: #222;
+    flex-shrink: 0;
+}
+.utm-single-link {
     background: #14141e;
     border: 1px solid #28283a;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 h2, #cinema-logo { font-size: 30px !important; text-align: center; width: 100%; }
@@ -666,7 +679,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
 <script>
 // =========================================================
-// JAVASCRIPT APP LOGIC & MERGING ENGINE (Line 490)         
+// JAVASCRIPT APP LOGIC & GROUPED UTM ENGINE (Line 510)     
 // =========================================================
 (function() {
     let moviesMap = {};
@@ -718,6 +731,9 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         }
     };
 
+    /**
+     * Dynamically organizes and sorts /utm_links by its "group" attribute
+     */
     async function loadUtmLinksFromFirebase() {
         const container = document.getElementById('utm-links-container');
         try {
@@ -725,57 +741,96 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             if (!res.ok) throw new Error("Could not fetch UTM links");
             const data = await res.json();
             
-            if (!data) {
+            if (!data || typeof data !== 'object') {
                 container.innerHTML = '<div style="color:#666; font-size:12px;">No links configured.</div>';
                 return;
             }
 
-            let html = '';
-            let folderIndex = 0;
+            // Organize entries into groups
+            const grouped = {};
+            const ungrouped = [];
 
             Object.keys(data).forEach(key => {
                 const item = data[key];
-                
-                if (typeof item === 'object' && item !== null && !item.url) {
-                    folderIndex++;
-                    const folderId = `utm-folder-${folderIndex}`;
-                    let subLinksHtml = '';
-                    
-                    Object.keys(item).forEach(subKey => {
-                        const sub = item[subKey];
-                        const subTitle = sub.title || subKey;
-                        const subUrl = typeof sub === 'string' ? sub : (sub.url || '#');
-                        subLinksHtml += `
-                            <a href="${subUrl}" target="_blank" rel="noopener noreferrer" class="utm-link-item" onclick="trackOutboundClick('${subUrl}', 'Drawer Link: ${subTitle}')">
-                                🔗 ${subTitle}
+                if (!item || typeof item !== 'object') return;
+
+                const groupName = (item.group || '').trim();
+                const linkObj = {
+                    key: key,
+                    title: item.title || item.campaign || key,
+                    url: item.utmUrl || item.url || '#',
+                    image: item.imageUrl || '',
+                    group: groupName
+                };
+
+                if (groupName) {
+                    if (!grouped[groupName]) grouped[groupName] = [];
+                    grouped[groupName].push(linkObj);
+                } else {
+                    ungrouped.push(linkObj);
+                }
+            });
+
+            let html = '';
+            let folderIndex = 0;
+
+            // Render Accordion Folders for Groups
+            Object.keys(grouped).sort().forEach(groupName => {
+                const groupItems = grouped[groupName];
+                folderIndex++;
+                const folderId = `utm-group-folder-${folderIndex}`;
+
+                if (groupItems.length === 1) {
+                    // Single item in group rendered as a clean single link
+                    const item = groupItems[0];
+                    const imgTag = item.image ? `<img src="${item.image}" class="utm-item-img" alt="" onerror="this.style.display='none'">` : '🌐';
+                    html += `
+                        <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="utm-item-link utm-single-link black-outline" onclick="trackOutboundClick('${item.url}', 'Drawer Link: ${item.title}')">
+                            ${imgTag}
+                            <span>${item.title} <small style="color:#888; font-size:10px;">(${groupName})</small></span>
+                        </a>
+                    `;
+                } else {
+                    // Multi-item group rendered as a folder dropdown
+                    let itemsHtml = '';
+                    groupItems.forEach(item => {
+                        const imgTag = item.image ? `<img src="${item.image}" class="utm-item-img" alt="" onerror="this.style.display='none'">` : '🔗';
+                        itemsHtml += `
+                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="utm-item-link" onclick="trackOutboundClick('${item.url}', 'Drawer Link: ${item.title}')">
+                                ${imgTag}
+                                <span>${item.title}</span>
                             </a>
                         `;
                     });
 
                     html += `
-                        <div class="utm-folder-wrapper">
-                            <button class="utm-folder-btn black-outline" onclick="toggleUtmFolder('${folderId}', this)">
-                                <span>📁 ${key}</span>
+                        <div class="utm-group-box">
+                            <button class="utm-group-btn black-outline" onclick="toggleUtmFolder('${folderId}', this)">
+                                <span>📁 ${groupName} <small style="color:#888; font-size:11px;">(${groupItems.length})</small></span>
                                 <span class="folder-arrow">▼</span>
                             </button>
-                            <div id="${folderId}" class="utm-folder-content">
-                                ${subLinksHtml}
+                            <div id="${folderId}" class="utm-group-items">
+                                ${itemsHtml}
                             </div>
                         </div>
-                    `;
-                } else {
-                    const title = item.title || key;
-                    const url = typeof item === 'string' ? item : (item.url || '#');
-                    html += `
-                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="utm-link-item utm-single-item black-outline" onclick="trackOutboundClick('${url}', 'Drawer Link: ${title}')">
-                            🌐 ${title}
-                        </a>
                     `;
                 }
             });
 
-            container.innerHTML = html;
+            // Render Standalone Ungrouped Links
+            ungrouped.forEach(item => {
+                const imgTag = item.image ? `<img src="${item.image}" class="utm-item-img" alt="" onerror="this.style.display='none'">` : '🌐';
+                html += `
+                    <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="utm-item-link utm-single-link black-outline" onclick="trackOutboundClick('${item.url}', 'Drawer Link: ${item.title}')">
+                        ${imgTag}
+                        <span>${item.title}</span>
+                    </a>
+                `;
+            });
+
+            container.innerHTML = html || '<div style="color:#666; font-size:12px;">No active links.</div>';
         } catch (e) {
+            console.error("UTM link fetch failure: ", e);
             container.innerHTML = '<div style="color:#ef233c; font-size:12px;">Could not load links.</div>';
         }
     }
@@ -1022,14 +1077,10 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         return 0;
     }
 
-    /**
-     * Resilient Data Fetch & Continuous SSE Stream Listener
-     */
     async function initLiveFirebaseStream() {
         const syncDot = document.getElementById('sync-dot');
         const syncText = document.getElementById('sync-text');
 
-        // Check Local Storage Cache First for immediate 0ms load
         const cachedData = localStorage.getItem(CACHE_STORAGE_KEY);
         if (cachedData) {
             try {
@@ -1041,7 +1092,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             } catch (err) {}
         }
 
-        // 1. Direct REST Fetch to guarantee all 1,000+ movies populate immediately
         try {
             const res = await fetch(FIREBASE_ENDPOINT);
             if (res.ok) {
@@ -1063,7 +1113,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             }
         }
 
-        // 2. Continuous Realtime SSE Stream (merges updates without overwriting full collection)
         try {
             const eventSource = new EventSource(FIREBASE_ENDPOINT);
             
@@ -1075,10 +1124,8 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                         const payload = parsed.data;
 
                         if (path === '/' && payload && typeof payload === 'object') {
-                            // Full Database Snapshot
                             moviesMap = payload;
                         } else if (path.startsWith('/') && payload && typeof payload === 'object') {
-                            // Single Movie Update (Merge into Dictionary)
                             const movieKey = path.substring(1).split('/')[0];
                             if (movieKey) {
                                 moviesMap[movieKey] = Object.assign({}, moviesMap[movieKey] || {}, payload);
@@ -1093,9 +1140,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         } catch (e) {}
     }
 
-    /**
-     * Converts the persistent dictionary to an array and renders the full gallery
-     */
     function rebuildMoviesArray(saveCache = true) {
         if (!moviesMap || typeof moviesMap !== 'object') return;
 
