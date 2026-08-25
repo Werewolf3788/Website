@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <!-- ================================================================= -->
-<!-- WEREWOLF CINEMA LIBRARY - GROUPED UTM MENU & PWA APPS             -->
+<!-- WEREWOLF CINEMA LIBRARY - LIVE UTM STREAM & PWA NAVIGATION        -->
 <!-- Line 1: HTML Document Structure & GA4 / GTM Setup                 -->
 <!-- Line 170: CSS Styles (Responsive Layout, Badges & Lightbox)       -->
 <!-- Line 400: App Scaffolding (Header, Nav Drawer, Filters, Lightbox) -->
-<!-- Line 510: Live Firebase Realtime Stream & Grouped UTM Engine      -->
-<!-- Date & Time (NYT 24hr): 08/25/2026 01:58:00 EDT                   -->
+<!-- Line 510: Live Realtime Firebase Sync Engine (Movies + UTM Menu)  -->
+<!-- Date & Time (NYT 24hr): 08/25/2026 02:25:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -50,7 +50,7 @@
     </div>
 </nav>
 
-<!-- Dynamic Navigation Drawer (Grouped UTM Links) -->
+<!-- Dynamic Navigation Drawer (Live Grouped UTM Links) -->
 <div id="nav-drawer-overlay" onclick="closeNavMenu()"></div>
 <div id="nav-drawer">
     <div class="drawer-header">
@@ -66,9 +66,9 @@
         </div>
     </div>
 
-    <div class="drawer-section-label">📂 FEATURED DIRECTORY & LINKS</div>
+    <div class="drawer-section-label">📂 LIVE LINK DIRECTORY</div>
     <div id="utm-links-container">
-        <div class="loading-spinner"></div> Loading menu links...
+        <div class="loading-spinner"></div> Connecting live menu feed...
     </div>
 </div>
 
@@ -679,12 +679,13 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
 <script>
 // =========================================================
-// JAVASCRIPT APP LOGIC & GROUPED UTM ENGINE (Line 510)     
+// JAVASCRIPT APP LOGIC & LIVE REALTIME ENGINE (Line 510)   
 // =========================================================
 (function() {
     let moviesMap = {};
     let movies = [];
     let currentFilteredList = [];
+    let utmLinksMap = {};
     
     // Batch Pagination Configurations (60 Cards initially, then append 60 on scroll)
     const BATCH_SIZE = 60;
@@ -732,107 +733,135 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     };
 
     /**
-     * Dynamically organizes and sorts /utm_links by its "group" attribute
+     * Initializes a Live SSE Realtime Connection for the Navigation Drawer (/utm_links)
      */
-    async function loadUtmLinksFromFirebase() {
-        const container = document.getElementById('utm-links-container');
+    function initLiveUtmStream() {
+        // 1. Initial REST Fetch
+        fetch(FIREBASE_UTM_ENDPOINT)
+            .then(res => res.json())
+            .then(data => {
+                if (data && typeof data === 'object') {
+                    utmLinksMap = data;
+                    renderLiveUtmLinks();
+                }
+            })
+            .catch(err => console.error("Error fetching UTM links:", err));
+
+        // 2. Persistent SSE Listener for Live Updates
         try {
-            const res = await fetch(FIREBASE_UTM_ENDPOINT);
-            if (!res.ok) throw new Error("Could not fetch UTM links");
-            const data = await res.json();
-            
-            if (!data || typeof data !== 'object') {
-                container.innerHTML = '<div style="color:#666; font-size:12px;">No links configured.</div>';
-                return;
+            const utmEventSource = new EventSource(FIREBASE_UTM_ENDPOINT);
+            utmEventSource.addEventListener('put', function(e) {
+                try {
+                    const parsed = JSON.parse(e.data);
+                    if (parsed) {
+                        const path = parsed.path || '/';
+                        const payload = parsed.data;
+
+                        if (path === '/' && payload && typeof payload === 'object') {
+                            utmLinksMap = payload;
+                        } else if (path.startsWith('/') && payload !== undefined) {
+                            const groupKey = path.substring(1).split('/')[0];
+                            if (groupKey) {
+                                utmLinksMap[groupKey] = payload;
+                            }
+                        }
+                        renderLiveUtmLinks();
+                    }
+                } catch (err) {
+                    console.error("Live UTM SSE parse error:", err);
+                }
+            });
+        } catch (e) {}
+    }
+
+    /**
+     * Parses Firebase Schema Nodes: Discord, Entertainment, Game, Home, Other, PlayStation_Trophy_Card, User
+     */
+    function renderLiveUtmLinks() {
+        const container = document.getElementById('utm-links-container');
+        if (!container || !utmLinksMap || typeof utmLinksMap !== 'object') return;
+
+        const groupKeys = Object.keys(utmLinksMap).sort();
+        if (groupKeys.length === 0) {
+            container.innerHTML = '<div style="color:#666; font-size:12px;">No links configured.</div>';
+            return;
+        }
+
+        let html = '';
+        let folderIndex = 0;
+
+        groupKeys.forEach(groupName => {
+            const groupNode = utmLinksMap[groupName];
+            if (!groupNode) return;
+
+            let itemsList = [];
+
+            // Handle Array of items [0, 1, 2...] or Object Map
+            if (Array.isArray(groupNode)) {
+                itemsList = groupNode.filter(Boolean);
+            } else if (typeof groupNode === 'object') {
+                // If it's a single link object
+                if (groupNode.utmUrl || groupNode.url) {
+                    itemsList = [groupNode];
+                } else {
+                    // Object with multiple sub-keys
+                    Object.keys(groupNode).forEach(k => {
+                        if (groupNode[k] && typeof groupNode[k] === 'object') {
+                            itemsList.push(groupNode[k]);
+                        }
+                    });
+                }
             }
 
-            // Organize entries into groups
-            const grouped = {};
-            const ungrouped = [];
+            const cleanGroupName = groupName.replace(/_/g, ' ');
 
-            Object.keys(data).forEach(key => {
-                const item = data[key];
-                if (!item || typeof item !== 'object') return;
+            if (itemsList.length === 1) {
+                // Single Standalone Link
+                const item = itemsList[0];
+                const title = item.title || item.campaign || cleanGroupName;
+                const url = item.utmUrl || item.url || '#';
+                const imgTag = item.imageUrl ? `<img src="${item.imageUrl}" class="utm-item-img" alt="" onerror="this.style.display='none'">` : '🌐';
 
-                const groupName = (item.group || '').trim();
-                const linkObj = {
-                    key: key,
-                    title: item.title || item.campaign || key,
-                    url: item.utmUrl || item.url || '#',
-                    image: item.imageUrl || '',
-                    group: groupName
-                };
-
-                if (groupName) {
-                    if (!grouped[groupName]) grouped[groupName] = [];
-                    grouped[groupName].push(linkObj);
-                } else {
-                    ungrouped.push(linkObj);
-                }
-            });
-
-            let html = '';
-            let folderIndex = 0;
-
-            // Render Accordion Folders for Groups
-            Object.keys(grouped).sort().forEach(groupName => {
-                const groupItems = grouped[groupName];
-                folderIndex++;
-                const folderId = `utm-group-folder-${folderIndex}`;
-
-                if (groupItems.length === 1) {
-                    // Single item in group rendered as a clean single link
-                    const item = groupItems[0];
-                    const imgTag = item.image ? `<img src="${item.image}" class="utm-item-img" alt="" onerror="this.style.display='none'">` : '🌐';
-                    html += `
-                        <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="utm-item-link utm-single-link black-outline" onclick="trackOutboundClick('${item.url}', 'Drawer Link: ${item.title}')">
-                            ${imgTag}
-                            <span>${item.title} <small style="color:#888; font-size:10px;">(${groupName})</small></span>
-                        </a>
-                    `;
-                } else {
-                    // Multi-item group rendered as a folder dropdown
-                    let itemsHtml = '';
-                    groupItems.forEach(item => {
-                        const imgTag = item.image ? `<img src="${item.image}" class="utm-item-img" alt="" onerror="this.style.display='none'">` : '🔗';
-                        itemsHtml += `
-                            <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="utm-item-link" onclick="trackOutboundClick('${item.url}', 'Drawer Link: ${item.title}')">
-                                ${imgTag}
-                                <span>${item.title}</span>
-                            </a>
-                        `;
-                    });
-
-                    html += `
-                        <div class="utm-group-box">
-                            <button class="utm-group-btn black-outline" onclick="toggleUtmFolder('${folderId}', this)">
-                                <span>📁 ${groupName} <small style="color:#888; font-size:11px;">(${groupItems.length})</small></span>
-                                <span class="folder-arrow">▼</span>
-                            </button>
-                            <div id="${folderId}" class="utm-group-items">
-                                ${itemsHtml}
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-
-            // Render Standalone Ungrouped Links
-            ungrouped.forEach(item => {
-                const imgTag = item.image ? `<img src="${item.image}" class="utm-item-img" alt="" onerror="this.style.display='none'">` : '🌐';
                 html += `
-                    <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="utm-item-link utm-single-link black-outline" onclick="trackOutboundClick('${item.url}', 'Drawer Link: ${item.title}')">
+                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="utm-item-link utm-single-link black-outline" onclick="trackOutboundClick('${url}', 'Drawer Link: ${title}')">
                         ${imgTag}
-                        <span>${item.title}</span>
+                        <span>${title}</span>
                     </a>
                 `;
-            });
+            } else if (itemsList.length > 1) {
+                // Multi-item Folder Accordion
+                folderIndex++;
+                const folderId = `utm-folder-node-${folderIndex}`;
+                let subLinksHtml = '';
 
-            container.innerHTML = html || '<div style="color:#666; font-size:12px;">No active links.</div>';
-        } catch (e) {
-            console.error("UTM link fetch failure: ", e);
-            container.innerHTML = '<div style="color:#ef233c; font-size:12px;">Could not load links.</div>';
-        }
+                itemsList.forEach(item => {
+                    const title = item.title || item.campaign || 'Link';
+                    const url = item.utmUrl || item.url || '#';
+                    const imgTag = item.imageUrl ? `<img src="${item.imageUrl}" class="utm-item-img" alt="" onerror="this.style.display='none'">` : '🔗';
+
+                    subLinksHtml += `
+                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="utm-item-link" onclick="trackOutboundClick('${url}', 'Drawer Link: ${title}')">
+                            ${imgTag}
+                            <span>${title}</span>
+                        </a>
+                    `;
+                });
+
+                html += `
+                    <div class="utm-group-box">
+                        <button class="utm-group-btn black-outline" onclick="toggleUtmFolder('${folderId}', this)">
+                            <span>📁 ${cleanGroupName} <small style="color:#888; font-size:11px;">(${itemsList.length})</small></span>
+                            <span class="folder-arrow">▼</span>
+                        </button>
+                        <div id="${folderId}" class="utm-group-items">
+                            ${subLinksHtml}
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        container.innerHTML = html || '<div style="color:#666; font-size:12px;">No active links.</div>';
     }
 
     function updateNotificationUI(isEnabled) {
@@ -1125,7 +1154,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
                         if (path === '/' && payload && typeof payload === 'object') {
                             moviesMap = payload;
-                        } else if (path.startsWith('/') && payload && typeof payload === 'object') {
+                        } else if (path.startsWith('/') && payload !== undefined) {
                             const movieKey = path.substring(1).split('/')[0];
                             if (movieKey) {
                                 moviesMap[movieKey] = Object.assign({}, moviesMap[movieKey] || {}, payload);
@@ -1606,7 +1635,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     window.onload = () => { 
         startClock(); 
         initLiveFirebaseStream(); 
-        loadUtmLinksFromFirebase();
+        initLiveUtmStream();
 
         const isNotifyActive = localStorage.getItem(NOTIFY_PREF_KEY) === 'true';
         updateNotificationUI(isNotifyActive);
