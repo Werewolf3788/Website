@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <!-- ================================================================= -->
-<!-- WEREWOLF CINEMA LIBRARY - FIXED FIREBASE STREAM LOADER            -->
+<!-- WEREWOLF CINEMA LIBRARY - FULL GRID RESTORED & STREAM MERGE FIX   -->
 <!-- Line 1: HTML Document Structure & GA4 / GTM Setup                 -->
 <!-- Line 170: CSS Styles (Responsive Layout, Badges & Lightbox)       -->
 <!-- Line 385: App Scaffolding (Header, Nav Drawer, Filters, Lightbox) -->
-<!-- Line 490: Live Firebase Realtime Stream & Progressive Engine      -->
-<!-- Date & Time (NYT 24hr): 08/25/2026 01:38:00 EDT                   -->
+<!-- Line 490: Resilient Realtime Data Merger & Filtering Engine       -->
+<!-- Date & Time (NYT 24hr): 08/25/2026 01:50:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -58,7 +58,6 @@
         <button class="drawer-close black-outline" onclick="closeNavMenu()">✕</button>
     </div>
     
-    <!-- Notification Settings Control Panel inside Drawer -->
     <div class="drawer-notify-box">
         <div class="drawer-section-label">🔔 New Movie Notifications</div>
         <div class="notify-control-row">
@@ -667,9 +666,10 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
 <script>
 // =========================================================
-// JAVASCRIPT APP LOGIC & PROGRESSIVE BATCH ENGINE (Line 490) 
+// JAVASCRIPT APP LOGIC & MERGING ENGINE (Line 490)         
 // =========================================================
 (function() {
+    let moviesMap = {};
     let movies = [];
     let currentFilteredList = [];
     
@@ -687,10 +687,8 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     let newestMoviesSet = new Set();
     const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
-    // Blacklist digital stores from free/subscription streaming lists
     const EXCLUDED_STREAMERS = /amazon video|apple tv store|itunes|google play movies|google play|youtube|fandango at home|fandango|vudu|buy\/rent|check apps|no free streams|spectrum on demand|amc\+\s*amazon channel|justwatch tv|vudu free/i;
 
-    // --- PWA SERVICE WORKER REGISTRATION ---
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
             navigator.serviceWorker.register('sw.js')
@@ -699,7 +697,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         });
     }
 
-    // --- DRAWER & UTM FOLDER MANAGEMENT ---
     window.toggleNavMenu = () => {
         document.getElementById('nav-drawer').classList.add('active');
         document.getElementById('nav-drawer-overlay').classList.add('active');
@@ -779,12 +776,10 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
             container.innerHTML = html;
         } catch (e) {
-            console.error("UTM link fetch failure: ", e);
             container.innerHTML = '<div style="color:#ef233c; font-size:12px;">Could not load links.</div>';
         }
     }
 
-    // --- PUSH NOTIFICATION ENGINE ---
     function updateNotificationUI(isEnabled) {
         const statusText = document.getElementById('notify-status-text');
         const bellBtn = document.getElementById('notify-toggle-btn');
@@ -1028,7 +1023,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     }
 
     /**
-     * Resilient Firebase Realtime Database Data Loader (REST First, SSE Streaming Second)
+     * Resilient Data Fetch & Continuous SSE Stream Listener
      */
     async function initLiveFirebaseStream() {
         const syncDot = document.getElementById('sync-dot');
@@ -1038,17 +1033,22 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         const cachedData = localStorage.getItem(CACHE_STORAGE_KEY);
         if (cachedData) {
             try {
-                processFirebasePayload(JSON.parse(cachedData), false);
+                const parsedCache = JSON.parse(cachedData);
+                if (parsedCache && Object.keys(parsedCache).length > 0) {
+                    moviesMap = parsedCache;
+                    rebuildMoviesArray(false);
+                }
             } catch (err) {}
         }
 
-        // 1. Direct REST Fetch to guarantee initial load without SSE parsing locks
+        // 1. Direct REST Fetch to guarantee all 1,000+ movies populate immediately
         try {
             const res = await fetch(FIREBASE_ENDPOINT);
             if (res.ok) {
                 const data = await res.json();
-                if (data) {
-                    processFirebasePayload(data, true);
+                if (data && typeof data === 'object') {
+                    moviesMap = data;
+                    rebuildMoviesArray(true);
                     if (syncDot && syncText) {
                         syncDot.className = 'dot-synced';
                         syncText.textContent = 'Live Firebase Realtime Stream Active';
@@ -1063,7 +1063,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             }
         }
 
-        // 2. Persistent EventSource SSE Listener for background live updates
+        // 2. Continuous Realtime SSE Stream (merges updates without overwriting full collection)
         try {
             const eventSource = new EventSource(FIREBASE_ENDPOINT);
             
@@ -1071,11 +1071,20 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 try {
                     const parsed = JSON.parse(e.data);
                     if (parsed) {
-                        // Firebase SSE root updates provide { path: "/", data: { ... } }
-                        const payload = (parsed.path === "/" || !parsed.path) ? parsed.data : parsed;
-                        if (payload && typeof payload === 'object') {
-                            processFirebasePayload(payload, true);
+                        const path = parsed.path || '/';
+                        const payload = parsed.data;
+
+                        if (path === '/' && payload && typeof payload === 'object') {
+                            // Full Database Snapshot
+                            moviesMap = payload;
+                        } else if (path.startsWith('/') && payload && typeof payload === 'object') {
+                            // Single Movie Update (Merge into Dictionary)
+                            const movieKey = path.substring(1).split('/')[0];
+                            if (movieKey) {
+                                moviesMap[movieKey] = Object.assign({}, moviesMap[movieKey] || {}, payload);
+                            }
                         }
+                        rebuildMoviesArray(true);
                     }
                 } catch (err) {
                     console.error("Firebase SSE parsing error: ", err);
@@ -1084,18 +1093,21 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         } catch (e) {}
     }
 
-    function processFirebasePayload(dataObj, saveCache = true) {
-        if (!dataObj || typeof dataObj !== 'object') return;
+    /**
+     * Converts the persistent dictionary to an array and renders the full gallery
+     */
+    function rebuildMoviesArray(saveCache = true) {
+        if (!moviesMap || typeof moviesMap !== 'object') return;
 
         if (saveCache) {
             try {
-                localStorage.setItem(CACHE_STORAGE_KEY, JSON.stringify(dataObj));
+                localStorage.setItem(CACHE_STORAGE_KEY, JSON.stringify(moviesMap));
             } catch (e) {}
         }
 
-        const rawKeys = Object.keys(dataObj);
+        const rawKeys = Object.keys(moviesMap);
         movies = rawKeys.map((key, index) => {
-            const v = dataObj[key];
+            const v = moviesMap[key];
             if (!v || typeof v !== 'object') return null;
 
             const p = { 
