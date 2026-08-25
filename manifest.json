@@ -1,0 +1,21 @@
+{
+  "name": "Werewolf Cinema Library",
+  "short_name": "Werewolf Cinema",
+  "start_url": "./Movies.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#8b0000",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
