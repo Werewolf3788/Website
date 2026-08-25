@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <!-- ================================================================= -->
-<!-- WEREWOLF CINEMA LIBRARY - PWA + PUSH NOTIFICATIONS + UTM MENU     -->
+<!-- WEREWOLF CINEMA LIBRARY - FIXED FIREBASE STREAM LOADER            -->
 <!-- Line 1: HTML Document Structure & GA4 / GTM Setup                 -->
-<!-- Line 170: CSS Styles (PWA Navigation, UTM Folders, Cards, Modals) -->
+<!-- Line 170: CSS Styles (Responsive Layout, Badges & Lightbox)       -->
 <!-- Line 385: App Scaffolding (Header, Nav Drawer, Filters, Lightbox) -->
-<!-- Line 490: Realtime Push Notifications, SSE Stream & UTM Engine   -->
-<!-- Date & Time (NYT 24hr): 08/25/2026 01:25:00 EDT                   -->
+<!-- Line 490: Live Firebase Realtime Stream & Progressive Engine      -->
+<!-- Date & Time (NYT 24hr): 08/25/2026 01:38:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -21,7 +21,7 @@
     <script src="https://raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/language_alphabets.js"></script>
     <script src="https://raw.githack.com/Werewolf3788/SKVentureSigns/main/Languge_Fonts/fontSwitcher.js"></script>
 
-    <!-- Google Analytics 4 (GA4) & GTM Tracking -->
+    <!-- Google Analytics 4 (GA4) via G-CTYHDF4MSD (Works across HTTP & HTTPS) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
@@ -81,8 +81,8 @@
         <div id="movie-counter" class="black-outline">Cinema Inventory: <span>...</span></div>
         
         <div id="sync-status-badge" class="black-outline">
-            <span id="sync-dot" class="dot-synced"></span>
-            <span id="sync-text">Live Firebase Realtime Stream Active</span>
+            <span id="sync-dot" class="dot-checking"></span>
+            <span id="sync-text">Connecting to Firebase...</span>
         </div>
         
         <div id="affiliate-disclosure">
@@ -739,7 +739,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             Object.keys(data).forEach(key => {
                 const item = data[key];
                 
-                // If it contains grouped sub-links (object with multiple links)
                 if (typeof item === 'object' && item !== null && !item.url) {
                     folderIndex++;
                     const folderId = `utm-folder-${folderIndex}`;
@@ -768,7 +767,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                         </div>
                     `;
                 } else {
-                    // Single Standalone Link
                     const title = item.title || key;
                     const url = typeof item === 'string' ? item : (item.url || '#');
                     html += `
@@ -809,7 +807,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         const currentlyEnabled = localStorage.getItem(NOTIFY_PREF_KEY) === 'true';
 
         if (currentlyEnabled) {
-            // User requested to remove/turn off push notifications
             localStorage.setItem(NOTIFY_PREF_KEY, 'false');
             updateNotificationUI(false);
             triggerToast('Push notifications disabled.');
@@ -827,7 +824,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             updateNotificationUI(true);
             triggerToast('Push notifications enabled for new movies!');
             
-            // Welcome alert
             new Notification('🎬 Werewolf Cinema', {
                 body: 'Instant alerts activated. You will be notified when new movies are added!',
                 icon: 'https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'
@@ -837,9 +833,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         }
     };
 
-    /**
-     * Checks if a movie's dateAdded matches today or is brand new, then fires push notifications immediately
-     */
     function checkNewMoviePushAlerts(movieList) {
         const isEnabled = localStorage.getItem(NOTIFY_PREF_KEY) === 'true';
         if (!isEnabled || !('Notification' in window) || Notification.permission !== 'granted') return;
@@ -850,7 +843,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         movieList.forEach(m => {
             const movieId = m.imdbId || m.title;
             if (!seenIds.includes(movieId)) {
-                // If added today or marked new
                 const addedDateObj = new Date(m.timestamp);
                 const isAddedToday = m.timestamp > 0 && (addedDateObj.toLocaleDateString() === todayString || (Date.now() - m.timestamp < 86400000));
                 
@@ -1035,11 +1027,14 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         return 0;
     }
 
-    function initLiveFirebaseStream() {
+    /**
+     * Resilient Firebase Realtime Database Data Loader (REST First, SSE Streaming Second)
+     */
+    async function initLiveFirebaseStream() {
         const syncDot = document.getElementById('sync-dot');
         const syncText = document.getElementById('sync-text');
 
-        // Check Local Storage Cache First for 0ms initial render
+        // Check Local Storage Cache First for immediate 0ms load
         const cachedData = localStorage.getItem(CACHE_STORAGE_KEY);
         if (cachedData) {
             try {
@@ -1047,19 +1042,11 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             } catch (err) {}
         }
 
-        const eventSource = new EventSource(FIREBASE_ENDPOINT);
-        eventSource.addEventListener('put', function(e) {
-            try {
-                const parsed = JSON.parse(e.data);
-                if (parsed && parsed.data) {
-                    processFirebasePayload(parsed.data, true);
-                }
-            } catch (err) {}
-        });
-
-        fetch(FIREBASE_ENDPOINT)
-            .then(res => res.json())
-            .then(data => {
+        // 1. Direct REST Fetch to guarantee initial load without SSE parsing locks
+        try {
+            const res = await fetch(FIREBASE_ENDPOINT);
+            if (res.ok) {
+                const data = await res.json();
                 if (data) {
                     processFirebasePayload(data, true);
                     if (syncDot && syncText) {
@@ -1067,23 +1054,50 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                         syncText.textContent = 'Live Firebase Realtime Stream Active';
                     }
                 }
-            })
-            .catch(err => {
-                if (syncDot && syncText) {
-                    syncDot.className = 'dot-error';
-                    syncText.textContent = 'Firebase Connection Offline';
+            }
+        } catch (err) {
+            console.error("Direct fetch error: ", err);
+            if (syncDot && syncText) {
+                syncDot.className = 'dot-error';
+                syncText.textContent = 'Firebase Offline';
+            }
+        }
+
+        // 2. Persistent EventSource SSE Listener for background live updates
+        try {
+            const eventSource = new EventSource(FIREBASE_ENDPOINT);
+            
+            eventSource.addEventListener('put', function(e) {
+                try {
+                    const parsed = JSON.parse(e.data);
+                    if (parsed) {
+                        // Firebase SSE root updates provide { path: "/", data: { ... } }
+                        const payload = (parsed.path === "/" || !parsed.path) ? parsed.data : parsed;
+                        if (payload && typeof payload === 'object') {
+                            processFirebasePayload(payload, true);
+                        }
+                    }
+                } catch (err) {
+                    console.error("Firebase SSE parsing error: ", err);
                 }
             });
+        } catch (e) {}
     }
 
     function processFirebasePayload(dataObj, saveCache = true) {
+        if (!dataObj || typeof dataObj !== 'object') return;
+
         if (saveCache) {
-            localStorage.setItem(CACHE_STORAGE_KEY, JSON.stringify(dataObj));
+            try {
+                localStorage.setItem(CACHE_STORAGE_KEY, JSON.stringify(dataObj));
+            } catch (e) {}
         }
 
         const rawKeys = Object.keys(dataObj);
         movies = rawKeys.map((key, index) => {
             const v = dataObj[key];
+            if (!v || typeof v !== 'object') return null;
+
             const p = { 
                 amazon: (v.amazon && isValidUrl(v.amazon)) ? v.amazon.trim() : '', 
                 google: (v.google && isValidUrl(v.google)) ? v.google.trim() : '', 
@@ -1125,11 +1139,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 timestamp: getSafeTimestamp(v.dateAdded),
                 libIndex: index
             };
-        }).filter(m => {
-            const hasValidLink = m.platforms.amazon || m.platforms.google || m.platforms.youtube || 
-                                 m.platforms.moviesanywhere || m.platforms.apple || m.platforms.fandango;
-            return m.title && (hasValidLink || (m.streaming && m.streaming.trim() !== ''));
-        });
+        }).filter(m => m !== null && m.title && m.title.trim() !== '');
 
         const validDates = [...movies].filter(m => m.timestamp > 0);
         newestMoviesSet.clear();
@@ -1142,9 +1152,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             sortedNew.slice(0, 8).forEach(m => newestMoviesSet.add(m.libIndex));
         }
 
-        // Check for new additions to trigger instant push alerts
         checkNewMoviePushAlerts(movies);
-
         updateDropdowns();
         runFilters();
     }
@@ -1544,7 +1552,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         initLiveFirebaseStream(); 
         loadUtmLinksFromFirebase();
 
-        // Check local notification status
         const isNotifyActive = localStorage.getItem(NOTIFY_PREF_KEY) === 'true';
         updateNotificationUI(isNotifyActive);
     };
