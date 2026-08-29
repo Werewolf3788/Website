@@ -2,11 +2,10 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
 # File: .github/workflows/psn-sync.yml
 # Project: PSN Live Sync & Deploy (Dual Stream & Pages Deploy)
-# Version: 15.5.0 - Pathspec Staging Fix & Clean Diff Check
-# Last Modified: Saturday, August 08, 2026 | 7:27 PM EDT
-# Logic: Runs Node script on 23-min schedule, pushes to Firebase RTDB,
-#        commits updated Playstation/psn.json back to repo with rebase handling,
-#        and deploys static payload directly to GitHub Pages.
+# Version: 15.6.0 - Pathspec Sync & Staging Fix
+# Last Modified: Saturday, August 29, 2026 | 16:55 EDT (24hr NY Time)
+# Logic: Runs Node sync engine, writes to Firebase RTDB,
+#        commits local JSON files, and deploys to GitHub Pages.
 # ==========================================
 
 name: PSN Sync and Deploy
@@ -44,7 +43,7 @@ jobs:
           node-version: '22'
 
       - name: Cache Node Modules
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.npm
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -59,21 +58,29 @@ jobs:
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
-        continue-on-error: true # Prevents red email alerts when Sony NPSSO expires
         run: |
-          node Playstation/psn.js || node psn.js || node index.js
+          if [ -f "Playstation/psn.js" ]; then
+            node Playstation/psn.js
+          elif [ -f "psn.js" ]; then
+            node psn.js
+          else
+            node index.js
+          fi
 
       - name: Commit and Push PSN Data
         run: |
           git config --global user.name "Werewolf3788-Bot"
           git config --global user.email "werewolf3788-bot@users.noreply.github.com"
-          git add Playstation/psn.json
+          
+          # Stage both root psn.json and Playstation/psn.json if they exist
+          git add psn.json Playstation/psn.json 2>/dev/null || true
+          
           if ! git diff --cached --quiet; then
-            git commit -m "Automated PSN Payload Sync [Playstation/psn.json]"
+            git commit -m "Automated PSN Payload Sync [24hr NY Timestamp: $(date)]"
             git pull --rebase origin main
             git push origin main
           else
-            echo "No changes detected in Playstation/psn.json to commit."
+            echo "No local file changes detected to commit."
           fi
 
       - name: Setup Pages
