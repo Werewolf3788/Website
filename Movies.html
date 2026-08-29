@@ -5,7 +5,7 @@
 <!-- Line 170: CSS Styles (Responsive Layout, Badges & Lightbox)       -->
 <!-- Line 400: App Scaffolding (Header, Nav Drawer, Filters, Lightbox) -->
 <!-- Line 510: Live Realtime Firebase Sync Engine (Movies + UTM Menu)  -->
-<!-- Date & Time (NYT 24hr): 08/28/2026 22:38:00 EDT                   -->
+<!-- Date & Time (NYT 24hr): 08/28/2026 22:42:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -193,7 +193,11 @@
                 
                 <div id="lb-tv-binge-container" style="display: none;"></div>
 
-                <div id="lb-artists" class="black-outline"></div>
+                <!-- Scrollable Starring Cast Section -->
+                <div class="lb-cast-section">
+                    <div class="lb-cast-label black-outline">Starring Cast:</div>
+                    <div id="lb-artists" class="lb-cast-scrollbox"></div>
+                </div>
                 
                 <!-- Lightbox-only image description -->
                 <p id="lb-image-alt-desc" class="black-outline" style="font-size: 11px; color: #f5c518; margin-top: 6px; font-style: italic;"></p>
@@ -589,8 +593,59 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 #movie-lightbox.active { display: flex; }
 .lightbox-content { width: 100%; max-width: 500px; height: 85vh; border: 2px solid #ff0000; border-radius: 20px; position: relative; background-size: cover; background-position: center; }
 .lightbox-overlay { position: absolute; inset: 0; background: linear-gradient(to top, #000 45%, rgba(0,0,0,0.4) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 25px; text-align: center; overflow-y: auto; }
+
+/* Lightbox Scrolling Actors Section */
+.lb-cast-section {
+    margin-top: 10px;
+    text-align: left;
+    background: rgba(0, 0, 0, 0.65);
+    border: 1px solid #28283a;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+.lb-cast-label {
+    font-size: 11px;
+    font-weight: 900;
+    color: #ffd166;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+.lb-cast-scrollbox {
+    max-height: 140px; /* Sized to show ~5 cast rows smoothly before scrolling */
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-right: 4px;
+    scrollbar-width: thin;
+    scrollbar-color: #8b0000 #111;
+}
+.lb-cast-scrollbox::-webkit-scrollbar {
+    width: 5px;
+}
+.lb-cast-scrollbox::-webkit-scrollbar-track {
+    background: #111;
+    border-radius: 4px;
+}
+.lb-cast-scrollbox::-webkit-scrollbar-thumb {
+    background: #8b0000;
+    border-radius: 4px;
+}
+.lb-cast-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    padding: 3px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.lb-cast-item:last-child {
+    border-bottom: none;
+}
 .actor-link { cursor: pointer; color: #38bdf8; text-decoration: none; transition: color 0.3s ease; }
 .actor-link:hover { color: #ff0000; text-decoration: underline; }
+
 .imdb-link { color: #f5c518; text-decoration: none; transition: color 0.3s ease; }
 .imdb-link:hover { color: #fff; text-decoration: underline; }
 .stream-link { color: #00aeef; text-decoration: none; transition: color 0.3s ease; }
@@ -1280,7 +1335,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 <div class="poster-box">
                     ${ribbonBadgeHtml}
                     ${holidayBadgeHtml}
-                    <!-- ALT description hidden from main screen, only displayed in lightbox -->
                     <img src="${m.image}" alt="${m.title}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
                     ${tvBadgeHtml}
                     <div class="poster-year-badge black-outline">${m.year}</div>
@@ -1427,10 +1481,22 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             streamContainer.style.display = 'none';
         }
 
-        const actorLinksHtml = m.cast.map(actor => `<span class="actor-link black-outline" onclick="filterByActor('${actor.replace(/'/g, "\\'")}')">${actor}</span>`).join(' • ');
-        document.getElementById('lb-artists').innerHTML = `<strong class="black-outline">Starring:</strong><br>${actorLinksHtml || 'Cast details unavailable.'}`;
+        // Render scrollable actors with first 5 visible by default
+        const artistsContainer = document.getElementById('lb-artists');
+        if (m.cast && m.cast.length > 0) {
+            const castItemsHtml = m.cast.map((actor, idx) => `
+                <div class="lb-cast-item">
+                    <span class="actor-link black-outline" onclick="filterByActor('${actor.replace(/'/g, "\\'")}')">
+                        ${idx + 1}. ${actor}
+                    </span>
+                </div>
+            `).join('');
+            artistsContainer.innerHTML = castItemsHtml;
+        } else {
+            artistsContainer.innerHTML = '<div style="color:#888; font-size:11px;">Cast details unavailable.</div>';
+        }
         
-        // Show Image Alt / Poster Details in Lightbox View Only
+        // Image Alt / Poster Details in Lightbox View Only
         const altDescEl = document.getElementById('lb-image-alt-desc');
         altDescEl.textContent = `Poster view for ${m.title} (${m.year})`;
 
