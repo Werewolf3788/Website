@@ -5,7 +5,7 @@
 <!-- Line 170: CSS Styles (Responsive Layout, Badges & Lightbox)       -->
 <!-- Line 400: App Scaffolding (Header, Nav Drawer, Filters, Lightbox) -->
 <!-- Line 510: Live Realtime Firebase Sync Engine (Movies + UTM Menu)  -->
-<!-- Date & Time (NYT 24hr): 08/28/2026 22:42:00 EDT                   -->
+<!-- Date & Time (NYT 24hr): 08/28/2026 23:58:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -108,6 +108,7 @@
                 
                 <select id="platform-select" class="f-select" onchange="runFilters()">
                     <option value="">All Digital Stores</option>
+                    <option value="family_share">👨‍👩‍👧‍👦 Google Family Share</option>
                     <option value="amazon">Amazon</option>
                     <option value="google">Google Play</option>
                     <option value="youtube">YouTube</option>
@@ -188,12 +189,15 @@
                 <div id="lb-meta-container" class="lb-meta black-outline"></div>
                 <div id="lb-rating-desc" class="lb-meta black-outline" style="color: #f5c518; font-size: 11px; margin-top: 5px; font-weight: 700; display: none;"></div>
                 
+                <!-- Google Family Share Badge in Lightbox -->
+                <div id="lb-family-share" class="family-share-lb-badge black-outline" style="display: none;">👨‍👩‍👧‍👦 Google Family Share Available</div>
+
                 <div id="lb-streaming" class="lb-meta black-outline" style="color: #00aeef; font-size: 13px; margin: 10px 0; display: none; white-space: pre-line; text-align: left; background: rgba(0,0,0,0.6); padding: 10px; border-radius: 8px; border: 1px solid #222;"></div>
                 <div id="lb-date-added" class="black-outline" style="font-size:12px; color:#1ce783; margin-bottom:10px;"></div>
                 
                 <div id="lb-tv-binge-container" style="display: none;"></div>
 
-                <!-- Scrollable Starring Cast Section -->
+                <!-- Scrollable Starring Cast Section (Top 5 visible + Scroll) -->
                 <div class="lb-cast-section">
                     <div class="lb-cast-label black-outline">Starring Cast:</div>
                     <div id="lb-artists" class="lb-cast-scrollbox"></div>
@@ -400,7 +404,7 @@ h2, #cinema-logo { font-size: 30px !important; text-align: center; width: 100%; 
 
 body.theme-dark { background: radial-gradient(circle at center top, #1a1010 0%, #050505 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-amazon { background: radial-gradient(circle at center top, #3d1b00 0%, #0d0600 50%, #000000 100%) fixed !important; }
-body.theme-dark.bg-google { background: radial-gradient(circle at center top, #0c1a3a 0%, #030612 50%, #000000 100%) fixed !important; }
+body.theme-dark.bg-google, body.theme-dark.bg-family_share { background: radial-gradient(circle at center top, #0c1a3a 0%, #030612 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-youtube { background: radial-gradient(circle at center top, #3a0303 0%, #0e0101 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-moviesanywhere { background: radial-gradient(circle at center top, #002d40 0%, #000a10 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-apple { background: radial-gradient(circle at center top, #242426 0%, #0a0a0b 50%, #000000 100%) fixed !important; }
@@ -526,6 +530,33 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     border: 1px solid transparent;
 }
 
+/* Family Share Badges */
+.family-share-badge {
+    position: absolute;
+    top: 36px;
+    left: 10px;
+    background: linear-gradient(135deg, #0284c7, #06b6d4);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 900;
+    padding: 3px 6px;
+    border-radius: 4px;
+    z-index: 10;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+    border: 1px solid rgba(255,255,255,0.4);
+}
+.family-share-lb-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #0284c7, #06b6d4);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin: 6px 0;
+}
+
 .tv-series-badge {
     position: absolute;
     bottom: 8px;
@@ -612,7 +643,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     margin-bottom: 4px;
 }
 .lb-cast-scrollbox {
-    max-height: 140px; /* Sized to show ~5 cast rows smoothly before scrolling */
+    max-height: 140px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
@@ -954,13 +985,22 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
     function isValidUrl(str) {
         if (!str) return false;
-        const s = str.trim().toLowerCase();
-        return s.startsWith('http://') || s.startsWith('https://');
+        const s = str.toString().trim().toLowerCase();
+        return s.startsWith('http://') || s.startsWith('https://') || s.includes('play.google.com') || s.includes('amazon.com') || s.includes('youtu');
+    }
+
+    function normalizeUrl(url) {
+        if (!url) return '';
+        let u = url.toString().trim();
+        if (!u.startsWith('http://') && !u.startsWith('https://')) {
+            u = 'https://' + u;
+        }
+        return u;
     }
 
     window.appendUtm = (url, title = 'outbound') => {
         if (!url) return '';
-        const cleanUrl = url.trim();
+        const cleanUrl = normalizeUrl(url);
         if (cleanUrl.includes('amazon.com') || cleanUrl.includes('amzn.to')) {
             return cleanUrl;
         }
@@ -999,8 +1039,8 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     };
 
     function resolveAppOrWebUrl(url, platform) {
-        if (!url || !url.startsWith("http")) return "";
-        let finalUrl = url.trim();
+        if (!url) return "";
+        let finalUrl = normalizeUrl(url);
 
         if (finalUrl.includes('amazon.com')) {
             if (!finalUrl.includes('moviesanywhere02-20')) {
@@ -1033,7 +1073,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             .replace(/Available to Stream On:\s*/gi, '')
             .replace(/🆓 Free \/ With Ads:\s*/gi, '')
             .replace(/📺 Subscription:\s*/gi, '')
-            .replace(/🛒 Prime \/ Add-on Channels:\s*/gi, '');
+            .replace(/🛒 Prime \/ Add-on Channels:\s*/gi);
 
         const rawParts = cleaned.split(/[\n,|•]/);
         const uniqueSet = new Set();
@@ -1196,12 +1236,12 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             if (!v || typeof v !== 'object') return null;
 
             const p = { 
-                amazon: (v.amazon && isValidUrl(v.amazon)) ? v.amazon.trim() : '', 
-                google: (v.google && isValidUrl(v.google)) ? v.google.trim() : '', 
-                youtube: (v.youtube && isValidUrl(v.youtube)) ? v.youtube.trim() : '', 
-                moviesanywhere: (v.ma && isValidUrl(v.ma)) ? v.ma.trim() : '', 
-                apple: (v.apple && isValidUrl(v.apple)) ? v.apple.trim() : '', 
-                fandango: (v.fandango && isValidUrl(v.fandango)) ? v.fandango.trim() : '' 
+                amazon: (v.amazon && isValidUrl(v.amazon)) ? normalizeUrl(v.amazon) : '', 
+                google: (v.google && isValidUrl(v.google)) ? normalizeUrl(v.google) : '', 
+                youtube: (v.youtube && isValidUrl(v.youtube)) ? normalizeUrl(v.youtube) : '', 
+                moviesanywhere: (v.ma && isValidUrl(v.ma)) ? normalizeUrl(v.ma) : '', 
+                apple: (v.apple && isValidUrl(v.apple)) ? normalizeUrl(v.apple) : '', 
+                fandango: (v.fandango && isValidUrl(v.fandango)) ? normalizeUrl(v.fandango) : '' 
             };
 
             let castArr = [];
@@ -1213,6 +1253,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
             const rawStreamingStr = v.streaming || '';
             const cleanStreamPlatforms = extractCleanStreamPlatforms(rawStreamingStr);
+            const isFamilyShareChecked = v.googleFamilyShare === true || v.googleFamilyShare === 'true' || v.googleFamilyShare === 1 || v.googleFamilyShare === 'TRUE';
 
             return {
                 title: v.title || key || '',
@@ -1233,6 +1274,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 holidayTag: v.holidays || '',
                 videoRating: v.rating || '',
                 ratingDescription: v.ratingReason || '',
+                googleFamilyShare: isFamilyShareChecked,
                 timestamp: getSafeTimestamp(v.dateAdded),
                 libIndex: index
             };
@@ -1243,11 +1285,9 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         oldestMovieIndex = null;
 
         if (validDates.length > 0) {
-            // Sort to find the oldest dateAdded (considered First Movie)
             validDates.sort((a, b) => a.timestamp - b.timestamp);
             oldestMovieIndex = validDates[0].libIndex;
 
-            // 10-day window for New Movies
             const now = Date.now();
             const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
 
@@ -1294,6 +1334,11 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 ribbonBadgeHtml = `<div class="status-badge badge-new black-outline">🆕 New to Library</div>`;
             }
 
+            let familyShareBadgeHtml = '';
+            if (m.googleFamilyShare) {
+                familyShareBadgeHtml = `<div class="family-share-badge black-outline">👨‍👩‍👧‍👦 Family Share</div>`;
+            }
+
             let holidayBadgeHtml = '';
             const holidayMeta = getHolidayMetadata(m);
             if (holidayMeta) {
@@ -1334,6 +1379,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             card.innerHTML = `
                 <div class="poster-box">
                     ${ribbonBadgeHtml}
+                    ${familyShareBadgeHtml}
                     ${holidayBadgeHtml}
                     <img src="${m.image}" alt="${m.title}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
                     ${tvBadgeHtml}
@@ -1377,7 +1423,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         const sort = document.getElementById('sort-select').value;
         const queryWords = query.split(/\s+/).filter(w => w.length > 0);
 
-        document.body.classList.remove('bg-amazon', 'bg-google', 'bg-youtube', 'bg-moviesanywhere', 'bg-apple', 'bg-fandango');
+        document.body.classList.remove('bg-amazon', 'bg-google', 'bg-youtube', 'bg-moviesanywhere', 'bg-apple', 'bg-fandango', 'bg-family_share');
         if (platformF) {
             document.body.classList.add('bg-' + platformF);
         }
@@ -1389,7 +1435,14 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             const searchMatch = queryWords.length === 0 || queryWords.every(word => pool.includes(word));
             
             const typeMatch = !typeF || (typeF === 'TV' ? m.type.toLowerCase().includes('tv') : m.type.toLowerCase().includes('movie'));
-            const platformMatch = !platformF || (m.platforms[platformF] && m.platforms[platformF].trim() !== '');
+            
+            let platformMatch = true;
+            if (platformF === 'family_share') {
+                platformMatch = m.googleFamilyShare === true;
+            } else if (platformF) {
+                platformMatch = m.platforms[platformF] && m.platforms[platformF].trim() !== '';
+            }
+
             const streamMatch = !streamF || (m.streamPlatforms && m.streamPlatforms.some(sp => sp.toLowerCase() === streamF));
             const ratingMatch = !ratingF || m.videoRating === ratingF;
 
@@ -1454,8 +1507,29 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         document.getElementById('lb-title').textContent = (holidayMeta ? `${holidayMeta.emoji} ` : '') + m.title;
         
         const hasEdition = m.edition && m.edition.toLowerCase() !== 'standard' && m.edition.trim() !== '';
-        const imdbLinkHtml = m.imdbId ? `<a href="https://www.imdb.com/title/${m.imdbId.toLowerCase().startsWith('tvdb-') ? '' : m.imdbId}/" target="werewolf_cinema_window" class="imdb-link black-outline">IMDb: ${m.imdbId}</a> | ` : '';
-        document.getElementById('lb-meta-container').innerHTML = `${imdbLinkHtml}${m.genre}${hasEdition ? ` | Edition: ${m.edition}` : ''}`;
+        
+        // Multi-Source Dynamic Database Linking (IMDb, TMDb, TVDb)
+        let sourceLinkHtml = '';
+        if (m.imdbId) {
+            const rawId = m.imdbId.toString().trim();
+            const lowerId = rawId.toLowerCase();
+            const isTv = m.type && m.type.toLowerCase().includes('tv');
+
+            if (lowerId.startsWith('tmdb-')) {
+                const tmdbNumeric = rawId.replace(/^tmdb-/i, '');
+                const mediaType = isTv ? 'tv' : 'movie';
+                sourceLinkHtml = `<a href="https://www.themoviedb.org/${mediaType}/${tmdbNumeric}" target="werewolf_cinema_window" class="imdb-link black-outline">TMDb: ${rawId}</a> | `;
+            } else if (lowerId.startsWith('tvdb-')) {
+                const tvdbNumeric = rawId.replace(/^tvdb-/i, '');
+                sourceLinkHtml = `<a href="https://thetvdb.com/dereferrer/series/${tvdbNumeric}" target="werewolf_cinema_window" class="imdb-link black-outline">TVDb: ${rawId}</a> | `;
+            } else if (lowerId.startsWith('tt')) {
+                sourceLinkHtml = `<a href="https://www.imdb.com/title/${rawId}/" target="werewolf_cinema_window" class="imdb-link black-outline">IMDb: ${rawId}</a> | `;
+            } else {
+                sourceLinkHtml = `<span class="imdb-link black-outline">ID: ${rawId}</span> | `;
+            }
+        }
+
+        document.getElementById('lb-meta-container').innerHTML = `${sourceLinkHtml}${m.genre}${hasEdition ? ` | Edition: ${m.edition}` : ''}`;
         
         const lbRatingDesc = document.getElementById('lb-rating-desc');
         if (m.ratingDescription && m.ratingDescription.trim() !== '') {
@@ -1463,6 +1537,14 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             lbRatingDesc.style.display = 'block';
         } else {
             lbRatingDesc.style.display = 'none';
+        }
+
+        // Family Share Lightbox Badge
+        const lbFamilyShare = document.getElementById('lb-family-share');
+        if (m.googleFamilyShare) {
+            lbFamilyShare.style.display = 'inline-block';
+        } else {
+            lbFamilyShare.style.display = 'none';
         }
 
         const isTV = m.type && m.type.toLowerCase().includes('tv');
