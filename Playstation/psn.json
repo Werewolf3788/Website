@@ -39,7 +39,7 @@
       "online": false,
       "currentGame": "Sniper Elite 5",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-      "currentGameActivity": "Shoot'em up",
+      "currentGameActivity": "Can we do this",
       "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=moviesanywhere02-20",
       "currentCommunicationId": "NPWR21465_00",
       "platform": "PS5",
@@ -53,32 +53,32 @@
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-300x300.png",
         "age": "3 years, 4 months",
         "bio": null,
-        "statusMessage": "Shoot'em up",
+        "statusMessage": "Can we do this",
         "uptime": null,
         "viewers": "0",
         "subCount": "werewolf3788 needs to authenticate to use subcount: https://decapi.me/auth/twitch?redirect=subcount&scopes=channel:read:subscriptions+user:read:email",
         "chatRules": null,
         "channelCreationRaw": "Apr 6. 2023 - 06:58:17 AM (UTC)"
       },
-      "gamesPlayed": 134,
+      "gamesPlayed": 135,
       "avatar": "http://static-resource.np.community.playstation.net/avatar_s/SCEI/I0029_s.png",
       "bio": "TM3QB",
       "psnAccountAge": "15 years, 4 months",
       "earliestTrophyDate": "2011-04-17T08:13:52.000Z",
-      "latestTrophyDate": 1787484446000,
+      "latestTrophyDate": 1787984553000,
       "plus": true,
-      "level": 169,
+      "level": 170,
       "region": "US",
       "trophySummary": {
         "accountId": "4087137467908566201",
-        "trophyLevel": 169,
-        "trophyPoint": 12210,
-        "trophyLevelBasePoint": 12150,
-        "trophyLevelNextPoint": 12240,
-        "progress": 66,
+        "trophyLevel": 170,
+        "trophyPoint": 12255,
+        "trophyLevelBasePoint": 12240,
+        "trophyLevelNextPoint": 12330,
+        "progress": 16,
         "tier": 2,
         "earnedTrophies": {
-          "bronze": 590,
+          "bronze": 593,
           "silver": 70,
           "gold": 14,
           "platinum": 0
@@ -86,15 +86,15 @@
         "platinum": 0,
         "gold": 14,
         "silver": 70,
-        "bronze": 590,
-        "total": 674
+        "bronze": 593,
+        "total": 677
       },
       "recentGames": [
         {
           "npCommunicationId": "NPWR21465_00",
           "name": "Sniper Elite 5",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-          "lastPlayed": "2026-08-23T12:02:12Z",
+          "lastPlayed": "2026-08-29T06:22:35Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite 5",
@@ -108,19 +108,52 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 38,
+          "progress": 41,
           "earnedTrophies": {
-            "bronze": 30,
+            "bronze": 33,
             "silver": 3,
             "gold": 1,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-08-23T12:02:12Z",
-          "earnedTotal": 34,
+          "lastUpdatedDateTime": "2026-08-29T06:22:35Z",
+          "earnedTotal": 37,
           "definedTotal": 72,
-          "ratio": "34/72",
+          "ratio": "37/72",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=moviesanywhere02-20",
+          "bootCount": "Unknown"
+        },
+        {
+          "npCommunicationId": "NPWR21143_00",
+          "name": "Avatar: Frontiers of Pandora™",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21143_00/689fd754-8e7d-4f3f-8b3e-e85ee5a7ab97.png",
+          "lastPlayed": "2026-08-29T04:46:31Z",
+          "npServiceName": "trophy2",
+          "trophySetVersion": "01.00",
+          "trophyTitleName": "Avatar: Frontiers of Pandora™",
+          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21143_00/689fd754-8e7d-4f3f-8b3e-e85ee5a7ab97.png",
+          "trophyTitlePlatform": "PS5",
+          "hasTrophyGroups": true,
+          "trophyGroupCount": 4,
+          "definedTrophies": {
+            "bronze": 25,
+            "silver": 21,
+            "gold": 6,
+            "platinum": 1
+          },
+          "progress": 0,
+          "earnedTrophies": {
+            "bronze": 0,
+            "silver": 0,
+            "gold": 0,
+            "platinum": 0
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-08-29T04:46:31Z",
+          "earnedTotal": 0,
+          "definedTotal": 53,
+          "ratio": "0/53",
+          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Avatar%3A%20Frontiers%20of%20Pandora&tag=moviesanywhere02-20",
           "bootCount": "Unknown"
         },
         {
@@ -1752,51 +1785,17 @@
           "ratio": "0/8",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sly%20Minigames&tag=moviesanywhere02-20",
           "bootCount": "Unknown"
-        },
-        {
-          "npCommunicationId": "NPWR02744_00",
-          "name": "Rayman 3 HD",
-          "art": "https://image.api.playstation.com/trophy/np/NPWR02744_00_003988A196E182C1D7108B3FD73D70C7820DDB13B5/A34F9A29F54C63A072FB07587FFCA89FE4B0F5EA.PNG",
-          "lastPlayed": "2016-06-04T00:09:05Z",
-          "npServiceName": "trophy",
-          "trophySetVersion": "01.00",
-          "trophyTitleName": "Rayman 3 HD",
-          "trophyTitleDetail": "Rayman 3 HD",
-          "trophyTitleIconUrl": "https://image.api.playstation.com/trophy/np/NPWR02744_00_003988A196E182C1D7108B3FD73D70C7820DDB13B5/A34F9A29F54C63A072FB07587FFCA89FE4B0F5EA.PNG",
-          "trophyTitlePlatform": "PS3",
-          "hasTrophyGroups": false,
-          "trophyGroupCount": 1,
-          "definedTrophies": {
-            "bronze": 7,
-            "silver": 4,
-            "gold": 1,
-            "platinum": 0
-          },
-          "progress": 0,
-          "earnedTrophies": {
-            "bronze": 0,
-            "silver": 0,
-            "gold": 0,
-            "platinum": 0
-          },
-          "hiddenFlag": false,
-          "lastUpdatedDateTime": "2016-06-04T00:09:05Z",
-          "earnedTotal": 0,
-          "definedTotal": 12,
-          "ratio": "0/12",
-          "amazonAffiliateUrl": "https://www.amazon.com/s?k=Rayman%203%20HD&tag=moviesanywhere02-20",
-          "bootCount": "Unknown"
         }
       ],
       "activeHunt": {
         "title": "Sniper Elite 5",
         "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=moviesanywhere02-20",
-        "progress": 38,
+        "progress": 41,
         "velocity": {
           "firstEarned": "7/28/2026, 8:56:24 PM",
-          "huntingDuration": "26 days",
-          "hunterPersona": "Steady Hunter",
-          "completionStatus": "34/72"
+          "huntingDuration": "32 days",
+          "hunterPersona": "Casual Pursuit",
+          "completionStatus": "37/72"
         },
         "groups": [
           {
@@ -1808,7 +1807,7 @@
               "gold": 1,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-08-23T12:02:12Z",
+            "lastUpdatedDateTime": "2026-08-29T06:22:34Z",
             "trophyGroupName": "Sniper Elite 5",
             "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
             "definedTrophies": {
@@ -1822,14 +1821,14 @@
           },
           {
             "trophyGroupId": "001",
-            "progress": 36,
+            "progress": 63,
             "earnedTrophies": {
-              "bronze": 2,
+              "bronze": 5,
               "silver": 1,
               "gold": 0,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-08-23T11:27:27Z",
+            "lastUpdatedDateTime": "2026-08-29T06:22:33Z",
             "trophyGroupName": "Wolf Mountain",
             "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/835342ce-169d-4ae2-a705-eac2eedf7df5.png",
             "definedTrophies": {
@@ -1839,7 +1838,7 @@
               "platinum": 0
             },
             "name": "Wolf Mountain",
-            "ratio": "3/8"
+            "ratio": "6/8"
           },
           {
             "trophyGroupId": "002",
@@ -1964,7 +1963,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/28/2026, 8:56:24 PM",
-            "earnedAge": "1 month, 1 day, 3 hours",
+            "earnedAge": "1 month, 1 day, 6 hours, 18 mins",
             "timestamp": 1785286584000,
             "currentValue": 0,
             "targetValue": 0
@@ -1987,7 +1986,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/8/2026, 12:55:01 AM",
-            "earnedAge": "2 weeks, 6 days, 23 hours, 2 mins",
+            "earnedAge": "3 weeks, 2 hours, 20 mins",
             "timestamp": 1786164901000,
             "currentValue": 0,
             "targetValue": 0
@@ -2010,7 +2009,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/9/2026, 2:26:13 AM",
-            "earnedAge": "2 weeks, 5 days, 21 hours, 30 mins",
+            "earnedAge": "2 weeks, 6 days, 48 mins",
             "timestamp": 1786256773000,
             "currentValue": 0,
             "targetValue": 0
@@ -2033,7 +2032,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/16/2026, 10:58:25 PM",
-            "earnedAge": "1 week, 5 days, 58 mins",
+            "earnedAge": "1 week, 5 days, 4 hours, 16 mins",
             "timestamp": 1786935505000,
             "currentValue": 0,
             "targetValue": 0
@@ -2056,7 +2055,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/22/2026, 11:40:54 PM",
-            "earnedAge": "6 days, 16 mins",
+            "earnedAge": "6 days, 3 hours, 34 mins",
             "timestamp": 1787456454000,
             "currentValue": 0,
             "targetValue": 0
@@ -2079,7 +2078,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 2:06:19 AM",
-            "earnedAge": "5 days, 21 hours, 50 mins",
+            "earnedAge": "6 days, 1 hour, 8 mins",
             "timestamp": 1787465179000,
             "currentValue": 0,
             "targetValue": 0
@@ -2102,7 +2101,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 4:16:29 AM",
-            "earnedAge": "5 days, 19 hours, 40 mins",
+            "earnedAge": "5 days, 22 hours, 58 mins",
             "timestamp": 1787472989000,
             "currentValue": 0,
             "targetValue": 0
@@ -2125,7 +2124,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 6:17:00 AM",
-            "earnedAge": "5 days, 17 hours, 40 mins",
+            "earnedAge": "5 days, 20 hours, 58 mins",
             "timestamp": 1787480220000,
             "currentValue": 0,
             "targetValue": 0
@@ -2173,7 +2172,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 12:04:30 AM",
-            "earnedAge": "5 days, 23 hours, 52 mins",
+            "earnedAge": "6 days, 3 hours, 10 mins",
             "timestamp": 1787457870000,
             "currentValue": 0,
             "targetValue": "40"
@@ -2196,7 +2195,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 6:19:32 AM",
-            "earnedAge": "5 days, 17 hours, 37 mins",
+            "earnedAge": "5 days, 20 hours, 55 mins",
             "timestamp": 1787480372000,
             "currentValue": 0,
             "targetValue": 0
@@ -2243,7 +2242,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 2:44:35 AM",
-            "earnedAge": "5 days, 21 hours, 12 mins",
+            "earnedAge": "6 days, 30 mins",
             "timestamp": 1787467475000,
             "currentValue": 0,
             "targetValue": "16"
@@ -2335,7 +2334,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/16/2026, 10:58:26 PM",
-            "earnedAge": "1 week, 5 days, 58 mins",
+            "earnedAge": "1 week, 5 days, 4 hours, 16 mins",
             "timestamp": 1786935506000,
             "currentValue": 0,
             "targetValue": 0
@@ -2358,7 +2357,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/7/2026, 11:36:30 PM",
-            "earnedAge": "3 weeks, 20 mins",
+            "earnedAge": "3 weeks, 3 hours, 38 mins",
             "timestamp": 1786160190000,
             "currentValue": 0,
             "targetValue": 0
@@ -2381,7 +2380,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 2:31:03 AM",
-            "earnedAge": "5 days, 21 hours, 26 mins",
+            "earnedAge": "6 days, 43 mins",
             "timestamp": 1787466663000,
             "currentValue": 0,
             "targetValue": 0
@@ -2549,7 +2548,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/8/2026, 10:07:19 PM",
-            "earnedAge": "2 weeks, 6 days, 1 hour, 49 mins",
+            "earnedAge": "2 weeks, 6 days, 5 hours, 7 mins",
             "timestamp": 1786241239000,
             "currentValue": 0,
             "targetValue": "350"
@@ -2575,7 +2574,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "59115",
+            "currentValue": "59117",
             "targetValue": "100000"
           },
           {
@@ -2597,7 +2596,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/8/2026, 5:25:29 AM",
-            "earnedAge": "2 weeks, 6 days, 18 hours, 31 mins",
+            "earnedAge": "2 weeks, 6 days, 21 hours, 49 mins",
             "timestamp": 1786181129000,
             "currentValue": 0,
             "targetValue": "50"
@@ -2621,7 +2620,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/22/2026, 11:58:11 PM",
-            "earnedAge": "5 days, 23 hours, 58 mins",
+            "earnedAge": "6 days, 3 hours, 16 mins",
             "timestamp": 1787457491000,
             "currentValue": 0,
             "targetValue": "150"
@@ -2669,7 +2668,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/16/2026, 8:03:45 PM",
-            "earnedAge": "1 week, 5 days, 3 hours, 53 mins",
+            "earnedAge": "1 week, 5 days, 7 hours, 11 mins",
             "timestamp": 1786925025000,
             "currentValue": 0,
             "targetValue": "20"
@@ -2716,7 +2715,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/16/2026, 8:01:09 PM",
-            "earnedAge": "1 week, 5 days, 3 hours, 55 mins",
+            "earnedAge": "1 week, 5 days, 7 hours, 13 mins",
             "timestamp": 1786924869000,
             "currentValue": 0,
             "targetValue": 0
@@ -2740,7 +2739,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/8/2026, 4:23:45 AM",
-            "earnedAge": "2 weeks, 6 days, 19 hours, 33 mins",
+            "earnedAge": "2 weeks, 6 days, 22 hours, 51 mins",
             "timestamp": 1786177425000,
             "currentValue": 0,
             "targetValue": "20"
@@ -2763,7 +2762,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 12:15:42 AM",
-            "earnedAge": "5 days, 23 hours, 41 mins",
+            "earnedAge": "6 days, 2 hours, 59 mins",
             "timestamp": 1787458542000,
             "currentValue": 0,
             "targetValue": 0
@@ -2787,7 +2786,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/16/2026, 9:52:18 PM",
-            "earnedAge": "1 week, 5 days, 2 hours, 4 mins",
+            "earnedAge": "1 week, 5 days, 5 hours, 22 mins",
             "timestamp": 1786931538000,
             "currentValue": 0,
             "targetValue": "50"
@@ -2811,7 +2810,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/22/2026, 11:48:21 PM",
-            "earnedAge": "6 days, 8 mins",
+            "earnedAge": "6 days, 3 hours, 26 mins",
             "timestamp": 1787456901000,
             "currentValue": 0,
             "targetValue": "250"
@@ -2835,7 +2834,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/20/2026, 7:17:03 PM",
-            "earnedAge": "1 week, 1 day, 4 hours, 40 mins",
+            "earnedAge": "1 week, 1 day, 7 hours, 57 mins",
             "timestamp": 1787267823000,
             "currentValue": 0,
             "targetValue": "50"
@@ -2859,7 +2858,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/16/2026, 8:35:50 PM",
-            "earnedAge": "1 week, 5 days, 3 hours, 21 mins",
+            "earnedAge": "1 week, 5 days, 6 hours, 39 mins",
             "timestamp": 1786926950000,
             "currentValue": 0,
             "targetValue": "100"
@@ -2885,7 +2884,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "28",
+            "currentValue": "29",
             "targetValue": "50"
           },
           {
@@ -2907,7 +2906,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 4:13:17 AM",
-            "earnedAge": "5 days, 19 hours, 43 mins",
+            "earnedAge": "5 days, 23 hours, 1 min",
             "timestamp": 1787472797000,
             "currentValue": 0,
             "targetValue": "41"
@@ -2931,7 +2930,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 3:30:41 AM",
-            "earnedAge": "5 days, 20 hours, 26 mins",
+            "earnedAge": "5 days, 23 hours, 44 mins",
             "timestamp": 1787470241000,
             "currentValue": 0,
             "targetValue": "39"
@@ -2955,7 +2954,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 5:21:47 AM",
-            "earnedAge": "5 days, 18 hours, 35 mins",
+            "earnedAge": "5 days, 21 hours, 53 mins",
             "timestamp": 1787476907000,
             "currentValue": 0,
             "targetValue": "24"
@@ -2979,7 +2978,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 3:38:49 AM",
-            "earnedAge": "5 days, 20 hours, 18 mins",
+            "earnedAge": "5 days, 23 hours, 36 mins",
             "timestamp": 1787470729000,
             "currentValue": 0,
             "targetValue": "24"
@@ -3119,7 +3118,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 6:16:11 AM",
-            "earnedAge": "5 days, 17 hours, 40 mins",
+            "earnedAge": "5 days, 20 hours, 58 mins",
             "timestamp": 1787480171000,
             "currentValue": 0,
             "targetValue": 0
@@ -3142,7 +3141,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 6:40:07 AM",
-            "earnedAge": "5 days, 17 hours, 16 mins",
+            "earnedAge": "5 days, 20 hours, 34 mins",
             "timestamp": 1787481607000,
             "currentValue": 0,
             "targetValue": 0
@@ -3211,11 +3210,11 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "2",
+            "earned": true,
+            "earnedDate": "8/29/2026, 2:22:33 AM",
+            "earnedAge": "52 mins",
+            "timestamp": 1787984553000,
+            "currentValue": 0,
             "targetValue": "5"
           },
           {
@@ -3234,10 +3233,10 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "earned": true,
+            "earnedDate": "8/29/2026, 2:09:47 AM",
+            "earnedAge": "1 hour, 5 mins",
+            "timestamp": 1787983787000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -3260,7 +3259,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/23/2026, 7:27:26 AM",
-            "earnedAge": "5 days, 16 hours, 29 mins",
+            "earnedAge": "5 days, 19 hours, 47 mins",
             "timestamp": 1787484446000,
             "currentValue": 0,
             "targetValue": "300"
@@ -3329,7 +3328,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/8/2026, 4:11:59 AM",
-            "earnedAge": "2 weeks, 6 days, 19 hours, 45 mins",
+            "earnedAge": "2 weeks, 6 days, 23 hours, 3 mins",
             "timestamp": 1786176719000,
             "currentValue": 0,
             "targetValue": 0
@@ -3353,7 +3352,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/8/2026, 4:12:00 AM",
-            "earnedAge": "2 weeks, 6 days, 19 hours, 45 mins",
+            "earnedAge": "2 weeks, 6 days, 23 hours, 3 mins",
             "timestamp": 1786176720000,
             "currentValue": 0,
             "targetValue": "2"
@@ -3374,10 +3373,10 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "earned": true,
+            "earnedDate": "8/29/2026, 2:22:31 AM",
+            "earnedAge": "52 mins",
+            "timestamp": 1787984551000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -3617,11 +3616,35 @@
       "mostRecentTrophies": [
         {
           "game": "Sniper Elite 5",
+          "name": "Führerious Repetition",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/66508739-96e8-487d-94fc-1a4d6fff188b.png",
+          "timestamp": 1787984553000,
+          "date": "8/29/2026, 2:22:33 AM",
+          "age": "52 mins"
+        },
+        {
+          "game": "Sniper Elite 5",
+          "name": "Das Familienjuwel",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/58c913a6-18d0-4739-bee3-089c95040b77.png",
+          "timestamp": 1787984551000,
+          "date": "8/29/2026, 2:22:31 AM",
+          "age": "52 mins"
+        },
+        {
+          "game": "Sniper Elite 5",
+          "name": "Reich To The Point",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d1b0be2c-a414-410e-abc2-7754676cc9fc.png",
+          "timestamp": 1787983787000,
+          "date": "8/29/2026, 2:09:47 AM",
+          "age": "1 hour, 5 mins"
+        },
+        {
+          "game": "Sniper Elite 5",
           "name": "From Führer Away",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4aceafe9-e503-40b1-b709-085a2530f25f.png",
           "timestamp": 1787484446000,
           "date": "8/23/2026, 7:27:26 AM",
-          "age": "5 days, 16 hours, 29 mins"
+          "age": "5 days, 19 hours, 47 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3629,7 +3652,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/368221f5-a2a4-4696-9bcb-cdea5a482b82.png",
           "timestamp": 1787481607000,
           "date": "8/23/2026, 6:40:07 AM",
-          "age": "5 days, 17 hours, 16 mins"
+          "age": "5 days, 20 hours, 34 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3637,7 +3660,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c6fe9f95-9c4b-463c-bad5-e797cc3a39f7.png",
           "timestamp": 1787480372000,
           "date": "8/23/2026, 6:19:32 AM",
-          "age": "5 days, 17 hours, 37 mins"
+          "age": "5 days, 20 hours, 55 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3645,7 +3668,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ba205084-5d0a-4648-8657-aaa38dd43533.png",
           "timestamp": 1787480220000,
           "date": "8/23/2026, 6:17:00 AM",
-          "age": "5 days, 17 hours, 40 mins"
+          "age": "5 days, 20 hours, 58 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3653,7 +3676,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/99edab93-7005-4634-b8ce-0de72d8c7df9.png",
           "timestamp": 1787480171000,
           "date": "8/23/2026, 6:16:11 AM",
-          "age": "5 days, 17 hours, 40 mins"
+          "age": "5 days, 20 hours, 58 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3661,7 +3684,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d1b43e92-5d28-4cc9-9ac5-d3ce63f7b8bf.png",
           "timestamp": 1787476907000,
           "date": "8/23/2026, 5:21:47 AM",
-          "age": "5 days, 18 hours, 35 mins"
+          "age": "5 days, 21 hours, 53 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3669,7 +3692,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1787472989000,
           "date": "8/23/2026, 4:16:29 AM",
-          "age": "5 days, 19 hours, 40 mins"
+          "age": "5 days, 22 hours, 58 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3677,7 +3700,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f3a31a12-29c7-4f70-899e-2d800aec3489.png",
           "timestamp": 1787472797000,
           "date": "8/23/2026, 4:13:17 AM",
-          "age": "5 days, 19 hours, 43 mins"
+          "age": "5 days, 23 hours, 1 min"
         },
         {
           "game": "Sniper Elite 5",
@@ -3685,7 +3708,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/83ec1770-119f-4cda-b294-cf93cfc5bdb3.png",
           "timestamp": 1787470729000,
           "date": "8/23/2026, 3:38:49 AM",
-          "age": "5 days, 20 hours, 18 mins"
+          "age": "5 days, 23 hours, 36 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3693,7 +3716,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c7fd0246-3d96-47fd-8ea8-4f6a96aec5c2.png",
           "timestamp": 1787470241000,
           "date": "8/23/2026, 3:30:41 AM",
-          "age": "5 days, 20 hours, 26 mins"
+          "age": "5 days, 23 hours, 44 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3701,7 +3724,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8c66d9c8-46f8-4612-b3be-9d4c98df287a.png",
           "timestamp": 1787467475000,
           "date": "8/23/2026, 2:44:35 AM",
-          "age": "5 days, 21 hours, 12 mins"
+          "age": "6 days, 30 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3709,7 +3732,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/eb1b1d0e-ccc9-4294-9410-e81aa1821dfe.png",
           "timestamp": 1787466663000,
           "date": "8/23/2026, 2:31:03 AM",
-          "age": "5 days, 21 hours, 26 mins"
+          "age": "6 days, 43 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3717,7 +3740,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d439e89b-1afb-408d-8257-e1922809047b.png",
           "timestamp": 1787465179000,
           "date": "8/23/2026, 2:06:19 AM",
-          "age": "5 days, 21 hours, 50 mins"
+          "age": "6 days, 1 hour, 8 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3725,7 +3748,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0bb96f58-bc48-404f-b396-33995fdd456d.png",
           "timestamp": 1787458542000,
           "date": "8/23/2026, 12:15:42 AM",
-          "age": "5 days, 23 hours, 41 mins"
+          "age": "6 days, 2 hours, 59 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3733,7 +3756,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/761c0fa3-7ed7-4f99-a0e1-3de4d8157aae.png",
           "timestamp": 1787457870000,
           "date": "8/23/2026, 12:04:30 AM",
-          "age": "5 days, 23 hours, 52 mins"
+          "age": "6 days, 3 hours, 10 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3741,7 +3764,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f0446d48-10f4-4bde-be46-d8019bea9311.png",
           "timestamp": 1787457491000,
           "date": "8/22/2026, 11:58:11 PM",
-          "age": "5 days, 23 hours, 58 mins"
+          "age": "6 days, 3 hours, 16 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3749,7 +3772,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/af2c0033-427c-4fff-befc-59eb5ac6a0ca.png",
           "timestamp": 1787456901000,
           "date": "8/22/2026, 11:48:21 PM",
-          "age": "6 days, 8 mins"
+          "age": "6 days, 3 hours, 26 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3757,7 +3780,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c603cb71-3a6d-4f20-8b7c-284cd8b1a8e4.png",
           "timestamp": 1787456454000,
           "date": "8/22/2026, 11:40:54 PM",
-          "age": "6 days, 16 mins"
+          "age": "6 days, 3 hours, 34 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3765,7 +3788,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb867a5e-ac51-44d3-89a0-8e35a4f6d191.png",
           "timestamp": 1787267823000,
           "date": "8/20/2026, 7:17:03 PM",
-          "age": "1 week, 1 day, 4 hours, 40 mins"
+          "age": "1 week, 1 day, 7 hours, 57 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3773,7 +3796,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f8fadef6-3e73-4368-952e-89549e26cd42.png",
           "timestamp": 1786935506000,
           "date": "8/16/2026, 10:58:26 PM",
-          "age": "1 week, 5 days, 58 mins"
+          "age": "1 week, 5 days, 4 hours, 16 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3781,7 +3804,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/31726dcd-86f5-4e53-9357-7348e9a3d072.png",
           "timestamp": 1786935505000,
           "date": "8/16/2026, 10:58:25 PM",
-          "age": "1 week, 5 days, 58 mins"
+          "age": "1 week, 5 days, 4 hours, 16 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3789,7 +3812,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ecd5a5ce-ab47-4165-b965-4704b194e2af.png",
           "timestamp": 1786931538000,
           "date": "8/16/2026, 9:52:18 PM",
-          "age": "1 week, 5 days, 2 hours, 4 mins"
+          "age": "1 week, 5 days, 5 hours, 22 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3797,7 +3820,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40109781-5a63-4f98-abc0-263fc65548e0.png",
           "timestamp": 1786926950000,
           "date": "8/16/2026, 8:35:50 PM",
-          "age": "1 week, 5 days, 3 hours, 21 mins"
+          "age": "1 week, 5 days, 6 hours, 39 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3805,7 +3828,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1786925025000,
           "date": "8/16/2026, 8:03:45 PM",
-          "age": "1 week, 5 days, 3 hours, 53 mins"
+          "age": "1 week, 5 days, 7 hours, 11 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3813,7 +3836,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1786924869000,
           "date": "8/16/2026, 8:01:09 PM",
-          "age": "1 week, 5 days, 3 hours, 55 mins"
+          "age": "1 week, 5 days, 7 hours, 13 mins"
         },
         {
           "game": "Tom Clancy’s Ghost Recon® Wildlands",
@@ -3821,7 +3844,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR09395_00_00295539F071D1213181651287E5EB5BDFD034B090/E345138D06B97957C93BD3FACA4E2EE810609925.PNG",
           "timestamp": 1786909529000,
           "date": "8/16/2026, 3:45:29 PM",
-          "age": "1 week, 5 days, 8 hours, 11 mins"
+          "age": "1 week, 5 days, 11 hours, 29 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -3829,7 +3852,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/66890b54-bf5d-4d85-bf72-641077f25596.png",
           "timestamp": 1786847019000,
           "date": "8/15/2026, 10:23:39 PM",
-          "age": "1 week, 6 days, 1 hour, 33 mins"
+          "age": "1 week, 6 days, 4 hours, 51 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -3837,7 +3860,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/51729b88-7ee0-4327-8eac-8795d7d89434.png",
           "timestamp": 1786845271000,
           "date": "8/15/2026, 9:54:31 PM",
-          "age": "1 week, 6 days, 2 hours, 2 mins"
+          "age": "1 week, 6 days, 5 hours, 20 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -3845,7 +3868,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/a7b100a3-62d7-4549-a8ca-34bb714c904f.png",
           "timestamp": 1786831486000,
           "date": "8/15/2026, 6:04:46 PM",
-          "age": "1 week, 6 days, 5 hours, 52 mins"
+          "age": "1 week, 6 days, 9 hours, 10 mins"
         },
         {
           "game": "theHunter: Call of the Wild",
@@ -3853,7 +3876,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR13211_00_00B97E973B2F847DE64A50C8CD5BD2DC20890B42E2/B8F49834161CD63C15E80F0434BEC6B4FBFD7DC9.PNG",
           "timestamp": 1786263514000,
           "date": "8/9/2026, 4:18:34 AM",
-          "age": "2 weeks, 5 days, 19 hours, 38 mins"
+          "age": "2 weeks, 5 days, 22 hours, 56 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3861,7 +3884,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f238c8de-14fb-40b1-92f3-486f1b8e4e81.png",
           "timestamp": 1786256773000,
           "date": "8/9/2026, 2:26:13 AM",
-          "age": "2 weeks, 5 days, 21 hours, 30 mins"
+          "age": "2 weeks, 6 days, 48 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3869,7 +3892,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/179b85d2-7b74-4bee-8d07-28e5710738a0.png",
           "timestamp": 1786241239000,
           "date": "8/8/2026, 10:07:19 PM",
-          "age": "2 weeks, 6 days, 1 hour, 49 mins"
+          "age": "2 weeks, 6 days, 5 hours, 7 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3877,7 +3900,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1786181129000,
           "date": "8/8/2026, 5:25:29 AM",
-          "age": "2 weeks, 6 days, 18 hours, 31 mins"
+          "age": "2 weeks, 6 days, 21 hours, 49 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3885,7 +3908,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/134f9030-0fee-4b0e-9efc-79a603aee163.png",
           "timestamp": 1786177425000,
           "date": "8/8/2026, 4:23:45 AM",
-          "age": "2 weeks, 6 days, 19 hours, 33 mins"
+          "age": "2 weeks, 6 days, 22 hours, 51 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3893,7 +3916,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c212cf07-0bf2-4b56-a617-e10e7f524dbe.png",
           "timestamp": 1786176720000,
           "date": "8/8/2026, 4:12:00 AM",
-          "age": "2 weeks, 6 days, 19 hours, 45 mins"
+          "age": "2 weeks, 6 days, 23 hours, 3 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3901,7 +3924,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3552602f-8568-4f5a-98bd-ff686db0a6fc.png",
           "timestamp": 1786176719000,
           "date": "8/8/2026, 4:11:59 AM",
-          "age": "2 weeks, 6 days, 19 hours, 45 mins"
+          "age": "2 weeks, 6 days, 23 hours, 3 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3909,7 +3932,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/1aa67e71-276b-41ac-a5c7-f3387add22d5.png",
           "timestamp": 1786164901000,
           "date": "8/8/2026, 12:55:01 AM",
-          "age": "2 weeks, 6 days, 23 hours, 2 mins"
+          "age": "3 weeks, 2 hours, 20 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3917,7 +3940,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2d66ad9-d7cc-4e79-a4dd-ef6bdc0f5ed8.png",
           "timestamp": 1786160190000,
           "date": "8/7/2026, 11:36:30 PM",
-          "age": "3 weeks, 20 mins"
+          "age": "3 weeks, 3 hours, 38 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -3925,7 +3948,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/17d25bb5-bc66-4bb1-b738-0222980cdc4a.png",
           "timestamp": 1785286584000,
           "date": "7/28/2026, 8:56:24 PM",
-          "age": "1 month, 1 day, 3 hours"
+          "age": "1 month, 1 day, 6 hours, 18 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -3933,7 +3956,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/abdafcab-a032-4c14-aebb-35a725196a88.png",
           "timestamp": 1783655746000,
           "date": "7/9/2026, 11:55:46 PM",
-          "age": "1 month, 2 weeks, 6 days, 1 min"
+          "age": "1 month, 2 weeks, 6 days, 3 hours, 19 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -3941,7 +3964,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/1f50f943-df32-4507-badf-0794f2a9a949.png",
           "timestamp": 1783653609000,
           "date": "7/9/2026, 11:20:09 PM",
-          "age": "1 month, 2 weeks, 6 days, 36 mins"
+          "age": "1 month, 2 weeks, 6 days, 3 hours, 54 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -3949,7 +3972,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/f0be7786-622f-4b8b-b2e0-5e42a256abe8.png",
           "timestamp": 1783653510000,
           "date": "7/9/2026, 11:18:30 PM",
-          "age": "1 month, 2 weeks, 6 days, 38 mins"
+          "age": "1 month, 2 weeks, 6 days, 3 hours, 56 mins"
         },
         {
           "game": "Farming Simulator 25",
@@ -3957,7 +3980,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR44827_00/b16c113b-e933-4adc-8b5b-f7f017f6471e.png",
           "timestamp": 1783652524000,
           "date": "7/9/2026, 11:02:04 PM",
-          "age": "1 month, 2 weeks, 6 days, 55 mins"
+          "age": "1 month, 2 weeks, 6 days, 4 hours, 12 mins"
         },
         {
           "game": "Team Sonic Racing",
@@ -3965,7 +3988,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR14885_00_00F2A3274FDB932ACC6913B736135C6C2A0AA71AC5/5BF56615ACCE8560CD1A9FFDB22A730CAA6696B2.PNG",
           "timestamp": 1737849625000,
           "date": "1/25/2025, 7:00:25 PM",
-          "age": "1 yr, 7 months, 5 days, 3 hours, 56 mins"
+          "age": "1 yr, 7 months, 5 days, 7 hours, 14 mins"
         },
         {
           "game": "It Takes Two",
@@ -3973,7 +3996,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR20783_00_00ABCCED328035CD3A5F97C330B0048280CFD60A01/C39385669A01DB1251308FFCDD06AD3225FEA82D.PNG",
           "timestamp": 1627786271000,
           "date": "7/31/2021, 10:51:11 PM",
-          "age": "5 yrs, 4 weeks, 1 day, 1 hour, 5 mins"
+          "age": "5 yrs, 4 weeks, 1 day, 4 hours, 23 mins"
         },
         {
           "game": "It Takes Two",
@@ -3981,7 +4004,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR20783_00_00ABCCED328035CD3A5F97C330B0048280CFD60A01/447CD0EAAC4A9FEF9DD7D95AB78B6F3FF9D082A6.PNG",
           "timestamp": 1627786117000,
           "date": "7/31/2021, 10:48:37 PM",
-          "age": "5 yrs, 4 weeks, 1 day, 1 hour, 8 mins"
+          "age": "5 yrs, 4 weeks, 1 day, 4 hours, 26 mins"
         },
         {
           "game": "It Takes Two",
@@ -3989,31 +4012,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR20783_00_00ABCCED328035CD3A5F97C330B0048280CFD60A01/C848570D8A9EC21B566C12F3CABD94D3BF5329B5.PNG",
           "timestamp": 1627785108000,
           "date": "7/31/2021, 10:31:48 PM",
-          "age": "5 yrs, 4 weeks, 1 day, 1 hour, 25 mins"
-        },
-        {
-          "game": "It Takes Two",
-          "name": "Meditation Maestro",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR20783_00_00ABCCED328035CD3A5F97C330B0048280CFD60A01/1035B9A285B8D270C37BC403CDCA914279946FB7.PNG",
-          "timestamp": 1627782753000,
-          "date": "7/31/2021, 9:52:33 PM",
-          "age": "5 yrs, 4 weeks, 1 day, 2 hours, 4 mins"
-        },
-        {
-          "game": "Call of Duty®: Black Ops 4",
-          "name": "Specialist Super Fan",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR16409_00_009BD3030E36B7A8CAF3B943FDB144D2C88F2E34C4/CDB0CA63DFFEF506B0101A37628E1E1E06BADC05.PNG",
-          "timestamp": 1626035966000,
-          "date": "7/11/2021, 4:39:26 PM",
-          "age": "5 yrs, 1 month, 2 weeks, 5 days, 7 hours, 17 mins"
-        },
-        {
-          "game": "Friday the 13: The Game",
-          "name": "Cooking With Jason Voorhees",
-          "icon": "https://image.api.playstation.com/trophy/np/NPWR12903_00_00DEBECE45FBC6B56DBF1F04B934BF7994190737B6/AD83515DFF80AFD75265CF2D4F6F06884D49CD80.PNG",
-          "timestamp": 1625547083000,
-          "date": "7/6/2021, 12:51:23 AM",
-          "age": "5 yrs, 1 month, 3 weeks, 3 days, 23 hours, 5 mins"
+          "age": "5 yrs, 4 weeks, 1 day, 4 hours, 43 mins"
         }
       ],
       "streamHistory": [],
@@ -4022,7 +4021,7 @@
           "npCommunicationId": "NPWR21465_00",
           "name": "Sniper Elite 5",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-          "lastPlayed": "2026-08-23T12:02:12Z",
+          "lastPlayed": "2026-08-29T06:22:35Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite 5",
@@ -4036,17 +4035,47 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 38,
+          "progress": 41,
           "earnedTrophies": {
-            "bronze": 30,
+            "bronze": 33,
             "silver": 3,
             "gold": 1,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-08-23T12:02:12Z",
-          "earnedTotal": 34,
+          "lastUpdatedDateTime": "2026-08-29T06:22:35Z",
+          "earnedTotal": 37,
           "definedTotal": 72
+        },
+        {
+          "npCommunicationId": "NPWR21143_00",
+          "name": "Avatar: Frontiers of Pandora™",
+          "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21143_00/689fd754-8e7d-4f3f-8b3e-e85ee5a7ab97.png",
+          "lastPlayed": "2026-08-29T04:46:31Z",
+          "npServiceName": "trophy2",
+          "trophySetVersion": "01.00",
+          "trophyTitleName": "Avatar: Frontiers of Pandora™",
+          "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21143_00/689fd754-8e7d-4f3f-8b3e-e85ee5a7ab97.png",
+          "trophyTitlePlatform": "PS5",
+          "hasTrophyGroups": true,
+          "trophyGroupCount": 4,
+          "definedTrophies": {
+            "bronze": 25,
+            "silver": 21,
+            "gold": 6,
+            "platinum": 1
+          },
+          "progress": 0,
+          "earnedTrophies": {
+            "bronze": 0,
+            "silver": 0,
+            "gold": 0,
+            "platinum": 0
+          },
+          "hiddenFlag": false,
+          "lastUpdatedDateTime": "2026-08-29T04:46:31Z",
+          "earnedTotal": 0,
+          "definedTotal": 53
         },
         {
           "npCommunicationId": "NPWR44827_00",
@@ -8217,11 +8246,11 @@
         },
         "presence": {
           "availability": "unavailable",
-          "lastAvailableDate": "2026-08-29T03:18:43.235Z",
+          "lastAvailableDate": "2026-08-29T06:45:44.003Z",
           "primaryPlatformInfo": {
             "onlineStatus": "offline",
             "platform": "PS5",
-            "lastOnlineDate": "2026-08-29T03:18:43.235Z"
+            "lastOnlineDate": "2026-08-29T06:45:44.003Z"
           }
         },
         "telemetry": [],
@@ -8241,15 +8270,40 @@
               "gold": 5,
               "platinum": 1
             },
-            "progress": 38,
+            "progress": 41,
             "earnedTrophies": {
-              "bronze": 30,
+              "bronze": 33,
               "silver": 3,
               "gold": 1,
               "platinum": 0
             },
             "hiddenFlag": false,
-            "lastUpdatedDateTime": "2026-08-23T12:02:12Z"
+            "lastUpdatedDateTime": "2026-08-29T06:22:35Z"
+          },
+          {
+            "npServiceName": "trophy2",
+            "npCommunicationId": "NPWR21143_00",
+            "trophySetVersion": "01.00",
+            "trophyTitleName": "Avatar: Frontiers of Pandora™",
+            "trophyTitleIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21143_00/689fd754-8e7d-4f3f-8b3e-e85ee5a7ab97.png",
+            "trophyTitlePlatform": "PS5",
+            "hasTrophyGroups": true,
+            "trophyGroupCount": 4,
+            "definedTrophies": {
+              "bronze": 25,
+              "silver": 21,
+              "gold": 6,
+              "platinum": 1
+            },
+            "progress": 0,
+            "earnedTrophies": {
+              "bronze": 0,
+              "silver": 0,
+              "gold": 0,
+              "platinum": 0
+            },
+            "hiddenFlag": false,
+            "lastUpdatedDateTime": "2026-08-29T04:46:31Z"
           },
           {
             "npServiceName": "trophy2",
@@ -11746,7 +11800,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "8/28/2026, 11:57:32 PM"
+      "lastUpdated": "8/29/2026, 3:15:22 AM"
     },
     "OneLIVIDMAN": {
       "onlineId": "OneLIVIDMAN",
@@ -11784,7 +11838,7 @@
       "npssoStatus": "ACTIVE",
       "handshakeText": "ONELIVIDMAN HANDSHAKE: FIREBASE LIVE",
       "handshakeState": "LIVE",
-      "online": true,
+      "online": false,
       "currentGame": "Sniper Elite 5",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
       "currentGameActivity": "Trophy / Collectible Hutning",
@@ -11813,36 +11867,36 @@
       "bio": "exo-ONELIVIDMANKDFC3",
       "psnAccountAge": "9 years, 8 months",
       "earliestTrophyDate": "2016-12-30T18:40:30.000Z",
-      "latestTrophyDate": 1787801424000,
+      "latestTrophyDate": 1787985354000,
       "plus": true,
       "level": 209,
       "region": "US",
       "trophySummary": {
         "accountId": "2732733730346312494",
         "trophyLevel": 209,
-        "trophyPoint": 19155,
+        "trophyPoint": 19215,
         "trophyLevelBasePoint": 18990,
         "trophyLevelNextPoint": 19440,
-        "progress": 36,
+        "progress": 50,
         "tier": 3,
         "earnedTrophies": {
-          "bronze": 637,
-          "silver": 131,
+          "bronze": 639,
+          "silver": 132,
           "gold": 43,
           "platinum": 6
         },
         "platinum": 6,
         "gold": 43,
-        "silver": 131,
-        "bronze": 637,
-        "total": 817
+        "silver": 132,
+        "bronze": 639,
+        "total": 820
       },
       "recentGames": [
         {
           "npCommunicationId": "NPWR21465_00",
           "name": "Sniper Elite 5",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-          "lastPlayed": "2026-08-27T03:30:24Z",
+          "lastPlayed": "2026-08-29T06:35:54Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite 5",
@@ -11856,18 +11910,18 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 59,
+          "progress": 63,
           "earnedTrophies": {
-            "bronze": 43,
-            "silver": 8,
+            "bronze": 45,
+            "silver": 9,
             "gold": 1,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-08-27T03:30:24Z",
-          "earnedTotal": 52,
+          "lastUpdatedDateTime": "2026-08-29T06:35:54Z",
+          "earnedTotal": 55,
           "definedTotal": 72,
-          "ratio": "52/72",
+          "ratio": "55/72",
           "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=moviesanywhere02-20",
           "bootCount": "Unknown"
         },
@@ -13530,12 +13584,12 @@
       "activeHunt": {
         "title": "Sniper Elite 5",
         "amazonAffiliateUrl": "https://www.amazon.com/s?k=Sniper%20Elite%205&tag=moviesanywhere02-20",
-        "progress": 59,
+        "progress": 63,
         "velocity": {
           "firstEarned": "5/31/2026, 5:39:34 AM",
-          "huntingDuration": "88 days",
+          "huntingDuration": "90 days",
           "hunterPersona": "Casual Pursuit",
-          "completionStatus": "52/72"
+          "completionStatus": "55/72"
         },
         "groups": [
           {
@@ -13561,14 +13615,14 @@
           },
           {
             "trophyGroupId": "001",
-            "progress": 36,
+            "progress": 72,
             "earnedTrophies": {
-              "bronze": 2,
-              "silver": 1,
+              "bronze": 4,
+              "silver": 2,
               "gold": 0,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-08-23T11:20:29Z",
+            "lastUpdatedDateTime": "2026-08-29T06:35:54Z",
             "trophyGroupName": "Wolf Mountain",
             "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/835342ce-169d-4ae2-a705-eac2eedf7df5.png",
             "definedTrophies": {
@@ -13578,7 +13632,7 @@
               "platinum": 0
             },
             "name": "Wolf Mountain",
-            "ratio": "3/8"
+            "ratio": "6/8"
           },
           {
             "trophyGroupId": "002",
@@ -13706,7 +13760,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 5:39:34 AM",
-            "earnedAge": "2 months, 4 weeks, 1 day, 18 hours, 18 mins",
+            "earnedAge": "2 months, 4 weeks, 1 day, 21 hours, 35 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0
@@ -13729,7 +13783,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 7:10:37 AM",
-            "earnedAge": "2 months, 4 weeks, 1 day, 16 hours, 46 mins",
+            "earnedAge": "2 months, 4 weeks, 1 day, 20 hours, 4 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0
@@ -13752,7 +13806,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:22:57 AM",
-            "earnedAge": "2 months, 4 weeks, 1 day, 14 hours, 34 mins",
+            "earnedAge": "2 months, 4 weeks, 1 day, 17 hours, 52 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0
@@ -13775,7 +13829,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 12:30:03 AM",
-            "earnedAge": "2 months, 3 weeks, 1 day, 23 hours, 27 mins",
+            "earnedAge": "2 months, 3 weeks, 2 days, 2 hours, 45 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0
@@ -13798,7 +13852,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 2:31:33 AM",
-            "earnedAge": "2 months, 3 weeks, 1 day, 21 hours, 26 mins",
+            "earnedAge": "2 months, 3 weeks, 2 days, 43 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0
@@ -13821,7 +13875,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 4:37:01 AM",
-            "earnedAge": "2 months, 3 weeks, 1 day, 19 hours, 20 mins",
+            "earnedAge": "2 months, 3 weeks, 1 day, 22 hours, 38 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0
@@ -13844,7 +13898,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 6:01:02 AM",
-            "earnedAge": "1 month, 2 weeks, 6 days, 17 hours, 56 mins",
+            "earnedAge": "1 month, 2 weeks, 6 days, 21 hours, 14 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0
@@ -13867,7 +13921,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 3:09:14 AM",
-            "earnedAge": "1 month, 2 weeks, 3 days, 20 hours, 48 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 6 mins",
             "timestamp": 1783840154000,
             "currentValue": 0,
             "targetValue": 0
@@ -13891,7 +13945,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/21/2026, 7:58:34 PM",
-            "earnedAge": "1 week, 3 hours, 59 mins",
+            "earnedAge": "1 week, 7 hours, 16 mins",
             "timestamp": 1787356714000,
             "currentValue": 0,
             "targetValue": "600"
@@ -13915,7 +13969,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 2:29:22 AM",
-            "earnedAge": "1 month, 2 weeks, 3 days, 21 hours, 28 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 46 mins",
             "timestamp": 1783837762000,
             "currentValue": 0,
             "targetValue": "40"
@@ -13938,7 +13992,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 3:21:21 AM",
-            "earnedAge": "1 month, 2 weeks, 3 days, 20 hours, 36 mins",
+            "earnedAge": "1 month, 2 weeks, 3 days, 23 hours, 54 mins",
             "timestamp": 1783840881000,
             "currentValue": 0,
             "targetValue": 0
@@ -13985,7 +14039,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 1:44:51 AM",
-            "earnedAge": "1 month, 2 weeks, 3 days, 22 hours, 12 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 1 hour, 30 mins",
             "timestamp": 1783835091000,
             "currentValue": 0,
             "targetValue": "16"
@@ -14008,7 +14062,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/25/2026, 2:27:33 AM",
-            "earnedAge": "1 month, 4 days, 21 hours, 30 mins",
+            "earnedAge": "1 month, 5 days, 47 mins",
             "timestamp": 1784960853000,
             "currentValue": 0,
             "targetValue": 0
@@ -14031,7 +14085,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/22/2026, 4:25:24 AM",
-            "earnedAge": "1 month, 1 week, 19 hours, 32 mins",
+            "earnedAge": "1 month, 1 week, 22 hours, 50 mins",
             "timestamp": 1784708724000,
             "currentValue": 0,
             "targetValue": 0
@@ -14077,7 +14131,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 5:39:35 AM",
-            "earnedAge": "2 months, 4 weeks, 1 day, 18 hours, 18 mins",
+            "earnedAge": "2 months, 4 weeks, 1 day, 21 hours, 35 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0
@@ -14100,7 +14154,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "5/31/2026, 9:08:00 AM",
-            "earnedAge": "2 months, 4 weeks, 1 day, 14 hours, 49 mins",
+            "earnedAge": "2 months, 4 weeks, 1 day, 18 hours, 7 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0
@@ -14123,7 +14177,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 1:09:35 AM",
-            "earnedAge": "1 month, 2 weeks, 3 days, 22 hours, 48 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 2 hours, 5 mins",
             "timestamp": 1783832975000,
             "currentValue": 0,
             "targetValue": 0
@@ -14243,7 +14297,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/28/2026, 7:42:16 PM",
-            "earnedAge": "1 month, 1 day, 4 hours, 15 mins",
+            "earnedAge": "1 month, 1 day, 7 hours, 33 mins",
             "timestamp": 1785282136000,
             "currentValue": 0,
             "targetValue": "150"
@@ -14267,7 +14321,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/7/2026, 8:48:36 PM",
-            "earnedAge": "3 weeks, 3 hours, 9 mins",
+            "earnedAge": "3 weeks, 6 hours, 26 mins",
             "timestamp": 1786150116000,
             "currentValue": 0,
             "targetValue": "300"
@@ -14291,7 +14345,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 11:45:56 PM",
-            "earnedAge": "1 month, 2 weeks, 4 days, 11 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 3 hours, 29 mins",
             "timestamp": 1783827956000,
             "currentValue": 0,
             "targetValue": "350"
@@ -14315,7 +14369,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/30/2026, 1:37:10 AM",
-            "earnedAge": "4 weeks, 1 day, 22 hours, 20 mins",
+            "earnedAge": "1 month, 1 hour, 38 mins",
             "timestamp": 1785389830000,
             "currentValue": 0,
             "targetValue": "100000"
@@ -14339,7 +14393,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 2:47:40 AM",
-            "earnedAge": "1 month, 2 weeks, 6 days, 21 hours, 9 mins",
+            "earnedAge": "1 month, 3 weeks, 27 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50"
@@ -14363,7 +14417,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/20/2026, 8:08:27 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 15 hours, 49 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 19 hours, 6 mins",
             "timestamp": 1784549307000,
             "currentValue": 0,
             "targetValue": "150"
@@ -14411,7 +14465,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/8/2026, 11:47:08 PM",
-            "earnedAge": "1 month, 3 weeks, 10 mins",
+            "earnedAge": "1 month, 3 weeks, 3 hours, 28 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20"
@@ -14435,7 +14489,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 2:28:49 AM",
-            "earnedAge": "1 month, 2 weeks, 3 days, 21 hours, 28 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 46 mins",
             "timestamp": 1783837729000,
             "currentValue": 0,
             "targetValue": "50"
@@ -14458,7 +14512,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/9/2026, 12:57:10 AM",
-            "earnedAge": "1 month, 2 weeks, 6 days, 23 hours",
+            "earnedAge": "1 month, 3 weeks, 2 hours, 18 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0
@@ -14482,7 +14536,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 7:56:27 PM",
-            "earnedAge": "1 month, 2 weeks, 4 days, 4 hours, 1 min",
+            "earnedAge": "1 month, 2 weeks, 4 days, 7 hours, 18 mins",
             "timestamp": 1783814187000,
             "currentValue": 0,
             "targetValue": "20"
@@ -14505,7 +14559,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 3:17:32 AM",
-            "earnedAge": "1 month, 2 weeks, 3 days, 20 hours, 40 mins",
+            "earnedAge": "1 month, 2 weeks, 3 days, 23 hours, 57 mins",
             "timestamp": 1783840652000,
             "currentValue": 0,
             "targetValue": 0
@@ -14529,7 +14583,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 8:50:07 PM",
-            "earnedAge": "1 month, 2 weeks, 4 days, 3 hours, 7 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 6 hours, 25 mins",
             "timestamp": 1783817407000,
             "currentValue": 0,
             "targetValue": "50"
@@ -14553,7 +14607,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 11:30:33 PM",
-            "earnedAge": "1 month, 2 weeks, 4 days, 27 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 3 hours, 44 mins",
             "timestamp": 1783827033000,
             "currentValue": 0,
             "targetValue": "250"
@@ -14577,7 +14631,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 12:11:02 AM",
-            "earnedAge": "1 month, 2 weeks, 3 days, 23 hours, 46 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 3 hours, 4 mins",
             "timestamp": 1783829462000,
             "currentValue": 0,
             "targetValue": "50"
@@ -14601,7 +14655,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 6:38:04 PM",
-            "earnedAge": "1 month, 2 weeks, 4 days, 5 hours, 19 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 8 hours, 37 mins",
             "timestamp": 1783809484000,
             "currentValue": 0,
             "targetValue": "100"
@@ -14625,7 +14679,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/24/2026, 9:07:07 PM",
-            "earnedAge": "1 month, 5 days, 2 hours, 50 mins",
+            "earnedAge": "1 month, 5 days, 6 hours, 8 mins",
             "timestamp": 1784941627000,
             "currentValue": 0,
             "targetValue": "50"
@@ -14649,7 +14703,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 2:26:14 AM",
-            "earnedAge": "1 month, 2 weeks, 3 days, 21 hours, 31 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 49 mins",
             "timestamp": 1783837574000,
             "currentValue": 0,
             "targetValue": "41"
@@ -14673,7 +14727,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/11/2026, 7:59:36 PM",
-            "earnedAge": "1 month, 2 weeks, 4 days, 3 hours, 58 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 7 hours, 15 mins",
             "timestamp": 1783814376000,
             "currentValue": 0,
             "targetValue": "39"
@@ -14697,7 +14751,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/12/2026, 2:55:08 AM",
-            "earnedAge": "1 month, 2 weeks, 3 days, 21 hours, 2 mins",
+            "earnedAge": "1 month, 2 weeks, 4 days, 20 mins",
             "timestamp": 1783839308000,
             "currentValue": 0,
             "targetValue": "24"
@@ -14721,7 +14775,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/20/2026, 3:52:37 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 20 hours, 4 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 23 hours, 22 mins",
             "timestamp": 1784533957000,
             "currentValue": 0,
             "targetValue": "24"
@@ -14745,7 +14799,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/29/2026, 3:59:45 AM",
-            "earnedAge": "1 month, 19 hours, 57 mins",
+            "earnedAge": "1 month, 23 hours, 15 mins",
             "timestamp": 1785311985000,
             "currentValue": 0,
             "targetValue": "24"
@@ -14768,7 +14822,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/22/2026, 12:55:17 AM",
-            "earnedAge": "6 days, 23 hours, 2 mins",
+            "earnedAge": "1 week, 2 hours, 20 mins",
             "timestamp": 1787374517000,
             "currentValue": 0,
             "targetValue": 0
@@ -14791,7 +14845,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/6/2026, 11:57:12 PM",
-            "earnedAge": "2 months, 3 weeks, 2 days",
+            "earnedAge": "2 months, 3 weeks, 2 days, 3 hours, 18 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0
@@ -14815,7 +14869,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "6/7/2026, 5:57:02 AM",
-            "earnedAge": "2 months, 3 weeks, 1 day, 18 hours",
+            "earnedAge": "2 months, 3 weeks, 1 day, 21 hours, 18 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3"
@@ -14861,7 +14915,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/23/2026, 6:38:40 AM",
-            "earnedAge": "5 days, 17 hours, 18 mins",
+            "earnedAge": "5 days, 20 hours, 36 mins",
             "timestamp": 1787481520000,
             "currentValue": 0,
             "targetValue": 0
@@ -14884,7 +14938,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "7/22/2026, 1:01:45 AM",
-            "earnedAge": "1 month, 1 week, 22 hours, 55 mins",
+            "earnedAge": "1 month, 1 week, 1 day, 2 hours, 13 mins",
             "timestamp": 1784696505000,
             "currentValue": 0,
             "targetValue": 0
@@ -14907,7 +14961,7 @@
             "groupName": "Sniper Elite 5",
             "earned": true,
             "earnedDate": "8/21/2026, 8:35:24 PM",
-            "earnedAge": "1 week, 3 hours, 22 mins",
+            "earnedAge": "1 week, 6 hours, 40 mins",
             "timestamp": 1787358924000,
             "currentValue": 0,
             "targetValue": 0
@@ -14953,11 +15007,11 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "3",
+            "earned": true,
+            "earnedDate": "8/29/2026, 1:39:48 AM",
+            "earnedAge": "1 hour, 35 mins",
+            "timestamp": 1787981988000,
+            "currentValue": 0,
             "targetValue": "5"
           },
           {
@@ -14976,10 +15030,10 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "earned": true,
+            "earnedDate": "8/29/2026, 2:09:47 AM",
+            "earnedAge": "1 hour, 5 mins",
+            "timestamp": 1787983787000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -15002,7 +15056,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/23/2026, 7:20:28 AM",
-            "earnedAge": "5 days, 16 hours, 37 mins",
+            "earnedAge": "5 days, 19 hours, 54 mins",
             "timestamp": 1787484028000,
             "currentValue": 0,
             "targetValue": "300"
@@ -15023,10 +15077,10 @@
             "earnedRate": "0.0",
             "hidden": false,
             "groupName": "Wolf Mountain",
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
+            "earned": true,
+            "earnedDate": "8/29/2026, 2:35:54 AM",
+            "earnedAge": "39 mins",
+            "timestamp": 1787985354000,
             "currentValue": 0,
             "targetValue": 0
           },
@@ -15071,7 +15125,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/8/2026, 4:12:07 AM",
-            "earnedAge": "2 weeks, 6 days, 19 hours, 45 mins",
+            "earnedAge": "2 weeks, 6 days, 23 hours, 3 mins",
             "timestamp": 1786176727000,
             "currentValue": 0,
             "targetValue": 0
@@ -15095,7 +15149,7 @@
             "groupName": "Wolf Mountain",
             "earned": true,
             "earnedDate": "8/8/2026, 4:12:08 AM",
-            "earnedAge": "2 weeks, 6 days, 19 hours, 45 mins",
+            "earnedAge": "2 weeks, 6 days, 23 hours, 3 mins",
             "timestamp": 1786176728000,
             "currentValue": 0,
             "targetValue": "2"
@@ -15141,7 +15195,7 @@
             "groupName": "Landing Force",
             "earned": true,
             "earnedDate": "7/20/2026, 9:21:29 AM",
-            "earnedAge": "1 month, 1 week, 2 days, 14 hours, 36 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 17 hours, 53 mins",
             "timestamp": 1784553689000,
             "currentValue": 0,
             "targetValue": 0
@@ -15164,7 +15218,7 @@
             "groupName": "Conqueror",
             "earned": true,
             "earnedDate": "8/26/2026, 11:30:24 PM",
-            "earnedAge": "2 days, 27 mins",
+            "earnedAge": "2 days, 3 hours, 45 mins",
             "timestamp": 1787801424000,
             "currentValue": 0,
             "targetValue": 0
@@ -15187,7 +15241,7 @@
             "groupName": "Conqueror",
             "earned": true,
             "earnedDate": "8/26/2026, 11:30:19 PM",
-            "earnedAge": "2 days, 27 mins",
+            "earnedAge": "2 days, 3 hours, 45 mins",
             "timestamp": 1787801419000,
             "currentValue": 0,
             "targetValue": 0
@@ -15302,7 +15356,7 @@
             "groupName": "Kraken Awakes",
             "earned": true,
             "earnedDate": "7/20/2026, 4:28:46 PM",
-            "earnedAge": "1 month, 1 week, 2 days, 7 hours, 28 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 10 hours, 46 mins",
             "timestamp": 1784579326000,
             "currentValue": 0,
             "targetValue": 0
@@ -15325,7 +15379,7 @@
             "groupName": "Kraken Awakes",
             "earned": true,
             "earnedDate": "7/20/2026, 4:28:45 PM",
-            "earnedAge": "1 month, 1 week, 2 days, 7 hours, 28 mins",
+            "earnedAge": "1 month, 1 week, 2 days, 10 hours, 46 mins",
             "timestamp": 1784579325000,
             "currentValue": 0,
             "targetValue": 0
@@ -15359,11 +15413,35 @@
       "mostRecentTrophies": [
         {
           "game": "Sniper Elite 5",
+          "name": "Covert Elimination",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/881d5abb-ffe0-4f1c-adb8-e21d526acc33.png",
+          "timestamp": 1787985354000,
+          "date": "8/29/2026, 2:35:54 AM",
+          "age": "39 mins"
+        },
+        {
+          "game": "Sniper Elite 5",
+          "name": "Reich To The Point",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d1b0be2c-a414-410e-abc2-7754676cc9fc.png",
+          "timestamp": 1787983787000,
+          "date": "8/29/2026, 2:09:47 AM",
+          "age": "1 hour, 5 mins"
+        },
+        {
+          "game": "Sniper Elite 5",
+          "name": "Führerious Repetition",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/66508739-96e8-487d-94fc-1a4d6fff188b.png",
+          "timestamp": 1787981988000,
+          "date": "8/29/2026, 1:39:48 AM",
+          "age": "1 hour, 35 mins"
+        },
+        {
+          "game": "Sniper Elite 5",
           "name": "Siegebreaker",
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/9492857a-51c1-40f6-badc-5f4974b15679.png",
           "timestamp": 1787801424000,
           "date": "8/26/2026, 11:30:24 PM",
-          "age": "2 days, 27 mins"
+          "age": "2 days, 3 hours, 45 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15371,7 +15449,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/48139b34-ced4-4c93-9e98-6f22b1701bd1.png",
           "timestamp": 1787801419000,
           "date": "8/26/2026, 11:30:19 PM",
-          "age": "2 days, 27 mins"
+          "age": "2 days, 3 hours, 45 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15379,7 +15457,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4aceafe9-e503-40b1-b709-085a2530f25f.png",
           "timestamp": 1787484028000,
           "date": "8/23/2026, 7:20:28 AM",
-          "age": "5 days, 16 hours, 37 mins"
+          "age": "5 days, 19 hours, 54 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15387,7 +15465,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/99edab93-7005-4634-b8ce-0de72d8c7df9.png",
           "timestamp": 1787481520000,
           "date": "8/23/2026, 6:38:40 AM",
-          "age": "5 days, 17 hours, 18 mins"
+          "age": "5 days, 20 hours, 36 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15395,7 +15473,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c2bc77bf-3b96-4b1f-8bbf-9035d5c424a4.png",
           "timestamp": 1787374517000,
           "date": "8/22/2026, 12:55:17 AM",
-          "age": "6 days, 23 hours, 2 mins"
+          "age": "1 week, 2 hours, 20 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15403,7 +15481,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/48b54ce3-510d-4cd1-a6d6-81fa7e864ada.png",
           "timestamp": 1787358924000,
           "date": "8/21/2026, 8:35:24 PM",
-          "age": "1 week, 3 hours, 22 mins"
+          "age": "1 week, 6 hours, 40 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15411,7 +15489,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8dc0e66c-4e79-44fd-95c5-9447c8ca0008.png",
           "timestamp": 1787356714000,
           "date": "8/21/2026, 7:58:34 PM",
-          "age": "1 week, 3 hours, 59 mins"
+          "age": "1 week, 7 hours, 16 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15419,7 +15497,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c212cf07-0bf2-4b56-a617-e10e7f524dbe.png",
           "timestamp": 1786176728000,
           "date": "8/8/2026, 4:12:08 AM",
-          "age": "2 weeks, 6 days, 19 hours, 45 mins"
+          "age": "2 weeks, 6 days, 23 hours, 3 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15427,7 +15505,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3552602f-8568-4f5a-98bd-ff686db0a6fc.png",
           "timestamp": 1786176727000,
           "date": "8/8/2026, 4:12:07 AM",
-          "age": "2 weeks, 6 days, 19 hours, 45 mins"
+          "age": "2 weeks, 6 days, 23 hours, 3 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15435,7 +15513,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e2e38296-39e7-46f8-ac29-64746b727036.png",
           "timestamp": 1786150116000,
           "date": "8/7/2026, 8:48:36 PM",
-          "age": "3 weeks, 3 hours, 9 mins"
+          "age": "3 weeks, 6 hours, 26 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15443,7 +15521,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/fe3a0ec8-7699-4fae-b840-85670b1cf11b.png",
           "timestamp": 1785389830000,
           "date": "7/30/2026, 1:37:10 AM",
-          "age": "4 weeks, 1 day, 22 hours, 20 mins"
+          "age": "1 month, 1 hour, 38 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15451,7 +15529,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/3183744c-91c8-4340-ac4a-5e429c0a61f4.png",
           "timestamp": 1785311985000,
           "date": "7/29/2026, 3:59:45 AM",
-          "age": "1 month, 19 hours, 57 mins"
+          "age": "1 month, 23 hours, 15 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15459,7 +15537,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/e1cbccd2-5c90-41ec-9653-3e39e56ae689.png",
           "timestamp": 1785282136000,
           "date": "7/28/2026, 7:42:16 PM",
-          "age": "1 month, 1 day, 4 hours, 15 mins"
+          "age": "1 month, 1 day, 7 hours, 33 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15467,7 +15545,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c95870e7-4545-4eb0-9c94-26d48461b9fc.png",
           "timestamp": 1784960853000,
           "date": "7/25/2026, 2:27:33 AM",
-          "age": "1 month, 4 days, 21 hours, 30 mins"
+          "age": "1 month, 5 days, 47 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15475,7 +15553,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c5f3010a-c566-4bc9-8ea8-aad2c53c7b21.png",
           "timestamp": 1784941627000,
           "date": "7/24/2026, 9:07:07 PM",
-          "age": "1 month, 5 days, 2 hours, 50 mins"
+          "age": "1 month, 5 days, 6 hours, 8 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15483,7 +15561,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d30e7fed-73bb-427e-80f2-5b199eb625ee.png",
           "timestamp": 1784708724000,
           "date": "7/22/2026, 4:25:24 AM",
-          "age": "1 month, 1 week, 19 hours, 32 mins"
+          "age": "1 month, 1 week, 22 hours, 50 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15491,7 +15569,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/368221f5-a2a4-4696-9bcb-cdea5a482b82.png",
           "timestamp": 1784696505000,
           "date": "7/22/2026, 1:01:45 AM",
-          "age": "1 month, 1 week, 22 hours, 55 mins"
+          "age": "1 month, 1 week, 1 day, 2 hours, 13 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15499,7 +15577,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f8c33498-f881-44bd-843c-2bf78141c1ab.png",
           "timestamp": 1784579326000,
           "date": "7/20/2026, 4:28:46 PM",
-          "age": "1 month, 1 week, 2 days, 7 hours, 28 mins"
+          "age": "1 month, 1 week, 2 days, 10 hours, 46 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15507,7 +15585,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c1842419-7765-45a0-9ccd-3358032dcb8f.png",
           "timestamp": 1784579325000,
           "date": "7/20/2026, 4:28:45 PM",
-          "age": "1 month, 1 week, 2 days, 7 hours, 28 mins"
+          "age": "1 month, 1 week, 2 days, 10 hours, 46 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15515,7 +15593,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/702698d3-3b28-443f-a6da-0bf8087a7456.png",
           "timestamp": 1784553689000,
           "date": "7/20/2026, 9:21:29 AM",
-          "age": "1 month, 1 week, 2 days, 14 hours, 36 mins"
+          "age": "1 month, 1 week, 2 days, 17 hours, 53 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15523,7 +15601,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f0446d48-10f4-4bde-be46-d8019bea9311.png",
           "timestamp": 1784549307000,
           "date": "7/20/2026, 8:08:27 AM",
-          "age": "1 month, 1 week, 2 days, 15 hours, 49 mins"
+          "age": "1 month, 1 week, 2 days, 19 hours, 6 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15531,7 +15609,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/83ec1770-119f-4cda-b294-cf93cfc5bdb3.png",
           "timestamp": 1784533957000,
           "date": "7/20/2026, 3:52:37 AM",
-          "age": "1 month, 1 week, 2 days, 20 hours, 4 mins"
+          "age": "1 month, 1 week, 2 days, 23 hours, 22 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15539,7 +15617,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c6fe9f95-9c4b-463c-bad5-e797cc3a39f7.png",
           "timestamp": 1783840881000,
           "date": "7/12/2026, 3:21:21 AM",
-          "age": "1 month, 2 weeks, 3 days, 20 hours, 36 mins"
+          "age": "1 month, 2 weeks, 3 days, 23 hours, 54 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15547,7 +15625,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/0bb96f58-bc48-404f-b396-33995fdd456d.png",
           "timestamp": 1783840652000,
           "date": "7/12/2026, 3:17:32 AM",
-          "age": "1 month, 2 weeks, 3 days, 20 hours, 40 mins"
+          "age": "1 month, 2 weeks, 3 days, 23 hours, 57 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15555,7 +15633,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ba205084-5d0a-4648-8657-aaa38dd43533.png",
           "timestamp": 1783840154000,
           "date": "7/12/2026, 3:09:14 AM",
-          "age": "1 month, 2 weeks, 3 days, 20 hours, 48 mins"
+          "age": "1 month, 2 weeks, 4 days, 6 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15563,7 +15641,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/d1b43e92-5d28-4cc9-9ac5-d3ce63f7b8bf.png",
           "timestamp": 1783839308000,
           "date": "7/12/2026, 2:55:08 AM",
-          "age": "1 month, 2 weeks, 3 days, 21 hours, 2 mins"
+          "age": "1 month, 2 weeks, 4 days, 20 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15571,7 +15649,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/761c0fa3-7ed7-4f99-a0e1-3de4d8157aae.png",
           "timestamp": 1783837762000,
           "date": "7/12/2026, 2:29:22 AM",
-          "age": "1 month, 2 weeks, 3 days, 21 hours, 28 mins"
+          "age": "1 month, 2 weeks, 4 days, 46 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15579,7 +15657,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6f30398b-e22a-406e-8858-b724b01ddcf5.png",
           "timestamp": 1783837729000,
           "date": "7/12/2026, 2:28:49 AM",
-          "age": "1 month, 2 weeks, 3 days, 21 hours, 28 mins"
+          "age": "1 month, 2 weeks, 4 days, 46 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15587,7 +15665,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/f3a31a12-29c7-4f70-899e-2d800aec3489.png",
           "timestamp": 1783837574000,
           "date": "7/12/2026, 2:26:14 AM",
-          "age": "1 month, 2 weeks, 3 days, 21 hours, 31 mins"
+          "age": "1 month, 2 weeks, 4 days, 49 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15595,7 +15673,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/8c66d9c8-46f8-4612-b3be-9d4c98df287a.png",
           "timestamp": 1783835091000,
           "date": "7/12/2026, 1:44:51 AM",
-          "age": "1 month, 2 weeks, 3 days, 22 hours, 12 mins"
+          "age": "1 month, 2 weeks, 4 days, 1 hour, 30 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15603,7 +15681,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/eb1b1d0e-ccc9-4294-9410-e81aa1821dfe.png",
           "timestamp": 1783832975000,
           "date": "7/12/2026, 1:09:35 AM",
-          "age": "1 month, 2 weeks, 3 days, 22 hours, 48 mins"
+          "age": "1 month, 2 weeks, 4 days, 2 hours, 5 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15611,7 +15689,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/bb867a5e-ac51-44d3-89a0-8e35a4f6d191.png",
           "timestamp": 1783829462000,
           "date": "7/12/2026, 12:11:02 AM",
-          "age": "1 month, 2 weeks, 3 days, 23 hours, 46 mins"
+          "age": "1 month, 2 weeks, 4 days, 3 hours, 4 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15619,7 +15697,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/179b85d2-7b74-4bee-8d07-28e5710738a0.png",
           "timestamp": 1783827956000,
           "date": "7/11/2026, 11:45:56 PM",
-          "age": "1 month, 2 weeks, 4 days, 11 mins"
+          "age": "1 month, 2 weeks, 4 days, 3 hours, 29 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15627,7 +15705,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/af2c0033-427c-4fff-befc-59eb5ac6a0ca.png",
           "timestamp": 1783827033000,
           "date": "7/11/2026, 11:30:33 PM",
-          "age": "1 month, 2 weeks, 4 days, 27 mins"
+          "age": "1 month, 2 weeks, 4 days, 3 hours, 44 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15635,7 +15713,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/ecd5a5ce-ab47-4165-b965-4704b194e2af.png",
           "timestamp": 1783817407000,
           "date": "7/11/2026, 8:50:07 PM",
-          "age": "1 month, 2 weeks, 4 days, 3 hours, 7 mins"
+          "age": "1 month, 2 weeks, 4 days, 6 hours, 25 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15643,7 +15721,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/c7fd0246-3d96-47fd-8ea8-4f6a96aec5c2.png",
           "timestamp": 1783814376000,
           "date": "7/11/2026, 7:59:36 PM",
-          "age": "1 month, 2 weeks, 4 days, 3 hours, 58 mins"
+          "age": "1 month, 2 weeks, 4 days, 7 hours, 15 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15651,7 +15729,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/134f9030-0fee-4b0e-9efc-79a603aee163.png",
           "timestamp": 1783814187000,
           "date": "7/11/2026, 7:56:27 PM",
-          "age": "1 month, 2 weeks, 4 days, 4 hours, 1 min"
+          "age": "1 month, 2 weeks, 4 days, 7 hours, 18 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15659,7 +15737,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40109781-5a63-4f98-abc0-263fc65548e0.png",
           "timestamp": 1783809484000,
           "date": "7/11/2026, 6:38:04 PM",
-          "age": "1 month, 2 weeks, 4 days, 5 hours, 19 mins"
+          "age": "1 month, 2 weeks, 4 days, 8 hours, 37 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15667,7 +15745,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/72e4865a-9bff-40b7-9088-5c2e28093d4a.png",
           "timestamp": 1783591262000,
           "date": "7/9/2026, 6:01:02 AM",
-          "age": "1 month, 2 weeks, 6 days, 17 hours, 56 mins"
+          "age": "1 month, 2 weeks, 6 days, 21 hours, 14 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15675,7 +15753,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/b9935f99-22ce-47e7-9691-d97181d974c2.png",
           "timestamp": 1783579660000,
           "date": "7/9/2026, 2:47:40 AM",
-          "age": "1 month, 2 weeks, 6 days, 21 hours, 9 mins"
+          "age": "1 month, 3 weeks, 27 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15683,7 +15761,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/4ad31c4e-975a-4953-a1b9-7b14b3aa0d45.png",
           "timestamp": 1783573030000,
           "date": "7/9/2026, 12:57:10 AM",
-          "age": "1 month, 2 weeks, 6 days, 23 hours"
+          "age": "1 month, 3 weeks, 2 hours, 18 mins"
         },
         {
           "game": "Sniper Elite 5",
@@ -15691,7 +15769,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/6d493257-9d84-49d4-9d46-8abaf96f9f3b.png",
           "timestamp": 1783568828000,
           "date": "7/8/2026, 11:47:08 PM",
-          "age": "1 month, 3 weeks, 10 mins"
+          "age": "1 month, 3 weeks, 3 hours, 28 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -15699,7 +15777,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/1bac352a-25a2-4385-966c-faf4db28d6ae.png",
           "timestamp": 1783555348000,
           "date": "7/8/2026, 8:02:28 PM",
-          "age": "1 month, 3 weeks, 3 hours, 55 mins"
+          "age": "1 month, 3 weeks, 7 hours, 12 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -15707,7 +15785,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/d36d60d9-0403-4515-8b2b-62c22b4fdf9f.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 5:02:18 PM",
-          "age": "1 month, 3 weeks, 6 hours, 55 mins"
+          "age": "1 month, 3 weeks, 10 hours, 13 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -15715,7 +15793,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0e9de15f-2a07-4627-bf54-562c9069ffc3.png",
           "timestamp": 1783544538000,
           "date": "7/8/2026, 5:02:18 PM",
-          "age": "1 month, 3 weeks, 6 hours, 55 mins"
+          "age": "1 month, 3 weeks, 10 hours, 13 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -15723,7 +15801,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/139f092a-5fb5-4a21-ad57-415ee97bd2c2.png",
           "timestamp": 1783541284000,
           "date": "7/8/2026, 4:08:04 PM",
-          "age": "1 month, 3 weeks, 7 hours, 49 mins"
+          "age": "1 month, 3 weeks, 11 hours, 7 mins"
         },
         {
           "game": "Expeditions: A Mudrunner Game",
@@ -15731,31 +15809,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR39117_00/0eaebb9e-b10b-450b-be02-2fd734a441f6.png",
           "timestamp": 1783540291000,
           "date": "7/8/2026, 3:51:31 PM",
-          "age": "1 month, 3 weeks, 8 hours, 6 mins"
-        },
-        {
-          "game": "LEGO® Star Wars™ II: The Original Trilogy",
-          "name": "End of the Beginning",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/51286ba0-cd83-43e1-a05f-b61b45338a39.png",
-          "timestamp": 1781835746000,
-          "date": "6/18/2026, 10:22:26 PM",
-          "age": "2 months, 1 week, 4 days, 1 hour, 35 mins"
-        },
-        {
-          "game": "LEGO® Star Wars™ II: The Original Trilogy",
-          "name": "Not the Arm!",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/dfea8051-1069-4b36-aa19-ad69bf37e018.png",
-          "timestamp": 1781834713000,
-          "date": "6/18/2026, 10:05:13 PM",
-          "age": "2 months, 1 week, 4 days, 1 hour, 52 mins"
-        },
-        {
-          "game": "LEGO® Star Wars™ II: The Original Trilogy",
-          "name": "Teamwork Makes the Dream Work",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR36496_00/64aeea65-eb3f-4687-beb4-5c7a3c04d518.png",
-          "timestamp": 1781832897000,
-          "date": "6/18/2026, 9:34:57 PM",
-          "age": "2 months, 1 week, 4 days, 2 hours, 22 mins"
+          "age": "1 month, 3 weeks, 11 hours, 23 mins"
         }
       ],
       "streamHistory": [],
@@ -15764,7 +15818,7 @@
           "npCommunicationId": "NPWR21465_00",
           "name": "Sniper Elite 5",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR21465_00/40ef1bb9-1c54-4133-8a9d-cb511bac28c2.png",
-          "lastPlayed": "2026-08-27T03:30:24Z",
+          "lastPlayed": "2026-08-29T06:35:54Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.00",
           "trophyTitleName": "Sniper Elite 5",
@@ -15778,16 +15832,16 @@
             "gold": 5,
             "platinum": 1
           },
-          "progress": 59,
+          "progress": 63,
           "earnedTrophies": {
-            "bronze": 43,
-            "silver": 8,
+            "bronze": 45,
+            "silver": 9,
             "gold": 1,
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-08-27T03:30:24Z",
-          "earnedTotal": 52,
+          "lastUpdatedDateTime": "2026-08-29T06:35:54Z",
+          "earnedTotal": 55,
           "definedTotal": 72
         },
         {
@@ -17780,14 +17834,6 @@
             "activationType": "PRIMARY",
             "activationDate": "2026-08-08T05:25:38.313Z",
             "accountDeviceVector": "LmaX00YEKEenCLC7eXvLBg"
-          },
-          {
-            "deviceId": "5053c2f9a1e69a6afab9e8a6292af2b0dee2dff907014e8ec698b757081964a64192",
-            "deviceType": "PS5",
-            "activationType": "TEMPORARY",
-            "activationDate": "2026-08-29T02:38:08.897Z",
-            "deactivationDate": "2026-08-29T06:38:08.893Z",
-            "accountDeviceVector": "KzRaC+oSClsD2mb0cOtQjQ"
           }
         ]
       },
@@ -17825,21 +17871,13 @@
           "isMe": true
         },
         "presence": {
-          "availability": "availableToPlay",
+          "availability": "unavailable",
+          "lastAvailableDate": "2026-08-29T07:09:35.428Z",
           "primaryPlatformInfo": {
-            "onlineStatus": "online",
+            "onlineStatus": "offline",
             "platform": "PS5",
-            "lastOnlineDate": "2026-08-27T03:31:19.566Z"
-          },
-          "gameTitleInfoList": [
-            {
-              "npTitleId": "PPSA01685_00",
-              "titleName": "Sniper Elite 5",
-              "format": "PS5",
-              "launchPlatform": "PS5",
-              "conceptIconUrl": "https://image.api.playstation.com/vulcan/ap/rnd/202202/2116/59jHCjMBRhuRhPUKUUy2gkNd.png"
-            }
-          ]
+            "lastOnlineDate": "2026-08-29T07:09:35.428Z"
+          }
         },
         "telemetry": [],
         "titles": [
@@ -17858,15 +17896,15 @@
               "gold": 5,
               "platinum": 1
             },
-            "progress": 59,
+            "progress": 63,
             "earnedTrophies": {
-              "bronze": 43,
-              "silver": 8,
+              "bronze": 45,
+              "silver": 9,
               "gold": 1,
               "platinum": 0
             },
             "hiddenFlag": false,
-            "lastUpdatedDateTime": "2026-08-27T03:30:24Z"
+            "lastUpdatedDateTime": "2026-08-29T06:35:54Z"
           },
           {
             "npServiceName": "trophy2",
@@ -19579,14 +19617,6 @@
               "activationType": "PRIMARY",
               "activationDate": "2026-08-08T05:25:38.313Z",
               "accountDeviceVector": "LmaX00YEKEenCLC7eXvLBg"
-            },
-            {
-              "deviceId": "5053c2f9a1e69a6afab9e8a6292af2b0dee2dff907014e8ec698b757081964a64192",
-              "deviceType": "PS5",
-              "activationType": "TEMPORARY",
-              "activationDate": "2026-08-29T02:38:08.897Z",
-              "deactivationDate": "2026-08-29T06:38:08.893Z",
-              "accountDeviceVector": "KzRaC+oSClsD2mb0cOtQjQ"
             }
           ]
         },
@@ -19598,7 +19628,7 @@
           "totalItemCount": 0
         }
       },
-      "lastUpdated": "8/28/2026, 11:58:01 PM"
+      "lastUpdated": "8/29/2026, 3:15:46 AM"
     },
     "Darkwing69420": {
       "onlineId": "Darkwing69420",
@@ -19632,11 +19662,11 @@
       "npssoStatus": "ACTIVE",
       "handshakeText": "DARKWING69420 HANDSHAKE: FIREBASE LIVE",
       "handshakeState": "LIVE",
-      "online": false,
-      "currentGame": "Fishing: North Atlantic",
+      "online": true,
+      "currentGame": "Fishing: North Atlantic Enhanced Edition",
       "currentGameArt": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/36bacb2a-cc10-4192-9738-36b6d7dd87b7.png",
       "currentGameActivity": "Pot with friend",
-      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Fishing%3A%20North%20Atlantic&tag=moviesanywhere02-20",
+      "amazonAffiliateUrl": "https://www.amazon.com/s?k=Fishing%3A%20North%20Atlantic%20Enhanced%20Edition&tag=moviesanywhere02-20",
       "currentCommunicationId": "NPWR26028_00",
       "platform": "PS5",
       "twitch": {
@@ -19690,7 +19720,7 @@
           "npCommunicationId": "NPWR26028_00",
           "name": "Fishing: North Atlantic",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/36bacb2a-cc10-4192-9738-36b6d7dd87b7.png",
-          "lastPlayed": "2026-08-28T08:32:36Z",
+          "lastPlayed": "2026-08-29T07:08:25Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.01",
           "trophyTitleName": "Fishing: North Atlantic",
@@ -19712,7 +19742,7 @@
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-08-28T08:32:36Z",
+          "lastUpdatedDateTime": "2026-08-29T07:08:25Z",
           "earnedTotal": 29,
           "definedTotal": 52,
           "ratio": "29/52",
@@ -20476,7 +20506,7 @@
               "gold": 1,
               "platinum": 0
             },
-            "lastUpdatedDateTime": "2026-08-28T08:32:35Z",
+            "lastUpdatedDateTime": "2026-08-29T07:08:24Z",
             "trophyGroupName": "Fishing: North Atlantic",
             "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/36bacb2a-cc10-4192-9738-36b6d7dd87b7.png",
             "definedTrophies": {
@@ -20551,7 +20581,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/19/2026, 2:00:54 AM",
-            "earnedAge": "1 week, 2 days, 21 hours, 57 mins",
+            "earnedAge": "1 week, 3 days, 1 hour, 14 mins",
             "timestamp": 1787119254000,
             "currentValue": 0,
             "targetValue": 0
@@ -20575,7 +20605,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/22/2026, 12:56:29 AM",
-            "earnedAge": "6 days, 23 hours, 1 min",
+            "earnedAge": "1 week, 2 hours, 19 mins",
             "timestamp": 1787374589000,
             "currentValue": 0,
             "targetValue": "100"
@@ -20599,7 +20629,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/22/2026, 12:56:29 AM",
-            "earnedAge": "6 days, 23 hours, 1 min",
+            "earnedAge": "1 week, 2 hours, 19 mins",
             "timestamp": 1787374589000,
             "currentValue": 0,
             "targetValue": "1000"
@@ -20671,7 +20701,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/19/2026, 7:02:17 PM",
-            "earnedAge": "1 week, 2 days, 4 hours, 55 mins",
+            "earnedAge": "1 week, 2 days, 8 hours, 13 mins",
             "timestamp": 1787180537000,
             "currentValue": 0,
             "targetValue": "100"
@@ -20695,7 +20725,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/19/2026, 7:02:17 PM",
-            "earnedAge": "1 week, 2 days, 4 hours, 55 mins",
+            "earnedAge": "1 week, 2 days, 8 hours, 13 mins",
             "timestamp": 1787180537000,
             "currentValue": 0,
             "targetValue": "1000"
@@ -20719,7 +20749,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/20/2026, 7:17:47 PM",
-            "earnedAge": "1 week, 1 day, 4 hours, 40 mins",
+            "earnedAge": "1 week, 1 day, 7 hours, 58 mins",
             "timestamp": 1787267867000,
             "currentValue": 0,
             "targetValue": "10000"
@@ -20743,7 +20773,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/26/2026, 3:21:27 AM",
-            "earnedAge": "2 days, 20 hours, 36 mins",
+            "earnedAge": "2 days, 23 hours, 54 mins",
             "timestamp": 1787728887000,
             "currentValue": 0,
             "targetValue": "100000"
@@ -20767,7 +20797,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/22/2026, 1:02:48 AM",
-            "earnedAge": "6 days, 22 hours, 55 mins",
+            "earnedAge": "1 week, 2 hours, 13 mins",
             "timestamp": 1787374968000,
             "currentValue": 0,
             "targetValue": "100"
@@ -20791,7 +20821,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/22/2026, 3:04:09 AM",
-            "earnedAge": "6 days, 20 hours, 53 mins",
+            "earnedAge": "1 week, 11 mins",
             "timestamp": 1787382249000,
             "currentValue": 0,
             "targetValue": "1000"
@@ -20815,7 +20845,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/26/2026, 1:40:21 AM",
-            "earnedAge": "2 days, 22 hours, 17 mins",
+            "earnedAge": "3 days, 1 hour, 35 mins",
             "timestamp": 1787722821000,
             "currentValue": 0,
             "targetValue": "10000"
@@ -20863,7 +20893,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/19/2026, 6:37:33 PM",
-            "earnedAge": "1 week, 2 days, 5 hours, 20 mins",
+            "earnedAge": "1 week, 2 days, 8 hours, 38 mins",
             "timestamp": 1787179053000,
             "currentValue": 0,
             "targetValue": "100"
@@ -20887,7 +20917,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/20/2026, 7:11:17 AM",
-            "earnedAge": "1 week, 1 day, 16 hours, 46 mins",
+            "earnedAge": "1 week, 1 day, 20 hours, 4 mins",
             "timestamp": 1787224277000,
             "currentValue": 0,
             "targetValue": "1000"
@@ -20911,7 +20941,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/20/2026, 7:04:12 PM",
-            "earnedAge": "1 week, 1 day, 4 hours, 53 mins",
+            "earnedAge": "1 week, 1 day, 8 hours, 11 mins",
             "timestamp": 1787267052000,
             "currentValue": 0,
             "targetValue": "10000"
@@ -20935,7 +20965,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/26/2026, 1:53:55 AM",
-            "earnedAge": "2 days, 22 hours, 4 mins",
+            "earnedAge": "3 days, 1 hour, 21 mins",
             "timestamp": 1787723635000,
             "currentValue": 0,
             "targetValue": "100000"
@@ -20959,7 +20989,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/28/2026, 3:54:30 AM",
-            "earnedAge": "20 hours, 3 mins",
+            "earnedAge": "23 hours, 21 mins",
             "timestamp": 1787903670000,
             "currentValue": 0,
             "targetValue": "100"
@@ -20985,7 +21015,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "174",
+            "currentValue": "177",
             "targetValue": "500"
           },
           {
@@ -21009,7 +21039,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "174",
+            "currentValue": "177",
             "targetValue": "1000"
           },
           {
@@ -21033,7 +21063,7 @@
             "earnedDate": null,
             "earnedAge": null,
             "timestamp": 0,
-            "currentValue": "174",
+            "currentValue": "177",
             "targetValue": "5000"
           },
           {
@@ -21055,7 +21085,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/24/2026, 6:37:49 PM",
-            "earnedAge": "4 days, 5 hours, 20 mins",
+            "earnedAge": "4 days, 8 hours, 38 mins",
             "timestamp": 1787611069000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21151,7 +21181,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/19/2026, 2:00:54 AM",
-            "earnedAge": "1 week, 2 days, 21 hours, 57 mins",
+            "earnedAge": "1 week, 3 days, 1 hour, 14 mins",
             "timestamp": 1787119254000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21175,7 +21205,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/19/2026, 4:10:38 AM",
-            "earnedAge": "1 week, 2 days, 19 hours, 47 mins",
+            "earnedAge": "1 week, 2 days, 23 hours, 5 mins",
             "timestamp": 1787127038000,
             "currentValue": 0,
             "targetValue": "1000"
@@ -21199,7 +21229,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/19/2026, 4:02:00 PM",
-            "earnedAge": "1 week, 2 days, 7 hours, 56 mins",
+            "earnedAge": "1 week, 2 days, 11 hours, 13 mins",
             "timestamp": 1787169720000,
             "currentValue": 0,
             "targetValue": "10000"
@@ -21343,7 +21373,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/26/2026, 1:40:21 AM",
-            "earnedAge": "2 days, 22 hours, 17 mins",
+            "earnedAge": "3 days, 1 hour, 35 mins",
             "timestamp": 1787722821000,
             "currentValue": 0,
             "targetValue": "10000"
@@ -21439,7 +21469,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/22/2026, 3:04:09 AM",
-            "earnedAge": "6 days, 20 hours, 53 mins",
+            "earnedAge": "1 week, 11 mins",
             "timestamp": 1787382249000,
             "currentValue": 0,
             "targetValue": "100"
@@ -21463,7 +21493,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/26/2026, 1:48:43 AM",
-            "earnedAge": "2 days, 22 hours, 9 mins",
+            "earnedAge": "3 days, 1 hour, 27 mins",
             "timestamp": 1787723323000,
             "currentValue": 0,
             "targetValue": "1000"
@@ -21487,7 +21517,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/26/2026, 4:24:19 AM",
-            "earnedAge": "2 days, 19 hours, 33 mins",
+            "earnedAge": "2 days, 22 hours, 51 mins",
             "timestamp": 1787732659000,
             "currentValue": 0,
             "targetValue": "10000"
@@ -21535,7 +21565,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/19/2026, 4:27:38 PM",
-            "earnedAge": "1 week, 2 days, 7 hours, 30 mins",
+            "earnedAge": "1 week, 2 days, 10 hours, 48 mins",
             "timestamp": 1787171258000,
             "currentValue": 0,
             "targetValue": "5"
@@ -21558,7 +21588,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/19/2026, 2:08:20 PM",
-            "earnedAge": "1 week, 2 days, 9 hours, 49 mins",
+            "earnedAge": "1 week, 2 days, 13 hours, 7 mins",
             "timestamp": 1787162900000,
             "currentValue": 0,
             "targetValue": 0
@@ -21581,7 +21611,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/19/2026, 2:24:30 PM",
-            "earnedAge": "1 week, 2 days, 9 hours, 33 mins",
+            "earnedAge": "1 week, 2 days, 12 hours, 51 mins",
             "timestamp": 1787163870000,
             "currentValue": 0,
             "targetValue": 0
@@ -21604,7 +21634,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/19/2026, 4:43:31 AM",
-            "earnedAge": "1 week, 2 days, 19 hours, 14 mins",
+            "earnedAge": "1 week, 2 days, 22 hours, 32 mins",
             "timestamp": 1787129011000,
             "currentValue": 0,
             "targetValue": 0
@@ -21627,7 +21657,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/19/2026, 4:27:38 PM",
-            "earnedAge": "1 week, 2 days, 7 hours, 30 mins",
+            "earnedAge": "1 week, 2 days, 10 hours, 48 mins",
             "timestamp": 1787171258000,
             "currentValue": 0,
             "targetValue": 0
@@ -21650,7 +21680,7 @@
             "groupName": "Fishing: North Atlantic",
             "earned": true,
             "earnedDate": "8/19/2026, 5:39:53 AM",
-            "earnedAge": "1 week, 2 days, 18 hours, 18 mins",
+            "earnedAge": "1 week, 2 days, 21 hours, 35 mins",
             "timestamp": 1787132393000,
             "currentValue": 0,
             "targetValue": 0
@@ -21761,7 +21791,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/1af7bf3f-aa9c-4f3a-8af9-aeeb7e566c34.png",
           "timestamp": 1787903670000,
           "date": "8/28/2026, 3:54:30 AM",
-          "age": "20 hours, 3 mins"
+          "age": "23 hours, 21 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21769,7 +21799,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/779bee44-efcb-4412-b248-a6f833b9cc64.png",
           "timestamp": 1787732659000,
           "date": "8/26/2026, 4:24:19 AM",
-          "age": "2 days, 19 hours, 33 mins"
+          "age": "2 days, 22 hours, 51 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21777,7 +21807,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/4864006e-2493-4513-ad7c-1b83a6204b78.png",
           "timestamp": 1787728887000,
           "date": "8/26/2026, 3:21:27 AM",
-          "age": "2 days, 20 hours, 36 mins"
+          "age": "2 days, 23 hours, 54 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21785,7 +21815,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/91f5c69a-4776-42a3-9df3-658a8d165c39.png",
           "timestamp": 1787723635000,
           "date": "8/26/2026, 1:53:55 AM",
-          "age": "2 days, 22 hours, 4 mins"
+          "age": "3 days, 1 hour, 21 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21793,7 +21823,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/2192c5ff-d823-457a-ba32-a987395dba56.png",
           "timestamp": 1787723323000,
           "date": "8/26/2026, 1:48:43 AM",
-          "age": "2 days, 22 hours, 9 mins"
+          "age": "3 days, 1 hour, 27 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21801,7 +21831,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/5f627011-8861-49d9-b412-c4296a444620.png",
           "timestamp": 1787722821000,
           "date": "8/26/2026, 1:40:21 AM",
-          "age": "2 days, 22 hours, 17 mins"
+          "age": "3 days, 1 hour, 35 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21809,7 +21839,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/14ab5927-7f36-4a83-aade-0f1d32eb956f.png",
           "timestamp": 1787722821000,
           "date": "8/26/2026, 1:40:21 AM",
-          "age": "2 days, 22 hours, 17 mins"
+          "age": "3 days, 1 hour, 35 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21817,7 +21847,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/b9a4eeb1-4d01-4d24-8939-a3a87eca7883.png",
           "timestamp": 1787611069000,
           "date": "8/24/2026, 6:37:49 PM",
-          "age": "4 days, 5 hours, 20 mins"
+          "age": "4 days, 8 hours, 38 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21825,7 +21855,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/e27d1023-ce22-4fe9-9f8e-964eb17e4205.png",
           "timestamp": 1787382249000,
           "date": "8/22/2026, 3:04:09 AM",
-          "age": "6 days, 20 hours, 53 mins"
+          "age": "1 week, 11 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21833,7 +21863,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/7701d8a3-12b6-4f50-b2e1-aaac8dbc0ef9.png",
           "timestamp": 1787382249000,
           "date": "8/22/2026, 3:04:09 AM",
-          "age": "6 days, 20 hours, 53 mins"
+          "age": "1 week, 11 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21841,7 +21871,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/ac48aec5-97cd-4d02-8d7f-b688fc1ae0ab.png",
           "timestamp": 1787374968000,
           "date": "8/22/2026, 1:02:48 AM",
-          "age": "6 days, 22 hours, 55 mins"
+          "age": "1 week, 2 hours, 13 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21849,7 +21879,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/20dbd753-2358-452b-94a9-917d767c510f.png",
           "timestamp": 1787374589000,
           "date": "8/22/2026, 12:56:29 AM",
-          "age": "6 days, 23 hours, 1 min"
+          "age": "1 week, 2 hours, 19 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21857,7 +21887,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/96be8421-63bc-47eb-8e58-e5ab85482542.png",
           "timestamp": 1787374589000,
           "date": "8/22/2026, 12:56:29 AM",
-          "age": "6 days, 23 hours, 1 min"
+          "age": "1 week, 2 hours, 19 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21865,7 +21895,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/e5bb4db5-da74-4555-bc2b-a7bf97a9bc08.png",
           "timestamp": 1787267867000,
           "date": "8/20/2026, 7:17:47 PM",
-          "age": "1 week, 1 day, 4 hours, 40 mins"
+          "age": "1 week, 1 day, 7 hours, 58 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21873,7 +21903,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/c3ff1eb5-aa95-45ea-92de-db2ab99ed8d1.png",
           "timestamp": 1787267052000,
           "date": "8/20/2026, 7:04:12 PM",
-          "age": "1 week, 1 day, 4 hours, 53 mins"
+          "age": "1 week, 1 day, 8 hours, 11 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21881,7 +21911,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/37b173a5-c1d7-48d3-ae32-3406fe293385.png",
           "timestamp": 1787224277000,
           "date": "8/20/2026, 7:11:17 AM",
-          "age": "1 week, 1 day, 16 hours, 46 mins"
+          "age": "1 week, 1 day, 20 hours, 4 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21889,7 +21919,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/4afb6218-dab6-4fd5-a8ff-12d4ee0c63a3.png",
           "timestamp": 1787180537000,
           "date": "8/19/2026, 7:02:17 PM",
-          "age": "1 week, 2 days, 4 hours, 55 mins"
+          "age": "1 week, 2 days, 8 hours, 13 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21897,7 +21927,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/2ccf7b39-fea4-469e-8121-7e030625b550.png",
           "timestamp": 1787180537000,
           "date": "8/19/2026, 7:02:17 PM",
-          "age": "1 week, 2 days, 4 hours, 55 mins"
+          "age": "1 week, 2 days, 8 hours, 13 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21905,7 +21935,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/7acf6201-3b63-4ba5-9d89-4cbdc83d0e08.png",
           "timestamp": 1787179053000,
           "date": "8/19/2026, 6:37:33 PM",
-          "age": "1 week, 2 days, 5 hours, 20 mins"
+          "age": "1 week, 2 days, 8 hours, 38 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21913,7 +21943,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/9cb2f379-038a-4202-9311-be0bec1d81b6.png",
           "timestamp": 1787171258000,
           "date": "8/19/2026, 4:27:38 PM",
-          "age": "1 week, 2 days, 7 hours, 30 mins"
+          "age": "1 week, 2 days, 10 hours, 48 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21921,7 +21951,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/933f3873-707f-4820-88b8-67fa0da53fa2.png",
           "timestamp": 1787171258000,
           "date": "8/19/2026, 4:27:38 PM",
-          "age": "1 week, 2 days, 7 hours, 30 mins"
+          "age": "1 week, 2 days, 10 hours, 48 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21929,7 +21959,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/d6ee7e5d-2704-4a00-9c1e-b8d99849234b.png",
           "timestamp": 1787169720000,
           "date": "8/19/2026, 4:02:00 PM",
-          "age": "1 week, 2 days, 7 hours, 56 mins"
+          "age": "1 week, 2 days, 11 hours, 13 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21937,7 +21967,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/a92ad3aa-fa1e-465f-978e-7bbd3a492615.png",
           "timestamp": 1787163870000,
           "date": "8/19/2026, 2:24:30 PM",
-          "age": "1 week, 2 days, 9 hours, 33 mins"
+          "age": "1 week, 2 days, 12 hours, 51 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21945,7 +21975,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/f2921eab-2a3c-4e9f-988d-2bf83941b367.png",
           "timestamp": 1787162900000,
           "date": "8/19/2026, 2:08:20 PM",
-          "age": "1 week, 2 days, 9 hours, 49 mins"
+          "age": "1 week, 2 days, 13 hours, 7 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21953,7 +21983,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/bf9225cc-c4d8-4634-b86b-81e4b07f61c7.png",
           "timestamp": 1787132393000,
           "date": "8/19/2026, 5:39:53 AM",
-          "age": "1 week, 2 days, 18 hours, 18 mins"
+          "age": "1 week, 2 days, 21 hours, 35 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21961,7 +21991,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/0c2b630d-4db8-4a7a-bbda-2efc04c9517f.png",
           "timestamp": 1787129011000,
           "date": "8/19/2026, 4:43:31 AM",
-          "age": "1 week, 2 days, 19 hours, 14 mins"
+          "age": "1 week, 2 days, 22 hours, 32 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21969,7 +21999,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/a8978f98-9574-4a35-a39a-4592417df917.png",
           "timestamp": 1787127038000,
           "date": "8/19/2026, 4:10:38 AM",
-          "age": "1 week, 2 days, 19 hours, 47 mins"
+          "age": "1 week, 2 days, 23 hours, 5 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21977,7 +22007,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/8f9be601-5411-4c29-ac81-bd8788c312f5.png",
           "timestamp": 1787119254000,
           "date": "8/19/2026, 2:00:54 AM",
-          "age": "1 week, 2 days, 21 hours, 57 mins"
+          "age": "1 week, 3 days, 1 hour, 14 mins"
         },
         {
           "game": "Fishing: North Atlantic",
@@ -21985,7 +22015,7 @@
           "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/6a714f94-8190-4ced-9611-02ccbab2eb1b.png",
           "timestamp": 1787119254000,
           "date": "8/19/2026, 2:00:54 AM",
-          "age": "1 week, 2 days, 21 hours, 57 mins"
+          "age": "1 week, 3 days, 1 hour, 14 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -21993,7 +22023,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/A47DBCEEC0329E0147339F760A06156114E2EDD4.PNG",
           "timestamp": 1787008181000,
           "date": "8/17/2026, 7:09:41 PM",
-          "age": "1 week, 4 days, 4 hours, 48 mins"
+          "age": "1 week, 4 days, 8 hours, 6 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22001,7 +22031,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/3441D7157AF19BDD80AC38748DCCC7415A1029C2.PNG",
           "timestamp": 1787004031000,
           "date": "8/17/2026, 6:00:31 PM",
-          "age": "1 week, 4 days, 5 hours, 57 mins"
+          "age": "1 week, 4 days, 9 hours, 15 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22009,7 +22039,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/F2CB80A7DB58F0F9D76DD5C1D2B667D3C7A7C3BB.PNG",
           "timestamp": 1786953224000,
           "date": "8/17/2026, 3:53:44 AM",
-          "age": "1 week, 4 days, 20 hours, 4 mins"
+          "age": "1 week, 4 days, 23 hours, 22 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22017,7 +22047,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/F5C3D4E8F1361B7145381102CFEF1B2B70824B2C.PNG",
           "timestamp": 1786781402000,
           "date": "8/15/2026, 4:10:02 AM",
-          "age": "1 week, 6 days, 19 hours, 48 mins"
+          "age": "1 week, 6 days, 23 hours, 5 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22025,7 +22055,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/92E717F4CA19D00337ED8B4A490888C28ECBCC92.PNG",
           "timestamp": 1786776628000,
           "date": "8/15/2026, 2:50:28 AM",
-          "age": "1 week, 6 days, 21 hours, 7 mins"
+          "age": "2 weeks, 25 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22033,7 +22063,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/F5F2965C2E338C6CF6B8A80964B66C686FB71162.PNG",
           "timestamp": 1786722376000,
           "date": "8/14/2026, 11:46:16 AM",
-          "age": "2 weeks, 12 hours, 11 mins"
+          "age": "2 weeks, 15 hours, 29 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22041,7 +22071,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/4A280B1E9438853A4140012426775BD67E9018AA.PNG",
           "timestamp": 1786722320000,
           "date": "8/14/2026, 11:45:20 AM",
-          "age": "2 weeks, 12 hours, 12 mins"
+          "age": "2 weeks, 15 hours, 30 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22049,7 +22079,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/089A1EC6B7CED9594A5411703FB4637E0E0DE6AE.PNG",
           "timestamp": 1786660575000,
           "date": "8/13/2026, 6:36:15 PM",
-          "age": "2 weeks, 1 day, 5 hours, 21 mins"
+          "age": "2 weeks, 1 day, 8 hours, 39 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22057,7 +22087,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/23368B344E48527088F0680983BC75E73A24612D.PNG",
           "timestamp": 1786660547000,
           "date": "8/13/2026, 6:35:47 PM",
-          "age": "2 weeks, 1 day, 5 hours, 22 mins"
+          "age": "2 weeks, 1 day, 8 hours, 40 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22065,7 +22095,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/0E2C68D635FE79A8B71866AC318DB9E36A8DD10D.PNG",
           "timestamp": 1786657459000,
           "date": "8/13/2026, 5:44:19 PM",
-          "age": "2 weeks, 1 day, 6 hours, 13 mins"
+          "age": "2 weeks, 1 day, 9 hours, 31 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22073,7 +22103,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/5C4844BE42D3F83A9589AB3E05723C8387AF8929.PNG",
           "timestamp": 1786656680000,
           "date": "8/13/2026, 5:31:20 PM",
-          "age": "2 weeks, 1 day, 6 hours, 26 mins"
+          "age": "2 weeks, 1 day, 9 hours, 44 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22081,7 +22111,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/F5280DA9E70A3098B7C0FFA662E503C871DC87FD.PNG",
           "timestamp": 1786656636000,
           "date": "8/13/2026, 5:30:36 PM",
-          "age": "2 weeks, 1 day, 6 hours, 27 mins"
+          "age": "2 weeks, 1 day, 9 hours, 45 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22089,7 +22119,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/732D02CBDA96E2F759D63BD8BAA726CD6E5E4191.PNG",
           "timestamp": 1786656623000,
           "date": "8/13/2026, 5:30:23 PM",
-          "age": "2 weeks, 1 day, 6 hours, 27 mins"
+          "age": "2 weeks, 1 day, 9 hours, 45 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22097,7 +22127,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/8923E9D357FC0A57AA0F42C47CAB7D263B2C50CA.PNG",
           "timestamp": 1786654025000,
           "date": "8/13/2026, 4:47:05 PM",
-          "age": "2 weeks, 1 day, 7 hours, 11 mins"
+          "age": "2 weeks, 1 day, 10 hours, 28 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22105,7 +22135,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/A6155D09A3E59AC2211F631B182197DF4A821996.PNG",
           "timestamp": 1786654005000,
           "date": "8/13/2026, 4:46:45 PM",
-          "age": "2 weeks, 1 day, 7 hours, 11 mins"
+          "age": "2 weeks, 1 day, 10 hours, 29 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22113,7 +22143,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/980D5393308725C3E93820B45D1FFBA94BF99D03.PNG",
           "timestamp": 1786653977000,
           "date": "8/13/2026, 4:46:17 PM",
-          "age": "2 weeks, 1 day, 7 hours, 11 mins"
+          "age": "2 weeks, 1 day, 10 hours, 29 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22121,7 +22151,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/7957C8D7555F5AF5EAB628230C5CEA8CEF5D1F1C.PNG",
           "timestamp": 1786653959000,
           "date": "8/13/2026, 4:45:59 PM",
-          "age": "2 weeks, 1 day, 7 hours, 12 mins"
+          "age": "2 weeks, 1 day, 10 hours, 29 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22129,7 +22159,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/D76194ABC77099265FC840B2FF403BAAA53ED82E.PNG",
           "timestamp": 1786653146000,
           "date": "8/13/2026, 4:32:26 PM",
-          "age": "2 weeks, 1 day, 7 hours, 25 mins"
+          "age": "2 weeks, 1 day, 10 hours, 43 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22137,7 +22167,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/918C799869A3D739AB225B7B57AB0F9DEF30066D.PNG",
           "timestamp": 1786650162000,
           "date": "8/13/2026, 3:42:42 PM",
-          "age": "2 weeks, 1 day, 8 hours, 15 mins"
+          "age": "2 weeks, 1 day, 11 hours, 33 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22145,7 +22175,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/767EF1549F5C9AE7AAEB9AAB1BA092CFF0F9E136.PNG",
           "timestamp": 1786646558000,
           "date": "8/13/2026, 2:42:38 PM",
-          "age": "2 weeks, 1 day, 9 hours, 15 mins"
+          "age": "2 weeks, 1 day, 12 hours, 33 mins"
         },
         {
           "game": "Deadliest Deep Sea Catch Fishing Simulator",
@@ -22153,7 +22183,7 @@
           "icon": "https://image.api.playstation.com/trophy/np/NPWR51841_00_0011818399CBA2E942FA23BE6E4499C1E926921C51/3B98645AD39A003BA5534A8137B08B53CE1D9ED7.PNG",
           "timestamp": 1786646520000,
           "date": "8/13/2026, 2:42:00 PM",
-          "age": "2 weeks, 1 day, 9 hours, 16 mins"
+          "age": "2 weeks, 1 day, 12 hours, 33 mins"
         }
       ],
       "streamHistory": [],
@@ -22162,7 +22192,7 @@
           "npCommunicationId": "NPWR26028_00",
           "name": "Fishing: North Atlantic",
           "art": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR26028_00/36bacb2a-cc10-4192-9738-36b6d7dd87b7.png",
-          "lastPlayed": "2026-08-28T08:32:36Z",
+          "lastPlayed": "2026-08-29T07:08:25Z",
           "npServiceName": "trophy2",
           "trophySetVersion": "01.01",
           "trophyTitleName": "Fishing: North Atlantic",
@@ -22184,7 +22214,7 @@
             "platinum": 0
           },
           "hiddenFlag": false,
-          "lastUpdatedDateTime": "2026-08-28T08:32:36Z",
+          "lastUpdatedDateTime": "2026-08-29T07:08:25Z",
           "earnedTotal": 29,
           "definedTotal": 52
         },
@@ -22892,13 +22922,21 @@
           "isMe": false
         },
         "presence": {
-          "availability": "unavailable",
-          "lastAvailableDate": "2026-08-28T09:02:44.971Z",
+          "availability": "availableToPlay",
           "primaryPlatformInfo": {
-            "onlineStatus": "offline",
+            "onlineStatus": "online",
             "platform": "PS5",
             "lastOnlineDate": "2026-08-28T09:02:44.971Z"
-          }
+          },
+          "gameTitleInfoList": [
+            {
+              "npTitleId": "PPSA02986_00",
+              "titleName": "Fishing: North Atlantic Enhanced Edition",
+              "format": "PS5",
+              "launchPlatform": "PS5",
+              "conceptIconUrl": "https://image.api.playstation.com/vulcan/img/rnd/202106/2108/4JKwEPUwcc5G0p8da1kDW0zH.png"
+            }
+          ]
         },
         "telemetry": [],
         "titles": [
@@ -22925,7 +22963,7 @@
               "platinum": 0
             },
             "hiddenFlag": false,
-            "lastUpdatedDateTime": "2026-08-28T08:32:36Z"
+            "lastUpdatedDateTime": "2026-08-29T07:08:25Z"
           },
           {
             "npServiceName": "trophy",
@@ -23493,7 +23531,7 @@
         "blocksQueue": [],
         "friendRequests": []
       },
-      "lastUpdated": "8/28/2026, 11:58:16 PM"
+      "lastUpdated": "8/29/2026, 3:15:59 AM"
     },
     "DesdemonaTiger": {
       "onlineId": "DesdemonaTiger",
@@ -23510,7 +23548,7 @@
       "bio": "Official Pack Member Profile",
       "twitch": null,
       "streamHistory": [],
-      "lastUpdated": "8/28/2026, 11:58:17 PM",
+      "lastUpdated": "8/29/2026, 3:15:59 AM",
       "gamesPlayed": 0,
       "plus": false,
       "level": 0,
@@ -23573,7 +23611,7 @@
         "channelCreationRaw": "Apr 2. 2020 - 12:16:54 AM (UTC)"
       },
       "streamHistory": [],
-      "lastUpdated": "8/28/2026, 11:58:18 PM",
+      "lastUpdated": "8/29/2026, 3:16:00 AM",
       "gamesPlayed": 0,
       "plus": false,
       "level": 0,
@@ -23620,7 +23658,7 @@
       "bio": "Official Pack Member Profile",
       "twitch": null,
       "streamHistory": [],
-      "lastUpdated": "8/28/2026, 11:58:18 PM",
+      "lastUpdated": "8/29/2026, 3:16:01 AM",
       "gamesPlayed": 0,
       "plus": false,
       "level": 0,
@@ -23683,7 +23721,7 @@
         "channelCreationRaw": "Jan 23. 2018 - 01:15:39 AM (UTC)"
       },
       "streamHistory": [],
-      "lastUpdated": "8/28/2026, 11:58:19 PM",
+      "lastUpdated": "8/29/2026, 3:16:02 AM",
       "gamesPlayed": 0,
       "plus": false,
       "level": 0,
@@ -23722,9 +23760,9 @@
     "wildhorse_spirit_status": "ACTIVE",
     "ray_active": "yes",
     "ray_status": "ACTIVE",
-    "lastCheck": "8/28/2026, 11:57:01 PM"
+    "lastCheck": "8/29/2026, 3:14:56 AM"
   },
-  "lastGlobalUpdate": "8/28/2026, 11:57:01 PM",
+  "lastGlobalUpdate": "8/29/2026, 3:14:56 AM",
   "engineVersion": "15.3.0",
   "codeTimestamp": "Saturday, August 8, 2026 | 7:20 PM EDT"
 }
