@@ -1,22 +1,23 @@
 <!DOCTYPE html>
 <!-- ============================================================================
- * Dashboard: Ray / OneLIVIDMAN Trophy Progression & Telemetry Dashboard
- * Engine Version: 16.3.0-OneLIVIDMAN
- * Target RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/OneLIVIDMAN.json
- * Fallback RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/psn.json
+ * Dashboard: OneLIVIDMAN / Raymystyro Progression & FS25 Fleet Telemetry
+ * Engine Version: 17.2.0-OneLIVIDMAN-FarmId2
+ * Target PSN RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/OneLIVIDMAN.json
+ * Target FS25 RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json (farmId2 focus)
+ * Target Firestore: /users/Raymystyro/platform/playstation/progress
  * Timezone: 24hr New York (EDT)
- * Last Modified: Saturday, August 29, 2026 | 03:15 EDT
+ * Date & Time Stamp: 2026-08-29 17:15:34 (24hr New York Time)
  * ============================================================================ -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="refresh" content="900">
-    <title>OneLIVIDMAN | Pack Progression Hub</title>
+    <title>OneLIVIDMAN | Pack Progression & FS25 Telemetry Hub</title>
     
     <!-- 
       ========================================================================
-      [LINE 23]: GOOGLE ANALYTICS 4 (GTM DEPLOYMENT + GOOGLE SIGNALS + CUSTOM METRICS)
+      [LINE 21]: GOOGLE ANALYTICS 4 (GTM DEPLOYMENT + GOOGLE SIGNALS + CUSTOM METRICS)
       - Measurement Tag: G-CTYHDF4MSD
       - Secondary Containers: G-H6Q756MVE8, G-L376P3NPY4
       - Features: Enhanced Measurement, Custom Dimensions, Signals Active
@@ -37,7 +38,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '16.3.0',
+            'layout_version': '17.2.0',
             'gamertag': 'OneLIVIDMAN',
             'user_handle': 'Raymystyro',
             'engagement_timezone': 'America/New_York',
@@ -47,11 +48,9 @@
             'cookie_flags': 'SameSite=None;Secure'
         });
 
-        // Linked Secondary Trackers
         gtag('config', 'G-H6Q756MVE8');
         gtag('config', 'G-L376P3NPY4');
 
-        // Custom E-commerce / Critical Event Tracking Bridge
         function trackUserAction(actionName, eventData) {
             if (typeof gtag === 'function') {
                 gtag('event', actionName, {
@@ -69,7 +68,7 @@
     
     <!-- 
       ========================================================================
-      [LINE 77]: MASTER STYLESHEET (SKY BLUE / OBSIDIAN / RESPONSIVE ENGINE)
+      [LINE 74]: MASTER STYLESHEET (MOBILE-FIRST / OBSIDIAN / NEON ACCENTS)
       ========================================================================
     -->
     <style>
@@ -80,9 +79,10 @@
             --wolf-gray: #1e1e24;
             --accent-blue: #38BDF8;
             --accent-blue-dim: #0284C7;
+            --accent-green: #10b981;
+            --accent-farm: #84cc16;
             --danger-red: #ef4444;
             --warning-yellow: #f59e0b;
-            --success-green: #10b981;
             --amazon-orange: #FF9900;
             --ps-blue: #00439c;
             --body-text-size: 16px;
@@ -101,7 +101,7 @@
             overflow-wrap: break-word;
         }
 
-        /* --- NAVIGATION BAR --- */
+        /* --- STICKY NAVIGATION BAR --- */
         .nav-bar {
             position: sticky; top: 0; z-index: 20000;
             background: rgba(10, 10, 12, 0.95);
@@ -124,21 +124,6 @@
             cursor: pointer; padding: 10px 0; min-height: 44px; display: flex; align-items: center;
         }
         .nav-link:hover, .nav-link.active { color: var(--accent-blue); }
-
-        .dropdown { position: relative; display: inline-block; }
-        .dropdown-content {
-            display: none; position: absolute; top: 100%; left: 0; background-color: var(--wolf-gray);
-            min-width: 250px; box-shadow: 0px 8px 16px rgba(0,0,0,0.5); z-index: 100;
-            border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
-        }
-        .dropdown-content a {
-            color: #cbd5e1; padding: 12px 16px; text-decoration: none; display: flex; align-items: center;
-            gap: 10px; font-size: 11px; font-weight: 700; text-transform: uppercase;
-            border-bottom: 1px solid rgba(255,255,255,0.05); min-height: 44px;
-        }
-        .dropdown-content a:hover { background-color: rgba(56, 189, 248, 0.1); color: var(--accent-blue); }
-        .dropdown:hover .dropdown-content { display: block; }
-        .nav-thumb { width: 22px; height: 22px; border-radius: 4px; object-fit: cover; flex-shrink: 0; }
 
         @media (min-width: 1024px) {
             .nav-links-wrapper { display: flex; flex-direction: row; }
@@ -176,15 +161,27 @@
         .trophy-icon-sq { width: 50px; height: 50px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
         .trophy-title-text { font-weight: 800; color: var(--accent-blue); font-size: 15px; text-transform: uppercase; }
 
-        .recent-earn-yellow-glow {
-            border-color: rgba(245, 158, 11, 0.9) !important;
-            background: rgba(245, 158, 11, 0.08) !important;
-            box-shadow: 0 0 20px rgba(245, 158, 11, 0.35) inset, 0 0 15px rgba(245, 158, 11, 0.2) !important;
-            animation: yellowEarnPulse 2.5s infinite ease-in-out;
+        /* Squad Member Badge Pill */
+        .squad-member-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
-        @keyframes yellowEarnPulse {
-            0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.25) inset; }
-            50% { box-shadow: 0 0 30px rgba(245, 158, 11, 0.55) inset; }
+        .squad-member-pill.earned {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+        .squad-member-pill.locked {
+            background: rgba(255, 255, 255, 0.05);
+            color: #94a3b8;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .progress-bar-container { height: 10px; background: #2d2d35; border-radius: 5px; overflow: hidden; }
@@ -209,7 +206,7 @@
             display: flex; align-items: center; gap: 10px;
         }
         .status-dot-pulse { width: 10px; height: 10px; border-radius: 50%; position: relative; }
-        .status-dot-pulse.online { background: var(--success-green); }
+        .status-dot-pulse.online { background: var(--accent-green); }
         .status-dot-pulse.online::after {
             content: ''; position: absolute; inset: -3px; border-radius: 50%;
             background: inherit; opacity: 0.4; animation: dotPulse 2s infinite;
@@ -232,7 +229,6 @@
             overflow: hidden; max-height: 90vh; display: flex; flex-direction: column;
         }
 
-        .support-img-icon { width: 44px; height: 44px; border-radius: 10px; object-fit: cover; }
         .ps-plus-badge {
             position: absolute; bottom: 0; left: 50%; transform: translate(-50%, 50%);
             background: var(--ps-blue); color: white; padding: 4px 12px; border-radius: 20px;
@@ -270,6 +266,18 @@
         }
         @keyframes pulseLive { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
+        /* FS25 Specific Badge Styles */
+        .fs25-badge {
+            background: rgba(132, 204, 22, 0.15);
+            color: #bef264;
+            border: 1px solid rgba(132, 204, 22, 0.3);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -281,18 +289,22 @@
         <span class="kf-k">K</span><span class="kf-f">F</span>
     </div>
 
-    <!-- [LINE 310]: STICKY NAVIGATION BAR -->
+    <!-- [LINE 306]: STICKY NAVIGATION BAR -->
     <nav class="nav-bar">
         <div class="nav-container">
             <a href="https://werewolf3788.github.io/Website/" target="_blank" class="text-white font-black text-lg flex items-center gap-2">
                 <i class="fab fa-playstation text-sky-400"></i> PACK HUB
             </a>
             <button class="mobile-toggle text-white text-2xl min-h-[44px] min-w-[44px]" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
-            <div class="nav-links-wrapper" id="nav-links"></div>
+            <div class="nav-links-wrapper" id="nav-links">
+                <a href="#active-hunt-section" class="nav-link">Active Hunt</a>
+                <a href="#dual-telemetry-row" class="nav-link text-lime-400">FS25 & Progress</a>
+                <a href="#mission-log-container" class="nav-link">Checklist</a>
+            </div>
         </div>
     </nav>
 
-    <!-- [LINE 322]: REALTIME HEALTH MONITOR -->
+    <!-- [LINE 321]: REALTIME HEALTH MONITOR -->
     <div id="health-monitor">
         <div id="health-dot" class="status-dot-pulse bg-gray-500"></div>
         <div class="flex flex-col">
@@ -301,7 +313,7 @@
         </div>
     </div>
 
-    <!-- [LINE 332]: SYSTEM NPSSO ALERT -->
+    <!-- [LINE 331]: SYSTEM NPSSO ALERT -->
     <div id="system-alerts-container" class="max-w-7xl mx-auto w-full px-6 mt-6 hidden">
         <div class="bg-red-500/10 border-2 border-red-500 p-4 rounded-2xl flex items-center gap-4">
             <i class="fas fa-triangle-exclamation text-red-500 text-2xl"></i>
@@ -312,7 +324,7 @@
         </div>
     </div>
 
-    <!-- [LINE 345]: HEADER HERO & STAT CARDS -->
+    <!-- [LINE 344]: HEADER HERO & STAT CARDS -->
     <header class="w-full text-center py-12 px-6">
         <div class="max-w-7xl mx-auto">
             <div class="relative inline-block mb-8">
@@ -374,14 +386,14 @@
         </div>
     </header>
 
-    <!-- [LINE 422]: MAIN DASHBOARD CONTENT GRID -->
+    <!-- [LINE 421]: MAIN DASHBOARD CONTENT GRID -->
     <main class="max-w-[1700px] mx-auto px-6 pb-24 flex-1 w-full">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
             <!-- LEFT 2 COLUMNS -->
             <div class="lg:col-span-2 flex flex-col gap-8">
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="active-hunt-section">
                     <div class="flex flex-col gap-8">
                         <!-- PROFILE BIO -->
                         <section class="glass-card p-8">
@@ -437,26 +449,110 @@
                     </div>
                 </div>
 
-                <!-- FIRESTORE PROGRESSION HUB -->
-                <section id="firestore-progress-section" class="glass-card p-8 border-t-4 border-cyan-500">
-                    <div class="flex justify-between items-center mb-6 border-b border-white/10 pb-4">
-                        <div>
-                            <h2 class="text-cyan-400 text-xl flex items-center gap-2"><i class="fas fa-gamepad"></i> Game Progression Hub</h2>
-                            <p id="firestore-path-label" class="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Observer: /users/Raymystyro/platform/playstation/progress</p>
-                        </div>
-                        <div id="firestore-status-badge" class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-cyan-950 text-cyan-400 border border-cyan-500/40 animate-pulse">
-                            Live Sync
-                        </div>
-                    </div>
-                    <div id="firestore-games-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-6 text-center text-gray-500 font-bold uppercase text-xs col-span-2">Connecting to Firestore Stream...</div>
-                    </div>
-                </section>
+                <!-- 
+                  ========================================================================
+                  [LINE 495]: SIDE-BY-SIDE DUAL TELEMETRY ROW (FS25 & PROGRESSION HUB)
+                  ========================================================================
+                -->
+                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 items-stretch" id="dual-telemetry-row">
+                    
+                    <!-- LEFT COLUMN: FS25 LIVE TELEMETRY & FLEET HUB (FARMID2 FOCUS) -->
+                    <section id="fs25-telemetry-section" class="glass-card p-6 border-t-4 border-lime-500 flex flex-col justify-between space-y-6">
+                        <div class="space-y-4">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-tractor text-lime-400 text-lg"></i>
+                                        <h2 class="text-lime-400 text-lg font-black uppercase">FS25 Farm 2 Telemetry</h2>
+                                    </div>
+                                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Endpoint: /fs25.json (farmId2)</p>
+                                </div>
+                                <div id="fs25-status-pill" class="fs25-badge flex items-center gap-1.5 self-start sm:self-auto">
+                                    <span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
+                                    <span id="fs25-status-text">Server Active</span>
+                                </div>
+                            </div>
 
-                <!-- TROPHY CHECKLIST LOG -->
+                            <!-- Farm Stats Grid -->
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
+                                    <div class="text-[9px] font-black text-gray-400 uppercase">Farm Name</div>
+                                    <div id="fs25-farm-name" class="text-xs font-black text-white mt-0.5 truncate">--</div>
+                                </div>
+                                <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
+                                    <div class="text-[9px] font-black text-gray-400 uppercase">Account Funds</div>
+                                    <div id="fs25-money" class="text-xs font-black text-lime-400 mt-0.5 truncate">$0</div>
+                                </div>
+                                <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
+                                    <div class="text-[9px] font-black text-gray-400 uppercase">Total Fields</div>
+                                    <div id="fs25-fields-count" class="text-xs font-black text-white mt-0.5">0</div>
+                                </div>
+                                <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
+                                    <div class="text-[9px] font-black text-gray-400 uppercase">Active Fleet</div>
+                                    <div id="fs25-vehicles-count" class="text-xs font-black text-white mt-0.5">0</div>
+                                </div>
+                            </div>
+
+                            <!-- Equipment / Fleet Machinery -->
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                                        <i class="fas fa-truck-monster text-lime-400"></i> Equipment Fleet
+                                    </h3>
+                                    <span id="fs25-fleet-subtitle" class="text-[9px] font-black text-gray-400 uppercase">0 Units</span>
+                                </div>
+                                <div id="fs25-fleet-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[220px] overflow-y-auto no-scrollbar">
+                                    <div class="p-3 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Loading Fleet...</div>
+                                </div>
+                            </div>
+
+                            <!-- Farmlands Grid -->
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
+                                        <i class="fas fa-seedling text-lime-400"></i> Farmland Parcels
+                                    </h3>
+                                    <span id="fs25-fields-subtitle" class="text-[9px] font-black text-gray-400 uppercase">0 Parcels</span>
+                                </div>
+                                <div id="fs25-fields-container" class="grid grid-cols-2 gap-2 max-h-[160px] overflow-y-auto no-scrollbar">
+                                    <div class="p-2.5 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Loading Fields...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- RIGHT COLUMN: FIRESTORE GAME PROGRESSION HUB -->
+                    <section id="firestore-progress-section" class="glass-card p-6 border-t-4 border-cyan-500 flex flex-col justify-between space-y-4">
+                        <div class="space-y-4">
+                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3">
+                                <div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-gamepad text-cyan-400 text-lg"></i>
+                                        <h2 class="text-cyan-400 text-lg font-black uppercase">Game Progress Hub</h2>
+                                    </div>
+                                    <p id="firestore-path-label" class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Observer: /users/Raymystyro/platform/playstation/progress</p>
+                                </div>
+                                <div id="firestore-status-badge" class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-cyan-950 text-cyan-400 border border-cyan-500/40 animate-pulse self-start sm:self-auto">
+                                    Live Sync
+                                </div>
+                            </div>
+
+                            <!-- Dynamic Firestore Game Cards -->
+                            <div id="firestore-games-grid" class="flex flex-col gap-3 max-h-[550px] overflow-y-auto no-scrollbar">
+                                <div class="p-6 text-center text-gray-500 font-bold uppercase text-xs">Connecting to Firestore Stream...</div>
+                            </div>
+                        </div>
+                    </section>
+
+                </div>
+
+                <!-- TROPHY CHECKLIST LOG WITH SQUAD COMPARISON -->
                 <section id="mission-log-container" class="glass-card overflow-hidden">
-                    <div class="p-6 border-b border-white/5"><h2 id="checklist-header-text" class="text-white text-lg flex items-center gap-2"><i class="fas fa-list-check text-sky-400"></i> Trophy Checklist</h2></div>
-                    <div id="trophy-checklist-container" class="max-h-[800px] overflow-y-auto divide-y divide-white/5 no-scrollbar"></div>
+                    <div class="p-6 border-b border-white/5 flex justify-between items-center">
+                        <h2 id="checklist-header-text" class="text-white text-lg flex items-center gap-2"><i class="fas fa-list-check text-sky-400"></i> Trophy Checklist</h2>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-gray-400 bg-white/5 px-2.5 py-1 rounded border border-white/5">Squad Presence Active</span>
+                    </div>
+                    <div id="trophy-checklist-container" class="max-h-[850px] overflow-y-auto divide-y divide-white/5 no-scrollbar"></div>
                 </section>
             </div>
 
@@ -475,47 +571,52 @@
                     </div>
                 </section>
 
-                <!-- COTW TROPHY LODGE -->
+                <!-- COTW TROPHY LODGE (AUTO-HIDES 0 AND -- ENTRIES) -->
                 <section id="cotw-card" class="glass-card p-6 border-b-4 border-emerald-500 text-center">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-emerald-400 text-base flex items-center gap-2"><i class="fas fa-paw"></i> COTW Trophy Lodge</h2>
                         <span class="text-[9px] font-black uppercase text-blue-400 bg-blue-950 border border-blue-500/30 px-2 py-0.5 rounded">PS5 Ranks</span>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-2 mb-4">
-                        <div class="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center">
+                    <!-- Dynamic Grid: Only non-zero, valid harvest numbers show here -->
+                    <div id="cotw-trophy-grid" class="grid grid-cols-3 gap-2 mb-4">
+                        <div id="cotw-card-great-one" class="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center hidden">
                             <i class="fas fa-crown text-yellow-400 text-sm mb-1"></i>
                             <span class="text-[8px] text-gray-400 uppercase font-black">Great One</span>
-                            <span id="cotw-great-one" class="text-sm font-black text-white">--</span>
+                            <span id="cotw-great-one" class="text-sm font-black text-white">0</span>
                         </div>
-                        <div class="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center">
+                        <div id="cotw-card-albino" class="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center hidden">
                             <i class="fas fa-sparkles text-pink-300 text-sm mb-1"></i>
                             <span class="text-[8px] text-gray-400 uppercase font-black">Rare Fur</span>
-                            <span id="cotw-albino" class="text-sm font-black text-white">--</span>
+                            <span id="cotw-albino" class="text-sm font-black text-white">0</span>
                         </div>
-                        <div class="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center">
+                        <div id="cotw-card-diamond" class="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center hidden">
                             <i class="fas fa-gem text-cyan-400 text-sm mb-1"></i>
                             <span class="text-[8px] text-gray-400 uppercase font-black">Diamond</span>
-                            <span id="cotw-diamond" class="text-sm font-black text-white">--</span>
+                            <span id="cotw-diamond" class="text-sm font-black text-white">0</span>
                         </div>
-                        <div class="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center">
+                        <div id="cotw-card-gold" class="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center hidden">
                             <i class="fas fa-award text-amber-400 text-sm mb-1"></i>
                             <span class="text-[8px] text-gray-400 uppercase font-black">Gold</span>
-                            <span id="cotw-gold" class="text-sm font-black text-white">--</span>
+                            <span id="cotw-gold" class="text-sm font-black text-white">0</span>
                         </div>
-                        <div class="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center">
+                        <div id="cotw-card-silver" class="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center hidden">
                             <i class="fas fa-award text-slate-300 text-sm mb-1"></i>
                             <span class="text-[8px] text-gray-400 uppercase font-black">Silver</span>
-                            <span id="cotw-silver" class="text-sm font-black text-white">--</span>
+                            <span id="cotw-silver" class="text-sm font-black text-white">0</span>
                         </div>
-                        <div class="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center">
+                        <div id="cotw-card-bronze" class="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center hidden">
                             <i class="fas fa-award text-amber-700 text-sm mb-1"></i>
                             <span class="text-[8px] text-gray-400 uppercase font-black">Bronze</span>
-                            <span id="cotw-bronze" class="text-sm font-black text-white">--</span>
+                            <span id="cotw-bronze" class="text-sm font-black text-white">0</span>
                         </div>
                     </div>
 
-                    <div class="bg-black/40 p-2.5 rounded-xl border border-emerald-500/20 text-left flex justify-between items-center">
+                    <div id="cotw-empty-msg" class="p-3 bg-white/5 rounded-xl text-[10px] font-bold text-gray-400 uppercase mb-4">
+                        No trophy harvests recorded yet
+                    </div>
+
+                    <div id="cotw-rank-container" class="bg-black/40 p-2.5 rounded-xl border border-emerald-500/20 text-left flex justify-between items-center hidden">
                         <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Hunter Rank</span>
                         <span id="cotw-ps-rank-val" class="text-white font-black text-xs">--</span>
                     </div>
@@ -553,11 +654,11 @@
         </div>
         
         <div class="text-center mt-12 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">
-            Sync Target: <span class="text-sky-400">/psn/gamertags/OneLIVIDMAN.json</span> | Updated (NYC 24hr): <span id="sync-time" class="text-gray-300">--</span>
+            Sync Target: <span class="text-sky-400">/psn/gamertags/OneLIVIDMAN.json</span> | FS25 Target: <span class="text-lime-400">/fs25.json (farmId2)</span> | NYC 24hr: <span id="sync-time" class="text-gray-300">--</span>
         </div>
     </main>
 
-    <!-- [LINE 602]: LIGHTBOX MODAL -->
+    <!-- [LINE 675]: LIGHTBOX MODAL -->
     <div id="generic-lightbox" onclick="closeGenericLightbox()">
         <div class="lightbox-modal-content" onclick="event.stopPropagation()">
             <div class="p-5 border-b border-white/10 flex justify-between items-center">
@@ -570,7 +671,7 @@
 
     <!-- 
       ========================================================================
-      [LINE 617]: FIREBASE MODULAR ENGINE (FIRESTORE OBSERVER FOR PROGRESSION)
+      [LINE 690]: FIREBASE MODULAR ENGINE (FIRESTORE OBSERVER FOR Raymystyro & OneLIVIDMAN)
       ========================================================================
     -->
     <script type="module">
@@ -591,41 +692,92 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const RAY_USER_ID = "Raymystyro";
+        const PRIMARY_USER_ALIAS = "Raymystyro";
+        const SECONDARY_USER_ALIAS = "OneLIVIDMAN";
 
-        function subscribePlaystationCOTW() {
-            const cotwRankRef = doc(db, "users", RAY_USER_ID, "platform", "playstation", "progress", "COTW_Ranks");
+        function isValidStat(val) {
+            if (val === undefined || val === null) return false;
+            const str = String(val).trim();
+            if (str === "" || str === "--" || str === "0" || str === "null" || str === "undefined") return false;
+            const num = Number(str);
+            if (!isNaN(num) && num <= 0) return false;
+            return true;
+        }
+
+        function subscribePlaystationCOTW(userAlias) {
+            const cotwRankRef = doc(db, "users", userAlias, "platform", "playstation", "progress", "COTW_Ranks");
             onSnapshot(cotwRankRef, (docSnap) => {
-                const rankValEl = document.getElementById("cotw-ps-rank-val");
-                if (!rankValEl) return;
-
                 if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    const setCard = (id, val) => {
-                        const el = document.getElementById(id);
-                        if (el) el.innerText = val !== undefined ? val : 0;
-                    };
-                    setCard('cotw-great-one', data.greatone || data.great_one || data.GREATONE || 0);
-                    setCard('cotw-albino', data.albino || data.rare_fur || data.rarefur || data.ALBINO || 0);
-                    setCard('cotw-diamond', data.diamond || data.DIAMOND || 0);
-                    setCard('cotw-gold', data.gold || data.GOLD || 0);
-                    setCard('cotw-silver', data.silver || data.SILVER || 0);
-                    setCard('cotw-bronze', data.bronze || data.BRONZE || 0);
-                    rankValEl.innerText = data.rank || data.level || data.currentRank || "Active";
+                    renderCOTWData(docSnap.data());
+                } else if (userAlias === PRIMARY_USER_ALIAS) {
+                    subscribePlaystationCOTW(SECONDARY_USER_ALIAS);
                 } else {
-                    rankValEl.innerText = "--";
+                    renderCOTWData({});
                 }
+            }, (err) => {
+                console.warn("[FIRESTORE COTW] Listener warn:", err.message);
+                if (userAlias === PRIMARY_USER_ALIAS) subscribePlaystationCOTW(SECONDARY_USER_ALIAS);
             });
         }
 
-        function subscribeFirestoreProgress() {
-            const progressRef = collection(db, "users", RAY_USER_ID, "platform", "playstation", "progress");
+        function renderCOTWData(data) {
+            const trophies = [
+                { idVal: 'cotw-great-one', idCard: 'cotw-card-great-one', val: data.greatone || data.great_one || data.GREATONE },
+                { idVal: 'cotw-albino', idCard: 'cotw-card-albino', val: data.albino || data.rare_fur || data.rarefur || data.ALBINO },
+                { idVal: 'cotw-diamond', idCard: 'cotw-card-diamond', val: data.diamond || data.DIAMOND },
+                { idVal: 'cotw-gold', idCard: 'cotw-card-gold', val: data.gold || data.GOLD },
+                { idVal: 'cotw-silver', idCard: 'cotw-card-silver', val: data.silver || data.SILVER },
+                { idVal: 'cotw-bronze', idCard: 'cotw-card-bronze', val: data.bronze || data.BRONZE }
+            ];
+
+            let visibleCount = 0;
+
+            trophies.forEach(t => {
+                const valEl = document.getElementById(t.idVal);
+                const cardEl = document.getElementById(t.idCard);
+                if (isValidStat(t.val)) {
+                    if (valEl) valEl.innerText = t.val;
+                    if (cardEl) cardEl.classList.remove('hidden');
+                    visibleCount++;
+                } else {
+                    if (cardEl) cardEl.classList.add('hidden');
+                }
+            });
+
+            const emptyMsg = document.getElementById('cotw-empty-msg');
+            if (emptyMsg) {
+                emptyMsg.classList.toggle('hidden', visibleCount > 0);
+            }
+
+            const rankVal = data.rank || data.level || data.currentRank;
+            const rankContainer = document.getElementById('cotw-rank-container');
+            const rankValEl = document.getElementById('cotw-ps-rank-val');
+
+            if (isValidStat(rankVal) && rankVal !== "0") {
+                if (rankValEl) rankValEl.innerText = rankVal;
+                if (rankContainer) rankContainer.classList.remove('hidden');
+            } else {
+                if (rankContainer) rankContainer.classList.add('hidden');
+            }
+        }
+
+        function subscribeFirestoreProgress(userAlias) {
+            const progressRef = collection(db, "users", userAlias, "platform", "playstation", "progress");
             return onSnapshot(progressRef, (snapshot) => {
                 const gamesGrid = document.getElementById("firestore-games-grid");
+                const pathLabel = document.getElementById("firestore-path-label");
                 if (!gamesGrid) return;
 
+                if (pathLabel) {
+                    pathLabel.innerText = `Observer: /users/${userAlias}/platform/playstation/progress`;
+                }
+
                 if (snapshot.empty) {
-                    gamesGrid.innerHTML = `<div class="p-6 text-center text-gray-500 font-bold uppercase text-xs col-span-2">No active PlayStation progress recorded in Firestore.</div>`;
+                    if (userAlias === PRIMARY_USER_ALIAS) {
+                        subscribeFirestoreProgress(SECONDARY_USER_ALIAS);
+                        return;
+                    }
+                    gamesGrid.innerHTML = `<div class="p-6 text-center text-gray-500 font-bold uppercase text-xs">No active PlayStation progress recorded in Firestore.</div>`;
                     return;
                 }
 
@@ -649,26 +801,26 @@
                     const cleanGameName = encodeURIComponent(title.replace(/®|™/g, ''));
 
                     html += `
-                        <div class="bg-black/40 p-5 rounded-2xl border border-white/10 flex flex-col justify-between space-y-4">
+                        <div class="bg-black/40 p-4 rounded-xl border border-white/10 flex flex-col justify-between space-y-3">
                             <div>
                                 <div class="flex justify-between items-start mb-1">
-                                    <h3 class="font-black text-white text-sm uppercase">${title}</h3>
-                                    <span class="text-[9px] font-black text-cyan-400 bg-cyan-950 px-2 py-0.5 rounded uppercase">${gameId}</span>
+                                    <h3 class="font-black text-white text-xs uppercase truncate max-w-[200px]">${title}</h3>
+                                    <span class="text-[8px] font-black text-cyan-400 bg-cyan-950 px-1.5 py-0.5 rounded uppercase">${gameId}</span>
                                 </div>
-                                <p class="text-[10px] text-gray-400 font-bold uppercase">Status: Live Syncing</p>
+                                <p class="text-[9px] text-gray-400 font-bold uppercase">Status: Live Syncing</p>
                             </div>
 
-                            <div class="space-y-1.5">
-                                <div class="flex justify-between text-xs font-black uppercase">
+                            <div class="space-y-1">
+                                <div class="flex justify-between text-[11px] font-black uppercase">
                                     <span class="text-cyan-400">Objectives</span>
                                     <span class="text-white">${percent}% (${completed}/${total})</span>
                                 </div>
                                 <div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${percent}%"></div></div>
                             </div>
 
-                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
-                                <a href="https://store.playstation.com/en-us/search/${cleanGameName}" target="_blank" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS Store</span></a>
-                                <a href="https://store.steampowered.com/search/?term=${cleanGameName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC Store</span></a>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">
+                                <a href="https://store.playstation.com/en-us/search/${cleanGameName}" target="_blank" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS</span></a>
+                                <a href="https://store.steampowered.com/search/?term=${cleanGameName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC</span></a>
                                 <a href="https://store.steampowered.com/search/?term=${cleanGameName}" target="_blank" class="store-btn store-btn-steam"><i class="fas fa-desktop"></i><span>Steam</span></a>
                                 <a href="https://www.amazon.com/s?k=${cleanGameName}&tag=website3788-20" target="_blank" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
                             </div>
@@ -676,28 +828,31 @@
                     `;
                 });
 
-                gamesGrid.innerHTML = html || `<div class="p-6 text-center text-gray-500 font-bold uppercase text-xs col-span-2">No active progress targets above 0%.</div>`;
+                gamesGrid.innerHTML = html || `<div class="p-6 text-center text-gray-500 font-bold uppercase text-xs">No active progress targets above 0%.</div>`;
+            }, (err) => {
+                console.warn("[FIRESTORE PROGRESS] Observer error:", err.message);
+                if (userAlias === PRIMARY_USER_ALIAS) subscribeFirestoreProgress(SECONDARY_USER_ALIAS);
             });
         }
 
-        subscribePlaystationCOTW();
-        subscribeFirestoreProgress();
+        subscribePlaystationCOTW(PRIMARY_USER_ALIAS);
+        subscribeFirestoreProgress(PRIMARY_USER_ALIAS);
     </script>
 
     <!-- 
       ========================================================================
-      [LINE 724]: REALTIME DATABASE & LIVE HUB DATA SYNCHRONIZER
+      [LINE 825]: REALTIME DATABASE & FS25 (FARMID2) / SQUAD SYNCHRONIZER
       ========================================================================
     -->
     <script>
-        // RTDB Endpoints (Primary GamerTag URL & Fallback Root URL)
+        // RTDB Endpoints (Primary GamerTag URL, Fallback Root URL, & FS25 Server Node)
         const ONELIVIDMAN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/OneLIVIDMAN.json";
         const ROOT_PSN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn.json";
-        const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
+        const FS25_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
 
         let currentTrophyData = [];
         let lastEarnedTrophyData = null;
-        let globalPsnPayload = null;
+        let globalSquadData = {}; 
 
         function convertFirebaseArray(data) {
             if (!data) return [];
@@ -706,49 +861,133 @@
             return [];
         }
 
-        function getRelativeTime(timestamp) {
-            if (!timestamp || timestamp === 0) return "Just now";
-            const diff = Math.max(0, Date.now() - timestamp);
-            const minutes = Math.floor(diff / 60000);
-            const hours = Math.floor(minutes / 60);
-            const days = Math.floor(hours / 24);
-            if (days > 0) return `${days}d ago`;
-            if (hours > 0) return `${hours}h ago`;
-            if (minutes > 0) return `${minutes}m ago`;
-            return "Just now";
-        }
-
         function formatNYC24Time(timestamp) {
             if (!timestamp) return new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
             return new Date(timestamp).toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
         }
 
-        // --- FETCH DEDICATED ONELIVIDMAN PAYLOAD WITH RESILIENT FALLBACK ---
+        function normalizeGameTitle(str) {
+            if (!str) return "";
+            return str.toLowerCase().replace(/®|™/g, "").replace(/[^a-z0-9]/g, "").trim();
+        }
+
+        // --- FETCH FS25 SERVER TELEMETRY SPECIFICALLY FOR RAY'S FARM (farmId2) ---
+        async function updateFS25Telemetry() {
+            try {
+                const res = await fetch(`${FS25_RTDB_URL}?t=${Date.now()}`);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (!data) return;
+
+                // Target Ray's specific farmId2 node with fallback chains
+                const farmData = data.farms?.farmId2 || 
+                                 data.farms?.[2] || 
+                                 data.farms?.farm2 || 
+                                 data.farmId2 || 
+                                 data.farms?.Ray || 
+                                 data.farms?.OneLIVIDMAN || 
+                                 data;
+
+                const farmName = farmData.farmName || farmData.name || "Ray's Farm (Farm 2)";
+                const money = farmData.money !== undefined ? `$${Number(farmData.money).toLocaleString()}` : "$0";
+                
+                const vehicles = convertFirebaseArray(farmData.vehicles || farmData.fleet || farmData.equipment || farmData.machines);
+                const fields = convertFirebaseArray(farmData.fields || farmData.farmland || farmData.farmlands || farmData.ownedFields);
+
+                document.getElementById('fs25-farm-name').innerText = farmName;
+                document.getElementById('fs25-money').innerText = money;
+                document.getElementById('fs25-fields-count').innerText = fields.length;
+                document.getElementById('fs25-vehicles-count').innerText = vehicles.length;
+                document.getElementById('fs25-fleet-subtitle').innerText = `${vehicles.length} Units`;
+                document.getElementById('fs25-fields-subtitle').innerText = `${fields.length} Parcels`;
+
+                // Render Fleet Equipment Cards
+                const fleetContainer = document.getElementById('fs25-fleet-container');
+                if (fleetContainer) {
+                    if (vehicles.length > 0) {
+                        fleetContainer.innerHTML = vehicles.map(v => {
+                            const name = v.name || v.brand || v.type || v.title || "Farm Implement";
+                            const category = v.category || v.group || (v.isTractor ? "Tractor" : "Machinery");
+                            const fillType = v.fillType || v.crop || v.contents || null;
+                            const operatingHours = v.operatingHours || v.hours || v.ageHours || null;
+                            const damage = v.damage !== undefined ? `${Math.round(v.damage * 100)}% Wear` : null;
+
+                            return `
+                                <div class="bg-black/40 p-2.5 rounded-xl border border-white/5 flex flex-col justify-between space-y-1.5">
+                                    <div>
+                                        <div class="text-[8px] font-black text-lime-400 uppercase">${category}</div>
+                                        <div class="text-[11px] font-black text-white uppercase truncate">${name}</div>
+                                    </div>
+                                    <div class="flex justify-between items-center text-[9px] font-bold text-gray-400 border-t border-white/5 pt-1.5">
+                                        <span>${operatingHours ? `${operatingHours} hrs` : (damage || 'Operational')}</span>
+                                        <span class="text-lime-400">${fillType ? `${fillType}` : 'Ready'}</span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        fleetContainer.innerHTML = `<div class="p-3 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No equipment registered for Farm 2.</div>`;
+                    }
+                }
+
+                // Render Fields Overview
+                const fieldsContainer = document.getElementById('fs25-fields-container');
+                if (fieldsContainer) {
+                    if (fields.length > 0) {
+                        fieldsContainer.innerHTML = fields.map(f => {
+                            const fId = f.id || f.fieldId || f.name || "Field";
+                            const crop = f.crop || f.fruitType || f.status || "Seeded";
+                            const area = f.area || f.size || (f.hectares ? `${f.hectares} ha` : null);
+
+                            return `
+                                <div class="bg-black/40 p-2 rounded-xl border border-white/5 text-center">
+                                    <div class="text-[8px] font-black text-gray-400 uppercase">Field ${fId}</div>
+                                    <div class="text-[10px] font-black text-white mt-0.5 truncate">${crop}</div>
+                                    ${area ? `<div class="text-[8px] text-lime-400 font-bold mt-0.5">${area}</div>` : ''}
+                                </div>
+                            `;
+                        }).join('');
+                    } else {
+                        fieldsContainer.innerHTML = `<div class="p-2.5 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No active fields assigned to Farm 2.</div>`;
+                    }
+                }
+
+            } catch (err) {
+                console.warn("[FS25 TELEMETRY] Telemetry fetch skipped or pending:", err.message);
+                const statusPill = document.getElementById('fs25-status-pill');
+                if (statusPill) statusPill.className = "fs25-badge border-gray-500/30 text-gray-400";
+                const statusText = document.getElementById('fs25-status-text');
+                if (statusText) statusText.innerText = "Sync Standby";
+            }
+        }
+
+        // --- FETCH DEDICATED ONELIVIDMAN / Raymystyro PAYLOAD ---
         async function updateHub() {
             try {
                 let user = null;
 
-                // 1. Attempt Dedicated GamerTag Direct Path
                 try {
-                    const directRes = await fetch(`${ONELIVIDMAN_RTDB_URL}?t=${Date.now()}`);
-                    if (directRes.ok) {
-                        const directData = await directRes.json();
-                        if (directData && (directData.onlineId || directData.trophySummary)) {
-                            user = directData;
-                        }
-                    }
-                } catch (e) {
-                    console.warn("[RTDB] Direct OneLIVIDMAN fetch failed, trying root fallback:", e.message);
-                }
-
-                // 2. Attempt Root PSN Path Fallback
-                if (!user) {
                     const rootRes = await fetch(`${ROOT_PSN_RTDB_URL}?t=${Date.now()}`);
                     if (rootRes.ok) {
-                        globalPsnPayload = await rootRes.json();
-                        user = globalPsnPayload?.gamertags?.OneLIVIDMAN || 
-                               globalPsnPayload?.users?.ray || 
-                               globalPsnPayload?.users?.Raymystyro || {};
+                        const rootData = await rootRes.json();
+                        globalSquadData = rootData?.gamertags || {};
+                        
+                        user = globalSquadData?.OneLIVIDMAN || 
+                               globalSquadData?.onelividman || 
+                               globalSquadData?.Raymystyro || 
+                               globalSquadData?.raymystyro || 
+                               rootData?.users?.ray || 
+                               rootData?.users?.Raymystyro || 
+                               rootData?.users?.OneLIVIDMAN || null;
+                    }
+                } catch (e) {
+                    console.warn("[RTDB] Root squad fetch failed, attempting direct path:", e.message);
+                }
+
+                if (!user) {
+                    const directRes = await fetch(`${ONELIVIDMAN_RTDB_URL}?t=${Date.now()}`);
+                    if (directRes.ok) {
+                        user = await directRes.json();
                     }
                 }
 
@@ -830,7 +1069,8 @@
 
                 if (hunt) {
                     currentTrophyData = convertFirebaseArray(hunt.trophies);
-                    document.getElementById('active-game-title').innerText = hunt.title || "---";
+                    const activeGameTitle = hunt.title || "---";
+                    document.getElementById('active-game-title').innerText = activeGameTitle;
 
                     const personaBadge = document.getElementById('hunter-persona-badge');
                     if (personaBadge && hunt.velocity?.hunterPersona) {
@@ -847,7 +1087,7 @@
                         if (fbBox) fbBox.classList.add('hidden');
                     }
 
-                    const cleanName = encodeURIComponent((hunt.title || '').replace(/®|™/g, ''));
+                    const cleanName = encodeURIComponent((activeGameTitle || '').replace(/®|™/g, ''));
                     document.getElementById('active-game-stores-bar').innerHTML = `
                         <a href="https://store.playstation.com/en-us/search/${cleanName}" target="_blank" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS Store</span></a>
                         <a href="https://store.steampowered.com/search/?term=${cleanName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC Store</span></a>
@@ -860,21 +1100,74 @@
                     document.getElementById('active-game-progress-fill').style.width = `${pct}%`;
                     document.getElementById('active-game-ratio').innerText = hunt.velocity?.completionStatus || "--/--";
 
-                    // Trophy Checklist
+                    // Squad comparison engine
+                    const activeGameNormalized = normalizeGameTitle(activeGameTitle);
+                    const squadMembersWithGame = [];
+
+                    Object.entries(globalSquadData).forEach(([gtag, playerObj]) => {
+                        if (gtag.toLowerCase() === 'onelividman' || gtag.toLowerCase() === 'raymystyro' || gtag.toLowerCase() === 'ray') return;
+
+                        const pRecent = convertFirebaseArray(playerObj.recentGames);
+                        const pHunt = playerObj.activeHunt;
+                        
+                        let matchedGameRef = pRecent.find(g => normalizeGameTitle(g.name) === activeGameNormalized);
+                        let matchedTrophies = [];
+
+                        if (pHunt && normalizeGameTitle(pHunt.title) === activeGameNormalized) {
+                            matchedTrophies = convertFirebaseArray(pHunt.trophies);
+                        }
+
+                        if (matchedGameRef || matchedTrophies.length > 0) {
+                            squadMembersWithGame.push({
+                                gamerTag: gtag,
+                                trophies: matchedTrophies,
+                                gameRef: matchedGameRef
+                            });
+                        }
+                    });
+
+                    // Render Trophy Checklist
                     const checklist = document.getElementById('trophy-checklist-container');
                     if (checklist && currentTrophyData.length > 0) {
-                        checklist.innerHTML = currentTrophyData.map((t, idx) => `
-                            <div class="trophy-row" onclick="openTrophyDetailModal(currentTrophyData[${idx}], '${(hunt.title || '').replace(/'/g, "\\'")}')">
-                                <img src="${t.icon}" class="trophy-icon-sq ${!t.earned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://via.placeholder.com/50x50/202024/38BDF8?text=🏆'">
-                                <div class="min-w-0 flex-1">
-                                    <div class="trophy-title-text truncate text-xs ${t.earned ? 'text-green-400' : 'text-sky-400'}">${t.name}</div>
-                                    <div class="text-[10px] text-gray-400 truncate">${t.description || 'Trophy Objective'}</div>
+                        checklist.innerHTML = currentTrophyData.map((t, idx) => {
+                            let squadStatusHtml = "";
+                            
+                            if (squadMembersWithGame.length > 0) {
+                                squadStatusHtml = `
+                                    <div class="flex flex-wrap items-center gap-1.5 mt-1.5 pt-1 border-t border-white/5">
+                                        <span class="text-[8px] font-black uppercase text-gray-500 mr-1">Squad Presence:</span>
+                                        ${squadMembersWithGame.map(member => {
+                                            let hasEarned = false;
+                                            if (member.trophies.length > 0) {
+                                                const matchT = member.trophies.find(mt => mt.trophyId === t.trophyId || (mt.name && t.name && mt.name.toLowerCase() === t.name.toLowerCase()));
+                                                if (matchT && matchT.earned) hasEarned = true;
+                                            }
+                                            
+                                            return `
+                                                <span class="squad-member-pill ${hasEarned ? 'earned' : 'locked'}">
+                                                    <i class="fas ${hasEarned ? 'fa-check-circle' : 'fa-lock'}"></i>
+                                                    ${member.gamerTag}
+                                                </span>
+                                            `;
+                                        }).join('')}
+                                    </div>
+                                `;
+                            }
+
+                            return `
+                                <div class="trophy-row" onclick="openTrophyDetailModal(currentTrophyData[${idx}], '${(activeGameTitle || '').replace(/'/g, "\\'")}')">
+                                    <img src="${t.icon}" class="trophy-icon-sq ${!t.earned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://via.placeholder.com/50x50/202024/38BDF8?text=🏆'">
+                                    <div class="min-w-0 flex-1">
+                                        <div class="trophy-title-text truncate text-xs ${t.earned ? 'text-green-400' : 'text-sky-400'}">${t.name}</div>
+                                        <div class="text-[10px] text-gray-400 truncate">${t.description || 'Trophy Objective'}</div>
+                                        ${squadStatusHtml}
+                                    </div>
+                                    <div class="text-right">
+                                        <span class="text-[9px] font-black uppercase ${t.earned ? 'text-green-400' : 'text-gray-500'}">${t.earned ? 'EARNED' : 'LOCKED'}</span>
+                                    </div>
                                 </div>
-                                <div class="text-right">
-                                    <span class="text-[9px] font-black uppercase ${t.earned ? 'text-green-400' : 'text-gray-500'}">${t.earned ? 'EARNED' : 'LOCKED'}</span>
-                                </div>
-                            </div>
-                        `).join('');
+                            `;
+                        }).join('');
                     }
                 }
 
@@ -977,9 +1270,12 @@
 
         // Initialize Engine & Polling Loops
         updateHub();
+        updateFS25Telemetry();
         fetchLiveTwitch();
         refreshMusic();
+
         setInterval(updateHub, 30000);
+        setInterval(updateFS25Telemetry, 45000);
         setInterval(fetchLiveTwitch, 60000);
         setInterval(refreshMusic, 60000);
     </script>
