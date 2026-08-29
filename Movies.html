@@ -5,7 +5,7 @@
 <!-- Line 170: CSS Styles (Responsive Layout, Badges & Lightbox)       -->
 <!-- Line 400: App Scaffolding (Header, Nav Drawer, Filters, Lightbox) -->
 <!-- Line 510: Live Realtime Firebase Sync Engine (Movies + UTM Menu)  -->
-<!-- Date & Time (NYT 24hr): 08/25/2026 02:25:00 EDT                   -->
+<!-- Date & Time (NYT 24hr): 08/28/2026 22:38:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -194,6 +194,9 @@
                 <div id="lb-tv-binge-container" style="display: none;"></div>
 
                 <div id="lb-artists" class="black-outline"></div>
+                
+                <!-- Lightbox-only image description -->
+                <p id="lb-image-alt-desc" class="black-outline" style="font-size: 11px; color: #f5c518; margin-top: 6px; font-style: italic;"></p>
                 
                 <p id="lb-description-text" class="black-outline" style="font-size: 12px; color: #ccc; line-height: 1.5; margin-top: 10px; text-align: left;"></p>
             </div>
@@ -550,57 +553,25 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     text-align: left;
     box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.2);
 }
-.binge-header {
-    font-size: 12px;
-    font-weight: 900;
-    color: #c084fc;
-    letter-spacing: 1px;
-    margin-bottom: 8px;
-    text-align: center;
-}
-.binge-progress-bar-wrapper {
-    background: #111;
-    border: 1px solid #333;
-    height: 6px;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-bottom: 4px;
-}
-.binge-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, #8b5cf6, #ec4899);
-    width: 0%;
-    transition: width 0.4s ease;
-}
-.binge-progress-text {
-    font-size: 10px;
-    color: #aaa;
-    text-align: right;
-    margin-bottom: 10px;
-}
-.binge-episode-list {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 6px;
-    max-height: 110px;
-    overflow-y: auto;
-}
-.binge-ep-row {
-    font-size: 11px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: #ddd;
-    cursor: pointer;
-    user-select: none;
-}
-.binge-checkbox {
-    accent-color: #8b5cf6;
-    cursor: pointer;
-}
 
 #movie-library-grid { display: grid; gap: 15px; width: 100%; grid-template-columns: repeat(2, 1fr); padding-right: 25px; }
-@media (min-width: 768px) { #movie-library-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; } }
+
+/* Responsive Tablet View */
+@media (min-width: 600px) and (max-width: 1024px) {
+    #movie-library-grid {
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+}
+
+/* Responsive Desktop View */
+@media (min-width: 1025px) { 
+    #movie-library-grid { 
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
+        gap: 25px; 
+    } 
+}
+
 .movie-card { background: var(--card-bg); border: 1px solid #222; border-radius: 12px; display: flex; flex-direction: column; overflow: hidden; transition: 0.3s; cursor: pointer; position: relative; }
 .movie-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(139,0,0,0.5); border-color: #8b0000; }
 .poster-box { position: relative; aspect-ratio: 2/3; background: #000; overflow: hidden; }
@@ -646,6 +617,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 .tip-link { padding: 15px 40px; background: linear-gradient(135deg, #8b0000, #ff0000); color: #fff !important; font-weight: 900; border-radius: 50px; text-decoration: none; border: 2px solid #fff; transition: 0.3s; min-height: 44px; display: flex; align-items: center; }
 .tip-link:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,0,0,0.6); }
 
+/* Mobile View Adjustments */
 @media (max-width: 768px) {
     .master-85-width { width: 95% !important; }
     #library-header { padding: 20px 15px; }
@@ -654,7 +626,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     .lightbox-content { height: 95vh; border-radius: 12px; }
     .lightbox-overlay { padding: 15px; }
     .button-container { grid-template-columns: repeat(2, 1fr) !important; }
-    .binge-episode-list { grid-template-columns: 1fr; max-height: 150px; }
     #dynamic-nav-sidebar { padding: 5px 2px; right: 2px; }
     .nav-item { font-size: 9px; padding: 2px 3px; }
     .nav-year { font-size: 8px; }
@@ -687,7 +658,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     let currentFilteredList = [];
     let utmLinksMap = {};
     
-    // Batch Pagination Configurations (60 Cards initially, then append 60 on scroll)
+    // Batch Pagination Configurations
     const BATCH_SIZE = 60;
     let currentRenderLimit = BATCH_SIZE;
 
@@ -733,10 +704,9 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     };
 
     /**
-     * Initializes a Live SSE Realtime Connection for the Navigation Drawer (/utm_links)
+     * Live SSE Connection for Drawer Directory (/utm_links)
      */
     function initLiveUtmStream() {
-        // 1. Initial REST Fetch
         fetch(FIREBASE_UTM_ENDPOINT)
             .then(res => res.json())
             .then(data => {
@@ -747,7 +717,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             })
             .catch(err => console.error("Error fetching UTM links:", err));
 
-        // 2. Persistent SSE Listener for Live Updates
         try {
             const utmEventSource = new EventSource(FIREBASE_UTM_ENDPOINT);
             utmEventSource.addEventListener('put', function(e) {
@@ -761,9 +730,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                             utmLinksMap = payload;
                         } else if (path.startsWith('/') && payload !== undefined) {
                             const groupKey = path.substring(1).split('/')[0];
-                            if (groupKey) {
-                                utmLinksMap[groupKey] = payload;
-                            }
+                            if (groupKey) utmLinksMap[groupKey] = payload;
                         }
                         renderLiveUtmLinks();
                     }
@@ -774,9 +741,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         } catch (e) {}
     }
 
-    /**
-     * Parses Firebase Schema Nodes: Discord, Entertainment, Game, Home, Other, PlayStation_Trophy_Card, User
-     */
     function renderLiveUtmLinks() {
         const container = document.getElementById('utm-links-container');
         if (!container || !utmLinksMap || typeof utmLinksMap !== 'object') return;
@@ -795,16 +759,12 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             if (!groupNode) return;
 
             let itemsList = [];
-
-            // Handle Array of items [0, 1, 2...] or Object Map
             if (Array.isArray(groupNode)) {
                 itemsList = groupNode.filter(Boolean);
             } else if (typeof groupNode === 'object') {
-                // If it's a single link object
                 if (groupNode.utmUrl || groupNode.url) {
                     itemsList = [groupNode];
                 } else {
-                    // Object with multiple sub-keys
                     Object.keys(groupNode).forEach(k => {
                         if (groupNode[k] && typeof groupNode[k] === 'object') {
                             itemsList.push(groupNode[k]);
@@ -816,7 +776,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             const cleanGroupName = groupName.replace(/_/g, ' ');
 
             if (itemsList.length === 1) {
-                // Single Standalone Link
                 const item = itemsList[0];
                 const title = item.title || item.campaign || cleanGroupName;
                 const url = item.utmUrl || item.url || '#';
@@ -829,7 +788,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                     </a>
                 `;
             } else if (itemsList.length > 1) {
-                // Multi-item Folder Accordion
                 folderIndex++;
                 const folderId = `utm-folder-node-${folderIndex}`;
                 let subLinksHtml = '';
@@ -908,7 +866,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 icon: 'https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'
             });
         } else {
-            alert('Notification permission was denied. Please allow notifications in browser settings.');
+            alert('Notification permission was denied.');
         }
     };
 
@@ -1144,7 +1102,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
         try {
             const eventSource = new EventSource(FIREBASE_ENDPOINT);
-            
             eventSource.addEventListener('put', function(e) {
                 try {
                     const parsed = JSON.parse(e.data);
@@ -1228,13 +1185,22 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
         const validDates = [...movies].filter(m => m.timestamp > 0);
         newestMoviesSet.clear();
+        oldestMovieIndex = null;
 
         if (validDates.length > 0) {
+            // Sort to find the oldest dateAdded (considered First Movie)
             validDates.sort((a, b) => a.timestamp - b.timestamp);
             oldestMovieIndex = validDates[0].libIndex;
 
-            const sortedNew = [...validDates].sort((a, b) => b.timestamp - a.timestamp);
-            sortedNew.slice(0, 8).forEach(m => newestMoviesSet.add(m.libIndex));
+            // 10-day window for New Movies
+            const now = Date.now();
+            const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
+
+            validDates.forEach(m => {
+                if (now - m.timestamp <= TEN_DAYS_MS) {
+                    newestMoviesSet.add(m.libIndex);
+                }
+            });
         }
 
         checkNewMoviePushAlerts(movies);
@@ -1314,7 +1280,8 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 <div class="poster-box">
                     ${ribbonBadgeHtml}
                     ${holidayBadgeHtml}
-                    <img src="${m.image}" alt="${m.title} Poster" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
+                    <!-- ALT description hidden from main screen, only displayed in lightbox -->
+                    <img src="${m.image}" alt="${m.title}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
                     ${tvBadgeHtml}
                     <div class="poster-year-badge black-outline">${m.year}</div>
                 </div>
@@ -1448,7 +1415,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         const tvBingeBox = document.getElementById('lb-tv-binge-container');
         if (isTV) {
             tvBingeBox.style.display = 'block';
-            buildTvTracker(m);
         } else {
             tvBingeBox.style.display = 'none';
         }
@@ -1463,6 +1429,11 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
         const actorLinksHtml = m.cast.map(actor => `<span class="actor-link black-outline" onclick="filterByActor('${actor.replace(/'/g, "\\'")}')">${actor}</span>`).join(' • ');
         document.getElementById('lb-artists').innerHTML = `<strong class="black-outline">Starring:</strong><br>${actorLinksHtml || 'Cast details unavailable.'}`;
+        
+        // Show Image Alt / Poster Details in Lightbox View Only
+        const altDescEl = document.getElementById('lb-image-alt-desc');
+        altDescEl.textContent = `Poster view for ${m.title} (${m.year})`;
+
         document.getElementById('lb-description-text').textContent = m.description || 'No description available.';
 
         let btns = [];
