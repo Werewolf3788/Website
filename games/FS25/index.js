@@ -1,10 +1,10 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 30, 2026, 16:30:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 30, 2026, 16:55:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Unified Tactical Dashboard Engine. Synchronizes directly with
-                /fs25 and /FS25_Mods_Info using a single, resilient Firebase
-                listener and REST fallback.
+   Description: Unified Tactical Dashboard Engine. Operates over 100% secure
+                HTTPS by routing map images via wsrv.nl proxy and reading
+                telemetry exclusively from Firebase RTDB.
    ========================================================================== */
 
 /* ------------------------------------------------------------------------
@@ -42,7 +42,9 @@
 
 const REPO_IMAGES_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
-const LIVE_MAP_FEED_URL = "http://207.244.246.70:9050/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=60&size=512";
+
+// Secure HTTPS Proxy for G-Portal Map Stream to prevent Mixed Content blocking
+const LIVE_MAP_SECURE_PROXY = "https://wsrv.nl/?url=207.244.246.70:9050/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=75&size=1024";
 
 const HAND_TOOL_NAMES = {
   "XP550": "Husqvarna XP550 Chainsaw",
@@ -164,7 +166,7 @@ function isValidImageUrl(url) {
 }
 
 /* ==========================================================================
-   SECTION 1: Cross-Referenced Server Mod Hub
+   SECTION 1: Mod Catalog Cross-Reference
    ========================================================================== */
 
 function renderServerMods(activeModObjects) {
@@ -179,7 +181,6 @@ function renderServerMods(activeModObjects) {
     const rawName = mod.name || mod.title || mod.filename || '';
     const cleanKey = sanitizeKey(rawName.replace('FS25_', ''));
     
-    // Cross-reference with /FS25_Mods_Info
     const fbMeta = firebaseWebsiteMods[cleanKey] || firebaseWebsiteMods[sanitizeKey(rawName)] || {};
     
     const finalName = fbMeta.name_a || fbMeta.name || mod.title || formatName(rawName);
@@ -368,7 +369,6 @@ window.renderDashboard = function(rawIncomingData) {
   latestFirebasePayload = data;
   window.setServerStatus(true);
 
-  // Directly access the fs25 scope
   const fs25Node = (data.fs25 && typeof data.fs25 === 'object') ? data.fs25 : data;
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
@@ -413,7 +413,7 @@ window.renderDashboard = function(rawIncomingData) {
 
         activeFarmDirectory[farmId] = { name: finalName, color: color, money: money };
 
-        // Strictly isolate Farm 1 ("My farm") for the Global Balance KPI Card
+        // Isolate Farm 1 ("My farm") for the KPI
         if (farmId === "1" || farmCount === 1) {
           primaryFarmBalance = money;
         }
@@ -495,8 +495,7 @@ window.renderDashboard = function(rawIncomingData) {
   setTxt('server-month', `Season: ${seasonText}`);
   setTxt('server-weather', `Weather: ${weatherText}`);
 
-  // Inject Live G-Portal Map Stream Lightbox Preview
-  const liveMapSrc = fs25Node.liveMapImage || LIVE_MAP_FEED_URL;
+  // Secure Satellite Map Stream Lightbox Preview
   const mapBadge = document.getElementById('server-map');
   if (mapBadge) {
     mapBadge.style.cursor = "pointer";
@@ -506,7 +505,7 @@ window.renderDashboard = function(rawIncomingData) {
       const modalCaption = document.getElementById('lightbox-caption');
       if (modal && modalImg) {
         modal.style.display = 'flex';
-        modalImg.src = `${liveMapSrc}&_t=${Date.now()}`;
+        modalImg.src = `${LIVE_MAP_SECURE_PROXY}&_t=${Date.now()}`;
         if (modalCaption) modalCaption.textContent = `Live Satellite Map Feed (${serverMapTitle})`;
       }
     };
@@ -628,7 +627,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (miscCont) miscCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold, #facc15); font-size:0.85rem;"><i class="fa-solid fa-tower-cell"></i> Placed Objects: ${miscCount}</strong></div>${miscHtml || `<div class="empty-state">No Placed Objects Logged</div>`}`;
   if (prodCont) prodCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold, #facc15); font-size:0.85rem;"><i class="fa-solid fa-industry"></i> Production Factories: ${prodCount}</strong></div>${prodHtml || `<div class="empty-state">No Production Buildings Logged</div>`}`;
 
-  // 5. Complete Contracts & Missions Board (All Types: Available, In Progress, Finished)
+  // 5. Complete Contracts & Missions Board (All Types)
   const missionsCont = document.getElementById('missions-container');
   let contractCropMap = {};
 
@@ -1020,9 +1019,7 @@ function initializeFirebaseSync() {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-  } catch (err) {
-    console.error("Firebase init note:", err.message);
-  }
+  } catch (err) {}
 
   const db = firebase.database();
 
@@ -1045,7 +1042,6 @@ function initializeFirebaseSync() {
     if (snap.exists()) {
       window.renderDashboard(snap.val());
     } else {
-      // Fallback REST fetch if Realtime connection is paused
       fetch("https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json")
         .then(r => r.json())
         .then(data => {
@@ -1090,6 +1086,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleBtn.addEventListener('click', () => navMenu.classList.toggle('open'));
   }
 
+  fetchModCatalog();
   initializeFirebaseSync();
 });
 
