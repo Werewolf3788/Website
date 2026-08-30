@@ -1,10 +1,12 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: Sun, Aug 30, 2026, 17:45:00 (EDT - New York)
+ * Deployment Timestamp: Sun, Aug 30, 2026, 17:50:00 (EDT - New York)
  * Project: entertainment-71888 (/fs25 RTDB Node)
- * Description: Smart FS25 Dynamic Savegame Ingestion Engine. Auto-detects the
- *              active savegame slot (Slot 1, 2, 3, etc.) on G-Portal, pulls all
- *              active XML files via FTP, and updates Firebase strictly under /fs25.
+ * Description: Smart FS25 Dynamic Savegame Ingestion Engine.
+ *              - Runs full FTP savegame sync every 16 mins when players are active.
+ *              - Runs full FTP savegame sync once every 24 hours when server is idle.
+ *              - Auto-detects active savegame slots (e.g. profile/savegame3).
+ *              - Synchronizes all 58+ XMLs atomically into /fs25.
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
  * ============================================================================ */
 
@@ -137,15 +139,54 @@ async function fetchStatsApi() {
 
 // SECTION 5: SMART PIPELINE EXECUTION
 async function runPipeline() {
-  console.log("📡 [1/4] Fetching live Web API stats feed...");
+  console.log("📡 [1/4] Running Pre-Flight Check against Web Stats API...");
   const statsData = await fetchStatsApi();
+  const activePlayers = statsData.players;
+
+  // Retrieve timestamp of last full savegame download
+  let lastFullSyncIso = null;
+  try {
+    const snap = await db.ref('fs25/lastFullSaveSync').once('value');
+    lastFullSyncIso = snap.val();
+  } catch (e) {}
+
+  const lastSyncMs = lastFullSyncIso ? new Date(lastFullSyncIso).getTime() : 0;
+  const hoursSinceLastFullSync = (Date.now() - lastSyncMs) / (1000 * 60 * 60);
+
+  console.log(`📊 Active Players: ${activePlayers} | Hours since last full save sync: ${hoursSinceLastFullSync.toFixed(1)}h`);
+
+  // SMART SCHEDULING LOGIC:
+  // If no players are online AND less than 24 hours have passed since the last full sync:
+  if (activePlayers === 0 && hoursSinceLastFullSync < 24 && lastSyncMs > 0) {
+    console.log("💤 Server Idle (0 players) & full sync performed < 24h ago.");
+    console.log("⚡ Updating live heartbeat and exiting in ~2 seconds to preserve Action minutes.");
+
+    const idlePayload = {
+      activePlayers: 0,
+      lastUpdated: new Date().toISOString(),
+      liveMapImage: MAP_IMAGE_URL
+    };
+    if (statsData.text) {
+      idlePayload.stats_raw = statsData.text;
+      idlePayload.stats_xml_raw = statsData.text;
+    }
+
+    await db.ref('fs25').update(idlePayload);
+    process.exit(0);
+  }
+
+  console.log(activePlayers > 0 
+    ? `🔥 Active player detected (${activePlayers} online). Proceeding with full 16-min savegame sync...`
+    : `⏰ 24-Hour maintenance interval reached (${hoursSinceLastFullSync.toFixed(1)}h). Running full savegame sync...`
+  );
 
   let detectedSlot = statsData.activeSlot || null;
 
   const masterPayload = {
-    activePlayers: statsData.players,
+    activePlayers: activePlayers,
     liveMapImage: MAP_IMAGE_URL,
     lastUpdated: new Date().toISOString(),
+    lastFullSaveSync: new Date().toISOString(),
     config: { appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c" }
   };
 
@@ -155,7 +196,7 @@ async function runPipeline() {
   }
 
   if (!ftpUser || !ftpPass) {
-    console.warn("⚠️ FTP credentials missing. Updating stats feed only.");
+    console.warn("⚠️ FTP credentials missing. Writing stats feed only.");
     await db.ref('fs25').update(masterPayload);
     process.exit(0);
   }
@@ -202,7 +243,7 @@ async function runPipeline() {
 
     const allDiscoveredFolders = [];
 
-    // Scan profile subdirectories (G-Portal primary location)
+    // Scan profile subdirectories (Primary G-Portal location)
     profileList.filter(f => f.isDirectory && f.name.toLowerCase().includes('savegame') && !f.name.toLowerCase().includes('backup')).forEach(f => {
       allDiscoveredFolders.push({
         path: `profile/${f.name}`,
@@ -222,22 +263,19 @@ async function runPipeline() {
       });
     });
 
-    // Sort folders by most recently modified
     allDiscoveredFolders.sort((a, b) => b.date - a.date);
 
     let activeSavePath = null;
 
-    // Prefer detected slot from config if available
     if (detectedSlot) {
       const match = allDiscoveredFolders.find(f => f.slotNumber === String(detectedSlot));
       if (match) activeSavePath = match.path;
     }
 
-    // Otherwise fallback to most recently modified directory
     if (!activeSavePath && allDiscoveredFolders.length > 0) {
       activeSavePath = allDiscoveredFolders[0].path;
       detectedSlot = allDiscoveredFolders[0].slotNumber;
-      console.log(`🎯 Auto-selected most recently modified savegame directory: [ ${activeSavePath} ]`);
+      console.log(`🎯 Auto-selected most recently modified save directory: [ ${activeSavePath} ]`);
     }
 
     if (!activeSavePath) {
