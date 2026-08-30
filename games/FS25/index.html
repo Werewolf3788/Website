@@ -1,26 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Line 4: Character Encoding & Responsive Viewport -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FS25 Realtime Tactical Dashboard & Mod Directory</title>
 
+  <!-- Line 9: Shortcut Icon & Stylesheets -->
   <link rel="shortcut icon" href="data:image/x-icon;," type="image/x-icon">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="preconnect" href="//fonts.googleapis.com">
+  <link rel="preconnect" href="//fonts.gstatic.com" crossorigin>
+  <link href="//fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-
-  <link rel="stylesheet" href="style.css?v=20260809_1917">
-  <script src="index.js?v=20260809_1917" defer></script>
+  <!-- Line 18: Firebase Realtime Database Client SDKs -->
+  <script src="//www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="//www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <script src="./index.js" defer></script>
 </head>
 <body>
 
+  <!-- Line 26: Master Navigation Header -->
   <header class="navbar">
     <div class="nav-brand">
-      <a href="https://werewolf3788.github.io/Website/" class="home-shortcut-btn" aria-label="Home Overview">
-        <i class="fa-solid fa-wheat-field logo-icon"></i>
+      <a href="//werewolf3788.github.io/Website/" class="home-shortcut-btn" aria-label="Home Overview">
+        <i class="fa-solid fa-wheat-awn logo-icon"></i>
         <span>FS25 TELEMETRY HUB</span>
       </a>
     </div>
@@ -35,16 +40,16 @@
           <i class="fa-solid fa-folder-tree"></i> Navigation Portals <i class="fa-solid fa-chevron-down arrow-icon"></i>
         </button>
         <div class="dropdown-popout-menu">
-          <a href="https://werewolf3788.github.io/Website/" class="dropdown-item">
+          <a href="//werewolf3788.github.io/Website/" class="dropdown-item">
             <i class="fa-solid fa-house"></i> Main Website Home
           </a>
-          <a href="https://werewolf3788.github.io/Website/games/FS25/" class="dropdown-item active">
+          <a href="//werewolf3788.github.io/Website/games/FS25/" class="dropdown-item active">
             <i class="fa-solid fa-tractor"></i> FS25 Telemetry Hub
           </a>
-          <a href="https://werewolf3788.github.io/Website/games/" class="dropdown-item">
+          <a href="//werewolf3788.github.io/Website/games/" class="dropdown-item">
             <i class="fa-solid fa-gamepad"></i> Gaming Servers & Profiles
           </a>
-          <a href="https://werewolf3788.github.io/Website/community/" class="dropdown-item">
+          <a href="//werewolf3788.github.io/Website/community/" class="dropdown-item">
             <i class="fa-solid fa-users"></i> Community Portals
           </a>
         </div>
@@ -52,29 +57,31 @@
     </nav>
   </header>
 
+  <!-- Line 60: Main Dashboard Body -->
   <main class="dashboard-container">
     
+    <!-- Section: Server Status Banner & Live Stream Preview -->
     <section class="server-banner">
       <div class="banner-layout">
         <div class="map-preview-box">
           <img id="banner-map-thumb" 
-               src="https://images.weserv.nl/?url=144.126.153.115:8300/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=60&size=512" 
+               src="http://207.244.246.70:9050/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=75&size=512" 
                data-alt="Live Dedicated Map Overview" 
                class="lightbox-trigger"
                onerror="this.parentNode.style.display='none';" />
         </div>
         <div class="banner-title">
           <div class="server-header-line">
-            <h1 id="server-name">OneLIVIDMAN and werewolf3788</h1>
+            <h1 id="server-name">OneLIVIDMAN and werewolf 618</h1>
             <span id="server-status-pill" class="status-pill status-online">
               <span class="status-dot"></span> <span id="status-text">ONLINE</span>
             </span>
           </div>
           <div class="banner-badges">
-            <span id="server-map" class="badge"><i class="fa-solid fa-map-location-dot"></i> Map: Calm Lands</span>
+            <span id="server-map" class="badge live-map-btn" title="Click to view full live satellite map feed"><i class="fa-solid fa-map-location-dot"></i> Map: Calm Lands</span>
             <span id="server-time" class="badge"><i class="fa-regular fa-clock"></i> Time: 00:00</span>
             <span id="time-speed-badge" class="badge" style="border:1px solid #facc15; color:#facc15;"><i class="fa-solid fa-forward-fast"></i> Speed: 1x</span>
-            <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Month: Early Autumn</span>
+            <span id="server-month" class="badge"><i class="fa-solid fa-calendar-days"></i> Season: Early Autumn</span>
             <span id="server-weather" class="badge"><i class="fa-solid fa-sun"></i> Weather: Clear</span>
             <span id="server-players" class="badge"><i class="fa-solid fa-users"></i> Players: 0/6</span>
             <span id="traffic-badge" class="badge" style="border:1px solid #38bdf8;"><i class="fa-solid fa-car"></i> Traffic: OFF</span>
@@ -83,25 +90,39 @@
       </div>
     </section>
 
+    <!-- Section: Global Summary KPI Counters -->
     <div class="metrics-row">
       <div class="metric-card">
         <i class="fa-solid fa-scale-balanced metric-icon" style="color:#4ade80;"></i>
-        <div><div class="metric-value" id="global-net-worth">$0</div><div class="metric-label">Global Net Balance</div></div>
+        <div>
+          <div class="metric-value" id="global-net-worth">$0</div>
+          <div class="metric-label">Global Net Balance</div>
+        </div>
       </div>
       <div class="metric-card">
         <i class="fa-solid fa-tractor metric-icon" style="color:#ef4444;"></i>
-        <div><div class="metric-value" id="global-vehicle-count">0</div><div class="metric-label">Total Fleet Machinery</div></div>
+        <div>
+          <div class="metric-value" id="global-vehicle-count">0</div>
+          <div class="metric-label">Total Fleet Machinery</div>
+        </div>
       </div>
       <div class="metric-card">
         <i class="fa-solid fa-triangle-exclamation metric-icon" style="color:#f87171;"></i>
-        <div><div class="metric-value" id="global-mod-errors">0</div><div class="metric-label">Active Mod Warnings</div></div>
+        <div>
+          <div class="metric-value" id="global-mod-errors">0</div>
+          <div class="metric-label">Active Mod Warnings</div>
+        </div>
       </div>
       <div class="metric-card">
         <i class="fa-solid fa-map-location-dot metric-icon" style="color:#84cc16;"></i>
-        <div><div class="metric-value" id="global-land-count">0 Fields</div><div class="metric-label">Total Map Farmland</div></div>
+        <div>
+          <div class="metric-value" id="global-land-count">0 Fields</div>
+          <div class="metric-label">Total Map Farmland</div>
+        </div>
       </div>
     </div>
 
+    <!-- Section: Diagnostics Terminal Banner -->
     <div class="grid-layout-full">
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-terminal"></i><h2>TACTICAL SERVER FEED & MOD DIAGNOSTICS</h2></div>
@@ -109,7 +130,7 @@
       </div>
     </div>
 
-    <!-- SEPARATE INDIVIDUAL CARDS GRID -->
+    <!-- Section: Primary Telemetry Columns -->
     <div class="grid-layout">
       
       <!-- Card: Active Online Players -->
@@ -130,7 +151,7 @@
         <div id="animals-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading animal telemetry...</div></div>
       </div>
 
-      <!-- Card: Placed Objects & Antennas -->
+      <!-- Card: Placed Objects & Construction -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-tower-cell"></i><h2>CONSTRUCTION & PLACED OBJECTS</h2></div>
         <div id="construction-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Counting placed objects...</div></div>
@@ -148,19 +169,25 @@
         <div id="collectibles-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading collectible items...</div></div>
       </div>
 
-      <!-- Fleet Categories -->
+      <!-- Card: Fleet Tractors & Rigs -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-tractor"></i><h2>FLEET TRACTORS & RIGS</h2></div>
         <div id="tractors-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning tractor fleet...</div></div>
       </div>
+
+      <!-- Card: Harvesters & Combines -->
       <div class="dashboard-box">
-        <div class="box-header"><i class="fa-solid fa-wheat-field"></i><h2>HARVESTERS & COMBINES</h2></div>
+        <div class="box-header"><i class="fa-solid fa-wheat-awn"></i><h2>HARVESTERS & COMBINES</h2></div>
         <div id="harvesters-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning harvest fleet...</div></div>
       </div>
+
+      <!-- Card: Hauling Trailers & Wagons -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-truck-ramp-box"></i><h2>HAULING TRAILERS & WAGONS</h2></div>
         <div id="trailers-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning trailers...</div></div>
       </div>
+
+      <!-- Card: Implements & Attachments -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-screwdriver-wrench"></i><h2>IMPLEMENTS & ATTACHMENTS</h2></div>
         <div id="implements-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning equipment...</div></div>
@@ -172,7 +199,7 @@
         <div id="handtools-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Scanning hand tools...</div></div>
       </div>
 
-      <!-- Card: Field Crops & Precision Farming -->
+      <!-- Card: Field Crops, Agronomy & Precision Farming -->
       <div class="dashboard-box">
         <div class="box-header"><i class="fa-solid fa-seedling"></i><h2>FIELD CROPS & AGRONOMY STATUS</h2></div>
         <div id="fields-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Loading field telemetry...</div></div>
@@ -184,13 +211,19 @@
         <div id="main-productions-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading factory telemetry...</div></div>
       </div>
 
+      <!-- Card: Greenhouses & Solar Generators -->
+      <div class="dashboard-box">
+        <div class="box-header"><i class="fa-solid fa-solar-panel"></i><h2>GREENHOUSES & SOLAR GENERATORS</h2></div>
+        <div id="greenhouses-container" class="box-content"><div class="loading-state"><i class="fa-solid fa-spinner fa-spin"></i> Reading solar & greenhouse telemetry...</div></div>
+      </div>
+
     </div>
 
-    <!-- Server Mod Directory -->
+    <!-- Section: Server Mod Directory -->
     <section class="mod-hub-section" style="margin-top: 2rem;">
       <div class="mod-hub-header">
-        <h2><i class="fa-solid fa-cubes" style="color:var(--accent-gold);"></i> SERVER MODIFICATION DIRECTORY</h2>
-        <p style="color:var(--text-muted); margin-top:4px;">Live mod catalog cross-referenced against /FS25_Mods_Info and active server files.</p>
+        <h2><i class="fa-solid fa-cubes" style="color:var(--accent-gold, #facc15);"></i> SERVER MODIFICATION DIRECTORY</h2>
+        <p style="color:var(--text-muted, #94a3b8); margin-top:4px;">Live mod catalog cross-referenced against /FS25_Mods_Info and active server files.</p>
         <div id="mod-categories-bar" class="mod-categories-bar"></div>
       </div>
       <div id="mod-hub-grid" class="mod-grid">
@@ -200,6 +233,7 @@
 
   </main>
 
+  <!-- Line 240: Lightbox Modal for Enlarged Satellite Map & Images -->
   <div id="lightbox-modal" class="lightbox-modal">
     <span id="lightbox-close" class="lightbox-close">&times;</span>
     <div id="lightbox-card-body" class="lightbox-body">
@@ -208,68 +242,14 @@
     </div>
   </div>
 
+  <!-- Line 249: System Footer -->
   <footer class="system-footer">
     <div class="footer-content">
-      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sun, Aug 09, 2026, 19:17:00 (EDT)</strong></span>
-      <span id="save-slot-display" style="color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
+      <span><i class="fa-solid fa-code-commit"></i> Deployment Timestamp: <strong>Sun, Aug 30, 2026, 15:15:00 (EDT)</strong></span>
+      <span id="save-slot-display" style="color:var(--accent-gold, #facc15); font-weight:bold;"><i class="fa-solid fa-floppy-disk"></i> Active Save Slot: Detecting...</span>
       <span id="last-sync-time"><i class="fa-solid fa-rotate"></i> Last Telemetry Sync: Connected</span>
     </div>
   </footer>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-    import { getAuth, onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
-      authDomain: "entertainment-71888.firebaseapp.com",
-      databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
-      projectId: "entertainment-71888",
-      storageBucket: "entertainment-71888.firebasestorage.app",
-      messagingSenderId: "660524340277",
-      appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
-      measurementId: "G-CTYHDF4MSD"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const auth = getAuth(app);
-    const rootRef = ref(db);
-
-    function attachLiveSync() {
-      onValue(rootRef, (snapshot) => {
-        const val = snapshot.val();
-        if (val && typeof window.renderDashboard === 'function') {
-          window.renderDashboard(val);
-        }
-      }, (error) => {
-        console.warn("⚠️ Firebase SDK live sync restricted, fetching REST snapshot:", error.message);
-        loadSingleRESTFetch();
-      });
-    }
-
-    async function loadSingleRESTFetch() {
-      try {
-        const response = await fetch("https://entertainment-71888-default-rtdb.firebaseio.com/.json");
-        if (!response.ok) throw new Error(`HTTP ${response.status}`);
-        const data = await response.json();
-        if (data && typeof window.renderDashboard === 'function') {
-          window.renderDashboard(data);
-        }
-      } catch (err) {
-        console.error("⚠️ RTDB REST Fetch Error:", err);
-      }
-    }
-
-    onAuthStateChanged(auth, (user) => {
-      if (!user) signInAnonymously(auth);
-      attachLiveSync();
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-      loadSingleRESTFetch();
-    });
-  </script>
 </body>
 </html>
