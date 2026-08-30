@@ -1,31 +1,26 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 30, 2026, 12:15:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 30, 2026, 12:40:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Master Tactical Telemetry Engine with live Firebase RTDB 
-                listener, cross-referenced contracts, detailed production 
-                chain metrics, persistent map coordinates, and mod hub.
+   Description: Resilient Tactical Telemetry Engine with multi-source active 
+                player resolver, farmland ag-grid, and production chain metrics.
    ========================================================================== */
 
 /* ------------------------------------------------------------------------
    HTML Target Reference Notes:
    - Mod Hub Grid -> Target ID in HTML: 'mod-hub-grid' (Line ~180)
-   - Mod Categories Bar -> Target ID in HTML: 'mod-categories-bar' (Line ~175)
    - Active Players Container -> Target ID in HTML: 'active-players-container' (Line ~290)
    - Farms Container -> Target ID in HTML: 'farms-container' (Line ~330)
-   - Construction, Placed Objects & Production Chains -> Target IDs: 
-     'animals-container', 'generators-container', 'misc-container', 
-     'greenhouses-container', 'farmhouses-container', 'shops-selling-container', 
-     'main-productions-container' (Line ~370)
+   - Placed Objects & Husbandry -> Target IDs: 'animals-container', 
+     'generators-container', 'misc-container', 'greenhouses-container', 
+     'farmhouses-container', 'shops-selling-container', 'main-productions-container' (Line ~370)
    - Contracts & Missions -> Target ID: 'missions-container' (Line ~460)
-   - Collectibles -> Target ID: 'collectibles-container' (Line ~500)
-   - Hand Tools -> Target ID: 'handtools-container' (Line ~520)
    - Fleet Machinery -> Target IDs: 'tractors-container', 'harvesters-container',
      'trailers-container', 'implements-container' (Line ~550)
-   - Farmlands & Agronomy -> Target ID: 'fields-container' (Line ~620)
+   - Farmlands -> Target ID: 'fields-container' (Line ~620)
    ------------------------------------------------------------------------ */
 
-// Section: Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
+// Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
 (function injectGA4() {
   try {
     if (!document.getElementById('ga4-gtag-script')) {
@@ -45,7 +40,6 @@
   } catch (e) {}
 })();
 
-// Base Config & Asset Paths
 const REPO_IMAGES_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
 
@@ -171,7 +165,7 @@ function isValidImageUrl(url) {
 }
 
 /* ==========================================================================
-   SECTION 2: Mod Catalog CSV Fallback Loader
+   SECTION 2: Mod Catalog CSV Loader
    ========================================================================== */
 
 async function fetchModCatalog() {
@@ -366,20 +360,22 @@ window.renderDashboard = function(rawIncomingData) {
     renderModGrid(window.activeFirebaseModData);
   }
 
-  const fs25Node = data.fs25 ? data.fs25 : data;
+  // Dual-root resolution
+  const fs25Node = (data.fs25 && typeof data.fs25 === 'object') ? data.fs25 : data;
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-  const careerXml = parseXML(fs25Node.careerSavegame_raw || fs25Node.careerSavegame);
-  const vehXml = parseXML(fs25Node.vehicles_raw || fs25Node.vehicles);
-  const farmsXml = parseXML(fs25Node.farms_raw || fs25Node.farms);
-  const placeXml = parseXML(fs25Node.placeables_raw || fs25Node.placeables);
-  const itemsXml = parseXML(fs25Node.items_raw || fs25Node.items);
-  const toolsXml = parseXML(fs25Node.handTools_raw || fs25Node.handTools);
-  const missionsXml = parseXML(fs25Node.missions_raw || fs25Node.missions);
-  const statsXml = parseXML(fs25Node.stats_xml_raw || fs25Node.stats_xml || fs25Node.stats);
-  const envXml = parseXML(fs25Node.environment_raw || fs25Node.environment);
+  const careerXml = parseXML(fs25Node.careerSavegame_raw || fs25Node.careerSavegame || data.careerSavegame_raw || data.careerSavegame);
+  const vehXml = parseXML(fs25Node.vehicles_raw || fs25Node.vehicles || data.vehicles_raw || data.vehicles);
+  const farmsXml = parseXML(fs25Node.farms_raw || fs25Node.farms || data.farms_raw || data.farms);
+  const placeXml = parseXML(fs25Node.placeables_raw || fs25Node.placeables || data.placeables_raw || data.placeables);
+  const itemsXml = parseXML(fs25Node.items_raw || fs25Node.items || data.items_raw || data.items);
+  const toolsXml = parseXML(fs25Node.handTools_raw || fs25Node.handTools || data.handTools_raw || data.handTools);
+  const missionsXml = parseXML(fs25Node.missions_raw || fs25Node.missions || data.missions_raw || data.missions);
+  const statsXml = parseXML(fs25Node.stats_xml_raw || fs25Node.stats_raw || fs25Node.stats_xml || fs25Node.stats || fs25Node.dedicatedServerConfig_raw || data.stats_xml_raw || data.stats_raw);
+  const farmlandXml = parseXML(fs25Node.farmland_raw || fs25Node.farmlands_raw || fs25Node.farmland || fs25Node.farmlands || data.farmland_raw || data.farmlands_raw);
+  const envXml = parseXML(fs25Node.environment_raw || fs25Node.environment || data.environment_raw || data.environment);
 
-  // 1. Server Banner, Time, Weather, & Calendar
+  // 1. Server Banner, Time, Weather, & Net Worth
   let liveClockText = "00:00";
   let seasonText = "Early Autumn";
   let weatherText = "Clear";
@@ -415,25 +411,47 @@ window.renderDashboard = function(rawIncomingData) {
   setTxt('server-month', `Season: ${seasonText}`);
   setTxt('server-weather', `Weather: ${weatherText}`);
 
-  // 2. Active Players
+  // 2. Active Players (Multi-source: Stats XML + Vehicle Drivers)
   const playersCont = document.getElementById('active-players-container');
   let activeGamertags = [];
   let totalSlots = "6";
 
   if (statsXml) {
-    const slotsNode = statsXml.querySelector("Slots");
-    if (slotsNode) totalSlots = slotsNode.getAttribute("capacity") || "6";
+    const slotsNode = statsXml.querySelector("Slots, slots");
+    if (slotsNode) totalSlots = slotsNode.getAttribute("capacity") || slotsNode.getAttribute("numMax") || "6";
 
     statsXml.querySelectorAll("Player, player").forEach(p => {
       const name = p.textContent ? p.textContent.trim() : p.getAttribute("name");
-      if (name) {
-        const uptimeMin = p.getAttribute("uptime") || "0";
+      if (name && name !== "UNKNOWN") {
+        const uptimeMin = p.getAttribute("uptime") || p.getAttribute("playingTime") || "0";
         const posX = p.getAttribute("x") ? parseFloat(p.getAttribute("x")).toFixed(1) : null;
         const posZ = p.getAttribute("z") ? parseFloat(p.getAttribute("z")).toFixed(1) : null;
         activeGamertags.push({ name, uptimeMin, posX, posZ });
       }
     });
   }
+
+  // Fallback: Check vehicles.xml for currently entered user gamertags
+  if (activeGamertags.length === 0 && vehXml) {
+    vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
+      const user = (v.getAttribute("enteredUserGamertag") || v.getAttribute("driverName") || "").trim();
+      if (user && user !== "UNKNOWN" && !activeGamertags.some(p => p.name === user)) {
+        const comp = v.querySelector("component");
+        let posX = null, posZ = null;
+        if (comp && comp.getAttribute("position")) {
+          const coords = comp.getAttribute("position").split(" ");
+          if (coords.length >= 3) {
+            posX = parseFloat(coords[0]).toFixed(1);
+            posZ = parseFloat(coords[2]).toFixed(1);
+          }
+        }
+        activeGamertags.push({ name: user, uptimeMin: "Active In Cab", posX, posZ });
+      }
+    });
+  }
+
+  // Fallback direct active count from root if available
+  const activePlayersCount = Math.max(activeGamertags.length, parseInt(fs25Node.activePlayers || data.activePlayers || 0, 10));
 
   if (playersCont) {
     let playersHtml = "";
@@ -443,7 +461,7 @@ window.renderDashboard = function(rawIncomingData) {
           <i class="fa-solid fa-gamepad card-icon" style="color:#22c55e;"></i>
           <div class="card-details">
             <strong style="color:#22c55e; font-size:1.05rem;">${p.name}</strong>
-            <span style="color:#ffffff;">Uptime: ${p.uptimeMin} mins</span>
+            <span style="color:#ffffff;">Session: ${p.uptimeMin}</span>
             ${p.posX ? `<span class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-location-dot"></i> Position: X: ${p.posX} | Z: ${p.posZ}</span>` : ''}
           </div>
         </div>`;
@@ -451,11 +469,11 @@ window.renderDashboard = function(rawIncomingData) {
 
     playersCont.innerHTML = `
       <div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;">
-        <strong style="color:#22c55e; font-size:0.85rem;"><i class="fa-solid fa-users"></i> Connected Players: ${activeGamertags.length}</strong>
+        <strong style="color:#22c55e; font-size:0.85rem;"><i class="fa-solid fa-users"></i> Connected Players: ${activePlayersCount}</strong>
       </div>
       ${playersHtml || `<div class="empty-state">No Active Players Connected</div>`}`;
   }
-  setTxt('server-players', `Players: ${activeGamertags.length}/${totalSlots}`);
+  setTxt('server-players', `Players: ${activePlayersCount}/${totalSlots}`);
 
   // 3. Farms & Balances
   const farmsCont = document.getElementById('farms-container');
@@ -508,7 +526,7 @@ window.renderDashboard = function(rawIncomingData) {
     if (calculatedNetWorth > 0) setTxt('global-net-worth', `$${calculatedNetWorth.toLocaleString()}`);
   }
 
-  // 4. Placed Objects & Production
+  // 4. Placed Objects & Production Chains
   const animalsCont = document.getElementById('animals-container');
   const genCont = document.getElementById('generators-container');
   const miscCont = document.getElementById('misc-container') || document.getElementById('construction-container');
@@ -551,8 +569,8 @@ window.renderDashboard = function(rawIncomingData) {
       });
 
       const productionMetricsText = inputsList.length > 0 
-        ? `<div class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-boxes-stacked"></i> Production Material Storage:<br>${inputsList.join("<br>")}</div>` 
-        : '<div class="card-subtext" style="color:#94a3b8;">Status: Production Ready (Inputs Empty)</div>';
+        ? `<div class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-boxes-stacked"></i> Storage:<br>${inputsList.join("<br>")}</div>` 
+        : '<div class="card-subtext" style="color:#94a3b8;">Status: Operational</div>';
 
       const matchedImg = resolveItemImage(rawFilename);
       const imgHtml = matchedImg 
@@ -646,13 +664,13 @@ window.renderDashboard = function(rawIncomingData) {
     });
   }
 
-  if (animalsCont) animalsCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-cow"></i> Total Animal Husbandry Facilities: ${animalCount}</strong></div>${animalsHtml || `<div class="empty-state">No Animal Husbandry Facilities Logged</div>`}`;
-  if (genCont) genCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-bolt"></i> Total Generators & Antennas: ${genCount}</strong></div>${genHtml || `<div class="empty-state">No Generators or Antennas Logged</div>`}`;
-  if (greenCont) greenCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-seedling"></i> Total Greenhouses Active: ${greenCount}</strong></div>${greenHtml || `<div class="empty-state">No Greenhouses Active</div>`}`;
-  if (houseCont) houseCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-house-chimney"></i> Total Farmhouses Logged: ${houseCount}</strong></div>${houseHtml || `<div class="empty-state">No Farmhouses Logged</div>`}`;
-  if (shopsCont) shopsCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-store"></i> Total Shops & Selling Points: ${shopsCount}</strong></div>${shopsHtml || `<div class="empty-state">No Shops or Selling Points Logged</div>`}`;
-  if (miscCont) miscCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-hammer"></i> Total Construction & Placed Objects: ${miscCount}</strong></div>${miscHtml || `<div class="empty-state">No Miscellaneous Placed Objects Logged</div>`}`;
-  if (prodCont) prodCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-industry"></i> Total Production Factories: ${prodCount}</strong></div>${prodHtml || `<div class="empty-state">No Production Buildings Logged</div>`}`;
+  if (animalsCont) animalsCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-cow"></i> Husbandry Facilities: ${animalCount}</strong></div>${animalsHtml || `<div class="empty-state">No Animal Facilities Logged</div>`}`;
+  if (genCont) genCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-bolt"></i> Generators & Antennas: ${genCount}</strong></div>${genHtml || `<div class="empty-state">No Generators Logged</div>`}`;
+  if (greenCont) greenCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-seedling"></i> Greenhouses: ${greenCount}</strong></div>${greenHtml || `<div class="empty-state">No Greenhouses Logged</div>`}`;
+  if (houseCont) houseCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-house-chimney"></i> Farmhouses: ${houseCount}</strong></div>${houseHtml || `<div class="empty-state">No Farmhouses Logged</div>`}`;
+  if (shopsCont) shopsCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-store"></i> Shops & Selling Points: ${shopsCount}</strong></div>${shopsHtml || `<div class="empty-state">No Shops Logged</div>`}`;
+  if (miscCont) miscCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-hammer"></i> Placed Objects: ${miscCount}</strong></div>${miscHtml || `<div class="empty-state">No Placed Objects Logged</div>`}`;
+  if (prodCont) prodCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-industry"></i> Production Factories: ${prodCount}</strong></div>${prodHtml || `<div class="empty-state">No Production Buildings Logged</div>`}`;
 
   // 5. Contracts & Missions
   const missionsCont = document.getElementById('missions-container');
@@ -666,16 +684,12 @@ window.renderDashboard = function(rawIncomingData) {
 
         const rawType = m.getAttribute("type") || m.getAttribute("category") || m.getAttribute("name") || m.querySelector("type")?.textContent || "Contract Job";
         const jobType = formatName(rawType);
-
         const fieldId = m.getAttribute("fieldIndex") || m.getAttribute("fieldId") || m.getAttribute("field") || m.querySelector("field")?.getAttribute("id") || "N/A";
-
         const rawReward = m.getAttribute("reward") || m.getAttribute("payout") || m.querySelector("reward")?.textContent || "0";
         const reward = Math.round(parseFloat(rawReward));
-
         const farmId = m.getAttribute("farmId") || m.getAttribute("owner") || "1";
         const farmName = FARM_COLOR_PALETTE[farmId]?.name || `Farm #${farmId}`;
         const color = getFarmColor(farmId);
-
         const fruitTypeName = m.getAttribute("fruitTypeName") || m.getAttribute("fruitType") || m.querySelector("fruitType")?.textContent || "";
         const fruitText = fruitTypeName ? ` | Crop: ${formatName(fruitTypeName)}` : '';
 
@@ -705,7 +719,7 @@ window.renderDashboard = function(rawIncomingData) {
 
     missionsCont.innerHTML = `
       <div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;">
-        <strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-file-contract"></i> Total Contracts Logged in XML: ${missionCount}</strong>
+        <strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-file-contract"></i> Total Contracts Logged: ${missionCount}</strong>
       </div>
       ${missionsHtml || `<div class="empty-state">No Contracts Found in XML File</div>`}`;
   }
@@ -778,9 +792,9 @@ window.renderDashboard = function(rawIncomingData) {
 
     toolsCont.innerHTML = `
       <div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;">
-        <strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-toolbox"></i> Total Hand Tools Stored: ${toolCount}</strong>
+        <strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-toolbox"></i> Total Hand Tools: ${toolCount}</strong>
       </div>
-      ${toolsHtml || `<div class="empty-state">No Hand Tools Logged in XML</div>`}`;
+      ${toolsHtml || `<div class="empty-state">No Hand Tools Logged</div>`}`;
   }
 
   // 7. Fleet Machinery
@@ -909,25 +923,27 @@ window.renderDashboard = function(rawIncomingData) {
     });
   }
 
-  if (tracCont) tracCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-tractor"></i> Total Tractors & Rigs Logged: ${tracCount}</strong></div>${tractors || `<div class="empty-state">No Fleet Tractors Found in XML</div>`}`;
-  if (harvCont) harvCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-wheat-field"></i> Total Harvesters & Combines Logged: ${harvCount}</strong></div>${harvesters || `<div class="empty-state">No Fleet Harvesters Found in XML</div>`}`;
-  if (trailCont) trailCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-truck-ramp-box"></i> Total Hauling Trailers Logged: ${trailCount}</strong></div>${trailers || `<div class="empty-state">No Fleet Trailers Found in XML</div>`}`;
-  if (implCont) implCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-screwdriver-wrench"></i> Total Implements Logged: ${implCount}</strong></div>${implements || `<div class="empty-state">No Fleet Implements Found in XML</div>`}`;
+  if (tracCont) tracCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-tractor"></i> Fleet Tractors: ${tracCount}</strong></div>${tractors || `<div class="empty-state">No Fleet Tractors Found</div>`}`;
+  if (harvCont) harvCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-wheat-field"></i> Harvesters: ${harvCount}</strong></div>${harvesters || `<div class="empty-state">No Harvesters Found</div>`}`;
+  if (trailCont) trailCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-truck-ramp-box"></i> Trailers: ${trailCount}</strong></div>${trailers || `<div class="empty-state">No Trailers Found</div>`}`;
+  if (implCont) implCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-screwdriver-wrench"></i> Implements: ${implCount}</strong></div>${implements || `<div class="empty-state">No Implements Found</div>`}`;
   setTxt('global-vehicle-count', vehicleCount);
 
-  // 8. Farmlands
+  // 8. Farmlands (Parsing farmland.xml or stats_xml)
   const fieldsCont = document.getElementById('fields-container');
   if (fieldsCont) {
     let fieldsByFarm = {};
     let fieldCount = 0;
 
-    if (statsXml) {
-      statsXml.querySelectorAll("Farmland, farmland").forEach(f => {
+    const sourceFarmlandDoc = farmlandXml || statsXml;
+
+    if (sourceFarmlandDoc) {
+      sourceFarmlandDoc.querySelectorAll("Farmland, farmland").forEach(f => {
         fieldCount++;
         const id = f.getAttribute("id") || f.getAttribute("name");
-        const farmId = f.getAttribute("owner") || "0";
+        const farmId = f.getAttribute("farmId") || f.getAttribute("owner") || "0";
         const areaHa = parseFloat(f.getAttribute("area") || "0");
-        const acresText = (areaHa * 2.47105).toFixed(2);
+        const acresText = areaHa > 0 ? (areaHa * 2.47105).toFixed(2) : "N/A";
         const price = Math.round(parseFloat(f.getAttribute("price") || "0"));
 
         if (!fieldsByFarm[farmId]) fieldsByFarm[farmId] = "";
@@ -937,8 +953,8 @@ window.renderDashboard = function(rawIncomingData) {
           <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
             <i class="fa-solid fa-seedling card-icon" style="color:${color};"></i>
             <div class="card-details" style="width:100%;">
-              <strong style="color:${color};">Farmland #${id} (${acresText} Acres)</strong>
-              <span>Owner: ${farmId === '0' ? 'Public / Buyable' : 'Farm #' + farmId} | Value: $${price.toLocaleString()}</span>
+              <strong style="color:${color};">Farmland #${id} ${acresText !== "N/A" ? `(${acresText} Acres)` : ''}</strong>
+              <span>Owner: ${farmId === '0' ? 'Public / Buyable' : 'Farm #' + farmId} ${price > 0 ? `| Value: $${price.toLocaleString()}` : ''}</span>
             </div>
           </div>`;
       });
@@ -957,25 +973,23 @@ window.renderDashboard = function(rawIncomingData) {
 
     fieldsCont.innerHTML = `
       <div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;">
-        <strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-map-location-dot"></i> Total Map Farmlands Logged: ${fieldCount}</strong>
+        <strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-map-location-dot"></i> Total Map Farmlands: ${fieldCount}</strong>
       </div>
-      ${unifiedFieldsHtml || `<div class="empty-state">No Farmland Logged</div>`}`;
+      ${unifiedFieldsHtml || `<div class="empty-state">No Farmland Data Available</div>`}`;
     setTxt('global-land-count', `${fieldCount} Fields`);
   }
 };
 
 /* ==========================================================================
-   SECTION 5: Firebase Realtime Database Listener (entertainment-71888)
+   SECTION 5: Firebase Realtime Database Listener
    ========================================================================== */
 
 function initializeFirebaseSync() {
   if (typeof firebase === 'undefined') {
-    console.warn("Firebase SDK not detected on page. Retrying in 1s...");
     setTimeout(initializeFirebaseSync, 1000);
     return;
   }
 
-  // Ensure default app instance exists
   let db;
   try {
     if (!firebase.apps || firebase.apps.length === 0) {
@@ -990,30 +1004,21 @@ function initializeFirebaseSync() {
     return;
   }
 
-  // Primary node listener: /fs25 with fallback root check
-  const fs25Ref = db.ref('fs25');
-  fs25Ref.on('value', (snapshot) => {
-    if (snapshot.exists()) {
-      const payload = snapshot.val();
-      window.renderDashboard(payload);
+  // Dual listener on root and /fs25 node
+  db.ref().on('value', (rootSnap) => {
+    if (rootSnap.exists()) {
+      window.renderDashboard(rootSnap.val());
     } else {
-      // Fallback check on root if data was pushed flat
-      db.ref().once('value', (rootSnap) => {
-        if (rootSnap.exists()) {
-          window.renderDashboard(rootSnap.val());
-        } else {
-          window.setServerStatus(false);
-        }
-      });
+      window.setServerStatus(false);
     }
   }, (error) => {
-    console.error("Firebase RTDB Error:", error);
+    console.error("Firebase RTDB Error:", error.message);
     window.setServerStatus(false);
   });
 }
 
 /* ==========================================================================
-   SECTION 6: Event Listeners, Lightbox, & Bootstrap
+   SECTION 6: Event Listeners & Lightbox Setup
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
