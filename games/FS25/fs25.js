@@ -1,9 +1,10 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: Sun, Aug 30, 2026, 17:30:00 (EDT - New York)
+ * Deployment Timestamp: Sun, Aug 30, 2026, 17:45:00 (EDT - New York)
  * Project: entertainment-71888 (/fs25 RTDB Node)
- * Description: Exhaustive G-Portal FTP Ingestion Engine. Targets profile/savegame3
- *              and pulls ALL 58+ files/XMLs directly into Firebase /fs25.
+ * Description: Smart FS25 Dynamic Savegame Ingestion Engine. Auto-detects the
+ *              active savegame slot (Slot 1, 2, 3, etc.) on G-Portal, pulls all
+ *              active XML files via FTP, and updates Firebase strictly under /fs25.
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
  * ============================================================================ */
 
@@ -12,13 +13,13 @@ const ftp = require('basic-ftp');
 const admin = require('firebase-admin');
 const { Writable } = require('stream');
 
-// Failsafe timeout
+// SECTION 1: SAFETY TIMEOUT (4 Minutes)
 setTimeout(() => {
   console.log("🚨 Safety Failsafe: Exiting cleanly after 4 minutes.");
   process.exit(0);
 }, 4 * 60 * 1000);
 
-// Initialize Firebase Admin
+// SECTION 2: FIREBASE ADMIN INITIALIZATION
 const firebaseConfig = {
   databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
 };
@@ -49,6 +50,7 @@ if (!admin.apps.length) {
 
 const db = admin.database();
 
+// SECTION 3: NETWORK & HOST CONFIGURATION
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
@@ -58,6 +60,7 @@ const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
 const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
 const MAP_IMAGE_URL = `https://wsrv.nl/?url=${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
 
+// SECTION 4: HELPER FUNCTIONS
 function sanitizeXml(rawText) {
   if (!rawText) return "";
   let clean = rawText.toString();
@@ -132,15 +135,15 @@ async function fetchStatsApi() {
   return { text: "", players: 0, activeSlot: null, mapTitle: "" };
 }
 
+// SECTION 5: SMART PIPELINE EXECUTION
 async function runPipeline() {
-  console.log("📡 Step 1: Querying live Web API Stats...");
+  console.log("📡 [1/4] Fetching live Web API stats feed...");
   const statsData = await fetchStatsApi();
 
-  let targetSlot = statsData.activeSlot || process.env.DEFAULT_SAVE_SLOT || "3";
+  let detectedSlot = statsData.activeSlot || null;
 
   const masterPayload = {
     activePlayers: statsData.players,
-    activeSaveSlot: String(targetSlot),
     liveMapImage: MAP_IMAGE_URL,
     lastUpdated: new Date().toISOString(),
     config: { appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c" }
@@ -152,12 +155,12 @@ async function runPipeline() {
   }
 
   if (!ftpUser || !ftpPass) {
-    console.warn("⚠️ FTP credentials missing. Updating stats only.");
+    console.warn("⚠️ FTP credentials missing. Updating stats feed only.");
     await db.ref('fs25').update(masterPayload);
     process.exit(0);
   }
 
-  console.log(`📡 Step 2: Connecting to FTP (${ftpHost}:${ftpPort})...`);
+  console.log(`📡 [2/4] Connecting to FTP at ${ftpHost}:${ftpPort}...`);
   const client = new ftp.Client();
   client.ftp.verbose = false;
 
@@ -170,7 +173,7 @@ async function runPipeline() {
       secure: false
     });
 
-    // Check config files for active save slot confirmation
+    // 1. Check Server Config Files for Active Savegame Slot
     const configPaths = [
       'dedicated_server/dedicatedServerConfig.xml',
       'profile/dedicated_server/dedicatedServerConfig.xml',
@@ -184,53 +187,78 @@ async function runPipeline() {
         if (cfgXml) {
           const slotMatch = cfgXml.match(/savegameSlot="(\d+)"/i) || cfgXml.match(/savegame="(\d+)"/i) || cfgXml.match(/<savegame>(\d+)<\/savegame>/i);
           if (slotMatch) {
-            targetSlot = slotMatch[1];
-            masterPayload.activeSaveSlot = String(targetSlot);
-            console.log(`🎯 Active Save confirmed from dedicatedServerConfig: Slot #${targetSlot}`);
+            detectedSlot = slotMatch[1];
+            console.log(`🎯 Active save slot verified from config: Slot #${detectedSlot}`);
             break;
           }
         }
       } catch (e) {}
     }
 
-    // Explicitly target profile/savegameX first, then fallback to root savegameX
-    const candidatePaths = [
-      `profile/savegame${targetSlot}`,
-      `savegame${targetSlot}`,
-      `profile/savegame3`,
-      `savegame3`
-    ];
+    // 2. Scan Directory Timestamps to confirm most recent active savegame
+    const rootList = await client.list();
+    let profileList = [];
+    try { profileList = await client.list('profile'); } catch (e) {}
 
-    let targetDir = null;
-    let fileList = [];
+    const allDiscoveredFolders = [];
 
-    for (const pathCandidate of candidatePaths) {
-      try {
-        const list = await client.list(pathCandidate);
-        if (list && list.length > 0) {
-          targetDir = pathCandidate;
-          fileList = list;
-          console.log(`📂 Found active directory at: [ ${targetDir} ] (${fileList.length} files found)`);
-          break;
-        }
-      } catch (e) {}
+    // Scan profile subdirectories (G-Portal primary location)
+    profileList.filter(f => f.isDirectory && f.name.toLowerCase().includes('savegame') && !f.name.toLowerCase().includes('backup')).forEach(f => {
+      allDiscoveredFolders.push({
+        path: `profile/${f.name}`,
+        name: f.name,
+        slotNumber: (f.name.match(/\d+/) || ["3"])[0],
+        date: new Date(f.rawModifiedAt || f.modifiedAt || 0).getTime()
+      });
+    });
+
+    // Scan root subdirectories
+    rootList.filter(f => f.isDirectory && f.name.toLowerCase().includes('savegame') && !f.name.toLowerCase().includes('backup')).forEach(f => {
+      allDiscoveredFolders.push({
+        path: f.name,
+        name: f.name,
+        slotNumber: (f.name.match(/\d+/) || ["3"])[0],
+        date: new Date(f.rawModifiedAt || f.modifiedAt || 0).getTime()
+      });
+    });
+
+    // Sort folders by most recently modified
+    allDiscoveredFolders.sort((a, b) => b.date - a.date);
+
+    let activeSavePath = null;
+
+    // Prefer detected slot from config if available
+    if (detectedSlot) {
+      const match = allDiscoveredFolders.find(f => f.slotNumber === String(detectedSlot));
+      if (match) activeSavePath = match.path;
     }
 
-    if (!targetDir) {
-      throw new Error(`Could not access savegame directory for slot #${targetSlot}`);
+    // Otherwise fallback to most recently modified directory
+    if (!activeSavePath && allDiscoveredFolders.length > 0) {
+      activeSavePath = allDiscoveredFolders[0].path;
+      detectedSlot = allDiscoveredFolders[0].slotNumber;
+      console.log(`🎯 Auto-selected most recently modified savegame directory: [ ${activeSavePath} ]`);
     }
 
-    // Filter for all readable XML and configuration files
+    if (!activeSavePath) {
+      activeSavePath = "profile/savegame3";
+      detectedSlot = "3";
+    }
+
+    masterPayload.activeSaveSlot = String(detectedSlot);
+    console.log(`📂 [3/4] Pulling XML telemetry files from: [ ${activeSavePath} ] (Slot #${detectedSlot})`);
+
+    const fileList = await client.list(activeSavePath);
     const readableFiles = fileList.filter(f => !f.isDirectory && (
       f.name.toLowerCase().endsWith('.xml') || f.name.toLowerCase().endsWith('.txt')
     ));
 
-    console.log(`📄 Pulling ${readableFiles.length} XML files from [ ${targetDir} ] into Firebase /fs25:`);
+    console.log(`📄 Found ${readableFiles.length} files. Synchronizing into Firebase /fs25...`);
 
     for (const file of readableFiles) {
-      const remoteFilePath = `${targetDir}/${file.name}`;
+      const remoteFilePath = `${activeSavePath}/${file.name}`;
       const rawBaseName = file.name.replace(/\.(xml|txt)$/i, '');
-      
+
       try {
         const content = await downloadFtpFileToString(client, remoteFilePath);
         const cleanContent = sanitizeXml(content);
@@ -244,10 +272,11 @@ async function runPipeline() {
       }
     }
 
-    // Write the complete payload directly into /fs25
+    // 3. Write Master Payload strictly to /fs25
+    console.log("💾 [4/4] Writing complete atomic payload to Firebase /fs25...");
     await db.ref('fs25').set(masterPayload);
 
-    console.log(`🏆 ALL XML files successfully updated inside /fs25!`);
+    console.log(`🏆 Active Savegame (Slot #${detectedSlot}) successfully synchronized to Firebase /fs25!`);
     client.close();
     process.exit(0);
 
