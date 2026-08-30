@@ -1,10 +1,10 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: Sun, Aug 30, 2026, 15:35:00 (EDT - New York)
+ * Deployment Timestamp: Sun, Aug 30, 2026, 15:55:00 (EDT - New York)
  * Project: entertainment-71888 (/fs25 RTDB Node)
- * Description: Master FS25 Live Ingestion Pipeline. Directly pulls active 
- *              savegame feeds from G-Portal over HTTP and writes exclusively 
- *              into the /fs25 Realtime Database node.
+ * Description: Master FS25 Web Stats REST API Ingestion Pipeline. Fetches live
+ *              active server memory and savegame files directly from G-Portal
+ *              REST endpoints and writes strictly into the /fs25 node.
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
  * ============================================================================ */
 
@@ -48,45 +48,50 @@ if (!admin.apps.length) {
 
 const db = admin.database();
 
-// SECTION 3: G-PORTAL DIRECT FEED CONFIGURATION
+// SECTION 3: G-PORTAL REST ENDPOINT DEFINITIONS
 const serverHost = process.env.FTP_HOST || '207.244.246.70';
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
 
 const BASE_FEED_URL = `http://${serverHost}:9050/feed`;
 const STATS_URL = `${BASE_FEED_URL}/dedicated-server-stats.xml?code=${apiCode}`;
-const MAP_IMAGE_URL = `${BASE_FEED_URL}/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
+const MAP_IMAGE_URL = `${BASE_FEED_URL}/dedicated-server-stats-map.jpg?code=${apiCode}&quality=60&size=512`;
 
-// SECTION 4: UNESCAPE & DECODE XML HELPER
-function decodeLiveXmlPayload(rawText) {
-  if (!rawText) return "";
-  let clean = rawText.toString();
+// SECTION 4: ROBUST XML DECODER & UNESCAPER
+function decodeGiantsHtmlXml(rawInput) {
+  if (!rawInput) return "";
+  let text = rawInput.toString();
 
-  // Strip UI resizer markup
-  if (clean.includes(".vue-modal-resizer")) {
-    clean = clean.split(".vue-modal-resizer")[0];
+  // Strip UI resizer markers if present
+  if (text.includes(".vue-modal-resizer")) {
+    text = text.split(".vue-modal-resizer")[0];
   }
 
-  // Extract from HTML <pre> or <code> wrapper if present
-  const preMatch = clean.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
-  if (preMatch && preMatch[1]) clean = preMatch[1];
-  const codeMatch = clean.match(/<code[^>]*>([\s\S]*?)<\/code>/i);
-  if (codeMatch && codeMatch[1]) clean = codeMatch[1];
+  // Extract from HTML <pre> or <code> or <textarea> wrappers
+  const preMatch = text.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
+  if (preMatch && preMatch[1]) text = preMatch[1];
+  const codeMatch = text.match(/<code[^>]*>([\s\S]*?)<\/code>/i);
+  if (codeMatch && codeMatch[1]) text = codeMatch[1];
+  const textMatch = text.match(/<textarea[^>]*>([\s\S]*?)<\/textarea>/i);
+  if (textMatch && textMatch[1]) text = textMatch[1];
 
-  // Unescape standard HTML entities if the server returned an HTML-wrapped feed
-  clean = clean
+  // Decode standard HTML entities
+  text = text
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&amp;/g, '&')
     .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'");
+    .replace(/&apos;/g, "'")
+    .replace(/&#39;/g, "'")
+    .replace(/&#34;/g, '"');
 
-  const xmlStart = clean.indexOf("<");
-  if (xmlStart > 0) clean = clean.substring(xmlStart);
+  // Strip anything preceding the opening XML tag
+  const xmlStart = text.indexOf("<");
+  if (xmlStart > 0) text = text.substring(xmlStart);
 
-  return clean.trim();
+  return text.trim();
 }
 
-async function fetchHttpSavegameFile(fileName) {
+async function fetchGPortalSavegameFile(fileName) {
   const url = `${BASE_FEED_URL}/dedicated-server-savegame.html?code=${apiCode}&file=${fileName}`;
   try {
     const controller = new AbortController();
@@ -96,10 +101,10 @@ async function fetchHttpSavegameFile(fileName) {
 
     if (res.ok) {
       const text = await res.text();
-      const clean = decodeLiveXmlPayload(text);
-      if (clean && clean.includes("<") && !clean.includes("404 Not Found")) {
-        console.log(`✅ Direct Feed synced: [ ${fileName} ] (${clean.length} bytes)`);
-        return clean;
+      const cleanXml = decodeGiantsHtmlXml(text);
+      if (cleanXml && cleanXml.includes("<") && !cleanXml.includes("404 Not Found") && cleanXml.length > 20) {
+        console.log(`✅ [REST API] Fetched [ ${fileName} ] (${cleanXml.length} bytes)`);
+        return cleanXml;
       }
     }
   } catch (err) {
@@ -108,7 +113,7 @@ async function fetchHttpSavegameFile(fileName) {
   return "";
 }
 
-async function fetchStatsApi() {
+async function fetchLiveStats() {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
@@ -117,27 +122,28 @@ async function fetchStatsApi() {
 
     if (res.ok) {
       const text = await res.text();
-      const clean = decodeLiveXmlPayload(text);
-      if (clean.includes('<Server') || clean.includes('<Slots') || clean.includes('<slots')) {
+      const cleanXml = decodeGiantsHtmlXml(text);
+      if (cleanXml.includes('<Server') || cleanXml.includes('<Slots') || cleanXml.includes('<slots')) {
         let players = 0;
         let activeSlot = null;
         let mapTitle = "";
 
-        const slotsMatch = clean.match(/numUsed="(\d+)"/i) || clean.match(/slots\s+numUsed="(\d+)"/i);
+        const slotsMatch = cleanXml.match(/numUsed="(\d+)"/i) || cleanXml.match(/slots\s+numUsed="(\d+)"/i);
         if (slotsMatch) {
           players = parseInt(slotsMatch[1], 10);
         } else {
-          const playerMatches = clean.match(/<Player\b[^>]*>([\s\S]*?)<\/Player>/gi);
+          const playerMatches = cleanXml.match(/<Player\b[^>]*>([\s\S]*?)<\/Player>/gi);
           if (playerMatches) players = playerMatches.length;
         }
 
-        const slotMatch = clean.match(/savegame="(\d+)"/i) || clean.match(/slot="(\d+)"/i) || clean.match(/savegameSlot="(\d+)"/i) || clean.match(/SAVEGAME\s*(\d+)/i);
+        const slotMatch = cleanXml.match(/savegame="(\d+)"/i) || cleanXml.match(/slot="(\d+)"/i) || cleanXml.match(/savegameSlot="(\d+)"/i);
         if (slotMatch) activeSlot = slotMatch[1];
 
-        const mapMatch = clean.match(/mapTitle="([^"]+)"/i) || clean.match(/mapName="([^"]+)"/i);
+        const mapMatch = cleanXml.match(/mapTitle="([^"]+)"/i) || cleanXml.match(/mapName="([^"]+)"/i);
         if (mapMatch) mapTitle = mapMatch[1];
 
-        return { text: clean, players, activeSlot, mapTitle };
+        console.log(`✅ [Stats XML] Active Players: ${players} | Active Slot: #${activeSlot || 'Live'} | Map: ${mapTitle}`);
+        return { text: cleanXml, players, activeSlot, mapTitle };
       }
     }
   } catch (err) {
@@ -146,25 +152,24 @@ async function fetchStatsApi() {
   return { text: "", players: 0, activeSlot: null, mapTitle: "" };
 }
 
-// SECTION 5: MASTER PIPELINE EXECUTION (STRICT /fs25 TARGET)
+// SECTION 5: MASTER PIPELINE (STRICT /fs25 TARGET)
 async function runPipeline() {
-  console.log(`📡 Connecting to live G-Portal feeds on [ ${serverHost}:9050 ]...`);
-  
-  const statsData = await fetchStatsApi();
-  const activeSlotNumber = statsData.activeSlot || "3";
-  console.log(`🎯 Active Savegame Detected: Slot #${activeSlotNumber} | Connected Players: ${statsData.players}`);
+  console.log(`📡 Querying G-Portal REST API for server ${serverHost}...`);
 
+  const statsData = await fetchLiveStats();
+
+  // Complete list of savegame files exposed by the G-Portal Web API
   const savegameFiles = [
     'careerSavegame',
     'farms',
-    'farmland',
-    'farmlands',
     'vehicles',
+    'economy',
     'placeables',
     'fields',
+    'farmland',
+    'farmlands',
     'missions',
     'environment',
-    'economy',
     'items',
     'collectibles',
     'handTools',
@@ -173,7 +178,7 @@ async function runPipeline() {
 
   const masterPayload = {
     activePlayers: statsData.players,
-    activeSaveSlot: String(activeSlotNumber),
+    activeSaveSlot: String(statsData.activeSlot || "3"),
     liveMapImage: MAP_IMAGE_URL,
     lastUpdated: new Date().toISOString(),
     config: { appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c" }
@@ -184,19 +189,19 @@ async function runPipeline() {
     masterPayload.stats_raw = statsData.text;
   }
 
-  // Fetch every live XML file from G-Portal's direct feed
-  for (const fileName of savegameFiles) {
-    const rawContent = await fetchHttpSavegameFile(fileName);
-    if (rawContent) {
-      masterPayload[`${fileName}_raw`] = rawContent;
-      masterPayload[fileName] = rawContent;
+  // Fetch each savegame file from the REST API
+  for (const file of savegameFiles) {
+    const rawXml = await fetchGPortalSavegameFile(file);
+    if (rawXml) {
+      masterPayload[`${file}_raw`] = rawXml;
+      masterPayload[file] = rawXml;
     }
   }
 
-  // Atomic write strictly inside /fs25 node
+  // Write strictly to /fs25 node
   await db.ref('fs25').set(masterPayload);
 
-  // Clean up any stray root-level keys that previously spilled over
+  // Clean up any stray root-level keys from previous dual-write runs
   const strayKeys = [
     'activePlayers', 'activeSaveSlot', 'config', 'dedicatedServerConfig_raw',
     'lastUpdated', 'modCatalogCrossplay', 'stats_raw', 'stats_xml_raw',
@@ -210,7 +215,7 @@ async function runPipeline() {
   strayKeys.forEach(k => cleanupMap[k] = null);
   await db.ref().update(cleanupMap);
 
-  console.log(`🏆 Everything for FS25 successfully updated strictly inside /fs25!`);
+  console.log(`🏆 All G-Portal REST API data synchronized strictly into /fs25!`);
   process.exit(0);
 }
 
