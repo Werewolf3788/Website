@@ -1,9 +1,10 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: Sun, Aug 30, 2026, 13:35:00 (EDT - New York)
+ * Deployment Timestamp: Sun, Aug 30, 2026, 14:15:00 (EDT - New York)
  * Project: entertainment-71888 (/fs25 RTDB Node)
- * Description: FS25 Resilient Telemetry Pipeline - Prioritizes Instant Player
- *              Sync to Firebase before executing FTP savegame extraction.
+ * Description: FS25 Self-Healing Telemetry Pipeline - Automatically detects 
+ *              and switches to the currently active savegame slot from the
+ *              live dedicated server stats feed in real time.
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com
  * ============================================================================ */
 
@@ -12,13 +13,13 @@ const ftp = require('basic-ftp');
 const admin = require('firebase-admin');
 const { Writable } = require('stream');
 
-// Failsafe exit after 4 minutes
+// SECTION 1: SAFETY FAILSAFE
 setTimeout(() => {
-  console.log("🚨 Safety Failsafe: Execution exceeded 4 minutes. Exiting.");
+  console.log("🚨 Safety Failsafe: Execution exceeded 4 minutes. Exiting cleanly.");
   process.exit(0);
 }, 4 * 60 * 1000);
 
-// Firebase Admin Initialization
+// SECTION 2: FIREBASE ADMIN INITIALIZATION
 const firebaseConfig = {
   databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
 };
@@ -49,18 +50,19 @@ if (!admin.apps.length) {
 
 const db = admin.database();
 
+// SECTION 3: NETWORK & HOST CONFIGURATION
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
 const ftpPass = process.env.FTP_PASS;
-const defaultSlot = process.env.DEFAULT_SAVE_SLOT || '2';
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
 
-const STATS_URL_PRIMARY = `http://${ftpHost}:8300/feed/dedicated-server-stats.xml?code=${apiCode}`;
-const STATS_URL_SECONDARY = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
+const STATS_URL_PRIMARY = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
+const STATS_URL_SECONDARY = `http://${ftpHost}:8300/feed/dedicated-server-stats.xml?code=${apiCode}`;
 
+// SECTION 4: STATS API & DYNAMIC SLOT DETECTOR
 async function fetchStatsApi() {
-  const candidateUrls = [STATS_URL_SECONDARY, STATS_URL_PRIMARY];
+  const candidateUrls = [STATS_URL_PRIMARY, STATS_URL_SECONDARY];
 
   for (const url of candidateUrls) {
     try {
@@ -76,6 +78,9 @@ async function fetchStatsApi() {
 
         if (cleanXml.includes('<Server') || cleanXml.includes('<Slots') || cleanXml.includes('<slots')) {
           let players = 0;
+          let activeSlot = null;
+
+          // 1. Detect Active Connected Players
           const slotsMatch = cleanXml.match(/numUsed="(\d+)"/i) || cleanXml.match(/slots\s+numUsed="(\d+)"/i);
           if (slotsMatch) {
             players = parseInt(slotsMatch[1], 10);
@@ -83,8 +88,19 @@ async function fetchStatsApi() {
             const playerMatches = cleanXml.match(/<Player\b[^>]*>([\s\S]*?)<\/Player>/gi);
             if (playerMatches) players = playerMatches.length;
           }
-          console.log(`✅ Live server stats received! Active Players: ${players}`);
-          return { text: cleanXml, players };
+
+          // 2. Dynamic Auto-Switch: Detect Current Savegame Slot from Stats XML
+          const slotAttrMatch = cleanXml.match(/savegame="(\d+)"/i) || 
+                                cleanXml.match(/slot="(\d+)"/i) || 
+                                cleanXml.match(/savegameSlot="(\d+)"/i) ||
+                                cleanXml.match(/SAVEGAME\s*(\d+)/i);
+          
+          if (slotAttrMatch) {
+            activeSlot = slotAttrMatch[1];
+          }
+
+          console.log(`✅ Live server stats received! Active Players: ${players} | Detected Active Slot: #${activeSlot || 'Dynamic'}`);
+          return { text: cleanXml, players, activeSlot };
         }
       }
     } catch (err) {
@@ -92,7 +108,7 @@ async function fetchStatsApi() {
     }
   }
 
-  return { text: "", players: 0 };
+  return { text: "", players: 0, activeSlot: null };
 }
 
 function sanitizeXmlContent(rawText) {
@@ -121,8 +137,8 @@ async function downloadFtpFileToString(client, remotePath) {
   return Buffer.concat(chunks).toString('utf-8');
 }
 
+// SECTION 5: MAIN PIPELINE WITH AUTOMATIC SAVE SWITCHING
 async function runPipeline() {
-  // 1. Fetch live Dedicated Server Stats Feed
   const statsData = await fetchStatsApi();
 
   // Instant safety write: update active players and live XML directly
@@ -136,7 +152,7 @@ async function runPipeline() {
       };
       await db.ref('fs25').update(quickPayload);
       await db.ref().update(quickPayload);
-      console.log(`⚡ Instant Sync: Active Players (${statsData.players}) committed to Firebase.`);
+      console.log(`⚡ Instant Sync: Live stats and ${statsData.players} player(s) committed to Firebase.`);
     } catch (e) {
       console.warn("Notice on quick-write:", e.message);
     }
@@ -162,21 +178,28 @@ async function runPipeline() {
 
     console.log("✅ FTP connection established. Scanning directory tree...");
 
-    // 2. Discover active savegame folder dynamically
+    // 1. Determine active save directory (Auto-switched from API or dynamically discovered)
     let validSavePath = null;
     let fileList = [];
+    let discoveredSlot = statsData.activeSlot || process.env.DEFAULT_SAVE_SLOT || "2";
 
     const rootList = await client.list();
-    const directMatch = rootList.find(f => f.isDirectory && f.name.includes(`savegame${defaultSlot}`));
     
-    if (directMatch) {
-      validSavePath = directMatch.name;
-      fileList = await client.list(validSavePath);
-    } else {
-      // Check under profile/
+    // Check if the slot detected from stats exists in root
+    if (discoveredSlot) {
+      const targetDirName = `savegame${discoveredSlot}`;
+      const foundInRoot = rootList.find(f => f.isDirectory && f.name.toLowerCase() === targetDirName.toLowerCase());
+      if (foundInRoot) {
+        validSavePath = foundInRoot.name;
+        fileList = await client.list(validSavePath);
+      }
+    }
+
+    // If not found yet, check under profile/ or search for the most recently modified savegame
+    if (!validSavePath) {
       try {
         const profileList = await client.list('profile');
-        const profMatch = profileList.find(f => f.isDirectory && f.name.includes(`savegame${defaultSlot}`));
+        const profMatch = profileList.find(f => f.isDirectory && f.name.toLowerCase().includes(`savegame${discoveredSlot}`));
         if (profMatch) {
           validSavePath = `profile/${profMatch.name}`;
           fileList = await client.list(validSavePath);
@@ -184,15 +207,19 @@ async function runPipeline() {
       } catch (e) {}
     }
 
+    // Dynamic Fallback: Select the most recently modified savegame folder automatically
     if (!validSavePath) {
-      const anySave = rootList.find(f => f.isDirectory && f.name.includes('savegame') && !f.name.includes('backup'));
-      if (anySave) {
-        validSavePath = anySave.name;
+      const allSaveDirs = rootList.filter(f => f.isDirectory && f.name.toLowerCase().includes('savegame') && !f.name.toLowerCase().includes('backup'));
+      if (allSaveDirs.length > 0) {
+        allSaveDirs.sort((a, b) => new Date(b.modifiedAt || 0) - new Date(a.modifiedAt || 0));
+        validSavePath = allSaveDirs[0].name;
         fileList = await client.list(validSavePath);
+        const slotMatch = validSavePath.match(/\d+/);
+        if (slotMatch) discoveredSlot = slotMatch[0];
       }
     }
 
-    console.log(`🎯 Active Target Save Directory: [ ${validSavePath || 'savegame2'} ]`);
+    console.log(`🎯 AUTO-SWITCHED ACTIVE SAVE: [ ${validSavePath || 'savegame2'} ] (Slot #${discoveredSlot})`);
 
     const readableFiles = fileList.filter(f => !f.isDirectory && (
       f.name.toLowerCase().endsWith('.xml') || f.name.toLowerCase().endsWith('.txt')
@@ -206,7 +233,7 @@ async function runPipeline() {
 
     const masterPayload = {
       activePlayers: statsData.players,
-      activeSaveSlot: defaultSlot,
+      activeSaveSlot: String(discoveredSlot),
       lastUpdated: new Date().toISOString(),
       modCatalogCrossplay: fs25ModsCrossplayData,
       config: { appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c" }
@@ -253,17 +280,17 @@ async function runPipeline() {
       }
     }
 
+    // Overwrite Firebase /fs25 and root with current active career save
     await db.ref('fs25').update(masterPayload);
     await db.ref().update(masterPayload);
 
-    console.log("🏆 Firebase full sync completed successfully!");
+    console.log(`🏆 Firebase updated with telemetry from active career save Slot #${discoveredSlot}!`);
     client.close();
     process.exit(0);
 
   } catch (err) {
-    console.error("🚨 FTP Warning/Error:", err.message);
+    console.error("🚨 Pipeline Warning:", err.message);
     client.close();
-    // Exiting cleanly with code 0 because live stats were already synced
     process.exit(0);
   }
 }
