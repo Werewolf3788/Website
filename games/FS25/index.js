@@ -1,17 +1,18 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 30, 2026, 15:45:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 30, 2026, 16:30:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Master Tactical Telemetry Engine - Operates 100% over secure
-                HTTPS via Firebase Realtime Database sync for Savegame 3.
+   Description: Unified Tactical Dashboard Engine. Synchronizes directly with
+                /fs25 and /FS25_Mods_Info using a single, resilient Firebase
+                listener and REST fallback.
    ========================================================================== */
 
 /* ------------------------------------------------------------------------
    HTML Target Reference Notes:
-   - Mod Hub Grid -> Target ID: 'mod-hub-grid'
+   - Mod Hub Grid -> Target ID in HTML: 'mod-hub-grid'
    - Active Players Container -> Target ID: 'active-players-container'
    - Farms Container -> Target ID: 'farms-container'
-   - Construction & Husbandry -> Target IDs: 'animals-container', 
+   - Husbandry & Productions -> Target IDs: 'animals-container', 
      'main-productions-container', 'construction-container', 'greenhouses-container'
    - Contracts & Missions -> Target ID: 'missions-container'
    - Fleet Machinery -> Target IDs: 'tractors-container', 'harvesters-container',
@@ -41,6 +42,7 @@
 
 const REPO_IMAGES_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
+const LIVE_MAP_FEED_URL = "http://207.244.246.70:9050/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=60&size=512";
 
 const HAND_TOOL_NAMES = {
   "XP550": "Husqvarna XP550 Chainsaw",
@@ -91,17 +93,28 @@ function smartExtractPayload(rawInput) {
   if (typeof rawInput === 'object') {
     try { rawInput = JSON.stringify(rawInput); } catch(e) { return ""; }
   }
-  const trimmed = String(rawInput).trim();
-  const preMatch = trimmed.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
-  if (preMatch && preMatch[1]) return preMatch[1].trim();
-  const codeMatch = trimmed.match(/<code[^>]*>([\s\S]*?)<\/code>/i);
-  if (codeMatch && codeMatch[1]) return codeMatch[1].trim();
-  return trimmed;
+  let text = String(rawInput).trim();
+  const preMatch = text.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
+  if (preMatch && preMatch[1]) text = preMatch[1];
+  const codeMatch = text.match(/<code[^>]*>([\s\S]*?)<\/code>/i);
+  if (codeMatch && codeMatch[1]) text = codeMatch[1];
+
+  text = text
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'");
+
+  const xmlStart = text.indexOf("<");
+  if (xmlStart > 0) text = text.substring(xmlStart);
+
+  return text.trim();
 }
 
 function parseXML(rawText) {
   const cleanXmlText = smartExtractPayload(rawText);
-  if (!cleanXmlText) return null;
+  if (!cleanXmlText || !cleanXmlText.includes("<")) return null;
   try {
     const xmlDoc = (new DOMParser()).parseFromString(cleanXmlText, "text/xml");
     return xmlDoc.getElementsByTagName("parsererror").length > 0 ? null : xmlDoc;
@@ -340,7 +353,7 @@ function renderActivePlayers(statsXml, vehXml, fallbackActiveCount = 0) {
 }
 
 /* ==========================================================================
-   SECTION 3: Master Telemetry Dashboard Engine (Strict /fs25 Node)
+   SECTION 3: Master Telemetry Dashboard Engine (Strict /fs25 Target)
    ========================================================================== */
 
 window.renderDashboard = function(rawIncomingData) {
@@ -355,6 +368,7 @@ window.renderDashboard = function(rawIncomingData) {
   latestFirebasePayload = data;
   window.setServerStatus(true);
 
+  // Directly access the fs25 scope
   const fs25Node = (data.fs25 && typeof data.fs25 === 'object') ? data.fs25 : data;
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
@@ -481,6 +495,23 @@ window.renderDashboard = function(rawIncomingData) {
   setTxt('server-month', `Season: ${seasonText}`);
   setTxt('server-weather', `Weather: ${weatherText}`);
 
+  // Inject Live G-Portal Map Stream Lightbox Preview
+  const liveMapSrc = fs25Node.liveMapImage || LIVE_MAP_FEED_URL;
+  const mapBadge = document.getElementById('server-map');
+  if (mapBadge) {
+    mapBadge.style.cursor = "pointer";
+    mapBadge.onclick = () => {
+      const modal = document.getElementById('lightbox-modal');
+      const modalImg = document.getElementById('lightbox-img');
+      const modalCaption = document.getElementById('lightbox-caption');
+      if (modal && modalImg) {
+        modal.style.display = 'flex';
+        modalImg.src = `${liveMapSrc}&_t=${Date.now()}`;
+        if (modalCaption) modalCaption.textContent = `Live Satellite Map Feed (${serverMapTitle})`;
+      }
+    };
+  }
+
   // 3. Render Active Players
   const rawActiveCount = parseInt(fs25Node.activePlayers || 0, 10);
   renderActivePlayers(statsXml, vehXml, rawActiveCount);
@@ -597,7 +628,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (miscCont) miscCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold, #facc15); font-size:0.85rem;"><i class="fa-solid fa-tower-cell"></i> Placed Objects: ${miscCount}</strong></div>${miscHtml || `<div class="empty-state">No Placed Objects Logged</div>`}`;
   if (prodCont) prodCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold, #facc15); font-size:0.85rem;"><i class="fa-solid fa-industry"></i> Production Factories: ${prodCount}</strong></div>${prodHtml || `<div class="empty-state">No Production Buildings Logged</div>`}`;
 
-  // 5. Complete Contracts & Missions Board
+  // 5. Complete Contracts & Missions Board (All Types: Available, In Progress, Finished)
   const missionsCont = document.getElementById('missions-container');
   let contractCropMap = {};
 
@@ -977,30 +1008,25 @@ window.renderDashboard = function(rawIncomingData) {
 };
 
 /* ==========================================================================
-   SECTION 4: Firebase Realtime Database Listener (Strictly /fs25 and /FS25_Mods_Info)
+   SECTION 4: Unified Firebase Realtime Database Listener
    ========================================================================== */
 
 function initializeFirebaseSync() {
-  if (typeof firebase === 'undefined') {
-    setTimeout(initializeFirebaseSync, 1000);
-    return;
-  }
+  const firebaseConfig = {
+    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
+  };
 
-  let db;
   try {
-    if (!firebase.apps || firebase.apps.length === 0) {
-      const firebaseConfig = {
-        databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
-      };
+    if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-    db = firebase.database();
   } catch (err) {
-    console.error("Firebase init error:", err);
-    return;
+    console.error("Firebase init note:", err.message);
   }
 
-  // Listen strictly to /FS25_Mods_Info metadata
+  const db = firebase.database();
+
+  // Listen to /FS25_Mods_Info metadata
   db.ref('FS25_Mods_Info').on('value', (modsSnap) => {
     if (modsSnap.exists()) {
       const modsData = modsSnap.val();
@@ -1019,11 +1045,17 @@ function initializeFirebaseSync() {
     if (snap.exists()) {
       window.renderDashboard(snap.val());
     } else {
-      window.setServerStatus(false);
+      // Fallback REST fetch if Realtime connection is paused
+      fetch("https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json")
+        .then(r => r.json())
+        .then(data => {
+          if (data) window.renderDashboard(data);
+          else window.setServerStatus(false);
+        })
+        .catch(() => window.setServerStatus(false));
     }
   }, (error) => {
-    console.error("Firebase RTDB Error:", error.message);
-    window.setServerStatus(false);
+    console.warn("RTDB Live Sync Notice:", error.message);
   });
 }
 
