@@ -1,15 +1,16 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Wed, Aug 12, 2026, 22:10:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 30, 2026, 12:15:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Master Tactical Telemetry Engine with cross-referenced
-                contracts, detailed production chain metrics, persistent map
-                coordinates, and farm fallback mapping.
+   Description: Master Tactical Telemetry Engine with live Firebase RTDB 
+                listener, cross-referenced contracts, detailed production 
+                chain metrics, persistent map coordinates, and mod hub.
    ========================================================================== */
 
 /* ------------------------------------------------------------------------
    HTML Target Reference Notes:
    - Mod Hub Grid -> Target ID in HTML: 'mod-hub-grid' (Line ~180)
+   - Mod Categories Bar -> Target ID in HTML: 'mod-categories-bar' (Line ~175)
    - Active Players Container -> Target ID in HTML: 'active-players-container' (Line ~290)
    - Farms Container -> Target ID in HTML: 'farms-container' (Line ~330)
    - Construction, Placed Objects & Production Chains -> Target IDs: 
@@ -17,11 +18,14 @@
      'greenhouses-container', 'farmhouses-container', 'shops-selling-container', 
      'main-productions-container' (Line ~370)
    - Contracts & Missions -> Target ID: 'missions-container' (Line ~460)
+   - Collectibles -> Target ID: 'collectibles-container' (Line ~500)
+   - Hand Tools -> Target ID: 'handtools-container' (Line ~520)
    - Fleet Machinery -> Target IDs: 'tractors-container', 'harvesters-container',
      'trailers-container', 'implements-container' (Line ~550)
+   - Farmlands & Agronomy -> Target ID: 'fields-container' (Line ~620)
    ------------------------------------------------------------------------ */
 
-// Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
+// Section: Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
 (function injectGA4() {
   try {
     if (!document.getElementById('ga4-gtag-script')) {
@@ -41,6 +45,7 @@
   } catch (e) {}
 })();
 
+// Base Config & Asset Paths
 const REPO_IMAGES_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
 
@@ -166,7 +171,7 @@ function isValidImageUrl(url) {
 }
 
 /* ==========================================================================
-   SECTION 2: Backup Mod Catalog Loader
+   SECTION 2: Mod Catalog CSV Fallback Loader
    ========================================================================== */
 
 async function fetchModCatalog() {
@@ -267,7 +272,7 @@ window.filterModsCategory = function(selectedCat, btnElem) {
 };
 
 /* ==========================================================================
-   SECTION 3: Firebase Mod Catalog Renderer
+   SECTION 3: Mod Grid Renderer
    ========================================================================== */
 
 function renderModGrid(modsData) {
@@ -348,6 +353,9 @@ window.renderDashboard = function(rawIncomingData) {
   if (typeof rawIncomingData.val === 'function') {
     data = rawIncomingData.val();
   }
+  if (!data) return;
+
+  window.setServerStatus(true);
 
   if (data.FS25_Mods_Info && data.FS25_Mods_Info.Images) {
     firebaseImageMappings = data.FS25_Mods_Info.Images;
@@ -371,9 +379,7 @@ window.renderDashboard = function(rawIncomingData) {
   const statsXml = parseXML(fs25Node.stats_xml_raw || fs25Node.stats_xml || fs25Node.stats);
   const envXml = parseXML(fs25Node.environment_raw || fs25Node.environment);
 
-  /* ------------------------------------------------------------------------
-     1. SERVER BANNER, TIME, WEATHER, & CALENDAR
-     ------------------------------------------------------------------------ */
+  // 1. Server Banner, Time, Weather, & Calendar
   let liveClockText = "00:00";
   let seasonText = "Early Autumn";
   let weatherText = "Clear";
@@ -395,7 +401,7 @@ window.renderDashboard = function(rawIncomingData) {
       setTxt('server-name', settings.querySelector("savegameName")?.textContent || "OneLIVIDMAN and werewolf 618");
       setTxt('server-map', `Map: ${settings.querySelector("mapTitle")?.textContent || "Calm Lands"}`);
       setTxt('traffic-badge', `Traffic: ${settings.querySelector("trafficEnabled")?.textContent === 'true' ? 'ON' : 'OFF'}`);
-      setTxt('time-speed-badge', `Speed: ${settings.querySelector("timeScale")?.textContent || "0.5"}x`);
+      setTxt('time-speed-badge', `Speed: ${settings.querySelector("timeScale")?.textContent || "1"}x`);
     }
 
     const stats = careerXml.querySelector("statistics");
@@ -409,9 +415,7 @@ window.renderDashboard = function(rawIncomingData) {
   setTxt('server-month', `Season: ${seasonText}`);
   setTxt('server-weather', `Weather: ${weatherText}`);
 
-  /* ------------------------------------------------------------------------
-     2. PLAYER SESSIONS & POSITIONS
-     ------------------------------------------------------------------------ */
+  // 2. Active Players
   const playersCont = document.getElementById('active-players-container');
   let activeGamertags = [];
   let totalSlots = "6";
@@ -453,9 +457,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
   setTxt('server-players', `Players: ${activeGamertags.length}/${totalSlots}`);
 
-  /* ------------------------------------------------------------------------
-     3. FARMS & BALANCES (WITH FARM 1 FALLBACK)
-     ------------------------------------------------------------------------ */
+  // 3. Farms & Balances
   const farmsCont = document.getElementById('farms-container');
   if (farmsCont) {
     let farmsHtml = "";
@@ -506,9 +508,7 @@ window.renderDashboard = function(rawIncomingData) {
     if (calculatedNetWorth > 0) setTxt('global-net-worth', `$${calculatedNetWorth.toLocaleString()}`);
   }
 
-  /* ------------------------------------------------------------------------
-     4. CONSTRUCTION, PLACED OBJECTS & PRODUCTION CHAINS
-     ------------------------------------------------------------------------ */
+  // 4. Placed Objects & Production
   const animalsCont = document.getElementById('animals-container');
   const genCont = document.getElementById('generators-container');
   const miscCont = document.getElementById('misc-container') || document.getElementById('construction-container');
@@ -538,9 +538,7 @@ window.renderDashboard = function(rawIncomingData) {
         if (parts.length >= 3) locText = `X: ${parseFloat(parts[0]).toFixed(1)} | Z: ${parseFloat(parts[2]).toFixed(1)}`;
       }
 
-      // Detailed Production Chain & Material Stock Parser
       let inputsList = [];
-      let outputsList = [];
       p.querySelectorAll("storage > fillLevel, fillLevel, productionPoint > fillLevel, production > fillLevel").forEach(fill => {
         const fillType = fill.getAttribute("fillType");
         const level = Math.round(parseFloat(fill.getAttribute("fillLevel") || fill.textContent || "0"));
@@ -656,9 +654,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (miscCont) miscCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-hammer"></i> Total Construction & Placed Objects: ${miscCount}</strong></div>${miscHtml || `<div class="empty-state">No Miscellaneous Placed Objects Logged</div>`}`;
   if (prodCont) prodCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-industry"></i> Total Production Factories: ${prodCount}</strong></div>${prodHtml || `<div class="empty-state">No Production Buildings Logged</div>`}`;
 
-  /* ------------------------------------------------------------------------
-     5. CONTRACTS & MISSIONS (FULL DETAILS & CORRECT STATUS CODES)
-     ------------------------------------------------------------------------ */
+  // 5. Contracts & Missions
   const missionsCont = document.getElementById('missions-container');
   if (missionsCont) {
     let missionsHtml = "";
@@ -683,7 +679,6 @@ window.renderDashboard = function(rawIncomingData) {
         const fruitTypeName = m.getAttribute("fruitTypeName") || m.getAttribute("fruitType") || m.querySelector("fruitType")?.textContent || "";
         const fruitText = fruitTypeName ? ` | Crop: ${formatName(fruitTypeName)}` : '';
 
-        // FS25 XML: status="0" means AVAILABLE (Not Started).
         let rawStatus = String(m.getAttribute("status") || m.getAttribute("state") || "0").toUpperCase();
         let statusBadge = `<span class="badge" style="background:rgba(56, 189, 248, 0.2); color:#38bdf8; border:1px solid #38bdf8;">AVAILABLE</span>`;
         
@@ -715,9 +710,7 @@ window.renderDashboard = function(rawIncomingData) {
       ${missionsHtml || `<div class="empty-state">No Contracts Found in XML File</div>`}`;
   }
 
-  /* ------------------------------------------------------------------------
-     6. COLLECTIBLES & HAND TOOLS
-     ------------------------------------------------------------------------ */
+  // 6. Collectibles & Hand Tools
   const collectiblesCont = document.getElementById('collectibles-container');
   if (collectiblesCont) {
     let collectiblesHtml = "";
@@ -790,9 +783,7 @@ window.renderDashboard = function(rawIncomingData) {
       ${toolsHtml || `<div class="empty-state">No Hand Tools Logged in XML</div>`}`;
   }
 
-  /* ------------------------------------------------------------------------
-     7. FLEET MACHINERY & VEHICLES
-     ------------------------------------------------------------------------ */
+  // 7. Fleet Machinery
   let vehicleCount = 0;
   let tracCount = 0, harvCount = 0, trailCount = 0, implCount = 0;
   const tracCont = document.getElementById('tractors-container');
@@ -924,9 +915,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (implCont) implCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold); font-size:0.85rem;"><i class="fa-solid fa-screwdriver-wrench"></i> Total Implements Logged: ${implCount}</strong></div>${implements || `<div class="empty-state">No Fleet Implements Found in XML</div>`}`;
   setTxt('global-vehicle-count', vehicleCount);
 
-  /* ------------------------------------------------------------------------
-     8. FARMLANDS
-     ------------------------------------------------------------------------ */
+  // 8. Farmlands
   const fieldsCont = document.getElementById('fields-container');
   if (fieldsCont) {
     let fieldsByFarm = {};
@@ -976,7 +965,55 @@ window.renderDashboard = function(rawIncomingData) {
 };
 
 /* ==========================================================================
-   SECTION 5: Event Listeners & Lightbox Setup
+   SECTION 5: Firebase Realtime Database Listener (entertainment-71888)
+   ========================================================================== */
+
+function initializeFirebaseSync() {
+  if (typeof firebase === 'undefined') {
+    console.warn("Firebase SDK not detected on page. Retrying in 1s...");
+    setTimeout(initializeFirebaseSync, 1000);
+    return;
+  }
+
+  // Ensure default app instance exists
+  let db;
+  try {
+    if (!firebase.apps || firebase.apps.length === 0) {
+      const firebaseConfig = {
+        databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
+      };
+      firebase.initializeApp(firebaseConfig);
+    }
+    db = firebase.database();
+  } catch (err) {
+    console.error("Firebase init error:", err);
+    return;
+  }
+
+  // Primary node listener: /fs25 with fallback root check
+  const fs25Ref = db.ref('fs25');
+  fs25Ref.on('value', (snapshot) => {
+    if (snapshot.exists()) {
+      const payload = snapshot.val();
+      window.renderDashboard(payload);
+    } else {
+      // Fallback check on root if data was pushed flat
+      db.ref().once('value', (rootSnap) => {
+        if (rootSnap.exists()) {
+          window.renderDashboard(rootSnap.val());
+        } else {
+          window.setServerStatus(false);
+        }
+      });
+    }
+  }, (error) => {
+    console.error("Firebase RTDB Error:", error);
+    window.setServerStatus(false);
+  });
+}
+
+/* ==========================================================================
+   SECTION 6: Event Listeners, Lightbox, & Bootstrap
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -1007,6 +1044,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   fetchModCatalog();
+  initializeFirebaseSync();
 });
 
 window.setServerStatus = function(isOnline) {
