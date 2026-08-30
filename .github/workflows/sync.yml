@@ -22,7 +22,7 @@ jobs:
     - name: Install Node Dependencies
       run: |
         cd games/FS25
-        npm install firebase-admin ftp dotenv @xmldom/xmldom
+        npm install firebase-admin basic-ftp dotenv @xmldom/xmldom
 
     - name: Run G-Portal to Firebase Bridge
       env:
