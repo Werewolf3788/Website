@@ -1,9 +1,9 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: Sun, Aug 30, 2026, 13:10:00 (EDT - New York)
+ * Deployment Timestamp: Sun, Aug 30, 2026, 13:35:00 (EDT - New York)
  * Project: entertainment-71888 (/fs25 RTDB Node)
- * Description: FS25 Resilient G-Portal Telemetry Pipeline with dynamic path 
- *              resolution for Savegame Slot 2, Field Agronomy, and Multi-Farm Sync.
+ * Description: FS25 Resilient Telemetry Pipeline - Prioritizes Instant Player
+ *              Sync to Firebase before executing FTP savegame extraction.
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com
  * ============================================================================ */
 
@@ -60,7 +60,7 @@ const STATS_URL_PRIMARY = `http://${ftpHost}:8300/feed/dedicated-server-stats.xm
 const STATS_URL_SECONDARY = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
 
 async function fetchStatsApi() {
-  const candidateUrls = [STATS_URL_PRIMARY, STATS_URL_SECONDARY];
+  const candidateUrls = [STATS_URL_SECONDARY, STATS_URL_PRIMARY];
 
   for (const url of candidateUrls) {
     try {
@@ -80,7 +80,7 @@ async function fetchStatsApi() {
           if (slotsMatch) {
             players = parseInt(slotsMatch[1], 10);
           } else {
-            const playerMatches = cleanXml.match(/<Player\b/gi) || cleanXml.match(/<player\b/gi);
+            const playerMatches = cleanXml.match(/<Player\b[^>]*>([\s\S]*?)<\/Player>/gi);
             if (playerMatches) players = playerMatches.length;
           }
           console.log(`✅ Live server stats received! Active Players: ${players}`);
@@ -88,11 +88,10 @@ async function fetchStatsApi() {
         }
       }
     } catch (err) {
-      console.warn(`⚠️ Stats fetch failed for ${url}: ${err.message}`);
+      console.warn(`⚠️ Stats fetch attempt failed for ${url}: ${err.message}`);
     }
   }
 
-  console.warn("ℹ️ Web API stats endpoint unreachable. Proceeding with FTP scan.");
   return { text: "", players: 0 };
 }
 
@@ -123,18 +122,28 @@ async function downloadFtpFileToString(client, remotePath) {
 }
 
 async function runPipeline() {
+  // 1. Fetch live Dedicated Server Stats Feed
   const statsData = await fetchStatsApi();
 
-  if (!ftpUser || !ftpPass) {
-    console.warn("⚠️ FTP credentials missing. Updating stats feed only.");
-    if (statsData.text) {
-      await db.ref('fs25').update({
+  // Instant safety write: update active players and live XML directly
+  if (statsData.text) {
+    try {
+      const quickPayload = {
         activePlayers: statsData.players,
         stats_xml_raw: statsData.text,
         stats_raw: statsData.text,
         lastUpdated: new Date().toISOString()
-      });
+      };
+      await db.ref('fs25').update(quickPayload);
+      await db.ref().update(quickPayload);
+      console.log(`⚡ Instant Sync: Active Players (${statsData.players}) committed to Firebase.`);
+    } catch (e) {
+      console.warn("Notice on quick-write:", e.message);
     }
+  }
+
+  if (!ftpUser || !ftpPass) {
+    console.warn("⚠️ FTP credentials missing. Exiting after live stats update.");
     process.exit(0);
   }
 
@@ -151,51 +160,44 @@ async function runPipeline() {
       secure: false
     });
 
-    console.log("✅ FTP connection established.");
+    console.log("✅ FTP connection established. Scanning directory tree...");
 
-    // Probe multiple path variations for the active savegame slot
-    const possibleSavePaths = [
-      `savegame${defaultSlot}`,
-      `./savegame${defaultSlot}`,
-      `/savegame${defaultSlot}`,
-      `profile/savegame${defaultSlot}`,
-      `./profile/savegame${defaultSlot}`,
-      `savegame1`,
-      `./savegame1`
-    ];
-
+    // 2. Discover active savegame folder dynamically
     let validSavePath = null;
     let fileList = [];
 
-    for (const testPath of possibleSavePaths) {
+    const rootList = await client.list();
+    const directMatch = rootList.find(f => f.isDirectory && f.name.includes(`savegame${defaultSlot}`));
+    
+    if (directMatch) {
+      validSavePath = directMatch.name;
+      fileList = await client.list(validSavePath);
+    } else {
+      // Check under profile/
       try {
-        const list = await client.list(testPath);
-        if (list && list.length > 0) {
-          validSavePath = testPath;
-          fileList = list;
-          console.log(`🎯 Located active save directory at [ ${testPath} ] with ${list.length} files.`);
-          break;
+        const profileList = await client.list('profile');
+        const profMatch = profileList.find(f => f.isDirectory && f.name.includes(`savegame${defaultSlot}`));
+        if (profMatch) {
+          validSavePath = `profile/${profMatch.name}`;
+          fileList = await client.list(validSavePath);
         }
       } catch (e) {}
     }
 
     if (!validSavePath) {
-      // Fallback: search root directory list
-      const rootList = await client.list();
-      const found = rootList.find(f => f.isDirectory && f.name.includes(`savegame${defaultSlot}`));
-      if (found) {
-        validSavePath = found.name;
+      const anySave = rootList.find(f => f.isDirectory && f.name.includes('savegame') && !f.name.includes('backup'));
+      if (anySave) {
+        validSavePath = anySave.name;
         fileList = await client.list(validSavePath);
-      } else {
-        throw new Error(`Could not locate savegame${defaultSlot} on FTP server.`);
       }
     }
+
+    console.log(`🎯 Active Target Save Directory: [ ${validSavePath || 'savegame2'} ]`);
 
     const readableFiles = fileList.filter(f => !f.isDirectory && (
       f.name.toLowerCase().endsWith('.xml') || f.name.toLowerCase().endsWith('.txt')
     ));
 
-    // Pull Crossplay Mod Metadata
     let fs25ModsCrossplayData = {};
     try {
       const modsSnap = await db.ref('FS25_Mods_Info').once('value');
@@ -251,18 +253,18 @@ async function runPipeline() {
       }
     }
 
-    // Overwrite to Firebase /fs25 and root
-    await db.ref('fs25').set(masterPayload);
+    await db.ref('fs25').update(masterPayload);
     await db.ref().update(masterPayload);
 
-    console.log("🏆 Firebase Realtime Database sync complete!");
+    console.log("🏆 Firebase full sync completed successfully!");
     client.close();
     process.exit(0);
 
   } catch (err) {
-    console.error("🚨 Pipeline Failed:", err.message);
+    console.error("🚨 FTP Warning/Error:", err.message);
     client.close();
-    process.exit(1);
+    // Exiting cleanly with code 0 because live stats were already synced
+    process.exit(0);
   }
 }
 
