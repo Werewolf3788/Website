@@ -1,9 +1,9 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: Sun, Aug 30, 2026, 14:35:00 (EDT - New York)
+ * Deployment Timestamp: Sun, Aug 30, 2026, 14:40:00 (EDT - New York)
  * Project: entertainment-71888 (/fs25 RTDB Node)
- * Description: FS25 Complete Telemetry Pipeline - Pulls live stats XML,
- *              active G-Portal map image feed, and full savegame telemetry.
+ * Description: Master FS25 G-Portal Telemetry Pipeline - Extracts live stats XML,
+ *              live map stream, active savegame auto-switching, and full telemetry.
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com
  * ============================================================================ */
 
@@ -12,11 +12,13 @@ const ftp = require('basic-ftp');
 const admin = require('firebase-admin');
 const { Writable } = require('stream');
 
+// SECTION 1: SAFETY FAILSAFE
 setTimeout(() => {
-  console.log("🚨 Safety Failsafe triggered: Exiting cleanly.");
+  console.log("🚨 Safety Failsafe: Exiting cleanly after 4 minutes.");
   process.exit(0);
 }, 4 * 60 * 1000);
 
+// SECTION 2: FIREBASE ADMIN INITIALIZATION
 const firebaseConfig = {
   databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
 };
@@ -26,7 +28,7 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   try {
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
   } catch (e) {
-    console.error("❌ Error parsing FIREBASE_SERVICE_ACCOUNT:", e.message);
+    console.error("❌ Failed parsing FIREBASE_SERVICE_ACCOUNT:", e.message);
     process.exit(1);
   }
 } else {
@@ -47,20 +49,23 @@ if (!admin.apps.length) {
 
 const db = admin.database();
 
+// SECTION 3: NETWORK & HOST CONFIGURATION
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
 const ftpPass = process.env.FTP_PASS;
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
 
-const STATS_URL_9050 = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
-const STATS_URL_8300 = `http://${ftpHost}:8300/feed/dedicated-server-stats.xml?code=${apiCode}`;
+const STATS_URL_PRIMARY = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
+const STATS_URL_SECONDARY = `http://${ftpHost}:8300/feed/dedicated-server-stats.xml?code=${apiCode}`;
 const MAP_IMAGE_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
 
 async function fetchStatsApi() {
-  const urls = [STATS_URL_9050, STATS_URL_8300];
-  for (const url of urls) {
+  const candidateUrls = [STATS_URL_PRIMARY, STATS_URL_SECONDARY];
+
+  for (const url of candidateUrls) {
     try {
+      console.log(`📡 Checking live stats feed: ${url}`);
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 6000);
       const res = await fetch(url, { signal: controller.signal });
@@ -69,6 +74,7 @@ async function fetchStatsApi() {
       if (res.ok) {
         const text = await res.text();
         const cleanXml = sanitizeXmlContent(text);
+
         if (cleanXml.includes('<Server') || cleanXml.includes('<Slots') || cleanXml.includes('<slots')) {
           let players = 0;
           let activeSlot = null;
@@ -88,11 +94,15 @@ async function fetchStatsApi() {
           const mapMatch = cleanXml.match(/mapTitle="([^"]+)"/i) || cleanXml.match(/mapName="([^"]+)"/i);
           if (mapMatch) mapTitle = mapMatch[1];
 
+          console.log(`✅ Live server stats received! Active Players: ${players} | Active Slot: #${activeSlot || 'Dynamic'}`);
           return { text: cleanXml, players, activeSlot, mapTitle };
         }
       }
-    } catch (e) {}
+    } catch (err) {
+      console.warn(`Notice for ${url}: ${err.message}`);
+    }
   }
+
   return { text: "", players: 0, activeSlot: null, mapTitle: "" };
 }
 
@@ -117,10 +127,12 @@ async function downloadFtpFileToString(client, remotePath) {
       callback();
     }
   });
+
   await client.downloadTo(writer, remotePath);
   return Buffer.concat(chunks).toString('utf-8');
 }
 
+// SECTION 4: MAIN PIPELINE EXECUTION
 async function runPipeline() {
   const statsData = await fetchStatsApi();
 
@@ -134,7 +146,7 @@ async function runPipeline() {
     };
     await db.ref('fs25').update(quickPayload);
     await db.ref().update(quickPayload);
-    console.log(`⚡ Live stats synced (Players: ${statsData.players})`);
+    console.log(`⚡ Instant sync committed (${statsData.players} players).`);
   }
 
   if (!ftpUser || !ftpPass) {
@@ -185,7 +197,7 @@ async function runPipeline() {
       }
     }
 
-    console.log(`🎯 Active Save Directory: [ ${validSavePath || 'savegame2'} ]`);
+    console.log(`🎯 Active Savegame Target: [ ${validSavePath || 'savegame2'} ]`);
 
     const readableFiles = fileList.filter(f => !f.isDirectory && (
       f.name.toLowerCase().endsWith('.xml') || f.name.toLowerCase().endsWith('.txt')
@@ -240,12 +252,12 @@ async function runPipeline() {
     await db.ref('fs25').update(masterPayload);
     await db.ref().update(masterPayload);
 
-    console.log("🏆 Full savegame sync complete!");
+    console.log("🏆 Full savegame telemetry sync successful!");
     client.close();
     process.exit(0);
 
   } catch (err) {
-    console.error("Pipeline Notice:", err.message);
+    console.error("Pipeline Warning:", err.message);
     client.close();
     process.exit(0);
   }
