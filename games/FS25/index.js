@@ -1,22 +1,22 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 30, 2026, 15:20:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 30, 2026, 15:45:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Master Tactical Telemetry Engine - Scoped strictly to /fs25
-                and /FS25_Mods_Info nodes for clean, non-conflicting sync.
+   Description: Master Tactical Telemetry Engine - Operates 100% over secure
+                HTTPS via Firebase Realtime Database sync for Savegame 3.
    ========================================================================== */
 
 /* ------------------------------------------------------------------------
    HTML Target Reference Notes:
-   - Mod Hub Grid -> Target ID: 'mod-hub-grid' (Line ~225)
-   - Active Players Container -> Target ID: 'active-players-container' (Line ~125)
-   - Farms Container -> Target ID: 'farms-container' (Line ~135)
-   - Husbandry & Productions -> Target IDs: 'animals-container', 
-     'main-productions-container', 'construction-container', 'greenhouses-container' (Line ~145)
-   - Contracts & Missions -> Target ID: 'missions-container' (Line ~180)
+   - Mod Hub Grid -> Target ID: 'mod-hub-grid'
+   - Active Players Container -> Target ID: 'active-players-container'
+   - Farms Container -> Target ID: 'farms-container'
+   - Construction & Husbandry -> Target IDs: 'animals-container', 
+     'main-productions-container', 'construction-container', 'greenhouses-container'
+   - Contracts & Missions -> Target ID: 'missions-container'
    - Fleet Machinery -> Target IDs: 'tractors-container', 'harvesters-container',
-     'trailers-container', 'implements-container' (Line ~200)
-   - Field Crops & Agronomy Status -> Target ID: 'fields-container' (Line ~245)
+     'trailers-container', 'implements-container'
+   - Field Crops & Agronomy Status -> Target ID: 'fields-container'
    ------------------------------------------------------------------------ */
 
 // Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
@@ -41,8 +41,6 @@
 
 const REPO_IMAGES_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 const CSV_MODS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSMgzcUsOADAcJQKRuWigsRL2NVXkdW8zTsoHBnGLQtcwJSgimxGC8-hewZalTAPsD3-tG1h45F0a-B/pub?gid=1424713988&single=true&output=csv";
-const LIVE_STATS_API_URL = "http://207.244.246.70:9050/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM";
-const LIVE_MAP_FEED_URL = "http://207.244.246.70:9050/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=75&size=1024";
 
 const HAND_TOOL_NAMES = {
   "XP550": "Husqvarna XP550 Chainsaw",
@@ -63,7 +61,6 @@ const FARM_COLOR_PALETTE = {
 
 let activeFarmDirectory = {};
 let latestFirebasePayload = null;
-let playerPollingTimer = null;
 let firebaseImageMappings = {};
 let firebaseWebsiteMods = {};
 
@@ -253,7 +250,7 @@ function renderConsolidatedGrid(modList) {
 }
 
 /* ==========================================================================
-   SECTION 2: Real-Time High-Frequency Location Poller
+   SECTION 2: Active Online Players Renderer
    ========================================================================== */
 
 function renderActivePlayers(statsXml, vehXml, fallbackActiveCount = 0) {
@@ -342,24 +339,6 @@ function renderActivePlayers(statsXml, vehXml, fallbackActiveCount = 0) {
   if (playersBadge) playersBadge.textContent = `Players: ${finalCount}/${totalSlots}`;
 }
 
-async function startLiveLocationPoller() {
-  if (playerPollingTimer) clearInterval(playerPollingTimer);
-
-  playerPollingTimer = setInterval(async () => {
-    try {
-      const response = await fetch(LIVE_STATS_API_URL);
-      if (response.ok) {
-        const text = await response.text();
-        const liveXml = parseXML(text);
-        if (liveXml) {
-          const vehXml = latestFirebasePayload ? parseXML(latestFirebasePayload.vehicles_raw || latestFirebasePayload.vehicles) : null;
-          renderActivePlayers(liveXml, vehXml);
-        }
-      }
-    } catch (err) {}
-  }, 5000);
-}
-
 /* ==========================================================================
    SECTION 3: Master Telemetry Dashboard Engine (Strict /fs25 Node)
    ========================================================================== */
@@ -376,7 +355,6 @@ window.renderDashboard = function(rawIncomingData) {
   latestFirebasePayload = data;
   window.setServerStatus(true);
 
-  // Directly access the fs25 scope
   const fs25Node = (data.fs25 && typeof data.fs25 === 'object') ? data.fs25 : data;
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
@@ -392,6 +370,11 @@ window.renderDashboard = function(rawIncomingData) {
   const farmlandXml = parseXML(fs25Node.farmland_raw || fs25Node.farmlands_raw || fs25Node.farmland || fs25Node.farmlands);
   const fieldsXml = parseXML(fs25Node.fields_raw || fs25Node.fields);
   const envXml = parseXML(fs25Node.environment_raw || fs25Node.environment);
+
+  // Active Save Slot Display in Footer
+  const activeSlot = fs25Node.activeSaveSlot || "3";
+  const slotElem = document.getElementById('save-slot-display');
+  if (slotElem) slotElem.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: #${activeSlot}`;
 
   // 1. Dynamic Farm Directory (Isolating Farm 1 for KPI)
   activeFarmDirectory = {};
@@ -448,7 +431,7 @@ window.renderDashboard = function(rawIncomingData) {
     return String(rawFid).trim();
   }
 
-  // 2. Server Banner, Map Stream, Weather, and Live Time
+  // 2. Server Banner, Weather, and Live Time
   let liveClockText = "00:00";
   let seasonText = "Early Autumn";
   let weatherText = "Clear";
@@ -497,23 +480,6 @@ window.renderDashboard = function(rawIncomingData) {
   setTxt('server-time', `Time: ${liveClockText}`);
   setTxt('server-month', `Season: ${seasonText}`);
   setTxt('server-weather', `Weather: ${weatherText}`);
-
-  // Inject Live G-Portal Map Stream Lightbox Preview
-  const liveMapSrc = fs25Node.liveMapImage || LIVE_MAP_FEED_URL;
-  const mapBadge = document.getElementById('server-map');
-  if (mapBadge) {
-    mapBadge.style.cursor = "pointer";
-    mapBadge.onclick = () => {
-      const modal = document.getElementById('lightbox-modal');
-      const modalImg = document.getElementById('lightbox-img');
-      const modalCaption = document.getElementById('lightbox-caption');
-      if (modal && modalImg) {
-        modal.style.display = 'flex';
-        modalImg.src = `${liveMapSrc}&_t=${Date.now()}`;
-        if (modalCaption) modalCaption.textContent = `Live Satellite Map Feed (${serverMapTitle})`;
-      }
-    };
-  }
 
   // 3. Render Active Players
   const rawActiveCount = parseInt(fs25Node.activePlayers || 0, 10);
@@ -1093,7 +1059,6 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   initializeFirebaseSync();
-  startLiveLocationPoller();
 });
 
 window.setServerStatus = function(isOnline) {
