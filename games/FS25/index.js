@@ -1,10 +1,9 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 30, 2026, 15:15:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 30, 2026, 15:20:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Master Tactical Telemetry Engine - Live Satellite Stream,
-                Continuous Player Location Poller, Relational Fleet Attachment
-                Graph, Precision Agronomy, Silage & Animal Diagnostics.
+   Description: Master Tactical Telemetry Engine - Scoped strictly to /fs25
+                and /FS25_Mods_Info nodes for clean, non-conflicting sync.
    ========================================================================== */
 
 /* ------------------------------------------------------------------------
@@ -65,6 +64,8 @@ const FARM_COLOR_PALETTE = {
 let activeFarmDirectory = {};
 let latestFirebasePayload = null;
 let playerPollingTimer = null;
+let firebaseImageMappings = {};
+let firebaseWebsiteMods = {};
 
 function getFarmMeta(farmId) {
   const fid = String(farmId || "0");
@@ -87,9 +88,6 @@ function formatHours(operatingSeconds) {
   const hours = parseFloat(operatingSeconds) / 3600;
   return `${hours.toFixed(1)} hrs`;
 }
-
-let parsedModCatalog = [];
-let firebaseImageMappings = {};
 
 function smartExtractPayload(rawInput) {
   if (!rawInput) return "";
@@ -156,150 +154,83 @@ function isValidImageUrl(url) {
 }
 
 /* ==========================================================================
-   SECTION 1: Mod Catalog CSV Loader
+   SECTION 1: Cross-Referenced Server Mod Hub
    ========================================================================== */
 
-async function fetchModCatalog() {
+function renderServerMods(activeModObjects) {
   const gridContainer = document.getElementById('mod-hub-grid');
   const catBar = document.getElementById('mod-categories-bar');
   if (!gridContainer) return;
 
-  try {
-    const response = await fetch(CSV_MODS_URL);
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const csvText = await response.text();
-    const rows = parseCSV(csvText);
-    if (rows.length <= 1) return;
+  const categoriesSet = new Set(['ALL']);
+  const modList = [];
 
-    const headers = rows[0].map(h => h.trim().toLowerCase());
-    parsedModCatalog = [];
-    const categoriesSet = new Set(['ALL']);
+  activeModObjects.forEach(mod => {
+    const rawName = mod.name || mod.title || mod.filename || '';
+    const cleanKey = sanitizeKey(rawName.replace('FS25_', ''));
+    
+    // Cross-reference with /FS25_Mods_Info
+    const fbMeta = firebaseWebsiteMods[cleanKey] || firebaseWebsiteMods[sanitizeKey(rawName)] || {};
+    
+    const finalName = fbMeta.name_a || fbMeta.name || mod.title || formatName(rawName);
+    const category = fbMeta.category_g || fbMeta.category_k || fbMeta.category || mod.category || 'General';
+    const desc = fbMeta.description_d || fbMeta.description || mod.description || '';
+    const author = fbMeta.author_h || fbMeta.author || mod.author || 'Community Modder';
+    const link = fbMeta.url_w_utm_c || fbMeta.link || fbMeta.url || '#';
+    const crossplay = fbMeta.crossplay_e || fbMeta.crossplay || 'Yes';
+    const rawImg = fbMeta.image_b || fbMeta.image || '';
 
-    for (let i = 1; i < rows.length; i++) {
-      const row = rows[i];
-      if (row.length < headers.length) continue;
-      
-      const modObj = {};
-      headers.forEach((header, index) => {
-        modObj[header] = row[index] ? row[index].trim() : '';
-      });
+    const repoImg = resolveItemImage(rawName);
+    const finalImg = isValidImageUrl(rawImg) ? rawImg : repoImg;
 
-      if (modObj.name || modObj.title || modObj['mod name']) {
-        parsedModCatalog.push(modObj);
-        const cat = modObj.category || modObj.type || 'General';
-        categoriesSet.add(cat.toUpperCase());
-      }
-    }
+    categoriesSet.add(category.toUpperCase());
 
-    if (catBar) {
-      catBar.innerHTML = Array.from(categoriesSet).map(cat => 
-        `<button type="button" class="category-btn ${cat === 'ALL' ? 'active' : ''}" onclick="filterModsCategory('${cat}', this)">${cat}</button>`
-      ).join('');
-    }
+    modList.push({
+      name: finalName,
+      category: category,
+      desc: desc,
+      author: author,
+      link: link,
+      crossplay: crossplay,
+      image: finalImg
+    });
+  });
 
-    if (!window.hasRenderedFirebaseMods) {
-      renderModGrid(parsedModCatalog);
-    }
-  } catch (err) {
-    console.warn("Sheet CSV Load Note:", err.message);
+  window.activeConsolidatedMods = modList;
+
+  if (catBar) {
+    catBar.innerHTML = Array.from(categoriesSet).map(cat => 
+      `<button type="button" class="category-btn ${cat === 'ALL' ? 'active' : ''}" onclick="filterConsolidatedCategory('${cat}', this)">${cat}</button>`
+    ).join('');
   }
+
+  renderConsolidatedGrid(modList);
 }
 
-function parseCSV(text) {
-  const lines = [];
-  let row = [];
-  let inQuotes = false;
-  let currentVal = '';
-
-  for (let i = 0; i < text.length; i++) {
-    const char = text[i];
-    const nextChar = text[i + 1];
-
-    if (char === '"' && inQuotes && nextChar === '"') {
-      currentVal += '"';
-      i++;
-    } else if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
-      row.push(currentVal);
-      currentVal = '';
-    } else if ((char === '\r' || char === '\n') && !inQuotes) {
-      if (char === '\r' && nextChar === '\n') i++;
-      row.push(currentVal);
-      if (row.length > 0 && row.some(cell => cell.length > 0)) lines.push(row);
-      row = [];
-      currentVal = '';
-    } else {
-      currentVal += char;
-    }
-  }
-  if (currentVal || row.length > 0) { row.push(currentVal); lines.push(row); }
-  return lines;
-}
-
-window.filterModsCategory = function(selectedCat, btnElem) {
+window.filterConsolidatedCategory = function(selectedCat, btnElem) {
   document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
   if (btnElem) btnElem.classList.add('active');
 
-  const sourceData = window.activeFirebaseModData || parsedModCatalog;
-
+  const source = window.activeConsolidatedMods || [];
   if (selectedCat === 'ALL') {
-    renderModGrid(sourceData);
+    renderConsolidatedGrid(source);
   } else {
-    const filtered = sourceData.filter(m => {
-      const cat = m.category_g || m.category_k || m.category || m.type || 'General';
-      return String(cat).toUpperCase() === selectedCat;
-    });
-    renderModGrid(filtered);
+    renderConsolidatedGrid(source.filter(m => m.category.toUpperCase() === selectedCat));
   }
 };
 
-function renderModGrid(modsData) {
+function renderConsolidatedGrid(modList) {
   const gridContainer = document.getElementById('mod-hub-grid');
   if (!gridContainer) return;
 
-  let modList = Array.isArray(modsData) ? modsData : (modsData ? Object.values(modsData) : []);
-
-  const catBar = document.getElementById('mod-categories-bar');
-  if (catBar && modList.length > 0) {
-    const categoriesSet = new Set(['ALL']);
-    modList.forEach(mod => {
-      const cat = mod.category_g || mod.category_k || mod.category || mod.mod_type_f || 'General';
-      categoriesSet.add(String(cat).toUpperCase());
-    });
-
-    catBar.innerHTML = `
-      <div style="margin-bottom:0.75rem; text-align:center; font-weight:700; color:var(--accent-gold, #facc15); font-size:1.05rem;">
-        <i class="fa-solid fa-cubes"></i> Total Server Mods Active: ${modList.length}
-      </div>
-      <div style="display:flex; gap:0.5rem; flex-wrap:wrap; justify-content:center;">
-        ${Array.from(categoriesSet).map(cat => 
-          `<button type="button" class="category-btn ${cat === 'ALL' ? 'active' : ''}" onclick="filterModsCategory('${cat}', this)">${cat}</button>`
-        ).join('')}
-      </div>`;
-  }
-
   if (modList.length === 0) {
-    gridContainer.innerHTML = `<div class="empty-state">No matching mods found in database.</div>`;
+    gridContainer.innerHTML = `<div class="empty-state">No matching server mods found.</div>`;
     return;
   }
 
   gridContainer.innerHTML = modList.map(mod => {
-    const name = mod.name_a || mod.name || mod.title || 'Unnamed Mod';
-    const category = mod.category_g || mod.category_k || mod.category || mod.mod_type_f || 'General';
-    const desc = mod.description_d || mod.description || '';
-    const author = mod.author_h || mod.author || 'Community Modder';
-    const link = mod.url_w_utm_c || mod.link || mod.url || mod.url_c || '#';
-    const filename = mod.filename_j || mod.filename || '';
-    const size = mod.size_i || mod.size || '';
-    const crossplay = mod.crossplay_e || mod.crossplay || 'Yes';
-    const rawImg = mod.image_b || mod.image || '';
-
-    const repoMatchedImg = resolveItemImage(filename || name);
-    const finalImg = isValidImageUrl(rawImg) ? rawImg : repoMatchedImg;
-
-    const imgHtml = finalImg
-      ? `<img src="${finalImg}" data-alt="${name}" class="lightbox-trigger mod-card-thumb">`
+    const imgHtml = mod.image
+      ? `<img src="${mod.image}" data-alt="${mod.name}" class="lightbox-trigger mod-card-thumb">`
       : `<div class="mod-card-icon-fallback"><i class="fa-solid fa-cube"></i></div>`;
 
     return `
@@ -307,14 +238,14 @@ function renderModGrid(modsData) {
         ${imgHtml}
         <div class="mod-card-body">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="mod-category-tag">${category}</span>
-            <span class="badge" style="font-size:0.7rem; padding:2px 6px;">${crossplay === 'Yes' ? 'Crossplay' : 'PC Only'}</span>
+            <span class="mod-category-tag">${mod.category}</span>
+            <span class="badge" style="font-size:0.7rem; padding:2px 6px;">${mod.crossplay === 'Yes' ? 'Crossplay' : 'PC Only'}</span>
           </div>
-          <h3 class="mod-title">${name}</h3>
-          ${desc ? `<p class="mod-desc">${desc.substring(0, 140)}...</p>` : ''}
+          <h3 class="mod-title">${mod.name}</h3>
+          ${mod.desc ? `<p class="mod-desc">${mod.desc.substring(0, 140)}...</p>` : ''}
           <div class="mod-card-footer">
-            <span class="mod-author"><i class="fa-solid fa-user"></i> ${author} ${size ? `(${size})` : ''}</span>
-            ${link !== '#' ? `<a href="${link}" target="_blank" rel="noopener" class="mod-download-btn"><i class="fa-solid fa-download"></i> Get Mod</a>` : ''}
+            <span class="mod-author"><i class="fa-solid fa-user"></i> ${mod.author}</span>
+            ${mod.link !== '#' ? `<a href="${mod.link}" target="_blank" rel="noopener" class="mod-download-btn"><i class="fa-solid fa-download"></i> Get Mod</a>` : ''}
           </div>
         </div>
       </div>`;
@@ -430,7 +361,7 @@ async function startLiveLocationPoller() {
 }
 
 /* ==========================================================================
-   SECTION 3: Master Telemetry Dashboard Engine
+   SECTION 3: Master Telemetry Dashboard Engine (Strict /fs25 Node)
    ========================================================================== */
 
 window.renderDashboard = function(rawIncomingData) {
@@ -445,33 +376,26 @@ window.renderDashboard = function(rawIncomingData) {
   latestFirebasePayload = data;
   window.setServerStatus(true);
 
-  if (data.FS25_Mods_Info && data.FS25_Mods_Info.Images) {
-    firebaseImageMappings = data.FS25_Mods_Info.Images;
-  }
-  if (data.FS25_Mods_Info && data.FS25_Mods_Info.Website) {
-    window.activeFirebaseModData = Object.values(data.FS25_Mods_Info.Website);
-    window.hasRenderedFirebaseMods = true;
-    renderModGrid(window.activeFirebaseModData);
-  }
-
+  // Directly access the fs25 scope
   const fs25Node = (data.fs25 && typeof data.fs25 === 'object') ? data.fs25 : data;
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-  const careerXml = parseXML(fs25Node.careerSavegame_raw || fs25Node.careerSavegame || data.careerSavegame_raw);
-  const vehXml = parseXML(fs25Node.vehicles_raw || fs25Node.vehicles || data.vehicles_raw);
-  const farmsXml = parseXML(fs25Node.farms_raw || fs25Node.farms || data.farms_raw);
-  const placeXml = parseXML(fs25Node.placeables_raw || fs25Node.placeables || data.placeables_raw);
-  const itemsXml = parseXML(fs25Node.items_raw || fs25Node.items || data.items_raw);
-  const toolsXml = parseXML(fs25Node.handTools_raw || fs25Node.handTools || data.handTools_raw);
-  const missionsXml = parseXML(fs25Node.missions_raw || fs25Node.missions || data.missions_raw);
-  const statsXml = parseXML(fs25Node.stats_xml_raw || fs25Node.stats_raw || fs25Node.stats_xml || data.stats_xml_raw);
-  const farmlandXml = parseXML(fs25Node.farmland_raw || fs25Node.farmlands_raw || fs25Node.farmland || fs25Node.farmlands || data.farmland_raw || data.farmlands_raw);
-  const fieldsXml = parseXML(fs25Node.fields_raw || fs25Node.fields || data.fields_raw);
-  const envXml = parseXML(fs25Node.environment_raw || fs25Node.environment || data.environment_raw);
+  const careerXml = parseXML(fs25Node.careerSavegame_raw || fs25Node.careerSavegame);
+  const vehXml = parseXML(fs25Node.vehicles_raw || fs25Node.vehicles);
+  const farmsXml = parseXML(fs25Node.farms_raw || fs25Node.farms);
+  const placeXml = parseXML(fs25Node.placeables_raw || fs25Node.placeables);
+  const itemsXml = parseXML(fs25Node.items_raw || fs25Node.items);
+  const collectiblesXml = parseXML(fs25Node.collectibles_raw || fs25Node.collectibles);
+  const toolsXml = parseXML(fs25Node.handTools_raw || fs25Node.handTools);
+  const missionsXml = parseXML(fs25Node.missions_raw || fs25Node.missions);
+  const statsXml = parseXML(fs25Node.stats_xml_raw || fs25Node.stats_raw);
+  const farmlandXml = parseXML(fs25Node.farmland_raw || fs25Node.farmlands_raw || fs25Node.farmland || fs25Node.farmlands);
+  const fieldsXml = parseXML(fs25Node.fields_raw || fs25Node.fields);
+  const envXml = parseXML(fs25Node.environment_raw || fs25Node.environment);
 
-  // 1. Dynamic Farm Directory (My Farm vs Dumbace)
+  // 1. Dynamic Farm Directory (Isolating Farm 1 for KPI)
   activeFarmDirectory = {};
-  let calculatedNetWorth = 0;
+  let primaryFarmBalance = 0;
   let farmCount = 0;
   let farmsHtml = "";
 
@@ -491,7 +415,11 @@ window.renderDashboard = function(rawIncomingData) {
         const color = FARM_COLOR_PALETTE[farmId]?.color || (farmCount === 1 ? "#ff5f00" : "#a855f7");
 
         activeFarmDirectory[farmId] = { name: finalName, color: color, money: money };
-        calculatedNetWorth += money;
+
+        // Strictly isolate Farm 1 ("My farm") for the Global Balance KPI Card
+        if (farmId === "1" || farmCount === 1) {
+          primaryFarmBalance = money;
+        }
 
         farmsHtml += `
           <div class="telemetry-card" style="border-left: 4px solid ${color}; padding: 0.85rem;">
@@ -512,7 +440,7 @@ window.renderDashboard = function(rawIncomingData) {
         <strong style="color:var(--accent-gold, #facc15); font-size:0.85rem;"><i class="fa-solid fa-building-columns"></i> Total Registered Farms: ${farmCount}</strong>
       </div>
       ${farmsHtml || `<div class="empty-state">No Active Farms Logged</div>`}`;
-    setTxt('global-net-worth', `$${calculatedNetWorth.toLocaleString()}`);
+    setTxt('global-net-worth', `$${primaryFarmBalance.toLocaleString()}`);
   }
 
   function extractNodeFarmId(node) {
@@ -558,7 +486,9 @@ window.renderDashboard = function(rawIncomingData) {
         serverMapTitle = settings.querySelector("mapTitle")?.textContent || serverMapTitle;
       }
       setTxt('traffic-badge', `Traffic: ${settings.querySelector("trafficEnabled")?.textContent === 'true' ? 'ON' : 'OFF'}`);
-      setTxt('time-speed-badge', `Speed: ${settings.querySelector("timeScale")?.textContent || "1"}x`);
+      
+      const rawSpeed = settings.querySelector("timeScale")?.textContent || "1";
+      setTxt('time-speed-badge', `Speed: ${parseFloat(rawSpeed)}x`);
     }
   }
 
@@ -569,7 +499,7 @@ window.renderDashboard = function(rawIncomingData) {
   setTxt('server-weather', `Weather: ${weatherText}`);
 
   // Inject Live G-Portal Map Stream Lightbox Preview
-  const liveMapSrc = fs25Node.liveMapImage || data.liveMapImage || LIVE_MAP_FEED_URL;
+  const liveMapSrc = fs25Node.liveMapImage || LIVE_MAP_FEED_URL;
   const mapBadge = document.getElementById('server-map');
   if (mapBadge) {
     mapBadge.style.cursor = "pointer";
@@ -586,7 +516,7 @@ window.renderDashboard = function(rawIncomingData) {
   }
 
   // 3. Render Active Players
-  const rawActiveCount = parseInt(fs25Node.activePlayers || data.activePlayers || 0, 10);
+  const rawActiveCount = parseInt(fs25Node.activePlayers || 0, 10);
   renderActivePlayers(statsXml, vehXml, rawActiveCount);
 
   // 4. Placed Objects, Husbandry & Silage Storage
@@ -701,7 +631,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (miscCont) miscCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold, #facc15); font-size:0.85rem;"><i class="fa-solid fa-tower-cell"></i> Placed Objects: ${miscCount}</strong></div>${miscHtml || `<div class="empty-state">No Placed Objects Logged</div>`}`;
   if (prodCont) prodCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold, #facc15); font-size:0.85rem;"><i class="fa-solid fa-industry"></i> Production Factories: ${prodCount}</strong></div>${prodHtml || `<div class="empty-state">No Production Buildings Logged</div>`}`;
 
-  // 5. Contracts & Missions Parser
+  // 5. Complete Contracts & Missions Board
   const missionsCont = document.getElementById('missions-container');
   let contractCropMap = {};
 
@@ -709,52 +639,53 @@ window.renderDashboard = function(rawIncomingData) {
     let missionsHtml = "";
     let missionCount = 0;
 
-    if (missionsXml) {
-      missionsXml.querySelectorAll("mission, contract, item, Mission, Contract, missions > *").forEach(m => {
-        const rawType = m.getAttribute("type") || m.getAttribute("category") || m.getAttribute("name") || m.querySelector("type")?.textContent || "";
-        if (!rawType && !m.getAttribute("fieldIndex") && !m.getAttribute("reward")) return;
+    const sourceMissions = missionsXml ? missionsXml.querySelectorAll("mission, contract, item, activeMission, missions > *") : [];
 
-        missionCount++;
-        const jobType = formatName(rawType || "Contract Job");
-        const fieldId = m.getAttribute("fieldIndex") || m.getAttribute("fieldId") || m.getAttribute("field") || m.querySelector("field")?.getAttribute("id") || "N/A";
-        const rawReward = m.getAttribute("reward") || m.getAttribute("payout") || m.querySelector("reward")?.textContent || "0";
-        const reward = Math.round(parseFloat(rawReward));
+    sourceMissions.forEach(m => {
+      const rawType = m.getAttribute("type") || m.getAttribute("category") || m.getAttribute("name") || m.getAttribute("missionType") || m.querySelector("type")?.textContent || "";
+      const fieldId = m.getAttribute("fieldIndex") || m.getAttribute("fieldId") || m.getAttribute("field") || m.querySelector("field")?.getAttribute("id") || m.querySelector("field")?.textContent || "N/A";
+      const rawReward = m.getAttribute("reward") || m.getAttribute("payout") || m.getAttribute("money") || m.querySelector("reward")?.textContent || "0";
+      const reward = Math.round(parseFloat(rawReward));
 
-        const fid = extractNodeFarmId(m);
-        const farmMeta = getFarmMeta(fid);
-        const color = farmMeta.color;
-        const farmName = farmMeta.name;
+      if (fieldId === "N/A" && reward === 0 && !rawType) return;
 
-        const fruitTypeName = m.getAttribute("fruitTypeName") || m.getAttribute("fruitType") || m.querySelector("fruitType")?.textContent || "";
-        const fruitText = fruitTypeName ? ` | Crop: ${formatName(fruitTypeName)}` : '';
+      missionCount++;
+      const jobType = formatName(rawType || "Contract Job");
+      
+      const fid = extractNodeFarmId(m);
+      const farmMeta = getFarmMeta(fid);
+      const color = farmMeta.color;
+      const farmName = farmMeta.name;
 
-        if (fieldId !== "N/A" && fruitTypeName) {
-          contractCropMap[fieldId] = { crop: formatName(fruitTypeName), status: jobType };
-        }
+      const fruitTypeName = m.getAttribute("fruitTypeName") || m.getAttribute("fruitType") || m.querySelector("fruitType")?.textContent || "";
+      const fruitText = fruitTypeName ? ` | Crop: ${formatName(fruitTypeName)}` : '';
 
-        let rawStatus = String(m.getAttribute("status") || m.getAttribute("state") || "0").toUpperCase();
-        let statusBadge = `<span class="badge" style="background:rgba(56, 189, 248, 0.2); color:#38bdf8; border:1px solid #38bdf8;">AVAILABLE</span>`;
-        
-        if (rawStatus === "1" || rawStatus.includes("RUNNING") || rawStatus.includes("ACTIVE") || rawStatus.includes("IN_PROGRESS")) {
-          statusBadge = `<span class="badge" style="background:rgba(34, 197, 94, 0.2); color:#4ade80; border:1px solid #4ade80;">IN PROGRESS</span>`;
-        } else if (rawStatus === "2" || rawStatus.includes("FINISHED") || rawStatus.includes("SUCCESS") || rawStatus.includes("COMPLETED")) {
-          statusBadge = `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15; border:1px solid #facc15;">READY FOR PAYOUT</span>`;
-        }
+      if (fieldId !== "N/A" && fruitTypeName) {
+        contractCropMap[fieldId] = { crop: formatName(fruitTypeName), status: jobType };
+      }
 
-        missionsHtml += `
-          <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
-            <i class="fa-solid fa-file-contract card-icon" style="color:${color};"></i>
-            <div class="card-details" style="width:100%;">
-              <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:0.5rem; flex-wrap:wrap;">
-                <strong style="color:${color}; font-size:1rem;">${jobType} - Field #${fieldId}</strong>
-                ${statusBadge}
-              </div>
-              <span style="color:#ffffff; font-weight:700;">Payout: $${reward.toLocaleString()}</span>
-              <span class="card-subtext" style="color:#94a3b8;">Client: ${farmName}${fruitText}</span>
+      let rawStatus = String(m.getAttribute("status") || m.getAttribute("state") || "0").toUpperCase();
+      let statusBadge = `<span class="badge" style="background:rgba(56, 189, 248, 0.2); color:#38bdf8; border:1px solid #38bdf8;">AVAILABLE</span>`;
+      
+      if (rawStatus === "1" || rawStatus.includes("RUNNING") || rawStatus.includes("ACTIVE") || rawStatus.includes("IN_PROGRESS")) {
+        statusBadge = `<span class="badge" style="background:rgba(34, 197, 94, 0.2); color:#4ade80; border:1px solid #4ade80;">IN PROGRESS</span>`;
+      } else if (rawStatus === "2" || rawStatus.includes("FINISHED") || rawStatus.includes("SUCCESS") || rawStatus.includes("COMPLETED")) {
+        statusBadge = `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15; border:1px solid #facc15;">READY FOR PAYOUT</span>`;
+      }
+
+      missionsHtml += `
+        <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
+          <i class="fa-solid fa-file-contract card-icon" style="color:${color};"></i>
+          <div class="card-details" style="width:100%;">
+            <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:0.5rem; flex-wrap:wrap;">
+              <strong style="color:${color}; font-size:1rem;">${jobType} - Field #${fieldId}</strong>
+              ${statusBadge}
             </div>
-          </div>`;
-      });
-    }
+            <span style="color:#ffffff; font-weight:700;">Payout: $${reward.toLocaleString()}</span>
+            <span class="card-subtext" style="color:#94a3b8;">Client: ${farmName}${fruitText}</span>
+          </div>
+        </div>`;
+    });
 
     missionsCont.innerHTML = `
       <div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;">
@@ -763,32 +694,39 @@ window.renderDashboard = function(rawIncomingData) {
       ${missionsHtml || `<div class="empty-state">No Active Contracts Available</div>`}`;
   }
 
-  // 6. Collectibles & Hand Tools
+  // 6. Collectibles Discoveries Engine
   const collectiblesCont = document.getElementById('collectibles-container');
   if (collectiblesCont) {
     let collectiblesHtml = "";
-    let totalCollectibles = 0;
+    let totalCollectibles = 100;
     let foundCollectibles = 0;
 
-    if (itemsXml) {
-      const itemNodes = itemsXml.querySelectorAll("item, collectible, Item");
-      totalCollectibles = itemNodes.length || 100;
+    const sourceColDoc = collectiblesXml || itemsXml;
+
+    if (sourceColDoc) {
+      const itemNodes = sourceColDoc.querySelectorAll("collectible, item, Collectible, Item");
+      if (itemNodes.length > 0) totalCollectibles = itemNodes.length;
 
       itemNodes.forEach(item => {
         const isFound = item.getAttribute("isFound") === "true" || item.getAttribute("found") === "true";
         if (isFound) {
           foundCollectibles++;
-          const name = formatName(item.getAttribute("className") || item.getAttribute("type") || "Collectible");
+          const name = formatName(item.getAttribute("name") || item.getAttribute("className") || item.getAttribute("type") || `Collectible #${foundCollectibles}`);
           collectiblesHtml += `
             <div class="telemetry-card">
               <i class="fa-solid fa-trophy card-icon" style="color:#facc15;"></i>
               <div class="card-details">
                 <strong style="color:#ffffff;">${name}</strong>
-                <span class="card-subtext">Status: Discovered</span>
+                <span class="card-subtext" style="color:#4ade80;"><i class="fa-solid fa-check"></i> Status: Discovered</span>
               </div>
             </div>`;
         }
       });
+    }
+
+    if (careerXml && foundCollectibles === 0) {
+      const statsFound = careerXml.querySelector("collectiblesFound")?.textContent;
+      if (statsFound) foundCollectibles = parseInt(statsFound, 10) || 0;
     }
 
     collectiblesCont.innerHTML = `
@@ -797,9 +735,10 @@ window.renderDashboard = function(rawIncomingData) {
           <i class="fa-solid fa-trophy"></i> Collectibles Discovered: ${foundCollectibles} / ${totalCollectibles}
         </strong>
       </div>
-      ${collectiblesHtml || `<div class="empty-state">0 / ${totalCollectibles} Collectibles Discovered</div>`}`;
+      ${collectiblesHtml || `<div class="empty-state">${foundCollectibles} / ${totalCollectibles} Collectibles Discovered</div>`}`;
   }
 
+  // 7. Player Hand Tools
   const toolsCont = document.getElementById('handtools-container');
   if (toolsCont) {
     let toolsHtml = "";
@@ -836,7 +775,7 @@ window.renderDashboard = function(rawIncomingData) {
       ${toolsHtml || `<div class="empty-state">No Hand Tools Logged</div>`}`;
   }
 
-  // 7. Relational Fleet Machinery Engine
+  // 8. Relational Fleet Machinery Engine
   let vehicleCount = 0;
   let tracCount = 0, harvCount = 0, trailCount = 0, implCount = 0;
   const tracCont = document.getElementById('tractors-container');
@@ -970,7 +909,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (implCont) implCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold, #facc15); font-size:0.85rem;"><i class="fa-solid fa-screwdriver-wrench"></i> Implements: ${implCount}</strong></div>${implements || `<div class="empty-state">No Implements Found</div>`}`;
   setTxt('global-vehicle-count', vehicleCount);
 
-  // 8. Field Crops & Agronomy Status Engine
+  // 9. Precision Agronomy & Field Telemetry Engine
   const fieldsCont = document.getElementById('fields-container');
   if (fieldsCont) {
     let fieldsByFarm = {};
@@ -988,14 +927,16 @@ window.renderDashboard = function(rawIncomingData) {
         const color = farmMeta.color;
         const ownerLabel = farmMeta.name;
 
-        const areaHa = parseFloat(f.getAttribute("area") || "0");
+        let areaHa = parseFloat(f.getAttribute("area") || f.getAttribute("hectares") || "0");
+        if (isNaN(areaHa) || areaHa <= 0) areaHa = 1.25;
         totalHectares += areaHa;
-        const haText = areaHa > 0 ? `${areaHa.toFixed(2)} Ha` : "N/A";
-        const acresText = areaHa > 0 ? `${(areaHa * 2.47105).toFixed(2)} Acres` : "";
+        
+        const haText = `${areaHa.toFixed(2)} Ha`;
+        const acresText = `${(areaHa * 2.47105).toFixed(2)} Acres`;
 
         const cropMatch = contractCropMap[id];
         const fruitType = cropMatch ? cropMatch.crop : (f.getAttribute("fruitTypeName") || f.getAttribute("fruitType") || "Grass / Fallow");
-        const growthState = cropMatch ? "Growing (Active Contract)" : (f.getAttribute("growthState") || "Cultivated");
+        const growthState = cropMatch ? "Growing (Active Contract)" : (f.getAttribute("growthState") || "Ready to Harvest");
         
         const fertLevel = f.getAttribute("fertilizedLevel") ? `${f.getAttribute("fertilizedLevel")}%` : "100%";
         const needsLime = f.getAttribute("limeState") === "1" ? '<span style="color:#f87171; margin-left:0.5rem;"><i class="fa-solid fa-triangle-exclamation"></i> Needs Lime</span>' : '<span style="color:#4ade80; margin-left:0.5rem;"><i class="fa-solid fa-check"></i> Lime OK</span>';
@@ -1007,7 +948,7 @@ window.renderDashboard = function(rawIncomingData) {
             <i class="fa-solid fa-wheat-awn card-icon" style="color:${color};"></i>
             <div class="card-details" style="width:100%;">
               <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;">
-                <strong style="color:${color}; font-size:1rem;">Field #${id} (${haText}${acresText ? ' | ' + acresText : ''})</strong>
+                <strong style="color:${color}; font-size:1rem;">Field #${id} (${haText} | ${acresText})</strong>
                 <span class="badge" style="border: 1px solid ${color}; color: ${color};">${ownerLabel}</span>
               </div>
               <span style="color:#ffffff; font-weight:600;"><i class="fa-solid fa-seedling"></i> Crop: ${formatName(fruitType)} (${growthState})</span>
@@ -1044,10 +985,33 @@ window.renderDashboard = function(rawIncomingData) {
       ${unifiedFieldsHtml || `<div class="empty-state">No Farmland Data Available</div>`}`;
     setTxt('global-land-count', `${fieldCount} Fields`);
   }
+
+  // 10. Cross-Reference Active Server Mods with /FS25_Mods_Info
+  const activeModsList = [];
+  if (statsXml) {
+    statsXml.querySelectorAll("Mod, mod").forEach(m => {
+      const name = m.getAttribute("name") || m.getAttribute("modName") || "";
+      const title = m.getAttribute("title") || m.textContent || name;
+      const author = m.getAttribute("author") || "Community Modder";
+      const version = m.getAttribute("version") || "";
+      if (name) activeModsList.push({ name, title, author, version });
+    });
+  }
+
+  if (activeModsList.length === 0 && careerXml) {
+    careerXml.querySelectorAll("mod").forEach(m => {
+      const name = m.getAttribute("modName") || "";
+      const title = m.getAttribute("title") || name;
+      const version = m.getAttribute("version") || "";
+      if (name) activeModsList.push({ name, title, author: "Server Mod", version });
+    });
+  }
+
+  renderServerMods(activeModsList);
 };
 
 /* ==========================================================================
-   SECTION 4: Firebase Realtime Database Listener
+   SECTION 4: Firebase Realtime Database Listener (Strictly /fs25 and /FS25_Mods_Info)
    ========================================================================== */
 
 function initializeFirebaseSync() {
@@ -1070,14 +1034,26 @@ function initializeFirebaseSync() {
     return;
   }
 
+  // Listen strictly to /FS25_Mods_Info metadata
+  db.ref('FS25_Mods_Info').on('value', (modsSnap) => {
+    if (modsSnap.exists()) {
+      const modsData = modsSnap.val();
+      if (modsData.Images) firebaseImageMappings = modsData.Images;
+      if (modsData.Website) {
+        Object.values(modsData.Website).forEach(m => {
+          const key = sanitizeKey(m.name_a || m.name || m.title || '');
+          if (key) firebaseWebsiteMods[key] = m;
+        });
+      }
+    }
+  });
+
+  // Listen strictly to /fs25 node
   db.ref('fs25').on('value', (snap) => {
     if (snap.exists()) {
       window.renderDashboard(snap.val());
     } else {
-      db.ref().once('value', (rootSnap) => {
-        if (rootSnap.exists()) window.renderDashboard(rootSnap.val());
-        else window.setServerStatus(false);
-      });
+      window.setServerStatus(false);
     }
   }, (error) => {
     console.error("Firebase RTDB Error:", error.message);
@@ -1116,7 +1092,6 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleBtn.addEventListener('click', () => navMenu.classList.toggle('open'));
   }
 
-  fetchModCatalog();
   initializeFirebaseSync();
   startLiveLocationPoller();
 });
