@@ -1,23 +1,25 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: Sun, Aug 30, 2026, 15:55:00 (EDT - New York)
+ * Deployment Timestamp: Sun, Aug 30, 2026, 16:45:00 (EDT - New York)
  * Project: entertainment-71888 (/fs25 RTDB Node)
- * Description: Master FS25 Web Stats REST API Ingestion Pipeline. Fetches live
- *              active server memory and savegame files directly from G-Portal
- *              REST endpoints and writes strictly into the /fs25 node.
+ * Description: Master Hybrid Ingestion Pipeline - Merges G-Portal Live Web API
+ *              (players & cab status) with Direct FTP Savegame Extraction
+ *              (farms, missions, placeables, farmland, items, collectibles).
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
  * ============================================================================ */
 
 require('dotenv').config({ path: __dirname + '/.env' });
+const ftp = require('basic-ftp');
 const admin = require('firebase-admin');
+const { Writable } = require('stream');
 
-// SECTION 1: SAFETY FAILSAFE
+// Failsafe timeout
 setTimeout(() => {
-  console.log("🚨 Safety Failsafe: Exiting cleanly after 3 minutes.");
+  console.log("🚨 Safety Failsafe: Exiting cleanly after 4 minutes.");
   process.exit(0);
-}, 3 * 60 * 1000);
+}, 4 * 60 * 1000);
 
-// SECTION 2: FIREBASE ADMIN INITIALIZATION
+// Firebase Admin Setup
 const firebaseConfig = {
   databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
 };
@@ -48,137 +50,98 @@ if (!admin.apps.length) {
 
 const db = admin.database();
 
-// SECTION 3: G-PORTAL REST ENDPOINT DEFINITIONS
-const serverHost = process.env.FTP_HOST || '207.244.246.70';
+const ftpHost = process.env.FTP_HOST || '207.244.246.70';
+const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
+const ftpUser = process.env.FTP_USER;
+const ftpPass = process.env.FTP_PASS;
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
 
-const BASE_FEED_URL = `http://${serverHost}:9050/feed`;
-const STATS_URL = `${BASE_FEED_URL}/dedicated-server-stats.xml?code=${apiCode}`;
-const MAP_IMAGE_URL = `${BASE_FEED_URL}/dedicated-server-stats-map.jpg?code=${apiCode}&quality=60&size=512`;
+const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
+const MAP_IMAGE_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
 
-// SECTION 4: ROBUST XML DECODER & UNESCAPER
-function decodeGiantsHtmlXml(rawInput) {
-  if (!rawInput) return "";
-  let text = rawInput.toString();
-
-  // Strip UI resizer markers if present
-  if (text.includes(".vue-modal-resizer")) {
-    text = text.split(".vue-modal-resizer")[0];
+function sanitizeXml(rawText) {
+  if (!rawText) return "";
+  let clean = rawText.toString();
+  if (clean.includes(".vue-modal-resizer")) {
+    clean = clean.split(".vue-modal-resizer")[0];
   }
+  const preMatch = clean.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
+  if (preMatch && preMatch[1]) clean = preMatch[1];
+  const codeMatch = clean.match(/<code[^>]*>([\s\S]*?)<\/code>/i);
+  if (codeMatch && codeMatch[1]) clean = codeMatch[1];
 
-  // Extract from HTML <pre> or <code> or <textarea> wrappers
-  const preMatch = text.match(/<pre[^>]*>([\s\S]*?)<\/pre>/i);
-  if (preMatch && preMatch[1]) text = preMatch[1];
-  const codeMatch = text.match(/<code[^>]*>([\s\S]*?)<\/code>/i);
-  if (codeMatch && codeMatch[1]) text = codeMatch[1];
-  const textMatch = text.match(/<textarea[^>]*>([\s\S]*?)<\/textarea>/i);
-  if (textMatch && textMatch[1]) text = textMatch[1];
-
-  // Decode standard HTML entities
-  text = text
+  clean = clean
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&amp;/g, '&')
     .replace(/&quot;/g, '"')
-    .replace(/&apos;/g, "'")
-    .replace(/&#39;/g, "'")
-    .replace(/&#34;/g, '"');
+    .replace(/&apos;/g, "'");
 
-  // Strip anything preceding the opening XML tag
-  const xmlStart = text.indexOf("<");
-  if (xmlStart > 0) text = text.substring(xmlStart);
+  const xmlStart = clean.indexOf("<");
+  if (xmlStart > 0) clean = clean.substring(xmlStart);
 
-  return text.trim();
+  return clean.trim();
 }
 
-async function fetchGPortalSavegameFile(fileName) {
-  const url = `${BASE_FEED_URL}/dedicated-server-savegame.html?code=${apiCode}&file=${fileName}`;
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-    const res = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeout);
-
-    if (res.ok) {
-      const text = await res.text();
-      const cleanXml = decodeGiantsHtmlXml(text);
-      if (cleanXml && cleanXml.includes("<") && !cleanXml.includes("404 Not Found") && cleanXml.length > 20) {
-        console.log(`✅ [REST API] Fetched [ ${fileName} ] (${cleanXml.length} bytes)`);
-        return cleanXml;
-      }
+async function downloadFtpFileToString(client, remotePath) {
+  const chunks = [];
+  const writer = new Writable({
+    write(chunk, encoding, callback) {
+      chunks.push(chunk);
+      callback();
     }
-  } catch (err) {
-    console.warn(`Notice on [ ${fileName} ]: ${err.message}`);
-  }
-  return "";
+  });
+  await client.downloadTo(writer, remotePath);
+  return Buffer.concat(chunks).toString('utf-8');
 }
 
-async function fetchLiveStats() {
+async function fetchStatsApi() {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
+    const timeout = setTimeout(() => controller.abort(), 6000);
     const res = await fetch(STATS_URL, { signal: controller.signal });
     clearTimeout(timeout);
 
     if (res.ok) {
       const text = await res.text();
-      const cleanXml = decodeGiantsHtmlXml(text);
-      if (cleanXml.includes('<Server') || cleanXml.includes('<Slots') || cleanXml.includes('<slots')) {
+      const clean = sanitizeXml(text);
+      if (clean.includes('<Server') || clean.includes('<Slots') || clean.includes('<slots')) {
         let players = 0;
         let activeSlot = null;
         let mapTitle = "";
 
-        const slotsMatch = cleanXml.match(/numUsed="(\d+)"/i) || cleanXml.match(/slots\s+numUsed="(\d+)"/i);
+        const slotsMatch = clean.match(/numUsed="(\d+)"/i) || clean.match(/slots\s+numUsed="(\d+)"/i);
         if (slotsMatch) {
           players = parseInt(slotsMatch[1], 10);
         } else {
-          const playerMatches = cleanXml.match(/<Player\b[^>]*>([\s\S]*?)<\/Player>/gi);
+          const playerMatches = clean.match(/<Player\b[^>]*>([\s\S]*?)<\/Player>/gi);
           if (playerMatches) players = playerMatches.length;
         }
 
-        const slotMatch = cleanXml.match(/savegame="(\d+)"/i) || cleanXml.match(/slot="(\d+)"/i) || cleanXml.match(/savegameSlot="(\d+)"/i);
+        const slotMatch = clean.match(/savegame="(\d+)"/i) || clean.match(/slot="(\d+)"/i) || clean.match(/savegameSlot="(\d+)"/i);
         if (slotMatch) activeSlot = slotMatch[1];
 
-        const mapMatch = cleanXml.match(/mapTitle="([^"]+)"/i) || cleanXml.match(/mapName="([^"]+)"/i);
+        const mapMatch = clean.match(/mapTitle="([^"]+)"/i) || clean.match(/mapName="([^"]+)"/i);
         if (mapMatch) mapTitle = mapMatch[1];
 
-        console.log(`✅ [Stats XML] Active Players: ${players} | Active Slot: #${activeSlot || 'Live'} | Map: ${mapTitle}`);
-        return { text: cleanXml, players, activeSlot, mapTitle };
+        return { text: clean, players, activeSlot, mapTitle };
       }
     }
   } catch (err) {
-    console.warn(`Stats feed notice: ${err.message}`);
+    console.warn("Stats API Notice:", err.message);
   }
   return { text: "", players: 0, activeSlot: null, mapTitle: "" };
 }
 
-// SECTION 5: MASTER PIPELINE (STRICT /fs25 TARGET)
 async function runPipeline() {
-  console.log(`📡 Querying G-Portal REST API for server ${serverHost}...`);
+  console.log("📡 Step 1: Fetching live Web API Stats...");
+  const statsData = await fetchStatsApi();
 
-  const statsData = await fetchLiveStats();
-
-  // Complete list of savegame files exposed by the G-Portal Web API
-  const savegameFiles = [
-    'careerSavegame',
-    'farms',
-    'vehicles',
-    'economy',
-    'placeables',
-    'fields',
-    'farmland',
-    'farmlands',
-    'missions',
-    'environment',
-    'items',
-    'collectibles',
-    'handTools',
-    'precisionFarming'
-  ];
+  let targetSlot = statsData.activeSlot || process.env.DEFAULT_SAVE_SLOT || "3";
 
   const masterPayload = {
     activePlayers: statsData.players,
-    activeSaveSlot: String(statsData.activeSlot || "3"),
+    activeSaveSlot: String(targetSlot),
     liveMapImage: MAP_IMAGE_URL,
     lastUpdated: new Date().toISOString(),
     config: { appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c" }
@@ -189,34 +152,138 @@ async function runPipeline() {
     masterPayload.stats_raw = statsData.text;
   }
 
-  // Fetch each savegame file from the REST API
-  for (const file of savegameFiles) {
-    const rawXml = await fetchGPortalSavegameFile(file);
-    if (rawXml) {
-      masterPayload[`${file}_raw`] = rawXml;
-      masterPayload[file] = rawXml;
-    }
+  if (!ftpUser || !ftpPass) {
+    console.warn("⚠️ FTP credentials missing. Writing live stats only.");
+    await db.ref('fs25').update(masterPayload);
+    process.exit(0);
   }
 
-  // Write strictly to /fs25 node
-  await db.ref('fs25').set(masterPayload);
+  console.log(`📡 Step 2: Connecting to FTP (${ftpHost}:${ftpPort}) to pull full save files...`);
+  const client = new ftp.Client();
+  client.ftp.verbose = false;
 
-  // Clean up any stray root-level keys from previous dual-write runs
-  const strayKeys = [
-    'activePlayers', 'activeSaveSlot', 'config', 'dedicatedServerConfig_raw',
-    'lastUpdated', 'modCatalogCrossplay', 'stats_raw', 'stats_xml_raw',
-    'careerSavegame_raw', 'careerSavegame', 'farms_raw', 'farms',
-    'vehicles_raw', 'vehicles', 'placeables_raw', 'placeables',
-    'items_raw', 'items', 'environment_raw', 'environment',
-    'fields_raw', 'fields', 'farmland_raw', 'farmland', 'farmlands_raw',
-    'missions_raw', 'missions', 'handTools_raw', 'handTools', 'collectibles_raw'
-  ];
-  const cleanupMap = {};
-  strayKeys.forEach(k => cleanupMap[k] = null);
-  await db.ref().update(cleanupMap);
+  try {
+    await client.access({
+      host: ftpHost,
+      port: ftpPort,
+      user: ftpUser,
+      password: ftpPass,
+      secure: false
+    });
 
-  console.log(`🏆 All G-Portal REST API data synchronized strictly into /fs25!`);
-  process.exit(0);
+    // Check config for true active slot
+    const possibleConfigFiles = [
+      'dedicated_server/dedicatedServerConfig.xml',
+      'profile/dedicated_server/dedicatedServerConfig.xml',
+      'dedicatedServerConfig.xml',
+      'profile/dedicatedServerConfig.xml'
+    ];
+
+    for (const cfgPath of possibleConfigFiles) {
+      try {
+        const cfgXml = await downloadFtpFileToString(client, cfgPath);
+        if (cfgXml) {
+          const slotMatch = cfgXml.match(/savegameSlot="(\d+)"/i) || cfgXml.match(/savegame="(\d+)"/i) || cfgXml.match(/<savegame>(\d+)<\/savegame>/i);
+          if (slotMatch) {
+            targetSlot = slotMatch[1];
+            masterPayload.activeSaveSlot = String(targetSlot);
+            console.log(`🎯 Active Save Slot confirmed from Config: Slot #${targetSlot}`);
+            break;
+          }
+        }
+      } catch (e) {}
+    }
+
+    // Locate the active save folder
+    let validSavePath = null;
+    let fileList = [];
+
+    const rootList = await client.list();
+    const targetDirName = `savegame${targetSlot}`;
+    const foundInRoot = rootList.find(f => f.isDirectory && f.name.toLowerCase() === targetDirName.toLowerCase());
+
+    if (foundInRoot) {
+      validSavePath = foundInRoot.name;
+      fileList = await client.list(validSavePath);
+    } else {
+      try {
+        const profileList = await client.list('profile');
+        const profMatch = profileList.find(f => f.isDirectory && f.name.toLowerCase().includes(`savegame${targetSlot}`));
+        if (profMatch) {
+          validSavePath = `profile/${profMatch.name}`;
+          fileList = await client.list(validSavePath);
+        }
+      } catch (e) {}
+    }
+
+    if (!validSavePath) {
+      const anySave = rootList.filter(f => f.isDirectory && f.name.toLowerCase().includes('savegame') && !f.name.toLowerCase().includes('backup'));
+      if (anySave.length > 0) {
+        anySave.sort((a, b) => new Date(b.modifiedAt || 0) - new Date(a.modifiedAt || 0));
+        validSavePath = anySave[0].name;
+        fileList = await client.list(validSavePath);
+      }
+    }
+
+    console.log(`📂 Pulling save files from: [ ${validSavePath || 'savegame3'} ]`);
+
+    const readableFiles = fileList.filter(f => !f.isDirectory && (
+      f.name.toLowerCase().endsWith('.xml') || f.name.toLowerCase().endsWith('.txt')
+    ));
+
+    const keyMap = {
+      'careersavegame': 'careerSavegame',
+      'farms': 'farms',
+      'farmland': 'farmland',
+      'farmlands': 'farmlands',
+      'vehicles': 'vehicles',
+      'placeables': 'placeables',
+      'fields': 'fields',
+      'field': 'fields',
+      'missions': 'missions',
+      'mission': 'missions',
+      'environment': 'environment',
+      'economy': 'economy',
+      'items': 'items',
+      'collectibles': 'collectibles',
+      'collectible': 'collectibles',
+      'handtools': 'handTools',
+      'precisionfarming': 'precisionFarming'
+    };
+
+    for (const file of readableFiles) {
+      const rawBaseName = file.name.replace(/\.(xml|txt)$/i, '');
+      const lowerBaseName = rawBaseName.toLowerCase();
+      const canonicalKey = keyMap[lowerBaseName] || rawBaseName;
+      const remoteFilePath = `${validSavePath}/${file.name}`;
+
+      try {
+        const rawContent = await downloadFtpFileToString(client, remoteFilePath);
+        const cleanContent = sanitizeXml(rawContent);
+        if (cleanContent) {
+          masterPayload[`${canonicalKey}_raw`] = cleanContent;
+          masterPayload[canonicalKey] = cleanContent;
+          console.log(`  -> Synced: ${file.name} (${cleanContent.length} bytes)`);
+        }
+      } catch (err) {
+        console.warn(`  ⚠️ Skipped ${file.name}: ${err.message}`);
+      }
+    }
+
+    // Write strictly to /fs25 node
+    await db.ref('fs25').set(masterPayload);
+
+    console.log(`🏆 Success! Full savegame telemetry synced to /fs25.`);
+    client.close();
+    process.exit(0);
+
+  } catch (err) {
+    console.error("🚨 Pipeline Error:", err.message);
+    // Write whatever stats we got
+    await db.ref('fs25').update(masterPayload);
+    client.close();
+    process.exit(0);
+  }
 }
 
 runPipeline();
