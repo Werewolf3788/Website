@@ -1,26 +1,27 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 30, 2026, 18:45:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 30, 2026, 18:35:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Resilient Tactical Telemetry Engine.
-                - Isolated execution blocks ensure no container gets stuck on loading.
-                - Dynamic vehicle classification using motorized/combine/trailer tags.
-                - Deep relational joins for contracts, factories, crops, and players.
+   Description: Complete Deep Tactical Telemetry Engine.
+                - Fixes ReferenceError: rawActiveCount is defined at the start.
+                - Relational joins across all 28 XML savegame feeds.
+                - Deep mission parsing with field, crop, destination, and payout.
+                - 100% case-insensitive image mapping matching repo assets.
    ========================================================================== */
 
 /* ------------------------------------------------------------------------
    HTML Target Reference Notes:
-   - Mod Hub Grid -> Target ID in HTML: 'mod-hub-grid'
-   - Active Players Container -> Target ID: 'active-players-container'
-   - Farms Container -> Target ID: 'farms-container'
+   - Mod Hub Grid -> Target ID in HTML: 'mod-hub-grid' (Line ~220)
+   - Active Players Container -> Target ID: 'active-players-container' (Line ~125)
+   - Farms Container -> Target ID: 'farms-container' (Line ~135)
    - Husbandry & Productions -> Target IDs: 'animals-container', 
-     'main-productions-container', 'construction-container', 'greenhouses-container'
-   - Contracts & Missions -> Target ID: 'missions-container'
+     'main-productions-container', 'construction-container', 'greenhouses-container' (Line ~145)
+   - Contracts & Missions -> Target ID: 'missions-container' (Line ~175)
    - Fleet Machinery -> Target IDs: 'tractors-container', 'harvesters-container',
-     'trailers-container', 'implements-container'
-   - Hand Tools -> Target ID: 'handtools-container'
-   - Collectibles -> Target ID: 'collectibles-container'
-   - Field Crops & Agronomy Status -> Target ID: 'fields-container'
+     'trailers-container', 'implements-container' (Line ~190)
+   - Hand Tools -> Target ID: 'handtools-container' (Line ~205)
+   - Collectibles -> Target ID: 'collectibles-container' (Line ~180)
+   - Field Crops & Agronomy Status -> Target ID: 'fields-container' (Line ~210)
    ------------------------------------------------------------------------ */
 
 // GA4 Protocol-Relative Analytics Injection
@@ -462,7 +463,7 @@ function renderActivePlayers(statsXml, vehXml, playersXml, vehicleObjMap, fallba
 }
 
 /* ==========================================================================
-   SECTION 3: Master Telemetry Dashboard Engine (With Isolated Error Traps)
+   SECTION 3: Master Telemetry Dashboard Engine
    ========================================================================== */
 
 window.renderDashboard = function(rawIncomingData) {
@@ -479,6 +480,9 @@ window.renderDashboard = function(rawIncomingData) {
 
   const fs25Node = (data.fs25 && typeof data.fs25 === 'object') ? data.fs25 : data;
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+  // Safely define rawActiveCount before any dependent calls
+  const rawActiveCount = parseInt(fs25Node.activePlayers || 0, 10);
 
   // XML Schemas
   const careerXml = parseXML(fs25Node.careerSavegame || fs25Node.careerSavegame_raw);
@@ -624,7 +628,7 @@ window.renderDashboard = function(rawIncomingData) {
     console.error("Banner render notice:", err);
   }
 
-  // 3. Relational Fleet Machinery Engine (With Motorized & Combine Dynamic Detectors)
+  // 3. Relational Fleet Machinery Engine
   let vehicleObjMap = {};
   let vehicleCount = 0;
   let tracCount = 0, harvCount = 0, trailCount = 0, implCount = 0;
@@ -783,7 +787,6 @@ window.renderDashboard = function(rawIncomingData) {
     if (implCont) implCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold, #facc15); font-size:0.85rem;"><i class="fa-solid fa-screwdriver-wrench"></i> Implements & Attachments: ${implCount}</strong></div>${implements || `<div class="empty-state">No Implements Found</div>`}`;
     setTxt('global-vehicle-count', vehicleCount);
 
-    const rawActiveCount = parseInt(fs25Node.activePlayers || 0, 10);
     renderActivePlayers(statsXml, vehXml, playersXml, vehicleObjMap, rawActiveCount);
   } catch (err) {
     console.error("Fleet render notice:", err);
