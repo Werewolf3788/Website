@@ -1,23 +1,9 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 30, 2026, 18:00:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 30, 2026, 18:04:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Exhaustive Master Tactical Telemetry Engine.
-                Directly cross-references and renders ALL 28+ XML feeds from
-                Firebase (/fs25 and /FS25_Mods_Info) with zero hidden nodes:
-                - Active & Available Contracts (missions.xml)
-                - Dynamic Multi-Farm Balances & User Rosters (farms.xml, players.xml)
-                - Fleet Equipment, Attachments, Consumables & Drivers (vehicles.xml)
-                - Precision Agronomy, Growth States, Soil, Weed & Stones (farmland.xml,
-                  fields.xml, precisionFarming.xml, densityMapHeight.xml,
-                  densityMap_fruits_growthState.xml, stone_growthState.xml, weed_growthState.xml)
-                - Economy Trends, Spikes & Active Machinery Discounts (economy.xml, sales.xml)
-                - Complete Placeables, Productions, Silos & Husbandry (placeables.xml)
-                - Map Discoveries & Collectibles 0-100 (collectibles.xml, items.xml)
-                - Hand Tools & Storage (handTools.xml)
-                - Forestry & Environment (treeMarker.xml, treePlant.xml, environment.xml, snow_state.xml)
-                - AI Field Routes, Navigation & Spawns (npc.xml, navigationSystem.xml, onCreateObjects.xml, destructibleMapObjectSystem.xml)
-                - Server Mod Directory (/FS25_Mods_Info)
+   Description: Tactical Dashboard Engine - Cleaned and optimized without
+                the tactical feed diagnostics banner.
    ========================================================================== */
 
 /* ------------------------------------------------------------------------
@@ -33,10 +19,9 @@
    - Field Crops & Agronomy Status -> Target ID: 'fields-container'
    - Hand Tools -> Target ID: 'handtools-container'
    - Collectibles -> Target ID: 'collectibles-container'
-   - Tactical Feed Log -> Target ID: 'tactical-log-container'
    ------------------------------------------------------------------------ */
 
-// Protocol-relative Google Analytics GA4 Tag Injection (G-CTYHDF4MSD)
+// Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
 (function injectGA4() {
   try {
     if (!document.getElementById('ga4-gtag-script')) {
@@ -44,7 +29,7 @@
       script.id = 'ga4-gtag-script';
       script.async = true;
       script.src = "//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD";
-      script.onerror = () => console.warn("ℹ️ GA4 tag skipped by client extension.");
+      script.onerror = () => console.warn("ℹ️ GA4 tag skipped by extension.");
       document.head.appendChild(script);
 
       window.dataLayer = window.dataLayer || [];
@@ -56,7 +41,6 @@
   } catch (e) {}
 })();
 
-// Constants & Secure Proxy Endpoints
 const REPO_IMAGES_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 const LIVE_MAP_SECURE_PROXY = "https://wsrv.nl/?url=207.244.246.70:9050/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=75&size=1024";
 
@@ -82,7 +66,6 @@ let latestFirebasePayload = null;
 let firebaseImageMappings = {};
 let firebaseWebsiteMods = {};
 
-// Helper Functions
 function getFarmMeta(farmId) {
   const fid = String(farmId || "0");
   if (activeFarmDirectory[fid]) return activeFarmDirectory[fid];
@@ -181,7 +164,7 @@ function isValidImageUrl(url) {
 }
 
 /* ==========================================================================
-   SECTION 1: Mod Catalog Cross-Reference (/FS25_Mods_Info)
+   SECTION 1: Mod Catalog Cross-Reference
    ========================================================================== */
 
 function renderServerMods(activeModObjects) {
@@ -287,7 +270,6 @@ function renderActivePlayers(statsXml, vehXml, playersXml, fallbackActiveCount =
   let activeGamertags = [];
   let totalSlots = "6";
 
-  // Check stats.xml
   if (statsXml) {
     const slotsNode = statsXml.querySelector("Slots, slots");
     if (slotsNode) totalSlots = slotsNode.getAttribute("capacity") || slotsNode.getAttribute("numMax") || "6";
@@ -321,7 +303,6 @@ function renderActivePlayers(statsXml, vehXml, playersXml, fallbackActiveCount =
     });
   }
 
-  // Cross-reference live vehicle drivers
   if (vehXml) {
     vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
       const user = (v.getAttribute("enteredUserGamertag") || v.getAttribute("driverName") || "").trim();
@@ -340,7 +321,6 @@ function renderActivePlayers(statsXml, vehXml, playersXml, fallbackActiveCount =
     });
   }
 
-  // Cross-reference players.xml for persistent users
   if (activeGamertags.length === 0 && playersXml) {
     playersXml.querySelectorAll("player, Player").forEach(p => {
       const name = p.getAttribute("lastNickname") || p.getAttribute("nickname") || p.getAttribute("name");
@@ -400,7 +380,6 @@ window.renderDashboard = function(rawIncomingData) {
   const fs25Node = (data.fs25 && typeof data.fs25 === 'object') ? data.fs25 : data;
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-  // XML Parser with backward-compatible key resolution
   const careerXml = parseXML(fs25Node.careerSavegame || fs25Node.careerSavegame_raw);
   const vehXml = parseXML(fs25Node.vehicles || fs25Node.vehicles_raw);
   const farmsXml = parseXML(fs25Node.farms || fs25Node.farms_raw);
@@ -413,17 +392,10 @@ window.renderDashboard = function(rawIncomingData) {
   const farmlandXml = parseXML(fs25Node.farmland || fs25Node.farmland_raw || fs25Node.farmlands || fs25Node.farmlands_raw);
   const fieldsXml = parseXML(fs25Node.fields || fs25Node.fields_raw);
   const envXml = parseXML(fs25Node.environment || fs25Node.environment_raw);
-  const economyXml = parseXML(fs25Node.economy || fs25Node.economy_raw);
   const salesXml = parseXML(fs25Node.sales || fs25Node.sales_raw);
   const precisionXml = parseXML(fs25Node.precisionFarming || fs25Node.precisionFarming_raw);
   const playersXml = parseXML(fs25Node.players || fs25Node.players_raw);
-  const npcXml = parseXML(fs25Node.npc || fs25Node.npc_raw);
-  const navXml = parseXML(fs25Node.navigationSystem || fs25Node.navigationSystem_raw);
   const treePlantXml = parseXML(fs25Node.treePlant || fs25Node.treePlant_raw);
-  const treeMarkerXml = parseXML(fs25Node.treeMarker || fs25Node.treeMarker_raw);
-  const snowXml = parseXML(fs25Node.snow_state || fs25Node.snow_state_raw);
-  const weedXml = parseXML(fs25Node.weed_growthState || fs25Node.weed_growthState_raw);
-  const stoneXml = parseXML(fs25Node.stone_growthState || fs25Node.stone_growthState_raw);
 
   // Active Save Slot Display in Footer
   const activeSlot = fs25Node.activeSaveSlot || "3";
@@ -555,7 +527,7 @@ window.renderDashboard = function(rawIncomingData) {
   const rawActiveCount = parseInt(fs25Node.activePlayers || 0, 10);
   renderActivePlayers(statsXml, vehXml, playersXml, rawActiveCount);
 
-  // 4. Placed Objects, Husbandry, Silage Storage & Forestry
+  // 4. Placed Objects, Husbandry & Silage Storage
   const animalsCont = document.getElementById('animals-container');
   const genCont = document.getElementById('greenhouses-container');
   const miscCont = document.getElementById('construction-container');
@@ -662,7 +634,6 @@ window.renderDashboard = function(rawIncomingData) {
     });
   }
 
-  // Cross-reference planted trees
   if (treePlantXml) {
     const trees = treePlantXml.querySelectorAll("tree, Tree");
     if (trees.length > 0) {
@@ -955,7 +926,6 @@ window.renderDashboard = function(rawIncomingData) {
     });
   }
 
-  // Cross-reference active discounted sales
   if (salesXml) {
     salesXml.querySelectorAll("sale, item, Item").forEach(s => {
       const rawName = s.getAttribute("filename") || s.getAttribute("name") || "";
@@ -1022,7 +992,6 @@ window.renderDashboard = function(rawIncomingData) {
         const fertLevel = f.getAttribute("fertilizedLevel") ? `${f.getAttribute("fertilizedLevel")}%` : "100%";
         const needsLime = f.getAttribute("limeState") === "1" ? '<span style="color:#f87171; margin-left:0.5rem;"><i class="fa-solid fa-triangle-exclamation"></i> Needs Lime</span>' : '<span style="color:#4ade80; margin-left:0.5rem;"><i class="fa-solid fa-check"></i> Lime OK</span>';
 
-        // Precision Farming Soil Data
         let precisionMetrics = "";
         if (precisionXml) {
           const pfNode = precisionXml.querySelector(`field[id="${id}"], farmland[id="${id}"]`);
@@ -1079,21 +1048,7 @@ window.renderDashboard = function(rawIncomingData) {
     setTxt('global-land-count', `${fieldCount} Fields`);
   }
 
-  // 10. Tactical Server Log & World Navigation Feed
-  const logCont = document.getElementById('tactical-log-container');
-  if (logCont) {
-    let logEntries = [];
-    if (navXml) logEntries.push(`Navigation Network: ${navXml.querySelectorAll("node, link").length} Waypoints Active`);
-    if (npcXml) logEntries.push(`AI Field Workers: ${npcXml.querySelectorAll("npc, worker").length} Routes Loaded`);
-    if (economyXml) logEntries.push(`Economy Tracker: ${economyXml.querySelectorAll("stats, fillType").length} Commodity Price Indices Active`);
-    if (snowXml) logEntries.push(`Weather & Terrain: Snow System ${snowXml.getAttribute("height") || "0.0m"}`);
-
-    logCont.innerHTML = logEntries.length > 0
-      ? logEntries.map(e => `<div style="padding:0.25rem 0; color:#38bdf8;"><i class="fa-solid fa-angle-right"></i> ${e}</div>`).join('')
-      : `<div style="color:#4ade80;"><i class="fa-solid fa-check"></i> Tactical savegame telemetry online and verified.</div>`;
-  }
-
-  // 11. Cross-Reference Active Server Mods with /FS25_Mods_Info
+  // 10. Cross-Reference Active Server Mods with /FS25_Mods_Info
   const activeModsList = [];
   if (statsXml) {
     statsXml.querySelectorAll("Mod, mod").forEach(m => {
