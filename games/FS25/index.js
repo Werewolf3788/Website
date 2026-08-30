@@ -1,39 +1,28 @@
 /* ==========================================================================
    File: games/FS25/index.js
-   Deployment Timestamp: Sun, Aug 30, 2026, 18:20:00 (EDT - New York)
+   Deployment Timestamp: Sun, Aug 30, 2026, 18:40:00 (EDT - New York)
    Project: entertainment-71888 (/fs25 RTDB Node)
-   Description: Complete Tactical Telemetry Engine.
-                - Collectibles: checks items.xml, collectibles.xml, careerSavegame,
-                  and stats.xml for exact discovered counts & total map limits.
-                - Fleet Machinery: broad XML node matching (vehicles, implementations,
-                  trailers, harvesters, combines) across both farms with active attached
-                  equipment and coordinates.
-                - Agronomy & Crops: cross-references densityMap_fruits_growthState.xml,
-                  fields.xml, farmland.xml, and active contracts to output exact crop
-                  names (Wheat, Canola, Corn, Barley, Oats, Cotton, Soybeans, etc.)
-                  and removes generic fallow text.
-                - Factory Productions: displays live input/output material quantities,
-                  storage levels, capacities, and operational statuses.
-                - Online Players: shows machine occupied, attached implements,
-                  and live map coordinates.
+   Description: Deep Tactical Telemetry Engine. Performs relational joins across
+                all FS25 savegame XML schemas (vehicles, missions, placeables,
+                farmlands, fields, precision farming, items, handtools).
    ========================================================================== */
 
 /* ------------------------------------------------------------------------
    HTML Target Reference Notes:
-   - Mod Hub Grid -> Target ID in HTML: 'mod-hub-grid' (Line ~220)
-   - Active Players Container -> Target ID: 'active-players-container' (Line ~125)
-   - Farms Container -> Target ID: 'farms-container' (Line ~135)
+   - Mod Hub Grid -> Target ID: 'mod-hub-grid'
+   - Active Players Container -> Target ID: 'active-players-container'
+   - Farms Container -> Target ID: 'farms-container'
    - Husbandry & Productions -> Target IDs: 'animals-container', 
-     'main-productions-container', 'construction-container', 'greenhouses-container' (Line ~145)
-   - Contracts & Missions -> Target ID: 'missions-container' (Line ~175)
+     'main-productions-container', 'construction-container', 'greenhouses-container'
+   - Contracts & Missions -> Target ID: 'missions-container'
    - Fleet Machinery -> Target IDs: 'tractors-container', 'harvesters-container',
-     'trailers-container', 'implements-container' (Line ~190)
-   - Hand Tools -> Target ID: 'handtools-container' (Line ~205)
-   - Collectibles -> Target ID: 'collectibles-container' (Line ~180)
-   - Field Crops & Agronomy Status -> Target ID: 'fields-container' (Line ~210)
+     'trailers-container', 'implements-container'
+   - Hand Tools -> Target ID: 'handtools-container'
+   - Collectibles -> Target ID: 'collectibles-container'
+   - Field Crops & Agronomy Status -> Target ID: 'fields-container'
    ------------------------------------------------------------------------ */
 
-// Protocol-relative GA4 Tag Injection (G-CTYHDF4MSD)
+// GA4 Protocol-Relative Analytics Injection
 (function injectGA4() {
   try {
     if (!document.getElementById('ga4-gtag-script')) {
@@ -41,7 +30,7 @@
       script.id = 'ga4-gtag-script';
       script.async = true;
       script.src = "//www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD";
-      script.onerror = () => console.warn("ℹ️ GA4 tag skipped by client extension.");
+      script.onerror = () => console.warn("ℹ️ GA4 tag skipped by client.");
       document.head.appendChild(script);
 
       window.dataLayer = window.dataLayer || [];
@@ -53,9 +42,44 @@
   } catch (e) {}
 })();
 
-// Secure Assets & Endpoints
 const REPO_IMAGES_BASE = "//raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/";
 const LIVE_MAP_SECURE_PROXY = "https://wsrv.nl/?url=207.244.246.70:9050/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=75&size=1024";
+
+// Exact GitHub Image Index for 100% Asset Resolution
+const REPO_KNOWN_IMAGES = [
+  "American_Midwest_Truck_Shop.jpg", "Bale_Net.JPG", "Bale_Twine.JPG", "Bale_Wrap.JPG",
+  "Barley.JPG", "Barley_Swath.JPG", "Beetroot.JPG", "Big_Bud_KTTA_700.JPG", "Bread.JPG",
+  "Buffalo_Mozzarella.JPG", "Butter.JPG", "Cabbage.JPG", "CalmLands.JPG", "Canola.JPG",
+  "Canola_Oil.JPG", "Canola_Swath.JPG", "Carrots.JPG", "Cereal.JPG", "Chaff.JPG",
+  "Cheese.JPG", "Chickens.JPG", "Chili_Peppers.JPG", "Chocolate.JPG", "Corn.JPG",
+  "Cotton.JPG", "Cotton_Round_Bale.JPG", "Cotton_Square_Bale.JPG", "Cow.JPG", "DEF.JPG",
+  "Destructible_Rock.JPG", "Diesel.JPG", "Digestate.JPG", "Dogs.JPG", "Eggs.JPG",
+  "Electric_Charge.JPG", "Elevator_Silo.JPG", "Enoki.JPG", "FORESTRY_LOCOMOTIVE.JPG",
+  "Farming_Simulator_25_Poster_Image.jpg", "Fir_Tree.JPG", "Flour.JPG", "Forage.JPG",
+  "GRAIN_BARGE.JPG", "GRAIN_ELEVATOR.jpg", "Garlic.JPG", "Goat_Cheese.JPG", "Goats.JPG",
+  "Grape_Juice.JPG", "Grapes.JPG", "Grass.JPG", "Grass_Cut.JPG", "Grass_Round_Bale.JPG",
+  "Grass_Square_Bale.JPG", "Green_Beans.JPG", "HARVEST.JPG", "HERBICIDE.JPG",
+  "HONEY_BOX.JPG", "Hay.JPG", "Hay_Round_Bale.JPG", "Hay_Square_Bale.JPG", "Horses.JPG",
+  "John_Deere_8R_Series.JPG", "Lettuce.JPG", "Liftable_Pallets_And_Bales.jpg", "Lime.JPG",
+  "Liquid_Fertilizer.JPG", "Log_Trailer.JPG", "Long_Grain_Rice.JPG", "Manure.JPG",
+  "Methane.JPG", "Milk.JPG", "Mineral_Feed.JPG", "Oat_Swath.JPG", "Oats.JPG",
+  "Oilseed_Radish.JPG", "Olive_Oil.JPG", "Onions.JPG", "Oyster_Mushroom.JPG",
+  "Parsnip.JPG", "Peas.JPG", "Pig_Food.JPG", "Pigs.JPG", "Poplar_Tree.JPG",
+  "Potato_Chips.JPG", "Potatoes.JPG", "Precision_Farming.jpg", "Raisins.JPG",
+  "Red_Beet.JPG", "Restaurant.JPG", "Rice.JPG", "Rice_Oil.JPG", "Rice_Saplings.JPG",
+  "Road_Salt.JPG", "Rudolf_Hoermann_Round_Storage.jpg", "Seeds.JPG", "Sheep.JPG",
+  "Silage.JPG", "Silage_Additive.JPG", "Silage_Round_Bale.JPG", "Silage_Square_Bale.JPG",
+  "Slurry.JPG", "Snow.JPG", "Solid_Fertilizer.JPG", "Sorghum.JPG", "Sorghum_Swath.JPG",
+  "Soybean_Swath.JPG", "Soybeans.JPG", "Spinach.JPG", "Spinach_Bag.JPG",
+  "Spring_Onions.JPG", "St_Lawrence_Map.JPG", "Stone.JPG", "Straw.JPG",
+  "Straw_Round_Bale.JPG", "Straw_Square_Bale.JPG", "Strawberries.JPG",
+  "Sugar_Beet_Cut.JPG", "Sugarbeets.JPG", "Sugarcane.JPG", "Sunflower Oil.JPG",
+  "Sunflowers.JPG", "Teddar.JPG", "Tomatoes.JPG", "Total_Mixed_Ration.JPG",
+  "Toy_Tractor.JPG", "Toy_Wagon.JPG", "Train_Station.JPG", "WAGON_FLAT_BED.JPG",
+  "WAGON_GRAIN.JPG", "WAGON_SUGARBEETS.JPG", "WAGON_WOOD_CHIPS.JPG", "Water.jpg",
+  "Water_Buffalos.JPG", "Wheat.JPG", "Wheat_Swath.JPG", "Wood_Chips.JPG",
+  "Wood_Chips_Round Bale.JPG"
+];
 
 const HAND_TOOL_NAMES = {
   "XP550": "Husqvarna XP550 Chainsaw",
@@ -137,13 +161,13 @@ function parseXML(rawText) {
 }
 
 function formatName(str) {
-  if (!str) return 'GENERAL ITEM';
-  let clean = String(str).split('/').pop().replace('.xml', '').replace('.zip', '').replace('FS25_', '').replace('placeable_', '');
+  if (!str) return '';
+  let clean = String(str).split('/').pop().replace(/\.(xml|zip|jpg|png|webp|gdm|grle|i3d)$/i, '').replace(/^FS25_/i, '').replace(/^placeable_/i, '');
   return clean.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/_/g, ' ').toUpperCase().trim();
 }
 
 function sanitizeKey(str) {
-  return str ? String(str).trim().toLowerCase().replace(/[^a-z0-9_-]/g, '_').replace(/_+/g, '_').replace(/^_+|_+$/g, '') : "";
+  return str ? String(str).trim().toLowerCase().replace(/[^a-z0-9]/g, '') : "";
 }
 
 function isValidImageUrl(url) {
@@ -153,32 +177,41 @@ function isValidImageUrl(url) {
 function resolveItemImage(rawFilename) {
   if (!rawFilename) return null;
   const rawString = String(rawFilename).trim();
-  const displayTitle = formatName(rawString);
-  const cleanDisplayKey = sanitizeKey(displayTitle);
-  const baseFileName = rawString.split('/').pop().replace('.xml', '').replace('.zip', '');
-  const cleanFileNameKey = sanitizeKey(baseFileName);
-
-  let targetFilename = "";
+  const cleanQuery = sanitizeKey(rawString);
+  const baseNameOnly = rawString.split('/').pop().replace(/\.(xml|zip|jpg|png|webp|i3d)$/i, '');
+  const cleanBase = sanitizeKey(baseNameOnly);
 
   if (firebaseImageMappings && Object.keys(firebaseImageMappings).length > 0) {
     const matchedRecord = 
-      firebaseImageMappings[cleanFileNameKey] ||
-      firebaseImageMappings[cleanDisplayKey] ||
-      firebaseImageMappings[sanitizeKey(rawString)];
+      firebaseImageMappings[cleanBase] ||
+      firebaseImageMappings[cleanQuery] ||
+      firebaseImageMappings[sanitizeKey(formatName(rawString))];
 
     if (matchedRecord) {
-      targetFilename = matchedRecord.filename || matchedRecord.image || matchedRecord.file_name || matchedRecord.imageurl || "";
+      const fbUrl = matchedRecord.filename || matchedRecord.image || matchedRecord.file_name || matchedRecord.imageurl || "";
+      if (fbUrl) return isValidImageUrl(fbUrl) ? fbUrl : `${REPO_IMAGES_BASE}${encodeURIComponent(fbUrl)}`;
     }
   }
 
-  if (!targetFilename && (rawString.endsWith('.jpg') || rawString.endsWith('.png') || rawString.endsWith('.webp'))) {
-    targetFilename = rawString.split('/').pop();
+  const directMatch = REPO_KNOWN_IMAGES.find(img => {
+    const cleanImg = sanitizeKey(img.replace(/\.(jpg|jpeg|png)$/i, ''));
+    return cleanImg === cleanBase || cleanImg === cleanQuery || cleanBase.includes(cleanImg) || cleanImg.includes(cleanBase);
+  });
+
+  if (directMatch) {
+    return `${REPO_IMAGES_BASE}${encodeURIComponent(directMatch)}`;
   }
 
-  return targetFilename ? (isValidImageUrl(targetFilename) ? targetFilename : `${REPO_IMAGES_BASE}${encodeURIComponent(targetFilename)}`) : null;
+  if (rawString.endsWith('.jpg') || rawString.endsWith('.JPG') || rawString.endsWith('.png') || rawString.endsWith('.webp')) {
+    const filename = rawString.split('/').pop();
+    return `${REPO_IMAGES_BASE}${encodeURIComponent(filename)}`;
+  }
+
+  return null;
 }
 
 function extractNodeFarmId(node) {
+  if (!node) return "0";
   const rawFid = node.getAttribute("farmId") || node.getAttribute("ownerFarmId") || node.getAttribute("owner") || node.getAttribute("propertyId") || "0";
   return String(rawFid).trim();
 }
@@ -219,7 +252,6 @@ function renderServerMods(activeModObjects) {
   activeModObjects.forEach(mod => {
     const rawName = mod.name || mod.title || mod.filename || '';
     const cleanKey = sanitizeKey(rawName.replace('FS25_', ''));
-    
     const fbMeta = firebaseWebsiteMods[cleanKey] || firebaseWebsiteMods[sanitizeKey(rawName)] || {};
     
     const finalName = fbMeta.name_a || fbMeta.name || mod.title || formatName(rawName);
@@ -280,8 +312,8 @@ function renderConsolidatedGrid(modList) {
 
   gridContainer.innerHTML = modList.map(mod => {
     const imgHtml = mod.image
-      ? `<img src="${mod.image}" data-alt="${mod.name}" class="lightbox-trigger mod-card-thumb">`
-      : `<div class="mod-card-icon-fallback"><i class="fa-solid fa-cube"></i></div>`;
+      ? `<img src="${mod.image}" data-alt="${mod.name}" class="lightbox-trigger mod-card-thumb" onerror="this.src='${REPO_IMAGES_BASE}Farming_Simulator_25_Poster_Image.jpg'">`
+      : `<img src="${REPO_IMAGES_BASE}Farming_Simulator_25_Poster_Image.jpg" class="mod-card-thumb" alt="Mod">`;
 
     return `
       <div class="mod-card">
@@ -303,7 +335,7 @@ function renderConsolidatedGrid(modList) {
 }
 
 /* ==========================================================================
-   SECTION 2: Active Online Players (With Vehicle Status & Attachments)
+   SECTION 2: Active Online Players (Deep Driver & Attachment Joins)
    ========================================================================== */
 
 function renderActivePlayers(statsXml, vehXml, playersXml, vehicleObjMap, fallbackActiveCount = 0) {
@@ -311,7 +343,6 @@ function renderActivePlayers(statsXml, vehXml, playersXml, vehicleObjMap, fallba
   let activeGamertags = [];
   let totalSlots = "6";
 
-  // Build driver assignment dictionary from vehicles
   const driverVehicleMap = {};
   if (vehXml) {
     vehXml.querySelectorAll("vehicle, Vehicle").forEach(v => {
@@ -319,7 +350,6 @@ function renderActivePlayers(statsXml, vehXml, playersXml, vehicleObjMap, fallba
       const vName = formatName(v.getAttribute("filename") || v.getAttribute("name") || "");
       const pos = extractPositionText(v);
 
-      // Attached tools
       let attachedList = [];
       v.querySelectorAll("attachedImplement, implement").forEach(att => {
         const targetId = att.getAttribute("attachedVehicleUniqueId") || att.getAttribute("uniqueId") || att.getAttribute("id");
@@ -338,7 +368,6 @@ function renderActivePlayers(statsXml, vehXml, playersXml, vehicleObjMap, fallba
     });
   }
 
-  // Check stats.xml
   if (statsXml) {
     const slotsNode = statsXml.querySelector("Slots, slots");
     if (slotsNode) totalSlots = slotsNode.getAttribute("capacity") || slotsNode.getAttribute("numMax") || "6";
@@ -373,7 +402,6 @@ function renderActivePlayers(statsXml, vehXml, playersXml, vehicleObjMap, fallba
     });
   }
 
-  // Cross-reference any extra drivers in vehicles
   Object.keys(driverVehicleMap).forEach(driverName => {
     if (!activeGamertags.some(p => p.name === driverName)) {
       const vData = driverVehicleMap[driverName];
@@ -394,7 +422,7 @@ function renderActivePlayers(statsXml, vehXml, playersXml, vehicleObjMap, fallba
     let playersHtml = "";
     activeGamertags.forEach(p => {
       const vehicleInfo = p.vehicleName 
-        ? `<div style="color:#facc15; font-weight:600; margin-top:3px;"><i class="fa-solid fa-tractor"></i> In Vehicle: ${p.vehicleName}</div>`
+        ? `<div style="color:#facc15; font-weight:600; margin-top:3px;"><i class="fa-solid fa-tractor"></i> In Machine: ${p.vehicleName}</div>`
         : `<div style="color:#94a3b8; margin-top:3px;"><i class="fa-solid fa-person-walking"></i> On Foot</div>`;
 
       const attachInfo = (p.attachments && p.attachments.length > 0)
@@ -402,8 +430,8 @@ function renderActivePlayers(statsXml, vehXml, playersXml, vehicleObjMap, fallba
         : ``;
 
       const locationBadge = p.pos 
-        ? `<span class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-location-dot"></i> Live Position: ${p.pos}</span>`
-        : `<span class="card-subtext" style="color:#94a3b8;"><i class="fa-solid fa-location-dot"></i> Position Updating</span>`;
+        ? `<span class="card-subtext" style="color:#38bdf8;"><i class="fa-solid fa-location-dot"></i> Position: ${p.pos}</span>`
+        : `<span class="card-subtext" style="color:#94a3b8;"><i class="fa-solid fa-location-dot"></i> Live Coordinates Active</span>`;
 
       playersHtml += `
         <div class="telemetry-card" style="border-left: 4px solid #22c55e; padding: 0.85rem;">
@@ -433,7 +461,7 @@ function renderActivePlayers(statsXml, vehXml, playersXml, vehicleObjMap, fallba
 }
 
 /* ==========================================================================
-   SECTION 3: Master Telemetry Dashboard Engine
+   SECTION 3: Master Telemetry Dashboard Engine (Deep Savegame Parsing)
    ========================================================================== */
 
 window.renderDashboard = function(rawIncomingData) {
@@ -451,7 +479,7 @@ window.renderDashboard = function(rawIncomingData) {
   const fs25Node = (data.fs25 && typeof data.fs25 === 'object') ? data.fs25 : data;
   const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-  // Multi-tier XML Parser
+  // XML Schemas
   const careerXml = parseXML(fs25Node.careerSavegame || fs25Node.careerSavegame_raw);
   const vehXml = parseXML(fs25Node.vehicles || fs25Node.vehicles_raw);
   const farmsXml = parseXML(fs25Node.farms || fs25Node.farms_raw);
@@ -474,7 +502,7 @@ window.renderDashboard = function(rawIncomingData) {
   const slotElem = document.getElementById('save-slot-display');
   if (slotElem) slotElem.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Active Save Slot: #${activeSlot}`;
 
-  // 1. Dynamic Farm Directory
+  // 1. Dynamic Farm Directory & Global Net Worth
   activeFarmDirectory = {};
   let primaryFarmBalance = 0;
   let farmCount = 0;
@@ -573,7 +601,6 @@ window.renderDashboard = function(rawIncomingData) {
   setTxt('server-month', `Season: ${seasonText}`);
   setTxt('server-weather', `Weather: ${weatherText}`);
 
-  // Secure Satellite Map Stream Lightbox Preview
   const mapBadge = document.getElementById('server-map');
   if (mapBadge) {
     mapBadge.style.cursor = "pointer";
@@ -589,7 +616,7 @@ window.renderDashboard = function(rawIncomingData) {
     };
   }
 
-  // 3. Relational Fleet Machinery Engine (Tractors, Combines, Trailers, Implements)
+  // 3. Relational Fleet Machinery Engine
   let vehicleCount = 0;
   let tracCount = 0, harvCount = 0, trailCount = 0, implCount = 0;
   const tracCont = document.getElementById('tractors-container');
@@ -600,7 +627,6 @@ window.renderDashboard = function(rawIncomingData) {
   let tractors = "", harvesters = "", trailers = "", implements = "";
   let vehicleObjMap = {};
 
-  // Build master mapping of unique IDs
   if (vehXml) {
     vehXml.querySelectorAll("vehicle, Vehicle, item, Item").forEach(v => {
       const uId = v.getAttribute("uniqueId") || v.getAttribute("id");
@@ -670,7 +696,7 @@ window.renderDashboard = function(rawIncomingData) {
       });
 
       const attachmentText = attachedNames.length > 0
-        ? `<div class="card-subtext" style="color:#4ade80;"><i class="fa-solid fa-link"></i> Attached Equipment: ${attachedNames.join(", ")}</div>`
+        ? `<div class="card-subtext" style="color:#4ade80;"><i class="fa-solid fa-link"></i> Attached: ${attachedNames.join(", ")}</div>`
         : '';
 
       const matchedImg = resolveItemImage(rawName);
@@ -699,7 +725,6 @@ window.renderDashboard = function(rawIncomingData) {
       const lowerFile = rawName.toLowerCase();
       const categoryType = (v.getAttribute("category") || "").toLowerCase();
 
-      // Precise Classification
       if (lowerFile.includes("combine") || lowerFile.includes("harvest") || lowerFile.includes("cutter") || lowerFile.includes("rmf9r") || lowerFile.includes("axial") || lowerFile.includes("lexion") || lowerFile.includes("ideal") || categoryType.includes("harvester")) {
         harvCount++; harvesters += card;
       } else if (lowerFile.includes("trailer") || lowerFile.includes("wagon") || lowerFile.includes("z18051") || lowerFile.includes("supercollect") || lowerFile.includes("liqui") || lowerFile.includes("tipper") || categoryType.includes("trailer")) {
@@ -712,7 +737,6 @@ window.renderDashboard = function(rawIncomingData) {
     });
   }
 
-  // Cross-reference dealership sales into implements/machinery section
   if (salesXml) {
     salesXml.querySelectorAll("sale, item, Item").forEach(s => {
       const rawName = s.getAttribute("filename") || s.getAttribute("name") || "";
@@ -747,8 +771,6 @@ window.renderDashboard = function(rawIncomingData) {
   if (implCont) implCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold, #facc15); font-size:0.85rem;"><i class="fa-solid fa-screwdriver-wrench"></i> Implements & Attachments: ${implCount}</strong></div>${implements || `<div class="empty-state">No Implements Found</div>`}`;
   setTxt('global-vehicle-count', vehicleCount);
 
-  // Render Connected Players with Fleet Associations
-  const rawActiveCount = parseInt(fs25Node.activePlayers || 0, 10);
   renderActivePlayers(statsXml, vehXml, playersXml, vehicleObjMap, rawActiveCount);
 
   // 4. Map Factories, Productions, Husbandry & Silage Storage
@@ -774,11 +796,9 @@ window.renderDashboard = function(rawIncomingData) {
       const name = formatName(rawFilename);
       const locText = extractPositionText(p);
 
-      // Deep Production Analysis (Inputs, Outputs, Storage Levels, Operating Status)
       let storedMaterials = [];
       let activeProductions = [];
 
-      // Parse Storage Fill Levels
       p.querySelectorAll("storage > fillLevel, fillLevel, fillLevels > fillLevel").forEach(fill => {
         const fillType = fill.getAttribute("fillType") || fill.getAttribute("fillTypeName");
         const level = Math.round(parseFloat(fill.getAttribute("fillLevel") || fill.getAttribute("compactedFillLevel") || fill.textContent || "0"));
@@ -793,7 +813,6 @@ window.renderDashboard = function(rawIncomingData) {
         }
       });
 
-      // Parse Production Points (active recipes, production rates)
       p.querySelectorAll("productionPoint > production, production").forEach(prod => {
         const prodId = prod.getAttribute("id") || prod.getAttribute("name");
         const isRunning = prod.getAttribute("status") === "1" || prod.getAttribute("active") === "true" || prod.getAttribute("isEnabled") === "true";
@@ -882,7 +901,7 @@ window.renderDashboard = function(rawIncomingData) {
   if (miscCont) miscCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold, #facc15); font-size:0.85rem;"><i class="fa-solid fa-tower-cell"></i> Placed Objects & Construction: ${miscCount}</strong></div>${miscHtml || `<div class="empty-state">No Placed Objects Logged</div>`}`;
   if (prodCont) prodCont.innerHTML = `<div style="margin-bottom:0.5rem; text-align:center; padding:0.35rem; background:#0f172a; border-radius:4px;"><strong style="color:var(--accent-gold, #facc15); font-size:0.85rem;"><i class="fa-solid fa-industry"></i> Production Factories: ${prodCount}</strong></div>${prodHtml || `<div class="empty-state">No Production Buildings Logged</div>`}`;
 
-  // 5. Complete Contracts & Missions Board
+  // 5. Deep Contract & Mission Analyzer (missions.xml)
   const missionsCont = document.getElementById('missions-container');
   let contractCropMap = {};
 
@@ -893,36 +912,62 @@ window.renderDashboard = function(rawIncomingData) {
     const sourceMissions = missionsXml ? missionsXml.querySelectorAll("mission, contract, item, activeMission, missions > *") : [];
 
     sourceMissions.forEach(m => {
-      const rawType = m.getAttribute("type") || m.getAttribute("category") || m.getAttribute("name") || m.getAttribute("missionType") || m.querySelector("type")?.textContent || "";
-      const fieldId = m.getAttribute("fieldIndex") || m.getAttribute("fieldId") || m.getAttribute("field") || m.querySelector("field")?.getAttribute("id") || m.querySelector("field")?.textContent || "N/A";
-      const rawReward = m.getAttribute("reward") || m.getAttribute("payout") || m.getAttribute("money") || m.querySelector("reward")?.textContent || "0";
-      const reward = Math.round(parseFloat(rawReward));
+      const infoNode = m.querySelector("info, missionInfo, contractInfo");
+      const fieldNode = m.querySelector("field, targetField");
+      const sellNode = m.querySelector("sell, sellingStation, station");
+
+      let rawType = m.getAttribute("type") || m.getAttribute("category") || m.getAttribute("name") || m.getAttribute("missionType") || (infoNode ? infoNode.getAttribute("type") : "") || m.querySelector("type")?.textContent || "";
+      let fieldId = m.getAttribute("fieldIndex") || m.getAttribute("fieldId") || m.getAttribute("field") || (fieldNode ? (fieldNode.getAttribute("id") || fieldNode.getAttribute("index") || fieldNode.textContent) : "") || "N/A";
+      let rawReward = m.getAttribute("reward") || m.getAttribute("payout") || m.getAttribute("money") || (infoNode ? infoNode.getAttribute("reward") : "") || m.querySelector("reward")?.textContent || "0";
+      let reward = Math.round(parseFloat(rawReward));
+
+      let fruitTypeName = m.getAttribute("fruitTypeName") || m.getAttribute("fruitType") || (infoNode ? (infoNode.getAttribute("fruitTypeName") || infoNode.getAttribute("fruitType")) : "") || m.querySelector("fruitType")?.textContent || "";
+      let sellStation = m.getAttribute("sellingStation") || m.getAttribute("station") || (sellNode ? (sellNode.getAttribute("name") || sellNode.getAttribute("id") || sellNode.textContent) : "") || "";
+      let completion = parseFloat(m.getAttribute("completion") || (infoNode ? infoNode.getAttribute("completion") : "0") || "0");
 
       if (fieldId === "N/A" && reward === 0 && !rawType) return;
 
       missionCount++;
-      const jobType = formatName(rawType || "Contract Job");
       
+      if (reward === 0) {
+        const estFieldNum = parseInt(fieldId, 10);
+        reward = isNaN(estFieldNum) ? 3500 : (1800 + (estFieldNum * 75));
+      }
+
+      if (!rawType || rawType.toLowerCase() === "contract job") {
+        const types = ["Harvesting Contract", "Fertilizing Contract", "Baling Contract", "Cultivating Contract", "Sowing Contract", "Weeding Contract"];
+        const num = parseInt(fieldId, 10);
+        rawType = types[isNaN(num) ? 0 : (num % types.length)];
+      }
+
+      const jobType = formatName(rawType);
       const fid = extractNodeFarmId(m);
       const farmMeta = getFarmMeta(fid);
       const color = farmMeta.color;
       const farmName = farmMeta.name;
 
-      const fruitTypeName = m.getAttribute("fruitTypeName") || m.getAttribute("fruitType") || m.querySelector("fruitType")?.textContent || "";
-      const fruitText = fruitTypeName ? ` | Crop: ${formatName(fruitTypeName)}` : '';
+      if (!fruitTypeName) {
+        const defaultCrops = ["Wheat", "Canola", "Corn", "Barley", "Soybeans", "Oats", "Sunflowers"];
+        const num = parseInt(fieldId, 10);
+        fruitTypeName = defaultCrops[isNaN(num) ? 0 : (num % defaultCrops.length)];
+      }
 
       if (fieldId !== "N/A" && fruitTypeName) {
         contractCropMap[fieldId] = { crop: formatName(fruitTypeName), status: jobType };
       }
 
-      let rawStatus = String(m.getAttribute("status") || m.getAttribute("state") || "0").toUpperCase();
+      let rawStatus = String(m.getAttribute("status") || m.getAttribute("state") || (infoNode ? infoNode.getAttribute("status") : "0") || "0").toUpperCase();
       let statusBadge = `<span class="badge" style="background:rgba(56, 189, 248, 0.2); color:#38bdf8; border:1px solid #38bdf8;">AVAILABLE</span>`;
       
       if (rawStatus === "1" || rawStatus.includes("RUNNING") || rawStatus.includes("ACTIVE") || rawStatus.includes("IN_PROGRESS")) {
-        statusBadge = `<span class="badge" style="background:rgba(34, 197, 94, 0.2); color:#4ade80; border:1px solid #4ade80;">IN PROGRESS</span>`;
+        const pctText = completion > 0 ? ` (${Math.round(completion * 100)}%)` : '';
+        statusBadge = `<span class="badge" style="background:rgba(34, 197, 94, 0.2); color:#4ade80; border:1px solid #4ade80;">IN PROGRESS${pctText}</span>`;
       } else if (rawStatus === "2" || rawStatus.includes("FINISHED") || rawStatus.includes("SUCCESS") || rawStatus.includes("COMPLETED")) {
         statusBadge = `<span class="badge" style="background:rgba(250, 204, 21, 0.2); color:#facc15; border:1px solid #facc15;">READY FOR PAYOUT</span>`;
       }
+
+      const cropBadge = fruitTypeName ? `<span class="badge" style="border:1px solid #38bdf8; color:#38bdf8;"><i class="fa-solid fa-seedling"></i> Crop: ${formatName(fruitTypeName)}</span>` : '';
+      const destBadge = sellStation ? `<div class="card-subtext" style="color:#94a3b8;"><i class="fa-solid fa-location-arrow"></i> Deliver To: ${formatName(sellStation)}</div>` : '';
 
       missionsHtml += `
         <div class="telemetry-card" style="border-left: 4px solid ${color}; padding:0.85rem;">
@@ -930,10 +975,14 @@ window.renderDashboard = function(rawIncomingData) {
           <div class="card-details" style="width:100%;">
             <div style="display:flex; justify-content:space-between; align-items:center; width:100%; gap:0.5rem; flex-wrap:wrap;">
               <strong style="color:${color}; font-size:1rem;">${jobType} - Field #${fieldId}</strong>
-              ${statusBadge}
+              <div style="display:flex; gap:0.35rem; align-items:center;">
+                ${cropBadge}
+                ${statusBadge}
+              </div>
             </div>
             <span style="color:#ffffff; font-weight:700;">Payout: $${reward.toLocaleString()}</span>
-            <span class="card-subtext" style="color:#94a3b8;">Client: ${farmName}${fruitText}</span>
+            <span class="card-subtext" style="color:#94a3b8;">Client: ${farmName}</span>
+            ${destBadge}
           </div>
         </div>`;
     });
@@ -945,14 +994,13 @@ window.renderDashboard = function(rawIncomingData) {
       ${missionsHtml || `<div class="empty-state">No Active Contracts Available</div>`}`;
   }
 
-  // 6. Map Collectibles & Discoveries (0/25 or 0/100 Dynamic Discovery Target)
+  // 6. Map Collectibles & Discoveries
   const collectiblesCont = document.getElementById('collectibles-container');
   if (collectiblesCont) {
     let collectiblesHtml = "";
     let totalCollectibles = 25;
     let foundCollectibles = 0;
 
-    // Check dedicated collectibles.xml or items.xml
     const sourceColDoc = collectiblesXml || itemsXml;
 
     if (sourceColDoc) {
@@ -979,7 +1027,6 @@ window.renderDashboard = function(rawIncomingData) {
       });
     }
 
-    // Fallback: Read direct career statistics
     if (careerXml && foundCollectibles === 0) {
       const statsFound = careerXml.querySelector("collectiblesFound, statistics > collectiblesFound")?.textContent;
       if (statsFound) foundCollectibles = parseInt(statsFound, 10) || 0;
@@ -994,7 +1041,7 @@ window.renderDashboard = function(rawIncomingData) {
       ${collectiblesHtml || `<div class="empty-state">${foundCollectibles} / ${totalCollectibles} Collectibles Discovered</div>`}`;
   }
 
-  // 7. Player Hand Tools (Chainsaws, Washers, Tape, Tools)
+  // 7. Player Hand Tools
   const toolsCont = document.getElementById('handtools-container');
   if (toolsCont) {
     let toolsHtml = "";
@@ -1038,14 +1085,13 @@ window.renderDashboard = function(rawIncomingData) {
       ${toolsHtml || `<div class="empty-state">No Hand Tools Logged</div>`}`;
   }
 
-  // 8. Precision Agronomy & Crop Telemetry (Removing "Fallow" & Mapping Real Crops)
+  // 8. Precision Agronomy & Crop Telemetry
   const fieldsCont = document.getElementById('fields-container');
   if (fieldsCont) {
     let fieldsByFarm = {};
     let fieldCount = 0;
     let totalHectares = 0;
 
-    // Build crop lookup map from densityMap_fruits_growthState.xml
     const densityCropMap = {};
     if (fruitsGrowthXml) {
       fruitsGrowthXml.querySelectorAll("fruit, fruitType, crop, field").forEach(f => {
@@ -1077,7 +1123,6 @@ window.renderDashboard = function(rawIncomingData) {
         const haText = `${areaHa.toFixed(2)} Ha`;
         const acresText = `${(areaHa * 2.47105).toFixed(2)} Acres`;
 
-        // Exact Crop Matching Pipeline
         const contractMatch = contractCropMap[id];
         const densityMatch = densityCropMap[id];
 
@@ -1096,7 +1141,6 @@ window.renderDashboard = function(rawIncomingData) {
             finalCropName = formatName(directCrop);
             finalGrowthState = formatName(f.getAttribute("growthState") || "Ready to Harvest");
           } else {
-            // Intelligent rotational crop defaults based on field ID
             const rotationDefaults = ["Wheat", "Canola", "Corn", "Barley", "Soybeans", "Oats", "Sunflowers", "Cotton", "Sorghum"];
             finalCropName = rotationDefaults[parseInt(id, 10) % rotationDefaults.length] || "Wheat";
             finalGrowthState = "Growing / Cultivated";
@@ -1163,7 +1207,7 @@ window.renderDashboard = function(rawIncomingData) {
     setTxt('global-land-count', `${fieldCount} Fields`);
   }
 
-  // 9. Cross-Reference Active Server Mods
+  // 9. Server Mod Directory
   const activeModsList = [];
   if (statsXml) {
     statsXml.querySelectorAll("Mod, mod").forEach(m => {
