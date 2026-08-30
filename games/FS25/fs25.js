@@ -1,11 +1,10 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: Sun, Aug 30, 2026, 14:45:00 (EDT - New York)
+ * Deployment Timestamp: Sun, Aug 30, 2026, 15:20:00 (EDT - New York)
  * Project: entertainment-71888 (/fs25 RTDB Node)
- * Description: Master FS25 G-Portal Telemetry Pipeline - Directly inspects 
- *              dedicatedServerConfig.xml to lock onto the true active slot,
- *              streams live stats feed, and uploads all savegame telemetry.
- * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com
+ * Description: Master FS25 G-Portal Telemetry Pipeline. Strictly encapsulates
+ *              all telemetry and savegame XML data inside the /fs25 node.
+ * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
  * ============================================================================ */
 
 require('dotenv').config({ path: __dirname + '/.env' });
@@ -29,7 +28,7 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   try {
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
   } catch (e) {
-    console.error("❌ Failed parsing FIREBASE_SERVICE_ACCOUNT secret:", e.message);
+    console.error("❌ Failed parsing FIREBASE_SERVICE_ACCOUNT:", e.message);
     process.exit(1);
   }
 } else {
@@ -66,7 +65,7 @@ async function fetchStatsApi() {
 
   for (const url of candidateUrls) {
     try {
-      console.log(`📡 Querying live dedicated stats feed: [ ${url} ]`);
+      console.log(`📡 Fetching live stats feed: [ ${url} ]`);
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 6000);
       const res = await fetch(url, { signal: controller.signal });
@@ -95,13 +94,10 @@ async function fetchStatsApi() {
           const mapMatch = cleanXml.match(/mapTitle="([^"]+)"/i) || cleanXml.match(/mapName="([^"]+)"/i);
           if (mapMatch) mapTitle = mapMatch[1];
 
-          console.log(`✅ Live Web API connected: ${players} active player(s). Map: ${mapTitle || 'Standard'}`);
           return { text: cleanXml, players, activeSlot, mapTitle };
         }
       }
-    } catch (err) {
-      console.warn(`Notice for ${url}: ${err.message}`);
-    }
+    } catch (err) {}
   }
 
   return { text: "", players: 0, activeSlot: null, mapTitle: "" };
@@ -137,6 +133,7 @@ async function downloadFtpFileToString(client, remotePath) {
 async function runPipeline() {
   const statsData = await fetchStatsApi();
 
+  // Instant safety write: update strictly inside /fs25 node
   if (statsData.text) {
     const liveStatsPayload = {
       activePlayers: statsData.players,
@@ -146,8 +143,7 @@ async function runPipeline() {
       lastUpdated: new Date().toISOString()
     };
     await db.ref('fs25').update(liveStatsPayload);
-    await db.ref().update(liveStatsPayload);
-    console.log(`⚡ Instant Sync: Active players committed to Firebase.`);
+    console.log(`⚡ Live stats updated strictly inside /fs25.`);
   }
 
   if (!ftpUser || !ftpPass) {
@@ -167,9 +163,8 @@ async function runPipeline() {
       secure: false
     });
 
-    console.log("✅ FTP connected. Inspecting dedicatedServerConfig.xml for active slot...");
+    console.log("✅ FTP connected. Resolving dedicated active save slot...");
 
-    // 1. Inspect dedicatedServerConfig.xml to find true active savegame slot
     let activeSlotNumber = statsData.activeSlot || null;
     const possibleConfigFiles = [
       'dedicated_server/dedicatedServerConfig.xml',
@@ -185,19 +180,15 @@ async function runPipeline() {
           const slotMatch = cfgXml.match(/savegameSlot="(\d+)"/i) || cfgXml.match(/savegame="(\d+)"/i) || cfgXml.match(/<savegame>(\d+)<\/savegame>/i);
           if (slotMatch) {
             activeSlotNumber = slotMatch[1];
-            console.log(`🎯 Active Savegame Slot detected from ${cfgPath}: Slot #${activeSlotNumber}`);
+            console.log(`🎯 Active Save Slot locked: Slot #${activeSlotNumber}`);
             break;
           }
         }
       } catch (e) {}
     }
 
-    if (!activeSlotNumber) {
-      activeSlotNumber = process.env.DEFAULT_SAVE_SLOT || "2";
-      console.log(`ℹ️ Defaulting target to Slot #${activeSlotNumber}`);
-    }
+    if (!activeSlotNumber) activeSlotNumber = process.env.DEFAULT_SAVE_SLOT || "2";
 
-    // 2. Discover active save directory
     let validSavePath = null;
     let fileList = [];
 
@@ -228,7 +219,7 @@ async function runPipeline() {
       }
     }
 
-    console.log(`📂 Reading savegame files from directory: [ ${validSavePath || 'savegame2'} ]`);
+    console.log(`📂 Pulling all XML files from: [ ${validSavePath || 'savegame2'} ]`);
 
     const readableFiles = fileList.filter(f => !f.isDirectory && (
       f.name.toLowerCase().endsWith('.xml') || f.name.toLowerCase().endsWith('.txt')
@@ -257,11 +248,14 @@ async function runPipeline() {
       'fields': 'fields',
       'field': 'fields',
       'missions': 'missions',
+      'mission': 'missions',
       'environment': 'environment',
       'economy': 'economy',
       'items': 'items',
       'collectibles': 'collectibles',
-      'handtools': 'handTools'
+      'collectible': 'collectibles',
+      'handtools': 'handTools',
+      'precisionfarming': 'precisionFarming'
     };
 
     for (const file of readableFiles) {
@@ -280,16 +274,29 @@ async function runPipeline() {
       } catch (err) {}
     }
 
-    // Direct atomic write to Firebase (/fs25 and root)
+    // Atomic write strictly to /fs25 node only
     await db.ref('fs25').update(masterPayload);
-    await db.ref().update(masterPayload);
 
-    console.log(`🏆 Active Savegame Slot #${activeSlotNumber} completely synced to Firebase!`);
+    // Clean up any loose root-level keys that spilled over previously
+    const strayKeys = [
+      'activePlayers', 'activeSaveSlot', 'config', 'dedicatedServerConfig_raw',
+      'lastUpdated', 'modCatalogCrossplay', 'stats_raw', 'stats_xml_raw',
+      'careerSavegame_raw', 'careerSavegame', 'farms_raw', 'farms',
+      'vehicles_raw', 'vehicles', 'placeables_raw', 'placeables',
+      'items_raw', 'items', 'environment_raw', 'environment',
+      'fields_raw', 'fields', 'farmland_raw', 'farmland', 'farmlands_raw',
+      'missions_raw', 'missions', 'handTools_raw', 'handTools', 'collectibles_raw'
+    ];
+    const cleanupMap = {};
+    strayKeys.forEach(k => cleanupMap[k] = null);
+    await db.ref().update(cleanupMap);
+
+    console.log(`🏆 Active Save Slot #${activeSlotNumber} completely synced to /fs25!`);
     client.close();
     process.exit(0);
 
   } catch (err) {
-    console.error("Pipeline Warning:", err.message);
+    console.error("Pipeline Notice:", err.message);
     client.close();
     process.exit(0);
   }
