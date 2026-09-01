@@ -1,12 +1,12 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-01 08:10:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-01 08:15:00 (EDT - 24hr New York Time)
  * Project: entertainment-71888 (/fs25 RTDB Node)
  * Description: Smart FS25 Dynamic Savegame Ingestion Engine.
  *              - Dual HTTP/HTTPS support.
- *              - Auto-parses raw XML files into clean, readable JSON trees.
- *              - Organizes all vehicles, placeables, stats, and balances by Farm.
- *              - Retains raw XML backup feeds in /fs25/raw_xml/.
+ *              - Groups vehicles, placeables, and stats by Farm.
+ *              - Pulls /FS25_Mods_Info catalog metadata (images, URLs, author,
+ *                description) and enriches active server mods into /fs25/activeMods.
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
  * ============================================================================ */
 
@@ -66,7 +66,7 @@ const ftpUser = process.env.FTP_USER;
 const ftpPass = process.env.FTP_PASS;
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
 
-// Supports standard HTTP feed and HTTPS image proxy fallback
+// Endpoints supporting plain HTTP or HTTPS reverse proxies
 const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
 const MAP_IMAGE_URL = `https://wsrv.nl/?url=${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
 
@@ -107,7 +107,6 @@ async function parseXmlString(xmlString) {
   }
 }
 
-// Converts messy XML file paths into clean, readable item names
 function cleanEntityName(filepath) {
   if (!filepath) return "Unknown Item";
   const filename = filepath.split('/').pop().replace(/\.xml$/i, '');
@@ -116,6 +115,12 @@ function cleanEntityName(filepath) {
     .replace(/[_-]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+}
+
+// Normalizes strings for loose dictionary lookups
+function normalizeKey(str) {
+  if (!str) return "";
+  return str.toString().toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
 async function downloadFtpFileToString(client, remotePath) {
@@ -168,16 +173,31 @@ async function fetchStatsApi() {
   return { text: "", players: 0, activeSlot: null, mapTitle: "" };
 }
 
+// Fetches your manual mod info database from /FS25_Mods_Info
+async function fetchModsCatalog() {
+  try {
+    const snap = await db.ref('FS25_Mods_Info').once('value');
+    const data = snap.val();
+    if (!data) return {};
+    return data;
+  } catch (err) {
+    console.warn("⚠️ Could not read /FS25_Mods_Info catalog:", err.message);
+    return {};
+  }
+}
+
 // ============================================================================
-// SECTION 5: JSON DATA STRUCTURING & CLEANING ENGINE
+// SECTION 5: JSON DATA STRUCTURING & MOD ENRICHMENT ENGINE
 // ============================================================================
-async function buildCleanStructuredSave(rawFiles) {
+async function buildCleanStructuredSave(rawFiles, modsCatalog, rawConfigXml) {
   const structured = {
     summary: {
       totalFarms: 0,
       totalVehicles: 0,
-      totalPlaceables: 0
+      totalPlaceables: 0,
+      totalActiveMods: 0
     },
+    activeMods: {},
     farms: {},
     unowned: {
       name: "Map Environment / Dealer",
@@ -186,7 +206,66 @@ async function buildCleanStructuredSave(rawFiles) {
     }
   };
 
-  // 1. Parse farms.xml
+  // Build quick-lookup dictionary for /FS25_Mods_Info
+  const catalogLookup = {};
+  Object.keys(modsCatalog).forEach(key => {
+    const item = modsCatalog[key];
+    const directKey = normalizeKey(key);
+    catalogLookup[directKey] = item;
+
+    if (item.name) catalogLookup[normalizeKey(item.name)] = item;
+    if (item.modName) catalogLookup[normalizeKey(item.modName)] = item;
+    if (item.fileName) catalogLookup[normalizeKey(item.fileName)] = item;
+    if (item.title) catalogLookup[normalizeKey(item.title)] = item;
+  });
+
+  // 1. Extract Active Mods from dedicatedServerConfig.xml and careerSavegame.xml
+  const discoveredModNames = new Set();
+
+  if (rawConfigXml) {
+    const cfgJson = await parseXmlString(rawConfigXml);
+    if (cfgJson && cfgJson.dedicatedServer && cfgJson.dedicatedServer.mods && cfgJson.dedicatedServer.mods.mod) {
+      const mList = Array.isArray(cfgJson.dedicatedServer.mods.mod) ? cfgJson.dedicatedServer.mods.mod : [cfgJson.dedicatedServer.mods.mod];
+      mList.forEach(m => {
+        const modId = typeof m === 'string' ? m : (m._ || m.name || m.filename || "");
+        if (modId) discoveredModNames.add(modId.trim());
+      });
+    }
+  }
+
+  if (rawFiles['careerSavegame']) {
+    const careerJson = await parseXmlString(rawFiles['careerSavegame']);
+    if (careerJson && careerJson.careerSavegame && careerJson.careerSavegame.mod) {
+      const mList = Array.isArray(careerJson.careerSavegame.mod) ? careerJson.careerSavegame.mod : [careerJson.careerSavegame.mod];
+      mList.forEach(m => {
+        const modId = typeof m === 'string' ? m : (m.modName || m.name || m.filename || m._ || "");
+        if (modId) discoveredModNames.add(modId.trim());
+      });
+    }
+  }
+
+  // Enrich discovered active mods with /FS25_Mods_Info metadata
+  discoveredModNames.forEach(rawModName => {
+    const cleanModKey = rawModName.replace(/\.zip$/i, '');
+    const lookupKey = normalizeKey(cleanModKey);
+    const catalogInfo = catalogLookup[lookupKey] || null;
+
+    structured.activeMods[cleanModKey] = {
+      modKey: cleanModKey,
+      name: catalogInfo && catalogInfo.name ? catalogInfo.name : cleanEntityName(cleanModKey),
+      image: catalogInfo && (catalogInfo.image || catalogInfo.imageUrl || catalogInfo.icon) ? (catalogInfo.image || catalogInfo.imageUrl || catalogInfo.icon) : null,
+      pageUrl: catalogInfo && (catalogInfo.pageUrl || catalogInfo.url || catalogInfo.link) ? (catalogInfo.pageUrl || catalogInfo.url || catalogInfo.link) : null,
+      platform: catalogInfo && catalogInfo.platform ? catalogInfo.platform : "PC / Mac",
+      description: catalogInfo && catalogInfo.description ? catalogInfo.description : "",
+      author: catalogInfo && catalogInfo.author ? catalogInfo.author : "Unknown / ModHub",
+      updatedNumber: catalogInfo && (catalogInfo.updatedNumber || catalogInfo.version) ? (catalogInfo.updatedNumber || catalogInfo.version) : "1.0.0.0",
+      matchedInCatalog: !!catalogInfo
+    };
+  });
+
+  structured.summary.totalActiveMods = Object.keys(structured.activeMods).length;
+
+  // 2. Parse farms.xml
   if (rawFiles['farms']) {
     const farmsJson = await parseXmlString(rawFiles['farms']);
     if (farmsJson && farmsJson.farms && farmsJson.farms.farm) {
@@ -211,7 +290,6 @@ async function buildCleanStructuredSave(rawFiles) {
     }
   }
 
-  // Fallback if no explicit farm exists
   if (Object.keys(structured.farms).length === 0) {
     structured.farms['farm_1'] = {
       farmId: "1",
@@ -225,7 +303,7 @@ async function buildCleanStructuredSave(rawFiles) {
     };
   }
 
-  // 2. Parse vehicles.xml
+  // 3. Parse vehicles.xml & cross-match with Mod Catalog
   if (rawFiles['vehicles']) {
     const vehJson = await parseXmlString(rawFiles['vehicles']);
     if (vehJson && vehJson.vehicles && vehJson.vehicles.vehicle) {
@@ -233,10 +311,22 @@ async function buildCleanStructuredSave(rawFiles) {
       vehList.forEach(v => {
         const fId = String(v.farmId || "0");
         const farmKey = `farm_${fId}`;
+        const filename = v.filename || "";
+
+        // Check if vehicle originates from a mod folder/file
+        let matchedMod = null;
+        for (const [mKey, mVal] of Object.entries(structured.activeMods)) {
+          if (filename.toLowerCase().includes(mKey.toLowerCase())) {
+            matchedMod = mVal;
+            break;
+          }
+        }
+
         const cleanItem = {
           id: v.id || "0",
-          name: cleanEntityName(v.filename),
-          file: v.filename,
+          name: matchedMod && matchedMod.name ? matchedMod.name : cleanEntityName(filename),
+          file: filename,
+          image: matchedMod ? matchedMod.image : null,
           price: parseFloat(v.price || 0),
           operatingHours: parseFloat(((parseFloat(v.operatingTime || 0)) / 3600).toFixed(1)),
           ageMonths: parseInt(v.age || 0, 10),
@@ -254,7 +344,7 @@ async function buildCleanStructuredSave(rawFiles) {
     }
   }
 
-  // 3. Parse placeables.xml
+  // 4. Parse placeables.xml
   if (rawFiles['placeables']) {
     const plcJson = await parseXmlString(rawFiles['placeables']);
     if (plcJson && plcJson.placeables && plcJson.placeables.placeable) {
@@ -262,10 +352,21 @@ async function buildCleanStructuredSave(rawFiles) {
       plcList.forEach(p => {
         const fId = String(p.farmId || "0");
         const farmKey = `farm_${fId}`;
+        const filename = p.filename || "";
+
+        let matchedMod = null;
+        for (const [mKey, mVal] of Object.entries(structured.activeMods)) {
+          if (filename.toLowerCase().includes(mKey.toLowerCase())) {
+            matchedMod = mVal;
+            break;
+          }
+        }
+
         const cleanItem = {
           id: p.id || "0",
-          name: cleanEntityName(p.filename),
-          file: p.filename,
+          name: matchedMod && matchedMod.name ? matchedMod.name : cleanEntityName(filename),
+          file: filename,
+          image: matchedMod ? matchedMod.image : null,
           position: p.position || null,
           price: parseFloat(p.price || 0),
           ageMonths: parseInt(p.age || 0, 10)
@@ -282,7 +383,7 @@ async function buildCleanStructuredSave(rawFiles) {
     }
   }
 
-  // 4. Parse farms_statistics.xml
+  // 5. Parse farms_statistics.xml
   if (rawFiles['farms_statistics']) {
     const statsJson = await parseXmlString(rawFiles['farms_statistics']);
     if (statsJson && statsJson.statistics && statsJson.statistics.farm) {
@@ -297,7 +398,7 @@ async function buildCleanStructuredSave(rawFiles) {
     }
   }
 
-  // 5. Parse careerSavegame.xml (Server Day, Time, Map Name)
+  // 6. Parse careerSavegame.xml
   if (rawFiles['careerSavegame']) {
     const careerJson = await parseXmlString(rawFiles['careerSavegame']);
     if (careerJson && careerJson.careerSavegame) {
@@ -324,7 +425,10 @@ async function runPipeline() {
   const statsData = await fetchStatsApi();
   const activePlayers = statsData.players;
 
-  // Check last full sync timestamp to prevent unnecessary API burn
+  // Retrieve mod catalogue from /FS25_Mods_Info
+  console.log("📦 Loading reference catalogue from /FS25_Mods_Info...");
+  const modsCatalog = await fetchModsCatalog();
+
   let lastFullSyncIso = null;
   try {
     const snap = await db.ref('fs25/lastFullSaveSync').once('value');
@@ -367,7 +471,7 @@ async function runPipeline() {
     lastUpdated: new Date().toISOString(),
     lastFullSaveSync: new Date().toISOString(),
     config: { appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c" },
-    raw_xml: {} // Isolates all heavy unparsed XML strings
+    raw_xml: {}
   };
 
   if (statsData.text) {
@@ -393,7 +497,9 @@ async function runPipeline() {
       secure: false
     });
 
-    // 1. Detect active savegame slot from server configs
+    let rawServerConfigXml = "";
+
+    // 1. Detect active savegame slot and capture server config XML
     const configPaths = [
       'dedicated_server/dedicatedServerConfig.xml',
       'profile/dedicated_server/dedicatedServerConfig.xml',
@@ -405,6 +511,7 @@ async function runPipeline() {
       try {
         const cfgXml = await downloadFtpFileToString(client, cfg);
         if (cfgXml) {
+          rawServerConfigXml = sanitizeXml(cfgXml);
           const slotMatch = cfgXml.match(/savegameSlot="(\d+)"/i) || cfgXml.match(/savegame="(\d+)"/i) || cfgXml.match(/<savegame>(\d+)<\/savegame>/i);
           if (slotMatch) {
             detectedSlot = slotMatch[1];
@@ -479,7 +586,6 @@ async function runPipeline() {
         const content = await downloadFtpFileToString(client, remoteFilePath);
         const cleanContent = sanitizeXml(content);
         if (cleanContent) {
-          // Store raw unparsed XML safely inside the raw_xml bucket
           masterPayload.raw_xml[rawBaseName] = cleanContent;
           rawFileCache[rawBaseName] = cleanContent;
           console.log(`  -> Downloaded: ${file.name}`);
@@ -489,20 +595,21 @@ async function runPipeline() {
       }
     }
 
-    // Convert raw XML files into clean structured JSON trees
-    console.log("🚜 Structuring farms, vehicles, buildings, and game info...");
-    const cleanData = await buildCleanStructuredSave(rawFileCache);
+    // Convert raw XML files into clean structured JSON trees & enrich with /FS25_Mods_Info
+    console.log("🚜 Structuring farms, active mods, vehicles, and placeables...");
+    const cleanData = await buildCleanStructuredSave(rawFileCache, modsCatalog, rawServerConfigXml);
 
     masterPayload.summary = cleanData.summary;
     masterPayload.gameInfo = cleanData.gameInfo || {};
+    masterPayload.activeMods = cleanData.activeMods || {};
     masterPayload.farms = cleanData.farms;
     masterPayload.unowned = cleanData.unowned;
 
-    // 3. Write Atomic Payload to /fs25
-    console.log("💾 [4/4] Writing clean structured JSON tree to Firebase /fs25...");
+    // 3. Write Complete Atomic Payload to /fs25
+    console.log("💾 [4/4] Writing clean enriched JSON tree to Firebase /fs25...");
     await db.ref('fs25').set(masterPayload);
 
-    console.log(`🏆 Server data successfully structured and saved to Firebase /fs25!`);
+    console.log(`🏆 Server data + Mods successfully enriched and saved to Firebase /fs25!`);
     client.close();
     process.exit(0);
 
