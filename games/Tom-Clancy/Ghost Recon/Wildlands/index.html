@@ -2,7 +2,7 @@
      FILE: index.html
      DESCRIPTION: Ghost Recon Wildlands Squad Operations Hub & Tactical Skill Tree
      GA4 TAG: G-CTYHDF4MSD (Entertainment & Gaming Sync Engine)
-     TIMESTAMP (24-HR NY TIME): 2026-09-01 06:03 EDT
+     TIMESTAMP (24-HR NY TIME): 2026-09-01 06:15 EDT
      ============================================================================ -->
 <!DOCTYPE html>
 <html lang="en">
@@ -24,7 +24,7 @@
     </script>
 
     <!-- Cross-Protocol Resilient Stylesheet -->
-    <link rel="stylesheet" href="./style.css?v=20.0">
+    <link rel="stylesheet" href="./style.css?v=21.0">
 </head>
 <body>
 
@@ -35,12 +35,19 @@
                 <a href="../../../index.html" class="logo-link" title="Return to Homepage">
                     <h1 class="logo-text">GHOST HUB</h1>
                 </a>
-                <a href="https://console.firebase.google.com/u/0/project/entertainment-71888/database/entertainment-71888-default-rtdb/data/~2Futm_links" target="_blank" rel="noopener noreferrer" class="nav-external-btn" title="Firebase RTDB UTM Links">
-                    📁 Intel Directory
-                </a>
+                
+                <!-- Live RTDB Dynamic Multi-Folder Flyout Menu -->
+                <div class="intel-dropdown-wrapper" id="intelDropdownWrapper">
+                    <button type="button" class="intel-menu-trigger" id="intelMenuTrigger" aria-haspopup="true" aria-expanded="false">
+                        📁 Intel Directory <span class="caret-icon">▼</span>
+                    </button>
+                    <nav class="intel-flyout-menu hidden" id="intelFlyoutMenu" aria-label="Intel Directory">
+                        <div class="intel-menu-loading">Connecting to Realtime Database...</div>
+                    </nav>
+                </div>
             </div>
 
-            <!-- Navigation Controls (Always Visible Menu Bar) -->
+            <!-- Navigation Controls -->
             <div id="navMenuWrapper" class="nav-menu-wrapper always-visible">
                 <div class="header-controls-group">
                     <div class="selector-wrapper">
@@ -209,6 +216,6 @@
     </main>
 
     <!-- APPLICATION CONTROLLER -->
-    <script type="module" src="./app.js?v=20.0"></script>
+    <script type="module" src="./app.js?v=21.0"></script>
 </body>
 </html>
