@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * Dashboard: OneLIVIDMAN / Raymystyro Progression & FS25 Dumbace Farm Telemetry
- * Engine Version: 22.0.0-OneLIVIDMAN-FS25CleanJSON
+ * Engine Version: 23.0.0-OneLIVIDMAN-FS25DedicatedRow
  * Target RTDB Menu: https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json
  * Target PSN RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/psn.json
- * Target FS25 RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json (farm_2 Focus)
+ * Target FS25 RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json (farm_2 Dedicated Row)
  * Target Firestore: /users/Raymystyro/platform/{platform}/progress
  * Timezone: 24hr New York (EDT)
- * Date & Time Stamp: 2026-09-01 08:48:28 (24hr New York Time)
+ * Date & Time Stamp: 2026-09-01 08:53:59 (24hr New York Time)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -31,7 +31,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '22.0.0',
+            'layout_version': '23.0.0',
             'gamertag': 'OneLIVIDMAN',
             'user_handle': 'Raymystyro',
             'engagement_timezone': 'America/New_York',
@@ -377,8 +377,10 @@
         </div>
     </header>
 
-    <!-- MAIN DASHBOARD CONTENT GRID -->
-    <main class="max-w-[1700px] mx-auto px-6 pb-24 flex-1 w-full">
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="max-w-[1700px] mx-auto px-6 pb-24 flex-1 w-full space-y-8">
+
+        <!-- 3-COLUMN TOP ROW (BIO, HUNT, SQUAD & PSN ACTIVITY) -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
             <!-- LEFT 2 COLUMNS -->
@@ -432,99 +434,29 @@
                             <h2 class="mb-6 text-sky-400 text-lg uppercase tracking-wider text-center">Recent Hunts</h2>
                             <div id="recent-games-container" class="grid grid-cols-2 gap-3"></div>
                         </section>
+
+                        <!-- FIRESTORE GAME PROGRESSION HUB (MULTI-PLATFORM DISCOVERY) -->
+                        <section id="firestore-progress-section" class="glass-card p-6 border-t-4 border-cyan-500 flex flex-col justify-between space-y-4">
+                            <div class="space-y-4">
+                                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3">
+                                    <div>
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-gamepad text-cyan-400 text-lg"></i>
+                                            <h2 class="text-cyan-400 text-lg font-black uppercase">Game Progress Hub</h2>
+                                        </div>
+                                        <p id="firestore-path-label" class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Multi-Platform Discovery (>0% Only)</p>
+                                    </div>
+                                    <div id="firestore-status-badge" class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-cyan-950 text-cyan-400 border border-cyan-500/40 animate-pulse self-start sm:self-auto">
+                                        Live Sync
+                                    </div>
+                                </div>
+
+                                <div id="firestore-games-grid" class="flex flex-col gap-3 max-h-[350px] overflow-y-auto no-scrollbar">
+                                    <div class="p-6 text-center text-gray-500 font-bold uppercase text-xs">Connecting to Firestore Stream...</div>
+                                </div>
+                            </div>
+                        </section>
                     </div>
-                </div>
-
-                <!-- SIDE-BY-SIDE DUAL TELEMETRY ROW (FS25 DUMBACE FARM & PROGRESSION HUB) -->
-                <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 items-stretch" id="dual-telemetry-row">
-                    
-                    <!-- FS25 LIVE TELEMETRY (DUMBACE FARM ID #2 FOCUS) -->
-                    <section id="fs25-telemetry-section" class="glass-card p-6 border-t-4 border-lime-500 flex flex-col justify-between space-y-6">
-                        <div class="space-y-4">
-                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3">
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <i class="fas fa-tractor text-lime-400 text-lg"></i>
-                                        <h2 class="text-lime-400 text-lg font-black uppercase" id="fs25-header-title">FS25 Dumbace Farm (Farm #2)</h2>
-                                    </div>
-                                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Telemetry Feed (/fs25/farms/farm_2)</p>
-                                </div>
-                                <div id="fs25-status-pill" class="fs25-badge flex items-center gap-1.5 self-start sm:self-auto">
-                                    <span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
-                                    <span id="fs25-status-text">Server Active</span>
-                                </div>
-                            </div>
-
-                            <!-- Farm Stats Grid -->
-                            <div class="grid grid-cols-2 gap-2.5">
-                                <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
-                                    <div class="text-[9px] font-black text-gray-400 uppercase">Farm Name</div>
-                                    <div id="fs25-farm-name" class="text-xs font-black text-white mt-0.5 truncate">dumbace</div>
-                                </div>
-                                <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
-                                    <div class="text-[9px] font-black text-gray-400 uppercase">Account Funds</div>
-                                    <div id="fs25-money" class="text-xs font-black text-lime-400 mt-0.5 truncate">$0</div>
-                                </div>
-                                <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
-                                    <div class="text-[9px] font-black text-gray-400 uppercase">Buildings / Placeables</div>
-                                    <div id="fs25-fields-count" class="text-xs font-black text-white mt-0.5">0</div>
-                                </div>
-                                <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
-                                    <div class="text-[9px] font-black text-gray-400 uppercase">Active Fleet</div>
-                                    <div id="fs25-vehicles-count" class="text-xs font-black text-white mt-0.5">0</div>
-                                </div>
-                            </div>
-
-                            <!-- Equipment / Fleet Machinery -->
-                            <div class="space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <h3 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                                        <i class="fas fa-truck-monster text-lime-400"></i> Equipment Fleet
-                                    </h3>
-                                    <span id="fs25-fleet-subtitle" class="text-[9px] font-black text-gray-400 uppercase">0 Units</span>
-                                </div>
-                                <div id="fs25-fleet-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[220px] overflow-y-auto no-scrollbar">
-                                    <div class="p-3 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Loading Fleet...</div>
-                                </div>
-                            </div>
-
-                            <!-- Placeables / Buildings Grid -->
-                            <div class="space-y-2">
-                                <div class="flex justify-between items-center">
-                                    <h3 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                                        <i class="fas fa-building text-lime-400"></i> Buildings & Placeables
-                                    </h3>
-                                    <span id="fs25-fields-subtitle" class="text-[9px] font-black text-gray-400 uppercase">0 Facilities</span>
-                                </div>
-                                <div id="fs25-fields-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[160px] overflow-y-auto no-scrollbar">
-                                    <div class="p-2.5 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Loading Buildings...</div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-
-                    <!-- FIRESTORE GAME PROGRESSION HUB (MULTI-PLATFORM DISCOVERY) -->
-                    <section id="firestore-progress-section" class="glass-card p-6 border-t-4 border-cyan-500 flex flex-col justify-between space-y-4">
-                        <div class="space-y-4">
-                            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3">
-                                <div>
-                                    <div class="flex items-center gap-2">
-                                        <i class="fas fa-gamepad text-cyan-400 text-lg"></i>
-                                        <h2 class="text-cyan-400 text-lg font-black uppercase">Game Progress Hub</h2>
-                                    </div>
-                                    <p id="firestore-path-label" class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Multi-Platform Discovery (>0% Only)</p>
-                                </div>
-                                <div id="firestore-status-badge" class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-cyan-950 text-cyan-400 border border-cyan-500/40 animate-pulse self-start sm:self-auto">
-                                    Live Sync
-                                </div>
-                            </div>
-
-                            <div id="firestore-games-grid" class="flex flex-col gap-3 max-h-[550px] overflow-y-auto no-scrollbar">
-                                <div class="p-6 text-center text-gray-500 font-bold uppercase text-xs">Connecting to Firestore Stream...</div>
-                            </div>
-                        </div>
-                    </section>
-
                 </div>
 
                 <!-- TROPHY CHECKLIST LOG WITH FULL SQUAD CROSS-MATCHING -->
@@ -533,7 +465,7 @@
                         <h2 id="checklist-header-text" class="text-white text-lg flex items-center gap-2"><i class="fas fa-list-check text-sky-400"></i> Trophy Checklist</h2>
                         <span class="text-[10px] font-black uppercase tracking-wider text-gray-400 bg-white/5 px-2.5 py-1 rounded border border-white/5">Squad Presence Active</span>
                     </div>
-                    <div id="trophy-checklist-container" class="max-h-[850px] overflow-y-auto divide-y divide-white/5 no-scrollbar"></div>
+                    <div id="trophy-checklist-container" class="max-h-[550px] overflow-y-auto divide-y divide-white/5 no-scrollbar"></div>
                 </section>
             </div>
 
@@ -551,7 +483,7 @@
                     </div>
                 </section>
 
-                <!-- COTW TROPHY LODGE (CLEAN 6 CARDS ONLY - HIDES 0 CARDS) -->
+                <!-- COTW TROPHY LODGE -->
                 <section id="cotw-card" class="glass-card p-6 border-b-4 border-emerald-500 text-center">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-emerald-400 text-base flex items-center gap-2"><i class="fas fa-paw"></i> COTW Trophy Lodge</h2>
@@ -619,8 +551,76 @@
                 </section>
             </div>
         </div>
+
+        <!-- DEDICATED FULL-WIDTH ROW: FS25 DUMBACE FARM (FARM #2) TELEMETRY -->
+        <section id="fs25-telemetry-section" class="glass-card p-8 border-t-4 border-lime-500 space-y-6 w-full">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-4">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-tractor text-lime-400 text-2xl"></i>
+                    <div>
+                        <h2 class="text-lime-400 text-xl lg:text-2xl font-black uppercase" id="fs25-header-title">FS25 Dumbace Farm (Farm #2) Telemetry</h2>
+                        <p class="text-xs text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Dedicated Ingestion Feed (/fs25/farms/farm_2)</p>
+                    </div>
+                </div>
+                <div id="fs25-status-pill" class="fs25-badge flex items-center gap-2 px-3 py-1.5 self-start sm:self-auto text-xs">
+                    <span class="w-2.5 h-2.5 rounded-full bg-lime-400 animate-pulse"></span>
+                    <span id="fs25-status-text">Server Active</span>
+                </div>
+            </div>
+
+            <!-- Farm Summary Stats Grid -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white/5 p-4 rounded-xl border border-white/5 text-center">
+                    <div class="text-[10px] font-black text-gray-400 uppercase">Farm Name</div>
+                    <div id="fs25-farm-name" class="text-base font-black text-white mt-1 truncate">dumbace</div>
+                </div>
+                <div class="bg-white/5 p-4 rounded-xl border border-white/5 text-center">
+                    <div class="text-[10px] font-black text-gray-400 uppercase">Account Funds</div>
+                    <div id="fs25-money" class="text-base font-black text-lime-400 mt-1 truncate">$0</div>
+                </div>
+                <div class="bg-white/5 p-4 rounded-xl border border-white/5 text-center">
+                    <div class="text-[10px] font-black text-gray-400 uppercase">Buildings / Placeables</div>
+                    <div id="fs25-fields-count" class="text-base font-black text-white mt-1">0</div>
+                </div>
+                <div class="bg-white/5 p-4 rounded-xl border border-white/5 text-center">
+                    <div class="text-[10px] font-black text-gray-400 uppercase">Active Machinery Fleet</div>
+                    <div id="fs25-vehicles-count" class="text-base font-black text-white mt-1">0</div>
+                </div>
+            </div>
+
+            <!-- Equipment Fleet & Placeables Side-by-Side inside Dedicated Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-2">
+                
+                <!-- Fleet Machinery -->
+                <div class="space-y-3 bg-black/30 p-5 rounded-2xl border border-white/5">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                        <h3 class="text-sm font-black text-gray-200 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fas fa-truck-monster text-lime-400"></i> Equipment Fleet
+                        </h3>
+                        <span id="fs25-fleet-subtitle" class="text-[10px] font-black text-lime-400 uppercase bg-lime-950 px-2 py-0.5 rounded border border-lime-500/30">0 Units</span>
+                    </div>
+                    <div id="fs25-fleet-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[300px] overflow-y-auto no-scrollbar">
+                        <div class="p-4 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Loading Fleet...</div>
+                    </div>
+                </div>
+
+                <!-- Buildings & Placeables -->
+                <div class="space-y-3 bg-black/30 p-5 rounded-2xl border border-white/5">
+                    <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                        <h3 class="text-sm font-black text-gray-200 uppercase tracking-wider flex items-center gap-2">
+                            <i class="fas fa-building text-lime-400"></i> Buildings & Placeables
+                        </h3>
+                        <span id="fs25-fields-subtitle" class="text-[10px] font-black text-lime-400 uppercase bg-lime-950 px-2 py-0.5 rounded border border-lime-500/30">0 Facilities</span>
+                    </div>
+                    <div id="fs25-fields-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-[300px] overflow-y-auto no-scrollbar">
+                        <div class="p-4 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Loading Buildings...</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
         
-        <div class="text-center mt-12 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">
+        <div class="text-center pt-6 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">
             Sync Target: <span class="text-sky-400">/psn/gamertags/OneLIVIDMAN.json</span> | FS25 Target: <span class="text-lime-400">/fs25.json (Farm #2 - dumbace)</span> | NYC 24hr: <span id="sync-time" class="text-gray-300">--</span>
         </div>
     </main>
@@ -965,7 +965,7 @@
             }
         }
 
-        // --- UPDATED FS25 TELEMETRY: DIRECTLY READS /fs25/farms/farm_2 (DUMBACE FARM) ---
+        // --- FS25 TELEMETRY ENGINE: STRICTLY PULLS FROM /fs25/farms/farm_2 (DUMBACE) ---
         async function updateFS25Telemetry() {
             try {
                 const res = await fetch(`${FS25_RTDB_URL}?t=${Date.now()}`);
@@ -973,7 +973,6 @@
                 const rootData = await res.json();
                 if (!rootData) return;
 
-                // Targeted resolution for Farm #2 (dumbace)
                 let farmData = null;
                 if (rootData.farms && typeof rootData.farms === 'object') {
                     farmData = rootData.farms.farm_2 || 
@@ -1009,20 +1008,20 @@
                             const price = v.price ? `$${Number(v.price).toLocaleString()}` : 'Owned';
 
                             return `
-                                <div class="bg-black/40 p-2.5 rounded-xl border border-white/5 flex flex-col justify-between space-y-1.5">
+                                <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col justify-between space-y-1.5">
                                     <div>
                                         <div class="text-[8px] font-black text-lime-400 uppercase">Machinery</div>
-                                        <div class="text-[11px] font-black text-white uppercase truncate">${name}</div>
+                                        <div class="text-xs font-black text-white uppercase truncate">${name}</div>
                                     </div>
-                                    <div class="flex justify-between items-center text-[9px] font-bold text-gray-400 border-t border-white/5 pt-1.5">
+                                    <div class="flex justify-between items-center text-[10px] font-bold text-gray-400 border-t border-white/5 pt-2">
                                         <span>${operatingHours}</span>
-                                        <span class="text-lime-400">${price}</span>
+                                        <span class="text-lime-400 font-black">${price}</span>
                                     </div>
                                 </div>
                             `;
                         }).join('');
                     } else {
-                        fleetContainer.innerHTML = `<div class="p-3 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No equipment registered for Dumbace Farm (Farm #2).</div>`;
+                        fleetContainer.innerHTML = `<div class="p-4 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No equipment registered for Dumbace Farm (Farm #2).</div>`;
                     }
                 }
 
@@ -1035,15 +1034,19 @@
                             const pAge = p.ageMonths !== undefined ? `${p.ageMonths} mo old` : 'Active';
 
                             return `
-                                <div class="bg-black/40 p-2 rounded-xl border border-white/5 text-center">
-                                    <div class="text-[8px] font-black text-gray-400 uppercase">${pAge}</div>
-                                    <div class="text-[10px] font-black text-white mt-0.5 truncate">${pName}</div>
-                                    <div class="text-[8px] text-lime-400 font-bold mt-0.5">${pPrice}</div>
+                                <div class="bg-black/40 p-3 rounded-xl border border-white/5 flex flex-col justify-between space-y-1.5">
+                                    <div>
+                                        <div class="text-[8px] font-black text-gray-400 uppercase">${pAge}</div>
+                                        <div class="text-xs font-black text-white mt-0.5 truncate">${pName}</div>
+                                    </div>
+                                    <div class="text-right border-t border-white/5 pt-2">
+                                        <span class="text-[10px] text-lime-400 font-black">${pPrice}</span>
+                                    </div>
                                 </div>
                             `;
                         }).join('');
                     } else {
-                        fieldsContainer.innerHTML = `<div class="p-2.5 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No placeables assigned to Dumbace Farm (Farm #2).</div>`;
+                        fieldsContainer.innerHTML = `<div class="p-4 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No placeables assigned to Dumbace Farm (Farm #2).</div>`;
                     }
                 }
 
@@ -1187,9 +1190,9 @@
                     const cleanName = encodeURIComponent((activeGameTitle || '').replace(/®|™/g, ''));
                     document.getElementById('active-game-stores-bar').innerHTML = `
                         <a href="https://store.playstation.com/en-us/search/${cleanName}" target="_blank" class="store-btn store-btn-ps"><i class="fab fa-playstation"></i><span>PS Store</span></a>
-                        <a href="https://store.steampowered.com/search/?term=${cleanName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC Store</span></a>
-                        <a href="https://store.steampowered.com/search/?term=${cleanName}" target="_blank" class="store-btn store-btn-steam"><i class="fas fa-desktop"></i><span>Steam</span></a>
-                        <a href="https://www.amazon.com/s?k=${cleanName}&tag=website3788-20" target="_blank" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
+                        <a href="https://store.steampowered.com/search/?term=${cleanGameName}" target="_blank" class="store-btn store-btn-pc"><i class="fab fa-steam"></i><span>PC Store</span></a>
+                        <a href="https://store.steampowered.com/search/?term=${cleanGameName}" target="_blank" class="store-btn store-btn-steam"><i class="fas fa-desktop"></i><span>Steam</span></a>
+                        <a href="https://www.amazon.com/s?k=${cleanGameName}&tag=website3788-20" target="_blank" class="store-btn store-btn-amazon"><i class="fab fa-amazon"></i><span>Amazon</span></a>
                     `;
 
                     const pct = hunt.progress || 0;
