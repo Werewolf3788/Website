@@ -1,13 +1,12 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-01 08:20:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-01 08:35:25 (EDT - 24hr New York Time)
  * Project: entertainment-71888 (/fs25 RTDB Node)
- * Description: Smart FS25 Dynamic Savegame Ingestion Engine.
+ * Description: Smart FS25 Dynamic Savegame Ingestion Engine (Clean JSON Structure).
  *              - Dual HTTP/HTTPS support.
- *              - Groups vehicles, placeables, stats, and balances by Farm.
- *              - Matches local repo images from Werewolf3788/Website/games/FS25/images/
- *              - Enriches active mods from /FS25_Mods_Info catalog.
- *              - Fixes collectibles 0/100 tracking bug across savegame XMLs.
+ *              - Forces full sync on manual triggers or config flag.
+ *              - Eliminates raw top-level strings and structures by Farm ID.
+ *              - Isolates raw XML strings into /fs25/raw_xml/.
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
  * ============================================================================ */
 
@@ -17,17 +16,13 @@ const admin = require('firebase-admin');
 const { Writable } = require('stream');
 const xml2js = require('xml2js');
 
-// ============================================================================
 // SECTION 1: SAFETY TIMEOUT (4 Minutes Failsafe)
-// ============================================================================
 setTimeout(() => {
   console.log("🚨 Safety Failsafe: Exiting cleanly after 4 minutes.");
   process.exit(0);
 }, 4 * 60 * 1000);
 
-// ============================================================================
 // SECTION 2: FIREBASE ADMIN INITIALIZATION
-// ============================================================================
 const firebaseConfig = {
   databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
 };
@@ -58,22 +53,19 @@ if (!admin.apps.length) {
 
 const db = admin.database();
 
-// ============================================================================
-// SECTION 3: NETWORK & HOST CONFIGURATION (Dual HTTP / HTTPS Support)
-// ============================================================================
+// SECTION 3: NETWORK & HOST CONFIGURATION
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
 const ftpPass = process.env.FTP_PASS;
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
+const FORCE_SYNC = process.env.FORCE_SYNC === 'true' || process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
 
 const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
 const MAP_IMAGE_URL = `https://wsrv.nl/?url=${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
 const GITHUB_IMG_BASE = `https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/`;
 
-// ============================================================================
-// SECTION 4: GITHUB IMAGE MAPPING DICTIONARY
-// ============================================================================
+// SECTION 4: GITHUB IMAGE LOOKUP DICTIONARY
 const REPO_IMAGES = {
   "americanmidwesttruckshop": "American_Midwest_Truck_Shop.jpg",
   "balenet": "Bale_Net.JPG",
@@ -215,9 +207,7 @@ const REPO_IMAGES = {
   "woodchipsroundbale": "Wood_Chips_Round Bale.JPG"
 };
 
-// ============================================================================
-// SECTION 5: HELPER FUNCTIONS & CLEANERS
-// ============================================================================
+// SECTION 5: PARSER & HELPERS
 function sanitizeXml(rawText) {
   if (!rawText) return "";
   let clean = rawText.toString();
@@ -267,7 +257,6 @@ function normalizeKey(str) {
   return str.toString().toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
-// Resolves image from GitHub repository first
 function resolveGitHubImage(query) {
   if (!query) return null;
   const key = normalizeKey(query);
@@ -335,23 +324,19 @@ async function fetchStatsApi() {
 async function fetchModsCatalog() {
   try {
     const snap = await db.ref('FS25_Mods_Info').once('value');
-    const data = snap.val();
-    return data || {};
+    return snap.val() || {};
   } catch (err) {
     console.warn("⚠️ Could not read /FS25_Mods_Info catalog:", err.message);
     return {};
   }
 }
 
-// ============================================================================
-// SECTION 6: COLLECTIBLES PARSER (Fixes 0/100 Issue)
-// ============================================================================
+// SECTION 6: COLLECTIBLES PARSER
 async function parseCollectibles(rawFiles) {
   let foundCount = 0;
   const totalCount = 100;
   const items = [];
 
-  // Check 1: collectibles.xml
   if (rawFiles['collectibles']) {
     const collJson = await parseXmlString(rawFiles['collectibles']);
     if (collJson && collJson.collectibles) {
@@ -359,30 +344,11 @@ async function parseCollectibles(rawFiles) {
       if (list) {
         const arr = Array.isArray(list) ? list : [list];
         arr.forEach((c, idx) => {
-          const isFound = String(c.isFound || c.found || '').toLowerCase() === 'true' || c.isFound === '1';
+          const isFound = String(c.collected || c.isFound || c.found || '').toLowerCase() === 'true' || c.collected === '1' || c.isFound === '1';
           if (isFound) foundCount++;
-          items.push({ id: c.id || idx + 1, name: c.name || `Collectible #${idx + 1}`, isFound });
+          items.push({ id: c.index || c.id || idx + 1, name: c.name || `Collectible #${idx + 1}`, isFound });
         });
       }
-    }
-  }
-
-  // Check 2: Scan farms.xml or careerSavegame.xml fallback
-  if (foundCount === 0 && rawFiles['farms']) {
-    const farmsJson = await parseXmlString(rawFiles['farms']);
-    if (farmsJson && farmsJson.farms && farmsJson.farms.farm) {
-      const farmList = Array.isArray(farmsJson.farms.farm) ? farmsJson.farms.farm : [farmsJson.farms.farm];
-      farmList.forEach(f => {
-        if (f.collectibles) {
-          const cList = f.collectibles.collectible || [];
-          const arr = Array.isArray(cList) ? cList : [cList];
-          arr.forEach((c, idx) => {
-            const isFound = String(c.isFound || c.found || '').toLowerCase() === 'true' || c.isFound === '1';
-            if (isFound) foundCount++;
-            items.push({ id: c.id || idx + 1, name: c.name || `Collectible #${idx + 1}`, isFound });
-          });
-        }
-      });
     }
   }
 
@@ -394,9 +360,7 @@ async function parseCollectibles(rawFiles) {
   };
 }
 
-// ============================================================================
-// SECTION 7: JSON DATA STRUCTURING ENGINE
-// ============================================================================
+// SECTION 7: JSON STRUCTURING ENGINE
 async function buildCleanStructuredSave(rawFiles, modsCatalog, rawConfigXml) {
   const structured = {
     summary: {
@@ -406,7 +370,7 @@ async function buildCleanStructuredSave(rawFiles, modsCatalog, rawConfigXml) {
       totalActiveMods: 0
     },
     gameInfo: {},
-    collectibles: { found: 0, total: 100, formatted: "0/100" },
+    collectibles: await parseCollectibles(rawFiles),
     activeMods: {},
     farms: {},
     unowned: {
@@ -416,10 +380,6 @@ async function buildCleanStructuredSave(rawFiles, modsCatalog, rawConfigXml) {
     }
   };
 
-  // Collectibles Calculation
-  structured.collectibles = await parseCollectibles(rawFiles);
-
-  // Build Mod Catalog Dictionary
   const catalogLookup = {};
   Object.keys(modsCatalog).forEach(key => {
     const item = modsCatalog[key];
@@ -429,7 +389,6 @@ async function buildCleanStructuredSave(rawFiles, modsCatalog, rawConfigXml) {
     if (item.fileName) catalogLookup[normalizeKey(item.fileName)] = item;
   });
 
-  // Extract Active Mods
   const discoveredModNames = new Set();
   if (rawConfigXml) {
     const cfgJson = await parseXmlString(rawConfigXml);
@@ -458,7 +417,6 @@ async function buildCleanStructuredSave(rawFiles, modsCatalog, rawConfigXml) {
     const lookupKey = normalizeKey(cleanModKey);
     const catalogInfo = catalogLookup[lookupKey] || null;
 
-    // Image priority: GitHub Repo -> Catalog Database Image -> Poster Fallback
     let modImage = resolveGitHubImage(cleanModKey);
     if (!modImage && catalogInfo && (catalogInfo.image || catalogInfo.imageUrl)) {
       modImage = catalogInfo.image || catalogInfo.imageUrl;
@@ -479,7 +437,6 @@ async function buildCleanStructuredSave(rawFiles, modsCatalog, rawConfigXml) {
 
   structured.summary.totalActiveMods = Object.keys(structured.activeMods).length;
 
-  // Process Farms
   if (rawFiles['farms']) {
     const farmsJson = await parseXmlString(rawFiles['farms']);
     if (farmsJson && farmsJson.farms && farmsJson.farms.farm) {
@@ -517,7 +474,6 @@ async function buildCleanStructuredSave(rawFiles, modsCatalog, rawConfigXml) {
     };
   }
 
-  // Process Vehicles
   if (rawFiles['vehicles']) {
     const vehJson = await parseXmlString(rawFiles['vehicles']);
     if (vehJson && vehJson.vehicles && vehJson.vehicles.vehicle) {
@@ -560,7 +516,6 @@ async function buildCleanStructuredSave(rawFiles, modsCatalog, rawConfigXml) {
     }
   }
 
-  // Process Placeables
   if (rawFiles['placeables']) {
     const plcJson = await parseXmlString(rawFiles['placeables']);
     if (plcJson && plcJson.placeables && plcJson.placeables.placeable) {
@@ -602,22 +557,6 @@ async function buildCleanStructuredSave(rawFiles, modsCatalog, rawConfigXml) {
     }
   }
 
-  // Process Statistics
-  if (rawFiles['farms_statistics']) {
-    const statsJson = await parseXmlString(rawFiles['farms_statistics']);
-    if (statsJson && statsJson.statistics && statsJson.statistics.farm) {
-      const statList = Array.isArray(statsJson.statistics.farm) ? statsJson.statistics.farm : [statsJson.statistics.farm];
-      statList.forEach(s => {
-        const fId = String(s.farmId || s.id);
-        const farmKey = `farm_${fId}`;
-        if (structured.farms[farmKey]) {
-          structured.farms[farmKey].statistics = s;
-        }
-      });
-    }
-  }
-
-  // Process Career Savegame
   if (rawFiles['careerSavegame']) {
     const careerJson = await parseXmlString(rawFiles['careerSavegame']);
     if (careerJson && careerJson.careerSavegame) {
@@ -636,9 +575,7 @@ async function buildCleanStructuredSave(rawFiles, modsCatalog, rawConfigXml) {
   return structured;
 }
 
-// ============================================================================
 // SECTION 8: SMART PIPELINE EXECUTION
-// ============================================================================
 async function runPipeline() {
   console.log("📡 [1/4] Running Pre-Flight Check against Web Stats API...");
   const statsData = await fetchStatsApi();
@@ -656,29 +593,20 @@ async function runPipeline() {
   const lastSyncMs = lastFullSyncIso ? new Date(lastFullSyncIso).getTime() : 0;
   const hoursSinceLastFullSync = (Date.now() - lastSyncMs) / (1000 * 60 * 60);
 
-  console.log(`📊 Active Players: ${activePlayers} | Hours since last full sync: ${hoursSinceLastFullSync.toFixed(1)}h`);
+  console.log(`📊 Active Players: ${activePlayers} | Force Sync: ${FORCE_SYNC} | Hours since sync: ${hoursSinceLastFullSync.toFixed(1)}h`);
 
-  if (activePlayers === 0 && hoursSinceLastFullSync < 24 && lastSyncMs > 0) {
-    console.log("💤 Server Idle (0 players) & full sync performed < 24h ago.");
-    console.log("⚡ Updating live heartbeat and exiting cleanly.");
-
-    const idlePayload = {
+  // If server is idle, not manually forced, and synced within 24 hours, perform heartbeat only
+  if (!FORCE_SYNC && activePlayers === 0 && hoursSinceLastFullSync < 24 && lastSyncMs > 0) {
+    console.log("💤 Server Idle & recently synced. Updating live status only.");
+    await db.ref('fs25').update({
       activePlayers: 0,
       lastUpdated: new Date().toISOString(),
       liveMapImage: MAP_IMAGE_URL
-    };
-    if (statsData.text) {
-      idlePayload.raw_xml = { stats: statsData.text };
-    }
-
-    await db.ref('fs25').update(idlePayload);
+    });
     process.exit(0);
   }
 
-  console.log(activePlayers > 0 
-    ? `🔥 Active player detected (${activePlayers} online). Proceeding with full 16-min sync...`
-    : `⏰ 24-Hour maintenance interval reached (${hoursSinceLastFullSync.toFixed(1)}h). Running full sync...`
-  );
+  console.log("🚀 Executing Full Savegame & Mod Sync...");
 
   let detectedSlot = statsData.activeSlot || null;
 
@@ -697,7 +625,7 @@ async function runPipeline() {
 
   if (!ftpUser || !ftpPass) {
     console.warn("⚠️ FTP credentials missing. Writing stats feed only.");
-    await db.ref('fs25').update(masterPayload);
+    await db.ref('fs25').set(masterPayload);
     process.exit(0);
   }
 
@@ -731,7 +659,7 @@ async function runPipeline() {
           const slotMatch = cfgXml.match(/savegameSlot="(\d+)"/i) || cfgXml.match(/savegame="(\d+)"/i) || cfgXml.match(/<savegame>(\d+)<\/savegame>/i);
           if (slotMatch) {
             detectedSlot = slotMatch[1];
-            console.log(`🎯 Active save slot verified from config: Slot #${detectedSlot}`);
+            console.log(`🎯 Active save slot verified: Slot #${detectedSlot}`);
             break;
           }
         }
@@ -773,7 +701,7 @@ async function runPipeline() {
     if (!activeSavePath && allDiscoveredFolders.length > 0) {
       activeSavePath = allDiscoveredFolders[0].path;
       detectedSlot = allDiscoveredFolders[0].slotNumber;
-      console.log(`🎯 Auto-selected most recently modified save directory: [ ${activeSavePath} ]`);
+      console.log(`🎯 Auto-selected save directory: [ ${activeSavePath} ]`);
     }
 
     if (!activeSavePath) {
@@ -820,16 +748,16 @@ async function runPipeline() {
     masterPayload.farms = cleanData.farms;
     masterPayload.unowned = cleanData.unowned;
 
-    console.log("💾 [4/4] Writing clean enriched JSON tree to Firebase /fs25...");
+    // Overwrite the entire /fs25 node to strip away previous raw XML keys
+    console.log("💾 [4/4] Writing clean atomic payload to Firebase /fs25...");
     await db.ref('fs25').set(masterPayload);
 
-    console.log(`🏆 Server data successfully synchronized to Firebase /fs25!`);
+    console.log(`🏆 Server data successfully updated cleanly to Firebase /fs25!`);
     client.close();
     process.exit(0);
 
   } catch (err) {
     console.error("🚨 Pipeline Error:", err.message);
-    await db.ref('fs25').update(masterPayload);
     client.close();
     process.exit(0);
   }
