@@ -3,18 +3,17 @@
     ==========================================
     --- PRECISION INTEGRITY PROTOCOL ---
     Project: Kevin's Official Pack Hub - Dynamic Dashboard
-    Version: 15.5.0-Wolf - Twitch Restored to werewolf3788
-    Timestamp: Sat, Aug 8, 2026 | 7:21 PM EDT
-    Author: Kevin (WildHorse_Spirit) Admin Engine
+    Version: 16.3.0-Wolf - Clean COTW 6-Card Visual Grid (No Bottom Text Box)
+    Timestamp: Tue, Sep 1, 2026 | 7:22 AM EDT
+    Author: Kevin (WildHorse_Spirit / Werewolf3788) Admin Engine
     Compatibility: Chrome, Safari, Firefox, Edge | Mobile, Tablet, Desktop
-    Fix: Reverted Twitch API endpoint back to werewolf3788.
     ==========================================
 -->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="900"> <!-- Hard Refresh every 15 minutes -->
+    <meta http-equiv="refresh" content="900">
     <title>WildHorse_Spirit | Official Admin Hub</title>
     
     <!-- --- GOOGLE ANALYTICS (GA4 DUAL TRACKING) --- -->
@@ -32,12 +31,12 @@
             'stream_id': '13278632388',
             'page_type': 'admin_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '15.5.0',
+            'layout_version': '16.3.0',
             'user_id': 'WildHorse_Spirit',
             'engagement_timezone': 'Eastern Time (New York)',
             'engagement_timestamp_ny': getNYTime(),
             'send_page_view': true,
-            'description': 'Official Pack Hub - Twitch Restored to werewolf3788.'
+            'description': 'Official Pack Hub - Clean COTW 6-Card Visual Grid.'
         });
         gtag('config', 'G-L376P3NPY4');
     </script>
@@ -128,15 +127,15 @@
         .trophy-icon-sq { width: 50px; height: 50px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
         .trophy-title-text { font-weight: 800; color: var(--accent-orange); font-size: 15px; text-transform: uppercase; }
 
-        .recent-earn-glow {
-            border-color: rgba(255, 95, 31, 0.8) !important;
-            background: rgba(255, 95, 31, 0.06) !important;
-            box-shadow: 0 0 15px rgba(255, 95, 31, 0.25) inset, 0 0 15px rgba(255, 95, 31, 0.15) !important;
+        .recent-earn-yellow-glow {
+            border-color: rgba(245, 158, 11, 0.8) !important;
+            background: rgba(245, 158, 11, 0.06) !important;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.25) inset, 0 0 15px rgba(245, 158, 11, 0.15) !important;
             animation: recentEarnPulse 2.5s infinite ease-in-out;
         }
         @keyframes recentEarnPulse {
-            0%, 100% { box-shadow: 0 0 15px rgba(255, 95, 31, 0.25) inset, 0 0 10px rgba(255, 95, 31, 0.1) !important; }
-            50% { box-shadow: 0 0 25px rgba(255, 95, 31, 0.45) inset, 0 0 20px rgba(255, 95, 31, 0.35) !important; }
+            0%, 100% { box-shadow: 0 0 15px rgba(245, 158, 11, 0.25) inset, 0 0 10px rgba(245, 158, 11, 0.1) !important; }
+            50% { box-shadow: 0 0 25px rgba(245, 158, 11, 0.45) inset, 0 0 20px rgba(245, 158, 11, 0.35) !important; }
         }
 
         .progress-bar-container { height: 10px; background: #2d2d35; border-radius: 5px; overflow: hidden; }
@@ -151,6 +150,7 @@
         .status-dot-pulse.online { background: var(--success-green); }
         .status-dot-pulse.online::after { content: ''; position: absolute; inset: -3px; border-radius: 50%; background: inherit; opacity: 0.4; animation: dotPulse 2s infinite; }
         .status-dot-pulse.offline { background: #475569; }
+        .status-dot-pulse.expired { background: var(--danger-red); }
         @keyframes dotPulse { 0% { transform: scale(1); opacity: 0.4; } 70% { transform: scale(2.5); opacity: 0; } 100% { transform: scale(1); opacity: 0; } }
 
         #generic-lightbox { position: fixed; inset: 0; z-index: 25000; background: rgba(0,0,0,0.92); display: none; align-items: center; justify-content: center; backdrop-filter: blur(15px); padding: 20px; }
@@ -166,7 +166,6 @@
         .kf-k { color: #FF4500; transform: scaleX(-1); z-index: 2; font-weight: 900; font-size: 24px; display: inline-block; }
         .kf-f { color: #ffffff; margin-left: -0.22em; z-index: 1; font-weight: 900; font-size: 24px; text-shadow: 1px 1px 0px rgba(0,0,0,0.8); display: inline-block; }
 
-        /* CLEAN SQUAD STORE BUTTON BADGES */
         .store-btn {
             display: flex;
             flex-direction: column;
@@ -198,6 +197,17 @@
 
         .store-btn-amazon { background: rgba(255, 153, 0, 0.25); color: #ff9900; border-color: rgba(255, 153, 0, 0.5); }
         .store-btn-amazon:hover { background: #ff9900; color: #000000; }
+
+        .squad-avatar-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 9px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
 
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -243,7 +253,7 @@
             <div class="text-[10px] lg:text-[18px] font-black text-gray-400 uppercase tracking-[0.5em] mb-12">Official Pack Admin Hub</div>
             
             <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 max-w-7xl mx-auto text-center">
-                <!-- TWITCH STATUS (werewolf3788 RESTORED) -->
+                <!-- TWITCH STATUS -->
                 <a href="https://twitch.tv/werewolf3788" target="_blank" class="glass-card header-stat-card p-5 lg:p-8 border-b-4 border-purple-500 hover:scale-[1.03] active:scale-[0.98] transition-transform duration-300 cursor-pointer min-h-[160px]">
                     <div class="text-[11px] lg:text-[13px] text-purple-400 font-black mb-1 uppercase text-center w-full tracking-widest">Twitch Status</div>
                     <div id="twitch-live-status" class="text-3xl lg:text-5xl font-black text-gray-500">OFFLINE</div>
@@ -328,9 +338,7 @@
                                     <div class="text-[10px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2">
                                         <i class="fas fa-store text-orange-400"></i> Store Launchpad
                                     </div>
-                                    <div id="active-game-stores-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                                        <!-- Injected via JavaScript -->
-                                    </div>
+                                    <div id="active-game-stores-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
                                 </div>
 
                                 <!-- HUNT PROGRESS & METRICS -->
@@ -360,7 +368,7 @@
                     <div class="flex justify-between items-center mb-8 border-b border-white/10 pb-4">
                         <div>
                             <h2 class="text-cyan-400 flex items-center gap-3 uppercase"><i class="fas fa-gamepad"></i> Game Progression Hub</h2>
-                            <p id="firestore-path-label" class="text-xs text-gray-400 uppercase font-black tracking-widest mt-1">Smart Progress Observer (>0% Only)</p>
+                            <p id="firestore-path-label" class="text-xs text-gray-400 uppercase font-black tracking-widest mt-1">Multi-Platform Cloud Discovery (>0% Only)</p>
                         </div>
                         <div id="firestore-status-badge" class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-cyan-950 text-cyan-400 border border-cyan-500/40 animate-pulse">
                             Live Syncing
@@ -369,7 +377,7 @@
 
                     <div id="firestore-games-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div class="p-8 text-center text-gray-500 font-bold uppercase tracking-widest text-xs col-span-2">
-                            Evaluating progression levels...
+                            Scanning Firestore profiles...
                         </div>
                     </div>
                 </section>
@@ -395,16 +403,17 @@
                     </div>
                 </section>
 
-                <!-- THEHUNTER: COTW TROPHY LODGE WITH PLAYSTATION COTW_RANKS -->
+                <!-- THEHUNTER: COTW TROPHY LODGE (CLEAN 6 CARDS ONLY) -->
                 <section id="cotw-card" class="glass-card p-8 border-b-4 border-emerald-500 text-center transition-all">
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-emerald-400 flex items-center gap-3 uppercase tracking-tighter text-left">
                             <i class="fas fa-paw"></i> COTW Trophy Lodge
                         </h2>
-                        <span class="text-[9px] font-black uppercase text-blue-400 bg-blue-950 border border-blue-500/30 px-2 py-0.5 rounded">PS5 Ranks</span>
+                        <span id="cotw-platform-tag" class="text-[9px] font-black uppercase text-emerald-400 bg-emerald-950 border border-emerald-500/30 px-2 py-0.5 rounded">Live Sync</span>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-3 mb-4">
+                    <!-- 6 VISUAL TROPHY CARDS GRID -->
+                    <div class="grid grid-cols-3 gap-3">
                         <div class="bg-white/5 p-3 rounded-xl border border-white/5 flex flex-col items-center">
                             <i class="fas fa-crown text-yellow-400 text-lg mb-1 animate-pulse"></i>
                             <span class="text-[9px] text-gray-400 uppercase font-black tracking-tighter">Great One</span>
@@ -436,18 +445,9 @@
                             <span id="cotw-bronze" class="text-base font-black text-white">--</span>
                         </div>
                     </div>
-
-                    <!-- PlayStation COTW_Ranks Embed Display -->
-                    <div id="cotw-ranks-ps-container" class="bg-black/40 p-4 rounded-xl border border-emerald-500/20 text-left">
-                        <div class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1 flex justify-between">
-                            <span>PlayStation Hunter Rank</span>
-                            <span id="cotw-ps-rank-val" class="text-white">--</span>
-                        </div>
-                        <div id="cotw-ps-ranks-details" class="text-[11px] text-gray-400 italic">Syncing PlayStation COTW_Ranks...</div>
-                    </div>
                 </section>
 
-                <!-- GHOST SQUAD OPERATOR STATUS (SAFE GUARDED) -->
+                <!-- GHOST SQUAD OPERATOR STATUS -->
                 <section id="ghost-squad-card" class="glass-card p-8 border-b-4 border-orange-600 text-center transition-all hidden">
                     <h2 class="mb-4 text-orange-500 flex items-center justify-center gap-3 uppercase tracking-tighter">
                         <i class="fas fa-shield-halved"></i> Ghost Squad Operator
@@ -543,7 +543,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const TARGET_USER_ID = "Werewolf3788";
+        const TARGET_IDENTITIES = ["wildhorse_spirit", "wildhorse", "WildHorse_Spirit", "Werewolf3788", "werewolf3788", "Werewolf", "werewolf"];
         const AMAZON_TAG = "website3788-20";
 
         function resolveGameTitle(rawTitle, rawId) {
@@ -556,38 +556,58 @@
             if (cleanId === 'cotw' || cleanTitle === 'cotw' || cleanTitle.includes('call of the wild')) {
                 return "TheHUNTER: Call of the Wild";
             }
-            return rawTitle || rawId.replace(/-/g, ' ').toUpperCase();
+            if (cleanId.includes('sniper') || cleanTitle.includes('sniper elite')) {
+                return "Sniper Elite 5";
+            }
+            return rawTitle || rawId.replace(/[-_]/g, ' ').toUpperCase();
         }
 
-        function generateAffiliateUrl(gameName) {
-            if (!gameName) return "https://www.amazon.com/s?k=gaming&tag=" + AMAZON_TAG;
-            const cleanName = encodeURIComponent(gameName.replace(/®|™/g, ""));
-            return `https://www.amazon.com/s?k=${cleanName}&tag=${AMAZON_TAG}`;
-        }
-
+        // Direct Stream for COTW 6 Trophy Cards (Reads from both COTW and COTW_Ranks documents)
         function subscribePlaystationCOTW() {
-            const cotwRankRef = doc(db, "users", TARGET_USER_ID, "platform", "playstation", "progress", "COTW_Ranks");
-            onSnapshot(cotwRankRef, (docSnap) => {
-                const rankValEl = document.getElementById("cotw-ps-rank-val");
-                const detailsEl = document.getElementById("cotw-ps-ranks-details");
-                if (!rankValEl || !detailsEl) return;
+            const platforms = ['playstation', 'pc', 'xbox'];
+            TARGET_IDENTITIES.forEach(userId => {
+                platforms.forEach(platform => {
+                    const updateCardsFromData = (data) => {
+                        const extractVal = (keys) => {
+                            for (const key of keys) {
+                                const normKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+                                for (const fKey in data) {
+                                    const normFKey = fKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+                                    if (normKey === normFKey) {
+                                        return data[fKey] !== undefined ? data[fKey] : 0;
+                                    }
+                                }
+                            }
+                            return 0;
+                        };
 
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    const rank = data.rank || data.level || data.currentRank || "Rank Syncing";
-                    rankValEl.innerText = rank;
-                    
-                    let html = `<div class="space-y-1 mt-1">`;
-                    for (const [k, v] of Object.entries(data)) {
-                        if (typeof v !== 'object') {
-                            html += `<div class="flex justify-between text-[10px]"><span>${k.toUpperCase()}:</span><span class="text-white font-bold">${v}</span></div>`;
-                        }
-                    }
-                    html += `</div>`;
-                    detailsEl.innerHTML = html;
-                } else {
-                    detailsEl.innerText = "No active PlayStation COTW_Ranks document found.";
-                }
+                        const goVal = extractVal(['greatone', 'great_one', 'great one']);
+                        const rfVal = extractVal(['albino', 'furtype', 'fur_type', 'fur type', 'rare_fur', 'rarefur']);
+                        const dmVal = extractVal(['diamond']);
+                        const gdVal = extractVal(['gold']);
+                        const svVal = extractVal(['silver']);
+                        const bzVal = extractVal(['bronze']);
+
+                        const go = document.getElementById('cotw-great-one'); if (go && goVal > 0) go.innerText = goVal;
+                        const rf = document.getElementById('cotw-rare-fur'); if (rf && rfVal > 0) rf.innerText = rfVal;
+                        const dm = document.getElementById('cotw-diamond'); if (dm && dmVal > 0) dm.innerText = dmVal;
+                        const gd = document.getElementById('cotw-gold'); if (gd && gdVal > 0) gd.innerText = gdVal;
+                        const sv = document.getElementById('cotw-silver'); if (sv && svVal > 0) sv.innerText = svVal;
+                        const bz = document.getElementById('cotw-bronze'); if (bz && bzVal > 0) bz.innerText = bzVal;
+                    };
+
+                    // Listen to COTW_Ranks
+                    const cotwRankRef = doc(db, "users", userId, "platform", platform, "progress", "COTW_Ranks");
+                    onSnapshot(cotwRankRef, (docSnap) => {
+                        if (docSnap.exists()) updateCardsFromData(docSnap.data());
+                    });
+
+                    // Listen to COTW
+                    const cotwTrophyRef = doc(db, "users", userId, "platform", platform, "progress", "COTW");
+                    onSnapshot(cotwTrophyRef, (docSnap) => {
+                        if (docSnap.exists()) updateCardsFromData(docSnap.data());
+                    });
+                });
             });
         }
 
@@ -606,7 +626,7 @@
 
                 let html = "";
                 activeDocs.forEach((item) => {
-                    const { gameId, platform, data } = item;
+                    const { gameId, platform, userId, data } = item;
                     
                     if (gameId.toLowerCase() === 'cotw_ranks') return;
 
@@ -618,29 +638,48 @@
 
                     if (Array.isArray(data.progress)) {
                         total = data.progress.length;
-                        completed = data.progress.filter(i => i && (i.collected === true || i.completed === true || i.earned === true)).length;
+                        completed = data.progress.filter(i => i && (i.collected === true || i.completed === true || i.earned === true || i.done === true)).length;
                         percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+                    } else if (data.skills && typeof data.skills === 'object') {
+                        let skillSlotsTotal = 0;
+                        let skillSlotsFilled = 0;
+                        Object.keys(data.skills).forEach(cat => {
+                            const catObj = data.skills[cat];
+                            if (typeof catObj === 'object') {
+                                Object.keys(catObj).forEach(sk => {
+                                    skillSlotsFilled += (catObj[sk].current || 0);
+                                    skillSlotsTotal += 4;
+                                });
+                            }
+                        });
+                        completed = skillSlotsFilled;
+                        total = skillSlotsTotal;
+                        percent = total > 0 ? Math.round((completed / total) * 100) : (data.percent || 0);
                     } else if (typeof data.progress === 'number') {
                         percent = data.progress;
-                        completed = data.completedItems || data.earnedTrophies || 0;
-                        total = data.totalItems || data.totalTrophies || 0;
+                        completed = data.completedItems || data.earnedTrophies || data.currentValue || 0;
+                        total = data.totalItems || data.totalTrophies || data.targetValue || 0;
                     } else {
-                        percent = data.percent !== undefined ? data.percent : 0;
-                        completed = data.completedItems || data.earnedTrophies || 0;
-                        total = data.totalItems || data.totalTrophies || 0;
+                        percent = data.percent !== undefined ? data.percent : (data.stats?.playerLevel ? Math.round((data.stats.playerLevel / 30) * 100) : 0);
+                        completed = data.completedItems || data.earnedTrophies || data.stats?.playerLevel || 0;
+                        total = data.totalItems || data.totalTrophies || 30;
                     }
 
                     if (percent <= 0 && completed === 0) return;
 
                     const lastUpdated = data.lastUpdated || data.updatedAt ? new Date(data.lastUpdated || data.updatedAt).toLocaleDateString() : "Recent";
                     const cleanGameName = encodeURIComponent(title.replace(/®|™/g, ''));
+                    const ratioDisplay = total > 0 ? `${completed}/${total}` : `${percent}%`;
 
                     html += `
                         <div class="bg-black/40 p-6 rounded-2xl border border-white/10 hover:border-cyan-400 transition-all flex flex-col justify-between space-y-4">
                             <div>
                                 <div class="flex justify-between items-start mb-2 gap-2">
                                     <h3 class="font-black text-white text-base uppercase leading-tight">${title}</h3>
-                                    <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-500/30">${platform}</span>
+                                    <div class="flex gap-1.5 flex-wrap justify-end">
+                                        <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-500/30">${platform}</span>
+                                        <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded bg-orange-950 text-orange-400 border border-orange-500/30">${userId}</span>
+                                    </div>
                                 </div>
                                 <div class="flex justify-between text-xs text-gray-400 uppercase font-bold mt-1">
                                     <span>Doc: ${gameId}</span>
@@ -651,14 +690,13 @@
                             <div class="space-y-2">
                                 <div class="flex justify-between text-xs font-black uppercase">
                                     <span class="text-cyan-400">Current Progress</span>
-                                    <span class="text-white">${percent}% (${completed}/${total})</span>
+                                    <span class="text-white">${percent}% (${ratioDisplay})</span>
                                 </div>
                                 <div class="progress-bar-container h-3">
                                     <div class="progress-bar-fill bg-gradient-to-r from-cyan-500 to-blue-600" style="width: ${percent}%"></div>
                                 </div>
                             </div>
 
-                            <!-- CLEAN SQUAD STORE LAUNCHPAD -->
                             <div class="space-y-1.5 pt-1">
                                 <div class="text-[9px] font-black text-gray-400 uppercase tracking-widest">Store / Purchase Options</div>
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -682,28 +720,33 @@
                             </div>
 
                             <button onclick="openFirestoreGameDetails('${title}', '${encodeURIComponent(JSON.stringify(data))}')" class="w-full py-2 bg-white/10 hover:bg-cyan-500 hover:text-black rounded-xl font-black text-[10px] uppercase tracking-wider transition-colors min-h-[44px]">
-                                <i class="fas fa-list-check mr-1"></i> Inspect Objectives
+                                <i class="fas fa-list-check mr-1"></i> Inspect Objectives (${ratioDisplay})
                             </button>
                         </div>
                     `;
                 });
 
                 if (html === "") {
-                    gamesGrid.innerHTML = `<div class="p-8 text-center text-gray-500 font-bold uppercase tracking-widest text-xs col-span-2">No games with verified active progress (>0%) found.</div>`;
+                    gamesGrid.innerHTML = `<div class="p-8 text-center text-gray-500 font-bold uppercase tracking-widest text-xs col-span-2">No games with verified active progress (>0%) found across wildhorse_spirit / werewolf identities.</div>`;
                 } else {
                     gamesGrid.innerHTML = html;
                 }
             };
 
-            const unsubs = platforms.map(platform => {
-                const progressRef = collection(db, "users", TARGET_USER_ID, "platform", platform, "progress");
-                return onSnapshot(progressRef, (snapshot) => {
-                    snapshot.forEach((doc) => {
-                        const key = `${platform}_${doc.id}`;
-                        activeDocs.set(key, { gameId: doc.id, platform, data: doc.data() });
-                    });
-                    renderGrid();
-                }, (err) => console.warn(`[FIRESTORE WARN] ${platform} error:`, err));
+            const unsubs = [];
+
+            TARGET_IDENTITIES.forEach(userId => {
+                platforms.forEach(platform => {
+                    const progressRef = collection(db, "users", userId, "platform", platform, "progress");
+                    const unsub = onSnapshot(progressRef, (snapshot) => {
+                        snapshot.forEach((doc) => {
+                            const key = `${userId}_${platform}_${doc.id}`;
+                            activeDocs.set(key, { gameId: doc.id, platform, userId, data: doc.data() });
+                        });
+                        renderGrid();
+                    }, (err) => console.warn(`[FIRESTORE ENGINE] ${userId} ${platform} read notice:`, err.message));
+                    unsubs.push(unsub);
+                });
             });
 
             return () => unsubs.forEach(unsub => unsub());
@@ -730,7 +773,7 @@
             let detailsHtml = `
                 <div class="flex justify-between items-center bg-black/50 p-4 rounded-xl border border-white/10 mb-4">
                     <span class="font-bold text-gray-400 uppercase text-xs">Game Tracker Doc ID</span>
-                    <span class="font-black text-cyan-400 uppercase text-xs">${data.gameId || 'sniper-elite-5'}</span>
+                    <span class="font-black text-cyan-400 uppercase text-xs">${data.gameId || 'game-registry'}</span>
                 </div>`;
 
             const list = Array.isArray(data.progress) ? data.progress : (data.items || data.checklist);
@@ -741,7 +784,7 @@
 
                 for (const item of list) {
                     const rawId = typeof item === 'string' ? item : (item.id || item.code || '');
-                    const isCollected = typeof item === 'object' ? (item.collected === true || item.completed === true || item.earned === true) : false;
+                    const isCollected = typeof item === 'object' ? (item.collected === true || item.completed === true || item.earned === true || item.done === true) : false;
 
                     const regMeta = SNIPER_ELITE_5_REGISTRY[rawId] || {};
                     const displayTitle = regMeta.name || item.name || item.title || rawId || 'Objective Item';
@@ -780,7 +823,7 @@
     <script>
         const MENU_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?gid=0&single=true&output=csv";
         const COTW_FIRESTORE_URL = "https://firestore.googleapis.com/v1/projects/entertainment-71888/databases/(default)/documents/artifacts/cotw-trophy-display/public/data/userTrophies/Werewolf3788";
-        
+
         const MY_TAGS = ["wildhorse_spirit", "wildhorse", "werewolf", "werewolf3788"];
         const OTHER_MEMBER_TAGS = ["raymystyro", "onelividman", "darkwing", "darkwing69420", "terrdog", "terrdog420", "fluffy", "phoenix_darkfire", "elucidatorvah", "jcrow", "jcrow207", "unicornbunnyshiv"];
 
@@ -826,10 +869,9 @@
             return d.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' }) + " at " + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
 
-        // --- DYNAMIC 7-USER SQUAD UNLOCK RATIO ENGINE ---
         function calculateSquadEarnRatio(trophy) {
             if (!trophy || (!trophy.name && !trophy.id)) {
-                return { count: 0, total: 0, text: `0/0 Squad` };
+                return { count: 0, total: 0, text: `0/0 Squad`, unlockedUsers: [] };
             }
 
             const normalize = (str) => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '').trim();
@@ -841,6 +883,7 @@
 
             let unlockedCount = 0;
             let playersWhoPlayThisGame = 0;
+            const unlockedUsers = [];
 
             if (globalPsnPayload && globalPsnPayload.users) {
                 const userKeys = Object.keys(globalPsnPayload.users);
@@ -875,6 +918,10 @@
 
                         if (hasEarned) {
                             unlockedCount++;
+                            unlockedUsers.push({
+                                name: u.onlineId || userKey.toUpperCase(),
+                                avatar: u.avatar || ''
+                            });
                         }
                     }
                 });
@@ -882,13 +929,17 @@
 
             if (playersWhoPlayThisGame === 0) {
                 playersWhoPlayThisGame = trophy.earned ? 1 : 1;
-                if (trophy.earned) unlockedCount = 1;
+                if (trophy.earned) {
+                    unlockedCount = 1;
+                    unlockedUsers.push({ name: "WildHorse_Spirit" });
+                }
             }
 
             return {
                 count: unlockedCount,
                 total: playersWhoPlayThisGame,
-                text: `${unlockedCount}/${playersWhoPlayThisGame} Squad`
+                text: `${unlockedCount}/${playersWhoPlayThisGame} Squad`,
+                unlockedUsers
             };
         }
 
@@ -903,10 +954,9 @@
             const img = document.getElementById('music-widget-img');
             if(!img) return;
             const now = Math.floor(Date.now() / 60000); 
-            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=15.5.0`;
+            img.src = `https://lastfm-recently-played.vercel.app/api?user=KR888434&count=1&width=300&t=${now}&v=16.3.0`;
         }
 
-        /* RESTORED TWITCH ENDPOINT TO werewolf3788 */
         async function fetchLiveTwitch() {
             try {
                 const username = "werewolf3788";
@@ -1064,7 +1114,7 @@
             lb.style.display = 'flex';
         }
 
-        /* LIGHTBOX TROPHY MODAL WITH INDIVIDUAL SQUAD UNLOCK BREAKDOWN */
+        /* LIGHTBOX TROPHY MODAL */
         window.openTrophyDetailModal = function(t, gameTitle) {
             if (!t) return;
             const lb = document.getElementById("generic-lightbox");
@@ -1089,7 +1139,6 @@
                 `;
             }
 
-            // BUILD INDIVIDUAL SQUAD PLAYER BREAKDOWN
             let playerBreakdownHtml = "";
             if (globalPsnPayload && globalPsnPayload.users) {
                 const normalize = (str) => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '').trim();
@@ -1204,47 +1253,6 @@
             if(lb) lb.style.display = 'none';
         }
 
-        function getFirestoreValue(field) {
-            if (!field) return 0;
-            if (field.integerValue !== undefined) return parseInt(field.integerValue);
-            if (field.doubleValue !== undefined) return parseFloat(field.doubleValue);
-            if (field.stringValue !== undefined) return parseInt(field.stringValue) || field.stringValue;
-            return 0;
-        }
-
-        async function updateCOTWLodge() {
-            try {
-                const res = await fetch(COTW_FIRESTORE_URL);
-                if (!res.ok) return;
-                const docSnap = await res.json();
-                const fields = docSnap.fields || {};
-
-                const extractVal = (keys) => {
-                    for (const key of keys) {
-                        const normKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
-                        for (const fKey in fields) {
-                            const normFKey = fKey.toLowerCase().replace(/[^a-z0-9]/g, '');
-                            if (normKey === normFKey) {
-                                return getFirestoreValue(fields[fKey]);
-                            }
-                        }
-                    }
-                    return 0;
-                };
-
-                document.getElementById('cotw-great-one').innerText = extractVal(['greatone', 'great_one', 'great one']);
-                document.getElementById('cotw-rare-fur').innerText = extractVal(['albino', 'furtype', 'fur_type', 'fur type', 'rare_fur']);
-                document.getElementById('cotw-diamond').innerText = extractVal(['diamond']);
-                document.getElementById('cotw-gold').innerText = extractVal(['gold']);
-                document.getElementById('cotw-silver').innerText = extractVal(['silver']);
-                document.getElementById('cotw-bronze').innerText = extractVal(['bronze']);
-
-            } catch (e) {
-                console.error("Firestore COTW sync failed cleanly:", e);
-            }
-        }
-
-        /* SAFE GHOST SQUAD OPERATOR FUNCTION WITH EXECUTION GUARD */
         async function updateGhostSquad() {
             try {
                 const res = await fetch("https://entertainment-71888-default-rtdb.firebaseio.com/ghost_squad/operators/Werewolf3788.json?t=" + Date.now());
@@ -1271,12 +1279,9 @@
                         detailsContainer.innerHTML = html;
                     }
                 }
-            } catch (e) {
-                // Silently fails without breaking other dashboard components
-            }
+            } catch (e) {}
         }
 
-        /* PSN Realtime Database fetch endpoint (/psn.json) */
         async function updateHub() {
             try {
                 const firebaseRes = await fetch("https://entertainment-71888-default-rtdb.firebaseio.com/psn.json?t=" + Date.now());
@@ -1286,24 +1291,19 @@
 
                 globalPsnPayload = psnData;
 
-                // Dynamic target check for gamertags/WildHorse_Spirit or users/wildhorse_spirit
-                const user = psnData.gamertags?.WildHorse_Spirit || psnData.users?.wildhorse_spirit || psnData.users?.wildhorse || {};
+                const user = psnData.gamertags?.WildHorse_Spirit || psnData.users?.wildhorse_spirit || psnData.users?.wildhorse || psnData.users?.werewolf3788 || psnData.users?.Werewolf3788 || {};
 
                 const hDot = document.getElementById('health-dot');
                 const hVal = document.getElementById('health-value');
-                const aBox = document.getElementById('system-alerts-container');
 
-                // Token validity check with clean banner hiding
                 const isTokenValid = user.npssoValid !== false && user.handshakeState !== 'EXPIRED';
 
                 if (!isTokenValid) {
                     if (hDot) hDot.className = "status-dot-pulse expired";
                     if (hVal) hVal.innerText = user.handshakeText || "WILDHORSE_SPIRIT HANDSHAKE: NPSSO EXPIRED / TOKEN BAD";
-                    if (aBox) aBox.classList.remove('hidden');
                 } else {
                     if (hDot) hDot.className = "status-dot-pulse online";
                     if (hVal) hVal.innerText = user.handshakeText || ((user.onlineId || "WildHorse_Spirit") + " HANDSHAKE: FIREBASE LIVE");
-                    if (aBox) aBox.classList.add('hidden');
                 }
 
                 const displayAdmin = document.getElementById('display-admin-name');
@@ -1347,7 +1347,6 @@
                 const gamesPlayedEl = document.getElementById('games-played-count');
                 if (gamesPlayedEl) gamesPlayedEl.innerText = user.gamesPlayed || "0";
 
-                // LIVE ONLINE / IDLE GAME BROADCAST ENGINE
                 const isOnline = user.online || false;
                 const sLabel = document.getElementById('online-status-label');
                 const gSub = document.getElementById('current-game-sub');
@@ -1373,7 +1372,6 @@
                 const sC = document.getElementById('silver-count'); if(sC) sC.innerText = summary.silver || 0;
                 const bC = document.getElementById('bronze-count'); if(bC) bC.innerText = summary.bronze || 0;
 
-                // ACTIVE HUNT & RECENT GAMES DATA
                 let hunt = user.activeHunt;
                 const recentGamesNormal = convertFirebaseArray(user.recentGames);
                 const fullLibraryNormal = convertFirebaseArray(user.fullLibrary);
@@ -1465,14 +1463,29 @@
                         if (currentTrophyData.length > 0) {
                             checklist.innerHTML = currentTrophyData.map((t, idx) => {
                                 let individualProgressTracker = "";
-                                if (!t.earned && t.targetValue > 1) {
-                                    individualProgressTracker = `<div class="text-[10px] font-black text-blue-400 uppercase tracking-widest mt-1">Progress: ${t.currentValue || 0} / ${t.targetValue}</div>`;
+                                if (t.targetValue > 1 || (t.currentValue !== undefined && t.targetValue !== undefined)) {
+                                    const cVal = t.currentValue || (t.earned ? t.targetValue : 0);
+                                    const tVal = t.targetValue || 100;
+                                    individualProgressTracker = `<div class="text-[10px] font-black text-cyan-400 uppercase tracking-widest mt-1">Progress: ${cVal} / ${tVal}</div>`;
                                 }
 
                                 const isEarnedRecently = t.earned && t.timestamp > 0 && (Date.now() - t.timestamp <= 12 * 60 * 60 * 1000);
                                 const yellowBadge = isEarnedRecently ? `<span class="ml-2 text-[8px] bg-yellow-500/20 text-yellow-300 border border-yellow-400 rounded px-1.5 py-0.5 animate-pulse font-extrabold tracking-widest"><i class="fas fa-fire mr-1"></i>RECENT 12H</span>` : '';
 
                                 const squadRatio = calculateSquadEarnRatio(t);
+
+                                let squadMembersListHtml = "";
+                                if (squadRatio.unlockedUsers.length > 0) {
+                                    squadMembersListHtml = `
+                                        <div class="flex items-center gap-1 mt-1 flex-wrap">
+                                            ${squadRatio.unlockedUsers.map(u => `
+                                                <span class="squad-avatar-pill bg-green-950 text-green-400 border border-green-500/30">
+                                                    <i class="fas fa-user-check text-[8px]"></i> ${u.name}
+                                                </span>
+                                            `).join('')}
+                                        </div>
+                                    `;
+                                }
 
                                 return `
                                 <div class="trophy-row ${isEarnedRecently ? 'recent-earn-yellow-glow' : ''}" onclick="openTrophyDetailModal(currentTrophyData[${idx}], '${(hunt.title || 'PlayStation Game').replace(/'/g, "\\'")}')">
@@ -1486,6 +1499,7 @@
                                         </div>
                                         ${individualProgressTracker}
                                         <div class="text-[8px] font-black text-orange-400 uppercase mt-1 tracking-widest"><i class="fas fa-users mr-1"></i> ${squadRatio.text}</div>
+                                        ${squadMembersListHtml}
                                     </div>
                                     <div class="min-w-[110px] text-right">
                                         ${t.earned ? `<div class="font-black text-[9px] ${isEarnedRecently ? 'text-yellow-400' : 'text-green-400'} uppercase">EARNED</div><div class="text-[8px] text-gray-400 uppercase mt-0.5">${getRelativeTime(t.timestamp)}</div>` : `<div class="text-[9px] font-black uppercase text-gray-600">${t.rarity || t.type || 'LOCKED'}</div>`}
@@ -1558,12 +1572,10 @@
         buildSmartMenu();
         refreshMusic();
         fetchLiveTwitch();
-        updateCOTWLodge();
         if (typeof updateGhostSquad === 'function') updateGhostSquad();
         updateHub();
         setInterval(refreshMusic, 60000);
         setInterval(fetchLiveTwitch, 60000);
-        setInterval(updateCOTWLodge, 30000);
         setInterval(() => { if (typeof updateGhostSquad === 'function') updateGhostSquad(); }, 30000);
         setInterval(updateHub, 30000);
     </script>
