@@ -1,7 +1,7 @@
 /* ============================================================================
    FILE: style.css
-   DESCRIPTION: Wildlands In-Game HUD Interface, Responsive Columns & Clickable Slots
-   TIMESTAMP (24-HR NY TIME): 2026-09-01 05:35 EDT
+   DESCRIPTION: Wildlands HUD Layout, Standard Slots & Horizontal 3x3 Rebel Powers
+   TIMESTAMP (24-HR NY TIME): 2026-09-01 06:05 EDT
    ============================================================================ */
 
 :root {
@@ -48,7 +48,7 @@ body {
     border: 0;
 }
 
-/* --- HEADER & NAVIGATION (Lines 49 - 110) --- */
+/* --- Line 49: Header & Navigation --- */
 .hub-header {
     background-color: var(--card-bg);
     border-bottom: 2px solid var(--card-border);
@@ -123,7 +123,7 @@ body {
     border-radius: 2px;
 }
 
-/* --- APP CONTAINER & STRUCTURE (Lines 112 - 165) --- */
+/* --- Line 112: App Container --- */
 .hub-container {
     width: 85%;
     max-width: 1500px;
@@ -174,7 +174,7 @@ body {
     background: #233347;
 }
 
-/* --- DUAL COLUMN DESKTOP ENGINE (Lines 167 - 210) --- */
+/* --- Line 167: Dual Column View --- */
 .desktop-dual-layout {
     display: grid;
     grid-template-columns: 360px 1fr;
@@ -195,7 +195,7 @@ body {
     min-height: 600px;
 }
 
-/* --- STATS HUD CARD (Lines 212 - 275) --- */
+/* --- Line 212: Stats HUD Block --- */
 .profile-header {
     display: flex;
     justify-content: space-between;
@@ -287,7 +287,7 @@ body {
     border-radius: 6px;
 }
 
-/* --- EDIT FORM (Lines 277 - 330) --- */
+/* --- Line 277: Edit Stats Panel --- */
 .edit-stats-panel.hidden {
     display: none;
 }
@@ -373,7 +373,7 @@ body {
     cursor: pointer;
 }
 
-/* --- AUTHENTIC WILDLANDS SKILL TREE HUD (Lines 332 - 470) --- */
+/* --- Line 332: Authentic Wildlands Skill Tree HUD --- */
 .skills-tabs-container {
     display: flex;
     gap: 8px;
@@ -394,6 +394,12 @@ body {
     cursor: pointer;
     white-space: nowrap;
     text-transform: uppercase;
+    transition: all 0.15s ease;
+}
+
+.tab-link:hover {
+    color: var(--text-white);
+    border-color: var(--wildlands-blue);
 }
 
 .tab-link.active {
@@ -414,7 +420,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 14px;
-    min-width: 220px;
+    min-width: 280px;
     flex: 1;
 }
 
@@ -447,12 +453,6 @@ body {
 .wildlands-skill-block.is-selected {
     border-color: var(--wildlands-blue-light);
     box-shadow: 0 0 10px rgba(0, 136, 204, 0.4);
-}
-
-.wildlands-skill-block.is-locked {
-    opacity: 0.55;
-    background: #0f141c;
-    border-color: #1a2330;
 }
 
 .wildlands-skill-block.is-unlocked {
@@ -501,6 +501,7 @@ body {
     text-shadow: 0 0 8px rgba(234, 179, 8, 0.9);
 }
 
+/* Standard Dash Slots */
 .skill-slots-row {
     display: flex;
     gap: 6px;
@@ -509,7 +510,7 @@ body {
 }
 
 .skill-slot-dash {
-    height: 10px;
+    height: 12px;
     flex: 1;
     max-width: 32px;
     background: var(--slot-empty);
@@ -527,6 +528,82 @@ body {
 }
 
 .skill-slot-dash.max-filled {
+    background: var(--wildlands-green);
+}
+
+/* --- Line 435: Rebel Support Horizontal Side-by-Side 3x3 Powers --- */
+.rebel-powers-container {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 8px;
+    width: 100%;
+    margin-top: 4px;
+}
+
+.rebel-power-box {
+    flex: 1;
+    background: #0d141e;
+    border: 1px solid #1e2c3d;
+    border-radius: 4px;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.rebel-power-box.active-power {
+    background: #0d273f;
+    border-color: var(--wildlands-blue-light);
+}
+
+.rebel-power-box.max-power {
+    background: #092a1d;
+    border-color: var(--wildlands-green);
+}
+
+.rebel-power-label {
+    font-size: 11px;
+    font-weight: 900;
+    color: var(--text-muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-align: center;
+}
+
+.rebel-power-box.active-power .rebel-power-label {
+    color: var(--wildlands-blue-light);
+}
+
+.rebel-power-box.max-power .rebel-power-label {
+    color: var(--wildlands-green);
+}
+
+.rebel-power-slots-row {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+    width: 100%;
+}
+
+.rebel-slot-dash {
+    height: 12px;
+    flex: 1;
+    background: var(--slot-empty);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.rebel-slot-dash:hover {
+    filter: brightness(1.35);
+}
+
+.rebel-slot-dash.filled {
+    background: var(--wildlands-blue-light);
+}
+
+.rebel-slot-dash.max-filled {
     background: var(--wildlands-green);
 }
 
@@ -607,7 +684,7 @@ body {
     color: #000000;
 }
 
-/* --- MOBILE RESPONSIVE MEDIA QUERIES (Lines 472 - 520) --- */
+/* --- Line 525: Responsive Media Queries --- */
 @media (max-width: 992px) {
     .desktop-dual-layout {
         grid-template-columns: 1fr;
