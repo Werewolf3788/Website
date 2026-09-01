@@ -2,14 +2,14 @@
    FILE: app.js
    DESCRIPTION: Wildlands Full Skill Slots, Click Handlers, Tree Branches, & Firestore
    TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
-   TIMESTAMP (24-HR NY TIME): 2026-08-16 16:55 EDT
+   TIMESTAMP (24-HR NY TIME): 2026-09-01 05:35 EDT
    ============================================================================ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// --- FIREBASE CONFIGURATION (Line 14) ---
+// --- FIREBASE CONFIGURATION (entertainment-71888) ---
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -21,7 +21,7 @@ const firebaseConfig = {
 
 const GAME_ID = 'T.C.G.R.Wildlands';
 
-// --- WILDLANDS STRUCTURED TREE (Exact In-Game Columns & Slots) ---
+// --- WILDLANDS STRUCTURED TREE ---
 const WILDLANDS_TREE = {
     "WEAPON": [
         {
@@ -183,7 +183,7 @@ const WILDLANDS_TREE = {
             ]
         }
     ],
-    "REBEL SUPPORT": [
+    "REBEL": [
         {
             tierName: "REBEL OPERATIONS",
             skills: [
@@ -210,25 +210,24 @@ const BLANK_STATS = {
     playerLevel: 1,
     tierActive: "off",
     tierLevel: 50,
-    playstyle: "Rakkasan",
-    avgDist: "0 m",
+    playstyle: "--",
+    avgDist: "--",
     tactical: "0%",
     stealth: "0%",
-    lifetime: "0h 0min",
-    longestShot: "0 m",
+    lifetime: "--",
+    longestShot: "--",
     precision: "0%",
-    favWeapon: "P416",
-    favWeapon2: "MP5",
-    revives: "0 Teammates",
-    explosiveKills: "0 Kills",
-    droneTime: "0h 0min",
-    airTravel: "0h 0min",
-    groundTravel: "0h 0min",
-    paraTravel: "0 Jumps",
-    mapDisc: "5%"
+    favWeapon: "--",
+    favWeapon2: "--",
+    revives: "--",
+    explosiveKills: "--",
+    droneTime: "--",
+    airTravel: "--",
+    groundTravel: "--",
+    paraTravel: "--",
+    mapDisc: "--"
 };
 
-// --- APP CONTROLLER ---
 const appState = {
     activeHunter: localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
     activePlatform: localStorage.getItem('active_gaming_platform') || 'pc',
@@ -247,6 +246,7 @@ const appState = {
         this.setupFormControls();
         this.populateWeaponSelects();
         this.buildCategoryTabs();
+        this.renderTree();
 
         try {
             const app = initializeApp(firebaseConfig, 'Wildlands-HUD-Engine');
@@ -266,7 +266,6 @@ const appState = {
         } catch (err) {
             console.error("Firestore Init Error:", err);
             this.setStatus(`❌ Error: ${err.message}`, "#ef4444");
-            this.renderTree();
         }
     },
 
@@ -326,8 +325,8 @@ const appState = {
         const fav2 = document.getElementById("editFav2");
         if (!fav1 || !fav2) return;
 
-        fav1.innerHTML = '';
-        fav2.innerHTML = '';
+        fav1.innerHTML = '<option value="--">Select Weapon</option>';
+        fav2.innerHTML = '<option value="--">Select Weapon</option>';
 
         Object.keys(WEAPONS_CATALOG).forEach(cat => {
             const grp1 = document.createElement("optgroup");
@@ -546,7 +545,7 @@ const appState = {
                 tierBadgeContainer.style.backgroundColor = "#ff8800";
                 tierBadgeContainer.style.opacity = "1";
             } else {
-                tierValEl.innerText = "OFF";
+                tierValEl.innerText = "--";
                 tierBadgeContainer.style.backgroundColor = "#233144";
                 tierBadgeContainer.style.opacity = "0.7";
             }
@@ -606,15 +605,13 @@ const appState = {
                 const block = document.createElement("div");
                 block.className = `wildlands-skill-block ${isLocked ? 'is-locked' : 'is-unlocked'} ${isMaxed ? 'is-maxed' : ''} ${skill.isEpic ? 'is-epic' : ''} ${isSelected ? 'is-selected' : ''}`;
 
-                // Header Row with Title and Bonus Medal
                 const titleRow = document.createElement("div");
                 titleRow.className = "skill-title-row";
                 titleRow.innerHTML = `
                     <span class="skill-title-text">${skill.name}</span>
-                    ${skill.hasMedal ? `<button class="medal-toggle-btn ${saved.medalEarned ? 'earned' : ''}" title="Toggle Bonus Medal">★</button>` : ''}
+                    ${skill.hasMedal ? `<button type="button" class="medal-toggle-btn ${saved.medalEarned ? 'earned' : ''}" title="Toggle Bonus Medal">★</button>` : ''}
                 `;
 
-                // Handle Bonus Medal Click Directly
                 if (skill.hasMedal) {
                     const starBtn = titleRow.querySelector(".medal-toggle-btn");
                     starBtn.onclick = (e) => {
@@ -624,15 +621,13 @@ const appState = {
                     };
                 }
 
-                // Handle Selection on Card Header Click
-                titleRow.onclick = () => {
+                block.onclick = () => {
                     this.selectedSkillId = skill.id;
                     this.renderTree();
                 };
 
                 block.appendChild(titleRow);
 
-                // Slot Dashes Row
                 const slotsRow = document.createElement("div");
                 slotsRow.className = "skill-slots-row";
 
@@ -642,7 +637,6 @@ const appState = {
                     dash.className = `skill-slot-dash ${isFilled ? (isMaxed ? 'max-filled' : 'filled') : ''}`;
                     dash.title = `Slot ${i + 1} of ${maxRank}`;
                     
-                    // Clicking slot directly sets rank to that level (or clears if already active)
                     dash.onclick = (e) => {
                         e.stopPropagation();
                         this.selectedSkillId = skill.id;
@@ -689,12 +683,12 @@ const appState = {
             <p class="inspect-desc">${skill.desc}</p>
 
             <div class="inspect-action-bar">
-                <button class="inspect-btn inspect-btn-rank ${isMaxed ? 'is-max' : ''}" id="btnRankUp">
+                <button type="button" class="inspect-btn inspect-btn-rank ${isMaxed ? 'is-max' : ''}" id="btnRankUp">
                     ${isLocked ? `🔒 Locked (Lvl ${skill.reqLevel})` : (isMaxed ? '✓ Max Rank (Click to Reset)' : `⭐ Upgrade Rank Slot (${currentRank + 1}/${maxRank})`)}
                 </button>
 
                 ${skill.hasMedal ? `
-                    <button class="inspect-btn inspect-btn-medal ${medalEarned ? 'active-medal' : ''}" id="btnToggleMedal">
+                    <button type="button" class="inspect-btn inspect-btn-medal ${medalEarned ? 'active-medal' : ''}" id="btnToggleMedal">
                         ${medalEarned ? '★ Bonus Medal Found' : '☆ Claim Bonus Medal'}
                     </button>
                 ` : ''}
@@ -702,7 +696,7 @@ const appState = {
         `;
 
         const rankBtn = document.getElementById("btnRankUp");
-        if (rankBtn) {
+        if (rankBtn && !isLocked) {
             rankBtn.onclick = () => {
                 this.cycleRank(skill.id, skill.reqLevel, maxRank);
             };
