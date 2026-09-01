@@ -1,8 +1,8 @@
 /* ============================================================================
    FILE: app.js
-   DESCRIPTION: Wildlands Full Skill Slots, Rebel 3x3 Powers, & Firestore Engine
+   DESCRIPTION: Wildlands 100% Pure Cloud Firestore Engine (No Local Storage / Cookies)
    TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
-   TIMESTAMP (24-HR NY TIME): 2026-09-01 05:52 EDT
+   TIMESTAMP (24-HR NY TIME): 2026-09-01 05:54 EDT
    ============================================================================ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -259,8 +259,8 @@ const BLANK_STATS = {
 };
 
 const appState = {
-    activeHunter: localStorage.getItem('active_gaming_nickname') || 'Werewolf3788',
-    activePlatform: localStorage.getItem('active_gaming_platform') || 'pc',
+    activeHunter: 'Werewolf3788',
+    activePlatform: 'playstation',
     activeCategory: 'WEAPON',
     selectedSkillId: 'w_stable_aim',
     hunterSkillsData: {},
@@ -270,6 +270,12 @@ const appState = {
     masterUnsub: null,
 
     init: async function() {
+        const uSel = document.getElementById("userSelect");
+        if (uSel) this.activeHunter = uSel.value;
+
+        const pSel = document.getElementById("platformSelect");
+        if (pSel) this.activePlatform = pSel.value.toLowerCase();
+
         this.initializeBlankSkills();
         this.setupMobileMenu();
         this.setupControlDropdowns();
@@ -279,7 +285,7 @@ const appState = {
         this.renderTree();
 
         try {
-            const app = initializeApp(firebaseConfig, 'Wildlands-HUD-Engine');
+            const app = initializeApp(firebaseConfig, 'Wildlands-Direct-Cloud-Engine');
             this.auth = getAuth(app);
             this.db = getFirestore(app);
 
@@ -287,10 +293,9 @@ const appState = {
 
             onAuthStateChanged(this.auth, (user) => {
                 if (user) {
-                    this.setStatus(`✓ Online [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
                     this.loadOperator(this.activeHunter, this.activePlatform);
                 } else {
-                    this.setStatus("❌ Auth Failed", "#ef4444");
+                    this.setStatus("❌ Cloud Auth Failed", "#ef4444");
                 }
             });
         } catch (err) {
@@ -511,37 +516,51 @@ const appState = {
         }
     },
 
+    // --- Line 330: DIRECT FIRESTORE OBSERVER (No Local Storage / Cookies) ---
     loadOperator: function(userName, platform) {
         this.activeHunter = userName;
         this.activePlatform = platform.toLowerCase();
 
-        localStorage.setItem('active_gaming_nickname', this.activeHunter);
-        localStorage.setItem('active_gaming_platform', this.activePlatform);
+        const uSel = document.getElementById("userSelect");
+        if (uSel) uSel.value = this.activeHunter;
+        const pSel = document.getElementById("platformSelect");
+        if (pSel) pSel.value = this.activePlatform;
 
-        if (this.masterUnsub) this.masterUnsub();
+        if (this.masterUnsub) {
+            this.masterUnsub();
+            this.masterUnsub = null;
+        }
 
+        this.initializeBlankSkills();
+        this.statsData = JSON.parse(JSON.stringify(BLANK_STATS));
+        this.updateStatsUI();
+        this.renderTree();
+
+        this.setStatus(`⏳ Fetching [${this.activeHunter} @ ${this.activePlatform.toUpperCase()}]...`, "#ff8800");
+
+        // Target Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
         const docRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
             if (snap.exists()) {
                 const data = snap.data();
-                if (data.stats) this.statsData = { ...BLANK_STATS, ...data.stats };
+                this.statsData = data.stats ? { ...BLANK_STATS, ...data.stats } : JSON.parse(JSON.stringify(BLANK_STATS));
                 if (data.skills) {
                     this.mergeLoadedSkills(data.skills);
                 } else {
                     this.initializeBlankSkills();
                 }
-                this.setStatus(`✓ Sync Active [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
+                this.setStatus(`✓ Live Cloud [${this.activeHunter} - ${this.activePlatform.toUpperCase()}]`, "#10b981");
             } else {
                 this.initializeBlankSkills();
                 this.statsData = JSON.parse(JSON.stringify(BLANK_STATS));
-                this.setStatus(`⚠️ No Saved Cloud Data for ${this.activeHunter} [${this.activePlatform.toUpperCase()}]`, "#ff8800");
+                this.setStatus(`⚠️ No Cloud Data for ${this.activeHunter} on ${this.activePlatform.toUpperCase()}`, "#ff8800");
             }
             this.updateStatsUI();
             this.renderTree();
         }, (err) => {
             console.error("Firestore Listen Error:", err);
-            this.setStatus(`❌ Read Error: ${err.message}`, "#ef4444");
+            this.setStatus(`❌ Cloud Read Error: ${err.message}`, "#ef4444");
         });
     },
 
@@ -840,7 +859,7 @@ const appState = {
 
         if (!this.db || !this.auth || !this.auth.currentUser) return;
 
-        this.setStatus("⏳ Saving to Cloud Firestore...", "#ff8800");
+        this.setStatus(`⏳ Cloud Syncing [${this.activeHunter} @ ${this.activePlatform.toUpperCase()}]...`, "#ff8800");
 
         try {
             const ref = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
@@ -855,10 +874,10 @@ const appState = {
 
             await setDoc(ref, payload, { merge: true });
             const nyTime = new Date().toLocaleTimeString('en-US', { timeZone: 'America/New_York', hour12: false });
-            this.setStatus(`✓ Saved to Firestore [${nyTime} NY]`, "#10b981");
+            this.setStatus(`✓ Saved to Cloud Firestore [${nyTime} NY]`, "#10b981");
         } catch (err) {
             console.error("Firestore Save Error:", err);
-            this.setStatus(`❌ Save Error: ${err.message}`, "#ef4444");
+            this.setStatus(`❌ Cloud Save Error: ${err.message}`, "#ef4444");
         }
     }
 };
