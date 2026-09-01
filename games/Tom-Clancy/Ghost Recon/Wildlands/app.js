@@ -1,15 +1,15 @@
 /* ============================================================================
    FILE: app.js
-   DESCRIPTION: Wildlands Full Skill Slots, Rebel 3x3 Tiering, & Firestore Engine
+   DESCRIPTION: Wildlands Full Skill Slots, Rebel 3x3 Powers, & Firestore Engine
    TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
-   TIMESTAMP (24-HR NY TIME): 2026-09-01 05:43 EDT
+   TIMESTAMP (24-HR NY TIME): 2026-09-01 05:52 EDT
    ============================================================================ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// --- Line 14: Firebase Config ---
+// --- Line 14: Firebase SDK Configuration ---
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -21,36 +21,36 @@ const firebaseConfig = {
 
 const GAME_ID = 'T.C.G.R.Wildlands';
 
-// --- Line 27: Structured Tree & Rebel 3x3 Powers ---
+// --- Line 27: Structured Tree Data Registry ---
 const WILDLANDS_TREE = {
     "WEAPON": [
         {
             tierName: "BASE SKILLS",
             skills: [
-                { id: "w_stable_aim", name: "Stable Aim", reqLevel: 1, maxSlots: 4, desc: "Adds extra stability when using a sniper scope or sighting weapons.", hasMedal: true },
-                { id: "w_hip_fire", name: "Hip Fire Spread", reqLevel: 1, maxSlots: 4, desc: "Reduces bullet spray when firing weapons from the hip.", hasMedal: true }
+                { id: "w_stable_aim", name: "Stable Aim", maxSlots: 4, desc: "Adds extra stability when using a sniper scope or sighting weapons.", hasMedal: true },
+                { id: "w_hip_fire", name: "Hip Fire Spread", maxSlots: 4, desc: "Reduces bullet spray when firing weapons from the hip.", hasMedal: true }
             ]
         },
         {
             tierName: "LEVEL 5",
             skills: [
-                { id: "w_grenade_launcher", name: "Grenade Launcher", reqLevel: 5, maxSlots: 1, desc: "An optional underbarrel grenade launcher attachment for specific assault rifles.", hasMedal: false },
-                { id: "w_ammo_cap", name: "Ammo Capacity", reqLevel: 5, maxSlots: 4, desc: "Increases maximum reserve ammunition capacity across all weapon classes.", hasMedal: true },
-                { id: "w_vhc_destruct", name: "VHC Destruction", reqLevel: 5, maxSlots: 4, desc: "Increases ballistic damage dealt to enemy vehicles and helicopters.", hasMedal: true }
+                { id: "w_grenade_launcher", name: "Grenade Launcher", maxSlots: 1, desc: "An optional underbarrel grenade launcher attachment for specific assault rifles.", hasMedal: false },
+                { id: "w_ammo_cap", name: "Ammo Capacity", maxSlots: 4, desc: "Increases maximum reserve ammunition capacity across all weapon classes.", hasMedal: true },
+                { id: "w_vhc_destruct", name: "VHC Destruction", maxSlots: 4, desc: "Increases ballistic damage dealt to enemy vehicles and helicopters.", hasMedal: true }
             ]
         },
         {
             tierName: "LEVEL 14",
             skills: [
-                { id: "w_adv_suppressor", name: "Adv Suppressor", reqLevel: 14, maxSlots: 1, desc: "Removes the damage reduction penalty from using suppressors with weapons.", hasMedal: false },
-                { id: "w_time_to_aim", name: "Time to Aim", reqLevel: 14, maxSlots: 4, desc: "Reduces the time it takes to aim down sights with weapons when using large scopes.", hasMedal: true },
-                { id: "w_ammo_retention", name: "Ammo Retention", reqLevel: 14, maxSlots: 1, desc: "Tactical reload retains remaining ammunition in current magazine.", hasMedal: false }
+                { id: "w_adv_suppressor", name: "Adv Suppressor", maxSlots: 1, desc: "Removes the damage reduction penalty from using suppressors with weapons.", hasMedal: false },
+                { id: "w_time_to_aim", name: "Time to Aim", maxSlots: 4, desc: "Reduces the time it takes to aim down sights with weapons when using large scopes.", hasMedal: true },
+                { id: "w_ammo_retention", name: "Ammo Retention", maxSlots: 1, desc: "Tactical reload retains remaining ammunition in current magazine.", hasMedal: false }
             ]
         },
         {
             tierName: "EPIC SKILL",
             skills: [
-                { id: "w_ranged_elite", name: "Ranged Elite", reqLevel: 30, maxSlots: 1, desc: "Significantly increases long-range weapon ballistic accuracy.", isEpic: true, hasMedal: false }
+                { id: "w_ranged_elite", name: "Ranged Elite", maxSlots: 1, desc: "Significantly increases long-range weapon ballistic accuracy.", isEpic: true, hasMedal: false }
             ]
         }
     ],
@@ -58,35 +58,35 @@ const WILDLANDS_TREE = {
         {
             tierName: "BASE SKILLS",
             skills: [
-                { id: "d_battery", name: "Battery", reqLevel: 1, maxSlots: 4, desc: "Increases the autonomy and flight duration of the recon drone.", hasMedal: false },
-                { id: "d_night_vision", name: "Night Vision", reqLevel: 1, maxSlots: 1, desc: "Enables night vision optics mode on the drone.", hasMedal: false },
-                { id: "d_range", name: "Range", reqLevel: 1, maxSlots: 4, desc: "Increases the horizontal radio transmission signal range.", hasMedal: true }
+                { id: "d_battery", name: "Battery", maxSlots: 4, desc: "Increases the autonomy and flight duration of the recon drone.", hasMedal: false },
+                { id: "d_night_vision", name: "Night Vision", maxSlots: 1, desc: "Enables night vision optics mode on the drone.", hasMedal: false },
+                { id: "d_range", name: "Range", maxSlots: 4, desc: "Increases the horizontal radio transmission signal range.", hasMedal: true }
             ]
         },
         {
             tierName: "LEVEL 7",
             skills: [
-                { id: "d_speed", name: "Speed", reqLevel: 7, maxSlots: 3, desc: "Increases drone acceleration and top flight velocity.", hasMedal: true },
-                { id: "d_mark_area", name: "Mark Area", reqLevel: 7, maxSlots: 3, desc: "Expands the automatic enemy visual marking detection radius.", hasMedal: true },
-                { id: "d_stealth", name: "Stealth", reqLevel: 7, maxSlots: 3, desc: "Reduces drone motor noise, decreasing enemy detection range.", hasMedal: false },
-                { id: "d_cooldown", name: "Cooldown", reqLevel: 7, maxSlots: 3, desc: "Reduces drone recharge cooldown duration between deployments.", hasMedal: true },
-                { id: "d_noisemaker", name: "Noisemaker", reqLevel: 7, maxSlots: 1, desc: "Emits noise pulse to attract hostiles to a specific point.", hasMedal: false }
+                { id: "d_speed", name: "Speed", maxSlots: 3, desc: "Increases drone acceleration and top flight velocity.", hasMedal: true },
+                { id: "d_mark_area", name: "Mark Area", maxSlots: 3, desc: "Expands the automatic enemy visual marking detection radius.", hasMedal: true },
+                { id: "d_stealth", name: "Stealth", maxSlots: 3, desc: "Reduces drone motor noise, decreasing enemy detection range.", hasMedal: false },
+                { id: "d_cooldown", name: "Cooldown", maxSlots: 3, desc: "Reduces drone recharge cooldown duration between deployments.", hasMedal: true },
+                { id: "d_noisemaker", name: "Noisemaker", maxSlots: 1, desc: "Emits noise pulse to attract hostiles to a specific point.", hasMedal: false }
             ]
         },
         {
             tierName: "LEVEL 15",
             skills: [
-                { id: "d_zoom", name: "Zoom", reqLevel: 15, maxSlots: 2, desc: "Increases optical magnification levels for the drone camera.", hasMedal: false },
-                { id: "d_explosive", name: "Explosive", reqLevel: 15, maxSlots: 1, desc: "Equips the drone with remote-detonated C4 charges.", hasMedal: false },
-                { id: "d_emp", name: "EMP", reqLevel: 15, maxSlots: 1, desc: "Emits electromagnetic pulse disabling lights, vehicles, and generators.", hasMedal: false },
-                { id: "d_armor", name: "Armor", reqLevel: 15, maxSlots: 3, desc: "Increases the drone's resistance against small-arms fire.", hasMedal: true },
-                { id: "d_thermal", name: "Thermal Vision", reqLevel: 15, maxSlots: 1, desc: "Enables thermal heat-signature imaging mode on the drone.", hasMedal: false }
+                { id: "d_zoom", name: "Zoom", maxSlots: 2, desc: "Increases optical magnification levels for the drone camera.", hasMedal: false },
+                { id: "d_explosive", name: "Explosive", maxSlots: 1, desc: "Equips the drone with remote-detonated C4 charges.", hasMedal: false },
+                { id: "d_emp", name: "EMP", maxSlots: 1, desc: "Emits electromagnetic pulse disabling lights, vehicles, and generators.", hasMedal: false },
+                { id: "d_armor", name: "Armor", maxSlots: 3, desc: "Increases the drone's resistance against small-arms fire.", hasMedal: true },
+                { id: "d_thermal", name: "Thermal Vision", maxSlots: 1, desc: "Enables thermal heat-signature imaging mode on the drone.", hasMedal: false }
             ]
         },
         {
             tierName: "EPIC SKILL",
             skills: [
-                { id: "d_medic", name: "Medic", reqLevel: 30, maxSlots: 1, desc: "Allows drone to deploy a revive dart on downed squad members.", isEpic: true, hasMedal: false }
+                { id: "d_medic", name: "Medic", maxSlots: 1, desc: "Allows drone to deploy a revive dart on downed squad members.", isEpic: true, hasMedal: false }
             ]
         }
     ],
@@ -94,32 +94,32 @@ const WILDLANDS_TREE = {
         {
             tierName: "BASE SKILLS",
             skills: [
-                { id: "i_parachute", name: "Parachute", reqLevel: 1, maxSlots: 1, desc: "Enables base jumping and safe parachute drops from aircraft.", hasMedal: false },
-                { id: "i_binoc_zoom", name: "Binocular Zoom", reqLevel: 1, maxSlots: 3, desc: "Increases the maximum optical zoom of tactical binoculars.", hasMedal: true },
-                { id: "i_mine", name: "Mine", reqLevel: 1, maxSlots: 4, desc: "Unlocks proximity mines and increases inventory carrying capacity.", hasMedal: true },
-                { id: "i_diversion_lure", name: "Diversion Lure", reqLevel: 1, maxSlots: 4, desc: "Unlocks noise lures to distract enemies to targeted spots.", hasMedal: true }
+                { id: "i_parachute", name: "Parachute", maxSlots: 1, desc: "Enables base jumping and safe parachute drops from aircraft.", hasMedal: false },
+                { id: "i_binoc_zoom", name: "Binocular Zoom", maxSlots: 3, desc: "Increases the maximum optical zoom of tactical binoculars.", hasMedal: true },
+                { id: "i_mine", name: "Mine", maxSlots: 4, desc: "Unlocks proximity mines and increases inventory carrying capacity.", hasMedal: true },
+                { id: "i_diversion_lure", name: "Diversion Lure", maxSlots: 4, desc: "Unlocks noise lures to distract enemies to targeted spots.", hasMedal: true }
             ]
         },
         {
             tierName: "LEVEL 4",
             skills: [
-                { id: "i_frag_grenade", name: "Frag Grenade", reqLevel: 4, maxSlots: 4, desc: "Increases fragmentation grenade maximum inventory quantity.", hasMedal: true },
-                { id: "i_c4", name: "C4", reqLevel: 4, maxSlots: 4, desc: "Enables deployment of remote-detonated C4 explosives.", hasMedal: true },
-                { id: "i_binoc_recon", name: "Binocular Recon", reqLevel: 4, maxSlots: 3, desc: "Increases the target identification speed and range of binoculars.", hasMedal: true },
-                { id: "i_thermal_vis", name: "Thermal Vision", reqLevel: 4, maxSlots: 1, desc: "Unlocks personal infantry helmet thermal vision goggles.", hasMedal: false }
+                { id: "i_frag_grenade", name: "Frag Grenade", maxSlots: 4, desc: "Increases fragmentation grenade maximum inventory quantity.", hasMedal: true },
+                { id: "i_c4", name: "C4", maxSlots: 4, desc: "Enables deployment of remote-detonated C4 explosives.", hasMedal: true },
+                { id: "i_binoc_recon", name: "Binocular Recon", maxSlots: 3, desc: "Increases the target identification speed and range of binoculars.", hasMedal: true },
+                { id: "i_thermal_vis", name: "Thermal Vision", maxSlots: 1, desc: "Unlocks personal infantry helmet thermal vision goggles.", hasMedal: false }
             ]
         },
         {
             tierName: "LEVEL 10",
             skills: [
-                { id: "i_flashbang", name: "Flashbang", reqLevel: 10, maxSlots: 4, desc: "Increases carrying capacity of tactical flashbang grenades.", hasMedal: false },
-                { id: "i_flare_gun", name: "Flare Gun", reqLevel: 10, maxSlots: 4, desc: "Unlocks distress flare gun to draw enemy or rebel attention.", hasMedal: true }
+                { id: "i_flashbang", name: "Flashbang", maxSlots: 4, desc: "Increases carrying capacity of tactical flashbang grenades.", hasMedal: false },
+                { id: "i_flare_gun", name: "Flare Gun", maxSlots: 4, desc: "Unlocks distress flare gun to draw enemy or rebel attention.", hasMedal: true }
             ]
         },
         {
             tierName: "EPIC SKILL",
             skills: [
-                { id: "i_explosion_radius", name: "Explosion Radius", reqLevel: 30, maxSlots: 1, desc: "Expands the blast lethality radius of all explosive ordnance.", isEpic: true, hasMedal: false }
+                { id: "i_explosion_radius", name: "Explosion Radius", maxSlots: 1, desc: "Expands the blast lethality radius of all explosive ordnance.", isEpic: true, hasMedal: false }
             ]
         }
     ],
@@ -127,30 +127,30 @@ const WILDLANDS_TREE = {
         {
             tierName: "BASE SKILLS",
             skills: [
-                { id: "p_stamina", name: "Stamina", reqLevel: 1, maxSlots: 4, desc: "Extends sprint duration before tactical fatigue.", hasMedal: false },
-                { id: "p_no_pain", name: "No Pain", reqLevel: 1, maxSlots: 4, desc: "Increases duration of damage resistance after being revived.", hasMedal: true }
+                { id: "p_stamina", name: "Stamina", maxSlots: 4, desc: "Extends sprint duration before tactical fatigue.", hasMedal: false },
+                { id: "p_no_pain", name: "No Pain", maxSlots: 4, desc: "Increases duration of damage resistance after being revived.", hasMedal: true }
             ]
         },
         {
             tierName: "LEVEL 6",
             skills: [
-                { id: "p_car_shield", name: "Car Shield", reqLevel: 6, maxSlots: 4, desc: "Reduces damage sustained while seated inside motor vehicles.", hasMedal: true },
-                { id: "p_quiet_running", name: "Quiet Running", reqLevel: 6, maxSlots: 4, desc: "Reduces footstep noise generated while sprinting.", hasMedal: true },
-                { id: "p_bullet_resist", name: "Bullet Resistance", reqLevel: 6, maxSlots: 4, desc: "Increases direct ballistic damage absorption.", hasMedal: true }
+                { id: "p_car_shield", name: "Car Shield", maxSlots: 4, desc: "Reduces damage sustained while seated inside motor vehicles.", hasMedal: true },
+                { id: "p_quiet_running", name: "Quiet Running", maxSlots: 4, desc: "Reduces footstep noise generated while sprinting.", hasMedal: true },
+                { id: "p_bullet_resist", name: "Bullet Resistance", maxSlots: 4, desc: "Increases direct ballistic damage absorption.", hasMedal: true }
             ]
         },
         {
             tierName: "LEVEL 17",
             skills: [
-                { id: "p_detection", name: "Detection", reqLevel: 17, maxSlots: 4, desc: "Slows enemy visual awareness and detection speed.", hasMedal: true },
-                { id: "p_explosion_resist", name: "Explosion Resistance", reqLevel: 17, maxSlots: 4, desc: "Reduces explosive splash damage taken.", hasMedal: true },
-                { id: "p_aircraft_shield", name: "Aircraft Shield", reqLevel: 17, maxSlots: 4, desc: "Reduces damage taken while pilot or passenger in aircraft.", hasMedal: true }
+                { id: "p_detection", name: "Detection", maxSlots: 4, desc: "Slows enemy visual awareness and detection speed.", hasMedal: true },
+                { id: "p_explosion_resist", name: "Explosion Resistance", maxSlots: 4, desc: "Reduces explosive splash damage taken.", hasMedal: true },
+                { id: "p_aircraft_shield", name: "Aircraft Shield", maxSlots: 4, desc: "Reduces damage taken while pilot or passenger in aircraft.", hasMedal: true }
             ]
         },
         {
             tierName: "EPIC SKILL",
             skills: [
-                { id: "p_faster_regen", name: "Faster Regen", reqLevel: 30, maxSlots: 1, desc: "Accelerates natural health recovery cooldown.", isEpic: true, hasMedal: false }
+                { id: "p_faster_regen", name: "Faster Regen", maxSlots: 1, desc: "Accelerates natural health recovery cooldown.", isEpic: true, hasMedal: false }
             ]
         }
     ],
@@ -158,28 +158,28 @@ const WILDLANDS_TREE = {
         {
             tierName: "BASE SKILLS",
             skills: [
-                { id: "s_revive_speed", name: "Revive Speed", reqLevel: 1, maxSlots: 4, desc: "Reduces time required to revive downed squad members.", hasMedal: true },
-                { id: "s_extra_sync", name: "Extra Sync Shot", reqLevel: 1, maxSlots: 3, desc: "Unlocks simultaneous targeted sync shots with squadmates.", hasMedal: false }
+                { id: "s_revive_speed", name: "Revive Speed", maxSlots: 4, desc: "Reduces time required to revive downed squad members.", hasMedal: true },
+                { id: "s_extra_sync", name: "Extra Sync Shot", maxSlots: 3, desc: "Unlocks simultaneous targeted sync shots with squadmates.", hasMedal: false }
             ]
         },
         {
             tierName: "LEVEL 8",
             skills: [
-                { id: "s_trained_rebels", name: "Trained Rebels", reqLevel: 8, maxSlots: 4, desc: "Boosts combat damage efficiency of allied Kataris 26 rebels.", hasMedal: true },
-                { id: "s_squad_resilience", name: "Squad Resilience", reqLevel: 8, maxSlots: 4, desc: "Increases health resistance for AI teammates.", hasMedal: true }
+                { id: "s_trained_rebels", name: "Trained Rebels", maxSlots: 4, desc: "Boosts combat damage efficiency of allied Kataris 26 rebels.", hasMedal: true },
+                { id: "s_squad_resilience", name: "Squad Resilience", maxSlots: 4, desc: "Increases health resistance for AI teammates.", hasMedal: true }
             ]
         },
         {
             tierName: "LEVEL 16",
             skills: [
-                { id: "s_bleed_out", name: "Bleed Out Time", reqLevel: 16, maxSlots: 4, desc: "Extends bleedout timer before operator death.", hasMedal: false },
-                { id: "s_born_leader", name: "Born Leader", reqLevel: 16, maxSlots: 4, desc: "Improves overall damage dealt by squad members.", hasMedal: true }
+                { id: "s_bleed_out", name: "Bleed Out Time", maxSlots: 4, desc: "Extends bleedout timer before operator death.", hasMedal: false },
+                { id: "s_born_leader", name: "Born Leader", maxSlots: 4, desc: "Improves overall damage dealt by squad members.", hasMedal: true }
             ]
         },
         {
             tierName: "EPIC SKILL",
             skills: [
-                { id: "s_last_chance", name: "Last Chance", reqLevel: 30, maxSlots: 1, desc: "Grants an additional self-revive attempt per engagement.", isEpic: true, hasMedal: false }
+                { id: "s_last_chance", name: "Last Chance", maxSlots: 1, desc: "Grants an additional self-revive attempt per engagement.", isEpic: true, hasMedal: false }
             ]
         }
     ],
@@ -190,7 +190,6 @@ const WILDLANDS_TREE = {
                 { 
                     id: "r_vehicle_drop", 
                     name: "Vehicle Drop-off", 
-                    reqLevel: 1, 
                     isRebelSupport: true, 
                     desc: "Rebel vehicle delivery: Power 1 delivers standard SUV, Power 2 delivers Armored Buggy/Vehicle, Power 3 delivers Helicopter.",
                     powers: ["Power 1: SUV", "Power 2: Armored", "Power 3: Helicopter"]
@@ -198,15 +197,13 @@ const WILDLANDS_TREE = {
                 { 
                     id: "r_guns_hire", 
                     name: "Guns For Hire", 
-                    reqLevel: 1, 
                     isRebelSupport: true, 
-                    desc: "Summons Kataris 26 rebel fireteam to reinforce position: Power 1 (2 fighters), Power 2 (4 fighters), Power 3 (Well-armed squad).",
+                    desc: "Summons Kataris 26 rebel fireteam: Power 1 (2 fighters), Power 2 (4 fighters), Power 3 (Well-armed squad).",
                     powers: ["Power 1: 2 Rebels", "Power 2: 4 Rebels", "Power 3: Elite Squad"]
                 },
                 { 
                     id: "r_mortar", 
                     name: "Mortar", 
-                    reqLevel: 1, 
                     isRebelSupport: true, 
                     desc: "Orders high-explosive rebel artillery bombardment: Power 1 (3 shells), Power 2 (5 shells), Power 3 (Intense saturation barrage).",
                     powers: ["Power 1: 3 Shells", "Power 2: 5 Shells", "Power 3: Saturation"]
@@ -214,7 +211,6 @@ const WILDLANDS_TREE = {
                 { 
                     id: "r_diversion", 
                     name: "Diversion", 
-                    reqLevel: 1, 
                     isRebelSupport: true, 
                     desc: "Commands rebel forces to attack nearby enemy outpost as a distraction: Increases attacking force and survivability per Power.",
                     powers: ["Power 1: Small Decoy", "Power 2: Assault Decoy", "Power 3: Massive Assault"]
@@ -222,7 +218,6 @@ const WILDLANDS_TREE = {
                 { 
                     id: "r_spotting", 
                     name: "Spotting", 
-                    reqLevel: 1, 
                     isRebelSupport: true, 
                     desc: "Rebel recon teams scan and tag hostiles in designated coordinates: Increases scan diameter and tagging speed per Power.",
                     powers: ["Power 1: 30m Radius", "Power 2: 60m Radius", "Power 3: 100m Radius"]
@@ -242,7 +237,7 @@ const WEAPONS_CATALOG = {
 };
 
 const BLANK_STATS = {
-    playerLevel: 1,
+    playerLevel: 30,
     tierActive: "off",
     tierLevel: 50,
     playstyle: "--",
@@ -386,11 +381,13 @@ const appState = {
         container.innerHTML = "";
         Object.keys(WILDLANDS_TREE).forEach(cat => {
             const btn = document.createElement("button");
-            btn.className = `tab-link ${cat === this.activeCategory ? 'active' : ''}`;
+            const isMatch = cat.toUpperCase() === this.activeCategory.toUpperCase();
+            btn.className = `tab-link ${isMatch ? 'active' : ''}`;
             btn.innerText = cat;
             btn.onclick = () => {
                 this.activeCategory = cat;
-                const firstSkill = WILDLANDS_TREE[cat][0].skills[0];
+                const activeKey = this.resolveActiveCategoryKey();
+                const firstSkill = WILDLANDS_TREE[activeKey][0]?.skills[0];
                 if (firstSkill) this.selectedSkillId = firstSkill.id;
 
                 document.querySelectorAll(".tab-link").forEach(b => b.classList.remove("active"));
@@ -399,6 +396,11 @@ const appState = {
             };
             container.appendChild(btn);
         });
+    },
+
+    resolveActiveCategoryKey: function() {
+        const search = (this.activeCategory || 'WEAPON').trim().toUpperCase();
+        return Object.keys(WILDLANDS_TREE).find(k => k.toUpperCase() === search) || "WEAPON";
     },
 
     setupFormControls: function() {
@@ -433,7 +435,7 @@ const appState = {
                     return val;
                 };
 
-                const pLevel = parseInt(document.getElementById("editPlayerLevel").value, 10) || 1;
+                const pLevel = parseInt(document.getElementById("editPlayerLevel").value, 10) || 30;
                 const tierMode = document.getElementById("editTierActive").value;
                 const tLevel = parseInt(document.getElementById("editTierLevel").value, 10) || 50;
 
@@ -481,7 +483,7 @@ const appState = {
             if (el) el.value = (val !== undefined && val !== null && val !== "--") ? val : "";
         };
 
-        setVal("editPlayerLevel", this.statsData.playerLevel || 1);
+        setVal("editPlayerLevel", this.statsData.playerLevel || 30);
         const tierSel = document.getElementById("editTierActive");
         if (tierSel) tierSel.value = this.statsData.tierActive || "off";
 
@@ -567,7 +569,7 @@ const appState = {
         };
 
         const d = this.statsData;
-        const pLevel = d.playerLevel || 1;
+        const pLevel = d.playerLevel || 30;
         setTxt("operatorName", this.activeHunter);
         setTxt("playerLevelDisplay", `LEVEL ${pLevel < 10 ? '0' + pLevel : pLevel}`);
 
@@ -604,14 +606,13 @@ const appState = {
         setTxt("statMap", d.mapDisc);
     },
 
-    // --- Line 465: Tree & Rebel 3x3 Slots Engine ---
     renderTree: function() {
         const container = document.getElementById('treeContainer');
         if (!container) return;
         container.innerHTML = '';
 
-        const tiers = WILDLANDS_TREE[this.activeCategory] || [];
-        const currentLevel = this.statsData.playerLevel || 1;
+        const activeKey = this.resolveActiveCategoryKey();
+        const tiers = WILDLANDS_TREE[activeKey] || [];
 
         let activeSelectedSkillObj = null;
         let activeSelectedSkillMeta = null;
@@ -626,12 +627,11 @@ const appState = {
             col.appendChild(colHeader);
 
             tier.skills.forEach(skill => {
-                const saved = (this.hunterSkillsData[this.activeCategory] && this.hunterSkillsData[this.activeCategory][skill.id]) || { current: 0, medalEarned: false };
+                const saved = (this.hunterSkillsData[activeKey] && this.hunterSkillsData[activeKey][skill.id]) || { current: 0, medalEarned: false };
                 const currentRank = saved.current || 0;
                 const isRebel = !!skill.isRebelSupport;
                 const maxRank = isRebel ? 9 : (skill.maxSlots || 1);
                 const isMaxed = currentRank >= maxRank;
-                const isLocked = currentLevel < skill.reqLevel;
                 const isSelected = this.selectedSkillId === skill.id;
 
                 if (isSelected) {
@@ -640,7 +640,7 @@ const appState = {
                 }
 
                 const block = document.createElement("div");
-                block.className = `wildlands-skill-block ${isLocked ? 'is-locked' : 'is-unlocked'} ${isMaxed ? 'is-maxed' : ''} ${skill.isEpic ? 'is-epic' : ''} ${isSelected ? 'is-selected' : ''}`;
+                block.className = `wildlands-skill-block is-unlocked ${isMaxed ? 'is-maxed' : ''} ${skill.isEpic ? 'is-epic' : ''} ${isSelected ? 'is-selected' : ''}`;
 
                 const titleRow = document.createElement("div");
                 titleRow.className = "skill-title-row";
@@ -666,7 +666,6 @@ const appState = {
                 block.appendChild(titleRow);
 
                 if (isRebel) {
-                    // Rebel 3-Power Section Display (3 blocks with 3 sub-slots each)
                     const rebelGroupsContainer = document.createElement("div");
                     rebelGroupsContainer.className = "rebel-powers-container";
 
@@ -698,9 +697,9 @@ const appState = {
                                 e.stopPropagation();
                                 this.selectedSkillId = skill.id;
                                 if (currentRank === exactTargetRank) {
-                                    this.setExplicitRank(skill.id, skill.reqLevel, exactTargetRank - 1);
+                                    this.setExplicitRank(skill.id, exactTargetRank - 1);
                                 } else {
-                                    this.setExplicitRank(skill.id, skill.reqLevel, exactTargetRank);
+                                    this.setExplicitRank(skill.id, exactTargetRank);
                                 }
                             };
 
@@ -713,7 +712,6 @@ const appState = {
 
                     block.appendChild(rebelGroupsContainer);
                 } else {
-                    // Standard Dash Slots
                     const slotsRow = document.createElement("div");
                     slotsRow.className = "skill-slots-row";
 
@@ -727,9 +725,9 @@ const appState = {
                             e.stopPropagation();
                             this.selectedSkillId = skill.id;
                             if (currentRank === i + 1) {
-                                this.setExplicitRank(skill.id, skill.reqLevel, i);
+                                this.setExplicitRank(skill.id, i);
                             } else {
-                                this.setExplicitRank(skill.id, skill.reqLevel, i + 1);
+                                this.setExplicitRank(skill.id, i + 1);
                             }
                         };
 
@@ -761,7 +759,6 @@ const appState = {
         const isRebel = !!skill.isRebelSupport;
         const maxRank = isRebel ? 9 : (skill.maxSlots || 1);
         const isMaxed = currentRank >= maxRank;
-        const isLocked = (this.statsData.playerLevel || 1) < skill.reqLevel;
         const medalEarned = meta ? !!meta.medalEarned : false;
 
         let statusText = `UNLOCKED (RANK ${currentRank}/${maxRank})`;
@@ -774,13 +771,13 @@ const appState = {
         inspectPanel.innerHTML = `
             <div class="inspect-top-row">
                 <h3 class="inspect-title">${skill.name}</h3>
-                <span class="inspect-req">${isLocked ? `🔒 LOCKED (REQUIRED LEVEL ${skill.reqLevel})` : statusText}</span>
+                <span class="inspect-req">${statusText}</span>
             </div>
             <p class="inspect-desc">${skill.desc}</p>
 
             <div class="inspect-action-bar">
                 <button type="button" class="inspect-btn inspect-btn-rank ${isMaxed ? 'is-max' : ''}" id="btnRankUp">
-                    ${isLocked ? `🔒 Locked (Lvl ${skill.reqLevel})` : (isMaxed ? '✓ Max Rank (Click to Reset)' : `⭐ Upgrade Rank Slot (${currentRank + 1}/${maxRank})`)}
+                    ${isMaxed ? '✓ Max Rank (Click to Reset)' : `⭐ Upgrade Rank Slot (${currentRank + 1}/${maxRank})`}
                 </button>
 
                 ${skill.hasMedal ? `
@@ -792,9 +789,9 @@ const appState = {
         `;
 
         const rankBtn = document.getElementById("btnRankUp");
-        if (rankBtn && !isLocked) {
+        if (rankBtn) {
             rankBtn.onclick = () => {
-                this.cycleRank(skill.id, skill.reqLevel, maxRank);
+                this.cycleRank(skill.id, maxRank);
             };
         }
 
@@ -806,14 +803,8 @@ const appState = {
         }
     },
 
-    setExplicitRank: function(skillId, reqLevel, targetRank) {
-        const currentLevel = this.statsData.playerLevel || 1;
-        if (currentLevel < reqLevel) {
-            alert(`This skill unlocks at Character Level ${reqLevel}. Update your level in 'Edit Tactical Profile' first.`);
-            return;
-        }
-
-        const cat = this.activeCategory;
+    setExplicitRank: function(skillId, targetRank) {
+        const cat = this.resolveActiveCategoryKey();
         if (!this.hunterSkillsData[cat]) this.hunterSkillsData[cat] = {};
         if (!this.hunterSkillsData[cat][skillId]) this.hunterSkillsData[cat][skillId] = { current: 0, medalEarned: false };
 
@@ -821,14 +812,8 @@ const appState = {
         this.sync();
     },
 
-    cycleRank: function(skillId, reqLevel, maxSlots) {
-        const currentLevel = this.statsData.playerLevel || 1;
-        if (currentLevel < reqLevel) {
-            alert(`This skill unlocks at Character Level ${reqLevel}. Update your level in 'Edit Tactical Profile' first.`);
-            return;
-        }
-
-        const cat = this.activeCategory;
+    cycleRank: function(skillId, maxSlots) {
+        const cat = this.resolveActiveCategoryKey();
         if (!this.hunterSkillsData[cat]) this.hunterSkillsData[cat] = {};
         if (!this.hunterSkillsData[cat][skillId]) this.hunterSkillsData[cat][skillId] = { current: 0, medalEarned: false };
 
@@ -840,7 +825,7 @@ const appState = {
     },
 
     toggleBonusMedal: function(skillId) {
-        const cat = this.activeCategory;
+        const cat = this.resolveActiveCategoryKey();
         if (!this.hunterSkillsData[cat]) this.hunterSkillsData[cat] = {};
         if (!this.hunterSkillsData[cat][skillId]) this.hunterSkillsData[cat][skillId] = { current: 0, medalEarned: false };
 
