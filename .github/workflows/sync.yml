@@ -1,11 +1,11 @@
 # ============================================================================
 # File: .github/workflows/fs25-sync.yml
-# Deployment Timestamp: 2026-09-01 08:25:00 (EDT - 24hr New York Time)
+# Deployment Timestamp: 2026-09-01 08:25:12 (EDT - 24hr New York Time)
 # Project: entertainment-71888 (/fs25 RTDB Node)
 # Description: Smart FS25 Dynamic Savegame Ingestion Workflow.
 #              - Triggers every 16 minutes via cron.
-#              - Automatically syncs savegame data to Firebase when players are online.
-#              - Executes a 24-hour maintenance sync when the server is idle.
+#              - Installs xml2js alongside core dependencies.
+#              - Synchronizes savegames, farms, and active mods to Firebase.
 # ============================================================================
 
 name: FS25 Live Backup Sync
@@ -37,7 +37,7 @@ jobs:
       - name: Install Dependencies
         run: |
           cd games/FS25
-          npm install basic-ftp firebase-admin dotenv
+          npm install basic-ftp firebase-admin dotenv xml2js
 
       - name: Run Dynamic Sync Pipeline
         env:
