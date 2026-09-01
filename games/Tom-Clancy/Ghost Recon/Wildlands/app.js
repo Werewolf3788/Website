@@ -1,8 +1,8 @@
 /* ============================================================================
    FILE: app.js
-   DESCRIPTION: Wildlands Full Skill Slots, RTDB Multi-Folder Menu, Firestore Engine
+   DESCRIPTION: Wildlands Full Skill Slots, RTDB Exact Array Menu, Firestore Engine
    TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
-   TIMESTAMP (24-HR NY TIME): 2026-09-01 06:15 EDT
+   TIMESTAMP (24-HR NY TIME): 2026-09-01 06:48 EDT
    ============================================================================ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -288,7 +288,7 @@ const appState = {
             this.db = getFirestore(app);
             this.rtdb = getDatabase(app);
 
-            // Live RTDB multi-folder listener for /utm_links
+            // Connect and pull live Intel Directory from RTDB /utm_links
             this.initRtdbIntelDirectory();
 
             await signInAnonymously(this.auth);
@@ -330,6 +330,17 @@ const appState = {
             });
         }
 
+        // Cross-protocol image sanitizer for http and https
+        const sanitizeImageUrl = (url) => {
+            if (!url || typeof url !== 'string') return '';
+            let cleaned = url.trim();
+            if (cleaned.startsWith('//')) return `https:${cleaned}`;
+            if (cleaned.startsWith('http://') || cleaned.startsWith('https://') || cleaned.startsWith('data:image/')) {
+                return cleaned;
+            }
+            return '';
+        };
+
         const linksRef = rtdbRef(this.rtdb, 'utm_links');
         onValue(linksRef, (snapshot) => {
             if (!flyout) return;
@@ -338,7 +349,6 @@ const appState = {
             if (snapshot.exists()) {
                 const rootData = snapshot.val();
 
-                // Sort keys so 'Home' appears at top if present
                 const keys = Object.keys(rootData).sort((a, b) => {
                     if (a.toLowerCase() === 'home') return -1;
                     if (b.toLowerCase() === 'home') return 1;
@@ -347,14 +357,15 @@ const appState = {
 
                 keys.forEach(key => {
                     const nodeVal = rootData[key];
+                    if (!nodeVal) return;
 
-                    // Check if node is a single direct link or a folder with children
-                    const isDirectLink = typeof nodeVal === 'string' || (nodeVal && (nodeVal.url || nodeVal.link) && !nodeVal.items && !nodeVal.links);
+                    // Direct link check (like Home)
+                    const isDirectLink = typeof nodeVal === 'string' || (typeof nodeVal === 'object' && nodeVal.url && !nodeVal[0] && !nodeVal['0']);
 
                     if (isDirectLink) {
-                        const directUrl = typeof nodeVal === 'string' ? nodeVal : (nodeVal.url || nodeVal.link);
-                        const label = (typeof nodeVal === 'object' && (nodeVal.title || nodeVal.label || nodeVal.name)) || key.replace(/_/g, ' ');
-                        const img = typeof nodeVal === 'object' ? (nodeVal.image || nodeVal.thumbnail || nodeVal.icon || '') : '';
+                        const directUrl = typeof nodeVal === 'string' ? nodeVal : nodeVal.url;
+                        const label = (typeof nodeVal === 'object' && (nodeVal.title || nodeVal.group || nodeVal.name)) || key.replace(/_/g, ' ');
+                        const imgUrl = sanitizeImageUrl(typeof nodeVal === 'object' ? (nodeVal.image || nodeVal.img || nodeVal.thumbnail || '') : '');
 
                         const a = document.createElement("a");
                         a.href = directUrl;
@@ -362,17 +373,20 @@ const appState = {
                         a.target = "_blank";
                         a.rel = "noopener noreferrer";
 
-                        let thumbHTML = img ? `<img src="${img}" class="intel-thumb-img" alt="">` : `<span class="intel-thumb-placeholder">🌐</span>`;
+                        let thumbHTML = imgUrl 
+                            ? `<img src="${imgUrl}" class="intel-thumb-img" alt="${label}" onerror="this.onerror=null; this.outerHTML='<span class=\\'intel-thumb-placeholder\\'>🌐</span>';">` 
+                            : `<span class="intel-thumb-placeholder">🌐</span>`;
+
                         a.innerHTML = `
-                            <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="display:flex; align-items:center; gap:10px; overflow:hidden;">
                                 ${thumbHTML}
-                                <span>${label}</span>
+                                <span class="intel-item-name">${label}</span>
                             </div>
-                            <span style="font-size:11px; opacity:0.7;">↗</span>
+                            <span style="font-size:11px; opacity:0.7; flex-shrink:0;">↗</span>
                         `;
                         flyout.appendChild(a);
-                    } else if (typeof nodeVal === 'object' && nodeVal !== null) {
-                        // Multi-Item Folder Node (e.g. Discord, Entertainment, Game, User, PlayStation_Trophy_Card)
+                    } else if (typeof nodeVal === 'object') {
+                        // Multi-item folder containing indexed arrays (0, 1, 2...)
                         const folderContainer = document.createElement("div");
                         folderContainer.className = "intel-folder-node";
 
@@ -385,15 +399,21 @@ const appState = {
                         const subMenu = document.createElement("div");
                         subMenu.className = "intel-submenu";
 
-                        const childKeys = Object.keys(nodeVal);
+                        // Get child items and sort by rowNumber if available
+                        const childKeys = Object.keys(nodeVal).sort((a, b) => {
+                            const rowA = (nodeVal[a] && typeof nodeVal[a].rowNumber === 'number') ? nodeVal[a].rowNumber : 999;
+                            const rowB = (nodeVal[b] && typeof nodeVal[b].rowNumber === 'number') ? nodeVal[b].rowNumber : 999;
+                            return rowA - rowB;
+                        });
+
                         childKeys.forEach(cKey => {
                             const item = nodeVal[cKey];
                             if (!item) return;
 
-                            const subUrl = typeof item === 'string' ? item : (item.url || item.link || item.href || '');
-                            const subLabel = (typeof item === 'object' && (item.title || item.name || item.label)) || cKey.replace(/_/g, ' ');
-                            const subDesc = typeof item === 'object' ? (item.desc || item.description || '') : '';
-                            const subImg = typeof item === 'object' ? (item.image || item.thumbnail || item.icon || item.img || '') : '';
+                            const subUrl = typeof item === 'string' ? item : (item.url || item.link || '');
+                            const subLabel = (typeof item === 'object' && (item.title || item.name || item.group)) || cKey;
+                            const subGroup = (typeof item === 'object' && item.group && item.group !== subLabel) ? item.group : '';
+                            const subImgUrl = sanitizeImageUrl(typeof item === 'object' ? item.image : '');
 
                             if (subUrl) {
                                 const subLink = document.createElement("a");
@@ -402,13 +422,15 @@ const appState = {
                                 subLink.target = "_blank";
                                 subLink.rel = "noopener noreferrer";
 
-                                let thumbHTML = subImg ? `<img src="${subImg}" class="intel-thumb-img" alt="">` : `<span class="intel-thumb-placeholder">📄</span>`;
+                                let thumbHTML = subImgUrl 
+                                    ? `<img src="${subImgUrl}" class="intel-thumb-img" alt="${subLabel}" onerror="this.onerror=null; this.outerHTML='<span class=\\'intel-thumb-placeholder\\'>📄</span>';">` 
+                                    : `<span class="intel-thumb-placeholder">📄</span>`;
 
                                 subLink.innerHTML = `
                                     ${thumbHTML}
                                     <div class="intel-item-text-wrap">
                                         <div class="intel-item-name">${subLabel}</div>
-                                        ${subDesc ? `<div class="intel-item-sub">${subDesc}</div>` : ''}
+                                        ${subGroup ? `<div class="intel-item-sub">${subGroup}</div>` : ''}
                                     </div>
                                 `;
                                 subMenu.appendChild(subLink);
@@ -640,7 +662,7 @@ const appState = {
         }
     },
 
-    // --- Line 430: DIRECT FIRESTORE OBSERVER (Per Hunter + Platform) ---
+    // --- Line 460: DIRECT FIRESTORE OBSERVER (Per Hunter + Platform) ---
     loadOperator: function(userName, platform) {
         this.activeHunter = userName;
         this.activePlatform = platform.toLowerCase();
@@ -662,7 +684,7 @@ const appState = {
 
         this.setStatus(`⏳ Fetching [${this.activeHunter} @ ${this.activePlatform.toUpperCase()}]...`, "#ff8800");
 
-        // Targeted isolation path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+        // Target path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
         const docRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
