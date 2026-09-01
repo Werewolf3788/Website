@@ -1,7 +1,7 @@
 /* ============================================================================
    FILE: style.css
    DESCRIPTION: Wildlands HUD Layout, Standard Slots & Horizontal 3x3 Rebel Powers
-   TIMESTAMP (24-HR NY TIME): 2026-09-01 06:05 EDT
+   TIMESTAMP (24-HR NY TIME): 2026-09-01 06:07 EDT
    ============================================================================ */
 
 :root {
@@ -48,7 +48,7 @@ body {
     border: 0;
 }
 
-/* --- Line 49: Header & Navigation --- */
+/* --- Header & Navigation Bar (Lines 49 - 110) --- */
 .hub-header {
     background-color: var(--card-bg);
     border-bottom: 2px solid var(--card-border);
@@ -64,6 +64,13 @@ body {
     margin: 0 auto;
     display: flex;
     justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.header-brand-group {
+    display: flex;
     align-items: center;
     gap: 16px;
 }
@@ -82,10 +89,37 @@ body {
     letter-spacing: 2px;
 }
 
+.nav-external-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #141c26;
+    border: 1px solid var(--accent-orange);
+    color: var(--accent-orange);
+    font-size: 14px;
+    font-weight: 800;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    min-height: var(--touch-min);
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-external-btn:hover {
+    background: var(--accent-orange);
+    color: #000000;
+}
+
+.nav-menu-wrapper.always-visible {
+    display: flex !important;
+    align-items: center;
+}
+
 .header-controls-group {
     display: flex;
     gap: 12px;
     flex-wrap: wrap;
+    align-items: center;
 }
 
 .styled-select {
@@ -104,26 +138,7 @@ body {
     border-color: var(--accent-orange);
 }
 
-.hamburger-btn {
-    display: none;
-    flex-direction: column;
-    justify-content: space-around;
-    width: var(--touch-min);
-    height: var(--touch-min);
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-}
-
-.hamburger-bar {
-    width: 100%;
-    height: 3px;
-    background-color: var(--accent-orange);
-    border-radius: 2px;
-}
-
-/* --- Line 112: App Container --- */
+/* --- App Container & Structure (Lines 112 - 165) --- */
 .hub-container {
     width: 85%;
     max-width: 1500px;
@@ -174,7 +189,7 @@ body {
     background: #233347;
 }
 
-/* --- Line 167: Dual Column View --- */
+/* --- Dual Column Layout (Lines 167 - 210) --- */
 .desktop-dual-layout {
     display: grid;
     grid-template-columns: 360px 1fr;
@@ -195,7 +210,7 @@ body {
     min-height: 600px;
 }
 
-/* --- Line 212: Stats HUD Block --- */
+/* --- Stats HUD Block (Lines 212 - 275) --- */
 .profile-header {
     display: flex;
     justify-content: space-between;
@@ -287,7 +302,7 @@ body {
     border-radius: 6px;
 }
 
-/* --- Line 277: Edit Stats Panel --- */
+/* --- Edit Stats Panel (Lines 277 - 330) --- */
 .edit-stats-panel.hidden {
     display: none;
 }
@@ -373,7 +388,7 @@ body {
     cursor: pointer;
 }
 
-/* --- Line 332: Authentic Wildlands Skill Tree HUD --- */
+/* --- Authentic Wildlands Skill Tree HUD (Lines 332 - 470) --- */
 .skills-tabs-container {
     display: flex;
     gap: 8px;
@@ -531,7 +546,7 @@ body {
     background: var(--wildlands-green);
 }
 
-/* --- Line 435: Rebel Support Horizontal Side-by-Side 3x3 Powers --- */
+/* --- Rebel Support Horizontal Side-by-Side 3x3 Powers (Lines 435 - 490) --- */
 .rebel-powers-container {
     display: flex !important;
     flex-direction: row !important;
@@ -684,7 +699,7 @@ body {
     color: #000000;
 }
 
-/* --- Line 525: Responsive Media Queries --- */
+/* --- Mobile Responsive Media Queries (Lines 525 - 565) --- */
 @media (max-width: 992px) {
     .desktop-dual-layout {
         grid-template-columns: 1fr;
@@ -705,22 +720,19 @@ body {
         width: 92%;
     }
 
-    .hamburger-btn {
-        display: flex;
-    }
-
-    .nav-menu-wrapper {
-        display: none;
-        width: 100%;
-        padding-top: 12px;
-    }
-
-    .nav-menu-wrapper.active {
-        display: block;
-    }
-
     .header-inner {
-        flex-wrap: wrap;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .header-brand-group {
+        justify-content: space-between;
+        width: 100%;
+    }
+
+    .nav-menu-wrapper.always-visible {
+        width: 100%;
     }
 
     .header-controls-group {
