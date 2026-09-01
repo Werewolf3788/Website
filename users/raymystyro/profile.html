@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * Dashboard: OneLIVIDMAN / Raymystyro Progression & FS25 Dumbace Farm Telemetry
- * Engine Version: 21.0.0-OneLIVIDMAN-RTDBMenuEngine
+ * Engine Version: 22.0.0-OneLIVIDMAN-FS25CleanJSON
  * Target RTDB Menu: https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json
  * Target PSN RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/psn.json
- * Target FS25 RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json (Dumbace Farm)
+ * Target FS25 RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json (farm_2 Focus)
  * Target Firestore: /users/Raymystyro/platform/{platform}/progress
  * Timezone: 24hr New York (EDT)
- * Date & Time Stamp: 2026-09-01 08:08:15 (24hr New York Time)
+ * Date & Time Stamp: 2026-09-01 08:48:28 (24hr New York Time)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -31,7 +31,7 @@
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '21.0.0',
+            'layout_version': '22.0.0',
             'gamertag': 'OneLIVIDMAN',
             'user_handle': 'Raymystyro',
             'engagement_timezone': 'America/New_York',
@@ -438,16 +438,16 @@
                 <!-- SIDE-BY-SIDE DUAL TELEMETRY ROW (FS25 DUMBACE FARM & PROGRESSION HUB) -->
                 <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 items-stretch" id="dual-telemetry-row">
                     
-                    <!-- FS25 LIVE TELEMETRY (DUMBACE FARM FOCUS) -->
+                    <!-- FS25 LIVE TELEMETRY (DUMBACE FARM ID #2 FOCUS) -->
                     <section id="fs25-telemetry-section" class="glass-card p-6 border-t-4 border-lime-500 flex flex-col justify-between space-y-6">
                         <div class="space-y-4">
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3">
                                 <div>
                                     <div class="flex items-center gap-2">
                                         <i class="fas fa-tractor text-lime-400 text-lg"></i>
-                                        <h2 class="text-lime-400 text-lg font-black uppercase" id="fs25-header-title">FS25 Dumbace Farm</h2>
+                                        <h2 class="text-lime-400 text-lg font-black uppercase" id="fs25-header-title">FS25 Dumbace Farm (Farm #2)</h2>
                                     </div>
-                                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Telemetry Feed (/fs25)</p>
+                                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Telemetry Feed (/fs25/farms/farm_2)</p>
                                 </div>
                                 <div id="fs25-status-pill" class="fs25-badge flex items-center gap-1.5 self-start sm:self-auto">
                                     <span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
@@ -459,14 +459,14 @@
                             <div class="grid grid-cols-2 gap-2.5">
                                 <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
                                     <div class="text-[9px] font-black text-gray-400 uppercase">Farm Name</div>
-                                    <div id="fs25-farm-name" class="text-xs font-black text-white mt-0.5 truncate">Dumbace Farm</div>
+                                    <div id="fs25-farm-name" class="text-xs font-black text-white mt-0.5 truncate">dumbace</div>
                                 </div>
                                 <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
                                     <div class="text-[9px] font-black text-gray-400 uppercase">Account Funds</div>
                                     <div id="fs25-money" class="text-xs font-black text-lime-400 mt-0.5 truncate">$0</div>
                                 </div>
                                 <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
-                                    <div class="text-[9px] font-black text-gray-400 uppercase">Total Fields</div>
+                                    <div class="text-[9px] font-black text-gray-400 uppercase">Buildings / Placeables</div>
                                     <div id="fs25-fields-count" class="text-xs font-black text-white mt-0.5">0</div>
                                 </div>
                                 <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
@@ -488,16 +488,16 @@
                                 </div>
                             </div>
 
-                            <!-- Farmlands Grid -->
+                            <!-- Placeables / Buildings Grid -->
                             <div class="space-y-2">
                                 <div class="flex justify-between items-center">
                                     <h3 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
-                                        <i class="fas fa-seedling text-lime-400"></i> Farmland Parcels
+                                        <i class="fas fa-building text-lime-400"></i> Buildings & Placeables
                                     </h3>
-                                    <span id="fs25-fields-subtitle" class="text-[9px] font-black text-gray-400 uppercase">0 Parcels</span>
+                                    <span id="fs25-fields-subtitle" class="text-[9px] font-black text-gray-400 uppercase">0 Facilities</span>
                                 </div>
-                                <div id="fs25-fields-container" class="grid grid-cols-2 gap-2 max-h-[160px] overflow-y-auto no-scrollbar">
-                                    <div class="p-2.5 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Loading Fields...</div>
+                                <div id="fs25-fields-container" class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[160px] overflow-y-auto no-scrollbar">
+                                    <div class="p-2.5 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">Loading Buildings...</div>
                                 </div>
                             </div>
                         </div>
@@ -621,7 +621,7 @@
         </div>
         
         <div class="text-center mt-12 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">
-            Sync Target: <span class="text-sky-400">/psn/gamertags/OneLIVIDMAN.json</span> | FS25 Target: <span class="text-lime-400">/fs25.json (Dumbace Farm)</span> | NYC 24hr: <span id="sync-time" class="text-gray-300">--</span>
+            Sync Target: <span class="text-sky-400">/psn/gamertags/OneLIVIDMAN.json</span> | FS25 Target: <span class="text-lime-400">/fs25.json (Farm #2 - dumbace)</span> | NYC 24hr: <span id="sync-time" class="text-gray-300">--</span>
         </div>
     </main>
 
@@ -843,7 +843,7 @@
         });
     </script>
 
-    <!-- REALTIME DATABASE & FS25 (DUMBACE FARM) / SQUAD SYNCHRONIZER -->
+    <!-- REALTIME DATABASE & FS25 (DUMBACE FARM ID #2) / SQUAD SYNCHRONIZER -->
     <script>
         const ONELIVIDMAN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/OneLIVIDMAN.json";
         const ROOT_PSN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn.json";
@@ -965,6 +965,7 @@
             }
         }
 
+        // --- UPDATED FS25 TELEMETRY: DIRECTLY READS /fs25/farms/farm_2 (DUMBACE FARM) ---
         async function updateFS25Telemetry() {
             try {
                 const res = await fetch(`${FS25_RTDB_URL}?t=${Date.now()}`);
@@ -972,114 +973,77 @@
                 const rootData = await res.json();
                 if (!rootData) return;
 
+                // Targeted resolution for Farm #2 (dumbace)
                 let farmData = null;
-                let matchedFarmId = null;
-
-                const searchList = [rootData.farms, rootData.farm, rootData].filter(Boolean);
-                for (const container of searchList) {
-                    if (typeof container === 'object') {
-                        for (const [key, val] of Object.entries(container)) {
-                            if (val && typeof val === 'object') {
-                                const name = String(val.farmName || val.name || val['@name'] || key || '').toLowerCase();
-                                if (name.includes('dumbace')) {
-                                    farmData = val;
-                                    matchedFarmId = val.farmId !== undefined ? val.farmId : (val['@farmId'] !== undefined ? val['@farmId'] : (val.id !== undefined ? val.id : key));
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (farmData) break;
+                if (rootData.farms && typeof rootData.farms === 'object') {
+                    farmData = rootData.farms.farm_2 || 
+                               rootData.farms['2'] || 
+                               rootData.farms.farmId2 || 
+                               Object.values(rootData.farms).find(f => String(f.name || '').toLowerCase().includes('dumbace') || String(f.farmId) === '2');
                 }
 
                 if (!farmData) {
-                    farmData = rootData.farms?.farmId2 || rootData.farms?.[2] || rootData.farmId2 || rootData;
-                    matchedFarmId = 2;
+                    farmData = { name: "dumbace", finances: { money: 0, balance: 0 }, vehicles: [], placeables: [] };
                 }
 
-                const farmName = farmData.farmName || farmData.name || farmData['@name'] || "Dumbace Farm";
-                const moneyNum = Number(farmData.money || farmData.accountBalance || farmData.funds || farmData['@money'] || 0);
+                const farmName = farmData.name || "dumbace";
+                const moneyNum = Number(farmData.finances ? farmData.finances.money : (farmData.money || 0));
                 const money = moneyNum > 0 ? `$${moneyNum.toLocaleString()}` : "$0";
                 
-                let allVehicles = [];
-                if (farmData.vehicles || farmData.fleet || farmData.equipment) {
-                    allVehicles = allVehicles.concat(convertFirebaseArray(farmData.vehicles || farmData.fleet || farmData.equipment));
-                }
-                const topLevelVehicles = convertFirebaseArray(rootData.vehicles || rootData.fleet || rootData.equipment || rootData.machines);
-                if (topLevelVehicles.length > 0) {
-                    const filteredTop = topLevelVehicles.filter(v => {
-                        const vFarmId = v.farmId !== undefined ? v.farmId : (v['@farmId'] !== undefined ? v['@farmId'] : (v.ownerFarmId !== undefined ? v.ownerFarmId : v.farm));
-                        return String(vFarmId) === String(matchedFarmId) || String(v.farmName || '').toLowerCase().includes('dumbace');
-                    });
-                    if (filteredTop.length > 0) allVehicles = filteredTop;
-                }
-
-                let allFields = [];
-                if (farmData.fields || farmData.farmland || farmData.farmlands) {
-                    allFields = allFields.concat(convertFirebaseArray(farmData.fields || farmData.farmland || farmData.farmlands));
-                }
-                const topLevelFarmlands = convertFirebaseArray(rootData.farmlands || rootData.farmland || rootData.fields);
-                if (topLevelFarmlands.length > 0) {
-                    const filteredFields = topLevelFarmlands.filter(f => {
-                        const fFarmId = f.farmId !== undefined ? f.farmId : (f['@farmId'] !== undefined ? f['@farmId'] : (f.ownerFarmId !== undefined ? f.ownerFarmId : f.farm));
-                        return String(fFarmId) === String(matchedFarmId) || String(f.farmName || '').toLowerCase().includes('dumbace');
-                    });
-                    if (filteredFields.length > 0) allFields = filteredFields;
-                }
+                const allVehicles = convertFirebaseArray(farmData.vehicles || []);
+                const allPlaceables = convertFirebaseArray(farmData.placeables || []);
 
                 document.getElementById('fs25-farm-name').innerText = farmName;
                 document.getElementById('fs25-money').innerText = money;
-                document.getElementById('fs25-fields-count').innerText = allFields.length;
+                document.getElementById('fs25-fields-count').innerText = allPlaceables.length;
                 document.getElementById('fs25-vehicles-count').innerText = allVehicles.length;
                 document.getElementById('fs25-fleet-subtitle').innerText = `${allVehicles.length} Units`;
-                document.getElementById('fs25-fields-subtitle').innerText = `${allFields.length} Parcels`;
+                document.getElementById('fs25-fields-subtitle').innerText = `${allPlaceables.length} Facilities`;
 
                 const fleetContainer = document.getElementById('fs25-fleet-container');
                 if (fleetContainer) {
                     if (allVehicles.length > 0) {
                         fleetContainer.innerHTML = allVehicles.map(v => {
-                            const name = v.name || v.brand || v.type || v.title || v['@name'] || "Farm Implement";
-                            const category = v.category || v.group || (v.isTractor ? "Tractor" : "Machinery");
-                            const fillType = v.fillType || v.crop || v.contents || null;
-                            const operatingHours = v.operatingHours || v.hours || v.ageHours || null;
-                            const damage = v.damage !== undefined ? `${Math.round(v.damage * 100)}% Wear` : null;
+                            const name = v.name || v.brand || v.file || "Farm Implement";
+                            const operatingHours = v.operatingHours !== undefined ? `${v.operatingHours} hrs` : (v.ageMonths ? `${v.ageMonths} mo` : 'Ready');
+                            const price = v.price ? `$${Number(v.price).toLocaleString()}` : 'Owned';
 
                             return `
                                 <div class="bg-black/40 p-2.5 rounded-xl border border-white/5 flex flex-col justify-between space-y-1.5">
                                     <div>
-                                        <div class="text-[8px] font-black text-lime-400 uppercase">${category}</div>
+                                        <div class="text-[8px] font-black text-lime-400 uppercase">Machinery</div>
                                         <div class="text-[11px] font-black text-white uppercase truncate">${name}</div>
                                     </div>
                                     <div class="flex justify-between items-center text-[9px] font-bold text-gray-400 border-t border-white/5 pt-1.5">
-                                        <span>${operatingHours ? `${operatingHours} hrs` : (damage || 'Operational')}</span>
-                                        <span class="text-lime-400">${fillType ? `${fillType}` : 'Ready'}</span>
+                                        <span>${operatingHours}</span>
+                                        <span class="text-lime-400">${price}</span>
                                     </div>
                                 </div>
                             `;
                         }).join('');
                     } else {
-                        fleetContainer.innerHTML = `<div class="p-3 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No equipment registered for Dumbace Farm.</div>`;
+                        fleetContainer.innerHTML = `<div class="p-3 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No equipment registered for Dumbace Farm (Farm #2).</div>`;
                     }
                 }
 
                 const fieldsContainer = document.getElementById('fs25-fields-container');
                 if (fieldsContainer) {
-                    if (allFields.length > 0) {
-                        fieldsContainer.innerHTML = allFields.map(f => {
-                            const fId = f.id || f.fieldId || f.name || f['@id'] || "Field";
-                            const crop = f.crop || f.fruitType || f.status || "Seeded";
-                            const area = f.area || f.size || (f.hectares ? `${f.hectares} ha` : null);
+                    if (allPlaceables.length > 0) {
+                        fieldsContainer.innerHTML = allPlaceables.map(p => {
+                            const pName = p.name || p.file || "Facility";
+                            const pPrice = p.price ? `$${Number(p.price).toLocaleString()}` : 'Placed';
+                            const pAge = p.ageMonths !== undefined ? `${p.ageMonths} mo old` : 'Active';
 
                             return `
                                 <div class="bg-black/40 p-2 rounded-xl border border-white/5 text-center">
-                                    <div class="text-[8px] font-black text-gray-400 uppercase">Field ${fId}</div>
-                                    <div class="text-[10px] font-black text-white mt-0.5 truncate">${crop}</div>
-                                    ${area ? `<div class="text-[8px] text-lime-400 font-bold mt-0.5">${area}</div>` : ''}
+                                    <div class="text-[8px] font-black text-gray-400 uppercase">${pAge}</div>
+                                    <div class="text-[10px] font-black text-white mt-0.5 truncate">${pName}</div>
+                                    <div class="text-[8px] text-lime-400 font-bold mt-0.5">${pPrice}</div>
                                 </div>
                             `;
                         }).join('');
                     } else {
-                        fieldsContainer.innerHTML = `<div class="p-2.5 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No active fields assigned to Dumbace Farm.</div>`;
+                        fieldsContainer.innerHTML = `<div class="p-2.5 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No placeables assigned to Dumbace Farm (Farm #2).</div>`;
                     }
                 }
 
