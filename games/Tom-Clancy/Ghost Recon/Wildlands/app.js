@@ -1,15 +1,15 @@
 /* ============================================================================
    FILE: app.js
-   DESCRIPTION: Wildlands Full Skill Slots, Click Handlers, Tree Branches, & Firestore
+   DESCRIPTION: Wildlands Full Skill Slots, Rebel 3x3 Tiering, & Firestore Engine
    TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
-   TIMESTAMP (24-HR NY TIME): 2026-09-01 05:35 EDT
+   TIMESTAMP (24-HR NY TIME): 2026-09-01 05:43 EDT
    ============================================================================ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
 
-// --- FIREBASE CONFIGURATION (entertainment-71888) ---
+// --- Line 14: Firebase Config ---
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
@@ -21,7 +21,7 @@ const firebaseConfig = {
 
 const GAME_ID = 'T.C.G.R.Wildlands';
 
-// --- WILDLANDS STRUCTURED TREE ---
+// --- Line 27: Structured Tree & Rebel 3x3 Powers ---
 const WILDLANDS_TREE = {
     "WEAPON": [
         {
@@ -187,11 +187,46 @@ const WILDLANDS_TREE = {
         {
             tierName: "REBEL OPERATIONS",
             skills: [
-                { id: "r_vehicle_drop", name: "Vehicle Drop-off", reqLevel: 1, maxSlots: 3, desc: "Rebel vehicle delivery: Rank 1 SUV, Rank 2 Armored Vehicle, Rank 3 Helicopter.", hasMedal: false },
-                { id: "r_guns_hire", name: "Guns For Hire", reqLevel: 1, maxSlots: 3, desc: "Summons Kataris 26 rebel squad to reinforce your position.", hasMedal: false },
-                { id: "r_mortar", name: "Mortar", reqLevel: 1, maxSlots: 3, desc: "Orders high-explosive rebel mortar artillery strike on target coordinates.", hasMedal: false },
-                { id: "r_diversion", name: "Diversion", reqLevel: 1, maxSlots: 3, desc: "Commands rebel forces to attack nearby enemy posts as a decoy.", hasMedal: false },
-                { id: "r_spotting", name: "Spotting", reqLevel: 1, maxSlots: 3, desc: "Rebel recon teams scan and highlight all hostiles in designated zone.", hasMedal: false }
+                { 
+                    id: "r_vehicle_drop", 
+                    name: "Vehicle Drop-off", 
+                    reqLevel: 1, 
+                    isRebelSupport: true, 
+                    desc: "Rebel vehicle delivery: Power 1 delivers standard SUV, Power 2 delivers Armored Buggy/Vehicle, Power 3 delivers Helicopter.",
+                    powers: ["Power 1: SUV", "Power 2: Armored", "Power 3: Helicopter"]
+                },
+                { 
+                    id: "r_guns_hire", 
+                    name: "Guns For Hire", 
+                    reqLevel: 1, 
+                    isRebelSupport: true, 
+                    desc: "Summons Kataris 26 rebel fireteam to reinforce position: Power 1 (2 fighters), Power 2 (4 fighters), Power 3 (Well-armed squad).",
+                    powers: ["Power 1: 2 Rebels", "Power 2: 4 Rebels", "Power 3: Elite Squad"]
+                },
+                { 
+                    id: "r_mortar", 
+                    name: "Mortar", 
+                    reqLevel: 1, 
+                    isRebelSupport: true, 
+                    desc: "Orders high-explosive rebel artillery bombardment: Power 1 (3 shells), Power 2 (5 shells), Power 3 (Intense saturation barrage).",
+                    powers: ["Power 1: 3 Shells", "Power 2: 5 Shells", "Power 3: Saturation"]
+                },
+                { 
+                    id: "r_diversion", 
+                    name: "Diversion", 
+                    reqLevel: 1, 
+                    isRebelSupport: true, 
+                    desc: "Commands rebel forces to attack nearby enemy outpost as a distraction: Increases attacking force and survivability per Power.",
+                    powers: ["Power 1: Small Decoy", "Power 2: Assault Decoy", "Power 3: Massive Assault"]
+                },
+                { 
+                    id: "r_spotting", 
+                    name: "Spotting", 
+                    reqLevel: 1, 
+                    isRebelSupport: true, 
+                    desc: "Rebel recon teams scan and tag hostiles in designated coordinates: Increases scan diameter and tagging speed per Power.",
+                    powers: ["Power 1: 30m Radius", "Power 2: 60m Radius", "Power 3: 100m Radius"]
+                }
             ]
         }
     ]
@@ -569,6 +604,7 @@ const appState = {
         setTxt("statMap", d.mapDisc);
     },
 
+    // --- Line 465: Tree & Rebel 3x3 Slots Engine ---
     renderTree: function() {
         const container = document.getElementById('treeContainer');
         if (!container) return;
@@ -592,7 +628,8 @@ const appState = {
             tier.skills.forEach(skill => {
                 const saved = (this.hunterSkillsData[this.activeCategory] && this.hunterSkillsData[this.activeCategory][skill.id]) || { current: 0, medalEarned: false };
                 const currentRank = saved.current || 0;
-                const maxRank = skill.maxSlots || 1;
+                const isRebel = !!skill.isRebelSupport;
+                const maxRank = isRebel ? 9 : (skill.maxSlots || 1);
                 const isMaxed = currentRank >= maxRank;
                 const isLocked = currentLevel < skill.reqLevel;
                 const isSelected = this.selectedSkillId === skill.id;
@@ -628,29 +665,80 @@ const appState = {
 
                 block.appendChild(titleRow);
 
-                const slotsRow = document.createElement("div");
-                slotsRow.className = "skill-slots-row";
+                if (isRebel) {
+                    // Rebel 3-Power Section Display (3 blocks with 3 sub-slots each)
+                    const rebelGroupsContainer = document.createElement("div");
+                    rebelGroupsContainer.className = "rebel-powers-container";
 
-                for (let i = 0; i < maxRank; i++) {
-                    const dash = document.createElement("div");
-                    const isFilled = i < currentRank;
-                    dash.className = `skill-slot-dash ${isFilled ? (isMaxed ? 'max-filled' : 'filled') : ''}`;
-                    dash.title = `Slot ${i + 1} of ${maxRank}`;
-                    
-                    dash.onclick = (e) => {
-                        e.stopPropagation();
-                        this.selectedSkillId = skill.id;
-                        if (currentRank === i + 1) {
-                            this.setExplicitRank(skill.id, skill.reqLevel, i);
-                        } else {
-                            this.setExplicitRank(skill.id, skill.reqLevel, i + 1);
+                    for (let p = 1; p <= 3; p++) {
+                        const powerTierBox = document.createElement("div");
+                        const powerMinRank = (p - 1) * 3;
+                        const powerCurrentSlots = Math.max(0, Math.min(3, currentRank - powerMinRank));
+                        const isPowerActive = powerCurrentSlots > 0;
+                        const isPowerMaxed = powerCurrentSlots === 3;
+
+                        powerTierBox.className = `rebel-power-box ${isPowerActive ? 'active-power' : ''} ${isPowerMaxed ? 'max-power' : ''}`;
+
+                        const powerLabel = document.createElement("div");
+                        powerLabel.className = "rebel-power-label";
+                        powerLabel.innerText = `PWR ${p}`;
+                        powerTierBox.appendChild(powerLabel);
+
+                        const powerSlotsRow = document.createElement("div");
+                        powerSlotsRow.className = "rebel-power-slots-row";
+
+                        for (let s = 1; s <= 3; s++) {
+                            const exactTargetRank = powerMinRank + s;
+                            const isSlotFilled = currentRank >= exactTargetRank;
+                            const slotDash = document.createElement("div");
+                            slotDash.className = `rebel-slot-dash ${isSlotFilled ? 'filled' : ''} ${isPowerMaxed ? 'max-filled' : ''}`;
+                            slotDash.title = `Power ${p} - Level ${s} of 3 (Total ${exactTargetRank}/9)`;
+
+                            slotDash.onclick = (e) => {
+                                e.stopPropagation();
+                                this.selectedSkillId = skill.id;
+                                if (currentRank === exactTargetRank) {
+                                    this.setExplicitRank(skill.id, skill.reqLevel, exactTargetRank - 1);
+                                } else {
+                                    this.setExplicitRank(skill.id, skill.reqLevel, exactTargetRank);
+                                }
+                            };
+
+                            powerSlotsRow.appendChild(slotDash);
                         }
-                    };
 
-                    slotsRow.appendChild(dash);
+                        powerTierBox.appendChild(powerSlotsRow);
+                        rebelGroupsContainer.appendChild(powerTierBox);
+                    }
+
+                    block.appendChild(rebelGroupsContainer);
+                } else {
+                    // Standard Dash Slots
+                    const slotsRow = document.createElement("div");
+                    slotsRow.className = "skill-slots-row";
+
+                    for (let i = 0; i < maxRank; i++) {
+                        const dash = document.createElement("div");
+                        const isFilled = i < currentRank;
+                        dash.className = `skill-slot-dash ${isFilled ? (isMaxed ? 'max-filled' : 'filled') : ''}`;
+                        dash.title = `Slot ${i + 1} of ${maxRank}`;
+
+                        dash.onclick = (e) => {
+                            e.stopPropagation();
+                            this.selectedSkillId = skill.id;
+                            if (currentRank === i + 1) {
+                                this.setExplicitRank(skill.id, skill.reqLevel, i);
+                            } else {
+                                this.setExplicitRank(skill.id, skill.reqLevel, i + 1);
+                            }
+                        };
+
+                        slotsRow.appendChild(dash);
+                    }
+
+                    block.appendChild(slotsRow);
                 }
 
-                block.appendChild(slotsRow);
                 col.appendChild(block);
             });
 
@@ -670,15 +758,23 @@ const appState = {
         }
 
         const currentRank = meta ? meta.current : 0;
-        const maxRank = skill.maxSlots || 1;
+        const isRebel = !!skill.isRebelSupport;
+        const maxRank = isRebel ? 9 : (skill.maxSlots || 1);
         const isMaxed = currentRank >= maxRank;
         const isLocked = (this.statsData.playerLevel || 1) < skill.reqLevel;
         const medalEarned = meta ? !!meta.medalEarned : false;
 
+        let statusText = `UNLOCKED (RANK ${currentRank}/${maxRank})`;
+        if (isRebel) {
+            const activePower = Math.min(3, Math.floor((currentRank - 1) / 3) + 1);
+            const subSlot = currentRank % 3 === 0 && currentRank > 0 ? 3 : currentRank % 3;
+            statusText = currentRank === 0 ? `REBEL OPS (INACTIVE 0/9)` : `ACTIVE: POWER ${activePower} (LEVEL ${subSlot}/3) - TOTAL ${currentRank}/9`;
+        }
+
         inspectPanel.innerHTML = `
             <div class="inspect-top-row">
                 <h3 class="inspect-title">${skill.name}</h3>
-                <span class="inspect-req">${isLocked ? `🔒 LOCKED (REQUIRED LEVEL ${skill.reqLevel})` : `UNLOCKED (RANK ${currentRank}/${maxRank})`}</span>
+                <span class="inspect-req">${isLocked ? `🔒 LOCKED (REQUIRED LEVEL ${skill.reqLevel})` : statusText}</span>
             </div>
             <p class="inspect-desc">${skill.desc}</p>
 
