@@ -1,18 +1,20 @@
 /* ============================================================================
    FILE: app.js
-   DESCRIPTION: Wildlands Full Skill Slots, Rebel 3x3 Powers, & Firestore Engine
+   DESCRIPTION: Wildlands Full Skill Slots, RTDB Multi-Folder Menu, Firestore Engine
    TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
-   TIMESTAMP (24-HR NY TIME): 2026-09-01 06:05 EDT
+   TIMESTAMP (24-HR NY TIME): 2026-09-01 06:15 EDT
    ============================================================================ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js';
 import { getFirestore, doc, setDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js';
+import { getDatabase, ref as rtdbRef, onValue } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
-// --- Line 14: Firebase SDK Configuration ---
+// --- Line 15: Firebase SDK Configuration ---
 const firebaseConfig = {
     apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
     authDomain: "entertainment-71888.firebaseapp.com",
+    databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com",
     projectId: "entertainment-71888",
     storageBucket: "entertainment-71888.firebasestorage.app",
     messagingSenderId: "660524340277",
@@ -21,7 +23,7 @@ const firebaseConfig = {
 
 const GAME_ID = 'T.C.G.R.Wildlands';
 
-// --- Line 27: Structured Tree Data Registry ---
+// --- Line 29: Structured Tree Data Registry ---
 const WILDLANDS_TREE = {
     "WEAPON": [
         {
@@ -262,6 +264,7 @@ const appState = {
     statsData: JSON.parse(JSON.stringify(BLANK_STATS)),
     auth: null,
     db: null,
+    rtdb: null,
     masterUnsub: null,
 
     init: async function() {
@@ -283,6 +286,10 @@ const appState = {
             const app = initializeApp(firebaseConfig, 'Wildlands-Direct-Cloud-Engine');
             this.auth = getAuth(app);
             this.db = getFirestore(app);
+            this.rtdb = getDatabase(app);
+
+            // Live RTDB multi-folder listener for /utm_links
+            this.initRtdbIntelDirectory();
 
             await signInAnonymously(this.auth);
 
@@ -294,9 +301,131 @@ const appState = {
                 }
             });
         } catch (err) {
-            console.error("Firestore Init Error:", err);
+            console.error("Firebase Engine Error:", err);
             this.setStatus(`❌ Error: ${err.message}`, "#ef4444");
         }
+    },
+
+    // --- Line 195: Multi-Folder Realtime Database Flyout Engine ---
+    initRtdbIntelDirectory: function() {
+        const trigger = document.getElementById("intelMenuTrigger");
+        const flyout = document.getElementById("intelFlyoutMenu");
+        const wrapper = document.getElementById("intelDropdownWrapper");
+
+        if (trigger && flyout) {
+            trigger.onclick = (e) => {
+                e.stopPropagation();
+                const isHidden = flyout.classList.contains("hidden");
+                flyout.classList.toggle("hidden", !isHidden);
+                trigger.classList.toggle("active", isHidden);
+                trigger.setAttribute("aria-expanded", String(isHidden));
+            };
+
+            document.addEventListener("click", (e) => {
+                if (wrapper && !wrapper.contains(e.target)) {
+                    flyout.classList.add("hidden");
+                    trigger.classList.remove("active");
+                    trigger.setAttribute("aria-expanded", "false");
+                }
+            });
+        }
+
+        const linksRef = rtdbRef(this.rtdb, 'utm_links');
+        onValue(linksRef, (snapshot) => {
+            if (!flyout) return;
+            flyout.innerHTML = "";
+
+            if (snapshot.exists()) {
+                const rootData = snapshot.val();
+
+                // Sort keys so 'Home' appears at top if present
+                const keys = Object.keys(rootData).sort((a, b) => {
+                    if (a.toLowerCase() === 'home') return -1;
+                    if (b.toLowerCase() === 'home') return 1;
+                    return a.localeCompare(b);
+                });
+
+                keys.forEach(key => {
+                    const nodeVal = rootData[key];
+
+                    // Check if node is a single direct link or a folder with children
+                    const isDirectLink = typeof nodeVal === 'string' || (nodeVal && (nodeVal.url || nodeVal.link) && !nodeVal.items && !nodeVal.links);
+
+                    if (isDirectLink) {
+                        const directUrl = typeof nodeVal === 'string' ? nodeVal : (nodeVal.url || nodeVal.link);
+                        const label = (typeof nodeVal === 'object' && (nodeVal.title || nodeVal.label || nodeVal.name)) || key.replace(/_/g, ' ');
+                        const img = typeof nodeVal === 'object' ? (nodeVal.image || nodeVal.thumbnail || nodeVal.icon || '') : '';
+
+                        const a = document.createElement("a");
+                        a.href = directUrl;
+                        a.className = "intel-direct-link";
+                        a.target = "_blank";
+                        a.rel = "noopener noreferrer";
+
+                        let thumbHTML = img ? `<img src="${img}" class="intel-thumb-img" alt="">` : `<span class="intel-thumb-placeholder">🌐</span>`;
+                        a.innerHTML = `
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                ${thumbHTML}
+                                <span>${label}</span>
+                            </div>
+                            <span style="font-size:11px; opacity:0.7;">↗</span>
+                        `;
+                        flyout.appendChild(a);
+                    } else if (typeof nodeVal === 'object' && nodeVal !== null) {
+                        // Multi-Item Folder Node (e.g. Discord, Entertainment, Game, User, PlayStation_Trophy_Card)
+                        const folderContainer = document.createElement("div");
+                        folderContainer.className = "intel-folder-node";
+
+                        const folderTitle = key.replace(/_/g, ' ');
+                        const folderBtn = document.createElement("button");
+                        folderBtn.type = "button";
+                        folderBtn.className = "intel-folder-btn";
+                        folderBtn.innerHTML = `<span>📁 ${folderTitle}</span><span style="font-size:10px;">▶</span>`;
+
+                        const subMenu = document.createElement("div");
+                        subMenu.className = "intel-submenu";
+
+                        const childKeys = Object.keys(nodeVal);
+                        childKeys.forEach(cKey => {
+                            const item = nodeVal[cKey];
+                            if (!item) return;
+
+                            const subUrl = typeof item === 'string' ? item : (item.url || item.link || item.href || '');
+                            const subLabel = (typeof item === 'object' && (item.title || item.name || item.label)) || cKey.replace(/_/g, ' ');
+                            const subDesc = typeof item === 'object' ? (item.desc || item.description || '') : '';
+                            const subImg = typeof item === 'object' ? (item.image || item.thumbnail || item.icon || item.img || '') : '';
+
+                            if (subUrl) {
+                                const subLink = document.createElement("a");
+                                subLink.href = subUrl;
+                                subLink.className = "intel-sub-item";
+                                subLink.target = "_blank";
+                                subLink.rel = "noopener noreferrer";
+
+                                let thumbHTML = subImg ? `<img src="${subImg}" class="intel-thumb-img" alt="">` : `<span class="intel-thumb-placeholder">📄</span>`;
+
+                                subLink.innerHTML = `
+                                    ${thumbHTML}
+                                    <div class="intel-item-text-wrap">
+                                        <div class="intel-item-name">${subLabel}</div>
+                                        ${subDesc ? `<div class="intel-item-sub">${subDesc}</div>` : ''}
+                                    </div>
+                                `;
+                                subMenu.appendChild(subLink);
+                            }
+                        });
+
+                        folderContainer.appendChild(folderBtn);
+                        folderContainer.appendChild(subMenu);
+                        flyout.appendChild(folderContainer);
+                    }
+                });
+            } else {
+                flyout.innerHTML = '<div class="intel-menu-loading">No Links in Database</div>';
+            }
+        }, (error) => {
+            if (flyout) flyout.innerHTML = `<div class="intel-menu-loading">Error: ${error.message}</div>`;
+        });
     },
 
     initializeBlankSkills: function() {
@@ -511,7 +640,7 @@ const appState = {
         }
     },
 
-    // --- Line 330: DIRECT FIRESTORE OBSERVER (Per User + Platform) ---
+    // --- Line 430: DIRECT FIRESTORE OBSERVER (Per Hunter + Platform) ---
     loadOperator: function(userName, platform) {
         this.activeHunter = userName;
         this.activePlatform = platform.toLowerCase();
@@ -620,7 +749,6 @@ const appState = {
         setTxt("statMap", d.mapDisc);
     },
 
-    // --- Render Tree With Side-by-Side 3-Box Rebel Powers ---
     renderTree: function() {
         const container = document.getElementById('treeContainer');
         if (!container) return;
@@ -681,7 +809,6 @@ const appState = {
                 block.appendChild(titleRow);
 
                 if (isRebel) {
-                    // Rebel 3-Power Side-by-Side Horizontal Row (3 Boxes, 3 Dash Slots each)
                     const rebelGroupsContainer = document.createElement("div");
                     rebelGroupsContainer.className = "rebel-powers-container";
 
@@ -728,7 +855,6 @@ const appState = {
 
                     block.appendChild(rebelGroupsContainer);
                 } else {
-                    // Standard Dash Slots
                     const slotsRow = document.createElement("div");
                     slotsRow.className = "skill-slots-row";
 
@@ -851,7 +977,7 @@ const appState = {
         this.sync();
     },
 
-    // --- Line 520: Pure Cloud Firestore Direct Save ---
+    // --- Line 600: Pure Cloud Firestore Direct Save ---
     sync: async function() {
         this.renderTree();
         this.updateStatsUI();
