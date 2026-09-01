@@ -1,9 +1,12 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-01 08:08:11 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-01 08:10:00 (EDT - 24hr New York Time)
  * Project: entertainment-71888 (/fs25 RTDB Node)
- * Description: Smart FS25 Dynamic Savegame Ingestion Engine with Farm-level
- *              Aggregation (groups vehicles, placeables, stats by farmId).
+ * Description: Smart FS25 Dynamic Savegame Ingestion Engine.
+ *              - Dual HTTP/HTTPS support.
+ *              - Auto-parses raw XML files into clean, readable JSON trees.
+ *              - Organizes all vehicles, placeables, stats, and balances by Farm.
+ *              - Retains raw XML backup feeds in /fs25/raw_xml/.
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
  * ============================================================================ */
 
@@ -13,14 +16,17 @@ const admin = require('firebase-admin');
 const { Writable } = require('stream');
 const xml2js = require('xml2js');
 
-// SECTION 1: SAFETY TIMEOUT (4 Minutes)
-// Prevents zombie processes on hanging FTP connections
+// ============================================================================
+// SECTION 1: SAFETY TIMEOUT (4 Minutes Failsafe)
+// ============================================================================
 setTimeout(() => {
   console.log("🚨 Safety Failsafe: Exiting cleanly after 4 minutes.");
   process.exit(0);
 }, 4 * 60 * 1000);
 
+// ============================================================================
 // SECTION 2: FIREBASE ADMIN INITIALIZATION
+// ============================================================================
 const firebaseConfig = {
   databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
 };
@@ -51,18 +57,22 @@ if (!admin.apps.length) {
 
 const db = admin.database();
 
-// SECTION 3: NETWORK & HOST CONFIGURATION (Dual HTTP/HTTPS support)
+// ============================================================================
+// SECTION 3: NETWORK & HOST CONFIGURATION (Dual HTTP / HTTPS Support)
+// ============================================================================
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
 const ftpPass = process.env.FTP_PASS;
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
 
-// Endpoints supporting plain HTTP or HTTPS reverse proxies
+// Supports standard HTTP feed and HTTPS image proxy fallback
 const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
 const MAP_IMAGE_URL = `https://wsrv.nl/?url=${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
 
-// SECTION 4: HELPER FUNCTIONS & PARSERS
+// ============================================================================
+// SECTION 4: HELPER FUNCTIONS & CLEANERS
+// ============================================================================
 function sanitizeXml(rawText) {
   if (!rawText) return "";
   let clean = rawText.toString();
@@ -95,6 +105,17 @@ async function parseXmlString(xmlString) {
   } catch (e) {
     return null;
   }
+}
+
+// Converts messy XML file paths into clean, readable item names
+function cleanEntityName(filepath) {
+  if (!filepath) return "Unknown Item";
+  const filename = filepath.split('/').pop().replace(/\.xml$/i, '');
+  return filename
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/[_-]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 async function downloadFtpFileToString(client, remotePath) {
@@ -147,52 +168,64 @@ async function fetchStatsApi() {
   return { text: "", players: 0, activeSlot: null, mapTitle: "" };
 }
 
-// SECTION 5: FARM DATA AGGREGATION ENGINE
-// Groups XML entities (farms, vehicles, placeables, stats) by farmId
-async function buildFarmsAggregation(rawFiles) {
-  const aggregated = {
-    unowned: { farmId: "0", name: "Unowned / Map Environment", vehicles: [], placeables: [] },
-    farms: {}
+// ============================================================================
+// SECTION 5: JSON DATA STRUCTURING & CLEANING ENGINE
+// ============================================================================
+async function buildCleanStructuredSave(rawFiles) {
+  const structured = {
+    summary: {
+      totalFarms: 0,
+      totalVehicles: 0,
+      totalPlaceables: 0
+    },
+    farms: {},
+    unowned: {
+      name: "Map Environment / Dealer",
+      vehicles: [],
+      placeables: []
+    }
   };
 
-  // 1. Process farms.xml
+  // 1. Parse farms.xml
   if (rawFiles['farms']) {
     const farmsJson = await parseXmlString(rawFiles['farms']);
     if (farmsJson && farmsJson.farms && farmsJson.farms.farm) {
       const farmList = Array.isArray(farmsJson.farms.farm) ? farmsJson.farms.farm : [farmsJson.farms.farm];
       farmList.forEach(f => {
         const fId = String(f.farmId || f.id || '1');
-        aggregated.farms[`farm_${fId}`] = {
+        structured.farms[`farm_${fId}`] = {
           farmId: fId,
           name: f.name || `Farm ${fId}`,
-          money: parseFloat(f.money || 0),
-          loan: parseFloat(f.loan || 0),
+          finances: {
+            money: parseFloat(f.money || 0),
+            loan: parseFloat(f.loan || 0),
+            balance: parseFloat(f.money || 0) - parseFloat(f.loan || 0)
+          },
           color: f.color || "1",
           players: f.players ? (Array.isArray(f.players.player) ? f.players.player : [f.players.player]) : [],
           vehicles: [],
           placeables: [],
-          fields: [],
-          stats: {}
+          statistics: {}
         };
       });
     }
   }
 
-  // Fallback if no farms were parsed
-  if (Object.keys(aggregated.farms).length === 0) {
-    aggregated.farms['farm_1'] = {
+  // Fallback if no explicit farm exists
+  if (Object.keys(structured.farms).length === 0) {
+    structured.farms['farm_1'] = {
       farmId: "1",
-      name: "My Farm",
-      money: 0,
-      loan: 0,
+      name: "Main Farm",
+      finances: { money: 0, loan: 0, balance: 0 },
+      color: "1",
+      players: [],
       vehicles: [],
       placeables: [],
-      fields: [],
-      stats: {}
+      statistics: {}
     };
   }
 
-  // 2. Process vehicles.xml
+  // 2. Parse vehicles.xml
   if (rawFiles['vehicles']) {
     const vehJson = await parseXmlString(rawFiles['vehicles']);
     if (vehJson && vehJson.vehicles && vehJson.vehicles.vehicle) {
@@ -200,25 +233,28 @@ async function buildFarmsAggregation(rawFiles) {
       vehList.forEach(v => {
         const fId = String(v.farmId || "0");
         const farmKey = `farm_${fId}`;
-        const item = {
-          id: v.id,
-          filename: v.filename,
-          age: v.age,
-          price: v.price,
-          operatingTime: v.operatingTime,
-          fillLevels: v.fillUnit ? v.fillUnit : null
+        const cleanItem = {
+          id: v.id || "0",
+          name: cleanEntityName(v.filename),
+          file: v.filename,
+          price: parseFloat(v.price || 0),
+          operatingHours: parseFloat(((parseFloat(v.operatingTime || 0)) / 3600).toFixed(1)),
+          ageMonths: parseInt(v.age || 0, 10),
+          fillLevel: v.fillUnit && v.fillUnit.unit ? v.fillUnit.unit : null
         };
 
+        structured.summary.totalVehicles++;
+
         if (fId === "0") {
-          aggregated.unowned.vehicles.push(item);
-        } else if (aggregated.farms[farmKey]) {
-          aggregated.farms[farmKey].vehicles.push(item);
+          structured.unowned.vehicles.push(cleanItem);
+        } else if (structured.farms[farmKey]) {
+          structured.farms[farmKey].vehicles.push(cleanItem);
         }
       });
     }
   }
 
-  // 3. Process placeables.xml
+  // 3. Parse placeables.xml
   if (rawFiles['placeables']) {
     const plcJson = await parseXmlString(rawFiles['placeables']);
     if (plcJson && plcJson.placeables && plcJson.placeables.placeable) {
@@ -226,24 +262,27 @@ async function buildFarmsAggregation(rawFiles) {
       plcList.forEach(p => {
         const fId = String(p.farmId || "0");
         const farmKey = `farm_${fId}`;
-        const item = {
-          id: p.id,
-          filename: p.filename,
-          position: p.position,
-          age: p.age,
-          price: p.price
+        const cleanItem = {
+          id: p.id || "0",
+          name: cleanEntityName(p.filename),
+          file: p.filename,
+          position: p.position || null,
+          price: parseFloat(p.price || 0),
+          ageMonths: parseInt(p.age || 0, 10)
         };
 
+        structured.summary.totalPlaceables++;
+
         if (fId === "0") {
-          aggregated.unowned.placeables.push(item);
-        } else if (aggregated.farms[farmKey]) {
-          aggregated.farms[farmKey].placeables.push(item);
+          structured.unowned.placeables.push(cleanItem);
+        } else if (structured.farms[farmKey]) {
+          structured.farms[farmKey].placeables.push(cleanItem);
         }
       });
     }
   }
 
-  // 4. Process farms_statistics.xml (if present)
+  // 4. Parse farms_statistics.xml
   if (rawFiles['farms_statistics']) {
     const statsJson = await parseXmlString(rawFiles['farms_statistics']);
     if (statsJson && statsJson.statistics && statsJson.statistics.farm) {
@@ -251,23 +290,41 @@ async function buildFarmsAggregation(rawFiles) {
       statList.forEach(s => {
         const fId = String(s.farmId || s.id);
         const farmKey = `farm_${fId}`;
-        if (aggregated.farms[farmKey]) {
-          aggregated.farms[farmKey].stats = s;
+        if (structured.farms[farmKey]) {
+          structured.farms[farmKey].statistics = s;
         }
       });
     }
   }
 
-  return aggregated;
+  // 5. Parse careerSavegame.xml (Server Day, Time, Map Name)
+  if (rawFiles['careerSavegame']) {
+    const careerJson = await parseXmlString(rawFiles['careerSavegame']);
+    if (careerJson && careerJson.careerSavegame) {
+      const c = careerJson.careerSavegame;
+      structured.gameInfo = {
+        savegameName: c.savegameName || "FS25 Server",
+        mapTitle: c.mapTitle || c.mapId || "Unknown Map",
+        currentDay: parseInt(c.currentDay || 1, 10),
+        dayTime: parseFloat(c.dayTime || 0),
+        playTimeMinutes: parseFloat(c.playTime || 0)
+      };
+    }
+  }
+
+  structured.summary.totalFarms = Object.keys(structured.farms).length;
+  return structured;
 }
 
+// ============================================================================
 // SECTION 6: SMART PIPELINE EXECUTION
+// ============================================================================
 async function runPipeline() {
   console.log("📡 [1/4] Running Pre-Flight Check against Web Stats API...");
   const statsData = await fetchStatsApi();
   const activePlayers = statsData.players;
 
-  // Retrieve timestamp of last full savegame download
+  // Check last full sync timestamp to prevent unnecessary API burn
   let lastFullSyncIso = null;
   try {
     const snap = await db.ref('fs25/lastFullSaveSync').once('value');
@@ -277,9 +334,9 @@ async function runPipeline() {
   const lastSyncMs = lastFullSyncIso ? new Date(lastFullSyncIso).getTime() : 0;
   const hoursSinceLastFullSync = (Date.now() - lastSyncMs) / (1000 * 60 * 60);
 
-  console.log(`📊 Active Players: ${activePlayers} | Hours since last full save sync: ${hoursSinceLastFullSync.toFixed(1)}h`);
+  console.log(`📊 Active Players: ${activePlayers} | Hours since last full sync: ${hoursSinceLastFullSync.toFixed(1)}h`);
 
-  // SMART SCHEDULING LOGIC:
+  // Smart idle check: exit in ~2s if server is inactive & synced < 24h ago
   if (activePlayers === 0 && hoursSinceLastFullSync < 24 && lastSyncMs > 0) {
     console.log("💤 Server Idle (0 players) & full sync performed < 24h ago.");
     console.log("⚡ Updating live heartbeat and exiting cleanly.");
@@ -290,8 +347,7 @@ async function runPipeline() {
       liveMapImage: MAP_IMAGE_URL
     };
     if (statsData.text) {
-      idlePayload.stats_raw = statsData.text;
-      idlePayload.stats_xml_raw = statsData.text;
+      idlePayload.raw_xml = { stats: statsData.text };
     }
 
     await db.ref('fs25').update(idlePayload);
@@ -299,8 +355,8 @@ async function runPipeline() {
   }
 
   console.log(activePlayers > 0 
-    ? `🔥 Active player detected (${activePlayers} online). Proceeding with full 16-min savegame sync...`
-    : `⏰ 24-Hour maintenance interval reached (${hoursSinceLastFullSync.toFixed(1)}h). Running full savegame sync...`
+    ? `🔥 Active player detected (${activePlayers} online). Proceeding with full 16-min sync...`
+    : `⏰ 24-Hour maintenance interval reached (${hoursSinceLastFullSync.toFixed(1)}h). Running full sync...`
   );
 
   let detectedSlot = statsData.activeSlot || null;
@@ -310,12 +366,12 @@ async function runPipeline() {
     liveMapImage: MAP_IMAGE_URL,
     lastUpdated: new Date().toISOString(),
     lastFullSaveSync: new Date().toISOString(),
-    config: { appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c" }
+    config: { appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c" },
+    raw_xml: {} // Isolates all heavy unparsed XML strings
   };
 
   if (statsData.text) {
-    masterPayload.stats_xml_raw = statsData.text;
-    masterPayload.stats_raw = statsData.text;
+    masterPayload.raw_xml.stats = statsData.text;
   }
 
   if (!ftpUser || !ftpPass) {
@@ -337,7 +393,7 @@ async function runPipeline() {
       secure: false
     });
 
-    // 1. Check Server Config Files for Active Savegame Slot
+    // 1. Detect active savegame slot from server configs
     const configPaths = [
       'dedicated_server/dedicatedServerConfig.xml',
       'profile/dedicated_server/dedicatedServerConfig.xml',
@@ -359,7 +415,7 @@ async function runPipeline() {
       } catch (e) {}
     }
 
-    // 2. Scan Directory Timestamps
+    // 2. Scan directories to determine active save directory
     const rootList = await client.list();
     let profileList = [];
     try { profileList = await client.list('profile'); } catch (e) {}
@@ -387,7 +443,6 @@ async function runPipeline() {
     allDiscoveredFolders.sort((a, b) => b.date - a.date);
 
     let activeSavePath = null;
-
     if (detectedSlot) {
       const match = allDiscoveredFolders.find(f => f.slotNumber === String(detectedSlot));
       if (match) activeSavePath = match.path;
@@ -405,14 +460,14 @@ async function runPipeline() {
     }
 
     masterPayload.activeSaveSlot = String(detectedSlot);
-    console.log(`📂 [3/4] Pulling XML telemetry files from: [ ${activeSavePath} ] (Slot #${detectedSlot})`);
+    console.log(`📂 [3/4] Pulling XML files from: [ ${activeSavePath} ] (Slot #${detectedSlot})`);
 
     const fileList = await client.list(activeSavePath);
     const readableFiles = fileList.filter(f => !f.isDirectory && (
       f.name.toLowerCase().endsWith('.xml') || f.name.toLowerCase().endsWith('.txt')
     ));
 
-    console.log(`📄 Found ${readableFiles.length} files. Synchronizing into Firebase /fs25...`);
+    console.log(`📄 Found ${readableFiles.length} files. Synchronizing into clean JSON models...`);
 
     const rawFileCache = {};
 
@@ -424,25 +479,30 @@ async function runPipeline() {
         const content = await downloadFtpFileToString(client, remoteFilePath);
         const cleanContent = sanitizeXml(content);
         if (cleanContent) {
-          masterPayload[`${rawBaseName}_raw`] = cleanContent;
-          masterPayload[rawBaseName] = cleanContent;
+          // Store raw unparsed XML safely inside the raw_xml bucket
+          masterPayload.raw_xml[rawBaseName] = cleanContent;
           rawFileCache[rawBaseName] = cleanContent;
-          console.log(`  -> Synced: ${file.name} (${cleanContent.length} bytes)`);
+          console.log(`  -> Downloaded: ${file.name}`);
         }
       } catch (err) {
         console.warn(`  ⚠️ Skipped ${file.name}: ${err.message}`);
       }
     }
 
-    // Process & group all items by Farm
-    console.log("🚜 Aggregating entities by Farm ID...");
-    masterPayload.farms_aggregated = await buildFarmsAggregation(rawFileCache);
+    // Convert raw XML files into clean structured JSON trees
+    console.log("🚜 Structuring farms, vehicles, buildings, and game info...");
+    const cleanData = await buildCleanStructuredSave(rawFileCache);
 
-    // 3. Write Master Payload strictly to /fs25
-    console.log("💾 [4/4] Writing complete atomic payload to Firebase /fs25...");
+    masterPayload.summary = cleanData.summary;
+    masterPayload.gameInfo = cleanData.gameInfo || {};
+    masterPayload.farms = cleanData.farms;
+    masterPayload.unowned = cleanData.unowned;
+
+    // 3. Write Atomic Payload to /fs25
+    console.log("💾 [4/4] Writing clean structured JSON tree to Firebase /fs25...");
     await db.ref('fs25').set(masterPayload);
 
-    console.log(`🏆 Active Savegame (Slot #${detectedSlot}) successfully synchronized to Firebase /fs25!`);
+    console.log(`🏆 Server data successfully structured and saved to Firebase /fs25!`);
     client.close();
     process.exit(0);
 
