@@ -1,8 +1,8 @@
 /* ============================================================================
    FILE: app.js
-   DESCRIPTION: Wildlands 100% Pure Cloud Firestore Engine (No Local Storage / Cookies)
+   DESCRIPTION: Wildlands Full Skill Slots, Rebel 3x3 Powers, & Firestore Engine
    TARGET PATH: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
-   TIMESTAMP (24-HR NY TIME): 2026-09-01 05:54 EDT
+   TIMESTAMP (24-HR NY TIME): 2026-09-01 06:05 EDT
    ============================================================================ */
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
@@ -191,36 +191,31 @@ const WILDLANDS_TREE = {
                     id: "r_vehicle_drop", 
                     name: "Vehicle Drop-off", 
                     isRebelSupport: true, 
-                    desc: "Rebel vehicle delivery: Power 1 delivers standard SUV, Power 2 delivers Armored Buggy/Vehicle, Power 3 delivers Helicopter.",
-                    powers: ["Power 1: SUV", "Power 2: Armored", "Power 3: Helicopter"]
+                    desc: "Rebel vehicle delivery: Power 1 delivers standard SUV, Power 2 delivers Armored Buggy/Vehicle, Power 3 delivers Helicopter."
                 },
                 { 
                     id: "r_guns_hire", 
                     name: "Guns For Hire", 
                     isRebelSupport: true, 
-                    desc: "Summons Kataris 26 rebel fireteam: Power 1 (2 fighters), Power 2 (4 fighters), Power 3 (Well-armed squad).",
-                    powers: ["Power 1: 2 Rebels", "Power 2: 4 Rebels", "Power 3: Elite Squad"]
+                    desc: "Summons Kataris 26 rebel fireteam: Power 1 (2 fighters), Power 2 (4 fighters), Power 3 (Well-armed squad)."
                 },
                 { 
                     id: "r_mortar", 
                     name: "Mortar", 
                     isRebelSupport: true, 
-                    desc: "Orders high-explosive rebel artillery bombardment: Power 1 (3 shells), Power 2 (5 shells), Power 3 (Intense saturation barrage).",
-                    powers: ["Power 1: 3 Shells", "Power 2: 5 Shells", "Power 3: Saturation"]
+                    desc: "Orders high-explosive rebel artillery bombardment: Power 1 (3 shells), Power 2 (5 shells), Power 3 (Intense saturation barrage)."
                 },
                 { 
                     id: "r_diversion", 
                     name: "Diversion", 
                     isRebelSupport: true, 
-                    desc: "Commands rebel forces to attack nearby enemy outpost as a distraction: Increases attacking force and survivability per Power.",
-                    powers: ["Power 1: Small Decoy", "Power 2: Assault Decoy", "Power 3: Massive Assault"]
+                    desc: "Commands rebel forces to attack nearby enemy outpost as a distraction: Increases attacking force and survivability per Power."
                 },
                 { 
                     id: "r_spotting", 
                     name: "Spotting", 
                     isRebelSupport: true, 
-                    desc: "Rebel recon teams scan and tag hostiles in designated coordinates: Increases scan diameter and tagging speed per Power.",
-                    powers: ["Power 1: 30m Radius", "Power 2: 60m Radius", "Power 3: 100m Radius"]
+                    desc: "Rebel recon teams scan and tag hostiles in designated coordinates: Increases scan diameter and tagging speed per Power."
                 }
             ]
         }
@@ -516,7 +511,7 @@ const appState = {
         }
     },
 
-    // --- Line 330: DIRECT FIRESTORE OBSERVER (No Local Storage / Cookies) ---
+    // --- Line 330: DIRECT FIRESTORE OBSERVER (Per User + Platform) ---
     loadOperator: function(userName, platform) {
         this.activeHunter = userName;
         this.activePlatform = platform.toLowerCase();
@@ -538,7 +533,7 @@ const appState = {
 
         this.setStatus(`⏳ Fetching [${this.activeHunter} @ ${this.activePlatform.toUpperCase()}]...`, "#ff8800");
 
-        // Target Path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
+        // Targeted isolation path: /users/{userId}/platform/{platform}/progress/T.C.G.R.Wildlands
         const docRef = doc(this.db, 'users', this.activeHunter, 'platform', this.activePlatform, 'progress', GAME_ID);
 
         this.masterUnsub = onSnapshot(docRef, (snap) => {
@@ -625,6 +620,7 @@ const appState = {
         setTxt("statMap", d.mapDisc);
     },
 
+    // --- Render Tree With Side-by-Side 3-Box Rebel Powers ---
     renderTree: function() {
         const container = document.getElementById('treeContainer');
         if (!container) return;
@@ -685,6 +681,7 @@ const appState = {
                 block.appendChild(titleRow);
 
                 if (isRebel) {
+                    // Rebel 3-Power Side-by-Side Horizontal Row (3 Boxes, 3 Dash Slots each)
                     const rebelGroupsContainer = document.createElement("div");
                     rebelGroupsContainer.className = "rebel-powers-container";
 
@@ -709,8 +706,8 @@ const appState = {
                             const exactTargetRank = powerMinRank + s;
                             const isSlotFilled = currentRank >= exactTargetRank;
                             const slotDash = document.createElement("div");
-                            slotDash.className = `rebel-slot-dash ${isSlotFilled ? 'filled' : ''} ${isPowerMaxed ? 'max-filled' : ''}`;
-                            slotDash.title = `Power ${p} - Level ${s} of 3 (Total ${exactTargetRank}/9)`;
+                            slotDash.className = `rebel-slot-dash ${isSlotFilled ? (isPowerMaxed ? 'max-filled' : 'filled') : ''}`;
+                            slotDash.title = `Power ${p} - Slot ${s} of 3 (Rank ${exactTargetRank}/9)`;
 
                             slotDash.onclick = (e) => {
                                 e.stopPropagation();
@@ -731,6 +728,7 @@ const appState = {
 
                     block.appendChild(rebelGroupsContainer);
                 } else {
+                    // Standard Dash Slots
                     const slotsRow = document.createElement("div");
                     slotsRow.className = "skill-slots-row";
 
@@ -853,6 +851,7 @@ const appState = {
         this.sync();
     },
 
+    // --- Line 520: Pure Cloud Firestore Direct Save ---
     sync: async function() {
         this.renderTree();
         this.updateStatsUI();
