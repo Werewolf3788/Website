@@ -1,8 +1,8 @@
 <!-- ============================================================================
      FILE: index.html
-     DESCRIPTION: Ghost Recon Wildlands Authentic Tactical HUD & Direct Slots
+     DESCRIPTION: Ghost Recon Wildlands Squad Operations Hub & Tactical Skill Tree
      GA4 TAG: G-CTYHDF4MSD (Entertainment & Gaming Sync Engine)
-     TIMESTAMP (24-HR NY TIME): 2026-08-16 16:55 EDT
+     TIMESTAMP (24-HR NY TIME): 2026-09-01 05:35 EDT
      ============================================================================ -->
 <!DOCTYPE html>
 <html lang="en">
@@ -24,7 +24,7 @@
     </script>
 
     <!-- Cross-Protocol Resilient Stylesheet -->
-    <link rel="stylesheet" href="./style.css?v=16.0">
+    <link rel="stylesheet" href="./style.css?v=17.0">
 </head>
 <body>
 
@@ -93,7 +93,7 @@
                         <option value="on">ON (Tier 50 down to 1)</option>
                     </select>
                 </div>
-                <div class="form-group" id="tierLevelGroup">
+                <div class="form-group" id="tierLevelGroup" style="display: none;">
                     <label for="editTierLevel">Tier Level (50 down to 1)</label>
                     <input type="number" id="editTierLevel" class="form-control" min="1" max="50" placeholder="50">
                 </div>
@@ -104,8 +104,8 @@
             <div class="form-grid-2col">
                 <div class="form-group"><label for="editPlaystyle">Playstyle Name</label><input type="text" id="editPlaystyle" class="form-control" placeholder="Rakkasan"></div>
                 <div class="form-group"><label for="editAvgDist">Average Kill Distance</label><input type="text" id="editAvgDist" class="form-control" placeholder="0 m"></div>
-                <div class="form-group"><label for="editTactical">Tactical %</label><input type="text" id="editTactical" class="form-control" placeholder="0%"></div>
-                <div class="form-group"><label for="editStealth">Stealth %</label><input type="text" id="editStealth" class="form-control" placeholder="0%"></div>
+                <div class="form-group"><label for="editTactical">Tactical Precision %</label><input type="text" id="editTactical" class="form-control" placeholder="0%"></div>
+                <div class="form-group"><label for="editStealth">Stealth Kills %</label><input type="text" id="editStealth" class="form-control" placeholder="0%"></div>
                 <div class="form-group"><label for="editLifetime">Lifetime</label><input type="text" id="editLifetime" class="form-control" placeholder="0h 0min"></div>
                 <div class="form-group"><label for="editLongest">Longest Shot</label><input type="text" id="editLongest" class="form-control" placeholder="0 m"></div>
                 <div class="form-group"><label for="editPrecision">Precision %</label><input type="text" id="editPrecision" class="form-control" placeholder="0%"></div>
@@ -120,8 +120,8 @@
                 <div class="form-group"><label for="editDroneTime">Drone Used</label><input type="text" id="editDroneTime" class="form-control" placeholder="0h 0min"></div>
                 <div class="form-group"><label for="editAir">Air Travel</label><input type="text" id="editAir" class="form-control" placeholder="0h 0min"></div>
                 <div class="form-group"><label for="editGround">Ground Travel</label><input type="text" id="editGround" class="form-control" placeholder="0h 0min"></div>
-                <div class="form-group"><label for="editPara">Parachute</label><input type="text" id="editPara" class="form-control" placeholder="0 Jumps"></div>
-                <div class="form-group full-width"><label for="editMap">Map Discovered</label><input type="text" id="editMap" class="form-control" placeholder="5%"></div>
+                <div class="form-group"><label for="editPara">Parachute Jumps</label><input type="text" id="editPara" class="form-control" placeholder="0 Jumps"></div>
+                <div class="form-group full-width"><label for="editMap">Map Discovered %</label><input type="text" id="editMap" class="form-control" placeholder="5%"></div>
             </div>
 
             <div class="form-actions-group">
@@ -143,7 +143,7 @@
                         </div>
                         <div id="tierContainer" class="tier-badge-container">
                             <span class="tier-label">TIER</span>
-                            <span id="tierLevel" class="tier-value">OFF</span>
+                            <span id="tierLevel" class="tier-value">--</span>
                         </div>
                     </div>
 
@@ -151,40 +151,40 @@
                     <div class="stat-category-block">
                         <div class="category-header-row">
                             <h3 class="category-header">PLAYSTYLE</h3>
-                            <span id="playstyleType" class="header-highlight">Rakkasan</span>
+                            <span id="playstyleType" class="header-highlight">--</span>
                         </div>
-                        <div class="stat-row"><span>Average Kill Distance</span><span id="avgKillDist" class="stat-val">0 m</span></div>
-                        <div class="stat-row"><span>Tactical</span><span id="tacticalValue" class="stat-val">0%</span></div>
+                        <div class="stat-row"><span>Average Kill Distance</span><span id="avgKillDist" class="stat-val">--</span></div>
+                        <div class="stat-row"><span>Tactical Precision</span><span id="tacticalValue" class="stat-val">0%</span></div>
                         <div class="stat-row"><span>Stealth Kills</span><span id="stealthValue" class="stat-val">0%</span></div>
                     </div>
 
                     <!-- Combat Block -->
                     <div class="stat-category-block">
                         <h3 class="category-header">COMBAT</h3>
-                        <div class="stat-row"><span>Lifetime</span><span id="statLifetime" class="stat-val">0h 0min</span></div>
-                        <div class="stat-row"><span>Longest Shot</span><span id="longestShot" class="stat-val">0 m</span></div>
+                        <div class="stat-row"><span>Lifetime</span><span id="statLifetime" class="stat-val">--</span></div>
+                        <div class="stat-row"><span>Longest Shot</span><span id="longestShot" class="stat-val">--</span></div>
                         <div class="stat-row"><span>Precision</span><span id="precisionValue" class="stat-val">0%</span></div>
                         <div class="weapons-fav-row">
-                            <div class="weapon-tag"><strong>Favorite Weapon:</strong> <span id="favWeapon">P416</span></div>
-                            <div class="weapon-tag"><strong>2nd Favorite Weapon:</strong> <span id="favWeapon2">MP5</span></div>
+                            <div class="weapon-tag"><strong>Favorite Weapon:</strong> <span id="favWeapon">--</span></div>
+                            <div class="weapon-tag"><strong>2nd Favorite Weapon:</strong> <span id="favWeapon2">--</span></div>
                         </div>
                     </div>
 
                     <!-- Support Block -->
                     <div class="stat-category-block">
                         <h3 class="category-header">SUPPORT</h3>
-                        <div class="stat-row"><span>Teammates Revived</span><span id="statRevives" class="stat-val">0 Teammates</span></div>
-                        <div class="stat-row"><span>C4 / Mine Kills</span><span id="statExplosiveKills" class="stat-val">0 Kills</span></div>
-                        <div class="stat-row"><span>Drone Used</span><span id="statDroneTime" class="stat-val">0h 0min</span></div>
+                        <div class="stat-row"><span>Teammates Revived</span><span id="statRevives" class="stat-val">--</span></div>
+                        <div class="stat-row"><span>C4 / Mine Kills</span><span id="statExplosiveKills" class="stat-val">--</span></div>
+                        <div class="stat-row"><span>Drone Used</span><span id="statDroneTime" class="stat-val">--</span></div>
                     </div>
 
                     <!-- Travel Block -->
                     <div class="stat-category-block">
                         <h3 class="category-header">TRAVEL</h3>
-                        <div class="stat-row"><span>Air</span><span id="statAir" class="stat-val">0h 0min</span></div>
-                        <div class="stat-row"><span>Ground</span><span id="statGround" class="stat-val">0h 0min</span></div>
-                        <div class="stat-row"><span>Parachute</span><span id="statPara" class="stat-val">0 Jumps</span></div>
-                        <div class="stat-row"><span>Map Discovered</span><span id="statMap" class="stat-val">5%</span></div>
+                        <div class="stat-row"><span>Air</span><span id="statAir" class="stat-val">--</span></div>
+                        <div class="stat-row"><span>Ground</span><span id="statGround" class="stat-val">--</span></div>
+                        <div class="stat-row"><span>Parachute</span><span id="statPara" class="stat-val">--</span></div>
+                        <div class="stat-row"><span>Map Discovered</span><span id="statMap" class="stat-val">--</span></div>
                     </div>
                 </section>
             </aside>
@@ -197,7 +197,7 @@
                 <!-- Tree Columns Container -->
                 <div id="treeContainer" class="tree-columns-wrapper"></div>
 
-                <!-- Bottom Inspect Panel (In-Game Style) -->
+                <!-- Bottom Inspect Panel -->
                 <div id="inspectPanel" class="inspect-panel">
                     <div class="inspect-top-row">
                         <h3 id="inspectTitle" class="inspect-title">SELECT A SKILL</h3>
@@ -211,6 +211,6 @@
     </main>
 
     <!-- APPLICATION CONTROLLER -->
-    <script type="module" src="./app.js?v=16.0"></script>
+    <script type="module" src="./app.js?v=17.0"></script>
 </body>
 </html>
