@@ -1,9 +1,10 @@
 <!--
   File: index.html
   Location: /index.html
-  Description: Werewolf Project Main Landing Page with Dynamic Movie Caption,
-               External Text Placement, Alphabetical CSV Navigation, Mobile Drill-Down View, and Live Telemetry.
-  Last Modified: Sunday, August 09, 2026
+  Description: Werewolf Project Main Landing Page with Dynamic Firebase RTDB utm_links Navigation,
+               Profile Card Direct Mapping (/utm_links/User/0, 1, 2), Live PSN Telemetry, 
+               Weather Overlays, and Mobile Drill-Down Drawer.
+  Last Modified: Tuesday, September 01, 2026 - 05:25:30 EDT (America/New_York)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -14,11 +15,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google Tag Manager - Personal Project -->
+    <!-- Google Tag Manager / GA4 setup for site metrics -->
+    <!-- HTML JS Line ~18 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
-      /* Google Tag Manager / GA4 setup for site metrics */
-      /* HTML JS Line ~17 */
+      /* GA4 Setup & G-CTYHDF4MSD Multi-Property Integration */
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
@@ -28,7 +29,7 @@
 
     <style>
         /* CSS Variables - Section and Layout Sizing */
-        /* CSS Line ~27 */
+        /* CSS Line ~30 */
         :root {
             --header-text-size: clamp(22px, 4vw, 32px);
             --body-text-size: 16px;
@@ -87,7 +88,7 @@
         }
 
         /* Custom Dynamic Card Styles */
-        /* CSS Line ~80 */
+        /* CSS Line ~85 */
         .custom-card {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(10px);
@@ -99,7 +100,7 @@
         }
 
         /* Dynamic Live Weather Animation Overlay Layers */
-        /* CSS Line ~92 */
+        /* CSS Line ~97 */
         .weather-layer {
             position: absolute;
             inset: 0;
@@ -215,7 +216,7 @@
         .is-sunny .visit-link { color: #0f172a !important; border-color: rgba(0,0,0,0.3) !important; }
 
         /* Site Signature Watermark */
-        /* CSS Line ~200 */
+        /* CSS Line ~205 */
         .kf-watermark {
             position: fixed;
             bottom: 10px;
@@ -237,18 +238,18 @@
 <body class="min-h-screen flex flex-col">
 
     <!-- Sticky Navigation Bar Container -->
-    <!-- HTML Line ~221 -->
+    <!-- HTML Line ~228 -->
     <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex-shrink-0 flex items-center">
-                    <a href="https://werewolf3788.github.io/Website/" class="text-lg sm:text-xl font-black tracking-tighter text-sky-400">
+                    <a href="./index.html" class="text-lg sm:text-xl font-black tracking-tighter text-sky-400">
                         WEREWOLF<span class="text-white">PROJECT</span>
                     </a>
                 </div>
 
-                <!-- Desktop / Wide Screen Horizontal Navigation Links (lg breakpoint for tablets) -->
-                <!-- HTML Line ~232 -->
+                <!-- Desktop / Wide Screen Horizontal Navigation Links -->
+                <!-- HTML Line ~239 -->
                 <div id="desktop-nav-links" class="hidden lg:flex items-center space-x-6 xl:space-x-8">
                     <div class="flex items-center space-x-4 animate-pulse">
                         <div class="h-4 w-16 bg-slate-700 rounded"></div>
@@ -257,8 +258,8 @@
                     </div>
                 </div>
 
-                <!-- Mobile & Tablet Hamburger Toggle Switch (Active under lg breakpoint) -->
-                <!-- HTML Line ~242 -->
+                <!-- Mobile & Tablet Hamburger Toggle Switch -->
+                <!-- HTML Line ~249 -->
                 <div class="lg:hidden flex items-center">
                     <button type="button" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu" class="text-slate-400 hover:text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-slate-800 transition-colors">
                         <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
@@ -269,7 +270,7 @@
     </nav>
 
     <!-- Mobile/Tablet Slide-Over Modal Drawer Overlay -->
-    <!-- HTML Line ~251 -->
+    <!-- HTML Line ~258 -->
     <div id="mobile-menu-overlay" class="fixed inset-0 bg-slate-950/95 z-[100] hidden flex flex-col no-scrollbar overflow-y-auto">
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90 sticky top-0 z-10">
             <span class="text-lg font-black text-sky-400">NAVIGATION MENU</span>
@@ -293,7 +294,7 @@
     </div>
 
     <!-- Main Landing Hero Section -->
-    <!-- HTML Line ~276 -->
+    <!-- HTML Line ~283 -->
     <header class="section-padding px-4 sm:px-6 lg:px-8 flex-grow flex items-center">
         <div class="max-w-4xl mx-auto text-center">
             <h1 class="text-slate-100">Knowing the Players</h1>
@@ -304,7 +305,7 @@
     </header>
 
     <!-- Contributors Team Section -->
-    <!-- HTML Line ~287 -->
+    <!-- HTML Line ~294 -->
     <section id="team" class="section-padding bg-slate-900/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-8 sm:mb-12">
@@ -313,8 +314,8 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Werewolf3788 Profile Card -->
-                <!-- HTML Line ~297 -->
+                <!-- Werewolf3788 Profile Card (Maps to /utm_links/User/2/url) -->
+                <!-- HTML Line ~304 -->
                 <div id="card-werewolf" class="custom-card p-6 text-center shadow-werewolf">
                     <div class="weather-layer" id="layer-werewolf"></div>
                     <div class="card-content">
@@ -329,15 +330,15 @@
                         <h3 class="text-xl mb-1 text-white">Werewolf3788</h3>
                         <p class="text-werewolf text-xs font-bold uppercase tracking-tighter mb-1">Admin / Streamer</p>
                         <p id="weather-desc-werewolf" class="weather-desc text-xs opacity-70 mb-2 italic">Updating weather...</p>
-                        <div class="mb-4 min-h-[20px]">
+                        <div class="mb-4 min-h-[24px] flex items-center justify-center">
                             <p id="game-status-werewolf" class="text-slate-400 text-xs uppercase font-bold italic tracking-widest">Checking PlayStation...</p>
                         </div>
-                        <a id="profile-link-werewolf" href="#" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-werewolf text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
+                        <a id="profile-link-werewolf" href="https://werewolf3788.github.io/Website/Werewolf3788.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-werewolf text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
                     </div>
                 </div>
 
-                <!-- Raymystyro Profile Card -->
-                <!-- HTML Line ~320 -->
+                <!-- Raymystyro Profile Card (Maps to /utm_links/User/1/url) -->
+                <!-- HTML Line ~327 -->
                 <div id="card-ray" class="custom-card p-6 text-center shadow-ray">
                     <div class="weather-layer" id="layer-ray"></div>
                     <div class="card-content">
@@ -352,15 +353,15 @@
                         <h3 class="text-xl mb-1 text-white">Raymystyro</h3>
                         <p class="text-ray text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
                         <p id="weather-desc-ray" class="weather-desc text-xs opacity-70 mb-2 italic">Updating weather...</p>
-                        <div class="mb-4 min-h-[20px]">
+                        <div class="mb-4 min-h-[24px] flex items-center justify-center">
                             <p id="game-status-ray" class="text-slate-400 text-xs uppercase font-bold italic tracking-widest">Checking PlayStation...</p>
                         </div>
-                        <a id="profile-link-ray" href="#" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-ray text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
+                        <a id="profile-link-ray" href="https://werewolf3788.github.io/Website/Raymystyro.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-ray text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
                     </div>
                 </div>
 
-                <!-- Terrdog420 Profile Card -->
-                <!-- HTML Line ~343 -->
+                <!-- Terrdog420 Profile Card (Maps to /utm_links/User/0/url) -->
+                <!-- HTML Line ~350 -->
                 <div id="card-tj" class="custom-card p-6 text-center shadow-terrdog md:col-span-2 lg:col-span-1">
                     <div class="weather-layer" id="layer-tj"></div>
                     <div class="card-content">
@@ -375,10 +376,10 @@
                         <h3 class="text-xl mb-1 text-white">Terrdog420</h3>
                         <p class="text-terrdog text-xs font-bold uppercase tracking-tighter mb-1">Contributor / Streamer</p>
                         <p id="weather-desc-tj" class="weather-desc text-xs opacity-70 mb-2 italic">Updating weather...</p>
-                        <div class="mb-4 min-h-[20px]">
+                        <div class="mb-4 min-h-[24px] flex items-center justify-center">
                             <p id="game-status-tj" class="text-slate-400 text-xs uppercase font-bold italic tracking-widest">Checking PlayStation...</p>
                         </div>
-                        <a id="profile-link-tj" href="#" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-terrdog text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
+                        <a id="profile-link-tj" href="https://werewolf3788.github.io/Website/Terrdog420.html" class="visit-link inline-block text-slate-400 hover:text-white border-b border-slate-700 hover:border-terrdog text-xs transition-colors min-h-[44px] flex items-center justify-center">Visit Profile</a>
                     </div>
                 </div>
             </div>
@@ -386,12 +387,12 @@
     </section>
 
     <!-- Cinema Movie Library Archive Section -->
-    <!-- HTML Line ~367 -->
+    <!-- HTML Line ~374 -->
     <section class="section-padding bg-slate-900/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             
             <!-- External Text & Archive Portal Button -->
-            <!-- HTML Line ~371 -->
+            <!-- HTML Line ~378 -->
             <div class="text-center max-w-3xl mx-auto space-y-4">
                 <h2 class="text-orange-500">Werewolf Cinema</h2>
                 <p class="text-slate-300 font-medium text-sm sm:text-base leading-relaxed">
@@ -411,7 +412,7 @@
             </div>
 
             <!-- Dynamic Cinema Slideshow Screen Frame -->
-            <!-- HTML Line ~392 -->
+            <!-- HTML Line ~399 -->
             <div id="cinema-container" class="custom-card p-4 border border-orange-500/30 flex flex-col items-center justify-end shadow-orange-500/10 shadow-2xl text-center relative overflow-hidden min-h-[300px] sm:min-h-[420px] max-w-4xl mx-auto">
                 <div id="cinema-layer-1" class="absolute inset-0 transition-opacity duration-1000 opacity-100 z-0">
                     <div class="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-50"></div>
@@ -434,7 +435,7 @@
     </section>
 
     <!-- Co-Op Games Modules Section -->
-    <!-- HTML Line ~415 -->
+    <!-- HTML Line ~422 -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-8">
@@ -446,7 +447,7 @@
             </div>
 
             <!-- Dynamic Gaming Progress Cards Layout Grid -->
-            <!-- HTML Line ~426 -->
+            <!-- HTML Line ~433 -->
             <div id="gaming-modules-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="custom-card p-6 border border-slate-700 animate-pulse flex items-center justify-center min-h-[200px]">
                     <span class="text-slate-400 text-sm font-mono"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Scanning Firestore for multi-player games...</span>
@@ -468,14 +469,14 @@
     </footer>
 
     <!-- Firebase SDK Modules Script -->
-    <!-- HTML JS Line ~448 -->
+    <!-- HTML JS Line ~455 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         /* Firebase App Credentials Config */
-        /* JS Line ~455 */
+        /* JS Line ~462 */
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
             authDomain: "entertainment-71888.firebaseapp.com",
@@ -494,61 +495,351 @@
         const PLATFORMS = ['playstation', 'psn', 'pc', 'xbox'];
         const TARGET_USERS = ['Elu Cloud', 'Raymystyro', 'Terrdog', 'Werewolf3788'];
 
-        /* Query Realtime DB Player Gamertags */
-        /* JS Line ~474 */
-        function getPlayerData(gamertagsObj, possibleTags) {
-            if (!gamertagsObj) return null;
-            for (const tag of possibleTags) {
-                if (gamertagsObj[tag]) return gamertagsObj[tag];
-                const lowerTag = tag.toLowerCase();
-                const foundKey = Object.keys(gamertagsObj).find(k => k.toLowerCase() === lowerTag);
-                if (foundKey && gamertagsObj[foundKey]) return gamertagsObj[foundKey];
-            }
-            return null;
-        }
+        /* -------------------------------------------------------------
+           1. Firebase RTDB Navigation Engine (/utm_links)
+           Replaces the CSV parser and binds directly to Navbar + Cards
+           ------------------------------------------------------------- */
+        let mobileNavTree = [];
 
-        /* Listen for PlayStation Live Status Updates */
-        /* JS Line ~486 */
-        function listenToPsnPresence() {
-            const psnRef = ref(rtdb, 'psn/gamertags');
-            onValue(psnRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const gamertags = snapshot.val();
-                    
-                    const werewolfData = getPlayerData(gamertags, ['WildHorse_Spirit', 'wildhorse_spirit', 'Werewolf3788', 'werewolf3788']);
-                    updatePsnCardStatus('werewolf', werewolfData, 'var(--color-werewolf)');
-
-                    const rayData = getPlayerData(gamertags, ['OneLIVIDMAN', 'onelividman', 'Raymystyro', 'raymystyro']);
-                    updatePsnCardStatus('ray', rayData, 'var(--color-ray)');
-
-                    const tjData = getPlayerData(gamertags, ['Darkwing69420', 'darkwing69420', 'Darkwing6942', 'Terrdog420', 'terrdog420', 'darkwing']);
-                    updatePsnCardStatus('tj', tjData, 'var(--color-terrdog)');
+        function listenToUtmLinks() {
+            const utmRef = ref(rtdb, 'utm_links');
+            onValue(utmRef, (snapshot) => {
+                if (!snapshot.exists()) {
+                    console.warn("No data at /utm_links");
+                    return;
                 }
+
+                const data = snapshot.val();
+                buildNavigationFromUtm(data);
+                bindProfileCardLinks(data);
+            }, (error) => {
+                console.error("Failed to read /utm_links:", error);
+                document.getElementById('desktop-nav-links').innerHTML = `<span class="text-red-400 text-sm">Navigation offline</span>`;
             });
         }
 
-        /* Render Active Game/Status indicators on profile cards */
-        /* JS Line ~506 */
+        /* Bind card links: User 0 -> Terrdog/Darkwing, User 1 -> Raymystyro, User 2 -> Werewolf */
+        function bindProfileCardLinks(utmData) {
+            const userFolder = utmData.User || utmData.user || utmData.Users || utmData.users;
+            if (!userFolder) return;
+
+            // Extract User 0 (Terrdog / Darkwing)
+            const user0 = userFolder[0] || userFolder['0'];
+            if (user0 && (user0.url || user0.link)) {
+                const btnTj = document.getElementById('profile-link-tj');
+                if (btnTj) btnTj.href = user0.url || user0.link;
+            }
+
+            // Extract User 1 (Raymystyro)
+            const user1 = userFolder[1] || userFolder['1'];
+            if (user1 && (user1.url || user1.link)) {
+                const btnRay = document.getElementById('profile-link-ray');
+                if (btnRay) btnRay.href = user1.url || user1.link;
+            }
+
+            // Extract User 2 (Werewolf3788)
+            const user2 = userFolder[2] || userFolder['2'];
+            if (user2 && (user2.url || user2.link)) {
+                const btnWerewolf = document.getElementById('profile-link-werewolf');
+                if (btnWerewolf) btnWerewolf.href = user2.url || user2.link;
+            }
+        }
+
+        /* Build Desktop & Mobile Dynamic Menus from Firebase /utm_links hierarchy */
+        function buildNavigationFromUtm(utmData) {
+            const standaloneItems = [];
+            const groupsMap = {};
+
+            // Protocol compatibility check
+            const protocol = window.location.protocol.startsWith('https') ? 'https:' : 'http:';
+
+            // Always add Home at the beginning
+            const navOrder = [
+                {
+                    type: 'standalone',
+                    data: { name: 'Home', url: `${protocol}//werewolf3788.github.io/Website/`, img: '' }
+                }
+            ];
+
+            // Traverse RTDB root object keys
+            Object.keys(utmData).forEach(groupKey => {
+                const groupContent = utmData[groupKey];
+                
+                // If it's an object/array containing children items
+                if (typeof groupContent === 'object' && groupContent !== null) {
+                    // Check if groupContent is a direct link item or a folder of items
+                    if (groupContent.url || groupContent.link) {
+                        // It's a standalone top-level link
+                        standaloneItems.push({
+                            name: groupContent.name || groupContent.title || groupKey,
+                            url: groupContent.url || groupContent.link || '#',
+                            img: groupContent.img || groupContent.image || groupContent.icon || ''
+                        });
+                    } else {
+                        // It's a Folder / Dropdown Category (like User, Games, Entertainment, etc.)
+                        const childItems = [];
+                        const keys = Object.keys(groupContent);
+                        
+                        keys.forEach(subKey => {
+                            const subItem = groupContent[subKey];
+                            if (subItem && (subItem.url || subItem.link || typeof subItem === 'string')) {
+                                const itemUrl = subItem.url || subItem.link || (typeof subItem === 'string' ? subItem : '#');
+                                const itemName = subItem.name || subItem.title || subKey;
+                                const itemImg = subItem.img || subItem.image || subItem.icon || '';
+                                
+                                childItems.push({
+                                    name: itemName,
+                                    url: itemUrl,
+                                    img: itemImg
+                                });
+                            }
+                        });
+
+                        if (childItems.length > 0) {
+                            childItems.sort((a, b) => a.name.localeCompare(b.name));
+                            groupsMap[groupKey] = childItems;
+                        }
+                    }
+                }
+            });
+
+            // Sort and append standalone items
+            standaloneItems.sort((a, b) => a.name.localeCompare(b.name));
+            standaloneItems.forEach(item => {
+                if (item.name.toLowerCase() !== 'home') {
+                    navOrder.push({ type: 'standalone', data: item });
+                }
+            });
+
+            // Sort and append group folders
+            const sortedGroupNames = Object.keys(groupsMap).sort((a, b) => a.localeCompare(b));
+            sortedGroupNames.forEach(groupName => {
+                navOrder.push({
+                    type: 'group',
+                    name: groupName,
+                    items: groupsMap[groupName]
+                });
+            });
+
+            mobileNavTree = navOrder;
+            renderNav(navOrder);
+        }
+
+        function renderNav(navOrder) {
+            const desktopContainer = document.getElementById('desktop-nav-links');
+            const mobileContainer = document.getElementById('mobile-root-view');
+
+            let desktopHTML = '';
+            let mobileHTML = '';
+
+            navOrder.forEach(node => {
+                if (node.type === 'standalone') {
+                    const item = node.data;
+                    const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}" class="w-5 h-5 rounded-full object-cover">` : '';
+                    
+                    const isMovies = item.name.toLowerCase() === 'movies';
+                    const textClass = isMovies ? 'text-orange-400 hover:text-orange-300 font-bold' : 'text-slate-300 hover:text-white';
+                    const targetAttr = isMovies ? 'target="werewolf_cinema_window"' : '';
+
+                    desktopHTML += `
+                        <a href="${item.url}" ${targetAttr} class="nav-link flex items-center gap-2 ${textClass} transition-colors min-h-[44px] text-sm">
+                            ${imgTag}<span>${item.name}</span>
+                        </a>
+                    `;
+
+                    mobileHTML += `
+                        <a href="${item.url}" ${targetAttr} onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 ${textClass} hover:bg-slate-800 min-h-[44px]">
+                            ${imgTag}<span>${item.name}</span>
+                        </a>
+                    `;
+                } else if (node.type === 'group') {
+                    desktopHTML += `
+                        <div class="relative group dropdown">
+                            <button type="button" class="flex items-center space-x-1 text-slate-300 hover:text-white focus:outline-none py-4 min-h-[44px] text-sm">
+                                <span>${node.name}</span>
+                                <i class="fa-solid fa-chevron-down text-xs ml-1"></i>
+                            </button>
+                            <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
+                    `;
+
+                    mobileHTML += `
+                        <button type="button" onclick="openMobileFolderView('${node.name.replace(/'/g, "\\'")}')" class="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 hover:border-sky-500/50 hover:text-sky-400 transition-all text-left min-h-[44px]">
+                            <span class="font-bold text-sm">${node.name}</span>
+                            <div class="flex items-center gap-2 text-xs text-sky-400">
+                                <span>${node.items.length} links</span>
+                                <i class="fa-solid fa-chevron-right"></i>
+                            </div>
+                        </button>
+                    `;
+
+                    node.items.forEach(item => {
+                        const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}" class="w-5 h-5 rounded-md object-cover border border-slate-600">` : '';
+                        
+                        desktopHTML += `
+                            <a href="${item.url}" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-sky-400 transition-colors min-h-[44px]">
+                                ${imgTag}<span>${item.name}</span>
+                            </a>
+                        `;
+                    });
+
+                    desktopHTML += `</div></div>`;
+                }
+            });
+
+            if (desktopContainer) desktopContainer.innerHTML = desktopHTML;
+            if (mobileContainer) mobileContainer.innerHTML = mobileHTML;
+        }
+
+        window.openMobileFolderView = function(groupName) {
+            const groupNode = mobileNavTree.find(n => n.type === 'group' && n.name === groupName);
+            if (!groupNode) return;
+
+            const rootView = document.getElementById('mobile-root-view');
+            const folderView = document.getElementById('mobile-folder-view');
+            const titleEl = document.getElementById('mobile-folder-title');
+            const linksContainer = document.getElementById('mobile-folder-links');
+
+            titleEl.textContent = groupName.toUpperCase();
+
+            let linksHtml = '';
+            groupNode.items.forEach(item => {
+                const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}" class="w-6 h-6 rounded-md object-cover border border-slate-600">` : '<i class="fa-solid fa-link text-sky-400"></i>';
+                linksHtml += `
+                    <a href="${item.url}" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 hover:text-sky-400 hover:border-sky-500/40 transition-all min-h-[44px]">
+                        ${imgTag}
+                        <span class="font-bold text-sm">${item.name}</span>
+                    </a>
+                `;
+            });
+
+            linksContainer.innerHTML = linksHtml;
+            rootView.classList.add('hidden');
+            folderView.classList.remove('hidden');
+        };
+
+        window.closeMobileFolderView = function() {
+            const rootView = document.getElementById('mobile-root-view');
+            const folderView = document.getElementById('mobile-folder-view');
+            if (rootView && folderView) {
+                folderView.classList.add('hidden');
+                rootView.classList.remove('hidden');
+            }
+        };
+
+        window.toggleMobileMenu = function() {
+            const overlay = document.getElementById('mobile-menu-overlay');
+            if (overlay) {
+                overlay.classList.toggle('hidden');
+                window.closeMobileFolderView();
+            }
+        };
+
+        /* -------------------------------------------------------------
+           2. PlayStation Live Status & Idle Detection Engine (/psn)
+           ------------------------------------------------------------- */
+        function extractUserPsnNode(psnRootData, possibleKeys) {
+            if (!psnRootData) return null;
+            
+            for (const key of possibleKeys) {
+                if (psnRootData[key]) return psnRootData[key];
+                if (psnRootData.gamertags && psnRootData.gamertags[key]) return psnRootData.gamertags[key];
+                if (psnRootData.users && psnRootData.users[key]) return psnRootData.users[key];
+            }
+
+            const lowerKeys = possibleKeys.map(k => k.toLowerCase());
+            const searchPool = [psnRootData, psnRootData.gamertags, psnRootData.users].filter(Boolean);
+
+            for (const pool of searchPool) {
+                const matchedKey = Object.keys(pool).find(k => lowerKeys.includes(k.toLowerCase()));
+                if (matchedKey && pool[matchedKey]) return pool[matchedKey];
+            }
+
+            return null;
+        }
+
+        function listenToPsnPresence() {
+            const psnRef = ref(rtdb, 'psn');
+            onValue(psnRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const psnData = snapshot.val();
+                    
+                    // Werewolf / WildHorse_Spirit Node
+                    const werewolfData = extractUserPsnNode(psnData, ['WildHorse_Spirit', 'wildhorse_spirit', 'Werewolf3788', 'werewolf3788', 'werewolf']);
+                    updatePsnCardStatus('werewolf', werewolfData, 'var(--color-werewolf)');
+
+                    // Raymystyro / OneLIVIDMAN Node
+                    const rayData = extractUserPsnNode(psnData, ['OneLIVIDMAN', 'onelividman', 'Raymystyro', 'raymystyro', 'Ray']);
+                    updatePsnCardStatus('ray', rayData, 'var(--color-ray)');
+
+                    // Terrdog420 / Darkwing Node
+                    const tjData = extractUserPsnNode(psnData, ['Darkwing69420', 'darkwing69420', 'Terrdog420', 'terrdog420', 'terrdog', 'Darkwing', 'darkwing']);
+                    updatePsnCardStatus('tj', tjData, 'var(--color-terrdog)');
+                } else {
+                    updatePsnCardStatus('werewolf', null, 'var(--color-werewolf)');
+                    updatePsnCardStatus('ray', null, 'var(--color-ray)');
+                    updatePsnCardStatus('tj', null, 'var(--color-terrdog)');
+                }
+            }, (error) => {
+                console.error("Firebase RTDB PSN Listen Error:", error);
+            });
+        }
+
         function updatePsnCardStatus(userId, userPsnData, themeColor) {
             const gameEl = document.getElementById(`game-status-${userId}`);
             const indicator = document.getElementById(`status-indicator-${userId}`);
             if (!gameEl) return;
 
-            if (userPsnData && (userPsnData.online === true || userPsnData.onlineStatus === 'online')) {
-                const gameName = userPsnData.currentGame || 'Active on PlayStation';
-                gameEl.innerHTML = `<i class="fa-solid fa-gamepad mr-2"></i>${gameName}`;
+            if (!userPsnData) {
+                gameEl.textContent = 'Currently Offline';
+                gameEl.className = 'text-slate-500 opacity-60 text-xs';
+                gameEl.style.color = '';
+                if (indicator) indicator.classList.add('hidden');
+                return;
+            }
+
+            const isOnline = userPsnData.online === true || 
+                             userPsnData.onlineStatus === 'online' || 
+                             userPsnData.status === 'online' ||
+                             userPsnData.presence === 'online';
+
+            const rawGame = userPsnData.currentGame || 
+                            userPsnData.game || 
+                            userPsnData.titleName || 
+                            userPsnData.gameTitle || 
+                            userPsnData.title || 
+                            '';
+
+            const isIdle = userPsnData.idle === true || 
+                          userPsnData.onlineStatus === 'idle' || 
+                          userPsnData.onlineStatus === 'standby' ||
+                          userPsnData.status === 'idle' ||
+                          userPsnData.status === 'standby' ||
+                          (typeof rawGame === 'string' && (rawGame.toLowerCase() === 'idle' || rawGame.toLowerCase() === 'standby'));
+
+            if (isOnline && !isIdle && rawGame.trim() !== '') {
+                // User is actively in game
+                gameEl.innerHTML = `<i class="fa-solid fa-gamepad mr-1.5"></i>${rawGame}`;
                 gameEl.style.color = themeColor;
-                gameEl.className = "text-xs uppercase font-bold italic";
+                gameEl.className = "text-xs uppercase font-bold italic tracking-wide";
+                if (indicator) indicator.classList.remove('hidden');
+            } else if (isOnline && !isIdle) {
+                // Online on PSN Dashboard
+                gameEl.innerHTML = `<i class="fa-brands fa-playstation mr-1.5"></i>Online on PSN`;
+                gameEl.style.color = themeColor;
+                gameEl.className = "text-xs uppercase font-bold italic tracking-wide";
                 if (indicator) indicator.classList.remove('hidden');
             } else {
+                // Idle or Offline
                 gameEl.textContent = 'Currently Offline';
-                gameEl.className = 'text-slate-500 opacity-50 text-xs';
+                gameEl.className = 'text-slate-500 opacity-60 text-xs';
+                gameEl.style.color = '';
                 if (indicator) indicator.classList.add('hidden');
             }
         }
 
-        /* Calculate Progress Percentages Across Dynamic Firestore Documents */
-        /* JS Line ~526 */
+        /* -------------------------------------------------------------
+           3. Firestore Squad Multi-Player Progress Tracker
+           ------------------------------------------------------------- */
         function calculateGameProgress(docData) {
             if (!docData) return 0;
 
@@ -598,8 +889,6 @@
             return 0;
         }
 
-        /* Load Multi-Player Game Operations from Firestore */
-        /* JS Line ~578 */
         async function loadFirestoreSquadProgress() {
             const container = document.getElementById("gaming-modules-container");
             if (!container) return;
@@ -642,7 +931,7 @@
                                 }
                             });
                         } catch (e) {
-                            // Empty path fallback
+                            // Suppress collection errors
                         }
                     }
                 }
@@ -717,64 +1006,20 @@
             }
         }
 
+        // Initialize Firebase Listeners
+        listenToUtmLinks();
         listenToPsnPresence();
         loadFirestoreSquadProgress();
     </script>
 
-    <!-- Navigation, Open-Meteo Weather & Cinema Slideshow Engine -->
-    <!-- HTML JS Line ~689 -->
+    <!-- Open-Meteo Weather & Cinema Slideshow Engine -->
+    <!-- HTML JS Line ~830 -->
     <script>
         const users = [
             { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf' },
             { id: 'ray', user: 'raymystyro', lat: 38.6689, lon: -88.4851, cardId: 'card-ray', layerId: 'layer-ray', descId: 'weather-desc-ray' },
             { id: 'tj', user: 'terrdog420', lat: 42.1614, lon: -93.3033, cardId: 'card-tj', layerId: 'layer-tj', descId: 'weather-desc-tj' }
         ];
-
-        let mobileNavTree = [];
-
-        function toggleMobileMenu() {
-            const overlay = document.getElementById('mobile-menu-overlay');
-            if (overlay) {
-                overlay.classList.toggle('hidden');
-                closeMobileFolderView();
-            }
-        }
-
-        function openMobileFolderView(groupName) {
-            const groupNode = mobileNavTree.find(n => n.type === 'group' && n.name === groupName);
-            if (!groupNode) return;
-
-            const rootView = document.getElementById('mobile-root-view');
-            const folderView = document.getElementById('mobile-folder-view');
-            const titleEl = document.getElementById('mobile-folder-title');
-            const linksContainer = document.getElementById('mobile-folder-links');
-
-            titleEl.textContent = groupName.toUpperCase();
-
-            let linksHtml = '';
-            groupNode.items.forEach(item => {
-                const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}" class="w-6 h-6 rounded-md object-cover border border-slate-600">` : '<i class="fa-solid fa-link text-sky-400"></i>';
-                linksHtml += `
-                    <a href="${item.url}" onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 hover:text-sky-400 hover:border-sky-500/40 transition-all min-h-[44px]">
-                        ${imgTag}
-                        <span class="font-bold text-sm">${item.name}</span>
-                    </a>
-                `;
-            });
-
-            linksContainer.innerHTML = linksHtml;
-            rootView.classList.add('hidden');
-            folderView.classList.remove('hidden');
-        }
-
-        function closeMobileFolderView() {
-            const rootView = document.getElementById('mobile-root-view');
-            const folderView = document.getElementById('mobile-folder-view');
-            if (rootView && folderView) {
-                folderView.classList.add('hidden');
-                rootView.classList.remove('hidden');
-            }
-        }
 
         async function fetchWithRetry(url, options = {}) {
             let delay = 1000;
@@ -789,149 +1034,6 @@
                     delay *= 2;
                 }
             }
-        }
-
-        const navCsvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS7s86dWkDdx-SomMJamUCFEEsQEpgcPBxUFmanAuYrWqqVSfDqOEhgLs1hZfLRFOPK7vLFeXKcMXqK/pub?output=csv';
-
-        async function fetchNavData() {
-            try {
-                const response = await fetchWithRetry(navCsvUrl);
-                const data = await response.text();
-                const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
-
-                const standaloneItems = [];
-                const groupsMap = {};
-
-                for (let i = 1; i < rows.length; i++) {
-                    const columns = parseCSVLine(rows[i]);
-                    if (columns.length >= 3) {
-                        const name = columns[0] ? columns[0].trim() : '';
-                        if (!name) continue;
-                        
-                        const group = columns[1] ? columns[1].trim() : '';
-                        const url = columns[2] ? columns[2].trim() : '#';
-                        const img = columns[3] ? columns[3].trim() : '';
-
-                        const item = { name, url, img };
-                        const lowerName = name.toLowerCase();
-                        const lowerUrl = url.toLowerCase();
-
-                        if (lowerName.includes('kevin') || lowerName.includes('werewolf')) {
-                            const btn = document.getElementById('profile-link-werewolf');
-                            if (btn && url && url !== '#') btn.href = url;
-                        }
-                        if (lowerName.includes('ray') || lowerName.includes('raymystyro')) {
-                            const btn = document.getElementById('profile-link-ray');
-                            if (btn && url && url !== '#') btn.href = url;
-                        }
-                        if (lowerName.includes('darkwing') || lowerName.includes('terrdog') || lowerName.includes('tj') || lowerUrl.includes('darkwing') || lowerUrl.includes('terro') || lowerUrl.includes('terrdog')) {
-                            const btn = document.getElementById('profile-link-tj');
-                            if (btn && url && url !== '#') btn.href = url;
-                        }
-
-                        if (group === '') {
-                            standaloneItems.push(item);
-                        } else {
-                            if (!groupsMap[group]) groupsMap[group] = [];
-                            groupsMap[group].push(item);
-                        }
-                    }
-                }
-
-                standaloneItems.sort((a, b) => a.name.localeCompare(b.name));
-                const sortedGroupNames = Object.keys(groupsMap).sort((a, b) => a.localeCompare(b));
-                const navOrder = [];
-
-                /* Auto-detect protocol to work seamlessly across HTTP & HTTPS */
-                const protocol = window.location.protocol.startsWith('https') ? 'https:' : 'http:';
-
-                navOrder.push({
-                    type: 'standalone',
-                    data: { name: 'Home', url: `${protocol}//werewolf3788.github.io/Website/`, img: '' }
-                });
-
-                standaloneItems.forEach(item => {
-                    if (item.name.toLowerCase() !== 'home') {
-                        navOrder.push({ type: 'standalone', data: item });
-                    }
-                });
-
-                sortedGroupNames.forEach(groupName => {
-                    const items = groupsMap[groupName].sort((a, b) => a.name.localeCompare(b.name));
-                    navOrder.push({ type: 'group', name: groupName, items: items });
-                });
-
-                mobileNavTree = navOrder;
-                renderNav(navOrder);
-            } catch (error) {
-                console.error("Failed to fetch navigation data:", error);
-                document.getElementById('desktop-nav-links').innerHTML = `<span class="text-red-400 text-sm">Navigation offline</span>`;
-            }
-        }
-
-        function renderNav(navOrder) {
-            const desktopContainer = document.getElementById('desktop-nav-links');
-            const mobileContainer = document.getElementById('mobile-root-view');
-
-            let desktopHTML = '';
-            let mobileHTML = '';
-
-            navOrder.forEach(node => {
-                if (node.type === 'standalone') {
-                    const item = node.data;
-                    const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}" class="w-5 h-5 rounded-full object-cover">` : '';
-                    
-                    const isMovies = item.name.toLowerCase() === 'movies';
-                    const textClass = isMovies ? 'text-orange-400 hover:text-orange-300 font-bold' : 'text-slate-300 hover:text-white';
-                    const targetAttr = isMovies ? 'target="werewolf_cinema_window"' : '';
-
-                    desktopHTML += `
-                        <a href="${item.url}" ${targetAttr} class="nav-link flex items-center gap-2 ${textClass} transition-colors min-h-[44px] text-sm">
-                            ${imgTag}<span>${item.name}</span>
-                        </a>
-                    `;
-
-                    mobileHTML += `
-                        <a href="${item.url}" ${targetAttr} onclick="toggleMobileMenu()" class="flex items-center gap-3 px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 ${textClass} hover:bg-slate-800 min-h-[44px]">
-                            ${imgTag}<span>${item.name}</span>
-                        </a>
-                    `;
-                } else if (node.type === 'group') {
-                    desktopHTML += `
-                        <div class="relative group dropdown">
-                            <button type="button" class="flex items-center space-x-1 text-slate-300 hover:text-white focus:outline-none py-4 min-h-[44px] text-sm">
-                                <span>${node.name}</span>
-                                <i class="fa-solid fa-chevron-down text-xs ml-1"></i>
-                            </button>
-                            <div class="dropdown-menu hidden absolute left-0 w-64 mt-0 bg-slate-800 border border-slate-700 rounded-lg shadow-xl overflow-hidden z-50">
-                    `;
-
-                    mobileHTML += `
-                        <button type="button" onclick="openMobileFolderView('${node.name.replace(/'/g, "\\'")}')" class="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 hover:border-sky-500/50 hover:text-sky-400 transition-all text-left min-h-[44px]">
-                            <span class="font-bold text-sm">${node.name}</span>
-                            <div class="flex items-center gap-2 text-xs text-sky-400">
-                                <span>${node.items.length} links</span>
-                                <i class="fa-solid fa-chevron-right"></i>
-                            </div>
-                        </button>
-                    `;
-
-                    node.items.forEach(item => {
-                        const imgTag = item.img ? `<img src="${item.img}" alt="${item.name}" class="w-5 h-5 rounded-md object-cover border border-slate-600">` : '';
-                        
-                        desktopHTML += `
-                            <a href="${item.url}" class="flex items-center gap-3 px-4 py-3 text-sm text-slate-300 hover:bg-slate-700 hover:text-sky-400 transition-colors min-h-[44px]">
-                                ${imgTag}<span>${item.name}</span>
-                            </a>
-                        `;
-                    });
-
-                    desktopHTML += `</div></div>`;
-                }
-            });
-
-            desktopContainer.innerHTML = desktopHTML;
-            mobileContainer.innerHTML = mobileHTML;
         }
 
         let cinemaImages = [];
@@ -1130,7 +1232,6 @@
         }
 
         function refreshData() {
-            fetchNavData(); 
             updateWeather();
             fetchMovieData(); 
         }
