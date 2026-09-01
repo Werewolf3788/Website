@@ -1,7 +1,7 @@
 /* ============================================================================
    FILE: style.css
-   DESCRIPTION: Wildlands HUD Layout, Standard Slots & Horizontal 3x3 Rebel Powers
-   TIMESTAMP (24-HR NY TIME): 2026-09-01 06:07 EDT
+   DESCRIPTION: Wildlands HUD Layout, Standard Slots, 3x3 Rebel Powers, Dynamic RTDB Menu
+   TIMESTAMP (24-HR NY TIME): 2026-09-01 06:15 EDT
    ============================================================================ */
 
 :root {
@@ -48,7 +48,7 @@ body {
     border: 0;
 }
 
-/* --- Header & Navigation Bar (Lines 49 - 110) --- */
+/* --- Line 49: Header & Navigation Bar --- */
 .hub-header {
     background-color: var(--card-bg);
     border-bottom: 2px solid var(--card-border);
@@ -73,6 +73,7 @@ body {
     display: flex;
     align-items: center;
     gap: 16px;
+    position: relative;
 }
 
 .logo-link {
@@ -89,27 +90,175 @@ body {
     letter-spacing: 2px;
 }
 
-.nav-external-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
+/* --- Line 85: RTDB Multi-Folder Flyout Menu System --- */
+.intel-dropdown-wrapper {
+    position: relative;
+}
+
+.intel-menu-trigger {
     background: #141c26;
     border: 1px solid var(--accent-orange);
     color: var(--accent-orange);
     font-size: 14px;
     font-weight: 800;
-    text-decoration: none;
     padding: 8px 14px;
     border-radius: 6px;
     min-height: var(--touch-min);
-    transition: background 0.15s ease, color 0.15s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s ease;
 }
 
-.nav-external-btn:hover {
+.intel-menu-trigger:hover,
+.intel-menu-trigger.active {
     background: var(--accent-orange);
     color: #000000;
 }
 
+.caret-icon {
+    font-size: 10px;
+    transition: transform 0.2s ease;
+}
+
+.intel-menu-trigger.active .caret-icon {
+    transform: rotate(180deg);
+}
+
+.intel-flyout-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 260px;
+    background: #0d1219;
+    border: 1px solid #233144;
+    border-radius: 6px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+    display: flex;
+    flex-direction: column;
+    padding: 6px 0;
+    z-index: 2000;
+}
+
+.intel-flyout-menu.hidden {
+    display: none;
+}
+
+.intel-menu-loading {
+    padding: 12px 16px;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 600;
+    text-align: center;
+}
+
+.intel-folder-node {
+    position: relative;
+}
+
+.intel-folder-btn, .intel-direct-link {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--text-white);
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.intel-folder-btn:hover, .intel-direct-link:hover {
+    background: #192434;
+    color: var(--wildlands-blue-light);
+}
+
+.intel-submenu {
+    position: absolute;
+    top: 0;
+    left: 100%;
+    width: 280px;
+    max-height: 380px;
+    overflow-y: auto;
+    background: #0d1219;
+    border: 1px solid #233144;
+    border-radius: 6px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+    display: none;
+    flex-direction: column;
+    padding: 6px 0;
+}
+
+.intel-folder-node:hover > .intel-submenu {
+    display: flex;
+}
+
+.intel-sub-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    color: var(--text-white);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+    transition: background 0.15s ease;
+}
+
+.intel-sub-item:hover {
+    background: #172436;
+    color: var(--accent-orange);
+}
+
+.intel-thumb-img {
+    width: 32px;
+    height: 32px;
+    object-fit: cover;
+    border-radius: 4px;
+    background: #1c2738;
+    border: 1px solid #2b3b52;
+    flex-shrink: 0;
+}
+
+.intel-thumb-placeholder {
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background: #192434;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.intel-item-text-wrap {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.intel-item-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.intel-item-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- Line 210: Controls & Inputs --- */
 .nav-menu-wrapper.always-visible {
     display: flex !important;
     align-items: center;
@@ -138,7 +287,7 @@ body {
     border-color: var(--accent-orange);
 }
 
-/* --- App Container & Structure (Lines 112 - 165) --- */
+/* --- Line 240: App Container & Structure --- */
 .hub-container {
     width: 85%;
     max-width: 1500px;
@@ -189,7 +338,7 @@ body {
     background: #233347;
 }
 
-/* --- Dual Column Layout (Lines 167 - 210) --- */
+/* --- Line 290: Dual Column View --- */
 .desktop-dual-layout {
     display: grid;
     grid-template-columns: 360px 1fr;
@@ -210,7 +359,7 @@ body {
     min-height: 600px;
 }
 
-/* --- Stats HUD Block (Lines 212 - 275) --- */
+/* --- Line 310: Stats HUD Block --- */
 .profile-header {
     display: flex;
     justify-content: space-between;
@@ -302,7 +451,7 @@ body {
     border-radius: 6px;
 }
 
-/* --- Edit Stats Panel (Lines 277 - 330) --- */
+/* --- Line 375: Edit Stats Panel --- */
 .edit-stats-panel.hidden {
     display: none;
 }
@@ -388,7 +537,7 @@ body {
     cursor: pointer;
 }
 
-/* --- Authentic Wildlands Skill Tree HUD (Lines 332 - 470) --- */
+/* --- Line 430: Authentic Wildlands Skill Tree HUD --- */
 .skills-tabs-container {
     display: flex;
     gap: 8px;
@@ -546,7 +695,7 @@ body {
     background: var(--wildlands-green);
 }
 
-/* --- Rebel Support Horizontal Side-by-Side 3x3 Powers (Lines 435 - 490) --- */
+/* --- Line 535: Rebel Support Horizontal Side-by-Side 3x3 Powers --- */
 .rebel-powers-container {
     display: flex !important;
     flex-direction: row !important;
@@ -699,7 +848,7 @@ body {
     color: #000000;
 }
 
-/* --- Mobile Responsive Media Queries (Lines 525 - 565) --- */
+/* --- Line 625: Mobile Responsive Media Queries --- */
 @media (max-width: 992px) {
     .desktop-dual-layout {
         grid-template-columns: 1fr;
@@ -728,6 +877,12 @@ body {
 
     .header-brand-group {
         justify-content: space-between;
+        width: 100%;
+    }
+
+    .intel-submenu {
+        position: static;
+        left: 0;
         width: 100%;
     }
 
