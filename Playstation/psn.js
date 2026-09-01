@@ -7,8 +7,8 @@
  *              Stores current game + top 4 past games (5 games max).
  * Database: Realtime Database (entertainment-71888)
  * Target Endpoint: https://entertainment-71888-default-rtdb.firebaseio.com/psn.json
- * Version: 15.9.0 - Active Squad Streamlining & Direct Chunked Sync
- * Date & Time Stamp: 2026-08-29 16:58:14 (24hr New York Time)
+ * Version: 15.9.1 - Fixed SDK destructuring & Safe Telemetry Parsing
+ * Date & Time Stamp: 2026-09-01 04:58:33 (24hr New York Time)
  * ============================================================================ */
 
 const fs = require("fs");
@@ -17,7 +17,7 @@ const psnApi = require("psn-api");
 
 // ----------------------------------------------------------------------------
 // [SECTION: PSN API MODULE DESTRUCTURING]
-// Line 21 in index.js: Official SDK imports
+// Line 22 in index.js: Official SDK imports
 // ----------------------------------------------------------------------------
 const {
     exchangeNpssoForCode,
@@ -34,7 +34,6 @@ const {
     getUserRegion,
     getBasicPresence,
     getUserFriendsAccountIds,
-    getAccountDevices,
     getUserBlockedAccountIds,
     getUserFriendsRequests,
     makeUniversalSearch
@@ -42,7 +41,7 @@ const {
 
 // ----------------------------------------------------------------------------
 // [SECTION: CONFIGURATION & CONSTANTS - WORKS OVER BOTH HTTP & HTTPS]
-// Line 47 in index.js: Target Database and Local Storage Endpoints
+// Line 48 in index.js: Target Database and Local Storage Endpoints
 // ----------------------------------------------------------------------------
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const LOCAL_JSON_PATH = path.join(__dirname, "psn.json");
@@ -56,7 +55,7 @@ const SQUAD_GAMERTAGS = {
     marc: "DesdemonaTiger"
 };
 
-// Stream Intelligence Target Map (Twitch handles retain werewolf3788 branding)
+// Stream Intelligence Target Map
 const TWITCH_MAP = {
     wildhorse_spirit: "werewolf3788",
     ray: "raymystyro",
@@ -69,7 +68,7 @@ const ACCOUNT_IDS = {
     wildhorse_spirit: "4087137467908566201",
     ray: "2732733730346312494",
     darkwing: "4398462806362115916",
-    marc: ""                           // Resolved dynamically via Universal Search API
+    marc: ""                            // Resolved dynamically via Universal Search API
 };
 
 const AMAZON_TAG = "moviesanywhere02-20";
@@ -146,7 +145,7 @@ async function getTwitchIntel(username) {
     const intel = { 
         isLive: false, game: null, gameArt: null, followers: "0", 
         latestFollower: "None", followerNames: [], avatar: null, age: null, bio: null, 
-        statusMessage: null, uptime: null, viewers: "0", subCount: "0",
+        statusMessage: null, uptime: null, viewers: "0", subCount: "0", 
         chatRules: null, channelCreationRaw: null
     };
 
@@ -181,7 +180,7 @@ async function getTwitchIntel(username) {
         intel.latestFollower = lFollow || "None";
 
         const listRes = await cleanFetch("followers?limit=100");
-        if (listRes) { intel.followerNames = listRes.split(", ").map(n => n.trim()); }
+        if (listRes) { intel.followerNames = listRes.split(", ").map(n => n.trim()).filter(Boolean); }
 
         intel.avatar = await cleanFetch("avatar");
         intel.age = await cleanFetch("accountage") || "Unknown";
@@ -207,7 +206,7 @@ async function getTwitchIntel(username) {
 
 // ----------------------------------------------------------------------------
 // [SECTION: PSN AUTHENTICATION & HANDSHAKE MANAGEMENT]
-// Line 219 in index.js: Token exchange and validation
+// Line 220 in index.js: Token exchange and validation
 // ----------------------------------------------------------------------------
 async function isTokenValid(accessToken) {
     try {
@@ -324,7 +323,7 @@ async function resolveAccountIdFromSearch(auth, gamerTag) {
 
 // ----------------------------------------------------------------------------
 // [SECTION: CORE USER PROFILE & TELEMETRY PARSER (TOP 5 GAMES MAXIMUM)]
-// Line 339 in index.js: Extracts current game + 4 previous titles
+// Line 340 in index.js: Extracts current game + 4 previous titles
 // ----------------------------------------------------------------------------
 async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) {
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
@@ -368,14 +367,12 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
 
         let region = { country: "US", language: "en" };
         let friendsList = [];
-        let deviceList = [];
         let blockedList = [];
         let inboundFriendRequests = [];
         
         if (ACCOUNT_IDS.ray === resolvedTargetId || userKey === 'wildhorse_spirit') {
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
             try { friendsList = await getUserFriendsAccountIds(auth, "me") || []; } catch(e) {}
-            try { deviceList = await getAccountDevices(auth) || []; } catch(e) {}
             try { blockedList = await getUserBlockedAccountIds(auth) || []; } catch(e) {}
             try { inboundFriendRequests = await getUserFriendsRequests(auth) || []; } catch(e) {}
         }
@@ -480,7 +477,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
 
         const targetSyncId = activeCommId || matchedGame.npCommunicationId || allRecentGames[0]?.npCommunicationId;
 
-        // ONLY scan top 5 games to keep payload minimal and avoid lag
+        // Scan top games to keep payload minimal and avoid latency
         for (const game of allRecentGames.slice(0, 10)) { 
             if (BLACKLIST.some(f => game.name.toLowerCase().includes(f))) continue;
             
@@ -489,7 +486,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
                 art: game.art, 
                 progress: game.progress || 0, 
                 ratio: `${game.earnedTotal || 0}/${game.definedTotal || 0}`, 
-                amazonAffiliateUrl: generateAffiliateUrl(game.name),
+                amazonAffiliateUrl: generateAffiliateUrl(game.name), 
                 npCommunicationId: game.npCommunicationId, 
                 lastPlayed: game.lastPlayed,
                 bootCount: game.playCount || "Unknown"
@@ -578,7 +575,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
 
                         activeHunt = { 
                             title: game.name, 
-                            amazonAffiliateUrl: generateAffiliateUrl(game.name),
+                            amazonAffiliateUrl: generateAffiliateUrl(game.name), 
                             progress: game.progress || 0,
                             velocity: {
                                 firstEarned: earnedTrophiesOnly[0]?.earnedDate || "Not Started",
@@ -642,13 +639,13 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
             region: region?.country || "US",
             trophySummary: { 
                 platinum: stats?.earnedTrophies?.platinum||0, 
-                gold: stats?.earnedTrophies?.gold||0,
+                gold: stats?.earnedTrophies?.gold||0, 
                 silver: stats?.earnedTrophies?.silver||0, 
-                bronze: stats?.earnedTrophies?.bronze||0,
+                bronze: stats?.earnedTrophies?.bronze||0, 
                 total: (stats?.earnedTrophies?.platinum||0) + (stats?.earnedTrophies?.gold||0) + (stats?.earnedTrophies?.silver||0) + (stats?.earnedTrophies?.bronze||0),
                 trophyLevel: stats?.trophyLevel || 0
             },
-            recentGames: recentGames.slice(0, MAX_RECENT_GAMES), // Strict 5 game cap
+            recentGames: recentGames.slice(0, MAX_RECENT_GAMES),
             activeHunt, 
             mostRecentTrophies: mostRecentTrophies.slice(0, 10), 
             streamHistory: historicalStreamList,
@@ -662,7 +659,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
 
 // ----------------------------------------------------------------------------
 // [SECTION: DATABASE & FILE I/O (FIREBASE REALTIME DB & LOCAL JSON)]
-// Line 562 in index.js: Realtime Database writer with individual node updates
+// Line 555 in index.js: Realtime Database writer with individual node updates
 // ----------------------------------------------------------------------------
 async function fetchFromFirebase() {
     console.log("[FIREBASE] Reading current state from Realtime Database...");
@@ -713,11 +710,11 @@ function writeLocalFile(payload) {
 
 // ----------------------------------------------------------------------------
 // [SECTION: MAIN EXECUTION PIPELINE]
-// Line 617 in index.js: Runs pipeline for active squad members only
+// Line 610 in index.js: Runs pipeline for active squad members only
 // ----------------------------------------------------------------------------
 async function main() {
     try {
-        console.log("[INIT] Starting Squad Pack Sync Engine v15.9.0 (Streamlined Active Squad)...");
+        console.log("[INIT] Starting Squad Pack Sync Engine v15.9.1 (Streamlined Active Squad)...");
 
         const previousFirebaseData = await fetchFromFirebase();
 
@@ -726,8 +723,8 @@ async function main() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport,
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "15.9.0",
-            codeTimestamp: "Saturday, August 29, 2026 | 16:58 EDT"
+            engineVersion: "15.9.1",
+            codeTimestamp: "Tuesday, September 1, 2026 | 04:58 EDT"
         };
 
         // Authenticate primary agent keys
@@ -754,8 +751,15 @@ async function main() {
         const lists = Object.values(finalData.gamertags).map(u => u.twitch?.followerNames || []).filter(l => l.length > 0);
         if (lists.length > 1) {
             const frequencyMap = {};
-            lists.flat().forEach(name => { frequencyMap[name] = (frequencyMap[name] || 0) + (typeof name === 'string' ? 1 : 0); });
-            finalData.mutualSquadFollowers = Object.entries(frequencyMap).filter(([name, count]) => count >= 2).sort((a,b) => b[1] - a[1]).map(([name, count]) => ({ username: name, sharedConnections: count }));
+            lists.flat().forEach(name => { 
+                if (typeof name === 'string' && name.trim()) {
+                    frequencyMap[name] = (frequencyMap[name] || 0) + 1;
+                }
+            });
+            finalData.mutualSquadFollowers = Object.entries(frequencyMap)
+                .filter(([name, count]) => count >= 2)
+                .sort((a,b) => b[1] - a[1])
+                .map(([name, count]) => ({ username: name, sharedConnections: count }));
         }
 
         // Push global metadata nodes
