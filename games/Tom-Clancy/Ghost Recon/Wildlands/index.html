@@ -1,49 +1,17 @@
-<!-- ============================================================================
-     FILE: index.html
-     DESCRIPTION: Ghost Recon Wildlands Squad Operations Hub & Tactical Skill Tree
-     GA4 TAG: G-CTYHDF4MSD (Entertainment & Gaming Sync Engine)
-     TIMESTAMP (24-HR NY TIME): 2026-09-01 05:35 EDT
-     ============================================================================ -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ghost Recon Wildlands Squad Operations Hub</title>
-
-    <!-- Google tag (gtag.js) GA4 Deployment -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-CTYHDF4MSD', {
-        'send_page_view': true,
-        'cookie_flags': 'SameSite=None;Secure'
-      });
-    </script>
-
-    <!-- Cross-Protocol Resilient Stylesheet -->
-    <link rel="stylesheet" href="./style.css?v=17.0">
-</head>
-<body>
-
-    <!-- TOP HEADER -->
+<!-- TOP HEADER -->
     <header class="hub-header">
         <div class="header-inner">
-            <a href="../../../index.html" class="logo-link" title="Return to Homepage">
-                <h1 class="logo-text">GHOST HUB</h1>
-            </a>
+            <div class="header-brand-group">
+                <a href="../../../index.html" class="logo-link" title="Return to Homepage">
+                    <h1 class="logo-text">GHOST HUB</h1>
+                </a>
+                <a href="https://console.firebase.google.com/u/0/project/entertainment-71888/database/entertainment-71888-default-rtdb/data/~2Futm_links" target="_blank" rel="noopener noreferrer" class="nav-external-btn" title="Firebase RTDB UTM Links">
+                    📁 Intel Directory
+                </a>
+            </div>
 
-            <!-- Mobile Hamburger Toggle -->
-            <button id="mobileNavToggle" class="hamburger-btn" aria-label="Toggle Navigation Menu">
-                <span class="hamburger-bar"></span>
-                <span class="hamburger-bar"></span>
-                <span class="hamburger-bar"></span>
-            </button>
-
-            <!-- Navigation Controls -->
-            <div id="navMenuWrapper" class="nav-menu-wrapper">
+            <!-- Navigation Controls (Always Visible Bar) -->
+            <div id="navMenuWrapper" class="nav-menu-wrapper always-visible">
                 <div class="header-controls-group">
                     <div class="selector-wrapper">
                         <label for="userSelect" class="sr-only">Gamertag</label>
@@ -58,8 +26,8 @@
                     <div class="selector-wrapper">
                         <label for="platformSelect" class="sr-only">Platform</label>
                         <select id="platformSelect" class="styled-select platform-highlight">
-                            <option value="pc">💻 PC (Ubisoft)</option>
                             <option value="playstation">🎮 PlayStation (PS5/PS4)</option>
+                            <option value="pc">💻 PC (Ubisoft)</option>
                             <option value="xbox">💚 Xbox</option>
                         </select>
                     </div>
@@ -67,150 +35,3 @@
             </div>
         </div>
     </header>
-
-    <!-- MAIN APP WRAPPER -->
-    <main class="hub-container">
-        
-        <!-- STATUS BAR & EDIT TRIGGER -->
-        <section class="card-section cta-section">
-            <div id="syncStatus" class="status-banner">Connecting to Cloud Firestore...</div>
-            <button type="button" id="toggleEditStats" class="edit-panel-btn">✏️ Edit Tactical Profile & Level</button>
-        </section>
-
-        <!-- EDIT STATS COLLAPSIBLE PANEL -->
-        <section id="editStatsPanel" class="card-section edit-stats-panel hidden">
-            <h3 class="form-section-title">Character Level & Tier Mode</h3>
-            <div class="form-grid-2col">
-                <div class="form-group">
-                    <label for="editPlayerLevel">Operator Level (1 - 30)</label>
-                    <input type="number" id="editPlayerLevel" class="form-control" min="1" max="30" value="1">
-                    <small class="helper-text">Tier One activates at Level 30</small>
-                </div>
-                <div class="form-group">
-                    <label for="editTierActive">Tier One Mode</label>
-                    <select id="editTierActive" class="form-control">
-                        <option value="off">OFF (Standard Progression)</option>
-                        <option value="on">ON (Tier 50 down to 1)</option>
-                    </select>
-                </div>
-                <div class="form-group" id="tierLevelGroup" style="display: none;">
-                    <label for="editTierLevel">Tier Level (50 down to 1)</label>
-                    <input type="number" id="editTierLevel" class="form-control" min="1" max="50" placeholder="50">
-                </div>
-            </div>
-
-            <hr class="panel-divider">
-            <h3 class="form-section-title">Playstyle & Combat Metrics</h3>
-            <div class="form-grid-2col">
-                <div class="form-group"><label for="editPlaystyle">Playstyle Name</label><input type="text" id="editPlaystyle" class="form-control" placeholder="Rakkasan"></div>
-                <div class="form-group"><label for="editAvgDist">Average Kill Distance</label><input type="text" id="editAvgDist" class="form-control" placeholder="0 m"></div>
-                <div class="form-group"><label for="editTactical">Tactical Precision %</label><input type="text" id="editTactical" class="form-control" placeholder="0%"></div>
-                <div class="form-group"><label for="editStealth">Stealth Kills %</label><input type="text" id="editStealth" class="form-control" placeholder="0%"></div>
-                <div class="form-group"><label for="editLifetime">Lifetime</label><input type="text" id="editLifetime" class="form-control" placeholder="0h 0min"></div>
-                <div class="form-group"><label for="editLongest">Longest Shot</label><input type="text" id="editLongest" class="form-control" placeholder="0 m"></div>
-                <div class="form-group"><label for="editPrecision">Precision %</label><input type="text" id="editPrecision" class="form-control" placeholder="0%"></div>
-                <div class="form-group"><label for="editFav1">Favorite Weapon</label><select id="editFav1" class="form-control"></select></div>
-                <div class="form-group full-width"><label for="editFav2">2nd Favorite Weapon</label><select id="editFav2" class="form-control"></select></div>
-            </div>
-
-            <h3 class="form-section-title">Support & Travel</h3>
-            <div class="form-grid-2col">
-                <div class="form-group"><label for="editRevives">Teammates Revived</label><input type="text" id="editRevives" class="form-control" placeholder="0 Teammates"></div>
-                <div class="form-group"><label for="editExplosiveKills">C4 / Mine Kills</label><input type="text" id="editExplosiveKills" class="form-control" placeholder="0 Kills"></div>
-                <div class="form-group"><label for="editDroneTime">Drone Used</label><input type="text" id="editDroneTime" class="form-control" placeholder="0h 0min"></div>
-                <div class="form-group"><label for="editAir">Air Travel</label><input type="text" id="editAir" class="form-control" placeholder="0h 0min"></div>
-                <div class="form-group"><label for="editGround">Ground Travel</label><input type="text" id="editGround" class="form-control" placeholder="0h 0min"></div>
-                <div class="form-group"><label for="editPara">Parachute Jumps</label><input type="text" id="editPara" class="form-control" placeholder="0 Jumps"></div>
-                <div class="form-group full-width"><label for="editMap">Map Discovered %</label><input type="text" id="editMap" class="form-control" placeholder="5%"></div>
-            </div>
-
-            <div class="form-actions-group">
-                <button type="button" id="saveStatsBtn" class="save-stats-btn">Save Tactical Update to Firebase</button>
-                <button type="button" id="clearStatsBtn" class="clear-stats-btn">🗑️ Reset Profile Data</button>
-            </div>
-        </section>
-
-        <!-- DUAL-PANE DESKTOP / STACKED MOBILE OPERATIONAL VIEW -->
-        <div class="desktop-dual-layout">
-            
-            <!-- LEFT COLUMN: OPERATOR STATS HUD -->
-            <aside class="left-stats-column">
-                <section class="card-section profile-section">
-                    <div class="profile-header">
-                        <div>
-                            <h2 id="operatorName" class="operator-title">Werewolf3788</h2>
-                            <div id="playerLevelDisplay" class="level-indicator-sub">LEVEL 01</div>
-                        </div>
-                        <div id="tierContainer" class="tier-badge-container">
-                            <span class="tier-label">TIER</span>
-                            <span id="tierLevel" class="tier-value">--</span>
-                        </div>
-                    </div>
-
-                    <!-- Playstyle Block -->
-                    <div class="stat-category-block">
-                        <div class="category-header-row">
-                            <h3 class="category-header">PLAYSTYLE</h3>
-                            <span id="playstyleType" class="header-highlight">--</span>
-                        </div>
-                        <div class="stat-row"><span>Average Kill Distance</span><span id="avgKillDist" class="stat-val">--</span></div>
-                        <div class="stat-row"><span>Tactical Precision</span><span id="tacticalValue" class="stat-val">0%</span></div>
-                        <div class="stat-row"><span>Stealth Kills</span><span id="stealthValue" class="stat-val">0%</span></div>
-                    </div>
-
-                    <!-- Combat Block -->
-                    <div class="stat-category-block">
-                        <h3 class="category-header">COMBAT</h3>
-                        <div class="stat-row"><span>Lifetime</span><span id="statLifetime" class="stat-val">--</span></div>
-                        <div class="stat-row"><span>Longest Shot</span><span id="longestShot" class="stat-val">--</span></div>
-                        <div class="stat-row"><span>Precision</span><span id="precisionValue" class="stat-val">0%</span></div>
-                        <div class="weapons-fav-row">
-                            <div class="weapon-tag"><strong>Favorite Weapon:</strong> <span id="favWeapon">--</span></div>
-                            <div class="weapon-tag"><strong>2nd Favorite Weapon:</strong> <span id="favWeapon2">--</span></div>
-                        </div>
-                    </div>
-
-                    <!-- Support Block -->
-                    <div class="stat-category-block">
-                        <h3 class="category-header">SUPPORT</h3>
-                        <div class="stat-row"><span>Teammates Revived</span><span id="statRevives" class="stat-val">--</span></div>
-                        <div class="stat-row"><span>C4 / Mine Kills</span><span id="statExplosiveKills" class="stat-val">--</span></div>
-                        <div class="stat-row"><span>Drone Used</span><span id="statDroneTime" class="stat-val">--</span></div>
-                    </div>
-
-                    <!-- Travel Block -->
-                    <div class="stat-category-block">
-                        <h3 class="category-header">TRAVEL</h3>
-                        <div class="stat-row"><span>Air</span><span id="statAir" class="stat-val">--</span></div>
-                        <div class="stat-row"><span>Ground</span><span id="statGround" class="stat-val">--</span></div>
-                        <div class="stat-row"><span>Parachute</span><span id="statPara" class="stat-val">--</span></div>
-                        <div class="stat-row"><span>Map Discovered</span><span id="statMap" class="stat-val">--</span></div>
-                    </div>
-                </section>
-            </aside>
-
-            <!-- RIGHT COLUMN: SKILLS HUD TREE VIEW -->
-            <section class="right-skills-column card-section">
-                <!-- Navigation Tabs -->
-                <div id="skillsCategoryTabs" class="skills-tabs-container"></div>
-                
-                <!-- Tree Columns Container -->
-                <div id="treeContainer" class="tree-columns-wrapper"></div>
-
-                <!-- Bottom Inspect Panel -->
-                <div id="inspectPanel" class="inspect-panel">
-                    <div class="inspect-top-row">
-                        <h3 id="inspectTitle" class="inspect-title">SELECT A SKILL</h3>
-                        <span id="inspectReq" class="inspect-req">CLICK ANY BLOCK OR SLOT TO UPGRADE</span>
-                    </div>
-                    <p id="inspectDesc" class="inspect-desc">Click directly on any skill's slot bars to mark rank ups. Click the ★ star to toggle bonus medals.</p>
-                </div>
-            </section>
-
-        </div>
-    </main>
-
-    <!-- APPLICATION CONTROLLER -->
-    <script type="module" src="./app.js?v=17.0"></script>
-</body>
-</html>
