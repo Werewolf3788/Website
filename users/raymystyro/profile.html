@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <!-- ============================================================================
- * Dashboard: OneLIVIDMAN / Raymystyro Progression & FS25 Fleet Telemetry
- * Engine Version: 17.2.0-OneLIVIDMAN-FarmId2
- * Target PSN RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/OneLIVIDMAN.json
- * Target FS25 RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json (farmId2 focus)
- * Target Firestore: /users/Raymystyro/platform/playstation/progress
+ * Dashboard: OneLIVIDMAN / Raymystyro Progression & FS25 Dumbace Farm Telemetry
+ * Engine Version: 21.0.0-OneLIVIDMAN-RTDBMenuEngine
+ * Target RTDB Menu: https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json
+ * Target PSN RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/psn.json
+ * Target FS25 RTDB Feed: https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json (Dumbace Farm)
+ * Target Firestore: /users/Raymystyro/platform/{platform}/progress
  * Timezone: 24hr New York (EDT)
- * Date & Time Stamp: 2026-08-29 17:15:34 (24hr New York Time)
+ * Date & Time Stamp: 2026-09-01 08:08:15 (24hr New York Time)
  * ============================================================================ -->
 <html lang="en">
 <head>
@@ -15,14 +16,7 @@
     <meta http-equiv="refresh" content="900">
     <title>OneLIVIDMAN | Pack Progression & FS25 Telemetry Hub</title>
     
-    <!-- 
-      ========================================================================
-      [LINE 21]: GOOGLE ANALYTICS 4 (GTM DEPLOYMENT + GOOGLE SIGNALS + CUSTOM METRICS)
-      - Measurement Tag: G-CTYHDF4MSD
-      - Secondary Containers: G-H6Q756MVE8, G-L376P3NPY4
-      - Features: Enhanced Measurement, Custom Dimensions, Signals Active
-      ========================================================================
-    -->
+    <!-- GOOGLE ANALYTICS 4 (GTM DEPLOYMENT) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -33,12 +27,11 @@
             return new Date().toLocaleString("en-US", {timeZone: "America/New_York", hour12: false});
         }
 
-        // GA4 Core Configuration
         gtag('config', 'G-CTYHDF4MSD', {
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '17.2.0',
+            'layout_version': '21.0.0',
             'gamertag': 'OneLIVIDMAN',
             'user_handle': 'Raymystyro',
             'engagement_timezone': 'America/New_York',
@@ -66,11 +59,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- 
-      ========================================================================
-      [LINE 74]: MASTER STYLESHEET (MOBILE-FIRST / OBSIDIAN / NEON ACCENTS)
-      ========================================================================
-    -->
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap');
 
@@ -101,7 +89,7 @@
             overflow-wrap: break-word;
         }
 
-        /* --- STICKY NAVIGATION BAR --- */
+        /* --- STICKY NAVIGATION BAR WITH RTDB DROPDOWNS --- */
         .nav-bar {
             position: sticky; top: 0; z-index: 20000;
             background: rgba(10, 10, 12, 0.95);
@@ -113,17 +101,38 @@
             max-width: 1700px; margin: 0 auto;
             display: flex; align-items: center; justify-content: space-between;
         }
-        .nav-links-wrapper { display: none; gap: 24px; align-items: center; }
+        .nav-links-wrapper { display: none; gap: 20px; align-items: center; }
         .nav-links-wrapper.active {
             display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0;
             background: var(--bg-dark); padding: 20px; border-bottom: 2px solid var(--accent-blue);
         }
         .nav-link {
             font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.15em;
-            color: #64748b; transition: all 0.3s; white-space: nowrap; text-decoration: none;
+            color: #94a3b8; transition: all 0.3s; white-space: nowrap; text-decoration: none;
             cursor: pointer; padding: 10px 0; min-height: 44px; display: flex; align-items: center;
         }
         .nav-link:hover, .nav-link.active { color: var(--accent-blue); }
+
+        .dropdown { position: relative; display: inline-block; padding-bottom: 5px; }
+        .dropdown-content {
+            display: none; position: absolute; top: 100%; left: 0;
+            background-color: #121822; min-width: 260px; max-height: 400px; overflow-y: auto;
+            box-shadow: 0px 10px 25px rgba(0,0,0,0.8); z-index: 21000;
+            border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 6px 0;
+        }
+        .dropdown-content a {
+            color: #cbd5e1; padding: 10px 16px; text-decoration: none;
+            display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 700;
+            text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.05); min-height: 44px;
+            transition: all 0.2s ease;
+        }
+        .dropdown-content a:hover { background-color: rgba(56, 189, 248, 0.15); color: var(--accent-blue); }
+        .dropdown:hover .dropdown-content { display: block; }
+        
+        .nav-thumb {
+            width: 24px; height: 24px; border-radius: 4px; object-fit: cover;
+            flex-shrink: 0; border: 1px solid rgba(255,255,255,0.2); background: #1e1e24;
+        }
 
         @media (min-width: 1024px) {
             .nav-links-wrapper { display: flex; flex-direction: row; }
@@ -161,27 +170,26 @@
         .trophy-icon-sq { width: 50px; height: 50px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
         .trophy-title-text { font-weight: 800; color: var(--accent-blue); font-size: 15px; text-transform: uppercase; }
 
-        /* Squad Member Badge Pill */
         .squad-member-pill {
             display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-size: 9px;
-            font-weight: 800;
+            gap: 5px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 900;
             text-transform: uppercase;
             letter-spacing: 0.05em;
         }
         .squad-member-pill.earned {
-            background: rgba(16, 185, 129, 0.15);
-            color: #34d399;
-            border: 1px solid rgba(16, 185, 129, 0.4);
+            background: rgba(16, 185, 129, 0.25) !important;
+            color: #34d399 !important;
+            border: 1px solid rgba(16, 185, 129, 0.6) !important;
         }
         .squad-member-pill.locked {
-            background: rgba(255, 255, 255, 0.05);
-            color: #94a3b8;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
         }
 
         .progress-bar-container { height: 10px; background: #2d2d35; border-radius: 5px; overflow: hidden; }
@@ -259,14 +267,6 @@
         .store-btn-amazon { background: rgba(255, 153, 0, 0.25); color: #ff9900; border-color: rgba(255, 153, 0, 0.5); }
         .store-btn-amazon:hover { background: #ff9900; color: #000000; }
 
-        .live-badge {
-            position: absolute; top: 12px; right: 12px; background: #38BDF8; color: black;
-            padding: 2px 8px; border-radius: 4px; font-size: 9px; font-weight: 900;
-            text-transform: uppercase; animation: pulseLive 2s infinite;
-        }
-        @keyframes pulseLive { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-        /* FS25 Specific Badge Styles */
         .fs25-badge {
             background: rgba(132, 204, 22, 0.15);
             color: #bef264;
@@ -289,7 +289,7 @@
         <span class="kf-k">K</span><span class="kf-f">F</span>
     </div>
 
-    <!-- [LINE 306]: STICKY NAVIGATION BAR -->
+    <!-- STICKY NAVIGATION BAR (DRIVEN BY FIREBASE /utm_links) -->
     <nav class="nav-bar">
         <div class="nav-container">
             <a href="https://werewolf3788.github.io/Website/" target="_blank" class="text-white font-black text-lg flex items-center gap-2">
@@ -297,14 +297,12 @@
             </a>
             <button class="mobile-toggle text-white text-2xl min-h-[44px] min-w-[44px]" onclick="toggleNav()"><i class="fas fa-bars"></i></button>
             <div class="nav-links-wrapper" id="nav-links">
-                <a href="#active-hunt-section" class="nav-link">Active Hunt</a>
-                <a href="#dual-telemetry-row" class="nav-link text-lime-400">FS25 & Progress</a>
-                <a href="#mission-log-container" class="nav-link">Checklist</a>
+                <div class="text-[11px] text-gray-500 font-bold uppercase py-2">Loading RTDB Menu...</div>
             </div>
         </div>
     </nav>
 
-    <!-- [LINE 321]: REALTIME HEALTH MONITOR -->
+    <!-- REALTIME HEALTH MONITOR -->
     <div id="health-monitor">
         <div id="health-dot" class="status-dot-pulse bg-gray-500"></div>
         <div class="flex flex-col">
@@ -313,7 +311,7 @@
         </div>
     </div>
 
-    <!-- [LINE 331]: SYSTEM NPSSO ALERT -->
+    <!-- SYSTEM NPSSO ALERT -->
     <div id="system-alerts-container" class="max-w-7xl mx-auto w-full px-6 mt-6 hidden">
         <div class="bg-red-500/10 border-2 border-red-500 p-4 rounded-2xl flex items-center gap-4">
             <i class="fas fa-triangle-exclamation text-red-500 text-2xl"></i>
@@ -324,7 +322,7 @@
         </div>
     </div>
 
-    <!-- [LINE 344]: HEADER HERO & STAT CARDS -->
+    <!-- HEADER HERO & STAT CARDS -->
     <header class="w-full text-center py-12 px-6">
         <div class="max-w-7xl mx-auto">
             <div class="relative inline-block mb-8">
@@ -336,10 +334,7 @@
             <h1 class="blue-gradient-text mb-2 text-4xl lg:text-6xl font-black" id="display-admin-name">OneLIVIDMAN</h1>
             <div class="text-[11px] lg:text-[14px] font-black text-gray-400 uppercase tracking-[0.4em] mb-10">Squad Pack Progression Dashboard</div>
             
-            <!-- 5-CARD STAT ROW -->
             <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 max-w-7xl mx-auto text-center">
-                
-                <!-- CARD 1: TWITCH -->
                 <a id="twitch-card" href="https://www.twitch.tv/raymystyro" target="_blank" class="glass-card header-stat-card p-5 border-b-4 border-purple-500 hover:scale-[1.02] transition-transform min-h-[160px] relative">
                     <div id="live-indicator" class="live-badge hidden">Live Now</div>
                     <div class="text-[11px] text-purple-400 font-black mb-1 uppercase tracking-widest">Twitch Feed</div>
@@ -348,14 +343,12 @@
                     <div id="twitch-age" class="text-[9px] text-gray-400 font-black uppercase mt-1">Age: --</div>
                 </a>
 
-                <!-- CARD 2: TOTAL GAMES -->
                 <div class="glass-card header-stat-card p-5 border-b-4 border-[#38BDF8] min-h-[160px]">
                     <div class="text-[11px] text-sky-400 font-black mb-1 uppercase tracking-widest">PSN Library</div>
                     <div id="games-played-count" class="text-3xl lg:text-4xl font-black text-white">--</div>
                     <div class="text-[10px] text-gray-300 font-bold uppercase mt-2">Total Games Played</div>
                 </div>
 
-                <!-- CARD 3: PSN LEVEL -->
                 <div class="glass-card header-stat-card p-5 border-b-4 border-[#0284C7] min-h-[160px]">
                     <div class="text-[11px] text-sky-400 font-black mb-1 uppercase tracking-widest">PSN Level</div>
                     <div id="psn-level-label" class="text-3xl lg:text-4xl font-black text-white">--</div>
@@ -363,7 +356,6 @@
                     <div id="psn-account-age" class="text-[9px] text-gray-400 font-black uppercase mt-1">Age: --</div>
                 </div>
 
-                <!-- CARD 4: TROPHY COUNTERS -->
                 <div id="trophy-card" class="glass-card header-stat-card p-5 border-b-4 border-yellow-500 min-h-[160px]">
                     <div class="text-[11px] text-yellow-500 font-black mb-1 uppercase tracking-widest">Total Trophies</div>
                     <div id="trophy-total" class="text-3xl lg:text-4xl font-black text-white mb-2">--</div>
@@ -375,7 +367,6 @@
                     </div>
                 </div>
 
-                <!-- CARD 5: LIVE PRESENCE -->
                 <div class="glass-card header-stat-card p-5 border-b-4 border-green-500 col-span-2 lg:col-span-1 min-h-[160px]">
                     <div id="online-status-label" class="text-base font-black text-white uppercase">Connecting</div>
                     <div id="current-game-sub" class="text-[11px] text-green-400 font-black uppercase mt-1 truncate max-w-[180px]">---</div>
@@ -386,7 +377,7 @@
         </div>
     </header>
 
-    <!-- [LINE 421]: MAIN DASHBOARD CONTENT GRID -->
+    <!-- MAIN DASHBOARD CONTENT GRID -->
     <main class="max-w-[1700px] mx-auto px-6 pb-24 flex-1 w-full">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
@@ -395,7 +386,6 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8" id="active-hunt-section">
                     <div class="flex flex-col gap-8">
-                        <!-- PROFILE BIO -->
                         <section class="glass-card p-8">
                             <div class="flex justify-between items-start mb-4">
                                 <h2 class="text-xl">Profile Bio</h2>
@@ -404,7 +394,6 @@
                             <p id="profile-bio" class="text-gray-400 text-sm leading-relaxed">Official Pack Member Profile</p>
                         </section>
 
-                        <!-- ACTIVE HUNT HERO -->
                         <section id="last-played-hero" class="glass-card overflow-hidden">
                             <div class="p-6 pb-3"><h2 class="text-sky-400 text-lg flex items-center gap-2"><i class="fas fa-crosshairs"></i> Active Hunt</h2></div>
                             
@@ -419,7 +408,6 @@
                                     <div id="hunter-persona-badge" class="inline-block px-2.5 py-0.5 bg-white/10 text-sky-400 border border-sky-500/40 rounded-full text-[9px] font-black uppercase tracking-widest hidden"></div>
                                 </div>
 
-                                <!-- MULTI-STORE LAUNCHPAD -->
                                 <div class="space-y-1.5">
                                     <div class="text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-1">
                                         <i class="fas fa-store text-sky-400"></i> Store Launchpad
@@ -427,7 +415,6 @@
                                     <div id="active-game-stores-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
                                 </div>
 
-                                <!-- HUNT PROGRESS & METRICS -->
                                 <div class="space-y-3 bg-white/5 p-4 rounded-xl border border-white/5">
                                     <div class="flex justify-between items-end"><span class="text-xs text-gray-300 font-black uppercase text-sky-400">Hunt Progress</span><span id="active-game-progress-text" class="text-base font-black text-sky-400">0%</span></div>
                                     <div class="progress-bar-container"><div id="active-game-progress-fill" class="progress-bar-fill" style="width: 0%"></div></div>
@@ -440,7 +427,6 @@
                         </section>
                     </div>
 
-                    <!-- RECENT HUNTS SECTION -->
                     <div class="flex flex-col gap-8">
                         <section id="recent-hunts-section" class="glass-card p-6">
                             <h2 class="mb-6 text-sky-400 text-lg uppercase tracking-wider text-center">Recent Hunts</h2>
@@ -449,23 +435,19 @@
                     </div>
                 </div>
 
-                <!-- 
-                  ========================================================================
-                  [LINE 495]: SIDE-BY-SIDE DUAL TELEMETRY ROW (FS25 & PROGRESSION HUB)
-                  ========================================================================
-                -->
+                <!-- SIDE-BY-SIDE DUAL TELEMETRY ROW (FS25 DUMBACE FARM & PROGRESSION HUB) -->
                 <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 items-stretch" id="dual-telemetry-row">
                     
-                    <!-- LEFT COLUMN: FS25 LIVE TELEMETRY & FLEET HUB (FARMID2 FOCUS) -->
+                    <!-- FS25 LIVE TELEMETRY (DUMBACE FARM FOCUS) -->
                     <section id="fs25-telemetry-section" class="glass-card p-6 border-t-4 border-lime-500 flex flex-col justify-between space-y-6">
                         <div class="space-y-4">
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3">
                                 <div>
                                     <div class="flex items-center gap-2">
                                         <i class="fas fa-tractor text-lime-400 text-lg"></i>
-                                        <h2 class="text-lime-400 text-lg font-black uppercase">FS25 Farm 2 Telemetry</h2>
+                                        <h2 class="text-lime-400 text-lg font-black uppercase" id="fs25-header-title">FS25 Dumbace Farm</h2>
                                     </div>
-                                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Endpoint: /fs25.json (farmId2)</p>
+                                    <p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Live Telemetry Feed (/fs25)</p>
                                 </div>
                                 <div id="fs25-status-pill" class="fs25-badge flex items-center gap-1.5 self-start sm:self-auto">
                                     <span class="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></span>
@@ -477,7 +459,7 @@
                             <div class="grid grid-cols-2 gap-2.5">
                                 <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
                                     <div class="text-[9px] font-black text-gray-400 uppercase">Farm Name</div>
-                                    <div id="fs25-farm-name" class="text-xs font-black text-white mt-0.5 truncate">--</div>
+                                    <div id="fs25-farm-name" class="text-xs font-black text-white mt-0.5 truncate">Dumbace Farm</div>
                                 </div>
                                 <div class="bg-white/5 p-3 rounded-xl border border-white/5 text-center">
                                     <div class="text-[9px] font-black text-gray-400 uppercase">Account Funds</div>
@@ -521,7 +503,7 @@
                         </div>
                     </section>
 
-                    <!-- RIGHT COLUMN: FIRESTORE GAME PROGRESSION HUB -->
+                    <!-- FIRESTORE GAME PROGRESSION HUB (MULTI-PLATFORM DISCOVERY) -->
                     <section id="firestore-progress-section" class="glass-card p-6 border-t-4 border-cyan-500 flex flex-col justify-between space-y-4">
                         <div class="space-y-4">
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3">
@@ -530,14 +512,13 @@
                                         <i class="fas fa-gamepad text-cyan-400 text-lg"></i>
                                         <h2 class="text-cyan-400 text-lg font-black uppercase">Game Progress Hub</h2>
                                     </div>
-                                    <p id="firestore-path-label" class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Observer: /users/Raymystyro/platform/playstation/progress</p>
+                                    <p id="firestore-path-label" class="text-[10px] text-gray-400 font-bold uppercase tracking-wider mt-0.5">Multi-Platform Discovery (>0% Only)</p>
                                 </div>
                                 <div id="firestore-status-badge" class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase bg-cyan-950 text-cyan-400 border border-cyan-500/40 animate-pulse self-start sm:self-auto">
                                     Live Sync
                                 </div>
                             </div>
 
-                            <!-- Dynamic Firestore Game Cards -->
                             <div id="firestore-games-grid" class="flex flex-col gap-3 max-h-[550px] overflow-y-auto no-scrollbar">
                                 <div class="p-6 text-center text-gray-500 font-bold uppercase text-xs">Connecting to Firestore Stream...</div>
                             </div>
@@ -546,7 +527,7 @@
 
                 </div>
 
-                <!-- TROPHY CHECKLIST LOG WITH SQUAD COMPARISON -->
+                <!-- TROPHY CHECKLIST LOG WITH FULL SQUAD CROSS-MATCHING -->
                 <section id="mission-log-container" class="glass-card overflow-hidden">
                     <div class="p-6 border-b border-white/5 flex justify-between items-center">
                         <h2 id="checklist-header-text" class="text-white text-lg flex items-center gap-2"><i class="fas fa-list-check text-sky-400"></i> Trophy Checklist</h2>
@@ -559,7 +540,6 @@
             <!-- RIGHT COLUMN -->
             <div class="flex flex-col gap-8">
                 
-                <!-- RECENTLY EARNED TROPHY -->
                 <section id="recent-trophy-card" class="glass-card p-6 border-t-4 border-yellow-500 hidden">
                     <h2 class="text-yellow-500 text-lg flex items-center gap-2 mb-4"><i class="fas fa-trophy"></i> Recently Earned</h2>
                     <div class="flex gap-4 items-center bg-white/5 p-4 rounded-xl cursor-pointer hover:bg-white/10 transition-colors" onclick="openRecentTrophyLightbox()">
@@ -571,17 +551,16 @@
                     </div>
                 </section>
 
-                <!-- COTW TROPHY LODGE (AUTO-HIDES 0 AND -- ENTRIES) -->
+                <!-- COTW TROPHY LODGE (CLEAN 6 CARDS ONLY - HIDES 0 CARDS) -->
                 <section id="cotw-card" class="glass-card p-6 border-b-4 border-emerald-500 text-center">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-emerald-400 text-base flex items-center gap-2"><i class="fas fa-paw"></i> COTW Trophy Lodge</h2>
-                        <span class="text-[9px] font-black uppercase text-blue-400 bg-blue-950 border border-blue-500/30 px-2 py-0.5 rounded">PS5 Ranks</span>
+                        <span class="text-[9px] font-black uppercase text-emerald-400 bg-emerald-950 border border-emerald-500/30 px-2 py-0.5 rounded">Live Sync</span>
                     </div>
 
-                    <!-- Dynamic Grid: Only non-zero, valid harvest numbers show here -->
-                    <div id="cotw-trophy-grid" class="grid grid-cols-3 gap-2 mb-4">
+                    <div id="cotw-trophy-grid" class="grid grid-cols-3 gap-2">
                         <div id="cotw-card-great-one" class="bg-white/5 p-2 rounded-xl border border-white/5 flex flex-col items-center hidden">
-                            <i class="fas fa-crown text-yellow-400 text-sm mb-1"></i>
+                            <i class="fas fa-crown text-yellow-400 text-sm mb-1 animate-pulse"></i>
                             <span class="text-[8px] text-gray-400 uppercase font-black">Great One</span>
                             <span id="cotw-great-one" class="text-sm font-black text-white">0</span>
                         </div>
@@ -611,18 +590,8 @@
                             <span id="cotw-bronze" class="text-sm font-black text-white">0</span>
                         </div>
                     </div>
-
-                    <div id="cotw-empty-msg" class="p-3 bg-white/5 rounded-xl text-[10px] font-bold text-gray-400 uppercase mb-4">
-                        No trophy harvests recorded yet
-                    </div>
-
-                    <div id="cotw-rank-container" class="bg-black/40 p-2.5 rounded-xl border border-emerald-500/20 text-left flex justify-between items-center hidden">
-                        <span class="text-[9px] font-black text-emerald-400 uppercase tracking-widest">Hunter Rank</span>
-                        <span id="cotw-ps-rank-val" class="text-white font-black text-xs">--</span>
-                    </div>
                 </section>
 
-                <!-- PS PLUS CARD -->
                 <section id="ps-plus-card" class="glass-card p-6 border-b-4 border-sky-400 text-center">
                     <h2 class="mb-4 text-[#38BDF8] text-base flex items-center justify-center gap-2"><i class="fab fa-playstation"></i> PS Plus Active</h2>
                     <a href="https://www.playstation.com/en-us/ps-plus/" target="_blank">
@@ -630,7 +599,6 @@
                     </a>
                 </section>
 
-                <!-- NOW PLAYING MUSIC -->
                 <section id="music-section" class="glass-card p-6 text-center border-b-4 border-pink-500">
                     <h2 class="mb-4 text-pink-400 text-base flex items-center justify-center gap-2"><i class="fas fa-headphones"></i> Now Playing</h2>
                     <a id="music-link" href="https://www.last.fm/user/KR888434" target="_blank" class="inline-block">
@@ -638,7 +606,6 @@
                     </a>
                 </section>
 
-                <!-- SUPPORT LINKS & AMAZON -->
                 <section class="glass-card p-6 space-y-4">
                     <h2 class="text-center text-xs font-black text-gray-400 uppercase tracking-widest">Support & Portals</h2>
                     <div id="dynamic-support-links" class="space-y-3"></div>
@@ -654,11 +621,11 @@
         </div>
         
         <div class="text-center mt-12 text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">
-            Sync Target: <span class="text-sky-400">/psn/gamertags/OneLIVIDMAN.json</span> | FS25 Target: <span class="text-lime-400">/fs25.json (farmId2)</span> | NYC 24hr: <span id="sync-time" class="text-gray-300">--</span>
+            Sync Target: <span class="text-sky-400">/psn/gamertags/OneLIVIDMAN.json</span> | FS25 Target: <span class="text-lime-400">/fs25.json (Dumbace Farm)</span> | NYC 24hr: <span id="sync-time" class="text-gray-300">--</span>
         </div>
     </main>
 
-    <!-- [LINE 675]: LIGHTBOX MODAL -->
+    <!-- LIGHTBOX MODAL -->
     <div id="generic-lightbox" onclick="closeGenericLightbox()">
         <div class="lightbox-modal-content" onclick="event.stopPropagation()">
             <div class="p-5 border-b border-white/10 flex justify-between items-center">
@@ -669,11 +636,7 @@
         </div>
     </div>
 
-    <!-- 
-      ========================================================================
-      [LINE 690]: FIREBASE MODULAR ENGINE (FIRESTORE OBSERVER FOR Raymystyro & OneLIVIDMAN)
-      ========================================================================
-    -->
+    <!-- FIREBASE MODULAR ENGINE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
         import { getFirestore, collection, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -692,128 +655,148 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const PRIMARY_USER_ALIAS = "Raymystyro";
-        const SECONDARY_USER_ALIAS = "OneLIVIDMAN";
+        const TARGET_ALIASES = ["Raymystyro", "OneLIVIDMAN", "ray", "raymystyro", "onelividman"];
+        const PLATFORMS = ['playstation', 'pc', 'xbox', 'steam'];
 
-        function isValidStat(val) {
-            if (val === undefined || val === null) return false;
-            const str = String(val).trim();
-            if (str === "" || str === "--" || str === "0" || str === "null" || str === "undefined") return false;
-            const num = Number(str);
-            if (!isNaN(num) && num <= 0) return false;
-            return true;
+        function resolveGameTitle(rawTitle, rawId) {
+            const cleanId = (rawId || '').toLowerCase().trim();
+            const cleanTitle = (rawTitle || '').toLowerCase().trim();
+
+            if (cleanId.includes('wildlands') || cleanTitle.includes('t.c.g.r.wildlands') || cleanTitle.includes('tcgrwildlands')) {
+                return "Tom Clancy's Ghost Recon Wildlands";
+            }
+            if (cleanId === 'cotw' || cleanTitle === 'cotw' || cleanTitle.includes('call of the wild')) {
+                return "TheHUNTER: Call of the Wild";
+            }
+            if (cleanId.includes('sniper') || cleanTitle.includes('sniper elite')) {
+                return "Sniper Elite 5";
+            }
+            return rawTitle || rawId.replace(/[-_]/g, ' ').toUpperCase();
         }
 
-        function subscribePlaystationCOTW(userAlias) {
-            const cotwRankRef = doc(db, "users", userAlias, "platform", "playstation", "progress", "COTW_Ranks");
-            onSnapshot(cotwRankRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    renderCOTWData(docSnap.data());
-                } else if (userAlias === PRIMARY_USER_ALIAS) {
-                    subscribePlaystationCOTW(SECONDARY_USER_ALIAS);
-                } else {
-                    renderCOTWData({});
-                }
-            }, (err) => {
-                console.warn("[FIRESTORE COTW] Listener warn:", err.message);
-                if (userAlias === PRIMARY_USER_ALIAS) subscribePlaystationCOTW(SECONDARY_USER_ALIAS);
+        function subscribePlaystationCOTW() {
+            TARGET_ALIASES.forEach(userId => {
+                PLATFORMS.forEach(platform => {
+                    const updateCards = (data) => {
+                        const extractVal = (keys) => {
+                            for (const key of keys) {
+                                const normKey = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+                                for (const fKey in data) {
+                                    const normFKey = fKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+                                    if (normKey === normFKey) {
+                                        const num = Number(data[fKey]);
+                                        return (!isNaN(num) && num > 0) ? num : 0;
+                                    }
+                                }
+                            }
+                            return 0;
+                        };
+
+                        const setCardVal = (cardId, valId, val) => {
+                            const cardEl = document.getElementById(cardId);
+                            const valEl = document.getElementById(valId);
+                            if (val > 0) {
+                                if (valEl) valEl.innerText = val;
+                                if (cardEl) cardEl.classList.remove('hidden');
+                            } else {
+                                if (cardEl) cardEl.classList.add('hidden');
+                            }
+                        };
+
+                        setCardVal('cotw-card-great-one', 'cotw-great-one', extractVal(['greatone', 'great_one', 'great one']));
+                        setCardVal('cotw-card-albino', 'cotw-albino', extractVal(['albino', 'furtype', 'fur_type', 'rare_fur', 'rarefur']));
+                        setCardVal('cotw-card-diamond', 'cotw-diamond', extractVal(['diamond']));
+                        setCardVal('cotw-card-gold', 'cotw-gold', extractVal(['gold']));
+                        setCardVal('cotw-card-silver', 'cotw-silver', extractVal(['silver']));
+                        setCardVal('cotw-card-bronze', 'cotw-bronze', extractVal(['bronze']));
+                    };
+
+                    const cotwRankRef = doc(db, "users", userId, "platform", platform, "progress", "COTW_Ranks");
+                    onSnapshot(cotwRankRef, (docSnap) => {
+                        if (docSnap.exists()) updateCards(docSnap.data());
+                    });
+
+                    const cotwTrophyRef = doc(db, "users", userId, "platform", platform, "progress", "COTW");
+                    onSnapshot(cotwTrophyRef, (docSnap) => {
+                        if (docSnap.exists()) updateCards(docSnap.data());
+                    });
+                });
             });
         }
 
-        function renderCOTWData(data) {
-            const trophies = [
-                { idVal: 'cotw-great-one', idCard: 'cotw-card-great-one', val: data.greatone || data.great_one || data.GREATONE },
-                { idVal: 'cotw-albino', idCard: 'cotw-card-albino', val: data.albino || data.rare_fur || data.rarefur || data.ALBINO },
-                { idVal: 'cotw-diamond', idCard: 'cotw-card-diamond', val: data.diamond || data.DIAMOND },
-                { idVal: 'cotw-gold', idCard: 'cotw-card-gold', val: data.gold || data.GOLD },
-                { idVal: 'cotw-silver', idCard: 'cotw-card-silver', val: data.silver || data.SILVER },
-                { idVal: 'cotw-bronze', idCard: 'cotw-card-bronze', val: data.bronze || data.BRONZE }
-            ];
+        function subscribeFirestoreProgress() {
+            const activeDocs = new Map();
 
-            let visibleCount = 0;
-
-            trophies.forEach(t => {
-                const valEl = document.getElementById(t.idVal);
-                const cardEl = document.getElementById(t.idCard);
-                if (isValidStat(t.val)) {
-                    if (valEl) valEl.innerText = t.val;
-                    if (cardEl) cardEl.classList.remove('hidden');
-                    visibleCount++;
-                } else {
-                    if (cardEl) cardEl.classList.add('hidden');
-                }
-            });
-
-            const emptyMsg = document.getElementById('cotw-empty-msg');
-            if (emptyMsg) {
-                emptyMsg.classList.toggle('hidden', visibleCount > 0);
-            }
-
-            const rankVal = data.rank || data.level || data.currentRank;
-            const rankContainer = document.getElementById('cotw-rank-container');
-            const rankValEl = document.getElementById('cotw-ps-rank-val');
-
-            if (isValidStat(rankVal) && rankVal !== "0") {
-                if (rankValEl) rankValEl.innerText = rankVal;
-                if (rankContainer) rankContainer.classList.remove('hidden');
-            } else {
-                if (rankContainer) rankContainer.classList.add('hidden');
-            }
-        }
-
-        function subscribeFirestoreProgress(userAlias) {
-            const progressRef = collection(db, "users", userAlias, "platform", "playstation", "progress");
-            return onSnapshot(progressRef, (snapshot) => {
+            const renderGrid = () => {
                 const gamesGrid = document.getElementById("firestore-games-grid");
-                const pathLabel = document.getElementById("firestore-path-label");
                 if (!gamesGrid) return;
 
-                if (pathLabel) {
-                    pathLabel.innerText = `Observer: /users/${userAlias}/platform/playstation/progress`;
-                }
-
-                if (snapshot.empty) {
-                    if (userAlias === PRIMARY_USER_ALIAS) {
-                        subscribeFirestoreProgress(SECONDARY_USER_ALIAS);
-                        return;
-                    }
-                    gamesGrid.innerHTML = `<div class="p-6 text-center text-gray-500 font-bold uppercase text-xs">No active PlayStation progress recorded in Firestore.</div>`;
+                if (activeDocs.size === 0) {
+                    gamesGrid.innerHTML = `<div class="p-6 text-center text-gray-500 font-bold uppercase text-xs">No active progress targets above 0%.</div>`;
                     return;
                 }
 
                 let html = "";
-                snapshot.forEach((docSnap) => {
-                    const gameId = docSnap.id;
-                    const data = docSnap.data();
+                activeDocs.forEach((item) => {
+                    const { gameId, platform, userId, data } = item;
                     if (gameId.toLowerCase() === 'cotw_ranks') return;
 
-                    const title = data.title || data.gameName || gameId.replace(/-/g, ' ').toUpperCase();
-                    let completed = data.completedItems || data.earnedTrophies || 0;
-                    let total = data.totalItems || data.totalTrophies || 0;
-                    let percent = data.progress || data.percent || 0;
+                    const title = resolveGameTitle(data.title || data.gameName, gameId);
+                    let completed = 0;
+                    let total = 0;
+                    let percent = 0;
 
                     if (Array.isArray(data.progress)) {
                         total = data.progress.length;
-                        completed = data.progress.filter(item => item && (item.collected || item.completed || item.earned)).length;
+                        completed = data.progress.filter(i => i && (i.collected || i.completed || i.earned || i.done)).length;
                         percent = total > 0 ? Math.round((completed / total) * 100) : 0;
+                    } else if (data.skills && typeof data.skills === 'object') {
+                        let filled = 0;
+                        let maxSlots = 0;
+                        Object.keys(data.skills).forEach(cat => {
+                            const catObj = data.skills[cat];
+                            if (typeof catObj === 'object') {
+                                Object.keys(catObj).forEach(sk => {
+                                    filled += (catObj[sk].current || 0);
+                                    maxSlots += 4;
+                                });
+                            }
+                        });
+                        completed = filled;
+                        total = maxSlots;
+                        percent = total > 0 ? Math.round((completed / total) * 100) : (data.percent || 0);
+                    } else if (typeof data.progress === 'number') {
+                        percent = data.progress;
+                        completed = data.completedItems || data.earnedTrophies || data.currentValue || 0;
+                        total = data.totalItems || data.totalTrophies || data.targetValue || 0;
+                    } else {
+                        percent = data.percent !== undefined ? data.percent : (data.stats?.playerLevel ? Math.round((data.stats.playerLevel / 30) * 100) : 0);
+                        completed = data.completedItems || data.earnedTrophies || data.stats?.playerLevel || 0;
+                        total = data.totalItems || data.totalTrophies || 30;
                     }
 
+                    if (percent <= 0 && completed === 0) return;
+
                     const cleanGameName = encodeURIComponent(title.replace(/®|™/g, ''));
+                    const ratioDisplay = total > 0 ? `${completed}/${total}` : `${percent}%`;
 
                     html += `
                         <div class="bg-black/40 p-4 rounded-xl border border-white/10 flex flex-col justify-between space-y-3">
                             <div>
-                                <div class="flex justify-between items-start mb-1">
+                                <div class="flex justify-between items-start mb-1 gap-2">
                                     <h3 class="font-black text-white text-xs uppercase truncate max-w-[200px]">${title}</h3>
-                                    <span class="text-[8px] font-black text-cyan-400 bg-cyan-950 px-1.5 py-0.5 rounded uppercase">${gameId}</span>
+                                    <div class="flex gap-1 flex-wrap justify-end">
+                                        <span class="text-[8px] font-black text-cyan-400 bg-cyan-950 px-1.5 py-0.5 rounded uppercase border border-cyan-500/30">${platform}</span>
+                                        <span class="text-[8px] font-black text-lime-400 bg-lime-950 px-1.5 py-0.5 rounded uppercase border border-lime-500/30">${userId}</span>
+                                    </div>
                                 </div>
-                                <p class="text-[9px] text-gray-400 font-bold uppercase">Status: Live Syncing</p>
+                                <p class="text-[9px] text-gray-400 font-bold uppercase">Doc: ${gameId}</p>
                             </div>
 
                             <div class="space-y-1">
                                 <div class="flex justify-between text-[11px] font-black uppercase">
                                     <span class="text-cyan-400">Objectives</span>
-                                    <span class="text-white">${percent}% (${completed}/${total})</span>
+                                    <span class="text-white">${percent}% (${ratioDisplay})</span>
                                 </div>
                                 <div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${percent}%"></div></div>
                             </div>
@@ -829,26 +812,46 @@
                 });
 
                 gamesGrid.innerHTML = html || `<div class="p-6 text-center text-gray-500 font-bold uppercase text-xs">No active progress targets above 0%.</div>`;
-            }, (err) => {
-                console.warn("[FIRESTORE PROGRESS] Observer error:", err.message);
-                if (userAlias === PRIMARY_USER_ALIAS) subscribeFirestoreProgress(SECONDARY_USER_ALIAS);
+            };
+
+            const unsubs = [];
+            TARGET_ALIASES.forEach(userId => {
+                PLATFORMS.forEach(platform => {
+                    const progressRef = collection(db, "users", userId, "platform", platform, "progress");
+                    const unsub = onSnapshot(progressRef, (snapshot) => {
+                        snapshot.forEach((docSnap) => {
+                            const key = `${userId}_${platform}_${docSnap.id}`;
+                            activeDocs.set(key, { gameId: docSnap.id, platform, userId, data: docSnap.data() });
+                        });
+                        renderGrid();
+                    }, (err) => console.warn(`[FIRESTORE] ${userId} ${platform} observer notice:`, err.message));
+                    unsubs.push(unsub);
+                });
             });
+
+            return () => unsubs.forEach(unsub => unsub());
         }
 
-        subscribePlaystationCOTW(PRIMARY_USER_ALIAS);
-        subscribeFirestoreProgress(PRIMARY_USER_ALIAS);
+        subscribePlaystationCOTW();
+        let unsubProgress = subscribeFirestoreProgress();
+
+        document.addEventListener("visibilitychange", () => {
+            if (!document.hidden) {
+                if (unsubProgress) unsubProgress();
+                unsubProgress = subscribeFirestoreProgress();
+            }
+        });
     </script>
 
-    <!-- 
-      ========================================================================
-      [LINE 825]: REALTIME DATABASE & FS25 (FARMID2) / SQUAD SYNCHRONIZER
-      ========================================================================
-    -->
+    <!-- REALTIME DATABASE & FS25 (DUMBACE FARM) / SQUAD SYNCHRONIZER -->
     <script>
-        // RTDB Endpoints (Primary GamerTag URL, Fallback Root URL, & FS25 Server Node)
         const ONELIVIDMAN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/OneLIVIDMAN.json";
         const ROOT_PSN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn.json";
         const FS25_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
+        const RTDB_MENU_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
+
+        const WILDHORSE_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/WildHorse_Spirit.json";
+        const DESDEMONA_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/DesdemonaTiger.json";
 
         let currentTrophyData = [];
         let lastEarnedTrophyData = null;
@@ -871,42 +874,171 @@
             return str.toLowerCase().replace(/®|™/g, "").replace(/[^a-z0-9]/g, "").trim();
         }
 
-        // --- FETCH FS25 SERVER TELEMETRY SPECIFICALLY FOR RAY'S FARM (farmId2) ---
+        // --- DYNAMIC MULTI-FOLDER FIREBASE MENU ENGINE (/utm_links) ---
+        async function buildRTDBMenu() {
+            try {
+                const res = await fetch(`${RTDB_MENU_URL}?t=${Date.now()}`);
+                if (!res.ok) return;
+                const rootData = await res.json();
+                const menuContainer = document.getElementById('nav-links');
+                if (!rootData || !menuContainer) return;
+
+                menuContainer.innerHTML = "";
+
+                const sanitizeImg = (url) => {
+                    if (!url || typeof url !== 'string') return '';
+                    let clean = url.trim();
+                    if (clean.startsWith('//')) return `https:${clean}`;
+                    if (clean.startsWith('http://') || clean.startsWith('https://') || clean.startsWith('data:image/')) return clean;
+                    return '';
+                };
+
+                const keys = Object.keys(rootData).sort((a, b) => {
+                    if (a.toLowerCase() === 'home') return -1;
+                    if (b.toLowerCase() === 'home') return 1;
+                    return a.localeCompare(b);
+                });
+
+                keys.forEach(key => {
+                    const nodeVal = rootData[key];
+                    if (!nodeVal) return;
+
+                    const isDirectLink = typeof nodeVal === 'string' || (typeof nodeVal === 'object' && nodeVal.url && !nodeVal[0] && !nodeVal['0']);
+
+                    if (isDirectLink) {
+                        const url = typeof nodeVal === 'string' ? nodeVal : nodeVal.url;
+                        const label = (typeof nodeVal === 'object' && (nodeVal.title || nodeVal.group || nodeVal.name)) || key.replace(/_/g, ' ');
+                        const img = sanitizeImg(typeof nodeVal === 'object' ? (nodeVal.image || nodeVal.img || nodeVal.thumbnail || '') : '');
+
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.className = "nav-link";
+                        a.target = "_blank";
+                        a.rel = "noopener noreferrer";
+
+                        let thumbHTML = img ? `<img src="${img}" class="nav-thumb mr-2" alt="${label}" onerror="this.style.display='none'">` : '';
+                        a.innerHTML = `${thumbHTML}<span>${label}</span>`;
+                        menuContainer.appendChild(a);
+                    } else if (typeof nodeVal === 'object') {
+                        const dropdown = document.createElement("div");
+                        dropdown.className = "dropdown";
+
+                        const folderTitle = key.replace(/_/g, ' ');
+                        dropdown.innerHTML = `<span class="nav-link">${folderTitle} <i class="fas fa-chevron-down ml-1 text-[8px]"></i></span>`;
+
+                        const dropContent = document.createElement("div");
+                        dropContent.className = "dropdown-content";
+
+                        const childKeys = Object.keys(nodeVal).sort((a, b) => {
+                            const rowA = (nodeVal[a] && typeof nodeVal[a].rowNumber === 'number') ? nodeVal[a].rowNumber : 999;
+                            const rowB = (nodeVal[b] && typeof nodeVal[b].rowNumber === 'number') ? nodeVal[b].rowNumber : 999;
+                            return rowA - rowB;
+                        });
+
+                        childKeys.forEach(cKey => {
+                            const item = nodeVal[cKey];
+                            if (!item) return;
+
+                            const subUrl = typeof item === 'string' ? item : (item.url || item.link || '');
+                            const subLabel = (typeof item === 'object' && (item.title || item.name || item.group)) || cKey;
+                            const subImg = sanitizeImg(typeof item === 'object' ? (item.image || item.img || '') : '');
+
+                            if (subUrl) {
+                                const subLink = document.createElement("a");
+                                subLink.href = subUrl;
+                                subLink.target = "_blank";
+                                subLink.rel = "noopener noreferrer";
+
+                                let thumbHTML = subImg ? `<img src="${subImg}" class="nav-thumb" alt="${subLabel}" onerror="this.style.display='none'">` : '<i class="fas fa-link text-xs text-sky-400"></i>';
+                                subLink.innerHTML = `${thumbHTML}<span>${subLabel}</span>`;
+                                dropContent.appendChild(subLink);
+                            }
+                        });
+
+                        dropdown.appendChild(dropContent);
+                        menuContainer.appendChild(dropdown);
+                    }
+                });
+
+            } catch (err) {
+                console.warn("[RTDB MENU] Failed loading /utm_links:", err.message);
+            }
+        }
+
         async function updateFS25Telemetry() {
             try {
                 const res = await fetch(`${FS25_RTDB_URL}?t=${Date.now()}`);
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                if (!data) return;
+                const rootData = await res.json();
+                if (!rootData) return;
 
-                // Target Ray's specific farmId2 node with fallback chains
-                const farmData = data.farms?.farmId2 || 
-                                 data.farms?.[2] || 
-                                 data.farms?.farm2 || 
-                                 data.farmId2 || 
-                                 data.farms?.Ray || 
-                                 data.farms?.OneLIVIDMAN || 
-                                 data;
+                let farmData = null;
+                let matchedFarmId = null;
 
-                const farmName = farmData.farmName || farmData.name || "Ray's Farm (Farm 2)";
-                const money = farmData.money !== undefined ? `$${Number(farmData.money).toLocaleString()}` : "$0";
+                const searchList = [rootData.farms, rootData.farm, rootData].filter(Boolean);
+                for (const container of searchList) {
+                    if (typeof container === 'object') {
+                        for (const [key, val] of Object.entries(container)) {
+                            if (val && typeof val === 'object') {
+                                const name = String(val.farmName || val.name || val['@name'] || key || '').toLowerCase();
+                                if (name.includes('dumbace')) {
+                                    farmData = val;
+                                    matchedFarmId = val.farmId !== undefined ? val.farmId : (val['@farmId'] !== undefined ? val['@farmId'] : (val.id !== undefined ? val.id : key));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if (farmData) break;
+                }
+
+                if (!farmData) {
+                    farmData = rootData.farms?.farmId2 || rootData.farms?.[2] || rootData.farmId2 || rootData;
+                    matchedFarmId = 2;
+                }
+
+                const farmName = farmData.farmName || farmData.name || farmData['@name'] || "Dumbace Farm";
+                const moneyNum = Number(farmData.money || farmData.accountBalance || farmData.funds || farmData['@money'] || 0);
+                const money = moneyNum > 0 ? `$${moneyNum.toLocaleString()}` : "$0";
                 
-                const vehicles = convertFirebaseArray(farmData.vehicles || farmData.fleet || farmData.equipment || farmData.machines);
-                const fields = convertFirebaseArray(farmData.fields || farmData.farmland || farmData.farmlands || farmData.ownedFields);
+                let allVehicles = [];
+                if (farmData.vehicles || farmData.fleet || farmData.equipment) {
+                    allVehicles = allVehicles.concat(convertFirebaseArray(farmData.vehicles || farmData.fleet || farmData.equipment));
+                }
+                const topLevelVehicles = convertFirebaseArray(rootData.vehicles || rootData.fleet || rootData.equipment || rootData.machines);
+                if (topLevelVehicles.length > 0) {
+                    const filteredTop = topLevelVehicles.filter(v => {
+                        const vFarmId = v.farmId !== undefined ? v.farmId : (v['@farmId'] !== undefined ? v['@farmId'] : (v.ownerFarmId !== undefined ? v.ownerFarmId : v.farm));
+                        return String(vFarmId) === String(matchedFarmId) || String(v.farmName || '').toLowerCase().includes('dumbace');
+                    });
+                    if (filteredTop.length > 0) allVehicles = filteredTop;
+                }
+
+                let allFields = [];
+                if (farmData.fields || farmData.farmland || farmData.farmlands) {
+                    allFields = allFields.concat(convertFirebaseArray(farmData.fields || farmData.farmland || farmData.farmlands));
+                }
+                const topLevelFarmlands = convertFirebaseArray(rootData.farmlands || rootData.farmland || rootData.fields);
+                if (topLevelFarmlands.length > 0) {
+                    const filteredFields = topLevelFarmlands.filter(f => {
+                        const fFarmId = f.farmId !== undefined ? f.farmId : (f['@farmId'] !== undefined ? f['@farmId'] : (f.ownerFarmId !== undefined ? f.ownerFarmId : f.farm));
+                        return String(fFarmId) === String(matchedFarmId) || String(f.farmName || '').toLowerCase().includes('dumbace');
+                    });
+                    if (filteredFields.length > 0) allFields = filteredFields;
+                }
 
                 document.getElementById('fs25-farm-name').innerText = farmName;
                 document.getElementById('fs25-money').innerText = money;
-                document.getElementById('fs25-fields-count').innerText = fields.length;
-                document.getElementById('fs25-vehicles-count').innerText = vehicles.length;
-                document.getElementById('fs25-fleet-subtitle').innerText = `${vehicles.length} Units`;
-                document.getElementById('fs25-fields-subtitle').innerText = `${fields.length} Parcels`;
+                document.getElementById('fs25-fields-count').innerText = allFields.length;
+                document.getElementById('fs25-vehicles-count').innerText = allVehicles.length;
+                document.getElementById('fs25-fleet-subtitle').innerText = `${allVehicles.length} Units`;
+                document.getElementById('fs25-fields-subtitle').innerText = `${allFields.length} Parcels`;
 
-                // Render Fleet Equipment Cards
                 const fleetContainer = document.getElementById('fs25-fleet-container');
                 if (fleetContainer) {
-                    if (vehicles.length > 0) {
-                        fleetContainer.innerHTML = vehicles.map(v => {
-                            const name = v.name || v.brand || v.type || v.title || "Farm Implement";
+                    if (allVehicles.length > 0) {
+                        fleetContainer.innerHTML = allVehicles.map(v => {
+                            const name = v.name || v.brand || v.type || v.title || v['@name'] || "Farm Implement";
                             const category = v.category || v.group || (v.isTractor ? "Tractor" : "Machinery");
                             const fillType = v.fillType || v.crop || v.contents || null;
                             const operatingHours = v.operatingHours || v.hours || v.ageHours || null;
@@ -926,16 +1058,15 @@
                             `;
                         }).join('');
                     } else {
-                        fleetContainer.innerHTML = `<div class="p-3 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No equipment registered for Farm 2.</div>`;
+                        fleetContainer.innerHTML = `<div class="p-3 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No equipment registered for Dumbace Farm.</div>`;
                     }
                 }
 
-                // Render Fields Overview
                 const fieldsContainer = document.getElementById('fs25-fields-container');
                 if (fieldsContainer) {
-                    if (fields.length > 0) {
-                        fieldsContainer.innerHTML = fields.map(f => {
-                            const fId = f.id || f.fieldId || f.name || "Field";
+                    if (allFields.length > 0) {
+                        fieldsContainer.innerHTML = allFields.map(f => {
+                            const fId = f.id || f.fieldId || f.name || f['@id'] || "Field";
                             const crop = f.crop || f.fruitType || f.status || "Seeded";
                             const area = f.area || f.size || (f.hectares ? `${f.hectares} ha` : null);
 
@@ -948,20 +1079,15 @@
                             `;
                         }).join('');
                     } else {
-                        fieldsContainer.innerHTML = `<div class="p-2.5 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No active fields assigned to Farm 2.</div>`;
+                        fieldsContainer.innerHTML = `<div class="p-2.5 bg-white/5 rounded-xl text-center text-xs font-bold text-gray-500 uppercase col-span-full">No active fields assigned to Dumbace Farm.</div>`;
                     }
                 }
 
             } catch (err) {
-                console.warn("[FS25 TELEMETRY] Telemetry fetch skipped or pending:", err.message);
-                const statusPill = document.getElementById('fs25-status-pill');
-                if (statusPill) statusPill.className = "fs25-badge border-gray-500/30 text-gray-400";
-                const statusText = document.getElementById('fs25-status-text');
-                if (statusText) statusText.innerText = "Sync Standby";
+                console.warn("[FS25 TELEMETRY] Fetch error:", err.message);
             }
         }
 
-        // --- FETCH DEDICATED ONELIVIDMAN / Raymystyro PAYLOAD ---
         async function updateHub() {
             try {
                 let user = null;
@@ -970,30 +1096,43 @@
                     const rootRes = await fetch(`${ROOT_PSN_RTDB_URL}?t=${Date.now()}`);
                     if (rootRes.ok) {
                         const rootData = await rootRes.json();
-                        globalSquadData = rootData?.gamertags || {};
+                        const combinedSquad = {};
+                        if (rootData?.gamertags && typeof rootData.gamertags === 'object') {
+                            Object.assign(combinedSquad, rootData.gamertags);
+                        }
+                        if (rootData?.users && typeof rootData.users === 'object') {
+                            Object.assign(combinedSquad, rootData.users);
+                        }
+                        globalSquadData = combinedSquad;
                         
                         user = globalSquadData?.OneLIVIDMAN || 
                                globalSquadData?.onelividman || 
                                globalSquadData?.Raymystyro || 
                                globalSquadData?.raymystyro || 
-                               rootData?.users?.ray || 
-                               rootData?.users?.Raymystyro || 
-                               rootData?.users?.OneLIVIDMAN || null;
+                               globalSquadData?.ray || null;
                     }
                 } catch (e) {
-                    console.warn("[RTDB] Root squad fetch failed, attempting direct path:", e.message);
+                    console.warn("[RTDB] Root squad fetch notice:", e.message);
+                }
+
+                try {
+                    const [whRes, dtRes] = await Promise.all([
+                        fetch(`${WILDHORSE_RTDB_URL}?t=${Date.now()}`).then(r => r.ok ? r.json() : null),
+                        fetch(`${DESDEMONA_RTDB_URL}?t=${Date.now()}`).then(r => r.ok ? r.json() : null)
+                    ]);
+                    if (whRes) globalSquadData["WildHorse_Spirit"] = whRes;
+                    if (dtRes) globalSquadData["DesdemonaTiger"] = dtRes;
+                } catch (err) {
+                    console.warn("[RTDB] Direct squad endpoints notice:", err.message);
                 }
 
                 if (!user) {
                     const directRes = await fetch(`${ONELIVIDMAN_RTDB_URL}?t=${Date.now()}`);
-                    if (directRes.ok) {
-                        user = await directRes.json();
-                    }
+                    if (directRes.ok) user = await directRes.json();
                 }
 
                 if (!user) return;
 
-                // Health & Handshake State
                 const hDot = document.getElementById('health-dot');
                 const hVal = document.getElementById('health-value');
                 const aBox = document.getElementById('system-alerts-container');
@@ -1009,21 +1148,18 @@
                     if (aBox) aBox.classList.add('hidden');
                 }
 
-                // Core Identifiers
                 const displayAdmin = document.getElementById('display-admin-name');
                 if (displayAdmin) displayAdmin.innerText = user.onlineId || "OneLIVIDMAN";
 
                 const mainAv = document.getElementById('main-avatar');
                 if (mainAv && user.avatar) mainAv.src = user.avatar;
 
-                // PS Plus Badge
                 const isPlus = !!user.plus;
                 const plusBadge = document.getElementById('ps-plus-indicator');
                 const plusCard = document.getElementById('ps-plus-card');
                 if (plusBadge) plusBadge.style.display = isPlus ? 'block' : 'none';
                 if (plusCard) plusCard.style.display = isPlus ? 'block' : 'none';
 
-                // Metadata
                 const bioEl = document.getElementById('profile-bio');
                 if (bioEl) bioEl.innerText = user.bio || "Official Pack Member Profile";
 
@@ -1042,7 +1178,6 @@
                 const gamesPlayedEl = document.getElementById('games-played-count');
                 if (gamesPlayedEl) gamesPlayedEl.innerText = user.gamesPlayed || "0";
 
-                // Online & Broadcast Presence
                 const isOnline = !!user.online;
                 const sLabel = document.getElementById('online-status-label');
                 const gSub = document.getElementById('current-game-sub');
@@ -1054,7 +1189,6 @@
                     if (actLabel) actLabel.innerText = "Activity: " + (user.currentGameActivity || (isOnline ? "Active" : "Idle"));
                 }
 
-                // Trophy Summary
                 const summary = user.trophySummary || {};
                 const tTotal = document.getElementById('trophy-total');
                 if (tTotal) tTotal.innerText = (summary.total || 0).toLocaleString();
@@ -1063,7 +1197,6 @@
                 document.getElementById('silver-count').innerText = summary.silver || 0;
                 document.getElementById('bronze-count').innerText = summary.bronze || 0;
 
-                // Active Hunt
                 const hunt = user.activeHunt;
                 const recentGames = convertFirebaseArray(user.recentGames);
 
@@ -1100,47 +1233,87 @@
                     document.getElementById('active-game-progress-fill').style.width = `${pct}%`;
                     document.getElementById('active-game-ratio').innerText = hunt.velocity?.completionStatus || "--/--";
 
-                    // Squad comparison engine
                     const activeGameNormalized = normalizeGameTitle(activeGameTitle);
                     const squadMembersWithGame = [];
 
                     Object.entries(globalSquadData).forEach(([gtag, playerObj]) => {
-                        if (gtag.toLowerCase() === 'onelividman' || gtag.toLowerCase() === 'raymystyro' || gtag.toLowerCase() === 'ray') return;
+                        const lowTag = gtag.toLowerCase();
+                        if (lowTag === 'onelividman' || lowTag === 'raymystyro' || lowTag === 'ray') return;
 
-                        const pRecent = convertFirebaseArray(playerObj.recentGames);
-                        const pHunt = playerObj.activeHunt;
+                        const pRecent = convertFirebaseArray(playerObj?.recentGames);
+                        const pHunt = playerObj?.activeHunt;
+                        const pLib = convertFirebaseArray(playerObj?.fullLibrary);
+                        const pTrophies = convertFirebaseArray(playerObj?.trophies);
                         
-                        let matchedGameRef = pRecent.find(g => normalizeGameTitle(g.name) === activeGameNormalized);
                         let matchedTrophies = [];
+                        let hasGame = false;
 
                         if (pHunt && normalizeGameTitle(pHunt.title) === activeGameNormalized) {
+                            hasGame = true;
                             matchedTrophies = convertFirebaseArray(pHunt.trophies);
                         }
 
-                        if (matchedGameRef || matchedTrophies.length > 0) {
+                        if (!hasGame) {
+                            const foundRec = pRecent.find(g => normalizeGameTitle(g?.name || g?.title) === activeGameNormalized);
+                            if (foundRec) {
+                                hasGame = true;
+                                if (foundRec.trophies) matchedTrophies = convertFirebaseArray(foundRec.trophies);
+                            }
+                        }
+
+                        if (!hasGame) {
+                            const foundLib = pLib.find(g => normalizeGameTitle(g?.name || g?.title || g?.trophyTitleName) === activeGameNormalized);
+                            if (foundLib) {
+                                hasGame = true;
+                                if (foundLib.trophies) matchedTrophies = convertFirebaseArray(foundLib.trophies);
+                            }
+                        }
+
+                        if (hasGame || pTrophies.length > 0) {
+                            const allUserTrophies = matchedTrophies.length > 0 ? matchedTrophies : pTrophies;
                             squadMembersWithGame.push({
-                                gamerTag: gtag,
-                                trophies: matchedTrophies,
-                                gameRef: matchedGameRef
+                                gamerTag: playerObj?.onlineId || gtag,
+                                trophies: allUserTrophies
                             });
                         }
                     });
 
-                    // Render Trophy Checklist
                     const checklist = document.getElementById('trophy-checklist-container');
                     if (checklist && currentTrophyData.length > 0) {
                         checklist.innerHTML = currentTrophyData.map((t, idx) => {
-                            let squadStatusHtml = "";
+                            let progressCountHtml = "";
+                            const isEarned = t.earned === true;
                             
+                            if (isEarned) {
+                                const tVal = t.targetValue || 100;
+                                progressCountHtml = `<div class="text-[10px] font-black text-green-400 uppercase tracking-widest mt-1">Progress: 100% (${tVal} / ${tVal})</div>`;
+                            } else if (t.targetValue && t.targetValue > 1) {
+                                const cVal = t.currentValue || 0;
+                                const tVal = t.targetValue;
+                                const currentPct = Math.round((cVal / tVal) * 100);
+                                if (currentPct > 0) {
+                                    progressCountHtml = `<div class="text-[10px] font-black text-sky-400 uppercase tracking-widest mt-1">Progress: ${currentPct}% (${cVal} / ${tVal})</div>`;
+                                }
+                            }
+
+                            let squadStatusHtml = "";
                             if (squadMembersWithGame.length > 0) {
+                                const normalizeTrophyName = (str) => (str || '').toLowerCase().replace(/[^a-z0-9]/g, '').trim();
+                                const currentTrophyNorm = normalizeTrophyName(t.name);
+                                const currentId = t.trophyId !== undefined ? t.trophyId : t.id;
+
                                 squadStatusHtml = `
                                     <div class="flex flex-wrap items-center gap-1.5 mt-1.5 pt-1 border-t border-white/5">
                                         <span class="text-[8px] font-black uppercase text-gray-500 mr-1">Squad Presence:</span>
                                         ${squadMembersWithGame.map(member => {
                                             let hasEarned = false;
                                             if (member.trophies.length > 0) {
-                                                const matchT = member.trophies.find(mt => mt.trophyId === t.trophyId || (mt.name && t.name && mt.name.toLowerCase() === t.name.toLowerCase()));
-                                                if (matchT && matchT.earned) hasEarned = true;
+                                                const matchT = member.trophies.find(mt => {
+                                                    const mId = mt.trophyId !== undefined ? mt.trophyId : mt.id;
+                                                    const mName = normalizeTrophyName(mt.name || mt.trophyName || mt.title);
+                                                    return (currentId && mId && String(currentId) === String(mId)) || (currentTrophyNorm && mName && currentTrophyNorm === mName);
+                                                });
+                                                if (matchT && (matchT.earned === true || matchT.unlocked === true)) hasEarned = true;
                                             }
                                             
                                             return `
@@ -1156,14 +1329,15 @@
 
                             return `
                                 <div class="trophy-row" onclick="openTrophyDetailModal(currentTrophyData[${idx}], '${(activeGameTitle || '').replace(/'/g, "\\'")}')">
-                                    <img src="${t.icon}" class="trophy-icon-sq ${!t.earned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://via.placeholder.com/50x50/202024/38BDF8?text=🏆'">
+                                    <img src="${t.icon}" class="trophy-icon-sq ${!isEarned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://via.placeholder.com/50x50/202024/38BDF8?text=🏆'">
                                     <div class="min-w-0 flex-1">
-                                        <div class="trophy-title-text truncate text-xs ${t.earned ? 'text-green-400' : 'text-sky-400'}">${t.name}</div>
+                                        <div class="trophy-title-text truncate text-xs ${isEarned ? 'text-green-400' : 'text-sky-400'}">${t.name}</div>
                                         <div class="text-[10px] text-gray-400 truncate">${t.description || 'Trophy Objective'}</div>
+                                        ${progressCountHtml}
                                         ${squadStatusHtml}
                                     </div>
                                     <div class="text-right">
-                                        <span class="text-[9px] font-black uppercase ${t.earned ? 'text-green-400' : 'text-gray-500'}">${t.earned ? 'EARNED' : 'LOCKED'}</span>
+                                        <span class="text-[9px] font-black uppercase ${isEarned ? 'text-green-400' : 'text-gray-500'}">${isEarned ? 'EARNED' : 'LOCKED'}</span>
                                     </div>
                                 </div>
                             `;
@@ -1171,7 +1345,6 @@
                     }
                 }
 
-                // Recent Games Grid
                 const recentContainer = document.getElementById('recent-games-container');
                 if (recentContainer && recentGames.length > 0) {
                     recentContainer.innerHTML = recentGames.slice(0, 6).map(g => `
@@ -1185,7 +1358,6 @@
                     `).join('');
                 }
 
-                // Standalone Recent Trophy
                 const recentTrophies = convertFirebaseArray(user.mostRecentTrophies);
                 const recCard = document.getElementById('recent-trophy-card');
                 if (recentTrophies.length > 0) {
@@ -1203,7 +1375,6 @@
             }
         }
 
-        // Twitch Integration
         async function fetchLiveTwitch() {
             try {
                 const user = "raymystyro";
@@ -1268,12 +1439,13 @@
             if (lb) lb.style.display = 'none';
         }
 
-        // Initialize Engine & Polling Loops
+        buildRTDBMenu();
         updateHub();
         updateFS25Telemetry();
         fetchLiveTwitch();
         refreshMusic();
 
+        setInterval(buildRTDBMenu, 60000);
         setInterval(updateHub, 30000);
         setInterval(updateFS25Telemetry, 45000);
         setInterval(fetchLiveTwitch, 60000);
