@@ -1,12 +1,12 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-01 08:35:25 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-01 08:44:00 (EDT - 24hr New York Time)
  * Project: entertainment-71888 (/fs25 RTDB Node)
- * Description: Smart FS25 Dynamic Savegame Ingestion Engine (Clean JSON Structure).
+ * Description: Smart FS25 Dynamic Savegame Ingestion Engine.
+ *              - Prioritizes Live Web Feed active savegame slot detection.
  *              - Dual HTTP/HTTPS support.
- *              - Forces full sync on manual triggers or config flag.
- *              - Eliminates raw top-level strings and structures by Farm ID.
- *              - Isolates raw XML strings into /fs25/raw_xml/.
+ *              - Structures items by Farm ID.
+ *              - Integrates GitHub images and /FS25_Mods_Info catalog.
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
  * ============================================================================ */
 
@@ -283,6 +283,7 @@ async function downloadFtpFileToString(client, remotePath) {
   return Buffer.concat(chunks).toString('utf-8');
 }
 
+// Live stats API check (Reads the real active slot from port 9050 feed)
 async function fetchStatsApi() {
   try {
     const controller = new AbortController();
@@ -306,7 +307,11 @@ async function fetchStatsApi() {
           if (playerMatches) players = playerMatches.length;
         }
 
-        const slotMatch = clean.match(/savegame="(\d+)"/i) || clean.match(/slot="(\d+)"/i) || clean.match(/savegameSlot="(\d+)"/i);
+        // Live active savegame slot attribute matching
+        const slotMatch = clean.match(/savegame="(\d+)"/i) || 
+                          clean.match(/savegameSlot="(\d+)"/i) || 
+                          clean.match(/slot="(\d+)"/i) || 
+                          clean.match(/<savegame>(\d+)<\/savegame>/i);
         if (slotMatch) activeSlot = slotMatch[1];
 
         const mapMatch = clean.match(/mapTitle="([^"]+)"/i) || clean.match(/mapName="([^"]+)"/i);
@@ -577,9 +582,13 @@ async function buildCleanStructuredSave(rawFiles, modsCatalog, rawConfigXml) {
 
 // SECTION 8: SMART PIPELINE EXECUTION
 async function runPipeline() {
-  console.log("📡 [1/4] Running Pre-Flight Check against Web Stats API...");
+  console.log("📡 [1/4] Querying Dedicated Server Stats API for Live Save Slot...");
   const statsData = await fetchStatsApi();
   const activePlayers = statsData.players;
+
+  // PRIORITY 1: Active save slot determined by the live port 9050 feed
+  let activeSlot = statsData.activeSlot || process.env.DEFAULT_SAVE_SLOT || "3";
+  console.log(`🎯 Live Web Feed reports Active Savegame Slot: [ Slot #${activeSlot} ]`);
 
   console.log("📦 Loading reference catalogue from /FS25_Mods_Info...");
   const modsCatalog = await fetchModsCatalog();
@@ -595,11 +604,11 @@ async function runPipeline() {
 
   console.log(`📊 Active Players: ${activePlayers} | Force Sync: ${FORCE_SYNC} | Hours since sync: ${hoursSinceLastFullSync.toFixed(1)}h`);
 
-  // If server is idle, not manually forced, and synced within 24 hours, perform heartbeat only
   if (!FORCE_SYNC && activePlayers === 0 && hoursSinceLastFullSync < 24 && lastSyncMs > 0) {
     console.log("💤 Server Idle & recently synced. Updating live status only.");
     await db.ref('fs25').update({
       activePlayers: 0,
+      activeSaveSlot: String(activeSlot),
       lastUpdated: new Date().toISOString(),
       liveMapImage: MAP_IMAGE_URL
     });
@@ -608,10 +617,9 @@ async function runPipeline() {
 
   console.log("🚀 Executing Full Savegame & Mod Sync...");
 
-  let detectedSlot = statsData.activeSlot || null;
-
   const masterPayload = {
     activePlayers: activePlayers,
+    activeSaveSlot: String(activeSlot),
     liveMapImage: MAP_IMAGE_URL,
     lastUpdated: new Date().toISOString(),
     lastFullSaveSync: new Date().toISOString(),
@@ -644,6 +652,7 @@ async function runPipeline() {
 
     let rawServerConfigXml = "";
 
+    // Inspect server config files to verify active savegame slot
     const configPaths = [
       'dedicated_server/dedicatedServerConfig.xml',
       'profile/dedicated_server/dedicatedServerConfig.xml',
@@ -656,63 +665,71 @@ async function runPipeline() {
         const cfgXml = await downloadFtpFileToString(client, cfg);
         if (cfgXml) {
           rawServerConfigXml = sanitizeXml(cfgXml);
-          const slotMatch = cfgXml.match(/savegameSlot="(\d+)"/i) || cfgXml.match(/savegame="(\d+)"/i) || cfgXml.match(/<savegame>(\d+)<\/savegame>/i);
-          if (slotMatch) {
-            detectedSlot = slotMatch[1];
-            console.log(`🎯 Active save slot verified: Slot #${detectedSlot}`);
+          const cfgSlotMatch = cfgXml.match(/savegameSlot="(\d+)"/i) || cfgXml.match(/savegame="(\d+)"/i) || cfgXml.match(/<savegame>(\d+)<\/savegame>/i);
+          if (cfgSlotMatch && !statsData.activeSlot) {
+            activeSlot = cfgSlotMatch[1];
+            masterPayload.activeSaveSlot = String(activeSlot);
+            console.log(`🎯 Config file verified active save slot: Slot #${activeSlot}`);
             break;
           }
         }
       } catch (e) {}
     }
 
-    const rootList = await client.list();
-    let profileList = [];
-    try { profileList = await client.list('profile'); } catch (e) {}
-
-    const allDiscoveredFolders = [];
-
-    profileList.filter(f => f.isDirectory && f.name.toLowerCase().includes('savegame') && !f.name.toLowerCase().includes('backup')).forEach(f => {
-      allDiscoveredFolders.push({
-        path: `profile/${f.name}`,
-        name: f.name,
-        slotNumber: (f.name.match(/\d+/) || ["3"])[0],
-        date: new Date(f.rawModifiedAt || f.modifiedAt || 0).getTime()
-      });
-    });
-
-    rootList.filter(f => f.isDirectory && f.name.toLowerCase().includes('savegame') && !f.name.toLowerCase().includes('backup')).forEach(f => {
-      allDiscoveredFolders.push({
-        path: f.name,
-        name: f.name,
-        slotNumber: (f.name.match(/\d+/) || ["3"])[0],
-        date: new Date(f.rawModifiedAt || f.modifiedAt || 0).getTime()
-      });
-    });
-
-    allDiscoveredFolders.sort((a, b) => b.date - a.date);
+    // Strict slot candidate resolution
+    const targetCandidates = [
+      `profile/savegame${activeSlot}`,
+      `savegame${activeSlot}`,
+      `profile/savegame_${activeSlot}`,
+      `savegame_${activeSlot}`
+    ];
 
     let activeSavePath = null;
-    if (detectedSlot) {
-      const match = allDiscoveredFolders.find(f => f.slotNumber === String(detectedSlot));
-      if (match) activeSavePath = match.path;
+    let fileList = [];
+
+    for (const targetPath of targetCandidates) {
+      try {
+        const list = await client.list(targetPath);
+        if (list && list.length > 0) {
+          activeSavePath = targetPath;
+          fileList = list;
+          console.log(`✅ Locked active savegame path: [ ${activeSavePath} ] (Slot #${activeSlot})`);
+          break;
+        }
+      } catch (e) {}
     }
 
-    if (!activeSavePath && allDiscoveredFolders.length > 0) {
-      activeSavePath = allDiscoveredFolders[0].path;
-      detectedSlot = allDiscoveredFolders[0].slotNumber;
-      console.log(`🎯 Auto-selected save directory: [ ${activeSavePath} ]`);
+    // Fallback if the specific slot folder wasn't reachable directly
+    if (!activeSavePath) {
+      console.warn(`⚠️ Path [ profile/savegame${activeSlot} ] not accessible directly. Scanning server roots...`);
+      let rootList = [];
+      try { rootList = await client.list(); } catch (e) {}
+      let profileList = [];
+      try { profileList = await client.list('profile'); } catch (e) {}
+
+      const allDiscovered = [];
+      profileList.filter(f => f.isDirectory && f.name.toLowerCase().includes('savegame')).forEach(f => {
+        allDiscovered.push({ path: `profile/${f.name}`, name: f.name });
+      });
+      rootList.filter(f => f.isDirectory && f.name.toLowerCase().includes('savegame')).forEach(f => {
+        allDiscovered.push({ path: f.name, name: f.name });
+      });
+
+      const matchedFolder = allDiscovered.find(f => f.name.includes(String(activeSlot))) || allDiscovered[0];
+      if (matchedFolder) {
+        activeSavePath = matchedFolder.path;
+        fileList = await client.list(activeSavePath);
+        console.log(`🎯 Found matching directory: [ ${activeSavePath} ]`);
+      }
     }
 
     if (!activeSavePath) {
-      activeSavePath = "profile/savegame3";
-      detectedSlot = "3";
+      throw new Error(`Unable to locate savegame directory for Slot #${activeSlot} on FTP server.`);
     }
 
-    masterPayload.activeSaveSlot = String(detectedSlot);
-    console.log(`📂 [3/4] Pulling XML files from: [ ${activeSavePath} ] (Slot #${detectedSlot})`);
+    masterPayload.activeSaveSlot = String(activeSlot);
+    console.log(`📂 [3/4] Pulling XML files from: [ ${activeSavePath} ] (Slot #${masterPayload.activeSaveSlot})`);
 
-    const fileList = await client.list(activeSavePath);
     const readableFiles = fileList.filter(f => !f.isDirectory && (
       f.name.toLowerCase().endsWith('.xml') || f.name.toLowerCase().endsWith('.txt')
     ));
@@ -748,11 +765,11 @@ async function runPipeline() {
     masterPayload.farms = cleanData.farms;
     masterPayload.unowned = cleanData.unowned;
 
-    // Overwrite the entire /fs25 node to strip away previous raw XML keys
+    // Overwrite the /fs25 node to clear all previous unparsed XML strings
     console.log("💾 [4/4] Writing clean atomic payload to Firebase /fs25...");
     await db.ref('fs25').set(masterPayload);
 
-    console.log(`🏆 Server data successfully updated cleanly to Firebase /fs25!`);
+    console.log(`🏆 Active Savegame (Slot #${activeSlot}) successfully synchronized to Firebase /fs25!`);
     client.close();
     process.exit(0);
 
