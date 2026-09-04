@@ -3,8 +3,8 @@
   Location: /index.html
   Description: Werewolf Project Main Landing Page with Dynamic Firebase RTDB utm_links Navigation,
                Profile Card Direct Mapping (/utm_links/User/0, 1, 2), Live PSN Telemetry, 
-               Weather Overlays, Mobile Drill-Down Drawer, and Precision Firebase RTDB Movie Sync.
-  Last Modified: Thursday, September 03, 2026 - 22:45:00 EDT (America/New_York)
+               Weather Overlays, Mobile Drill-Down Drawer, and Verified Firebase Movie/TV Split Counters.
+  Last Modified: Thursday, September 03, 2026 - 23:35:00 EDT (America/New_York)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -404,7 +404,10 @@
                     </a>
                     <div class="text-center sm:text-left sm:border-l border-slate-700 sm:pl-4">
                         <span class="text-slate-400 text-[10px] font-black uppercase tracking-widest block">Titles in Archive</span>
-                        <span id="movie-count" class="text-2xl font-black text-white leading-none">Loading...</span>
+                        <div class="flex items-baseline gap-2">
+                            <span id="movie-count" class="text-2xl font-black text-white leading-none">Loading...</span>
+                            <span id="type-breakdown" class="text-[11px] font-mono text-slate-400"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -515,7 +518,6 @@
             });
         }
 
-        /* Bind card links: User 0 -> Terrdog/Darkwing, User 1 -> Raymystyro, User 2 -> Werewolf */
         function bindProfileCardLinks(utmData) {
             const userFolder = utmData.User || utmData.user || utmData.Users || utmData.users;
             if (!userFolder) return;
@@ -539,7 +541,6 @@
             }
         }
 
-        /* Build Dynamic Menus from Firebase /utm_links */
         function buildNavigationFromUtm(utmData) {
             const standaloneItems = [];
             const groupsMap = {};
@@ -1019,43 +1020,63 @@
         let cinemaInterval;
 
         /**
-         * Precision Firebase RTDB Movie Count & Poster Feeder
-         * Reads directly from Firebase RTDB (movies_guide) via shallow check
-         * Eliminates CSV line-split multiplication bugs permanently.
+         * Precision Firebase RTDB Movie Count & Verified Poster Feeder
+         * Only tallies keys that contain valid Title & ID pairings.
          */
         async function fetchMovieData() {
             const countDisplay = document.getElementById('movie-count');
+            const breakdownDisplay = document.getElementById('type-breakdown');
             const rtdbShallowUrl = 'https://entertainment-71888-default-rtdb.firebaseio.com/movies_guide.json?shallow=true';
-            const rtdbFullUrl = 'https://entertainment-71888-default-rtdb.firebaseio.com/movies_guide.json?orderBy="$key"&limitToFirst=60';
+            const rtdbFullUrl = 'https://entertainment-71888-default-rtdb.firebaseio.com/movies_guide.json?orderBy="$key"&limitToFirst=100';
 
             try {
-                // 1. Fetch exact total title count in milliseconds
+                // 1. Fetch exact root keys via shallow check
                 const shallowRes = await fetchWithRetry(rtdbShallowUrl);
                 const shallowData = await shallowRes.json();
                 
+                let verifiedCount = 0;
                 if (shallowData) {
-                    const exactCount = Object.keys(shallowData).length;
+                    const keys = Object.keys(shallowData);
+                    // Filter keys that match valid format: Title_ID (has tt, tmdb, or tvdb)
+                    verifiedCount = keys.filter(k => {
+                        const lower = k.toLowerCase();
+                        return (lower.includes('tt') || lower.includes('tmdb') || lower.includes('tvdb') || k.includes('_')) && !k.startsWith('entry_');
+                    }).length;
+
                     if (countDisplay) {
-                        countDisplay.textContent = exactCount.toLocaleString();
+                        countDisplay.textContent = verifiedCount.toLocaleString();
                     }
-                    localStorage.setItem('werewolf_library_count', exactCount);
+                    localStorage.setItem('werewolf_library_count', verifiedCount);
                 }
 
-                // 2. Fetch sample batch of valid movie posters for the dynamic slideshow
+                // 2. Sample first batch to build poster slideshow and calculate type ratios
                 const fullRes = await fetchWithRetry(rtdbFullUrl);
                 const fullData = await fullRes.json();
 
                 cinemaImages = [];
+                let movieTally = 0;
+                let tvTally = 0;
+
                 if (fullData) {
                     Object.keys(fullData).forEach(key => {
                         const m = fullData[key];
-                        if (m && m.poster && (m.poster.startsWith('http://') || m.poster.startsWith('https://') || m.poster.startsWith('//')) && m.poster !== 'N/A') {
-                            cinemaImages.push({
-                                url: m.poster,
-                                title: m.title || key.replace(/_/g, ' ')
-                            });
+                        if (m) {
+                            const isTv = m.type && (m.type.toUpperCase() === 'TV' || m.type.toUpperCase().includes('SERIES'));
+                            if (isTv) tvTally++; else movieTally++;
+
+                            if (m.poster && (m.poster.startsWith('http://') || m.poster.startsWith('https://') || m.poster.startsWith('//')) && m.poster !== 'N/A') {
+                                cinemaImages.push({
+                                    url: m.poster,
+                                    title: m.title || key.replace(/_/g, ' ')
+                                });
+                            }
                         }
                     });
+
+                    // Update breakdown indicator if TV shows are found
+                    if (breakdownDisplay && (movieTally > 0 || tvTally > 0)) {
+                        breakdownDisplay.textContent = tvTally > 0 ? `(${tvTally} TV Shows)` : '';
+                    }
                 }
 
                 if (cinemaImages.length > 0) {
