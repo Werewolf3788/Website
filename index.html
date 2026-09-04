@@ -3,8 +3,8 @@
   Location: /index.html
   Description: Werewolf Project Main Landing Page with Dynamic Firebase RTDB utm_links Navigation,
                Profile Card Direct Mapping (/utm_links/User/0, 1, 2), Live PSN Telemetry, 
-               Weather Overlays, Mobile Drill-Down Drawer, Click-to-Pause Cinema Lightbox,
-               and Live FS25 Dedicated Server XML Feed Parser with Minimap & Savegame Links.
+               Weather Overlays, Mobile Drill-Down Drawer, Click-to-Pause Cinema Lightbox with Full 
+               Action Buttons, and Native Firebase RTDB FS25 Telemetry Mapping (/fs25).
   Last Modified: Thursday, September 03, 2026 - 23:55:00 EDT (America/New_York)
 -->
 <!DOCTYPE html>
@@ -29,7 +29,7 @@
     </script>
 
     <style>
-        /* CSS Variables - Section and Layout Sizing */
+        /* CSS Variables - Layout & Gamertag Accent Colors */
         /* CSS Line ~32 */
         :root {
             --header-text-size: clamp(22px, 4vw, 32px);
@@ -89,8 +89,8 @@
             display: block;
         }
 
-        /* Custom Dynamic Card Styles */
-        /* CSS Line ~88 */
+        /* Dynamic Glassmorphic Custom Cards */
+        /* CSS Line ~89 */
         .custom-card {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(10px);
@@ -101,8 +101,8 @@
             transition: transform 0.3s ease;
         }
 
-        /* Dynamic Live Weather Animation Overlay Layers */
-        /* CSS Line ~100 */
+        /* Dynamic Weather Animation Layers */
+        /* CSS Line ~101 */
         .weather-layer {
             position: absolute;
             inset: 0;
@@ -217,7 +217,8 @@
         .is-sunny .border-terrdog, .is-sunny .border-werewolf, .is-sunny .border-ray { border-color: rgba(0,0,0,0.4); }
         .is-sunny .visit-link { color: #0f172a !important; border-color: rgba(0,0,0,0.3) !important; }
 
-        /* Cinema Action / Store Buttons in Lightbox */
+        /* Lightbox Action Buttons Grid */
+        /* CSS Line ~207 */
         .lb-btn-grid {
             display: grid;
             gap: 8px;
@@ -256,7 +257,7 @@
         .btn-youtube { background: #dc2626 !important; cursor: pointer; border: none; }
 
         /* Site Signature Watermark */
-        /* CSS Line ~230 */
+        /* CSS Line ~245 */
         .kf-watermark {
             position: fixed;
             bottom: 10px;
@@ -278,7 +279,7 @@
 <body class="min-h-screen flex flex-col">
 
     <!-- Sticky Navigation Bar Container -->
-    <!-- HTML Line ~250 -->
+    <!-- HTML Line ~268 -->
     <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -289,7 +290,7 @@
                 </div>
 
                 <!-- Desktop Horizontal Navigation Links -->
-                <!-- HTML Line ~261 -->
+                <!-- HTML Line ~279 -->
                 <div id="desktop-nav-links" class="hidden lg:flex items-center space-x-6 xl:space-x-8">
                     <div class="flex items-center space-x-4 animate-pulse">
                         <div class="h-4 w-16 bg-slate-700 rounded"></div>
@@ -299,7 +300,7 @@
                 </div>
 
                 <!-- Mobile & Tablet Hamburger Toggle -->
-                <!-- HTML Line ~271 -->
+                <!-- HTML Line ~289 -->
                 <div class="lg:hidden flex items-center">
                     <button type="button" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu" class="text-slate-400 hover:text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-slate-800 transition-colors">
                         <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
@@ -310,7 +311,7 @@
     </nav>
 
     <!-- Mobile/Tablet Slide-Over Modal Drawer -->
-    <!-- HTML Line ~280 -->
+    <!-- HTML Line ~298 -->
     <div id="mobile-menu-overlay" class="fixed inset-0 bg-slate-950/95 z-[100] hidden flex flex-col no-scrollbar overflow-y-auto">
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90 sticky top-0 z-10">
             <span class="text-lg font-black text-sky-400">NAVIGATION MENU</span>
@@ -334,7 +335,7 @@
     </div>
 
     <!-- Main Landing Hero Section -->
-    <!-- HTML Line ~305 -->
+    <!-- HTML Line ~323 -->
     <header class="section-padding px-4 sm:px-6 lg:px-8 flex-grow flex items-center">
         <div class="max-w-4xl mx-auto text-center">
             <h1 class="text-slate-100">Knowing the Players</h1>
@@ -345,7 +346,7 @@
     </header>
 
     <!-- Contributors Team Section -->
-    <!-- HTML Line ~316 -->
+    <!-- HTML Line ~334 -->
     <section id="team" class="section-padding bg-slate-900/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-8 sm:mb-12">
@@ -355,7 +356,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Werewolf3788 Profile Card -->
-                <!-- HTML Line ~326 -->
+                <!-- HTML Line ~344 -->
                 <div id="card-werewolf" class="custom-card p-6 text-center shadow-werewolf">
                     <div class="weather-layer" id="layer-werewolf"></div>
                     <div class="card-content">
@@ -378,7 +379,7 @@
                 </div>
 
                 <!-- Raymystyro Profile Card -->
-                <!-- HTML Line ~349 -->
+                <!-- HTML Line ~367 -->
                 <div id="card-ray" class="custom-card p-6 text-center shadow-ray">
                     <div class="weather-layer" id="layer-ray"></div>
                     <div class="card-content">
@@ -401,7 +402,7 @@
                 </div>
 
                 <!-- Terrdog420 Profile Card -->
-                <!-- HTML Line ~372 -->
+                <!-- HTML Line ~390 -->
                 <div id="card-tj" class="custom-card p-6 text-center shadow-terrdog md:col-span-2 lg:col-span-1">
                     <div class="weather-layer" id="layer-tj"></div>
                     <div class="card-content">
@@ -427,7 +428,7 @@
     </section>
 
     <!-- Cinema Movie Library Archive Section -->
-    <!-- HTML Line ~396 -->
+    <!-- HTML Line ~414 -->
     <section class="section-padding bg-slate-900/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             
@@ -453,7 +454,7 @@
             </div>
 
             <!-- Dynamic Cinema Slideshow Screen Frame (Click to Pause & Open Lightbox) -->
-            <!-- HTML Line ~421 -->
+            <!-- HTML Line ~439 -->
             <div id="cinema-container" 
                  onclick="openCinemaLightbox()" 
                  title="Click to view details and pause slideshow"
@@ -481,7 +482,7 @@
     </section>
 
     <!-- Co-Op Games & Live Dedicated Server Telemetry Section -->
-    <!-- HTML Line ~450 -->
+    <!-- HTML Line ~468 -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-8">
@@ -493,11 +494,11 @@
             </div>
 
             <!-- Featured Modules Grid -->
-            <!-- HTML Line ~461 -->
+            <!-- HTML Line ~479 -->
             <div id="gaming-modules-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
-                <!-- Dedicated FS25 Live Server Card (Live XML Stream Parser) -->
-                <!-- HTML Line ~465 -->
+                <!-- Dedicated FS25 Live Server Card (Mapped to Native /fs25 RTDB Endpoint) -->
+                <!-- HTML Line ~483 -->
                 <div id="fs25-server-card" class="custom-card p-6 border border-emerald-500/30 flex flex-col justify-between shadow-emerald-950/20 shadow-xl">
                     <div>
                         <div class="flex items-center justify-between mb-3">
@@ -506,7 +507,7 @@
                             </span>
                             <span id="fs25-status-pill" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700 flex items-center gap-1 font-mono">
                                 <span class="w-2 h-2 rounded-full bg-slate-500 inline-block animate-pulse"></span>
-                                Fetching XML...
+                                Checking Firebase...
                             </span>
                         </div>
 
@@ -522,7 +523,7 @@
                             <!-- Minimap Thumbnail View -->
                             <div class="relative w-full h-32 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 group">
                                 <img id="fs25-map-img" 
-                                     src="http://207.244.246.70:9050/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=60&size=512" 
+                                     src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80" 
                                      alt="FS25 Live Server Map"
                                      class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
                                      onerror="this.src='https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80';">
@@ -542,7 +543,7 @@
                                     </span>
                                     <span class="text-slate-200 font-mono font-bold text-xs" id="fs25-farm0-money">$0</span>
                                 </div>
-                                <div class="text-[11px] text-slate-400 truncate" id="fs25-farm0-name">Scanning XML feed...</div>
+                                <div class="text-[11px] text-slate-400 truncate" id="fs25-farm0-name">Connecting to feed...</div>
                             </div>
 
                             <!-- Quick Stats Row -->
@@ -562,22 +563,22 @@
                         <div class="border-t border-slate-800/80 pt-2 mb-3">
                             <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Savegame Data Feeds:</span>
                             <div class="grid grid-cols-3 gap-1.5 text-center">
-                                <a href="http://207.244.246.70:9050/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=careerSavegame" target="_blank" rel="noopener noreferrer" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-1 py-1.5 rounded truncate transition-colors">
+                                <a href="http://207.244.246.70:9050/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=careerSavegame" target="_blank" rel="noopener noreferrer" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-1 py-1.5 rounded truncate transition-colors min-h-[36px] flex items-center justify-center">
                                     Career
                                 </a>
-                                <a href="http://207.244.246.70:9050/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=vehicles" target="_blank" rel="noopener noreferrer" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-1 py-1.5 rounded truncate transition-colors">
+                                <a href="http://207.244.246.70:9050/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=vehicles" target="_blank" rel="noopener noreferrer" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-1 py-1.5 rounded truncate transition-colors min-h-[36px] flex items-center justify-center">
                                     Vehicles
                                 </a>
-                                <a href="http://207.244.246.70:9050/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=economy" target="_blank" rel="noopener noreferrer" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-1 py-1.5 rounded truncate transition-colors">
+                                <a href="http://207.244.246.70:9050/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=economy" target="_blank" rel="noopener noreferrer" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-1 py-1.5 rounded truncate transition-colors min-h-[36px] flex items-center justify-center">
                                     Economy
                                 </a>
                             </div>
                         </div>
                     </div>
 
-                    <a href="http://207.244.246.70:9050/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 pt-3 min-h-[44px]">
-                        <span>View Raw Server XML</span>
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    <a href="https://werewolf3788.github.io/Website/games/FS25/index.html" class="text-emerald-400 hover:text-emerald-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 pt-3 min-h-[44px]">
+                        <span>Explore FS25 Telemetry Hub</span>
+                        <i class="fa-solid fa-arrow-right"></i>
                     </a>
                 </div>
 
@@ -590,7 +591,7 @@
     </section>
 
     <!-- Cinema Movie Lightbox Modal with Full Action / Play / Buy Buttons -->
-    <!-- HTML Line ~560 -->
+    <!-- HTML Line ~578 -->
     <div id="cinema-lightbox" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4">
         <div class="relative max-w-2xl w-full bg-slate-900 border border-orange-500/40 rounded-2xl p-6 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
             
@@ -602,7 +603,7 @@
             <!-- Embedded YouTube Video Screen Layer -->
             <div id="lb-video-wrapper" class="absolute inset-0 bg-black z-30 hidden flex-col">
                 <div class="flex items-center justify-between p-3 bg-slate-900 border-b border-slate-800">
-                    <button type="button" onclick="closeLightboxVideo()" class="text-red-400 hover:text-red-300 text-xs font-bold flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 rounded">
+                    <button type="button" onclick="closeLightboxVideo()" class="text-red-400 hover:text-red-300 text-xs font-bold flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 rounded min-h-[36px]">
                         <i class="fa-solid fa-arrow-left"></i> Back to Movie Details
                     </button>
                     <span id="video-header-title" class="text-xs text-slate-400 font-mono truncate max-w-[200px]">Trailer</span>
@@ -616,7 +617,7 @@
                 <!-- Large Poster View -->
                 <img id="lightbox-img" src="" alt="Movie Poster" class="max-h-[42vh] w-auto rounded-lg shadow-xl object-contain border border-slate-800">
                 
-                <!-- Description / Alt Details (Exclusively displayed here inside lightbox view) -->
+                <!-- Description / Alt Details (Exclusively displayed inside lightbox view) -->
                 <div class="w-full bg-slate-950/60 p-4 rounded-xl border border-slate-800 text-left space-y-3">
                     <div>
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Overview / Description</span>
@@ -656,14 +657,14 @@
     </footer>
 
     <!-- Firebase SDK Modules Script -->
-    <!-- HTML JS Line ~630 -->
+    <!-- HTML JS Line ~650 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         /* Firebase App Credentials Config */
-        /* JS Line ~637 */
+        /* JS Line ~657 */
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
             authDomain: "entertainment-71888.firebaseapp.com",
@@ -1004,103 +1005,119 @@
         }
 
         /* -------------------------------------------------------------
-           3. Live Farming Simulator 25 Dedicated Server XML Feed Parser
-              Source: http://207.244.246.70:9050/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM
+           3. Live Farming Simulator 25 Telemetry from Firebase RTDB (/fs25)
+              Bypasses insecure HTTP mixed-content issues cleanly
            ------------------------------------------------------------- */
-        async function fetchFs25LiveXml() {
-            const rawUrl = 'http://207.244.246.70:9050/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM';
+        function listenToFs25FirebaseTelemetry() {
+            const fs25Ref = ref(rtdb, 'fs25');
             
-            // Proxied to bypass browser mixed-content (HTTP -> HTTPS) and CORS restrictions safely
-            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`;
-            
-            const statusPill = document.getElementById('fs25-status-pill');
-            const serverNameEl = document.getElementById('fs25-server-name');
-            const mapNameEl = document.getElementById('fs25-map-name');
-            const gameTimeEl = document.getElementById('fs25-game-time');
-            const slotsCountEl = document.getElementById('fs25-slots-count');
-            const farm0NameEl = document.getElementById('fs25-farm0-name');
-            const farm0MoneyEl = document.getElementById('fs25-farm0-money');
-            const totalFarmsEl = document.getElementById('fs25-total-farms');
-            const playersEl = document.getElementById('fs25-player-count');
-            const daySeasonEl = document.getElementById('fs25-day-season');
+            onValue(fs25Ref, (snapshot) => {
+                const statusPill = document.getElementById('fs25-status-pill');
+                const serverNameEl = document.getElementById('fs25-server-name');
+                const mapNameEl = document.getElementById('fs25-map-name');
+                const gameTimeEl = document.getElementById('fs25-game-time');
+                const slotsCountEl = document.getElementById('fs25-slots-count');
+                const farm0NameEl = document.getElementById('fs25-farm0-name');
+                const farm0MoneyEl = document.getElementById('fs25-farm0-money');
+                const totalFarmsEl = document.getElementById('fs25-total-farms');
+                const playersEl = document.getElementById('fs25-player-count');
+                const daySeasonEl = document.getElementById('fs25-day-season');
+                const mapImgEl = document.getElementById('fs25-map-img');
 
-            try {
-                let response = null;
-                try {
-                    response = await fetch(rawUrl, { cache: 'no-store' });
-                } catch (corsErr) {
-                    // Fallback to proxy if direct call blocked
-                    response = await fetch(proxyUrl, { cache: 'no-store' });
+                if (!snapshot.exists()) {
+                    setFs25Offline();
+                    return;
                 }
 
-                if (!response || !response.ok) throw new Error('XML Feed unreachable');
+                const data = snapshot.val();
 
-                const xmlText = await response.text();
-                const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+                // 1. Online Detection
+                const isOnline = data.syncStatus === 'online' || 
+                                 data.syncStatus === true || 
+                                 data.serverOnline === true ||
+                                 (data.gameInfo && Object.keys(data.gameInfo).length > 0);
 
-                // Read Root Server Node
-                const serverNode = xmlDoc.querySelector('Server');
-                if (!serverNode) throw new Error('Invalid FS25 XML Format');
+                if (isOnline) {
+                    statusPill.className = "text-[10px] bg-emerald-950/90 text-emerald-400 px-2 py-0.5 rounded border border-emerald-800 flex items-center gap-1 font-mono font-bold";
+                    statusPill.innerHTML = `<span class="status-pulse" style="background-color:#22c55e;"></span> ONLINE`;
+                } else {
+                    statusPill.className = "text-[10px] bg-red-950/80 text-red-400 px-2 py-0.5 rounded border border-red-800 flex items-center gap-1 font-mono font-bold";
+                    statusPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span> OFFLINE`;
+                }
 
-                const serverName = serverNode.getAttribute('name') || 'Dedicated FS25 Server';
-                const mapName = serverNode.getAttribute('mapName') || 'Dedicated Map';
-                const day = serverNode.getAttribute('day') || '1';
-                const dayTimeRaw = parseInt(serverNode.getAttribute('dayTime') || '0', 10);
-                
-                // Calculate In-game Clock (Minutes to HH:MM)
-                const hours = Math.floor(dayTimeRaw / 60) % 24;
-                const minutes = dayTimeRaw % 60;
-                const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+                // 2. Map Image Preview
+                const mapImgUrl = data.map_image_url || data.liveMapImage;
+                if (mapImgUrl && mapImgEl) {
+                    mapImgEl.src = mapImgUrl;
+                }
 
-                // Update Header Telemetry
+                // 3. Server Metadata (gameInfo or summary)
+                const gInfo = data.gameInfo || data.summary || {};
+                const serverName = gInfo.serverName || gInfo.name || "WEREWOLF FS25 SERVER";
+                const mapName = gInfo.mapName || gInfo.map || "Zielonka / Elmcreek";
+                const day = gInfo.day || gInfo.currentDay || "1";
+                const time = gInfo.time || gInfo.dayTime || "12:00";
+                const slots = gInfo.slots || gInfo.capacity || "16";
+
                 serverNameEl.textContent = serverName;
                 mapNameEl.innerHTML = `<i class="fa-solid fa-map-location-dot mr-1"></i>Map: ${mapName}`;
-                gameTimeEl.innerHTML = `<i class="fa-regular fa-clock mr-1"></i>${formattedTime}`;
+                gameTimeEl.innerHTML = `<i class="fa-regular fa-clock mr-1"></i>${time}`;
                 daySeasonEl.textContent = `Day ${day}`;
 
-                // Slots and Players Online
-                const slotsNode = xmlDoc.querySelector('Slots');
-                const maxSlots = slotsNode ? slotsNode.getAttribute('capacity') || '16' : '16';
-                const playerNodes = xmlDoc.querySelectorAll('Slots > Player[isUsed="true"]');
-                const onlinePlayerCount = playerNodes.length;
-
-                slotsCountEl.textContent = `${onlinePlayerCount}/${maxSlots} Slots`;
+                // 4. Players Online Count
+                let onlinePlayerCount = 0;
+                if (data.activePlayers) {
+                    onlinePlayerCount = Array.isArray(data.activePlayers) 
+                        ? data.activePlayers.length 
+                        : Object.keys(data.activePlayers).length;
+                } else if (gInfo.playersCount !== undefined) {
+                    onlinePlayerCount = gInfo.playersCount;
+                }
+                slotsCountEl.textContent = `${onlinePlayerCount}/${slots} Slots`;
                 playersEl.textContent = onlinePlayerCount.toString();
 
-                // Parse Farm ID 0 & Farms
-                const farmNodes = xmlDoc.querySelectorAll('Farms > Farm');
-                const totalFarmsCount = farmNodes.length > 0 ? farmNodes.length : 1;
-                totalFarmsEl.textContent = totalFarmsCount.toString();
+                // 5. Farms & Farm ID 0
+                const farmsNode = data.farms || data.farms_raw || {};
+                const farmKeys = Object.keys(farmsNode);
+                totalFarmsEl.textContent = farmKeys.length > 0 ? farmKeys.length.toString() : "1";
 
                 let farm0 = null;
-                farmNodes.forEach(f => {
-                    const farmId = f.getAttribute('id') || f.getAttribute('farmId');
-                    if (farmId === '0' || farmId === '1' || !farm0) {
-                        farm0 = f;
-                    }
-                });
+                if (farmsNode['0']) farm0 = farmsNode['0'];
+                else if (farmsNode['1']) farm0 = farmsNode['1'];
+                else if (farmsNode['farm0']) farm0 = farmsNode['farm0'];
+                else if (farmKeys.length > 0) farm0 = farmsNode[farmKeys[0]];
 
                 if (farm0) {
-                    const farmName = farm0.getAttribute('name') || 'Primary Farm';
-                    const moneyVal = parseFloat(farm0.getAttribute('money') || '0');
+                    const farmName = farm0.name || farm0.farmName || "Primary Farm";
+                    const money = typeof farm0.money === 'number' 
+                        ? `$${farm0.money.toLocaleString()}` 
+                        : (farm0.money || farm0.balance || "$0");
                     farm0NameEl.textContent = farmName;
-                    farm0MoneyEl.textContent = `$${moneyVal.toLocaleString()}`;
+                    farm0MoneyEl.textContent = money;
                 } else {
-                    farm0NameEl.textContent = 'Farm 0 Initialized';
-                    farm0MoneyEl.textContent = '$0';
+                    farm0NameEl.textContent = "Farm 0 Initialized";
+                    farm0MoneyEl.textContent = "$0";
                 }
 
-                // Server Status: Online
-                statusPill.className = "text-[10px] bg-emerald-950/90 text-emerald-400 px-2 py-0.5 rounded border border-emerald-800 flex items-center gap-1 font-mono font-bold";
-                statusPill.innerHTML = `<span class="status-pulse" style="background-color:#22c55e;"></span> ONLINE`;
+            }, (error) => {
+                console.error("FS25 Firebase RTDB Error:", error);
+                setFs25Offline();
+            });
+        }
 
-            } catch (err) {
-                console.warn('FS25 Direct XML Error, showing standby mode:', err);
-                statusPill.className = "text-[10px] bg-red-950/80 text-red-400 px-2 py-0.5 rounded border border-red-800 flex items-center gap-1 font-mono font-bold";
-                statusPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span> OFFLINE`;
-                farm0NameEl.textContent = 'Server Feeds Standby';
+        function setFs25Offline() {
+            const statusPill = document.getElementById('fs25-status-pill');
+            const totalFarmsEl = document.getElementById('fs25-total-farms');
+            const farm0NameEl = document.getElementById('fs25-farm0-name');
+            const playersEl = document.getElementById('fs25-player-count');
+
+            if (statusPill) {
+                statusPill.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700 flex items-center gap-1 font-mono";
+                statusPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-500 inline-block"></span> OFFLINE`;
             }
+            if (farm0NameEl) farm0NameEl.textContent = "Server Telemetry Standby";
+            if (totalFarmsEl) totalFarmsEl.textContent = "0";
+            if (playersEl) playersEl.textContent = "0";
         }
 
         /* -------------------------------------------------------------
@@ -1265,16 +1282,15 @@
             }
         }
 
-        // Initialize Firebase RTDB & Firestore Listeners
+        // Initialize Firebase RTDB, FS25 Native Listener & Firestore Listeners
         listenToUtmLinks();
         listenToPsnPresence();
-        fetchFs25LiveXml();
-        setInterval(fetchFs25LiveXml, 60000); // 60-second XML Telemetry Polling
+        listenToFs25FirebaseTelemetry();
         loadFirestoreSquadProgress();
     </script>
 
     <!-- Open-Meteo Weather, Lightbox, & Interactive Slideshow Engine -->
-    <!-- HTML JS Line ~970 -->
+    <!-- HTML JS Line ~1170 -->
     <script>
         const users = [
             { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf' },
