@@ -4,8 +4,8 @@
   Description: Werewolf Project Main Landing Page with Dynamic Firebase RTDB utm_links Navigation,
                Profile Card Direct Mapping (/utm_links/User/0, 1, 2), Live PSN Telemetry, 
                Weather Overlays, Mobile Drill-Down Drawer, Click-to-Pause Cinema Lightbox with Full 
-               Action Buttons, and Native Dual-Farm Firebase RTDB FS25 Telemetry Mapping (/fs25).
-  Last Modified: Friday, September 04, 2026 - 01:25:00 EDT (America/New_York)
+               Action Buttons, and Native Live FS25 Telemetry with Leader Badges (Most Fleet & Placeables).
+  Last Modified: Friday, September 04, 2026 - 01:50:00 EDT (America/New_York)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -489,7 +489,7 @@
                 <span class="text-emerald-400 font-bold uppercase tracking-widest text-xs">Live Telemetry & Progression</span>
                 <h2 class="mt-2">Farming Simulator 25 & Squad Modules</h2>
                 <p class="mt-2 text-slate-400 text-sm sm:text-base">
-                    Live telemetry feed directly parsed from our dedicated FS25 server alongside Firestore squad co-op progress.
+                    Real-time world telemetry parsed directly from Cloud Firebase RTDB feeds.
                 </p>
             </div>
 
@@ -497,7 +497,7 @@
             <!-- HTML Line ~479 -->
             <div id="gaming-modules-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 
-                <!-- Dedicated FS25 Live Server Card (Mapped to Native /fs25 RTDB Endpoint) -->
+                <!-- Dedicated FS25 Live Server Card (Native /fs25 RTDB Endpoint) -->
                 <!-- HTML Line ~483 -->
                 <div id="fs25-server-card" class="custom-card p-6 border border-emerald-500/30 flex flex-col justify-between shadow-emerald-950/20 shadow-xl">
                     <div>
@@ -520,7 +520,7 @@
 
                         <!-- Live Minimap & Dual Farm Grid -->
                         <div class="space-y-3 mb-4">
-                            <!-- Minimap Thumbnail View -->
+                            <!-- Minimap Thumbnail View (Routed through SSL Proxy) -->
                             <div class="relative w-full h-28 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 group">
                                 <img id="fs25-map-img" 
                                      src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80" 
@@ -534,28 +534,38 @@
                                 </div>
                             </div>
 
-                            <!-- Dual Farm Display: Farm 1 & Farm 2 Split Box -->
+                            <!-- Dual Farm Display: Farm 1 & Farm 2 Split Box with Leader Badges -->
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                 <!-- Farm 1 -->
-                                <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 flex flex-col justify-between min-h-[64px]">
-                                    <div class="flex justify-between items-center text-[11px] mb-0.5">
-                                        <span class="text-emerald-400 font-bold truncate" id="fs25-farm1-label">Farm 1</span>
-                                        <span class="text-slate-200 font-mono font-bold text-xs" id="fs25-farm1-money">$0</span>
+                                <div id="fs25-farm1-box" class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 flex flex-col justify-between min-h-[78px] transition-all">
+                                    <div>
+                                        <div class="flex justify-between items-center text-[11px] mb-0.5">
+                                            <span class="text-emerald-400 font-bold truncate" id="fs25-farm1-label">Farm 1</span>
+                                            <span class="text-slate-200 font-mono font-bold text-xs" id="fs25-farm1-money">$0</span>
+                                        </div>
+                                        <div class="text-[10px] text-slate-400 truncate mb-1.5" id="fs25-farm1-name">Loading Farm 1...</div>
                                     </div>
-                                    <div class="text-[10px] text-slate-400 truncate" id="fs25-farm1-name">Loading Farm 1...</div>
+                                    <div id="fs25-farm1-badges" class="flex flex-wrap gap-1 mt-auto">
+                                        <!-- Badges: Most Fleet, Most Placeables -->
+                                    </div>
                                 </div>
 
                                 <!-- Farm 2 -->
-                                <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 flex flex-col justify-between min-h-[64px]">
-                                    <div class="flex justify-between items-center text-[11px] mb-0.5">
-                                        <span class="text-emerald-400 font-bold truncate" id="fs25-farm2-label">Farm 2</span>
-                                        <span class="text-slate-200 font-mono font-bold text-xs" id="fs25-farm2-money">$0</span>
+                                <div id="fs25-farm2-box" class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 flex flex-col justify-between min-h-[78px] transition-all">
+                                    <div>
+                                        <div class="flex justify-between items-center text-[11px] mb-0.5">
+                                            <span class="text-emerald-400 font-bold truncate" id="fs25-farm2-label">Farm 2</span>
+                                            <span class="text-slate-200 font-mono font-bold text-xs" id="fs25-farm2-money">$0</span>
+                                        </div>
+                                        <div class="text-[10px] text-slate-400 truncate mb-1.5" id="fs25-farm2-name">Loading Farm 2...</div>
                                     </div>
-                                    <div class="text-[10px] text-slate-400 truncate" id="fs25-farm2-name">Loading Farm 2...</div>
+                                    <div id="fs25-farm2-badges" class="flex flex-wrap gap-1 mt-auto">
+                                        <!-- Badges: Most Fleet, Most Placeables -->
+                                    </div>
                                 </div>
                             </div>
 
-                            <!-- Quick Stats Row -->
+                            <!-- Quick Stats Row (Farms & Active Players) -->
                             <div class="grid grid-cols-2 gap-2">
                                 <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 text-center">
                                     <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Total Farms</span>
@@ -568,19 +578,30 @@
                             </div>
                         </div>
 
-                        <!-- Direct Savegame Quick-Links -->
-                        <div class="border-t border-slate-800/80 pt-2 mb-3">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Savegame Feeds:</span>
+                        <!-- Live Equipment & Summary Breakdown (from /fs25/summary) -->
+                        <div class="border-t border-slate-800/80 pt-2.5 mb-3">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">World Assets & Inventory:</span>
                             <div class="grid grid-cols-3 gap-1.5 text-center">
-                                <a href="http://207.244.246.70:9050/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=careerSavegame" target="_blank" rel="noopener noreferrer" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-1 py-1.5 rounded truncate transition-colors min-h-[36px] flex items-center justify-center">
-                                    Career
-                                </a>
-                                <a href="http://207.244.246.70:9050/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=vehicles" target="_blank" rel="noopener noreferrer" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-1 py-1.5 rounded truncate transition-colors min-h-[36px] flex items-center justify-center">
-                                    Vehicles
-                                </a>
-                                <a href="http://207.244.246.70:9050/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=economy" target="_blank" rel="noopener noreferrer" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-1 py-1.5 rounded truncate transition-colors min-h-[36px] flex items-center justify-center">
-                                    Economy
-                                </a>
+                                <div class="bg-slate-900/90 border border-slate-800 p-2 rounded flex flex-col items-center">
+                                    <span class="text-[10px] text-slate-400 uppercase font-bold">Vehicles</span>
+                                    <span class="text-xs font-mono font-black text-white mt-0.5" id="fs25-total-vehicles">--</span>
+                                </div>
+                                <div class="bg-slate-900/90 border border-slate-800 p-2 rounded flex flex-col items-center">
+                                    <span class="text-[10px] text-slate-400 uppercase font-bold">Buildings</span>
+                                    <span class="text-xs font-mono font-black text-white mt-0.5" id="fs25-total-placeables">--</span>
+                                </div>
+                                <div class="bg-slate-900/90 border border-slate-800 p-2 rounded flex flex-col items-center">
+                                    <span class="text-[10px] text-slate-400 uppercase font-bold">Active Mods</span>
+                                    <span class="text-xs font-mono font-black text-white mt-0.5" id="fs25-total-mods">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live CareerSavegame Environment Display (from /fs25/raw_xml/careerSavegame) -->
+                        <div class="border-t border-slate-800/80 pt-2 mb-3 bg-slate-950/50 p-2 rounded border border-slate-800">
+                            <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
+                                <span><i class="fa-solid fa-gamepad mr-1 text-emerald-400"></i>Difficulty: <strong id="fs25-career-difficulty" class="text-slate-200">Normal</strong></span>
+                                <span><i class="fa-solid fa-gauge mr-1 text-emerald-400"></i>Speed: <strong id="fs25-career-timescale" class="text-slate-200">1x</strong></span>
                             </div>
                         </div>
                     </div>
@@ -1014,8 +1035,9 @@
         }
 
         /* -------------------------------------------------------------
-           3. Live Farming Simulator 25 Telemetry from Firebase RTDB (/fs25)
-              Dual-Farm Extraction (Farm 1 & Farm 2)
+           3. Live Farming Simulator 25 Telemetry & Leader Badges
+              Calculates Fleet and Placeables counts per farm from
+              /fs25/raw_xml/vehicles and /fs25/raw_xml/placeables.
            ------------------------------------------------------------- */
         function listenToFs25FirebaseTelemetry() {
             const fs25Ref = ref(rtdb, 'fs25');
@@ -1031,16 +1053,29 @@
                 const farm1LabelEl = document.getElementById('fs25-farm1-label');
                 const farm1NameEl = document.getElementById('fs25-farm1-name');
                 const farm1MoneyEl = document.getElementById('fs25-farm1-money');
+                const farm1BadgesEl = document.getElementById('fs25-farm1-badges');
+                const farm1BoxEl = document.getElementById('fs25-farm1-box');
                 
                 // Farm 2 elements
                 const farm2LabelEl = document.getElementById('fs25-farm2-label');
                 const farm2NameEl = document.getElementById('fs25-farm2-name');
                 const farm2MoneyEl = document.getElementById('fs25-farm2-money');
+                const farm2BadgesEl = document.getElementById('fs25-farm2-badges');
+                const farm2BoxEl = document.getElementById('fs25-farm2-box');
                 
                 const totalFarmsEl = document.getElementById('fs25-total-farms');
                 const playersEl = document.getElementById('fs25-player-count');
                 const daySeasonEl = document.getElementById('fs25-day-season');
                 const mapImgEl = document.getElementById('fs25-map-img');
+
+                // Summary stats elements
+                const totalVehiclesEl = document.getElementById('fs25-total-vehicles');
+                const totalPlaceablesEl = document.getElementById('fs25-total-placeables');
+                const totalModsEl = document.getElementById('fs25-total-mods');
+
+                // Career Savegame elements
+                const careerDiffEl = document.getElementById('fs25-career-difficulty');
+                const careerScaleEl = document.getElementById('fs25-career-timescale');
 
                 if (!snapshot.exists()) {
                     setFs25Offline();
@@ -1049,7 +1084,7 @@
 
                 const data = snapshot.val();
 
-                // 1. Online Detection
+                // 1. Online State
                 const isOnline = data.syncStatus === 'online' || 
                                  data.syncStatus === true || 
                                  data.serverOnline === true ||
@@ -1063,80 +1098,171 @@
                     statusPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span> OFFLINE`;
                 }
 
-                // 2. Map Image Preview
-                const mapImgUrl = data.map_image_url || data.liveMapImage;
-                if (mapImgUrl && mapImgEl) {
-                    mapImgEl.src = mapImgUrl;
+                // 2. HTTPS-Safe Live Map Image
+                let rawMapImg = data.liveMapImage || data.map_image_url || '';
+                if (rawMapImg && mapImgEl) {
+                    if (rawMapImg.startsWith('http://')) {
+                        mapImgEl.src = `https://images.weserv.nl/?url=${encodeURIComponent(rawMapImg.replace(/^https?:\/\//, ''))}`;
+                    } else {
+                        mapImgEl.src = rawMapImg;
+                    }
                 }
 
-                // 3. Server Metadata (gameInfo or summary)
-                const gInfo = data.gameInfo || data.summary || {};
-                const serverName = gInfo.serverName || gInfo.name || "WEREWOLF FS25 SERVER";
-                const mapName = gInfo.mapName || gInfo.map || "Zielonka / Elmcreek";
+                // 3. Server Metadata
+                const gInfo = data.gameInfo || {};
+                const summary = data.summary || {};
+
+                const serverName = gInfo.serverName || gInfo.name || summary.serverName || "WEREWOLF FS25 SERVER";
+                const mapTitle = gInfo.mapTitle || gInfo.mapName || "Riverbend Springs";
                 const day = gInfo.day || gInfo.currentDay || "1";
                 const time = gInfo.time || gInfo.dayTime || "12:00";
                 const slots = gInfo.slots || gInfo.capacity || "16";
 
                 serverNameEl.textContent = serverName;
-                mapNameEl.innerHTML = `<i class="fa-solid fa-map-location-dot mr-1"></i>Map: ${mapName}`;
+                mapNameEl.innerHTML = `<i class="fa-solid fa-map-location-dot mr-1"></i>Map: ${mapTitle}`;
                 gameTimeEl.innerHTML = `<i class="fa-regular fa-clock mr-1"></i>${time}`;
                 daySeasonEl.textContent = `Day ${day}`;
 
-                // 4. Players Online Count
+                // 4. Summary Asset Figures
+                if (totalVehiclesEl) totalVehiclesEl.textContent = (summary.totalVehicles ?? summary.vehiclesCount ?? "--").toString();
+                if (totalPlaceablesEl) totalPlaceablesEl.textContent = (summary.totalPlaceables ?? summary.placeablesCount ?? "--").toString();
+                if (totalModsEl) totalModsEl.textContent = (summary.totalActiveMods ?? summary.modsCount ?? "--").toString();
+
+                // 5. CareerSavegame Parsing
+                const careerData = (data.raw_xml && data.raw_xml.careerSavegame) ? data.raw_xml.careerSavegame : {};
+                if (careerDiffEl) {
+                    let diffText = "Normal";
+                    const diffVal = careerData.difficulty || careerData.economicDifficulty;
+                    if (diffVal === 1 || diffVal === "1" || diffVal === "easy") diffText = "Easy";
+                    else if (diffVal === 3 || diffVal === "3" || diffVal === "hard") diffText = "Hard";
+                    careerDiffEl.textContent = diffText;
+                }
+                if (careerScaleEl) {
+                    const timeScale = careerData.timeScale || careerData.timescale || 1;
+                    careerScaleEl.textContent = `${timeScale}x`;
+                }
+
+                // 6. Active Players Online
                 let onlinePlayerCount = 0;
                 if (data.activePlayers) {
                     onlinePlayerCount = Array.isArray(data.activePlayers) 
                         ? data.activePlayers.length 
                         : Object.keys(data.activePlayers).length;
-                } else if (gInfo.playersCount !== undefined) {
-                    onlinePlayerCount = gInfo.playersCount;
+                } else if (summary.activePlayersCount !== undefined) {
+                    onlinePlayerCount = summary.activePlayersCount;
                 }
                 slotsCountEl.textContent = `${onlinePlayerCount}/${slots} Slots`;
                 playersEl.textContent = onlinePlayerCount.toString();
 
-                // 5. Dual Farm Resolution: Farm 1 & Farm 2
-                const farmsNode = data.farms || data.farms_raw || {};
-                let farmList = [];
-
-                if (Array.isArray(farmsNode)) {
-                    farmList = farmsNode.filter(Boolean);
-                } else if (typeof farmsNode === 'object') {
-                    const sortedKeys = Object.keys(farmsNode).sort();
-                    sortedKeys.forEach(k => {
-                        if (farmsNode[k]) farmList.push(farmsNode[k]);
-                    });
-                }
-
-                totalFarmsEl.textContent = farmList.length > 0 ? farmList.length.toString() : "0";
-
+                // 7. Currency Formatter Helper
                 const formatMoney = (val) => {
-                    if (typeof val === 'number') return `$${Math.round(val).toLocaleString()}`;
-                    if (typeof val === 'string' && val.trim() !== '') return val.startsWith('$') ? val : `$${val}`;
-                    return '$0';
+                    if (val === undefined || val === null) return "$0";
+                    const num = typeof val === 'string' ? parseFloat(val.replace(/[$,]/g, '')) : val;
+                    if (isNaN(num)) return "$0";
+                    return `$${Math.round(num).toLocaleString()}`;
                 };
 
-                // Farm 1
-                const f1 = farmList[0] || farmsNode['0'] || farmsNode['1'] || null;
-                if (f1) {
-                    farm1LabelEl.textContent = f1.farmId !== undefined ? `Farm ${f1.farmId}` : "Farm 1";
-                    farm1NameEl.textContent = f1.name || f1.farmName || "Primary Operation";
-                    farm1MoneyEl.textContent = formatMoney(f1.money ?? f1.balance);
+                // 8. Direct Farm Resolution
+                const farmsNode = data.farms || {};
+                const farm1Node = farmsNode.farm_1 || farmsNode['1'] || farmsNode['0'] || {};
+                const farm2Node = farmsNode.farm_2 || farmsNode['2'] || {};
+
+                const farmKeys = Object.keys(farmsNode);
+                totalFarmsEl.textContent = farmKeys.length.toString();
+
+                // Farm 1 Data
+                if (farm1Node && (farm1Node.name || farm1Node.finances)) {
+                    farm1LabelEl.textContent = "Farm 1";
+                    farm1NameEl.textContent = farm1Node.name || "Primary Operation";
+                    const balance1 = farm1Node.finances ? farm1Node.finances.balance : (farm1Node.money || farm1Node.balance);
+                    farm1MoneyEl.textContent = formatMoney(balance1);
                 } else {
                     farm1LabelEl.textContent = "Farm 1";
                     farm1NameEl.textContent = "Not Created";
                     farm1MoneyEl.textContent = "$0";
                 }
 
-                // Farm 2
-                const f2 = farmList[1] || farmsNode['2'] || null;
-                if (f2) {
-                    farm2LabelEl.textContent = f2.farmId !== undefined ? `Farm ${f2.farmId}` : "Farm 2";
-                    farm2NameEl.textContent = f2.name || f2.farmName || "Secondary Operation";
-                    farm2MoneyEl.textContent = formatMoney(f2.money ?? f2.balance);
+                // Farm 2 Data
+                if (farm2Node && (farm2Node.name || farm2Node.finances)) {
+                    farm2LabelEl.textContent = "Farm 2";
+                    farm2NameEl.textContent = farm2Node.name || "Secondary Operation";
+                    const balance2 = farm2Node.finances ? farm2Node.finances.balance : (farm2Node.money || farm2Node.balance);
+                    farm2MoneyEl.textContent = formatMoney(balance2);
                 } else {
                     farm2LabelEl.textContent = "Farm 2";
                     farm2NameEl.textContent = "No 2nd Farm";
                     farm2MoneyEl.textContent = "--";
+                }
+
+                // 9. Fleet & Placeables Comparison Engine
+                let f1Vehicles = 0, f2Vehicles = 0;
+                let f1Placeables = 0, f2Placeables = 0;
+
+                // Tally vehicles per farm
+                const vehiclesPool = (data.raw_xml && data.raw_xml.vehicles) ? data.raw_xml.vehicles : (data.vehicles || {});
+                const vehiclesList = Array.isArray(vehiclesPool) ? vehiclesPool : Object.values(vehiclesPool);
+                vehiclesList.forEach(item => {
+                    if (!item) return;
+                    const fId = item.farmId || item.ownerFarmId || (item.$ && item.$.farmId);
+                    if (fId == 1 || fId == '1' || fId == 'farm_1') f1Vehicles++;
+                    else if (fId == 2 || fId == '2' || fId == 'farm_2') f2Vehicles++;
+                });
+
+                // Check farm node vehicle counts as fallback
+                if (f1Vehicles === 0 && farm1Node.statistics && farm1Node.statistics.vehiclesCount) f1Vehicles = farm1Node.statistics.vehiclesCount;
+                if (f2Vehicles === 0 && farm2Node.statistics && farm2Node.statistics.vehiclesCount) f2Vehicles = farm2Node.statistics.vehiclesCount;
+
+                // Tally placeables per farm
+                const placeablesPool = (data.raw_xml && data.raw_xml.placeables) ? data.raw_xml.placeables : (data.placeables || {});
+                const placeablesList = Array.isArray(placeablesPool) ? placeablesPool : Object.values(placeablesPool);
+                placeablesList.forEach(item => {
+                    if (!item) return;
+                    const fId = item.farmId || item.ownerFarmId || (item.$ && item.$.farmId);
+                    if (fId == 1 || fId == '1' || fId == 'farm_1') f1Placeables++;
+                    else if (fId == 2 || fId == '2' || fId == 'farm_2') f2Placeables++;
+                });
+
+                // Render Fleet Badges
+                let f1BadgesHtml = '';
+                let f2BadgesHtml = '';
+
+                if (f1Vehicles > 0 || f2Vehicles > 0) {
+                    if (f1Vehicles > f2Vehicles) {
+                        f1BadgesHtml += `<span class="text-[9px] bg-amber-950/80 text-amber-300 px-1.5 py-0.5 rounded border border-amber-800/80 font-bold"><i class="fa-solid fa-trophy text-[8px] mr-1"></i>Most Fleet (${f1Vehicles})</span>`;
+                    } else if (f2Vehicles > f1Vehicles) {
+                        f2BadgesHtml += `<span class="text-[9px] bg-amber-950/80 text-amber-300 px-1.5 py-0.5 rounded border border-amber-800/80 font-bold"><i class="fa-solid fa-trophy text-[8px] mr-1"></i>Most Fleet (${f2Vehicles})</span>`;
+                    } else {
+                        f1BadgesHtml += `<span class="text-[9px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700 font-bold"><i class="fa-solid fa-handshake text-[8px] mr-1"></i>Fleet Tied (${f1Vehicles})</span>`;
+                        f2BadgesHtml += `<span class="text-[9px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700 font-bold"><i class="fa-solid fa-handshake text-[8px] mr-1"></i>Fleet Tied (${f2Vehicles})</span>`;
+                    }
+                }
+
+                // Render Placeables Badges
+                if (f1Placeables > 0 || f2Placeables > 0) {
+                    if (f1Placeables > f2Placeables) {
+                        f1BadgesHtml += `<span class="text-[9px] bg-sky-950/80 text-sky-300 px-1.5 py-0.5 rounded border border-sky-800/80 font-bold"><i class="fa-solid fa-building text-[8px] mr-1"></i>Most Buildings (${f1Placeables})</span>`;
+                    } else if (f2Placeables > f1Placeables) {
+                        f2BadgesHtml += `<span class="text-[9px] bg-sky-950/80 text-sky-300 px-1.5 py-0.5 rounded border border-sky-800/80 font-bold"><i class="fa-solid fa-building text-[8px] mr-1"></i>Most Buildings (${f2Placeables})</span>`;
+                    } else {
+                        f1BadgesHtml += `<span class="text-[9px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700 font-bold"><i class="fa-solid fa-handshake text-[8px] mr-1"></i>Buildings Tied (${f1Placeables})</span>`;
+                        f2BadgesHtml += `<span class="text-[9px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700 font-bold"><i class="fa-solid fa-handshake text-[8px] mr-1"></i>Buildings Tied (${f2Placeables})</span>`;
+                    }
+                }
+
+                if (farm1BadgesEl) farm1BadgesEl.innerHTML = f1BadgesHtml;
+                if (farm2BadgesEl) farm2BadgesEl.innerHTML = f2BadgesHtml;
+
+                // Accent highlighting for leaders
+                if (f1Vehicles > f2Vehicles || f1Placeables > f2Placeables) {
+                    farm1BoxEl.classList.add('border-emerald-500/40');
+                } else {
+                    farm1BoxEl.classList.remove('border-emerald-500/40');
+                }
+
+                if (f2Vehicles > f1Vehicles || f2Placeables > f1Placeables) {
+                    farm2BoxEl.classList.add('border-emerald-500/40');
+                } else {
+                    farm2BoxEl.classList.remove('border-emerald-500/40');
                 }
 
             }, (error) => {
@@ -1152,7 +1278,12 @@
             const farm2NameEl = document.getElementById('fs25-farm2-name');
             const farm1MoneyEl = document.getElementById('fs25-farm1-money');
             const farm2MoneyEl = document.getElementById('fs25-farm2-money');
+            const farm1BadgesEl = document.getElementById('fs25-farm1-badges');
+            const farm2BadgesEl = document.getElementById('fs25-farm2-badges');
             const playersEl = document.getElementById('fs25-player-count');
+            const totalVehiclesEl = document.getElementById('fs25-total-vehicles');
+            const totalPlaceablesEl = document.getElementById('fs25-total-placeables');
+            const totalModsEl = document.getElementById('fs25-total-mods');
 
             if (statusPill) {
                 statusPill.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700 flex items-center gap-1 font-mono";
@@ -1162,8 +1293,13 @@
             if (farm2NameEl) farm2NameEl.textContent = "Server Standby";
             if (farm1MoneyEl) farm1MoneyEl.textContent = "--";
             if (farm2MoneyEl) farm2MoneyEl.textContent = "--";
+            if (farm1BadgesEl) farm1BadgesEl.innerHTML = "";
+            if (farm2BadgesEl) farm2BadgesEl.innerHTML = "";
             if (totalFarmsEl) totalFarmsEl.textContent = "0";
             if (playersEl) playersEl.textContent = "0";
+            if (totalVehiclesEl) totalVehiclesEl.textContent = "--";
+            if (totalPlaceablesEl) totalPlaceablesEl.textContent = "--";
+            if (totalModsEl) totalModsEl.textContent = "--";
         }
 
         /* -------------------------------------------------------------
