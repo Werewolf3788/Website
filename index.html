@@ -3,8 +3,8 @@
   Location: /index.html
   Description: Werewolf Project Main Landing Page with Dynamic Firebase RTDB utm_links Navigation,
                Profile Card Direct Mapping (/utm_links/User/0, 1, 2), Live PSN Telemetry, 
-               Weather Overlays, Mobile Drill-Down Drawer, and Verified Firebase Movie/TV Split Counters.
-  Last Modified: Thursday, September 03, 2026 - 23:35:00 EDT (America/New_York)
+               Weather Overlays, Mobile Drill-Down Drawer, and Click-to-Pause Cinema Lightbox.
+  Last Modified: Thursday, September 03, 2026 - 23:26:07 EDT (America/New_York)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -412,9 +412,13 @@
                 </div>
             </div>
 
-            <!-- Dynamic Cinema Slideshow Screen Frame -->
+            <!-- Dynamic Cinema Slideshow Screen Frame (Click to Pause & Open Lightbox) -->
             <!-- HTML Line ~401 -->
-            <div id="cinema-container" class="custom-card p-4 border border-orange-500/30 flex flex-col items-center justify-end shadow-orange-500/10 shadow-2xl text-center relative overflow-hidden min-h-[300px] sm:min-h-[420px] max-w-4xl mx-auto">
+            <div id="cinema-container" 
+                 onclick="openCinemaLightbox()" 
+                 title="Click to view details and pause slideshow"
+                 class="custom-card p-4 border border-orange-500/30 hover:border-orange-500/80 cursor-pointer flex flex-col items-center justify-end shadow-orange-500/10 shadow-2xl text-center relative overflow-hidden min-h-[300px] sm:min-h-[420px] max-w-4xl mx-auto transition-all group">
+                
                 <div id="cinema-layer-1" class="absolute inset-0 transition-opacity duration-1000 opacity-100 z-0">
                     <div class="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-50"></div>
                     <div class="absolute inset-0 bg-contain bg-center bg-no-repeat drop-shadow-2xl"></div>
@@ -424,10 +428,11 @@
                     <div class="absolute inset-0 bg-contain bg-center bg-no-repeat drop-shadow-2xl"></div>
                 </div>
                 
-                <div class="absolute inset-0 bg-slate-950/40 z-0"></div>
+                <div class="absolute inset-0 bg-slate-950/40 group-hover:bg-slate-950/20 transition-colors z-0"></div>
                 
                 <!-- Dynamic Poster Caption Pill -->
-                <div class="relative z-10 mb-2 sm:mb-4 bg-black/70 border border-orange-500/50 px-4 sm:px-6 py-2 rounded-full backdrop-blur-md max-w-md mx-auto">
+                <div class="relative z-10 mb-2 sm:mb-4 bg-black/70 border border-orange-500/50 group-hover:border-orange-400 px-4 sm:px-6 py-2 rounded-full backdrop-blur-md max-w-md mx-auto flex items-center justify-center gap-2 transition-all">
+                    <i class="fa-solid fa-expand text-orange-400 text-xs"></i>
                     <span id="cinema-caption-title" class="text-orange-400 font-black text-xs uppercase tracking-wider italic">Featured Poster</span>
                 </div>
             </div>
@@ -436,7 +441,7 @@
     </section>
 
     <!-- Co-Op Games Modules Section -->
-    <!-- HTML Line ~424 -->
+    <!-- HTML Line ~430 -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-8">
@@ -448,7 +453,7 @@
             </div>
 
             <!-- Dynamic Gaming Progress Cards Layout Grid -->
-            <!-- HTML Line ~435 -->
+            <!-- HTML Line ~441 -->
             <div id="gaming-modules-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="custom-card p-6 border border-slate-700 animate-pulse flex items-center justify-center min-h-[200px]">
                     <span class="text-slate-400 text-sm font-mono"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Scanning Firestore for multi-player games...</span>
@@ -456,6 +461,36 @@
             </div>
         </div>
     </section>
+
+    <!-- Cinema Movie Lightbox Modal (Pauses Slideshow while Visible) -->
+    <!-- HTML Line ~452 -->
+    <div id="cinema-lightbox" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4">
+        <div class="relative max-w-2xl w-full bg-slate-900 border border-orange-500/40 rounded-2xl p-6 shadow-2xl flex flex-col max-h-[90vh]">
+            
+            <!-- Close Button -->
+            <button type="button" onclick="closeCinemaLightbox()" aria-label="Close Lightbox" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-full w-10 h-10 flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <h3 id="lightbox-title" class="text-xl font-bold text-orange-400 mb-4 pr-10">Movie Title</h3>
+            
+            <div class="flex-1 overflow-y-auto no-scrollbar flex flex-col items-center gap-4">
+                <!-- Large Poster View -->
+                <img id="lightbox-img" src="" alt="Movie Poster" class="max-h-[50vh] w-auto rounded-lg shadow-xl object-contain border border-slate-800">
+                
+                <!-- Description / Alt Details (Exclusively displayed here inside lightbox view) -->
+                <div class="w-full bg-slate-950/60 p-4 rounded-xl border border-slate-800 text-left">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Overview / Description</span>
+                    <p id="lightbox-desc" class="text-slate-300 text-sm leading-relaxed">No description available.</p>
+                </div>
+            </div>
+            
+            <div class="mt-4 pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
+                <span><i class="fa-solid fa-circle-pause text-orange-400 mr-1.5"></i>Slideshow paused</span>
+                <button type="button" onclick="closeCinemaLightbox()" class="text-sky-400 hover:text-sky-300 font-bold px-4 py-2 bg-slate-800 rounded-lg">Close & Resume</button>
+            </div>
+        </div>
+    </div>
 
     <footer class="mt-auto bg-slate-950 py-10 border-t border-slate-800 text-center relative">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -470,14 +505,14 @@
     </footer>
 
     <!-- Firebase SDK Modules Script -->
-    <!-- HTML JS Line ~457 -->
+    <!-- HTML JS Line ~496 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         /* Firebase App Credentials Config */
-        /* JS Line ~464 */
+        /* JS Line ~503 */
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
             authDomain: "entertainment-71888.firebaseapp.com",
@@ -990,7 +1025,7 @@
         loadFirestoreSquadProgress();
     </script>
 
-    <!-- Open-Meteo Weather & Firebase RTDB Cinema Slideshow Engine -->
+    <!-- Open-Meteo Weather, Lightbox, & Interactive Slideshow Engine -->
     <!-- HTML JS Line ~830 -->
     <script>
         const users = [
@@ -1017,11 +1052,11 @@
         let cinemaImages = [];
         let currentSlideIndex = 0;
         let activeBgId = 1;
-        let cinemaInterval;
+        let cinemaInterval = null;
+        let isLightboxOpen = false;
 
         /**
          * Precision Firebase RTDB Movie Count & Verified Poster Feeder
-         * Only tallies keys that contain valid Title & ID pairings.
          */
         async function fetchMovieData() {
             const countDisplay = document.getElementById('movie-count');
@@ -1030,14 +1065,13 @@
             const rtdbFullUrl = 'https://entertainment-71888-default-rtdb.firebaseio.com/movies_guide.json?orderBy="$key"&limitToFirst=100';
 
             try {
-                // 1. Fetch exact root keys via shallow check
+                // 1. Exact root keys shallow count
                 const shallowRes = await fetchWithRetry(rtdbShallowUrl);
                 const shallowData = await shallowRes.json();
                 
                 let verifiedCount = 0;
                 if (shallowData) {
                     const keys = Object.keys(shallowData);
-                    // Filter keys that match valid format: Title_ID (has tt, tmdb, or tvdb)
                     verifiedCount = keys.filter(k => {
                         const lower = k.toLowerCase();
                         return (lower.includes('tt') || lower.includes('tmdb') || lower.includes('tvdb') || k.includes('_')) && !k.startsWith('entry_');
@@ -1049,7 +1083,7 @@
                     localStorage.setItem('werewolf_library_count', verifiedCount);
                 }
 
-                // 2. Sample first batch to build poster slideshow and calculate type ratios
+                // 2. Fetch sample batch with descriptions for the poster slideshow and lightbox
                 const fullRes = await fetchWithRetry(rtdbFullUrl);
                 const fullData = await fullRes.json();
 
@@ -1067,13 +1101,15 @@
                             if (m.poster && (m.poster.startsWith('http://') || m.poster.startsWith('https://') || m.poster.startsWith('//')) && m.poster !== 'N/A') {
                                 cinemaImages.push({
                                     url: m.poster,
-                                    title: m.title || key.replace(/_/g, ' ')
+                                    title: m.title || key.replace(/_/g, ' '),
+                                    description: m.description && m.description !== 'N/A' ? m.description : "No description available for this title.",
+                                    year: m.year || "",
+                                    rating: m.rating || ""
                                 });
                             }
                         }
                     });
 
-                    // Update breakdown indicator if TV shows are found
                     if (breakdownDisplay && (movieTally > 0 || tvTally > 0)) {
                         breakdownDisplay.textContent = tvTally > 0 ? `(${tvTally} TV Shows)` : '';
                     }
@@ -1091,7 +1127,7 @@
         }
 
         function startCinemaSlideshow() {
-            if (cinemaImages.length === 0 || cinemaInterval) return;
+            if (cinemaImages.length === 0 || cinemaInterval || isLightboxOpen) return;
             
             const layer1 = document.getElementById('cinema-layer-1');
             const layer2 = document.getElementById('cinema-layer-2');
@@ -1128,6 +1164,60 @@
                 }
             }, 6000);
         }
+
+        function pauseCinemaSlideshow() {
+            if (cinemaInterval) {
+                clearInterval(cinemaInterval);
+                cinemaInterval = null;
+            }
+        }
+
+        /**
+         * Lightbox Actions: Pauses interval and opens responsive details modal
+         */
+        window.openCinemaLightbox = function() {
+            if (cinemaImages.length === 0) return;
+
+            pauseCinemaSlideshow();
+            isLightboxOpen = true;
+
+            const currentItem = cinemaImages[currentSlideIndex];
+            const modal = document.getElementById('cinema-lightbox');
+            const titleEl = document.getElementById('lightbox-title');
+            const imgEl = document.getElementById('lightbox-img');
+            const descEl = document.getElementById('lightbox-desc');
+
+            const yearText = currentItem.year ? ` (${currentItem.year})` : '';
+            titleEl.textContent = `${currentItem.title}${yearText}`;
+            imgEl.src = currentItem.url;
+            imgEl.alt = currentItem.title; // ALT text kept within lightbox view only
+            descEl.textContent = currentItem.description;
+
+            modal.classList.remove('hidden');
+        };
+
+        window.closeCinemaLightbox = function() {
+            const modal = document.getElementById('cinema-lightbox');
+            if (modal) {
+                modal.classList.add('hidden');
+                isLightboxOpen = false;
+                startCinemaSlideshow();
+            }
+        };
+
+        // Close on background click
+        document.getElementById('cinema-lightbox').addEventListener('click', function(e) {
+            if (e.target === this) {
+                window.closeCinemaLightbox();
+            }
+        });
+
+        // Close on Escape key press
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isLightboxOpen) {
+                window.closeCinemaLightbox();
+            }
+        });
 
         async function updateWeather() {
             for (const u of users) {
