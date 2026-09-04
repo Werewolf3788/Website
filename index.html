@@ -4,8 +4,8 @@
   Description: Werewolf Project Main Landing Page with Dynamic Firebase RTDB utm_links Navigation,
                Profile Card Direct Mapping (/utm_links/User/0, 1, 2), Live PSN Telemetry, 
                Weather Overlays, Mobile Drill-Down Drawer, Click-to-Pause Cinema Lightbox with Full 
-               Action Buttons, and Native Firebase RTDB FS25 Telemetry Mapping (/fs25).
-  Last Modified: Thursday, September 03, 2026 - 23:55:00 EDT (America/New_York)
+               Action Buttons, and Native Dual-Farm Firebase RTDB FS25 Telemetry Mapping (/fs25).
+  Last Modified: Friday, September 04, 2026 - 01:25:00 EDT (America/New_York)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -16,7 +16,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google Tag Manager / GA4 Setup & G-CTYHDF4MSD Integration -->
+    <!-- Google Tag Manager / GA4 Setup & G-CTYHDF4MSD Multi-Property Integration (Works on HTTP & HTTPS) -->
     <!-- HTML JS Line ~18 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
@@ -518,10 +518,10 @@
                             <span id="fs25-game-time" class="text-emerald-400 font-bold"><i class="fa-regular fa-clock mr-1"></i>--:--</span>
                         </div>
 
-                        <!-- Live Minimap & Primary Farm Grid -->
+                        <!-- Live Minimap & Dual Farm Grid -->
                         <div class="space-y-3 mb-4">
                             <!-- Minimap Thumbnail View -->
-                            <div class="relative w-full h-32 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 group">
+                            <div class="relative w-full h-28 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 group">
                                 <img id="fs25-map-img" 
                                      src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80" 
                                      alt="FS25 Live Server Map"
@@ -534,16 +534,25 @@
                                 </div>
                             </div>
 
-                            <!-- Primary Farm (farmId 0) -->
-                            <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
-                                <div class="flex justify-between items-center text-xs mb-1">
-                                    <span class="text-emerald-400 font-bold flex items-center gap-1">
-                                        <i class="fa-solid fa-wheat-awn"></i>
-                                        <span id="fs25-farm0-label">Farm 0 (Dedicated Farm)</span>
-                                    </span>
-                                    <span class="text-slate-200 font-mono font-bold text-xs" id="fs25-farm0-money">$0</span>
+                            <!-- Dual Farm Display: Farm 1 & Farm 2 Split Box -->
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <!-- Farm 1 -->
+                                <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 flex flex-col justify-between min-h-[64px]">
+                                    <div class="flex justify-between items-center text-[11px] mb-0.5">
+                                        <span class="text-emerald-400 font-bold truncate" id="fs25-farm1-label">Farm 1</span>
+                                        <span class="text-slate-200 font-mono font-bold text-xs" id="fs25-farm1-money">$0</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 truncate" id="fs25-farm1-name">Loading Farm 1...</div>
                                 </div>
-                                <div class="text-[11px] text-slate-400 truncate" id="fs25-farm0-name">Connecting to feed...</div>
+
+                                <!-- Farm 2 -->
+                                <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 flex flex-col justify-between min-h-[64px]">
+                                    <div class="flex justify-between items-center text-[11px] mb-0.5">
+                                        <span class="text-emerald-400 font-bold truncate" id="fs25-farm2-label">Farm 2</span>
+                                        <span class="text-slate-200 font-mono font-bold text-xs" id="fs25-farm2-money">$0</span>
+                                    </div>
+                                    <div class="text-[10px] text-slate-400 truncate" id="fs25-farm2-name">Loading Farm 2...</div>
+                                </div>
                             </div>
 
                             <!-- Quick Stats Row -->
@@ -561,7 +570,7 @@
 
                         <!-- Direct Savegame Quick-Links -->
                         <div class="border-t border-slate-800/80 pt-2 mb-3">
-                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Savegame Data Feeds:</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Savegame Feeds:</span>
                             <div class="grid grid-cols-3 gap-1.5 text-center">
                                 <a href="http://207.244.246.70:9050/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=careerSavegame" target="_blank" rel="noopener noreferrer" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-1 py-1.5 rounded truncate transition-colors min-h-[36px] flex items-center justify-center">
                                     Career
@@ -1006,7 +1015,7 @@
 
         /* -------------------------------------------------------------
            3. Live Farming Simulator 25 Telemetry from Firebase RTDB (/fs25)
-              Bypasses insecure HTTP mixed-content issues cleanly
+              Dual-Farm Extraction (Farm 1 & Farm 2)
            ------------------------------------------------------------- */
         function listenToFs25FirebaseTelemetry() {
             const fs25Ref = ref(rtdb, 'fs25');
@@ -1017,8 +1026,17 @@
                 const mapNameEl = document.getElementById('fs25-map-name');
                 const gameTimeEl = document.getElementById('fs25-game-time');
                 const slotsCountEl = document.getElementById('fs25-slots-count');
-                const farm0NameEl = document.getElementById('fs25-farm0-name');
-                const farm0MoneyEl = document.getElementById('fs25-farm0-money');
+                
+                // Farm 1 elements
+                const farm1LabelEl = document.getElementById('fs25-farm1-label');
+                const farm1NameEl = document.getElementById('fs25-farm1-name');
+                const farm1MoneyEl = document.getElementById('fs25-farm1-money');
+                
+                // Farm 2 elements
+                const farm2LabelEl = document.getElementById('fs25-farm2-label');
+                const farm2NameEl = document.getElementById('fs25-farm2-name');
+                const farm2MoneyEl = document.getElementById('fs25-farm2-money');
+                
                 const totalFarmsEl = document.getElementById('fs25-total-farms');
                 const playersEl = document.getElementById('fs25-player-count');
                 const daySeasonEl = document.getElementById('fs25-day-season');
@@ -1076,27 +1094,49 @@
                 slotsCountEl.textContent = `${onlinePlayerCount}/${slots} Slots`;
                 playersEl.textContent = onlinePlayerCount.toString();
 
-                // 5. Farms & Farm ID 0
+                // 5. Dual Farm Resolution: Farm 1 & Farm 2
                 const farmsNode = data.farms || data.farms_raw || {};
-                const farmKeys = Object.keys(farmsNode);
-                totalFarmsEl.textContent = farmKeys.length > 0 ? farmKeys.length.toString() : "1";
+                let farmList = [];
 
-                let farm0 = null;
-                if (farmsNode['0']) farm0 = farmsNode['0'];
-                else if (farmsNode['1']) farm0 = farmsNode['1'];
-                else if (farmsNode['farm0']) farm0 = farmsNode['farm0'];
-                else if (farmKeys.length > 0) farm0 = farmsNode[farmKeys[0]];
+                if (Array.isArray(farmsNode)) {
+                    farmList = farmsNode.filter(Boolean);
+                } else if (typeof farmsNode === 'object') {
+                    const sortedKeys = Object.keys(farmsNode).sort();
+                    sortedKeys.forEach(k => {
+                        if (farmsNode[k]) farmList.push(farmsNode[k]);
+                    });
+                }
 
-                if (farm0) {
-                    const farmName = farm0.name || farm0.farmName || "Primary Farm";
-                    const money = typeof farm0.money === 'number' 
-                        ? `$${farm0.money.toLocaleString()}` 
-                        : (farm0.money || farm0.balance || "$0");
-                    farm0NameEl.textContent = farmName;
-                    farm0MoneyEl.textContent = money;
+                totalFarmsEl.textContent = farmList.length > 0 ? farmList.length.toString() : "0";
+
+                const formatMoney = (val) => {
+                    if (typeof val === 'number') return `$${Math.round(val).toLocaleString()}`;
+                    if (typeof val === 'string' && val.trim() !== '') return val.startsWith('$') ? val : `$${val}`;
+                    return '$0';
+                };
+
+                // Farm 1
+                const f1 = farmList[0] || farmsNode['0'] || farmsNode['1'] || null;
+                if (f1) {
+                    farm1LabelEl.textContent = f1.farmId !== undefined ? `Farm ${f1.farmId}` : "Farm 1";
+                    farm1NameEl.textContent = f1.name || f1.farmName || "Primary Operation";
+                    farm1MoneyEl.textContent = formatMoney(f1.money ?? f1.balance);
                 } else {
-                    farm0NameEl.textContent = "Farm 0 Initialized";
-                    farm0MoneyEl.textContent = "$0";
+                    farm1LabelEl.textContent = "Farm 1";
+                    farm1NameEl.textContent = "Not Created";
+                    farm1MoneyEl.textContent = "$0";
+                }
+
+                // Farm 2
+                const f2 = farmList[1] || farmsNode['2'] || null;
+                if (f2) {
+                    farm2LabelEl.textContent = f2.farmId !== undefined ? `Farm ${f2.farmId}` : "Farm 2";
+                    farm2NameEl.textContent = f2.name || f2.farmName || "Secondary Operation";
+                    farm2MoneyEl.textContent = formatMoney(f2.money ?? f2.balance);
+                } else {
+                    farm2LabelEl.textContent = "Farm 2";
+                    farm2NameEl.textContent = "No 2nd Farm";
+                    farm2MoneyEl.textContent = "--";
                 }
 
             }, (error) => {
@@ -1108,14 +1148,20 @@
         function setFs25Offline() {
             const statusPill = document.getElementById('fs25-status-pill');
             const totalFarmsEl = document.getElementById('fs25-total-farms');
-            const farm0NameEl = document.getElementById('fs25-farm0-name');
+            const farm1NameEl = document.getElementById('fs25-farm1-name');
+            const farm2NameEl = document.getElementById('fs25-farm2-name');
+            const farm1MoneyEl = document.getElementById('fs25-farm1-money');
+            const farm2MoneyEl = document.getElementById('fs25-farm2-money');
             const playersEl = document.getElementById('fs25-player-count');
 
             if (statusPill) {
                 statusPill.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700 flex items-center gap-1 font-mono";
                 statusPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-slate-500 inline-block"></span> OFFLINE`;
             }
-            if (farm0NameEl) farm0NameEl.textContent = "Server Telemetry Standby";
+            if (farm1NameEl) farm1NameEl.textContent = "Server Standby";
+            if (farm2NameEl) farm2NameEl.textContent = "Server Standby";
+            if (farm1MoneyEl) farm1MoneyEl.textContent = "--";
+            if (farm2MoneyEl) farm2MoneyEl.textContent = "--";
             if (totalFarmsEl) totalFarmsEl.textContent = "0";
             if (playersEl) playersEl.textContent = "0";
         }
