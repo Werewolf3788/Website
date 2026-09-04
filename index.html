@@ -3,8 +3,8 @@
   Location: /index.html
   Description: Werewolf Project Main Landing Page with Dynamic Firebase RTDB utm_links Navigation,
                Profile Card Direct Mapping (/utm_links/User/0, 1, 2), Live PSN Telemetry, 
-               Weather Overlays, and Mobile Drill-Down Drawer.
-  Last Modified: Tuesday, September 01, 2026 - 05:25:30 EDT (America/New_York)
+               Weather Overlays, Mobile Drill-Down Drawer, and Precision Firebase RTDB Movie Sync.
+  Last Modified: Thursday, September 03, 2026 - 22:45:00 EDT (America/New_York)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -15,11 +15,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google Tag Manager / GA4 setup for site metrics -->
+    <!-- Google Tag Manager / GA4 Setup & G-CTYHDF4MSD Integration -->
     <!-- HTML JS Line ~18 -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-Z9M5LXQ5XN"></script>
     <script>
-      /* GA4 Setup & G-CTYHDF4MSD Multi-Property Integration */
+      /* GA4 Multi-Property Setup: G-Z9M5LXQ5XN & G-CTYHDF4MSD */
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
@@ -29,7 +29,7 @@
 
     <style>
         /* CSS Variables - Section and Layout Sizing */
-        /* CSS Line ~30 */
+        /* CSS Line ~32 */
         :root {
             --header-text-size: clamp(22px, 4vw, 32px);
             --body-text-size: 16px;
@@ -88,7 +88,7 @@
         }
 
         /* Custom Dynamic Card Styles */
-        /* CSS Line ~85 */
+        /* CSS Line ~87 */
         .custom-card {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(10px);
@@ -100,7 +100,7 @@
         }
 
         /* Dynamic Live Weather Animation Overlay Layers */
-        /* CSS Line ~97 */
+        /* CSS Line ~99 */
         .weather-layer {
             position: absolute;
             inset: 0;
@@ -216,7 +216,7 @@
         .is-sunny .visit-link { color: #0f172a !important; border-color: rgba(0,0,0,0.3) !important; }
 
         /* Site Signature Watermark */
-        /* CSS Line ~205 */
+        /* CSS Line ~207 */
         .kf-watermark {
             position: fixed;
             bottom: 10px;
@@ -238,7 +238,7 @@
 <body class="min-h-screen flex flex-col">
 
     <!-- Sticky Navigation Bar Container -->
-    <!-- HTML Line ~228 -->
+    <!-- HTML Line ~230 -->
     <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -248,8 +248,8 @@
                     </a>
                 </div>
 
-                <!-- Desktop / Wide Screen Horizontal Navigation Links -->
-                <!-- HTML Line ~239 -->
+                <!-- Desktop Horizontal Navigation Links -->
+                <!-- HTML Line ~241 -->
                 <div id="desktop-nav-links" class="hidden lg:flex items-center space-x-6 xl:space-x-8">
                     <div class="flex items-center space-x-4 animate-pulse">
                         <div class="h-4 w-16 bg-slate-700 rounded"></div>
@@ -258,8 +258,8 @@
                     </div>
                 </div>
 
-                <!-- Mobile & Tablet Hamburger Toggle Switch -->
-                <!-- HTML Line ~249 -->
+                <!-- Mobile & Tablet Hamburger Toggle -->
+                <!-- HTML Line ~251 -->
                 <div class="lg:hidden flex items-center">
                     <button type="button" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu" class="text-slate-400 hover:text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-slate-800 transition-colors">
                         <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
@@ -269,8 +269,8 @@
         </div>
     </nav>
 
-    <!-- Mobile/Tablet Slide-Over Modal Drawer Overlay -->
-    <!-- HTML Line ~258 -->
+    <!-- Mobile/Tablet Slide-Over Modal Drawer -->
+    <!-- HTML Line ~260 -->
     <div id="mobile-menu-overlay" class="fixed inset-0 bg-slate-950/95 z-[100] hidden flex flex-col no-scrollbar overflow-y-auto">
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90 sticky top-0 z-10">
             <span class="text-lg font-black text-sky-400">NAVIGATION MENU</span>
@@ -294,7 +294,7 @@
     </div>
 
     <!-- Main Landing Hero Section -->
-    <!-- HTML Line ~283 -->
+    <!-- HTML Line ~285 -->
     <header class="section-padding px-4 sm:px-6 lg:px-8 flex-grow flex items-center">
         <div class="max-w-4xl mx-auto text-center">
             <h1 class="text-slate-100">Knowing the Players</h1>
@@ -305,7 +305,7 @@
     </header>
 
     <!-- Contributors Team Section -->
-    <!-- HTML Line ~294 -->
+    <!-- HTML Line ~296 -->
     <section id="team" class="section-padding bg-slate-900/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-8 sm:mb-12">
@@ -314,8 +314,8 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Werewolf3788 Profile Card (Maps to /utm_links/User/2/url) -->
-                <!-- HTML Line ~304 -->
+                <!-- Werewolf3788 Profile Card -->
+                <!-- HTML Line ~306 -->
                 <div id="card-werewolf" class="custom-card p-6 text-center shadow-werewolf">
                     <div class="weather-layer" id="layer-werewolf"></div>
                     <div class="card-content">
@@ -337,8 +337,8 @@
                     </div>
                 </div>
 
-                <!-- Raymystyro Profile Card (Maps to /utm_links/User/1/url) -->
-                <!-- HTML Line ~327 -->
+                <!-- Raymystyro Profile Card -->
+                <!-- HTML Line ~329 -->
                 <div id="card-ray" class="custom-card p-6 text-center shadow-ray">
                     <div class="weather-layer" id="layer-ray"></div>
                     <div class="card-content">
@@ -360,8 +360,8 @@
                     </div>
                 </div>
 
-                <!-- Terrdog420 Profile Card (Maps to /utm_links/User/0/url) -->
-                <!-- HTML Line ~350 -->
+                <!-- Terrdog420 Profile Card -->
+                <!-- HTML Line ~352 -->
                 <div id="card-tj" class="custom-card p-6 text-center shadow-terrdog md:col-span-2 lg:col-span-1">
                     <div class="weather-layer" id="layer-tj"></div>
                     <div class="card-content">
@@ -387,12 +387,10 @@
     </section>
 
     <!-- Cinema Movie Library Archive Section -->
-    <!-- HTML Line ~374 -->
+    <!-- HTML Line ~376 -->
     <section class="section-padding bg-slate-900/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             
-            <!-- External Text & Archive Portal Button -->
-            <!-- HTML Line ~378 -->
             <div class="text-center max-w-3xl mx-auto space-y-4">
                 <h2 class="text-orange-500">Werewolf Cinema</h2>
                 <p class="text-slate-300 font-medium text-sm sm:text-base leading-relaxed">
@@ -412,7 +410,7 @@
             </div>
 
             <!-- Dynamic Cinema Slideshow Screen Frame -->
-            <!-- HTML Line ~399 -->
+            <!-- HTML Line ~401 -->
             <div id="cinema-container" class="custom-card p-4 border border-orange-500/30 flex flex-col items-center justify-end shadow-orange-500/10 shadow-2xl text-center relative overflow-hidden min-h-[300px] sm:min-h-[420px] max-w-4xl mx-auto">
                 <div id="cinema-layer-1" class="absolute inset-0 transition-opacity duration-1000 opacity-100 z-0">
                     <div class="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-50"></div>
@@ -435,7 +433,7 @@
     </section>
 
     <!-- Co-Op Games Modules Section -->
-    <!-- HTML Line ~422 -->
+    <!-- HTML Line ~424 -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-8">
@@ -447,7 +445,7 @@
             </div>
 
             <!-- Dynamic Gaming Progress Cards Layout Grid -->
-            <!-- HTML Line ~433 -->
+            <!-- HTML Line ~435 -->
             <div id="gaming-modules-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div class="custom-card p-6 border border-slate-700 animate-pulse flex items-center justify-center min-h-[200px]">
                     <span class="text-slate-400 text-sm font-mono"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Scanning Firestore for multi-player games...</span>
@@ -469,14 +467,14 @@
     </footer>
 
     <!-- Firebase SDK Modules Script -->
-    <!-- HTML JS Line ~455 -->
+    <!-- HTML JS Line ~457 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         /* Firebase App Credentials Config */
-        /* JS Line ~462 */
+        /* JS Line ~464 */
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
             authDomain: "entertainment-71888.firebaseapp.com",
@@ -497,7 +495,6 @@
 
         /* -------------------------------------------------------------
            1. Firebase RTDB Navigation Engine (/utm_links)
-           Replaces the CSV parser and binds directly to Navbar + Cards
            ------------------------------------------------------------- */
         let mobileNavTree = [];
 
@@ -523,21 +520,18 @@
             const userFolder = utmData.User || utmData.user || utmData.Users || utmData.users;
             if (!userFolder) return;
 
-            // Extract User 0 (Terrdog / Darkwing)
             const user0 = userFolder[0] || userFolder['0'];
             if (user0 && (user0.url || user0.link)) {
                 const btnTj = document.getElementById('profile-link-tj');
                 if (btnTj) btnTj.href = user0.url || user0.link;
             }
 
-            // Extract User 1 (Raymystyro)
             const user1 = userFolder[1] || userFolder['1'];
             if (user1 && (user1.url || user1.link)) {
                 const btnRay = document.getElementById('profile-link-ray');
                 if (btnRay) btnRay.href = user1.url || user1.link;
             }
 
-            // Extract User 2 (Werewolf3788)
             const user2 = userFolder[2] || userFolder['2'];
             if (user2 && (user2.url || user2.link)) {
                 const btnWerewolf = document.getElementById('profile-link-werewolf');
@@ -545,15 +539,13 @@
             }
         }
 
-        /* Build Desktop & Mobile Dynamic Menus from Firebase /utm_links hierarchy */
+        /* Build Dynamic Menus from Firebase /utm_links */
         function buildNavigationFromUtm(utmData) {
             const standaloneItems = [];
             const groupsMap = {};
 
-            // Protocol compatibility check
             const protocol = window.location.protocol.startsWith('https') ? 'https:' : 'http:';
 
-            // Always add Home at the beginning
             const navOrder = [
                 {
                     type: 'standalone',
@@ -561,22 +553,17 @@
                 }
             ];
 
-            // Traverse RTDB root object keys
             Object.keys(utmData).forEach(groupKey => {
                 const groupContent = utmData[groupKey];
                 
-                // If it's an object/array containing children items
                 if (typeof groupContent === 'object' && groupContent !== null) {
-                    // Check if groupContent is a direct link item or a folder of items
                     if (groupContent.url || groupContent.link) {
-                        // It's a standalone top-level link
                         standaloneItems.push({
                             name: groupContent.name || groupContent.title || groupKey,
                             url: groupContent.url || groupContent.link || '#',
                             img: groupContent.img || groupContent.image || groupContent.icon || ''
                         });
                     } else {
-                        // It's a Folder / Dropdown Category (like User, Games, Entertainment, etc.)
                         const childItems = [];
                         const keys = Object.keys(groupContent);
                         
@@ -603,7 +590,6 @@
                 }
             });
 
-            // Sort and append standalone items
             standaloneItems.sort((a, b) => a.name.localeCompare(b.name));
             standaloneItems.forEach(item => {
                 if (item.name.toLowerCase() !== 'home') {
@@ -611,7 +597,6 @@
                 }
             });
 
-            // Sort and append group folders
             const sortedGroupNames = Object.keys(groupsMap).sort((a, b) => a.localeCompare(b));
             sortedGroupNames.forEach(groupName => {
                 navOrder.push({
@@ -763,15 +748,12 @@
                 if (snapshot.exists()) {
                     const psnData = snapshot.val();
                     
-                    // Werewolf / WildHorse_Spirit Node
                     const werewolfData = extractUserPsnNode(psnData, ['WildHorse_Spirit', 'wildhorse_spirit', 'Werewolf3788', 'werewolf3788', 'werewolf']);
                     updatePsnCardStatus('werewolf', werewolfData, 'var(--color-werewolf)');
 
-                    // Raymystyro / OneLIVIDMAN Node
                     const rayData = extractUserPsnNode(psnData, ['OneLIVIDMAN', 'onelividman', 'Raymystyro', 'raymystyro', 'Ray']);
                     updatePsnCardStatus('ray', rayData, 'var(--color-ray)');
 
-                    // Terrdog420 / Darkwing Node
                     const tjData = extractUserPsnNode(psnData, ['Darkwing69420', 'darkwing69420', 'Terrdog420', 'terrdog420', 'terrdog', 'Darkwing', 'darkwing']);
                     updatePsnCardStatus('tj', tjData, 'var(--color-terrdog)');
                 } else {
@@ -812,24 +794,21 @@
             const isIdle = userPsnData.idle === true || 
                           userPsnData.onlineStatus === 'idle' || 
                           userPsnData.onlineStatus === 'standby' ||
-                          userPsnData.status === 'idle' ||
+                          userPsnData.status === 'idle' || 
                           userPsnData.status === 'standby' ||
                           (typeof rawGame === 'string' && (rawGame.toLowerCase() === 'idle' || rawGame.toLowerCase() === 'standby'));
 
             if (isOnline && !isIdle && rawGame.trim() !== '') {
-                // User is actively in game
                 gameEl.innerHTML = `<i class="fa-solid fa-gamepad mr-1.5"></i>${rawGame}`;
                 gameEl.style.color = themeColor;
                 gameEl.className = "text-xs uppercase font-bold italic tracking-wide";
                 if (indicator) indicator.classList.remove('hidden');
             } else if (isOnline && !isIdle) {
-                // Online on PSN Dashboard
                 gameEl.innerHTML = `<i class="fa-brands fa-playstation mr-1.5"></i>Online on PSN`;
                 gameEl.style.color = themeColor;
                 gameEl.className = "text-xs uppercase font-bold italic tracking-wide";
                 if (indicator) indicator.classList.remove('hidden');
             } else {
-                // Idle or Offline
                 gameEl.textContent = 'Currently Offline';
                 gameEl.className = 'text-slate-500 opacity-60 text-xs';
                 gameEl.style.color = '';
@@ -930,9 +909,7 @@
                                     }
                                 }
                             });
-                        } catch (e) {
-                            // Suppress collection errors
-                        }
+                        } catch (e) {}
                     }
                 }
 
@@ -1006,13 +983,13 @@
             }
         }
 
-        // Initialize Firebase Listeners
+        // Initialize Firebase RTDB & Firestore Listeners
         listenToUtmLinks();
         listenToPsnPresence();
         loadFirestoreSquadProgress();
     </script>
 
-    <!-- Open-Meteo Weather & Cinema Slideshow Engine -->
+    <!-- Open-Meteo Weather & Firebase RTDB Cinema Slideshow Engine -->
     <!-- HTML JS Line ~830 -->
     <script>
         const users = [
@@ -1041,67 +1018,45 @@
         let activeBgId = 1;
         let cinemaInterval;
 
-        function parseCSVLine(line) {
-            const result = [];
-            let current = '';
-            let inQuotes = false;
-            for (let i = 0; i < line.length; i++) {
-                const char = line[i];
-                if (char === '"' && line[i+1] === '"') {
-                    current += '"'; i++;
-                } else if (char === '"') {
-                    inQuotes = !inQuotes;
-                } else if (char === ',' && !inQuotes) {
-                    result.push(current.trim());
-                    current = '';
-                } else {
-                    current += char;
-                }
-            }
-            result.push(current.trim());
-            return result;
-        }
-
-        function cleanMovieTitleFromUrl(url) {
-            if (!url) return "Featured Movie Title";
-            let filename = url.split('/').pop().split('?')[0];
-            filename = decodeURIComponent(filename)
-                .replace(/\.[^/.]+$/, '')
-                .replace(/[-_]/g, ' ')
-                .replace(/([a-z])([A-Z])/g, '$1 $2');
-            return filename.toUpperCase();
-        }
-
+        /**
+         * Precision Firebase RTDB Movie Count & Poster Feeder
+         * Reads directly from Firebase RTDB (movies_guide) via shallow check
+         * Eliminates CSV line-split multiplication bugs permanently.
+         */
         async function fetchMovieData() {
-            const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRbnwK6U18P1u1eAS8a_PqZzpOKxQ9AATL6RBH7CfxXQR10YPM63akRqxSDbNiXYJWs92tvobh6iqE7/pub?output=csv';
             const countDisplay = document.getElementById('movie-count');
+            const rtdbShallowUrl = 'https://entertainment-71888-default-rtdb.firebaseio.com/movies_guide.json?shallow=true';
+            const rtdbFullUrl = 'https://entertainment-71888-default-rtdb.firebaseio.com/movies_guide.json?orderBy="$key"&limitToFirst=60';
 
             try {
-                const response = await fetchWithRetry(csvUrl);
-                const data = await response.text();
-                const rows = data.split(/\r?\n/).filter(line => line.trim() !== "");
+                // 1. Fetch exact total title count in milliseconds
+                const shallowRes = await fetchWithRetry(rtdbShallowUrl);
+                const shallowData = await shallowRes.json();
                 
-                let validMovieCount = 0;
-                cinemaImages = [];
+                if (shallowData) {
+                    const exactCount = Object.keys(shallowData).length;
+                    if (countDisplay) {
+                        countDisplay.textContent = exactCount.toLocaleString();
+                    }
+                    localStorage.setItem('werewolf_library_count', exactCount);
+                }
 
-                for (let i = 1; i < rows.length; i++) {
-                    const columns = parseCSVLine(rows[i]);
-                    if (columns.length > 0 && columns[0].trim() !== '') {
-                        validMovieCount++;
-                        if (columns.length > 1 && columns[1] && (columns[1].startsWith('http') || columns[1].startsWith('//'))) {
+                // 2. Fetch sample batch of valid movie posters for the dynamic slideshow
+                const fullRes = await fetchWithRetry(rtdbFullUrl);
+                const fullData = await fullRes.json();
+
+                cinemaImages = [];
+                if (fullData) {
+                    Object.keys(fullData).forEach(key => {
+                        const m = fullData[key];
+                        if (m && m.poster && (m.poster.startsWith('http://') || m.poster.startsWith('https://') || m.poster.startsWith('//')) && m.poster !== 'N/A') {
                             cinemaImages.push({
-                                url: columns[1],
-                                title: columns[0].trim() || cleanMovieTitleFromUrl(columns[1])
+                                url: m.poster,
+                                title: m.title || key.replace(/_/g, ' ')
                             });
                         }
-                    }
+                    });
                 }
-
-                if (countDisplay) {
-                    countDisplay.textContent = validMovieCount.toLocaleString();
-                }
-                
-                localStorage.setItem('werewolf_library_count', validMovieCount);
 
                 if (cinemaImages.length > 0) {
                     cinemaImages.sort(() => 0.5 - Math.random());
@@ -1109,8 +1064,8 @@
                 }
 
             } catch (error) {
-                console.error('Error fetching library data:', error);
-                if (countDisplay) countDisplay.textContent = 'Service unavailable';
+                console.error('Error fetching library from Firebase RTDB:', error);
+                if (countDisplay) countDisplay.textContent = 'Archive Offline';
             }
         }
 
