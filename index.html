@@ -3,8 +3,9 @@
   Location: /index.html
   Description: Werewolf Project Main Landing Page with Dynamic Firebase RTDB utm_links Navigation,
                Profile Card Direct Mapping (/utm_links/User/0, 1, 2), Live PSN Telemetry, 
-               Weather Overlays, Mobile Drill-Down Drawer, and Click-to-Pause Cinema Lightbox.
-  Last Modified: Thursday, September 03, 2026 - 23:26:07 EDT (America/New_York)
+               Weather Overlays, Mobile Drill-Down Drawer, Click-to-Pause Cinema Lightbox,
+               and Live FS25 Dedicated Server XML Feed Parser with Minimap & Savegame Links.
+  Last Modified: Thursday, September 03, 2026 - 23:55:00 EDT (America/New_York)
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -40,6 +41,7 @@
             --color-ray: #C41E3A;      /* Red */
             --color-phoenix: #00f2ff;   /* Cyan */
             --color-terrdog: #9333ea;   /* Purple */
+            --color-fs25: #22c55e;      /* Green */
         }
 
         body {
@@ -88,7 +90,7 @@
         }
 
         /* Custom Dynamic Card Styles */
-        /* CSS Line ~87 */
+        /* CSS Line ~88 */
         .custom-card {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(10px);
@@ -100,7 +102,7 @@
         }
 
         /* Dynamic Live Weather Animation Overlay Layers */
-        /* CSS Line ~99 */
+        /* CSS Line ~100 */
         .weather-layer {
             position: absolute;
             inset: 0;
@@ -215,8 +217,46 @@
         .is-sunny .border-terrdog, .is-sunny .border-werewolf, .is-sunny .border-ray { border-color: rgba(0,0,0,0.4); }
         .is-sunny .visit-link { color: #0f172a !important; border-color: rgba(0,0,0,0.3) !important; }
 
+        /* Cinema Action / Store Buttons in Lightbox */
+        .lb-btn-grid {
+            display: grid;
+            gap: 8px;
+            width: 100%;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+        @media (max-width: 640px) {
+            .lb-btn-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+        .lb-btn {
+            padding: 10px 6px;
+            border-radius: 8px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+            color: #fff;
+            text-decoration: none;
+            text-align: center;
+            transition: transform 0.2s, opacity 0.2s;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .lb-btn:hover {
+            transform: scale(1.02);
+            opacity: 0.95;
+        }
+        .btn-amazon { background: #FF9900 !important; color: #000 !important; }
+        .btn-google { background: #4285F4 !important; }
+        .btn-moviesanywhere { background: #00aeef !important; }
+        .btn-apple { background: #4b5563 !important; }
+        .btn-fandango { background: #ea580c !important; }
+        .btn-youtube { background: #dc2626 !important; cursor: pointer; border: none; }
+
         /* Site Signature Watermark */
-        /* CSS Line ~207 */
+        /* CSS Line ~230 */
         .kf-watermark {
             position: fixed;
             bottom: 10px;
@@ -238,7 +278,7 @@
 <body class="min-h-screen flex flex-col">
 
     <!-- Sticky Navigation Bar Container -->
-    <!-- HTML Line ~230 -->
+    <!-- HTML Line ~250 -->
     <nav class="bg-slate-900/90 sticky top-0 z-50 border-b border-slate-700 backdrop-blur-md">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -249,7 +289,7 @@
                 </div>
 
                 <!-- Desktop Horizontal Navigation Links -->
-                <!-- HTML Line ~241 -->
+                <!-- HTML Line ~261 -->
                 <div id="desktop-nav-links" class="hidden lg:flex items-center space-x-6 xl:space-x-8">
                     <div class="flex items-center space-x-4 animate-pulse">
                         <div class="h-4 w-16 bg-slate-700 rounded"></div>
@@ -259,7 +299,7 @@
                 </div>
 
                 <!-- Mobile & Tablet Hamburger Toggle -->
-                <!-- HTML Line ~251 -->
+                <!-- HTML Line ~271 -->
                 <div class="lg:hidden flex items-center">
                     <button type="button" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu" class="text-slate-400 hover:text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center rounded-lg hover:bg-slate-800 transition-colors">
                         <i class="fa-solid fa-bars text-2xl" id="menu-icon"></i>
@@ -270,7 +310,7 @@
     </nav>
 
     <!-- Mobile/Tablet Slide-Over Modal Drawer -->
-    <!-- HTML Line ~260 -->
+    <!-- HTML Line ~280 -->
     <div id="mobile-menu-overlay" class="fixed inset-0 bg-slate-950/95 z-[100] hidden flex flex-col no-scrollbar overflow-y-auto">
         <div class="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90 sticky top-0 z-10">
             <span class="text-lg font-black text-sky-400">NAVIGATION MENU</span>
@@ -294,7 +334,7 @@
     </div>
 
     <!-- Main Landing Hero Section -->
-    <!-- HTML Line ~285 -->
+    <!-- HTML Line ~305 -->
     <header class="section-padding px-4 sm:px-6 lg:px-8 flex-grow flex items-center">
         <div class="max-w-4xl mx-auto text-center">
             <h1 class="text-slate-100">Knowing the Players</h1>
@@ -305,7 +345,7 @@
     </header>
 
     <!-- Contributors Team Section -->
-    <!-- HTML Line ~296 -->
+    <!-- HTML Line ~316 -->
     <section id="team" class="section-padding bg-slate-900/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-8 sm:mb-12">
@@ -315,7 +355,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Werewolf3788 Profile Card -->
-                <!-- HTML Line ~306 -->
+                <!-- HTML Line ~326 -->
                 <div id="card-werewolf" class="custom-card p-6 text-center shadow-werewolf">
                     <div class="weather-layer" id="layer-werewolf"></div>
                     <div class="card-content">
@@ -338,7 +378,7 @@
                 </div>
 
                 <!-- Raymystyro Profile Card -->
-                <!-- HTML Line ~329 -->
+                <!-- HTML Line ~349 -->
                 <div id="card-ray" class="custom-card p-6 text-center shadow-ray">
                     <div class="weather-layer" id="layer-ray"></div>
                     <div class="card-content">
@@ -361,7 +401,7 @@
                 </div>
 
                 <!-- Terrdog420 Profile Card -->
-                <!-- HTML Line ~352 -->
+                <!-- HTML Line ~372 -->
                 <div id="card-tj" class="custom-card p-6 text-center shadow-terrdog md:col-span-2 lg:col-span-1">
                     <div class="weather-layer" id="layer-tj"></div>
                     <div class="card-content">
@@ -387,7 +427,7 @@
     </section>
 
     <!-- Cinema Movie Library Archive Section -->
-    <!-- HTML Line ~376 -->
+    <!-- HTML Line ~396 -->
     <section class="section-padding bg-slate-900/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             
@@ -413,7 +453,7 @@
             </div>
 
             <!-- Dynamic Cinema Slideshow Screen Frame (Click to Pause & Open Lightbox) -->
-            <!-- HTML Line ~401 -->
+            <!-- HTML Line ~421 -->
             <div id="cinema-container" 
                  onclick="openCinemaLightbox()" 
                  title="Click to view details and pause slideshow"
@@ -440,54 +480,165 @@
         </div>
     </section>
 
-    <!-- Co-Op Games Modules Section -->
-    <!-- HTML Line ~430 -->
+    <!-- Co-Op Games & Live Dedicated Server Telemetry Section -->
+    <!-- HTML Line ~450 -->
     <section class="section-padding">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="mb-8">
-                <span class="text-sky-500 font-bold uppercase tracking-widest text-xs">Featured Content</span>
-                <h2 class="mt-2">Gaming Modules</h2>
+                <span class="text-emerald-400 font-bold uppercase tracking-widest text-xs">Live Telemetry & Progression</span>
+                <h2 class="mt-2">Farming Simulator 25 & Squad Modules</h2>
                 <p class="mt-2 text-slate-400 text-sm sm:text-base">
-                    Shared squad operations and co-op game progress mapped directly from Cloud Firestore.
+                    Live telemetry feed directly parsed from our dedicated FS25 server alongside Firestore squad co-op progress.
                 </p>
             </div>
 
-            <!-- Dynamic Gaming Progress Cards Layout Grid -->
-            <!-- HTML Line ~441 -->
-            <div id="gaming-modules-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="custom-card p-6 border border-slate-700 animate-pulse flex items-center justify-center min-h-[200px]">
-                    <span class="text-slate-400 text-sm font-mono"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Scanning Firestore for multi-player games...</span>
+            <!-- Featured Modules Grid -->
+            <!-- HTML Line ~461 -->
+            <div id="gaming-modules-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Dedicated FS25 Live Server Card (Live XML Stream Parser) -->
+                <!-- HTML Line ~465 -->
+                <div id="fs25-server-card" class="custom-card p-6 border border-emerald-500/30 flex flex-col justify-between shadow-emerald-950/20 shadow-xl">
+                    <div>
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="text-xs font-bold uppercase tracking-widest text-emerald-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-tractor text-sm"></i>FS25 Dedicated
+                            </span>
+                            <span id="fs25-status-pill" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded border border-slate-700 flex items-center gap-1 font-mono">
+                                <span class="w-2 h-2 rounded-full bg-slate-500 inline-block animate-pulse"></span>
+                                Fetching XML...
+                            </span>
+                        </div>
+
+                        <h3 class="text-lg font-black text-white mb-1 uppercase tracking-tight truncate" id="fs25-server-name">WEREWOLF FS25</h3>
+                        
+                        <div class="flex items-center justify-between text-xs text-slate-400 mb-3 font-mono">
+                            <span id="fs25-map-name"><i class="fa-solid fa-map-location-dot mr-1"></i>Map: Loading...</span>
+                            <span id="fs25-game-time" class="text-emerald-400 font-bold"><i class="fa-regular fa-clock mr-1"></i>--:--</span>
+                        </div>
+
+                        <!-- Live Minimap & Primary Farm Grid -->
+                        <div class="space-y-3 mb-4">
+                            <!-- Minimap Thumbnail View -->
+                            <div class="relative w-full h-32 rounded-lg overflow-hidden border border-slate-700 bg-slate-950 group">
+                                <img id="fs25-map-img" 
+                                     src="http://207.244.246.70:9050/feed/dedicated-server-stats-map.jpg?code=3FvqSlOsYKckfauM&quality=60&size=512" 
+                                     alt="FS25 Live Server Map"
+                                     class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
+                                     onerror="this.src='https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=600&q=80';">
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent"></div>
+                                <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[11px] font-mono">
+                                    <span class="text-white font-bold bg-black/60 px-2 py-0.5 rounded border border-slate-700" id="fs25-day-season">Day --</span>
+                                    <span class="text-emerald-400 font-bold bg-black/60 px-2 py-0.5 rounded border border-slate-700" id="fs25-slots-count">0/16 Slots</span>
+                                </div>
+                            </div>
+
+                            <!-- Primary Farm (farmId 0) -->
+                            <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-800">
+                                <div class="flex justify-between items-center text-xs mb-1">
+                                    <span class="text-emerald-400 font-bold flex items-center gap-1">
+                                        <i class="fa-solid fa-wheat-awn"></i>
+                                        <span id="fs25-farm0-label">Farm 0 (Dedicated Farm)</span>
+                                    </span>
+                                    <span class="text-slate-200 font-mono font-bold text-xs" id="fs25-farm0-money">$0</span>
+                                </div>
+                                <div class="text-[11px] text-slate-400 truncate" id="fs25-farm0-name">Scanning XML feed...</div>
+                            </div>
+
+                            <!-- Quick Stats Row -->
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 text-center">
+                                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Total Farms</span>
+                                    <span class="text-lg font-black text-white font-mono" id="fs25-total-farms">--</span>
+                                </div>
+                                <div class="bg-slate-900/80 p-2.5 rounded-lg border border-slate-800 text-center">
+                                    <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">Players Online</span>
+                                    <span class="text-lg font-black text-emerald-400 font-mono" id="fs25-player-count">--</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Direct Savegame Quick-Links -->
+                        <div class="border-t border-slate-800/80 pt-2 mb-3">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Savegame Data Feeds:</span>
+                            <div class="grid grid-cols-3 gap-1.5 text-center">
+                                <a href="http://207.244.246.70:9050/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=careerSavegame" target="_blank" rel="noopener noreferrer" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-1 py-1.5 rounded truncate transition-colors">
+                                    Career
+                                </a>
+                                <a href="http://207.244.246.70:9050/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=vehicles" target="_blank" rel="noopener noreferrer" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-1 py-1.5 rounded truncate transition-colors">
+                                    Vehicles
+                                </a>
+                                <a href="http://207.244.246.70:9050/feed/dedicated-server-savegame.html?code=3FvqSlOsYKckfauM&file=economy" target="_blank" rel="noopener noreferrer" class="text-[10px] bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-300 px-1 py-1.5 rounded truncate transition-colors">
+                                    Economy
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="http://207.244.246.70:9050/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-bold text-xs flex items-center justify-between border-t border-slate-800 pt-3 min-h-[44px]">
+                        <span>View Raw Server XML</span>
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    </a>
+                </div>
+
+                <!-- Squad Progress Skeleton Cards -->
+                <div class="custom-card p-6 border border-slate-700 animate-pulse flex items-center justify-center min-h-[200px] md:col-span-1 lg:col-span-2">
+                    <span class="text-slate-400 text-sm font-mono"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Scanning Firestore for co-op squad progress...</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Cinema Movie Lightbox Modal (Pauses Slideshow while Visible) -->
-    <!-- HTML Line ~452 -->
+    <!-- Cinema Movie Lightbox Modal with Full Action / Play / Buy Buttons -->
+    <!-- HTML Line ~560 -->
     <div id="cinema-lightbox" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[200] hidden flex items-center justify-center p-4">
-        <div class="relative max-w-2xl w-full bg-slate-900 border border-orange-500/40 rounded-2xl p-6 shadow-2xl flex flex-col max-h-[90vh]">
+        <div class="relative max-w-2xl w-full bg-slate-900 border border-orange-500/40 rounded-2xl p-6 shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
             
             <!-- Close Button -->
-            <button type="button" onclick="closeCinemaLightbox()" aria-label="Close Lightbox" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-full w-10 h-10 flex items-center justify-center transition-colors">
+            <button type="button" onclick="closeCinemaLightbox()" aria-label="Close Lightbox" class="absolute top-4 right-4 text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-full w-10 h-10 flex items-center justify-center transition-colors z-20">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
             
+            <!-- Embedded YouTube Video Screen Layer -->
+            <div id="lb-video-wrapper" class="absolute inset-0 bg-black z-30 hidden flex-col">
+                <div class="flex items-center justify-between p-3 bg-slate-900 border-b border-slate-800">
+                    <button type="button" onclick="closeLightboxVideo()" class="text-red-400 hover:text-red-300 text-xs font-bold flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 rounded">
+                        <i class="fa-solid fa-arrow-left"></i> Back to Movie Details
+                    </button>
+                    <span id="video-header-title" class="text-xs text-slate-400 font-mono truncate max-w-[200px]">Trailer</span>
+                </div>
+                <iframe id="lb-yt-iframe" src="" class="w-full h-full border-0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            </div>
+
             <h3 id="lightbox-title" class="text-xl font-bold text-orange-400 mb-4 pr-10">Movie Title</h3>
             
             <div class="flex-1 overflow-y-auto no-scrollbar flex flex-col items-center gap-4">
                 <!-- Large Poster View -->
-                <img id="lightbox-img" src="" alt="Movie Poster" class="max-h-[50vh] w-auto rounded-lg shadow-xl object-contain border border-slate-800">
+                <img id="lightbox-img" src="" alt="Movie Poster" class="max-h-[42vh] w-auto rounded-lg shadow-xl object-contain border border-slate-800">
                 
                 <!-- Description / Alt Details (Exclusively displayed here inside lightbox view) -->
-                <div class="w-full bg-slate-950/60 p-4 rounded-xl border border-slate-800 text-left">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Overview / Description</span>
-                    <p id="lightbox-desc" class="text-slate-300 text-sm leading-relaxed">No description available.</p>
+                <div class="w-full bg-slate-950/60 p-4 rounded-xl border border-slate-800 text-left space-y-3">
+                    <div>
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block mb-1">Overview / Description</span>
+                        <p id="lightbox-desc" class="text-slate-300 text-sm leading-relaxed">No description available.</p>
+                    </div>
+
+                    <!-- Streaming / Broadcast Info Pill -->
+                    <div id="lightbox-stream-pill" class="hidden text-xs text-sky-400 bg-sky-950/40 p-2.5 rounded-lg border border-sky-800/40 whitespace-pre-line font-medium"></div>
+
+                    <!-- Action / Play / Buy Buttons Container -->
+                    <div>
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-2" id="lb-actions-header">Play / Stream / Buy</span>
+                        <div id="lightbox-buttons-container" class="lb-btn-grid">
+                            <!-- Populated dynamically: Amazon, Google, YouTube, Apple, MA, Fandango -->
+                        </div>
+                    </div>
                 </div>
             </div>
             
             <div class="mt-4 pt-4 border-t border-slate-800 flex justify-between items-center text-xs text-slate-400">
                 <span><i class="fa-solid fa-circle-pause text-orange-400 mr-1.5"></i>Slideshow paused</span>
-                <button type="button" onclick="closeCinemaLightbox()" class="text-sky-400 hover:text-sky-300 font-bold px-4 py-2 bg-slate-800 rounded-lg">Close & Resume</button>
+                <button type="button" onclick="closeCinemaLightbox()" class="text-sky-400 hover:text-sky-300 font-bold px-4 py-2 bg-slate-800 rounded-lg min-h-[44px]">Close & Resume</button>
             </div>
         </div>
     </div>
@@ -505,14 +656,14 @@
     </footer>
 
     <!-- Firebase SDK Modules Script -->
-    <!-- HTML JS Line ~496 -->
+    <!-- HTML JS Line ~630 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         /* Firebase App Credentials Config */
-        /* JS Line ~503 */
+        /* JS Line ~637 */
         const firebaseConfig = {
             apiKey: "AIzaSyDeuNBGHcwU4rFyOcsfGxLHjmEdpADacmc",
             authDomain: "entertainment-71888.firebaseapp.com",
@@ -853,7 +1004,107 @@
         }
 
         /* -------------------------------------------------------------
-           3. Firestore Squad Multi-Player Progress Tracker
+           3. Live Farming Simulator 25 Dedicated Server XML Feed Parser
+              Source: http://207.244.246.70:9050/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM
+           ------------------------------------------------------------- */
+        async function fetchFs25LiveXml() {
+            const rawUrl = 'http://207.244.246.70:9050/feed/dedicated-server-stats.xml?code=3FvqSlOsYKckfauM';
+            
+            // Proxied to bypass browser mixed-content (HTTP -> HTTPS) and CORS restrictions safely
+            const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(rawUrl)}`;
+            
+            const statusPill = document.getElementById('fs25-status-pill');
+            const serverNameEl = document.getElementById('fs25-server-name');
+            const mapNameEl = document.getElementById('fs25-map-name');
+            const gameTimeEl = document.getElementById('fs25-game-time');
+            const slotsCountEl = document.getElementById('fs25-slots-count');
+            const farm0NameEl = document.getElementById('fs25-farm0-name');
+            const farm0MoneyEl = document.getElementById('fs25-farm0-money');
+            const totalFarmsEl = document.getElementById('fs25-total-farms');
+            const playersEl = document.getElementById('fs25-player-count');
+            const daySeasonEl = document.getElementById('fs25-day-season');
+
+            try {
+                let response = null;
+                try {
+                    response = await fetch(rawUrl, { cache: 'no-store' });
+                } catch (corsErr) {
+                    // Fallback to proxy if direct call blocked
+                    response = await fetch(proxyUrl, { cache: 'no-store' });
+                }
+
+                if (!response || !response.ok) throw new Error('XML Feed unreachable');
+
+                const xmlText = await response.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+
+                // Read Root Server Node
+                const serverNode = xmlDoc.querySelector('Server');
+                if (!serverNode) throw new Error('Invalid FS25 XML Format');
+
+                const serverName = serverNode.getAttribute('name') || 'Dedicated FS25 Server';
+                const mapName = serverNode.getAttribute('mapName') || 'Dedicated Map';
+                const day = serverNode.getAttribute('day') || '1';
+                const dayTimeRaw = parseInt(serverNode.getAttribute('dayTime') || '0', 10);
+                
+                // Calculate In-game Clock (Minutes to HH:MM)
+                const hours = Math.floor(dayTimeRaw / 60) % 24;
+                const minutes = dayTimeRaw % 60;
+                const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+
+                // Update Header Telemetry
+                serverNameEl.textContent = serverName;
+                mapNameEl.innerHTML = `<i class="fa-solid fa-map-location-dot mr-1"></i>Map: ${mapName}`;
+                gameTimeEl.innerHTML = `<i class="fa-regular fa-clock mr-1"></i>${formattedTime}`;
+                daySeasonEl.textContent = `Day ${day}`;
+
+                // Slots and Players Online
+                const slotsNode = xmlDoc.querySelector('Slots');
+                const maxSlots = slotsNode ? slotsNode.getAttribute('capacity') || '16' : '16';
+                const playerNodes = xmlDoc.querySelectorAll('Slots > Player[isUsed="true"]');
+                const onlinePlayerCount = playerNodes.length;
+
+                slotsCountEl.textContent = `${onlinePlayerCount}/${maxSlots} Slots`;
+                playersEl.textContent = onlinePlayerCount.toString();
+
+                // Parse Farm ID 0 & Farms
+                const farmNodes = xmlDoc.querySelectorAll('Farms > Farm');
+                const totalFarmsCount = farmNodes.length > 0 ? farmNodes.length : 1;
+                totalFarmsEl.textContent = totalFarmsCount.toString();
+
+                let farm0 = null;
+                farmNodes.forEach(f => {
+                    const farmId = f.getAttribute('id') || f.getAttribute('farmId');
+                    if (farmId === '0' || farmId === '1' || !farm0) {
+                        farm0 = f;
+                    }
+                });
+
+                if (farm0) {
+                    const farmName = farm0.getAttribute('name') || 'Primary Farm';
+                    const moneyVal = parseFloat(farm0.getAttribute('money') || '0');
+                    farm0NameEl.textContent = farmName;
+                    farm0MoneyEl.textContent = `$${moneyVal.toLocaleString()}`;
+                } else {
+                    farm0NameEl.textContent = 'Farm 0 Initialized';
+                    farm0MoneyEl.textContent = '$0';
+                }
+
+                // Server Status: Online
+                statusPill.className = "text-[10px] bg-emerald-950/90 text-emerald-400 px-2 py-0.5 rounded border border-emerald-800 flex items-center gap-1 font-mono font-bold";
+                statusPill.innerHTML = `<span class="status-pulse" style="background-color:#22c55e;"></span> ONLINE`;
+
+            } catch (err) {
+                console.warn('FS25 Direct XML Error, showing standby mode:', err);
+                statusPill.className = "text-[10px] bg-red-950/80 text-red-400 px-2 py-0.5 rounded border border-red-800 flex items-center gap-1 font-mono font-bold";
+                statusPill.innerHTML = `<span class="w-2 h-2 rounded-full bg-red-500 inline-block"></span> OFFLINE`;
+                farm0NameEl.textContent = 'Server Feeds Standby';
+            }
+        }
+
+        /* -------------------------------------------------------------
+           4. Firestore Squad Multi-Player Progress Tracker
            ------------------------------------------------------------- */
         function calculateGameProgress(docData) {
             if (!docData) return 0;
@@ -906,6 +1157,7 @@
 
         async function loadFirestoreSquadProgress() {
             const container = document.getElementById("gaming-modules-container");
+            const fs25Card = document.getElementById("fs25-server-card");
             if (!container) return;
 
             try {
@@ -951,12 +1203,19 @@
 
                 const multiPlayerGames = Object.values(gameMap).filter(g => g.players.length >= 2);
 
+                let finalCardsHTML = fs25Card ? fs25Card.outerHTML : '';
+
                 if (multiPlayerGames.length === 0) {
-                    renderNoMultiplayerGames("No active co-op modules with 2 or more active players.");
+                    finalCardsHTML += `
+                        <div class="custom-card p-6 border border-slate-700 text-center md:col-span-1 lg:col-span-2">
+                            <i class="fa-solid fa-gamepad text-3xl text-slate-600 mb-2"></i>
+                            <p class="text-slate-400 text-sm">No active co-op squad modules with 2 or more active players.</p>
+                        </div>
+                    `;
+                    container.innerHTML = finalCardsHTML;
                     return;
                 }
 
-                let html = "";
                 multiPlayerGames.forEach(game => {
                     let playerProgressHTML = "";
 
@@ -979,7 +1238,7 @@
                         `;
                     });
 
-                    html += `
+                    finalCardsHTML += `
                         <div class="custom-card p-6 border border-slate-700/80 hover:border-sky-500/50 transition-all flex flex-col justify-between">
                             <div>
                                 <div class="flex items-center justify-between mb-4">
@@ -999,34 +1258,23 @@
                     `;
                 });
 
-                container.innerHTML = html;
+                container.innerHTML = finalCardsHTML;
 
             } catch (err) {
                 console.error("Firestore Progress Read Error:", err);
-                renderNoMultiplayerGames("Firestore sync offline.");
-            }
-        }
-
-        function renderNoMultiplayerGames(message) {
-            const container = document.getElementById("gaming-modules-container");
-            if (container) {
-                container.innerHTML = `
-                    <div class="custom-card p-6 border border-slate-700 text-center col-span-full">
-                        <i class="fa-solid fa-gamepad text-3xl text-slate-600 mb-2"></i>
-                        <p class="text-slate-400 text-sm">${message}</p>
-                    </div>
-                `;
             }
         }
 
         // Initialize Firebase RTDB & Firestore Listeners
         listenToUtmLinks();
         listenToPsnPresence();
+        fetchFs25LiveXml();
+        setInterval(fetchFs25LiveXml, 60000); // 60-second XML Telemetry Polling
         loadFirestoreSquadProgress();
     </script>
 
     <!-- Open-Meteo Weather, Lightbox, & Interactive Slideshow Engine -->
-    <!-- HTML JS Line ~830 -->
+    <!-- HTML JS Line ~970 -->
     <script>
         const users = [
             { id: 'werewolf', user: 'werewolf3788', lat: 29.6516, lon: -82.3248, cardId: 'card-werewolf', layerId: 'layer-werewolf', descId: 'weather-desc-werewolf' },
@@ -1055,9 +1303,6 @@
         let cinemaInterval = null;
         let isLightboxOpen = false;
 
-        /**
-         * Precision Firebase RTDB Movie Count & Verified Poster Feeder
-         */
         async function fetchMovieData() {
             const countDisplay = document.getElementById('movie-count');
             const breakdownDisplay = document.getElementById('type-breakdown');
@@ -1065,7 +1310,6 @@
             const rtdbFullUrl = 'https://entertainment-71888-default-rtdb.firebaseio.com/movies_guide.json?orderBy="$key"&limitToFirst=100';
 
             try {
-                // 1. Exact root keys shallow count
                 const shallowRes = await fetchWithRetry(rtdbShallowUrl);
                 const shallowData = await shallowRes.json();
                 
@@ -1083,7 +1327,6 @@
                     localStorage.setItem('werewolf_library_count', verifiedCount);
                 }
 
-                // 2. Fetch sample batch with descriptions for the poster slideshow and lightbox
                 const fullRes = await fetchWithRetry(rtdbFullUrl);
                 const fullData = await fullRes.json();
 
@@ -1104,7 +1347,16 @@
                                     title: m.title || key.replace(/_/g, ' '),
                                     description: m.description && m.description !== 'N/A' ? m.description : "No description available for this title.",
                                     year: m.year || "",
-                                    rating: m.rating || ""
+                                    rating: m.rating || "",
+                                    streaming: m.streaming || "",
+                                    platforms: {
+                                        amazon: m.amazon || "",
+                                        google: m.google || "",
+                                        youtube: m.youtube || "",
+                                        ma: m.ma || "",
+                                        apple: m.apple || "",
+                                        fandango: m.fandango || ""
+                                    }
                                 });
                             }
                         }
@@ -1172,9 +1424,6 @@
             }
         }
 
-        /**
-         * Lightbox Actions: Pauses interval and opens responsive details modal
-         */
         window.openCinemaLightbox = function() {
             if (cinemaImages.length === 0) return;
 
@@ -1186,12 +1435,52 @@
             const titleEl = document.getElementById('lightbox-title');
             const imgEl = document.getElementById('lightbox-img');
             const descEl = document.getElementById('lightbox-desc');
+            const streamPill = document.getElementById('lightbox-stream-pill');
+            const btnsContainer = document.getElementById('lightbox-buttons-container');
+            const actionsHeader = document.getElementById('lb-actions-header');
 
             const yearText = currentItem.year ? ` (${currentItem.year})` : '';
             titleEl.textContent = `${currentItem.title}${yearText}`;
             imgEl.src = currentItem.url;
-            imgEl.alt = currentItem.title; // ALT text kept within lightbox view only
+            imgEl.alt = currentItem.title;
             descEl.textContent = currentItem.description;
+
+            if (currentItem.streaming && currentItem.streaming.trim() !== '') {
+                streamPill.textContent = "📺 " + currentItem.streaming.replace(/^Stream:\s*/i, '');
+                streamPill.classList.remove('hidden');
+            } else {
+                streamPill.classList.add('hidden');
+            }
+
+            const p = currentItem.platforms || {};
+            let buttonsHtml = '';
+
+            if (p.youtube && (p.youtube.startsWith('http://') || p.youtube.startsWith('https://'))) {
+                buttonsHtml += `<button type="button" onclick="playLightboxYouTube('${p.youtube}', '${currentItem.title.replace(/'/g, "\\'")}')" class="lb-btn btn-youtube"><i class="fa-brands fa-youtube mr-1.5 text-base"></i>Watch Video</button>`;
+            }
+            if (p.amazon && (p.amazon.startsWith('http://') || p.amazon.startsWith('https://'))) {
+                buttonsHtml += `<a href="${p.amazon}" target="_blank" rel="noopener noreferrer" class="lb-btn btn-amazon"><i class="fa-brands fa-amazon mr-1.5 text-base"></i>Amazon</a>`;
+            }
+            if (p.google && (p.google.startsWith('http://') || p.google.startsWith('https://'))) {
+                buttonsHtml += `<a href="${p.google}" target="_blank" rel="noopener noreferrer" class="lb-btn btn-google"><i class="fa-brands fa-google-play mr-1.5 text-base"></i>Google</a>`;
+            }
+            if (p.ma && (p.ma.startsWith('http://') || p.ma.startsWith('https://'))) {
+                buttonsHtml += `<a href="${p.ma}" target="_blank" rel="noopener noreferrer" class="lb-btn btn-moviesanywhere"><i class="fa-solid fa-film mr-1.5 text-base"></i>MA</a>`;
+            }
+            if (p.apple && (p.apple.startsWith('http://') || p.apple.startsWith('https://'))) {
+                buttonsHtml += `<a href="${p.apple}" target="_blank" rel="noopener noreferrer" class="lb-btn btn-apple"><i class="fa-brands fa-apple mr-1.5 text-base"></i>Apple TV</a>`;
+            }
+            if (p.fandango && (p.fandango.startsWith('http://') || p.fandango.startsWith('https://'))) {
+                buttonsHtml += `<a href="${p.fandango}" target="_blank" rel="noopener noreferrer" class="lb-btn btn-fandango"><i class="fa-solid fa-ticket mr-1.5 text-base"></i>Fandango</a>`;
+            }
+
+            if (buttonsHtml) {
+                btnsContainer.innerHTML = buttonsHtml;
+                actionsHeader.classList.remove('hidden');
+            } else {
+                btnsContainer.innerHTML = '<span class="text-xs text-slate-500 italic col-span-full">Direct store buttons not specified for this title.</span>';
+                actionsHeader.classList.add('hidden');
+            }
 
             modal.classList.remove('hidden');
         };
@@ -1199,20 +1488,45 @@
         window.closeCinemaLightbox = function() {
             const modal = document.getElementById('cinema-lightbox');
             if (modal) {
+                closeLightboxVideo();
                 modal.classList.add('hidden');
                 isLightboxOpen = false;
                 startCinemaSlideshow();
             }
         };
 
-        // Close on background click
+        window.playLightboxYouTube = function(url, title) {
+            const vidWrapper = document.getElementById('lb-video-wrapper');
+            const iframe = document.getElementById('lb-yt-iframe');
+            const videoHeader = document.getElementById('video-header-title');
+
+            const vidMatch = url.match(/(?:youtu\.be\/|v\/|embed\/|watch\?v=|\&v=)([^#\&\?]{11})/);
+            if (vidMatch && vidMatch[1]) {
+                videoHeader.textContent = title;
+                iframe.src = `https://www.youtube.com/embed/${vidMatch[1]}?autoplay=1`;
+                vidWrapper.classList.remove('hidden');
+                vidWrapper.classList.add('flex');
+            } else {
+                window.open(url, '_blank', 'noopener,noreferrer');
+            }
+        };
+
+        window.closeLightboxVideo = function() {
+            const vidWrapper = document.getElementById('lb-video-wrapper');
+            const iframe = document.getElementById('lb-yt-iframe');
+            if (vidWrapper && iframe) {
+                vidWrapper.classList.add('hidden');
+                vidWrapper.classList.remove('flex');
+                iframe.src = "";
+            }
+        };
+
         document.getElementById('cinema-lightbox').addEventListener('click', function(e) {
             if (e.target === this) {
                 window.closeCinemaLightbox();
             }
         });
 
-        // Close on Escape key press
         window.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && isLightboxOpen) {
                 window.closeCinemaLightbox();
