@@ -1,11 +1,12 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-05 13:25:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-05 19:25:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
- * Target Server: FIREBASE_DEDICATED_SERVER
+ * Target Server: Direct Web API Client
  * Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
  * Measurement ID: G-SGJF0FJPQZ
  * Description: Zero-Loss, Multi-Tiered FS25 Savegame Ingestion Engine.
+ *              - Direct Web SDK initialization (Bypasses Service Account Secrets).
  *              - Dual HTTP & HTTPS protocol-agnostic networking.
  *              - Server Offline Guard:
  *                  * Pings Port 9050.
@@ -29,57 +30,48 @@
 
 require('dotenv').config({ path: __dirname + '/.env' });
 const ftp = require('basic-ftp');
-const admin = require('firebase-admin');
+const { initializeApp } = require('firebase/app');
+const { getDatabase, ref, update, get } = require('firebase/database');
 const { Writable } = require('stream');
 const xml2js = require('xml2js');
 
 // ============================================================================
 // SECTION 1: SAFETY TIMEOUT (4-Minute Process Failsafe)
 // ============================================================================
-// Line ~37: Halts background processes before GitHub Actions or runner times out
+// Line ~45: Ensures the runner clean-exits before GitHub Actions 5-min timeout
 setTimeout(() => {
   console.log("🚨 Safety Failsafe: Process exiting cleanly after 4 minutes.");
   process.exit(0);
 }, 4 * 60 * 1000);
 
 // ============================================================================
-// SECTION 2: FIREBASE ADMIN INITIALIZATION (Dedicated Server Config)
+// SECTION 2: FIREBASE DIRECT WEB SDK CONFIGURATION
 // ============================================================================
-// Target RTDB configuration for fs25-a3563
+// Line ~53: Uses raw web API config directly. No JSON.parse or service accounts needed.
 const firebaseConfig = {
-  projectId: "fs25-a3563",
+  apiKey: "AIzaSyBwhhUNH0itRb2hQcnSap_vGfnErAGVzZc",
+  authDomain: "fs25-a3563.firebaseapp.com",
   databaseURL: "https://fs25-a3563-default-rtdb.firebaseio.com",
-  storageBucket: "fs25-a3563.firebasestorage.app"
+  projectId: "fs25-a3563",
+  storageBucket: "fs25-a3563.firebasestorage.app",
+  messagingSenderId: "528331196894",
+  appId: "1:528331196894:web:5af51bc2c80fd56aecf54f",
+  measurementId: "G-SGJF0FJPQZ"
 };
 
-let serviceAccount;
-// Check FIREBASE_DEDICATED_SERVER secret first, fallback to standard credential names
-const rawSecret = process.env.FIREBASE_DEDICATED_SERVER || process.env.FIREBASE_SERVICE_ACCOUNT;
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-if (rawSecret) {
-  try {
-    serviceAccount = JSON.parse(rawSecret);
-  } catch (e) {
-    console.error("❌ Error parsing FIREBASE credential JSON:", e.message);
-    process.exit(1);
-  }
-} else {
-  try {
-    serviceAccount = require("./your-firebase-adminsdk-key.json");
-  } catch (e) {
-    console.error("❌ Missing FIREBASE_DEDICATED_SERVER service account key.");
-    process.exit(1);
-  }
+// Helper function to update RTDB using standard modular path keys
+async function updateDb(path, data) {
+  return await update(ref(db, path), data);
 }
 
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: firebaseConfig.databaseURL
-  });
+// Helper function to read RTDB nodes
+async function getDb(path) {
+  const snapshot = await get(ref(db, path));
+  return snapshot.exists() ? snapshot.val() : null;
 }
-
-const db = admin.database();
 
 // ============================================================================
 // SECTION 3: NETWORK CONFIGURATION (Dual HTTP/HTTPS Compatibility)
@@ -90,7 +82,6 @@ const ftpUser = process.env.FTP_USER;
 const ftpPass = process.env.FTP_PASS;
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
 
-// Supports both standard HTTP XML ping and HTTPS image proxy caching
 const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
 const MAP_IMAGE_URL = `https://wsrv.nl/?url=${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
 const GITHUB_IMG_BASE = `https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/`;
@@ -385,8 +376,7 @@ async function pingServerLiveStats() {
 
 async function fetchModsCatalog() {
   try {
-    const snap = await db.ref('FS25_Mods_Info').once('value');
-    const rawVal = snap.val() || {};
+    const rawVal = (await getDb('FS25_Mods_Info')) || {};
     const catalogLookup = {};
 
     function indexObject(obj) {
@@ -460,10 +450,8 @@ async function syncVehicles(client, activeSavePath, liveStats, catalogLookup) {
       return;
     }
 
-    // Operating hours calculation
     const operatingHours = parseFloat(((parseFloat(v.operatingTime || 0)) / 3600).toFixed(1));
 
-    // Full equipment item structure
     const item = {
       id: v.uniqueId || v.id || "0",
       farmId: fId,
@@ -499,7 +487,7 @@ async function syncVehicles(client, activeSavePath, liveStats, catalogLookup) {
     }
   });
 
-  await db.ref('fs25').update({
+  await updateDb('fs25', {
     'cards/fleet': fleet,
     'cards/harvestersAndCombines': harvesters,
     'cards/palletsAndBales': palletsAndBales,
@@ -538,7 +526,7 @@ async function syncFields(client, activeSavePath) {
     });
   }
 
-  await db.ref('fs25').update({
+  await updateDb('fs25', {
     'cards/fieldsAgronomy': fieldsAgronomy,
     'fields': fieldsAgronomy,
     'lastFieldsSync': new Date().toISOString()
@@ -592,7 +580,7 @@ async function syncMissions(client, activeSavePath) {
         else if (statusRaw === 3) failed.push(item);
       });
 
-      await db.ref('fs25').update({
+      await updateDb('fs25', {
         'cards/missions/all': all,
         'cards/missions/available': available,
         'cards/missions/inProgress': inProgress,
@@ -691,7 +679,7 @@ async function syncFarmsAndLand(client, activeSavePath, liveStats) {
     });
   }
 
-  await db.ref('fs25').update({
+  await updateDb('fs25', {
     'farms': farms,
     'playersRegistry': playerRecords,
     'cards/farmlands': farmlands,
@@ -916,7 +904,7 @@ async function syncSlowStaticSystems(client, activeSavePath, catalogLookup) {
   } catch (e) {}
 
   updates['lastSlowSync'] = Date.now();
-  await db.ref('fs25').update(updates);
+  await updateDb('fs25', updates);
 }
 
 // ============================================================================
@@ -929,7 +917,7 @@ async function runPipeline() {
   // Guard: If server is offline, update flag only and halt immediately
   if (!serverPing.isOnline) {
     console.log("🛑 Server is OFFLINE. Updating serverStatus flag and exiting. (Preserving all saved Firebase data).");
-    await db.ref('fs25/serverStatus').update({
+    await updateDb('fs25/serverStatus', {
       isOnline: false,
       lastChecked: new Date().toISOString()
     });
@@ -941,15 +929,14 @@ async function runPipeline() {
   const activePlayers = liveStats && liveStats.Slots ? parseInt(liveStats.Slots.numUsed || 0, 10) : 0;
   console.log(`✅ Server is ONLINE | Active Players: ${activePlayers}`);
 
-  await db.ref('fs25/serverStatus').update({
+  await updateDb('fs25/serverStatus', {
     isOnline: true,
     activePlayers: activePlayers,
     lastChecked: new Date().toISOString()
   });
 
   const catalogLookup = await fetchModsCatalog();
-  const metaSnap = await db.ref('fs25').once('value');
-  const existingFs25 = metaSnap.val() || {};
+  const existingFs25 = (await getDb('fs25')) || {};
 
   const client = new ftp.Client();
   client.ftp.verbose = false;
@@ -997,7 +984,7 @@ async function runPipeline() {
         const newDay = parsedEnv.environment.currentDay;
         if (newDay !== currentInGameDay) {
           console.log(`🌅 In-game day changed from ${currentInGameDay} to ${newDay}. Updating environment.`);
-          await db.ref('fs25/environment').set(parsedEnv.environment);
+          await updateDb('fs25/environment', parsedEnv.environment);
         }
       }
     } catch (e) {}
@@ -1021,8 +1008,8 @@ async function runPipeline() {
       await syncSlowStaticSystems(client, activeSavePath, catalogLookup);
     }
 
-    // Config metadata updated for dedicated server setup
-    await db.ref('fs25/config').update({
+    // Config metadata
+    await updateDb('fs25/config', {
       appId: "1:528331196894:web:5af51bc2c80fd56aecf54f",
       projectId: "fs25-a3563",
       gaTag: "G-CTYHDF4MSD",
