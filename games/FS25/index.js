@@ -1,22 +1,23 @@
 /* ============================================================================
  * File: index.js
- * Deployment Timestamp: 2026-09-04 19:09:28 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-05 05:57:00 (EDT - 24hr New York Time)
  * Project: entertainment-71888 (/fs25 RTDB Node)
- * Google Analytics Tag: G-CTYHDF4MSD (Gaming / Progress Tracking / Entertainment)
- * Description: Zero-loss FS25 Ingestion Engine & Card Separator.
- *              - Dual HTTP/HTTPS protocol agnostic support.
- *              - Isolated Card System:
+ * Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
+ * Description: Zero-Loss FS25 Savegame Ingestion & Card Synchronization Engine.
+ *              - Dual HTTP & HTTPS protocol-agnostic networking.
+ *              - Unconditional full pipeline execution (bypasses player-count skips).
+ *              - Complete recursive XML parsing preserving 100% of data.
+ *              - Independent Cards:
  *                  * Pallets & Bales
- *                  * Animals & Husbandry
- *                  * Factories & Production Points
- *                  * Fleet Equipment & Vehicles
- *                  * Harvesters & Combines
- *                  * Passive Income Generators (Solar, Wind, Subsidies, BGA)
- *                  * Farmland Holdings & Agronomy
- *                  * Universal Missions & Field Contracts
- *                  * Hand Tools & Dealership Sales
- *              - Dual-Layer Image Resolver (Google Sheet / Drive + GitHub Fallback)
- *              - Complete recursive XML parsing preserving 100% of unmapped fields.
+ *                  * Animals & Husbandry (Headcounts, Milk, Slurry, Health)
+ *                  * Factories & Production Points (Inputs, Outputs, Greenhouses)
+ *                  * Fleet Equipment & Machinery
+ *                  * Harvesters & Combines (Dedicated Isolated Card)
+ *                  * Passive Income Generators (Windmills, Solar, Government Subsidies)
+ *                  * Farmland Holdings & Plots
+ *                  * Universal Missions & Contracts (All Available, Active, Finished)
+ *                  * Player Hand Tools & Field Agronomy (Weed, Lime, Fertilizer)
+ *              - Dual-Layer Image Resolver (Google Sheet/Drive with GitHub fallback).
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
  * ============================================================================ */
 
@@ -30,7 +31,7 @@ const xml2js = require('xml2js');
 // SECTION 1: SAFETY TIMEOUT (4-Minute Failsafe to Prevent GitHub Action Hangs)
 // ============================================================================
 setTimeout(() => {
-  console.log("🚨 Safety Failsafe: Process terminating cleanly after 4 minutes.");
+  console.log("🚨 Safety Failsafe: Exiting process after 4 minutes.");
   process.exit(0);
 }, 4 * 60 * 1000);
 
@@ -46,14 +47,14 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT) {
   try {
     serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
   } catch (e) {
-    console.error("❌ Failed parsing FIREBASE_SERVICE_ACCOUNT:", e.message);
+    console.error("❌ Error parsing FIREBASE_SERVICE_ACCOUNT:", e.message);
     process.exit(1);
   }
 } else {
   try {
     serviceAccount = require("./your-firebase-adminsdk-key.json");
   } catch (e) {
-    console.error("❌ Missing FIREBASE_SERVICE_ACCOUNT secret.");
+    console.error("❌ Missing FIREBASE_SERVICE_ACCOUNT credential secret.");
     process.exit(1);
   }
 }
@@ -68,14 +69,13 @@ if (!admin.apps.length) {
 const db = admin.database();
 
 // ============================================================================
-// SECTION 3: NETWORK & HOST CONFIGURATION (Dual HTTP/HTTPS Friendly)
+// SECTION 3: NETWORK & HOST CONFIGURATION (Dual HTTP/HTTPS Compatibility)
 // ============================================================================
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
 const ftpPass = process.env.FTP_PASS;
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
-const FORCE_SYNC = process.env.FORCE_SYNC === 'true' || process.env.GITHUB_EVENT_NAME === 'workflow_dispatch';
 
 const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
 const MAP_IMAGE_URL = `https://wsrv.nl/?url=${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
@@ -276,7 +276,6 @@ function normalizeKey(str) {
   return str.toString().toLowerCase().replace(/[^a-z0-9]/g, '');
 }
 
-// Converts Google Drive preview/edit links into direct raw image URLs
 function formatSheetImageUrl(rawUrl) {
   if (!rawUrl || typeof rawUrl !== 'string') return null;
   let url = rawUrl.trim();
@@ -291,7 +290,6 @@ function formatSheetImageUrl(rawUrl) {
   return url;
 }
 
-// Waterfall: Google Sheet Image > GitHub Repo Image Fallback
 function resolveBestImage(entityKey, sheetRecord) {
   if (sheetRecord && typeof sheetRecord === 'object') {
     const candidateColumns = [
@@ -339,7 +337,6 @@ async function downloadFtpFileToString(client, remotePath) {
   return Buffer.concat(chunks).toString('utf-8');
 }
 
-// Dedicated server port 9050 stats check
 async function fetchStatsApi() {
   try {
     const controller = new AbortController();
@@ -381,7 +378,6 @@ async function fetchStatsApi() {
   return { text: "", players: 0, activeSlot: null, mapTitle: "" };
 }
 
-// Flattens all Google Sheets tabs under /FS25_Mods_Info
 async function fetchModsCatalog() {
   try {
     const snap = await db.ref('FS25_Mods_Info').once('value');
@@ -413,7 +409,7 @@ async function fetchModsCatalog() {
 }
 
 // ============================================================================
-// SECTION 6: ZERO-LOSS CARD STRUCTURING ENGINE
+// SECTION 6: ZERO-LOSS CARD STRUCTURING ENGINE (All Cards Separated)
 // ============================================================================
 async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfigXml) {
   const parsedTree = {};
@@ -421,7 +417,6 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     parsedTree[key] = await parseXmlString(rawContent);
   }
 
-  // Farms Initialization
   const farmNameMap = {};
   const farms = {};
 
@@ -438,6 +433,9 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
       color: color || "1",
       players: raw.players ? (Array.isArray(raw.players.player) ? raw.players.player : [raw.players.player]) : [],
       rawFarmData: raw,
+      vehicles: [],
+      placeables: [],
+      handTools: [],
       cards: {
         palletsAndBales: [],
         animals: [],
@@ -468,7 +466,6 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     farmNameMap["1"] = "Main Farm";
   }
 
-  // Root Global Cards
   const globalCards = {
     palletsAndBales: [],
     animals: [],
@@ -477,13 +474,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     harvestersAndCombines: [],
     incomeGenerators: [],
     farmlands: [],
-    missions: {
-      available: [],
-      inProgress: [],
-      finished: [],
-      failed: [],
-      all: []
-    },
+    missions: { available: [], inProgress: [], finished: [], failed: [], all: [] },
     handTools: [],
     dealershipSales: [],
     collectibles: [],
@@ -533,7 +524,8 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     };
   });
 
-  // 2. PARSE VEHICLES, BALES, PALLETS, HARVESTERS & FLEET
+  // 2. VEHICLES, BALES, PALLETS, HARVESTERS & FLEET
+  const flatVehicles = [];
   if (parsedTree['vehicles'] && parsedTree['vehicles'].vehicles && parsedTree['vehicles'].vehicles.vehicle) {
     const vehList = Array.isArray(parsedTree['vehicles'].vehicles.vehicle) ? parsedTree['vehicles'].vehicles.vehicle : [parsedTree['vehicles'].vehicles.vehicle];
     
@@ -587,12 +579,15 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
         raw: v
       };
 
+      flatVehicles.push(equipmentItem);
+
       // Card B: Harvesters / Combines
       if (lower.includes("harvester") || lower.includes("combine") || lower.includes("cottonpicker") || lower.includes("sugarbeet") || lower.includes("forageharvester")) {
         equipmentItem.cardType = "Harvester / Combine";
         globalCards.harvestersAndCombines.push(equipmentItem);
         if (fId !== "0" && farms[`farm_${fId}`]) {
           farms[`farm_${fId}`].cards.harvestersAndCombines.push(equipmentItem);
+          farms[`farm_${fId}`].vehicles.push(equipmentItem);
         }
       } else {
         // Card C: General Fleet Equipment
@@ -600,12 +595,14 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
         globalCards.fleet.push(equipmentItem);
         if (fId !== "0" && farms[`farm_${fId}`]) {
           farms[`farm_${fId}`].cards.fleet.push(equipmentItem);
+          farms[`farm_${fId}`].vehicles.push(equipmentItem);
         }
       }
     });
   }
 
-  // 3. PARSE PLACEABLES: ANIMALS, FACTORIES, GENERATORS & BUILDINGS
+  // 3. PLACEABLES: ANIMALS, FACTORIES, GENERATORS & BUILDINGS
+  const flatPlaceables = [];
   if (parsedTree['placeables'] && parsedTree['placeables'].placeables && parsedTree['placeables'].placeables.placeable) {
     const plcList = Array.isArray(parsedTree['placeables'].placeables.placeable) ? parsedTree['placeables'].placeables.placeable : [parsedTree['placeables'].placeables.placeable];
 
@@ -625,86 +622,55 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
       const itemImage = resolveBestImage(cleanName, matchedMod ? matchedMod.sheetRecord : null) || resolveBestImage(filename, null);
       const lower = (filename + " " + cleanName).toLowerCase();
 
-      // Card 1: Passive Income Generators (Solar, Wind, Subsidies, BGA)
+      const placeableItem = {
+        id: p.id || "0",
+        farmId: fId,
+        name: cleanName,
+        file: filename,
+        image: itemImage,
+        price: parseFloat(p.price || 0),
+        raw: p
+      };
+      flatPlaceables.push(placeableItem);
+
+      // Card 1: Passive Income Generators
       const isGenerator = lower.includes("solar") || lower.includes("wind") || lower.includes("turbine") || 
                           lower.includes("subsidy") || lower.includes("subsidies") || lower.includes("generator") || 
-                          lower.includes("bga") || lower.includes("biogas") || lower.includes("powerplant");
+                          lower.includes("bga") || lower.includes("biogas");
 
       if (isGenerator) {
-        const generatorItem = {
-          id: p.id || "0",
-          farmId: fId,
-          name: cleanName,
-          category: "Income Generator",
-          file: filename,
-          image: itemImage,
-          price: parseFloat(p.price || 0),
-          incomeData: p.incomePerHour || p.solarCollector || p.windTurbine || p.generator || null,
-          raw: p
-        };
-        globalCards.incomeGenerators.push(generatorItem);
+        globalCards.incomeGenerators.push(placeableItem);
         if (fId !== "0" && farms[`farm_${fId}`]) {
-          farms[`farm_${fId}`].cards.incomeGenerators.push(generatorItem);
+          farms[`farm_${fId}`].cards.incomeGenerators.push(placeableItem);
+          farms[`farm_${fId}`].placeables.push(placeableItem);
         }
         return;
       }
 
-      // Card 2: Animals & Husbandry Card
+      // Card 2: Animals & Husbandry
       if (p.husbandryAnimals || p.animals || lower.includes("husbandry") || lower.includes("barn") || lower.includes("pasture") || lower.includes("coop") || lower.includes("pen")) {
-        const animalItem = {
-          id: p.id || "0",
-          farmId: fId,
-          name: cleanName,
-          category: "Animals & Husbandry",
-          file: filename,
-          image: itemImage,
-          animalsData: p.husbandryAnimals || p.animals || null,
-          foodLevels: p.husbandryFood || null,
-          liquidManure: p.husbandryLiquidManure || null,
-          straw: p.husbandryStraw || null,
-          raw: p
-        };
-        globalCards.animals.push(animalItem);
+        globalCards.animals.push(placeableItem);
         if (fId !== "0" && farms[`farm_${fId}`]) {
-          farms[`farm_${fId}`].cards.animals.push(animalItem);
+          farms[`farm_${fId}`].cards.animals.push(placeableItem);
+          farms[`farm_${fId}`].placeables.push(placeableItem);
         }
         return;
       }
 
-      // Card 3: Factories & Production Chains Card
+      // Card 3: Factories & Production
       if (p.productionPoint || lower.includes("production") || lower.includes("factory") || lower.includes("mill") || lower.includes("bakery") || lower.includes("greenhouse") || lower.includes("dairy")) {
-        const factoryItem = {
-          id: p.id || "0",
-          farmId: fId,
-          name: cleanName,
-          category: "Factories & Production",
-          file: filename,
-          image: itemImage,
-          productionData: p.productionPoint || null,
-          storage: p.storage || null,
-          raw: p
-        };
-        globalCards.factories.push(factoryItem);
+        globalCards.factories.push(placeableItem);
         if (fId !== "0" && farms[`farm_${fId}`]) {
-          farms[`farm_${fId}`].cards.factories.push(factoryItem);
+          farms[`farm_${fId}`].cards.factories.push(placeableItem);
+          farms[`farm_${fId}`].placeables.push(placeableItem);
         }
         return;
       }
 
       // Card 4: General Buildings & Silos
-      const placeableItem = {
-        id: p.id || "0",
-        farmId: fId,
-        name: cleanName,
-        category: "Buildings & Silos",
-        file: filename,
-        image: itemImage,
-        price: parseFloat(p.price || 0),
-        storage: p.storage || null,
-        raw: p
-      };
       if (fId !== "0" && farms[`farm_${fId}`]) {
         farms[`farm_${fId}`].cards.generalPlaceables.push(placeableItem);
+        farms[`farm_${fId}`].placeables.push(placeableItem);
       }
     });
   }
@@ -792,6 +758,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
       globalCards.handTools.push(toolItem);
       if (fId !== "0" && farms[`farm_${fId}`]) {
         farms[`farm_${fId}`].cards.handTools.push(toolItem);
+        farms[`farm_${fId}`].handTools.push(toolItem);
       }
     });
   }
@@ -833,11 +800,13 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
   }
 
   // 9. COLLECTIBLES CARD
+  let collectiblesFound = 0;
   if (parsedTree['collectibles'] && parsedTree['collectibles'].collectibles) {
     const list = parsedTree['collectibles'].collectibles.collectible || parsedTree['collectibles'].collectibles.item || [];
     const arr = Array.isArray(list) ? list : [list];
     arr.forEach((c, idx) => {
       const isFound = String(c.collected || c.isFound || c.found || '').toLowerCase() === 'true' || c.collected === '1' || c.isFound === '1';
+      if (isFound) collectiblesFound++;
       globalCards.collectibles.push({ id: c.index || c.id || idx + 1, name: c.name || `Collectible #${idx + 1}`, isFound, raw: c });
     });
   }
@@ -845,17 +814,34 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
   return {
     summary: {
       totalFarms: Object.keys(farms).length,
+      totalVehicles: flatVehicles.length,
       totalFleet: globalCards.fleet.length,
       totalHarvestersAndCombines: globalCards.harvestersAndCombines.length,
+      totalPlaceables: flatPlaceables.length,
       totalPalletsAndBales: globalCards.palletsAndBales.length,
       totalAnimalsHusbandry: globalCards.animals.length,
       totalFactories: globalCards.factories.length,
       totalIncomeGenerators: globalCards.incomeGenerators.length,
-      totalFarmlands: globalCards.farmlands.length,
-      totalMissions: globalCards.missions.all.length,
-      activeMissionsCount: globalCards.missions.inProgress.length
+      totalFarmlandsOwned: globalCards.farmlands.filter(f => f.isOwned).length,
+      totalMapFarmlands: globalCards.farmlands.length,
+      totalAllMissions: globalCards.missions.all.length,
+      activeMissionsCount: globalCards.missions.inProgress.length,
+      totalActiveMods: Object.keys(activeMods).length
     },
     gameInfo: parsedTree['careerSavegame'] && parsedTree['careerSavegame'].careerSavegame ? parsedTree['careerSavegame'].careerSavegame : {},
+    collectibles: {
+      found: collectiblesFound,
+      total: 100,
+      formatted: `${collectiblesFound}/100`,
+      items: globalCards.collectibles.slice(0, 100)
+    },
+    farmlands: {
+      totalMapFarmlands: globalCards.farmlands.length,
+      ownedFarmlands: globalCards.farmlands.filter(f => f.isOwned).length,
+      list: globalCards.farmlands
+    },
+    missions: globalCards.missions,
+    fields: globalCards.fieldsAgronomy,
     cards: globalCards,
     farms: farms,
     activeMods: activeMods,
@@ -864,7 +850,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
 }
 
 // ============================================================================
-// SECTION 7: PIPELINE EXECUTION ENGINE
+// SECTION 7: PIPELINE EXECUTION ENGINE (Unconditional Sync)
 // ============================================================================
 async function runPipeline() {
   console.log("📡 [1/4] Querying Dedicated Server Stats API for Live Save Slot...");
@@ -874,29 +860,9 @@ async function runPipeline() {
   let activeSlot = statsData.activeSlot || process.env.DEFAULT_SAVE_SLOT || "3";
   console.log(`🎯 Active Savegame Slot: [ Slot #${activeSlot} ]`);
 
-  console.log("📦 Indexing Mod Catalogue across all /FS25_Mods_Info sub-nodes...");
+  console.log("📦 Indexing Mod Catalogue from Firebase /FS25_Mods_Info...");
   const catalogLookup = await fetchModsCatalog();
-  console.log(`✅ Indexed ${Object.keys(catalogLookup).length} mod catalogue references.`);
-
-  let lastFullSyncIso = null;
-  try {
-    const snap = await db.ref('fs25/lastFullSaveSync').once('value');
-    lastFullSyncIso = snap.val();
-  } catch (e) {}
-
-  const lastSyncMs = lastFullSyncIso ? new Date(lastFullSyncIso).getTime() : 0;
-  const hoursSinceLastFullSync = (Date.now() - lastSyncMs) / (1000 * 60 * 60);
-
-  if (!FORCE_SYNC && activePlayers === 0 && hoursSinceLastFullSync < 24 && lastSyncMs > 0) {
-    console.log("💤 Server Idle & recently synced. Updating live status only.");
-    await db.ref('fs25').update({
-      activePlayers: 0,
-      activeSaveSlot: String(activeSlot),
-      lastUpdated: new Date().toISOString(),
-      liveMapImage: MAP_IMAGE_URL
-    });
-    process.exit(0);
-  }
+  console.log(`✅ Loaded ${Object.keys(catalogLookup).length} mod catalogue references.`);
 
   console.log("🚀 Executing Full Zero-Loss Savegame & Mod Sync...");
 
@@ -1023,15 +989,19 @@ async function runPipeline() {
 
     masterPayload.summary = cleanData.summary;
     masterPayload.gameInfo = cleanData.gameInfo;
+    masterPayload.collectibles = cleanData.collectibles;
+    masterPayload.farmlands = cleanData.farmlands;
+    masterPayload.missions = cleanData.missions;
+    masterPayload.fields = cleanData.fields;
     masterPayload.cards = cleanData.cards;
     masterPayload.farms = cleanData.farms;
     masterPayload.activeMods = cleanData.activeMods;
     masterPayload.allRawParsedXml = cleanData.allRawParsedXml;
 
-    console.log("💾 [4/4] Writing zero-loss card architecture to Firebase /fs25...");
+    console.log("💾 [4/4] Writing complete payload to Firebase /fs25...");
     await db.ref('fs25').set(masterPayload);
 
-    console.log(`🏆 Complete savegame synchronization verified! All cards organized cleanly.`);
+    console.log(`🏆 Complete savegame synchronization verified! Node /fs25 fully populated.`);
     client.close();
     process.exit(0);
 
