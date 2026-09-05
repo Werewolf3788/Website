@@ -1,25 +1,15 @@
 # ============================================================================
 # File: .github/workflows/fs25-sync.yml
-# Deployment Timestamp: 2026-09-05 13:42:00 (EDT - 24hr New York Time)
+# Deployment Timestamp: 2026-09-05 19:35:00 (EDT - 24hr New York Time)
 # Project: fs25-a3563 (/fs25 RTDB Node)
-# Target Database: https://fs25-a3563-default-rtdb.firebaseio.com
-# Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
-# Measurement ID: G-SGJF0FJPQZ
-# Description: Tiered FS25 Savegame & Telemetry Ingestion Workflow.
-#              - Poller runs every 16 minutes matching G-Portal's 15-min auto-save.
-#              - Evaluates Port 9050 live stats:
-#                  * If server is offline: marks serverStatus.isOnline = false and exits (zero overwrite).
-#                  * If active players > 0: executes high-frequency sync (vehicles, fields, farms, missions).
-#                  * If in-game calendar day changed: updates weather/environment forecast.
-#                  * If 0 players: skips volatile files; triggers slow sync (economy, sales, placeables)
-#                    only on the daily/6-12 hour window.
+# Database Target: https://fs25-a3563-default-rtdb.firebaseio.com
+# Description: Zero-Loss FS25 Ingestion Workflow via Native REST API.
 # ============================================================================
 
 name: FS25 Live Backup Sync
 
 on:
   schedule:
-    # Triggers every 16 minutes in alignment with G-Portal auto-save
     - cron: '*/16 * * * *'
   workflow_dispatch:
 
@@ -45,10 +35,10 @@ jobs:
         run: |
           cd games/FS25
           if [ -f package.json ]; then
-            npm install basic-ftp firebase-admin dotenv xml2js
+            npm install basic-ftp dotenv xml2js
           else
             npm init -y
-            npm install basic-ftp firebase-admin dotenv xml2js
+            npm install basic-ftp dotenv xml2js
           fi
 
       - name: Run Tiered Sync Pipeline
@@ -58,8 +48,6 @@ jobs:
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASS: ${{ secrets.FTP_PASS }}
           FS25_API_CODE: ${{ secrets.FS25_API_CODE }}
-          FIREBASE_DEDICATED_SERVER: ${{ secrets.FIREBASE_DEDICATED_SERVER }}
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_DEDICATED_SERVER || secrets.FIREBASE_SERVICE_ACCOUNT }}
           DEFAULT_SAVE_SLOT: ${{ secrets.DEFAULT_SAVE_SLOT || '3' }}
         run: |
           cd games/FS25
