@@ -1,6 +1,6 @@
 # ============================================================================
 # File: .github/workflows/fs25-sync.yml
-# Deployment Timestamp: 2026-09-05 13:38:00 (EDT - 24hr New York Time)
+# Deployment Timestamp: 2026-09-05 13:42:00 (EDT - 24hr New York Time)
 # Project: fs25-a3563 (/fs25 RTDB Node)
 # Target Database: https://fs25-a3563-default-rtdb.firebaseio.com
 # Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
@@ -39,9 +39,7 @@ jobs:
       - name: Setup Node.js Runtime
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'npm'
-          cache-dependency-path: 'games/FS25/package-lock.json'
+          node-version: 24
 
       - name: Install Dependencies
         run: |
@@ -60,7 +58,6 @@ jobs:
           FTP_USER: ${{ secrets.FTP_USER }}
           FTP_PASS: ${{ secrets.FTP_PASS }}
           FS25_API_CODE: ${{ secrets.FS25_API_CODE }}
-          # Dedicated Server Firebase Admin Service Account Secret
           FIREBASE_DEDICATED_SERVER: ${{ secrets.FIREBASE_DEDICATED_SERVER }}
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_DEDICATED_SERVER || secrets.FIREBASE_SERVICE_ACCOUNT }}
           DEFAULT_SAVE_SLOT: ${{ secrets.DEFAULT_SAVE_SLOT || '3' }}
