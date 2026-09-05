@@ -1,18 +1,22 @@
 # ============================================================================
 # File: .github/workflows/fs25-sync.yml
-# Deployment Timestamp: 2026-09-01 08:25:12 (EDT - 24hr New York Time)
+# Deployment Timestamp: 2026-09-05 07:35:00 (EDT - 24hr New York Time)
 # Project: entertainment-71888 (/fs25 RTDB Node)
-# Description: Smart FS25 Dynamic Savegame Ingestion Workflow.
-#              - Triggers every 16 minutes via cron.
-#              - Installs xml2js alongside core dependencies.
-#              - Synchronizes savegames, farms, and active mods to Firebase.
+# Description: Tiered FS25 Savegame & Telemetry Ingestion Workflow.
+#              - Poller runs every 16 minutes matching G-Portal's 15-min auto-save.
+#              - Evaluates Port 9050 live stats:
+#                  * If server is offline: marks serverStatus.isOnline = false and exits (zero overwrite).
+#                  * If active players > 0: executes high-frequency sync (vehicles, fields, farms, missions).
+#                  * If in-game calendar day changed: updates weather/environment forecast.
+#                  * If 0 players: skips volatile files; triggers slow sync (economy, sales, placeables)
+#                    only on the daily/6-12 hour window.
 # ============================================================================
 
 name: FS25 Live Backup Sync
 
 on:
   schedule:
-    # Trigger every 16 minutes
+    # Triggers every 16 minutes in alignment with G-Portal auto-save
     - cron: '*/16 * * * *'
   workflow_dispatch:
 
@@ -33,13 +37,20 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: 'games/FS25/package-lock.json'
 
       - name: Install Dependencies
         run: |
           cd games/FS25
-          npm install basic-ftp firebase-admin dotenv xml2js
+          if [ -f package.json ]; then
+            npm install basic-ftp firebase-admin dotenv xml2js
+          else
+            npm init -y
+            npm install basic-ftp firebase-admin dotenv xml2js
+          fi
 
-      - name: Run Dynamic Sync Pipeline
+      - name: Run Tiered Sync Pipeline
         env:
           FTP_HOST: ${{ secrets.FTP_HOST }}
           FTP_PORT: ${{ secrets.FTP_PORT }}
@@ -47,6 +58,7 @@ jobs:
           FTP_PASS: ${{ secrets.FTP_PASS }}
           FS25_API_CODE: ${{ secrets.FS25_API_CODE }}
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          FIREBASE_CONFIG: ${{ secrets.FIREBASE_ENTERTAINEMENT_API }}
           DEFAULT_SAVE_SLOT: ${{ secrets.DEFAULT_SAVE_SLOT || '3' }}
         run: |
           cd games/FS25
