@@ -5,8 +5,9 @@
 <!-- Line 65: Top Navigation Bar & Dynamic Menu Scaffolding            -->
 <!-- Line 180: CSS Styles (85% Layout, Dropdown Bounds & Mobile Spec)   -->
 <!-- Line 470: App Core & Movie Gallery Scaffolding                    -->
-<!-- Line 590: Live Realtime Firebase Sync Engine (Movies + UTM Menu)  -->
-<!-- Date & Time (NYT 24hr): 09/05/2026 12:45:00 EDT                   -->
+<!-- Line 590: Live Realtime Firebase Sync Engine (Universal Dates)    -->
+<!-- Line 1060: Universal Clickable Outbound Storefronts & YouTube Fix -->
+<!-- Date & Time (NYT 24hr): 09/05/2026 13:25:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -107,7 +108,7 @@
         <!-- Controls & Filters -->
         <div id="controls-container">
             <div id="search-box-wrapper">
-                <input type="text" id="movie-search" placeholder="Search titles, actors, or years..." onkeyup="runFilters()">
+                <input type="text" id="movie-search" placeholder="Type to instantly filter by title, actor, or year..." oninput="runFilters()">
             </div>
             
             <div id="filter-dropdowns">
@@ -138,13 +139,6 @@
                 
                 <select id="holiday-select" class="f-select" onchange="runFilters()">
                     <option value="">All Holidays</option>
-                    <option value="Christmas">Christmas</option>
-                    <option value="Halloween">Halloween</option>
-                    <option value="Thanksgiving">Thanksgiving</option>
-                    <option value="4th of July">4th of July</option>
-                    <option value="Valentine's">Valentine's Day</option>
-                    <option value="St. Patrick's">St. Patrick's Day</option>
-                    <option value="Easter">Easter</option>
                 </select>
                 
                 <select id="genre-select" class="f-select" onchange="document.getElementById('collection-select').value=''; runFilters()">
@@ -195,7 +189,7 @@
     <div class="lightbox-content" id="lightbox-inner" onclick="event.stopPropagation()">
         <div id="lb-video-wrapper" style="display: none;">
             <button class="close-video-btn black-outline" onclick="closeYouTube(event)">⬅ Close Video</button>
-            <iframe id="lb-yt-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+            <iframe id="lb-yt-iframe" src="" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
         </div>
         <button class="close-btn black-outline" onclick="closeLightbox(event)">✕</button>
         <div class="lightbox-overlay">
@@ -224,7 +218,7 @@
                 <p id="lb-description-text" class="black-outline" style="font-size: 13px; color: #ccc; line-height: 1.5; margin-top: 10px; text-align: left;"></p>
             </div>
 
-            <h3 id="lb-store-heading" class="black-outline" style="font-size: 14px; color: #fff; margin: 20px 0 10px; text-transform: uppercase; font-weight: 400; display: none;">Buy / Rent / Sync</h3>
+            <h3 id="lb-store-heading" class="black-outline" style="font-size: 14px; color: #fff; margin: 20px 0 10px; text-transform: uppercase; font-weight: 400; display: none;">Buy / Rent / Watch</h3>
             <div id="lb-buttons" class="button-container"></div>
         </div>
     </div>
@@ -337,7 +331,7 @@ body {
     color: #1ce783;
 }
 
-/* Desktop Menubar (Middle Home, Right-hand A-Z Folders) */
+/* Desktop Menubar */
 #desktop-menubar-container {
     display: flex;
     align-items: center;
@@ -383,7 +377,6 @@ body {
     background: #232336;
 }
 
-/* Desktop Dropdowns: Position Constrained to Screen */
 .nav-folder-dropdown {
     position: relative;
     display: inline-block;
@@ -409,7 +402,6 @@ body {
     color: #ff0000;
 }
 
-/* BOUNDED DROPDOWN */
 .folder-menu-dropdown {
     position: absolute;
     top: 100%;
@@ -435,7 +427,6 @@ body {
     display: flex;
 }
 
-/* Dropdown / Drawer Item Row */
 .menu-link-row {
     display: flex;
     align-items: center;
@@ -531,9 +522,7 @@ body {
 .notify-control-row { display: flex; flex-direction: column; gap: 8px; }
 #drawer-notify-desc { font-size: 12px; color: #aaa; }
 
-#mobile-home-container {
-    margin-bottom: 10px;
-}
+#mobile-home-container { margin-bottom: 10px; }
 .mobile-home-btn {
     width: 100%;
     min-height: 44px;
@@ -551,7 +540,6 @@ body {
     text-decoration: none;
 }
 
-/* Mobile Drawer Accordion */
 .utm-group-box { margin-bottom: 10px; }
 .utm-group-btn {
     width: 100%;
@@ -582,7 +570,6 @@ body {
 }
 .utm-group-items.open { display: flex; }
 
-/* Image Viewer Lightbox Modal (For Menu Thumbnails) */
 #image-viewer-lightbox {
     position: fixed;
     inset: 0;
@@ -660,7 +647,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 #filter-dropdowns { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; }
 .f-select { background: #111; color: #ffff00; border: 1px solid #444; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; min-height: 44px; outline: none; font-size: 16px; }
 
-/* Dynamic Alphabetical Sidebar */
 #dynamic-nav-sidebar {
     position: fixed;
     top: 50%;
@@ -748,10 +734,9 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     z-index: 10;
     text-transform: uppercase;
     box-shadow: 0 2px 8px rgba(0,0,0,0.7);
-    border: 1px solid transparent;
+    border: 1px solid rgba(255,255,255,0.2);
 }
 
-/* Family Share Badges */
 .family-share-badge {
     position: absolute;
     top: 36px;
@@ -810,7 +795,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.2);
 }
 
-/* Responsive Movie Grid Layout */
 #movie-library-grid { 
     display: grid; 
     gap: 15px; 
@@ -819,7 +803,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     padding-right: 0;
 }
 
-/* Tablet Layout (600px - 1024px) */
 @media (min-width: 600px) and (max-width: 1024px) {
     #movie-library-grid {
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -828,7 +811,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     }
 }
 
-/* Desktop Layout (1025px+) */
 @media (min-width: 1025px) { 
     #movie-library-grid { 
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
@@ -855,7 +837,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 .lightbox-content { width: 100%; max-width: 500px; height: 85vh; border: 2px solid #ff0000; border-radius: 20px; position: relative; background-size: cover; background-position: center; }
 .lightbox-overlay { position: absolute; inset: 0; background: linear-gradient(to top, #000 45%, rgba(0,0,0,0.4) 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 25px; text-align: center; overflow-y: auto; }
 
-/* Lightbox Scrolling Actors Section */
 .lb-cast-section {
     margin-top: 10px;
     text-align: left;
@@ -907,8 +888,8 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 .close-video-btn { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.85); border: 1px solid #ff0000; color: #ff0000; padding: 6px 14px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; z-index: 150; min-height: 44px; }
 #lb-yt-iframe { width: 100%; height: 100%; border: none; }
 
-.button-container { display: grid; gap: 8px; width: 100%; margin-top: 5px; grid-template-columns: repeat(3, 1fr); }
-.m-link { padding: 10px 4px; border-radius: 8px; font-size: 11px; font-weight: 700 !important; text-transform: uppercase; color: #fff; text-decoration: none; text-align: center; transition: 0.3s; text-shadow: none !important; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+.button-container { display: grid; gap: 8px; width: 100%; margin-top: 5px; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
+.m-link { padding: 10px 4px; border-radius: 8px; font-size: 11px; font-weight: 700 !important; text-transform: uppercase; color: #fff; text-decoration: none; text-align: center; transition: 0.3s; text-shadow: none !important; min-height: 44px; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
 .btn-amazon { background: #FF9900 !important; color: #000 !important; }
 .btn-google { background: #4285F4; position: relative; }
 .btn-google.glow-family-share {
@@ -923,7 +904,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 .btn-moviesanywhere { background: #00aeef; }
 .btn-apple { background: #555; }
 .btn-fandango { background: #ff7300; }
-.btn-youtube { background: #FF0000; border: none; font-family: inherit; cursor: pointer; }
+.btn-youtube { background: #FF0000; }
 .f-btn { background: #111; color: #ff0000; border: 1px solid #444; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; min-height: 44px; font-size: 14px; }
 .f-btn:hover { background: #ff0000; color: #fff; border-color: #ff0000; }
 #kf-watermark { position: fixed; bottom: 10px; left: 10px; font-size: 24px; font-weight: 900; opacity: 0.8; z-index: 10000; pointer-events: none; }
@@ -933,7 +914,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 .tip-link { padding: 15px 40px; background: linear-gradient(135deg, #8b0000, #ff0000); color: #fff !important; font-weight: 900; border-radius: 50px; text-decoration: none; border: 2px solid #fff; transition: 0.3s; min-height: 44px; display: flex; align-items: center; }
 .tip-link:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,0,0,0.6); }
 
-/* Desktop vs Mobile Header Visibility Rules */
 @media (max-width: 950px) {
     #desktop-menubar-container { display: none; }
     #nav-toggle-btn { display: flex; }
@@ -943,7 +923,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     #nav-toggle-btn { display: none; }
 }
 
-/* Mobile Screen Standards */
 @media (max-width: 768px) {
     .master-85-width { width: 92% !important; }
     #library-header { padding: 20px 15px; }
@@ -984,7 +963,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     let currentFilteredList = [];
     let utmLinksMap = {};
     
-    // Batch Pagination Configurations
     const BATCH_SIZE = 60;
     let currentRenderLimit = BATCH_SIZE;
 
@@ -1029,7 +1007,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         }
     };
 
-    // Full Image Viewer Modal
     window.openImageViewer = (imgUrl, caption) => {
         const modal = document.getElementById('image-viewer-lightbox');
         const imgEl = document.getElementById('img-viewer-element');
@@ -1051,9 +1028,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         document.body.style.overflow = 'auto';
     };
 
-    /**
-     * Live SSE Connection for Drawer & Menubar Directory (/utm_links)
-     */
     function initLiveUtmStream() {
         fetch(FIREBASE_UTM_ENDPOINT)
             .then(res => res.json())
@@ -1089,9 +1063,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         } catch (e) {}
     }
 
-    /**
-     * Renders Desktop Menu Bar and Mobile Drawer based on /utm_links structure
-     */
     function renderBothMenuBars() {
         if (!utmLinksMap || typeof utmLinksMap !== 'object') return;
 
@@ -1103,7 +1074,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         let homeItem = null;
         let folderGroups = {};
 
-        // Process branches (Discord, Entertainment, Game, Home, Other, User, etc.)
         Object.keys(utmLinksMap).forEach(key => {
             const rawNode = utmLinksMap[key];
             if (!rawNode) return;
@@ -1137,7 +1107,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             });
         });
 
-        // 1. Build Desktop Home Button (Center)
         const homeUrl = homeItem ? (homeItem.url || '#') : '#';
         const homeTitle = homeItem ? (homeItem.title || 'Home') : 'Home';
         const homeImg = (homeItem && homeItem.image) ? homeItem.image : '';
@@ -1155,7 +1124,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             </div>
         `;
 
-        // Mobile Home Button
         mobileHomeSlot.innerHTML = `
             <div class="menu-link-row">
                 <a href="${homeUrl}" class="menu-link-anchor black-outline" onclick="trackOutboundClick('${homeUrl}', 'Mobile Home')">
@@ -1165,10 +1133,8 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             </div>
         `;
 
-        // 2. Sort Folders A-Z
         const sortedFolderKeys = Object.keys(folderGroups).sort((a, b) => a.localeCompare(b));
 
-        // 3. Build Desktop Right-Hand Dropdowns
         let desktopFoldersHtml = '';
         sortedFolderKeys.forEach(folderName => {
             const list = folderGroups[folderName];
@@ -1206,7 +1172,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         });
         desktopFoldersSlot.innerHTML = desktopFoldersHtml;
 
-        // 4. Build Mobile Drawer Accordions
         let mobileDrawerHtml = '';
         sortedFolderKeys.forEach((folderName, idx) => {
             const list = folderGroups[folderName];
@@ -1427,112 +1392,102 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         return Array.from(uniqueSet);
     }
 
-    function isHolidaySeason(holidayName) {
-        const now = new Date();
-        const month = now.getMonth();
-        const date = now.getDate();
-
-        switch (holidayName) {
-            case 'Christmas': return (month === 10 && date >= 15) || month === 11 || (month === 0 && date <= 5);
-            case 'Halloween': return (month === 8 && date >= 15) || month === 9 || (month === 10 && date <= 3);
-            case 'Thanksgiving': return month === 10;
-            case '4th of July': return (month === 5 && date >= 20) || (month === 6 && date <= 10);
-            case 'Valentine\'s': return month === 1 && date <= 16;
-            case 'St. Patrick\'s': return month === 2 && date <= 20;
-            case 'Easter': return (month === 2 && date >= 15) || month === 3;
-            default: return false;
-        }
-    }
-
-    function detectHoliday(m) {
-        if (m.holidayTag) {
-            const tag = m.holidayTag.trim().toLowerCase();
-            if (/\b(christmas|xmas)\b/i.test(tag)) return { emoji: '🎄', name: 'Christmas', color: '#15803d', border: '#22c55e' };
-            if (/\b(halloween|spooky)\b/i.test(tag)) return { emoji: '🎃', name: 'Halloween', color: '#ea580c', border: '#f97316' };
-            if (/\bthanksgiving\b/i.test(tag)) return { emoji: '🦃', name: 'Thanksgiving', color: '#b45309', border: '#f59e0b' };
-            if (/\b(independence\s+day|4th\s+of\s+july|july\s+4)\b/i.test(tag)) return { emoji: '🎆', name: '4th of July', color: '#1d4ed8', border: '#3b82f6' };
-            if (/\b(valentine|valentines)\b/i.test(tag)) return { emoji: '💝', name: 'Valentine\'s', color: '#be185d', border: '#ec4899' };
-            if (/\b(st\s*.\s*patrick|shamrock|irish)\b/i.test(tag)) return { emoji: '🍀', name: 'St. Patrick\'s', color: '#047857', border: '#10b981' };
-            if (/\beaster\b/i.test(tag)) return { emoji: '🐰', name: 'Easter', color: '#a21caf', border: '#d946ef' };
-        }
-
-        const text = [m.title, m.description, m.genre, m.collection].join(' ').toLowerCase();
-        if (/\b(christmas|xmas|santa\s+claus|santa|grinch|scrooge|mistletoe|north\s+pole|advent|nativity)\b/i.test(text)) {
-            return { emoji: '🎄', name: 'Christmas', color: '#15803d', border: '#22c55e' };
-        } else if (/\b(halloween|michael\s+myers|hocus\s+pocus|trick\s+or\s+treat|jack-o-lantern)\b/i.test(text)) {
-            return { emoji: '🎃', name: 'Halloween', color: '#ea580c', border: '#f97316' };
-        } else if (/\b(thanksgiving|pilgrim|gobble)\b/i.test(text)) {
-            return { emoji: '🦃', name: 'Thanksgiving', color: '#b45309', border: '#f59e0b' };
-        } else if (/\b(independence\s+day|4th\s+of\s+july)\b/i.test(text)) {
-            return { emoji: '🎆', name: '4th of July', color: '#1d4ed8', border: '#3b82f6' };
-        } else if (/\b(valentine|valentines\s+day|cupid)\b/i.test(text)) {
-            return { emoji: '💝', name: 'Valentine\'s', color: '#be185d', border: '#ec4899' };
-        } else if (/\b(st\s*.\s*patrick|leprechaun|shamrock)\b/i.test(text)) {
-            return { emoji: '🍀', name: 'St. Patrick\'s', color: '#047857', border: '#10b981' };
-        } else if (/\b(easter|easter\s+bunny|egg\s+hunt)\b/i.test(text)) {
-            return { emoji: '🐰', name: 'Easter', color: '#a21caf', border: '#d946ef' };
-        }
-        return null;
-    }
-
     function getHolidayMetadata(m) {
-        const holiday = detectHoliday(m);
-        return (holiday && isHolidaySeason(holiday.name)) ? holiday : null;
+        if (!m.holidayTag || typeof m.holidayTag !== 'string') return null;
+        const tag = m.holidayTag.trim();
+        if (!tag || tag.toLowerCase() === 'none' || tag.toLowerCase() === 'n/a') return null;
+
+        const lower = tag.toLowerCase();
+        let emoji = '🎉';
+        let color = '#3b82f6';
+
+        if (lower.includes('christmas') || lower.includes('xmas')) {
+            emoji = '🎄'; color = '#15803d';
+        } else if (lower.includes('halloween') || lower.includes('spooky')) {
+            emoji = '🎃'; color = '#ea580c';
+        } else if (lower.includes('thanksgiving')) {
+            emoji = '🦃'; color = '#b45309';
+        } else if (lower.includes('4th of july') || lower.includes('independence')) {
+            emoji = '🎆'; color = '#1d4ed8';
+        } else if (lower.includes('valentine')) {
+            emoji = '💝'; color = '#be185d';
+        } else if (lower.includes('st. patrick') || lower.includes('patrick')) {
+            emoji = '🍀'; color = '#047857';
+        } else if (lower.includes('easter')) {
+            emoji = '🐰'; color = '#a21caf';
+        } else if (lower.includes('new year')) {
+            emoji = '🥂'; color = '#854d0e';
+        }
+
+        return { name: tag, emoji: emoji, color: color };
     }
 
     /**
-     * BULLETPROOF DATE PARSER:
-     * Accurately parses standard receipts: MM/DD/YYYY, M/D/YYYY, YYYY-MM-DD
+     * UNIVERSAL MULTI-FORMAT DATE PARSER:
+     * Handles Google Sheets serial numbers (e.g. 42505), MM/DD/YYYY, M/D/YY, and YYYY-MM-DD
      */
     function getSafeTimestamp(ds) {
         if (!ds) return 0;
         const cleanDs = ds.toString().trim();
+
+        // 1. Google Sheets Serial Number (e.g. 42505 for May 2016, 45899 for Aug 2025)
+        const num = Number(cleanDs);
+        if (!isNaN(num) && num > 20000 && num < 80000) {
+            return (num - 25569) * 86400 * 1000;
+        }
+
+        // 2. Delimited Date Strings (MM/DD/YYYY, M/D/YY, YYYY-MM-DD)
         const parts = cleanDs.split(' ')[0].split(/[\/\-\.]/);
-        
         if (parts.length === 3) {
             let m, d, y;
             if (parts[0].length === 4) {
-                // Format: YYYY-MM-DD
+                // ISO YYYY-MM-DD
                 y = parseInt(parts[0], 10);
                 m = parseInt(parts[1], 10);
                 d = parseInt(parts[2], 10);
             } else {
-                // Format: MM/DD/YYYY or M/D/YYYY
+                // US M/D/Y or MM/DD/YYYY
                 m = parseInt(parts[0], 10);
                 d = parseInt(parts[1], 10);
                 y = parseInt(parts[2], 10);
+                // Handle 2-digit years (e.g., 16 -> 2016)
+                if (y < 100) y += (y < 50 ? 2000 : 1900);
             }
             if (!isNaN(m) && !isNaN(d) && !isNaN(y)) {
-                if (y < 100) y += (y < 50 ? 2000 : 1900);
                 return new Date(y, m - 1, d).getTime() || 0;
             }
         }
         
+        // 3. Fallback standard JavaScript parser
         const parsed = Date.parse(cleanDs);
         return !isNaN(parsed) ? parsed : 0;
     }
 
+    function getDisplayDateString(rawDateStr, timestamp) {
+        if (timestamp > 0) {
+            const dt = new Date(timestamp);
+            const mm = String(dt.getMonth() + 1).padStart(2, '0');
+            const dd = String(dt.getDate()).padStart(2, '0');
+            const yyyy = dt.getFullYear();
+            return `${mm}/${dd}/${yyyy}`;
+        }
+        return rawDateStr || '';
+    }
+
+    /**
+     * REALTIME SYNC ENGINE (Bypasses Stale Local Storage Cache on Page Load)
+     */
     async function initLiveFirebaseStream() {
         const syncDot = document.getElementById('sync-dot');
         const syncText = document.getElementById('sync-text');
 
-        const cachedData = localStorage.getItem(CACHE_STORAGE_KEY);
-        if (cachedData) {
-            try {
-                const parsedCache = JSON.parse(cachedData);
-                if (parsedCache && Object.keys(parsedCache).length > 0) {
-                    moviesMap = parsedCache;
-                    rebuildMoviesArray(false);
-                }
-            } catch (err) {}
-        }
-
         try {
-            const res = await fetch(FIREBASE_ENDPOINT);
+            const res = await fetch(`${FIREBASE_ENDPOINT}?cb=${Date.now()}`);
             if (res.ok) {
                 const data = await res.json();
                 if (data && typeof data === 'object') {
                     moviesMap = data;
+                    localStorage.removeItem(CACHE_STORAGE_KEY);
                     rebuildMoviesArray(true);
                     if (syncDot && syncText) {
                         syncDot.className = 'dot-synced';
@@ -1542,6 +1497,11 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             }
         } catch (err) {
             console.error("Direct fetch error: ", err);
+            const cachedData = localStorage.getItem(CACHE_STORAGE_KEY);
+            if (cachedData) {
+                moviesMap = JSON.parse(cachedData);
+                rebuildMoviesArray(false);
+            }
             if (syncDot && syncText) {
                 syncDot.className = 'dot-error';
                 syncText.textContent = 'Firebase Offline';
@@ -1569,6 +1529,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                                 }
                             }
                         }
+                        localStorage.removeItem(CACHE_STORAGE_KEY);
                         rebuildMoviesArray(true);
                         runFilters();
                     }
@@ -1616,12 +1577,15 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             let finalPoster = (v.poster && v.poster !== 'N/A' && isValidUrl(v.poster)) ? v.poster : '';
             const rawMediaId = v.id ? v.id.toString().trim() : '';
 
+            const rawHolidayTag = (v.holidays && v.holidays.toString().trim().toLowerCase() !== 'none') ? v.holidays.toString().trim() : '';
+            const ts = getSafeTimestamp(v.dateAdded);
+
             return {
                 title: v.title || key || '',
                 image: finalPoster,
                 year: v.year || '',
                 platforms: p,
-                dateAdded: v.dateAdded || '',
+                dateAdded: getDisplayDateString(v.dateAdded, ts),
                 imdbId: rawMediaId,
                 cast: castArr,
                 edition: v.edition || '',
@@ -1632,11 +1596,11 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 streaming: rawStreamingStr,
                 streamPlatforms: cleanStreamPlatforms,
                 description: v.description || '',
-                holidayTag: v.holidays || '',
+                holidayTag: rawHolidayTag,
                 videoRating: v.rating || '',
                 ratingDescription: v.ratingReason || '',
                 googleFamilyShare: isFamilyShareChecked,
-                timestamp: getSafeTimestamp(v.dateAdded),
+                timestamp: ts,
                 libIndex: index
             };
         }).filter(m => m !== null && m.title && m.title.trim() !== '');
@@ -1647,10 +1611,9 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
         if (validDates.length > 0) {
             validDates.sort((a, b) => a.timestamp - b.timestamp);
-            oldestMovieIndex = validDates[0].libIndex; // Absolute oldest purchase
+            oldestMovieIndex = validDates[0].libIndex;
 
             const latestTimestamp = validDates[validDates.length - 1].timestamp;
-            // Mark items added on the latest catalog day or within 14 days of that latest day
             const RECENT_THRESHOLD = 14 * 24 * 60 * 60 * 1000;
             validDates.forEach(m => {
                 if (latestTimestamp - m.timestamp <= RECENT_THRESHOLD) {
@@ -1704,7 +1667,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             const holidayMeta = getHolidayMetadata(m);
             if (holidayMeta) {
                 holidayBadgeHtml = `
-                    <div class="holiday-badge black-outline" style="background: ${holidayMeta.color}d5; border-color: ${holidayMeta.border};">
+                    <div class="holiday-badge black-outline" style="background: ${holidayMeta.color}d5;">
                         <span>${holidayMeta.emoji} ${holidayMeta.name}</span>
                     </div>`;
             }
@@ -1735,7 +1698,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                 }
             }
 
-            const holidayEmoji = holidayMeta ? ` ${holidayMeta.emoji}` : '';
             const posterSrc = m.image || 'https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg';
 
             card.innerHTML = `
@@ -1748,7 +1710,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                     <div class="poster-year-badge black-outline">${m.year}</div>
                 </div>
                 <div class="movie-info">
-                    <div class="movie-title black-outline">${m.title}${holidayEmoji}</div>
+                    <div class="movie-title black-outline">${m.title}</div>
                     <div class="main-desc">${m.description || 'N/A'}</div>
                     ${ownershipHtml}
                     <div class="main-meta-row black-outline">
@@ -1773,28 +1735,33 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     });
 
     window.runFilters = () => {
-        const query = document.getElementById('movie-search').value.toLowerCase();
+        const rawQuery = document.getElementById('movie-search').value.toLowerCase().trim();
         const typeF = document.getElementById('type-select').value;
         const ratingF = document.getElementById('rating-select').value;
         const platformF = document.getElementById('platform-select').value;
         const streamF = document.getElementById('stream-service-select').value.toLowerCase().trim();
-        const holidayF = document.getElementById('holiday-select').value;
+        const holidayF = document.getElementById('holiday-select').value.toLowerCase().trim();
         const genreF = document.getElementById('genre-select').value;
         const collF = document.getElementById('collection-select').value;
         const artF = document.getElementById('artist-select').value.toLowerCase().trim();
         const sort = document.getElementById('sort-select').value;
-        const queryWords = query.split(/\s+/).filter(w => w.length > 0);
 
         document.body.classList.remove('bg-amazon', 'bg-google', 'bg-youtube', 'bg-moviesanywhere', 'bg-apple', 'bg-fandango', 'bg-family_share');
         if (platformF) {
             document.body.classList.add('bg-' + platformF);
         }
 
-        const isFiltered = !!(query || typeF || ratingF || platformF || streamF || holidayF || genreF || collF || artF);
+        const isFiltered = !!(rawQuery || typeF || ratingF || platformF || streamF || holidayF || genreF || collF || artF);
 
         currentFilteredList = movies.filter(m => {
-            const pool = [m.title, m.year, ...m.cast].join(' ').toLowerCase();
-            const searchMatch = queryWords.length === 0 || queryWords.every(word => pool.includes(word));
+            let searchMatch = true;
+            if (rawQuery.length > 0) {
+                const titleLower = m.title.toLowerCase();
+                const yearLower = (m.year || '').toString().toLowerCase();
+                const castStr = (m.cast || []).join(' ').toLowerCase();
+
+                searchMatch = titleLower.includes(rawQuery) || yearLower.includes(rawQuery) || castStr.includes(rawQuery);
+            }
             
             const typeMatch = !typeF || (typeF === 'TV' ? m.type.toLowerCase().includes('tv') : m.type.toLowerCase().includes('movie'));
             
@@ -1808,8 +1775,10 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             const streamMatch = !streamF || (m.streamPlatforms && m.streamPlatforms.some(sp => sp.toLowerCase() === streamF));
             const ratingMatch = !ratingF || m.videoRating === ratingF;
 
-            const holidayObj = detectHoliday(m);
-            const holidayMatch = !holidayF || (holidayObj && holidayObj.name === holidayF);
+            let holidayMatch = true;
+            if (holidayF) {
+                holidayMatch = m.holidayTag && m.holidayTag.toLowerCase().includes(holidayF);
+            }
             
             const genreMatch = !genreF || m.genre.toLowerCase().includes(genreF.toLowerCase());
             const collMatch = !collF || m.collection === collF;
@@ -1818,9 +1787,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             return searchMatch && typeMatch && platformMatch && streamMatch && ratingMatch && holidayMatch && genreMatch && collMatch && artMatch;
         });
 
-        // Strict Sorting Logic:
-        // 'newest' orders strictly by the highest timestamp (dateAdded). 
-        // If tied, the most recently added entry in the database (b.libIndex - a.libIndex) wins.
         if (collF && sort === 'newest') {
             currentFilteredList.sort((a,b) => (parseInt(a.year)||0) - (parseInt(b.year)||0) || a.title.localeCompare(b.title));
         } else {
@@ -1870,6 +1836,16 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         runFilters();
         document.getElementById('controls-container').scrollIntoView({ behavior: 'smooth' });
     };
+
+    /**
+     * EXTRACTOR: Resolves standard desktop URLs, short links, and embeds
+     */
+    function extractYouTubeVideoId(url) {
+        if (!url) return null;
+        const clean = url.toString().trim();
+        const match = clean.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+        return match ? match[1] : null;
+    }
 
     window.openLightbox = (m) => {
         const lb = document.getElementById('movie-lightbox');
@@ -1961,31 +1937,40 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
         document.getElementById('lb-description-text').textContent = m.description || 'No description available.';
 
+        // CONDITIONAL BUTTONS: Direct URLs with Clean Fallbacks
         let btns = [];
         const p = m.platforms;
-        if (p.amazon) {
+        const sanitizedTitle = m.title.replace(/'/g, '');
+
+        if (p.amazon && p.amazon.trim() !== '') {
             const amz = resolveAppOrWebUrl(p.amazon, 'amazon');
-            btns.push(`<a href="${amz}" onclick="trackOutboundClick(this.href, 'Amazon: ${m.title.replace(/'/g, "\\'")}')" target="_blank" class="m-link btn-amazon">Amazon</a>`);
+            btns.push(`<a href="${amz}" onclick="trackOutboundClick(this.href, 'Amazon: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-amazon">Amazon</a>`);
         }
-        if (p.google) {
+        if (p.google && p.google.trim() !== '') {
             const goog = appendUtm(p.google, m.title + '_google');
             const familyGlowClass = m.googleFamilyShare ? ' glow-family-share' : '';
-            btns.push(`<a href="${goog}" onclick="trackOutboundClick(this.href, 'Google: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="m-link btn-google${familyGlowClass}">Google Play</a>`);
+            btns.push(`<a href="${goog}" onclick="trackOutboundClick(this.href, 'Google: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-google${familyGlowClass}">Google Play</a>`);
         }
-        if (p.moviesanywhere) {
+        if (p.moviesanywhere && p.moviesanywhere.trim() !== '' && !p.moviesanywhere.toLowerCase().includes('not in library')) {
             const ma = appendUtm(p.moviesanywhere, m.title + '_moviesanywhere');
-            btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MoviesAnywhere: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="m-link btn-moviesanywhere">Movies Anywhere</a>`);
+            btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MoviesAnywhere: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-moviesanywhere">Movies Anywhere</a>`);
         }
-        if (p.apple) {
+        if (p.apple && p.apple.trim() !== '') {
             const app = appendUtm(p.apple, m.title + '_apple');
-            btns.push(`<a href="${app}" onclick="trackOutboundClick(this.href, 'AppleTV: ${m.title.replace(/'/g, "\\'")}')" target="_blank" class="m-link btn-apple">Apple TV</a>`);
+            btns.push(`<a href="${app}" onclick="trackOutboundClick(this.href, 'AppleTV: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-apple">Apple TV</a>`);
         }
-        if (p.fandango) {
+        if (p.fandango && p.fandango.trim() !== '') {
             const fan = appendUtm(p.fandango, m.title + '_fandango');
-            btns.push(`<a href="${fan}" onclick="trackOutboundClick(this.href, 'Fandango: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="m-link btn-fandango">Fandango</a>`);
+            btns.push(`<a href="${fan}" onclick="trackOutboundClick(this.href, 'Fandango: ${sanitizedTitle}')" target="werewolf_cinema_window" rel="noopener noreferrer" class="m-link btn-fandango">Fandango</a>`);
         }
-        if (p.youtube) {
-            btns.push(`<button onclick="playYouTube('${p.youtube}', '${m.title.replace(/'/g, "\\'")}')" class="m-link btn-youtube">YouTube</button>`);
+        if (p.youtube && p.youtube.trim() !== '') {
+            const ytVidId = extractYouTubeVideoId(p.youtube);
+            if (ytVidId) {
+                btns.push(`<button type="button" onclick="playYouTube('${p.youtube}')" class="m-link btn-youtube">▶ Watch Trailer</button>`);
+            } else {
+                const ytUrl = resolveAppOrWebUrl(p.youtube, 'youtube');
+                btns.push(`<a href="${ytUrl}" onclick="trackOutboundClick(this.href, 'YouTube: ${sanitizedTitle}')" target="_blank" rel="noopener noreferrer" class="m-link btn-youtube">YouTube</a>`);
+            }
         }
 
         const storeHeading = document.getElementById('lb-store-heading');
@@ -1993,8 +1978,8 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         
         buttonBox.innerHTML = btns.join('');
         if (btns.length > 0) {
-            const hasMA = p.moviesanywhere && p.moviesanywhere.trim() !== '';
-            storeHeading.textContent = hasMA ? "Sync / Rent / Buy (Movies Anywhere Compatible)" : "Buy / Rent";
+            const hasMA = p.moviesanywhere && p.moviesanywhere.trim() !== '' && !p.moviesanywhere.toLowerCase().includes('not in library');
+            storeHeading.textContent = hasMA ? "Sync / Rent / Buy (Movies Anywhere Compatible)" : "Buy / Rent / Watch";
             storeHeading.style.display = 'block';
         } else {
             storeHeading.style.display = 'none';
@@ -2010,15 +1995,19 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         closeYouTube(); 
     };
     
-    window.playYouTube = (u, title = 'YouTube Video') => {
-        const vid = u.match(/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/);
-        if (vid && vid[2].length === 11) {
-            document.getElementById('lb-video-wrapper').classList.add('active').style.display = "flex";
-            document.getElementById('lb-yt-iframe').src = `https://www.youtube.com/embed/${vid[2]}?autoplay=1`;
+    // YOUTUBE AUTOPLAY & PLAYER CONTROLLER
+    window.playYouTube = (u) => {
+        const vidId = extractYouTubeVideoId(u);
+        const wrapper = document.getElementById('lb-video-wrapper');
+        const iframe = document.getElementById('lb-yt-iframe');
+
+        if (vidId && wrapper && iframe) {
+            iframe.src = `https://www.youtube-nocookie.com/embed/${vidId}?autoplay=1&rel=0&enablejsapi=1`;
+            wrapper.classList.add('active');
+            wrapper.style.display = "flex";
+            trackOutboundClick(u, 'YouTube Player Embedded');
         } else {
-            const fallbackUrl = appendUtm(u, title);
-            trackOutboundClick(fallbackUrl, 'YouTube: ' + title);
-            window.open(fallbackUrl, 'werewolf_cinema_window');
+            window.open(normalizeUrl(u), '_blank', 'noopener,noreferrer');
         }
     };
 
@@ -2034,12 +2023,13 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     };
 
     function updateDropdowns() {
-        const gSet = new Set(), cSet = new Set(), aSet = new Set(), rSet = new Set(), sSet = new Set();
+        const gSet = new Set(), cSet = new Set(), aSet = new Set(), rSet = new Set(), sSet = new Set(), hSet = new Set();
         
         movies.forEach(m => { 
             if(m.genre) m.genre.split(',').forEach(g => { const clean = g.trim(); if(clean) gSet.add(clean); });
             if(m.collection) cSet.add(m.collection);
             if(m.videoRating) rSet.add(m.videoRating.trim());
+            if(m.holidayTag) hSet.add(m.holidayTag.trim());
 
             if (Array.isArray(m.cast)) {
                 m.cast.forEach(a => {
@@ -2069,6 +2059,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         fill('artist-select', aSet, 'Artists'); 
         fill('rating-select', rSet, 'Ratings');
         fill('stream-service-select', sSet, 'Free & Sub Streams');
+        fill('holiday-select', hSet, 'Holidays');
     }
 
     window.resetFilters = () => { 
