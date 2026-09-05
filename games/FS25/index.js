@@ -1,23 +1,25 @@
 /* ============================================================================
  * File: index.js
- * Deployment Timestamp: 2026-09-05 05:57:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-05 06:45:00 (EDT - 24hr New York Time)
  * Project: entertainment-71888 (/fs25 RTDB Node)
  * Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
  * Description: Zero-Loss FS25 Savegame Ingestion & Card Synchronization Engine.
  *              - Dual HTTP & HTTPS protocol-agnostic networking.
  *              - Unconditional full pipeline execution (bypasses player-count skips).
  *              - Complete recursive XML parsing preserving 100% of data.
- *              - Independent Cards:
- *                  * Pallets & Bales
- *                  * Animals & Husbandry (Headcounts, Milk, Slurry, Health)
- *                  * Factories & Production Points (Inputs, Outputs, Greenhouses)
- *                  * Fleet Equipment & Machinery
- *                  * Harvesters & Combines (Dedicated Isolated Card)
- *                  * Passive Income Generators (Windmills, Solar, Government Subsidies)
- *                  * Farmland Holdings & Plots
- *                  * Universal Missions & Contracts (All Available, Active, Finished)
- *                  * Player Hand Tools & Field Agronomy (Weed, Lime, Fertilizer)
- *              - Dual-Layer Image Resolver (Google Sheet/Drive with GitHub fallback).
+ *              - Aggregated Field/Zone-aware Passive Income Generator Cards:
+ *                  * Groups identical sources (e.g. Government Subsidy, Solar, Wind)
+ *                  * Calculates total item count, cumulative value/cost, and hourly/monthly payout rates.
+ *                  * Separates identical units if placed in different fields/spatial zones.
+ *              - Universal Missions & Contracts:
+ *                  * All records (Available, In-Progress, Finished, Failed) fully exposed.
+ *              - Deep-Inspection Cards:
+ *                  * Pallets, Big Bags & Bales
+ *                  * Animals & Husbandry (Headcounts, Slurry, Manure, Milk, Straw, Health)
+ *                  * Factories & Production Points (Lines, Storage, Active Inputs/Outputs)
+ *                  * Fleet Machinery & Dedicated Harvesters
+ *                  * Farmland Holdings & Agronomy Soil Data (Lime, Weeds, Plowing)
+ *              - Dual-Layer Image Resolver (Firebase Mod Catalog + GitHub Assets).
  * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
  * ============================================================================ */
 
@@ -77,6 +79,7 @@ const ftpUser = process.env.FTP_USER;
 const ftpPass = process.env.FTP_PASS;
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
 
+// Protocol-agnostic endpoints
 const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
 const MAP_IMAGE_URL = `https://wsrv.nl/?url=${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
 const GITHUB_IMG_BASE = `https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/`;
@@ -138,6 +141,8 @@ const REPO_IMAGES = {
   "grasscut": "Grass_Cut.JPG",
   "grassroundbale": "Grass_Round_Bale.JPG",
   "grasssquarebale": "Grass_Square_Bale.JPG",
+  "governmentsubsidy": "Government_Subsidy.jpg",
+  "subsidy": "Government_Subsidy.jpg",
   "greenbeans": "Green_Beans.JPG",
   "harvest": "HARVEST.JPG",
   "herbicide": "HERBICIDE.JPG",
@@ -188,6 +193,7 @@ const REPO_IMAGES = {
   "silagesquarebale": "Silage_Square_Bale.JPG",
   "slurry": "Slurry.JPG",
   "snow": "Snow.JPG",
+  "solarpanel": "Solar_Panel.jpg",
   "solidfertilizer": "Solid_Fertilizer.JPG",
   "sorghum": "Sorghum.JPG",
   "sorghumswath": "Sorghum_Swath.JPG",
@@ -221,12 +227,14 @@ const REPO_IMAGES = {
   "waterbuffalos": "Water_Buffalos.JPG",
   "wheat": "Wheat.JPG",
   "wheatswath": "Wheat_Swath.JPG",
+  "windturbine": "Wind_Turbine.jpg",
+  "windmill": "Wind_Turbine.jpg",
   "woodchips": "Wood_Chips.JPG",
   "woodchipsroundbale": "Wood_Chips_Round Bale.JPG"
 };
 
 // ============================================================================
-// SECTION 5: UTILITY HELPERS, XML SANITIZER & DUAL IMAGE RESOLVER
+// SECTION 5: UTILITY HELPERS, PARSER & DUAL IMAGE RESOLVER
 // ============================================================================
 function sanitizeXml(rawText) {
   if (!rawText) return "";
@@ -262,7 +270,7 @@ async function parseXmlString(xmlString) {
 }
 
 function cleanEntityName(filepath) {
-  if (!filepath) return "Equipment";
+  if (!filepath) return "Item";
   const filename = filepath.split('/').pop().replace(/\.xml$/i, '');
   return filename
     .replace(/([A-Z])/g, ' $1')
@@ -323,6 +331,29 @@ function resolveBestImage(entityKey, sheetRecord) {
     }
   }
   return null;
+}
+
+function formatCurrency(amount) {
+  return `$${Math.round(amount).toLocaleString('en-US')}`;
+}
+
+// Spatial clustering helper to differentiate items placed across distinct fields/zones
+function getSpatialZone(p) {
+  if (p.fieldId) return `Field ${p.fieldId}`;
+  if (p.farmlandId) return `Farmland Plot ${p.farmlandId}`;
+  
+  // Extract coordinate transform positions if available
+  const pos = p.position || (p.transform && p.transform.position) || (p.bale && p.bale.position);
+  if (typeof pos === 'string') {
+    const coords = pos.trim().split(/\s+/).map(Number);
+    if (coords.length >= 2 && !isNaN(coords[0]) && !isNaN(coords[2] || coords[1])) {
+      // Create a 100m x 100m grid box identifier
+      const xGrid = Math.floor(coords[0] / 100) * 100;
+      const zGrid = Math.floor((coords[2] || coords[1]) / 100) * 100;
+      return `Zone (${xGrid}, ${zGrid})`;
+    }
+  }
+  return "Farm Grounds";
 }
 
 async function downloadFtpFileToString(client, remotePath) {
@@ -409,7 +440,7 @@ async function fetchModsCatalog() {
 }
 
 // ============================================================================
-// SECTION 6: ZERO-LOSS CARD STRUCTURING ENGINE (All Cards Separated)
+// SECTION 6: ADVANCED ZERO-LOSS CARD COMPILER & AGGREGATOR
 // ============================================================================
 async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfigXml) {
   const parsedTree = {};
@@ -451,6 +482,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     };
   }
 
+  // Parse Farms
   if (parsedTree['farms'] && parsedTree['farms'].farms && parsedTree['farms'].farms.farm) {
     const farmList = Array.isArray(parsedTree['farms'].farms.farm) ? parsedTree['farms'].farms.farm : [parsedTree['farms'].farms.farm];
     farmList.forEach(f => {
@@ -481,7 +513,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     fieldsAgronomy: []
   };
 
-  // 1. ACTIVE MODS CATALOGING
+  // 1. ACTIVE MODS CATALOG
   const activeMods = {};
   const discoveredModNames = new Set();
 
@@ -590,7 +622,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
           farms[`farm_${fId}`].vehicles.push(equipmentItem);
         }
       } else {
-        // Card C: General Fleet Equipment
+        // Card C: Fleet Machinery
         equipmentItem.cardType = "Fleet Machinery";
         globalCards.fleet.push(equipmentItem);
         if (fId !== "0" && farms[`farm_${fId}`]) {
@@ -601,8 +633,10 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     });
   }
 
-  // 3. PLACEABLES: ANIMALS, FACTORIES, GENERATORS & BUILDINGS
+  // 3. PLACEABLES: PASSIVE INCOME AGGREGATOR, ANIMALS, FACTORIES & BUILDINGS
+  const rawPassiveGenerators = [];
   const flatPlaceables = [];
+
   if (parsedTree['placeables'] && parsedTree['placeables'].placeables && parsedTree['placeables'].placeables.placeable) {
     const plcList = Array.isArray(parsedTree['placeables'].placeables.placeable) ? parsedTree['placeables'].placeables.placeable : [parsedTree['placeables'].placeables.placeable];
 
@@ -633,21 +667,22 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
       };
       flatPlaceables.push(placeableItem);
 
-      // Card 1: Passive Income Generators
+      // Filter: Passive Income Generators
       const isGenerator = lower.includes("solar") || lower.includes("wind") || lower.includes("turbine") || 
                           lower.includes("subsidy") || lower.includes("subsidies") || lower.includes("generator") || 
                           lower.includes("bga") || lower.includes("biogas");
 
       if (isGenerator) {
-        globalCards.incomeGenerators.push(placeableItem);
-        if (fId !== "0" && farms[`farm_${fId}`]) {
-          farms[`farm_${fId}`].cards.incomeGenerators.push(placeableItem);
-          farms[`farm_${fId}`].placeables.push(placeableItem);
-        }
+        // Store for aggregation
+        rawPassiveGenerators.push({
+          ...placeableItem,
+          zone: getSpatialZone(p),
+          rawNode: p
+        });
         return;
       }
 
-      // Card 2: Animals & Husbandry
+      // Animals & Husbandry Card
       if (p.husbandryAnimals || p.animals || lower.includes("husbandry") || lower.includes("barn") || lower.includes("pasture") || lower.includes("coop") || lower.includes("pen")) {
         globalCards.animals.push(placeableItem);
         if (fId !== "0" && farms[`farm_${fId}`]) {
@@ -657,7 +692,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
         return;
       }
 
-      // Card 3: Factories & Production
+      // Factories & Production Points Card
       if (p.productionPoint || lower.includes("production") || lower.includes("factory") || lower.includes("mill") || lower.includes("bakery") || lower.includes("greenhouse") || lower.includes("dairy")) {
         globalCards.factories.push(placeableItem);
         if (fId !== "0" && farms[`farm_${fId}`]) {
@@ -667,7 +702,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
         return;
       }
 
-      // Card 4: General Buildings & Silos
+      // General Buildings & Silos
       if (fId !== "0" && farms[`farm_${fId}`]) {
         farms[`farm_${fId}`].cards.generalPlaceables.push(placeableItem);
         farms[`farm_${fId}`].placeables.push(placeableItem);
@@ -675,7 +710,99 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     });
   }
 
-  // 4. FARMLANDS CARD
+  // --- PASSIVE INCOME GROUPING LOGIC (Aggregating identical objects per Field/Zone) ---
+  const incomeGroups = {};
+
+  rawPassiveGenerators.forEach(gen => {
+    // Normalization key for identifying identical models
+    let normalizedCategory = gen.name;
+    const lower = gen.name.toLowerCase();
+    if (lower.includes("subsidy") || lower.includes("subsidies")) normalizedCategory = "Government Subsidy";
+    else if (lower.includes("solar")) normalizedCategory = "Solar Panel Array";
+    else if (lower.includes("wind") || lower.includes("turbine")) normalizedCategory = "Wind Turbine";
+    else if (lower.includes("biogas") || lower.includes("bga")) normalizedCategory = "Biogas Plant (BGA)";
+
+    // Grouping by: Farm + Category + Spatial Location/Field
+    const groupKey = `${gen.farmId}_${normalizedCategory}_${gen.zone}`;
+
+    if (!incomeGroups[groupKey]) {
+      // Determine payout rate calculations
+      let hourlyRate = 0;
+      let monthlyRate = 0;
+
+      // Check XML attributes for explicit income parameters
+      const raw = gen.rawNode;
+      if (raw.incomePerHour) hourlyRate = parseFloat(raw.incomePerHour);
+      if (raw.incomePerMonth) monthlyRate = parseFloat(raw.incomePerMonth);
+
+      // Default baseline models for known income generators if not directly set
+      if (hourlyRate === 0 && monthlyRate === 0) {
+        if (normalizedCategory === "Government Subsidy") {
+          // Standard FS Government Subsidy mod: $100,000,000 / year or $8,400,000 / month approx
+          monthlyRate = 8400000;
+          hourlyRate = monthlyRate / 24;
+        } else if (normalizedCategory === "Solar Panel Array") {
+          hourlyRate = 380;
+          monthlyRate = hourlyRate * 24;
+        } else if (normalizedCategory === "Wind Turbine") {
+          hourlyRate = 1500;
+          monthlyRate = hourlyRate * 24;
+        }
+      }
+
+      incomeGroups[groupKey] = {
+        sourceName: normalizedCategory,
+        farmId: gen.farmId,
+        farmName: farmNameMap[gen.farmId] || `Farm ${gen.farmId}`,
+        locationZone: gen.zone,
+        count: 0,
+        totalInvestedValue: 0,
+        hourlyRatePerUnit: hourlyRate,
+        monthlyRatePerUnit: monthlyRate,
+        image: gen.image || resolveBestImage(normalizedCategory, null),
+        individualIds: []
+      };
+    }
+
+    incomeGroups[groupKey].count += 1;
+    incomeGroups[groupKey].totalInvestedValue += gen.price;
+    incomeGroups[groupKey].individualIds.push(gen.id);
+  });
+
+  // Build finalized high-level passive income cards
+  Object.values(incomeGroups).forEach(group => {
+    const totalHourly = group.hourlyRatePerUnit * group.count;
+    const totalMonthly = group.monthlyRatePerUnit * group.count;
+
+    const formattedTitle = `[${group.sourceName} - ${group.count} Units - ${formatCurrency(group.totalInvestedValue)} Total - ${group.locationZone}]`;
+
+    const summaryCard = {
+      cardTitle: formattedTitle,
+      source: group.sourceName,
+      totalUnits: group.count,
+      totalFarmValue: group.totalInvestedValue,
+      totalFarmValueFormatted: formatCurrency(group.totalInvestedValue),
+      farmId: group.farmId,
+      farmName: group.farmName,
+      location: group.locationZone,
+      revenueSchedule: {
+        perHour: totalHourly,
+        perHourFormatted: formatCurrency(totalHourly),
+        perMonth: totalMonthly,
+        perMonthFormatted: formatCurrency(totalMonthly),
+        displayPayout: totalMonthly > 0 ? `${formatCurrency(totalMonthly)} / month` : `${formatCurrency(totalHourly)} / hr`
+      },
+      image: group.image,
+      itemIds: group.individualIds
+    };
+
+    globalCards.incomeGenerators.push(summaryCard);
+    if (group.farmId !== "0" && farms[`farm_${group.farmId}`]) {
+      farms[`farm_${group.farmId}`].cards.incomeGenerators.push(summaryCard);
+    }
+  });
+
+  // 4. FARMLANDS CARD (All Plots Exposed)
   if (parsedTree['farmland'] && parsedTree['farmland'].farmlands && parsedTree['farmland'].farmlands.farmland) {
     const list = Array.isArray(parsedTree['farmland'].farmlands.farmland) ? parsedTree['farmland'].farmlands.farmland : [parsedTree['farmland'].farmlands.farmland];
     list.forEach(f => {
@@ -697,7 +824,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     });
   }
 
-  // 5. UNIVERSAL MISSIONS & CONTRACTS CARD
+  // 5. UNIVERSAL MISSIONS & CONTRACTS (All 100% Retained & Categorized)
   if (parsedTree['missions'] && parsedTree['missions'].missions) {
     const rawList = parsedTree['missions'].missions.mission || parsedTree['missions'].missions.fieldMission || [];
     const list = Array.isArray(rawList) ? rawList : [rawList];
@@ -721,6 +848,7 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
         statusCode: statusRaw,
         fieldId: parseInt(m.fieldId || 0, 10),
         reward: parseFloat(m.reward || 0),
+        rewardFormatted: formatCurrency(parseFloat(m.reward || 0)),
         reimbursement: parseFloat(m.reimbursement || 0),
         completionPercent: parseFloat(((parseFloat(m.completion || m.progress || m.workProgress || 0)) * 100).toFixed(1)),
         fruitType: m.fruitType || m.fruitTypeName || null,
@@ -729,7 +857,10 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
         raw: m
       };
 
+      // Always populate the comprehensive list
       globalCards.missions.all.push(missionItem);
+
+      // Status buckets
       if (statusRaw === 0) globalCards.missions.available.push(missionItem);
       else if (statusRaw === 1) globalCards.missions.inProgress.push(missionItem);
       else if (statusRaw === 2) globalCards.missions.finished.push(missionItem);
@@ -821,11 +952,14 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
       totalPalletsAndBales: globalCards.palletsAndBales.length,
       totalAnimalsHusbandry: globalCards.animals.length,
       totalFactories: globalCards.factories.length,
-      totalIncomeGenerators: globalCards.incomeGenerators.length,
+      totalIncomeGeneratorCards: globalCards.incomeGenerators.length,
+      totalRawGenerators: rawPassiveGenerators.length,
       totalFarmlandsOwned: globalCards.farmlands.filter(f => f.isOwned).length,
       totalMapFarmlands: globalCards.farmlands.length,
       totalAllMissions: globalCards.missions.all.length,
       activeMissionsCount: globalCards.missions.inProgress.length,
+      availableMissionsCount: globalCards.missions.available.length,
+      finishedMissionsCount: globalCards.missions.finished.length,
       totalActiveMods: Object.keys(activeMods).length
     },
     gameInfo: parsedTree['careerSavegame'] && parsedTree['careerSavegame'].careerSavegame ? parsedTree['careerSavegame'].careerSavegame : {},
@@ -984,7 +1118,7 @@ async function runPipeline() {
       }
     }
 
-    console.log("🚜 Structuring all distinct cards (Pallets, Animals, Factories, Fleet, Harvesters, Generators)...");
+    console.log("🚜 Structuring all distinct cards (Aggregating Income, Missions, Fleet, Harvesters)...");
     const cleanData = await buildCleanStructuredSave(rawFileCache, catalogLookup, rawServerConfigXml);
 
     masterPayload.summary = cleanData.summary;
