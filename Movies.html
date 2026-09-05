@@ -2,10 +2,11 @@
 <!-- ================================================================= -->
 <!-- WEREWOLF CINEMA LIBRARY - LIVE UTM STREAM & PWA NAVIGATION        -->
 <!-- Line 1: HTML Document Structure & GA4 / GTM Setup                 -->
-<!-- Line 170: CSS Styles (Responsive Layout, Badges & Lightbox)       -->
-<!-- Line 400: App Scaffolding (Header, Nav Drawer, Filters, Lightbox) -->
-<!-- Line 510: Live Realtime Firebase Sync Engine (Movies + UTM Menu)  -->
-<!-- Date & Time (NYT 24hr): 08/28/2026 23:58:00 EDT                   -->
+<!-- Line 65: Top Navigation Bar & Dynamic Menu Scaffolding            -->
+<!-- Line 180: CSS Styles (85% Layout, Dropdown Bounds & Mobile Spec)   -->
+<!-- Line 470: App Core & Movie Gallery Scaffolding                    -->
+<!-- Line 590: Live Realtime Firebase Sync Engine (Movies + UTM Menu)  -->
+<!-- Date & Time (NYT 24hr): 09/05/2026 12:25:00 EDT                   -->
 <!-- ================================================================= -->
 <html lang="en">
 <head>
@@ -35,22 +36,33 @@
 </head>
 <body class="theme-dark">
 
-<!-- Top App Bar Navigation with Hamburger Menu -->
-<nav id="top-navbar">
-    <button id="nav-toggle-btn" class="nav-btn black-outline" onclick="toggleNavMenu()" aria-label="Open Navigation Menu">
-        ☰
-    </button>
-    <div class="nav-brand black-outline" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-        WEREWOLF <span>CINEMA</span>
-    </div>
-    <div class="nav-actions">
-        <button id="notify-toggle-btn" class="nav-btn notify-bell black-outline" onclick="toggleNotifications()" title="Push Notifications Toggle">
-            🔔 <span id="notify-status-text">OFF</span>
-        </button>
-    </div>
-</nav>
+<!-- Top App Bar Navigation with Desktop Menu & Mobile Hamburger (85% Width Centered) -->
+<header id="top-navbar-wrapper">
+    <nav id="top-navbar" class="master-85-width">
+        <div class="nav-left-zone">
+            <button id="nav-toggle-btn" class="nav-btn black-outline" onclick="toggleNavMenu()" aria-label="Open Navigation Menu">
+                ☰
+            </button>
+            <div class="nav-brand black-outline" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+                WEREWOLF <span>CINEMA</span>
+            </div>
+        </div>
 
-<!-- Dynamic Navigation Drawer (Live Grouped UTM Links) -->
+        <!-- Desktop Menu Bar: Center Home & Right-Hand A-Z Folders -->
+        <div id="desktop-menubar-container">
+            <div id="desktop-home-slot"></div>
+            <div id="desktop-folders-slot"></div>
+        </div>
+
+        <div class="nav-actions">
+            <button id="notify-toggle-btn" class="nav-btn notify-bell black-outline" onclick="toggleNotifications()" title="Push Notifications Toggle">
+                🔔 <span id="notify-status-text">OFF</span>
+            </button>
+        </div>
+    </nav>
+</header>
+
+<!-- Dynamic Mobile Navigation Drawer (Sandwich Slide-out) -->
 <div id="nav-drawer-overlay" onclick="closeNavMenu()"></div>
 <div id="nav-drawer">
     <div class="drawer-header">
@@ -65,6 +77,9 @@
             <button id="drawer-notify-toggle" class="f-btn black-outline" onclick="toggleNotifications()">Enable</button>
         </div>
     </div>
+
+    <!-- Mobile Home Slot -->
+    <div id="mobile-home-container"></div>
 
     <div class="drawer-section-label">📂 LIVE LINK DIRECTORY</div>
     <div id="utm-links-container">
@@ -182,12 +197,12 @@
             <button class="close-video-btn black-outline" onclick="closeYouTube(event)">⬅ Close Video</button>
             <iframe id="lb-yt-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
-        <button class="close-btn black-outline" onclick="closeLightbox(event)">X</button>
+        <button class="close-btn black-outline" onclick="closeLightbox(event)">✕</button>
         <div class="lightbox-overlay">
             <div class="lightbox-info">
                 <h2 id="lb-title" class="black-outline"></h2>
                 <div id="lb-meta-container" class="lb-meta black-outline"></div>
-                <div id="lb-rating-desc" class="lb-meta black-outline" style="color: #f5c518; font-size: 11px; margin-top: 5px; font-weight: 700; display: none;"></div>
+                <div id="lb-rating-desc" class="lb-meta black-outline" style="color: #f5c518; font-size: 12px; margin-top: 5px; font-weight: 700; display: none;"></div>
                 
                 <!-- Google Family Share Badge in Lightbox -->
                 <div id="lb-family-share" class="family-share-lb-badge black-outline" style="display: none;">👨‍👩‍👧‍👦 Google Family Share Available</div>
@@ -197,21 +212,30 @@
                 
                 <div id="lb-tv-binge-container" style="display: none;"></div>
 
-                <!-- Scrollable Starring Cast Section (Top 5 visible + Scroll) -->
+                <!-- Scrollable Starring Cast Section -->
                 <div class="lb-cast-section">
                     <div class="lb-cast-label black-outline">Starring Cast:</div>
                     <div id="lb-artists" class="lb-cast-scrollbox"></div>
                 </div>
                 
                 <!-- Lightbox-only image description -->
-                <p id="lb-image-alt-desc" class="black-outline" style="font-size: 11px; color: #f5c518; margin-top: 6px; font-style: italic;"></p>
+                <p id="lb-image-alt-desc" class="black-outline" style="font-size: 12px; color: #f5c518; margin-top: 6px; font-style: italic;"></p>
                 
-                <p id="lb-description-text" class="black-outline" style="font-size: 12px; color: #ccc; line-height: 1.5; margin-top: 10px; text-align: left;"></p>
+                <p id="lb-description-text" class="black-outline" style="font-size: 13px; color: #ccc; line-height: 1.5; margin-top: 10px; text-align: left;"></p>
             </div>
 
             <h3 id="lb-store-heading" class="black-outline" style="font-size: 14px; color: #fff; margin: 20px 0 10px; text-transform: uppercase; font-weight: 400; display: none;">Buy / Rent / Sync</h3>
             <div id="lb-buttons" class="button-container"></div>
         </div>
+    </div>
+</div>
+
+<!-- Standalone Image Lightbox (For Menu Thumbnails) -->
+<div id="image-viewer-lightbox" onclick="closeImageViewer(event)">
+    <button class="close-btn black-outline" onclick="closeImageViewer(event)">✕</button>
+    <div class="img-viewer-card" onclick="event.stopPropagation()">
+        <img id="img-viewer-element" src="" alt="">
+        <div id="img-viewer-caption" class="black-outline"></div>
     </div>
 </div>
 
@@ -223,45 +247,66 @@
 
 <style>
 /* ========================================================= */
-/* CSS STYLING SECTION (Line 170)                            */
+/* CSS STYLING SECTION (Line 180)                            */
 /* ========================================================= */
 :root { --text-main: #fff; --header-bg: rgba(0, 0, 0, 0.9); --card-bg: rgba(15, 15, 15, 0.98); --accent-red: #8b0000; }
+* { box-sizing: border-box; }
+
 body { 
     background: #000; 
     color: var(--text-main); 
     font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-    font-size: 16px; 
+    font-size: 16px; /* Base 16px to prevent mobile zoom */
     margin: 0; 
     padding: 0; 
     overflow-x: hidden;
     transition: background 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Top Sticky Navigation Bar */
-#top-navbar {
+/* Master 85% Width Scaffolding */
+.master-85-width { 
+    width: 85% !important; 
+    margin: 0 auto; 
+    max-width: 2560px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+}
+
+/* Top Sticky Navbar Wrapper */
+#top-navbar-wrapper {
     position: sticky;
     top: 0;
     left: 0;
     width: 100%;
-    height: 56px;
     background: rgba(10, 10, 15, 0.95);
     backdrop-filter: blur(10px);
     border-bottom: 2px solid var(--accent-red);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 15px;
-    box-sizing: border-box;
     z-index: 10000;
 }
+#top-navbar {
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 10px;
+}
+.nav-left-zone {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 .nav-brand {
-    font-size: 18px;
+    font-size: 17px;
     font-weight: 900;
     letter-spacing: 1px;
     cursor: pointer;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 .nav-brand span { color: #ff0000; }
+
 .nav-btn {
     min-width: 44px;
     min-height: 44px;
@@ -282,15 +327,162 @@ body {
     font-weight: 800;
     background: #181824;
     border: 1px solid #333;
-    padding: 4px 10px;
-    gap: 5px;
+    padding: 6px 12px;
+    gap: 6px;
+    min-height: 44px;
+    min-width: 44px;
 }
 .notify-bell.active {
     border-color: #1ce783;
     color: #1ce783;
 }
 
-/* Navigation Drawer */
+/* Desktop Menubar (Middle Home, Right-hand A-Z Folders) */
+#desktop-menubar-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-grow: 1;
+    margin: 0 15px;
+    min-width: 0;
+}
+#desktop-home-slot {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+}
+#desktop-folders-slot {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: nowrap;
+}
+
+.desktop-home-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    background: #181824;
+    border: 1px solid #3b2a5c;
+    color: #ffd166;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 8px;
+    text-decoration: none;
+    cursor: pointer;
+    min-height: 44px;
+    box-sizing: border-box;
+    transition: 0.2s;
+}
+.desktop-home-btn:hover {
+    border-color: #ff0000;
+    color: #fff;
+    background: #232336;
+}
+
+/* Desktop Dropdowns: Position Constrained to Screen */
+.nav-folder-dropdown {
+    position: relative;
+    display: inline-block;
+}
+.folder-trigger-btn {
+    min-height: 44px;
+    padding: 8px 14px;
+    background: #12121c;
+    border: 1px solid #28283a;
+    border-radius: 8px;
+    color: #eee;
+    font-size: 13px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.folder-trigger-btn:hover {
+    border-color: var(--accent-red);
+    background: #1c1c2b;
+    color: #ff0000;
+}
+
+/* BOUNDED DROPDOWN (Prevents Falling Off Screen) */
+.folder-menu-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: max-content;
+    min-width: 260px;
+    max-width: 90vw;
+    max-height: 75vh; /* Prevents falling off the bottom */
+    overflow-y: auto; /* Adds clean scrollbar inside dropdown */
+    background: #0d0d14;
+    border: 1px solid #3b2a5c;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.9);
+    padding: 8px;
+    display: none;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 10005;
+    scrollbar-width: thin;
+    scrollbar-color: #8b0000 #111;
+}
+.nav-folder-dropdown:hover .folder-menu-dropdown {
+    display: flex;
+}
+
+/* Dropdown / Drawer Item Row */
+.menu-link-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: #151522;
+    border: 1px solid transparent;
+    transition: 0.2s;
+    min-height: 44px;
+}
+.menu-link-row:hover {
+    border-color: var(--accent-red);
+    background: #1f1f33;
+}
+.menu-link-anchor {
+    color: #ddd;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+}
+.menu-link-anchor:hover {
+    color: #ff0000;
+}
+.menu-item-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: 6px;
+    object-fit: cover;
+    background: #000;
+    cursor: pointer;
+    border: 1px solid #444;
+    transition: 0.2s;
+    flex-shrink: 0;
+}
+.menu-item-thumb:hover {
+    transform: scale(1.1);
+    border-color: #ff0000;
+}
+
+/* Mobile Slide Drawer */
 #nav-drawer-overlay {
     position: fixed;
     inset: 0;
@@ -326,7 +518,7 @@ body {
     margin-bottom: 15px;
 }
 .drawer-title { font-size: 14px; font-weight: 900; color: #ff0000; letter-spacing: 1px; }
-.drawer-close { background: none; border: none; color: #fff; font-size: 18px; font-weight: 900; cursor: pointer; min-width: 44px; min-height: 44px; }
+.drawer-close { background: none; border: none; color: #fff; font-size: 20px; font-weight: 900; cursor: pointer; min-width: 44px; min-height: 44px; }
 .drawer-section-label { font-size: 11px; font-weight: 900; color: #888; text-transform: uppercase; margin: 15px 0 8px; letter-spacing: 0.5px; }
 
 .drawer-notify-box {
@@ -337,9 +529,29 @@ body {
     margin-bottom: 10px;
 }
 .notify-control-row { display: flex; flex-direction: column; gap: 8px; }
-#drawer-notify-desc { font-size: 11px; color: #aaa; }
+#drawer-notify-desc { font-size: 12px; color: #aaa; }
 
-/* Grouped UTM Links Folder Accordion */
+#mobile-home-container {
+    margin-bottom: 10px;
+}
+.mobile-home-btn {
+    width: 100%;
+    min-height: 44px;
+    background: #181824;
+    border: 1px solid #3b2a5c;
+    color: #ffd166;
+    font-size: 13px;
+    font-weight: 800;
+    text-transform: uppercase;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    text-decoration: none;
+}
+
+/* Mobile Drawer Accordion */
 .utm-group-box { margin-bottom: 10px; }
 .utm-group-btn {
     width: 100%;
@@ -362,45 +574,55 @@ body {
 .utm-group-items {
     display: none;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
     background: #09090e;
     border-left: 2px solid var(--accent-red);
     margin-left: 10px;
-    padding: 6px 0 6px 8px;
+    padding: 8px 0 8px 8px;
 }
 .utm-group-items.open { display: flex; }
 
-.utm-item-link {
-    display: flex;
+/* Image Viewer Lightbox Modal (For Menu Thumbnails) */
+#image-viewer-lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 30000;
+    display: none;
     align-items: center;
-    gap: 10px;
-    padding: 8px 12px;
-    color: #ddd;
-    text-decoration: none;
+    justify-content: center;
+    padding: 20px;
+}
+#image-viewer-lightbox.active { display: flex; }
+.img-viewer-card {
+    position: relative;
+    max-width: 90vw;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #111;
+    border: 2px solid #8b0000;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 0 30px rgba(255, 0, 0, 0.4);
+}
+#img-viewer-element {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+    border-radius: 8px;
+}
+#img-viewer-caption {
+    margin-top: 10px;
     font-size: 13px;
     font-weight: 700;
-    border-radius: 6px;
-    min-height: 44px;
-    transition: 0.2s;
-}
-.utm-item-link:hover { background: #1f1f2e; color: #ff0000; }
-.utm-item-img {
-    width: 26px;
-    height: 26px;
-    border-radius: 4px;
-    object-fit: cover;
-    background: #222;
-    flex-shrink: 0;
-}
-.utm-single-link {
-    background: #14141e;
-    border: 1px solid #28283a;
-    margin-bottom: 10px;
+    color: #ffd166;
+    text-align: center;
 }
 
 h2, #cinema-logo { font-size: 30px !important; text-align: center; width: 100%; }
 .black-outline { text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000 !important; }
-.master-85-width { width: 85% !important; margin: 0 auto; max-width: 2560px; display: flex; flex-direction: column; align-items: center; }
 
 body.theme-dark { background: radial-gradient(circle at center top, #1a1010 0%, #050505 50%, #000000 100%) fixed !important; }
 body.theme-dark.bg-amazon { background: radial-gradient(circle at center top, #3d1b00 0%, #0d0600 50%, #000000 100%) fixed !important; }
@@ -429,16 +651,16 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 }
 
 #toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-.toast { background: rgba(10, 10, 10, 0.95); border: 1px solid #1ce783; box-shadow: 0 0 15px rgba(28, 231, 131, 0.4); color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 12px; font-weight: 600; pointer-events: auto; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; max-width: 320px; }
+.toast { background: rgba(10, 10, 10, 0.95); border: 1px solid #1ce783; box-shadow: 0 0 15px rgba(28, 231, 131, 0.4); color: #fff; padding: 12px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; pointer-events: auto; transform: translateY(100px); opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); display: flex; align-items: center; gap: 10px; max-width: 320px; }
 .toast.show { transform: translateY(0); opacity: 1; }
 
 #controls-container { width: 100%; margin-top: 25px; display: flex; flex-direction: column; align-items: center; }
-#movie-search { width: 90%; max-width: 600px; padding: 14px 25px; border-radius: 50px; background: #111; border: 1px solid #333; color: #fff; margin-bottom: 20px; text-align: center; outline: none; min-height: 44px; }
+#movie-search { width: 90%; max-width: 600px; padding: 14px 25px; border-radius: 50px; background: #111; border: 1px solid #333; color: #fff; margin-bottom: 20px; text-align: center; outline: none; min-height: 44px; font-size: 16px; }
 #movie-search:focus { border-color: #ff0000; }
 #filter-dropdowns { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; width: 100%; }
-.f-select { background: #111; color: #ffff00; border: 1px solid #444; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; min-height: 44px; outline: none; }
+.f-select { background: #111; color: #ffff00; border: 1px solid #444; padding: 10px; border-radius: 8px; font-weight: 700; cursor: pointer; min-height: 44px; outline: none; font-size: 16px; }
 
-/* Dynamic Navigation Overlay */
+/* Dynamic Alphabetical Sidebar */
 #dynamic-nav-sidebar {
     position: fixed;
     top: 50%;
@@ -470,7 +692,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     color: #ff0000;
     transform: scale(1.4);
 }
-.nav-year { font-size: 10px; letter-spacing: -0.5px; }
 
 #back-to-top {
     position: fixed;
@@ -552,7 +773,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     color: #fff;
     font-size: 11px;
     font-weight: 800;
-    padding: 4px 10px;
+    padding: 6px 12px;
     border-radius: 6px;
     margin: 6px 0;
 }
@@ -589,21 +810,30 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     box-shadow: inset 0 0 10px rgba(139, 92, 246, 0.2);
 }
 
-#movie-library-grid { display: grid; gap: 15px; width: 100%; grid-template-columns: repeat(2, 1fr); padding-right: 25px; }
+/* Responsive Movie Grid Layout */
+#movie-library-grid { 
+    display: grid; 
+    gap: 15px; 
+    width: 100%; 
+    grid-template-columns: 1fr; /* Mobile Default: Single Vertical Column Stacking */
+    padding-right: 0;
+}
 
-/* Responsive Tablet View */
+/* Tablet Layout (600px - 1024px) */
 @media (min-width: 600px) and (max-width: 1024px) {
     #movie-library-grid {
         grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
         gap: 20px;
+        padding-right: 25px;
     }
 }
 
-/* Responsive Desktop View */
+/* Desktop Layout (1025px+) */
 @media (min-width: 1025px) { 
     #movie-library-grid { 
         grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); 
         gap: 25px; 
+        padding-right: 25px;
     } 
 }
 
@@ -612,13 +842,13 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 .poster-box { position: relative; aspect-ratio: 2/3; background: #000; overflow: hidden; }
 .movie-card img { width: 100%; height: 100%; object-fit: cover; }
 .poster-year-badge { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.8); padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 900; }
-.movie-info { padding: 12px; flex-grow: 1; display: flex; flex-direction: column; gap: 5px; text-align: center; }
-.movie-title { font-weight: 800; font-size: 15px; border-bottom: 1px solid #333; padding-bottom: 5px; min-height: 2.5em; display: flex; align-items: center; justify-content: center; }
-.main-desc { font-size: 11px; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 5px 0; }
-.main-meta-row { display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 10px; color: #f5c518; text-transform: uppercase; margin-top: auto; }
+.movie-info { padding: 14px; flex-grow: 1; display: flex; flex-direction: column; gap: 6px; text-align: center; }
+.movie-title { font-weight: 800; font-size: 16px; border-bottom: 1px solid #333; padding-bottom: 6px; min-height: 2.5em; display: flex; align-items: center; justify-content: center; }
+.main-desc { font-size: 12px; color: #888; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 6px 0; }
+.main-meta-row { display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 11px; color: #f5c518; text-transform: uppercase; margin-top: auto; }
 .rating-badge { border: 1px solid #666; color: #ddd; padding: 2px 6px; border-radius: 4px; font-weight: 900; background: rgba(0,0,0,0.5); }
-.ownership-text { font-size: 9px; color: #c084fc; font-weight: 800; margin-top: 3px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: center; width: 100%; }
-.click-indicator { font-size: 10px; color: #1ce783; font-weight: bold; padding-top: 5px; text-transform: uppercase; letter-spacing: 1px; border-top: 1px solid #222; }
+.ownership-text { font-size: 10px; color: #c084fc; font-weight: 800; margin-top: 3px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; display: flex; justify-content: center; width: 100%; }
+.click-indicator { font-size: 11px; color: #1ce783; font-weight: bold; padding-top: 6px; text-transform: uppercase; letter-spacing: 1px; border-top: 1px solid #222; min-height: 44px; display: flex; align-items: center; justify-content: center; }
 
 #movie-lightbox { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); z-index: 20000; display: none; align-items: center; justify-content: center; padding: 20px; }
 #movie-lightbox.active { display: flex; }
@@ -652,17 +882,9 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     scrollbar-width: thin;
     scrollbar-color: #8b0000 #111;
 }
-.lb-cast-scrollbox::-webkit-scrollbar {
-    width: 5px;
-}
-.lb-cast-scrollbox::-webkit-scrollbar-track {
-    background: #111;
-    border-radius: 4px;
-}
-.lb-cast-scrollbox::-webkit-scrollbar-thumb {
-    background: #8b0000;
-    border-radius: 4px;
-}
+.lb-cast-scrollbox::-webkit-scrollbar { width: 5px; }
+.lb-cast-scrollbox::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
+.lb-cast-scrollbox::-webkit-scrollbar-thumb { background: #8b0000; border-radius: 4px; }
 .lb-cast-item {
     display: flex;
     align-items: center;
@@ -671,9 +893,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     padding: 3px 0;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
-.lb-cast-item:last-child {
-    border-bottom: none;
-}
+.lb-cast-item:last-child { border-bottom: none; }
 .actor-link { cursor: pointer; color: #38bdf8; text-decoration: none; transition: color 0.3s ease; }
 .actor-link:hover { color: #ff0000; text-decoration: underline; }
 
@@ -686,15 +906,25 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 .close-btn { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.8); border: 1px solid #fff; color: #fff; border-radius: 50%; width: 44px; height: 44px; font-weight: 900; cursor: pointer; z-index: 200; display: flex; align-items: center; justify-content: center; }
 .close-video-btn { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.85); border: 1px solid #ff0000; color: #ff0000; padding: 6px 14px; font-size: 11px; font-weight: 700; border-radius: 4px; cursor: pointer; z-index: 150; min-height: 44px; }
 #lb-yt-iframe { width: 100%; height: 100%; border: none; }
+
 .button-container { display: grid; gap: 8px; width: 100%; margin-top: 5px; grid-template-columns: repeat(3, 1fr); }
-.m-link { padding: 10px 4px; border-radius: 8px; font-size: 10px; font-weight: 700 !important; text-transform: uppercase; color: #fff; text-decoration: none; text-align: center; transition: 0.3s; text-shadow: none !important; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+.m-link { padding: 10px 4px; border-radius: 8px; font-size: 11px; font-weight: 700 !important; text-transform: uppercase; color: #fff; text-decoration: none; text-align: center; transition: 0.3s; text-shadow: none !important; min-height: 44px; display: flex; align-items: center; justify-content: center; }
 .btn-amazon { background: #FF9900 !important; color: #000 !important; }
-.btn-google { background: #4285F4; }
+.btn-google { background: #4285F4; position: relative; }
+.btn-google.glow-family-share {
+    box-shadow: 0 0 15px #00f0ff, inset 0 0 8px #ffffff !important;
+    border: 2px solid #00f0ff !important;
+    animation: familyGlowPulse 1.5s infinite alternate;
+}
+@keyframes familyGlowPulse {
+    0% { box-shadow: 0 0 8px #00e5ff, inset 0 0 4px #ffffff; }
+    100% { box-shadow: 0 0 20px #00e5ff, inset 0 0 10px #ffffff; }
+}
 .btn-moviesanywhere { background: #00aeef; }
 .btn-apple { background: #555; }
 .btn-fandango { background: #ff7300; }
 .btn-youtube { background: #FF0000; border: none; font-family: inherit; cursor: pointer; }
-.f-btn { background: #111; color: #ff0000; border: 1px solid #444; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; min-height: 44px; }
+.f-btn { background: #111; color: #ff0000; border: 1px solid #444; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; min-height: 44px; font-size: 14px; }
 .f-btn:hover { background: #ff0000; color: #fff; border-color: #ff0000; }
 #kf-watermark { position: fixed; bottom: 10px; left: 10px; font-size: 24px; font-weight: 900; opacity: 0.8; z-index: 10000; pointer-events: none; }
 .kf-k { color: #FF4500; transform: scaleX(-1); display: inline-block; }
@@ -703,10 +933,21 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 .tip-link { padding: 15px 40px; background: linear-gradient(135deg, #8b0000, #ff0000); color: #fff !important; font-weight: 900; border-radius: 50px; text-decoration: none; border: 2px solid #fff; transition: 0.3s; min-height: 44px; display: flex; align-items: center; }
 .tip-link:hover { transform: scale(1.05); box-shadow: 0 0 20px rgba(255,0,0,0.6); }
 
-/* Mobile View Adjustments */
+/* Desktop vs Mobile Header Visibility Rules */
+@media (max-width: 950px) {
+    #desktop-menubar-container { display: none; }
+    #nav-toggle-btn { display: flex; }
+}
+@media (min-width: 951px) {
+    #desktop-menubar-container { display: flex; }
+    #nav-toggle-btn { display: none; }
+}
+
+/* Mobile Screen Standards */
 @media (max-width: 768px) {
-    .master-85-width { width: 95% !important; }
+    .master-85-width { width: 92% !important; }
     #library-header { padding: 20px 15px; }
+    #movie-library-grid { grid-template-columns: 1fr; } /* Strict 1-column vertical stacking */
 }
 @media (max-width: 480px) {
     .lightbox-content { height: 95vh; border-radius: 12px; }
@@ -714,8 +955,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
     .button-container { grid-template-columns: repeat(2, 1fr) !important; }
     #dynamic-nav-sidebar { padding: 5px 2px; right: 2px; }
     .nav-item { font-size: 9px; padding: 2px 3px; }
-    .nav-year { font-size: 8px; }
-    #back-to-top { right: 20px; font-size: 9px; padding: 8px 10px; }
+    #back-to-top { right: 20px; font-size: 10px; padding: 8px 12px; }
 }
 
 .loading-spinner {
@@ -736,7 +976,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
 <script>
 // =========================================================
-// JAVASCRIPT APP LOGIC & LIVE REALTIME ENGINE (Line 510)   
+// JAVASCRIPT APP LOGIC & LIVE REALTIME ENGINE (Line 590)   
 // =========================================================
 (function() {
     let moviesMap = {};
@@ -789,8 +1029,30 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         }
     };
 
+    // Full Image Viewer Modal
+    window.openImageViewer = (imgUrl, caption) => {
+        const modal = document.getElementById('image-viewer-lightbox');
+        const imgEl = document.getElementById('img-viewer-element');
+        const capEl = document.getElementById('img-viewer-caption');
+
+        imgEl.src = imgUrl;
+        imgEl.alt = caption || 'Preview Image';
+        capEl.textContent = caption || '';
+
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    };
+
+    window.closeImageViewer = (e) => {
+        if (e) e.stopPropagation();
+        const modal = document.getElementById('image-viewer-lightbox');
+        modal.classList.remove('active');
+        document.getElementById('img-viewer-element').src = '';
+        document.body.style.overflow = 'auto';
+    };
+
     /**
-     * Live SSE Connection for Drawer Directory (/utm_links)
+     * Live SSE Connection for Drawer & Menubar Directory (/utm_links)
      */
     function initLiveUtmStream() {
         fetch(FIREBASE_UTM_ENDPOINT)
@@ -798,7 +1060,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             .then(data => {
                 if (data && typeof data === 'object') {
                     utmLinksMap = data;
-                    renderLiveUtmLinks();
+                    renderBothMenuBars();
                 }
             })
             .catch(err => console.error("Error fetching UTM links:", err));
@@ -818,7 +1080,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
                             const groupKey = path.substring(1).split('/')[0];
                             if (groupKey) utmLinksMap[groupKey] = payload;
                         }
-                        renderLiveUtmLinks();
+                        renderBothMenuBars();
                     }
                 } catch (err) {
                     console.error("Live UTM SSE parse error:", err);
@@ -827,85 +1089,162 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         } catch (e) {}
     }
 
-    function renderLiveUtmLinks() {
-        const container = document.getElementById('utm-links-container');
-        if (!container || !utmLinksMap || typeof utmLinksMap !== 'object') return;
+    /**
+     * Renders Desktop Menu Bar and Mobile Drawer based on /utm_links structure
+     */
+    function renderBothMenuBars() {
+        if (!utmLinksMap || typeof utmLinksMap !== 'object') return;
 
-        const groupKeys = Object.keys(utmLinksMap).sort();
-        if (groupKeys.length === 0) {
-            container.innerHTML = '<div style="color:#666; font-size:12px;">No links configured.</div>';
-            return;
-        }
+        const desktopHomeSlot = document.getElementById('desktop-home-slot');
+        const desktopFoldersSlot = document.getElementById('desktop-folders-slot');
+        const mobileHomeSlot = document.getElementById('mobile-home-container');
+        const mobileLinksContainer = document.getElementById('utm-links-container');
 
-        let html = '';
-        let folderIndex = 0;
+        let homeItem = null;
+        let folderGroups = {};
 
-        groupKeys.forEach(groupName => {
-            const groupNode = utmLinksMap[groupName];
-            if (!groupNode) return;
+        // Process branches (Discord, Entertainment, Game, Home, Other, User, etc.)
+        Object.keys(utmLinksMap).forEach(key => {
+            const rawNode = utmLinksMap[key];
+            if (!rawNode) return;
 
-            let itemsList = [];
-            if (Array.isArray(groupNode)) {
-                itemsList = groupNode.filter(Boolean);
-            } else if (typeof groupNode === 'object') {
-                if (groupNode.utmUrl || groupNode.url) {
-                    itemsList = [groupNode];
+            let items = [];
+            if (Array.isArray(rawNode)) {
+                items = rawNode.filter(Boolean);
+            } else if (typeof rawNode === 'object') {
+                if (rawNode.url || rawNode.title) {
+                    items = [rawNode];
                 } else {
-                    Object.keys(groupNode).forEach(k => {
-                        if (groupNode[k] && typeof groupNode[k] === 'object') {
-                            itemsList.push(groupNode[k]);
+                    Object.keys(rawNode).forEach(subK => {
+                        if (rawNode[subK] && typeof rawNode[subK] === 'object') {
+                            items.push(rawNode[subK]);
                         }
                     });
                 }
             }
 
-            const cleanGroupName = groupName.replace(/_/g, ' ');
+            items.forEach(item => {
+                const groupName = item.group ? item.group.toString().trim() : key;
+                const isHome = key.toLowerCase() === 'home' || (item.title && item.title.toLowerCase() === 'home');
 
-            if (itemsList.length === 1) {
-                const item = itemsList[0];
-                const title = item.title || item.campaign || cleanGroupName;
-                const url = item.utmUrl || item.url || '#';
-                const imgTag = item.imageUrl ? `<img src="${item.imageUrl}" class="utm-item-img" alt="" onerror="this.style.display='none'">` : '🌐';
-
-                html += `
-                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="utm-item-link utm-single-link black-outline" onclick="trackOutboundClick('${url}', 'Drawer Link: ${title}')">
-                        ${imgTag}
-                        <span>${title}</span>
-                    </a>
-                `;
-            } else if (itemsList.length > 1) {
-                folderIndex++;
-                const folderId = `utm-folder-node-${folderIndex}`;
-                let subLinksHtml = '';
-
-                itemsList.forEach(item => {
-                    const title = item.title || item.campaign || 'Link';
-                    const url = item.utmUrl || item.url || '#';
-                    const imgTag = item.imageUrl ? `<img src="${item.imageUrl}" class="utm-item-img" alt="" onerror="this.style.display='none'">` : '🔗';
-
-                    subLinksHtml += `
-                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="utm-item-link" onclick="trackOutboundClick('${url}', 'Drawer Link: ${title}')">
-                            ${imgTag}
-                            <span>${title}</span>
-                        </a>
-                    `;
-                });
-
-                html += `
-                    <div class="utm-group-box">
-                        <button class="utm-group-btn black-outline" onclick="toggleUtmFolder('${folderId}', this)">
-                            <span>📁 ${cleanGroupName} <small style="color:#888; font-size:11px;">(${itemsList.length})</small></span>
-                            <span class="folder-arrow">▼</span>
-                        </button>
-                        <div id="${folderId}" class="utm-group-items">
-                            ${subLinksHtml}
-                        </div>
-                    </div>
-                `;
-            }
+                if (isHome) {
+                    homeItem = item;
+                } else {
+                    const cleanFolderKey = (groupName.toLowerCase() === 'standalone') ? 'Other' : groupName;
+                    if (!folderGroups[cleanFolderKey]) folderGroups[cleanFolderKey] = [];
+                    folderGroups[cleanFolderKey].push(item);
+                }
+            });
         });
 
-        container.innerHTML = html || '<div style="color:#666; font-size:12px;">No active links.</div>';
+        // 1. Build Desktop Home Button (Center)
+        const homeUrl = homeItem ? (homeItem.url || '#') : '#';
+        const homeTitle = homeItem ? (homeItem.title || 'Home') : 'Home';
+        const homeImg = (homeItem && homeItem.image) ? homeItem.image : '';
+
+        const homeImgTag = homeImg 
+            ? `<img src="${homeImg}" class="menu-item-thumb" alt="${homeTitle}" onclick="openImageViewer('${homeImg}', '${homeTitle.replace(/'/g, "\\'")}')">` 
+            : '🏠';
+
+        desktopHomeSlot.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 8px;">
+                ${homeImg ? homeImgTag : ''}
+                <a href="${homeUrl}" class="desktop-home-btn black-outline" onclick="trackOutboundClick('${homeUrl}', 'Desktop Home')">
+                    ${!homeImg ? '🏠 ' : ''}${homeTitle}
+                </a>
+            </div>
+        `;
+
+        // Mobile Home Button
+        mobileHomeSlot.innerHTML = `
+            <div class="menu-link-row">
+                <a href="${homeUrl}" class="menu-link-anchor black-outline" onclick="trackOutboundClick('${homeUrl}', 'Mobile Home')">
+                    🏠 <span>${homeTitle}</span>
+                </a>
+                ${homeImg ? `<img src="${homeImg}" class="menu-item-thumb" alt="${homeTitle}" onclick="openImageViewer('${homeImg}', '${homeTitle.replace(/'/g, "\\'")}')">` : ''}
+            </div>
+        `;
+
+        // 2. Sort Folders A-Z
+        const sortedFolderKeys = Object.keys(folderGroups).sort((a, b) => a.localeCompare(b));
+
+        // 3. Build Desktop Right-Hand Dropdowns
+        let desktopFoldersHtml = '';
+        sortedFolderKeys.forEach(folderName => {
+            const list = folderGroups[folderName];
+            let itemsHtml = '';
+
+            list.forEach(linkObj => {
+                const title = linkObj.title || 'Link';
+                const url = linkObj.url || '#';
+                const img = linkObj.image || '';
+
+                const thumbHtml = img 
+                    ? `<img src="${img}" class="menu-item-thumb" alt="${title}" onclick="openImageViewer('${img}', '${title.replace(/'/g, "\\'")}')">` 
+                    : '';
+
+                itemsHtml += `
+                    <div class="menu-link-row">
+                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="menu-link-anchor" onclick="trackOutboundClick('${url}', 'Menu: ${title}')">
+                            🔗 <span>${title}</span>
+                        </a>
+                        ${thumbHtml}
+                    </div>
+                `;
+            });
+
+            desktopFoldersHtml += `
+                <div class="nav-folder-dropdown">
+                    <button class="folder-trigger-btn black-outline">
+                        📁 ${folderName} <small style="color:#888;">▼</small>
+                    </button>
+                    <div class="folder-menu-dropdown">
+                        ${itemsHtml}
+                    </div>
+                </div>
+            `;
+        });
+        desktopFoldersSlot.innerHTML = desktopFoldersHtml;
+
+        // 4. Build Mobile Drawer Accordions
+        let mobileDrawerHtml = '';
+        sortedFolderKeys.forEach((folderName, idx) => {
+            const list = folderGroups[folderName];
+            const folderNodeId = `mobile-fld-node-${idx}`;
+            let subLinks = '';
+
+            list.forEach(linkObj => {
+                const title = linkObj.title || 'Link';
+                const url = linkObj.url || '#';
+                const img = linkObj.image || '';
+
+                const thumbHtml = img 
+                    ? `<img src="${img}" class="menu-item-thumb" alt="${title}" onclick="openImageViewer('${img}', '${title.replace(/'/g, "\\'")}')">` 
+                    : '';
+
+                subLinks += `
+                    <div class="menu-link-row">
+                        <a href="${url}" target="_blank" rel="noopener noreferrer" class="menu-link-anchor" onclick="trackOutboundClick('${url}', 'Mobile Drawer: ${title}')">
+                            🔗 <span>${title}</span>
+                        </a>
+                        ${thumbHtml}
+                    </div>
+                `;
+            });
+
+            mobileDrawerHtml += `
+                <div class="utm-group-box">
+                    <button class="utm-group-btn black-outline" onclick="toggleUtmFolder('${folderNodeId}', this)">
+                        <span>📁 ${folderName} <small style="color:#888; font-size:11px;">(${list.length})</small></span>
+                        <span class="folder-arrow">▼</span>
+                    </button>
+                    <div id="${folderNodeId}" class="utm-group-items">
+                        ${subLinks}
+                    </div>
+                </div>
+            `;
+        });
+        mobileLinksContainer.innerHTML = mobileDrawerHtml || '<div style="color:#666; font-size:12px;">No active folders found.</div>';
     }
 
     function updateNotificationUI(isEnabled) {
@@ -1143,17 +1482,25 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
     function getSafeTimestamp(ds) {
         if (!ds) return 0;
-        const parsed = Date.parse(ds);
+        const cleanDs = ds.toString().trim();
+        const parsed = Date.parse(cleanDs);
         if (!isNaN(parsed)) return parsed;
 
-        const cleanDs = ds.trim().replace(/\s+/g, ' ');
-        const parts = cleanDs.split(' ');
-        const dp = parts[0].split(/[\/\-\.]/);
-        if (dp.length >= 3) {
-            let m = parseInt(dp[0]), d = parseInt(dp[1]), y = parseInt(dp[2]);
+        const parts = cleanDs.split(' ')[0].split(/[\/\-\.]/);
+        if (parts.length >= 3) {
+            let m, d, y;
+            if (parts[0].length === 4) {
+                y = parseInt(parts[0]);
+                m = parseInt(parts[1]);
+                d = parseInt(parts[2]);
+            } else {
+                m = parseInt(parts[0]);
+                d = parseInt(parts[1]);
+                y = parseInt(parts[2]);
+            }
             if (!isNaN(m) && !isNaN(d) && !isNaN(y)) {
                 if (y < 100) y += (y < 50 ? 2000 : 1900);
-                return new Date(y, m-1, d).getTime() || 0;
+                return new Date(y, m - 1, d).getTime() || 0;
             }
         }
         return 0;
@@ -1255,13 +1602,16 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             const cleanStreamPlatforms = extractCleanStreamPlatforms(rawStreamingStr);
             const isFamilyShareChecked = v.googleFamilyShare === true || v.googleFamilyShare === 'true' || v.googleFamilyShare === 1 || v.googleFamilyShare === 'TRUE';
 
+            let finalPoster = (v.poster && v.poster !== 'N/A' && isValidUrl(v.poster)) ? v.poster : '';
+            const rawMediaId = v.id ? v.id.toString().trim() : '';
+
             return {
                 title: v.title || key || '',
-                image: (v.poster && v.poster !== 'N/A') ? v.poster : '',
+                image: finalPoster,
                 year: v.year || '',
                 platforms: p,
                 dateAdded: v.dateAdded || '',
-                imdbId: v.id || '',
+                imdbId: rawMediaId,
                 cast: castArr,
                 edition: v.edition || '',
                 collection: v.collection || '',
@@ -1288,11 +1638,10 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             validDates.sort((a, b) => a.timestamp - b.timestamp);
             oldestMovieIndex = validDates[0].libIndex;
 
-            const now = Date.now();
-            const TEN_DAYS_MS = 10 * 24 * 60 * 60 * 1000;
-
+            const latestTimestamp = validDates[validDates.length - 1].timestamp;
+            const RECENT_THRESHOLD = 14 * 24 * 60 * 60 * 1000;
             validDates.forEach(m => {
-                if (now - m.timestamp <= TEN_DAYS_MS) {
+                if (latestTimestamp - m.timestamp <= RECENT_THRESHOLD) {
                     newestMoviesSet.add(m.libIndex);
                 }
             });
@@ -1375,13 +1724,14 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             }
 
             const holidayEmoji = holidayMeta ? ` ${holidayMeta.emoji}` : '';
+            const posterSrc = m.image || 'https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg';
 
             card.innerHTML = `
                 <div class="poster-box">
                     ${ribbonBadgeHtml}
                     ${familyShareBadgeHtml}
                     ${holidayBadgeHtml}
-                    <img src="${m.image}" alt="${m.title}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
+                    <img src="${posterSrc}" alt="${m.title}" loading="lazy" onerror="this.src='https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg'">
                     ${tvBadgeHtml}
                     <div class="poster-year-badge black-outline">${m.year}</div>
                 </div>
@@ -1459,12 +1809,19 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         if (collF && sort === 'newest') {
             currentFilteredList.sort((a,b) => (parseInt(a.year)||0) - (parseInt(b.year)||0) || a.title.localeCompare(b.title));
         } else {
-            if (sort === 'newest') currentFilteredList.sort((a,b) => (b.timestamp - a.timestamp) || a.title.localeCompare(b.title));
-            else if (sort === 'oldest') currentFilteredList.sort((a,b) => (a.timestamp - b.timestamp) || a.title.localeCompare(b.title));
-            else if (sort === 'az') currentFilteredList.sort((a,b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
-            else if (sort === 'za') currentFilteredList.sort((a,b) => b.title.toLowerCase().localeCompare(a.title.toLowerCase()));
-            else if (sort === 'new-old') currentFilteredList.sort((a,b) => (parseInt(b.year)||0) - (parseInt(a.year)||0));
-            else if (sort === 'old-new') currentFilteredList.sort((a,b) => (parseInt(a.year)||0) - (parseInt(b.year)||0));
+            if (sort === 'newest') {
+                currentFilteredList.sort((a,b) => (b.timestamp - a.timestamp) || a.title.localeCompare(b.title));
+            } else if (sort === 'oldest') {
+                currentFilteredList.sort((a,b) => (a.timestamp - b.timestamp) || a.title.localeCompare(b.title));
+            } else if (sort === 'az') {
+                currentFilteredList.sort((a,b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
+            } else if (sort === 'za') {
+                currentFilteredList.sort((a,b) => b.title.toLowerCase().localeCompare(a.title.toLowerCase()));
+            } else if (sort === 'new-old') {
+                currentFilteredList.sort((a,b) => (parseInt(b.year)||0) - (parseInt(a.year)||0) || a.title.localeCompare(b.title));
+            } else if (sort === 'old-new') {
+                currentFilteredList.sort((a,b) => (parseInt(a.year)||0) - (parseInt(b.year)||0) || a.title.localeCompare(b.title));
+            }
         }
 
         const counter = document.getElementById('movie-counter');
@@ -1501,14 +1858,14 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
 
     window.openLightbox = (m) => {
         const lb = document.getElementById('movie-lightbox');
-        document.getElementById('lightbox-inner').style.backgroundImage = `url('${m.image}')`;
+        const posterImg = m.image || 'https://raw.githubusercontent.com/KFruti88/Movies-Anywhere/main/images/default.jpg';
+        document.getElementById('lightbox-inner').style.backgroundImage = `url('${posterImg}')`;
         
         const holidayMeta = getHolidayMetadata(m);
         document.getElementById('lb-title').textContent = (holidayMeta ? `${holidayMeta.emoji} ` : '') + m.title;
         
         const hasEdition = m.edition && m.edition.toLowerCase() !== 'standard' && m.edition.trim() !== '';
         
-        // Multi-Source Dynamic Database Linking (IMDb, TMDb, TVDb)
         let sourceLinkHtml = '';
         if (m.imdbId) {
             const rawId = m.imdbId.toString().trim();
@@ -1539,7 +1896,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             lbRatingDesc.style.display = 'none';
         }
 
-        // Family Share Lightbox Badge
         const lbFamilyShare = document.getElementById('lb-family-share');
         if (m.googleFamilyShare) {
             lbFamilyShare.style.display = 'inline-block';
@@ -1563,7 +1919,14 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             streamContainer.style.display = 'none';
         }
 
-        // Render scrollable actors with first 5 visible by default
+        const dateAddedEl = document.getElementById('lb-date-added');
+        if (m.dateAdded) {
+            dateAddedEl.textContent = `Purchased / Added: ${m.dateAdded}`;
+            dateAddedEl.style.display = 'block';
+        } else {
+            dateAddedEl.style.display = 'none';
+        }
+
         const artistsContainer = document.getElementById('lb-artists');
         if (m.cast && m.cast.length > 0) {
             const castItemsHtml = m.cast.map((actor, idx) => `
@@ -1578,7 +1941,6 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
             artistsContainer.innerHTML = '<div style="color:#888; font-size:11px;">Cast details unavailable.</div>';
         }
         
-        // Image Alt / Poster Details in Lightbox View Only
         const altDescEl = document.getElementById('lb-image-alt-desc');
         altDescEl.textContent = `Poster view for ${m.title} (${m.year})`;
 
@@ -1592,11 +1954,12 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         }
         if (p.google) {
             const goog = appendUtm(p.google, m.title + '_google');
-            btns.push(`<a href="${goog}" onclick="trackOutboundClick(this.href, 'Google: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="m-link btn-google">Google</a>`);
+            const familyGlowClass = m.googleFamilyShare ? ' glow-family-share' : '';
+            btns.push(`<a href="${goog}" onclick="trackOutboundClick(this.href, 'Google: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="m-link btn-google${familyGlowClass}">Google Play</a>`);
         }
         if (p.moviesanywhere) {
             const ma = appendUtm(p.moviesanywhere, m.title + '_moviesanywhere');
-            btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MoviesAnywhere: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="m-link btn-moviesanywhere">MA</a>`);
+            btns.push(`<a href="${ma}" onclick="trackOutboundClick(this.href, 'MoviesAnywhere: ${m.title.replace(/'/g, "\\'")}')" target="werewolf_cinema_window" class="m-link btn-moviesanywhere">Movies Anywhere</a>`);
         }
         if (p.apple) {
             const app = appendUtm(p.apple, m.title + '_apple');
@@ -1616,7 +1979,7 @@ body.theme-dark.bg-fandango { background: radial-gradient(circle at center top, 
         buttonBox.innerHTML = btns.join('');
         if (btns.length > 0) {
             const hasMA = p.moviesanywhere && p.moviesanywhere.trim() !== '';
-            storeHeading.textContent = hasMA ? "Buy / Rent / Sync" : "Buy / Rent";
+            storeHeading.textContent = hasMA ? "Sync / Rent / Buy (Movies Anywhere Compatible)" : "Buy / Rent";
             storeHeading.style.display = 'block';
         } else {
             storeHeading.style.display = 'none';
