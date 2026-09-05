@@ -1,8 +1,10 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-05 07:38:00 (EDT - 24hr New York Time)
- * Project: entertainment-71888 (/fs25 RTDB Node)
+ * Deployment Timestamp: 2026-09-05 13:25:00 (EDT - 24hr New York Time)
+ * Project: fs25-a3563 (/fs25 RTDB Node)
+ * Target Server: FIREBASE_DEDICATED_SERVER
  * Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
+ * Measurement ID: G-SGJF0FJPQZ
  * Description: Zero-Loss, Multi-Tiered FS25 Savegame Ingestion Engine.
  *              - Dual HTTP & HTTPS protocol-agnostic networking.
  *              - Server Offline Guard:
@@ -22,7 +24,7 @@
  *                    with hourly and monthly revenue models.
  *                  * Preserves attached implement hierarchies, baler twine inventories,
  *                    factory production storages, and precision farming offsets.
- * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
+ * Database Target: https://fs25-a3563-default-rtdb.firebaseio.com/fs25
  * ============================================================================ */
 
 require('dotenv').config({ path: __dirname + '/.env' });
@@ -34,31 +36,38 @@ const xml2js = require('xml2js');
 // ============================================================================
 // SECTION 1: SAFETY TIMEOUT (4-Minute Process Failsafe)
 // ============================================================================
+// Line ~37: Halts background processes before GitHub Actions or runner times out
 setTimeout(() => {
   console.log("🚨 Safety Failsafe: Process exiting cleanly after 4 minutes.");
   process.exit(0);
 }, 4 * 60 * 1000);
 
 // ============================================================================
-// SECTION 2: FIREBASE ADMIN INITIALIZATION
+// SECTION 2: FIREBASE ADMIN INITIALIZATION (Dedicated Server Config)
 // ============================================================================
+// Target RTDB configuration for fs25-a3563
 const firebaseConfig = {
-  databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
+  projectId: "fs25-a3563",
+  databaseURL: "https://fs25-a3563-default-rtdb.firebaseio.com",
+  storageBucket: "fs25-a3563.firebasestorage.app"
 };
 
 let serviceAccount;
-if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+// Check FIREBASE_DEDICATED_SERVER secret first, fallback to standard credential names
+const rawSecret = process.env.FIREBASE_DEDICATED_SERVER || process.env.FIREBASE_SERVICE_ACCOUNT;
+
+if (rawSecret) {
   try {
-    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    serviceAccount = JSON.parse(rawSecret);
   } catch (e) {
-    console.error("❌ Error parsing FIREBASE_SERVICE_ACCOUNT:", e.message);
+    console.error("❌ Error parsing FIREBASE credential JSON:", e.message);
     process.exit(1);
   }
 } else {
   try {
     serviceAccount = require("./your-firebase-adminsdk-key.json");
   } catch (e) {
-    console.error("❌ Missing FIREBASE_SERVICE_ACCOUNT credential secret.");
+    console.error("❌ Missing FIREBASE_DEDICATED_SERVER service account key.");
     process.exit(1);
   }
 }
@@ -81,6 +90,7 @@ const ftpUser = process.env.FTP_USER;
 const ftpPass = process.env.FTP_PASS;
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
 
+// Supports both standard HTTP XML ping and HTTPS image proxy caching
 const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
 const MAP_IMAGE_URL = `https://wsrv.nl/?url=${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
 const GITHUB_IMG_BASE = `https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/`;
@@ -1011,11 +1021,14 @@ async function runPipeline() {
       await syncSlowStaticSystems(client, activeSavePath, catalogLookup);
     }
 
-    // Config metadata
+    // Config metadata updated for dedicated server setup
     await db.ref('fs25/config').update({
-      appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
+      appId: "1:528331196894:web:5af51bc2c80fd56aecf54f",
+      projectId: "fs25-a3563",
       gaTag: "G-CTYHDF4MSD",
-      activeSaveSlot: String(activeSlot)
+      measurementId: "G-SGJF0FJPQZ",
+      activeSaveSlot: String(activeSlot),
+      lastConfigSync: new Date().toISOString()
     });
 
     console.log("🏁 16-minute pipeline check completed cleanly.");
