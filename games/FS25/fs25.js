@@ -1,18 +1,26 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-05 20:10:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-05 20:20:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
  * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com/fs25
  * Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
  * Measurement ID: G-SGJF0FJPQZ
  * Description: Zero-Loss, Dual-Tiered FS25 Savegame Ingestion Engine.
+ *              - Direct Database Endpoint: Uses native fetch REST requests (no SDK/credentials needed).
+ *              - Dual HTTP & HTTPS protocol-agnostic networking.
+ *              - Manual Trigger Override (workflow_dispatch / --force / first-run):
+ *                  * Bypasses 0-player idle check to force an immediate full sync of all cards.
  *              - Active Player Route (activePlayers > 0 on 16-min tick):
- *                  * Only syncs volatile player files: vehicles.xml, fields.xml,
- *                    farms.xml, farmland.xml, missions.xml, players.xml.
- *              - 6-Hour Static Route (runs independently or when activePlayers === 0):
- *                  * Refreshes slow/static files only once every 6 hours:
- *                    economy.xml, sales.xml, placeables.xml, collectibles.xml,
- *                    precisionFarming.xml, activeMods.
+ *                  * Syncs player files: vehicles.xml, fields.xml, farms.xml,
+ *                    farmland.xml, missions.xml, players.xml.
+ *              - 6-Hour Static Route (runs on first-run, manual run, or every 6 hours):
+ *                  * Refreshes slow/static files: economy.xml, sales.xml,
+ *                    placeables.xml, collectibles.xml, precisionFarming.xml, activeMods.
+ *              - Spatial Aggregations:
+ *                  * Passive income generators grouped by [Source - Count - $Total - Zone]
+ *                    with hourly and monthly revenue models.
+ *                  * Preserves attached implement hierarchies, baler twine inventories,
+ *                    factory production storages, and precision farming offsets.
  *              - Server Offline Guard:
  *                  * Pings Port 9050. Halts immediately if offline without overwriting data.
  * ============================================================================ */
@@ -25,6 +33,7 @@ const xml2js = require('xml2js');
 // ============================================================================
 // SECTION 1: SAFETY TIMEOUT (4-Minute Process Failsafe)
 // ============================================================================
+// Line ~37: Halts background processes cleanly before runner timeout
 setTimeout(() => {
   console.log("🚨 Safety Failsafe: Process exiting cleanly after 4 minutes.");
   process.exit(0);
@@ -33,6 +42,7 @@ setTimeout(() => {
 // ============================================================================
 // SECTION 2: DIRECT FIREBASE RTDB REST CLIENT (fs25-a3563)
 // ============================================================================
+// Line ~45: Uses REST endpoints directly; requires no SDK initialization or service accounts
 const RTDB_URL = "https://fs25-a3563-default-rtdb.firebaseio.com";
 
 async function updateDb(path, data) {
@@ -72,6 +82,7 @@ async function getDb(path) {
 // ============================================================================
 // SECTION 3: NETWORK CONFIGURATION (Dual HTTP/HTTPS Compatibility)
 // ============================================================================
+// Line ~83: Handles both standard HTTP port queries and HTTPS image transformations
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
@@ -79,6 +90,7 @@ const ftpPass = process.env.FTP_PASS;
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
 
 const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
+const MAP_IMAGE_URL = `https://wsrv.nl/?url=${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
 const GITHUB_IMG_BASE = `https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/`;
 
 // ============================================================================
@@ -402,6 +414,7 @@ async function fetchModsCatalog() {
 // ============================================================================
 
 // Module A: Vehicles, Fleet, Implements, Twine & Pallets (vehicles.xml)
+// Line ~375: Card Container - Vehicles, Combines, Implements & Pallets
 async function syncVehicles(client, activeSavePath, liveStats, catalogLookup) {
   console.log("🚜 Active Player: Syncing vehicles.xml...");
   const content = await downloadFtpFileToString(client, `${activeSavePath}/vehicles.xml`);
@@ -429,7 +442,7 @@ async function syncVehicles(client, activeSavePath, liveStats, catalogLookup) {
     const lower = (filename + " " + cleanName).toLowerCase();
     const liveCat = liveVehicleCategoryMap[normalizeKey(cleanName)] || "";
 
-    // Pallets & Bales
+    // Pallets & Bales Card Item
     if (v.pallet || liveCat === "PALLETS" || v.bale || lower.includes("bale") || lower.includes("pallet") || lower.includes("bigbag")) {
       palletsAndBales.push({
         id: v.uniqueId || v.id || "0",
@@ -447,6 +460,7 @@ async function syncVehicles(client, activeSavePath, liveStats, catalogLookup) {
 
     const operatingHours = parseFloat(((parseFloat(v.operatingTime || 0)) / 3600).toFixed(1));
 
+    // Full Equipment Card Item
     const item = {
       id: v.uniqueId || v.id || "0",
       farmId: fId,
@@ -495,6 +509,7 @@ async function syncVehicles(client, activeSavePath, liveStats, catalogLookup) {
 }
 
 // Module B: Fields Agronomy & Soil Progress (fields.xml)
+// Line ~462: Card Container - Fields and Soil Agronomy
 async function syncFields(client, activeSavePath) {
   console.log("🌱 Active Player: Syncing fields.xml...");
   const fieldsXml = await downloadFtpFileToString(client, `${activeSavePath}/fields.xml`);
@@ -529,6 +544,7 @@ async function syncFields(client, activeSavePath) {
 }
 
 // Module C: Missions & Contracts Progress (missions.xml)
+// Line ~498: Card Container - Contract Missions and Payout Status
 async function syncMissions(client, activeSavePath) {
   console.log("📜 Active Player: Syncing missions.xml...");
   try {
@@ -593,6 +609,7 @@ async function syncMissions(client, activeSavePath) {
 }
 
 // Module D: Farms, Ledgers, Players & Farmlands (farms.xml, players.xml, farmland.xml)
+// Line ~565: Card Container - Farm Ledgers, Balances, and Plot Ownership
 async function syncFarmsAndLand(client, activeSavePath, liveStats) {
   console.log("💰 Active Player: Syncing farms.xml, players.xml & farmland.xml...");
   const farmsXml = await downloadFtpFileToString(client, `${activeSavePath}/farms.xml`);
@@ -691,6 +708,7 @@ async function syncFarmsAndLand(client, activeSavePath, liveStats) {
 // ============================================================================
 // SECTION 7: 6-HOUR STATIC SYSTEMS ROUTE (Non-Changeable by Active Users)
 // ============================================================================
+// Line ~650: Ingests placeables, factories, animals, economy, sales, collectibles
 async function syncSlowStaticSystems(client, activeSavePath, catalogLookup) {
   console.log("🏛️ Executing 6-Hour Static Route (Placeables, Economy, Sales, Mods, Collectibles)...");
   const updates = {};
@@ -745,6 +763,7 @@ async function syncSlowStaticSystems(client, activeSavePath, catalogLookup) {
         generalPlaceables.push(item);
       });
 
+      // Passive Income Clustering Engine: [Source - Count - $Total - Zone]
       const incomeGroups = {};
       rawPassiveGenerators.forEach(gen => {
         let normalizedCategory = gen.name;
@@ -903,14 +922,17 @@ async function syncSlowStaticSystems(client, activeSavePath, catalogLookup) {
 }
 
 // ============================================================================
-// SECTION 8: 16-MINUTE MASTER CONTROLLER
+// SECTION 8: 16-MINUTE MASTER CONTROLLER (With Manual Force Override)
 // ============================================================================
+// Line ~830: Main Execution Router with 0-Player and 6-Hour Static Route Guards
 async function runPipeline() {
-  console.log("⏱️ [16-Min Trigger]: Pinging Server Status & Port 9050...");
+  const isManualRun = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch' || process.argv.includes('--force');
+  console.log(`⏱️ [Pipeline Trigger]: Starting check... (Manual Force Run: ${isManualRun})`);
+
   const serverPing = await pingServerLiveStats();
 
-  // Guard: If server is offline, update flag only and halt immediately
-  if (!serverPing.isOnline) {
+  // Guard: If server is offline, update flag only and halt immediately (Zero overwrite)
+  if (!serverPing.isOnline && !isManualRun) {
     console.log("🛑 Server is OFFLINE. Updating serverStatus flag and exiting. (Preserving all saved Firebase data).");
     await updateDb('fs25/serverStatus', {
       isOnline: false,
@@ -919,25 +941,25 @@ async function runPipeline() {
     process.exit(0);
   }
 
-  // Server is verified online
   const liveStats = serverPing.parsed;
   const activePlayers = liveStats && liveStats.Slots ? parseInt(liveStats.Slots.numUsed || 0, 10) : 0;
-  console.log(`✅ Server is ONLINE | Active Players: ${activePlayers}`);
+  console.log(`✅ Server Status Ping Finished | Active Players: ${activePlayers}`);
 
   await updateDb('fs25/serverStatus', {
-    isOnline: true,
+    isOnline: serverPing.isOnline,
     activePlayers: activePlayers,
     lastChecked: new Date().toISOString()
   });
 
   const existingFs25 = (await getDb('fs25')) || {};
+  const isFirstRun = !existingFs25.lastSlowSync;
   const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
   const lastSlowSyncTime = existingFs25.lastSlowSync || 0;
-  const shouldRun6HourSync = (Date.now() - lastSlowSyncTime) > SIX_HOURS_MS;
+  const shouldRun6HourSync = isFirstRun || isManualRun || ((Date.now() - lastSlowSyncTime) > SIX_HOURS_MS);
 
-  // Efficiency Guard: If no players are online AND the 6-hour window hasn't elapsed, do nothing
-  if (activePlayers === 0 && !shouldRun6HourSync) {
-    console.log("💤 0 players online & 6-hour static window not reached yet. Skipping FTP connection and exiting cleanly.");
+  // Efficiency Guard: If automated run, 0 players, not past 6 hours, and not first run -> exit
+  if (activePlayers === 0 && !shouldRun6HourSync && !isManualRun && !isFirstRun) {
+    console.log("💤 0 players online & 6-hour static window not reached yet. Skipping FTP connection.");
     process.exit(0);
   }
 
@@ -955,7 +977,7 @@ async function runPipeline() {
     });
 
     // Detect save slot index
-    let activeSlot = "3";
+    let activeSlot = process.env.DEFAULT_SAVE_SLOT || "3";
     const configCandidates = [
       'dedicated_server/dedicatedServerConfig.xml',
       'dedicatedServerConfig.xml',
@@ -979,9 +1001,10 @@ async function runPipeline() {
     const activeSavePath = `savegame${activeSlot}`;
     console.log(`📂 Locked savegame path: [ ${activeSavePath} ] (Slot #${activeSlot})`);
 
-    // --- ROUTE 1: ACTIVE PLAYER 16-MINUTE SYNC ---
-    if (activePlayers > 0) {
-      console.log("⚡ Active players detected. Running 16-minute volatile files sync...");
+    // --- ROUTE 1: PLAYER & VOLATILE FILES ---
+    // Runs if players are online, OR if this is a manual run, OR if it's the first time populating
+    if (activePlayers > 0 || isManualRun || isFirstRun) {
+      console.log(`⚡ Ingesting volatile files (Active Players: ${activePlayers} | Manual/Init: ${isManualRun || isFirstRun})...`);
 
       // Environment & In-Game Day Check
       let currentInGameDay = existingFs25.environment ? existingFs25.environment.currentDay : null;
@@ -990,8 +1013,8 @@ async function runPipeline() {
         const parsedEnv = await parseXmlString(sanitizeXml(envXml));
         if (parsedEnv && parsedEnv.environment) {
           const newDay = parsedEnv.environment.currentDay;
-          if (newDay !== currentInGameDay) {
-            console.log(`🌅 In-game day changed from ${currentInGameDay} to ${newDay}. Updating environment.`);
+          if (newDay !== currentInGameDay || isManualRun || isFirstRun) {
+            console.log(`🌅 Updating environment (Day ${newDay}).`);
             await setDb('fs25/environment', parsedEnv.environment);
           }
         }
@@ -1003,12 +1026,12 @@ async function runPipeline() {
       await syncMissions(client, activeSavePath);
       await syncFarmsAndLand(client, activeSavePath, liveStats);
     } else {
-      console.log("💤 0 players online. Volatile player-influenced files skipped.");
+      console.log("💤 0 players online. Skipping player-influenced files.");
     }
 
-    // --- ROUTE 2: 6-HOUR STATIC SYSTEMS SYNC ---
+    // --- ROUTE 2: STATIC & 6-HOUR FILES ---
     if (shouldRun6HourSync) {
-      console.log("⏰ 6-Hour threshold reached. Executing static data sync...");
+      console.log("⏰ Ingesting static files (Economy, Dealership, Placeables, Collectibles)...");
       await syncSlowStaticSystems(client, activeSavePath, catalogLookup);
     }
 
