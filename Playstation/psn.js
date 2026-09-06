@@ -3,12 +3,15 @@
  * Location: /index.js & /Playstation/psn.js
  * Description: Squad Pack Sync Engine - Pure Active Gamer Tag Telemetry
  *              Filtered Squad: WildHorse_Spirit, OneLIVIDMAN, Darkwing69420, DesdemonaTiger.
- *              Removed hidden profiles (joe-punk_, IlIMjolnirIlI, Balto20_01).
- *              Stores current game + top 4 past games (5 games max).
+ *              Features:
+ *                - PS4 vs PS5 detection & badge separation
+ *                - PS5 trophy incremental progress parsing (e.g. "12/50")
+ *                - Total gameplay hours and playtime extraction (ISO 8601 parse)
+ *                - 50% milestone retention (>=50% stays, <50% dynamic cleanup)
  * Database: Realtime Database (entertainment-71888)
  * Target Endpoint: https://entertainment-71888-default-rtdb.firebaseio.com/psn.json
- * Version: 15.9.1 - Fixed SDK destructuring & Safe Telemetry Parsing
- * Date & Time Stamp: 2026-09-01 04:58:33 (24hr New York Time)
+ * Version: 16.5.0 - PS4/PS5 Smart Split, Play Duration & Sub-Trophy Progress
+ * Date & Time Stamp: 2026-09-06 08:06:12 (24hr Chicago Time)
  * ============================================================================ */
 
 const fs = require("fs");
@@ -17,7 +20,6 @@ const psnApi = require("psn-api");
 
 // ----------------------------------------------------------------------------
 // [SECTION: PSN API MODULE DESTRUCTURING]
-// Line 22 in index.js: Official SDK imports
 // ----------------------------------------------------------------------------
 const {
     exchangeNpssoForCode,
@@ -40,14 +42,12 @@ const {
 } = psnApi;
 
 // ----------------------------------------------------------------------------
-// [SECTION: CONFIGURATION & CONSTANTS - WORKS OVER BOTH HTTP & HTTPS]
-// Line 48 in index.js: Target Database and Local Storage Endpoints
+// [SECTION: CONFIGURATION & CONSTANTS]
 // ----------------------------------------------------------------------------
 const FIREBASE_BASE_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn";
 const LOCAL_JSON_PATH = path.join(__dirname, "psn.json");
 const ALT_LOCAL_JSON_PATH = path.join(__dirname, "Playstation", "psn.json");
 
-// Direct Gamer Tag Mapping (Filtered active squad only)
 const SQUAD_GAMERTAGS = {
     wildhorse_spirit: "WildHorse_Spirit",
     ray: "OneLIVIDMAN",
@@ -55,7 +55,6 @@ const SQUAD_GAMERTAGS = {
     marc: "DesdemonaTiger"
 };
 
-// Stream Intelligence Target Map
 const TWITCH_MAP = {
     wildhorse_spirit: "werewolf3788",
     ray: "raymystyro",
@@ -63,19 +62,18 @@ const TWITCH_MAP = {
     marc: ""
 };
 
-// Cached Account IDs
 const ACCOUNT_IDS = {
     wildhorse_spirit: "4087137467908566201",
     ray: "2732733730346312494",
     darkwing: "4398462806362115916",
-    marc: ""                            // Resolved dynamically via Universal Search API
+    marc: ""
 };
 
 const AMAZON_TAG = "moviesanywhere02-20";
 const BLACKLIST = ["grand theft auto v", "grand theft auto online", "gta v", "gta online"];
 
-// Maximum recent games to store per player (includes current game + 4 past games)
-const MAX_RECENT_GAMES = 5;
+const MILESTONE_PROGRESS_THRESHOLD = 50; 
+const MAX_ROTATING_SUB50_GAMES = 3;       
 
 let tokenStore = { ray: {}, wildhorse_spirit: {} };
 
@@ -84,17 +82,70 @@ let diagnosticReport = {
     wildhorse_spirit_status: "UNCHECKED",
     ray_active: "no",
     ray_status: "UNCHECKED",
-    lastCheck: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
+    lastCheck: new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false })
 };
 
 // ----------------------------------------------------------------------------
 // [SECTION: HELPER UTILITIES & STRING FORMATTING]
-// Line 100 in index.js: Utility functions for affiliate tags and time formatting
 // ----------------------------------------------------------------------------
 function generateAffiliateUrl(gameName) {
     if (!gameName || gameName === "Dashboard") return null;
     const cleanName = encodeURIComponent(gameName.replace(/®|™/g, ""));
     return `https://www.amazon.com/s?k=${cleanName}&tag=${AMAZON_TAG}`;
+}
+
+/**
+ * Converts PlayStation ISO 8601 playDuration strings (e.g. "PT45H22M10S" or "PT30M")
+ * into human-readable hours and numbers.
+ */
+function parsePlayDuration(durationStr) {
+    if (!durationStr || typeof durationStr !== "string") {
+        return { totalHours: 0, hoursFormatted: "0 hrs", rawDuration: null };
+    }
+    
+    const matches = durationStr.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+    if (!matches) {
+        return { totalHours: 0, hoursFormatted: "0 hrs", rawDuration: durationStr };
+    }
+
+    const hours = parseInt(matches[1] || "0", 10);
+    const minutes = parseInt(matches[2] || "0", 10);
+    const fractionalHours = Number((hours + (minutes / 60)).toFixed(1));
+
+    let hoursFormatted = "";
+    if (hours > 0 && minutes > 0) {
+        hoursFormatted = `${hours}h ${minutes}m`;
+    } else if (hours > 0) {
+        hoursFormatted = `${hours} hrs`;
+    } else if (minutes > 0) {
+        hoursFormatted = `${minutes} mins`;
+    } else {
+        hoursFormatted = "< 1 min";
+    }
+
+    return {
+        totalHours: fractionalHours,
+        hoursFormatted,
+        rawDuration: durationStr
+    };
+}
+
+/**
+ * Accurately detects and normalizes the console platform (PS5 vs PS4).
+ */
+function normalizePlatform(game) {
+    const rawPlatform = (
+        game.trophyTitlePlatform || 
+        game.platform || 
+        game.category || 
+        (game.npServiceName === "trophy2" ? "PS5" : "PS4")
+    ).toUpperCase();
+
+    if (rawPlatform.includes("PS5")) return "PS5";
+    if (rawPlatform.includes("PS4")) return "PS4";
+    if (rawPlatform.includes("PS3")) return "PS3";
+    if (rawPlatform.includes("VITA")) return "PS Vita";
+    return "PS4";
 }
 
 function getTrophyAgeString(timestamp) {
@@ -138,7 +189,6 @@ const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 // ----------------------------------------------------------------------------
 // [SECTION: TWITCH STREAM INTELLIGENCE FETCHER]
-// Line 150 in index.js: DecAPI fetch with timeout
 // ----------------------------------------------------------------------------
 async function getTwitchIntel(username) {
     if (!username) return null;
@@ -169,31 +219,21 @@ async function getTwitchIntel(username) {
     try {
         const statusRes = await cleanFetch("status");
         intel.isLive = !!(statusRes && statusRes.toLowerCase().includes("live"));
-
         intel.game = await cleanFetch("game");
         intel.gameArt = await cleanFetch("game_image");
-        
-        const fCount = await cleanFetch("followcount");
-        intel.followers = fCount || "0";
-
-        const lFollow = await cleanFetch("latest_follower");
-        intel.latestFollower = lFollow || "None";
+        intel.followers = (await cleanFetch("followcount")) || "0";
+        intel.latestFollower = (await cleanFetch("latest_follower")) || "None";
 
         const listRes = await cleanFetch("followers?limit=100");
         if (listRes) { intel.followerNames = listRes.split(", ").map(n => n.trim()).filter(Boolean); }
 
         intel.avatar = await cleanFetch("avatar");
-        intel.age = await cleanFetch("accountage") || "Unknown";
+        intel.age = (await cleanFetch("accountage")) || "Unknown";
         intel.bio = await cleanFetch("description");
         intel.statusMessage = await cleanFetch("title");
         intel.uptime = await cleanFetch("uptime");
-        
-        const views = await cleanFetch("viewercount");
-        intel.viewers = views || "0";
-
-        const subs = await cleanFetch("subcount");
-        intel.subCount = subs || "0";
-
+        intel.viewers = (await cleanFetch("viewercount")) || "0";
+        intel.subCount = (await cleanFetch("subcount")) || "0";
         intel.chatRules = await cleanFetch("chat_rules");
         intel.channelCreationRaw = await cleanFetch("creation");
 
@@ -206,7 +246,6 @@ async function getTwitchIntel(username) {
 
 // ----------------------------------------------------------------------------
 // [SECTION: PSN AUTHENTICATION & HANDSHAKE MANAGEMENT]
-// Line 220 in index.js: Token exchange and validation
 // ----------------------------------------------------------------------------
 async function isTokenValid(accessToken) {
     try {
@@ -296,11 +335,11 @@ function generatePrivateProfileFallback(gamerTag, userKey, twitchIntel, existing
         bio: twitchIntel?.bio || "Official Pack Member Profile",
         twitch: twitchIntel, 
         streamHistory: historicalStreamList,
-        lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
+        lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false }), 
         gamesPlayed: existingData?.gamesPlayed || 0, plus: false, level: existingData?.level || 0, region: "US", note: "PSN Auth Inactive or Token Expired", devices: [],
         blockedAccountsCount: 0, inboundFriendRequestsCount: 0,
         trophySummary: existingData?.trophySummary || { platinum: 0, gold: 0, silver: 0, bronze: 0, total: 0, trophyLevel: 0 },
-        recentGames: (existingData?.recentGames || []).slice(0, MAX_RECENT_GAMES), 
+        recentGames: existingData?.recentGames || [], 
         activeHunt: existingData?.activeHunt || null, 
         mostRecentTrophies: (existingData?.mostRecentTrophies || []).slice(0, 10)
     };
@@ -322,8 +361,7 @@ async function resolveAccountIdFromSearch(auth, gamerTag) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: CORE USER PROFILE & TELEMETRY PARSER (TOP 5 GAMES MAXIMUM)]
-// Line 340 in index.js: Extracts current game + 4 previous titles
+// [SECTION: CORE USER PROFILE & TELEMETRY PARSER]
 // ----------------------------------------------------------------------------
 async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) {
     const twitchIntel = await getTwitchIntel(TWITCH_MAP[userKey]);
@@ -345,13 +383,11 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
             existingData.online = !!twitchIntel?.isLive;
             existingData.twitch = twitchIntel;
             existingData.streamHistory = processStreamHistory(existingData.streamHistory, twitchIntel);
-            existingData.lastUpdated = new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
+            existingData.lastUpdated = new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false });
             existingData.npssoValid = false;
             existingData.npssoStatus = "EXPIRED / UPDATE NEEDED";
             existingData.handshakeText = `${(existingData.onlineId || gamerTag).toUpperCase()} HANDSHAKE: NPSSO EXPIRED`;
             existingData.handshakeState = "EXPIRED";
-            existingData.recentGames = (existingData.recentGames || []).slice(0, MAX_RECENT_GAMES);
-            existingData.mostRecentTrophies = (existingData.mostRecentTrophies || []).slice(0, 10);
             return existingData;
         }
         return generatePrivateProfileFallback(gamerTag, userKey, twitchIntel, existingData);
@@ -359,7 +395,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
 
     try {
         const profile = await getProfileFromAccountId(auth, resolvedTargetId).catch(() => null);
-        
         if (!profile) {
             console.log(`[PRIVACY OVERRIDE] Account ${gamerTag} is restricted.`);
             return generatePrivateProfileFallback(gamerTag, userKey, twitchIntel, existingData);
@@ -396,32 +431,58 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
 
         let telemetryData = [];
         try {
-            const history = await getRecentlyPlayedGames(auth, resolvedTargetId, { limit: 20 });
+            const history = await getRecentlyPlayedGames(auth, resolvedTargetId, { limit: 25 });
             telemetryData = history?.data?.recentlyPlayedTitles || history?.recentlyPlayedTitles || [];
         } catch (e) {}
 
         const mergedGamesMap = new Map();
+
+        // 1. Ingest telemetry data (Has playDuration, playCount, image)
         telemetryData.forEach(g => {
             if (!g.npCommunicationId) return;
+            const playTimeMeta = parsePlayDuration(g.playDuration);
             mergedGamesMap.set(g.npCommunicationId, {
-                ...g, npCommunicationId: g.npCommunicationId, name: g.name || "Unknown Game",
-                art: g.image?.url || null, playCount: g.playCount, lastPlayed: g.lastPlayedDateTime || null,
-                progress: 0, earnedTotal: 0, definedTotal: 0, npServiceName: null
+                ...g,
+                npCommunicationId: g.npCommunicationId,
+                name: g.name || "Unknown Game",
+                platform: normalizePlatform(g),
+                art: g.image?.url || null,
+                playCount: g.playCount || 1,
+                lastPlayed: g.lastPlayedDateTime || null,
+                playDurationRaw: g.playDuration || null,
+                hoursPlayed: playTimeMeta.totalHours,
+                hoursFormatted: playTimeMeta.hoursFormatted,
+                progress: 0,
+                earnedTotal: 0,
+                definedTotal: 0,
+                npServiceName: g.npServiceName || (g.category === "ps5_native_game" ? "trophy2" : "trophy")
             });
         });
 
+        // 2. Ingest trophy data (Has completion %, trophyTitlePlatform, exact trophy counts)
         sortedTitles.forEach(t => {
             if (!t.npCommunicationId) return;
             const existing = mergedGamesMap.get(t.npCommunicationId) || {
-                npCommunicationId: t.npCommunicationId, name: t.trophyTitleName || "Unknown Game",
-                art: t.trophyTitleIconUrl || null, lastPlayed: t.lastUpdatedDateTime || null
+                npCommunicationId: t.npCommunicationId,
+                name: t.trophyTitleName || "Unknown Game",
+                platform: normalizePlatform(t),
+                art: t.trophyTitleIconUrl || null,
+                playCount: 1,
+                lastPlayed: t.lastUpdatedDateTime || null,
+                playDurationRaw: null,
+                hoursPlayed: 0,
+                hoursFormatted: "0 hrs"
             };
+
             Object.assign(existing, t); 
             existing.name = existing.name !== "Unknown Game" ? existing.name : (t.trophyTitleName || "Unknown Game");
             existing.art = existing.art || t.trophyTitleIconUrl;
+            existing.platform = normalizePlatform(t);
             existing.progress = t.progress || 0;
             existing.earnedTotal = (t.earnedTrophies?.platinum||0) + (t.earnedTrophies?.gold||0) + (t.earnedTrophies?.silver||0) + (t.earnedTrophies?.bronze||0);
             existing.definedTotal = (t.definedTrophies?.platinum||0) + (t.definedTrophies?.gold||0) + (t.definedTrophies?.silver||0) + (t.definedTrophies?.bronze||0);
+            existing.npServiceName = t.npServiceName || (existing.platform === "PS5" ? "trophy2" : "trophy");
+
             mergedGamesMap.set(t.npCommunicationId, existing);
         });
 
@@ -440,13 +501,22 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
 
         if (activeCommId && !mergedGamesMap.has(activeCommId)) {
             mergedGamesMap.set(activeCommId, {
-                npCommunicationId: activeCommId, name: resolvedTitle !== "Dashboard" ? resolvedTitle : "Unknown Game",
-                art: null, playCount: 1, lastPlayed: new Date().toISOString(),
-                progress: 0, earnedTotal: 0, definedTotal: 0, npServiceName: "trophy2"
+                npCommunicationId: activeCommId,
+                name: resolvedTitle !== "Dashboard" ? resolvedTitle : "Unknown Game",
+                platform: rawP.primaryPlatformInfo?.platform?.toUpperCase() || "PS5",
+                art: null,
+                playCount: 1,
+                lastPlayed: new Date().toISOString(),
+                playDurationRaw: null,
+                hoursPlayed: 0,
+                hoursFormatted: "0 hrs",
+                progress: 0,
+                earnedTotal: 0,
+                definedTotal: 0,
+                npServiceName: "trophy2"
             });
         }
 
-        // Sort by last played date with current game strictly on top
         const allRecentGames = Array.from(mergedGamesMap.values()).sort((a, b) => {
             if (activeCommId) {
                 if (a.npCommunicationId === activeCommId) return -1;
@@ -471,42 +541,63 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
 
         const stats = await getUserTrophyProfileSummary(auth, resolvedTargetId).catch(() => ({}));
         
-        const recentGames = [];
         let activeHunt = null;
         let mostRecentTrophies = [];
-
         const targetSyncId = activeCommId || matchedGame.npCommunicationId || allRecentGames[0]?.npCommunicationId;
 
-        // Scan top games to keep payload minimal and avoid latency
-        for (const game of allRecentGames.slice(0, 10)) { 
-            if (BLACKLIST.some(f => game.name.toLowerCase().includes(f))) continue;
-            
+        // Retention split
+        const filteredAllGames = allRecentGames.filter(g => !BLACKLIST.some(f => g.name.toLowerCase().includes(f)));
+        const permanentGames = filteredAllGames.filter(g => (g.progress || 0) >= MILESTONE_PROGRESS_THRESHOLD);
+        const transientGames = filteredAllGames
+            .filter(g => (g.progress || 0) < MILESTONE_PROGRESS_THRESHOLD)
+            .slice(0, MAX_ROTATING_SUB50_GAMES);
+
+        const combinedCandidateMap = new Map();
+        const currentActiveObj = filteredAllGames.find(g => g.npCommunicationId === targetSyncId);
+        if (currentActiveObj) {
+            combinedCandidateMap.set(currentActiveObj.npCommunicationId, currentActiveObj);
+        }
+
+        permanentGames.forEach(g => {
+            if (!combinedCandidateMap.has(g.npCommunicationId)) combinedCandidateMap.set(g.npCommunicationId, g);
+        });
+
+        transientGames.forEach(g => {
+            if (!combinedCandidateMap.has(g.npCommunicationId)) combinedCandidateMap.set(g.npCommunicationId, g);
+        });
+
+        const gamesToDisplay = Array.from(combinedCandidateMap.values());
+        const recentGames = [];
+
+        for (const game of gamesToDisplay) {
             const recentGameRef = {
                 name: game.name, 
+                platform: game.platform,
                 art: game.art, 
                 progress: game.progress || 0, 
                 ratio: `${game.earnedTotal || 0}/${game.definedTotal || 0}`, 
+                hoursPlayed: game.hoursPlayed || 0,
+                hoursFormatted: game.hoursFormatted || "0 hrs",
                 amazonAffiliateUrl: generateAffiliateUrl(game.name), 
                 npCommunicationId: game.npCommunicationId, 
                 lastPlayed: game.lastPlayed,
-                bootCount: game.playCount || "Unknown"
+                bootCount: game.playCount || "Unknown",
+                isPermanent: (game.progress || 0) >= MILESTONE_PROGRESS_THRESHOLD
             };
 
-            if (recentGames.length < MAX_RECENT_GAMES) { 
-                recentGames.push(recentGameRef); 
-            }
+            recentGames.push(recentGameRef);
 
             const isTargetHunt = (game.npCommunicationId === targetSyncId);
             
-            // Only fetch in-depth trophies for the active hunting title or top 2 active titles
+            // Fetch trophy lists & progress for active hunting title or top 2 titles
             if (recentGames.length <= 2 || isTargetHunt) {
                 try {
                     await sleep(40);
                     
-                    let opt = game.npServiceName ? { npServiceName: game.npServiceName } : { npServiceName: "trophy" };
+                    let opt = game.npServiceName ? { npServiceName: game.npServiceName } : { npServiceName: game.platform === "PS5" ? "trophy2" : "trophy" };
                     let groupsRes = await getTitleTrophyGroups(auth, game.npCommunicationId, opt).catch(()=>null);
                     
-                    if (!groupsRes && !game.npServiceName) {
+                    if (!groupsRes && opt.npServiceName === "trophy") {
                         opt.npServiceName = "trophy2";
                         groupsRes = await getTitleTrophyGroups(auth, game.npCommunicationId, opt).catch(()=>({}));
                     } else { groupsRes = groupsRes || {}; }
@@ -526,33 +617,46 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
                     const mappedTrophies = meta.map(m => {
                         const s = earnedStatus.find(x => x.trophyId === m.trophyId);
                         const group = trophyGroups.find(g => g.trophyGroupId === m.trophyGroupId);
+                        
+                        // Parse incremental progress for PS5 sub-trophies (e.g. 15/50)
+                        const currentVal = s?.progress || 0;
+                        const targetVal = m.trophyProgressTargetValue || 0;
+                        const hasSubProgress = targetVal > 0;
+                        const progressRatio = hasSubProgress ? `${currentVal}/${targetVal}` : null;
+
                         return { 
                             trophyId: m.trophyId,
                             name: m.trophyName || "Unknown", 
+                            platform: game.platform,
                             type: m.trophyType, 
                             icon: m.trophyIconUrl, 
-                            description: m.trophyDetail || "Secret Objective",
+                            description: m.trophyDetail || "Secret Objective", 
                             rarity: m.trophyRare ? m.trophyRare + "%" : "Rare", 
                             earnedRate: m.trophyEarnedRate || "0.0",
                             hidden: m.trophyHidden || false,
                             groupName: group?.trophyGroupName || "Base Game", 
                             earned: s?.earned || false, 
-                            earnedDate: s?.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }) : null,
+                            earnedDate: s?.earnedDateTime ? new Date(s.earnedDateTime).toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false }) : null,
                             earnedAge: s?.earnedDateTime ? getTrophyAgeString(s.earnedDateTime) : null,
                             timestamp: s?.earnedDateTime ? new Date(s.earnedDateTime).getTime() : 0,
-                            currentValue: s?.progress || 0, 
-                            targetValue: m.trophyProgressTargetValue || 0
+                            // Sub-trophy data
+                            hasSubProgress,
+                            currentValue: currentVal, 
+                            targetValue: targetVal,
+                            subProgressRatio: progressRatio
                         };
                     });
 
                     mappedTrophies.filter(t => t.earned).forEach(t => {
                         mostRecentTrophies.push({ 
                             game: game.name, 
+                            platform: game.platform,
                             name: t.name, 
                             icon: t.icon, 
                             timestamp: t.timestamp, 
                             date: t.earnedDate, 
-                            age: t.earnedAge 
+                            age: t.earnedAge,
+                            subProgress: t.subProgressRatio
                         });
                     });
 
@@ -575,6 +679,9 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
 
                         activeHunt = { 
                             title: game.name, 
+                            platform: game.platform,
+                            hoursPlayed: game.hoursPlayed || 0,
+                            hoursFormatted: game.hoursFormatted || "0 hrs",
                             amazonAffiliateUrl: generateAffiliateUrl(game.name), 
                             progress: game.progress || 0,
                             velocity: {
@@ -614,7 +721,8 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
             currentGameActivity: activeGameInfo.formatValue || twitchIntel?.statusMessage || (proofOfLife ? "Active Hunting" : null) || (twitchIntel?.isLive ? "Streaming Live" : null),
             amazonAffiliateUrl: generateAffiliateUrl(resolvedTitle),
             currentCommunicationId: matchedGame.npCommunicationId || null,
-            platform: rawP.primaryPlatformInfo?.platform?.toUpperCase() || "PS5",
+            platform: matchedGame.platform || rawP.primaryPlatformInfo?.platform?.toUpperCase() || "PS5",
+            currentGameHours: matchedGame.hoursFormatted || "0 hrs",
             twitch: twitchIntel
         };
 
@@ -645,11 +753,11 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
                 total: (stats?.earnedTrophies?.platinum||0) + (stats?.earnedTrophies?.gold||0) + (stats?.earnedTrophies?.silver||0) + (stats?.earnedTrophies?.bronze||0),
                 trophyLevel: stats?.trophyLevel || 0
             },
-            recentGames: recentGames.slice(0, MAX_RECENT_GAMES),
+            recentGames: recentGames,
             activeHunt, 
             mostRecentTrophies: mostRecentTrophies.slice(0, 10), 
             streamHistory: historicalStreamList,
-            lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false })
+            lastUpdated: new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false })
         };
     } catch (e) { 
         console.warn(`[WARN] Fetch exception for ${gamerTag}:`, e.message);
@@ -658,8 +766,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData) 
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: DATABASE & FILE I/O (FIREBASE REALTIME DB & LOCAL JSON)]
-// Line 555 in index.js: Realtime Database writer with individual node updates
+// [SECTION: DATABASE & FILE I/O]
 // ----------------------------------------------------------------------------
 async function fetchFromFirebase() {
     console.log("[FIREBASE] Reading current state from Realtime Database...");
@@ -710,11 +817,10 @@ function writeLocalFile(payload) {
 
 // ----------------------------------------------------------------------------
 // [SECTION: MAIN EXECUTION PIPELINE]
-// Line 610 in index.js: Runs pipeline for active squad members only
 // ----------------------------------------------------------------------------
 async function main() {
     try {
-        console.log("[INIT] Starting Squad Pack Sync Engine v15.9.1 (Streamlined Active Squad)...");
+        console.log("[INIT] Starting Squad Pack Sync Engine v16.5.0 (PS4/PS5 Filter, Hours & Sub-Trophies)...");
 
         const previousFirebaseData = await fetchFromFirebase();
 
@@ -722,19 +828,17 @@ async function main() {
             gamertags: previousFirebaseData.gamertags || {}, 
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport,
-            lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/New_York", hour12: false }), 
-            engineVersion: "15.9.1",
-            codeTimestamp: "Tuesday, September 1, 2026 | 04:58 EDT"
+            lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false }), 
+            engineVersion: "16.5.0",
+            codeTimestamp: "Sunday, September 6, 2026 | 08:06 CDT"
         };
 
-        // Authenticate primary agent keys
         const wildHorseAuth = await getAuthenticated("wildhorse_spirit", process.env.PSN_NPSSO_WEREWOLF);
         const rayAuth = await getAuthenticated("ray", process.env.PSN_NPSSO_RAY);
         const masterAuth = wildHorseAuth || rayAuth;
 
         finalData.authDiagnostics = diagnosticReport;
 
-        // Process only active Squad Gamer Tags
         for (const [key, gamerTag] of Object.entries(SQUAD_GAMERTAGS)) {
             const accountId = ACCOUNT_IDS[key];
             const agentAuth = (key === 'ray' && rayAuth) ? rayAuth : (key === 'wildhorse_spirit' && wildHorseAuth) ? wildHorseAuth : masterAuth;
@@ -742,12 +846,10 @@ async function main() {
             const data = await getFullUserData(agentAuth, gamerTag, key, accountId, finalData.gamertags[gamerTag]);
             if (data) {
                 finalData.gamertags[gamerTag] = data;
-                // Direct chunked node push to avoid heavy payload limits
                 await syncNodeToFirebase(`gamertags/${gamerTag}`, data);
             }
         }
 
-        // Mutual Twitch followers calculation
         const lists = Object.values(finalData.gamertags).map(u => u.twitch?.followerNames || []).filter(l => l.length > 0);
         if (lists.length > 1) {
             const frequencyMap = {};
@@ -762,17 +864,15 @@ async function main() {
                 .map(([name, count]) => ({ username: name, sharedConnections: count }));
         }
 
-        // Push global metadata nodes
         await syncNodeToFirebase("authDiagnostics", finalData.authDiagnostics);
         await syncNodeToFirebase("mutualSquadFollowers", finalData.mutualSquadFollowers);
         await syncNodeToFirebase("lastGlobalUpdate", finalData.lastGlobalUpdate);
         await syncNodeToFirebase("engineVersion", finalData.engineVersion);
         await syncNodeToFirebase("codeTimestamp", finalData.codeTimestamp);
 
-        // Write dual local files
         writeLocalFile(finalData);
 
-        console.log(`[SUCCESS] Streamlined Squad Sync completed cleanly.`);
+        console.log(`[SUCCESS] PS4/PS5 & Playtime Telemetry Sync completed cleanly.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Execution failed: ${criticalError.message}`);
         process.exit(1);
