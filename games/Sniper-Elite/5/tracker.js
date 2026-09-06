@@ -1,12 +1,12 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sat, Sep 5, 2026, 20:56 (EDT - New York)
+   Deployment Timestamp: Sat, Sep 5, 2026, 21:14 (EDT - New York)
    Project: entertainment-71888
-   Version: v6.0.0-SE5-MEDALS-RIBBONS-SYNC
+   Version: v6.1.0-SE5-HYBRID-MEDALS-RIBBONS
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
-   Notes: Integrated full authentic Sniper Elite 5 Medals and Ribbons database.
-          Supports direct-click manual number entry with auto-save (no +/- buttons).
+   Notes: Direct manual number keyboard input + quick +/- stepper buttons for Medals.
+          Simple clickable toggle button for Ribbons and 1-count objectives.
           Retains high-resolution tactical map images mapped to:
           - Mission 7: "Sniper Elite Secret Weapons.JPG"
           - Mission 8: "Sniper Elite Rubble and Ruin.JPG"
@@ -16,7 +16,7 @@
 
 /* === SECTION: Auto Cache Purge === */
 (function purgeStaleTrackerCache() {
-    const activeVersion = 'v6.0.0-20260905-2056';
+    const activeVersion = 'v6.1.0-20260905-2114';
     const storedVersion = localStorage.getItem('se5_tracker_build_version');
     if (storedVersion !== activeVersion) {
         Object.keys(localStorage).forEach(key => {
@@ -358,30 +358,30 @@ const sniperData = [
     { id: 'm14_ch1', cat: '14: Kraken Awakes (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Destroy carrier without triggering alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
 
     // ---------------- 15: CAMPAIGN & OBJECTIVE MEDALS (18 Items) ----------------
-    { id: 'med_fleshwound', cat: '15: Campaign & Objective Medals', name: 'Just a Flesh Wound', type: 'Medal', desc: 'Complete a mission (excluding Loose Ends) on any difficulty without healing.', target: 1 },
-    { id: 'med_frenchconn', cat: '15: Campaign & Objective Medals', name: 'The French Connection', type: 'Medal', desc: 'Liberate Blue Viper in Colline-Sur-Mer (Mission 1).', target: 1 },
-    { id: 'med_buffrightout', cat: '15: Campaign & Objective Medals', name: 'It’ll Buff Right Out', type: 'Medal', desc: 'Destroy Möller’s shiny new car in the chateau courtyard (Mission 2).', target: 1 },
-    { id: 'med_pigeonhunter', cat: '15: Campaign & Objective Medals', name: 'Pigeon Hunter', type: 'Medal', desc: 'Destroy 1 cardboard pigeon target on Beaumont-Saint-Denis (Mission 3).', target: 1 },
-    { id: 'med_showoff', cat: '15: Campaign & Objective Medals', name: 'Show Off', type: 'Medal', desc: 'Hit all practice targets on range in Spy Academy (Mission 3).', target: 1 },
-    { id: 'med_locomotion', cat: '15: Campaign & Objective Medals', name: 'Locomotion Commotion', type: 'Medal', desc: 'In Martressac, cause crane accident destroying train (Mission 4).', target: 1 },
-    { id: 'med_germaneng', cat: '15: Campaign & Objective Medals', name: 'German Engineering', type: 'Medal', desc: 'Destroy the Armoured Car in Martressac (Mission 4).', target: 1 },
-    { id: 'med_saboteur', cat: '15: Campaign & Objective Medals', name: 'Saboteur', type: 'Medal', desc: 'Sabotage fuses of all searchlights in Martressac without killing operators (Mission 4).', target: 1 },
-    { id: 'med_gnomeguard', cat: '15: Campaign & Objective Medals', name: 'The Gnome Guard', type: 'Medal', desc: 'Shoot and destroy the garden gnome hidden in Guernsey (Mission 5).', target: 1 },
-    { id: 'med_upclose', cat: '15: Campaign & Objective Medals', name: 'Up Close and Personal', type: 'Medal', desc: 'Takedown all 3 snipers guarding 2nd river crossing in Desponts-sur-Douve (Mission 6).', target: 1 },
-    { id: 'med_roadrage', cat: '15: Campaign & Objective Medals', name: 'Road Rage', type: 'Medal', desc: 'In Secret Weapons, find and destroy one of each vehicle type present (Mission 7).', target: 1 },
-    { id: 'med_dontbreath', cat: '15: Campaign & Objective Medals', name: 'Don\'t Hold Your Breath', type: 'Medal', desc: 'Make final shot in St. Nazaire fuel tanks without using Empty Lung (Mission 8).', target: 1 },
-    { id: 'med_brainsop', cat: '15: Campaign & Objective Medals', name: 'Brains of the Operation', type: 'Medal', desc: 'Kill Möller with a headshot in Loose Ends (Mission 9).', target: 1 },
-    { id: 'med_sightbeyond', cat: '15: Campaign & Objective Medals', name: 'Sight Beyond Sights', type: 'Medal', desc: 'Kill Möller with a rifle while in Iron Sights (Mission 9).', target: 1 },
-    { id: 'med_cantoutrun', cat: '15: Campaign & Objective Medals', name: 'Can\'t Outrun a Bullet', type: 'Medal', desc: 'Kill Möller with a rifle at a distance of 600 meters or more (Mission 9).', target: 1 },
-    { id: 'med_meetresist', cat: '15: Campaign & Objective Medals', name: 'Meeting Resistance', type: 'Medal', desc: 'Complete The Atlantic Wall with a 2-star rating.', target: 1 },
-    { id: 'med_takeback', cat: '15: Campaign & Objective Medals', name: 'Taking It Back', type: 'Medal', desc: 'Complete Libération with a 1-star rating.', target: 1 },
-    { id: 'med_bestofbest', cat: '15: Campaign & Objective Medals', name: 'Best of the Best', type: 'Medal', desc: 'Complete the entire campaign on Authentic difficulty.', target: 1 },
+    { id: 'med_fleshwound', cat: '15: Campaign & Objective Medals', name: 'Just a Flesh Wound', type: 'Medal', desc: 'Complete a mission (excluding Loose Ends) on any difficulty without healing.' },
+    { id: 'med_frenchconn', cat: '15: Campaign & Objective Medals', name: 'The French Connection', type: 'Medal', desc: 'Liberate Blue Viper in Colline-Sur-Mer (Mission 1).' },
+    { id: 'med_buffrightout', cat: '15: Campaign & Objective Medals', name: 'It’ll Buff Right Out', type: 'Medal', desc: 'Destroy Möller’s shiny new car in the chateau courtyard (Mission 2).' },
+    { id: 'med_pigeonhunter', cat: '15: Campaign & Objective Medals', name: 'Pigeon Hunter', type: 'Medal', desc: 'Destroy 1 cardboard pigeon target on Beaumont-Saint-Denis (Mission 3).' },
+    { id: 'med_showoff', cat: '15: Campaign & Objective Medals', name: 'Show Off', type: 'Medal', desc: 'Hit all practice targets on range in Spy Academy (Mission 3).' },
+    { id: 'med_locomotion', cat: '15: Campaign & Objective Medals', name: 'Locomotion Commotion', type: 'Medal', desc: 'In Martressac, cause crane accident destroying train (Mission 4).' },
+    { id: 'med_germaneng', cat: '15: Campaign & Objective Medals', name: 'German Engineering', type: 'Medal', desc: 'Destroy the Armoured Car in Martressac (Mission 4).' },
+    { id: 'med_saboteur', cat: '15: Campaign & Objective Medals', name: 'Saboteur', type: 'Medal', desc: 'Sabotage fuses of all searchlights in Martressac without killing operators (Mission 4).' },
+    { id: 'med_gnomeguard', cat: '15: Campaign & Objective Medals', name: 'The Gnome Guard', type: 'Medal', desc: 'Shoot and destroy the garden gnome hidden in Guernsey (Mission 5).' },
+    { id: 'med_upclose', cat: '15: Campaign & Objective Medals', name: 'Up Close and Personal', type: 'Medal', desc: 'Takedown all 3 snipers guarding 2nd river crossing in Desponts-sur-Douve (Mission 6).' },
+    { id: 'med_roadrage', cat: '15: Campaign & Objective Medals', name: 'Road Rage', type: 'Medal', desc: 'In Secret Weapons, find and destroy one of each vehicle type present (Mission 7).' },
+    { id: 'med_dontbreath', cat: '15: Campaign & Objective Medals', name: 'Don\'t Hold Your Breath', type: 'Medal', desc: 'Make final shot in St. Nazaire fuel tanks without using Empty Lung (Mission 8).' },
+    { id: 'med_brainsop', cat: '15: Campaign & Objective Medals', name: 'Brains of the Operation', type: 'Medal', desc: 'Kill Möller with a headshot in Loose Ends (Mission 9).' },
+    { id: 'med_sightbeyond', cat: '15: Campaign & Objective Medals', name: 'Sight Beyond Sights', type: 'Medal', desc: 'Kill Möller with a rifle while in Iron Sights (Mission 9).' },
+    { id: 'med_cantoutrun', cat: '15: Campaign & Objective Medals', name: 'Can\'t Outrun a Bullet', type: 'Medal', desc: 'Kill Möller with a rifle at a distance of 600 meters or more (Mission 9).' },
+    { id: 'med_meetresist', cat: '15: Campaign & Objective Medals', name: 'Meeting Resistance', type: 'Medal', desc: 'Complete The Atlantic Wall with a 2-star rating.' },
+    { id: 'med_takeback', cat: '15: Campaign & Objective Medals', name: 'Taking It Back', type: 'Medal', desc: 'Complete Libération with a 1-star rating.' },
+    { id: 'med_bestofbest', cat: '15: Campaign & Objective Medals', name: 'Best of the Best', type: 'Medal', desc: 'Complete the entire campaign on Authentic difficulty.' },
 
     // ---------------- 16: LONGSHOT & COMBAT MEDALS (18 Items) ----------------
-    { id: 'med_ls_m1', cat: '16: Longshot & Combat Medals', name: 'Mission 1 Long Shot', type: 'Medal', desc: 'Make a 350+ meters rifle shot in Colline-Sur-Mer.', target: 1 },
-    { id: 'med_ls_m3', cat: '16: Longshot & Combat Medals', name: 'Mission 3 Authentic Long Shot', type: 'Medal', desc: 'Take a 325+ meters shot in Beaumont-Saint-Denis on Authentic difficulty.', target: 1 },
-    { id: 'med_ls_m6', cat: '16: Longshot & Combat Medals', name: 'Mission 6 Long Shot', type: 'Medal', desc: 'Take a 400+ meters rifle shot in Desponts-Sur-Douve.', target: 1 },
-    { id: 'med_ls_m8', cat: '16: Longshot & Combat Medals', name: 'Mission 8 Authentic Long Shot', type: 'Medal', desc: 'Take a 200+ meters shot in St. Nazaire on Authentic difficulty.', target: 1 },
+    { id: 'med_ls_m1', cat: '16: Longshot & Combat Medals', name: 'Mission 1 Long Shot', type: 'Medal', desc: 'Make a 350+ meters rifle shot in Colline-Sur-Mer.' },
+    { id: 'med_ls_m3', cat: '16: Longshot & Combat Medals', name: 'Mission 3 Authentic Long Shot', type: 'Medal', desc: 'Take a 325+ meters shot in Beaumont-Saint-Denis on Authentic difficulty.' },
+    { id: 'med_ls_m6', cat: '16: Longshot & Combat Medals', name: 'Mission 6 Long Shot', type: 'Medal', desc: 'Take a 400+ meters rifle shot in Desponts-Sur-Douve.' },
+    { id: 'med_ls_m8', cat: '16: Longshot & Combat Medals', name: 'Mission 8 Authentic Long Shot', type: 'Medal', desc: 'Take a 200+ meters shot in St. Nazaire on Authentic difficulty.' },
     { id: 'med_longgame', cat: '16: Longshot & Combat Medals', name: 'The Long Game', type: 'Medal', desc: 'Accumulate a cumulative kill distance of 100,000 meters across all modes.', target: 100000 },
     { id: 'med_sharpshooter', cat: '16: Longshot & Combat Medals', name: 'Sharpshooter', type: 'Medal', desc: 'Kill 350 enemies with a Rifle.', target: 350 },
     { id: 'med_skirmisher', cat: '16: Longshot & Combat Medals', name: 'Skirmisher', type: 'Medal', desc: 'Kill 300 enemies with a Secondary Weapon.', target: 300 },
@@ -404,9 +404,9 @@ const sniperData = [
     { id: 'med_masteratarms', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master-at-Arms', type: 'Medal', desc: 'Master all weapons in the game across Rifles, Secondaries, and Pistols.', target: 3 },
     { id: 'med_seteablaze', cat: '17: Weapon Mastery & Tactics Medals', name: 'Set Europe Ablaze', type: 'Medal', desc: 'Kill 50 enemies with traps (TNT or teller mines).', target: 50 },
     { id: 'med_riggedtoblow', cat: '17: Weapon Mastery & Tactics Medals', name: 'Rigged to Blow', type: 'Medal', desc: 'Kill 20 soldiers using booby-trapped dead bodies.', target: 20 },
-    { id: 'med_explodeeffic', cat: '17: Weapon Mastery & Tactics Medals', name: 'Explosive Efficiency', type: 'Medal', desc: 'Kill 3 on-foot soldiers with a single hand grenade.', target: 1 },
-    { id: 'med_nutcracker', cat: '17: Weapon Mastery & Tactics Medals', name: 'Die Nussknacker Sweet!', type: 'Medal', desc: 'Get a testicle shot with a rifle from 100 meters or more.', target: 1 },
-    { id: 'med_strategist', cat: '17: Weapon Mastery & Tactics Medals', name: 'Strategist', type: 'Medal', desc: 'Make an enemy tank shoot and destroy another enemy vehicle.', target: 1 },
+    { id: 'med_explodeeffic', cat: '17: Weapon Mastery & Tactics Medals', name: 'Explosive Efficiency', type: 'Medal', desc: 'Kill 3 on-foot soldiers with a single hand grenade.' },
+    { id: 'med_nutcracker', cat: '17: Weapon Mastery & Tactics Medals', name: 'Die Nussknacker Sweet!', type: 'Medal', desc: 'Get a testicle shot with a rifle from 100 meters or more.' },
+    { id: 'med_strategist', cat: '17: Weapon Mastery & Tactics Medals', name: 'Strategist', type: 'Medal', desc: 'Make an enemy tank shoot and destroy another enemy vehicle.' },
     { id: 'med_nostone', cat: '17: Weapon Mastery & Tactics Medals', name: 'No Stone Unturned', type: 'Medal', desc: 'Complete 16 campaign optional objectives.', target: 16 },
 
     // ---------------- 18: CAREER RIBBONS (16 Items) ----------------
@@ -439,8 +439,8 @@ const appState = {
     db: null, auth: null, user: null,
     unsubListeners: [],
     isLoaded: false,
-    version: 'v6.0.0',
-    buildDate: '2026-09-05 20:56 EDT',
+    version: 'v6.1.0',
+    buildDate: '2026-09-05 21:14 EDT',
     
     activeLeafletMaps: {}, 
     markerLayers: {}, 
@@ -701,7 +701,16 @@ const appState = {
         }
     },
 
-    /* Direct Manual Click Input Handler (No +/- Buttons) */
+    /* Step + / - Increment/Decrement */
+    stepItemCount: function(id, delta) {
+        const item = this.hunterData.find(i => i.id === id);
+        if (!item) return;
+        const currentVal = item.count || 0;
+        const nextVal = Math.max(0, currentVal + delta);
+        this.setManualItemCount(id, nextVal);
+    },
+
+    /* Direct Manual Click Input Handler (Opens Keyboard Input) */
     openDirectNumberEditor: function(id, currentVal, maxVal) {
         const container = document.getElementById(`val-box-${id}`);
         if (!container) return;
@@ -820,7 +829,7 @@ const appState = {
 
             const grid = section.querySelector('.item-grid');
             items.forEach(item => {
-                const isNumericType = (item.type === 'Medal' || item.type === 'Ribbon');
+                const isNumericProgress = (item.target !== undefined && item.target > 1);
                 const card = document.createElement('div');
                 card.className = `item-card ${item.collected ? 'completed' : ''}`;
                 
@@ -832,33 +841,33 @@ const appState = {
                     const opStatus = opProgress.find(s => s.id === item.id);
                     const isCollected = opStatus ? !!opStatus.collected : false;
                     const opCount = opStatus && opStatus.count !== undefined ? opStatus.count : (isCollected ? '✓' : 0);
-                    const displayBadgeText = isNumericType ? `${op.toUpperCase()} (${opCount})` : op.toUpperCase();
+                    const displayBadgeText = isNumericProgress ? `${op.toUpperCase()} (${opCount})` : op.toUpperCase();
                     teamBadgesHtml += `<span class="team-badge ${isCollected ? 'is-collected' : ''}">${displayBadgeText}</span>`;
                 });
 
-                // Custom control rendering: Direct-Click number badge for Medals/Ribbons, Standard Checkbox for Collectibles
                 let actionControlsHtml = '';
-                if (isNumericType) {
+                if (isNumericProgress) {
                     const countVal = item.count || 0;
-                    const targetVal = item.target || null;
-                    const valBadgeText = targetVal ? `${countVal} / ${targetVal}` : `${countVal} EARNED`;
+                    const targetVal = item.target;
                     
                     actionControlsHtml = `
-                        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; margin-top:8px;">
-                            <span style="font-size:11px; color:#aaa;" class="outlined-text">TAP NUMBER TO ENTER:</span>
-                            <div id="val-box-${item.id}" class="clickable-num-pill outlined-text ${item.collected ? 'pill-completed' : ''}" onclick="appState.openDirectNumberEditor('${item.id}', ${countVal}, ${targetVal || 'null'})">
-                                ✏️ ${valBadgeText}
+                        <div class="stepper-action-row">
+                            <button class="step-btn outlined-text" onclick="appState.stepItemCount('${item.id}', -1)">−</button>
+                            <div id="val-box-${item.id}" class="clickable-num-pill outlined-text ${item.collected ? 'pill-completed' : ''}" onclick="appState.openDirectNumberEditor('${item.id}', ${countVal}, ${targetVal})">
+                                ✏️ ${countVal} / ${targetVal}
                             </div>
+                            <button class="step-btn outlined-text" onclick="appState.stepItemCount('${item.id}', 1)">+</button>
                         </div>
                     `;
                 } else {
+                    // Ribbons, Collectibles, and 1-target Medals get the simple Click-to-Mark toggle
                     actionControlsHtml = `
                         <div class="card-actions-row">
                             ${item.yt 
                                 ? `<a href="${item.yt}" target="_blank" rel="noopener noreferrer" class="watch-clip-btn outlined-text">🎥 WATCH CLIP</a>` 
                                 : `<span></span>`}
                             <button class="confirm-toggle-btn outlined-text ${item.collected ? 'completed-state' : ''}" onclick="appState.toggleItem('${item.id}')">
-                                ${item.collected ? 'COLLECTED (Undo)' : 'CONFIRM FOUND'}
+                                ${item.collected ? 'GOT IT (Undo)' : 'MARK GOT IT'}
                             </button>
                         </div>
                     `;
@@ -869,7 +878,7 @@ const appState = {
                         <div style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">
                             <img src="${iconUrl}" style="width:20px; height:20px; border-radius:4px; object-fit:cover; border:1px solid rgba(255,255,255,0.2);">
                             <span class="item-type-badge">${item.type}</span>
-                            ${item.target ? `<span style="font-size:10px; color:#aaa; font-family:monospace; margin-left:auto;">GOAL: ${item.target}</span>` : ''}
+                            ${item.target && item.target > 1 ? `<span style="font-size:10px; color:#aaa; font-family:monospace; margin-left:auto;">GOAL: ${item.target}</span>` : ''}
                         </div>
                         <div class="item-title outlined-text">${item.name}</div>
                         <div class="item-desc outlined-text">${item.desc}</div>
