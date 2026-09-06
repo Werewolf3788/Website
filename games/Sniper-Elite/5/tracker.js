@@ -1,15 +1,16 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sun, Sep 6, 2026, 01:25 (EDT - New York)
+   Deployment Timestamp: Sun, Sep 6, 2026, 01:45 (EDT - New York)
    Project: entertainment-71888
-   Version: v7.0.0-SE5-UNIFIED-TACTICAL-ENGINE
+   Version: v7.1.0-SE5-LONGSHOT-UNCAPPED-LEADERBOARD
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
    Features:
      - Real-time Firestore sync & LocalStorage offline caching
-     - Team Intel badge overlays (Werewolf3788, Raymystyro, Terrdog, Elu Cloud)
+     - Uncapped Long Shot recording: input values can exceed in-game requirements
+     - Dynamic Team Intel Leaderboard badge with Leader Crown (👑) indicator
      - Interactive Leaflet tactical map overlay with dynamic pin filtering
-     - Direct numeric input editing + step (+/-) counters for multi-tier medals
+     - Direct numeric input editing + quick step (+/-) counters
      - Single-tap toggle for 1-tier Medals, Ribbons, and Collectibles
      - Mobile hamburger toggle and Google Sheets CSV top navigation engine
      - 24-Hour New York Time clock with auto-updating DOM bindings
@@ -17,7 +18,7 @@
 
 /* === SECTION: Automatic Cache Purge === */
 (function purgeStaleTrackerCache() {
-  const activeVersion = 'v7.0.0-20260906-0125';
+  const activeVersion = 'v7.1.0-20260906-0145';
   const storedVersion = localStorage.getItem('se5_tracker_build_version');
   if (storedVersion !== activeVersion) {
     Object.keys(localStorage).forEach(key => {
@@ -290,7 +291,7 @@ const sniperData = [
   { id: 'm10_wb1', cat: '10: Wolf Mountain (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar of large SW resort building.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=582s' },
   { id: 'm10_wb2', cat: '10: Wolf Mountain (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Basement of abandoned shack near AA gun.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=615s' },
   { id: 'm10_wb3', cat: '10: Wolf Mountain (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury in Berghof basement.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=648s' },
-  { id: 'med_wm_fuhrerlong', cat: '10: Wolf Mountain (DLC)', name: 'Führer Long Shot', type: 'Medal', desc: 'Take a 412 meters shot in Wolf Mountain.', target: 412 },
+  { id: 'med_wm_fuhrerlong', cat: '10: Wolf Mountain (DLC)', name: 'Führer Long Shot', type: 'Medal', desc: 'Take a 412 meters shot in Wolf Mountain.', target: 412, isLongShot: true },
   { id: 'med_wm_dasspook', cat: '10: Wolf Mountain (DLC)', name: 'Das Spook', type: 'Medal', desc: 'Perform a ghost takedown on Hitler.' },
   { id: 'med_wm_herrtoday', cat: '10: Wolf Mountain (DLC)', name: 'Herr Today, Gone Tomorrow', type: 'Medal', desc: 'Complete mission across Cadet, Sharpshooter, and Sniper Elite.', target: 2 },
   { id: 'med_wm_familienjuwel', cat: '10: Wolf Mountain (DLC)', name: 'Das Familienjuwel', type: 'Medal', desc: 'Kill Hitler with a testicle shot.' },
@@ -299,9 +300,9 @@ const sniperData = [
   { id: 'med_alpsmemories', cat: '10: Wolf Mountain (DLC)', name: 'Memories of the Alps', type: 'Medal', desc: 'Obtain 15 collectibles in Wolf Mountain.', target: 15 },
   { id: 'med_wm_opfoxley', cat: '10: Wolf Mountain (DLC)', name: 'Operation Foxley', type: 'Medal', desc: 'Complete Wolf Mountain with a 2-star rating.', target: 2 },
   { id: 'med_wm_alpha', cat: '10: Wolf Mountain (DLC)', name: 'Alpha', type: 'Medal', desc: 'Complete Wolf Mountain on Authentic difficulty.' },
-  { id: 'med_wm_fromfuhrer', cat: '10: Wolf Mountain (DLC)', name: 'From Führer Away', type: 'Medal', desc: 'Kill Hitler at a distance of 300 meters or more.', target: 300 },
+  { id: 'med_wm_fromfuhrer', cat: '10: Wolf Mountain (DLC)', name: 'From Führer Away', type: 'Medal', desc: 'Kill Hitler at a distance of 300 meters or more.', target: 300, isLongShot: true },
   { id: 'med_downfall', cat: '10: Wolf Mountain (DLC)', name: 'Downfall', type: 'Medal', desc: 'Kill Hitler by making him fall down a cliffside via tampered fence.' },
-  { id: 'med_fuhrerlongshot', cat: '10: Wolf Mountain (DLC)', name: 'Führer Authentic Long Shot', type: 'Medal', desc: 'Take a 257 meters shot in Wolf Mountain, in Authentic difficulty.', target: 257 },
+  { id: 'med_fuhrerlongshot', cat: '10: Wolf Mountain (DLC)', name: 'Führer Authentic Long Shot', type: 'Medal', desc: 'Take a 257 meters shot in Wolf Mountain, in Authentic difficulty.', target: 257, isLongShot: true },
   { id: 'med_putapinit', cat: '10: Wolf Mountain (DLC)', name: 'Put a Pin in It', type: 'Medal', desc: 'Kill Hitler with a booby-trapped bowling pin.' },
   { id: 'med_covertelim', cat: '10: Wolf Mountain (DLC)', name: 'Covert Elimination', type: 'Medal', desc: 'Kill Hitler and exfiltrate without ever being detected.' },
 
@@ -320,8 +321,8 @@ const sniperData = [
   { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Radar installation sub-level locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'm11_ch1', cat: '11: Landing Force (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Disable heavy battery without combat alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
   { id: 'med_lastresort', cat: '11: Landing Force (DLC)', name: 'Last Resort', type: 'Medal', desc: 'Complete the campaign mission - Landing Force.' },
-  { id: 'med_m11longshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Landing Force.', target: 350 },
-  { id: 'med_m11authlongshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Landing Force, in Authentic difficulty.', target: 250 },
+  { id: 'med_m11longshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Landing Force.', target: 350, isLongShot: true },
+  { id: 'med_m11authlongshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Landing Force, in Authentic difficulty.', target: 250, isLongShot: true },
 
   // --- Mission 12: Conqueror (DLC) ---
   { id: 'm12_pl1', cat: '12: Conqueror (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Town entrance bridge guard desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
@@ -340,7 +341,7 @@ const sniperData = [
   { id: 'med_siegebreaker', cat: '12: Conqueror (DLC)', name: 'Siegebreaker', type: 'Medal', desc: 'Complete the campaign mission - Conqueror.' },
   { id: 'med_ghostoffalaise', cat: '12: Conqueror (DLC)', name: 'Ghost of Falaise', type: 'Medal', desc: 'Conqueror - Complete mission with a 2 star rating.', target: 2 },
   { id: 'med_opoverlord', cat: '12: Conqueror (DLC)', name: 'Operation Overlord', type: 'Medal', desc: 'Conqueror - Complete mission on Authentic difficulty.' },
-  { id: 'med_m12authlongshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 Authentic Long Shot', type: 'Medal', desc: 'Take a 260 meters shot in Conqueror, in Authentic difficulty.', target: 260 },
+  { id: 'med_m12authlongshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 Authentic Long Shot', type: 'Medal', desc: 'Take a 260 meters shot in Conqueror, in Authentic difficulty.', target: 260, isLongShot: true },
 
   // --- Mission 13: Rough Landing (DLC) ---
   { id: 'm13_pl1', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Forest camp command tent cot.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
@@ -365,8 +366,8 @@ const sniperData = [
   { id: 'med_m13_woods', cat: '13: Rough Landing (DLC)', name: 'If You Go Down to the Woods Today', type: 'Medal', desc: 'Complete campaign mission - Rough Landing.' },
   { id: 'med_m13_fightanother', cat: '13: Rough Landing (DLC)', name: 'Fight Another Day', type: 'Medal', desc: 'Rough Landing - Complete mission with a 2 star rating.', target: 2 },
   { id: 'med_m13_stroll', cat: '13: Rough Landing (DLC)', name: 'Stroll in the Woods', type: 'Medal', desc: 'Rough Landing - Complete mission on Authentic difficulty.' },
-  { id: 'med_m13_longshot', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing.', target: 240 },
-  { id: 'med_m13_authlong', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Rough Landing, in Authentic difficulty.', target: 250 },
+  { id: 'med_m13_longshot', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing.', target: 240, isLongShot: true },
+  { id: 'med_m13_authlong', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Rough Landing, in Authentic difficulty.', target: 250, isLongShot: true },
 
   // --- Mission 14: Kraken Awakes (DLC) ---
   { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Submarine dry dock office desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
@@ -408,29 +409,29 @@ const sniperData = [
   { id: 'med_dontbreath', cat: '15: Campaign & Objective Medals', name: 'Don\'t Hold Your Breath', type: 'Medal', desc: 'Make final shot in fuel tanks without Empty Lung (Mission 8).' },
   { id: 'med_brainsop', cat: '15: Campaign & Objective Medals', name: 'Brains of the Operation', type: 'Medal', desc: 'Kill Möller with a headshot in Loose Ends (Mission 9).' },
   { id: 'med_sightbeyond', cat: '15: Campaign & Objective Medals', name: 'Sight Beyond Sights', type: 'Medal', desc: 'Kill Möller with a rifle in Iron Sights (Mission 9).' },
-  { id: 'med_cantoutrun', cat: '15: Campaign & Objective Medals', name: 'Can\'t Outrun a Bullet', type: 'Medal', desc: 'Kill Möller at 600 meters or more (Mission 9).', target: 600 },
+  { id: 'med_cantoutrun', cat: '15: Campaign & Objective Medals', name: 'Can\'t Outrun a Bullet', type: 'Medal', desc: 'Kill Möller at 600 meters or more (Mission 9).', target: 600, isLongShot: true },
   { id: 'med_liberte', cat: '15: Campaign & Objective Medals', name: 'Liberté', type: 'Medal', desc: 'Complete campaign across Bronze, Silver, and Gold tiers.', target: 2 },
   { id: 'med_bestofbest', cat: '15: Campaign & Objective Medals', name: 'Best of the Best', type: 'Medal', desc: 'Complete entire campaign on Authentic difficulty.' },
 
   // --- Category: Longshot & Combat Medals ---
-  { id: 'med_ls_m1', cat: '16: Longshot & Combat Medals', name: 'Mission 1 Long Shot', type: 'Medal', desc: 'Take a 450 meters shot in Colline-Sur-Mer.', target: 450 },
-  { id: 'med_ls_m1_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 1 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Colline-Sur-Mer, in Authentic difficulty.', target: 250 },
-  { id: 'med_ls_m2', cat: '16: Longshot & Combat Medals', name: 'Mission 2 Long Shot', type: 'Medal', desc: 'Take a 375 meters shot in Château de Berengar.', target: 375 },
-  { id: 'med_ls_m2_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 2 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Château de Berengar, in Authentic difficulty.', target: 250 },
-  { id: 'med_ls_m3', cat: '16: Longshot & Combat Medals', name: 'Mission 3 Long Shot', type: 'Medal', desc: 'Take a 675 meters shot in Beaumont-Saint-Denis.', target: 675 },
-  { id: 'med_ls_m3_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 3 Authentic Long Shot', type: 'Medal', desc: 'Take a 325 meters shot in Beaumont-Saint-Denis, in Authentic difficulty.', target: 325 },
-  { id: 'med_ls_m4', cat: '16: Longshot & Combat Medals', name: 'Mission 4 Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in War Factory.', target: 200 },
-  { id: 'med_ls_m4_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 4 Authentic Long Shot', type: 'Medal', desc: 'Take an Authentic difficulty long shot in War Factory.', target: 200 },
-  { id: 'med_ls_m5', cat: '16: Longshot & Combat Medals', name: 'Mission 5 Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Festung Guernsey.', target: 400 },
-  { id: 'med_ls_m5_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 5 Authentic Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Festung Guernsey, in Authentic difficulty.', target: 400 },
-  { id: 'med_ls_m6', cat: '16: Longshot & Combat Medals', name: 'Mission 6 Long Shot', type: 'Medal', desc: 'Take a 400 meters rifle shot in Desponts-Sur-Douve.', target: 400 },
-  { id: 'med_ls_m6_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 6 Authentic Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Desponts-Sur-Douve, in Authentic difficulty.', target: 400 },
-  { id: 'med_ls_m7', cat: '16: Longshot & Combat Medals', name: 'Mission 7 Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Secret Weapons.', target: 350 },
-  { id: 'med_ls_m7_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 7 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in Secret Weapons, in Authentic difficulty.', target: 200 },
-  { id: 'med_ls_m8', cat: '16: Longshot & Combat Medals', name: 'Mission 8 Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in St. Nazaire.', target: 200 },
-  { id: 'med_ls_m8_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 8 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in St. Nazaire, in Authentic difficulty.', target: 200 },
-  { id: 'med_ls_m9', cat: '16: Longshot & Combat Medals', name: 'Mission 9 Long Shot', type: 'Medal', desc: 'Take a 500 meters shot in Loose Ends.', target: 500 },
-  { id: 'med_ls_m9_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 9 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in Loose Ends, in Authentic difficulty.', target: 200 },
+  { id: 'med_ls_m1', cat: '16: Longshot & Combat Medals', name: 'Mission 1 Long Shot', type: 'Medal', desc: 'Take a 450 meters shot in Colline-Sur-Mer.', target: 450, isLongShot: true },
+  { id: 'med_ls_m1_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 1 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Colline-Sur-Mer, in Authentic difficulty.', target: 250, isLongShot: true },
+  { id: 'med_ls_m2', cat: '16: Longshot & Combat Medals', name: 'Mission 2 Long Shot', type: 'Medal', desc: 'Take a 375 meters shot in Château de Berengar.', target: 375, isLongShot: true },
+  { id: 'med_ls_m2_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 2 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Château de Berengar, in Authentic difficulty.', target: 250, isLongShot: true },
+  { id: 'med_ls_m3', cat: '16: Longshot & Combat Medals', name: 'Mission 3 Long Shot', type: 'Medal', desc: 'Take a 675 meters shot in Beaumont-Saint-Denis.', target: 675, isLongShot: true },
+  { id: 'med_ls_m3_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 3 Authentic Long Shot', type: 'Medal', desc: 'Take a 325 meters shot in Beaumont-Saint-Denis, in Authentic difficulty.', target: 325, isLongShot: true },
+  { id: 'med_ls_m4', cat: '16: Longshot & Combat Medals', name: 'Mission 4 Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in War Factory.', target: 200, isLongShot: true },
+  { id: 'med_ls_m4_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 4 Authentic Long Shot', type: 'Medal', desc: 'Take an Authentic difficulty long shot in War Factory.', target: 200, isLongShot: true },
+  { id: 'med_ls_m5', cat: '16: Longshot & Combat Medals', name: 'Mission 5 Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Festung Guernsey.', target: 400, isLongShot: true },
+  { id: 'med_ls_m5_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 5 Authentic Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Festung Guernsey, in Authentic difficulty.', target: 400, isLongShot: true },
+  { id: 'med_ls_m6', cat: '16: Longshot & Combat Medals', name: 'Mission 6 Long Shot', type: 'Medal', desc: 'Take a 400 meters rifle shot in Desponts-Sur-Douve.', target: 400, isLongShot: true },
+  { id: 'med_ls_m6_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 6 Authentic Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Desponts-Sur-Douve, in Authentic difficulty.', target: 400, isLongShot: true },
+  { id: 'med_ls_m7', cat: '16: Longshot & Combat Medals', name: 'Mission 7 Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Secret Weapons.', target: 350, isLongShot: true },
+  { id: 'med_ls_m7_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 7 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in Secret Weapons, in Authentic difficulty.', target: 200, isLongShot: true },
+  { id: 'med_ls_m8', cat: '16: Longshot & Combat Medals', name: 'Mission 8 Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in St. Nazaire.', target: 200, isLongShot: true },
+  { id: 'med_ls_m8_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 8 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in St. Nazaire, in Authentic difficulty.', target: 200, isLongShot: true },
+  { id: 'med_ls_m9', cat: '16: Longshot & Combat Medals', name: 'Mission 9 Long Shot', type: 'Medal', desc: 'Take a 500 meters shot in Loose Ends.', target: 500, isLongShot: true },
+  { id: 'med_ls_m9_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 9 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in Loose Ends, in Authentic difficulty.', target: 200, isLongShot: true },
   { id: 'med_longgame', cat: '16: Longshot & Combat Medals', name: 'The Long Game', type: 'Medal', desc: 'Accumulate a cumulative kill distance of 100,000 meters across all modes.', target: 100000 },
   { id: 'med_sharpshooter', cat: '16: Longshot & Combat Medals', name: 'Sharpshooter', type: 'Medal', desc: 'Kill 350 enemies with a Rifle.', target: 350 },
   { id: 'med_skirmisher', cat: '16: Longshot & Combat Medals', name: 'Skirmisher', type: 'Medal', desc: 'Kill 150 enemies with a Secondary Weapon.', target: 150 },
@@ -591,8 +592,8 @@ const appState = {
   user: null,
   unsubListeners: [],
   isLoaded: false,
-  version: 'v7.0.0',
-  buildDate: '2026-09-06 01:25 EDT',
+  version: 'v7.1.0',
+  buildDate: '2026-09-06 01:45 EDT',
   activeLeafletMaps: {},
   markerLayers: {},
 
@@ -874,16 +875,21 @@ const appState = {
     const item = this.hunterData.find(i => i.id === id);
     if (!item) return;
     const currentVal = item.count || 0;
-    const nextVal = Math.max(0, currentVal + delta);
+    // For long shots, step by 5 meters; otherwise step by 1
+    const stepSize = item.isLongShot ? 5 : 1;
+    const nextVal = Math.max(0, currentVal + (delta * stepSize));
     this.setManualItemCount(id, nextVal);
   },
 
-  openDirectNumberEditor: function(id, currentVal, maxVal) {
+  openDirectNumberEditor: function(id, currentVal, maxVal, isLongShot = false) {
     const container = document.getElementById(`val-box-${id}`);
     if (!container) return;
 
+    // Uncap input ceiling if it's a Long Shot to record true distance
+    const maxAttr = (isLongShot || !maxVal) ? '' : `max="${maxVal}"`;
+
     container.innerHTML = `
-      <input type="number" id="input-edit-${id}" class="manual-inline-num-input" value="${currentVal}" min="0" ${maxVal ? `max="${maxVal}"` : ''}>
+      <input type="number" id="input-edit-${id}" class="manual-inline-num-input" value="${currentVal}" min="0" ${maxAttr}>
     `;
 
     const inputEl = document.getElementById(`input-edit-${id}`);
@@ -996,32 +1002,64 @@ const appState = {
       const grid = section.querySelector('.item-grid');
       items.forEach(item => {
         const isNumericProgress = (item.target !== undefined && item.target > 1);
+        const isLongShot = !!item.isLongShot;
         const card = document.createElement('div');
         card.className = `item-card ${item.collected ? 'completed' : ''}`;
 
         const iconUrl = GAME_TYPE_ICONS[item.type] || GAME_TYPE_ICONS['Personal Letter'];
         const themeMeta = getItemThemeMeta(item);
 
+        // Calculate highest team distance for leader crown display on Long Shots
+        let maxTeamShot = 0;
+        if (isLongShot) {
+          ALL_OPERATIVES.forEach(op => {
+            const opData = (this.teamProgress[op] || []).find(s => s.id === item.id);
+            if (opData && opData.count > maxTeamShot) {
+              maxTeamShot = opData.count;
+            }
+          });
+        }
+
         let teamBadgesHtml = '';
         ALL_OPERATIVES.forEach(op => {
           const opProgress = this.teamProgress[op] || [];
           const opStatus = opProgress.find(s => s.id === item.id);
           const isCollected = opStatus ? !!opStatus.collected : false;
-          const opCount = opStatus && opStatus.count !== undefined ? opStatus.count : (isCollected ? '✓' : 0);
-          const displayBadgeText = isNumericProgress ? `${op.toUpperCase()} (${opCount})` : op.toUpperCase();
-          teamBadgesHtml += `<span class="team-badge ${isCollected ? 'is-collected' : ''}">${displayBadgeText}</span>`;
+          const opCount = opStatus && opStatus.count !== undefined ? Number(opStatus.count) : (isCollected ? '✓' : 0);
+          
+          let displayBadgeText = op.toUpperCase();
+          let leaderClass = '';
+
+          if (isLongShot) {
+            displayBadgeText = `${op.toUpperCase()} (${opCount}m)`;
+            if (opCount > 0 && opCount === maxTeamShot) {
+              leaderClass = ' team-shot-leader';
+              displayBadgeText = `👑 ${displayBadgeText}`;
+            }
+          } else if (isNumericProgress) {
+            displayBadgeText = `${op.toUpperCase()} (${opCount})`;
+          }
+
+          teamBadgesHtml += `<span class="team-badge ${isCollected ? 'is-collected' : ''}${leaderClass}">${displayBadgeText}</span>`;
         });
 
         let actionControlsHtml = '';
         if (isNumericProgress) {
           const countVal = item.count || 0;
           const targetVal = item.target;
+          
+          // Long Shot labels display your record alongside the in-game target
+          let pillLabel = `✏️ ${countVal} / ${targetVal}`;
+          if (isLongShot) {
+            const isPersonalRecord = countVal > targetVal;
+            pillLabel = `🎯 ${countVal}m / ${targetVal}m REQ ${isPersonalRecord ? '🔥' : ''}`;
+          }
 
           actionControlsHtml = `
             <div class="stepper-action-row">
               <button class="step-btn outlined-text" onclick="appState.stepItemCount('${item.id}', -1)">−</button>
-              <div id="val-box-${item.id}" class="clickable-num-pill outlined-text ${item.collected ? 'pill-completed' : ''}" onclick="appState.openDirectNumberEditor('${item.id}', ${countVal}, ${targetVal})">
-                ✏️ ${countVal} / ${targetVal}
+              <div id="val-box-${item.id}" class="clickable-num-pill outlined-text ${item.collected ? 'pill-completed' : ''}" onclick="appState.openDirectNumberEditor('${item.id}', ${countVal}, ${targetVal}, ${isLongShot})">
+                ${pillLabel}
               </div>
               <button class="step-btn outlined-text" onclick="appState.stepItemCount('${item.id}', 1)">+</button>
             </div>
@@ -1044,14 +1082,14 @@ const appState = {
             <div style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">
               <img src="${iconUrl}" style="width:20px; height:20px; border-radius:4px; object-fit:cover; border:1px solid rgba(255,255,255,0.2);">
               <span class="item-type-badge item-type-tag ${themeMeta.badgeClass}" style="${themeMeta.customStyle}">${item.type}</span>
-              ${item.target && item.target > 1 ? `<span style="font-size:11px; color:#aaa; font-family:monospace; margin-left:auto;">GOAL: ${item.target}</span>` : ''}
+              ${item.target && item.target > 1 ? `<span style="font-size:11px; color:#aaa; font-family:monospace; margin-left:auto;">${isLongShot ? 'TARGET DISTANCE:' : 'GOAL:'} ${item.target}${isLongShot ? 'm' : ''}</span>` : ''}
             </div>
             <div class="item-title outlined-text">${item.name}</div>
             <div class="item-desc outlined-text">${item.desc}</div>
           </div>
           <div>
             <div class="team-intel-row">
-              <span class="team-intel-label">TEAM INTEL:</span>
+              <span class="team-intel-label">${isLongShot ? 'SNIPER COMPARISON:' : 'TEAM INTEL:'}</span>
               ${teamBadgesHtml}
             </div>
             ${actionControlsHtml}
