@@ -1,76 +1,72 @@
 /* ============================================================================
  * File: games/FS25/fs25.js
- * Deployment Timestamp: 2026-09-05 19:25:00 (EDT - 24hr New York Time)
+ * Deployment Timestamp: 2026-09-05 20:10:00 (EDT - 24hr New York Time)
  * Project: fs25-a3563 (/fs25 RTDB Node)
- * Target Server: Direct Web API Client
+ * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com/fs25
  * Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
  * Measurement ID: G-SGJF0FJPQZ
- * Description: Zero-Loss, Multi-Tiered FS25 Savegame Ingestion Engine.
- *              - Direct Web SDK initialization (Bypasses Service Account Secrets).
- *              - Dual HTTP & HTTPS protocol-agnostic networking.
- *              - Server Offline Guard:
- *                  * Pings Port 9050.
- *                  * If offline: updates serverStatus.isOnline = false and halts.
- *                  * ZERO existing card data in Firebase is overwritten or deleted.
- *              - Active Player High-Frequency Route (activePlayers > 0):
- *                  * Syncs player-influenced files: vehicles.xml, fields.xml, 
+ * Description: Zero-Loss, Dual-Tiered FS25 Savegame Ingestion Engine.
+ *              - Active Player Route (activePlayers > 0 on 16-min tick):
+ *                  * Only syncs volatile player files: vehicles.xml, fields.xml,
  *                    farms.xml, farmland.xml, missions.xml, players.xml.
- *              - In-Game Calendar Day Trigger:
- *                  * Ingests environment.xml whenever currentDay increments.
- *              - Idle 6-12 Hour / Daily Route (activePlayers === 0):
- *                  * Refreshes economy.xml, sales.xml, placeables.xml, 
- *                    collectibles.xml, precisionFarming.xml, activeMods.
- *              - Spatial Aggregations:
- *                  * Passive income generators grouped by [Source - Count - $Total - Zone]
- *                    with hourly and monthly revenue models.
- *                  * Preserves attached implement hierarchies, baler twine inventories,
- *                    factory production storages, and precision farming offsets.
- * Database Target: https://fs25-a3563-default-rtdb.firebaseio.com/fs25
+ *              - 6-Hour Static Route (runs independently or when activePlayers === 0):
+ *                  * Refreshes slow/static files only once every 6 hours:
+ *                    economy.xml, sales.xml, placeables.xml, collectibles.xml,
+ *                    precisionFarming.xml, activeMods.
+ *              - Server Offline Guard:
+ *                  * Pings Port 9050. Halts immediately if offline without overwriting data.
  * ============================================================================ */
 
 require('dotenv').config({ path: __dirname + '/.env' });
 const ftp = require('basic-ftp');
-const { initializeApp } = require('firebase/app');
-const { getDatabase, ref, update, get } = require('firebase/database');
 const { Writable } = require('stream');
 const xml2js = require('xml2js');
 
 // ============================================================================
 // SECTION 1: SAFETY TIMEOUT (4-Minute Process Failsafe)
 // ============================================================================
-// Line ~45: Ensures the runner clean-exits before GitHub Actions 5-min timeout
 setTimeout(() => {
   console.log("🚨 Safety Failsafe: Process exiting cleanly after 4 minutes.");
   process.exit(0);
 }, 4 * 60 * 1000);
 
 // ============================================================================
-// SECTION 2: FIREBASE DIRECT WEB SDK CONFIGURATION
+// SECTION 2: DIRECT FIREBASE RTDB REST CLIENT (fs25-a3563)
 // ============================================================================
-// Line ~53: Uses raw web API config directly. No JSON.parse or service accounts needed.
-const firebaseConfig = {
-  apiKey: "AIzaSyBwhhUNH0itRb2hQcnSap_vGfnErAGVzZc",
-  authDomain: "fs25-a3563.firebaseapp.com",
-  databaseURL: "https://fs25-a3563-default-rtdb.firebaseio.com",
-  projectId: "fs25-a3563",
-  storageBucket: "fs25-a3563.firebasestorage.app",
-  messagingSenderId: "528331196894",
-  appId: "1:528331196894:web:5af51bc2c80fd56aecf54f",
-  measurementId: "G-SGJF0FJPQZ"
-};
+const RTDB_URL = "https://fs25-a3563-default-rtdb.firebaseio.com";
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-// Helper function to update RTDB using standard modular path keys
 async function updateDb(path, data) {
-  return await update(ref(db, path), data);
+  const res = await fetch(`${RTDB_URL}/${path}.json`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) {
+    throw new Error(`Firebase write error at ${path}: ${res.status} ${res.statusText}`);
+  }
+  return await res.json();
 }
 
-// Helper function to read RTDB nodes
+async function setDb(path, data) {
+  const res = await fetch(`${RTDB_URL}/${path}.json`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) {
+    throw new Error(`Firebase write error at ${path}: ${res.status} ${res.statusText}`);
+  }
+  return await res.json();
+}
+
 async function getDb(path) {
-  const snapshot = await get(ref(db, path));
-  return snapshot.exists() ? snapshot.val() : null;
+  try {
+    const res = await fetch(`${RTDB_URL}/${path}.json`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    return null;
+  }
 }
 
 // ============================================================================
@@ -83,7 +79,6 @@ const ftpPass = process.env.FTP_PASS;
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
 
 const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
-const MAP_IMAGE_URL = `https://wsrv.nl/?url=${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
 const GITHUB_IMG_BASE = `https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/`;
 
 // ============================================================================
@@ -694,10 +689,10 @@ async function syncFarmsAndLand(client, activeSavePath, liveStats) {
 }
 
 // ============================================================================
-// SECTION 7: LOW-FREQUENCY / SLOW STATIC SYSTEMS (6-12 Hours / Daily)
+// SECTION 7: 6-HOUR STATIC SYSTEMS ROUTE (Non-Changeable by Active Users)
 // ============================================================================
 async function syncSlowStaticSystems(client, activeSavePath, catalogLookup) {
-  console.log("🏛️ Executing 6-12 Hour Low-Frequency Sync (Placeables, Economy, Sales, Mods, Collectibles)...");
+  console.log("🏛️ Executing 6-Hour Static Route (Placeables, Economy, Sales, Mods, Collectibles)...");
   const updates = {};
 
   // 1. Placeables & Passive Income Aggregations (placeables.xml)
@@ -935,9 +930,18 @@ async function runPipeline() {
     lastChecked: new Date().toISOString()
   });
 
-  const catalogLookup = await fetchModsCatalog();
   const existingFs25 = (await getDb('fs25')) || {};
+  const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
+  const lastSlowSyncTime = existingFs25.lastSlowSync || 0;
+  const shouldRun6HourSync = (Date.now() - lastSlowSyncTime) > SIX_HOURS_MS;
 
+  // Efficiency Guard: If no players are online AND the 6-hour window hasn't elapsed, do nothing
+  if (activePlayers === 0 && !shouldRun6HourSync) {
+    console.log("💤 0 players online & 6-hour static window not reached yet. Skipping FTP connection and exiting cleanly.");
+    process.exit(0);
+  }
+
+  const catalogLookup = await fetchModsCatalog();
   const client = new ftp.Client();
   client.ftp.verbose = false;
 
@@ -975,40 +979,40 @@ async function runPipeline() {
     const activeSavePath = `savegame${activeSlot}`;
     console.log(`📂 Locked savegame path: [ ${activeSavePath} ] (Slot #${activeSlot})`);
 
-    // --- TRIGGER 1: Environment & In-Game Day Check ---
-    let currentInGameDay = existingFs25.environment ? existingFs25.environment.currentDay : null;
-    try {
-      const envXml = await downloadFtpFileToString(client, `${activeSavePath}/environment.xml`);
-      const parsedEnv = await parseXmlString(sanitizeXml(envXml));
-      if (parsedEnv && parsedEnv.environment) {
-        const newDay = parsedEnv.environment.currentDay;
-        if (newDay !== currentInGameDay) {
-          console.log(`🌅 In-game day changed from ${currentInGameDay} to ${newDay}. Updating environment.`);
-          await updateDb('fs25/environment', parsedEnv.environment);
-        }
-      }
-    } catch (e) {}
-
-    // --- TRIGGER 2: High-Frequency Active Player Route ---
+    // --- ROUTE 1: ACTIVE PLAYER 16-MINUTE SYNC ---
     if (activePlayers > 0) {
-      console.log("⚡ Players are active on the server. Executing fast sync...");
+      console.log("⚡ Active players detected. Running 16-minute volatile files sync...");
+
+      // Environment & In-Game Day Check
+      let currentInGameDay = existingFs25.environment ? existingFs25.environment.currentDay : null;
+      try {
+        const envXml = await downloadFtpFileToString(client, `${activeSavePath}/environment.xml`);
+        const parsedEnv = await parseXmlString(sanitizeXml(envXml));
+        if (parsedEnv && parsedEnv.environment) {
+          const newDay = parsedEnv.environment.currentDay;
+          if (newDay !== currentInGameDay) {
+            console.log(`🌅 In-game day changed from ${currentInGameDay} to ${newDay}. Updating environment.`);
+            await setDb('fs25/environment', parsedEnv.environment);
+          }
+        }
+      } catch (e) {}
+
+      // High-Frequency Player Files
       await syncVehicles(client, activeSavePath, liveStats, catalogLookup);
       await syncFields(client, activeSavePath);
       await syncMissions(client, activeSavePath);
       await syncFarmsAndLand(client, activeSavePath, liveStats);
     } else {
-      console.log("💤 0 players currently online. Skipping active equipment and field files.");
+      console.log("💤 0 players online. Volatile player-influenced files skipped.");
     }
 
-    // --- TRIGGER 3: Low-Frequency 6–12 Hour Window Check ---
-    const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
-    const lastSlowSyncTime = existingFs25.lastSlowSync || 0;
-
-    if (Date.now() - lastSlowSyncTime > SIX_HOURS_MS) {
+    // --- ROUTE 2: 6-HOUR STATIC SYSTEMS SYNC ---
+    if (shouldRun6HourSync) {
+      console.log("⏰ 6-Hour threshold reached. Executing static data sync...");
       await syncSlowStaticSystems(client, activeSavePath, catalogLookup);
     }
 
-    // Config metadata
+    // Update config metadata
     await updateDb('fs25/config', {
       appId: "1:528331196894:web:5af51bc2c80fd56aecf54f",
       projectId: "fs25-a3563",
@@ -1018,7 +1022,7 @@ async function runPipeline() {
       lastConfigSync: new Date().toISOString()
     });
 
-    console.log("🏁 16-minute pipeline check completed cleanly.");
+    console.log("🏁 Pipeline check completed cleanly.");
     client.close();
     process.exit(0);
 
