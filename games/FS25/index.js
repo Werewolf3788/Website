@@ -1,14 +1,22 @@
 /* ============================================================================
  * File: index.js
- * Deployment Timestamp: 2026-09-05 06:45:00 (EDT - 24hr New York Time)
- * Project: entertainment-71888 (/fs25 RTDB Node)
+ * Deployment Timestamp: 2026-09-05 20:30:00 (EDT - 24hr New York Time)
+ * Project: fs25-a3563 (/fs25 RTDB Node)
+ * Target Database: https://fs25-a3563-default-rtdb.firebaseio.com/fs25
  * Google Analytics Tag: G-CTYHDF4MSD (Gaming, Progress Tracking, Firebase Entertainment)
+ * Measurement ID: G-SGJF0FJPQZ
  * Description: Zero-Loss FS25 Savegame Ingestion & Card Synchronization Engine.
  *              - Dual HTTP & HTTPS protocol-agnostic networking.
- *              - Unconditional full pipeline execution (bypasses player-count skips).
+ *              - Direct Database Endpoint: Uses native fetch REST requests (no SDK/credentials needed).
+ *              - Server Offline Guard:
+ *                  * Pings Port 9050.
+ *                  * If offline: updates serverStatus.isOnline = false and halts (zero overwrite).
+ *              - Dual-Tiered Execution Route:
+ *                  * Active Player Route (activePlayers > 0): Ingests high-frequency volatile files.
+ *                  * 6-Hour Static Route (or manual workflow_dispatch / --force): Refreshes slow systems.
  *              - Complete recursive XML parsing preserving 100% of data.
  *              - Aggregated Field/Zone-aware Passive Income Generator Cards:
- *                  * Groups identical sources (e.g. Government Subsidy, Solar, Wind)
+ *                  * Groups identical sources (e.g. Government Subsidy, Solar, Wind).
  *                  * Calculates total item count, cumulative value/cost, and hourly/monthly payout rates.
  *                  * Separates identical units if placed in different fields/spatial zones.
  *              - Universal Missions & Contracts:
@@ -20,66 +28,72 @@
  *                  * Fleet Machinery & Dedicated Harvesters
  *                  * Farmland Holdings & Agronomy Soil Data (Lime, Weeds, Plowing)
  *              - Dual-Layer Image Resolver (Firebase Mod Catalog + GitHub Assets).
- * Database Target: https://entertainment-71888-default-rtdb.firebaseio.com/fs25
  * ============================================================================ */
 
 require('dotenv').config({ path: __dirname + '/.env' });
 const ftp = require('basic-ftp');
-const admin = require('firebase-admin');
 const { Writable } = require('stream');
 const xml2js = require('xml2js');
 
 // ============================================================================
-// SECTION 1: SAFETY TIMEOUT (4-Minute Failsafe to Prevent GitHub Action Hangs)
+// SECTION 1: SAFETY TIMEOUT (4-Minute Failsafe to Prevent Runner Hangs)
 // ============================================================================
+// Line ~42: Ensures process cleanly exits before GitHub Actions runner reaches limit
 setTimeout(() => {
-  console.log("🚨 Safety Failsafe: Exiting process after 4 minutes.");
+  console.log("🚨 Safety Failsafe: Exiting process cleanly after 4 minutes.");
   process.exit(0);
 }, 4 * 60 * 1000);
 
 // ============================================================================
-// SECTION 2: FIREBASE ADMIN INITIALIZATION
+// SECTION 2: DIRECT FIREBASE RTDB REST CLIENT (fs25-a3563)
 // ============================================================================
-const firebaseConfig = {
-  databaseURL: "https://entertainment-71888-default-rtdb.firebaseio.com"
-};
+// Line ~50: Communicates directly via HTTPS REST calls; avoids credential/SDK parse errors
+const RTDB_URL = "https://fs25-a3563-default-rtdb.firebaseio.com";
 
-let serviceAccount;
-if (process.env.FIREBASE_SERVICE_ACCOUNT) {
-  try {
-    serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
-  } catch (e) {
-    console.error("❌ Error parsing FIREBASE_SERVICE_ACCOUNT:", e.message);
-    process.exit(1);
-  }
-} else {
-  try {
-    serviceAccount = require("./your-firebase-adminsdk-key.json");
-  } catch (e) {
-    console.error("❌ Missing FIREBASE_SERVICE_ACCOUNT credential secret.");
-    process.exit(1);
-  }
-}
-
-if (!admin.apps.length) {
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: firebaseConfig.databaseURL
+async function updateDb(path, data) {
+  const res = await fetch(`${RTDB_URL}/${path}.json`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
   });
+  if (!res.ok) {
+    throw new Error(`Firebase write error at ${path}: ${res.status} ${res.statusText}`);
+  }
+  return await res.json();
 }
 
-const db = admin.database();
+async function setDb(path, data) {
+  const res = await fetch(`${RTDB_URL}/${path}.json`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  });
+  if (!res.ok) {
+    throw new Error(`Firebase write error at ${path}: ${res.status} ${res.statusText}`);
+  }
+  return await res.json();
+}
+
+async function getDb(path) {
+  try {
+    const res = await fetch(`${RTDB_URL}/${path}.json`);
+    if (!res.ok) return null;
+    return await res.json();
+  } catch (e) {
+    return null;
+  }
+}
 
 // ============================================================================
 // SECTION 3: NETWORK & HOST CONFIGURATION (Dual HTTP/HTTPS Compatibility)
 // ============================================================================
+// Line ~88: Supports both local HTTP polling and HTTPS asset proxy transformation
 const ftpHost = process.env.FTP_HOST || '207.244.246.70';
 const ftpPort = parseInt(process.env.FTP_PORT, 10) || 21;
 const ftpUser = process.env.FTP_USER;
 const ftpPass = process.env.FTP_PASS;
 const apiCode = process.env.FS25_API_CODE || '3FvqSlOsYKckfauM';
 
-// Protocol-agnostic endpoints
 const STATS_URL = `http://${ftpHost}:9050/feed/dedicated-server-stats.xml?code=${apiCode}`;
 const MAP_IMAGE_URL = `https://wsrv.nl/?url=${ftpHost}:9050/feed/dedicated-server-stats-map.jpg?code=${apiCode}&quality=75&size=1024`;
 const GITHUB_IMG_BASE = `https://raw.githubusercontent.com/Werewolf3788/Website/main/games/FS25/images/`;
@@ -334,20 +348,17 @@ function resolveBestImage(entityKey, sheetRecord) {
 }
 
 function formatCurrency(amount) {
-  return `$${Math.round(amount).toLocaleString('en-US')}`;
+  return `$${Math.round(amount || 0).toLocaleString('en-US')}`;
 }
 
-// Spatial clustering helper to differentiate items placed across distinct fields/zones
 function getSpatialZone(p) {
   if (p.fieldId) return `Field ${p.fieldId}`;
   if (p.farmlandId) return `Farmland Plot ${p.farmlandId}`;
   
-  // Extract coordinate transform positions if available
   const pos = p.position || (p.transform && p.transform.position) || (p.bale && p.bale.position);
   if (typeof pos === 'string') {
     const coords = pos.trim().split(/\s+/).map(Number);
     if (coords.length >= 2 && !isNaN(coords[0]) && !isNaN(coords[2] || coords[1])) {
-      // Create a 100m x 100m grid box identifier
       const xGrid = Math.floor(coords[0] / 100) * 100;
       const zGrid = Math.floor((coords[2] || coords[1]) / 100) * 100;
       return `Zone (${xGrid}, ${zGrid})`;
@@ -368,7 +379,7 @@ async function downloadFtpFileToString(client, remotePath) {
   return Buffer.concat(chunks).toString('utf-8');
 }
 
-async function fetchStatsApi() {
+async function pingServerLiveStats() {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 6000);
@@ -400,19 +411,19 @@ async function fetchStatsApi() {
         const mapMatch = clean.match(/mapTitle="([^"]+)"/i) || clean.match(/mapName="([^"]+)"/i);
         if (mapMatch) mapTitle = mapMatch[1];
 
-        return { text: clean, players, activeSlot, mapTitle };
+        const parsed = await parseXmlString(clean);
+        return { isOnline: true, text: clean, players, activeSlot, mapTitle, parsed: parsed ? parsed.Server : null };
       }
     }
   } catch (err) {
-    console.warn("Stats API Notice:", err.message);
+    console.warn("⚠️ Dedicated server ping offline:", err.message);
   }
-  return { text: "", players: 0, activeSlot: null, mapTitle: "" };
+  return { isOnline: false, text: "", players: 0, activeSlot: null, mapTitle: "", parsed: null };
 }
 
 async function fetchModsCatalog() {
   try {
-    const snap = await db.ref('FS25_Mods_Info').once('value');
-    const rawVal = snap.val() || {};
+    const rawVal = (await getDb('FS25_Mods_Info')) || {};
     const catalogLookup = {};
 
     function indexObject(obj) {
@@ -442,6 +453,7 @@ async function fetchModsCatalog() {
 // ============================================================================
 // SECTION 6: ADVANCED ZERO-LOSS CARD COMPILER & AGGREGATOR
 // ============================================================================
+// Line ~415: Card Compiler - Aggregates passive generators, inventories, contracts, vehicles
 async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfigXml) {
   const parsedTree = {};
   for (const [key, rawContent] of Object.entries(rawFiles)) {
@@ -673,7 +685,6 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
                           lower.includes("bga") || lower.includes("biogas");
 
       if (isGenerator) {
-        // Store for aggregation
         rawPassiveGenerators.push({
           ...placeableItem,
           zone: getSpatialZone(p),
@@ -714,7 +725,6 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
   const incomeGroups = {};
 
   rawPassiveGenerators.forEach(gen => {
-    // Normalization key for identifying identical models
     let normalizedCategory = gen.name;
     const lower = gen.name.toLowerCase();
     if (lower.includes("subsidy") || lower.includes("subsidies")) normalizedCategory = "Government Subsidy";
@@ -722,23 +732,18 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     else if (lower.includes("wind") || lower.includes("turbine")) normalizedCategory = "Wind Turbine";
     else if (lower.includes("biogas") || lower.includes("bga")) normalizedCategory = "Biogas Plant (BGA)";
 
-    // Grouping by: Farm + Category + Spatial Location/Field
     const groupKey = `${gen.farmId}_${normalizedCategory}_${gen.zone}`;
 
     if (!incomeGroups[groupKey]) {
-      // Determine payout rate calculations
       let hourlyRate = 0;
       let monthlyRate = 0;
 
-      // Check XML attributes for explicit income parameters
       const raw = gen.rawNode;
       if (raw.incomePerHour) hourlyRate = parseFloat(raw.incomePerHour);
       if (raw.incomePerMonth) monthlyRate = parseFloat(raw.incomePerMonth);
 
-      // Default baseline models for known income generators if not directly set
       if (hourlyRate === 0 && monthlyRate === 0) {
         if (normalizedCategory === "Government Subsidy") {
-          // Standard FS Government Subsidy mod: $100,000,000 / year or $8,400,000 / month approx
           monthlyRate = 8400000;
           hourlyRate = monthlyRate / 24;
         } else if (normalizedCategory === "Solar Panel Array") {
@@ -769,7 +774,6 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
     incomeGroups[groupKey].individualIds.push(gen.id);
   });
 
-  // Build finalized high-level passive income cards
   Object.values(incomeGroups).forEach(group => {
     const totalHourly = group.hourlyRatePerUnit * group.count;
     const totalMonthly = group.monthlyRatePerUnit * group.count;
@@ -857,10 +861,8 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
         raw: m
       };
 
-      // Always populate the comprehensive list
       globalCards.missions.all.push(missionItem);
 
-      // Status buckets
       if (statusRaw === 0) globalCards.missions.available.push(missionItem);
       else if (statusRaw === 1) globalCards.missions.inProgress.push(missionItem);
       else if (statusRaw === 2) globalCards.missions.finished.push(missionItem);
@@ -984,40 +986,81 @@ async function buildCleanStructuredSave(rawFiles, catalogLookup, rawServerConfig
 }
 
 // ============================================================================
-// SECTION 7: PIPELINE EXECUTION ENGINE (Unconditional Sync)
+// SECTION 7: MASTER PIPELINE CONTROLLER (With Offline Guard & Force Sync)
 // ============================================================================
+// Line ~830: Main Execution Router
 async function runPipeline() {
-  console.log("📡 [1/4] Querying Dedicated Server Stats API for Live Save Slot...");
-  const statsData = await fetchStatsApi();
-  const activePlayers = statsData.players;
+  const isManualRun = process.env.GITHUB_EVENT_NAME === 'workflow_dispatch' || process.argv.includes('--force');
+  console.log(`📡 [1/4] Querying Port 9050 Server Stats (Manual Override: ${isManualRun})...`);
 
-  let activeSlot = statsData.activeSlot || process.env.DEFAULT_SAVE_SLOT || "3";
-  console.log(`🎯 Active Savegame Slot: [ Slot #${activeSlot} ]`);
+  const serverPing = await pingServerLiveStats();
+
+  // Server Offline Guard: Halt immediately without overwriting cards
+  if (!serverPing.isOnline && !isManualRun) {
+    console.log("🛑 Server is OFFLINE. Updating serverStatus node only and halting execution. Zero cards overwritten.");
+    await updateDb('fs25/serverStatus', {
+      isOnline: false,
+      lastChecked: new Date().toISOString()
+    });
+    process.exit(0);
+  }
+
+  const activePlayers = serverPing.players;
+  console.log(`✅ Server is ONLINE | Active Players: ${activePlayers}`);
+
+  await updateDb('fs25/serverStatus', {
+    isOnline: serverPing.isOnline,
+    activePlayers: activePlayers,
+    lastChecked: new Date().toISOString()
+  });
+
+  const existingFs25 = (await getDb('fs25')) || {};
+  const isFirstRun = !existingFs25.lastFullSaveSync;
+  const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
+  const lastSlowSyncTime = existingFs25.lastSlowSync || 0;
+  const shouldRun6HourSync = isFirstRun || isManualRun || ((Date.now() - lastSlowSyncTime) > SIX_HOURS_MS);
+
+  // Efficiency Guard: If 0 players, not past 6 hours, not first run, and not manual -> exit cleanly
+  if (activePlayers === 0 && !shouldRun6HourSync && !isManualRun && !isFirstRun) {
+    console.log("💤 0 players online & 6-hour static window not reached yet. Skipping FTP connection.");
+    process.exit(0);
+  }
+
+  let activeSlot = serverPing.activeSlot || process.env.DEFAULT_SAVE_SLOT || "3";
+  console.log(`🎯 Target Savegame Slot: [ Slot #${activeSlot} ]`);
 
   console.log("📦 Indexing Mod Catalogue from Firebase /FS25_Mods_Info...");
   const catalogLookup = await fetchModsCatalog();
   console.log(`✅ Loaded ${Object.keys(catalogLookup).length} mod catalogue references.`);
 
-  console.log("🚀 Executing Full Zero-Loss Savegame & Mod Sync...");
-
   const masterPayload = {
+    serverStatus: {
+      isOnline: serverPing.isOnline,
+      activePlayers: activePlayers,
+      lastChecked: new Date().toISOString()
+    },
     activePlayers: activePlayers,
     activeSaveSlot: String(activeSlot),
     liveMapImage: MAP_IMAGE_URL,
     lastUpdated: new Date().toISOString(),
     lastFullSaveSync: new Date().toISOString(),
+    lastSlowSync: shouldRun6HourSync ? Date.now() : (existingFs25.lastSlowSync || Date.now()),
     config: { 
-      appId: "1:660524340277:web:ef8f4ed04fa985a4f88d7c",
-      gaTag: "G-CTYHDF4MSD"
+      appId: "1:528331196894:web:5af51bc2c80fd56aecf54f",
+      projectId: "fs25-a3563",
+      gaTag: "G-CTYHDF4MSD",
+      measurementId: "G-SGJF0FJPQZ",
+      activeSaveSlot: String(activeSlot),
+      lastConfigSync: new Date().toISOString()
     },
     raw_xml: {}
   };
 
-  if (statsData.text) masterPayload.raw_xml.stats = statsData.text;
+  if (serverPing.text) masterPayload.raw_xml.stats = serverPing.text;
 
   if (!ftpUser || !ftpPass) {
-    console.warn("⚠️ FTP credentials missing. Writing stats feed only.");
-    await db.ref('fs25').set(masterPayload);
+    console.warn("⚠️ FTP credentials missing. Writing stats payload only.");
+    await updateDb('fs25', masterPayload);
     process.exit(0);
   }
 
@@ -1048,7 +1091,7 @@ async function runPipeline() {
         if (cfgXml) {
           rawServerConfigXml = sanitizeXml(cfgXml);
           const cfgSlotMatch = cfgXml.match(/savegameSlot="(\d+)"/i) || cfgXml.match(/savegame="(\d+)"/i) || cfgXml.match(/<savegame>(\d+)<\/savegame>/i);
-          if (cfgSlotMatch && !statsData.activeSlot) {
+          if (cfgSlotMatch && !serverPing.activeSlot) {
             activeSlot = cfgSlotMatch[1];
             masterPayload.activeSaveSlot = String(activeSlot);
             break;
@@ -1094,7 +1137,7 @@ async function runPipeline() {
     }
 
     masterPayload.activeSaveSlot = String(activeSlot);
-    console.log(`📂 [3/4] Pulling ALL XML files from: [ ${activeSavePath} ]`);
+    console.log(`📂 [3/4] Pulling XML savegame files from: [ ${activeSavePath} ]`);
 
     const readableFiles = fileList.filter(f => !f.isDirectory && (
       f.name.toLowerCase().endsWith('.xml') || f.name.toLowerCase().endsWith('.txt')
@@ -1132,8 +1175,8 @@ async function runPipeline() {
     masterPayload.activeMods = cleanData.activeMods;
     masterPayload.allRawParsedXml = cleanData.allRawParsedXml;
 
-    console.log("💾 [4/4] Writing complete payload to Firebase /fs25...");
-    await db.ref('fs25').set(masterPayload);
+    console.log("💾 [4/4] Writing complete payload to Firebase /fs25 via REST...");
+    await updateDb('fs25', masterPayload);
 
     console.log(`🏆 Complete savegame synchronization verified! Node /fs25 fully populated.`);
     client.close();
