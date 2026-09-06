@@ -1,8 +1,8 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sat, Sep 5, 2026, 23:33 (EDT - New York)
+   Deployment Timestamp: Sun, Sep 6, 2026, 00:07 (EDT - New York)
    Project: entertainment-71888
-   Version: v6.3.0-SE5-HYBRID-MEDALS-RIBBONS
+   Version: v6.4.0-SE5-THEMED-MEDALS-DYNAMIC-ACCORDION
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
    Notes: Direct manual number keyboard input + quick +/- stepper buttons for Medals.
@@ -16,7 +16,7 @@
 
 /* === SECTION: Auto Cache Purge === */
 (function purgeStaleTrackerCache() {
-    const activeVersion = 'v6.3.0-20260905-2333';
+    const activeVersion = 'v6.4.0-20260906-0007';
     const storedVersion = localStorage.getItem('se5_tracker_build_version');
     if (storedVersion !== activeVersion) {
         Object.keys(localStorage).forEach(key => {
@@ -236,7 +236,7 @@ const sniperData = [
     { id: 'm7_hi2', cat: '7: Secret Weapons', name: 'Luftwaffe Playing Cards', type: 'Hidden Item', desc: 'Table inside guardhouse next to northern bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=410s', x: 920, y: 410, pin: 'HI2' },
     { id: 'm7_hi3', cat: '7: Secret Weapons', name: 'Prüfstand XII Plans', type: 'Hidden Item', desc: 'Rocky beach under eastern side of bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=445s', x: 860, y: 890, pin: 'HI3' },
     { id: 'm7_se1', cat: '7: Secret Weapons', name: 'Stone Eagle #1', type: 'Stone Eagle', desc: 'Among rocks south of eastern abandoned house.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=480s', x: 1650, y: 840, pin: 'SE1' },
-    { id: 'm7_se2', cat: '7: Secret Weapons', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Inside dam filter water on western bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=512s', x: 640, y: 720, pin: 'SE2' },
+    { id: 'm7_se2', cat: '7: Secret Weapons', name: 'Stone Eagle #2', type: 'Stone Eagle', desc: 'Inside dam filter water on western bridge.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=512s' },
     { id: 'm7_se3', cat: '7: Secret Weapons', name: 'Stone Eagle #3', type: 'Stone Eagle', desc: 'Wall alcove opposite eastern tower in SW castle.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=545s', x: 590, y: 1390, pin: 'SE3' },
     { id: 'm7_wb1', cat: '7: Secret Weapons', name: 'Rifle Workbench', type: 'Workbench', desc: 'Axis Armoury north of V2 rockets.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=578s', x: 1180, y: 560, pin: 'WB1' },
     { id: 'm7_wb2', cat: '7: Secret Weapons', name: 'SMG Workbench', type: 'Workbench', desc: 'Shower corridor from V2 dome spiral stairs.', yt: '//www.youtube.com/watch?v=ZtN5V8Q1x4w&t=610s', x: 1290, y: 640, pin: 'WB2' },
@@ -292,7 +292,7 @@ const sniperData = [
     // Wolf Mountain Specific Medals & Challenges
     { id: 'med_wm_fuhrerlong', cat: '10: Wolf Mountain (DLC)', name: 'Führer Long Shot', type: 'Medal', desc: 'Take a 412 meters shot in Wolf Mountain.', target: 412 },
     { id: 'med_wm_dasspook', cat: '10: Wolf Mountain (DLC)', name: 'Das Spook', type: 'Medal', desc: 'Perform a ghost takedown on Hitler.' },
-    { id: 'med_wm_herrtoday', cat: '10: Wolf Mountain (DLC)', name: 'Herr Today, Gone Tomorrow', type: 'Medal', desc: 'Complete mission on Civilian/Cadet (Bronze), Sharpshooter (Silver), and Sniper Elite (Gold).', target: 3 },
+    { id: 'med_wm_herrtoday', cat: '10: Wolf Mountain (DLC)', name: 'Herr Today, Gone Tomorrow', type: 'Medal', desc: 'Complete the mission on difficulty Civilian/Cadet (Bronze), Sharpshooter (Silver), and Sniper Elite (Gold).', target: 2 },
     { id: 'med_wm_familienjuwel', cat: '10: Wolf Mountain (DLC)', name: 'Das Familienjuwel', type: 'Medal', desc: 'Kill Hitler with a testicle shot.' },
     { id: 'med_wm_fuhrerious', cat: '10: Wolf Mountain (DLC)', name: 'Führerious Repetition', type: 'Medal', desc: 'Kill Hitler 10 times.', target: 10 },
     { id: 'med_reichtopoint', cat: '10: Wolf Mountain (DLC)', name: 'Reich to the Point', type: 'Medal', desc: 'Kill only Hitler and exfiltrate on Wolf Mountain.' },
@@ -386,7 +386,7 @@ const sniperData = [
     { id: 'med_m14_sinkorswim', cat: '14: Kraken Awakes (DLC)', name: 'Sink or Swim', type: 'Medal', desc: 'Kraken Awakes - Complete the mission with a 2 star rating.', target: 2 },
     { id: 'med_m14_goingover', cat: '14: Kraken Awakes (DLC)', name: 'Going Overboard', type: 'Medal', desc: 'Kraken Awakes - Complete the mission on Authentic difficulty.' },
 
-    // ---------------- 15: CAMPAIGN & OBJECTIVE MEDALS (23 Items) ----------------
+    // ---------------- 15: CAMPAIGN & OBJECTIVE MEDALS (24 Items) ----------------
     { id: 'med_fleshwound', cat: '15: Campaign & Objective Medals', name: 'Just a Flesh Wound', type: 'Medal', desc: 'Complete a mission (excluding Loose Ends) on any difficulty without healing.' },
     { id: 'med_frenchconn', cat: '15: Campaign & Objective Medals', name: 'The French Connection', type: 'Medal', desc: 'Liberate Blue Viper in Colline-Sur-Mer (Mission 1).' },
     { id: 'med_buffrightout', cat: '15: Campaign & Objective Medals', name: 'It’ll Buff Right Out', type: 'Medal', desc: 'Destroy Möller’s shiny new car in the chateau courtyard (Mission 2).' },
@@ -399,6 +399,7 @@ const sniperData = [
     { id: 'med_germaneng', cat: '15: Campaign & Objective Medals', name: 'German Engineering', type: 'Medal', desc: 'Destroy the Armoured Car in Martressac (Mission 4).' },
     { id: 'med_saboteur', cat: '15: Campaign & Objective Medals', name: 'Saboteur', type: 'Medal', desc: 'Sabotage fuses of all searchlights in Martressac without killing operators (Mission 4).' },
     { id: 'med_gnomeguard', cat: '15: Campaign & Objective Medals', name: 'The Gnome Guard', type: 'Medal', desc: 'Shoot and destroy the garden gnome hidden in Guernsey (Mission 5).' },
+    { id: 'med_changechannel', cat: '15: Campaign & Objective Medals', name: 'Change the Channel', type: 'Medal', desc: 'Complete Festung Guernsey with a 3 star rating.', target: 3 },
     { id: 'med_takeback', cat: '15: Campaign & Objective Medals', name: 'Taking It Back', type: 'Medal', desc: 'Complete Libération with a 3-star rating.', target: 3 },
     { id: 'med_upclose', cat: '15: Campaign & Objective Medals', name: 'Up Close and Personal', type: 'Medal', desc: 'Takedown all 3 snipers guarding 2nd river crossing in Desponts-sur-Douve (Mission 6).' },
     { id: 'med_targetamerica', cat: '15: Campaign & Objective Medals', name: 'Target America', type: 'Medal', desc: 'Complete Secret Weapons with a 3 star rating.', target: 3 },
@@ -408,7 +409,7 @@ const sniperData = [
     { id: 'med_brainsop', cat: '15: Campaign & Objective Medals', name: 'Brains of the Operation', type: 'Medal', desc: 'Kill Möller with a headshot in Loose Ends (Mission 9).' },
     { id: 'med_sightbeyond', cat: '15: Campaign & Objective Medals', name: 'Sight Beyond Sights', type: 'Medal', desc: 'Kill Möller with a rifle while in Iron Sights (Mission 9).' },
     { id: 'med_cantoutrun', cat: '15: Campaign & Objective Medals', name: 'Can\'t Outrun a Bullet', type: 'Medal', desc: 'Kill Möller with a rifle at a distance of 600 meters or more (Mission 9).', target: 600 },
-    { id: 'med_liberte', cat: '15: Campaign & Objective Medals', name: 'Liberté', type: 'Medal', desc: 'Complete campaign on Any difficulty (Bronze), Sharpshooter (Silver), and Sniper Elite (Gold).', target: 3 },
+    { id: 'med_liberte', cat: '15: Campaign & Objective Medals', name: 'Liberté', type: 'Medal', desc: 'Complete the campaign on any difficulty (Bronze), on Sharpshooter difficulty (Silver), and on Sniper Elite difficulty (Gold).', target: 2 },
     { id: 'med_bestofbest', cat: '15: Campaign & Objective Medals', name: 'Best of the Best', type: 'Medal', desc: 'Complete the entire campaign on Authentic difficulty.' },
 
     // ---------------- 16: LONGSHOT & COMBAT MEDALS (30 Items) ----------------
@@ -483,6 +484,7 @@ const WEREWOLF_SEEDS = [
     { id: 'med_confirming_susp', count: 3, collected: true },
     { id: 'med_thekrakenwakes', count: 3, collected: true },
     { id: 'med_startstocrack', count: 3, collected: true },
+    { id: 'med_changechannel', count: 3, collected: true },
     { id: 'med_takeback', count: 3, collected: true },
     { id: 'med_targetamerica', count: 3, collected: true },
     { id: 'med_krakensleeps', count: 3, collected: true },
@@ -517,6 +519,58 @@ const WEREWOLF_SEEDS = [
     { id: 'med_gunslinger', count: 150, collected: true }
 ];
 
+/* === SECTION: Dynamic Themed Medal Styling Utility === */
+function getItemThemeMeta(item) {
+    const nameLower = item.name.toLowerCase();
+    const catLower = item.cat.toLowerCase();
+
+    // Authentic Long Shots: Red Badge
+    if (nameLower.includes('authentic long shot') || nameLower.includes('führer authentic long shot')) {
+        return {
+            badgeClass: 'theme-badge-auth-ls',
+            customStyle: 'background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;'
+        };
+    }
+
+    // Standard Long Shots: Purple Badge
+    if (nameLower.includes('long shot') || nameLower.includes('the long game')) {
+        return {
+            badgeClass: 'theme-badge-ls',
+            customStyle: 'background: rgba(168, 85, 247, 0.2); color: #c084fc; border: 1px solid #a855f7;'
+        };
+    }
+
+    // Master of Pistols: Pistol Silver
+    if (nameLower.includes('master of pistols') || nameLower.includes('double 1866') || nameLower.includes('welrod') || nameLower.includes('gunslinger')) {
+        return {
+            badgeClass: 'theme-badge-pistol-silver',
+            customStyle: 'background: rgba(209, 213, 219, 0.2); color: #e5e7eb; border: 1px solid #9ca3af;'
+        };
+    }
+
+    // DLC Campaign Missions / Objectives / DLC Medals: Military Tan
+    if (catLower.includes('(dlc)') || catLower.includes('landing force') || catLower.includes('conqueror') || catLower.includes('rough landing') || catLower.includes('kraken awakes') || catLower.includes('wolf mountain')) {
+        return {
+            badgeClass: 'theme-badge-dlc-tan',
+            customStyle: 'background: rgba(212, 185, 130, 0.2); color: #e2cb9d; border: 1px solid #d4b982;'
+        };
+    }
+
+    // Ribbons: Cyan/Blue
+    if (item.type === 'Ribbon') {
+        return {
+            badgeClass: 'theme-badge-ribbon',
+            customStyle: 'background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid #3b82f6;'
+        };
+    }
+
+    // Standard Objectives & Collectibles default
+    return {
+        badgeClass: 'theme-badge-default',
+        customStyle: 'background: rgba(255, 255, 255, 0.08); color: #ddd; border: 1px solid rgba(255,255,255,0.15);'
+    };
+}
+
 /* === SECTION: App State Controller & Tactical Engine === */
 const appState = {
     activeGamertag: 'Werewolf3788',
@@ -528,8 +582,8 @@ const appState = {
     db: null, auth: null, user: null,
     unsubListeners: [],
     isLoaded: false,
-    version: 'v6.3.0',
-    buildDate: '2026-09-05 23:33 EDT',
+    version: 'v6.4.0',
+    buildDate: '2026-09-06 00:07 EDT',
     
     activeLeafletMaps: {}, 
     markerLayers: {}, 
@@ -558,6 +612,7 @@ const appState = {
             }
         });
 
+        // Dynamic Accordion State: Only the currently active mission opens
         const cats = [...new Set(this.hunterData.map(i => i.cat))];
         cats.forEach(cat => {
             const sid = cat.replace(/[^a-z0-9]/gi, '');
@@ -610,10 +665,16 @@ const appState = {
     setActiveMission: function(catName) {
         this.activeMission = catName;
         const cats = [...new Set(this.hunterData.map(i => i.cat))];
+        
+        // Dynamically open ONLY the active mission and collapse all others
         cats.forEach(c => {
             const sid = c.replace(/[^a-z0-9]/gi, '');
             this.collapsedSections[sid] = (c !== catName);
         });
+
+        const select = document.getElementById('mission-focus-select');
+        if (select) select.value = catName;
+
         this.render();
         this.sync();
         
@@ -654,8 +715,13 @@ const appState = {
                     localStorage.setItem(`se5_progress_${op}`, JSON.stringify(saved));
                     
                     if (op === this.activeGamertag) {
-                        if (docData.activeMission) {
+                        if (docData.activeMission && docData.activeMission !== this.activeMission) {
                             this.activeMission = docData.activeMission;
+                            const cats = [...new Set(this.hunterData.map(i => i.cat))];
+                            cats.forEach(c => {
+                                const sid = c.replace(/[^a-z0-9]/gi, '');
+                                this.collapsedSections[sid] = (c !== this.activeMission);
+                            });
                             const select = document.getElementById('mission-focus-select');
                             if (select) select.value = this.activeMission;
                         }
@@ -910,12 +976,12 @@ const appState = {
             section.innerHTML = `
                 <div class="category-header outlined-text" onclick="appState.toggleSection('${sid}')">
                     <div style="display:flex; align-items:center; gap: 8px;">
-                        <h2 style="font-size: 1rem; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase;">${cat}</h2>
+                        <h2 style="font-size: 1.15rem; font-weight: 900; letter-spacing: 1px; color: #fff; text-transform: uppercase;">${cat}</h2>
                         ${isActiveFocus ? `<span style="color:var(--ser-color); font-size:11px; font-weight:900; letter-spacing:1px;">[ACTIVE TARGET]</span>` : ''}
                     </div>
                     <div style="font-weight:900; font-size: 15px; color: var(--ser-color); font-family: monospace;">${count}/${items.length}</div>
                 </div>
-                <div class="category-content">
+                <div class="category-content section-content">
                     ${mapHtml}
                     <div class="item-grid"></div>
                 </div>
@@ -928,6 +994,7 @@ const appState = {
                 card.className = `item-card ${item.collected ? 'completed' : ''}`;
                 
                 const iconUrl = GAME_TYPE_ICONS[item.type] || GAME_TYPE_ICONS['Personal Letter'];
+                const themeMeta = getItemThemeMeta(item);
 
                 let teamBadgesHtml = '';
                 ALL_OPERATIVES.forEach(op => {
@@ -959,7 +1026,7 @@ const appState = {
                             ${item.yt 
                                 ? `<a href="${item.yt}" target="_blank" rel="noopener noreferrer" class="watch-clip-btn outlined-text">🎥 WATCH CLIP</a>` 
                                 : `<span></span>`}
-                            <button class="confirm-toggle-btn outlined-text ${item.collected ? 'completed-state' : ''}" onclick="appState.toggleItem('${item.id}')">
+                            <button class="confirm-toggle-btn toggle-btn outlined-text ${item.collected ? 'completed-state' : ''}" onclick="appState.toggleItem('${item.id}')">
                                 ${item.collected ? 'GOT IT (Undo)' : 'MARK GOT IT'}
                             </button>
                         </div>
@@ -970,8 +1037,8 @@ const appState = {
                     <div>
                         <div style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">
                             <img src="${iconUrl}" style="width:20px; height:20px; border-radius:4px; object-fit:cover; border:1px solid rgba(255,255,255,0.2);">
-                            <span class="item-type-badge">${item.type}</span>
-                            ${item.target && item.target > 1 ? `<span style="font-size:10px; color:#aaa; font-family:monospace; margin-left:auto;">GOAL: ${item.target}</span>` : ''}
+                            <span class="item-type-badge item-type-tag ${themeMeta.badgeClass}" style="${themeMeta.customStyle}">${item.type}</span>
+                            ${item.target && item.target > 1 ? `<span style="font-size:11px; color:#aaa; font-family:monospace; margin-left:auto;">GOAL: ${item.target}</span>` : ''}
                         </div>
                         <div class="item-title outlined-text">${item.name}</div>
                         <div class="item-desc outlined-text">${item.desc}</div>
@@ -1099,7 +1166,7 @@ async function buildTopMenu() {
             }
         }
 
-        const menuBar = document.getElementById('csv-menu-bar');
+        const menuBar = document.getElementById('dynamic-nav-links') || document.getElementById('csv-menu-bar');
         if (!menuBar) return;
         let html = '';
         
@@ -1111,15 +1178,15 @@ async function buildTopMenu() {
             } else {
                 const safeId = item.name.replace(/[^a-zA-Z0-9]/g, '');
                 html += `
-                    <div class="csv-dropdown">
-                        <button class="csv-dropdown-btn outlined-text" data-dropdown="${safeId}">
+                    <div class="nav-dropdown csv-dropdown">
+                        <button class="nav-dropbtn csv-dropdown-btn outlined-text" data-dropdown="${safeId}">
                             ${item.name} ${chevron}
                         </button>
-                        <div id="dropdown-${safeId}" class="csv-dropdown-content">
+                        <div id="dropdown-${safeId}" class="nav-dropdown-content csv-dropdown-content">
                 `;
                 
                 item.items.forEach(sub => {
-                    const imgTag = sub.img ? `<img src="${sub.img}" style="width:26px; height:26px; margin-right:12px; vertical-align:middle; border-radius:6px; object-fit:cover; box-shadow: 0 2px 5px rgba(0,0,0,0.5);">` : '';
+                    const imgTag = sub.img ? `<img src="${sub.img}" class="nav-icon" style="margin-right:10px;">` : '';
                     html += `<a href="${sub.url}" target="SE5_ITC_Window" class="csv-dropdown-item outlined-text">${imgTag}${sub.name}</a>`;
                 });
                 
@@ -1135,27 +1202,23 @@ async function buildTopMenu() {
 }
 
 window.addEventListener('click', function(event) {
-    const btn = event.target.closest('.csv-dropdown-btn');
-    const dropdowns = document.getElementsByClassName("csv-dropdown-content");
+    const btn = event.target.closest('.csv-dropdown-btn') || event.target.closest('.nav-dropbtn');
+    const dropdowns = document.querySelectorAll(".csv-dropdown-content, .nav-dropdown-content");
 
     if (btn) {
         event.preventDefault();
         event.stopPropagation();
         const id = btn.getAttribute('data-dropdown');
         const targetDropdown = document.getElementById('dropdown-' + id);
-        const isCurrentlyOpen = targetDropdown.classList.contains('show');
+        const isCurrentlyOpen = targetDropdown && targetDropdown.classList.contains('show');
 
-        for (let i = 0; i < dropdowns.length; i++) {
-            dropdowns[i].classList.remove('show');
-        }
+        dropdowns.forEach(d => d.classList.remove('show'));
         
-        if (!isCurrentlyOpen) {
+        if (targetDropdown && !isCurrentlyOpen) {
             targetDropdown.classList.add('show');
         }
     } else {
-        for (let i = 0; i < dropdowns.length; i++) {
-            dropdowns[i].classList.remove('show');
-        }
+        dropdowns.forEach(d => d.classList.remove('show'));
     }
 });
 
