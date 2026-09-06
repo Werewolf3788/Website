@@ -1,8 +1,8 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sat, Sep 5, 2026, 21:14 (EDT - New York)
+   Deployment Timestamp: Sat, Sep 5, 2026, 23:33 (EDT - New York)
    Project: entertainment-71888
-   Version: v6.1.0-SE5-HYBRID-MEDALS-RIBBONS
+   Version: v6.3.0-SE5-HYBRID-MEDALS-RIBBONS
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
    Notes: Direct manual number keyboard input + quick +/- stepper buttons for Medals.
@@ -16,7 +16,7 @@
 
 /* === SECTION: Auto Cache Purge === */
 (function purgeStaleTrackerCache() {
-    const activeVersion = 'v6.1.0-20260905-2114';
+    const activeVersion = 'v6.3.0-20260905-2333';
     const storedVersion = localStorage.getItem('se5_tracker_build_version');
     if (storedVersion !== activeVersion) {
         Object.keys(localStorage).forEach(key => {
@@ -80,7 +80,6 @@ const GAME_TYPE_ICONS = {
     'Ribbon': `${GITHUB_RAW_BASE}Sniper%20Elite%20Personal%20Letters.JPG`
 };
 
-/* Direct Map JPG Image Linking for Missions 7 and 8 */
 const MISSION_MAP_CONFIG = {
     '7SecretWeapons': { 
         imgUrl: `${GITHUB_RAW_BASE}Sniper%20Elite%20Secret%20Weapons.JPG`,
@@ -209,7 +208,7 @@ const sniperData = [
     { id: 'm6_pl5', cat: '6: Libération', name: 'Vengeance Is Nigh!', type: 'Personal Letter', desc: 'Central farm sector; upstairs inside old barn attic.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=115s' },
     { id: 'm6_cd1', cat: '6: Libération', name: 'Hold The Line', type: 'Classified Doc', desc: 'Southern bridge sector desk in radio bunker room.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=138s' },
     { id: 'm6_cd2', cat: '6: Libération', name: 'Incoming Armour', type: 'Classified Doc', desc: 'Northern trenches equipment case in dugout node.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=160s' },
-    { id: 'm6_cd3', cat: '6: Libération', name: 'Unfit for Duty', type: 'Classified Doc', desc: 'Southern farm cluster bedroom nightstand.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=182s' },
+    { id: 'm6_cd3', cat: '6: Libération', name: 'Unfit for Duty', type: 'Classified Doc', desc: 'Southern farm sector cluster bedroom nightstand.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=182s' },
     { id: 'm6_cd4', cat: '6: Libération', name: 'A Surplus Bridge', type: 'Classified Doc', desc: 'Wooden box in yard of eastern burnt buildings.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=205s' },
     { id: 'm6_cd5', cat: '6: Libération', name: 'Resistance Fanatic Located', type: 'Classified Doc', desc: 'Chest of drawers in locked 2nd-floor northern room.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=228s' },
     { id: 'm6_hi1', cat: '6: Libération', name: 'Lucky Rabbit\'s Foot', type: 'Hidden Item', desc: 'Looted from bald soldier near central crashed plane.', yt: '//www.youtube.com/watch?v=3HbMOkG9SMk&t=250s' },
@@ -270,7 +269,7 @@ const sniperData = [
     { id: 'm9_ch3', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Sightless Strike Trophy', type: 'Trophy', desc: 'Kill Möller with a scoped rifle aiming purely down the iron sights.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA' },
     { id: 'm9_ch4', cat: '9: Loose Ends (Trophies & Challenges)', name: 'Master Sniper Trophy', type: 'Trophy', desc: 'Complete entire campaign on Authentic difficulty.', yt: '//www.youtube.com/watch?v=3R4uO8Hq_sA' },
 
-    // ---------------- MISSION 10: WOLF MOUNTAIN (DLC) (19 Items) ----------------
+    // ---------------- MISSION 10: WOLF MOUNTAIN (DLC) (31 Items) ----------------
     { id: 'm10_pl1', cat: '10: Wolf Mountain (DLC)', name: 'Construction Halted', type: 'Personal Letter', desc: 'Inside eastern guardhouse just before teahouse.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=22s' },
     { id: 'm10_pl2', cat: '10: Wolf Mountain (DLC)', name: 'Vermin Infestation', type: 'Personal Letter', desc: 'Garage back room north of Berghof.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=58s' },
     { id: 'm10_pl3', cat: '10: Wolf Mountain (DLC)', name: 'Führer\'s Plans', type: 'Personal Letter', desc: 'Berghof ground-floor southern kitchen.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=95s' },
@@ -290,8 +289,23 @@ const sniperData = [
     { id: 'm10_wb1', cat: '10: Wolf Mountain (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Cellar of large SW building.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=582s' },
     { id: 'm10_wb2', cat: '10: Wolf Mountain (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Basement of abandoned shack near AA gun.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=615s' },
     { id: 'm10_wb3', cat: '10: Wolf Mountain (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Armoury in Berghof basement.', yt: '//www.youtube.com/watch?v=uK8_vJ9P9aQ&t=648s' },
+    // Wolf Mountain Specific Medals & Challenges
+    { id: 'med_wm_fuhrerlong', cat: '10: Wolf Mountain (DLC)', name: 'Führer Long Shot', type: 'Medal', desc: 'Take a 412 meters shot in Wolf Mountain.', target: 412 },
+    { id: 'med_wm_dasspook', cat: '10: Wolf Mountain (DLC)', name: 'Das Spook', type: 'Medal', desc: 'Perform a ghost takedown on Hitler.' },
+    { id: 'med_wm_herrtoday', cat: '10: Wolf Mountain (DLC)', name: 'Herr Today, Gone Tomorrow', type: 'Medal', desc: 'Complete mission on Civilian/Cadet (Bronze), Sharpshooter (Silver), and Sniper Elite (Gold).', target: 3 },
+    { id: 'med_wm_familienjuwel', cat: '10: Wolf Mountain (DLC)', name: 'Das Familienjuwel', type: 'Medal', desc: 'Kill Hitler with a testicle shot.' },
+    { id: 'med_wm_fuhrerious', cat: '10: Wolf Mountain (DLC)', name: 'Führerious Repetition', type: 'Medal', desc: 'Kill Hitler 10 times.', target: 10 },
+    { id: 'med_reichtopoint', cat: '10: Wolf Mountain (DLC)', name: 'Reich to the Point', type: 'Medal', desc: 'Kill only Hitler and exfiltrate on Wolf Mountain.' },
+    { id: 'med_alpsmemories', cat: '10: Wolf Mountain (DLC)', name: 'Memories of the Alps', type: 'Medal', desc: 'Obtain 15 collectibles in Wolf Mountain.', target: 15 },
+    { id: 'med_wm_opfoxley', cat: '10: Wolf Mountain (DLC)', name: 'Operation Foxley', type: 'Medal', desc: 'Complete Wolf Mountain with a 2-star rating.', target: 2 },
+    { id: 'med_wm_alpha', cat: '10: Wolf Mountain (DLC)', name: 'Alpha', type: 'Medal', desc: 'Complete Wolf Mountain on Authentic difficulty.' },
+    { id: 'med_wm_fromfuhrer', cat: '10: Wolf Mountain (DLC)', name: 'From Führer Away', type: 'Medal', desc: 'Kill Hitler at a distance of 300 meters or more.', target: 300 },
+    { id: 'med_downfall', cat: '10: Wolf Mountain (DLC)', name: 'Downfall', type: 'Medal', desc: 'Kill Hitler by making him fall down a cliffside due to a tampered fence.' },
+    { id: 'med_fuhrerlongshot', cat: '10: Wolf Mountain (DLC)', name: 'Führer Authentic Long Shot', type: 'Medal', desc: 'Take a 257 meters shot in Wolf Mountain, in Authentic difficulty.', target: 257 },
+    { id: 'med_putapinit', cat: '10: Wolf Mountain (DLC)', name: 'Put a Pin in It', type: 'Medal', desc: 'Kill Hitler with a booby-trapped bowling pin.' },
+    { id: 'med_covertelim', cat: '10: Wolf Mountain (DLC)', name: 'Covert Elimination', type: 'Medal', desc: 'Kill Hitler and exfiltrate without ever being detected.' },
 
-    // ---------------- MISSION 11: LANDING FORCE (DLC) (13 Items) ----------------
+    // ---------------- MISSION 11: LANDING FORCE (DLC) (16 Items) ----------------
     { id: 'm11_pl1', cat: '11: Landing Force (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Northern radio guardpost table.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm11_pl2', cat: '11: Landing Force (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Dock warehouse barracks trunk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm11_cd1', cat: '11: Landing Force (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Command bunker office safe.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
@@ -305,8 +319,11 @@ const sniperData = [
     { id: 'm11_wb2', cat: '11: Landing Force (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Locked boatyard warehouse.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm11_wb3', cat: '11: Landing Force (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Radar installation sub-level locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm11_ch1', cat: '11: Landing Force (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Disable heavy battery without combat alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+    { id: 'med_lastresort', cat: '11: Landing Force (DLC)', name: 'Last Resort', type: 'Medal', desc: 'Complete the campaign mission - Landing Force.' },
+    { id: 'med_m11longshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Landing Force.', target: 350 },
+    { id: 'med_m11authlongshot', cat: '11: Landing Force (DLC)', name: 'Mission 11 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Landing Force, in Authentic difficulty.', target: 250 },
 
-    // ---------------- MISSION 12: CONQUEROR (DLC) (13 Items) ----------------
+    // ---------------- MISSION 12: CONQUEROR (DLC) (16 Items) ----------------
     { id: 'm12_pl1', cat: '12: Conqueror (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Town entrance bridge guard desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm12_pl2', cat: '12: Conqueror (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Town square townhouse bedroom.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm12_cd1', cat: '12: Conqueror (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Castle fortress headquarters table.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
@@ -320,8 +337,12 @@ const sniperData = [
     { id: 'm12_wb2', cat: '12: Conqueror (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Cellar beneath eastern town bakery.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm12_wb3', cat: '12: Conqueror (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Castle cellar weapons cache.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm12_ch1', cat: '12: Conqueror (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Eliminate general using environment hazards.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+    { id: 'med_siegebreaker', cat: '12: Conqueror (DLC)', name: 'Siegebreaker', type: 'Medal', desc: 'Complete the campaign mission - Conqueror.' },
+    { id: 'med_ghostoffalaise', cat: '12: Conqueror (DLC)', name: 'Ghost of Falaise', type: 'Medal', desc: 'Conqueror - Complete the mission with a 2 star rating.', target: 2 },
+    { id: 'med_opoverlord', cat: '12: Conqueror (DLC)', name: 'Operation Overlord', type: 'Medal', desc: 'Conqueror - Complete the mission on Authentic difficulty.' },
+    { id: 'med_m12authlongshot', cat: '12: Conqueror (DLC)', name: 'Mission 12 Authentic Long Shot', type: 'Medal', desc: 'Take a 260 meters shot in Conqueror, in Authentic difficulty.', target: 260 },
 
-    // ---------------- MISSION 13: ROUGH LANDING (DLC) (19 Items) ----------------
+    // ---------------- MISSION 13: ROUGH LANDING (DLC) (23 Items) ----------------
     { id: 'm13_pl1', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Forest camp command tent cot.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm13_pl2', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Crashed glider wreckage site.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm13_pl3', cat: '13: Rough Landing (DLC)', name: 'Personal Letter #3', type: 'Personal Letter', desc: 'Rail depot switchboard table.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
@@ -341,8 +362,13 @@ const sniperData = [
     { id: 'm13_wb1', cat: '13: Rough Landing (DLC)', name: 'Rifle Workbench', type: 'Workbench', desc: 'Hangar maintenance trench underground.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm13_wb2', cat: '13: Rough Landing (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Rail freight staging depot armory.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm13_wb3', cat: '13: Rough Landing (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Forest checkpoint security bunker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+    { id: 'med_m13_woods', cat: '13: Rough Landing (DLC)', name: 'If You Go Down to the Woods Today', type: 'Medal', desc: 'Complete the campaign mission - Rough Landing.' },
+    { id: 'med_m13_fightanother', cat: '13: Rough Landing (DLC)', name: 'Fight Another Day', type: 'Medal', desc: 'Rough Landing - Complete the mission with a 2 star rating.', target: 2 },
+    { id: 'med_m13_stroll', cat: '13: Rough Landing (DLC)', name: 'Stroll in the Woods', type: 'Medal', desc: 'Rough Landing - Complete the mission on Authentic difficulty.' },
+    { id: 'med_m13_longshot', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Long Shot', type: 'Medal', desc: 'Take a 240 meters shot in Rough Landing.', target: 240 },
+    { id: 'med_m13_authlong', cat: '13: Rough Landing (DLC)', name: 'Mission 13 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Rough Landing, in Authentic difficulty.', target: 250 },
 
-    // ---------------- MISSION 14: KRAKEN AWAKES (DLC) (13 Items) ----------------
+    // ---------------- MISSION 14: KRAKEN AWAKES (DLC) (16 Items) ----------------
     { id: 'm14_pl1', cat: '14: Kraken Awakes (DLC)', name: 'Personal Letter #1', type: 'Personal Letter', desc: 'Submarine dry dock office desk.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm14_pl2', cat: '14: Kraken Awakes (DLC)', name: 'Personal Letter #2', type: 'Personal Letter', desc: 'Carrier flight deck control station.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm14_cd1', cat: '14: Kraken Awakes (DLC)', name: 'Classified Doc #1', type: 'Classified Doc', desc: 'Super-carrier reactor room logbook.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
@@ -356,37 +382,59 @@ const sniperData = [
     { id: 'm14_wb2', cat: '14: Kraken Awakes (DLC)', name: 'SMG Workbench', type: 'Workbench', desc: 'Dry dock machine shop workshop.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm14_wb3', cat: '14: Kraken Awakes (DLC)', name: 'Pistol Workbench', type: 'Workbench', desc: 'Docklands security station gun locker.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
     { id: 'm14_ch1', cat: '14: Kraken Awakes (DLC)', name: 'Mission Challenge', type: 'Challenge', desc: 'Destroy carrier without triggering alarms.', yt: '//www.youtube.com/watch?v=9jJ5aT9wQ_M' },
+    { id: 'med_m14_shipbreaker', cat: '14: Kraken Awakes (DLC)', name: 'Shipbreaker', type: 'Medal', desc: 'Complete the campaign mission - Kraken Awakes.' },
+    { id: 'med_m14_sinkorswim', cat: '14: Kraken Awakes (DLC)', name: 'Sink or Swim', type: 'Medal', desc: 'Kraken Awakes - Complete the mission with a 2 star rating.', target: 2 },
+    { id: 'med_m14_goingover', cat: '14: Kraken Awakes (DLC)', name: 'Going Overboard', type: 'Medal', desc: 'Kraken Awakes - Complete the mission on Authentic difficulty.' },
 
-    // ---------------- 15: CAMPAIGN & OBJECTIVE MEDALS (18 Items) ----------------
+    // ---------------- 15: CAMPAIGN & OBJECTIVE MEDALS (23 Items) ----------------
     { id: 'med_fleshwound', cat: '15: Campaign & Objective Medals', name: 'Just a Flesh Wound', type: 'Medal', desc: 'Complete a mission (excluding Loose Ends) on any difficulty without healing.' },
     { id: 'med_frenchconn', cat: '15: Campaign & Objective Medals', name: 'The French Connection', type: 'Medal', desc: 'Liberate Blue Viper in Colline-Sur-Mer (Mission 1).' },
     { id: 'med_buffrightout', cat: '15: Campaign & Objective Medals', name: 'It’ll Buff Right Out', type: 'Medal', desc: 'Destroy Möller’s shiny new car in the chateau courtyard (Mission 2).' },
-    { id: 'med_pigeonhunter', cat: '15: Campaign & Objective Medals', name: 'Pigeon Hunter', type: 'Medal', desc: 'Destroy 1 cardboard pigeon target on Beaumont-Saint-Denis (Mission 3).' },
+    { id: 'med_confirming_susp', cat: '15: Campaign & Objective Medals', name: 'Confirming Suspicions', type: 'Medal', desc: 'Complete Occupied Residence with a 3 star rating.', target: 3 },
+    { id: 'med_thekrakenwakes', cat: '15: Campaign & Objective Medals', name: 'The Kraken Wakes', type: 'Medal', desc: 'Complete Spy Academy with a 3 star rating.', target: 3 },
+    { id: 'med_startstocrack', cat: '15: Campaign & Objective Medals', name: 'It’s Starting to Crack', type: 'Medal', desc: 'Complete War Factory with a 3 star rating.', target: 3 },
+    { id: 'med_pigeonhunter', cat: '15: Campaign & Objective Medals', name: 'Pigeon Hunter', type: 'Medal', desc: 'Destroy 10 cardboard pigeons on Beaumont-Saint-Denis (Mission 3).', target: 10 },
     { id: 'med_showoff', cat: '15: Campaign & Objective Medals', name: 'Show Off', type: 'Medal', desc: 'Hit all practice targets on range in Spy Academy (Mission 3).' },
     { id: 'med_locomotion', cat: '15: Campaign & Objective Medals', name: 'Locomotion Commotion', type: 'Medal', desc: 'In Martressac, cause crane accident destroying train (Mission 4).' },
     { id: 'med_germaneng', cat: '15: Campaign & Objective Medals', name: 'German Engineering', type: 'Medal', desc: 'Destroy the Armoured Car in Martressac (Mission 4).' },
     { id: 'med_saboteur', cat: '15: Campaign & Objective Medals', name: 'Saboteur', type: 'Medal', desc: 'Sabotage fuses of all searchlights in Martressac without killing operators (Mission 4).' },
     { id: 'med_gnomeguard', cat: '15: Campaign & Objective Medals', name: 'The Gnome Guard', type: 'Medal', desc: 'Shoot and destroy the garden gnome hidden in Guernsey (Mission 5).' },
+    { id: 'med_takeback', cat: '15: Campaign & Objective Medals', name: 'Taking It Back', type: 'Medal', desc: 'Complete Libération with a 3-star rating.', target: 3 },
     { id: 'med_upclose', cat: '15: Campaign & Objective Medals', name: 'Up Close and Personal', type: 'Medal', desc: 'Takedown all 3 snipers guarding 2nd river crossing in Desponts-sur-Douve (Mission 6).' },
+    { id: 'med_targetamerica', cat: '15: Campaign & Objective Medals', name: 'Target America', type: 'Medal', desc: 'Complete Secret Weapons with a 3 star rating.', target: 3 },
     { id: 'med_roadrage', cat: '15: Campaign & Objective Medals', name: 'Road Rage', type: 'Medal', desc: 'In Secret Weapons, find and destroy one of each vehicle type present (Mission 7).' },
+    { id: 'med_krakensleeps', cat: '15: Campaign & Objective Medals', name: 'The Kraken Sleeps', type: 'Medal', desc: 'Complete Rubble and Ruin with a 3 star rating.', target: 3 },
     { id: 'med_dontbreath', cat: '15: Campaign & Objective Medals', name: 'Don\'t Hold Your Breath', type: 'Medal', desc: 'Make final shot in St. Nazaire fuel tanks without using Empty Lung (Mission 8).' },
     { id: 'med_brainsop', cat: '15: Campaign & Objective Medals', name: 'Brains of the Operation', type: 'Medal', desc: 'Kill Möller with a headshot in Loose Ends (Mission 9).' },
     { id: 'med_sightbeyond', cat: '15: Campaign & Objective Medals', name: 'Sight Beyond Sights', type: 'Medal', desc: 'Kill Möller with a rifle while in Iron Sights (Mission 9).' },
-    { id: 'med_cantoutrun', cat: '15: Campaign & Objective Medals', name: 'Can\'t Outrun a Bullet', type: 'Medal', desc: 'Kill Möller with a rifle at a distance of 600 meters or more (Mission 9).' },
-    { id: 'med_meetresist', cat: '15: Campaign & Objective Medals', name: 'Meeting Resistance', type: 'Medal', desc: 'Complete The Atlantic Wall with a 2-star rating.' },
-    { id: 'med_takeback', cat: '15: Campaign & Objective Medals', name: 'Taking It Back', type: 'Medal', desc: 'Complete Libération with a 1-star rating.' },
+    { id: 'med_cantoutrun', cat: '15: Campaign & Objective Medals', name: 'Can\'t Outrun a Bullet', type: 'Medal', desc: 'Kill Möller with a rifle at a distance of 600 meters or more (Mission 9).', target: 600 },
+    { id: 'med_liberte', cat: '15: Campaign & Objective Medals', name: 'Liberté', type: 'Medal', desc: 'Complete campaign on Any difficulty (Bronze), Sharpshooter (Silver), and Sniper Elite (Gold).', target: 3 },
     { id: 'med_bestofbest', cat: '15: Campaign & Objective Medals', name: 'Best of the Best', type: 'Medal', desc: 'Complete the entire campaign on Authentic difficulty.' },
 
-    // ---------------- 16: LONGSHOT & COMBAT MEDALS (18 Items) ----------------
-    { id: 'med_ls_m1', cat: '16: Longshot & Combat Medals', name: 'Mission 1 Long Shot', type: 'Medal', desc: 'Make a 350+ meters rifle shot in Colline-Sur-Mer.' },
-    { id: 'med_ls_m3', cat: '16: Longshot & Combat Medals', name: 'Mission 3 Authentic Long Shot', type: 'Medal', desc: 'Take a 325+ meters shot in Beaumont-Saint-Denis on Authentic difficulty.' },
-    { id: 'med_ls_m6', cat: '16: Longshot & Combat Medals', name: 'Mission 6 Long Shot', type: 'Medal', desc: 'Take a 400+ meters rifle shot in Desponts-Sur-Douve.' },
-    { id: 'med_ls_m8', cat: '16: Longshot & Combat Medals', name: 'Mission 8 Authentic Long Shot', type: 'Medal', desc: 'Take a 200+ meters shot in St. Nazaire on Authentic difficulty.' },
+    // ---------------- 16: LONGSHOT & COMBAT MEDALS (30 Items) ----------------
+    { id: 'med_ls_m1', cat: '16: Longshot & Combat Medals', name: 'Mission 1 Long Shot', type: 'Medal', desc: 'Make a 450 meters shot in Colline-Sur-Mer.', target: 450 },
+    { id: 'med_ls_m1_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 1 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Colline-Sur-Mer, in Authentic difficulty.', target: 250 },
+    { id: 'med_ls_m2', cat: '16: Longshot & Combat Medals', name: 'Mission 2 Long Shot', type: 'Medal', desc: 'Take a 375 meters shot in Château de Berengar.', target: 375 },
+    { id: 'med_ls_m2_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 2 Authentic Long Shot', type: 'Medal', desc: 'Take a 250 meters shot in Château de Berengar, in Authentic difficulty.', target: 250 },
+    { id: 'med_ls_m3', cat: '16: Longshot & Combat Medals', name: 'Mission 3 Long Shot', type: 'Medal', desc: 'Take a 675 meters shot in Beaumont-Saint-Denis.', target: 675 },
+    { id: 'med_ls_m3_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 3 Authentic Long Shot', type: 'Medal', desc: 'Take a 325 meters shot in Beaumont-Saint-Denis, in Authentic difficulty.', target: 325 },
+    { id: 'med_ls_m4', cat: '16: Longshot & Combat Medals', name: 'Mission 4 Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in War Factory.', target: 200 },
+    { id: 'med_ls_m4_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 4 Authentic Long Shot', type: 'Medal', desc: 'Take an Authentic difficulty long shot in War Factory.', target: 200 },
+    { id: 'med_ls_m5', cat: '16: Longshot & Combat Medals', name: 'Mission 5 Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Festung Guernsey.', target: 400 },
+    { id: 'med_ls_m5_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 5 Authentic Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Festung Guernsey, in Authentic difficulty.', target: 400 },
+    { id: 'med_ls_m6', cat: '16: Longshot & Combat Medals', name: 'Mission 6 Long Shot', type: 'Medal', desc: 'Take a 400 meters rifle shot in Desponts-Sur-Douve.', target: 400 },
+    { id: 'med_ls_m6_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 6 Authentic Long Shot', type: 'Medal', desc: 'Take a 400 meters shot in Desponts-Sur-Douve, in Authentic difficulty.', target: 400 },
+    { id: 'med_ls_m7', cat: '16: Longshot & Combat Medals', name: 'Mission 7 Long Shot', type: 'Medal', desc: 'Take a 350 meters shot in Secret Weapons.', target: 350 },
+    { id: 'med_ls_m7_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 7 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in Secret Weapons, in Authentic difficulty.', target: 200 },
+    { id: 'med_ls_m8', cat: '16: Longshot & Combat Medals', name: 'Mission 8 Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in St. Nazaire.', target: 200 },
+    { id: 'med_ls_m8_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 8 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in St. Nazaire, in Authentic difficulty.', target: 200 },
+    { id: 'med_ls_m9', cat: '16: Longshot & Combat Medals', name: 'Mission 9 Long Shot', type: 'Medal', desc: 'Take a 500 meters shot in Loose Ends.', target: 500 },
+    { id: 'med_ls_m9_auth', cat: '16: Longshot & Combat Medals', name: 'Mission 9 Authentic Long Shot', type: 'Medal', desc: 'Take a 200 meters shot in Loose Ends, in Authentic difficulty.', target: 200 },
     { id: 'med_longgame', cat: '16: Longshot & Combat Medals', name: 'The Long Game', type: 'Medal', desc: 'Accumulate a cumulative kill distance of 100,000 meters across all modes.', target: 100000 },
     { id: 'med_sharpshooter', cat: '16: Longshot & Combat Medals', name: 'Sharpshooter', type: 'Medal', desc: 'Kill 350 enemies with a Rifle.', target: 350 },
-    { id: 'med_skirmisher', cat: '16: Longshot & Combat Medals', name: 'Skirmisher', type: 'Medal', desc: 'Kill 300 enemies with a Secondary Weapon.', target: 300 },
+    { id: 'med_skirmisher', cat: '16: Longshot & Combat Medals', name: 'Skirmisher', type: 'Medal', desc: 'Kill 150 enemies with a Secondary Weapon.', target: 150 },
     { id: 'med_gunslinger', cat: '16: Longshot & Combat Medals', name: 'Gunslinger', type: 'Medal', desc: 'Kill 150 enemies with Pistols.', target: 150 },
-    { id: 'med_ironprecision', cat: '16: Longshot & Combat Medals', name: 'Precision Is Key', type: 'Medal', desc: 'Kill 150 enemies with any weapon while in Iron Sights.', target: 150 },
+    { id: 'med_ironprecision', cat: '16: Longshot & Combat Medals', name: 'Precision Is Key', type: 'Medal', desc: 'Kill 300 enemies with any weapon while in Iron Sights.', target: 300 },
     { id: 'med_outofscope', cat: '16: Longshot & Combat Medals', name: 'Out of Scope', type: 'Medal', desc: 'Kill 150 enemies with a rifle while in Iron Sights.', target: 150 },
     { id: 'med_resourceful', cat: '16: Longshot & Combat Medals', name: 'Resourceful', type: 'Medal', desc: 'Kill 50 enemy soldiers with Found Weapons.', target: 50 },
     { id: 'med_littlefriend', cat: '16: Longshot & Combat Medals', name: 'My Little Friend', type: 'Medal', desc: 'Kill 50 soldiers with heavy weapons (Panzerfaust or MG42).', target: 50 },
@@ -397,13 +445,15 @@ const sniperData = [
     { id: 'med_closequarters', cat: '16: Longshot & Combat Medals', name: 'Close Quarters', type: 'Medal', desc: 'Perform 100 lethal takedowns.', target: 100 },
     { id: 'med_snaketallgrass', cat: '16: Longshot & Combat Medals', name: 'Snake in the Grass', type: 'Medal', desc: 'While in Tall Grass, kill 50 soldiers.', target: 50 },
 
-    // ---------------- 17: WEAPON MASTERY & TACTICS MEDALS (10 Items) ----------------
+    // ---------------- 17: WEAPON MASTERY & TACTICS MEDALS (12 Items) ----------------
     { id: 'med_masterrifles', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master of Rifles', type: 'Medal', desc: 'Obtain 6 rifle-related mastery medals (50 headshots from 100m+ each).', target: 6 },
     { id: 'med_mastersecond', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master of Secondaries', type: 'Medal', desc: 'Obtain 6 secondary-related mastery medals (150 kills each).', target: 6 },
     { id: 'med_masterpistols', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master of Pistols', type: 'Medal', desc: 'Obtain 6 pistol-related mastery medals (50 ghost kills each).', target: 6 },
+    { id: 'med_double1866', cat: '17: Weapon Mastery & Tactics Medals', name: 'Double 1866 Master', type: 'Medal', desc: 'Ghost kill 5 enemies with the Double 1866.', target: 5 },
+    { id: 'med_welrodmaster', cat: '17: Weapon Mastery & Tactics Medals', name: 'Welrod Master', type: 'Medal', desc: 'Ghost kill 5 enemies with the Welrod.', target: 5 },
     { id: 'med_masteratarms', cat: '17: Weapon Mastery & Tactics Medals', name: 'Master-at-Arms', type: 'Medal', desc: 'Master all weapons in the game across Rifles, Secondaries, and Pistols.', target: 3 },
-    { id: 'med_seteablaze', cat: '17: Weapon Mastery & Tactics Medals', name: 'Set Europe Ablaze', type: 'Medal', desc: 'Kill 50 enemies with traps (TNT or teller mines).', target: 50 },
-    { id: 'med_riggedtoblow', cat: '17: Weapon Mastery & Tactics Medals', name: 'Rigged to Blow', type: 'Medal', desc: 'Kill 20 soldiers using booby-trapped dead bodies.', target: 20 },
+    { id: 'med_seteablaze', cat: '17: Weapon Mastery & Tactics Medals', name: 'Set Europe Ablaze', type: 'Medal', desc: 'Kill 100 enemies with traps (TNT or teller mines).', target: 100 },
+    { id: 'med_riggedtoblow', cat: '17: Weapon Mastery & Tactics Medals', name: 'Rigged to Blow', type: 'Medal', desc: 'Kill 40 soldiers using booby traps.', target: 40 },
     { id: 'med_explodeeffic', cat: '17: Weapon Mastery & Tactics Medals', name: 'Explosive Efficiency', type: 'Medal', desc: 'Kill 3 on-foot soldiers with a single hand grenade.' },
     { id: 'med_nutcracker', cat: '17: Weapon Mastery & Tactics Medals', name: 'Die Nussknacker Sweet!', type: 'Medal', desc: 'Get a testicle shot with a rifle from 100 meters or more.' },
     { id: 'med_strategist', cat: '17: Weapon Mastery & Tactics Medals', name: 'Strategist', type: 'Medal', desc: 'Make an enemy tank shoot and destroy another enemy vehicle.' },
@@ -428,6 +478,45 @@ const sniperData = [
     { id: 'rib_fightforsurvival', cat: '18: Career Ribbons', name: 'Fight for Survival', type: 'Ribbon', desc: 'Complete 2 consecutive Waves with top kill honors.' }
 ];
 
+/* Default Seeds for Werewolf3788 Profile */
+const WEREWOLF_SEEDS = [
+    { id: 'med_confirming_susp', count: 3, collected: true },
+    { id: 'med_thekrakenwakes', count: 3, collected: true },
+    { id: 'med_startstocrack', count: 3, collected: true },
+    { id: 'med_takeback', count: 3, collected: true },
+    { id: 'med_targetamerica', count: 3, collected: true },
+    { id: 'med_krakensleeps', count: 3, collected: true },
+    { id: 'med_cantoutrun', count: 600, collected: true },
+    { id: 'med_liberte', count: 1, collected: false },
+    { id: 'med_nostone', count: 16, collected: true },
+    { id: 'med_bestofbest', count: 0, collected: false },
+    { id: 'med_ls_m1', count: 373, collected: false },
+    { id: 'med_ls_m1_auth', count: 146, collected: false },
+    { id: 'med_ls_m2', count: 266, collected: false },
+    { id: 'med_ls_m2_auth', count: 0, collected: false },
+    { id: 'med_ls_m3', count: 516, collected: false },
+    { id: 'med_ls_m3_auth', count: 325, collected: true },
+    { id: 'med_wm_dasspook', count: 1, collected: true },
+    { id: 'med_wm_herrtoday', count: 1, collected: false },
+    { id: 'med_wm_familienjuwel', count: 1, collected: true },
+    { id: 'med_wm_fuhrerious', count: 6, collected: false },
+    { id: 'med_reichtopoint', count: 1, collected: true },
+    { id: 'med_alpsmemories', count: 15, collected: true },
+    { id: 'med_wm_opfoxley', count: 2, collected: true },
+    { id: 'med_wm_fromfuhrer', count: 300, collected: true },
+    { id: 'med_fuhrerlongshot', count: 196, collected: false },
+    { id: 'med_sharpshooter', count: 350, collected: true },
+    { id: 'med_ironprecision', count: 300, collected: true },
+    { id: 'med_riggedtoblow', count: 40, collected: true },
+    { id: 'med_outofscope', count: 150, collected: true },
+    { id: 'med_seteablaze', count: 100, collected: true },
+    { id: 'med_lordofwar', count: 20, collected: true },
+    { id: 'med_resourceful', count: 50, collected: true },
+    { id: 'med_skirmisher', count: 113, collected: false },
+    { id: 'med_littlefriend', count: 49, collected: false },
+    { id: 'med_gunslinger', count: 150, collected: true }
+];
+
 /* === SECTION: App State Controller & Tactical Engine === */
 const appState = {
     activeGamertag: 'Werewolf3788',
@@ -439,8 +528,8 @@ const appState = {
     db: null, auth: null, user: null,
     unsubListeners: [],
     isLoaded: false,
-    version: 'v6.1.0',
-    buildDate: '2026-09-05 21:14 EDT',
+    version: 'v6.3.0',
+    buildDate: '2026-09-05 23:33 EDT',
     
     activeLeafletMaps: {}, 
     markerLayers: {}, 
@@ -459,7 +548,14 @@ const appState = {
         
         ALL_OPERATIVES.forEach(op => {
             const localSaved = localStorage.getItem(`se5_progress_${op}`);
-            this.teamProgress[op] = localSaved ? JSON.parse(localSaved) : [];
+            if (localSaved) {
+                this.teamProgress[op] = JSON.parse(localSaved);
+            } else if (op === 'Werewolf3788') {
+                this.teamProgress[op] = WEREWOLF_SEEDS;
+                localStorage.setItem(`se5_progress_${op}`, JSON.stringify(WEREWOLF_SEEDS));
+            } else {
+                this.teamProgress[op] = [];
+            }
         });
 
         const cats = [...new Set(this.hunterData.map(i => i.cat))];
@@ -572,6 +668,9 @@ const appState = {
                             };
                         });
                     }
+                } else if (op === 'Werewolf3788' && !localStorage.getItem(`se5_progress_${op}`)) {
+                    this.teamProgress[op] = WEREWOLF_SEEDS;
+                    this.sync();
                 }
                 this.isLoaded = true;
                 this.render();
@@ -585,7 +684,7 @@ const appState = {
 
     loadHunterFromLocalStorage: function(gamertag) {
         const localSaved = localStorage.getItem(`se5_progress_${gamertag}`);
-        const saved = localSaved ? JSON.parse(localSaved) : [];
+        const saved = localSaved ? JSON.parse(localSaved) : (gamertag === 'Werewolf3788' ? WEREWOLF_SEEDS : []);
         this.teamProgress[gamertag] = saved;
         this.hunterData = sniperData.map(item => {
             const status = saved.find(s => s.id === item.id);
@@ -625,7 +724,6 @@ const appState = {
         this.render();
     },
 
-    /* Render In-Game Map Overlay Using GitHub Raw JPG Textures */
     initTacticalGameMapForSection: function(sid, catName) {
         const mapContainer = document.getElementById(`map-frame-${sid}`);
         if (!mapContainer || typeof L === 'undefined') return;
@@ -651,7 +749,6 @@ const appState = {
 
         this.activeLeafletMaps[sid] = map;
 
-        // Plot pins using in-game icon sprites
         const sectionItems = this.hunterData.filter(i => i.cat === catName && i.x !== undefined && i.y !== undefined);
         sectionItems.forEach(item => {
             const iconUrl = GAME_TYPE_ICONS[item.type] || GAME_TYPE_ICONS['Personal Letter'];
@@ -701,7 +798,6 @@ const appState = {
         }
     },
 
-    /* Step + / - Increment/Decrement */
     stepItemCount: function(id, delta) {
         const item = this.hunterData.find(i => i.id === id);
         if (!item) return;
@@ -710,7 +806,6 @@ const appState = {
         this.setManualItemCount(id, nextVal);
     },
 
-    /* Direct Manual Click Input Handler (Opens Keyboard Input) */
     openDirectNumberEditor: function(id, currentVal, maxVal) {
         const container = document.getElementById(`val-box-${id}`);
         if (!container) return;
@@ -801,7 +896,6 @@ const appState = {
             section.id = `section-${sid}`;
             section.className = `category-section ${this.collapsedSections[sid] ? 'section-collapsed' : ''} ${isActiveFocus ? 'active-focus' : ''}`;
             
-            // Render In-Game Map Frame for Missions with JPG Assets (Secret Weapons & Rubble and Ruin)
             const hasMapTexture = MISSION_MAP_CONFIG[sid] !== undefined;
             const mapHtml = hasMapTexture ? `
                 <div class="tactical-map-wrapper">
@@ -860,7 +954,6 @@ const appState = {
                         </div>
                     `;
                 } else {
-                    // Ribbons, Collectibles, and 1-target Medals get the simple Click-to-Mark toggle
                     actionControlsHtml = `
                         <div class="card-actions-row">
                             ${item.yt 
@@ -895,7 +988,6 @@ const appState = {
             });
             container.appendChild(section);
 
-            // Initialize tactical map if section is open
             if (!this.collapsedSections[sid] && hasMapTexture) {
                 setTimeout(() => this.initTacticalGameMapForSection(sid, cat), 50);
             }
@@ -1068,3 +1160,29 @@ window.addEventListener('click', function(event) {
 });
 
 buildTopMenu();
+
+/* === SECTION: Dynamic 24-Hour New York Time Clock === */
+function updateNewYorkTimestamp() {
+    const options = {
+        timeZone: 'America/New_York',
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+    };
+
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-US', options);
+    const timeParts = formatter.format(now);
+
+    const targetElement = document.getElementById('ny-timestamp');
+    if (targetElement) {
+        targetElement.textContent = `New York Time (24h): ${timeParts}`;
+    }
+}
+
+updateNewYorkTimestamp();
+setInterval(updateNewYorkTimestamp, 1000);
