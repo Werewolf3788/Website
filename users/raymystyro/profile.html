@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <!-- ============================================================================
  * Dashboard: OneLIVIDMAN / Raymystyro Tactical Progression & FS25 Fleet Telemetry
- * Deployment Timestamp: 2026-09-06 02:05:00 (EDT - 24hr New York Time)
- * Engine Version: 18.0.0-SE5-LONGSHOT-LEADERBOARD-FS25-A3563
+ * Deployment Timestamp: 2026-09-06 02:22:00 (EDT - 24hr New York Time)
+ * Engine Version: 18.3.0-HOURS-FROM-RECENT-TROPHY-SYNC
  * Target PSN RTDB: https://entertainment-71888-default-rtdb.firebaseio.com/psn/gamertags/OneLIVIDMAN.json
  * Target Menu RTDB: https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json
  * Target FS25 Cluster: https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json (farmId2 focus)
@@ -18,7 +18,7 @@
     
     <!-- 
       ========================================================================
-      [LINE 22]: GOOGLE ANALYTICS 4 (GTM DEPLOYMENT + GOOGLE SIGNALS + CUSTOM METRICS)
+      [LINE 23]: GOOGLE ANALYTICS 4 (GTM DEPLOYMENT + GOOGLE SIGNALS + CUSTOM METRICS)
       - Primary Tag: G-CTYHDF4MSD
       - Secondary Containers: G-H6Q756MVE8, G-L376P3NPY4
       - Measurement Tag: G-SGJF0FJPQZ
@@ -34,12 +34,11 @@
             return new Date().toLocaleString("en-US", {timeZone: "America/New_York", hour12: false});
         }
 
-        // GA4 Core Configuration
         gtag('config', 'G-CTYHDF4MSD', {
             'stream_id': '13278632388',
             'page_type': 'gamertag_dashboard',
             'content_group': 'squad_hub',
-            'layout_version': '18.0.0',
+            'layout_version': '18.3.0',
             'gamertag': 'OneLIVIDMAN',
             'user_handle': 'Raymystyro',
             'engagement_timezone': 'America/New_York',
@@ -70,7 +69,7 @@
     
     <!-- 
       ========================================================================
-      [LINE 74]: MASTER STYLESHEET (MOBILE-FIRST / OBSIDIAN / NEON ACCENTS)
+      [LINE 74]: MASTER STYLESHEET (OBSIDIAN / NEON ACCENTS / PROGRESS BADGES)
       ========================================================================
     -->
     <style>
@@ -129,7 +128,6 @@
         }
         .nav-link-btn:hover { color: var(--accent-blue); background: rgba(56, 189, 248, 0.1); border-color: var(--accent-blue); }
 
-        /* Dynamic Dropdown Folder Structure */
         .nav-folder { position: relative; display: inline-block; }
         .folder-toggle-btn {
             font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em;
@@ -179,13 +177,14 @@
             -webkit-text-fill-color: transparent;
         }
 
+        /* Trophy Checklist Item Grid */
         .trophy-row {
-            display: grid; grid-template-columns: 50px 1fr auto; align-items: center; gap: 16px;
+            display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 16px;
             padding: 16px; border-bottom: 1px solid rgba(255,255,255,0.06); cursor: pointer;
-            transition: all 0.3s ease; min-height: 60px;
+            transition: all 0.3s ease; min-height: 72px;
         }
         .trophy-row:hover { background: rgba(255,255,255,0.03); }
-        .trophy-icon-sq { width: 50px; height: 50px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
+        .trophy-icon-sq { width: 56px; height: 56px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); object-fit: cover; }
         .trophy-title-text { font-weight: 800; color: var(--accent-blue); font-size: 15px; text-transform: uppercase; }
 
         /* Squad Member Badge Pill */
@@ -196,7 +195,11 @@
         .squad-member-pill.earned { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); }
         .squad-member-pill.locked { background: rgba(255, 255, 255, 0.05); color: #94a3b8; border: 1px solid rgba(255, 255, 255, 0.1); }
 
-        /* --- TRAFFIC LIGHT RANKED GLOW SYSTEM (SNIPER LONG SHOTS) --- */
+        /* Objective Numeric Progress Bar Inside Checklist */
+        .trophy-step-bar-wrap { width: 100%; max-width: 220px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+        .trophy-step-bar-fill { height: 100%; background: linear-gradient(90deg, #38bdf8, #0284c7); transition: width 0.5s ease-out; }
+
+        /* Traffic Light Ranked Glow */
         .rank-glow-1st {
             border: 2px solid #10b981 !important;
             box-shadow: 0 0 16px rgba(16, 185, 129, 0.7) !important;
@@ -320,7 +323,7 @@
         <span class="kf-k">K</span><span class="kf-f">F</span>
     </div>
 
-    <!-- [LINE 245]: STICKY NAVIGATION BAR WITH DYNAMIC /utm_links FOLDERS -->
+    <!-- [LINE 245]: STICKY NAVIGATION BAR -->
     <nav class="nav-bar">
         <div class="nav-container">
             <a href="https://werewolf3788.github.io/Website/" target="_blank" class="text-white font-black text-lg flex items-center gap-2">
@@ -331,14 +334,13 @@
                 <i class="fas fa-bars"></i>
             </button>
             
-            <!-- Injected dynamically via /utm_links.json -->
             <div class="nav-links-wrapper" id="dynamic-nav-container">
                 <span class="text-xs text-gray-500 font-bold uppercase tracking-wider">Syncing Tactical Links...</span>
             </div>
         </div>
     </nav>
 
-    <!-- [LINE 265]: REALTIME HEALTH MONITOR -->
+    <!-- [LINE 264]: REALTIME HEALTH MONITOR -->
     <div id="health-monitor">
         <div id="health-dot" class="status-dot-pulse bg-gray-500"></div>
         <div class="flex flex-col">
@@ -347,7 +349,7 @@
         </div>
     </div>
 
-    <!-- [LINE 275]: SYSTEM NPSSO ALERT -->
+    <!-- [LINE 274]: SYSTEM NPSSO ALERT -->
     <div id="system-alerts-container" class="max-w-7xl mx-auto w-full px-6 mt-6 hidden">
         <div class="bg-red-500/10 border-2 border-red-500 p-4 rounded-2xl flex items-center gap-4">
             <i class="fas fa-triangle-exclamation text-red-500 text-2xl"></i>
@@ -358,7 +360,7 @@
         </div>
     </div>
 
-    <!-- [LINE 288]: HEADER HERO & STAT CARDS -->
+    <!-- [LINE 287]: HEADER HERO & STAT CARDS -->
     <header class="w-full text-center py-12 px-6">
         <div class="max-w-7xl mx-auto">
             <div class="relative inline-block mb-8">
@@ -420,7 +422,7 @@
         </div>
     </header>
 
-    <!-- [LINE 365]: MAIN DASHBOARD CONTENT GRID -->
+    <!-- [LINE 364]: MAIN DASHBOARD CONTENT GRID -->
     <main class="max-w-[1700px] mx-auto px-6 pb-24 flex-1 w-full">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             
@@ -461,11 +463,39 @@
                                     <div id="active-game-stores-bar" class="grid grid-cols-2 sm:grid-cols-4 gap-2"></div>
                                 </div>
 
-                                <!-- HUNT PROGRESS & METRICS -->
+                                <!-- HUNT PROGRESS & PLAYTIME VELOCITY PANEL -->
                                 <div class="space-y-3 bg-white/5 p-4 rounded-xl border border-white/5">
-                                    <div class="flex justify-between items-end"><span class="text-xs text-gray-300 font-black uppercase text-sky-400">Hunt Progress</span><span id="active-game-progress-text" class="text-base font-black text-sky-400">0%</span></div>
+                                    <div class="flex justify-between items-end">
+                                        <span class="text-xs text-gray-300 font-black uppercase text-sky-400">Hunt Progress</span>
+                                        <span id="active-game-progress-text" class="text-base font-black text-sky-400">0%</span>
+                                    </div>
                                     <div class="progress-bar-container"><div id="active-game-progress-fill" class="progress-bar-fill" style="width: 0%"></div></div>
-                                    <div class="flex justify-between text-[10px] font-black text-gray-400 uppercase">
+                                    
+                                    <!-- Playtime Velocity & Elapsed Metrics Grid -->
+                                    <div class="grid grid-cols-2 gap-2 pt-2 border-t border-white/5 text-[10px] font-black uppercase">
+                                        <div class="bg-black/40 p-2 rounded-lg border border-white/5">
+                                            <span class="text-gray-400 block text-[8px]">Campaign Timeline</span>
+                                            <span id="hunt-timeline-span" class="text-white">--</span>
+                                        </div>
+                                        <div class="bg-black/40 p-2 rounded-lg border border-white/5">
+                                            <span class="text-gray-400 block text-[8px]">Gameplay Hours</span>
+                                            <span id="hunt-gameplay-hours" class="text-emerald-400">-- hrs logged</span>
+                                        </div>
+                                        <div class="bg-black/40 p-2 rounded-lg border border-white/5">
+                                            <span class="text-gray-400 block text-[8px]">Trophy Pace (Velocity)</span>
+                                            <span id="hunt-trophy-pace" class="text-sky-400">--</span>
+                                        </div>
+                                        <div class="bg-black/40 p-2 rounded-lg border border-white/5">
+                                            <span class="text-gray-400 block text-[8px]">First Trophy Date</span>
+                                            <span id="hunt-first-trophy-date" class="text-amber-400 truncate block">--</span>
+                                        </div>
+                                        <div class="bg-black/40 p-2 rounded-lg border border-white/5 col-span-2">
+                                            <span class="text-gray-400 block text-[8px]">Recent Trophy Elapsed</span>
+                                            <span id="hunt-recent-trophy-hours" class="text-sky-300">--</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex justify-between text-[10px] font-black text-gray-400 uppercase pt-1">
                                         <div>Started: <span id="game-journey-age" class="text-white">--</span></div>
                                         <div><span id="active-game-ratio" class="text-white">--/--</span> Objectives</div>
                                     </div>
@@ -485,7 +515,7 @@
 
                 <!-- 
                   ========================================================================
-                  [LINE 440]: DUAL TELEMETRY ROW (FS25 & ADVANCED SNIPER ELITE 5 LEADERBOARD)
+                  [LINE 450]: DUAL TELEMETRY ROW (FS25 & SNIPER ELITE 5 TRAFFIC LIGHT GLOW)
                   ========================================================================
                 -->
                 <div class="grid grid-cols-1 xl:grid-cols-2 gap-8 items-stretch" id="dual-telemetry-row">
@@ -555,7 +585,7 @@
                         </div>
                     </section>
 
-                    <!-- RIGHT COLUMN: SNIPER ELITE 5 LEADERBOARD & TRAFFIC LIGHT GLOW HUB -->
+                    <!-- RIGHT COLUMN: SNIPER ELITE 5 LEADERBOARD -->
                     <section id="firestore-progress-section" class="glass-card p-6 border-t-4 border-cyan-500 flex flex-col justify-between space-y-4">
                         <div class="space-y-4">
                             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 border-b border-white/10 pb-3">
@@ -571,7 +601,6 @@
                                 </div>
                             </div>
 
-                            <!-- SE5 Summary & Progress Header -->
                             <div class="bg-black/50 p-4 rounded-xl border border-white/10 space-y-3">
                                 <div class="flex justify-between items-center">
                                     <span class="text-xs font-black text-cyan-400 uppercase">Raymystyro Progress</span>
@@ -584,7 +613,6 @@
                                 </div>
                             </div>
 
-                            <!-- Dynamic Long Shot Leaderboard Cards -->
                             <div class="space-y-2">
                                 <div class="flex justify-between items-center">
                                     <h3 class="text-xs font-black text-gray-300 uppercase tracking-wider flex items-center gap-1.5">
@@ -601,13 +629,26 @@
 
                 </div>
 
-                <!-- TROPHY CHECKLIST LOG WITH SQUAD COMPARISON -->
+                <!-- 
+                  ========================================================================
+                  [LINE 550]: TROPHY CHECKLIST LOG (WITH DATES, TIMELINES & PLAYTIME ASSIST)
+                  ========================================================================
+                -->
                 <section id="mission-log-container" class="glass-card overflow-hidden">
-                    <div class="p-6 border-b border-white/5 flex justify-between items-center">
-                        <h2 id="checklist-header-text" class="text-white text-lg flex items-center gap-2"><i class="fas fa-list-check text-sky-400"></i> Trophy Checklist</h2>
-                        <span class="text-[10px] font-black uppercase tracking-wider text-gray-400 bg-white/5 px-2.5 py-1 rounded border border-white/5">Squad Presence Active</span>
+                    <div class="p-6 border-b border-white/5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div>
+                            <h2 id="checklist-header-text" class="text-white text-lg flex items-center gap-2">
+                                <i class="fas fa-list-check text-sky-400"></i> Trophy Checklist & Journey Engine
+                            </h2>
+                            <p id="checklist-timeline-sub" class="text-[10px] text-gray-400 font-bold uppercase mt-0.5">
+                                Tracking interval from First Trophy to Current New York Time
+                            </p>
+                        </div>
+                        <span class="text-[10px] font-black uppercase tracking-wider text-gray-400 bg-white/5 px-2.5 py-1 rounded border border-white/5">
+                            Playtime & Time Ago Synchronized
+                        </span>
                     </div>
-                    <div id="trophy-checklist-container" class="max-h-[850px] overflow-y-auto divide-y divide-white/5 no-scrollbar"></div>
+                    <div id="trophy-checklist-container" class="max-h-[900px] overflow-y-auto divide-y divide-white/5 no-scrollbar"></div>
                 </section>
             </div>
 
@@ -622,11 +663,13 @@
                         <div class="min-w-0 flex-1">
                             <div id="last-trophy-name" class="font-black text-white uppercase text-sm truncate">---</div>
                             <div id="last-trophy-game" class="text-[10px] font-black text-yellow-500 uppercase truncate">---</div>
+                            <div id="last-trophy-time" class="text-[9px] font-bold text-gray-400 uppercase mt-0.5">---</div>
+                            <div id="last-trophy-hours-ago" class="text-[9px] font-bold text-sky-400 uppercase mt-0.5">---</div>
                         </div>
                     </div>
                 </section>
 
-                <!-- COTW TROPHY LODGE (AUTO-HIDES 0 ENTRIES) -->
+                <!-- COTW TROPHY LODGE -->
                 <section id="cotw-card" class="glass-card p-6 border-b-4 border-emerald-500 text-center">
                     <div class="flex justify-between items-center mb-4">
                         <h2 class="text-emerald-400 text-base flex items-center gap-2"><i class="fas fa-paw"></i> COTW Trophy Lodge</h2>
@@ -711,7 +754,7 @@
         </div>
     </main>
 
-    <!-- [LINE 640]: LIGHTBOX MODAL -->
+    <!-- [LINE 675]: LIGHTBOX MODAL -->
     <div id="generic-lightbox" onclick="closeGenericLightbox()">
         <div class="lightbox-modal-content" onclick="event.stopPropagation()">
             <div class="p-5 border-b border-white/10 flex justify-between items-center">
@@ -724,7 +767,7 @@
 
     <!-- 
       ========================================================================
-      [LINE 655]: FIREBASE MODULE & REAL-TIME SNIPER ELITE 5 LEADERBOARD
+      [LINE 690]: FIREBASE MODULE & REAL-TIME SNIPER ELITE 5 LEADERBOARD
       ========================================================================
     -->
     <script type="module">
@@ -748,7 +791,6 @@
         const OPERATIVES = ['Werewolf3788', 'Raymystyro', 'Terrdog', 'Elu Cloud'];
         const teamSE5Progress = {};
 
-        // Long Shot Targets Definition
         const LONG_SHOT_ITEMS = [
             { id: 'med_ls_m1', mission: 'Mission 1', name: 'Colline-Sur-Mer', req: 450 },
             { id: 'med_ls_m1_auth', mission: 'Mission 1 (Auth)', name: 'Colline-Sur-Mer Auth', req: 250 },
@@ -779,14 +821,12 @@
             { id: 'med_m13_authlong', mission: 'DLC 13 (Auth)', name: 'Rough Landing Auth', req: 250 }
         ];
 
-        // Attach listeners to all operatives
         OPERATIVES.forEach(op => {
             const path = `users/${op}/platform/playstation/progress/sniper-elite-5`;
             onSnapshot(doc(db, path), (snap) => {
                 if (snap.exists()) {
                     teamSE5Progress[op] = snap.data();
                 } else if (op === 'Raymystyro') {
-                    // Fallback to OneLIVIDMAN path if Raymystyro empty
                     onSnapshot(doc(db, `users/OneLIVIDMAN/platform/playstation/progress/sniper-elite-5`), (subSnap) => {
                         if (subSnap.exists()) teamSE5Progress[op] = subSnap.data();
                         renderSE5Leaderboard();
@@ -802,7 +842,6 @@
             const container = document.getElementById('se5-longshot-cards-container');
             if (!container) return;
 
-            // Raymystyro Progress Header Calculations
             const rayData = teamSE5Progress['Raymystyro'] || {};
             const rayItems = Array.isArray(rayData.progress) ? rayData.progress : [];
             const completedCount = rayItems.filter(i => i && (i.collected || i.completed)).length;
@@ -817,10 +856,8 @@
             if (fillEl) fillEl.style.width = `${pct}%`;
             if (missionEl && rayData.activeMission) missionEl.innerText = rayData.activeMission;
 
-            // Render Comparison Cards with Traffic Light Ranked Glow
             let html = '';
             LONG_SHOT_ITEMS.forEach(item => {
-                // Collect and sort operative distances
                 const operativeScores = OPERATIVES.map(op => {
                     const pList = (teamSE5Progress[op] && Array.isArray(teamSE5Progress[op].progress)) ? teamSE5Progress[op].progress : [];
                     const match = pList.find(p => p.id === item.id);
@@ -828,10 +865,8 @@
                     return { op, dist };
                 });
 
-                // Sort descending: highest distance first
                 const sorted = [...operativeScores].sort((a, b) => b.dist - a.dist);
 
-                // Assign stoplight glow ranks to positive scores
                 const rankMap = {};
                 let currentRank = 1;
 
@@ -863,7 +898,6 @@
                             </div>
                         </div>
 
-                        <!-- Stoplight Glow Badges Row -->
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 pt-1">
                             ${OPERATIVES.map(op => {
                                 const score = operativeScores.find(s => s.op === op)?.dist || 0;
@@ -888,7 +922,6 @@
             container.innerHTML = html;
         }
 
-        // Subscribe to COTW Trophies (Playstation)
         function subscribePlaystationCOTW(userAlias) {
             const cotwRankRef = doc(db, "users", userAlias, "platform", "playstation", "progress", "COTW_Ranks");
             onSnapshot(cotwRankRef, (docSnap) => {
@@ -943,7 +976,7 @@
 
     <!-- 
       ========================================================================
-      [LINE 825]: REALTIME DATABASE SYNCHRONIZER (PSN, FS25-A3563 & UTM LINKS)
+      [LINE 825]: REALTIME DATABASE & PLAYTIME / TIMELINE INTERVAL ENGINE
       ========================================================================
     -->
     <script>
@@ -951,7 +984,6 @@
         const ROOT_PSN_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/psn.json";
         const UTM_LINKS_RTDB_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/utm_links.json";
         
-        // Target updated FS25 cluster with fallback
         const FS25_PRIMARY_URL = "https://fs25-a3563-default-rtdb.firebaseio.com/fs25.json";
         const FS25_FALLBACK_URL = "https://entertainment-71888-default-rtdb.firebaseio.com/fs25.json";
 
@@ -971,12 +1003,75 @@
             return new Date(timestamp).toLocaleString("en-US", { timeZone: "America/New_York", hour12: false });
         }
 
+        function getTimeAgoString(timestamp) {
+            if (!timestamp) return "";
+            const time = typeof timestamp === 'number' ? timestamp : new Date(timestamp).getTime();
+            if (isNaN(time)) return "";
+            
+            const diffMs = Date.now() - time;
+            if (diffMs < 0) return "just now";
+
+            const diffSec = Math.floor(diffMs / 1000);
+            if (diffSec < 60) return "just now";
+            const diffMin = Math.floor(diffSec / 60);
+            if (diffMin < 60) return `${diffMin}m ago`;
+            const diffHours = Math.floor(diffMin / 60);
+            if (diffHours < 24) return `${diffHours}h ago`;
+            const diffDays = Math.floor(diffHours / 24);
+            if (diffDays < 30) return `${diffDays}d ago`;
+            const diffMonths = Math.floor(diffDays / 30);
+            if (diffMonths < 12) return `${diffMonths}mo ago`;
+            const diffYears = Math.floor(diffDays / 365);
+            return `${diffYears}y ago`;
+        }
+
+        function getPreciseHoursAgo(timestamp) {
+            if (!timestamp) return "--";
+            const time = typeof timestamp === 'number' ? timestamp : new Date(timestamp).getTime();
+            if (isNaN(time)) return "--";
+            const diffMs = Math.max(0, Date.now() - time);
+            const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const totalMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            return `${totalHours}h ${totalMinutes}m elapsed`;
+        }
+
+        // Precise Interval Formatter (From First Trophy to Date/Time Now)
+        function formatIntervalSpan(startTimestamp, endTimestamp = Date.now()) {
+            if (!startTimestamp) return "--";
+            const start = typeof startTimestamp === 'number' ? startTimestamp : new Date(startTimestamp).getTime();
+            if (isNaN(start)) return "--";
+
+            const diffMs = Math.max(0, endTimestamp - start);
+            const totalHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const days = Math.floor(totalHours / 24);
+            const remHours = totalHours % 24;
+
+            if (days > 0) {
+                return `${days}d ${remHours}h elapsed`;
+            }
+            return `${totalHours}h elapsed`;
+        }
+
+        // Parses ISO 8601 duration (e.g. PT45H12M) or numeric hours
+        function parsePlayDurationToHours(val) {
+            if (!val) return 0;
+            if (typeof val === 'number') return Math.round(val);
+            const str = String(val).trim();
+            if (!isNaN(Number(str))) return Math.round(Number(str));
+
+            const matchH = str.match(/(\d+)H/i);
+            const matchM = str.match(/(\d+)M/i);
+            let hours = matchH ? parseInt(matchH[1], 10) : 0;
+            let minutes = matchM ? parseInt(matchM[1], 10) : 0;
+            return Math.round(hours + (minutes / 60));
+        }
+
         function normalizeGameTitle(str) {
             if (!str) return "";
             return str.toLowerCase().replace(/®|™/g, "").replace(/[^a-z0-9]/g, "").trim();
         }
 
-        // --- 1. DYNAMIC NAVIGATION ENGINE (FROM /utm_links.json) ---
+        // --- 1. DYNAMIC NAVIGATION ENGINE ---
         async function fetchUtmNavLinks() {
             const container = document.getElementById('dynamic-nav-container');
             if (!container) return;
@@ -1011,7 +1106,6 @@
                     <a href="#mission-log-container" class="nav-link-btn"><i class="fas fa-list-check text-sky-400 mr-1.5"></i> Checklist</a>
                 `;
 
-                // Render Folder Groups
                 Object.entries(groups).forEach(([groupName, groupItems], idx) => {
                     const safeId = `group-folder-${idx}`;
                     html += `
@@ -1033,7 +1127,6 @@
                     `;
                 });
 
-                // Render Standalone Single Links
                 singles.forEach(si => {
                     html += `
                         <a href="${si.url}" target="_blank" class="nav-link-btn">
@@ -1046,7 +1139,7 @@
                 container.innerHTML = html;
 
             } catch (err) {
-                console.warn("[UTM NAV LINKS] Fallback default links loaded:", err.message);
+                console.warn("[UTM NAV LINKS] Fallback links active:", err.message);
                 container.innerHTML = `
                     <a href="#active-hunt-section" class="nav-link-btn">Active Hunt</a>
                     <a href="#dual-telemetry-row" class="nav-link-btn text-lime-400">FS25 & Sniper</a>
@@ -1080,7 +1173,6 @@
                 const data = await res.json();
                 if (!data) return;
 
-                // Lock directly onto Ray's farm (farmId2 / farm_2)
                 const farmData = data.farms?.farm_2 || 
                                  data.farms?.farmId2 || 
                                  data.farms?.[2] || 
@@ -1103,7 +1195,6 @@
                 document.getElementById('fs25-fleet-subtitle').innerText = `${vehicles.length} Units`;
                 document.getElementById('fs25-fields-subtitle').innerText = `${fields.length} Parcels`;
 
-                // Render Fleet Implement Cards
                 const fleetContainer = document.getElementById('fs25-fleet-container');
                 if (fleetContainer) {
                     if (vehicles.length > 0) {
@@ -1132,7 +1223,6 @@
                     }
                 }
 
-                // Render Farmlands Overview
                 const fieldsContainer = document.getElementById('fs25-fields-container');
                 if (fieldsContainer) {
                     if (fields.length > 0) {
@@ -1161,7 +1251,7 @@
             }
         }
 
-        // --- 3. PSN ONELIVIDMAN HUB ENGINE ---
+        // --- 3. PSN ONELIVIDMAN HUB & FIRST/RECENT TROPHY TIMELINE ENGINE ---
         async function updateHub() {
             try {
                 let user = null;
@@ -1186,7 +1276,6 @@
 
                 if (!user) return;
 
-                // Health State Handshake
                 const hDot = document.getElementById('health-dot');
                 const hVal = document.getElementById('health-value');
                 const aBox = document.getElementById('system-alerts-container');
@@ -1287,7 +1376,66 @@
                     document.getElementById('active-game-progress-fill').style.width = `${pct}%`;
                     document.getElementById('active-game-ratio').innerText = hunt.velocity?.completionStatus || "--/--";
 
-                    // Squad Presence Tracker for Active Game
+                    // ====================================================================
+                    // TIMELINE, PLAYTIME & RECENT TROPHY ELAPSED CALCULATIONS
+                    // ====================================================================
+                    const earnedList = currentTrophyData.filter(t => t.earned && (t.earnedDateTime || t.earnedTimestamp || t.earnedDate));
+                    
+                    earnedList.sort((a, b) => {
+                        const tA = new Date(a.earnedDateTime || a.earnedTimestamp || a.earnedDate).getTime();
+                        const tB = new Date(b.earnedDateTime || b.earnedTimestamp || b.earnedDate).getTime();
+                        return tA - tB;
+                    });
+
+                    const firstTrophy = earnedList.length > 0 ? earnedList[0] : null;
+                    const recentTrophy = earnedList.length > 0 ? earnedList[earnedList.length - 1] : null;
+
+                    const firstDateRaw = firstTrophy ? (firstTrophy.earnedDateTime || firstTrophy.earnedTimestamp || firstTrophy.earnedDate) : (hunt.firstTrophyTimestamp || null);
+                    const recentDateRaw = recentTrophy ? (recentTrophy.earnedDateTime || recentTrophy.earnedTimestamp || recentTrophy.earnedDate) : null;
+
+                    const loggedHours = parsePlayDurationToHours(hunt.playDuration || hunt.totalPlayDuration || hunt.hoursPlayed || (recentGames[0]?.hours) || 0);
+
+                    if (firstDateRaw) {
+                        const intervalStr = formatIntervalSpan(firstDateRaw);
+                        const firstDateFormatted = formatNYC24Time(firstDateRaw).split(',')[0];
+
+                        const timelineEl = document.getElementById('hunt-timeline-span');
+                        const hoursEl = document.getElementById('hunt-gameplay-hours');
+                        const paceEl = document.getElementById('hunt-trophy-pace');
+                        const firstDateEl = document.getElementById('hunt-first-trophy-date');
+
+                        if (timelineEl) timelineEl.innerText = intervalStr;
+                        if (hoursEl) hoursEl.innerText = `${loggedHours > 0 ? loggedHours : '--'} hrs logged`;
+                        
+                        if (paceEl) {
+                            if (loggedHours > 0 && earnedList.length > 0) {
+                                const hrsPerTrophy = (loggedHours / earnedList.length).toFixed(1);
+                                paceEl.innerText = `1 trophy / ${hrsPerTrophy}h`;
+                            } else {
+                                paceEl.innerText = `${earnedList.length} trophies total`;
+                            }
+                        }
+
+                        if (firstDateEl) firstDateEl.innerText = `${firstDateFormatted} (${firstTrophy?.name || 'Start'})`;
+
+                        const recentHoursEl = document.getElementById('hunt-recent-trophy-hours');
+                        if (recentHoursEl) {
+                            if (recentDateRaw) {
+                                const hoursSinceRecent = getPreciseHoursAgo(recentDateRaw);
+                                recentHoursEl.innerText = `${hoursSinceRecent} (${recentTrophy?.name || 'Latest'})`;
+                            } else {
+                                recentHoursEl.innerText = "--";
+                            }
+                        }
+
+                        const subHeader = document.getElementById('checklist-timeline-sub');
+                        if (subHeader) {
+                            const recentAgo = recentDateRaw ? getPreciseHoursAgo(recentDateRaw) : "--";
+                            subHeader.innerText = `First: ${firstDateFormatted} | Span: ${intervalStr} | Recent Trophy: ${recentAgo}`;
+                        }
+                    }
+
+                    // Squad Presence Tracker
                     const activeGameNormalized = normalizeGameTitle(activeGameTitle);
                     const squadMembersWithGame = [];
 
@@ -1314,10 +1462,47 @@
                     const checklist = document.getElementById('trophy-checklist-container');
                     if (checklist && currentTrophyData.length > 0) {
                         checklist.innerHTML = currentTrophyData.map((t, idx) => {
+                            const earnedDateRaw = t.earnedDateTime || t.earnedTimestamp || t.earnedDate || t.unlockedAt || null;
+                            let dateBadgeHtml = "";
+
+                            if (t.earned && earnedDateRaw) {
+                                const formattedDate = formatNYC24Time(earnedDateRaw);
+                                const timeAgo = getTimeAgoString(earnedDateRaw);
+                                const hoursAgo = getPreciseHoursAgo(earnedDateRaw);
+                                dateBadgeHtml = `
+                                    <div class="flex flex-wrap items-center gap-2 mt-1 text-[10px] font-bold text-gray-400">
+                                        <span class="text-emerald-400"><i class="far fa-calendar-check mr-1"></i>${formattedDate} EDT</span>
+                                        ${timeAgo ? `<span class="bg-white/5 px-2 py-0.5 rounded text-gray-300 font-mono text-[9px] border border-white/5">(${timeAgo})</span>` : ''}
+                                        <span class="text-sky-300 font-mono text-[9px]">${hoursAgo}</span>
+                                    </div>
+                                `;
+                            }
+
+                            // PS5 Objective Step Progress (1/100)
+                            const targetVal = Number(t.trophyProgressTargetValue || t.target || t.maxProgress || t.totalSteps || 0);
+                            const currentVal = Number(t.progress || t.currentValue || t.progressValue || t.earnedProgress || (t.earned ? targetVal : 0));
+                            let progressStepHtml = "";
+
+                            if (targetVal > 1) {
+                                const stepPct = Math.min(100, Math.round((currentVal / targetVal) * 100));
+                                progressStepHtml = `
+                                    <div class="mt-2 space-y-1">
+                                        <div class="flex justify-between items-center text-[9px] font-black uppercase">
+                                            <span class="text-sky-400 font-mono">Progress: ${currentVal} / ${targetVal} (${stepPct}%)</span>
+                                            <span class="${t.earned ? 'text-emerald-400' : 'text-gray-400'}">${t.earned ? 'COMPLETE' : `${targetVal - currentVal} REMAINING`}</span>
+                                        </div>
+                                        <div class="trophy-step-bar-wrap">
+                                            <div class="trophy-step-bar-fill" style="width: ${stepPct}%"></div>
+                                        </div>
+                                    </div>
+                                `;
+                            }
+
+                            // Squad Presence Bar
                             let squadStatusHtml = "";
                             if (squadMembersWithGame.length > 0) {
                                 squadStatusHtml = `
-                                    <div class="flex flex-wrap items-center gap-1.5 mt-1.5 pt-1 border-t border-white/5">
+                                    <div class="flex flex-wrap items-center gap-1.5 mt-2 pt-1.5 border-t border-white/5">
                                         <span class="text-[8px] font-black uppercase text-gray-500 mr-1">Squad Presence:</span>
                                         ${squadMembersWithGame.map(member => {
                                             let hasEarned = false;
@@ -1338,14 +1523,18 @@
 
                             return `
                                 <div class="trophy-row" onclick="openTrophyDetailModal(currentTrophyData[${idx}], '${(activeGameTitle || '').replace(/'/g, "\\'")}')">
-                                    <img src="${t.icon}" class="trophy-icon-sq ${!t.earned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://via.placeholder.com/50x50/202024/38BDF8?text=🏆'">
+                                    <img src="${t.icon}" class="trophy-icon-sq ${!t.earned && t.hidden ? 'opacity-30 blur-[2px]' : ''}" onerror="this.src='https://via.placeholder.com/56x56/202024/38BDF8?text=🏆'">
                                     <div class="min-w-0 flex-1">
                                         <div class="trophy-title-text truncate text-xs ${t.earned ? 'text-green-400' : 'text-sky-400'}">${t.name}</div>
-                                        <div class="text-[10px] text-gray-400 truncate">${t.description || 'Trophy Objective'}</div>
+                                        <div class="text-[10px] text-gray-400 truncate mt-0.5">${t.description || 'Trophy Objective'}</div>
+                                        ${progressStepHtml}
+                                        ${dateBadgeHtml}
                                         ${squadStatusHtml}
                                     </div>
-                                    <div class="text-right">
-                                        <span class="text-[9px] font-black uppercase ${t.earned ? 'text-green-400' : 'text-gray-500'}">${t.earned ? 'EARNED' : 'LOCKED'}</span>
+                                    <div class="text-right flex flex-col items-end">
+                                        <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded ${t.earned ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40' : 'bg-white/5 text-gray-500 border border-white/10'}">
+                                            ${t.earned ? 'EARNED' : 'LOCKED'}
+                                        </span>
                                     </div>
                                 </div>
                             `;
@@ -1375,6 +1564,14 @@
                     document.getElementById('last-trophy-icon').src = lastEarnedTrophyData.icon || "";
                     document.getElementById('last-trophy-name').innerText = lastEarnedTrophyData.name || "Trophy";
                     document.getElementById('last-trophy-game').innerText = lastEarnedTrophyData.game || "PS5";
+                    
+                    const earnedDate = lastEarnedTrophyData.earnedDateTime || lastEarnedTrophyData.earnedDate || null;
+                    const timeAgo = earnedDate ? `Earned: ${formatNYC24Time(earnedDate)} (${getTimeAgoString(earnedDate)})` : "Unlocked";
+                    const hoursAgo = earnedDate ? `Elapsed: ${getPreciseHoursAgo(earnedDate)}` : "--";
+
+                    document.getElementById('last-trophy-time').innerText = timeAgo;
+                    document.getElementById('last-trophy-hours-ago').innerText = hoursAgo;
+                    
                     if (recCard) recCard.classList.remove('hidden');
                 } else if (recCard) {
                     recCard.classList.add('hidden');
@@ -1432,12 +1629,43 @@
             if (!t) return;
             const lb = document.getElementById('generic-lightbox');
             document.getElementById('lightbox-title').innerText = (gameTitle || "Game") + " - Trophy";
+
+            const earnedDateRaw = t.earnedDateTime || t.earnedTimestamp || t.earnedDate || null;
+            const formattedDate = earnedDateRaw ? formatNYC24Time(earnedDateRaw) : null;
+            const timeAgo = earnedDateRaw ? getTimeAgoString(earnedDateRaw) : null;
+            const hoursAgo = earnedDateRaw ? getPreciseHoursAgo(earnedDateRaw) : null;
+
+            const targetVal = Number(t.trophyProgressTargetValue || t.target || 0);
+            const currentVal = Number(t.progress || t.currentValue || (t.earned ? targetVal : 0));
+            const hasProgress = targetVal > 1;
+
             document.getElementById('lightbox-body').innerHTML = `
                 <div class="flex flex-col items-center space-y-4 text-center">
                     <img src="${t.icon || ''}" class="w-24 h-24 rounded-xl border border-white/10 shadow-xl">
                     <h4 class="text-xl font-black text-white uppercase">${t.name}</h4>
                     <p class="text-gray-300 bg-white/5 p-4 rounded-xl border border-white/5 w-full">${t.description || t.detail || 'Objective Achieved.'}</p>
-                    <div class="text-xs font-black text-sky-400 uppercase">${t.earned ? 'Unlocked on PSN' : 'Locked'}</div>
+                    
+                    ${hasProgress ? `
+                        <div class="bg-black/50 p-3 rounded-xl border border-sky-500/20 w-full space-y-1.5">
+                            <div class="flex justify-between text-xs font-black uppercase text-sky-400">
+                                <span>Objective Progress</span>
+                                <span>${currentVal} / ${targetVal} (${Math.round((currentVal/targetVal)*100)}%)</span>
+                            </div>
+                            <div class="progress-bar-container"><div class="progress-bar-fill" style="width: ${(currentVal/targetVal)*100}%"></div></div>
+                        </div>
+                    ` : ''}
+
+                    <div class="flex flex-col items-center gap-1">
+                        <div class="text-xs font-black uppercase ${t.earned ? 'text-emerald-400' : 'text-gray-500'}">
+                            ${t.earned ? 'Unlocked on PlayStation Network' : 'Locked Trophy'}
+                        </div>
+                        ${formattedDate ? `
+                            <div class="text-[11px] font-bold text-gray-400">
+                                Earned: <span class="text-white">${formattedDate} (EDT)</span> &bull; <span class="text-sky-400">${timeAgo}</span>
+                                <div class="text-sky-300 font-mono text-[10px] mt-0.5">${hoursAgo}</div>
+                            </div>
+                        ` : ''}
+                    </div>
                 </div>
             `;
             if (lb) lb.style.display = 'flex';
@@ -1448,7 +1676,7 @@
             if (lb) lb.style.display = 'none';
         }
 
-        // Initialize Engine & Realtime Heartbeats
+        // Initialize Engine
         fetchUtmNavLinks();
         updateHub();
         updateFS25Telemetry();
