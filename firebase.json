@@ -1,14 +1,1 @@
-cat << 'EOF' > firebase.json
-{
-  "hosting": {
-    "public": ".",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**",
-      "package*.json",
-      "*.md"
-    ]
-  }
-}
-EOF
+
