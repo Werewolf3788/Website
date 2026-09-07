@@ -1,0 +1,49 @@
+# ==============================================================================
+# GitHub Actions Workflow: Auto-Deploy to Google Cloud Firebase
+# Timestamp: 2026-09-07 17:42:23 EDT (New York)
+# Triggers on git push to the main branch
+# ==============================================================================
+
+name: Deploy to Google Cloud & Firebase
+
+on:
+  push:
+    branches:
+      - main  # Set to master if your default branch is master
+
+jobs:
+  build_and_deploy:
+    name: Build, Package and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out repository files into runner workspace
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js 20 environment
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache-dependency-path: functions/package-lock.json
+
+      # Step 3: Clean install backend dependencies for Cloud Functions
+      - name: Install Cloud Functions Dependencies
+        run: |
+          if [ -d "functions" ]; then
+            echo "Functions directory detected. Installing npm dependencies..."
+            cd functions
+            npm install
+          else
+            echo "No functions folder found, skipping function install."
+          fi
+
+      # Step 4: Deploy both Hosting and Cloud Functions using your service account secret
+      # Note: Uses FIREBASE_SERVICE_ACCOUNT_GITHUB secret as configured
+      - name: Deploy to Firebase Hosting and Functions
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy
+        env:
+          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GITHUB }}
