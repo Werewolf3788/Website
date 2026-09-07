@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- 
+    PSN Trophy Tracker Application 
+    Timestamp: 2026-09-07 17:42:23 EDT (New York)
+    Line 8: Viewport Meta Tag
+    Line 9: PWA Manifest Link
+    Line 10: Google Analytics GA4 Tag
+    Line 25: CSS Stylesheet
+    Line 102: Client-side JavaScript
+  -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1f1f1f">
+  <title>Trophy Progress Tracker</title>
+
+  <!-- Google Analytics Tag (GA4: G-CTYHDF4MSD) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-CTYHDF4MSD"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-CTYHDF4MSD', {
+      send_page_view: true
+    });
+  </script>
+
+  <!-- CSS Styles -->
+  <style>
+    /* CSS Line 26: Global Reset & Variables */
+    :root {
+      --bg-color: #121212;
+      --card-bg: #1e1e1e;
+      --text-main: #f0f0f0;
+      --text-muted: #a0a0a0;
+      --accent: #0070d1;
+      --gold: #d4af37;
+      --silver: #c0c0c0;
+      --bronze: #cd7f32;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 16px;
+      line-height: 1.5;
+    }
+
+    /* CSS Line 54: Layout Container (Responsive Desktop & Mobile) */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    header {
+      padding: 16px 0;
+      border-bottom: 1px solid #333;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+    }
+
+    /* CSS Line 75: Trophy Cards */
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      padding: 16px;
+      border: 1px solid #2a2a2a;
+    }
+
+    .trophy-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid #2a2a2a;
+    }
+
+    .trophy-item:last-child {
+      border-bottom: none;
+    }
+
+    .trophy-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 6px;
+      object-fit: cover;
+      background-color: #2a2a2a;
+    }
+
+    .trophy-info {
+      flex: 1;
+    }
+
+    .trophy-name {
+      font-weight: 600;
+      font-size: 1rem;
+    }
+
+    .trophy-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* CSS Line 116: Responsive Breakpoint for Mobile Screens */
+    @media (max-width: 480px) {
+      body {
+        padding: 12px;
+      }
+      header h1 {
+        font-size: 1.25rem;
+      }
+      .trophy-item {
+        gap: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Line 133: App Shell UI -->
+  <div class="container">
+    <header>
+      <h1>Trophy Tracker</h1>
+      <span id="sync-time" style="font-size: 0.85rem; color: var(--text-muted);">Listening for updates...</span>
+    </header>
+
+    <div class="card" id="active-game-card">
+      <h2 id="game-title" style="font-size: 1.2rem; margin-bottom: 8px;">Waiting for Game Data</h2>
+      <p id="trophy-count" style="color: var(--text-muted); font-size: 0.9rem;">No data pulled yet</p>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size: 1.1rem; margin-bottom: 12px;">Recent Unlocks</h3>
+      <div id="trophy-list">
+        <!-- Dynamic trophy entries populate here -->
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript: Service Worker Registration & Firestore Listener -->
+  <script type="module">
+    // JS Line 157: Service Worker Registration for PWA Installation
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then((reg) => console.log('Service Worker active:', reg.scope))
+          .catch((err) => console.error('Service Worker registration failed:', err));
+      });
+    }
+
+    // JS Line 166: Firebase Web SDK Imports (Compatible with HTTP and HTTPS)
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+    // Insert your Firebase web configuration object here
+    const firebaseConfig = {
+      apiKey: "YOUR_FIREBASE_API_KEY",
+      authDomain: "entertainment-71888.firebaseapp.com",
+      projectId: "entertainment-71888",
+      storageBucket: "entertainment-71888.appspot.com",
+      messagingSenderId: "660524340277",
+      appId: "YOUR_FIREBASE_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // JS Line 184: Real-time listener for settings/psn
+    const psnDocRef = doc(db, "settings", "psn");
+    onSnapshot(psnDocRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        document.getElementById("game-title").textContent = data.lastTitleName || "No Title Playing";
+        document.getElementById("trophy-count").textContent = `Total Earned Trophies: ${data.lastTrophyCount || 0}`;
+        
+        if (data.lastUpdated) {
+          const date = new Date(data.lastUpdated);
+          document.getElementById("sync-time").textContent = `Updated: ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })}`;
+        }
+
+        // Listen to the specific game's detailed trophies
+        if (data.lastTitleId) {
+          listenToGameTrophies(data.lastTitleId);
+        }
+      }
+    });
+
+    // JS Line 205: Real-time listener for detailed trophy list
+    let unsubscribeGame = null;
+    function listenToGameTrophies(titleId) {
+      if (unsubscribeGame) unsubscribeGame();
+
+      const gameDocRef = doc(db, "player_trophies", titleId);
+      unsubscribeGame = onSnapshot(gameDocRef, (docSnap) => {
+        const listEl = document.getElementById("trophy-list");
+        listEl.innerHTML = "";
+
+        if (docSnap.exists()) {
+          const gameData = docSnap.data();
+          const trophies = gameData.trophies || [];
+
+          // Show earned trophies first
+          const earnedTrophies = trophies.filter(t => t.earned);
+
+          if (earnedTrophies.length === 0) {
+            listEl.innerHTML = "<p style='color: #888; font-size: 0.9rem;'>No trophies unlocked yet.</p>";
+            return;
+          }
+
+          earnedTrophies.forEach(t => {
+            const item = document.createElement("div");
+            item.className = "trophy-item";
+            item.innerHTML = `
+              <img src="${t.trophyIconUrl || ''}" class="trophy-icon" alt="Trophy Icon" loading="lazy" />
+              <div class="trophy-info">
+                <div class="trophy-name">${t.trophyName}</div>
+                <div class="trophy-desc">${t.trophyDetail || ''}</div>
+              </div>
+            `;
+            listEl.appendChild(item);
+          });
+        }
+      });
+    }
+  </script>
+</body>
+</html>
