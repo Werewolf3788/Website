@@ -1,19 +1,17 @@
+rm -rf .agents .firebase
+cat << 'EOF' > firebase.json
 {
   "hosting": {
-    "public": "public",
+    "public": ".",
     "ignore": [
       "firebase.json",
-      "**/.*",
-      "**/node_modules/**"
-    ],
-    "rewrites": [
-      {
-        "source": "**",
-        "destination": "/index.html"
-      }
+      ".*",
+      "**/.*/**",
+      "node_modules/**",
+      "**/*.md",
+      "package*.json"
     ]
-  },
-  "functions": {
-    "source": "functions"
   }
 }
+EOF
+firebase deploy --only hosting
