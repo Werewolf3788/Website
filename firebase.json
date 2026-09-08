@@ -1,5 +1,14 @@
+cd ~/Website-main/Website-main
+cat << 'EOF' > firebase.json
 {
   "hosting": {
-    "public": "."
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
   }
 }
+EOF
+npx firebase-tools deploy --only hosting --project entertainment-71888
