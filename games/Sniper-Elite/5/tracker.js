@@ -1,24 +1,25 @@
 /* ============================================================================
    File: tracker.js
-   Deployment Timestamp: Sun, Sep 6, 2026, 01:45 (EDT - New York)
+   Deployment Timestamp: Sat, Sep 12, 2026, 15:59 (EDT - New York)
    Project: entertainment-71888
-   Version: v7.1.0-SE5-LONGSHOT-UNCAPPED-LEADERBOARD
+   Version: v7.2.0-SE5-CAREER-RIBBONS-UNCAPPED-LEADERBOARD
    Firestore Path: users/{gamertag}/platform/playstation/progress/sniper-elite-5
    Google Analytics Tag: G-CTYHDF4MSD
    Features:
      - Real-time Firestore sync & LocalStorage offline caching
-     - Uncapped Long Shot recording: input values can exceed in-game requirements
+     - Uncapped Long Shot & Repeatable Career Ribbon tracking (counter + direct edit)
+     - 47 Complete Campaign/Survival Career Ribbons (Stealth, Tactics, Lethal, Non-Lethal, Survival)
      - Dynamic Team Intel Leaderboard badge with Leader Crown (👑) indicator
      - Interactive Leaflet tactical map overlay with dynamic pin filtering
      - Direct numeric input editing + quick step (+/-) counters
-     - Single-tap toggle for 1-tier Medals, Ribbons, and Collectibles
+     - Single-tap toggle for 1-tier Medals, Collectibles, and Challenges
      - Mobile hamburger toggle and Google Sheets CSV top navigation engine
      - 24-Hour New York Time clock with auto-updating DOM bindings
    ============================================================================ */
 
 /* === SECTION: Automatic Cache Purge === */
 (function purgeStaleTrackerCache() {
-  const activeVersion = 'v7.1.0-20260906-0145';
+  const activeVersion = 'v7.2.0-20260912-1559';
   const storedVersion = localStorage.getItem('se5_tracker_build_version');
   if (storedVersion !== activeVersion) {
     Object.keys(localStorage).forEach(key => {
@@ -466,23 +467,62 @@ const sniperData = [
   { id: 'med_strategist', cat: '17: Weapon Mastery & Tactics Medals', name: 'Strategist', type: 'Medal', desc: 'Make an enemy tank shoot and destroy another enemy vehicle.' },
   { id: 'med_nostone', cat: '17: Weapon Mastery & Tactics Medals', name: 'No Stone Unturned', type: 'Medal', desc: 'Complete 16 campaign optional objectives.', target: 16 },
 
-  // --- Category: Career Ribbons ---
-  { id: 'rib_camofleur', cat: '18: Career Ribbons', name: 'Camofleur', type: 'Ribbon', desc: 'Kill 15 enemies while concealed in Tall Grass in a single mission.' },
-  { id: 'rib_assassin', cat: '18: Career Ribbons', name: 'Assassin', type: 'Ribbon', desc: 'Achieve 5 lethal takedowns classified as Ghost Kills.' },
-  { id: 'rib_circuitbreaker', cat: '18: Career Ribbons', name: 'Circuit Breaker', type: 'Ribbon', desc: 'Disable or sabotage an enemy alarm node.' },
-  { id: 'rib_scout', cat: '18: Career Ribbons', name: 'Scout', type: 'Ribbon', desc: 'Tag 20 enemies using your binoculars.' },
-  { id: 'rib_demolitionist', cat: '18: Career Ribbons', name: 'Demolitionist', type: 'Ribbon', desc: 'Kill 2 enemies by detonating an environmental explosive.' },
-  { id: 'rib_engineer', cat: '18: Career Ribbons', name: 'Engineer', type: 'Ribbon', desc: 'Use placed traps (mines/TNT) to destroy an enemy vehicle.' },
-  { id: 'rib_grenadier', cat: '18: Career Ribbons', name: 'Grenadier', type: 'Ribbon', desc: 'Get 5 kills using hand grenades.' },
-  { id: 'rib_butcher', cat: '18: Career Ribbons', name: 'Butcher', type: 'Ribbon', desc: 'Score 10 distinct organ shot kills with a rifle.' },
-  { id: 'rib_wrecker', cat: '18: Career Ribbons', name: 'Wrecker', type: 'Ribbon', desc: 'Destroy 5 enemy vehicles in combat.' },
-  { id: 'rib_skullcrusher', cat: '18: Career Ribbons', name: 'Skull Crusher', type: 'Ribbon', desc: 'Score 10 headshot kills.' },
-  { id: 'rib_guerrilla', cat: '18: Career Ribbons', name: 'Guerrilla', type: 'Ribbon', desc: 'Incapacitate 3 enemies using non-lethal schu-mines.' },
-  { id: 'rib_boxer', cat: '18: Career Ribbons', name: 'Boxer', type: 'Ribbon', desc: 'Perform 10 non-lethal melee takedowns.' },
-  { id: 'rib_knockoutexpert', cat: '18: Career Ribbons', name: 'Knockout Expert', type: 'Ribbon', desc: 'Distract or pacify enemies using throwables 4 times.' },
-  { id: 'rib_nevergiveground', cat: '18: Career Ribbons', name: 'Never Give Ground', type: 'Ribbon', desc: 'Complete a Survival Stage without losing the Command Post.' },
-  { id: 'rib_heavyhitter', cat: '18: Career Ribbons', name: 'Heavy Hitter', type: 'Ribbon', desc: 'Score 10 kills each worth 300+ score points.' },
-  { id: 'rib_fightforsurvival', cat: '18: Career Ribbons', name: 'Fight for Survival', type: 'Ribbon', desc: 'Complete 2 consecutive Waves with top kill honors.' }
+  // --- Category 18: Ribbons - Stealth (Blue) ---
+  { id: 'rib_camofleur', cat: '18: Ribbons - Stealth (Blue)', name: 'Camofleur', type: 'Ribbon', desc: 'Kill 15 enemies while in Tall Grass.', isRibbon: true },
+  { id: 'rib_cleaner', cat: '18: Ribbons - Stealth (Blue)', name: 'Cleaner', type: 'Ribbon', desc: 'Hide 3 bodies in crates.', isRibbon: true },
+  { id: 'rib_distraction_expert', cat: '18: Ribbons - Stealth (Blue)', name: 'Distraction Expert', type: 'Ribbon', desc: 'Kill 5 distracted enemies.', isRibbon: true },
+  { id: 'rib_ghost', cat: '18: Ribbons - Stealth (Blue)', name: 'Ghost', type: 'Ribbon', desc: 'Whilst undetected, kill 15 soldiers.', isRibbon: true },
+  { id: 'rib_sound_mask_expert', cat: '18: Ribbons - Stealth (Blue)', name: 'Sound Mask Expert', type: 'Ribbon', desc: 'Sabotage 3 entities to create sound masks.', isRibbon: true },
+  { id: 'rib_assassin', cat: '18: Ribbons - Stealth (Blue)', name: 'Assassin', type: 'Ribbon', desc: 'Achieve a total of 5 lethal takedowns classified as Ghost Kills.', isRibbon: true },
+  { id: 'rib_circuit_breaker', cat: '18: Ribbons - Stealth (Blue)', name: 'Circuit Breaker', type: 'Ribbon', desc: 'Disable an alarm.', isRibbon: true },
+
+  // --- Category 19: Ribbons - Tactics (Maroon) ---
+  { id: 'rib_partisan', cat: '19: Ribbons - Tactics (Maroon)', name: 'Partisan', type: 'Ribbon', desc: 'Get 3 environmental kills.', isRibbon: true },
+  { id: 'rib_trapper', cat: '19: Ribbons - Tactics (Maroon)', name: 'Trapper', type: 'Ribbon', desc: 'Kill 3 or more soldiers with booby traps.', isRibbon: true },
+  { id: 'rib_demolitionist', cat: '19: Ribbons - Tactics (Maroon)', name: 'Demolitionist', type: 'Ribbon', desc: 'Kill 2 on-foot enemies simultaneously by shooting an explosive or traps.', isRibbon: true },
+  { id: 'rib_sapper', cat: '19: Ribbons - Tactics (Maroon)', name: 'Sapper', type: 'Ribbon', desc: 'Kill 2 on-foot enemies or more with a single trap or explosive.', isRibbon: true },
+  { id: 'rib_tank_hunter', cat: '19: Ribbons - Tactics (Maroon)', name: 'Tank Hunter', type: 'Ribbon', desc: 'Destroy a tank.', isRibbon: true },
+  { id: 'rib_v8_cylinder_hunter', cat: '19: Ribbons - Tactics (Maroon)', name: 'V8 Cylinder Hunter', type: 'Ribbon', desc: 'Destroy a 222 Armoured Car.', isRibbon: true },
+  { id: 'rib_scout', cat: '19: Ribbons - Tactics (Maroon)', name: 'Scout', type: 'Ribbon', desc: 'Tag 20 enemies with your binoculars.', isRibbon: true },
+  { id: 'rib_field_medic', cat: '19: Ribbons - Tactics (Maroon)', name: 'Field Medic', type: 'Ribbon', desc: 'Perform 1 teammate revive.', isRibbon: true },
+  { id: 'rib_spotter', cat: '19: Ribbons - Tactics (Maroon)', name: 'Spotter', type: 'Ribbon', desc: 'While playing the campaign in Co-op, get 5 tag assists.', isRibbon: true },
+  { id: 'rib_second_gunner', cat: '19: Ribbons - Tactics (Maroon)', name: 'Second Gunner', type: 'Ribbon', desc: 'While playing the campaign in Co-op mode, get 3 kill assists.', isRibbon: true },
+  { id: 'rib_engineer', cat: '19: Ribbons - Tactics (Maroon)', name: 'Engineer', type: 'Ribbon', desc: 'Use traps to destroy a vehicle.', isRibbon: true },
+
+  // --- Category 20: Ribbons - Lethal (Red) ---
+  { id: 'rib_pistol_specialist', cat: '20: Ribbons - Lethal (Red)', name: 'Pistol Specialist', type: 'Ribbon', desc: 'Kill 20 enemies with a pistol.', isRibbon: true },
+  { id: 'rib_secondary_specialist', cat: '20: Ribbons - Lethal (Red)', name: 'Secondary Specialist', type: 'Ribbon', desc: 'Kill 20 enemies with a secondary weapon.', isRibbon: true },
+  { id: 'rib_butcher', cat: '20: Ribbons - Lethal (Red)', name: 'Butcher', type: 'Ribbon', desc: 'Get 10 organ shot kills.', isRibbon: true },
+  { id: 'rib_wrecker', cat: '20: Ribbons - Lethal (Red)', name: 'Wrecker', type: 'Ribbon', desc: 'Destroy 5 manned vehicles.', isRibbon: true },
+  { id: 'rib_speed_shooter', cat: '20: Ribbons - Lethal (Red)', name: 'Speed Shooter', type: 'Ribbon', desc: 'Achieve 5 kills in less than 60 seconds with a rifle.', isRibbon: true },
+  { id: 'rib_grenadier', cat: '20: Ribbons - Lethal (Red)', name: 'Grenadier', type: 'Ribbon', desc: 'Get 5 grenade kills.', isRibbon: true },
+  { id: 'rib_rifle_specialist', cat: '20: Ribbons - Lethal (Red)', name: 'Rifle Specialist', type: 'Ribbon', desc: 'Kill 20 enemies with a rifle.', isRibbon: true },
+  { id: 'rib_brawler', cat: '20: Ribbons - Lethal (Red)', name: 'Brawler', type: 'Ribbon', desc: 'Perform 10 lethal takedowns.', isRibbon: true },
+  { id: 'rib_skull_crusher', cat: '20: Ribbons - Lethal (Red)', name: 'Skull Crusher', type: 'Ribbon', desc: 'Get 10 headshot kills.', isRibbon: true },
+
+  // --- Category 21: Ribbons - Non-Lethal (Teal) ---
+  { id: 'rib_guerrilla', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Guerrilla', type: 'Ribbon', desc: 'Knock 3 enemies unconscious with Schu-mines.', isRibbon: true },
+  { id: 'rib_pacifist', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Pacifist', type: 'Ribbon', desc: 'Complete the mission with over 20 tagged enemies that have not been killed.', isRibbon: true },
+  { id: 'rib_head_doctor', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Head Doctor', type: 'Ribbon', desc: 'Get 15 non-lethal ammo headshots.', isRibbon: true },
+  { id: 'rib_mechanic', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Mechanic', type: 'Ribbon', desc: 'Disable the engine of 3 vehicles.', isRibbon: true },
+  { id: 'rib_merciful', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Merciful', type: 'Ribbon', desc: 'Knock 15 enemies unconscious with non-lethal ammo.', isRibbon: true },
+  { id: 'rib_boxer', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Boxer', type: 'Ribbon', desc: 'Perform 10 non-lethal takedowns.', isRibbon: true },
+  { id: 'rib_knockout_expert', cat: '21: Ribbons - Non-Lethal (Teal)', name: 'Knockout Expert', type: 'Ribbon', desc: 'Use throwable items to knockout enemies 4 times.', isRibbon: true },
+
+  // --- Category 22: Ribbons - Survival (Gold) ---
+  { id: 'rib_guard_duty', cat: '22: Ribbons - Survival (Gold)', name: 'Guard Duty', type: 'Ribbon', desc: 'Get 15 kills while closely defending from inside the command post area.', isRibbon: true },
+  { id: 'rib_to_fight_another_day', cat: '22: Ribbons - Survival (Gold)', name: 'To Fight Another Day', type: 'Ribbon', desc: 'Complete an entire Survival mission.', isRibbon: true },
+  { id: 'rib_rocket_man', cat: '22: Ribbons - Survival (Gold)', name: 'Rocket Man', type: 'Ribbon', desc: 'Get 10 kills with a Panzerfaust.', isRibbon: true },
+  { id: 'rib_heavy_hitter', cat: '22: Ribbons - Survival (Gold)', name: 'Heavy Hitter', type: 'Ribbon', desc: 'Get 10 kills each scoring 300 or more points.', isRibbon: true },
+  { id: 'rib_liberator', cat: '22: Ribbons - Survival (Gold)', name: 'Liberator', type: 'Ribbon', desc: 'Kill 5 enemies capturing a Command Post.', isRibbon: true },
+  { id: 'rib_untouchable', cat: '22: Ribbons - Survival (Gold)', name: 'Untouchable', type: 'Ribbon', desc: 'Get 10 consecutive kills without taking any damage.', isRibbon: true },
+  { id: 'rib_fight_for_survival', cat: '22: Ribbons - Survival (Gold)', name: 'Fight for Survival', type: 'Ribbon', desc: 'Complete 2 consecutive waves with most kills in each.', isRibbon: true },
+  { id: 'rib_never_give_ground', cat: '22: Ribbons - Survival (Gold)', name: 'Never Give Ground', type: 'Ribbon', desc: 'Complete a Survival Stage without losing the Command Post.', isRibbon: true },
+  { id: 'rib_still_standing', cat: '22: Ribbons - Survival (Gold)', name: 'Still Standing', type: 'Ribbon', desc: 'Complete a Survival Stage without being incapacitated.', isRibbon: true },
+  { id: 'rib_counter_sniper', cat: '22: Ribbons - Survival (Gold)', name: 'Counter-Sniper', type: 'Ribbon', desc: 'Headshot 5 enemy snipers.', isRibbon: true },
+  { id: 'rib_crash_test_dummies', cat: '22: Ribbons - Survival (Gold)', name: 'Crash Test Dummies', type: 'Ribbon', desc: 'Kill 10 enemies before they disembark their vehicles.', isRibbon: true },
+  { id: 'rib_top_guns', cat: '22: Ribbons - Survival (Gold)', name: 'Top Guns', type: 'Ribbon', desc: 'Get 10 kills with MG42.', isRibbon: true },
+  { id: 'rib_perfect_defence', cat: '22: Ribbons - Survival (Gold)', name: 'Perfect Defence', type: 'Ribbon', desc: 'Complete a Stage without the enemy breaching the Command Post.', isRibbon: true }
 ];
 
 /* Default Seeds for Werewolf3788 Profile */
@@ -524,10 +564,14 @@ const WEREWOLF_SEEDS = [
   { id: 'med_littlefriend', count: 49, collected: false },
   { id: 'med_gunslinger', count: 150, collected: true },
   { id: 'med_m1911master', count: 7, collected: false },
-  { id: 'med_mod712master', count: 3, collected: false }
+  { id: 'med_mod712master', count: 3, collected: false },
+  { id: 'rib_camofleur', count: 1, collected: true },
+  { id: 'rib_cleaner', count: 1, collected: true },
+  { id: 'rib_distraction_expert', count: 1, collected: true },
+  { id: 'rib_ghost', count: 14, collected: true }
 ];
 
-/* === SECTION: Dynamic Themed Medal Styling Utility === */
+/* === SECTION: Dynamic Themed Medal & Ribbon Styling Utility === */
 function getItemThemeMeta(item) {
   const nameLower = item.name.toLowerCase();
   const catLower = item.cat.toLowerCase();
@@ -564,7 +608,46 @@ function getItemThemeMeta(item) {
     };
   }
 
-  // Ribbons: Cyan/Blue
+  // Ribbons - Stealth (Blue)
+  if (catLower.includes('stealth')) {
+    return {
+      badgeClass: 'theme-badge-ribbon-blue',
+      customStyle: 'background: rgba(37, 99, 235, 0.25); color: #60a5fa; border: 1px solid #2563eb;'
+    };
+  }
+
+  // Ribbons - Tactics (Maroon)
+  if (catLower.includes('tactics')) {
+    return {
+      badgeClass: 'theme-badge-ribbon-maroon',
+      customStyle: 'background: rgba(159, 18, 57, 0.25); color: #fb7185; border: 1px solid #9f1239;'
+    };
+  }
+
+  // Ribbons - Lethal (Red)
+  if (catLower.includes('lethal') && !catLower.includes('non-lethal')) {
+    return {
+      badgeClass: 'theme-badge-ribbon-red',
+      customStyle: 'background: rgba(220, 38, 38, 0.25); color: #f87171; border: 1px solid #dc2626;'
+    };
+  }
+
+  // Ribbons - Non-Lethal (Teal)
+  if (catLower.includes('non-lethal')) {
+    return {
+      badgeClass: 'theme-badge-ribbon-teal',
+      customStyle: 'background: rgba(13, 148, 136, 0.25); color: #2dd4bf; border: 1px solid #0d9488;'
+    };
+  }
+
+  // Ribbons - Survival (Gold)
+  if (catLower.includes('survival')) {
+    return {
+      badgeClass: 'theme-badge-ribbon-gold',
+      customStyle: 'background: rgba(202, 138, 4, 0.25); color: #facc15; border: 1px solid #ca8a04;'
+    };
+  }
+
   if (item.type === 'Ribbon') {
     return {
       badgeClass: 'theme-badge-ribbon',
@@ -592,8 +675,8 @@ const appState = {
   user: null,
   unsubListeners: [],
   isLoaded: false,
-  version: 'v7.1.0',
-  buildDate: '2026-09-06 01:45 EDT',
+  version: 'v7.2.0',
+  buildDate: '2026-09-12 15:59 EDT',
   activeLeafletMaps: {},
   markerLayers: {},
 
@@ -875,18 +958,18 @@ const appState = {
     const item = this.hunterData.find(i => i.id === id);
     if (!item) return;
     const currentVal = item.count || 0;
-    // For long shots, step by 5 meters; otherwise step by 1
+    // Step by 5m for longshots, 1 for ribbons/medals
     const stepSize = item.isLongShot ? 5 : 1;
     const nextVal = Math.max(0, currentVal + (delta * stepSize));
     this.setManualItemCount(id, nextVal);
   },
 
-  openDirectNumberEditor: function(id, currentVal, maxVal, isLongShot = false) {
+  openDirectNumberEditor: function(id, currentVal, maxVal, isUncapped = false) {
     const container = document.getElementById(`val-box-${id}`);
     if (!container) return;
 
-    // Uncap input ceiling if it's a Long Shot to record true distance
-    const maxAttr = (isLongShot || !maxVal) ? '' : `max="${maxVal}"`;
+    // Uncap input ceiling if Long Shot or Career Ribbon
+    const maxAttr = (isUncapped || !maxVal) ? '' : `max="${maxVal}"`;
 
     container.innerHTML = `
       <input type="number" id="input-edit-${id}" class="manual-inline-num-input" value="${currentVal}" min="0" ${maxAttr}>
@@ -1001,17 +1084,18 @@ const appState = {
 
       const grid = section.querySelector('.item-grid');
       items.forEach(item => {
-        const isNumericProgress = (item.target !== undefined && item.target > 1);
+        const isNumericProgress = (item.target !== undefined && item.target > 1) || !!item.isRibbon;
         const isLongShot = !!item.isLongShot;
+        const isRibbon = !!item.isRibbon;
         const card = document.createElement('div');
         card.className = `item-card ${item.collected ? 'completed' : ''}`;
 
         const iconUrl = GAME_TYPE_ICONS[item.type] || GAME_TYPE_ICONS['Personal Letter'];
         const themeMeta = getItemThemeMeta(item);
 
-        // Calculate highest team distance for leader crown display on Long Shots
+        // Leader comparison: highest shot distance or ribbon count
         let maxTeamShot = 0;
-        if (isLongShot) {
+        if (isLongShot || isRibbon) {
           ALL_OPERATIVES.forEach(op => {
             const opData = (this.teamProgress[op] || []).find(s => s.id === item.id);
             if (opData && opData.count > maxTeamShot) {
@@ -1036,6 +1120,12 @@ const appState = {
               leaderClass = ' team-shot-leader';
               displayBadgeText = `👑 ${displayBadgeText}`;
             }
+          } else if (isRibbon) {
+            displayBadgeText = `${op.toUpperCase()} (${opCount}x)`;
+            if (opCount > 0 && opCount === maxTeamShot) {
+              leaderClass = ' team-shot-leader';
+              displayBadgeText = `👑 ${displayBadgeText}`;
+            }
           } else if (isNumericProgress) {
             displayBadgeText = `${op.toUpperCase()} (${opCount})`;
           }
@@ -1046,19 +1136,20 @@ const appState = {
         let actionControlsHtml = '';
         if (isNumericProgress) {
           const countVal = item.count || 0;
-          const targetVal = item.target;
+          const targetVal = item.target || 1;
           
-          // Long Shot labels display your record alongside the in-game target
           let pillLabel = `✏️ ${countVal} / ${targetVal}`;
           if (isLongShot) {
             const isPersonalRecord = countVal > targetVal;
             pillLabel = `🎯 ${countVal}m / ${targetVal}m REQ ${isPersonalRecord ? '🔥' : ''}`;
+          } else if (isRibbon) {
+            pillLabel = `🎖️ EARNED: ${countVal} TIME${countVal === 1 ? '' : 'S'}`;
           }
 
           actionControlsHtml = `
             <div class="stepper-action-row">
               <button class="step-btn outlined-text" onclick="appState.stepItemCount('${item.id}', -1)">−</button>
-              <div id="val-box-${item.id}" class="clickable-num-pill outlined-text ${item.collected ? 'pill-completed' : ''}" onclick="appState.openDirectNumberEditor('${item.id}', ${countVal}, ${targetVal}, ${isLongShot})">
+              <div id="val-box-${item.id}" class="clickable-num-pill outlined-text ${item.collected ? 'pill-completed' : ''}" onclick="appState.openDirectNumberEditor('${item.id}', ${countVal}, ${targetVal}, ${isLongShot || isRibbon})">
                 ${pillLabel}
               </div>
               <button class="step-btn outlined-text" onclick="appState.stepItemCount('${item.id}', 1)">+</button>
@@ -1077,19 +1168,28 @@ const appState = {
           `;
         }
 
+        let goalBadgeText = '';
+        if (isLongShot) {
+          goalBadgeText = `TARGET: ${item.target}m`;
+        } else if (item.target && item.target > 1) {
+          goalBadgeText = `GOAL: ${item.target}`;
+        } else if (isRibbon) {
+          goalBadgeText = `REPEATABLE`;
+        }
+
         card.innerHTML = `
           <div>
             <div style="display:flex; align-items:center; gap:6px; margin-bottom:8px;">
               <img src="${iconUrl}" style="width:20px; height:20px; border-radius:4px; object-fit:cover; border:1px solid rgba(255,255,255,0.2);">
               <span class="item-type-badge item-type-tag ${themeMeta.badgeClass}" style="${themeMeta.customStyle}">${item.type}</span>
-              ${item.target && item.target > 1 ? `<span style="font-size:11px; color:#aaa; font-family:monospace; margin-left:auto;">${isLongShot ? 'TARGET DISTANCE:' : 'GOAL:'} ${item.target}${isLongShot ? 'm' : ''}</span>` : ''}
+              ${goalBadgeText ? `<span style="font-size:11px; color:#aaa; font-family:monospace; margin-left:auto;">${goalBadgeText}</span>` : ''}
             </div>
             <div class="item-title outlined-text">${item.name}</div>
             <div class="item-desc outlined-text">${item.desc}</div>
           </div>
           <div>
             <div class="team-intel-row">
-              <span class="team-intel-label">${isLongShot ? 'SNIPER COMPARISON:' : 'TEAM INTEL:'}</span>
+              <span class="team-intel-label">${isLongShot ? 'SNIPER COMPARISON:' : (isRibbon ? 'RIBBONS COMPARISON:' : 'TEAM INTEL:')}</span>
               ${teamBadgesHtml}
             </div>
             ${actionControlsHtml}
