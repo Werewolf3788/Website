@@ -1,5 +1,3 @@
-cd ~/Website-main/Website-main
-cat << 'EOF' > firebase.json
 {
   "hosting": {
     "public": ".",
@@ -10,5 +8,3 @@ cat << 'EOF' > firebase.json
     ]
   }
 }
-EOF
-npx firebase-tools deploy --only hosting --project entertainment-71888
