@@ -1054,7 +1054,7 @@
       ],
       "streamHistory": [],
       "lastHeavySyncTimestamp": null,
-      "lastUpdated": "9/12/2026, 08:45:50"
+      "lastUpdated": "9/12/2026, 09:08:08"
     },
     "DesdemonaTiger": {
       "accountId": "",
@@ -1065,7 +1065,7 @@
       "handshakeState": "EXPIRED",
       "handshakeText": "DESDEMONATIGER HANDSHAKE: NPSSO EXPIRED",
       "inboundFriendRequestsCount": 0,
-      "lastUpdated": "9/12/2026, 08:45:51",
+      "lastUpdated": "9/12/2026, 09:08:10",
       "level": 0,
       "note": "PSN Auth Inactive or Token Expired",
       "npssoStatus": "EXPIRED / UPDATE NEEDED",
@@ -2951,7 +2951,7 @@
       ],
       "streamHistory": [],
       "lastHeavySyncTimestamp": null,
-      "lastUpdated": "9/12/2026, 08:45:48"
+      "lastUpdated": "9/12/2026, 09:08:06"
     },
     "WildHorse_Spirit": {
       "onlineId": "WildHorse_Spirit",
@@ -4734,7 +4734,7 @@
       ],
       "streamHistory": [],
       "lastHeavySyncTimestamp": null,
-      "lastUpdated": "9/12/2026, 08:45:46"
+      "lastUpdated": "9/12/2026, 09:08:04"
     }
   },
   "games": {
@@ -5760,594 +5760,594 @@
     },
     "NPWR40072_00": {
       "commId": "NPWR40072_00",
+      "createdTimestamp": "2026-09-12T13:45:46.365Z",
+      "groups": [
+        {
+          "definedTrophies": {
+            "bronze": 22,
+            "gold": 4,
+            "platinum": 1,
+            "silver": 12
+          },
+          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/2aa0a644-6afa-46ed-99c7-c580d7c89ad1.png",
+          "trophyGroupId": "default",
+          "trophyGroupName": "Ready or Not"
+        },
+        {
+          "definedTrophies": {
+            "bronze": 5,
+            "gold": 0,
+            "platinum": 0,
+            "silver": 3
+          },
+          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/4db32780-109d-4cf2-9cae-b4fdec52eb2f.png",
+          "trophyGroupId": "001",
+          "trophyGroupName": "Home Invasion"
+        },
+        {
+          "definedTrophies": {
+            "bronze": 8,
+            "gold": 0,
+            "platinum": 0,
+            "silver": 2
+          },
+          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/4eafbd3b-ff07-4574-84ba-ddd6dbc84b69.png",
+          "trophyGroupId": "002",
+          "trophyGroupName": "Dark Waters"
+        },
+        {
+          "definedTrophies": {
+            "bronze": 8,
+            "gold": 0,
+            "platinum": 0,
+            "silver": 2
+          },
+          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/60aaddc7-6da3-485b-b1e6-4920001b3d7c.png",
+          "trophyGroupId": "003",
+          "trophyGroupName": "Boiling Point"
+        }
+      ],
       "name": "Ready or Not",
       "platform": "PS5",
       "totalTrophies": 67,
       "trophies": [
         {
-          "trophyId": 0,
-          "name": "You Were Ready",
-          "type": "platinum",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/aad8caf0-9364-4ec6-93ca-76f3eedbc45a.png",
           "detail": "Unlock all the trophies",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/aad8caf0-9364-4ec6-93ca-76f3eedbc45a.png",
+          "name": "You Were Ready",
+          "trophyId": 0,
+          "type": "platinum"
         },
         {
-          "trophyId": 1,
-          "name": "The War",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/73960757-e832-433f-9f77-91dbdb80a3ba.png",
           "detail": "Complete ‘Thank You, Come Again’, ‘Rust Belt’ and ‘Twisted Nerve’ at C+ on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/73960757-e832-433f-9f77-91dbdb80a3ba.png",
+          "name": "The War",
+          "trophyId": 1,
+          "type": "silver"
         },
         {
-          "trophyId": 2,
-          "name": "The Decaying City",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/5f164682-ee6a-4074-8744-55f5b057a600.png",
           "detail": "Complete ‘Elephant’, ‘Relapse’ and ‘Neon Tomb’ at C+ on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/5f164682-ee6a-4074-8744-55f5b057a600.png",
+          "name": "The Decaying City",
+          "trophyId": 2,
+          "type": "silver"
         },
         {
-          "trophyId": 3,
-          "name": "The Left Behind",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/70120024-79ca-4c53-a38e-b69507d13316.png",
           "detail": "Complete ‘Carriers of the Vine’, ‘Sins of the Father’, ‘Ides of March’, and ‘A Lethal Obsession’ at C+ on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/70120024-79ca-4c53-a38e-b69507d13316.png",
+          "name": "The Left Behind",
+          "trophyId": 3,
+          "type": "silver"
         },
         {
-          "trophyId": 4,
-          "name": "The Abducted",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/dc75c072-26f0-4d18-87fd-b67a21cf1afb.png",
           "detail": "Complete ‘Buy Cheap, Buy Twice', ‘Hide and Seek', 'Ends of the Earth’, and 'Greased Palms’ at C+ on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/dc75c072-26f0-4d18-87fd-b67a21cf1afb.png",
+          "name": "The Abducted",
+          "trophyId": 4,
+          "type": "silver"
         },
         {
-          "trophyId": 5,
-          "name": "The Exploited",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/af60e6bd-6f60-41ec-9ed5-50794297eaf8.png",
           "detail": "Complete ‘The Spider’, ‘Valley of the Dolls’, ‘Sinuous Trail’, and '23 Megabytes a Second' at C+ on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/af60e6bd-6f60-41ec-9ed5-50794297eaf8.png",
+          "name": "The Exploited",
+          "trophyId": 5,
+          "type": "silver"
         },
         {
-          "trophyId": 6,
-          "name": "Medal of Valor",
-          "type": "gold",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/ebd4a884-5384-4b6d-a055-0c5b264377ad.png",
           "detail": "Complete all base game missions at S on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/ebd4a884-5384-4b6d-a055-0c5b264377ad.png",
+          "name": "Medal of Valor",
+          "trophyId": 6,
+          "type": "gold"
         },
         {
-          "trophyId": 7,
-          "name": "The World",
-          "type": "gold",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/d0a102aa-e160-4512-ba6f-63429c045274.png",
           "detail": "Complete Ready or Not in ‘Ironman mode’ on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/d0a102aa-e160-4512-ba6f-63429c045274.png",
+          "name": "The World",
+          "trophyId": 7,
+          "type": "gold"
         },
         {
-          "trophyId": 8,
-          "name": "The Hermit",
-          "type": "gold",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/5eae30f6-7ae0-48b8-bba2-8cb1e3656693.png",
           "detail": "Complete Ready or Not in ‘Ironman mode’ without losing a single officer on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/5eae30f6-7ae0-48b8-bba2-8cb1e3656693.png",
+          "name": "The Hermit",
+          "trophyId": 8,
+          "type": "gold"
         },
         {
-          "trophyId": 9,
-          "name": "I'm Too Old For This...",
-          "type": "gold",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/aa85a00c-7f28-4d7f-9a78-0364416ddd80.png",
           "detail": "Complete all base game missions on 'Hard' difficulty in any game mode",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/aa85a00c-7f28-4d7f-9a78-0364416ddd80.png",
+          "name": "I'm Too Old For This...",
+          "trophyId": 9,
+          "type": "gold"
         },
         {
-          "trophyId": 10,
-          "name": "The Emperor",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/8aab9c11-8674-4fc9-ae02-5d0f264d8c9a.png",
           "detail": "Unlock each unique officer trait at least once",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/8aab9c11-8674-4fc9-ae02-5d0f264d8c9a.png",
+          "name": "The Emperor",
+          "trophyId": 10,
+          "type": "silver"
         },
         {
-          "trophyId": 11,
-          "name": "Practice Makes Perfect",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/2c114272-978d-42cc-ade4-e7796e199ff2.png",
           "detail": "Complete 'Training'",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/2c114272-978d-42cc-ade4-e7796e199ff2.png",
+          "name": "Practice Makes Perfect",
+          "trophyId": 11,
+          "type": "bronze"
         },
         {
-          "trophyId": 12,
-          "name": "Dress to Impress",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/cfcb7147-34dd-4bda-bedf-83de89292fb5.png",
           "detail": "Unlock all base game customization items",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/cfcb7147-34dd-4bda-bedf-83de89292fb5.png",
+          "name": "Dress to Impress",
+          "trophyId": 12,
+          "type": "bronze"
         },
         {
-          "trophyId": 13,
-          "name": "Temperance",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/fc31eebb-308d-4746-a449-c29a78b68dd5.png",
           "detail": "Drink one too many coffees",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/fc31eebb-308d-4746-a449-c29a78b68dd5.png",
+          "name": "Temperance",
+          "trophyId": 13,
+          "type": "bronze"
         },
         {
-          "trophyId": 14,
-          "name": "The Fool",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/291f2c95-5f71-4ab5-8725-b13d7e7c37ff.png",
           "detail": "Be killed by a civilian",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/291f2c95-5f71-4ab5-8725-b13d7e7c37ff.png",
+          "name": "The Fool",
+          "trophyId": 14,
+          "type": "bronze"
         },
         {
-          "trophyId": 15,
-          "name": "The Hanged Man",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/ec969f5b-148a-4df2-8224-5b7c0213091e.png",
           "detail": "Complete ‘Hide and Seek' using only a taser, flashbangs, and bash on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/ec969f5b-148a-4df2-8224-5b7c0213091e.png",
+          "name": "The Hanged Man",
+          "trophyId": 15,
+          "type": "silver"
         },
         {
-          "trophyId": 16,
-          "name": "Way Out West",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/7d005abc-d1cf-4705-a630-c795dd25f395.png",
           "detail": "Complete ‘Rust Belt’ using only the .357 Magnum as a weapon on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/7d005abc-d1cf-4705-a630-c795dd25f395.png",
+          "name": "Way Out West",
+          "trophyId": 16,
+          "type": "silver"
         },
         {
-          "trophyId": 17,
-          "name": "Toxic Fumes",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/ef198218-53dc-4c84-b17a-c4d4d6e050cc.png",
           "detail": "Complete 'Twisted Nerve' using only VPL-25, CS gas, gas mask, and bash on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/ef198218-53dc-4c84-b17a-c4d4d6e050cc.png",
+          "name": "Toxic Fumes",
+          "trophyId": 17,
+          "type": "silver"
         },
         {
-          "trophyId": 18,
-          "name": "Off Duty",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/4bc236fa-d466-4659-b50d-a42e7569205b.png",
           "detail": "Complete ‘Thank You, Come Again’ without armor and a helmet on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/4bc236fa-d466-4659-b50d-a42e7569205b.png",
+          "name": "Off Duty",
+          "trophyId": 18,
+          "type": "silver"
         },
         {
-          "trophyId": 19,
-          "name": "Who is Pepe Silvia?",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/3b25dbb2-fd3a-41f7-a91b-fecfe2ebb232.png",
           "detail": "On 'A Lethal Obsession' play all of the audiotapes that can be found in the mission",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/3b25dbb2-fd3a-41f7-a91b-fecfe2ebb232.png",
+          "name": "Who is Pepe Silvia?",
+          "trophyId": 19,
+          "type": "bronze"
         },
         {
-          "trophyId": 20,
-          "name": "Fool Me Once",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/0398040a-3c89-4031-9185-b01835a3c970.png",
           "detail": "On 'Elephant' defuse the second bomb within 2 minutes after defusing the first bomb on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/0398040a-3c89-4031-9185-b01835a3c970.png",
+          "name": "Fool Me Once",
+          "trophyId": 20,
+          "type": "bronze"
         },
         {
-          "trophyId": 21,
-          "name": "Fool Me Twice",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/76d7fb91-4045-47a0-9bae-47070369f6dc.png",
           "detail": "On 'Relapse' defuse the second bomb within 2 minutes after defusing the first bomb on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/76d7fb91-4045-47a0-9bae-47070369f6dc.png",
+          "name": "Fool Me Twice",
+          "trophyId": 21,
+          "type": "bronze"
         },
         {
-          "trophyId": 22,
-          "name": "The Devil",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/b66efecf-f034-4407-85c4-669396bf3b92.png",
           "detail": "Use the secret command for your SWAT team (kill me command)",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/b66efecf-f034-4407-85c4-669396bf3b92.png",
+          "name": "The Devil",
+          "trophyId": 22,
+          "type": "bronze"
         },
         {
-          "trophyId": 23,
-          "name": "The Magician",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/d5a751b6-fc91-42d4-8809-101f62366e33.png",
           "detail": "Arrest a downed suspect only to find out they were faking it",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/d5a751b6-fc91-42d4-8809-101f62366e33.png",
+          "name": "The Magician",
+          "trophyId": 23,
+          "type": "bronze"
         },
         {
-          "trophyId": 24,
-          "name": "First Arrest",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/e55f52fe-7a2c-4ad2-9d64-35e40ca8cb95.png",
           "detail": "Make your first arrest",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/e55f52fe-7a2c-4ad2-9d64-35e40ca8cb95.png",
+          "name": "First Arrest",
+          "trophyId": 24,
+          "type": "bronze"
         },
         {
-          "trophyId": 25,
-          "name": "Due Process",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/64a42984-2bf9-4d2e-8137-3441a5331728.png",
           "detail": "Incapacitate a suspect with a C2 charge",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/64a42984-2bf9-4d2e-8137-3441a5331728.png",
+          "name": "Due Process",
+          "trophyId": 25,
+          "type": "bronze"
         },
         {
-          "trophyId": 26,
-          "name": "Walnut Warrior",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/f5c9f7d3-f437-4db5-b374-4e0c9eb6aaab.png",
           "detail": "Command your squad to breach a door, 20 times",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/f5c9f7d3-f437-4db5-b374-4e0c9eb6aaab.png",
+          "name": "Walnut Warrior",
+          "trophyId": 26,
+          "type": "bronze"
         },
         {
-          "trophyId": 27,
-          "name": "Mahogany Masochist",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/4073fbf3-37fd-45cc-b6e3-a3883bb07d91.png",
           "detail": "Command your squad to breach a door, 50 times",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/4073fbf3-37fd-45cc-b6e3-a3883bb07d91.png",
+          "name": "Mahogany Masochist",
+          "trophyId": 27,
+          "type": "silver"
         },
         {
-          "trophyId": 28,
-          "name": "Arrest Warrant",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/fb9c1620-d85a-462f-a5c6-e1f4a861db8f.png",
           "detail": "Arrest 50 suspects or civilians",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/fb9c1620-d85a-462f-a5c6-e1f4a861db8f.png",
+          "name": "Arrest Warrant",
+          "trophyId": 28,
+          "type": "bronze"
         },
         {
-          "trophyId": 29,
-          "name": "A Rest For The Wicked",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/d40de460-efe5-48d0-a315-bade19a2abe1.png",
           "detail": "Arrest 100 suspects or civilians",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/d40de460-efe5-48d0-a315-bade19a2abe1.png",
+          "name": "A Rest For The Wicked",
+          "trophyId": 29,
+          "type": "silver"
         },
         {
-          "trophyId": 30,
-          "name": "What's In The Box?!",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/bfcd7046-20b8-4a13-b48a-5fe8c8e27467.png",
           "detail": "Inspect any evidence item from the 'Evidence locker' in the 'Headquarters'",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/bfcd7046-20b8-4a13-b48a-5fe8c8e27467.png",
+          "name": "What's In The Box?!",
+          "trophyId": 30,
+          "type": "bronze"
         },
         {
-          "trophyId": 31,
-          "name": "Here's Johnny",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/f87896fc-f56f-476b-92f7-ed9abbf1b713.png",
           "detail": "Breach 20 locked doors with the 'Battering Ram'",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/f87896fc-f56f-476b-92f7-ed9abbf1b713.png",
+          "name": "Here's Johnny",
+          "trophyId": 31,
+          "type": "bronze"
         },
         {
-          "trophyId": 32,
-          "name": "Peeping Tom",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/6b0ae0e2-f717-4ebf-aeb8-4e64e7e306ed.png",
           "detail": "Use the 'Mirrorgun' 30 times under a door",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/6b0ae0e2-f717-4ebf-aeb8-4e64e7e306ed.png",
+          "name": "Peeping Tom",
+          "trophyId": 32,
+          "type": "bronze"
         },
         {
-          "trophyId": 33,
-          "name": "Say Hello To My Little Friend",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/7ab31a15-596e-4e27-a054-ab74c8a7955e.png",
           "detail": "Stun enemies with any 'M320' 30 times",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/7ab31a15-596e-4e27-a054-ab74c8a7955e.png",
+          "name": "Say Hello To My Little Friend",
+          "trophyId": 33,
+          "type": "bronze"
         },
         {
-          "trophyId": 34,
-          "name": "Click From 3, 4 Is Binding",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/e6602d06-fade-4576-841d-1f4ac039c5d2.png",
           "detail": "Unlock 20 doors using the 'Lockpick Gun'",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/e6602d06-fade-4576-841d-1f4ac039c5d2.png",
+          "name": "Click From 3, 4 Is Binding",
+          "trophyId": 34,
+          "type": "bronze"
         },
         {
-          "trophyId": 35,
-          "name": "Door Kickers",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/17be8e36-9c1f-4b0f-b3f1-b872b37a67bf.png",
           "detail": "Have 2 officers with an active “Kicker” trait assigned to the roster and kick a door open in any mission",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/17be8e36-9c1f-4b0f-b3f1-b872b37a67bf.png",
+          "name": "Door Kickers",
+          "trophyId": 35,
+          "type": "bronze"
         },
         {
-          "trophyId": 36,
-          "name": "Silly String",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/aa6f576a-2904-4e00-90e4-3fc0e818200e.png",
           "detail": "Disarm 10 tripwires",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/aa6f576a-2904-4e00-90e4-3fc0e818200e.png",
+          "name": "Silly String",
+          "trophyId": 36,
+          "type": "bronze"
         },
         {
-          "trophyId": 37,
-          "name": "The Tactician",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/acd6e303-48a7-4eb3-aa69-74ea962ea8a9.png",
           "detail": "Complete a mission without using a weapon and only relying on deployables, tactical gear, and bash on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/acd6e303-48a7-4eb3-aa69-74ea962ea8a9.png",
+          "name": "The Tactician",
+          "trophyId": 37,
+          "type": "bronze"
         },
         {
-          "trophyId": 38,
-          "name": "By the Book",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/c2113bb6-c71f-4995-afef-9a2e06e219f5.png",
           "detail": "Complete a mission while only commanding your officers and not using anything from your loadout on 'Standard' difficulty or higher",
-          "groupId": "default"
+          "groupId": "default",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/c2113bb6-c71f-4995-afef-9a2e06e219f5.png",
+          "name": "By the Book",
+          "trophyId": 38,
+          "type": "bronze"
         },
         {
-          "trophyId": 39,
-          "name": "Cut To Pieces",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/fdc64ddc-100b-4ad2-9986-a97e07effe82.png",
           "detail": "Complete ‘Narcos’ at C+ on 'Standard' difficulty or higher",
-          "groupId": "001"
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/fdc64ddc-100b-4ad2-9986-a97e07effe82.png",
+          "name": "Cut To Pieces",
+          "trophyId": 39,
+          "type": "bronze"
         },
         {
-          "trophyId": 40,
-          "name": "Panic Room",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/8ab2c2d4-ae2b-4b42-b2c0-da1bcd758e93.png",
           "detail": "Complete ‘Lawmaker’ at C+ on 'Standard' difficulty or higher",
-          "groupId": "001"
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/8ab2c2d4-ae2b-4b42-b2c0-da1bcd758e93.png",
+          "name": "Panic Room",
+          "trophyId": 40,
+          "type": "bronze"
         },
         {
-          "trophyId": 41,
-          "name": "Back To School",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/ea679d4d-bed4-4abd-b7a4-3d3d702bd883.png",
           "detail": "Complete ‘Dorms’ at C+ on 'Standard' difficulty or higher",
-          "groupId": "001"
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/ea679d4d-bed4-4abd-b7a4-3d3d702bd883.png",
+          "name": "Back To School",
+          "trophyId": 41,
+          "type": "bronze"
         },
         {
-          "trophyId": 42,
-          "name": "After The Storm",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/f93c62d1-a216-41ad-b98f-d3ebb8d5fa8a.png",
           "detail": "Complete all Home Invasion levels at S on 'Standard' difficulty or higher",
-          "groupId": "001"
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/f93c62d1-a216-41ad-b98f-d3ebb8d5fa8a.png",
+          "name": "After The Storm",
+          "trophyId": 42,
+          "type": "silver"
         },
         {
-          "trophyId": 43,
-          "name": "Beat Cop",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/b40a47d4-8136-409e-9187-e657dfd6a991.png",
           "detail": "Complete ‘Narcos’ using only lethal pistols but without using grenades or launchers on 'Standard' difficulty or higher",
-          "groupId": "001"
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/b40a47d4-8136-409e-9187-e657dfd6a991.png",
+          "name": "Beat Cop",
+          "trophyId": 43,
+          "type": "bronze"
         },
         {
-          "trophyId": 44,
-          "name": "Hidden and Dangerous",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/55b67eb5-f7bf-41be-8667-a9e47977d6c3.png",
           "detail": "Restrain all civilians in ‘Lawmaker’ without neutralizing any suspects on 'Standard' difficulty or higher",
-          "groupId": "001"
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/55b67eb5-f7bf-41be-8667-a9e47977d6c3.png",
+          "name": "Hidden and Dangerous",
+          "trophyId": 44,
+          "type": "silver"
         },
         {
-          "trophyId": 45,
-          "name": "Meldonin",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/0ce82d39-af12-4eeb-8e85-1547a680a629.png",
           "detail": "Complete all ‘Dorms’ main objectives in five minutes on 'Standard' difficulty or higher",
-          "groupId": "001"
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/0ce82d39-af12-4eeb-8e85-1547a680a629.png",
+          "name": "Meldonin",
+          "trophyId": 45,
+          "type": "bronze"
         },
         {
-          "trophyId": 46,
-          "name": "From House to Home",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/7b61a3f2-f060-4157-81b1-e5fff061160f.png",
           "detail": "Get all Ready Or Not Home Invasion DLC trophies",
-          "groupId": "001"
+          "groupId": "001",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/7b61a3f2-f060-4157-81b1-e5fff061160f.png",
+          "name": "From House to Home",
+          "trophyId": 46,
+          "type": "silver"
         },
         {
-          "trophyId": 47,
-          "name": "The Dogs Heads",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/654abd57-9819-4825-b883-bd026729242a.png",
           "detail": "Complete ‘Mirage at Sea’ at C+ on 'Standard' difficulty or higher",
-          "groupId": "002"
+          "groupId": "002",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/654abd57-9819-4825-b883-bd026729242a.png",
+          "name": "The Dogs Heads",
+          "trophyId": 47,
+          "type": "bronze"
         },
         {
-          "trophyId": 48,
-          "name": "The Meek & The Earth",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/74efe1a5-3cb6-49dd-83fc-4d58ec169ab8.png",
           "detail": "Complete ‘Leviathan’ at C+ on 'Standard' difficulty or higher",
-          "groupId": "002"
+          "groupId": "002",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/74efe1a5-3cb6-49dd-83fc-4d58ec169ab8.png",
+          "name": "The Meek & The Earth",
+          "trophyId": 48,
+          "type": "bronze"
         },
         {
-          "trophyId": 49,
-          "name": "The Margay",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/59541145-28ae-40a7-9de6-d93ac85deae6.png",
           "detail": "Complete ‘3 Letter Triad’ at C+ on 'Standard' difficulty or higher",
-          "groupId": "002"
+          "groupId": "002",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/59541145-28ae-40a7-9de6-d93ac85deae6.png",
+          "name": "The Margay",
+          "trophyId": 49,
+          "type": "bronze"
         },
         {
-          "trophyId": 50,
-          "name": "From Land to Sea",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/d0f1b17c-a51a-45a1-83a4-dde9f5ebb220.png",
           "detail": "Complete all Dark Waters levels at S on 'Standard' difficulty or higher",
-          "groupId": "002"
+          "groupId": "002",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/d0f1b17c-a51a-45a1-83a4-dde9f5ebb220.png",
+          "name": "From Land to Sea",
+          "trophyId": 50,
+          "type": "silver"
         },
         {
-          "trophyId": 51,
-          "name": "Big Shell Specialist",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/a41a9035-c562-47df-be2f-1f429643b8da.png",
           "detail": "During ‘Leviathan’, successfully hit two long-range headshots, on two different active Suspects, located over 30m away from you on 'Standard' difficulty or higher",
-          "groupId": "002"
+          "groupId": "002",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/a41a9035-c562-47df-be2f-1f429643b8da.png",
+          "name": "Big Shell Specialist",
+          "trophyId": 51,
+          "type": "bronze"
         },
         {
-          "trophyId": 52,
-          "name": "Sleeper Agent",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/9b1d6611-6e7a-4a01-8487-0b63d9bf7755.png",
           "detail": "During ‘3 Letter Triad’, apprehend or incapacitate 15 suspects consecutively, within 15 seconds of one another on 'Standard' difficulty or higher",
-          "groupId": "002"
+          "groupId": "002",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/9b1d6611-6e7a-4a01-8487-0b63d9bf7755.png",
+          "name": "Sleeper Agent",
+          "trophyId": 52,
+          "type": "bronze"
         },
         {
-          "trophyId": 53,
-          "name": "Smile, You're On Camera!",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/0538909a-fe87-44d4-83ec-4457be57ceae.png",
           "detail": "In any mission, see yourself on the Helicopter camera feed",
-          "groupId": "002"
+          "groupId": "002",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/0538909a-fe87-44d4-83ec-4457be57ceae.png",
+          "name": "Smile, You're On Camera!",
+          "trophyId": 53,
+          "type": "bronze"
         },
         {
-          "trophyId": 54,
-          "name": "Justice Uncovers Depths Ghosts in Elysium",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/83712c67-7adc-4f27-b552-61191d59edba.png",
           "detail": "Discover the location of the secret MLO meeting room",
-          "groupId": "002"
+          "groupId": "002",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/83712c67-7adc-4f27-b552-61191d59edba.png",
+          "name": "Justice Uncovers Depths Ghosts in Elysium",
+          "trophyId": 54,
+          "type": "bronze"
         },
         {
-          "trophyId": 55,
-          "name": "Party Crasher",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/4c56f8ba-5ecf-4654-b3fd-8c9967727dcc.png",
           "detail": "During ‘Mirage at Sea’, apprehend Sah’id before the order is given to murder civilians, and no civilians are killed on 'Standard' difficulty or higher",
-          "groupId": "002"
+          "groupId": "002",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/4c56f8ba-5ecf-4654-b3fd-8c9967727dcc.png",
+          "name": "Party Crasher",
+          "trophyId": 55,
+          "type": "bronze"
         },
         {
-          "trophyId": 56,
-          "name": "Getting Your Sea Legs",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/b0d72295-bc65-45d2-91cb-958a1a2d72e7.png",
           "detail": "Get all Ready Or Not Dark Waters DLC trophies",
-          "groupId": "002"
+          "groupId": "002",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/b0d72295-bc65-45d2-91cb-958a1a2d72e7.png",
+          "name": "Getting Your Sea Legs",
+          "trophyId": 56,
+          "type": "silver"
         },
         {
-          "trophyId": 57,
-          "name": "The Flash Point",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/dd5fab39-58e5-4b0d-ba13-8a6d9c48c5a7.png",
           "detail": "Complete ‘No Good Deed’ at C+ on 'Standard' difficulty or higher",
-          "groupId": "003"
+          "groupId": "003",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/dd5fab39-58e5-4b0d-ba13-8a6d9c48c5a7.png",
+          "name": "The Flash Point",
+          "trophyId": 57,
+          "type": "bronze"
         },
         {
-          "trophyId": 58,
-          "name": "The False Idol",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/418746de-c1f8-4fbd-9eeb-6a314c8b1382.png",
           "detail": "Complete ‘All Gods Burn’ at C+ on 'Standard' difficulty or higher",
-          "groupId": "003"
+          "groupId": "003",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/418746de-c1f8-4fbd-9eeb-6a314c8b1382.png",
+          "name": "The False Idol",
+          "trophyId": 58,
+          "type": "bronze"
         },
         {
-          "trophyId": 59,
-          "name": "The Final Directive",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/5fe76745-58bb-47c1-8308-4f6a4bb873e9.png",
           "detail": "Complete ‘A New America’ at C+ on 'Standard' difficulty or higher",
-          "groupId": "003"
+          "groupId": "003",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/5fe76745-58bb-47c1-8308-4f6a4bb873e9.png",
+          "name": "The Final Directive",
+          "trophyId": 59,
+          "type": "bronze"
         },
         {
-          "trophyId": 60,
-          "name": "Nosce Te Ipsum",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/04395f3b-1dbf-44bd-b0a4-1f52b35ffe0e.png",
           "detail": "Complete all Boiling Point levels at S on 'Standard' difficulty or higher",
-          "groupId": "003"
+          "groupId": "003",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/04395f3b-1dbf-44bd-b0a4-1f52b35ffe0e.png",
+          "name": "Nosce Te Ipsum",
+          "trophyId": 60,
+          "type": "silver"
         },
         {
-          "trophyId": 61,
-          "name": "My Eyes, It Burns!",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/b6041d99-f1f9-4e1f-9459-c64ac4b4d8c0.png",
           "detail": "During any Boiling Point mission, while you are actively taking damage from toxic gas, incapacitate three different active Suspects within 5 seconds of one another on ‘Standard’ or higher.",
-          "groupId": "003"
+          "groupId": "003",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/b6041d99-f1f9-4e1f-9459-c64ac4b4d8c0.png",
+          "name": "My Eyes, It Burns!",
+          "trophyId": 61,
+          "type": "bronze"
         },
         {
-          "trophyId": 62,
-          "name": "The Heat is On",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/5ed15448-89ef-4c6a-994e-659ea08f9d0a.png",
           "detail": "Complete ‘All Gods Burn’ without Armor or a Shield equipped and without using grenades, on ‘Hard’ difficulty",
-          "groupId": "003"
+          "groupId": "003",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/5ed15448-89ef-4c6a-994e-659ea08f9d0a.png",
+          "name": "The Heat is On",
+          "trophyId": 62,
+          "type": "bronze"
         },
         {
-          "trophyId": 63,
-          "name": "Programmed Psychosis",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/4413bf08-ddf0-416d-9967-c19ae0885644.png",
           "detail": "Complete ‘A New America’, alone in a multiplayer lobby, on ‘Hard’ difficulty",
-          "groupId": "003"
+          "groupId": "003",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/4413bf08-ddf0-416d-9967-c19ae0885644.png",
+          "name": "Programmed Psychosis",
+          "trophyId": 63,
+          "type": "bronze"
         },
         {
-          "trophyId": 64,
-          "name": "All Secrets Safe",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/6d3a61e4-d492-4b09-9e0b-a551c5171acf.png",
           "detail": "Answer the phone call in the bank vault. It’s for you.",
-          "groupId": "003"
+          "groupId": "003",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/6d3a61e4-d492-4b09-9e0b-a551c5171acf.png",
+          "name": "All Secrets Safe",
+          "trophyId": 64,
+          "type": "bronze"
         },
         {
-          "trophyId": 65,
-          "name": "Targeted Manipulation",
-          "type": "bronze",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/66781c1c-97ba-446c-a766-0c851708345b.png",
           "detail": "Detonate the explosives in ‘A New America’ yourself. You are a part of ‘A New America’. Bring it all down, just as you were told.",
-          "groupId": "003"
+          "groupId": "003",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/66781c1c-97ba-446c-a766-0c851708345b.png",
+          "name": "Targeted Manipulation",
+          "trophyId": 65,
+          "type": "bronze"
         },
         {
-          "trophyId": 66,
-          "name": "Eye of Providence",
-          "type": "silver",
-          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/b3893ec1-3aaf-4f8e-ae71-4cb5072d960b.png",
           "detail": "Find and use all major world interactables in every Boiling Point level.",
-          "groupId": "003"
+          "groupId": "003",
+          "icon": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/b3893ec1-3aaf-4f8e-ae71-4cb5072d960b.png",
+          "name": "Eye of Providence",
+          "trophyId": 66,
+          "type": "silver"
         }
-      ],
-      "groups": [
-        {
-          "trophyGroupId": "default",
-          "trophyGroupName": "Ready or Not",
-          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/2aa0a644-6afa-46ed-99c7-c580d7c89ad1.png",
-          "definedTrophies": {
-            "bronze": 22,
-            "silver": 12,
-            "gold": 4,
-            "platinum": 1
-          }
-        },
-        {
-          "trophyGroupId": "001",
-          "trophyGroupName": "Home Invasion",
-          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/4db32780-109d-4cf2-9cae-b4fdec52eb2f.png",
-          "definedTrophies": {
-            "bronze": 5,
-            "silver": 3,
-            "gold": 0,
-            "platinum": 0
-          }
-        },
-        {
-          "trophyGroupId": "002",
-          "trophyGroupName": "Dark Waters",
-          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/4eafbd3b-ff07-4574-84ba-ddd6dbc84b69.png",
-          "definedTrophies": {
-            "bronze": 8,
-            "silver": 2,
-            "gold": 0,
-            "platinum": 0
-          }
-        },
-        {
-          "trophyGroupId": "003",
-          "trophyGroupName": "Boiling Point",
-          "trophyGroupIconUrl": "https://psnobj.prod.dl.playstation.net/psnobj/NPWR40072_00/60aaddc7-6da3-485b-b1e6-4920001b3d7c.png",
-          "definedTrophies": {
-            "bronze": 8,
-            "silver": 2,
-            "gold": 0,
-            "platinum": 0
-          }
-        }
-      ],
-      "createdTimestamp": "2026-09-12T13:45:46.365Z"
+      ]
     }
   },
   "mutualSquadFollowers": [],
@@ -6356,9 +6356,9 @@
     "wildhorse_spirit_status": "EXPIRED_NPSSO",
     "ray_active": "yes",
     "ray_status": "ACTIVE",
-    "lastCheck": "9/12/2026, 08:45:42"
+    "lastCheck": "9/12/2026, 09:08:01"
   },
-  "lastGlobalUpdate": "9/12/2026, 08:45:42",
+  "lastGlobalUpdate": "9/12/2026, 09:08:01",
   "engineVersion": "24.0.0",
   "codeTimestamp": "Saturday, September 12, 2026 | 02:34 EDT"
 }
