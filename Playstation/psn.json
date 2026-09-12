@@ -17,7 +17,7 @@
       "currentGameHours": "0 hrs",
       "twitch": {
         "isLive": false,
-        "game": null,
+        "game": "Path of Titans",
         "gameArt": null,
         "followers": "73",
         "latestFollower": "None",
@@ -194,7 +194,7 @@
         }
       ],
       "streamHistory": [],
-      "lastUpdated": "9/12/2026, 14:16:50"
+      "lastUpdated": "9/12/2026, 14:23:27"
     },
     "DesdemonaTiger": {
       "onlineId": "DesdemonaTiger",
@@ -213,7 +213,7 @@
       "playSessions": {},
       "liveTrophyProgress": {},
       "currentGameHours": "0 hrs",
-      "lastUpdated": "9/12/2026, 14:16:51",
+      "lastUpdated": "9/12/2026, 14:23:27",
       "gamesPlayed": 0,
       "level": 0,
       "trophySummary": {
@@ -354,7 +354,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "5/31/2026, 04:39:34",
-            "earnedAge": "3 months, 2 weeks, 9 hours, 37 mins",
+            "earnedAge": "3 months, 2 weeks, 9 hours, 43 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0,
@@ -378,7 +378,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "5/31/2026, 06:10:37",
-            "earnedAge": "3 months, 2 weeks, 8 hours, 6 mins",
+            "earnedAge": "3 months, 2 weeks, 8 hours, 12 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0,
@@ -402,7 +402,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "5/31/2026, 08:22:57",
-            "earnedAge": "3 months, 2 weeks, 5 hours, 53 mins",
+            "earnedAge": "3 months, 2 weeks, 6 hours",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0,
@@ -426,7 +426,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "6/6/2026, 23:30:03",
-            "earnedAge": "3 months, 1 week, 14 hours, 46 mins",
+            "earnedAge": "3 months, 1 week, 14 hours, 53 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0,
@@ -450,7 +450,7 @@
             "earnedRate": "0.0",
             "hidden": true,
             "earnedDate": "6/7/2026, 01:31:33",
-            "earnedAge": "3 months, 1 week, 12 hours, 45 mins",
+            "earnedAge": "3 months, 1 week, 12 hours, 51 mins",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0,
@@ -474,7 +474,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "6/7/2026, 03:37:01",
-            "earnedAge": "3 months, 1 week, 10 hours, 39 mins",
+            "earnedAge": "3 months, 1 week, 10 hours, 46 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0,
@@ -498,7 +498,7 @@
             "earnedRate": "0.0",
             "hidden": true,
             "earnedDate": "7/9/2026, 05:01:02",
-            "earnedAge": "2 months, 5 days, 9 hours, 15 mins",
+            "earnedAge": "2 months, 5 days, 9 hours, 22 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0,
@@ -522,7 +522,7 @@
             "earnedRate": "0.0",
             "hidden": true,
             "earnedDate": "7/12/2026, 02:09:14",
-            "earnedAge": "2 months, 2 days, 12 hours, 7 mins",
+            "earnedAge": "2 months, 2 days, 12 hours, 14 mins",
             "timestamp": 1783840154000,
             "currentValue": 0,
             "targetValue": 0,
@@ -546,7 +546,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/21/2026, 18:58:34",
-            "earnedAge": "3 weeks, 19 hours, 18 mins",
+            "earnedAge": "3 weeks, 19 hours, 24 mins",
             "timestamp": 1787356714000,
             "currentValue": 0,
             "targetValue": "600",
@@ -570,7 +570,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/12/2026, 01:29:22",
-            "earnedAge": "2 months, 2 days, 12 hours, 47 mins",
+            "earnedAge": "2 months, 2 days, 12 hours, 54 mins",
             "timestamp": 1783837762000,
             "currentValue": 0,
             "targetValue": "40",
@@ -594,7 +594,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/12/2026, 02:21:21",
-            "earnedAge": "2 months, 2 days, 11 hours, 55 mins",
+            "earnedAge": "2 months, 2 days, 12 hours, 2 mins",
             "timestamp": 1783840881000,
             "currentValue": 0,
             "targetValue": 0,
@@ -641,7 +641,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/12/2026, 00:44:51",
-            "earnedAge": "2 months, 2 days, 13 hours, 31 mins",
+            "earnedAge": "2 months, 2 days, 13 hours, 38 mins",
             "timestamp": 1783835091000,
             "currentValue": 0,
             "targetValue": "16",
@@ -665,7 +665,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/25/2026, 01:27:33",
-            "earnedAge": "1 month, 2 weeks, 5 days, 12 hours, 49 mins",
+            "earnedAge": "1 month, 2 weeks, 5 days, 12 hours, 55 mins",
             "timestamp": 1784960853000,
             "currentValue": 0,
             "targetValue": 0,
@@ -689,7 +689,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/22/2026, 03:25:24",
-            "earnedAge": "1 month, 3 weeks, 1 day, 10 hours, 51 mins",
+            "earnedAge": "1 month, 3 weeks, 1 day, 10 hours, 58 mins",
             "timestamp": 1784708724000,
             "currentValue": 0,
             "targetValue": 0,
@@ -713,7 +713,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "9/11/2026, 23:36:55",
-            "earnedAge": "14 hours, 39 mins",
+            "earnedAge": "14 hours, 46 mins",
             "timestamp": 1789187815000,
             "currentValue": 0,
             "targetValue": 0,
@@ -737,7 +737,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "5/31/2026, 04:39:35",
-            "earnedAge": "3 months, 2 weeks, 9 hours, 37 mins",
+            "earnedAge": "3 months, 2 weeks, 9 hours, 43 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0,
@@ -761,7 +761,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "5/31/2026, 08:08:00",
-            "earnedAge": "3 months, 2 weeks, 6 hours, 8 mins",
+            "earnedAge": "3 months, 2 weeks, 6 hours, 15 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0,
@@ -785,7 +785,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/12/2026, 00:09:35",
-            "earnedAge": "2 months, 2 days, 14 hours, 7 mins",
+            "earnedAge": "2 months, 2 days, 14 hours, 13 mins",
             "timestamp": 1783832975000,
             "currentValue": 0,
             "targetValue": 0,
@@ -912,7 +912,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/28/2026, 18:42:16",
-            "earnedAge": "1 month, 2 weeks, 1 day, 19 hours, 34 mins",
+            "earnedAge": "1 month, 2 weeks, 1 day, 19 hours, 41 mins",
             "timestamp": 1785282136000,
             "currentValue": 0,
             "targetValue": "150",
@@ -936,7 +936,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/7/2026, 19:48:36",
-            "earnedAge": "1 month, 5 days, 18 hours, 28 mins",
+            "earnedAge": "1 month, 5 days, 18 hours, 34 mins",
             "timestamp": 1786150116000,
             "currentValue": 0,
             "targetValue": "300",
@@ -960,7 +960,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/11/2026, 22:45:56",
-            "earnedAge": "2 months, 2 days, 15 hours, 30 mins",
+            "earnedAge": "2 months, 2 days, 15 hours, 37 mins",
             "timestamp": 1783827956000,
             "currentValue": 0,
             "targetValue": "350",
@@ -984,7 +984,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/30/2026, 00:37:10",
-            "earnedAge": "1 month, 2 weeks, 13 hours, 39 mins",
+            "earnedAge": "1 month, 2 weeks, 13 hours, 46 mins",
             "timestamp": 1785389830000,
             "currentValue": 0,
             "targetValue": "100000",
@@ -1008,7 +1008,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/9/2026, 01:47:40",
-            "earnedAge": "2 months, 5 days, 12 hours, 29 mins",
+            "earnedAge": "2 months, 5 days, 12 hours, 35 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50",
@@ -1032,7 +1032,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/20/2026, 07:08:27",
-            "earnedAge": "1 month, 3 weeks, 3 days, 7 hours, 8 mins",
+            "earnedAge": "1 month, 3 weeks, 3 days, 7 hours, 14 mins",
             "timestamp": 1784549307000,
             "currentValue": 0,
             "targetValue": "150",
@@ -1082,7 +1082,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/8/2026, 22:47:08",
-            "earnedAge": "2 months, 5 days, 15 hours, 29 mins",
+            "earnedAge": "2 months, 5 days, 15 hours, 36 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20",
@@ -1106,7 +1106,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/12/2026, 01:28:49",
-            "earnedAge": "2 months, 2 days, 12 hours, 47 mins",
+            "earnedAge": "2 months, 2 days, 12 hours, 54 mins",
             "timestamp": 1783837729000,
             "currentValue": 0,
             "targetValue": "50",
@@ -1130,7 +1130,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/8/2026, 23:57:10",
-            "earnedAge": "2 months, 5 days, 14 hours, 19 mins",
+            "earnedAge": "2 months, 5 days, 14 hours, 26 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1154,7 +1154,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/11/2026, 18:56:27",
-            "earnedAge": "2 months, 2 days, 19 hours, 20 mins",
+            "earnedAge": "2 months, 2 days, 19 hours, 26 mins",
             "timestamp": 1783814187000,
             "currentValue": 0,
             "targetValue": "20",
@@ -1178,7 +1178,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/12/2026, 02:17:32",
-            "earnedAge": "2 months, 2 days, 11 hours, 59 mins",
+            "earnedAge": "2 months, 2 days, 12 hours, 5 mins",
             "timestamp": 1783840652000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1202,7 +1202,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/11/2026, 19:50:07",
-            "earnedAge": "2 months, 2 days, 18 hours, 26 mins",
+            "earnedAge": "2 months, 2 days, 18 hours, 33 mins",
             "timestamp": 1783817407000,
             "currentValue": 0,
             "targetValue": "50",
@@ -1226,7 +1226,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/11/2026, 22:30:33",
-            "earnedAge": "2 months, 2 days, 15 hours, 46 mins",
+            "earnedAge": "2 months, 2 days, 15 hours, 52 mins",
             "timestamp": 1783827033000,
             "currentValue": 0,
             "targetValue": "250",
@@ -1250,7 +1250,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/11/2026, 23:11:02",
-            "earnedAge": "2 months, 2 days, 15 hours, 5 mins",
+            "earnedAge": "2 months, 2 days, 15 hours, 12 mins",
             "timestamp": 1783829462000,
             "currentValue": 0,
             "targetValue": "50",
@@ -1274,7 +1274,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/11/2026, 17:38:04",
-            "earnedAge": "2 months, 2 days, 20 hours, 38 mins",
+            "earnedAge": "2 months, 2 days, 20 hours, 45 mins",
             "timestamp": 1783809484000,
             "currentValue": 0,
             "targetValue": "100",
@@ -1298,7 +1298,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/24/2026, 20:07:07",
-            "earnedAge": "1 month, 2 weeks, 5 days, 18 hours, 9 mins",
+            "earnedAge": "1 month, 2 weeks, 5 days, 18 hours, 16 mins",
             "timestamp": 1784941627000,
             "currentValue": 0,
             "targetValue": "50",
@@ -1322,7 +1322,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/12/2026, 01:26:14",
-            "earnedAge": "2 months, 2 days, 12 hours, 50 mins",
+            "earnedAge": "2 months, 2 days, 12 hours, 57 mins",
             "timestamp": 1783837574000,
             "currentValue": 0,
             "targetValue": "41",
@@ -1346,7 +1346,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/11/2026, 18:59:36",
-            "earnedAge": "2 months, 2 days, 19 hours, 17 mins",
+            "earnedAge": "2 months, 2 days, 19 hours, 23 mins",
             "timestamp": 1783814376000,
             "currentValue": 0,
             "targetValue": "39",
@@ -1370,7 +1370,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/12/2026, 01:55:08",
-            "earnedAge": "2 months, 2 days, 12 hours, 21 mins",
+            "earnedAge": "2 months, 2 days, 12 hours, 28 mins",
             "timestamp": 1783839308000,
             "currentValue": 0,
             "targetValue": "24",
@@ -1394,7 +1394,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/20/2026, 02:52:37",
-            "earnedAge": "1 month, 3 weeks, 3 days, 11 hours, 24 mins",
+            "earnedAge": "1 month, 3 weeks, 3 days, 11 hours, 30 mins",
             "timestamp": 1784533957000,
             "currentValue": 0,
             "targetValue": "24",
@@ -1418,7 +1418,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/29/2026, 02:59:45",
-            "earnedAge": "1 month, 2 weeks, 1 day, 11 hours, 16 mins",
+            "earnedAge": "1 month, 2 weeks, 1 day, 11 hours, 23 mins",
             "timestamp": 1785311985000,
             "currentValue": 0,
             "targetValue": "24",
@@ -1442,7 +1442,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/21/2026, 23:55:17",
-            "earnedAge": "3 weeks, 14 hours, 21 mins",
+            "earnedAge": "3 weeks, 14 hours, 28 mins",
             "timestamp": 1787374517000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1466,7 +1466,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "6/6/2026, 22:57:12",
-            "earnedAge": "3 months, 1 week, 15 hours, 19 mins",
+            "earnedAge": "3 months, 1 week, 15 hours, 26 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1490,7 +1490,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "6/7/2026, 04:57:02",
-            "earnedAge": "3 months, 1 week, 9 hours, 19 mins",
+            "earnedAge": "3 months, 1 week, 9 hours, 26 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3",
@@ -1514,7 +1514,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "9/5/2026, 17:05:50",
-            "earnedAge": "6 days, 21 hours, 10 mins",
+            "earnedAge": "6 days, 21 hours, 17 mins",
             "timestamp": 1788645950000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1538,7 +1538,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/23/2026, 05:38:40",
-            "earnedAge": "2 weeks, 6 days, 8 hours, 38 mins",
+            "earnedAge": "2 weeks, 6 days, 8 hours, 44 mins",
             "timestamp": 1787481520000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1562,7 +1562,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/22/2026, 00:01:45",
-            "earnedAge": "1 month, 3 weeks, 1 day, 14 hours, 14 mins",
+            "earnedAge": "1 month, 3 weeks, 1 day, 14 hours, 21 mins",
             "timestamp": 1784696505000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1586,7 +1586,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/21/2026, 19:35:24",
-            "earnedAge": "3 weeks, 18 hours, 41 mins",
+            "earnedAge": "3 weeks, 18 hours, 48 mins",
             "timestamp": 1787358924000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1636,7 +1636,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/29/2026, 00:39:48",
-            "earnedAge": "2 weeks, 13 hours, 36 mins",
+            "earnedAge": "2 weeks, 13 hours, 43 mins",
             "timestamp": 1787981988000,
             "currentValue": 0,
             "targetValue": "5",
@@ -1660,7 +1660,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/29/2026, 01:09:47",
-            "earnedAge": "2 weeks, 13 hours, 6 mins",
+            "earnedAge": "2 weeks, 13 hours, 13 mins",
             "timestamp": 1787983787000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1684,7 +1684,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/23/2026, 06:20:28",
-            "earnedAge": "2 weeks, 6 days, 7 hours, 56 mins",
+            "earnedAge": "2 weeks, 6 days, 8 hours, 2 mins",
             "timestamp": 1787484028000,
             "currentValue": 0,
             "targetValue": "300",
@@ -1708,7 +1708,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/29/2026, 01:35:54",
-            "earnedAge": "2 weeks, 12 hours, 40 mins",
+            "earnedAge": "2 weeks, 12 hours, 47 mins",
             "timestamp": 1787985354000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1755,7 +1755,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/8/2026, 03:12:07",
-            "earnedAge": "1 month, 5 days, 11 hours, 4 mins",
+            "earnedAge": "1 month, 5 days, 11 hours, 11 mins",
             "timestamp": 1786176727000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1779,7 +1779,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/8/2026, 03:12:08",
-            "earnedAge": "1 month, 5 days, 11 hours, 4 mins",
+            "earnedAge": "1 month, 5 days, 11 hours, 11 mins",
             "timestamp": 1786176728000,
             "currentValue": 0,
             "targetValue": "2",
@@ -1826,7 +1826,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/20/2026, 08:21:29",
-            "earnedAge": "1 month, 3 weeks, 3 days, 5 hours, 55 mins",
+            "earnedAge": "1 month, 3 weeks, 3 days, 6 hours, 1 min",
             "timestamp": 1784553689000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1850,7 +1850,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/26/2026, 22:30:24",
-            "earnedAge": "2 weeks, 2 days, 15 hours, 46 mins",
+            "earnedAge": "2 weeks, 2 days, 15 hours, 53 mins",
             "timestamp": 1787801424000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1874,7 +1874,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/26/2026, 22:30:19",
-            "earnedAge": "2 weeks, 2 days, 15 hours, 46 mins",
+            "earnedAge": "2 weeks, 2 days, 15 hours, 53 mins",
             "timestamp": 1787801419000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1921,7 +1921,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "9/2/2026, 22:20:08",
-            "earnedAge": "1 week, 2 days, 15 hours, 56 mins",
+            "earnedAge": "1 week, 2 days, 16 hours, 3 mins",
             "timestamp": 1788405608000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1945,7 +1945,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "9/2/2026, 22:20:05",
-            "earnedAge": "1 week, 2 days, 15 hours, 56 mins",
+            "earnedAge": "1 week, 2 days, 16 hours, 3 mins",
             "timestamp": 1788405605000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1992,7 +1992,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/20/2026, 15:28:46",
-            "earnedAge": "1 month, 3 weeks, 2 days, 22 hours, 47 mins",
+            "earnedAge": "1 month, 3 weeks, 2 days, 22 hours, 54 mins",
             "timestamp": 1784579326000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2016,7 +2016,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/20/2026, 15:28:45",
-            "earnedAge": "1 month, 3 weeks, 2 days, 22 hours, 47 mins",
+            "earnedAge": "1 month, 3 weeks, 2 days, 22 hours, 54 mins",
             "timestamp": 1784579325000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2471,7 +2471,7 @@
           "rarity": "Rare",
           "timestamp": 1789187815000,
           "earnedDate": "9/11/2026, 23:36:55",
-          "earnedAge": "14 hours, 39 mins"
+          "earnedAge": "14 hours, 46 mins"
         },
         {
           "trophyId": 49,
@@ -2481,7 +2481,7 @@
           "rarity": "Rare",
           "timestamp": 1788645950000,
           "earnedDate": "9/5/2026, 17:05:50",
-          "earnedAge": "6 days, 21 hours, 10 mins"
+          "earnedAge": "6 days, 21 hours, 17 mins"
         },
         {
           "trophyId": 66,
@@ -2491,7 +2491,7 @@
           "rarity": "Rare",
           "timestamp": 1788405608000,
           "earnedDate": "9/2/2026, 22:20:08",
-          "earnedAge": "1 week, 2 days, 15 hours, 56 mins"
+          "earnedAge": "1 week, 2 days, 16 hours, 3 mins"
         },
         {
           "trophyId": 67,
@@ -2501,7 +2501,7 @@
           "rarity": "Rare",
           "timestamp": 1788405605000,
           "earnedDate": "9/2/2026, 22:20:05",
-          "earnedAge": "1 week, 2 days, 15 hours, 56 mins"
+          "earnedAge": "1 week, 2 days, 16 hours, 3 mins"
         },
         {
           "trophyId": 57,
@@ -2511,7 +2511,7 @@
           "rarity": "Rare",
           "timestamp": 1787985354000,
           "earnedDate": "8/29/2026, 01:35:54",
-          "earnedAge": "2 weeks, 12 hours, 40 mins"
+          "earnedAge": "2 weeks, 12 hours, 47 mins"
         },
         {
           "trophyId": 55,
@@ -2521,7 +2521,7 @@
           "rarity": "Rare",
           "timestamp": 1787983787000,
           "earnedDate": "8/29/2026, 01:09:47",
-          "earnedAge": "2 weeks, 13 hours, 6 mins"
+          "earnedAge": "2 weeks, 13 hours, 13 mins"
         },
         {
           "trophyId": 54,
@@ -2531,7 +2531,7 @@
           "rarity": "Rare",
           "timestamp": 1787981988000,
           "earnedDate": "8/29/2026, 00:39:48",
-          "earnedAge": "2 weeks, 13 hours, 36 mins"
+          "earnedAge": "2 weeks, 13 hours, 43 mins"
         },
         {
           "trophyId": 63,
@@ -2541,7 +2541,7 @@
           "rarity": "Rare",
           "timestamp": 1787801424000,
           "earnedDate": "8/26/2026, 22:30:24",
-          "earnedAge": "2 weeks, 2 days, 15 hours, 46 mins"
+          "earnedAge": "2 weeks, 2 days, 15 hours, 53 mins"
         },
         {
           "trophyId": 64,
@@ -2551,7 +2551,7 @@
           "rarity": "Rare",
           "timestamp": 1787801419000,
           "earnedDate": "8/26/2026, 22:30:19",
-          "earnedAge": "2 weeks, 2 days, 15 hours, 46 mins"
+          "earnedAge": "2 weeks, 2 days, 15 hours, 53 mins"
         },
         {
           "trophyId": 56,
@@ -2561,11 +2561,11 @@
           "rarity": "Rare",
           "timestamp": 1787484028000,
           "earnedDate": "8/23/2026, 06:20:28",
-          "earnedAge": "2 weeks, 6 days, 7 hours, 56 mins"
+          "earnedAge": "2 weeks, 6 days, 8 hours, 2 mins"
         }
       ],
       "streamHistory": [],
-      "lastUpdated": "9/12/2026, 14:16:44"
+      "lastUpdated": "9/12/2026, 14:23:25"
     },
     "WildHorse_Spirit": {
       "onlineId": "WildHorse_Spirit",
@@ -2693,7 +2693,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "7/28/2026, 19:56:24",
-            "earnedAge": "1 month, 2 weeks, 1 day, 18 hours, 20 mins",
+            "earnedAge": "1 month, 2 weeks, 1 day, 18 hours, 26 mins",
             "timestamp": 1785286584000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2717,7 +2717,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/7/2026, 23:55:01",
-            "earnedAge": "1 month, 5 days, 14 hours, 21 mins",
+            "earnedAge": "1 month, 5 days, 14 hours, 28 mins",
             "timestamp": 1786164901000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2741,7 +2741,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/9/2026, 01:26:13",
-            "earnedAge": "1 month, 4 days, 12 hours, 50 mins",
+            "earnedAge": "1 month, 4 days, 12 hours, 57 mins",
             "timestamp": 1786256773000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2765,7 +2765,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/16/2026, 21:58:25",
-            "earnedAge": "3 weeks, 5 days, 16 hours, 18 mins",
+            "earnedAge": "3 weeks, 5 days, 16 hours, 24 mins",
             "timestamp": 1786935505000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2789,7 +2789,7 @@
             "earnedRate": "0.0",
             "hidden": true,
             "earnedDate": "8/22/2026, 22:40:54",
-            "earnedAge": "2 weeks, 6 days, 15 hours, 35 mins",
+            "earnedAge": "2 weeks, 6 days, 15 hours, 42 mins",
             "timestamp": 1787456454000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2813,7 +2813,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/23/2026, 01:06:19",
-            "earnedAge": "2 weeks, 6 days, 13 hours, 10 mins",
+            "earnedAge": "2 weeks, 6 days, 13 hours, 17 mins",
             "timestamp": 1787465179000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2837,7 +2837,7 @@
             "earnedRate": "0.0",
             "hidden": true,
             "earnedDate": "8/23/2026, 03:16:29",
-            "earnedAge": "2 weeks, 6 days, 11 hours",
+            "earnedAge": "2 weeks, 6 days, 11 hours, 6 mins",
             "timestamp": 1787472989000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2861,7 +2861,7 @@
             "earnedRate": "0.0",
             "hidden": true,
             "earnedDate": "8/23/2026, 05:17:00",
-            "earnedAge": "2 weeks, 6 days, 8 hours, 59 mins",
+            "earnedAge": "2 weeks, 6 days, 9 hours, 6 mins",
             "timestamp": 1787480220000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2885,7 +2885,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/29/2026, 16:31:01",
-            "earnedAge": "1 week, 6 days, 21 hours, 45 mins",
+            "earnedAge": "1 week, 6 days, 21 hours, 52 mins",
             "timestamp": 1788039061000,
             "currentValue": 0,
             "targetValue": "600",
@@ -2909,7 +2909,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/22/2026, 23:04:30",
-            "earnedAge": "2 weeks, 6 days, 15 hours, 12 mins",
+            "earnedAge": "2 weeks, 6 days, 15 hours, 18 mins",
             "timestamp": 1787457870000,
             "currentValue": 0,
             "targetValue": "40",
@@ -2933,7 +2933,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/23/2026, 05:19:32",
-            "earnedAge": "2 weeks, 6 days, 8 hours, 57 mins",
+            "earnedAge": "2 weeks, 6 days, 9 hours, 3 mins",
             "timestamp": 1787480372000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2980,7 +2980,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/23/2026, 01:44:35",
-            "earnedAge": "2 weeks, 6 days, 12 hours, 32 mins",
+            "earnedAge": "2 weeks, 6 days, 12 hours, 38 mins",
             "timestamp": 1787467475000,
             "currentValue": 0,
             "targetValue": "16",
@@ -3050,7 +3050,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "9/11/2026, 23:36:52",
-            "earnedAge": "14 hours, 39 mins",
+            "earnedAge": "14 hours, 46 mins",
             "timestamp": 1789187812000,
             "currentValue": 0,
             "targetValue": 0,
@@ -3074,7 +3074,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/16/2026, 21:58:26",
-            "earnedAge": "3 weeks, 5 days, 16 hours, 18 mins",
+            "earnedAge": "3 weeks, 5 days, 16 hours, 24 mins",
             "timestamp": 1786935506000,
             "currentValue": 0,
             "targetValue": 0,
@@ -3098,7 +3098,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/7/2026, 22:36:30",
-            "earnedAge": "1 month, 5 days, 15 hours, 40 mins",
+            "earnedAge": "1 month, 5 days, 15 hours, 46 mins",
             "timestamp": 1786160190000,
             "currentValue": 0,
             "targetValue": 0,
@@ -3122,7 +3122,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/23/2026, 01:31:03",
-            "earnedAge": "2 weeks, 6 days, 12 hours, 45 mins",
+            "earnedAge": "2 weeks, 6 days, 12 hours, 52 mins",
             "timestamp": 1787466663000,
             "currentValue": 0,
             "targetValue": 0,
@@ -3246,7 +3246,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "9/5/2026, 21:51:40",
-            "earnedAge": "6 days, 16 hours, 24 mins",
+            "earnedAge": "6 days, 16 hours, 31 mins",
             "timestamp": 1788663100000,
             "currentValue": 0,
             "targetValue": "150",
@@ -3296,7 +3296,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/8/2026, 21:07:19",
-            "earnedAge": "1 month, 4 days, 17 hours, 9 mins",
+            "earnedAge": "1 month, 4 days, 17 hours, 16 mins",
             "timestamp": 1786241239000,
             "currentValue": 0,
             "targetValue": "350",
@@ -3346,7 +3346,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/8/2026, 04:25:29",
-            "earnedAge": "1 month, 5 days, 9 hours, 51 mins",
+            "earnedAge": "1 month, 5 days, 9 hours, 57 mins",
             "timestamp": 1786181129000,
             "currentValue": 0,
             "targetValue": "50",
@@ -3370,7 +3370,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/22/2026, 22:58:11",
-            "earnedAge": "2 weeks, 6 days, 15 hours, 18 mins",
+            "earnedAge": "2 weeks, 6 days, 15 hours, 25 mins",
             "timestamp": 1787457491000,
             "currentValue": 0,
             "targetValue": "150",
@@ -3394,7 +3394,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/29/2026, 17:48:49",
-            "earnedAge": "1 week, 6 days, 20 hours, 27 mins",
+            "earnedAge": "1 week, 6 days, 20 hours, 34 mins",
             "timestamp": 1788043729000,
             "currentValue": 0,
             "targetValue": "150",
@@ -3418,7 +3418,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/16/2026, 19:03:45",
-            "earnedAge": "3 weeks, 5 days, 19 hours, 12 mins",
+            "earnedAge": "3 weeks, 5 days, 19 hours, 19 mins",
             "timestamp": 1786925025000,
             "currentValue": 0,
             "targetValue": "20",
@@ -3468,7 +3468,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/16/2026, 19:01:09",
-            "earnedAge": "3 weeks, 5 days, 19 hours, 15 mins",
+            "earnedAge": "3 weeks, 5 days, 19 hours, 22 mins",
             "timestamp": 1786924869000,
             "currentValue": 0,
             "targetValue": 0,
@@ -3492,7 +3492,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/8/2026, 03:23:45",
-            "earnedAge": "1 month, 5 days, 10 hours, 52 mins",
+            "earnedAge": "1 month, 5 days, 10 hours, 59 mins",
             "timestamp": 1786177425000,
             "currentValue": 0,
             "targetValue": "20",
@@ -3516,7 +3516,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/22/2026, 23:15:42",
-            "earnedAge": "2 weeks, 6 days, 15 hours",
+            "earnedAge": "2 weeks, 6 days, 15 hours, 7 mins",
             "timestamp": 1787458542000,
             "currentValue": 0,
             "targetValue": 0,
@@ -3540,7 +3540,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/16/2026, 20:52:18",
-            "earnedAge": "3 weeks, 5 days, 17 hours, 24 mins",
+            "earnedAge": "3 weeks, 5 days, 17 hours, 31 mins",
             "timestamp": 1786931538000,
             "currentValue": 0,
             "targetValue": "50",
@@ -3564,7 +3564,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/22/2026, 22:48:21",
-            "earnedAge": "2 weeks, 6 days, 15 hours, 28 mins",
+            "earnedAge": "2 weeks, 6 days, 15 hours, 34 mins",
             "timestamp": 1787456901000,
             "currentValue": 0,
             "targetValue": "250",
@@ -3588,7 +3588,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/20/2026, 18:17:03",
-            "earnedAge": "3 weeks, 1 day, 19 hours, 59 mins",
+            "earnedAge": "3 weeks, 1 day, 20 hours, 6 mins",
             "timestamp": 1787267823000,
             "currentValue": 0,
             "targetValue": "50",
@@ -3612,7 +3612,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/16/2026, 19:35:50",
-            "earnedAge": "3 weeks, 5 days, 18 hours, 40 mins",
+            "earnedAge": "3 weeks, 5 days, 18 hours, 47 mins",
             "timestamp": 1786926950000,
             "currentValue": 0,
             "targetValue": "100",
@@ -3636,7 +3636,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/29/2026, 16:57:54",
-            "earnedAge": "1 week, 6 days, 21 hours, 18 mins",
+            "earnedAge": "1 week, 6 days, 21 hours, 25 mins",
             "timestamp": 1788040674000,
             "currentValue": 0,
             "targetValue": "50",
@@ -3660,7 +3660,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/23/2026, 03:13:17",
-            "earnedAge": "2 weeks, 6 days, 11 hours, 3 mins",
+            "earnedAge": "2 weeks, 6 days, 11 hours, 10 mins",
             "timestamp": 1787472797000,
             "currentValue": 0,
             "targetValue": "41",
@@ -3684,7 +3684,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/23/2026, 02:30:41",
-            "earnedAge": "2 weeks, 6 days, 11 hours, 45 mins",
+            "earnedAge": "2 weeks, 6 days, 11 hours, 52 mins",
             "timestamp": 1787470241000,
             "currentValue": 0,
             "targetValue": "39",
@@ -3708,7 +3708,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/23/2026, 04:21:47",
-            "earnedAge": "2 weeks, 6 days, 9 hours, 54 mins",
+            "earnedAge": "2 weeks, 6 days, 10 hours, 1 min",
             "timestamp": 1787476907000,
             "currentValue": 0,
             "targetValue": "24",
@@ -3732,7 +3732,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/23/2026, 02:38:49",
-            "earnedAge": "2 weeks, 6 days, 11 hours, 37 mins",
+            "earnedAge": "2 weeks, 6 days, 11 hours, 44 mins",
             "timestamp": 1787470729000,
             "currentValue": 0,
             "targetValue": "24",
@@ -3876,7 +3876,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/23/2026, 05:16:11",
-            "earnedAge": "2 weeks, 6 days, 9 hours",
+            "earnedAge": "2 weeks, 6 days, 9 hours, 7 mins",
             "timestamp": 1787480171000,
             "currentValue": 0,
             "targetValue": 0,
@@ -3900,7 +3900,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/23/2026, 05:40:07",
-            "earnedAge": "2 weeks, 6 days, 8 hours, 36 mins",
+            "earnedAge": "2 weeks, 6 days, 8 hours, 43 mins",
             "timestamp": 1787481607000,
             "currentValue": 0,
             "targetValue": 0,
@@ -3973,7 +3973,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/29/2026, 01:22:33",
-            "earnedAge": "2 weeks, 12 hours, 54 mins",
+            "earnedAge": "2 weeks, 13 hours",
             "timestamp": 1787984553000,
             "currentValue": 0,
             "targetValue": "5",
@@ -3997,7 +3997,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/29/2026, 01:09:47",
-            "earnedAge": "2 weeks, 13 hours, 6 mins",
+            "earnedAge": "2 weeks, 13 hours, 13 mins",
             "timestamp": 1787983787000,
             "currentValue": 0,
             "targetValue": 0,
@@ -4021,7 +4021,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/23/2026, 06:27:26",
-            "earnedAge": "2 weeks, 6 days, 7 hours, 49 mins",
+            "earnedAge": "2 weeks, 6 days, 7 hours, 55 mins",
             "timestamp": 1787484446000,
             "currentValue": 0,
             "targetValue": "300",
@@ -4045,7 +4045,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "9/11/2026, 23:10:18",
-            "earnedAge": "15 hours, 6 mins",
+            "earnedAge": "15 hours, 13 mins",
             "timestamp": 1789186218000,
             "currentValue": 0,
             "targetValue": 0,
@@ -4092,7 +4092,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/8/2026, 03:11:59",
-            "earnedAge": "1 month, 5 days, 11 hours, 4 mins",
+            "earnedAge": "1 month, 5 days, 11 hours, 11 mins",
             "timestamp": 1786176719000,
             "currentValue": 0,
             "targetValue": 0,
@@ -4116,7 +4116,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/8/2026, 03:12:00",
-            "earnedAge": "1 month, 5 days, 11 hours, 4 mins",
+            "earnedAge": "1 month, 5 days, 11 hours, 11 mins",
             "timestamp": 1786176720000,
             "currentValue": 0,
             "targetValue": "2",
@@ -4140,7 +4140,7 @@
             "earnedRate": "0.0",
             "hidden": false,
             "earnedDate": "8/29/2026, 01:22:31",
-            "earnedAge": "2 weeks, 12 hours, 54 mins",
+            "earnedAge": "2 weeks, 13 hours",
             "timestamp": 1787984551000,
             "currentValue": 0,
             "targetValue": 0,
@@ -4800,7 +4800,7 @@
           "rarity": "Rare",
           "timestamp": 1789187812000,
           "earnedDate": "9/11/2026, 23:36:52",
-          "earnedAge": "14 hours, 39 mins"
+          "earnedAge": "14 hours, 46 mins"
         },
         {
           "trophyId": 57,
@@ -4810,7 +4810,7 @@
           "rarity": "Rare",
           "timestamp": 1789186218000,
           "earnedDate": "9/11/2026, 23:10:18",
-          "earnedAge": "15 hours, 6 mins"
+          "earnedAge": "15 hours, 13 mins"
         },
         {
           "trophyId": 24,
@@ -4820,7 +4820,7 @@
           "rarity": "Rare",
           "timestamp": 1788663100000,
           "earnedDate": "9/5/2026, 21:51:40",
-          "earnedAge": "6 days, 16 hours, 24 mins"
+          "earnedAge": "6 days, 16 hours, 31 mins"
         },
         {
           "trophyId": 30,
@@ -4830,7 +4830,7 @@
           "rarity": "Rare",
           "timestamp": 1788043729000,
           "earnedDate": "8/29/2026, 17:48:49",
-          "earnedAge": "1 week, 6 days, 20 hours, 27 mins"
+          "earnedAge": "1 week, 6 days, 20 hours, 34 mins"
         },
         {
           "trophyId": 40,
@@ -4840,7 +4840,7 @@
           "rarity": "Rare",
           "timestamp": 1788040674000,
           "earnedDate": "8/29/2026, 16:57:54",
-          "earnedAge": "1 week, 6 days, 21 hours, 18 mins"
+          "earnedAge": "1 week, 6 days, 21 hours, 25 mins"
         },
         {
           "trophyId": 9,
@@ -4850,7 +4850,7 @@
           "rarity": "Rare",
           "timestamp": 1788039061000,
           "earnedDate": "8/29/2026, 16:31:01",
-          "earnedAge": "1 week, 6 days, 21 hours, 45 mins"
+          "earnedAge": "1 week, 6 days, 21 hours, 52 mins"
         },
         {
           "trophyId": 54,
@@ -4860,7 +4860,7 @@
           "rarity": "Rare",
           "timestamp": 1787984553000,
           "earnedDate": "8/29/2026, 01:22:33",
-          "earnedAge": "2 weeks, 12 hours, 54 mins"
+          "earnedAge": "2 weeks, 13 hours"
         },
         {
           "trophyId": 61,
@@ -4870,7 +4870,7 @@
           "rarity": "Rare",
           "timestamp": 1787984551000,
           "earnedDate": "8/29/2026, 01:22:31",
-          "earnedAge": "2 weeks, 12 hours, 54 mins"
+          "earnedAge": "2 weeks, 13 hours"
         },
         {
           "trophyId": 55,
@@ -4880,7 +4880,7 @@
           "rarity": "Rare",
           "timestamp": 1787983787000,
           "earnedDate": "8/29/2026, 01:09:47",
-          "earnedAge": "2 weeks, 13 hours, 6 mins"
+          "earnedAge": "2 weeks, 13 hours, 13 mins"
         },
         {
           "trophyId": 56,
@@ -4890,11 +4890,11 @@
           "rarity": "Rare",
           "timestamp": 1787484446000,
           "earnedDate": "8/23/2026, 06:27:26",
-          "earnedAge": "2 weeks, 6 days, 7 hours, 49 mins"
+          "earnedAge": "2 weeks, 6 days, 7 hours, 55 mins"
         }
       ],
       "streamHistory": [],
-      "lastUpdated": "9/12/2026, 14:16:35"
+      "lastUpdated": "9/12/2026, 14:23:19"
     }
   },
   "games": {
@@ -6644,7 +6644,7 @@
         ],
         "totalItemCount": 58
       },
-      "lastUpdated": "2026-09-12T19:16:41.170Z"
+      "lastUpdated": "2026-09-12T19:23:23.055Z"
     },
     "NPWR09412_00": {
       "commId": "NPWR09412_00",
@@ -8192,7 +8192,7 @@
         ],
         "totalItemCount": 52
       },
-      "lastUpdated": "2026-09-12T19:16:34.586Z"
+      "lastUpdated": "2026-09-12T19:23:18.989Z"
     },
     "NPWR13211_00": {
       "commId": "NPWR13211_00",
@@ -11645,7 +11645,7 @@
         ],
         "totalItemCount": 115
       },
-      "lastUpdated": "2026-09-12T19:16:33.386Z"
+      "lastUpdated": "2026-09-12T19:23:18.012Z"
     },
     "NPWR14289_00": {
       "commId": "NPWR14289_00",
@@ -13193,7 +13193,7 @@
         ],
         "totalItemCount": 52
       },
-      "lastUpdated": "2026-09-12T19:16:43.316Z"
+      "lastUpdated": "2026-09-12T19:23:24.535Z"
     },
     "NPWR18502_00": {
       "commId": "NPWR18502_00",
@@ -14210,7 +14210,7 @@
         ],
         "totalItemCount": 21
       },
-      "lastUpdated": "2026-09-12T19:16:34.184Z"
+      "lastUpdated": "2026-09-12T19:23:18.667Z"
     },
     "NPWR21143_00": {
       "commId": "NPWR21143_00",
@@ -15872,7 +15872,7 @@
         ],
         "totalItemCount": 53
       },
-      "lastUpdated": "2026-09-12T19:16:32.329Z"
+      "lastUpdated": "2026-09-12T19:23:17.315Z"
     },
     "NPWR21465_00": {
       "commId": "NPWR21465_00",
@@ -18123,7 +18123,7 @@
         ],
         "totalItemCount": 72
       },
-      "lastUpdated": "2026-09-12T19:16:38.703Z"
+      "lastUpdated": "2026-09-12T19:23:21.619Z"
     },
     "NPWR22138_00": {
       "commId": "NPWR22138_00",
@@ -19409,7 +19409,7 @@
         ],
         "totalItemCount": 43
       },
-      "lastUpdated": "2026-09-12T19:16:40.577Z"
+      "lastUpdated": "2026-09-12T19:23:22.760Z"
     },
     "NPWR22859_00": {
       "commId": "NPWR22859_00",
@@ -21741,7 +21741,7 @@
         ],
         "totalItemCount": 77
       },
-      "lastUpdated": "2026-09-12T19:16:42.050Z"
+      "lastUpdated": "2026-09-12T19:23:23.679Z"
     },
     "NPWR24913_00": {
       "commId": "NPWR24913_00",
@@ -22804,7 +22804,7 @@
         ],
         "totalItemCount": 34
       },
-      "lastUpdated": "2026-09-12T19:16:33.814Z"
+      "lastUpdated": "2026-09-12T19:23:18.363Z"
     },
     "NPWR28141_00": {
       "commId": "NPWR28141_00",
@@ -23133,7 +23133,7 @@
         ],
         "totalItemCount": 10
       },
-      "lastUpdated": "2026-09-12T19:16:43.897Z"
+      "lastUpdated": "2026-09-12T19:23:24.936Z"
     },
     "NPWR33770_00": {
       "commId": "NPWR33770_00",
@@ -23781,7 +23781,7 @@
         ],
         "totalItemCount": 21
       },
-      "lastUpdated": "2026-09-12T19:16:41.624Z"
+      "lastUpdated": "2026-09-12T19:23:23.413Z"
     },
     "NPWR36496_00": {
       "commId": "NPWR36496_00",
@@ -24690,7 +24690,7 @@
         ],
         "totalItemCount": 30
       },
-      "lastUpdated": "2026-09-12T19:16:39.996Z"
+      "lastUpdated": "2026-09-12T19:23:22.362Z"
     },
     "NPWR39117_00": {
       "commId": "NPWR39117_00",
@@ -25338,7 +25338,7 @@
         ],
         "totalItemCount": 21
       },
-      "lastUpdated": "2026-09-12T19:16:39.440Z"
+      "lastUpdated": "2026-09-12T19:23:22.008Z"
     },
     "NPWR40072_00": {
       "commId": "NPWR40072_00",
@@ -27400,7 +27400,7 @@
         ],
         "totalItemCount": 67
       },
-      "lastUpdated": "2026-09-12T19:16:30.530Z"
+      "lastUpdated": "2026-09-12T19:23:16.057Z"
     },
     "NPWR40813_00": {
       "commId": "NPWR40813_00",
@@ -29604,7 +29604,7 @@
         ],
         "totalItemCount": 71
       },
-      "lastUpdated": "2026-09-12T19:16:42.562Z"
+      "lastUpdated": "2026-09-12T19:23:24.093Z"
     },
     "NPWR44827_00": {
       "commId": "NPWR44827_00",
@@ -31067,7 +31067,7 @@
         ],
         "totalItemCount": 46
       },
-      "lastUpdated": "2026-09-12T19:16:32.884Z"
+      "lastUpdated": "2026-09-12T19:23:17.608Z"
     }
   },
   "mutualSquadFollowers": [],
@@ -31076,9 +31076,9 @@
     "wildhorse_spirit_status": "EXPIRED_NPSSO",
     "ray_active": "yes",
     "ray_status": "ACTIVE",
-    "lastCheck": "9/12/2026, 14:16:25"
+    "lastCheck": "9/12/2026, 14:23:10"
   },
-  "lastGlobalUpdate": "9/12/2026, 14:16:25",
+  "lastGlobalUpdate": "9/12/2026, 14:23:10",
   "engineVersion": "32.0.0",
   "codeTimestamp": "Saturday, September 12, 2026 | 14:15 CDT"
 }
