@@ -17,7 +17,7 @@
       "currentGameHours": "0 hrs",
       "twitch": {
         "isLive": false,
-        "game": "Path of Titans",
+        "game": null,
         "gameArt": null,
         "followers": "73",
         "latestFollower": "None",
@@ -42,6 +42,7 @@
       "level": 107,
       "region": "US",
       "playSessions": {},
+      "liveTrophyProgress": {},
       "trophySummary": {
         "platinum": 0,
         "gold": 0,
@@ -157,7 +158,7 @@
         }
       ],
       "streamHistory": [],
-      "lastUpdated": "9/12/2026, 12:23:21"
+      "lastUpdated": "9/12/2026, 13:20:49"
     },
     "DesdemonaTiger": {
       "onlineId": "DesdemonaTiger",
@@ -175,8 +176,9 @@
       "twitch": null,
       "streamHistory": [],
       "playSessions": {},
+      "liveTrophyProgress": {},
       "currentGameHours": "0 hrs",
-      "lastUpdated": "9/12/2026, 12:23:21",
+      "lastUpdated": "9/12/2026, 13:20:50",
       "gamesPlayed": 0,
       "plus": false,
       "level": 0,
@@ -236,6 +238,802 @@
       "level": 209,
       "region": "US",
       "playSessions": {},
+      "liveTrophyProgress": {
+        "NPWR21465_00": {
+          "0": {
+            "trophyId": 0,
+            "name": "Sniper Elite",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "1": {
+            "trophyId": 1,
+            "name": "Meeting Resistance",
+            "earned": true,
+            "earnedDate": "5/31/2026, 04:39:34",
+            "earnedAge": "3 months, 2 weeks, 8 hours, 41 mins",
+            "timestamp": 1780220374000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "2": {
+            "trophyId": 2,
+            "name": "Confirming Suspicions",
+            "earned": true,
+            "earnedDate": "5/31/2026, 06:10:37",
+            "earnedAge": "3 months, 2 weeks, 7 hours, 10 mins",
+            "timestamp": 1780225837000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "3": {
+            "trophyId": 3,
+            "name": "The Kraken Wakes",
+            "earned": true,
+            "earnedDate": "5/31/2026, 08:22:57",
+            "earnedAge": "3 months, 2 weeks, 4 hours, 57 mins",
+            "timestamp": 1780233777000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "4": {
+            "trophyId": 4,
+            "name": "It's Starting to Crack",
+            "earned": true,
+            "earnedDate": "6/6/2026, 23:30:03",
+            "earnedAge": "3 months, 1 week, 13 hours, 50 mins",
+            "timestamp": 1780806603000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "5": {
+            "trophyId": 5,
+            "name": "Change the Channel",
+            "earned": true,
+            "earnedDate": "6/7/2026, 01:31:33",
+            "earnedAge": "3 months, 1 week, 11 hours, 49 mins",
+            "timestamp": 1780813893000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "6": {
+            "trophyId": 6,
+            "name": "Taking it back",
+            "earned": true,
+            "earnedDate": "6/7/2026, 03:37:01",
+            "earnedAge": "3 months, 1 week, 9 hours, 43 mins",
+            "timestamp": 1780821421000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "7": {
+            "trophyId": 7,
+            "name": "Target America",
+            "earned": true,
+            "earnedDate": "7/9/2026, 05:01:02",
+            "earnedAge": "2 months, 5 days, 8 hours, 19 mins",
+            "timestamp": 1783591262000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "8": {
+            "trophyId": 8,
+            "name": "The Kraken Sleeps",
+            "earned": true,
+            "earnedDate": "7/12/2026, 02:09:14",
+            "earnedAge": "2 months, 2 days, 11 hours, 11 mins",
+            "timestamp": 1783840154000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "9": {
+            "trophyId": 9,
+            "name": "Can't Outrun A Bullet",
+            "earned": true,
+            "earnedDate": "8/21/2026, 18:58:34",
+            "earnedAge": "3 weeks, 18 hours, 22 mins",
+            "timestamp": 1787356714000,
+            "currentValue": 0,
+            "targetValue": "600",
+            "subProgressRatio": "0/600"
+          },
+          "10": {
+            "trophyId": 10,
+            "name": "Climbing the Ladder",
+            "earned": true,
+            "earnedDate": "7/12/2026, 01:29:22",
+            "earnedAge": "2 months, 2 days, 11 hours, 51 mins",
+            "timestamp": 1783837762000,
+            "currentValue": 0,
+            "targetValue": "40",
+            "subProgressRatio": "0/40"
+          },
+          "11": {
+            "trophyId": 11,
+            "name": "Liberté",
+            "earned": true,
+            "earnedDate": "7/12/2026, 02:21:21",
+            "earnedAge": "2 months, 2 days, 10 hours, 59 mins",
+            "timestamp": 1783840881000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "12": {
+            "trophyId": 12,
+            "name": "Best of the Best",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "13": {
+            "trophyId": 13,
+            "name": "No Stone Unturned",
+            "earned": true,
+            "earnedDate": "7/12/2026, 00:44:51",
+            "earnedAge": "2 months, 2 days, 12 hours, 35 mins",
+            "timestamp": 1783835091000,
+            "currentValue": 0,
+            "targetValue": "16",
+            "subProgressRatio": "0/16"
+          },
+          "14": {
+            "trophyId": 14,
+            "name": "Opposing Force",
+            "earned": true,
+            "earnedDate": "7/25/2026, 01:27:33",
+            "earnedAge": "1 month, 2 weeks, 5 days, 11 hours, 53 mins",
+            "timestamp": 1784960853000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "15": {
+            "trophyId": 15,
+            "name": "Enemy at the Gates",
+            "earned": true,
+            "earnedDate": "7/22/2026, 03:25:24",
+            "earnedAge": "1 month, 3 weeks, 1 day, 9 hours, 55 mins",
+            "timestamp": 1784708724000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "16": {
+            "trophyId": 16,
+            "name": "Fields of Glory",
+            "earned": true,
+            "earnedDate": "9/11/2026, 23:36:55",
+            "earnedAge": "13 hours, 43 mins",
+            "timestamp": 1789187815000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "17": {
+            "trophyId": 17,
+            "name": "Just a Flesh Wound",
+            "earned": true,
+            "earnedDate": "5/31/2026, 04:39:35",
+            "earnedAge": "3 months, 2 weeks, 8 hours, 41 mins",
+            "timestamp": 1780220375000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "18": {
+            "trophyId": 18,
+            "name": "Organ Grinder",
+            "earned": true,
+            "earnedDate": "5/31/2026, 08:08:00",
+            "earnedAge": "3 months, 2 weeks, 5 hours, 12 mins",
+            "timestamp": 1780232880000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "19": {
+            "trophyId": 19,
+            "name": "Strategist",
+            "earned": true,
+            "earnedDate": "7/12/2026, 00:09:35",
+            "earnedAge": "2 months, 2 days, 13 hours, 11 mins",
+            "timestamp": 1783832975000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "20": {
+            "trophyId": 20,
+            "name": "Master of Pistols",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "2",
+            "targetValue": "6",
+            "subProgressRatio": "2/6"
+          },
+          "21": {
+            "trophyId": 21,
+            "name": "Master of Secondaries",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "1",
+            "targetValue": "6",
+            "subProgressRatio": "1/6"
+          },
+          "22": {
+            "trophyId": 22,
+            "name": "Master of Rifles",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "1",
+            "targetValue": "6",
+            "subProgressRatio": "1/6"
+          },
+          "23": {
+            "trophyId": 23,
+            "name": "Master-at-arms",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "0",
+            "targetValue": "3",
+            "subProgressRatio": "0/3"
+          },
+          "24": {
+            "trophyId": 24,
+            "name": "Gunslinger",
+            "earned": true,
+            "earnedDate": "7/28/2026, 18:42:16",
+            "earnedAge": "1 month, 2 weeks, 1 day, 18 hours, 38 mins",
+            "timestamp": 1785282136000,
+            "currentValue": 0,
+            "targetValue": "150",
+            "subProgressRatio": "0/150"
+          },
+          "25": {
+            "trophyId": 25,
+            "name": "Skirmisher",
+            "earned": true,
+            "earnedDate": "8/7/2026, 19:48:36",
+            "earnedAge": "1 month, 5 days, 17 hours, 32 mins",
+            "timestamp": 1786150116000,
+            "currentValue": 0,
+            "targetValue": "300",
+            "subProgressRatio": "0/300"
+          },
+          "26": {
+            "trophyId": 26,
+            "name": "Sharpshooter",
+            "earned": true,
+            "earnedDate": "7/11/2026, 22:45:56",
+            "earnedAge": "2 months, 2 days, 14 hours, 34 mins",
+            "timestamp": 1783827956000,
+            "currentValue": 0,
+            "targetValue": "350",
+            "subProgressRatio": "0/350"
+          },
+          "27": {
+            "trophyId": 27,
+            "name": "The Long Game",
+            "earned": true,
+            "earnedDate": "7/30/2026, 00:37:10",
+            "earnedAge": "1 month, 2 weeks, 12 hours, 43 mins",
+            "timestamp": 1785389830000,
+            "currentValue": 0,
+            "targetValue": "100000",
+            "subProgressRatio": "0/100000"
+          },
+          "28": {
+            "trophyId": 28,
+            "name": "Set Europe Ablaze",
+            "earned": true,
+            "earnedDate": "7/9/2026, 01:47:40",
+            "earnedAge": "2 months, 5 days, 11 hours, 33 mins",
+            "timestamp": 1783579660000,
+            "currentValue": 0,
+            "targetValue": "50",
+            "subProgressRatio": "0/50"
+          },
+          "29": {
+            "trophyId": 29,
+            "name": "Precision Is Key",
+            "earned": true,
+            "earnedDate": "7/20/2026, 07:08:27",
+            "earnedAge": "1 month, 3 weeks, 3 days, 6 hours, 12 mins",
+            "timestamp": 1784549307000,
+            "currentValue": 0,
+            "targetValue": "150",
+            "subProgressRatio": "0/150"
+          },
+          "30": {
+            "trophyId": 30,
+            "name": "Out of Scope",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "56",
+            "targetValue": "150",
+            "subProgressRatio": "56/150"
+          },
+          "31": {
+            "trophyId": 31,
+            "name": "Rigged to Blow",
+            "earned": true,
+            "earnedDate": "7/8/2026, 22:47:08",
+            "earnedAge": "2 months, 5 days, 14 hours, 33 mins",
+            "timestamp": 1783568828000,
+            "currentValue": 0,
+            "targetValue": "20",
+            "subProgressRatio": "0/20"
+          },
+          "32": {
+            "trophyId": 32,
+            "name": "My Little Friend",
+            "earned": true,
+            "earnedDate": "7/12/2026, 01:28:49",
+            "earnedAge": "2 months, 2 days, 11 hours, 51 mins",
+            "timestamp": 1783837729000,
+            "currentValue": 0,
+            "targetValue": "50",
+            "subProgressRatio": "0/50"
+          },
+          "33": {
+            "trophyId": 33,
+            "name": "Explosive Efficiency",
+            "earned": true,
+            "earnedDate": "7/8/2026, 23:57:10",
+            "earnedAge": "2 months, 5 days, 13 hours, 23 mins",
+            "timestamp": 1783573030000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "34": {
+            "trophyId": 34,
+            "name": "Lord of War",
+            "earned": true,
+            "earnedDate": "7/11/2026, 18:56:27",
+            "earnedAge": "2 months, 2 days, 18 hours, 24 mins",
+            "timestamp": 1783814187000,
+            "currentValue": 0,
+            "targetValue": "20",
+            "subProgressRatio": "0/20"
+          },
+          "35": {
+            "trophyId": 35,
+            "name": "Die Nussknacker Sweet!",
+            "earned": true,
+            "earnedDate": "7/12/2026, 02:17:32",
+            "earnedAge": "2 months, 2 days, 11 hours, 3 mins",
+            "timestamp": 1783840652000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "36": {
+            "trophyId": 36,
+            "name": "Resourceful",
+            "earned": true,
+            "earnedDate": "7/11/2026, 19:50:07",
+            "earnedAge": "2 months, 2 days, 17 hours, 30 mins",
+            "timestamp": 1783817407000,
+            "currentValue": 0,
+            "targetValue": "50",
+            "subProgressRatio": "0/50"
+          },
+          "37": {
+            "trophyId": 37,
+            "name": "Der Geist",
+            "earned": true,
+            "earnedDate": "7/11/2026, 22:30:33",
+            "earnedAge": "2 months, 2 days, 14 hours, 50 mins",
+            "timestamp": 1783827033000,
+            "currentValue": 0,
+            "targetValue": "250",
+            "subProgressRatio": "0/250"
+          },
+          "38": {
+            "trophyId": 38,
+            "name": "As Quiet as a Mouse",
+            "earned": true,
+            "earnedDate": "7/11/2026, 23:11:02",
+            "earnedAge": "2 months, 2 days, 14 hours, 9 mins",
+            "timestamp": 1783829462000,
+            "currentValue": 0,
+            "targetValue": "50",
+            "subProgressRatio": "0/50"
+          },
+          "39": {
+            "trophyId": 39,
+            "name": "Close Quarters",
+            "earned": true,
+            "earnedDate": "7/11/2026, 17:38:04",
+            "earnedAge": "2 months, 2 days, 19 hours, 42 mins",
+            "timestamp": 1783809484000,
+            "currentValue": 0,
+            "targetValue": "100",
+            "subProgressRatio": "0/100"
+          },
+          "40": {
+            "trophyId": 40,
+            "name": "Snake in the Grass",
+            "earned": true,
+            "earnedDate": "7/24/2026, 20:07:07",
+            "earnedAge": "1 month, 2 weeks, 5 days, 17 hours, 13 mins",
+            "timestamp": 1784941627000,
+            "currentValue": 0,
+            "targetValue": "50",
+            "subProgressRatio": "0/50"
+          },
+          "41": {
+            "trophyId": 41,
+            "name": "From Paris with Love",
+            "earned": true,
+            "earnedDate": "7/12/2026, 01:26:14",
+            "earnedAge": "2 months, 2 days, 11 hours, 54 mins",
+            "timestamp": 1783837574000,
+            "currentValue": 0,
+            "targetValue": "41",
+            "subProgressRatio": "0/41"
+          },
+          "42": {
+            "trophyId": 42,
+            "name": "Burn after reading",
+            "earned": true,
+            "earnedDate": "7/11/2026, 18:59:36",
+            "earnedAge": "2 months, 2 days, 18 hours, 21 mins",
+            "timestamp": 1783814376000,
+            "currentValue": 0,
+            "targetValue": "39",
+            "subProgressRatio": "0/39"
+          },
+          "43": {
+            "trophyId": 43,
+            "name": "Souvenir hunter",
+            "earned": true,
+            "earnedDate": "7/12/2026, 01:55:08",
+            "earnedAge": "2 months, 2 days, 11 hours, 25 mins",
+            "timestamp": 1783839308000,
+            "currentValue": 0,
+            "targetValue": "24",
+            "subProgressRatio": "0/24"
+          },
+          "44": {
+            "trophyId": 44,
+            "name": "Eagle Eyed",
+            "earned": true,
+            "earnedDate": "7/20/2026, 02:52:37",
+            "earnedAge": "1 month, 3 weeks, 3 days, 10 hours, 28 mins",
+            "timestamp": 1784533957000,
+            "currentValue": 0,
+            "targetValue": "24",
+            "subProgressRatio": "0/24"
+          },
+          "45": {
+            "trophyId": 45,
+            "name": "Tinkerer",
+            "earned": true,
+            "earnedDate": "7/29/2026, 02:59:45",
+            "earnedAge": "1 month, 2 weeks, 1 day, 10 hours, 21 mins",
+            "timestamp": 1785311985000,
+            "currentValue": 0,
+            "targetValue": "24",
+            "subProgressRatio": "0/24"
+          },
+          "46": {
+            "trophyId": 46,
+            "name": "It'll Buff Right Out",
+            "earned": true,
+            "earnedDate": "8/21/2026, 23:55:17",
+            "earnedAge": "3 weeks, 13 hours, 25 mins",
+            "timestamp": 1787374517000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "47": {
+            "trophyId": 47,
+            "name": "Locomotion Commotion",
+            "earned": true,
+            "earnedDate": "6/6/2026, 22:57:12",
+            "earnedAge": "3 months, 1 week, 14 hours, 23 mins",
+            "timestamp": 1780804632000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "48": {
+            "trophyId": 48,
+            "name": "Up Close and Personal",
+            "earned": true,
+            "earnedDate": "6/7/2026, 04:57:02",
+            "earnedAge": "3 months, 1 week, 8 hours, 23 mins",
+            "timestamp": 1780826222000,
+            "currentValue": 0,
+            "targetValue": "3",
+            "subProgressRatio": "0/3"
+          },
+          "49": {
+            "trophyId": 49,
+            "name": "Road Rage",
+            "earned": true,
+            "earnedDate": "9/5/2026, 17:05:50",
+            "earnedAge": "6 days, 20 hours, 14 mins",
+            "timestamp": 1788645950000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "50": {
+            "trophyId": 50,
+            "name": "Don't hold your breath",
+            "earned": true,
+            "earnedDate": "8/23/2026, 05:38:40",
+            "earnedAge": "2 weeks, 6 days, 7 hours, 42 mins",
+            "timestamp": 1787481520000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "51": {
+            "trophyId": 51,
+            "name": "Brains of the Operation",
+            "earned": true,
+            "earnedDate": "7/22/2026, 00:01:45",
+            "earnedAge": "1 month, 3 weeks, 1 day, 13 hours, 19 mins",
+            "timestamp": 1784696505000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "52": {
+            "trophyId": 52,
+            "name": "Sight Beyond Sights",
+            "earned": true,
+            "earnedDate": "8/21/2026, 19:35:24",
+            "earnedAge": "3 weeks, 17 hours, 45 mins",
+            "timestamp": 1787358924000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "53": {
+            "trophyId": 53,
+            "name": "Shoot for the Moon",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "1",
+            "targetValue": "3",
+            "subProgressRatio": "1/3"
+          },
+          "54": {
+            "trophyId": 54,
+            "name": "Führerious Repetition",
+            "earned": true,
+            "earnedDate": "8/29/2026, 00:39:48",
+            "earnedAge": "2 weeks, 12 hours, 40 mins",
+            "timestamp": 1787981988000,
+            "currentValue": 0,
+            "targetValue": "5",
+            "subProgressRatio": "0/5"
+          },
+          "55": {
+            "trophyId": 55,
+            "name": "Reich To The Point",
+            "earned": true,
+            "earnedDate": "8/29/2026, 01:09:47",
+            "earnedAge": "2 weeks, 12 hours, 11 mins",
+            "timestamp": 1787983787000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "56": {
+            "trophyId": 56,
+            "name": "From Führer Away",
+            "earned": true,
+            "earnedDate": "8/23/2026, 06:20:28",
+            "earnedAge": "2 weeks, 6 days, 7 hours",
+            "timestamp": 1787484028000,
+            "currentValue": 0,
+            "targetValue": "300",
+            "subProgressRatio": "0/300"
+          },
+          "57": {
+            "trophyId": 57,
+            "name": "Covert Elimination",
+            "earned": true,
+            "earnedDate": "8/29/2026, 01:35:54",
+            "earnedAge": "2 weeks, 11 hours, 44 mins",
+            "timestamp": 1787985354000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "58": {
+            "trophyId": 58,
+            "name": "Alpha",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "59": {
+            "trophyId": 59,
+            "name": "Herr Today, Gone Tomorrow",
+            "earned": true,
+            "earnedDate": "8/8/2026, 03:12:07",
+            "earnedAge": "1 month, 5 days, 10 hours, 8 mins",
+            "timestamp": 1786176727000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "60": {
+            "trophyId": 60,
+            "name": "Operation Foxley",
+            "earned": true,
+            "earnedDate": "8/8/2026, 03:12:08",
+            "earnedAge": "1 month, 5 days, 10 hours, 8 mins",
+            "timestamp": 1786176728000,
+            "currentValue": 0,
+            "targetValue": "2",
+            "subProgressRatio": "0/2"
+          },
+          "61": {
+            "trophyId": 61,
+            "name": "Das Familienjuwel",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "62": {
+            "trophyId": 62,
+            "name": "Last Resort",
+            "earned": true,
+            "earnedDate": "7/20/2026, 08:21:29",
+            "earnedAge": "1 month, 3 weeks, 3 days, 4 hours, 59 mins",
+            "timestamp": 1784553689000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "63": {
+            "trophyId": 63,
+            "name": "Siegebreaker",
+            "earned": true,
+            "earnedDate": "8/26/2026, 22:30:24",
+            "earnedAge": "2 weeks, 2 days, 14 hours, 50 mins",
+            "timestamp": 1787801424000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "64": {
+            "trophyId": 64,
+            "name": "Ghost of Falaise",
+            "earned": true,
+            "earnedDate": "8/26/2026, 22:30:19",
+            "earnedAge": "2 weeks, 2 days, 14 hours, 50 mins",
+            "timestamp": 1787801419000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "65": {
+            "trophyId": 65,
+            "name": "Operation Overlord",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "66": {
+            "trophyId": 66,
+            "name": "If You Go Down To The Woods Today",
+            "earned": true,
+            "earnedDate": "9/2/2026, 22:20:08",
+            "earnedAge": "1 week, 2 days, 15 hours",
+            "timestamp": 1788405608000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "67": {
+            "trophyId": 67,
+            "name": "Fight Another Day",
+            "earned": true,
+            "earnedDate": "9/2/2026, 22:20:05",
+            "earnedAge": "1 week, 2 days, 15 hours",
+            "timestamp": 1788405605000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "68": {
+            "trophyId": 68,
+            "name": "Stroll in the Woods",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "69": {
+            "trophyId": 69,
+            "name": "Shipbreaker",
+            "earned": true,
+            "earnedDate": "7/20/2026, 15:28:46",
+            "earnedAge": "1 month, 3 weeks, 2 days, 21 hours, 52 mins",
+            "timestamp": 1784579326000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "70": {
+            "trophyId": 70,
+            "name": "Sink or Swim",
+            "earned": true,
+            "earnedDate": "7/20/2026, 15:28:45",
+            "earnedAge": "1 month, 3 weeks, 2 days, 21 hours, 52 mins",
+            "timestamp": 1784579325000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "71": {
+            "trophyId": 71,
+            "name": "Going Overboard",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          }
+        }
+      },
       "trophySummary": {
         "platinum": 6,
         "gold": 43,
@@ -647,585 +1445,7 @@
             },
             "lastUpdatedDateTime": "2026-07-20T20:28:46Z"
           }
-        ],
-        "userTrophies": {
-          "0": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "1": {
-            "earned": true,
-            "earnedDate": "5/31/2026, 04:39:34",
-            "earnedAge": "3 months, 2 weeks, 7 hours, 43 mins",
-            "timestamp": 1780220374000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "2": {
-            "earned": true,
-            "earnedDate": "5/31/2026, 06:10:37",
-            "earnedAge": "3 months, 2 weeks, 6 hours, 12 mins",
-            "timestamp": 1780225837000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "3": {
-            "earned": true,
-            "earnedDate": "5/31/2026, 08:22:57",
-            "earnedAge": "3 months, 2 weeks, 4 hours",
-            "timestamp": 1780233777000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "4": {
-            "earned": true,
-            "earnedDate": "6/6/2026, 23:30:03",
-            "earnedAge": "3 months, 1 week, 12 hours, 53 mins",
-            "timestamp": 1780806603000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "5": {
-            "earned": true,
-            "earnedDate": "6/7/2026, 01:31:33",
-            "earnedAge": "3 months, 1 week, 10 hours, 51 mins",
-            "timestamp": 1780813893000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "6": {
-            "earned": true,
-            "earnedDate": "6/7/2026, 03:37:01",
-            "earnedAge": "3 months, 1 week, 8 hours, 46 mins",
-            "timestamp": 1780821421000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "7": {
-            "earned": true,
-            "earnedDate": "7/9/2026, 05:01:02",
-            "earnedAge": "2 months, 5 days, 7 hours, 22 mins",
-            "timestamp": 1783591262000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "8": {
-            "earned": true,
-            "earnedDate": "7/12/2026, 02:09:14",
-            "earnedAge": "2 months, 2 days, 10 hours, 14 mins",
-            "timestamp": 1783840154000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "9": {
-            "earned": true,
-            "earnedDate": "8/21/2026, 18:58:34",
-            "earnedAge": "3 weeks, 17 hours, 24 mins",
-            "timestamp": 1787356714000,
-            "currentValue": 0,
-            "subProgressRatio": "0/600"
-          },
-          "10": {
-            "earned": true,
-            "earnedDate": "7/12/2026, 01:29:22",
-            "earnedAge": "2 months, 2 days, 10 hours, 53 mins",
-            "timestamp": 1783837762000,
-            "currentValue": 0,
-            "subProgressRatio": "0/40"
-          },
-          "11": {
-            "earned": true,
-            "earnedDate": "7/12/2026, 02:21:21",
-            "earnedAge": "2 months, 2 days, 10 hours, 1 min",
-            "timestamp": 1783840881000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "12": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "13": {
-            "earned": true,
-            "earnedDate": "7/12/2026, 00:44:51",
-            "earnedAge": "2 months, 2 days, 11 hours, 38 mins",
-            "timestamp": 1783835091000,
-            "currentValue": 0,
-            "subProgressRatio": "0/16"
-          },
-          "14": {
-            "earned": true,
-            "earnedDate": "7/25/2026, 01:27:33",
-            "earnedAge": "1 month, 2 weeks, 5 days, 10 hours, 55 mins",
-            "timestamp": 1784960853000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "15": {
-            "earned": true,
-            "earnedDate": "7/22/2026, 03:25:24",
-            "earnedAge": "1 month, 3 weeks, 1 day, 8 hours, 57 mins",
-            "timestamp": 1784708724000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "16": {
-            "earned": true,
-            "earnedDate": "9/11/2026, 23:36:55",
-            "earnedAge": "12 hours, 46 mins",
-            "timestamp": 1789187815000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "17": {
-            "earned": true,
-            "earnedDate": "5/31/2026, 04:39:35",
-            "earnedAge": "3 months, 2 weeks, 7 hours, 43 mins",
-            "timestamp": 1780220375000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "18": {
-            "earned": true,
-            "earnedDate": "5/31/2026, 08:08:00",
-            "earnedAge": "3 months, 2 weeks, 4 hours, 15 mins",
-            "timestamp": 1780232880000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "19": {
-            "earned": true,
-            "earnedDate": "7/12/2026, 00:09:35",
-            "earnedAge": "2 months, 2 days, 12 hours, 13 mins",
-            "timestamp": 1783832975000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "20": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "2",
-            "subProgressRatio": "2/6"
-          },
-          "21": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "1",
-            "subProgressRatio": "1/6"
-          },
-          "22": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "1",
-            "subProgressRatio": "1/6"
-          },
-          "23": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "subProgressRatio": "0/3"
-          },
-          "24": {
-            "earned": true,
-            "earnedDate": "7/28/2026, 18:42:16",
-            "earnedAge": "1 month, 2 weeks, 1 day, 17 hours, 41 mins",
-            "timestamp": 1785282136000,
-            "currentValue": 0,
-            "subProgressRatio": "0/150"
-          },
-          "25": {
-            "earned": true,
-            "earnedDate": "8/7/2026, 19:48:36",
-            "earnedAge": "1 month, 5 days, 16 hours, 34 mins",
-            "timestamp": 1786150116000,
-            "currentValue": 0,
-            "subProgressRatio": "0/300"
-          },
-          "26": {
-            "earned": true,
-            "earnedDate": "7/11/2026, 22:45:56",
-            "earnedAge": "2 months, 2 days, 13 hours, 37 mins",
-            "timestamp": 1783827956000,
-            "currentValue": 0,
-            "subProgressRatio": "0/350"
-          },
-          "27": {
-            "earned": true,
-            "earnedDate": "7/30/2026, 00:37:10",
-            "earnedAge": "1 month, 2 weeks, 11 hours, 46 mins",
-            "timestamp": 1785389830000,
-            "currentValue": 0,
-            "subProgressRatio": "0/100000"
-          },
-          "28": {
-            "earned": true,
-            "earnedDate": "7/9/2026, 01:47:40",
-            "earnedAge": "2 months, 5 days, 10 hours, 35 mins",
-            "timestamp": 1783579660000,
-            "currentValue": 0,
-            "subProgressRatio": "0/50"
-          },
-          "29": {
-            "earned": true,
-            "earnedDate": "7/20/2026, 07:08:27",
-            "earnedAge": "1 month, 3 weeks, 3 days, 5 hours, 14 mins",
-            "timestamp": 1784549307000,
-            "currentValue": 0,
-            "subProgressRatio": "0/150"
-          },
-          "30": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "56",
-            "subProgressRatio": "56/150"
-          },
-          "31": {
-            "earned": true,
-            "earnedDate": "7/8/2026, 22:47:08",
-            "earnedAge": "2 months, 5 days, 13 hours, 36 mins",
-            "timestamp": 1783568828000,
-            "currentValue": 0,
-            "subProgressRatio": "0/20"
-          },
-          "32": {
-            "earned": true,
-            "earnedDate": "7/12/2026, 01:28:49",
-            "earnedAge": "2 months, 2 days, 10 hours, 54 mins",
-            "timestamp": 1783837729000,
-            "currentValue": 0,
-            "subProgressRatio": "0/50"
-          },
-          "33": {
-            "earned": true,
-            "earnedDate": "7/8/2026, 23:57:10",
-            "earnedAge": "2 months, 5 days, 12 hours, 26 mins",
-            "timestamp": 1783573030000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "34": {
-            "earned": true,
-            "earnedDate": "7/11/2026, 18:56:27",
-            "earnedAge": "2 months, 2 days, 17 hours, 26 mins",
-            "timestamp": 1783814187000,
-            "currentValue": 0,
-            "subProgressRatio": "0/20"
-          },
-          "35": {
-            "earned": true,
-            "earnedDate": "7/12/2026, 02:17:32",
-            "earnedAge": "2 months, 2 days, 10 hours, 5 mins",
-            "timestamp": 1783840652000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "36": {
-            "earned": true,
-            "earnedDate": "7/11/2026, 19:50:07",
-            "earnedAge": "2 months, 2 days, 16 hours, 33 mins",
-            "timestamp": 1783817407000,
-            "currentValue": 0,
-            "subProgressRatio": "0/50"
-          },
-          "37": {
-            "earned": true,
-            "earnedDate": "7/11/2026, 22:30:33",
-            "earnedAge": "2 months, 2 days, 13 hours, 52 mins",
-            "timestamp": 1783827033000,
-            "currentValue": 0,
-            "subProgressRatio": "0/250"
-          },
-          "38": {
-            "earned": true,
-            "earnedDate": "7/11/2026, 23:11:02",
-            "earnedAge": "2 months, 2 days, 13 hours, 12 mins",
-            "timestamp": 1783829462000,
-            "currentValue": 0,
-            "subProgressRatio": "0/50"
-          },
-          "39": {
-            "earned": true,
-            "earnedDate": "7/11/2026, 17:38:04",
-            "earnedAge": "2 months, 2 days, 18 hours, 45 mins",
-            "timestamp": 1783809484000,
-            "currentValue": 0,
-            "subProgressRatio": "0/100"
-          },
-          "40": {
-            "earned": true,
-            "earnedDate": "7/24/2026, 20:07:07",
-            "earnedAge": "1 month, 2 weeks, 5 days, 16 hours, 16 mins",
-            "timestamp": 1784941627000,
-            "currentValue": 0,
-            "subProgressRatio": "0/50"
-          },
-          "41": {
-            "earned": true,
-            "earnedDate": "7/12/2026, 01:26:14",
-            "earnedAge": "2 months, 2 days, 10 hours, 57 mins",
-            "timestamp": 1783837574000,
-            "currentValue": 0,
-            "subProgressRatio": "0/41"
-          },
-          "42": {
-            "earned": true,
-            "earnedDate": "7/11/2026, 18:59:36",
-            "earnedAge": "2 months, 2 days, 17 hours, 23 mins",
-            "timestamp": 1783814376000,
-            "currentValue": 0,
-            "subProgressRatio": "0/39"
-          },
-          "43": {
-            "earned": true,
-            "earnedDate": "7/12/2026, 01:55:08",
-            "earnedAge": "2 months, 2 days, 10 hours, 28 mins",
-            "timestamp": 1783839308000,
-            "currentValue": 0,
-            "subProgressRatio": "0/24"
-          },
-          "44": {
-            "earned": true,
-            "earnedDate": "7/20/2026, 02:52:37",
-            "earnedAge": "1 month, 3 weeks, 3 days, 9 hours, 30 mins",
-            "timestamp": 1784533957000,
-            "currentValue": 0,
-            "subProgressRatio": "0/24"
-          },
-          "45": {
-            "earned": true,
-            "earnedDate": "7/29/2026, 02:59:45",
-            "earnedAge": "1 month, 2 weeks, 1 day, 9 hours, 23 mins",
-            "timestamp": 1785311985000,
-            "currentValue": 0,
-            "subProgressRatio": "0/24"
-          },
-          "46": {
-            "earned": true,
-            "earnedDate": "8/21/2026, 23:55:17",
-            "earnedAge": "3 weeks, 12 hours, 28 mins",
-            "timestamp": 1787374517000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "47": {
-            "earned": true,
-            "earnedDate": "6/6/2026, 22:57:12",
-            "earnedAge": "3 months, 1 week, 13 hours, 26 mins",
-            "timestamp": 1780804632000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "48": {
-            "earned": true,
-            "earnedDate": "6/7/2026, 04:57:02",
-            "earnedAge": "3 months, 1 week, 7 hours, 26 mins",
-            "timestamp": 1780826222000,
-            "currentValue": 0,
-            "subProgressRatio": "0/3"
-          },
-          "49": {
-            "earned": true,
-            "earnedDate": "9/5/2026, 17:05:50",
-            "earnedAge": "6 days, 19 hours, 17 mins",
-            "timestamp": 1788645950000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "50": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 05:38:40",
-            "earnedAge": "2 weeks, 6 days, 6 hours, 44 mins",
-            "timestamp": 1787481520000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "51": {
-            "earned": true,
-            "earnedDate": "7/22/2026, 00:01:45",
-            "earnedAge": "1 month, 3 weeks, 1 day, 12 hours, 21 mins",
-            "timestamp": 1784696505000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "52": {
-            "earned": true,
-            "earnedDate": "8/21/2026, 19:35:24",
-            "earnedAge": "3 weeks, 16 hours, 47 mins",
-            "timestamp": 1787358924000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "53": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "1",
-            "subProgressRatio": "1/3"
-          },
-          "54": {
-            "earned": true,
-            "earnedDate": "8/29/2026, 00:39:48",
-            "earnedAge": "2 weeks, 11 hours, 43 mins",
-            "timestamp": 1787981988000,
-            "currentValue": 0,
-            "subProgressRatio": "0/5"
-          },
-          "55": {
-            "earned": true,
-            "earnedDate": "8/29/2026, 01:09:47",
-            "earnedAge": "2 weeks, 11 hours, 13 mins",
-            "timestamp": 1787983787000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "56": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 06:20:28",
-            "earnedAge": "2 weeks, 6 days, 6 hours, 2 mins",
-            "timestamp": 1787484028000,
-            "currentValue": 0,
-            "subProgressRatio": "0/300"
-          },
-          "57": {
-            "earned": true,
-            "earnedDate": "8/29/2026, 01:35:54",
-            "earnedAge": "2 weeks, 10 hours, 47 mins",
-            "timestamp": 1787985354000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "58": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "59": {
-            "earned": true,
-            "earnedDate": "8/8/2026, 03:12:07",
-            "earnedAge": "1 month, 5 days, 9 hours, 11 mins",
-            "timestamp": 1786176727000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "60": {
-            "earned": true,
-            "earnedDate": "8/8/2026, 03:12:08",
-            "earnedAge": "1 month, 5 days, 9 hours, 11 mins",
-            "timestamp": 1786176728000,
-            "currentValue": 0,
-            "subProgressRatio": "0/2"
-          },
-          "61": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "62": {
-            "earned": true,
-            "earnedDate": "7/20/2026, 08:21:29",
-            "earnedAge": "1 month, 3 weeks, 3 days, 4 hours, 1 min",
-            "timestamp": 1784553689000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "63": {
-            "earned": true,
-            "earnedDate": "8/26/2026, 22:30:24",
-            "earnedAge": "2 weeks, 2 days, 13 hours, 52 mins",
-            "timestamp": 1787801424000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "64": {
-            "earned": true,
-            "earnedDate": "8/26/2026, 22:30:19",
-            "earnedAge": "2 weeks, 2 days, 13 hours, 53 mins",
-            "timestamp": 1787801419000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "65": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "66": {
-            "earned": true,
-            "earnedDate": "9/2/2026, 22:20:08",
-            "earnedAge": "1 week, 2 days, 14 hours, 3 mins",
-            "timestamp": 1788405608000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "67": {
-            "earned": true,
-            "earnedDate": "9/2/2026, 22:20:05",
-            "earnedAge": "1 week, 2 days, 14 hours, 3 mins",
-            "timestamp": 1788405605000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "68": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "69": {
-            "earned": true,
-            "earnedDate": "7/20/2026, 15:28:46",
-            "earnedAge": "1 month, 3 weeks, 2 days, 20 hours, 54 mins",
-            "timestamp": 1784579326000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "70": {
-            "earned": true,
-            "earnedDate": "7/20/2026, 15:28:45",
-            "earnedAge": "1 month, 3 weeks, 2 days, 20 hours, 54 mins",
-            "timestamp": 1784579325000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "71": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          }
-        }
+        ]
       },
       "mostRecentTrophies": [
         {
@@ -1236,7 +1456,7 @@
           "rarity": "Rare",
           "timestamp": 1789187815000,
           "earnedDate": "9/11/2026, 23:36:55",
-          "earnedAge": "12 hours, 46 mins"
+          "earnedAge": "13 hours, 43 mins"
         },
         {
           "trophyId": 49,
@@ -1246,7 +1466,7 @@
           "rarity": "Rare",
           "timestamp": 1788645950000,
           "earnedDate": "9/5/2026, 17:05:50",
-          "earnedAge": "6 days, 19 hours, 17 mins"
+          "earnedAge": "6 days, 20 hours, 14 mins"
         },
         {
           "trophyId": 66,
@@ -1256,7 +1476,7 @@
           "rarity": "Rare",
           "timestamp": 1788405608000,
           "earnedDate": "9/2/2026, 22:20:08",
-          "earnedAge": "1 week, 2 days, 14 hours, 3 mins"
+          "earnedAge": "1 week, 2 days, 15 hours"
         },
         {
           "trophyId": 67,
@@ -1266,7 +1486,7 @@
           "rarity": "Rare",
           "timestamp": 1788405605000,
           "earnedDate": "9/2/2026, 22:20:05",
-          "earnedAge": "1 week, 2 days, 14 hours, 3 mins"
+          "earnedAge": "1 week, 2 days, 15 hours"
         },
         {
           "trophyId": 57,
@@ -1276,7 +1496,7 @@
           "rarity": "Rare",
           "timestamp": 1787985354000,
           "earnedDate": "8/29/2026, 01:35:54",
-          "earnedAge": "2 weeks, 10 hours, 47 mins"
+          "earnedAge": "2 weeks, 11 hours, 44 mins"
         },
         {
           "trophyId": 55,
@@ -1286,7 +1506,7 @@
           "rarity": "Rare",
           "timestamp": 1787983787000,
           "earnedDate": "8/29/2026, 01:09:47",
-          "earnedAge": "2 weeks, 11 hours, 13 mins"
+          "earnedAge": "2 weeks, 12 hours, 11 mins"
         },
         {
           "trophyId": 54,
@@ -1296,7 +1516,7 @@
           "rarity": "Rare",
           "timestamp": 1787981988000,
           "earnedDate": "8/29/2026, 00:39:48",
-          "earnedAge": "2 weeks, 11 hours, 43 mins"
+          "earnedAge": "2 weeks, 12 hours, 40 mins"
         },
         {
           "trophyId": 63,
@@ -1306,7 +1526,7 @@
           "rarity": "Rare",
           "timestamp": 1787801424000,
           "earnedDate": "8/26/2026, 22:30:24",
-          "earnedAge": "2 weeks, 2 days, 13 hours, 52 mins"
+          "earnedAge": "2 weeks, 2 days, 14 hours, 50 mins"
         },
         {
           "trophyId": 64,
@@ -1316,7 +1536,7 @@
           "rarity": "Rare",
           "timestamp": 1787801419000,
           "earnedDate": "8/26/2026, 22:30:19",
-          "earnedAge": "2 weeks, 2 days, 13 hours, 53 mins"
+          "earnedAge": "2 weeks, 2 days, 14 hours, 50 mins"
         },
         {
           "trophyId": 56,
@@ -1326,11 +1546,11 @@
           "rarity": "Rare",
           "timestamp": 1787484028000,
           "earnedDate": "8/23/2026, 06:20:28",
-          "earnedAge": "2 weeks, 6 days, 6 hours, 2 mins"
+          "earnedAge": "2 weeks, 6 days, 7 hours"
         }
       ],
       "streamHistory": [],
-      "lastUpdated": "9/12/2026, 12:23:19"
+      "lastUpdated": "9/12/2026, 13:20:47"
     },
     "WildHorse_Spirit": {
       "onlineId": "WildHorse_Spirit",
@@ -1349,9 +1569,9 @@
       "currentGameHours": "0 hrs",
       "twitch": {
         "isLive": false,
-        "game": "Sniper Elite 5",
+        "game": null,
         "gameArt": null,
-        "followers": "0",
+        "followers": "104",
         "latestFollower": "None",
         "followerNames": [],
         "avatar": "https://static-cdn.jtvnw.net/jtv_user_pictures/1a4efdb4-023e-4802-b07c-82c09a45c4c8-profile_image-300x300.png",
@@ -1374,6 +1594,802 @@
       "level": 187,
       "region": "US",
       "playSessions": {},
+      "liveTrophyProgress": {
+        "NPWR21465_00": {
+          "0": {
+            "trophyId": 0,
+            "name": "Sniper Elite",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "1": {
+            "trophyId": 1,
+            "name": "Meeting Resistance",
+            "earned": true,
+            "earnedDate": "7/28/2026, 19:56:24",
+            "earnedAge": "1 month, 2 weeks, 1 day, 17 hours, 24 mins",
+            "timestamp": 1785286584000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "2": {
+            "trophyId": 2,
+            "name": "Confirming Suspicions",
+            "earned": true,
+            "earnedDate": "8/7/2026, 23:55:01",
+            "earnedAge": "1 month, 5 days, 13 hours, 25 mins",
+            "timestamp": 1786164901000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "3": {
+            "trophyId": 3,
+            "name": "The Kraken Wakes",
+            "earned": true,
+            "earnedDate": "8/9/2026, 01:26:13",
+            "earnedAge": "1 month, 4 days, 11 hours, 54 mins",
+            "timestamp": 1786256773000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "4": {
+            "trophyId": 4,
+            "name": "It's Starting to Crack",
+            "earned": true,
+            "earnedDate": "8/16/2026, 21:58:25",
+            "earnedAge": "3 weeks, 5 days, 15 hours, 22 mins",
+            "timestamp": 1786935505000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "5": {
+            "trophyId": 5,
+            "name": "Change the Channel",
+            "earned": true,
+            "earnedDate": "8/22/2026, 22:40:54",
+            "earnedAge": "2 weeks, 6 days, 14 hours, 39 mins",
+            "timestamp": 1787456454000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "6": {
+            "trophyId": 6,
+            "name": "Taking it back",
+            "earned": true,
+            "earnedDate": "8/23/2026, 01:06:19",
+            "earnedAge": "2 weeks, 6 days, 12 hours, 14 mins",
+            "timestamp": 1787465179000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "7": {
+            "trophyId": 7,
+            "name": "Target America",
+            "earned": true,
+            "earnedDate": "8/23/2026, 03:16:29",
+            "earnedAge": "2 weeks, 6 days, 10 hours, 4 mins",
+            "timestamp": 1787472989000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "8": {
+            "trophyId": 8,
+            "name": "The Kraken Sleeps",
+            "earned": true,
+            "earnedDate": "8/23/2026, 05:17:00",
+            "earnedAge": "2 weeks, 6 days, 8 hours, 3 mins",
+            "timestamp": 1787480220000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "9": {
+            "trophyId": 9,
+            "name": "Can't Outrun A Bullet",
+            "earned": true,
+            "earnedDate": "8/29/2026, 16:31:01",
+            "earnedAge": "1 week, 6 days, 20 hours, 49 mins",
+            "timestamp": 1788039061000,
+            "currentValue": 0,
+            "targetValue": "600",
+            "subProgressRatio": "0/600"
+          },
+          "10": {
+            "trophyId": 10,
+            "name": "Climbing the Ladder",
+            "earned": true,
+            "earnedDate": "8/22/2026, 23:04:30",
+            "earnedAge": "2 weeks, 6 days, 14 hours, 16 mins",
+            "timestamp": 1787457870000,
+            "currentValue": 0,
+            "targetValue": "40",
+            "subProgressRatio": "0/40"
+          },
+          "11": {
+            "trophyId": 11,
+            "name": "Liberté",
+            "earned": true,
+            "earnedDate": "8/23/2026, 05:19:32",
+            "earnedAge": "2 weeks, 6 days, 8 hours, 1 min",
+            "timestamp": 1787480372000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "12": {
+            "trophyId": 12,
+            "name": "Best of the Best",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "13": {
+            "trophyId": 13,
+            "name": "No Stone Unturned",
+            "earned": true,
+            "earnedDate": "8/23/2026, 01:44:35",
+            "earnedAge": "2 weeks, 6 days, 11 hours, 36 mins",
+            "timestamp": 1787467475000,
+            "currentValue": 0,
+            "targetValue": "16",
+            "subProgressRatio": "0/16"
+          },
+          "14": {
+            "trophyId": 14,
+            "name": "Opposing Force",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "15": {
+            "trophyId": 15,
+            "name": "Enemy at the Gates",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "16": {
+            "trophyId": 16,
+            "name": "Fields of Glory",
+            "earned": true,
+            "earnedDate": "9/11/2026, 23:36:52",
+            "earnedAge": "13 hours, 43 mins",
+            "timestamp": 1789187812000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "17": {
+            "trophyId": 17,
+            "name": "Just a Flesh Wound",
+            "earned": true,
+            "earnedDate": "8/16/2026, 21:58:26",
+            "earnedAge": "3 weeks, 5 days, 15 hours, 22 mins",
+            "timestamp": 1786935506000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "18": {
+            "trophyId": 18,
+            "name": "Organ Grinder",
+            "earned": true,
+            "earnedDate": "8/7/2026, 22:36:30",
+            "earnedAge": "1 month, 5 days, 14 hours, 44 mins",
+            "timestamp": 1786160190000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "19": {
+            "trophyId": 19,
+            "name": "Strategist",
+            "earned": true,
+            "earnedDate": "8/23/2026, 01:31:03",
+            "earnedAge": "2 weeks, 6 days, 11 hours, 49 mins",
+            "timestamp": 1787466663000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "20": {
+            "trophyId": 20,
+            "name": "Master of Pistols",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "0",
+            "targetValue": "6",
+            "subProgressRatio": "0/6"
+          },
+          "21": {
+            "trophyId": 21,
+            "name": "Master of Secondaries",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "0",
+            "targetValue": "6",
+            "subProgressRatio": "0/6"
+          },
+          "22": {
+            "trophyId": 22,
+            "name": "Master of Rifles",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "0",
+            "targetValue": "6",
+            "subProgressRatio": "0/6"
+          },
+          "23": {
+            "trophyId": 23,
+            "name": "Master-at-arms",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "0",
+            "targetValue": "3",
+            "subProgressRatio": "0/3"
+          },
+          "24": {
+            "trophyId": 24,
+            "name": "Gunslinger",
+            "earned": true,
+            "earnedDate": "9/5/2026, 21:51:40",
+            "earnedAge": "6 days, 15 hours, 28 mins",
+            "timestamp": 1788663100000,
+            "currentValue": 0,
+            "targetValue": "150",
+            "subProgressRatio": "0/150"
+          },
+          "25": {
+            "trophyId": 25,
+            "name": "Skirmisher",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "128",
+            "targetValue": "300",
+            "subProgressRatio": "128/300"
+          },
+          "26": {
+            "trophyId": 26,
+            "name": "Sharpshooter",
+            "earned": true,
+            "earnedDate": "8/8/2026, 21:07:19",
+            "earnedAge": "1 month, 4 days, 16 hours, 13 mins",
+            "timestamp": 1786241239000,
+            "currentValue": 0,
+            "targetValue": "350",
+            "subProgressRatio": "0/350"
+          },
+          "27": {
+            "trophyId": 27,
+            "name": "The Long Game",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "80726",
+            "targetValue": "100000",
+            "subProgressRatio": "80726/100000"
+          },
+          "28": {
+            "trophyId": 28,
+            "name": "Set Europe Ablaze",
+            "earned": true,
+            "earnedDate": "8/8/2026, 04:25:29",
+            "earnedAge": "1 month, 5 days, 8 hours, 55 mins",
+            "timestamp": 1786181129000,
+            "currentValue": 0,
+            "targetValue": "50",
+            "subProgressRatio": "0/50"
+          },
+          "29": {
+            "trophyId": 29,
+            "name": "Precision Is Key",
+            "earned": true,
+            "earnedDate": "8/22/2026, 22:58:11",
+            "earnedAge": "2 weeks, 6 days, 14 hours, 22 mins",
+            "timestamp": 1787457491000,
+            "currentValue": 0,
+            "targetValue": "150",
+            "subProgressRatio": "0/150"
+          },
+          "30": {
+            "trophyId": 30,
+            "name": "Out of Scope",
+            "earned": true,
+            "earnedDate": "8/29/2026, 17:48:49",
+            "earnedAge": "1 week, 6 days, 19 hours, 31 mins",
+            "timestamp": 1788043729000,
+            "currentValue": 0,
+            "targetValue": "150",
+            "subProgressRatio": "0/150"
+          },
+          "31": {
+            "trophyId": 31,
+            "name": "Rigged to Blow",
+            "earned": true,
+            "earnedDate": "8/16/2026, 19:03:45",
+            "earnedAge": "3 weeks, 5 days, 18 hours, 16 mins",
+            "timestamp": 1786925025000,
+            "currentValue": 0,
+            "targetValue": "20",
+            "subProgressRatio": "0/20"
+          },
+          "32": {
+            "trophyId": 32,
+            "name": "My Little Friend",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "49",
+            "targetValue": "50",
+            "subProgressRatio": "49/50"
+          },
+          "33": {
+            "trophyId": 33,
+            "name": "Explosive Efficiency",
+            "earned": true,
+            "earnedDate": "8/16/2026, 19:01:09",
+            "earnedAge": "3 weeks, 5 days, 18 hours, 19 mins",
+            "timestamp": 1786924869000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "34": {
+            "trophyId": 34,
+            "name": "Lord of War",
+            "earned": true,
+            "earnedDate": "8/8/2026, 03:23:45",
+            "earnedAge": "1 month, 5 days, 9 hours, 56 mins",
+            "timestamp": 1786177425000,
+            "currentValue": 0,
+            "targetValue": "20",
+            "subProgressRatio": "0/20"
+          },
+          "35": {
+            "trophyId": 35,
+            "name": "Die Nussknacker Sweet!",
+            "earned": true,
+            "earnedDate": "8/22/2026, 23:15:42",
+            "earnedAge": "2 weeks, 6 days, 14 hours, 4 mins",
+            "timestamp": 1787458542000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "36": {
+            "trophyId": 36,
+            "name": "Resourceful",
+            "earned": true,
+            "earnedDate": "8/16/2026, 20:52:18",
+            "earnedAge": "3 weeks, 5 days, 16 hours, 28 mins",
+            "timestamp": 1786931538000,
+            "currentValue": 0,
+            "targetValue": "50",
+            "subProgressRatio": "0/50"
+          },
+          "37": {
+            "trophyId": 37,
+            "name": "Der Geist",
+            "earned": true,
+            "earnedDate": "8/22/2026, 22:48:21",
+            "earnedAge": "2 weeks, 6 days, 14 hours, 32 mins",
+            "timestamp": 1787456901000,
+            "currentValue": 0,
+            "targetValue": "250",
+            "subProgressRatio": "0/250"
+          },
+          "38": {
+            "trophyId": 38,
+            "name": "As Quiet as a Mouse",
+            "earned": true,
+            "earnedDate": "8/20/2026, 18:17:03",
+            "earnedAge": "3 weeks, 1 day, 19 hours, 3 mins",
+            "timestamp": 1787267823000,
+            "currentValue": 0,
+            "targetValue": "50",
+            "subProgressRatio": "0/50"
+          },
+          "39": {
+            "trophyId": 39,
+            "name": "Close Quarters",
+            "earned": true,
+            "earnedDate": "8/16/2026, 19:35:50",
+            "earnedAge": "3 weeks, 5 days, 17 hours, 44 mins",
+            "timestamp": 1786926950000,
+            "currentValue": 0,
+            "targetValue": "100",
+            "subProgressRatio": "0/100"
+          },
+          "40": {
+            "trophyId": 40,
+            "name": "Snake in the Grass",
+            "earned": true,
+            "earnedDate": "8/29/2026, 16:57:54",
+            "earnedAge": "1 week, 6 days, 20 hours, 22 mins",
+            "timestamp": 1788040674000,
+            "currentValue": 0,
+            "targetValue": "50",
+            "subProgressRatio": "0/50"
+          },
+          "41": {
+            "trophyId": 41,
+            "name": "From Paris with Love",
+            "earned": true,
+            "earnedDate": "8/23/2026, 03:13:17",
+            "earnedAge": "2 weeks, 6 days, 10 hours, 7 mins",
+            "timestamp": 1787472797000,
+            "currentValue": 0,
+            "targetValue": "41",
+            "subProgressRatio": "0/41"
+          },
+          "42": {
+            "trophyId": 42,
+            "name": "Burn after reading",
+            "earned": true,
+            "earnedDate": "8/23/2026, 02:30:41",
+            "earnedAge": "2 weeks, 6 days, 10 hours, 49 mins",
+            "timestamp": 1787470241000,
+            "currentValue": 0,
+            "targetValue": "39",
+            "subProgressRatio": "0/39"
+          },
+          "43": {
+            "trophyId": 43,
+            "name": "Souvenir hunter",
+            "earned": true,
+            "earnedDate": "8/23/2026, 04:21:47",
+            "earnedAge": "2 weeks, 6 days, 8 hours, 58 mins",
+            "timestamp": 1787476907000,
+            "currentValue": 0,
+            "targetValue": "24",
+            "subProgressRatio": "0/24"
+          },
+          "44": {
+            "trophyId": 44,
+            "name": "Eagle Eyed",
+            "earned": true,
+            "earnedDate": "8/23/2026, 02:38:49",
+            "earnedAge": "2 weeks, 6 days, 10 hours, 41 mins",
+            "timestamp": 1787470729000,
+            "currentValue": 0,
+            "targetValue": "24",
+            "subProgressRatio": "0/24"
+          },
+          "45": {
+            "trophyId": 45,
+            "name": "Tinkerer",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "21",
+            "targetValue": "24",
+            "subProgressRatio": "21/24"
+          },
+          "46": {
+            "trophyId": 46,
+            "name": "It'll Buff Right Out",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "47": {
+            "trophyId": 47,
+            "name": "Locomotion Commotion",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "48": {
+            "trophyId": 48,
+            "name": "Up Close and Personal",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "0",
+            "targetValue": "3",
+            "subProgressRatio": "0/3"
+          },
+          "49": {
+            "trophyId": 49,
+            "name": "Road Rage",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "50": {
+            "trophyId": 50,
+            "name": "Don't hold your breath",
+            "earned": true,
+            "earnedDate": "8/23/2026, 05:16:11",
+            "earnedAge": "2 weeks, 6 days, 8 hours, 4 mins",
+            "timestamp": 1787480171000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "51": {
+            "trophyId": 51,
+            "name": "Brains of the Operation",
+            "earned": true,
+            "earnedDate": "8/23/2026, 05:40:07",
+            "earnedAge": "2 weeks, 6 days, 7 hours, 40 mins",
+            "timestamp": 1787481607000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "52": {
+            "trophyId": 52,
+            "name": "Sight Beyond Sights",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "53": {
+            "trophyId": 53,
+            "name": "Shoot for the Moon",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": "1",
+            "targetValue": "3",
+            "subProgressRatio": "1/3"
+          },
+          "54": {
+            "trophyId": 54,
+            "name": "Führerious Repetition",
+            "earned": true,
+            "earnedDate": "8/29/2026, 01:22:33",
+            "earnedAge": "2 weeks, 11 hours, 58 mins",
+            "timestamp": 1787984553000,
+            "currentValue": 0,
+            "targetValue": "5",
+            "subProgressRatio": "0/5"
+          },
+          "55": {
+            "trophyId": 55,
+            "name": "Reich To The Point",
+            "earned": true,
+            "earnedDate": "8/29/2026, 01:09:47",
+            "earnedAge": "2 weeks, 12 hours, 10 mins",
+            "timestamp": 1787983787000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "56": {
+            "trophyId": 56,
+            "name": "From Führer Away",
+            "earned": true,
+            "earnedDate": "8/23/2026, 06:27:26",
+            "earnedAge": "2 weeks, 6 days, 6 hours, 53 mins",
+            "timestamp": 1787484446000,
+            "currentValue": 0,
+            "targetValue": "300",
+            "subProgressRatio": "0/300"
+          },
+          "57": {
+            "trophyId": 57,
+            "name": "Covert Elimination",
+            "earned": true,
+            "earnedDate": "9/11/2026, 23:10:18",
+            "earnedAge": "14 hours, 10 mins",
+            "timestamp": 1789186218000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "58": {
+            "trophyId": 58,
+            "name": "Alpha",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "59": {
+            "trophyId": 59,
+            "name": "Herr Today, Gone Tomorrow",
+            "earned": true,
+            "earnedDate": "8/8/2026, 03:11:59",
+            "earnedAge": "1 month, 5 days, 10 hours, 8 mins",
+            "timestamp": 1786176719000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "60": {
+            "trophyId": 60,
+            "name": "Operation Foxley",
+            "earned": true,
+            "earnedDate": "8/8/2026, 03:12:00",
+            "earnedAge": "1 month, 5 days, 10 hours, 8 mins",
+            "timestamp": 1786176720000,
+            "currentValue": 0,
+            "targetValue": "2",
+            "subProgressRatio": "0/2"
+          },
+          "61": {
+            "trophyId": 61,
+            "name": "Das Familienjuwel",
+            "earned": true,
+            "earnedDate": "8/29/2026, 01:22:31",
+            "earnedAge": "2 weeks, 11 hours, 58 mins",
+            "timestamp": 1787984551000,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": "100%"
+          },
+          "62": {
+            "trophyId": 62,
+            "name": "Last Resort",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "63": {
+            "trophyId": 63,
+            "name": "Siegebreaker",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "64": {
+            "trophyId": 64,
+            "name": "Ghost of Falaise",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "65": {
+            "trophyId": 65,
+            "name": "Operation Overlord",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "66": {
+            "trophyId": 66,
+            "name": "If You Go Down To The Woods Today",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "67": {
+            "trophyId": 67,
+            "name": "Fight Another Day",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "68": {
+            "trophyId": 68,
+            "name": "Stroll in the Woods",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "69": {
+            "trophyId": 69,
+            "name": "Shipbreaker",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "70": {
+            "trophyId": 70,
+            "name": "Sink or Swim",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          },
+          "71": {
+            "trophyId": 71,
+            "name": "Going Overboard",
+            "earned": false,
+            "earnedDate": null,
+            "earnedAge": null,
+            "timestamp": 0,
+            "currentValue": 0,
+            "targetValue": 0,
+            "subProgressRatio": null
+          }
+        }
+      },
       "trophySummary": {
         "platinum": 1,
         "gold": 23,
@@ -1783,585 +2799,7 @@
               "platinum": 0
             }
           }
-        ],
-        "userTrophies": {
-          "0": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "1": {
-            "earned": true,
-            "earnedDate": "7/28/2026, 19:56:24",
-            "earnedAge": "1 month, 2 weeks, 1 day, 16 hours, 26 mins",
-            "timestamp": 1785286584000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "2": {
-            "earned": true,
-            "earnedDate": "8/7/2026, 23:55:01",
-            "earnedAge": "1 month, 5 days, 12 hours, 28 mins",
-            "timestamp": 1786164901000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "3": {
-            "earned": true,
-            "earnedDate": "8/9/2026, 01:26:13",
-            "earnedAge": "1 month, 4 days, 10 hours, 57 mins",
-            "timestamp": 1786256773000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "4": {
-            "earned": true,
-            "earnedDate": "8/16/2026, 21:58:25",
-            "earnedAge": "3 weeks, 5 days, 14 hours, 24 mins",
-            "timestamp": 1786935505000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "5": {
-            "earned": true,
-            "earnedDate": "8/22/2026, 22:40:54",
-            "earnedAge": "2 weeks, 6 days, 13 hours, 42 mins",
-            "timestamp": 1787456454000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "6": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 01:06:19",
-            "earnedAge": "2 weeks, 6 days, 11 hours, 16 mins",
-            "timestamp": 1787465179000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "7": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 03:16:29",
-            "earnedAge": "2 weeks, 6 days, 9 hours, 6 mins",
-            "timestamp": 1787472989000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "8": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 05:17:00",
-            "earnedAge": "2 weeks, 6 days, 7 hours, 6 mins",
-            "timestamp": 1787480220000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "9": {
-            "earned": true,
-            "earnedDate": "8/29/2026, 16:31:01",
-            "earnedAge": "1 week, 6 days, 19 hours, 52 mins",
-            "timestamp": 1788039061000,
-            "currentValue": 0,
-            "subProgressRatio": "0/600"
-          },
-          "10": {
-            "earned": true,
-            "earnedDate": "8/22/2026, 23:04:30",
-            "earnedAge": "2 weeks, 6 days, 13 hours, 18 mins",
-            "timestamp": 1787457870000,
-            "currentValue": 0,
-            "subProgressRatio": "0/40"
-          },
-          "11": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 05:19:32",
-            "earnedAge": "2 weeks, 6 days, 7 hours, 3 mins",
-            "timestamp": 1787480372000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "12": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "13": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 01:44:35",
-            "earnedAge": "2 weeks, 6 days, 10 hours, 38 mins",
-            "timestamp": 1787467475000,
-            "currentValue": 0,
-            "subProgressRatio": "0/16"
-          },
-          "14": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "15": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "16": {
-            "earned": true,
-            "earnedDate": "9/11/2026, 23:36:52",
-            "earnedAge": "12 hours, 46 mins",
-            "timestamp": 1789187812000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "17": {
-            "earned": true,
-            "earnedDate": "8/16/2026, 21:58:26",
-            "earnedAge": "3 weeks, 5 days, 14 hours, 24 mins",
-            "timestamp": 1786935506000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "18": {
-            "earned": true,
-            "earnedDate": "8/7/2026, 22:36:30",
-            "earnedAge": "1 month, 5 days, 13 hours, 46 mins",
-            "timestamp": 1786160190000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "19": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 01:31:03",
-            "earnedAge": "2 weeks, 6 days, 10 hours, 52 mins",
-            "timestamp": 1787466663000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "20": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "subProgressRatio": "0/6"
-          },
-          "21": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "subProgressRatio": "0/6"
-          },
-          "22": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "subProgressRatio": "0/6"
-          },
-          "23": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "subProgressRatio": "0/3"
-          },
-          "24": {
-            "earned": true,
-            "earnedDate": "9/5/2026, 21:51:40",
-            "earnedAge": "6 days, 14 hours, 31 mins",
-            "timestamp": 1788663100000,
-            "currentValue": 0,
-            "subProgressRatio": "0/150"
-          },
-          "25": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "128",
-            "subProgressRatio": "128/300"
-          },
-          "26": {
-            "earned": true,
-            "earnedDate": "8/8/2026, 21:07:19",
-            "earnedAge": "1 month, 4 days, 15 hours, 15 mins",
-            "timestamp": 1786241239000,
-            "currentValue": 0,
-            "subProgressRatio": "0/350"
-          },
-          "27": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "80726",
-            "subProgressRatio": "80726/100000"
-          },
-          "28": {
-            "earned": true,
-            "earnedDate": "8/8/2026, 04:25:29",
-            "earnedAge": "1 month, 5 days, 7 hours, 57 mins",
-            "timestamp": 1786181129000,
-            "currentValue": 0,
-            "subProgressRatio": "0/50"
-          },
-          "29": {
-            "earned": true,
-            "earnedDate": "8/22/2026, 22:58:11",
-            "earnedAge": "2 weeks, 6 days, 13 hours, 25 mins",
-            "timestamp": 1787457491000,
-            "currentValue": 0,
-            "subProgressRatio": "0/150"
-          },
-          "30": {
-            "earned": true,
-            "earnedDate": "8/29/2026, 17:48:49",
-            "earnedAge": "1 week, 6 days, 18 hours, 34 mins",
-            "timestamp": 1788043729000,
-            "currentValue": 0,
-            "subProgressRatio": "0/150"
-          },
-          "31": {
-            "earned": true,
-            "earnedDate": "8/16/2026, 19:03:45",
-            "earnedAge": "3 weeks, 5 days, 17 hours, 19 mins",
-            "timestamp": 1786925025000,
-            "currentValue": 0,
-            "subProgressRatio": "0/20"
-          },
-          "32": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "49",
-            "subProgressRatio": "49/50"
-          },
-          "33": {
-            "earned": true,
-            "earnedDate": "8/16/2026, 19:01:09",
-            "earnedAge": "3 weeks, 5 days, 17 hours, 22 mins",
-            "timestamp": 1786924869000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "34": {
-            "earned": true,
-            "earnedDate": "8/8/2026, 03:23:45",
-            "earnedAge": "1 month, 5 days, 8 hours, 59 mins",
-            "timestamp": 1786177425000,
-            "currentValue": 0,
-            "subProgressRatio": "0/20"
-          },
-          "35": {
-            "earned": true,
-            "earnedDate": "8/22/2026, 23:15:42",
-            "earnedAge": "2 weeks, 6 days, 13 hours, 7 mins",
-            "timestamp": 1787458542000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "36": {
-            "earned": true,
-            "earnedDate": "8/16/2026, 20:52:18",
-            "earnedAge": "3 weeks, 5 days, 15 hours, 30 mins",
-            "timestamp": 1786931538000,
-            "currentValue": 0,
-            "subProgressRatio": "0/50"
-          },
-          "37": {
-            "earned": true,
-            "earnedDate": "8/22/2026, 22:48:21",
-            "earnedAge": "2 weeks, 6 days, 13 hours, 34 mins",
-            "timestamp": 1787456901000,
-            "currentValue": 0,
-            "subProgressRatio": "0/250"
-          },
-          "38": {
-            "earned": true,
-            "earnedDate": "8/20/2026, 18:17:03",
-            "earnedAge": "3 weeks, 1 day, 18 hours, 6 mins",
-            "timestamp": 1787267823000,
-            "currentValue": 0,
-            "subProgressRatio": "0/50"
-          },
-          "39": {
-            "earned": true,
-            "earnedDate": "8/16/2026, 19:35:50",
-            "earnedAge": "3 weeks, 5 days, 16 hours, 47 mins",
-            "timestamp": 1786926950000,
-            "currentValue": 0,
-            "subProgressRatio": "0/100"
-          },
-          "40": {
-            "earned": true,
-            "earnedDate": "8/29/2026, 16:57:54",
-            "earnedAge": "1 week, 6 days, 19 hours, 25 mins",
-            "timestamp": 1788040674000,
-            "currentValue": 0,
-            "subProgressRatio": "0/50"
-          },
-          "41": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 03:13:17",
-            "earnedAge": "2 weeks, 6 days, 9 hours, 9 mins",
-            "timestamp": 1787472797000,
-            "currentValue": 0,
-            "subProgressRatio": "0/41"
-          },
-          "42": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 02:30:41",
-            "earnedAge": "2 weeks, 6 days, 9 hours, 52 mins",
-            "timestamp": 1787470241000,
-            "currentValue": 0,
-            "subProgressRatio": "0/39"
-          },
-          "43": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 04:21:47",
-            "earnedAge": "2 weeks, 6 days, 8 hours, 1 min",
-            "timestamp": 1787476907000,
-            "currentValue": 0,
-            "subProgressRatio": "0/24"
-          },
-          "44": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 02:38:49",
-            "earnedAge": "2 weeks, 6 days, 9 hours, 44 mins",
-            "timestamp": 1787470729000,
-            "currentValue": 0,
-            "subProgressRatio": "0/24"
-          },
-          "45": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "21",
-            "subProgressRatio": "21/24"
-          },
-          "46": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "47": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "48": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "0",
-            "subProgressRatio": "0/3"
-          },
-          "49": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "50": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 05:16:11",
-            "earnedAge": "2 weeks, 6 days, 7 hours, 7 mins",
-            "timestamp": 1787480171000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "51": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 05:40:07",
-            "earnedAge": "2 weeks, 6 days, 6 hours, 43 mins",
-            "timestamp": 1787481607000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "52": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "53": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": "1",
-            "subProgressRatio": "1/3"
-          },
-          "54": {
-            "earned": true,
-            "earnedDate": "8/29/2026, 01:22:33",
-            "earnedAge": "2 weeks, 11 hours",
-            "timestamp": 1787984553000,
-            "currentValue": 0,
-            "subProgressRatio": "0/5"
-          },
-          "55": {
-            "earned": true,
-            "earnedDate": "8/29/2026, 01:09:47",
-            "earnedAge": "2 weeks, 11 hours, 13 mins",
-            "timestamp": 1787983787000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "56": {
-            "earned": true,
-            "earnedDate": "8/23/2026, 06:27:26",
-            "earnedAge": "2 weeks, 6 days, 5 hours, 55 mins",
-            "timestamp": 1787484446000,
-            "currentValue": 0,
-            "subProgressRatio": "0/300"
-          },
-          "57": {
-            "earned": true,
-            "earnedDate": "9/11/2026, 23:10:18",
-            "earnedAge": "13 hours, 12 mins",
-            "timestamp": 1789186218000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "58": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "59": {
-            "earned": true,
-            "earnedDate": "8/8/2026, 03:11:59",
-            "earnedAge": "1 month, 5 days, 9 hours, 11 mins",
-            "timestamp": 1786176719000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "60": {
-            "earned": true,
-            "earnedDate": "8/8/2026, 03:12:00",
-            "earnedAge": "1 month, 5 days, 9 hours, 11 mins",
-            "timestamp": 1786176720000,
-            "currentValue": 0,
-            "subProgressRatio": "0/2"
-          },
-          "61": {
-            "earned": true,
-            "earnedDate": "8/29/2026, 01:22:31",
-            "earnedAge": "2 weeks, 11 hours",
-            "timestamp": 1787984551000,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "62": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "63": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "64": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "65": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "66": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "67": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "68": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "69": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "70": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          },
-          "71": {
-            "earned": false,
-            "earnedDate": null,
-            "earnedAge": null,
-            "timestamp": 0,
-            "currentValue": 0,
-            "subProgressRatio": null
-          }
-        }
+        ]
       },
       "mostRecentTrophies": [
         {
@@ -2372,7 +2810,7 @@
           "rarity": "Rare",
           "timestamp": 1789187812000,
           "earnedDate": "9/11/2026, 23:36:52",
-          "earnedAge": "12 hours, 46 mins"
+          "earnedAge": "13 hours, 43 mins"
         },
         {
           "trophyId": 57,
@@ -2382,7 +2820,7 @@
           "rarity": "Rare",
           "timestamp": 1789186218000,
           "earnedDate": "9/11/2026, 23:10:18",
-          "earnedAge": "13 hours, 12 mins"
+          "earnedAge": "14 hours, 10 mins"
         },
         {
           "trophyId": 24,
@@ -2392,7 +2830,7 @@
           "rarity": "Rare",
           "timestamp": 1788663100000,
           "earnedDate": "9/5/2026, 21:51:40",
-          "earnedAge": "6 days, 14 hours, 31 mins"
+          "earnedAge": "6 days, 15 hours, 28 mins"
         },
         {
           "trophyId": 30,
@@ -2402,7 +2840,7 @@
           "rarity": "Rare",
           "timestamp": 1788043729000,
           "earnedDate": "8/29/2026, 17:48:49",
-          "earnedAge": "1 week, 6 days, 18 hours, 34 mins"
+          "earnedAge": "1 week, 6 days, 19 hours, 31 mins"
         },
         {
           "trophyId": 40,
@@ -2412,7 +2850,7 @@
           "rarity": "Rare",
           "timestamp": 1788040674000,
           "earnedDate": "8/29/2026, 16:57:54",
-          "earnedAge": "1 week, 6 days, 19 hours, 25 mins"
+          "earnedAge": "1 week, 6 days, 20 hours, 22 mins"
         },
         {
           "trophyId": 9,
@@ -2422,7 +2860,7 @@
           "rarity": "Rare",
           "timestamp": 1788039061000,
           "earnedDate": "8/29/2026, 16:31:01",
-          "earnedAge": "1 week, 6 days, 19 hours, 52 mins"
+          "earnedAge": "1 week, 6 days, 20 hours, 49 mins"
         },
         {
           "trophyId": 54,
@@ -2432,7 +2870,7 @@
           "rarity": "Rare",
           "timestamp": 1787984553000,
           "earnedDate": "8/29/2026, 01:22:33",
-          "earnedAge": "2 weeks, 11 hours"
+          "earnedAge": "2 weeks, 11 hours, 58 mins"
         },
         {
           "trophyId": 61,
@@ -2442,7 +2880,7 @@
           "rarity": "Rare",
           "timestamp": 1787984551000,
           "earnedDate": "8/29/2026, 01:22:31",
-          "earnedAge": "2 weeks, 11 hours"
+          "earnedAge": "2 weeks, 11 hours, 58 mins"
         },
         {
           "trophyId": 55,
@@ -2452,7 +2890,7 @@
           "rarity": "Rare",
           "timestamp": 1787983787000,
           "earnedDate": "8/29/2026, 01:09:47",
-          "earnedAge": "2 weeks, 11 hours, 13 mins"
+          "earnedAge": "2 weeks, 12 hours, 10 mins"
         },
         {
           "trophyId": 56,
@@ -2462,11 +2900,11 @@
           "rarity": "Rare",
           "timestamp": 1787484446000,
           "earnedDate": "8/23/2026, 06:27:26",
-          "earnedAge": "2 weeks, 6 days, 5 hours, 55 mins"
+          "earnedAge": "2 weeks, 6 days, 6 hours, 53 mins"
         }
       ],
       "streamHistory": [],
-      "lastUpdated": "9/12/2026, 12:23:14"
+      "lastUpdated": "9/12/2026, 13:20:38"
     }
   },
   "games": {
@@ -3214,7 +3652,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:17.745Z"
+      "lastUpdated": "2026-09-12T18:20:43.908Z"
     },
     "NPWR09412_00": {
       "commId": "NPWR09412_00",
@@ -3868,7 +4306,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:13.444Z"
+      "lastUpdated": "2026-09-12T18:20:37.614Z"
     },
     "NPWR13211_00": {
       "commId": "NPWR13211_00",
@@ -5338,7 +5776,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:12.548Z"
+      "lastUpdated": "2026-09-12T18:20:35.245Z"
     },
     "NPWR14289_00": {
       "commId": "NPWR14289_00",
@@ -5992,7 +6430,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:18.992Z"
+      "lastUpdated": "2026-09-12T18:20:45.930Z"
     },
     "NPWR18502_00": {
       "commId": "NPWR18502_00",
@@ -6642,7 +7080,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:13.116Z"
+      "lastUpdated": "2026-09-12T18:20:36.936Z"
     },
     "NPWR21143_00": {
       "commId": "NPWR21143_00",
@@ -7338,7 +7776,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:11.993Z"
+      "lastUpdated": "2026-09-12T18:20:34.301Z"
     },
     "NPWR21465_00": {
       "commId": "NPWR21465_00",
@@ -8282,7 +8720,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:16.366Z"
+      "lastUpdated": "2026-09-12T18:20:41.762Z"
     },
     "NPWR22138_00": {
       "commId": "NPWR22138_00",
@@ -8828,7 +9266,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:17.402Z"
+      "lastUpdated": "2026-09-12T18:20:43.410Z"
     },
     "NPWR22859_00": {
       "commId": "NPWR22859_00",
@@ -9832,7 +10270,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:18.435Z"
+      "lastUpdated": "2026-09-12T18:20:44.960Z"
     },
     "NPWR24913_00": {
       "commId": "NPWR24913_00",
@@ -10280,7 +10718,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:12.829Z"
+      "lastUpdated": "2026-09-12T18:20:35.922Z"
     },
     "NPWR28141_00": {
       "commId": "NPWR28141_00",
@@ -10430,7 +10868,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:19.336Z"
+      "lastUpdated": "2026-09-12T18:20:46.478Z"
     },
     "NPWR33770_00": {
       "commId": "NPWR33770_00",
@@ -10712,7 +11150,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:18.169Z"
+      "lastUpdated": "2026-09-12T18:20:44.507Z"
     },
     "NPWR36496_00": {
       "commId": "NPWR36496_00",
@@ -11102,7 +11540,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:17.034Z"
+      "lastUpdated": "2026-09-12T18:20:42.896Z"
     },
     "NPWR39117_00": {
       "commId": "NPWR39117_00",
@@ -11384,7 +11822,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:16.660Z"
+      "lastUpdated": "2026-09-12T18:20:42.351Z"
     },
     "NPWR40072_00": {
       "commId": "NPWR40072_00",
@@ -12248,7 +12686,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:11.032Z"
+      "lastUpdated": "2026-09-12T18:20:32.831Z"
     },
     "NPWR40813_00": {
       "commId": "NPWR40813_00",
@@ -13170,7 +13608,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:18.728Z"
+      "lastUpdated": "2026-09-12T18:20:45.473Z"
     },
     "NPWR44827_00": {
       "commId": "NPWR44827_00",
@@ -13752,7 +14190,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T17:23:12.289Z"
+      "lastUpdated": "2026-09-12T18:20:34.786Z"
     }
   },
   "mutualSquadFollowers": [],
@@ -13761,9 +14199,9 @@
     "wildhorse_spirit_status": "EXPIRED_NPSSO",
     "ray_active": "yes",
     "ray_status": "ACTIVE",
-    "lastCheck": "9/12/2026, 12:23:06"
+    "lastCheck": "9/12/2026, 13:20:27"
   },
-  "lastGlobalUpdate": "9/12/2026, 12:23:06",
-  "engineVersion": "29.0.0",
-  "codeTimestamp": "Saturday, September 12, 2026 | 12:05 CDT"
+  "lastGlobalUpdate": "9/12/2026, 13:20:28",
+  "engineVersion": "30.0.0",
+  "codeTimestamp": "Saturday, September 12, 2026 | 13:18 CDT"
 }
