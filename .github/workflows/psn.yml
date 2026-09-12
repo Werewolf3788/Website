@@ -2,10 +2,10 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
 # File: .github/workflows/psn-sync.yml
 # Project: PSN Live Sync & Deploy (Dual Stream & Pages Deploy)
-# Version: 16.0.0 - Service Account Auth & 15m Cadence Alignment
-# Date & Time Stamp: 2026-09-12 02:00:00 (24hr New York Time)
-# Logic: Runs Node sync engine with FIREBASE_SERVICE_ACCOUNT_GITHUB, writes to
-#        Firebase RTDB, commits local JSON files, and deploys to GitHub Pages.
+# Version: 17.0.0 - Correct Secret Mapping & Firebase Action
+# Date & Time Stamp: 2026-09-12 12:20:00 (Chicago Time)
+# Logic: Runs Node sync engine, writes to Firebase RTDB, commits local JSON files,
+#        deploys to Firebase Hosting/Rules, and deploys to GitHub Pages.
 # Supports both HTTP and HTTPS hosting deployment workflows.
 # ============================================================================
 
@@ -17,7 +17,6 @@ on:
       - main
   workflow_dispatch:
   schedule:
-    # Line 20: 15-minute sync cadence to match light presence & delta checks
     - cron: '*/15 * * * *'
 
 permissions:
@@ -34,19 +33,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Line 37: Checkout repository with full history for rebase safety
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # Line 44: Node runtime environment setup
       - name: Setup Node.js Environment
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
-      # Line 51: Cache node modules to optimize runner execution speed
       - name: Cache Node Modules
         uses: actions/cache@v4
         with:
@@ -55,18 +51,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Line 61: Install required dependencies (PSN API & Firebase Admin)
       - name: Install Dependencies
         run: |
           npm install psn-api firebase-admin
 
-      # Line 67: Execute PSN Sync Engine (Injects existing secret as GCP_SA_KEY)
       - name: Execute PSN Sync Engine
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
-          FIREBASE_SERVICE_ACCOUNT_GITHUB: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GITHUB }}
-          GCP_SA_KEY: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_GITHUB }}
+          FIREBASE_ACCESS_GITHUB: ${{ secrets.FIREBASE_ACCESS_GITHUB }}
+          GCP_SA_KEY: ${{ secrets.FIREBASE_ACCESS_GITHUB }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
           if [ -f "Playstation/psn.js" ]; then
@@ -77,34 +71,36 @@ jobs:
             node index.js
           fi
 
-      # Line 85: Commit and push local JSON payloads back to main
       - name: Commit and Push PSN Data
         run: |
           git config --global user.name "Werewolf3788-Bot"
           git config --global user.email "werewolf3788-bot@users.noreply.github.com"
           
-          # Stage both root psn.json and Playstation/psn.json if generated
           git add psn.json Playstation/psn.json 2>/dev/null || true
           
           if ! git diff --cached --quiet; then
-            git commit -m "Automated PSN Payload Sync [24hr NY Timestamp: $(TZ='America/New_York' date '+%Y-%m-%d %H:%M:%S')]"
+            git commit -m "Automated PSN Payload Sync [Chicago Time: $(TZ='America/Chicago' date '+%Y-%m-%d %H:%M:%S')]"
             git pull --rebase origin main
             git push origin main
           else
             echo "No local file changes detected to commit."
           fi
 
-      # Line 102: GitHub Pages Configuration
+      - name: Deploy to Firebase
+        uses: w9jds/firebase-action@master
+        with:
+          args: deploy --project entertainment-71888
+        env:
+          GCP_SA_KEY: ${{ secrets.FIREBASE_ACCESS_GITHUB }}
+
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
-      # Line 107: Artifact packaging
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
 
-      # Line 114: Deploy to GitHub Pages target endpoint
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
