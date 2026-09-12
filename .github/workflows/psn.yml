@@ -2,10 +2,11 @@
 # --- PRECISION INTEGRITY PROTOCOL ---
 # File: .github/workflows/psn-sync.yml
 # Project: PSN Live Sync & Deploy (Dual Stream & Pages Deploy)
-# Version: 17.0.0 - Correct Secret Mapping & Firebase Action
-# Date & Time Stamp: 2026-09-12 12:20:00 (Chicago Time)
-# Logic: Runs Node sync engine, writes to Firebase RTDB, commits local JSON files,
-#        deploys to Firebase Hosting/Rules, and deploys to GitHub Pages.
+# Version: 18.0.0 - REST Engine Streamlined (GCP SA Step Removed)
+# Date & Time Stamp: 2026-09-12 12:22:00 (Chicago Time)
+# Logic: Executes Node PSN telemetry sync engine, pushes directly to Firebase
+#        RTDB via direct REST endpoints, commits local psn.json, and deploys
+#        the website cleanly to GitHub Pages.
 # Supports both HTTP and HTTPS hosting deployment workflows.
 # ============================================================================
 
@@ -17,6 +18,7 @@ on:
       - main
   workflow_dispatch:
   schedule:
+    # 15-minute sync cadence to match light presence & delta checks
     - cron: '*/15 * * * *'
 
 permissions:
@@ -53,14 +55,12 @@ jobs:
 
       - name: Install Dependencies
         run: |
-          npm install psn-api firebase-admin
+          npm install psn-api
 
       - name: Execute PSN Sync Engine
         env:
           PSN_NPSSO_WEREWOLF: ${{ secrets.PSN_NPSSO_WEREWOLF }}
           PSN_NPSSO_RAY: ${{ secrets.PSN_NPSSO_RAY }}
-          FIREBASE_ACCESS_GITHUB: ${{ secrets.FIREBASE_ACCESS_GITHUB }}
-          GCP_SA_KEY: ${{ secrets.FIREBASE_ACCESS_GITHUB }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
           if [ -f "Playstation/psn.js" ]; then
@@ -85,13 +85,6 @@ jobs:
           else
             echo "No local file changes detected to commit."
           fi
-
-      - name: Deploy to Firebase
-        uses: w9jds/firebase-action@master
-        with:
-          args: deploy --project entertainment-71888
-        env:
-          GCP_SA_KEY: ${{ secrets.FIREBASE_ACCESS_GITHUB }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
