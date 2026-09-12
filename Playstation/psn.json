@@ -17,7 +17,7 @@
       "currentGameHours": "0 hrs",
       "twitch": {
         "isLive": false,
-        "game": null,
+        "game": "Path of Titans",
         "gameArt": null,
         "followers": "73",
         "latestFollower": "None",
@@ -158,7 +158,7 @@
         }
       ],
       "streamHistory": [],
-      "lastUpdated": "9/12/2026, 13:20:49"
+      "lastUpdated": "9/12/2026, 13:32:39"
     },
     "DesdemonaTiger": {
       "onlineId": "DesdemonaTiger",
@@ -178,7 +178,7 @@
       "playSessions": {},
       "liveTrophyProgress": {},
       "currentGameHours": "0 hrs",
-      "lastUpdated": "9/12/2026, 13:20:50",
+      "lastUpdated": "9/12/2026, 13:32:39",
       "gamesPlayed": 0,
       "plus": false,
       "level": 0,
@@ -256,7 +256,7 @@
             "name": "Meeting Resistance",
             "earned": true,
             "earnedDate": "5/31/2026, 04:39:34",
-            "earnedAge": "3 months, 2 weeks, 8 hours, 41 mins",
+            "earnedAge": "3 months, 2 weeks, 8 hours, 53 mins",
             "timestamp": 1780220374000,
             "currentValue": 0,
             "targetValue": 0,
@@ -267,7 +267,7 @@
             "name": "Confirming Suspicions",
             "earned": true,
             "earnedDate": "5/31/2026, 06:10:37",
-            "earnedAge": "3 months, 2 weeks, 7 hours, 10 mins",
+            "earnedAge": "3 months, 2 weeks, 7 hours, 22 mins",
             "timestamp": 1780225837000,
             "currentValue": 0,
             "targetValue": 0,
@@ -278,7 +278,7 @@
             "name": "The Kraken Wakes",
             "earned": true,
             "earnedDate": "5/31/2026, 08:22:57",
-            "earnedAge": "3 months, 2 weeks, 4 hours, 57 mins",
+            "earnedAge": "3 months, 2 weeks, 5 hours, 9 mins",
             "timestamp": 1780233777000,
             "currentValue": 0,
             "targetValue": 0,
@@ -289,7 +289,7 @@
             "name": "It's Starting to Crack",
             "earned": true,
             "earnedDate": "6/6/2026, 23:30:03",
-            "earnedAge": "3 months, 1 week, 13 hours, 50 mins",
+            "earnedAge": "3 months, 1 week, 14 hours, 2 mins",
             "timestamp": 1780806603000,
             "currentValue": 0,
             "targetValue": 0,
@@ -300,7 +300,7 @@
             "name": "Change the Channel",
             "earned": true,
             "earnedDate": "6/7/2026, 01:31:33",
-            "earnedAge": "3 months, 1 week, 11 hours, 49 mins",
+            "earnedAge": "3 months, 1 week, 12 hours, 1 min",
             "timestamp": 1780813893000,
             "currentValue": 0,
             "targetValue": 0,
@@ -311,7 +311,7 @@
             "name": "Taking it back",
             "earned": true,
             "earnedDate": "6/7/2026, 03:37:01",
-            "earnedAge": "3 months, 1 week, 9 hours, 43 mins",
+            "earnedAge": "3 months, 1 week, 9 hours, 55 mins",
             "timestamp": 1780821421000,
             "currentValue": 0,
             "targetValue": 0,
@@ -322,7 +322,7 @@
             "name": "Target America",
             "earned": true,
             "earnedDate": "7/9/2026, 05:01:02",
-            "earnedAge": "2 months, 5 days, 8 hours, 19 mins",
+            "earnedAge": "2 months, 5 days, 8 hours, 31 mins",
             "timestamp": 1783591262000,
             "currentValue": 0,
             "targetValue": 0,
@@ -333,7 +333,7 @@
             "name": "The Kraken Sleeps",
             "earned": true,
             "earnedDate": "7/12/2026, 02:09:14",
-            "earnedAge": "2 months, 2 days, 11 hours, 11 mins",
+            "earnedAge": "2 months, 2 days, 11 hours, 23 mins",
             "timestamp": 1783840154000,
             "currentValue": 0,
             "targetValue": 0,
@@ -344,7 +344,7 @@
             "name": "Can't Outrun A Bullet",
             "earned": true,
             "earnedDate": "8/21/2026, 18:58:34",
-            "earnedAge": "3 weeks, 18 hours, 22 mins",
+            "earnedAge": "3 weeks, 18 hours, 34 mins",
             "timestamp": 1787356714000,
             "currentValue": 0,
             "targetValue": "600",
@@ -355,7 +355,7 @@
             "name": "Climbing the Ladder",
             "earned": true,
             "earnedDate": "7/12/2026, 01:29:22",
-            "earnedAge": "2 months, 2 days, 11 hours, 51 mins",
+            "earnedAge": "2 months, 2 days, 12 hours, 3 mins",
             "timestamp": 1783837762000,
             "currentValue": 0,
             "targetValue": "40",
@@ -366,7 +366,7 @@
             "name": "Liberté",
             "earned": true,
             "earnedDate": "7/12/2026, 02:21:21",
-            "earnedAge": "2 months, 2 days, 10 hours, 59 mins",
+            "earnedAge": "2 months, 2 days, 11 hours, 11 mins",
             "timestamp": 1783840881000,
             "currentValue": 0,
             "targetValue": 0,
@@ -388,7 +388,7 @@
             "name": "No Stone Unturned",
             "earned": true,
             "earnedDate": "7/12/2026, 00:44:51",
-            "earnedAge": "2 months, 2 days, 12 hours, 35 mins",
+            "earnedAge": "2 months, 2 days, 12 hours, 47 mins",
             "timestamp": 1783835091000,
             "currentValue": 0,
             "targetValue": "16",
@@ -399,7 +399,7 @@
             "name": "Opposing Force",
             "earned": true,
             "earnedDate": "7/25/2026, 01:27:33",
-            "earnedAge": "1 month, 2 weeks, 5 days, 11 hours, 53 mins",
+            "earnedAge": "1 month, 2 weeks, 5 days, 12 hours, 5 mins",
             "timestamp": 1784960853000,
             "currentValue": 0,
             "targetValue": 0,
@@ -410,7 +410,7 @@
             "name": "Enemy at the Gates",
             "earned": true,
             "earnedDate": "7/22/2026, 03:25:24",
-            "earnedAge": "1 month, 3 weeks, 1 day, 9 hours, 55 mins",
+            "earnedAge": "1 month, 3 weeks, 1 day, 10 hours, 7 mins",
             "timestamp": 1784708724000,
             "currentValue": 0,
             "targetValue": 0,
@@ -421,7 +421,7 @@
             "name": "Fields of Glory",
             "earned": true,
             "earnedDate": "9/11/2026, 23:36:55",
-            "earnedAge": "13 hours, 43 mins",
+            "earnedAge": "13 hours, 55 mins",
             "timestamp": 1789187815000,
             "currentValue": 0,
             "targetValue": 0,
@@ -432,7 +432,7 @@
             "name": "Just a Flesh Wound",
             "earned": true,
             "earnedDate": "5/31/2026, 04:39:35",
-            "earnedAge": "3 months, 2 weeks, 8 hours, 41 mins",
+            "earnedAge": "3 months, 2 weeks, 8 hours, 53 mins",
             "timestamp": 1780220375000,
             "currentValue": 0,
             "targetValue": 0,
@@ -443,7 +443,7 @@
             "name": "Organ Grinder",
             "earned": true,
             "earnedDate": "5/31/2026, 08:08:00",
-            "earnedAge": "3 months, 2 weeks, 5 hours, 12 mins",
+            "earnedAge": "3 months, 2 weeks, 5 hours, 24 mins",
             "timestamp": 1780232880000,
             "currentValue": 0,
             "targetValue": 0,
@@ -454,7 +454,7 @@
             "name": "Strategist",
             "earned": true,
             "earnedDate": "7/12/2026, 00:09:35",
-            "earnedAge": "2 months, 2 days, 13 hours, 11 mins",
+            "earnedAge": "2 months, 2 days, 13 hours, 23 mins",
             "timestamp": 1783832975000,
             "currentValue": 0,
             "targetValue": 0,
@@ -509,7 +509,7 @@
             "name": "Gunslinger",
             "earned": true,
             "earnedDate": "7/28/2026, 18:42:16",
-            "earnedAge": "1 month, 2 weeks, 1 day, 18 hours, 38 mins",
+            "earnedAge": "1 month, 2 weeks, 1 day, 18 hours, 50 mins",
             "timestamp": 1785282136000,
             "currentValue": 0,
             "targetValue": "150",
@@ -520,7 +520,7 @@
             "name": "Skirmisher",
             "earned": true,
             "earnedDate": "8/7/2026, 19:48:36",
-            "earnedAge": "1 month, 5 days, 17 hours, 32 mins",
+            "earnedAge": "1 month, 5 days, 17 hours, 44 mins",
             "timestamp": 1786150116000,
             "currentValue": 0,
             "targetValue": "300",
@@ -531,7 +531,7 @@
             "name": "Sharpshooter",
             "earned": true,
             "earnedDate": "7/11/2026, 22:45:56",
-            "earnedAge": "2 months, 2 days, 14 hours, 34 mins",
+            "earnedAge": "2 months, 2 days, 14 hours, 46 mins",
             "timestamp": 1783827956000,
             "currentValue": 0,
             "targetValue": "350",
@@ -542,7 +542,7 @@
             "name": "The Long Game",
             "earned": true,
             "earnedDate": "7/30/2026, 00:37:10",
-            "earnedAge": "1 month, 2 weeks, 12 hours, 43 mins",
+            "earnedAge": "1 month, 2 weeks, 12 hours, 55 mins",
             "timestamp": 1785389830000,
             "currentValue": 0,
             "targetValue": "100000",
@@ -553,7 +553,7 @@
             "name": "Set Europe Ablaze",
             "earned": true,
             "earnedDate": "7/9/2026, 01:47:40",
-            "earnedAge": "2 months, 5 days, 11 hours, 33 mins",
+            "earnedAge": "2 months, 5 days, 11 hours, 44 mins",
             "timestamp": 1783579660000,
             "currentValue": 0,
             "targetValue": "50",
@@ -564,7 +564,7 @@
             "name": "Precision Is Key",
             "earned": true,
             "earnedDate": "7/20/2026, 07:08:27",
-            "earnedAge": "1 month, 3 weeks, 3 days, 6 hours, 12 mins",
+            "earnedAge": "1 month, 3 weeks, 3 days, 6 hours, 24 mins",
             "timestamp": 1784549307000,
             "currentValue": 0,
             "targetValue": "150",
@@ -586,7 +586,7 @@
             "name": "Rigged to Blow",
             "earned": true,
             "earnedDate": "7/8/2026, 22:47:08",
-            "earnedAge": "2 months, 5 days, 14 hours, 33 mins",
+            "earnedAge": "2 months, 5 days, 14 hours, 45 mins",
             "timestamp": 1783568828000,
             "currentValue": 0,
             "targetValue": "20",
@@ -597,7 +597,7 @@
             "name": "My Little Friend",
             "earned": true,
             "earnedDate": "7/12/2026, 01:28:49",
-            "earnedAge": "2 months, 2 days, 11 hours, 51 mins",
+            "earnedAge": "2 months, 2 days, 12 hours, 3 mins",
             "timestamp": 1783837729000,
             "currentValue": 0,
             "targetValue": "50",
@@ -608,7 +608,7 @@
             "name": "Explosive Efficiency",
             "earned": true,
             "earnedDate": "7/8/2026, 23:57:10",
-            "earnedAge": "2 months, 5 days, 13 hours, 23 mins",
+            "earnedAge": "2 months, 5 days, 13 hours, 35 mins",
             "timestamp": 1783573030000,
             "currentValue": 0,
             "targetValue": 0,
@@ -619,7 +619,7 @@
             "name": "Lord of War",
             "earned": true,
             "earnedDate": "7/11/2026, 18:56:27",
-            "earnedAge": "2 months, 2 days, 18 hours, 24 mins",
+            "earnedAge": "2 months, 2 days, 18 hours, 36 mins",
             "timestamp": 1783814187000,
             "currentValue": 0,
             "targetValue": "20",
@@ -630,7 +630,7 @@
             "name": "Die Nussknacker Sweet!",
             "earned": true,
             "earnedDate": "7/12/2026, 02:17:32",
-            "earnedAge": "2 months, 2 days, 11 hours, 3 mins",
+            "earnedAge": "2 months, 2 days, 11 hours, 15 mins",
             "timestamp": 1783840652000,
             "currentValue": 0,
             "targetValue": 0,
@@ -641,7 +641,7 @@
             "name": "Resourceful",
             "earned": true,
             "earnedDate": "7/11/2026, 19:50:07",
-            "earnedAge": "2 months, 2 days, 17 hours, 30 mins",
+            "earnedAge": "2 months, 2 days, 17 hours, 42 mins",
             "timestamp": 1783817407000,
             "currentValue": 0,
             "targetValue": "50",
@@ -652,7 +652,7 @@
             "name": "Der Geist",
             "earned": true,
             "earnedDate": "7/11/2026, 22:30:33",
-            "earnedAge": "2 months, 2 days, 14 hours, 50 mins",
+            "earnedAge": "2 months, 2 days, 15 hours, 2 mins",
             "timestamp": 1783827033000,
             "currentValue": 0,
             "targetValue": "250",
@@ -663,7 +663,7 @@
             "name": "As Quiet as a Mouse",
             "earned": true,
             "earnedDate": "7/11/2026, 23:11:02",
-            "earnedAge": "2 months, 2 days, 14 hours, 9 mins",
+            "earnedAge": "2 months, 2 days, 14 hours, 21 mins",
             "timestamp": 1783829462000,
             "currentValue": 0,
             "targetValue": "50",
@@ -674,7 +674,7 @@
             "name": "Close Quarters",
             "earned": true,
             "earnedDate": "7/11/2026, 17:38:04",
-            "earnedAge": "2 months, 2 days, 19 hours, 42 mins",
+            "earnedAge": "2 months, 2 days, 19 hours, 54 mins",
             "timestamp": 1783809484000,
             "currentValue": 0,
             "targetValue": "100",
@@ -685,7 +685,7 @@
             "name": "Snake in the Grass",
             "earned": true,
             "earnedDate": "7/24/2026, 20:07:07",
-            "earnedAge": "1 month, 2 weeks, 5 days, 17 hours, 13 mins",
+            "earnedAge": "1 month, 2 weeks, 5 days, 17 hours, 25 mins",
             "timestamp": 1784941627000,
             "currentValue": 0,
             "targetValue": "50",
@@ -696,7 +696,7 @@
             "name": "From Paris with Love",
             "earned": true,
             "earnedDate": "7/12/2026, 01:26:14",
-            "earnedAge": "2 months, 2 days, 11 hours, 54 mins",
+            "earnedAge": "2 months, 2 days, 12 hours, 6 mins",
             "timestamp": 1783837574000,
             "currentValue": 0,
             "targetValue": "41",
@@ -707,7 +707,7 @@
             "name": "Burn after reading",
             "earned": true,
             "earnedDate": "7/11/2026, 18:59:36",
-            "earnedAge": "2 months, 2 days, 18 hours, 21 mins",
+            "earnedAge": "2 months, 2 days, 18 hours, 33 mins",
             "timestamp": 1783814376000,
             "currentValue": 0,
             "targetValue": "39",
@@ -718,7 +718,7 @@
             "name": "Souvenir hunter",
             "earned": true,
             "earnedDate": "7/12/2026, 01:55:08",
-            "earnedAge": "2 months, 2 days, 11 hours, 25 mins",
+            "earnedAge": "2 months, 2 days, 11 hours, 37 mins",
             "timestamp": 1783839308000,
             "currentValue": 0,
             "targetValue": "24",
@@ -729,7 +729,7 @@
             "name": "Eagle Eyed",
             "earned": true,
             "earnedDate": "7/20/2026, 02:52:37",
-            "earnedAge": "1 month, 3 weeks, 3 days, 10 hours, 28 mins",
+            "earnedAge": "1 month, 3 weeks, 3 days, 10 hours, 40 mins",
             "timestamp": 1784533957000,
             "currentValue": 0,
             "targetValue": "24",
@@ -740,7 +740,7 @@
             "name": "Tinkerer",
             "earned": true,
             "earnedDate": "7/29/2026, 02:59:45",
-            "earnedAge": "1 month, 2 weeks, 1 day, 10 hours, 21 mins",
+            "earnedAge": "1 month, 2 weeks, 1 day, 10 hours, 32 mins",
             "timestamp": 1785311985000,
             "currentValue": 0,
             "targetValue": "24",
@@ -751,7 +751,7 @@
             "name": "It'll Buff Right Out",
             "earned": true,
             "earnedDate": "8/21/2026, 23:55:17",
-            "earnedAge": "3 weeks, 13 hours, 25 mins",
+            "earnedAge": "3 weeks, 13 hours, 37 mins",
             "timestamp": 1787374517000,
             "currentValue": 0,
             "targetValue": 0,
@@ -762,7 +762,7 @@
             "name": "Locomotion Commotion",
             "earned": true,
             "earnedDate": "6/6/2026, 22:57:12",
-            "earnedAge": "3 months, 1 week, 14 hours, 23 mins",
+            "earnedAge": "3 months, 1 week, 14 hours, 35 mins",
             "timestamp": 1780804632000,
             "currentValue": 0,
             "targetValue": 0,
@@ -773,7 +773,7 @@
             "name": "Up Close and Personal",
             "earned": true,
             "earnedDate": "6/7/2026, 04:57:02",
-            "earnedAge": "3 months, 1 week, 8 hours, 23 mins",
+            "earnedAge": "3 months, 1 week, 8 hours, 35 mins",
             "timestamp": 1780826222000,
             "currentValue": 0,
             "targetValue": "3",
@@ -784,7 +784,7 @@
             "name": "Road Rage",
             "earned": true,
             "earnedDate": "9/5/2026, 17:05:50",
-            "earnedAge": "6 days, 20 hours, 14 mins",
+            "earnedAge": "6 days, 20 hours, 26 mins",
             "timestamp": 1788645950000,
             "currentValue": 0,
             "targetValue": 0,
@@ -795,7 +795,7 @@
             "name": "Don't hold your breath",
             "earned": true,
             "earnedDate": "8/23/2026, 05:38:40",
-            "earnedAge": "2 weeks, 6 days, 7 hours, 42 mins",
+            "earnedAge": "2 weeks, 6 days, 7 hours, 53 mins",
             "timestamp": 1787481520000,
             "currentValue": 0,
             "targetValue": 0,
@@ -806,7 +806,7 @@
             "name": "Brains of the Operation",
             "earned": true,
             "earnedDate": "7/22/2026, 00:01:45",
-            "earnedAge": "1 month, 3 weeks, 1 day, 13 hours, 19 mins",
+            "earnedAge": "1 month, 3 weeks, 1 day, 13 hours, 30 mins",
             "timestamp": 1784696505000,
             "currentValue": 0,
             "targetValue": 0,
@@ -817,7 +817,7 @@
             "name": "Sight Beyond Sights",
             "earned": true,
             "earnedDate": "8/21/2026, 19:35:24",
-            "earnedAge": "3 weeks, 17 hours, 45 mins",
+            "earnedAge": "3 weeks, 17 hours, 57 mins",
             "timestamp": 1787358924000,
             "currentValue": 0,
             "targetValue": 0,
@@ -839,7 +839,7 @@
             "name": "Führerious Repetition",
             "earned": true,
             "earnedDate": "8/29/2026, 00:39:48",
-            "earnedAge": "2 weeks, 12 hours, 40 mins",
+            "earnedAge": "2 weeks, 12 hours, 52 mins",
             "timestamp": 1787981988000,
             "currentValue": 0,
             "targetValue": "5",
@@ -850,7 +850,7 @@
             "name": "Reich To The Point",
             "earned": true,
             "earnedDate": "8/29/2026, 01:09:47",
-            "earnedAge": "2 weeks, 12 hours, 11 mins",
+            "earnedAge": "2 weeks, 12 hours, 22 mins",
             "timestamp": 1787983787000,
             "currentValue": 0,
             "targetValue": 0,
@@ -861,7 +861,7 @@
             "name": "From Führer Away",
             "earned": true,
             "earnedDate": "8/23/2026, 06:20:28",
-            "earnedAge": "2 weeks, 6 days, 7 hours",
+            "earnedAge": "2 weeks, 6 days, 7 hours, 12 mins",
             "timestamp": 1787484028000,
             "currentValue": 0,
             "targetValue": "300",
@@ -872,7 +872,7 @@
             "name": "Covert Elimination",
             "earned": true,
             "earnedDate": "8/29/2026, 01:35:54",
-            "earnedAge": "2 weeks, 11 hours, 44 mins",
+            "earnedAge": "2 weeks, 11 hours, 56 mins",
             "timestamp": 1787985354000,
             "currentValue": 0,
             "targetValue": 0,
@@ -894,7 +894,7 @@
             "name": "Herr Today, Gone Tomorrow",
             "earned": true,
             "earnedDate": "8/8/2026, 03:12:07",
-            "earnedAge": "1 month, 5 days, 10 hours, 8 mins",
+            "earnedAge": "1 month, 5 days, 10 hours, 20 mins",
             "timestamp": 1786176727000,
             "currentValue": 0,
             "targetValue": 0,
@@ -905,7 +905,7 @@
             "name": "Operation Foxley",
             "earned": true,
             "earnedDate": "8/8/2026, 03:12:08",
-            "earnedAge": "1 month, 5 days, 10 hours, 8 mins",
+            "earnedAge": "1 month, 5 days, 10 hours, 20 mins",
             "timestamp": 1786176728000,
             "currentValue": 0,
             "targetValue": "2",
@@ -927,7 +927,7 @@
             "name": "Last Resort",
             "earned": true,
             "earnedDate": "7/20/2026, 08:21:29",
-            "earnedAge": "1 month, 3 weeks, 3 days, 4 hours, 59 mins",
+            "earnedAge": "1 month, 3 weeks, 3 days, 5 hours, 11 mins",
             "timestamp": 1784553689000,
             "currentValue": 0,
             "targetValue": 0,
@@ -938,7 +938,7 @@
             "name": "Siegebreaker",
             "earned": true,
             "earnedDate": "8/26/2026, 22:30:24",
-            "earnedAge": "2 weeks, 2 days, 14 hours, 50 mins",
+            "earnedAge": "2 weeks, 2 days, 15 hours, 2 mins",
             "timestamp": 1787801424000,
             "currentValue": 0,
             "targetValue": 0,
@@ -949,7 +949,7 @@
             "name": "Ghost of Falaise",
             "earned": true,
             "earnedDate": "8/26/2026, 22:30:19",
-            "earnedAge": "2 weeks, 2 days, 14 hours, 50 mins",
+            "earnedAge": "2 weeks, 2 days, 15 hours, 2 mins",
             "timestamp": 1787801419000,
             "currentValue": 0,
             "targetValue": 0,
@@ -971,7 +971,7 @@
             "name": "If You Go Down To The Woods Today",
             "earned": true,
             "earnedDate": "9/2/2026, 22:20:08",
-            "earnedAge": "1 week, 2 days, 15 hours",
+            "earnedAge": "1 week, 2 days, 15 hours, 12 mins",
             "timestamp": 1788405608000,
             "currentValue": 0,
             "targetValue": 0,
@@ -982,7 +982,7 @@
             "name": "Fight Another Day",
             "earned": true,
             "earnedDate": "9/2/2026, 22:20:05",
-            "earnedAge": "1 week, 2 days, 15 hours",
+            "earnedAge": "1 week, 2 days, 15 hours, 12 mins",
             "timestamp": 1788405605000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1004,7 +1004,7 @@
             "name": "Shipbreaker",
             "earned": true,
             "earnedDate": "7/20/2026, 15:28:46",
-            "earnedAge": "1 month, 3 weeks, 2 days, 21 hours, 52 mins",
+            "earnedAge": "1 month, 3 weeks, 2 days, 22 hours, 3 mins",
             "timestamp": 1784579326000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1015,7 +1015,7 @@
             "name": "Sink or Swim",
             "earned": true,
             "earnedDate": "7/20/2026, 15:28:45",
-            "earnedAge": "1 month, 3 weeks, 2 days, 21 hours, 52 mins",
+            "earnedAge": "1 month, 3 weeks, 2 days, 22 hours, 3 mins",
             "timestamp": 1784579325000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1456,7 +1456,7 @@
           "rarity": "Rare",
           "timestamp": 1789187815000,
           "earnedDate": "9/11/2026, 23:36:55",
-          "earnedAge": "13 hours, 43 mins"
+          "earnedAge": "13 hours, 55 mins"
         },
         {
           "trophyId": 49,
@@ -1466,7 +1466,7 @@
           "rarity": "Rare",
           "timestamp": 1788645950000,
           "earnedDate": "9/5/2026, 17:05:50",
-          "earnedAge": "6 days, 20 hours, 14 mins"
+          "earnedAge": "6 days, 20 hours, 26 mins"
         },
         {
           "trophyId": 66,
@@ -1476,7 +1476,7 @@
           "rarity": "Rare",
           "timestamp": 1788405608000,
           "earnedDate": "9/2/2026, 22:20:08",
-          "earnedAge": "1 week, 2 days, 15 hours"
+          "earnedAge": "1 week, 2 days, 15 hours, 12 mins"
         },
         {
           "trophyId": 67,
@@ -1486,7 +1486,7 @@
           "rarity": "Rare",
           "timestamp": 1788405605000,
           "earnedDate": "9/2/2026, 22:20:05",
-          "earnedAge": "1 week, 2 days, 15 hours"
+          "earnedAge": "1 week, 2 days, 15 hours, 12 mins"
         },
         {
           "trophyId": 57,
@@ -1496,7 +1496,7 @@
           "rarity": "Rare",
           "timestamp": 1787985354000,
           "earnedDate": "8/29/2026, 01:35:54",
-          "earnedAge": "2 weeks, 11 hours, 44 mins"
+          "earnedAge": "2 weeks, 11 hours, 56 mins"
         },
         {
           "trophyId": 55,
@@ -1506,7 +1506,7 @@
           "rarity": "Rare",
           "timestamp": 1787983787000,
           "earnedDate": "8/29/2026, 01:09:47",
-          "earnedAge": "2 weeks, 12 hours, 11 mins"
+          "earnedAge": "2 weeks, 12 hours, 22 mins"
         },
         {
           "trophyId": 54,
@@ -1516,7 +1516,7 @@
           "rarity": "Rare",
           "timestamp": 1787981988000,
           "earnedDate": "8/29/2026, 00:39:48",
-          "earnedAge": "2 weeks, 12 hours, 40 mins"
+          "earnedAge": "2 weeks, 12 hours, 52 mins"
         },
         {
           "trophyId": 63,
@@ -1526,7 +1526,7 @@
           "rarity": "Rare",
           "timestamp": 1787801424000,
           "earnedDate": "8/26/2026, 22:30:24",
-          "earnedAge": "2 weeks, 2 days, 14 hours, 50 mins"
+          "earnedAge": "2 weeks, 2 days, 15 hours, 2 mins"
         },
         {
           "trophyId": 64,
@@ -1536,7 +1536,7 @@
           "rarity": "Rare",
           "timestamp": 1787801419000,
           "earnedDate": "8/26/2026, 22:30:19",
-          "earnedAge": "2 weeks, 2 days, 14 hours, 50 mins"
+          "earnedAge": "2 weeks, 2 days, 15 hours, 2 mins"
         },
         {
           "trophyId": 56,
@@ -1546,11 +1546,11 @@
           "rarity": "Rare",
           "timestamp": 1787484028000,
           "earnedDate": "8/23/2026, 06:20:28",
-          "earnedAge": "2 weeks, 6 days, 7 hours"
+          "earnedAge": "2 weeks, 6 days, 7 hours, 12 mins"
         }
       ],
       "streamHistory": [],
-      "lastUpdated": "9/12/2026, 13:20:47"
+      "lastUpdated": "9/12/2026, 13:32:37"
     },
     "WildHorse_Spirit": {
       "onlineId": "WildHorse_Spirit",
@@ -1569,7 +1569,7 @@
       "currentGameHours": "0 hrs",
       "twitch": {
         "isLive": false,
-        "game": null,
+        "game": "Sniper Elite 5",
         "gameArt": null,
         "followers": "104",
         "latestFollower": "None",
@@ -1612,7 +1612,7 @@
             "name": "Meeting Resistance",
             "earned": true,
             "earnedDate": "7/28/2026, 19:56:24",
-            "earnedAge": "1 month, 2 weeks, 1 day, 17 hours, 24 mins",
+            "earnedAge": "1 month, 2 weeks, 1 day, 17 hours, 36 mins",
             "timestamp": 1785286584000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1623,7 +1623,7 @@
             "name": "Confirming Suspicions",
             "earned": true,
             "earnedDate": "8/7/2026, 23:55:01",
-            "earnedAge": "1 month, 5 days, 13 hours, 25 mins",
+            "earnedAge": "1 month, 5 days, 13 hours, 37 mins",
             "timestamp": 1786164901000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1634,7 +1634,7 @@
             "name": "The Kraken Wakes",
             "earned": true,
             "earnedDate": "8/9/2026, 01:26:13",
-            "earnedAge": "1 month, 4 days, 11 hours, 54 mins",
+            "earnedAge": "1 month, 4 days, 12 hours, 6 mins",
             "timestamp": 1786256773000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1645,7 +1645,7 @@
             "name": "It's Starting to Crack",
             "earned": true,
             "earnedDate": "8/16/2026, 21:58:25",
-            "earnedAge": "3 weeks, 5 days, 15 hours, 22 mins",
+            "earnedAge": "3 weeks, 5 days, 15 hours, 34 mins",
             "timestamp": 1786935505000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1656,7 +1656,7 @@
             "name": "Change the Channel",
             "earned": true,
             "earnedDate": "8/22/2026, 22:40:54",
-            "earnedAge": "2 weeks, 6 days, 14 hours, 39 mins",
+            "earnedAge": "2 weeks, 6 days, 14 hours, 51 mins",
             "timestamp": 1787456454000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1667,7 +1667,7 @@
             "name": "Taking it back",
             "earned": true,
             "earnedDate": "8/23/2026, 01:06:19",
-            "earnedAge": "2 weeks, 6 days, 12 hours, 14 mins",
+            "earnedAge": "2 weeks, 6 days, 12 hours, 26 mins",
             "timestamp": 1787465179000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1678,7 +1678,7 @@
             "name": "Target America",
             "earned": true,
             "earnedDate": "8/23/2026, 03:16:29",
-            "earnedAge": "2 weeks, 6 days, 10 hours, 4 mins",
+            "earnedAge": "2 weeks, 6 days, 10 hours, 16 mins",
             "timestamp": 1787472989000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1689,7 +1689,7 @@
             "name": "The Kraken Sleeps",
             "earned": true,
             "earnedDate": "8/23/2026, 05:17:00",
-            "earnedAge": "2 weeks, 6 days, 8 hours, 3 mins",
+            "earnedAge": "2 weeks, 6 days, 8 hours, 15 mins",
             "timestamp": 1787480220000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1700,7 +1700,7 @@
             "name": "Can't Outrun A Bullet",
             "earned": true,
             "earnedDate": "8/29/2026, 16:31:01",
-            "earnedAge": "1 week, 6 days, 20 hours, 49 mins",
+            "earnedAge": "1 week, 6 days, 21 hours, 1 min",
             "timestamp": 1788039061000,
             "currentValue": 0,
             "targetValue": "600",
@@ -1711,7 +1711,7 @@
             "name": "Climbing the Ladder",
             "earned": true,
             "earnedDate": "8/22/2026, 23:04:30",
-            "earnedAge": "2 weeks, 6 days, 14 hours, 16 mins",
+            "earnedAge": "2 weeks, 6 days, 14 hours, 28 mins",
             "timestamp": 1787457870000,
             "currentValue": 0,
             "targetValue": "40",
@@ -1722,7 +1722,7 @@
             "name": "Liberté",
             "earned": true,
             "earnedDate": "8/23/2026, 05:19:32",
-            "earnedAge": "2 weeks, 6 days, 8 hours, 1 min",
+            "earnedAge": "2 weeks, 6 days, 8 hours, 12 mins",
             "timestamp": 1787480372000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1744,7 +1744,7 @@
             "name": "No Stone Unturned",
             "earned": true,
             "earnedDate": "8/23/2026, 01:44:35",
-            "earnedAge": "2 weeks, 6 days, 11 hours, 36 mins",
+            "earnedAge": "2 weeks, 6 days, 11 hours, 47 mins",
             "timestamp": 1787467475000,
             "currentValue": 0,
             "targetValue": "16",
@@ -1777,7 +1777,7 @@
             "name": "Fields of Glory",
             "earned": true,
             "earnedDate": "9/11/2026, 23:36:52",
-            "earnedAge": "13 hours, 43 mins",
+            "earnedAge": "13 hours, 55 mins",
             "timestamp": 1789187812000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1788,7 +1788,7 @@
             "name": "Just a Flesh Wound",
             "earned": true,
             "earnedDate": "8/16/2026, 21:58:26",
-            "earnedAge": "3 weeks, 5 days, 15 hours, 22 mins",
+            "earnedAge": "3 weeks, 5 days, 15 hours, 34 mins",
             "timestamp": 1786935506000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1799,7 +1799,7 @@
             "name": "Organ Grinder",
             "earned": true,
             "earnedDate": "8/7/2026, 22:36:30",
-            "earnedAge": "1 month, 5 days, 14 hours, 44 mins",
+            "earnedAge": "1 month, 5 days, 14 hours, 56 mins",
             "timestamp": 1786160190000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1810,7 +1810,7 @@
             "name": "Strategist",
             "earned": true,
             "earnedDate": "8/23/2026, 01:31:03",
-            "earnedAge": "2 weeks, 6 days, 11 hours, 49 mins",
+            "earnedAge": "2 weeks, 6 days, 12 hours, 1 min",
             "timestamp": 1787466663000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1865,7 +1865,7 @@
             "name": "Gunslinger",
             "earned": true,
             "earnedDate": "9/5/2026, 21:51:40",
-            "earnedAge": "6 days, 15 hours, 28 mins",
+            "earnedAge": "6 days, 15 hours, 40 mins",
             "timestamp": 1788663100000,
             "currentValue": 0,
             "targetValue": "150",
@@ -1887,7 +1887,7 @@
             "name": "Sharpshooter",
             "earned": true,
             "earnedDate": "8/8/2026, 21:07:19",
-            "earnedAge": "1 month, 4 days, 16 hours, 13 mins",
+            "earnedAge": "1 month, 4 days, 16 hours, 25 mins",
             "timestamp": 1786241239000,
             "currentValue": 0,
             "targetValue": "350",
@@ -1909,7 +1909,7 @@
             "name": "Set Europe Ablaze",
             "earned": true,
             "earnedDate": "8/8/2026, 04:25:29",
-            "earnedAge": "1 month, 5 days, 8 hours, 55 mins",
+            "earnedAge": "1 month, 5 days, 9 hours, 7 mins",
             "timestamp": 1786181129000,
             "currentValue": 0,
             "targetValue": "50",
@@ -1920,7 +1920,7 @@
             "name": "Precision Is Key",
             "earned": true,
             "earnedDate": "8/22/2026, 22:58:11",
-            "earnedAge": "2 weeks, 6 days, 14 hours, 22 mins",
+            "earnedAge": "2 weeks, 6 days, 14 hours, 34 mins",
             "timestamp": 1787457491000,
             "currentValue": 0,
             "targetValue": "150",
@@ -1931,7 +1931,7 @@
             "name": "Out of Scope",
             "earned": true,
             "earnedDate": "8/29/2026, 17:48:49",
-            "earnedAge": "1 week, 6 days, 19 hours, 31 mins",
+            "earnedAge": "1 week, 6 days, 19 hours, 43 mins",
             "timestamp": 1788043729000,
             "currentValue": 0,
             "targetValue": "150",
@@ -1942,7 +1942,7 @@
             "name": "Rigged to Blow",
             "earned": true,
             "earnedDate": "8/16/2026, 19:03:45",
-            "earnedAge": "3 weeks, 5 days, 18 hours, 16 mins",
+            "earnedAge": "3 weeks, 5 days, 18 hours, 28 mins",
             "timestamp": 1786925025000,
             "currentValue": 0,
             "targetValue": "20",
@@ -1964,7 +1964,7 @@
             "name": "Explosive Efficiency",
             "earned": true,
             "earnedDate": "8/16/2026, 19:01:09",
-            "earnedAge": "3 weeks, 5 days, 18 hours, 19 mins",
+            "earnedAge": "3 weeks, 5 days, 18 hours, 31 mins",
             "timestamp": 1786924869000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1975,7 +1975,7 @@
             "name": "Lord of War",
             "earned": true,
             "earnedDate": "8/8/2026, 03:23:45",
-            "earnedAge": "1 month, 5 days, 9 hours, 56 mins",
+            "earnedAge": "1 month, 5 days, 10 hours, 8 mins",
             "timestamp": 1786177425000,
             "currentValue": 0,
             "targetValue": "20",
@@ -1986,7 +1986,7 @@
             "name": "Die Nussknacker Sweet!",
             "earned": true,
             "earnedDate": "8/22/2026, 23:15:42",
-            "earnedAge": "2 weeks, 6 days, 14 hours, 4 mins",
+            "earnedAge": "2 weeks, 6 days, 14 hours, 16 mins",
             "timestamp": 1787458542000,
             "currentValue": 0,
             "targetValue": 0,
@@ -1997,7 +1997,7 @@
             "name": "Resourceful",
             "earned": true,
             "earnedDate": "8/16/2026, 20:52:18",
-            "earnedAge": "3 weeks, 5 days, 16 hours, 28 mins",
+            "earnedAge": "3 weeks, 5 days, 16 hours, 40 mins",
             "timestamp": 1786931538000,
             "currentValue": 0,
             "targetValue": "50",
@@ -2008,7 +2008,7 @@
             "name": "Der Geist",
             "earned": true,
             "earnedDate": "8/22/2026, 22:48:21",
-            "earnedAge": "2 weeks, 6 days, 14 hours, 32 mins",
+            "earnedAge": "2 weeks, 6 days, 14 hours, 44 mins",
             "timestamp": 1787456901000,
             "currentValue": 0,
             "targetValue": "250",
@@ -2019,7 +2019,7 @@
             "name": "As Quiet as a Mouse",
             "earned": true,
             "earnedDate": "8/20/2026, 18:17:03",
-            "earnedAge": "3 weeks, 1 day, 19 hours, 3 mins",
+            "earnedAge": "3 weeks, 1 day, 19 hours, 15 mins",
             "timestamp": 1787267823000,
             "currentValue": 0,
             "targetValue": "50",
@@ -2030,7 +2030,7 @@
             "name": "Close Quarters",
             "earned": true,
             "earnedDate": "8/16/2026, 19:35:50",
-            "earnedAge": "3 weeks, 5 days, 17 hours, 44 mins",
+            "earnedAge": "3 weeks, 5 days, 17 hours, 56 mins",
             "timestamp": 1786926950000,
             "currentValue": 0,
             "targetValue": "100",
@@ -2041,7 +2041,7 @@
             "name": "Snake in the Grass",
             "earned": true,
             "earnedDate": "8/29/2026, 16:57:54",
-            "earnedAge": "1 week, 6 days, 20 hours, 22 mins",
+            "earnedAge": "1 week, 6 days, 20 hours, 34 mins",
             "timestamp": 1788040674000,
             "currentValue": 0,
             "targetValue": "50",
@@ -2052,7 +2052,7 @@
             "name": "From Paris with Love",
             "earned": true,
             "earnedDate": "8/23/2026, 03:13:17",
-            "earnedAge": "2 weeks, 6 days, 10 hours, 7 mins",
+            "earnedAge": "2 weeks, 6 days, 10 hours, 19 mins",
             "timestamp": 1787472797000,
             "currentValue": 0,
             "targetValue": "41",
@@ -2063,7 +2063,7 @@
             "name": "Burn after reading",
             "earned": true,
             "earnedDate": "8/23/2026, 02:30:41",
-            "earnedAge": "2 weeks, 6 days, 10 hours, 49 mins",
+            "earnedAge": "2 weeks, 6 days, 11 hours, 1 min",
             "timestamp": 1787470241000,
             "currentValue": 0,
             "targetValue": "39",
@@ -2074,7 +2074,7 @@
             "name": "Souvenir hunter",
             "earned": true,
             "earnedDate": "8/23/2026, 04:21:47",
-            "earnedAge": "2 weeks, 6 days, 8 hours, 58 mins",
+            "earnedAge": "2 weeks, 6 days, 9 hours, 10 mins",
             "timestamp": 1787476907000,
             "currentValue": 0,
             "targetValue": "24",
@@ -2085,7 +2085,7 @@
             "name": "Eagle Eyed",
             "earned": true,
             "earnedDate": "8/23/2026, 02:38:49",
-            "earnedAge": "2 weeks, 6 days, 10 hours, 41 mins",
+            "earnedAge": "2 weeks, 6 days, 10 hours, 53 mins",
             "timestamp": 1787470729000,
             "currentValue": 0,
             "targetValue": "24",
@@ -2151,7 +2151,7 @@
             "name": "Don't hold your breath",
             "earned": true,
             "earnedDate": "8/23/2026, 05:16:11",
-            "earnedAge": "2 weeks, 6 days, 8 hours, 4 mins",
+            "earnedAge": "2 weeks, 6 days, 8 hours, 16 mins",
             "timestamp": 1787480171000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2162,7 +2162,7 @@
             "name": "Brains of the Operation",
             "earned": true,
             "earnedDate": "8/23/2026, 05:40:07",
-            "earnedAge": "2 weeks, 6 days, 7 hours, 40 mins",
+            "earnedAge": "2 weeks, 6 days, 7 hours, 52 mins",
             "timestamp": 1787481607000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2195,7 +2195,7 @@
             "name": "Führerious Repetition",
             "earned": true,
             "earnedDate": "8/29/2026, 01:22:33",
-            "earnedAge": "2 weeks, 11 hours, 58 mins",
+            "earnedAge": "2 weeks, 12 hours, 9 mins",
             "timestamp": 1787984553000,
             "currentValue": 0,
             "targetValue": "5",
@@ -2206,7 +2206,7 @@
             "name": "Reich To The Point",
             "earned": true,
             "earnedDate": "8/29/2026, 01:09:47",
-            "earnedAge": "2 weeks, 12 hours, 10 mins",
+            "earnedAge": "2 weeks, 12 hours, 22 mins",
             "timestamp": 1787983787000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2217,7 +2217,7 @@
             "name": "From Führer Away",
             "earned": true,
             "earnedDate": "8/23/2026, 06:27:26",
-            "earnedAge": "2 weeks, 6 days, 6 hours, 53 mins",
+            "earnedAge": "2 weeks, 6 days, 7 hours, 5 mins",
             "timestamp": 1787484446000,
             "currentValue": 0,
             "targetValue": "300",
@@ -2228,7 +2228,7 @@
             "name": "Covert Elimination",
             "earned": true,
             "earnedDate": "9/11/2026, 23:10:18",
-            "earnedAge": "14 hours, 10 mins",
+            "earnedAge": "14 hours, 22 mins",
             "timestamp": 1789186218000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2250,7 +2250,7 @@
             "name": "Herr Today, Gone Tomorrow",
             "earned": true,
             "earnedDate": "8/8/2026, 03:11:59",
-            "earnedAge": "1 month, 5 days, 10 hours, 8 mins",
+            "earnedAge": "1 month, 5 days, 10 hours, 20 mins",
             "timestamp": 1786176719000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2261,7 +2261,7 @@
             "name": "Operation Foxley",
             "earned": true,
             "earnedDate": "8/8/2026, 03:12:00",
-            "earnedAge": "1 month, 5 days, 10 hours, 8 mins",
+            "earnedAge": "1 month, 5 days, 10 hours, 20 mins",
             "timestamp": 1786176720000,
             "currentValue": 0,
             "targetValue": "2",
@@ -2272,7 +2272,7 @@
             "name": "Das Familienjuwel",
             "earned": true,
             "earnedDate": "8/29/2026, 01:22:31",
-            "earnedAge": "2 weeks, 11 hours, 58 mins",
+            "earnedAge": "2 weeks, 12 hours, 10 mins",
             "timestamp": 1787984551000,
             "currentValue": 0,
             "targetValue": 0,
@@ -2810,7 +2810,7 @@
           "rarity": "Rare",
           "timestamp": 1789187812000,
           "earnedDate": "9/11/2026, 23:36:52",
-          "earnedAge": "13 hours, 43 mins"
+          "earnedAge": "13 hours, 55 mins"
         },
         {
           "trophyId": 57,
@@ -2820,7 +2820,7 @@
           "rarity": "Rare",
           "timestamp": 1789186218000,
           "earnedDate": "9/11/2026, 23:10:18",
-          "earnedAge": "14 hours, 10 mins"
+          "earnedAge": "14 hours, 22 mins"
         },
         {
           "trophyId": 24,
@@ -2830,7 +2830,7 @@
           "rarity": "Rare",
           "timestamp": 1788663100000,
           "earnedDate": "9/5/2026, 21:51:40",
-          "earnedAge": "6 days, 15 hours, 28 mins"
+          "earnedAge": "6 days, 15 hours, 40 mins"
         },
         {
           "trophyId": 30,
@@ -2840,7 +2840,7 @@
           "rarity": "Rare",
           "timestamp": 1788043729000,
           "earnedDate": "8/29/2026, 17:48:49",
-          "earnedAge": "1 week, 6 days, 19 hours, 31 mins"
+          "earnedAge": "1 week, 6 days, 19 hours, 43 mins"
         },
         {
           "trophyId": 40,
@@ -2850,7 +2850,7 @@
           "rarity": "Rare",
           "timestamp": 1788040674000,
           "earnedDate": "8/29/2026, 16:57:54",
-          "earnedAge": "1 week, 6 days, 20 hours, 22 mins"
+          "earnedAge": "1 week, 6 days, 20 hours, 34 mins"
         },
         {
           "trophyId": 9,
@@ -2860,7 +2860,7 @@
           "rarity": "Rare",
           "timestamp": 1788039061000,
           "earnedDate": "8/29/2026, 16:31:01",
-          "earnedAge": "1 week, 6 days, 20 hours, 49 mins"
+          "earnedAge": "1 week, 6 days, 21 hours, 1 min"
         },
         {
           "trophyId": 54,
@@ -2870,7 +2870,7 @@
           "rarity": "Rare",
           "timestamp": 1787984553000,
           "earnedDate": "8/29/2026, 01:22:33",
-          "earnedAge": "2 weeks, 11 hours, 58 mins"
+          "earnedAge": "2 weeks, 12 hours, 9 mins"
         },
         {
           "trophyId": 61,
@@ -2880,7 +2880,7 @@
           "rarity": "Rare",
           "timestamp": 1787984551000,
           "earnedDate": "8/29/2026, 01:22:31",
-          "earnedAge": "2 weeks, 11 hours, 58 mins"
+          "earnedAge": "2 weeks, 12 hours, 10 mins"
         },
         {
           "trophyId": 55,
@@ -2890,7 +2890,7 @@
           "rarity": "Rare",
           "timestamp": 1787983787000,
           "earnedDate": "8/29/2026, 01:09:47",
-          "earnedAge": "2 weeks, 12 hours, 10 mins"
+          "earnedAge": "2 weeks, 12 hours, 22 mins"
         },
         {
           "trophyId": 56,
@@ -2900,11 +2900,11 @@
           "rarity": "Rare",
           "timestamp": 1787484446000,
           "earnedDate": "8/23/2026, 06:27:26",
-          "earnedAge": "2 weeks, 6 days, 6 hours, 53 mins"
+          "earnedAge": "2 weeks, 6 days, 7 hours, 5 mins"
         }
       ],
       "streamHistory": [],
-      "lastUpdated": "9/12/2026, 13:20:38"
+      "lastUpdated": "9/12/2026, 13:32:31"
     }
   },
   "games": {
@@ -3652,7 +3652,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:43.908Z"
+      "lastUpdated": "2026-09-12T18:32:35.442Z"
     },
     "NPWR09412_00": {
       "commId": "NPWR09412_00",
@@ -4306,7 +4306,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:37.614Z"
+      "lastUpdated": "2026-09-12T18:32:30.523Z"
     },
     "NPWR13211_00": {
       "commId": "NPWR13211_00",
@@ -5776,7 +5776,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:35.245Z"
+      "lastUpdated": "2026-09-12T18:32:29.568Z"
     },
     "NPWR14289_00": {
       "commId": "NPWR14289_00",
@@ -6430,7 +6430,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:45.930Z"
+      "lastUpdated": "2026-09-12T18:32:36.561Z"
     },
     "NPWR18502_00": {
       "commId": "NPWR18502_00",
@@ -7080,7 +7080,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:36.936Z"
+      "lastUpdated": "2026-09-12T18:32:30.236Z"
     },
     "NPWR21143_00": {
       "commId": "NPWR21143_00",
@@ -7776,7 +7776,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:34.301Z"
+      "lastUpdated": "2026-09-12T18:32:28.981Z"
     },
     "NPWR21465_00": {
       "commId": "NPWR21465_00",
@@ -8720,7 +8720,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:41.762Z"
+      "lastUpdated": "2026-09-12T18:32:34.223Z"
     },
     "NPWR22138_00": {
       "commId": "NPWR22138_00",
@@ -9266,7 +9266,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:43.410Z"
+      "lastUpdated": "2026-09-12T18:32:35.176Z"
     },
     "NPWR22859_00": {
       "commId": "NPWR22859_00",
@@ -10270,7 +10270,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:44.960Z"
+      "lastUpdated": "2026-09-12T18:32:36.014Z"
     },
     "NPWR24913_00": {
       "commId": "NPWR24913_00",
@@ -10718,7 +10718,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:35.922Z"
+      "lastUpdated": "2026-09-12T18:32:29.976Z"
     },
     "NPWR28141_00": {
       "commId": "NPWR28141_00",
@@ -10868,7 +10868,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:46.478Z"
+      "lastUpdated": "2026-09-12T18:32:36.851Z"
     },
     "NPWR33770_00": {
       "commId": "NPWR33770_00",
@@ -11150,7 +11150,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:44.507Z"
+      "lastUpdated": "2026-09-12T18:32:35.752Z"
     },
     "NPWR36496_00": {
       "commId": "NPWR36496_00",
@@ -11540,7 +11540,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:42.896Z"
+      "lastUpdated": "2026-09-12T18:32:34.874Z"
     },
     "NPWR39117_00": {
       "commId": "NPWR39117_00",
@@ -11822,7 +11822,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:42.351Z"
+      "lastUpdated": "2026-09-12T18:32:34.539Z"
     },
     "NPWR40072_00": {
       "commId": "NPWR40072_00",
@@ -12686,7 +12686,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:32.831Z"
+      "lastUpdated": "2026-09-12T18:32:28.068Z"
     },
     "NPWR40813_00": {
       "commId": "NPWR40813_00",
@@ -13608,7 +13608,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:45.473Z"
+      "lastUpdated": "2026-09-12T18:32:36.284Z"
     },
     "NPWR44827_00": {
       "commId": "NPWR44827_00",
@@ -14190,7 +14190,7 @@
           }
         }
       ],
-      "lastUpdated": "2026-09-12T18:20:34.786Z"
+      "lastUpdated": "2026-09-12T18:32:29.276Z"
     }
   },
   "mutualSquadFollowers": [],
@@ -14199,9 +14199,9 @@
     "wildhorse_spirit_status": "EXPIRED_NPSSO",
     "ray_active": "yes",
     "ray_status": "ACTIVE",
-    "lastCheck": "9/12/2026, 13:20:27"
+    "lastCheck": "9/12/2026, 13:32:20"
   },
-  "lastGlobalUpdate": "9/12/2026, 13:20:28",
-  "engineVersion": "30.0.0",
-  "codeTimestamp": "Saturday, September 12, 2026 | 13:18 CDT"
+  "lastGlobalUpdate": "9/12/2026, 13:32:21",
+  "engineVersion": "31.0.0",
+  "codeTimestamp": "Saturday, September 12, 2026 | 13:31 CDT"
 }
