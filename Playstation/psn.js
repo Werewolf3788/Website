@@ -1,18 +1,24 @@
 /* ============================================================================
  * File: psn.js
  * Location: /Playstation/psn.js
- * Description: Squad Pack Sync Engine - Dedicated Subtree Architecture:
- *              1. `games/{commId}`: Central canonical skeleton containing full
- *                 game metadata, cover art, trophy definitions, DLC groups,
- *                 target values, rarity, and hidden attributes.
- *              2. `gamertags/{player}/activeHunt`: High-level session summary.
- *              3. `gamertags/{player}/liveTrophyProgress/{commId}`: DEDICATED SUBTREE
- *                 exposing trophy status, current values, targets, and subProgressRatio.
- *              4. `gamertags/{player}/playSessions/{commId}`: Cumulative playtime ledger.
+ * Description: Squad Pack Sync Engine - Full Relational Architecture:
+ *              1. Shared Game Skeleton (`games/{commId}`): Master game data,
+ *                 canonical cover poster art, square icons, platform tags,
+ *                 trophy group expansions (DLC), and full trophy catalogs with
+ *                 rarity, earned rate, secret flags, and PS5 target values.
+ *              2. Dedicated Trophy Subtree (`gamertags/{player}/liveTrophyProgress/{commId}`):
+ *                 Unhidden, dedicated tree tracking each trophy's live state,
+ *                 unlocked status, earned timestamps, current count, target count,
+ *                 and computed `subProgressRatio` (#/##).
+ *              3. Cumulative Session Engine (`gamertags/{player}/playSessions/{commId}`):
+ *                 Persistent play session ledger tracking live session elapsed
+ *                 times and cumulative total hours across launches.
+ *              4. Lean User Node (`gamertags/{player}`): Live presence, active hunt
+ *                 summary, high-level metrics, and stream history.
  * Protocol Support: Works over HTTP & HTTPS via Direct REST PUT endpoints.
  * Analytics Tagging: Ready for GA4 (G-CTYHDF4MSD) deployment via GTM.
- * Version: 30.0.0 - Full Dedicated Subtree Ingestion & Unconditional Writes
- * Date & Time Stamp: 2026-09-12 13:18:00 (America/Chicago)
+ * Version: 31.0.0 - Full Dedicated Subtree Ingestion, Canonical Posters & Zero Skips
+ * Date & Time Stamp: 2026-09-12 13:31:00 (America/Chicago)
  * ============================================================================ */
 
 const fs = require("fs");
@@ -117,7 +123,7 @@ function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, 
             session.sessionStartTime = null;
             session.lastEndedTime = now;
             session.totalFormatted = formatDuration(session.totalSeconds);
-            console.log(`[SESSION CLOSED] ${session.title} ended. Added ${sessionElapsed}s. Cumulative: ${session.totalFormatted}`);
+            console.log(`[SESSION CLOSED] ${session.title} ended. Added ${sessionElapsed}s. Total: ${session.totalFormatted}`);
         }
     }
 
@@ -503,7 +509,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             try { region = await getUserRegion(auth, "me"); } catch(e) {}
         }
 
-        // Live Presence
+        // Live Presence Discovery
         let rawP = { primaryPlatformInfo: { onlineStatus: 'offline' }, gameTitleInfoList: [] };
         try { 
             const raw = await getBasicPresence(auth, presenceId); 
@@ -517,7 +523,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         let resolvedTitle = (twitchIntel?.isLive && twitchIntel.game && (!activeGameInfo.titleName || activeGameInfo.titleName === "Dashboard")) 
             ? twitchIntel.game : (activeGameInfo.titleName || null);
 
-        // Titles & Telemetry
+        // Titles & Telemetry Fetching
         const titlesRes = await getUserTitles(auth, resolvedTargetId, { limit: 100 }).catch(() => ({}));
         const sortedTitles = (titlesRes?.trophyTitles || []).sort((a, b) => new Date(b.lastUpdatedDateTime) - new Date(a.lastUpdatedDateTime));
         const totalGamesPlayedCount = titlesRes?.totalItemCount || sortedTitles.length;
@@ -535,6 +541,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
 
         const mergedGamesMap = new Map();
 
+        // 1. Process Telemetry (contains high-res rectangular poster artwork)
         telemetryData.forEach(g => {
             if (!g.npCommunicationId) return;
             mergedGamesMap.set(g.npCommunicationId, {
@@ -550,6 +557,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             });
         });
 
+        // 2. Process Trophy Titles & Merge
         sortedTitles.forEach(t => {
             const commId = t.npCommunicationId;
             if (!commId) return;
@@ -607,7 +615,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             isPlayerOnline
         );
 
-        // Ingest canonical skeletons for all recent games
+        // Ingest Canonical Skeletons for All Discovered Games
         for (const g of allRecentGames.slice(0, 10)) {
             if (g.npCommunicationId && g.npCommunicationId !== "Dashboard") {
                 await ensureGameSkeleton(
@@ -661,7 +669,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                         progressRatio = targetVal > 0 ? `${targetVal}/${targetVal}` : "100%";
                     }
 
-                    // Write directly into the dedicated visible subtree
+                    // Direct write to the dedicated, unhidden subtree
                     standaloneProgressMap[s.trophyId] = {
                         trophyId: s.trophyId,
                         name: skelTrophy?.name || "Trophy Objective",
@@ -793,7 +801,7 @@ function writeLocalFile(payload) {
 
 async function main() {
     try {
-        console.log("[INIT] Starting Squad Pack Sync Engine v30.0.0 (Dedicated Subtree Architecture)...");
+        console.log("[INIT] Starting Squad Pack Sync Engine v31.0.0 (Full Subtree & Canonical Postering)...");
 
         const previousFirebaseData = await fetchFromFirebase();
         const globalGames = previousFirebaseData.games || {};
@@ -804,8 +812,8 @@ async function main() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport,
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false }), 
-            engineVersion: "30.0.0",
-            codeTimestamp: "Saturday, September 12, 2026 | 13:18 CDT"
+            engineVersion: "31.0.0",
+            codeTimestamp: "Saturday, September 12, 2026 | 13:31 CDT"
         };
 
         const wildHorseAuth = await getAuthenticated("wildhorse_spirit", process.env.PSN_NPSSO_WEREWOLF);
@@ -829,7 +837,7 @@ async function main() {
         await syncNodeToFirebase("lastGlobalUpdate", finalData.lastGlobalUpdate);
         writeLocalFile(finalData);
 
-        console.log(`[SUCCESS] PSN Engine finished writing full skeletons and user nodes.`);
+        console.log(`[SUCCESS] PSN Engine execution finished cleanly.`);
     } catch (criticalError) {
         console.error(`[CRITICAL CATCH] Execution failed: ${criticalError.message}`);
         process.exit(1);
