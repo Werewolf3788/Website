@@ -1,19 +1,20 @@
 /* ============================================================================
  * File: psn.js
  * Location: /Playstation/psn.js
- * Description: Squad Pack Sync Engine - Choice A Architecture:
- *              1. Shared Game Skeleton (`games/{commId}`): Stores static title
- *                 metadata, icon assets, trophy definitions, groups, and progress targets
- *                 directly under direct Sony Communication IDs (NPWR...) for maximum stability.
- *              2. Lean User Node (`gamertags/{player}`): Saves only dynamic player
- *                 progress, earned status, and live session stats to eliminate payload bloat.
- *              3. Live Session Engine: Tracks game launches, active duration, and 
- *                 accumulates cumulative session time across play sessions.
- *              4. PS5 Sub-Progress Engine: Computes `subProgressRatio` for all PS5 titles.
+ * Description: Squad Pack Sync Engine - Full Relational Architecture:
+ *              1. Shared Game Skeleton (`games/{commId}`): Stores canonical title
+ *                 metadata, high-res poster art, trophy definitions, DLC groups,
+ *                 rarity, hidden flags, and PS5 sub-progress target values.
+ *              2. Lean User Node (`gamertags/{player}`): Tracks live presence,
+ *                 dynamic player progress, earned trophy states, and timestamps.
+ *              3. Cumulative Session Engine: Tracks live session hours and persists
+ *                 cumulative play duration per title across launches.
+ *              4. PS5 Sub-Progress Engine: Calculates accurate `subProgressRatio`
+ *                 for all PS5 versions and records real-time completion deltas.
  * Protocol Support: Works over HTTP & HTTPS via Direct REST PUT endpoints.
  * Analytics Tagging: Ready for GA4 (G-CTYHDF4MSD) deployment via GTM.
- * Version: 26.1.0 - Choice A Direct Keying, Relational Engine & Sub-Progress
- * Date & Time Stamp: 2026-09-12 10:44:00 (America/Chicago)
+ * Version: 27.0.0 - Unified Canonical Posters, Full Skeleton & Session Telemetry
+ * Date & Time Stamp: 2026-09-12 11:33:00 (America/Chicago)
  * ============================================================================ */
 
 const fs = require("fs");
@@ -121,7 +122,7 @@ function updateGameSessionTracking(existingUserData, activeCommId, activeTitle, 
             session.sessionStartTime = null;
             session.lastEndedTime = now;
             session.totalFormatted = formatDuration(session.totalSeconds);
-            console.log(`[SESSION CLOSED] ${session.title} ended. Added ${sessionElapsed}s. Cumulative: ${session.totalFormatted}`);
+            console.log(`[SESSION CLOSED] ${session.title} ended. Added ${sessionElapsed}s. Total: ${session.totalFormatted}`);
         }
     }
 
@@ -416,16 +417,24 @@ async function resolveAccountIdFromSearch(auth, gamerTag) {
 }
 
 // ----------------------------------------------------------------------------
-// [SECTION: GLOBAL GAME SKELETON HANDLER (CHOICE A: PURE NPWR DIRECT KEY)]
+// [SECTION: GLOBAL CANONICAL GAME SKELETON HANDLER]
 // ----------------------------------------------------------------------------
-async function ensureGameSkeleton(auth, commId, gameName, platform, existingGames) {
+async function ensureGameSkeleton(auth, commId, gameName, platform, posterArt, existingGames) {
     if (!commId || commId === "Dashboard") return null;
     
-    // Exact O(1) direct lookup under games/{commId}
-    if (existingGames && existingGames[commId]) return existingGames[commId];
+    // Check if skeleton exists
+    if (existingGames && existingGames[commId]) {
+        // If skeleton is missing poster art, update it
+        if (!existingGames[commId].posterArt && posterArt) {
+            existingGames[commId].posterArt = posterArt;
+            await syncNodeToFirebase(`games/${commId}/posterArt`, posterArt);
+            console.log(`[SKELETON ART UPDATE] Added missing cover art for ${gameName} (${commId}).`);
+        }
+        return existingGames[commId];
+    }
 
     try {
-        console.log(`[SKELETON PULL] Generating global game skeleton for ${gameName} (${commId})...`);
+        console.log(`[SKELETON PULL] Generating canonical game skeleton for ${gameName} (${commId})...`);
         const opt = { npServiceName: platform === "PS5" ? "trophy2" : "trophy" };
         
         let metaRes = await getTitleTrophies(auth, commId, "all", opt).catch(() => null);
@@ -442,6 +451,7 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, existingGame
             commId: commId,
             name: gameName,
             platform: platform,
+            posterArt: posterArt || null,
             totalTrophies: metaRes?.trophies?.length || 0,
             trophies: (metaRes?.trophies || []).map(t => ({
                 trophyId: t.trophyId,
@@ -451,7 +461,8 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, existingGame
                 detail: t.trophyDetail || "Secret Objective",
                 groupId: t.trophyGroupId || "default",
                 targetValue: t.trophyProgressTargetValue || 0,
-                rarity: t.trophyRare ? t.trophyRare + "%" : "Rare",
+                rarity: t.trophyRare !== undefined ? `${t.trophyRare}%` : "Rare",
+                earnedRate: t.trophyEarnedRate || "0.0",
                 hidden: t.trophyHidden || false
             })),
             groups: (groupsRes?.trophyGroups || []).map(g => ({
@@ -462,10 +473,9 @@ async function ensureGameSkeleton(auth, commId, gameName, platform, existingGame
             createdTimestamp: new Date().toISOString()
         };
 
-        // Saved cleanly to games/{commId}
         await syncNodeToFirebase(`games/${commId}`, skeletonData);
         if (existingGames) existingGames[commId] = skeletonData;
-        console.log(`[SKELETON SUCCESS] Stored shared skeleton for ${gameName} (${commId}).`);
+        console.log(`[SKELETON SUCCESS] Stored shared skeleton with cover art for ${gameName} (${commId}).`);
         return skeletonData;
     } catch (err) {
         console.warn(`[SKELETON WARN] Could not store skeleton for ${commId}:`, err.message);
@@ -607,7 +617,6 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             return dateB - dateA;
         });
 
-        // Strict presence resolution prevents old recent titles from getting stuck
         if (!resolvedTitle) {
             if (isPlayerOnline && activeCommId && mergedGamesMap.has(activeCommId)) {
                 resolvedTitle = mergedGamesMap.get(activeCommId).name;
@@ -618,6 +627,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             }
         }
 
+        // Multi-Source Poster Art Resolution
         let matchedArt = null;
         if (activeCommId && mergedGamesMap.has(activeCommId)) {
             matchedArt = mergedGamesMap.get(activeCommId).art;
@@ -630,7 +640,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             matchedArt = match?.art || allRecentGames[0]?.art;
         }
 
-        // 3. PERSISTENT SESSION TRACKING
+        // 3. PERSISTENT PLAY SESSION ENGINE
         const { playSessions, currentGameDurationFormatted } = updateGameSessionTracking(
             existingData,
             activeCommId,
@@ -638,21 +648,22 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
             isPlayerOnline
         );
 
-        // 4. VERIFY GAME SKELETON (Direct NPWR storage)
+        // 4. CANONICAL SKELETON STORAGE WITH COVER ART
         const targetSyncId = activeCommId || allRecentGames[0]?.npCommunicationId;
         const matchedGame = (targetSyncId && mergedGamesMap.get(targetSyncId)) || {};
         const currentPlatform = normalizePlatform(matchedGame);
+        const resolvedPoster = matchedArt || matchedGame.art || allRecentGames[0]?.art || null;
 
         let skeleton = null;
         if (targetSyncId && targetSyncId !== "Dashboard") {
-            skeleton = await ensureGameSkeleton(auth, targetSyncId, resolvedTitle, currentPlatform, globalGames);
+            skeleton = await ensureGameSkeleton(auth, targetSyncId, resolvedTitle, currentPlatform, resolvedPoster, globalGames);
         }
 
         const stats = await getUserTrophyProfileSummary(auth, resolvedTargetId).catch(() => ({}));
         let activeHunt = existingData?.activeHunt || null;
         let mostRecentTrophies = existingData?.mostRecentTrophies || [];
 
-        // 5. RELATIONAL USER ACTIVE HUNT SYNC
+        // 5. USER ACTIVE HUNT DELTA (Lean Player Node)
         if ((isPlayerOnline && targetSyncId) || runHeavy) {
             try {
                 await sleep(40);
@@ -681,7 +692,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     let progressRatio = null;
                     if (targetVal > 0) {
                         progressRatio = `${currentVal}/${targetVal}`;
-                    } else if (s.progress && !s.earned) {
+                    } else if (s.progress !== undefined && s.progress > 0 && !s.earned) {
                         progressRatio = `${s.progress}%`;
                     }
 
@@ -730,6 +741,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
                     npCommunicationId: targetSyncId,
                     title: matchedGame.name || resolvedTitle, 
                     platform: currentPlatform,
+                    art: resolvedPoster,
                     hoursPlayed: currentGameDurationFormatted,
                     hoursFormatted: currentGameDurationFormatted,
                     amazonAffiliateUrl: generateAffiliateUrl(matchedGame.name || resolvedTitle), 
@@ -755,7 +767,7 @@ async function getFullUserData(auth, gamerTag, userKey, targetId, existingData, 
         const presence = {
             online: isFullyOnline,
             currentGame: resolvedTitle,
-            currentGameArt: matchedArt,
+            currentGameArt: resolvedPoster,
             currentGameActivity: activeGameInfo.formatValue || twitchIntel?.statusMessage || (proofOfLife ? "Active Hunting" : null) || (twitchIntel?.isLive ? "Streaming Live" : null),
             amazonAffiliateUrl: generateAffiliateUrl(resolvedTitle),
             currentCommunicationId: activeCommId || null,
@@ -860,7 +872,7 @@ function writeLocalFile(payload) {
 // ----------------------------------------------------------------------------
 async function main() {
     try {
-        console.log("[INIT] Starting Squad Pack Sync Engine v26.1.0 (Choice A: Pure NPWR Direct)...");
+        console.log("[INIT] Starting Squad Pack Sync Engine v27.0.0...");
 
         const previousFirebaseData = await fetchFromFirebase();
         const globalGames = previousFirebaseData.games || {};
@@ -872,8 +884,8 @@ async function main() {
             mutualSquadFollowers: [], 
             authDiagnostics: diagnosticReport,
             lastGlobalUpdate: new Date().toLocaleString("en-US", { timeZone: "America/Chicago", hour12: false }), 
-            engineVersion: "26.1.0",
-            codeTimestamp: "Saturday, September 12, 2026 | 10:44 CDT"
+            engineVersion: "27.0.0",
+            codeTimestamp: "Saturday, September 12, 2026 | 11:33 CDT"
         };
 
         const wildHorseAuth = await getAuthenticated("wildhorse_spirit", process.env.PSN_NPSSO_WEREWOLF);
